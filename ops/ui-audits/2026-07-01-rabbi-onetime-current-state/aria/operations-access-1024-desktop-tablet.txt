@@ -1,0 +1,92 @@
+- complementary "BNA Operations navigation":
+  - text: One Time Mishnah Class CRM, school operations, providers, portals, usage, and automation in one workspace.
+  - group:
+    - text: Workspace Directory
+    - strong: One Time Mishnah Class
+    - text: Service Provider / Provider Workspace Admin Switch
+  - navigation:
+    - button "Dashboard DB"
+    - button "Watchdog WG"
+    - button "Program PG"
+    - button "Agents AG"
+    - button "Members MB"
+    - button "Community CO"
+    - button "Studio ST"
+    - button "Content CT"
+    - button "Live LC"
+    - button "Schedule SC"
+    - button "Communications CM"
+    - button "Tasks TS"
+    - button "Automations AU"
+    - button "Integrations IN"
+    - button "Reporting RP"
+    - button "Settings SE"
+  - button "Settings"
+  - button "Help"
+  - link "Logout":
+    - /url: /operations-login.html
+- main:
+  - text: One Time Mishnah Class / Program / Payment / Access
+  - strong: Payment / Access
+  - button "Need decision 0":
+    - text: Need decision
+    - strong: "0"
+  - button "Codex Queue 0":
+    - text: Codex Queue
+    - strong: "0"
+  - button "Student accountability 0":
+    - text: Student accountability
+    - strong: "0"
+  - button "Alerts 0":
+    - text: Alerts
+    - strong: "0"
+  - text: One Time Mishnah Class / Provider Workspace Admin
+  - button "Ask / Search"
+  - text: Wed 1 Jul
+  - button "Open Schedule"
+  - navigation "Program filters":
+    - text: Program
+    - strong: Payment / Access
+    - tablist "Program views":
+      - tab "Program Overview 0"
+      - tab "Launch / Checkout 0"
+      - tab "Mishnayos Membership 0"
+      - tab "Membership Tiers 0"
+      - tab "7:00 Class 0"
+      - tab "Worksheets / Source Sheets 0"
+      - tab "Questions / Posts 0"
+      - tab "Payment / Access 0" [selected]
+      - tab "Provider Settings 0"
+  - text: Provider Workspace
+  - heading "One Time Mishnah Class" [level=2]
+  - paragraph: Rabbi Sheller is the current service provider and revenue-share partner for this workspace. Members are participants, not BNA students, and this workspace does not expose BNA accountability data.
+  - heading "Payment / Access" [level=3]
+  - text: 1 participants
+  - table:
+    - rowgroup:
+      - row "Participant Status Access Next Action":
+        - columnheader "Participant"
+        - columnheader "Status"
+        - columnheader "Access"
+        - columnheader "Next Action"
+    - rowgroup:
+      - row "Mishnayos member sample Needs payment/access review Load participants from provider signup/payment source.":
+        - cell "Mishnayos member"
+        - cell "sample"
+        - cell "Needs payment/access review"
+        - cell "Load participants from provider signup/payment source."
+  - paragraph: No payment, payout, or access sync fires until the connector is explicitly configured and confirmed.
+  - heading "Command Bot Actions" [level=3]
+  - text: 0 typed actions
+  - paragraph: The bot reads page/workspace context and previews typed actions. Sensitive actions require approval and dedicated handlers before mutation.
+  - text: No typed actions are registered for this page yet.
+- dialog "Shloimie's BNA Helper":
+  - text: Shloimie's BNA Helper Provider Workspace Admin / Program
+  - button "Close Shloimie's BNA Helper": x
+  - region "Helper scope":
+    - strong: admin / rabbi_sheller_provider
+    - text: Scoped to this workspace and current page context. 0 tools standard
+    - button "Teach helper"
+  - text: Ready for scoped Operations actions. Confirmation is required before email sends, social scheduling, or other sensitive changes.
+  - textbox "Ask Shloimie's BNA Helper to open a task, mark done, report a problem, draft an email, check the queue, or prepare an action."
+  - button "Send"

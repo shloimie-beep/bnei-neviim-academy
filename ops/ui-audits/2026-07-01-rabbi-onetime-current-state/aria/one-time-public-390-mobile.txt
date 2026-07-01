@@ -1,0 +1,149 @@
+- text: 30 DAYS TO JOIN - START WITH 30 DAYS FREE Enrollment deadline will be posted before launch
+- banner:
+  - link "OneTimeOneTime Mishnah home":
+    - /url: /one-time
+    - strong: OneTimeOneTime Mishnah
+  - navigation "One Time navigation":
+    - link "Watch":
+      - /url: "#watch-rabbi"
+    - link "Program":
+      - /url: "#what-you-get"
+    - link "How It Works":
+      - /url: "#how-it-works"
+    - link "Campaign FAQ":
+      - /url: "#faq"
+    - link "Start Free":
+      - /url: "#signup"
+    - link "Member Login":
+      - /url: /rabbi-member
+- main:
+  - paragraph: Worldwide Live Mishnayos
+  - heading "Learn Mishnayos Live with Rabbi Eli Scheller" [level=1]
+  - paragraph: Live shiurim, daily accountability, practical worksheets, and direct interaction with the Rabbi - so boys can finish Mishnayos, love learning Torah, and keep going wherever they live.
+  - link "START 30 DAYS FREE":
+    - /url: "#signup"
+  - link "WATCH RABBI SCHELLER":
+    - /url: "#watch-rabbi"
+  - iframe
+  - text: Watch a short welcome from Rabbi Scheller, then start the trial when you are ready.
+  - paragraph: What You Get
+  - heading "A live Mishnayos class your child can stay with." [level=2]
+  - paragraph: One Time combines Rabbi Scheller's live shiur, structured review, simple worksheets, and family-visible progress so learning keeps moving between classes.
+  - article:
+    - heading "Live Shiurim" [level=3]
+    - paragraph: Join Rabbi Scheller for live Mishnayos learning with a clear weekly rhythm.
+  - article:
+    - heading "Daily Accountability" [level=3]
+    - paragraph: Students have a steady review path and parents can see the learning progress.
+  - article:
+    - heading "Worksheets and Library" [level=3]
+    - paragraph: Practical worksheets and member videos help students review the class material.
+  - paragraph: Inside The Program
+  - heading "Live learning, review, and follow-through in one simple rhythm." [level=2]
+  - paragraph: The teaching experience stays focused on Rabbi Scheller, the live class, and the follow-up that helps students keep learning between shiurim.
+  - article:
+    - img "Rabbi Scheller teaching from the One Time stage"
+    - heading "Live Class" [level=3]
+    - paragraph: Join the shiur live and learn with the structure of a real class.
+  - article:
+    - img "Rabbi Scheller during a teaching moment"
+    - heading "Clear Review" [level=3]
+    - paragraph: Rewatch the lesson and review the Mishnayos with practical worksheets.
+  - article:
+    - img "One Time teaching setup with Rabbi Scheller"
+    - heading "Steady Progress" [level=3]
+    - paragraph: Keep the momentum going between shiurim with a visible learning path.
+  - paragraph: Across The Jewish World
+  - heading "A shiur built for families in many communities." [level=2]
+  - paragraph: One live class gives families in different communities a steady way to learn, review, and stay connected to Rabbi Scheller. Media references are shown as public references only and do not imply sponsorship.
+  - img "TorahAnytime"
+  - img "24Six"
+  - img "Loop"
+  - img "Mishpacha"
+  - paragraph: How It Works
+  - heading "Three steps that keep the learning moving." [level=2]
+  - paragraph: A simple weekly rhythm helps the class feel clear for students and easy for parents to follow.
+  - article:
+    - heading "Join the live shiur" [level=3]
+    - paragraph: Students come into the live class and learn Mishnayos with Rabbi Scheller.
+  - article:
+    - heading "Review the lesson" [level=3]
+    - paragraph: The video library and worksheets make it easier to review after class.
+  - article:
+    - heading "Keep building" [level=3]
+    - paragraph: Accountability and family-visible progress help students keep going.
+  - paragraph: Rabbi Eli Scheller
+  - heading "Warm, clear teaching that keeps boys connected to Mishnayos." [level=2]
+  - paragraph: Clear Mishnayos learning, steady accountability, practical resources, and a live connection to the Rabbi.
+  - paragraph:
+    - strong: $67 USD per month after a 30-day free trial.
+  - img "Rabbi Eli Scheller"
+  - paragraph: Member Classroom
+  - heading "Watch the lesson inside the site." [level=2]
+  - paragraph: Members can rewatch the shiur, open worksheets, and keep class resources together in the One Time classroom.
+  - article:
+    - heading "Class Video" [level=3]
+    - paragraph: The lesson plays in the classroom so students can review without losing the flow.
+  - article:
+    - heading "Worksheets" [level=3]
+    - paragraph: Worksheet cards stay inside the One Time classroom flow.
+  - article:
+    - heading "Questions" [level=3]
+    - paragraph: Students and parents have a clear place to ask class-related questions.
+  - paragraph: FAQ
+  - heading "Quick answers before you start." [level=2]
+  - article:
+    - heading "Who is this for?" [level=3]
+    - paragraph: Families who want a live Mishnayos class, steady review, and a warm connection to Rabbi Scheller.
+  - article:
+    - heading "What happens after I sign up?" [level=3]
+    - paragraph: The One Time team follows up with the next steps for the trial, class access, and schedule details.
+  - article:
+    - heading "Can my child review missed classes?" [level=3]
+    - paragraph: Yes. The member classroom is built around replay videos, worksheets, and review resources.
+  - article:
+    - heading "What is the monthly price?" [level=3]
+    - paragraph: The intended membership is $67 USD per month after the 30-day free trial.
+  - paragraph: Start Free
+  - heading "Start with 30 days free." [level=2]
+  - paragraph: Leave your details and the One Time team will help you start the free trial and get the right class information.
+  - text: Parent name
+  - textbox "Parent name"
+  - text: Email
+  - textbox "Email"
+  - text: Phone / WhatsApp
+  - textbox "Phone / WhatsApp"
+  - text: Region
+  - button "Region": US
+  - text: Notes
+  - textbox "Notes":
+    - /placeholder: Best time zone, child's age range, or class questions
+  - checkbox "I agree to be contacted about One Time Mishnayos and the 30-day free trial."
+  - text: I agree to be contacted about One Time Mishnayos and the 30-day free trial.
+  - button "START 30 DAYS FREE"
+  - paragraph
+- contentinfo:
+  - text: OneTimeOneTime Mishnayos
+  - navigation "One Time footer navigation":
+    - link "BNA":
+      - /url: /
+    - link "School":
+      - /url: /school
+    - link "Families":
+      - /url: /parents
+    - link "Provider Directory":
+      - /url: /service-providers
+    - link "One Time":
+      - /url: /one-time
+    - link "Blog":
+      - /url: /blog
+    - link "FAQ":
+      - /url: /faq
+    - link "BNA Register":
+      - /url: /signup.html
+    - link "Privacy":
+      - /url: /one-time/privacy.html
+    - link "Terms":
+      - /url: /one-time/terms.html
+    - link "Member Login":
+      - /url: /rabbi-member

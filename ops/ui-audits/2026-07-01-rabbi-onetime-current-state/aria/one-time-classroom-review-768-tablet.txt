@@ -1,0 +1,84 @@
+- banner:
+  - strong: One Time Mishnah Classroom
+  - text: Videos, assignments, source sheets, live sessions, and Rabbi-reviewed questions
+  - link "One Time home":
+    - /url: /one-time
+    - button "One Time home"
+  - link "Member home":
+    - /url: /rabbi-member
+    - button "Member home"
+  - link "Library":
+    - /url: /member-library
+    - button "Library"
+  - link "Classroom":
+    - /url: /one-time-classroom
+    - button "Classroom"
+  - button "Assistant/help"
+  - link "Questions/support":
+    - /url: /rabbi-member#support
+    - button "Questions/support"
+  - link "Account/logout":
+    - /url: /rabbi-member?logout=1
+    - button "Account/logout"
+  - link "Return to public site":
+    - /url: /
+    - button "Return to public site"
+- main:
+  - heading "One Time Mishnah Classroom" [level=1]
+  - paragraph: Follow the live shiur path, review class videos by Seder, open worksheets, and respond to Rabbi-reviewed prompts without an open student chat. This review route uses TEST-only member-library data.
+  - text: Internal calendar Approved questions Private replies Rabbi moderation
+  - heading "Access Code" [level=2]
+  - textbox "Enter your One Time access code": TEST-ONETIME-REVIEW-ACCESS
+  - button "Open Classroom"
+  - text: TEST classroom review opened. No writes will be performed.
+  - heading "Today / Live" [level=2]
+  - text: TEST Student One Time / test_review_member
+  - iframe
+  - heading "Pesachim Perek 10 Review Class" [level=3]
+  - paragraph: Manual Vimeo sample reference traced from the legacy OneTimeOneTime site for UI review. This is not an automated upload.
+  - text: "2026-06-18 Vimeo manual/sample reference published_for_review Captions/transcript: pending review"
+  - paragraph:
+    - link "Fallback Vimeo Link":
+      - /url: https://vimeo.com/1178363755/282ea2577c
+      - button "Fallback Vimeo Link"
+  - heading "Calendar" [level=2]
+  - article:
+    - strong: TEST Weekly Mishnah Live Class
+    - paragraph: Pesachim Perek 10 Mishnah 1-2
+    - text: 25 Jun, 22:30 TEST review schedule
+  - heading "Six Sedarim" [level=2]
+  - group:
+    - text: Pesachim Foundations 1 video
+    - paragraph: Review-ready module with one lesson, one video, and one worksheet.
+    - article:
+      - strong: Pesachim Perek 10 - Seder Night Review
+      - paragraph: Manual Vimeo sample reference traced from the legacy OneTimeOneTime site for UI review. This is not an automated upload.
+      - text: 2026-06-18 published_for_review
+  - heading "Approved Participation" [level=2]
+  - text: OK
+  - strong: TEST Student One Time
+  - paragraph: 1 questions / 0 responses / 0 featured
+  - strong: Reviewed
+  - heading "Top Questions" [level=2]
+  - article:
+    - strong: Private question about the Mishnah
+    - paragraph: Can Rabbi explain why this time is used for Shema?
+    - text: TEST Student One Time
+  - heading "Reply Queue" [level=2]
+  - article:
+    - strong: Private first
+    - paragraph: Students respond to Rabbi/admin threads below. Replies stay in review until Rabbi/admin chooses the next step.
+  - article:
+    - strong: No open chat
+    - paragraph: Teacher-led discussion can be featured after review, but students do not publish directly to a public feed.
+  - heading "Rabbi Threads" [level=2]
+  - text: Responses are reviewed before visibility
+  - article:
+    - strong: Welcome to the TEST One Time cohort
+    - text: announcement 1 approved message
+    - strong: Eli Scheller
+    - paragraph: This announcement is safe test content for the review walkthrough.
+    - text: Respond to Rabbi/admin thread
+    - textbox "Respond to Rabbi/admin thread":
+      - /placeholder: Your response is private until reviewed.
+    - button "Submit For Review"

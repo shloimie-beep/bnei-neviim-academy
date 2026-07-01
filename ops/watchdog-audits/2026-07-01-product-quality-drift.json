@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T09:56:07.509Z",
+  "generated_at": "2026-07-01T12:14:24.610Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -372,6 +372,7 @@
     "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md",
     "tasks-pending/2026-06-30-current-systems-closeout.md",
     "tasks-pending/2026-07-01-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md",
+    "tasks-pending/2026-07-01-run-rabbi-onetime-visual-audit-resend-smoke.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
   ],

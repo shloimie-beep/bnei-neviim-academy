@@ -1,0 +1,90 @@
+- complementary "BNA Operations navigation":
+  - text: One Time Mishnah Class CRM, school operations, providers, portals, usage, and automation in one workspace.
+  - group:
+    - text: Workspace Directory
+    - strong: One Time Mishnah Class
+    - text: Service Provider / Provider Workspace Admin Switch
+  - navigation:
+    - button "Dashboard DB"
+    - button "Watchdog WG"
+    - button "Program PG"
+    - button "Agents AG"
+    - button "Members MB"
+    - button "Community CO"
+    - button "Studio ST"
+    - button "Content CT"
+    - button "Live LC"
+    - button "Schedule SC"
+    - button "Communications CM"
+    - button "Tasks TS"
+    - button "Automations AU"
+    - button "Integrations IN"
+    - button "Reporting RP"
+    - button "Settings SE"
+  - button "Settings"
+  - button "Help"
+  - link "Logout":
+    - /url: /operations-login.html
+- main:
+  - text: One Time Mishnah Class / Members / Participants / Members
+  - strong: Participants / Members
+  - button "Need decision 0":
+    - text: Need decision
+    - strong: "0"
+  - button "Codex Queue 0":
+    - text: Codex Queue
+    - strong: "0"
+  - button "Student accountability 0":
+    - text: Student accountability
+    - strong: "0"
+  - button "Alerts 0":
+    - text: Alerts
+    - strong: "0"
+  - text: One Time Mishnah Class / Provider Workspace Admin
+  - button "Ask / Search"
+  - text: Wed 1 Jul
+  - button "Open Members"
+  - navigation "Members filters":
+    - text: Members
+    - strong: Participants / Members
+    - tablist "Members views":
+      - tab "Overview 0"
+      - tab "Participants / Members 1" [selected]
+      - tab "CRM Contacts 0"
+      - tab "Email Contacts 0"
+      - tab "Participant Parents 0"
+      - tab "Questions / Posts 0"
+      - tab "Payment / Access 0"
+      - tab "Messages / Help 0"
+  - text: Provider Roster
+  - heading "Participants / Members" [level=2]
+  - paragraph: Rabbi Sheller users are participants/members unless actually enrolled in BNA. Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.
+  - heading "Participants / Members" [level=3]
+  - text: 1 records
+  - table:
+    - rowgroup:
+      - row "Name Status Scope Next Action":
+        - columnheader "Name"
+        - columnheader "Status"
+        - columnheader "Scope"
+        - columnheader "Next Action"
+    - rowgroup:
+      - row "Mishnayos member sample Provider participant Load participants from provider signup/payment source.":
+        - cell "Mishnayos member"
+        - cell "sample"
+        - cell "Provider participant"
+        - cell "Load participants from provider signup/payment source."
+  - heading "Command Bot Actions" [level=3]
+  - text: 0 typed actions
+  - paragraph: The bot reads page/workspace context and previews typed actions. Sensitive actions require approval and dedicated handlers before mutation.
+  - text: No typed actions are registered for this page yet.
+- dialog "Shloimie's BNA Helper":
+  - text: Shloimie's BNA Helper Provider Workspace Admin / Members
+  - button "Close Shloimie's BNA Helper": x
+  - region "Helper scope":
+    - strong: admin / rabbi_sheller_provider
+    - text: Scoped to this workspace and current page context. 0 tools standard
+    - button "Teach helper"
+  - text: Ready for scoped Operations actions. Confirmation is required before email sends, social scheduling, or other sensitive changes.
+  - textbox "Ask Shloimie's BNA Helper to open a task, mark done, report a problem, draft an email, check the queue, or prepare an action."
+  - button "Send"

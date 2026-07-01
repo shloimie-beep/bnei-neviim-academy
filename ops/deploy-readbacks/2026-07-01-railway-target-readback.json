@@ -1,0 +1,41 @@
+{
+  "report_id": "2026-07-01-railway-target-readback",
+  "raw_id": "RAW-20260701-004",
+  "requirement_id": "REQ-20260701-403",
+  "generated_at": "2026-07-01T12:30:00.000Z",
+  "default_environment": {
+    "command": "npm run railway:target:doctor",
+    "status": "blocked",
+    "deployment_mode": "cli",
+    "project": null,
+    "environment": "production",
+    "service": null,
+    "expected_domain": "bneineviimacademy.org",
+    "known_domains": [],
+    "blockers": [
+      "Railway target requires explicit project ID or project name.",
+      "Railway target requires explicit service ID or service name; no production fallback is allowed."
+    ],
+    "warnings": [
+      "No Railway custom domain was available for comparison."
+    ]
+  },
+  "explicit_target_probe": {
+    "command": "BNA_RAILWAY_PROJECT_NAME=skillful-motivation BNA_RAILWAY_SERVICE_NAME=skillful-motivation BNA_RAILWAY_ENVIRONMENT_NAME=production BNA_RAILWAY_CUSTOM_DOMAIN=bneineviimacademy.org npm run railway:target:doctor",
+    "status": "ready",
+    "deployment_mode": "cli",
+    "project": "skillful-motivation",
+    "environment": "production",
+    "service": "skillful-motivation",
+    "expected_domain": "bneineviimacademy.org",
+    "known_domains": [
+      "bneineviimacademy.org"
+    ]
+  },
+  "deploy_status": {
+    "deploy_attempted": false,
+    "live_smoke_attempted": false,
+    "reason": "This packet produced audit/report/tooling artifacts and a local smoke-script enhancement. The default environment still lacks persistent Railway project/service target values; no deploy/live-smoke proof is claimed."
+  },
+  "next_action": "Persist explicit Railway target values in the safe deploy environment or pass them at deploy time: BNA_RAILWAY_PROJECT_NAME=skillful-motivation, BNA_RAILWAY_SERVICE_NAME=skillful-motivation, BNA_RAILWAY_ENVIRONMENT_NAME=production, BNA_RAILWAY_CUSTOM_DOMAIN=bneineviimacademy.org."
+}

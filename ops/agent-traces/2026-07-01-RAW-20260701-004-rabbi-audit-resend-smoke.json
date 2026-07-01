@@ -1,0 +1,265 @@
+{
+  "trace_id": "TRACE-20260701-004-rabbi-audit-resend-smoke",
+  "raw_id": "RAW-20260701-004",
+  "parent_raw_id": "RAW-20260701-004",
+  "parent_packet_raw_ids": [
+    "RAW-20260701-003"
+  ],
+  "packet_ids": [
+    "PKT-20260701-112",
+    "PKT-20260701-109"
+  ],
+  "stage_transitions": [
+    "raw_capture",
+    "source_readback",
+    "railway_target_readback",
+    "visual_audit",
+    "resend_readiness",
+    "resend_guarded_smoke",
+    "closeout"
+  ],
+  "source_files_read": [
+    "BNA-START-HERE.md",
+    "AGENTS.md",
+    "docs/BNA-RAMBLE-TO-DONE.md",
+    "docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md",
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/RAMBLE-ROUTER.md",
+    "docs/PACKET-DAG.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "MEMORY.md",
+    "TASKS.md",
+    "SYSTEM-STATE.md",
+    "package.json",
+    "ops/execution-runs/latest.json",
+    "ops/execution-runs/2026-06-30-current-systems-closeout/NEXT-SESSION.md",
+    "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/00-control-tower.md",
+    "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/01-current-state-visual-audit.md",
+    "ops/prompt-packets/2026-07-01-provider-config-readback/09-resend-send-enabled-smoke.md",
+    "docs/integrations/RESEND.md",
+    "scripts/smoke-email.mjs",
+    "scripts/smoke-email-resend-ux-live.mjs",
+    "server.js",
+    "src/lib/integrations/resend-client.js",
+    "src/lib/integrations/resend-inbound-crm.js",
+    "tests/resend-client.test.js",
+    "tests/resend-inbound-crm.test.js",
+    "tests/resend-inbound-webhook.test.js"
+  ],
+  "source_statements_mapped": [
+    "Run 01-current-state-visual-audit.",
+    "Run 09-resend-send-enabled-smoke.",
+    "Resolve or record Railway target blocker.",
+    "No Rabbi UI implementation.",
+    "No bulk campaign.",
+    "No Stripe in this packet.",
+    "No GHL.",
+    "No secret exposure.",
+    "Safe Resend smoke authorized for official Resend test recipients."
+  ],
+  "repo_surface_map_path": null,
+  "compiler_schema_version": "pqc.v2",
+  "validation_results": [
+    {
+      "command": "node --check scripts/smoke-email.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "node --check scripts/audit-rabbi-onetime-current-state.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "node --check server.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --check src/lib/integrations/resend-client.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --check src/lib/integrations/resend-inbound-crm.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test tests/resend-client.test.js tests/resend-inbound-crm.test.js tests/resend-inbound-webhook.test.js",
+      "status": "pass",
+      "summary": "16 tests passed"
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=https://bneineviimacademy.org",
+      "status": "pass",
+      "summary": "75 screenshots captured across 15 routes and 5 viewports"
+    },
+    {
+      "command": "npm run email:smoke -- --base=https://bneineviimacademy.org --identity=one_time --workspace=rabbi_sheller_provider --project=one_time_mishnah_class --to=delivered+onetime-smoke-20260701@resend.dev --subject=\"One Time Resend dry-run smoke 2026-07-01\" --body=\"Dry-run smoke for One Time Resend readiness.\"",
+      "status": "pass",
+      "summary": "dry-run only; no external send"
+    },
+    {
+      "command": "npm run email:smoke -- --adapter=resend-client --identity=one_time --workspace=rabbi_sheller_provider --project=one_time_mishnah_class --to=delivered+onetime-smoke-20260701@resend.dev --send --subject=\"One Time Resend smoke 2026-07-01\" --body=\"Controlled One Time Resend smoke. This verifies sender and provider readiness only; no campaign send occurred.\"",
+      "status": "pass",
+      "summary": "single guarded Resend test send delivered"
+    },
+    {
+      "command": "npm run railway:target:doctor",
+      "status": "blocked",
+      "summary": "default environment missing persistent Railway project/service target values"
+    },
+    {
+      "command": "BNA_RAILWAY_PROJECT_NAME=skillful-motivation BNA_RAILWAY_SERVICE_NAME=skillful-motivation BNA_RAILWAY_ENVIRONMENT_NAME=production BNA_RAILWAY_CUSTOM_DOMAIN=bneineviimacademy.org npm run railway:target:doctor",
+      "status": "pass",
+      "summary": "command-scoped target readback passed"
+    },
+    {
+      "command": "npm run pqc:all",
+      "status": "pass",
+      "summary": "packet validation, fixtures, evals, protocol drift watchdog, and trace validation passed"
+    },
+    {
+      "command": "npm run bna:run:status",
+      "status": "pass",
+      "summary": "active run valid; one unrelated blocked item remains"
+    },
+    {
+      "command": "npm run bna:run:validate",
+      "status": "pass"
+    },
+    {
+      "command": "npm run bna:run:source-coverage",
+      "status": "pass",
+      "summary": "8 source statements, 8 requirements, 0 unmapped executable statements"
+    },
+    {
+      "command": "npm run bna:run:stale-evidence",
+      "status": "pass",
+      "summary": "no stale evidence detected"
+    },
+    {
+      "command": "npm run secrets:audit",
+      "status": "pass",
+      "summary": "5546 tracked paths checked, 0 tracked secret-risk files found"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "summary": "passed with expected LF-to-CRLF working-copy warnings"
+    },
+    {
+      "command": "JSON/JSONL parse validation for generated evidence",
+      "status": "pass",
+      "summary": "95 JSON files and ledger JSONL parsed"
+    }
+  ],
+  "packet_validation_results": {
+    "visual_audit_packet": "executed",
+    "resend_packet": "executed_with_remaining_env_blockers",
+    "final_pqc_all": "pass"
+  },
+  "tool_actions_taken": [
+    "Created raw intake and requirement register.",
+    "Ran Railway target guard in default environment and command-scoped explicit target probe.",
+    "Added audit screenshot runner.",
+    "Captured Rabbi / One Time current-state audit screenshots.",
+    "Added One Time-aware Resend smoke path to scripts/smoke-email.mjs.",
+    "Ran focused Resend tests.",
+    "Ran dry-run email smoke.",
+    "Ran guarded Resend test send to official Resend test recipient.",
+    "Read back provider message status as delivered."
+  ],
+  "tool_actions_skipped": [
+    "No Rabbi UI fixes.",
+    "No Stripe sandbox smoke.",
+    "No bulk campaign send.",
+    "No DNS mutation.",
+    "No deploy/live smoke."
+  ],
+  "skipped_action_reasons": {
+    "rabbi_ui_fixes": "Out of scope; audit-only packet.",
+    "stripe": "Explicitly separate later sandbox packet.",
+    "bulk_campaign": "Not authorized.",
+    "dns": "Not authorized.",
+    "deploy_live_smoke": "Default Railway target environment lacks persistent project/service values."
+  },
+  "browser_routes_visited": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=participants",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=automations&section=center",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks&section=one_time&project=one_time_mishnah_class",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=workspace",
+    "/one-time",
+    "/one-time/member-login",
+    "/provider.html?review=one-time",
+    "/parent.html?review=one-time",
+    "/student.html?review=one-time",
+    "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+    "/one-time-email-review.html"
+  ],
+  "screenshots_captured": 75,
+  "aria_snapshots_captured": 75,
+  "accessibility_scans": "heuristic accessibility records written; no axe scan in this packet",
+  "tests_run": [
+    "node --check scripts/smoke-email.mjs",
+    "node --check scripts/audit-rabbi-onetime-current-state.mjs",
+    "node --check server.js",
+    "node --check src/lib/integrations/resend-client.js",
+    "node --check src/lib/integrations/resend-inbound-crm.js",
+    "node --test tests/resend-client.test.js tests/resend-inbound-crm.test.js tests/resend-inbound-webhook.test.js"
+  ],
+  "watchdogs_run": [
+    "npm run watchdog:protocol-drift"
+  ],
+  "external_actions_blocked": [
+    "Bulk email campaign",
+    "DNS mutation",
+    "Stripe",
+    "GHL/external CRM"
+  ],
+  "external_actions_performed": [
+    {
+      "provider": "resend",
+      "action": "single guarded test email to official Resend test recipient",
+      "recipient": "d***@resend.dev",
+      "provider_message_id": "513b89c4-6bc5-4dbd-b271-f1291249211d",
+      "readback_status": "delivered"
+    }
+  ],
+  "decisions_created_or_updated": [],
+  "blockers": [
+    "Persist One Time Resend sender config in Railway/keyholder.",
+    "Install RESEND_WEBHOOK_SECRET for https://bneineviimacademy.org/api/resend/inbound.",
+    "Persist explicit Railway target values for deploy/live-smoke commands."
+  ],
+  "implementation_files_changed": [
+    "scripts/smoke-email.mjs",
+    "scripts/audit-rabbi-onetime-current-state.mjs"
+  ],
+  "commits": [
+    "8e466153"
+  ],
+  "PR": {
+    "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/61",
+    "status": "opened"
+  },
+  "deployment": {
+    "attempted": false,
+    "reason": "Default Railway target missing project/service values."
+  },
+  "live_smoke": {
+    "attempted": false,
+    "reason": "No deploy was run from this packet."
+  },
+  "evidence_paths": [
+    "ops/ui-audits/2026-07-01-rabbi-onetime-current-state/report.md",
+    "ops/ui-audits/2026-07-01-rabbi-onetime-current-state/report.json",
+    "ops/provider-config-readbacks/2026-07-01-resend-smoke-readback.md",
+    "ops/provider-config-readbacks/2026-07-01-resend-smoke-readback.json",
+    "ops/deploy-readbacks/2026-07-01-railway-target-readback.md",
+    "ops/deploy-readbacks/2026-07-01-railway-target-readback.json"
+  ],
+  "final_status": "pr_opened_deploy_blocked_by_persistent_railway_target_config",
+  "next_packet": "Review visual audit screenshots with Shloimie, then generate 02-brand-kit-and-design-reference-alignment and 03-ia-nav-filter-cleanup implementation packets."
+}
