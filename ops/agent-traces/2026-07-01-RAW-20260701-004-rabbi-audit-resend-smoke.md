@@ -1,6 +1,8 @@
 # Agent Trace - RAW-20260701-004
 
 Trace ID: `TRACE-20260701-004-rabbi-audit-resend-smoke`
+Commit: `8e466153`
+PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/61`
 
 ## What Ran
 

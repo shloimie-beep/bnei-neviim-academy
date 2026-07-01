@@ -35,7 +35,7 @@ Also resolve or precisely record the Railway target/deploy blocker.
 | `REQ-20260701-405` | Verify Resend env/readiness, inbound route, webhook logic, and focused tests by redacted status only. | Done with setup blockers | `ops/provider-config-readbacks/2026-07-01-resend-smoke-readback.*`; webhook secret and persistent sender config remain setup blockers. |
 | `REQ-20260701-406` | Run Resend dry-run smoke and one guarded send smoke only if readiness/safe recipient allow it. | Done | Dry-run smoke passed; one guarded Resend test send to official redacted test recipient delivered. |
 | `REQ-20260701-407` | Update trace, ledger, changelog, memory-topic, memory, and NEXT-SESSION/handoff records. | Done | `ops/agent-traces/2026-07-01-RAW-20260701-004-rabbi-audit-resend-smoke.*`, ledger/changelog/memory/NEXT-SESSION updated. |
-| `REQ-20260701-408` | Run validation, commit, push, PR/merge/deploy where permitted, or record exact blockers. | Validation passed; Git publish pending | `npm run pqc:all`, BNA run validators, secrets audit, JSON/JSONL parse, and `git diff --check` passed. Deploy/live smoke not run because persistent Railway target values are not configured by default. |
+| `REQ-20260701-408` | Run validation, commit, push, PR/merge/deploy where permitted, or record exact blockers. | Done through PR; deploy blocked | Commit `8e466153`; PR #61: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/61`. `npm run pqc:all`, BNA run validators, secrets audit, JSON/JSONL parse, and `git diff --check` passed. Deploy/live smoke not run because persistent Railway target values are not configured by default. |
 
 ## Runnable Packet Rule
 

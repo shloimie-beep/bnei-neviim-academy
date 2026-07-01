@@ -237,8 +237,13 @@
     "scripts/smoke-email.mjs",
     "scripts/audit-rabbi-onetime-current-state.mjs"
   ],
-  "commits": [],
-  "PR": null,
+  "commits": [
+    "8e466153"
+  ],
+  "PR": {
+    "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/61",
+    "status": "opened"
+  },
   "deployment": {
     "attempted": false,
     "reason": "Default Railway target missing project/service values."
@@ -255,6 +260,6 @@
     "ops/deploy-readbacks/2026-07-01-railway-target-readback.md",
     "ops/deploy-readbacks/2026-07-01-railway-target-readback.json"
   ],
-  "final_status": "validation_passed_pending_git_publish",
+  "final_status": "pr_opened_deploy_blocked_by_persistent_railway_target_config",
   "next_packet": "Review visual audit screenshots with Shloimie, then generate 02-brand-kit-and-design-reference-alignment and 03-ia-nav-filter-cleanup implementation packets."
 }
