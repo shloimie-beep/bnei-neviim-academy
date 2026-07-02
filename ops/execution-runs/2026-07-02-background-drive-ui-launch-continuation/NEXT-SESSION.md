@@ -39,5 +39,13 @@ Still blocked:
 1. `REQ-20260702-102` - repair agent-fleet readiness drift.
 2. `REQ-20260702-103` - repair or rerun structured parsing for newest Drive
    recording `content_job:101` without committing raw transcript text.
+   Updated evidence:
+   - `ops/drive-transcript-visibility/2026-07-02/JOB-101-TRACE.md`
+   - `ops/drive-transcript-visibility/2026-07-02/BACKLOG-20260625-20260702.md`
+   - `ops/drive-transcript-visibility/2026-07-02/DRIVE-TRANSCRIPT-LIBRARY-PLAN.md`
+   - `ops/drive-transcript-visibility/2026-07-02/VERIFICATION.md`
+   Next safe action: restore app/API reachability for the dry-run reprocess
+   command, run parser repair for `content_job:101`, and apply private Drive
+   transcript-doc sync only after exact approval.
 3. Campaign send remains blocked on final copy, exact segment/list,
    suppression/unsubscribe proof, seed pass, and exact real-send packet.
