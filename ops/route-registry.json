@@ -1830,6 +1830,25 @@
       ]
     },
     {
+      "route": "/api/provider-portal/integrations/whatsapp-wapi/setup",
+      "surface": "provider_portal_api_wapi_setup",
+      "access": "private_provider",
+      "required_role": "provider",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_provider_session_required",
+      "expected_logged_in_behavior": "return_or_save_own_one_time_provider_wapi_setup_only",
+      "privacy_risk": "provider_secret_reference",
+      "canonical_target": "/provider?section=whatsapp_setup",
+      "security_expectation": "Requires provider session and One Time provider scope; saves provider-scoped integration and secret-reference/fingerprint metadata only; returns no raw token and performs no WhatsApp send or external provider write.",
+      "smoke_expectation": "tests/provider-wapi-setup-portal.test.js verifies route gating, secret-reference handling, no raw token return, and no send behavior.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/provider-portal/inquiries",
       "surface": "provider_portal_api_inquiries",
       "access": "private_provider",

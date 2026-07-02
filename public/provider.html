@@ -310,6 +310,27 @@
             padding: 14px;
         }
 
+        .wapi-setup-section {
+            padding-bottom: 96px;
+        }
+
+        .wapi-setup-grid {
+            padding-right: min(128px, 12vw);
+        }
+
+        .setup-ack-row {
+            display: grid;
+            grid-template-columns: 18px minmax(0, 1fr);
+            align-items: start;
+            gap: 8px;
+        }
+
+        .setup-ack-row input {
+            width: 16px;
+            height: 16px;
+            margin: 2px 0 0;
+        }
+
         .service-head {
             display: flex;
             align-items: flex-start;
@@ -369,6 +390,9 @@
             .grid {
                 display: grid;
                 grid-template-columns: 1fr;
+            }
+            .wapi-setup-grid {
+                padding-right: 0;
             }
             .field-grid {
                 grid-template-columns: 1fr;
@@ -766,6 +790,55 @@
                 <div id="integrationList" class="service-list"></div>
             </section>
 
+            <section class="panel provider-section wapi-setup-section" data-provider-section="whatsapp_setup">
+                <h2>WhatsApp / WAPI Setup</h2>
+                <div id="wapiSetupStatus" class="service-list"></div>
+                <div class="grid wapi-setup-grid" style="margin-top:14px;">
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>Setup steps</h3>
+                                <ol class="small" id="wapiSetupInstructions"></ol>
+                            </div>
+                            <span class="status-pill">No send</span>
+                        </div>
+                        <div class="button-row">
+                            <a id="wapiDocsLink" class="btn" href="https://whapi.cloud/docs" target="_blank" rel="noopener noreferrer">Whapi Docs</a>
+                            <a id="wapiDashboardLink" class="btn" href="https://panel.whapi.cloud/" target="_blank" rel="noopener noreferrer">Whapi Dashboard</a>
+                        </div>
+                    </article>
+                    <form id="wapiSetupForm" class="service-card" data-provider-wapi-setup-form autocomplete="off">
+                        <div class="service-head">
+                            <div>
+                                <h3>Save setup for BNA</h3>
+                                <p class="small">Paste the token once. It is saved as a provider-scoped secret reference/fingerprint for BNA verification and is not shown back on this page.</p>
+                            </div>
+                            <span class="status-pill">Provider scoped</span>
+                        </div>
+                        <label>API token
+                            <input name="api_token" type="password" autocomplete="off" minlength="12" required placeholder="Paste Whapi/WAPI token">
+                        </label>
+                        <label>Linked WhatsApp phone
+                            <input name="linked_phone" autocomplete="off" placeholder="+1 / +972 ...">
+                        </label>
+                        <label>Instance or channel ID
+                            <input name="instance_id" autocomplete="off" placeholder="Optional">
+                        </label>
+                        <label>Notes
+                            <textarea name="notes" maxlength="1000" placeholder="Optional setup note"></textarea>
+                        </label>
+                        <label class="small setup-ack-row">
+                            <input name="setup_ack" type="checkbox" required>
+                            <span>I scanned/connected the phone in Whapi and want BNA to verify this setup before any WhatsApp send is enabled.</span>
+                        </label>
+                        <div class="button-row">
+                            <button class="btn primary" type="submit" data-action-id="ACTION-PROVIDER-WAPI-SETUP-SAVE">Save WhatsApp Setup</button>
+                        </div>
+                        <p id="wapiSetupResult" class="small"></p>
+                    </form>
+                </div>
+            </section>
+
             <section class="panel provider-section" data-provider-section="access">
                 <h2>Access Checklist</h2>
                 <div id="accessChecklist" class="service-list"></div>
@@ -1050,6 +1123,16 @@
             return providerApiUsagePreviewFlag || portalEntitlementEnabled('api_usage_preview') || portalEntitlementEnabled('api_usage');
         }
 
+        function providerWapiSetupEnabled() {
+            const provider = portalState?.provider || {};
+            const scope = portalState?.scope || {};
+            const projectKey = String(scope.project_key || provider.project_key || '').toLowerCase();
+            const workspaceKey = String(scope.workspace_key || '').toLowerCase();
+            return Boolean(portalState?.one_time_class_media_enabled)
+                || projectKey === 'one_time_mishnah_class'
+                || workspaceKey === 'rabbi_sheller_provider';
+        }
+
         function providerSections() {
             if (oneTimeReviewMode) {
                 return [
@@ -1104,6 +1187,10 @@
             if (portalEntitlementEnabled('provider_admin') || portalEntitlementEnabled('custom_partnership_terms')) {
                 if (!sections.some(section => section.id === 'integrations')) sections.push({ id: 'integrations', label: 'External Apps' });
                 sections.push({ id: 'access', label: 'Access Checklist' });
+            }
+            if (providerWapiSetupEnabled() && !sections.some(section => section.id === 'whatsapp_setup')) {
+                const integrationsIndex = sections.findIndex(section => section.id === 'integrations');
+                sections.splice(integrationsIndex >= 0 ? integrationsIndex + 1 : sections.length, 0, { id: 'whatsapp_setup', label: 'WhatsApp Setup' });
             }
             if (providerApiUsagePreviewEnabled()) {
                 sections.push({ id: 'api_usage', label: 'API Usage' });
@@ -1279,6 +1366,70 @@
             }
         }
 
+        function providerWapiSetupLink() {
+            const url = new URL(window.location.href);
+            url.pathname = '/provider';
+            url.search = '';
+            url.searchParams.set('section', 'whatsapp_setup');
+            url.hash = '';
+            return url.toString();
+        }
+
+        function providerWapiIntegrationFromState() {
+            const integrations = Array.isArray(portalState?.integrations) ? portalState.integrations : [];
+            return integrations.find(item => ['wapi', 'whatsapp_wapi'].includes(String(item.integration_key || item.integration_type || '').toLowerCase())) || null;
+        }
+
+        function renderProviderWapiSetup(setup = null) {
+            const statusTarget = document.getElementById('wapiSetupStatus');
+            const instructionsTarget = document.getElementById('wapiSetupInstructions');
+            const form = document.getElementById('wapiSetupForm');
+            if (!statusTarget || !instructionsTarget || !form) return;
+            const provider = portalState?.provider || {};
+            const stateSetup = setup || portalState?.wapi_setup || {};
+            const integration = stateSetup.integration || providerWapiIntegrationFromState();
+            const secret = stateSetup.secret_ref || null;
+            const instructions = Array.isArray(stateSetup.instructions) && stateSetup.instructions.length
+                ? stateSetup.instructions
+                : [
+                    'Open Whapi and activate the WhatsApp API plan for the phone you want to use.',
+                    'Connect WhatsApp in Whapi by scanning the QR code with that phone.',
+                    'Copy the Whapi/WAPI API token and paste it here.',
+                    'Save once. BNA will verify the connection before any message send is enabled.',
+                ];
+            instructionsTarget.innerHTML = instructions.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+            const docsLink = document.getElementById('wapiDocsLink');
+            const dashboardLink = document.getElementById('wapiDashboardLink');
+            if (docsLink) docsLink.href = stateSetup.docs_url || 'https://whapi.cloud/docs';
+            if (dashboardLink) dashboardLink.href = stateSetup.dashboard_url || 'https://panel.whapi.cloud/';
+            const setupLink = stateSetup.setup_link && stateSetup.setup_link !== '/provider?section=whatsapp_setup'
+                ? stateSetup.setup_link
+                : providerWapiSetupLink();
+            statusTarget.innerHTML = `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(integration?.label || 'WhatsApp / WAPI')}</h3>
+                            <p class="small">${escapeHtml(integration?.notes || 'Connect Whapi/WAPI, paste the token, and BNA will verify before messages are enabled.')}</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(friendlyStatus(integration?.status || 'not_configured'))}</span>
+                    </div>
+                    <div class="service-meta">
+                        <span class="status-pill">${secret ? escapeHtml(String(secret.status || 'pending_keyholder').replace(/_/g, ' ')) : 'No saved token yet'}</span>
+                        <span class="status-pill">No WhatsApp send from this page</span>
+                        <span class="status-pill">Raw token hidden after save</span>
+                    </div>
+                    <p class="small">Sendable link: <a href="${escapeHtml(setupLink)}">${escapeHtml(setupLink)}</a></p>
+                </article>
+            `;
+            if (form.elements.linked_phone && !form.elements.linked_phone.value) {
+                form.elements.linked_phone.value = stateSetup.defaults?.linked_phone || provider.whatsapp_phone || provider.contact_phone || '';
+            }
+            if (form.elements.instance_id && !form.elements.instance_id.value && integration?.connected_account_label) {
+                form.elements.instance_id.value = integration.connected_account_label;
+            }
+        }
+
         function renderPortal(data) {
             portalState = data;
             const provider = data.provider || {};
@@ -1355,6 +1506,7 @@
                     </article>
                 `).join('')
                 : '<p class="small">Coming soon: external app review details will appear here.</p>';
+            renderProviderWapiSetup(data.wapi_setup || null);
             document.getElementById('accessChecklist').innerHTML = accessChecklist.length
                 ? accessChecklist.map(item => `
                     <article class="service-card">
@@ -2086,6 +2238,30 @@
         });
 
         document.getElementById('portalPanel').addEventListener('submit', async (event) => {
+            const wapiSetupForm = event.target.closest('[data-provider-wapi-setup-form]');
+            if (wapiSetupForm) {
+                event.preventDefault();
+                const button = event.submitter;
+                const status = document.getElementById('wapiSetupResult');
+                if (button) button.disabled = true;
+                if (status) status.textContent = 'Saving setup for BNA verification...';
+                try {
+                    const result = await api('/api/provider-portal/integrations/whatsapp-wapi/setup', {
+                        method: 'POST',
+                        body: JSON.stringify(formObject(wapiSetupForm))
+                    });
+                    portalState.wapi_setup = result.wapi_setup;
+                    renderProviderWapiSetup(result.wapi_setup);
+                    wapiSetupForm.elements.api_token.value = '';
+                    if (status) status.textContent = result.message || 'Setup saved. No WhatsApp message was sent.';
+                } catch (error) {
+                    if (status) status.textContent = error.message || 'Could not save WhatsApp setup.';
+                } finally {
+                    if (button) button.disabled = false;
+                }
+                return;
+            }
+
             const inquiryForm = event.target.closest('[data-provider-inquiry-reply]');
             if (inquiryForm) {
                 event.preventDefault();

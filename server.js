@@ -27437,6 +27437,257 @@ async function serviceProviderWithProject(providerId, db = pool) {
   return result.rows[0] || null;
 }
 
+const PROVIDER_WAPI_INTEGRATION_KEY = 'wapi';
+
+function providerIntegrationSecretFingerprint(value = '') {
+  const salt = process.env.INTEGRATION_SECRET_FINGERPRINT_SALT
+    || process.env.SESSION_SECRET
+    || 'bna-provider-secret-fingerprint-v1';
+  return crypto.createHmac('sha256', salt).update(String(value || '')).digest('hex');
+}
+
+function providerWapiSecretRef(provider = {}, scope = {}) {
+  const workspaceKey = normalizeWorkspaceKey(scope.workspace_key || providerWorkspaceKeyForProvider(provider) || 'provider');
+  const providerKey = String(provider.login_username || provider.provider_name || provider.id || 'provider')
+    .replace(/[^a-z0-9_-]+/gi, '_')
+    .replace(/^_+|_+$/g, '')
+    .toLowerCase() || `provider_${provider.id || 'unknown'}`;
+  return `keyholder://${workspaceKey}/${providerKey}/wapi/api_token`;
+}
+
+function providerWapiSetupInstructions() {
+  return [
+    'Open Whapi and activate the WhatsApp API plan for the phone you want to use.',
+    'Connect WhatsApp in Whapi by scanning the QR code with that phone.',
+    'Copy the Whapi/WAPI API token and paste it here.',
+    'Save once. BNA will verify the connection before any message send is enabled.',
+  ];
+}
+
+function safeProviderWapiIntegrationView(row = {}) {
+  if (!row || !row.id) return null;
+  const metadata = parseJsonMaybe(row.metadata) || {};
+  return {
+    id: Number(row.id),
+    integration_key: row.integration_key || PROVIDER_WAPI_INTEGRATION_KEY,
+    integration_type: row.integration_type || row.integration_key || PROVIDER_WAPI_INTEGRATION_KEY,
+    label: row.display_name || row.label || 'WhatsApp / WAPI',
+    status: row.status || 'not_configured',
+    integration_status: row.integration_status || 'no_access',
+    source_of_truth: row.source_of_truth || 'unknown_pending_access',
+    connected_account_label: row.connected_account_label || null,
+    notes: row.notes || null,
+    last_checked_at: row.last_checked_at || null,
+    metadata: {
+      provider_submitted_setup: Boolean(metadata.provider_submitted_setup),
+      raw_secret_stored: false,
+      key_input_received: Boolean(metadata.key_input_received || metadata.token_received),
+      linked_phone_present: Boolean(metadata.linked_phone_present),
+      instance_id_present: Boolean(metadata.instance_id_present),
+    },
+  };
+}
+
+function safeProviderWapiSecretView(row = {}) {
+  if (!row || !row.id) return null;
+  const metadata = parseJsonMaybe(row.metadata) || {};
+  return {
+    id: Number(row.id),
+    secret_type: row.secret_type || 'api_token',
+    status: row.status || 'pending_keyholder',
+    secret_ref: row.secret_ref || null,
+    secret_label: row.secret_label || null,
+    secret_hash_prefix: row.secret_hash_prefix || null,
+    fingerprint_present: Boolean(row.fingerprint),
+    encrypted_secret_present: Boolean(row.encrypted_secret),
+    raw_secret_stored: false,
+    storage_instruction: metadata.storage_instruction || 'BNA keyholder/Railway follow-up is required before live WAPI sends.',
+    created_at: row.created_at || null,
+    last_rotated_at: row.last_rotated_at || null,
+  };
+}
+
+async function getProviderWapiSetupPayload(provider = {}, { req = null, db = pool } = {}) {
+  const scoped = await scopedProviderSummaryForProvider(provider, db);
+  const workspaceKey = normalizeWorkspaceKey(scoped.scope.workspace_key || providerWorkspaceKeyForProvider(provider));
+  const projectKey = normalizeProjectKey(scoped.scope.project_key || provider.project_key);
+  const setupLink = req ? `${requestBaseUrl(req)}/provider?section=whatsapp_setup` : '/provider?section=whatsapp_setup';
+  const integration = (await db.query(
+    `SELECT *
+     FROM bna_provider_integrations
+     WHERE provider_id = $1
+       AND (integration_key = $2 OR integration_type = $2 OR integration_key = 'whatsapp_wapi')
+     ORDER BY updated_at DESC NULLS LAST, id DESC
+     LIMIT 1`,
+    [provider.id, PROVIDER_WAPI_INTEGRATION_KEY]
+  )).rows[0] || null;
+  const secret = integration ? (await db.query(
+    `SELECT id, workspace_id, provider_id, integration_id, secret_type, secret_ref,
+            secret_label, secret_hash_prefix, fingerprint, encrypted_secret,
+            status, created_at, last_rotated_at, revoked_at, metadata
+     FROM bna_provider_secret_refs
+     WHERE provider_id = $1
+       AND integration_id = $2
+       AND secret_type IN ('api_token', 'api_key', 'token')
+       AND status <> 'revoked'
+     ORDER BY created_at DESC, id DESC
+     LIMIT 1`,
+    [provider.id, integration.id]
+  )).rows[0] || null : null;
+
+  return {
+    provider: {
+      id: provider.id,
+      provider_name: provider.provider_name || provider.display_name || 'Provider',
+      workspace_key: workspaceKey,
+      project_key: projectKey,
+    },
+    setup_link: setupLink,
+    docs_url: 'https://whapi.cloud/docs',
+    dashboard_url: 'https://panel.whapi.cloud/',
+    instructions: providerWapiSetupInstructions(),
+    integration: safeProviderWapiIntegrationView(integration),
+    secret_ref: safeProviderWapiSecretView(secret),
+    defaults: {
+      linked_phone: provider.whatsapp_phone || provider.contact_phone || '',
+      connected_account_label: integration?.connected_account_label || provider.whatsapp_phone || provider.contact_phone || '',
+    },
+    no_send: true,
+    external_write_performed: false,
+    whatsapp_send_performed: false,
+    raw_secret_returned: false,
+    raw_secret_stored: false,
+  };
+}
+
+async function saveProviderWapiSetup({ provider = {}, body = {}, req = null, db = pool }) {
+  if (!isOneTimeClassMediaProvider(provider)) {
+    const error = new Error('WhatsApp setup is available only in the One Time provider workspace.');
+    error.statusCode = 403;
+    throw error;
+  }
+  const token = String(body.api_token || body.apiToken || body.api_key || body.apiKey || body.token || '').trim();
+  if (!token || token.length < 12) {
+    const error = new Error('Paste the Whapi/WAPI API token before saving.');
+    error.statusCode = 400;
+    throw error;
+  }
+  const scoped = await scopedProviderSummaryForProvider(provider, db);
+  const workspaceKey = normalizeWorkspaceKey(scoped.scope.workspace_key || providerWorkspaceKeyForProvider(provider));
+  const projectKey = normalizeProjectKey(scoped.scope.project_key || provider.project_key);
+  const workspaceId = (await db.query(
+    `SELECT id FROM bna_workspace_settings WHERE workspace_key = $1 LIMIT 1`,
+    [workspaceKey]
+  ).catch(() => ({ rows: [] }))).rows[0]?.id || null;
+  const linkedPhone = limitText(body.linked_phone || body.linkedPhone || provider.whatsapp_phone || provider.contact_phone || '', 80) || null;
+  const instanceId = limitText(body.instance_id || body.instanceId || body.channel_id || body.channelId || '', 180) || null;
+  const notes = limitText(body.notes || body.setup_notes || body.setupNotes || '', 1000) || null;
+  const accountLabel = limitText(
+    body.connected_account_label || body.connectedAccountLabel || linkedPhone || instanceId || 'Provider WhatsApp',
+    180
+  ) || 'Provider WhatsApp';
+  const fingerprint = providerIntegrationSecretFingerprint(token);
+  const integrationMetadata = {
+    source: 'provider_portal_wapi_setup',
+    workspace_key: workspaceKey,
+    project_key: projectKey,
+    provider_submitted_setup: true,
+    key_input_received: true,
+    token_received: true,
+    raw_secret_stored: false,
+    linked_phone_present: Boolean(linkedPhone),
+    instance_id_present: Boolean(instanceId),
+    no_send: true,
+    external_write_performed: false,
+  };
+  const integration = (await db.query(
+    `INSERT INTO bna_provider_integrations (
+       workspace_id, provider_id, integration_key, integration_type, label, display_name,
+       external_system, source_of_truth, integration_status, status,
+       connected_account_label, last_checked_at, notes, metadata, created_by
+     ) VALUES (
+       $1, $2, $3, $3, 'WhatsApp / WAPI', 'WhatsApp / WAPI',
+       'Whapi/WAPI', 'hybrid', 'api_available', 'ready_for_test',
+       $4, NOW(), $5, $6::jsonb, 'provider_portal'
+     )
+     ON CONFLICT(provider_id, integration_key) DO UPDATE SET
+       workspace_id = EXCLUDED.workspace_id,
+       integration_type = EXCLUDED.integration_type,
+       label = EXCLUDED.label,
+       display_name = EXCLUDED.display_name,
+       external_system = EXCLUDED.external_system,
+       source_of_truth = EXCLUDED.source_of_truth,
+       integration_status = EXCLUDED.integration_status,
+       status = EXCLUDED.status,
+       connected_account_label = EXCLUDED.connected_account_label,
+       last_checked_at = NOW(),
+       notes = EXCLUDED.notes,
+       metadata = bna_provider_integrations.metadata || EXCLUDED.metadata,
+       updated_at = NOW()
+     RETURNING *`,
+    [
+      workspaceId,
+      provider.id,
+      PROVIDER_WAPI_INTEGRATION_KEY,
+      accountLabel,
+      notes || 'Provider submitted Whapi/WAPI setup details for BNA verification. No WhatsApp send was performed.',
+      JSON.stringify(integrationMetadata),
+    ]
+  )).rows[0];
+  const secretRef = providerWapiSecretRef(provider, { workspace_key: workspaceKey, project_key: projectKey });
+  const secret = (await db.query(
+    `INSERT INTO bna_provider_secret_refs (
+       workspace_id, provider_id, integration_id, secret_type, secret_ref,
+       secret_label, secret_hash_prefix, fingerprint, encrypted_secret,
+       encryption_version, status, created_by, metadata
+     ) VALUES (
+       $1, $2, $3, 'api_token', $4,
+       'WhatsApp / WAPI API token', $5, $6, NULL,
+       NULL, 'pending_keyholder', 'provider_portal', $7::jsonb
+     )
+     RETURNING id, workspace_id, provider_id, integration_id, secret_type,
+       secret_ref, secret_label, secret_hash_prefix, fingerprint,
+       encrypted_secret, status, created_at, last_rotated_at, revoked_at, metadata`,
+    [
+      workspaceId,
+      provider.id,
+      integration.id,
+      secretRef,
+      fingerprint.slice(0, 12),
+      `hmac:${fingerprint.slice(0, 16)}`,
+      JSON.stringify({
+        source: 'provider_portal_wapi_setup',
+        raw_secret_stored: false,
+        key_input_received: true,
+        storage_instruction: 'Place the real key in the server-side keyholder or Railway env path; this DB row stores only reference/fingerprint metadata.',
+      }),
+    ]
+  )).rows[0];
+  await db.query(
+    `INSERT INTO bna_provider_integration_audit_log (
+       workspace_id, provider_id, integration_id, action, actor, outcome,
+       route_path, request_ip_hash, user_agent_hash, metadata
+     ) VALUES ($1, $2, $3, 'provider_wapi_setup_submitted', 'provider_portal', 'recorded', $4, $5, $6, $7::jsonb)`,
+    [
+      workspaceId,
+      provider.id,
+      integration.id,
+      req?.path || '/api/provider-portal/integrations/whatsapp-wapi/setup',
+      req?.ip ? providerIntegrationSecretFingerprint(req.ip).slice(0, 24) : null,
+      req?.headers?.['user-agent'] ? providerIntegrationSecretFingerprint(req.headers['user-agent']).slice(0, 24) : null,
+      JSON.stringify({
+        workspace_key: workspaceKey,
+        project_key: projectKey,
+        secret_ref_id: secret.id,
+        raw_secret_stored: false,
+        no_send: true,
+        external_write_performed: false,
+      }),
+    ]
+  );
+  return getProviderWapiSetupPayload(provider, { req, db });
+}
+
 function parseCrmContactRef(value = '') {
   const raw = String(value || '').trim();
   const [source, id] = raw.includes(':') ? raw.split(':', 2) : ['bna_contacts', raw];
@@ -27689,6 +27940,7 @@ async function getProviderPortalPayload(providerId, db = pool) {
        ORDER BY integration_key`,
       [providerId]
     )).rows,
+    wapi_setup: oneTimeClassMediaEnabled ? await getProviderWapiSetupPayload(provider, { db }).catch(() => null) : null,
     access_checklist: (await db.query(
       `SELECT *
        FROM bna_provider_access_checklist
@@ -47446,6 +47698,44 @@ app.get('/api/provider-portal/scope-session', requireProviderSession, async (req
     });
   } catch (err) {
     res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.get('/api/provider-portal/integrations/whatsapp-wapi/setup', requireProviderSession, async (req, res) => {
+  try {
+    const provider = await serviceProviderWithProject(req.providerSession.providerId);
+    if (!provider) return res.status(404).json({ success: false, error: 'Provider was not found' });
+    if (!isOneTimeClassMediaProvider(provider)) {
+      return res.status(403).json({ success: false, error: 'WhatsApp setup is available only in the One Time provider workspace.' });
+    }
+    res.json({
+      success: true,
+      wapi_setup: await getProviderWapiSetupPayload(provider, { req }),
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/provider-portal/integrations/whatsapp-wapi/setup', requireProviderSession, async (req, res) => {
+  let client = null;
+  try {
+    client = await pool.connect();
+    const provider = await serviceProviderWithProject(req.providerSession.providerId, client);
+    if (!provider) return res.status(404).json({ success: false, error: 'Provider was not found' });
+    await client.query('BEGIN');
+    const wapiSetup = await saveProviderWapiSetup({ provider, body: req.body || {}, req, db: client });
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      message: 'WhatsApp setup saved for BNA verification. No WhatsApp message was sent.',
+      wapi_setup: wapiSetup,
+    });
+  } catch (err) {
+    if (client) await client.query('ROLLBACK').catch(() => null);
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message });
+  } finally {
+    if (client) client.release();
   }
 });
 
