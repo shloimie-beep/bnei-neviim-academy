@@ -1,7 +1,8 @@
 SELECT 'bna_students_outside_onetime' AS check_name, COUNT(*)::int AS count
 FROM bna_students s
 LEFT JOIN bna_projects p ON p.id = COALESCE(s.project_id, s.workspace_id)
-WHERE COALESCE(p.project_key, '') <> 'one_time_mishnah_class';
+WHERE COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+  AND COALESCE(p.project_key, '') <> 'one_time_mishnah_class';
 
 SELECT 'bna_payments_present' AS check_name, COUNT(*)::int AS count
 FROM bna_payment_intake;

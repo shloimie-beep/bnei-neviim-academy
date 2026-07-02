@@ -455,6 +455,11 @@ const ONE_TIME_EMAIL_FROM = 'info@onetimeonetime.com';
 const ONE_TIME_EMAIL_FROM_NAME = 'OneTimeOneTime Mishnah';
 const ONE_TIME_EMAIL_REPLY_TO = ONE_TIME_EMAIL_FROM;
 const INSTANCE_RUNTIME_FLAGS = buildOneTimeRuntimeFlags(process.env);
+const IS_ONE_TIME_SINGLE_TENANT = Boolean(
+  INSTANCE_RUNTIME_FLAGS.single_tenant &&
+  INSTANCE_RUNTIME_FLAGS.app_instance === 'onetime' &&
+  INSTANCE_RUNTIME_FLAGS.project_key === ONE_TIME_PROJECT_KEY
+);
 const ONE_TIME_DRIVE_ROOT_ID = '16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2';
 const ONE_TIME_LIBRARY_APPROVAL_FLAG = 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING';
 const ONE_TIME_MEDIA_PROVIDERS = new Set(['vimeo', 'manual_url', 'drive', 'placeholder']);
@@ -30322,19 +30327,23 @@ async function initDb() {
     await ensureWorkspacePlatformDefaultsOnce();
     await ensureDefaultProjects();
     await seedDefaultAutomations();
-    await ensurePersonalWorkspacesAndPeople();
-    await ensureDefaultLearningCommunity();
     await ensureWs11CommunityFoundation();
     await ensureDefaultContentPrompts();
     await ensureDefaultAssignmentPrompts();
-    await ensureInitialParentLeads();
-    await ensureDefaultServiceProviderDirectoryOnce();
-    await backfillProviderIndexSlugs();
-    await backfillIdentityLinks({ dryRun: false, limit: 50 });
+    if (!IS_ONE_TIME_SINGLE_TENANT) {
+      await ensurePersonalWorkspacesAndPeople();
+      await ensureDefaultLearningCommunity();
+      await ensureInitialParentLeads();
+      await ensureDefaultServiceProviderDirectoryOnce();
+      await backfillProviderIndexSlugs();
+      await backfillIdentityLinks({ dryRun: false, limit: 50 });
+    }
     ensureWebsiteBlogDataFiles();
-    await ensureStudentsFromSignups();
-    await ensureTorahSeedStudents();
-    await seedTodayTorahLearningSnapshot();
+    if (!IS_ONE_TIME_SINGLE_TENANT) {
+      await ensureStudentsFromSignups();
+      await ensureTorahSeedStudents();
+      await seedTodayTorahLearningSnapshot();
+    }
     await cleanupExpiredSessions();
     await cleanupExpiredParentAuth();
     await cleanupExpiredStudentAuth();
@@ -34919,6 +34928,10 @@ async function linkExactStudentPerson({ person, name, workspaceId, householdId =
 }
 
 async function ensurePersonalWorkspacesAndPeople(db = pool) {
+  if (IS_ONE_TIME_SINGLE_TENANT) {
+    await ensureDefaultProjects(db);
+    return { skipped: true, reason: 'one_time_single_tenant' };
+  }
   const { bna: seededBna, oneTime } = await ensureDefaultProjects(db);
   const bna = seededBna || fallbackWorkspaceProjectRow('bna');
   const shloimie = (await upsertCanonicalPerson({
