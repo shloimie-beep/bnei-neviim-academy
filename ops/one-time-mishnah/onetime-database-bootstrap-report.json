@@ -6,9 +6,9 @@
   "database_url_env": "DATABASE_URL",
   "instance_guard": {
     "required_app_instance": "onetime",
-    "current_app_instance": "",
-    "current_default_workspace_key": "",
-    "current_default_project_key": ""
+    "current_app_instance": "onetime",
+    "current_default_workspace_key": "rabbi_sheller_provider",
+    "current_default_project_key": "one_time_mishnah_class"
   },
   "migration_count": 22,
   "migrations": [
