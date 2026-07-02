@@ -15875,6 +15875,7 @@ CREATE TABLE IF NOT EXISTS bna_content_jobs (
   source_type TEXT NOT NULL DEFAULT 'telegram_media' CHECK (source_type IN ('telegram_media', 'telegram_text', 'manual', 'import', 'local_drop', 'google_drive')),
   source_message_id TEXT,
   source_chat_id TEXT,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
   local_path TEXT,
   media_url TEXT,
   drive_file_id TEXT,
