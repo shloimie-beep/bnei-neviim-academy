@@ -30258,6 +30258,7 @@ async function initDb() {
     await pool.query(createServiceProvidersSQL);
     if (createServiceProviderScopesSQL) await pool.query(createServiceProviderScopesSQL);
     await pool.query(createProviderIndexMvpSQL);
+    await pool.query(createAccountabilityEventsSQL);
     await pool.query(createGoalBoardCheckinsSQL);
     await pool.query(createParentMagicLinksSQL);
     await pool.query(createParentPasswordAccountsSQL);
