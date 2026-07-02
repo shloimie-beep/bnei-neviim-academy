@@ -48,6 +48,26 @@
       ]
     },
     {
+      "action_id": "ACTION-PROVIDER-WAPI-SETUP-SAVE",
+      "label": "Save WhatsApp Setup",
+      "surface": "provider_portal",
+      "route": "/provider?section=whatsapp_setup",
+      "selector_hint": "[data-provider-wapi-setup-form] button[data-action-id=\"ACTION-PROVIDER-WAPI-SETUP-SAVE\"]",
+      "expected_behavior": "Saves Rabbi/One Time provider-scoped Whapi/WAPI setup details to BNA integration and secret-reference records for verification; the raw token is not rendered back, and no WhatsApp send, broadcast, payment, access grant, or external provider mutation runs from this action.",
+      "permission": "authenticated One Time provider workspace member",
+      "status": "active",
+      "test": {
+        "type": "static_and_api_contract",
+        "expected_result": "Provider portal exposes the WhatsApp setup form and posts to /api/provider-portal/integrations/whatsapp-wapi/setup; server route requires provider session, stores only secret-reference/fingerprint metadata, returns no raw token, and never uses SEND_WHATSAPP."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-HELPER-CREATE-AUTOMATION",
       "label": "Create automation with helper",
       "surface": "operations",
