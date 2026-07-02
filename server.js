@@ -15937,9 +15937,11 @@ CREATE TABLE IF NOT EXISTS bna_class_sessions (
   newsletter_draft TEXT,
   source_media_url TEXT,
   transcript_text TEXT,
+  metadata JSONB DEFAULT '{}',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
 `;
 
 const createOneTimeQuestionReviewsSQL = `
