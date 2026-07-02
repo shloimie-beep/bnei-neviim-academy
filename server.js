@@ -30276,8 +30276,8 @@ async function initDb() {
     await pool.query(createDeviceAccessRulesSQL);
     await pool.query(createDeviceAccessSessionsSQL);
     await pool.query(createGroupGoalsSQL);
-    await pool.query(createGroupGoalEntriesSQL);
     await pool.query(createContentJobsSQL);
+    await pool.query(createGroupGoalEntriesSQL);
     await pool.query(createProjectMeetingsSQL);
     await pool.query(createClassSessionsSQL);
     await pool.query(createOneTimeQuestionReviewsSQL);
