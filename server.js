@@ -17040,6 +17040,7 @@ ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS daily_video BOOLEAN NOT 
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS classroom_visibility TEXT NOT NULL DEFAULT 'package_status' CHECK (classroom_visibility IN ('hidden', 'package_status', 'members', 'parents', 'students', 'public_preview'));
 
 ALTER TABLE bna_assignments ADD COLUMN IF NOT EXISTS class_session_id INTEGER REFERENCES bna_class_sessions(id) ON DELETE SET NULL;
+ALTER TABLE bna_assignments ADD COLUMN IF NOT EXISTS project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
 ALTER TABLE bna_assignments ADD COLUMN IF NOT EXISTS curriculum_unit_id INTEGER REFERENCES bna_curriculum_units(id) ON DELETE SET NULL;
 ALTER TABLE bna_assignments ADD COLUMN IF NOT EXISTS natural_language_request TEXT;
 ALTER TABLE bna_assignments ADD COLUMN IF NOT EXISTS classroom_visibility TEXT NOT NULL DEFAULT 'students_parents' CHECK (classroom_visibility IN ('hidden', 'students', 'parents', 'students_parents', 'members', 'staff_only'));
