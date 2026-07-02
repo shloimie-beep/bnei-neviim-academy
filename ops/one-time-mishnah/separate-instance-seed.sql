@@ -4,6 +4,23 @@
 
 BEGIN;
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_bna_projects_project_key
+  ON bna_projects(project_key);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_bna_project_members_project_person
+  ON bna_project_members(project_id, person_name);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_workspace_memberships_project_person_role
+  ON bna_workspace_memberships(workspace_id, person_id, role);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_member_access_access_code
+  ON one_time_member_access(access_code);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_courses_slug
+  ON bna_courses(slug);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_course_lessons_course_slug
+  ON bna_course_lessons(course_id, slug)
+  WHERE slug IS NOT NULL AND trim(slug) <> '';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_support_tickets_ticket_number
+  ON bna_support_tickets(ticket_number)
+  WHERE ticket_number IS NOT NULL;
+
 INSERT INTO bna_projects (project_key, name, short_name, description, status, metadata)
 VALUES (
   'one_time_mishnah_class',
