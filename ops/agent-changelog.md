@@ -27980,8 +27980,11 @@ Actions: 1. Active machine tasks: 22.
   GoDaddy CNAME/TXT tasks. No GoDaddy DNS mutation was performed.
 - Safe provider readbacks ran. Resend path is configured but no send occurred;
   Vimeo, Stripe sandbox, Whapi/WAPI, and Zoom remain exact external blockers.
-- Updated top task readback: Shloimie’s top task is now GoDaddy DNS for
+- Updated top task readback: Shloimie's top task is now GoDaddy DNS for
   `join.onetimeonetime.com`.
+- Pushed commit `edec1133` to
+  `codex/one-time-ui-recording-clean-integration-20260702` and opened draft
+  PR #64: https://github.com/shloimie-beep/bnei-neviim-academy/pull/64.
 - Guardrails held: no bulk campaign, live payment, WhatsApp broadcast,
   apex/root DNS mutation, hard delete, paid-user cancellation, GHL runtime,
   secret exposure, raw private-data evidence leak, email send, Vimeo upload, or

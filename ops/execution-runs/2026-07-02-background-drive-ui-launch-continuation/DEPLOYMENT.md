@@ -4,6 +4,10 @@ No app deploy or live smoke has run yet for this continuation branch.
 
 What did happen:
 
+- Commit `edec1133` was pushed to
+  `codex/one-time-ui-recording-clean-integration-20260702`.
+- Draft PR #64 was opened:
+  https://github.com/shloimie-beep/bnei-neviim-academy/pull/64
 - Guarded Railway provisioning succeeded for the separate One Time project,
   web service, and Postgres service.
 - Railway custom domain attachment succeeded for `join.onetimeonetime.com`.

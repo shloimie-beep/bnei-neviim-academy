@@ -20,3 +20,5 @@ After DNS:
    `ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md`.
 6. For UI corrections, either repair the Drive parser output for the newest
    recording or proceed from the existing Rabbi/One Time visual audit findings.
+7. Review draft PR #64:
+   https://github.com/shloimie-beep/bnei-neviim-academy/pull/64

@@ -491,7 +491,7 @@
       "id": "REQ-20260702-110",
       "title": "Validate, push PR, and close out blockers",
       "expected_result": "All runnable work is validated and pushed, with exact remaining operator task.",
-      "status": "in_progress",
+      "status": "blocked",
       "source_id": "RAW-20260702-006",
       "source_statement_ids": [
         "RAW-20260702-006-S010"
@@ -514,20 +514,28 @@
         "REQ-20260702-108",
         "REQ-20260702-109"
       ],
-      "implementation_status": "Validation and PR closeout in progress.",
+      "implementation_status": "Committed edec1133, pushed branch codex/one-time-ui-recording-clean-integration-20260702, and opened draft PR #64. Merge/deploy/live smoke are blocked until PR review plus external DNS/provider setup are complete.",
       "can_continue_without_operator": true,
-      "next_action": "Run final validation, commit, push, open PR, and record PR/deploy status.",
+      "next_action": "Review/merge PR #64 after external blockers are handled, then run post-setup deploy/live-smoke packet.",
       "acceptance_criteria": [
         "All requirements terminal",
         "Guardrails held",
         "PR or exact blocker",
         "One top operator task"
       ],
-      "evidence": [],
+      "evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64"
+      ],
       "verification": [],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-07-02T13:05:00+03:00"
+      "updated_at": "2026-07-02T13:05:00+03:00",
+      "blocker": "PR exists but merge/deploy/live smoke cannot truthfully complete until external DNS/provider setup blockers are resolved and PR review/merge is allowed.",
+      "blocker_owner": "Shloimie / repo maintainer / external provider owners",
+      "blocker_next_action": "Add GoDaddy DNS for join.onetimeonetime.com, provide remaining provider aliases, review PR #64, then run the post-setup deploy/live-smoke packet.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64",
+      "implementation_commit": "edec1133",
+      "pushed_commit": "edec1133"
     }
   ]
 }

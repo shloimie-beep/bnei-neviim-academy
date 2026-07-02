@@ -2,9 +2,9 @@
   "run_id": "2026-07-02-background-drive-ui-launch-continuation",
   "title": "Background Agent, Drive UI Recording, Mock Data, Railway Provisioning",
   "created_at": "2026-07-02T15:45:00+03:00",
-  "updated_at": "2026-07-02T13:05:00+03:00",
+  "updated_at": "2026-07-02T13:17:40.361Z",
   "active": true,
-  "status": "in_progress",
+  "status": "blocked",
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
   "raw_id": "RAW-20260702-006",
@@ -31,5 +31,6 @@
     "No GHL/LeadConnector runtime",
     "No secret exposure",
     "No raw private contact/student/parent data in repo evidence"
-  ]
+  ],
+  "current_batch": "external_setup_and_pr_review_blockers"
 }

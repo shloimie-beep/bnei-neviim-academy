@@ -33,3 +33,5 @@ Focused checks already run:
 - PASS `npm run secrets:audit`
 - PASS `git diff --check` after trimming the generated Drive audit note; remaining output is line-ending warnings only
 - PASS edited JSON/JSONL parse validation
+- PASS `git push -u origin codex/one-time-ui-recording-clean-integration-20260702`
+- PASS `gh pr create --draft`: PR #64

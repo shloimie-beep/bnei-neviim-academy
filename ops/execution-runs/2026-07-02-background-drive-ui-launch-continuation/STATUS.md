@@ -1,6 +1,7 @@
 # Status
 
-Current status: `in_progress`; validation passed and PR closeout is next.
+Current status: `blocked`; validation passed, branch was pushed, and draft
+PR #64 is open.
 
 - `REQ-20260702-101`: done. Clean branch created from `origin/master`; clean
   PR #63 commits cherry-picked without force-merging PR #62.
@@ -27,7 +28,11 @@ Current status: `in_progress`; validation passed and PR closeout is next.
   Whapi/WAPI, and Zoom aliases remain missing.
 - `REQ-20260702-109`: done. Top visible task is now GoDaddy DNS for
   `join.onetimeonetime.com`.
-- `REQ-20260702-110`: pending final validation/PR closeout.
+- `REQ-20260702-110`: blocked. Commit `edec1133` was pushed and draft PR #64
+  was opened, but merge/deploy/live smoke wait for PR review plus external
+  DNS/provider setup.
+
+PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/64
 
 Guardrails held: no bulk campaign, live payment, WhatsApp broadcast, apex/root
 DNS mutation, hard delete, paid-user cancellation, GHL runtime, secret exposure,
