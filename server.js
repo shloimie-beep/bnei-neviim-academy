@@ -11621,6 +11621,7 @@ CREATE TABLE IF NOT EXISTS bna_tasks (
   parent_task_id INTEGER REFERENCES bna_tasks(id) ON DELETE SET NULL,
   related_contact_email TEXT,
   related_signup_id INTEGER,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
   created_by TEXT NOT NULL DEFAULT 'system',
   assigned_to TEXT,
   decision_required BOOLEAN DEFAULT FALSE,
@@ -12394,6 +12395,7 @@ CREATE TABLE IF NOT EXISTS bna_task_comments (
 
 const createTaskWorkflowExtensionsSQL = `
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS project_key TEXT;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS workspace_role TEXT;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS item_type TEXT DEFAULT 'task';
