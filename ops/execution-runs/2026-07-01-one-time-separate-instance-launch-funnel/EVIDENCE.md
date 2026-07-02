@@ -281,4 +281,30 @@ The task view now puts newest active work ahead of stale/terminal history,
 keeps workspace/project/owner signals visible on cards and details, keeps
 Shloimie/super-admin filters broad, and hides internal tech-only Codex/system
 cards from project-scoped Rabbi provider users unless explicitly shared or
-provider-actionable. Deploy/live smoke was not run.
+provider-actionable. The existing BNA Railway target was deployed and general
+Operations task API smoke passed; targeted live task-view sorting/visibility
+proof remains the remaining verification gap for this requirement.
+
+## 2026-07-02 Existing BNA Deploy / Live Smoke Closeout
+
+- Branch pushed: `codex/one-time-launch-cleanup-20260702-no-workflow`.
+- Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/62`.
+- Railway project/service/environment:
+  `skillful-motivation` / `skillful-motivation` / `production`.
+- Deployment: `7af5568c-6fcd-4201-98e2-3fc350388c4b`.
+- Deployment status: `SUCCESS`.
+- PASS `npm run railway:doctor` before and after deploy.
+- PASS `npm run railway:redeploy`.
+- PASS `npm run app:smoke`.
+- PASS `npm run app:smoke:rabbi-onetime-landing`.
+- PASS `npm run app:smoke:public-privacy`.
+- Local ignored smoke reports:
+  `ops/live-smokes/2026-07-02T11-19-36-691Z-live-app-smoke.md`,
+  `ops/live-smokes/2026-07-02T11-19-36-691Z-live-app-smoke.json`,
+  `ops/live-smokes/2026-07-02T11-19-35-409Z-rabbi-onetime-landing-smoke.md`,
+  and
+  `ops/live-smokes/2026-07-02T11-19-45-687Z-public-route-privacy-smoke.md`.
+- Expected blocked check:
+  `npm run one-time:setup:check -- --write-report` still reports `0/8`
+  external setup areas ready and records no external write, provider mutation,
+  DNS mutation, email send, WhatsApp send, live payment, or secret print.

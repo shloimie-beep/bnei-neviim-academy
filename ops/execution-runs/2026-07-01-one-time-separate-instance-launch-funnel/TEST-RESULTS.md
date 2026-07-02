@@ -162,6 +162,27 @@ Closeout hygiene:
 - PASS `git diff --check`; only line-ending warnings were emitted.
 - PASS `npm run bna:run:next` reports no unblocked executable batch remains.
 
+## 2026-07-02 Dirty Worktree Cleanup, Push, Deploy, Live Smoke
+
+- PASS `git status --short` after reconciliation showed a clean publish
+  branch before deployment.
+- PASS committed intentional cleanup/protocol/One Time launch work on
+  `codex/one-time-launch-cleanup-20260702-no-workflow`.
+- PASS pushed branch to GitHub and opened draft PR #62:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/62`.
+- PASS `npm run railway:doctor` before deploy for
+  `skillful-motivation / production`.
+- PASS `npm run railway:redeploy` uploaded the current local app bundle.
+- PASS `npm run railway:doctor` after deploy reported deployment
+  `7af5568c-6fcd-4201-98e2-3fc350388c4b` as `SUCCESS`.
+- PASS `npm run app:smoke`.
+- PASS `npm run app:smoke:rabbi-onetime-landing`.
+- PASS `npm run app:smoke:public-privacy`.
+- EXPECTED BLOCKED `npm run one-time:setup:check -- --write-report` still
+  reports `0/8` external setup areas ready. No external write, provider
+  mutation, DNS mutation, email send, WhatsApp send, live payment, or secret
+  print occurred.
+
 ## RAW-20260702-003 Setup And Worktree Checks
 
 - PASS: `npm run bna:run:blockers` listed remaining external blockers with

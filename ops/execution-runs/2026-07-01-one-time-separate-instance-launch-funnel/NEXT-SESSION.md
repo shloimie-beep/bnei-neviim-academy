@@ -6,23 +6,22 @@ launch funnel.
 Current executable batch:
 
 - `npm run bna:run:next` currently reports no unblocked executable batch.
-  `REQ-20260701-701` is blocked for external
-  apply/bootstrap details after safe no-write readiness, and
-  `REQ-20260701-703` is blocked only for live smoke after local verification,
-  and `REQ-20260701-704` is blocked only for deployed/live smoke after local
-  implementation and screenshots. `REQ-20260701-705`, `REQ-20260701-706`,
-  `REQ-20260701-707`, and `REQ-20260701-709` are now locally verified from the
-  launch-unblocker packet but remain blocked on separate One Time
-  Railway/database/domain deployment, final session/content details, or final
-  campaign packet where applicable. `REQ-20260701-711` is locally done for the
-  no-send Whapi/WAPI setup panel. `REQ-20260701-712` is locally done for
-  Buffer/social draft-approval setup, with provider draft/schedule writes
+  `REQ-20260701-701` is blocked for external apply/bootstrap details after
+  safe no-write readiness. `REQ-20260701-703` and `REQ-20260701-704` are
+  deployed to the existing BNA Railway app target and live-smoked on `/rabbi`,
+  but still need the separate One Time `join.onetimeonetime.com` live smoke
+  after the external Railway/custom-domain/DNS gates exist. `REQ-20260701-705`,
+  `REQ-20260701-706`, `REQ-20260701-707`, and `REQ-20260701-709` are locally
+  verified from the launch-unblocker packet but remain blocked on separate One
+  Time Railway/database/domain deployment, final session/content details, or
+  final campaign packet where applicable. `REQ-20260701-711` is locally done
+  for the no-send Whapi/WAPI setup panel. `REQ-20260701-712` is locally done
+  for Buffer/social draft-approval setup, with provider draft/schedule writes
   blocked. `REQ-20260701-715` is done as a read-only existing paying-users
-  audit packet; actual migration remains blocked. `REQ-20260701-716` is locally
-  verified for task sorting/filtering/scoped visibility, but app-visible done
-  proof remains blocked on deploy/live smoke. Resume after one of the listed
-  blockers is cleared or a new packet explicitly authorizes a safe dependent
-  batch.
+  audit packet; actual migration remains blocked. `REQ-20260701-716` has
+  existing-app deployment and general Operations task API smoke proof; a
+  targeted live task-view sorting/visibility smoke remains needed before
+  terminal `done`.
 
 Start with:
 
@@ -31,9 +30,9 @@ Start with:
    or wait for the exact external approval/input.
 3. Keep join-domain live smoke under `REQ-20260701-717` until external routing
    exists.
-4. Do not create Railway resources, write variables, deploy, mutate DNS, send
-   email/WhatsApp, run live Stripe, cancel paid users, or expose secrets
-   without exact later approval.
+4. Do not create separate One Time Railway resources, write provider variables,
+   mutate DNS, send email/WhatsApp, run live Stripe, cancel paid users, or
+   expose secrets without exact later approval.
 5. Use
    `ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.md`
    as the exact external setup checklist before asking for missing information.
@@ -64,9 +63,13 @@ Open blockers/decisions:
   custom-domain/DNS setup are ready.
 - GoDaddy join-only DNS handoff:
   `ops/one-time-mishnah/launch-unblocker/2026-07-02-godaddy-join-subdomain-instructions.md`.
-- Worktree reconciliation:
+- Worktree reconciliation and deploy cleanup:
   `ops/worktree-reconciliation/2026-07-02-one-time-launch-execution/report.md`.
-  Use explicit path staging only; do not broad-add the mixed dirty worktree.
+  Codex reconciled the dirty worktree, preserved local-only evidence, committed
+  and pushed `codex/one-time-launch-cleanup-20260702-no-workflow`, opened PR
+  #62, deployed the existing BNA Railway target, and live-smoked it. Future
+  dirty-worktree deploy blockers should follow the same reconcile/preserve/
+  commit-or-stash/deploy pattern without destructive reset/clean.
 - Real Whapi/WAPI sending/reminders: need Rabbi/One Time provider account,
   phone number, token/instance/webhook details, and explicit safe-test/send
   approval. No real WhatsApp send is authorized in this run.

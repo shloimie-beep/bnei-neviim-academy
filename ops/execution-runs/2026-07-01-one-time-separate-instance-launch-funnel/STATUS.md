@@ -10,16 +10,19 @@ Current status: `in_progress`.
   project/service/database creation, variable writes, custom-domain attachment,
   deploy/promote, and real database bootstrap require exact external target and
   confirmation details.
-- `REQ-20260701-703`: blocked after local verification. `join.onetimeonetime.com` host routing
-  is wired for the One Time landing and member entry paths; `/one-time` remains
-  fallback, `/rabbi` remains compatible, and BNA root remains separate. Live
-  join-domain smoke is deferred to `REQ-20260701-717` until the external
-  Railway/custom-domain/DNS gates exist.
-- `REQ-20260701-704`: blocked after local verification. The landing/signup page
-  now matches the launch offer sections, required signup fields, UTM/campaign
-  capture, and safety copy. Static local Playwright screenshots passed for
-  desktop/tablet/mobile. Live join-domain smoke is still blocked by external
-  Railway/custom-domain/DNS.
+- `REQ-20260701-703`: blocked only for separate One Time join-domain live
+  verification. `join.onetimeonetime.com` host routing is wired for the One
+  Time landing and member entry paths; `/one-time` remains fallback, `/rabbi`
+  remains compatible, and BNA root remains separate. The current BNA Railway
+  app target was deployed and live-smoked on 2026-07-02. Live
+  `join.onetimeonetime.com` smoke remains deferred to `REQ-20260701-717` until
+  the separate One Time Railway/custom-domain/DNS gates exist.
+- `REQ-20260701-704`: blocked only for separate One Time join-domain live
+  verification. The landing/signup page now matches the launch offer sections,
+  required signup fields, UTM/campaign capture, and safety copy. Static local
+  Playwright screenshots passed for desktop/tablet/mobile, and the current BNA
+  live `/rabbi` One Time landing smoke passed. Live `join.onetimeonetime.com`
+  smoke is still blocked by separate One Time Railway/custom-domain/DNS.
 - `REQ-20260701-705`: blocked after local verification from `RAW-20260702-002`.
   No-card 30-day signup/trial/access preview, referral capture, and scoped
   first-party One Time contracts pass locally. Final launch status still needs
@@ -52,12 +55,15 @@ Current status: `in_progress`.
   lanes and a no-send platform-update email draft, and keeps all billing,
   cancellation, refund, subscription, access-migration, and send actions
   blocked.
-- `REQ-20260701-716`: blocked after local verification. Operations task cards
-  now sort newest active work first, push completed/superseded/history rows
-  below active work, show workspace/project/owner signals, keep super-admin
-  filters broad, and hide internal tech-only cards from project-scoped Rabbi
-  provider views unless explicitly shared or provider-actionable. Deploy/live
-  smoke is still required for app-visible done proof.
+- `REQ-20260701-716`: partially live-verified after local verification.
+  Operations task cards now sort newest active work first, push
+  completed/superseded/history rows below active work, show
+  workspace/project/owner signals, keep super-admin filters broad, and hide
+  internal tech-only cards from project-scoped Rabbi provider views unless
+  explicitly shared or provider-actionable. The current BNA Railway app target
+  was deployed and general Operations task API smoke passed. A targeted live
+  task-view sorting/visibility smoke remains needed before changing this item
+  to terminal `done`.
 - `npm run bna:run:next` now reports no unblocked executable batch. Remaining
   work is blocked by external setup/approval, dependent on those blockers, or
   reserved for deploy/live-smoke closeout.
@@ -72,9 +78,10 @@ Current status: `in_progress`.
   when external setup is ready.
 - No new external setup value was present in this session. Safe checks still
   report `0/8` external setup areas ready.
-- Railway apply, database bootstrap, deploy/live smoke, Resend seed send,
-  Stripe sandbox smoke, and WhatsApp setup message remain blocked because
-  required target labels/aliases/provider fields are missing.
+- Separate One Time Railway apply, separate database bootstrap,
+  `join.onetimeonetime.com` deploy/live smoke, Resend seed send, Stripe sandbox
+  smoke, and WhatsApp setup message remain blocked because required target
+  labels/aliases/provider fields are missing.
 - Exact top visible operator tasks were created at
   `ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md`.
   The first task is `TASK-20260702-001`: create or identify the separate One
@@ -83,5 +90,6 @@ Current status: `in_progress`.
   `ops/one-time-mishnah/launch-unblocker/2026-07-02-godaddy-join-subdomain-instructions.md`.
 - Worktree reconciliation was recorded at
   `ops/worktree-reconciliation/2026-07-02-one-time-launch-execution/report.md`.
-  Broad cleanup/staging is unsafe because the worktree contains a large mixed
-  dirty state; use explicit path staging only.
+  Codex then reconciled the dirty worktree, preserved local-only evidence,
+  committed/pushed the intentional cleanup branch, opened PR #62, deployed the
+  existing BNA Railway target, and live-smoked it successfully.

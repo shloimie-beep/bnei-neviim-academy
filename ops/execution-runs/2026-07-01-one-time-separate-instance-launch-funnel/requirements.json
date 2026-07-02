@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-01-one-time-separate-instance-launch-funnel",
   "title": "One Time Separate Instance Launch Funnel",
-  "updated_at": "2026-07-02T10:30:00+03:00",
+  "updated_at": "2026-07-02T14:19:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260701-007",
@@ -519,7 +519,7 @@
       "depends_on": [
         "REQ-20260701-700"
       ],
-      "implementation_status": "Join-domain host routing is implemented and locally verified. `join.onetimeonetime.com/` serves the One Time focused landing, `join.onetimeonetime.com/member-login` and `/member` serve the One Time member entry, `/one-time` remains a fallback route, `/rabbi` remains a compatibility route, and BNA root remains separate. Live join-domain smoke is deferred to REQ-20260701-717 because the separate Railway target/custom domain/DNS are still externally blocked.",
+      "implementation_status": "Join-domain host routing is implemented and locally verified. `join.onetimeonetime.com/` serves the One Time focused landing, `join.onetimeonetime.com/member-login` and `/member` serve the One Time member entry, `/one-time` remains a fallback route, `/rabbi` remains a compatibility route, and BNA root remains separate. Live join-domain smoke is deferred to REQ-20260701-717 because the separate Railway target/custom domain/DNS are still externally blocked. Existing BNA Railway deploy/live smoke completed on 2026-07-02; separate join.onetimeonetime.com smoke remains blocked by external One Time Railway/custom-domain/DNS setup.",
       "can_continue_without_operator": false,
       "next_action": "Continue with landing/signup launch offer gaps; run live join-domain smoke under REQ-20260701-717 after the One Time Railway/custom-domain/DNS target exists.",
       "acceptance_criteria": [
@@ -535,14 +535,23 @@
         "public/js/rabbi-member.js",
         "ops/route-registry.json",
         "tests/one-time-focused-landing.test.js",
-        "tests/rabbi-checkout-access.test.js"
+        "tests/rabbi-checkout-access.test.js",
+        "ops/execution-runs/2026-07-01-one-time-separate-instance-launch-funnel/DEPLOYMENT.md",
+        "ops/live-smokes/2026-07-02T11-19-35-409Z-rabbi-onetime-landing-smoke.md",
+        "ops/live-smokes/2026-07-02T11-19-36-691Z-live-app-smoke.md",
+        "ops/live-smokes/2026-07-02T11-19-45-687Z-public-route-privacy-smoke.md"
       ],
       "verification": [
         "PASS: node --test tests\\one-time-focused-landing.test.js tests\\rabbi-checkout-access.test.js tests\\one-time-product-system.test.js tests\\public-route-privacy-contract.test.js",
         "PASS: node --check server.js",
         "PASS: ops/route-registry.json JSON parse",
         "PASS: legacy apex/www campaign host gate removed from server route code and focused route test",
-        "NOT RUN: live join.onetimeonetime.com smoke, blocked until Railway custom domain/DNS exists"
+        "NOT RUN: live join.onetimeonetime.com smoke, blocked until Railway custom domain/DNS exists",
+        "PASS: npm run railway:redeploy deployed existing BNA Railway target skillful-motivation/production",
+        "PASS: npm run railway:doctor after deploy reported 7af5568c-6fcd-4201-98e2-3fc350388c4b SUCCESS",
+        "PASS: npm run app:smoke",
+        "PASS: npm run app:smoke:rabbi-onetime-landing",
+        "PASS: npm run app:smoke:public-privacy"
       ],
       "implementation_files": [
         "server.js",
@@ -552,11 +561,11 @@
         "tests/rabbi-checkout-access.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-01T20:38:00+03:00",
+      "updated_at": "2026-07-02T14:19:00+03:00",
       "deployment_live_smoke_note": "Local/server contract verified. Live smoke remains pending under REQ-20260701-717 because REQ-20260701-701/702 external Railway/custom-domain/DNS gates are not complete.",
-      "blocker": "Live-required route requirement cannot close until the separate One Time Railway service/custom-domain/DNS target exists and join.onetimeonetime.com can be smoke-tested.",
+      "blocker": "Separate One Time join-domain smoke still needs the dedicated One Time Railway service/database/custom-domain setup.",
       "blocker_owner": "Shloimie/Railway/domain owner",
-      "blocker_next_action": "After the One Time Railway target and join custom-domain/DNS are configured, run live smoke for join root, member-login, member access, /one-time fallback, /rabbi compatibility, and BNA root separation."
+      "blocker_next_action": "Complete the separate One Time external setup checklist, then rerun one-time setup check and the post-setup deploy/live-smoke packet."
     },
     {
       "id": "REQ-20260701-704",
@@ -577,7 +586,7 @@
       "depends_on": [
         "REQ-20260701-700"
       ],
-      "implementation_status": "Landing/signup funnel is locally implemented and visually checked: black/yellow One Time branding, Start 30 Days Free CTA, campaign/video/offer/child-benefits/live-class/attendance/how-it-works/FAQ/final-CTA/member-login sections, required signup fields, timezone/country, UTM/campaign metadata, and no public Zoom/payment/WhatsApp/external CRM writes. Live deployment/smoke remains blocked until separate Railway/custom-domain/DNS exists.",
+      "implementation_status": "Landing/signup funnel is locally implemented and visually checked: black/yellow One Time branding, Start 30 Days Free CTA, campaign/video/offer/child-benefits/live-class/attendance/how-it-works/FAQ/final-CTA/member-login sections, required signup fields, timezone/country, UTM/campaign metadata, and no public Zoom/payment/WhatsApp/external CRM writes. Live deployment/smoke remains blocked until separate Railway/custom-domain/DNS exists. Existing BNA Railway deploy/live smoke completed on 2026-07-02; separate join.onetimeonetime.com smoke remains blocked by external One Time Railway/custom-domain/DNS setup.",
       "can_continue_without_operator": false,
       "next_action": "Continue independent safe batches; run deployed join-domain landing/signup smoke under REQ-20260701-717 once external Railway/custom-domain/DNS exists.",
       "acceptance_criteria": [
@@ -592,14 +601,23 @@
         "tests/one-time-focused-landing.test.js",
         "tests/one-time-product-system.test.js",
         "ops/playwright-smokes/2026-07-01-one-time-join-landing-local/report.md",
-        "ops/playwright-smokes/2026-07-01-one-time-join-landing-local/report.json"
+        "ops/playwright-smokes/2026-07-01-one-time-join-landing-local/report.json",
+        "ops/execution-runs/2026-07-01-one-time-separate-instance-launch-funnel/DEPLOYMENT.md",
+        "ops/live-smokes/2026-07-02T11-19-35-409Z-rabbi-onetime-landing-smoke.md",
+        "ops/live-smokes/2026-07-02T11-19-36-691Z-live-app-smoke.md",
+        "ops/live-smokes/2026-07-02T11-19-45-687Z-public-route-privacy-smoke.md"
       ],
       "verification": [
         "PASS: node --test tests\\one-time-focused-landing.test.js tests\\one-time-product-system.test.js tests\\rabbi-checkout-access.test.js",
         "PASS: node --check server.js",
         "PASS: static local Playwright screenshots for 1440, 1024, 768, 430, and 390 viewports",
         "PASS: public/one-time/index.html contains no raw Zoom URL, Rabbi checkout call, Stripe checkout copy, GreenInvoice checkout copy, GHL, or LeadConnector",
-        "NOT RUN: deployed join-domain landing/signup smoke, blocked until Railway custom-domain/DNS target exists"
+        "NOT RUN: deployed join-domain landing/signup smoke, blocked until Railway custom-domain/DNS target exists",
+        "PASS: npm run railway:redeploy deployed existing BNA Railway target skillful-motivation/production",
+        "PASS: npm run railway:doctor after deploy reported 7af5568c-6fcd-4201-98e2-3fc350388c4b SUCCESS",
+        "PASS: npm run app:smoke",
+        "PASS: npm run app:smoke:rabbi-onetime-landing",
+        "PASS: npm run app:smoke:public-privacy"
       ],
       "implementation_files": [
         "public/one-time/index.html",
@@ -614,10 +632,10 @@
         "ops/playwright-smokes/2026-07-01-one-time-join-landing-local/mobile-390.png"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-01T21:05:00+03:00",
-      "blocker": "Live-required landing/signup requirement cannot close until the separate One Time Railway service/custom-domain/DNS target exists and join.onetimeonetime.com can be smoke-tested.",
+      "updated_at": "2026-07-02T14:19:00+03:00",
+      "blocker": "Separate One Time join-domain smoke still needs the dedicated One Time Railway service/database/custom-domain setup.",
       "blocker_owner": "Shloimie/Railway/domain owner",
-      "blocker_next_action": "After the One Time Railway target and join custom-domain/DNS are configured, run deployed smoke for join landing, signup form, UTM handling, member-login link, no public Zoom, and no payment/WhatsApp/external CRM writes."
+      "blocker_next_action": "Complete the separate One Time external setup checklist, then rerun one-time setup check and the post-setup deploy/live-smoke packet."
     },
     {
       "id": "REQ-20260701-705",
@@ -1198,7 +1216,7 @@
       "depends_on": [
         "REQ-20260701-700"
       ],
-      "implementation_status": "Task view sorting/filtering is locally implemented and verified. Operations task cards now sort newest active work first by last activity/update time, push terminal/history rows below active work, expose workspace/project/owner signals on card/detail views, keep super-admin filters broad, and hide One Time internal tech-only Codex/system cards from project-scoped provider users unless explicitly shared or provider-actionable. Final done status is blocked on deploy/live smoke proof for the app-visible Operations UI.",
+      "implementation_status": "Task view sorting/filtering is locally implemented and verified. The existing BNA Railway target was deployed on 2026-07-02, and general Operations task API smoke passed. Targeted live task-view sorting/visibility smoke remains needed before terminal Done.",
       "can_continue_without_operator": true,
       "next_action": "Deploy the release target and live-smoke the Operations task view sorting/filtering when the One Time/BNA deploy path is available.",
       "acceptance_criteria": [
@@ -1215,14 +1233,20 @@
         "tasks-pending/2026-07-02-one-time-launch-execution-worktree-external-setup.md",
         "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md",
         "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.json",
-        "ops/worktree-reconciliation/2026-07-02-one-time-launch-execution/report.md"
+        "ops/worktree-reconciliation/2026-07-02-one-time-launch-execution/report.md",
+        "ops/execution-runs/2026-07-01-one-time-separate-instance-launch-funnel/DEPLOYMENT.md",
+        "ops/live-smokes/2026-07-02T11-19-36-691Z-live-app-smoke.md"
       ],
       "verification": [
         "PASS: node --check server.js",
         "PASS: node --test tests\\workspace-task-no-stale-agent.test.js tests\\operations-task-queue-visibility.test.js tests\\operations-task-comments-and-dictation.test.js tests\\one-time-operations-ui-smoke.test.js",
         "PASS: route/action registry JSON parse",
         "BLOCKED: deploy/live smoke not run because the app-visible release target is not available in this packet",
-        "PASS: top visible operator tasks generated with TASK-20260702-001 as current first task; live Operations visibility remains blocked on deploy/live smoke."
+        "PASS: top visible operator tasks generated with TASK-20260702-001 as current first task; live Operations visibility remains blocked on deploy/live smoke.",
+        "PASS: npm run railway:redeploy deployed existing BNA Railway target skillful-motivation/production",
+        "PASS: npm run railway:doctor after deploy reported 7af5568c-6fcd-4201-98e2-3fc350388c4b SUCCESS",
+        "PASS: npm run app:smoke includes Operations login/session and task create/comment/delete readback",
+        "OPEN: targeted live task-view sorting/visibility smoke still needed for terminal Done"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -1232,10 +1256,10 @@
         "ops/one-time-mishnah/task-view/2026-07-01-task-view-sorting-filtering-readiness.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-02T10:30:00+03:00",
-      "blocker": "App-visible Operations task view changes need deploy/live-smoke evidence before final Done status.",
+      "updated_at": "2026-07-02T14:19:00+03:00",
+      "blocker": "Need targeted live task-view sorting/visibility proof before terminal Done; general app deploy/live smoke has passed.",
       "blocker_owner": "Codex/release owner",
-      "blocker_next_action": "After the release target is available, deploy and verify newest-first sorting, workspace/project/owner filters, super-admin visibility, and Rabbi/provider-scoped internal-tech hiding."
+      "blocker_next_action": "Run or add a targeted live Operations task-view smoke for newest-first sorting, workspace/project/owner filters, super-admin visibility, and Rabbi/provider-scoped internal-tech hiding."
     },
     {
       "id": "REQ-20260701-717",
@@ -1257,7 +1281,7 @@
       "depends_on": [
         "REQ-20260701-701"
       ],
-      "implementation_status": "Partial verification completed: PQC suite, run status/next/blockers/source coverage/stale evidence, focused local tests, local launch smoke, no-write Railway provisioning check, DB bootstrap check, and current BNA Railway doctor passed. Final closeout is blocked on separate One Time Railway/database/custom-domain setup and deploy/live smoke. Added post-setup readiness checker and report so deploy/live-smoke closeout can start from one command after external setup is configured.",
+      "implementation_status": "Partial verification completed: PQC suite, run validation/source coverage/stale evidence, focused local tests, local launch smoke, no-write Railway provisioning check, DB bootstrap check, existing BNA Railway deploy, and live app smokes passed. Final One Time launch closeout remains blocked on separate One Time Railway/database/custom-domain setup and join-domain live smoke.",
       "can_continue_without_operator": false,
       "next_action": "After external setup, run full focused validation, deploy, screenshots, live smoke, source coverage, stale evidence, secrets audit, and closeout.",
       "acceptance_criteria": [
@@ -1282,7 +1306,11 @@
         "tasks-pending/2026-07-02-one-time-launch-execution-worktree-external-setup.md",
         "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md",
         "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.json",
-        "ops/worktree-reconciliation/2026-07-02-one-time-launch-execution/report.md"
+        "ops/worktree-reconciliation/2026-07-02-one-time-launch-execution/report.md",
+        "ops/execution-runs/2026-07-01-one-time-separate-instance-launch-funnel/DEPLOYMENT.md",
+        "ops/live-smokes/2026-07-02T11-19-36-691Z-live-app-smoke.md",
+        "ops/live-smokes/2026-07-02T11-19-35-409Z-rabbi-onetime-landing-smoke.md",
+        "ops/live-smokes/2026-07-02T11-19-45-687Z-public-route-privacy-smoke.md"
       ],
       "verification": [
         "PASS: npm run pqc:all",
@@ -1301,7 +1329,13 @@
         "EXPECTED BLOCKED: npm run one-time:setup:check reports 0/8 external setup areas ready; external_write_performed=false; secret_values_printed=false",
         "EXPECTED BLOCKED: node scripts/check-onetime-external-setup-readiness.mjs --write-report writes no-secret readiness report with 0/8 areas ready",
         "BLOCKED: npm run one-time:setup:check -- --write-report reports 0/8 external setup areas ready; no deploy/live smoke attempted.",
-        "BLOCKED: worktree reconciliation report shows broad commit/push is unsafe until explicit path staging is used."
+        "BLOCKED: worktree reconciliation report shows broad commit/push is unsafe until explicit path staging is used.",
+        "PASS: npm run railway:redeploy deployed existing BNA Railway target skillful-motivation/production",
+        "PASS: npm run railway:doctor after deploy reported 7af5568c-6fcd-4201-98e2-3fc350388c4b SUCCESS",
+        "PASS: npm run app:smoke",
+        "PASS: npm run app:smoke:rabbi-onetime-landing",
+        "PASS: npm run app:smoke:public-privacy",
+        "EXPECTED BLOCKED: npm run one-time:setup:check -- --write-report still reports 0/8 external setup areas ready"
       ],
       "implementation_files": [
         "ops/one-time-mishnah/launch-unblocker/2026-07-02-launch-unblocker-readiness.md",
@@ -1311,8 +1345,8 @@
         "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-02T10:30:00+03:00",
-      "blocker": "Need separate One Time Railway service/database/custom-domain setup before deploy/live smoke and terminal launch closeout.",
+      "updated_at": "2026-07-02T14:19:00+03:00",
+      "blocker": "Need separate One Time Railway service/database/custom-domain setup before join.onetimeonetime.com deploy/live smoke and terminal launch closeout.",
       "blocker_owner": "Shloimie/Railway/domain owner",
       "blocker_next_action": "Clear TASK-20260702-001 through TASK-20260702-003 first, then rerun one-time setup check and the post-setup deploy/live-smoke packet."
     }

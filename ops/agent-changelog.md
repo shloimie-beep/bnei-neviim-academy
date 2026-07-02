@@ -28346,3 +28346,23 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   WhatsApp send, live Stripe payment, provider mutation, provider purchase,
   hard delete, secret exposure, GHL/LeadConnector runtime, or privacy-sensitive
   export was performed.
+
+## 2026-07-02T14:19:00+03:00 - Dirty Worktree Reconciled And Existing BNA App Deployed
+
+- Preserved local-only evidence, moved repo-local secret artifacts out of the
+  repo, committed the intentional One Time launch cleanup/protocol work, and
+  pushed branch `codex/one-time-launch-cleanup-20260702-no-workflow`.
+- Opened draft PR #62:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/62`.
+- Deployed the existing BNA Railway target
+  `skillful-motivation / skillful-motivation / production`; deployment
+  `7af5568c-6fcd-4201-98e2-3fc350388c4b` reached `SUCCESS`.
+- Live smokes passed: `npm run app:smoke`,
+  `npm run app:smoke:rabbi-onetime-landing`, and
+  `npm run app:smoke:public-privacy`.
+- Separate One Time `join.onetimeonetime.com` deployment remains blocked by
+  the setup checker reporting `0/8` external setup areas ready.
+- Guardrails held: no apex/root DNS mutation, no separate One Time Railway
+  resource creation, no email send, no WhatsApp send, no live Stripe payment,
+  no provider mutation, no hard delete, no secret exposure, and no GHL/
+  LeadConnector runtime.
