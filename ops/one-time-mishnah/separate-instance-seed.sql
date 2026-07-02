@@ -17,9 +17,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_courses_slug
 CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_course_lessons_course_slug
   ON bna_course_lessons(course_id, slug)
   WHERE slug IS NOT NULL AND trim(slug) <> '';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_course_lessons_course_slug_conflict
+  ON bna_course_lessons(course_id, slug);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_support_tickets_ticket_number
   ON bna_support_tickets(ticket_number)
   WHERE ticket_number IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_support_tickets_ticket_number_conflict
+  ON bna_support_tickets(ticket_number);
 
 INSERT INTO bna_projects (project_key, name, short_name, description, status, metadata)
 VALUES (
