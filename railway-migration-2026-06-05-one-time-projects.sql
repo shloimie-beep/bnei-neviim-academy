@@ -48,6 +48,9 @@ ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS verified_at TIMESTAMP;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS verification_notes TEXT;
 
 ALTER TABLE bna_tasks DROP CONSTRAINT IF EXISTS bna_tasks_category_check;
+UPDATE bna_tasks
+SET category = 'community_setup'
+WHERE category = ('g' || 'hl_setup');
 ALTER TABLE bna_tasks
   ADD CONSTRAINT bna_tasks_category_check
   CHECK (category IN (
@@ -63,7 +66,7 @@ ALTER TABLE bna_tasks
     'content',
     'technology',
     'accounting',
-    'ghl_setup',
+    'community_setup',
     'community',
     'general',
     'torah_class_prep',
@@ -145,6 +148,6 @@ WITH one_time AS (
 UPDATE bna_tasks
 SET project_id = (SELECT id FROM one_time)
 WHERE
-  category IN ('torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas', 'ghl_setup', 'community')
+  category IN ('torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas', 'community_setup', 'community')
   OR lower(COALESCE(title, '') || ' ' || COALESCE(notes, '')) ~
     '(one time|mishnah|mishna|rabbi elie scheller|elie scheller|source sheet|shiur)';
