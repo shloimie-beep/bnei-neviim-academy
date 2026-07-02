@@ -4,6 +4,33 @@
 
 BEGIN;
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_bna_projects_project_key
+  ON bna_projects(project_key);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_course_lessons_course_slug_conflict
+  ON bna_course_lessons(course_id, slug);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_support_tickets_ticket_number_conflict
+  ON bna_support_tickets(ticket_number);
+
+UPDATE bna_students s
+SET name = 'TEST Archived BNA Seed ' || s.id::text,
+    name_en = 'TEST Archived BNA Seed ' || s.id::text,
+    name_he = NULL,
+    parent_name = NULL,
+    parent_email = NULL,
+    parent_phone = NULL,
+    status = 'inactive',
+    tags = ARRAY(
+      SELECT DISTINCT tag_value
+      FROM unnest(COALESCE(s.tags, ARRAY[]::text[]) || ARRAY['archived_wrong_instance_seed', 'one_time_bootstrap_cleanup']) AS tag_values(tag_value)
+      WHERE tag_value <> ''
+    ),
+    notes = 'Archived/redacted by One Time bootstrap because this BNA Torah seed row was created in the separate One Time instance before single-tenant seed guards were active.',
+    updated_at = NOW()
+FROM bna_projects p
+WHERE p.id = COALESCE(s.project_id, s.workspace_id)
+  AND p.project_key <> 'one_time_mishnah_class'
+  AND COALESCE(s.notes, '') LIKE 'Seeded for Torah learning group goal%';
+
 INSERT INTO bna_projects (project_key, name, short_name, description, status, metadata)
 VALUES (
   'one_time_mishnah_class',

@@ -1,6 +1,6 @@
 # One Time External Setup Readiness Check
 
-Generated: 2026-07-02T16:14:36.055Z
+Generated: 2026-07-02T18:02:27.624Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: full_setup
@@ -57,7 +57,7 @@ Warnings: Live Stripe key appears configured; sandbox-only smoke must not use it
 
 Ready: false
 Clears: not mapped
-Missing: whapi_wapi_instance_id, whapi_wapi_phone_number
+Missing: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number
 Warnings: none
 
 ### SETUP-ONETIME-CAMPAIGN-001 - Campaign seed / real campaign

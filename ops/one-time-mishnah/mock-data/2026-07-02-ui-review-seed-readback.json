@@ -1,7 +1,7 @@
 {
   "ok": true,
   "mode": "dry_run",
-  "generated_at": "2026-07-02T12:55:48.382Z",
+  "generated_at": "2026-07-02T17:37:26.685Z",
   "mutation_performed": false,
   "external_writes_performed": false,
   "database_url_env": "DATABASE_URL",
@@ -9,7 +9,7 @@
     "manifest_path": "ops/one-time-mishnah/mock-data/2026-07-02-ui-review/ui-review-fixtures.json",
     "sql_path": "ops/one-time-mishnah/mock-data/2026-07-02-ui-review/seed-ui-review-data.sql",
     "cleanup_path": "ops/one-time-mishnah/mock-data/2026-07-02-ui-review/cleanup-ui-review-data.sql",
-    "sql_sha256": "7f0623ea36fa909ca6c68824518befd7b95be58043dd1e6d50006aacd87e19a7",
+    "sql_sha256": "c0c5e610659dd433406c22bf7d97881b4ff979a71ae0e2915f71a379e4a476a7",
     "cleanup_sha256": "2d3cba7c27399d212218094adb03f8cd8aead5a65617ff05e1893f67a5a5a113"
   },
   "validation": {
