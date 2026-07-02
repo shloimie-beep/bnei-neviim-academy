@@ -27989,3 +27989,34 @@ Actions: 1. Active machine tasks: 22.
   apex/root DNS mutation, hard delete, paid-user cancellation, GHL runtime,
   secret exposure, raw private-data evidence leak, email send, Vimeo upload, or
   Zoom mutation.
+
+## 2026-07-02 - PR #64 Join DNS, Keyholder Discovery, Railway Env Readback
+
+- Verified `join.onetimeonetime.com` GoDaddy DNS by readback: CNAME points to
+  Railway and TXT verification matches the expected Railway value. Apex/root
+  and `www` were not touched.
+- Ran safe keyholder alias discovery by filename/fingerprint only. Resend,
+  Zoom account credentials, and Vimeo client credentials were found; Vimeo
+  upload access token, One Time Drive drop-folder alias, Rabbi Stripe sandbox
+  key/price, Whapi/WAPI instance/phone, and Zoom class-session/join alias
+  remain exact blockers.
+- Fixed One Time setup readiness to consume current Railway CLI-session
+  readback, real keyholder aliases, and verified DNS evidence. Current setup
+  checker status is `3/8` ready: Railway target, database reference, and join
+  DNS.
+- Corrected the One Time Railway `DATABASE_URL` service reference to the
+  active Postgres service and verified non-empty variable readback without
+  exposing values.
+- Propagated safe keyholder-backed provider env values to the separate One
+  Time Railway service with deploy skipped, then verified remote fingerprints.
+- Attempted guarded One Time DB bootstrap. Local execution is blocked because
+  the Railway internal Postgres host is not resolvable from this machine; next
+  bootstrap should run from the deployed Railway service after PR merge/deploy.
+- Added read-only Drive/transcript visibility evidence. Job `101` has a
+  transcript but no confirmed structured parser output yet; no raw transcript
+  body was committed and no production class/student/question/progress writes
+  were performed.
+- Validation passed: focused One Time/provider/credential tests, PQC, BNA run
+  validation/source coverage/stale evidence, JSON validation, `git diff
+  --check`, and tracked secret audit. `one-time:setup:check` intentionally
+  exits blocked because five provider/campaign setup areas remain incomplete.

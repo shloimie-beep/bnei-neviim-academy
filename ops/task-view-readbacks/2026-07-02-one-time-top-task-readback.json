@@ -1,14 +1,15 @@
 {
-  "generated_at": "2026-07-02T13:01:30+03:00",
+  "generated_at": "2026-07-02T15:42:42+03:00",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
-  "top_task_id": "TASK-20260702-003",
-  "top_task_title": "Add GoDaddy DNS records for join.onetimeonetime.com",
-  "top_task_owner": "Shloimie / domain owner",
+  "top_task_id": "TASK-20260702-004",
+  "top_task_title": "Provide remaining One Time provider aliases",
+  "top_task_owner": "Shloimie / provider account owners",
   "source": "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.json",
   "railway_target_task_status": "done",
   "database_service_task_status": "done_service_reference_ready",
-  "dns_task_status": "pending_external_dns",
+  "dns_task_status": "done_verified",
+  "provider_alias_task_status": "pending_external_input",
   "internal_codex_tasks_hidden_from_rabbi_view": true,
   "support_admin_items_require_support_drawer_or_platform_scope": true
 }

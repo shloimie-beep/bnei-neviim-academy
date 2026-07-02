@@ -76,13 +76,13 @@ const PROVIDER_FIELDS = [
     names: ['resend-api-key', 'resend'],
   },
   {
-    key: 'RESEND_FROM',
-    label: 'Resend from address',
+    key: 'RESEND_FROM_EMAIL',
+    label: 'Resend from email address',
     provider: 'resend',
     required: false,
     resendGroup: true,
-    fileNames: ['resend-from.txt', 'RESEND_FROM.txt', 'resend.txt'],
-    names: ['resend-from', 'resend'],
+    fileNames: ['resend-from-email.txt', 'RESEND_FROM_EMAIL.txt', 'resend.txt'],
+    names: ['resend-from-email', 'resend'],
   },
   {
     key: 'RESEND_DOMAIN',
@@ -173,13 +173,28 @@ function setRailwayVariable({ key, value, service, environment, env, repoRoot = 
     '--skip-deploys',
     '--json',
   ]);
-  const result = runner(command, args, {
-    cwd: repoRoot,
-    env,
-    input: value,
-    encoding: 'utf8',
-    maxBuffer: 1024 * 1024 * 4,
-  });
+  function runWithEnv(commandEnv) {
+    return runner(command, args, {
+      cwd: repoRoot,
+      env: commandEnv,
+      input: value,
+      encoding: 'utf8',
+      maxBuffer: 1024 * 1024 * 4,
+    });
+  }
+
+  let result = runWithEnv(env);
+  if (
+    result.status !== 0 &&
+    /service.+not found|project.+not found|environment.+not found/i.test(String(result.stderr || result.stdout || '')) &&
+    (env.RAILWAY_TOKEN || env.RAILWAY_API_TOKEN)
+  ) {
+    const fallbackEnv = { ...process.env };
+    delete fallbackEnv.RAILWAY_TOKEN;
+    delete fallbackEnv.RAILWAY_API_TOKEN;
+    const fallback = runWithEnv(fallbackEnv);
+    if (fallback.status === 0 && !fallback.error) result = fallback;
+  }
   if (result.error) {
     return {
       ok: false,

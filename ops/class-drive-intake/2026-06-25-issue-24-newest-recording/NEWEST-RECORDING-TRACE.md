@@ -1,6 +1,6 @@
 # Newest Drive Recording Read-Only Trace
 
-Generated: 2026-07-02T12:41:45.410Z
+Generated: 2026-07-02T15:45:01.517Z
 Mode: read_only_newest_drive_recording_trace
 No production mutation: true
 Class backfill guardrail: NOT SAFE TO APPLY - Issue #18 guardrail preserved; no class backfill writes attempted.
@@ -27,7 +27,7 @@ Class backfill guardrail: NOT SAFE TO APPLY - Issue #18 guardrail preserved; no 
 | --- | --- | --- |
 | source_discovered | CONFIRMED | content job 101 |
 | source_fingerprint | CONFIRMED | 487e9f3034b947eb |
-| intake_record | UNKNOWN | No linked raw/canonical intake row was found. |
+| intake_record | CONFIRMED | linked intake |
 | queue_record | CONFIRMED | status=transcribed stage=03 Transcribed |
 | download | CONFIRMED | Download/transcript evidence exists. |
 | transcription_request | CONFIRMED | Transcript or transcription metadata exists. |
@@ -70,7 +70,7 @@ Class backfill guardrail: NOT SAFE TO APPLY - Issue #18 guardrail preserved; no 
   "torah_entries_scope": 47,
   "accountability_events": 0,
   "content_outputs": 1,
-  "intake_parse_runs": 44,
-  "raw_intake_rows": 46
+  "intake_parse_runs": 45,
+  "raw_intake_rows": 47
 }
 ```

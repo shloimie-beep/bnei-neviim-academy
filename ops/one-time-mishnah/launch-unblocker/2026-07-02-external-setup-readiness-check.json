@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T13:10:18.064Z",
+  "generated_at": "2026-07-02T15:50:22.457Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -212,7 +212,21 @@
       }
     ]
   },
-  "ready_count": 2,
+  "railway_variable_readback": {
+    "ok": true,
+    "attempted": true,
+    "source": "railway_cli_session_fallback",
+    "service": "one-time-web",
+    "environment": "production",
+    "key_count": 36,
+    "database_url_present": true,
+    "database_url_length": 98,
+    "database_url_usable": true,
+    "one_time_public_domain_matches": true,
+    "default_workspace_matches": true,
+    "default_project_matches": true
+  },
+  "ready_count": 3,
   "total_count": 8,
   "all_required_external_setup_ready": false,
   "post_setup_execution_packet": "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md",
@@ -242,7 +256,7 @@
       "ready": true,
       "missing_fields": [],
       "warnings": [
-        "Ready from Railway Postgres service and DATABASE_URL service reference in ops\\one-time-mishnah\\onetime-railway-provisioning-report.json."
+        "Ready from current Railway DATABASE_URL service reference readback or ops\\one-time-mishnah\\onetime-railway-provisioning-report.json."
       ],
       "verification_after_setup": [
         "npm run one-time:db:bootstrap"
@@ -257,12 +271,10 @@
         "REQ-20260701-704",
         "REQ-20260701-717"
       ],
-      "ready": false,
-      "missing_fields": [
-        "ONE_TIME_JOIN_DNS_CONFIGURED"
-      ],
+      "ready": true,
+      "missing_fields": [],
       "warnings": [
-        "Railway custom domain is attached from ops\\domain-readbacks\\2026-07-02-join-onetimeonetime-domain-task.json; GoDaddy DNS still must verify."
+        "Railway custom domain and GoDaddy DNS are verified from ops\\domain-readbacks\\2026-07-02-join-onetimeonetime-domain-task.json."
       ],
       "verification_after_setup": [
         "join-domain live smoke after deploy"
@@ -276,9 +288,11 @@
       ],
       "ready": false,
       "missing_fields": [
-        "ONE_TIME_ZOOM_SESSION_ALIAS_or_private_keyholder_path"
+        "ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias"
       ],
-      "warnings": [],
+      "warnings": [
+        "Zoom account/client credentials are present by safe keyholder alias; class session/join details are still a separate setup item."
+      ],
       "verification_after_setup": [
         "member-gated class-link smoke; no public raw Zoom link"
       ]
@@ -294,7 +308,9 @@
         "VIMEO_ACCESS_TOKEN_alias_or_keyholder_path",
         "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS"
       ],
-      "warnings": [],
+      "warnings": [
+        "Vimeo client credentials are present by safe keyholder alias; upload/readback still needs an access token alias."
+      ],
       "verification_after_setup": [
         "fingerprint-only Vimeo readback",
         "Drive intake/drop-folder readback"
@@ -311,7 +327,9 @@
         "rabbi_stripe_test_secret_key_alias_or_test_key_status",
         "67_month_product_price_id_or_alias"
       ],
-      "warnings": [],
+      "warnings": [
+        "Live Stripe key appears configured; sandbox-only smoke must not use it."
+      ],
       "verification_after_setup": [
         "sandbox Stripe smoke only; no live payment"
       ]
@@ -322,7 +340,6 @@
       "clears_requirements": [],
       "ready": false,
       "missing_fields": [
-        "whapi_wapi_token_alias",
         "whapi_wapi_instance_id",
         "whapi_wapi_phone_number"
       ],
@@ -340,7 +357,6 @@
       ],
       "ready": false,
       "missing_fields": [
-        "join_domain_live_first",
         "final_campaign_copy",
         "exact_recipient_segment_or_list",
         "suppression_unsubscribe_proof",
@@ -354,22 +370,14 @@
   ],
   "blockers": [
     {
-      "id": "SETUP-ONETIME-JOIN-DOMAIN-001",
-      "title": "Join subdomain only",
-      "missing_fields": [
-        "ONE_TIME_JOIN_DNS_CONFIGURED"
-      ],
-      "warnings": [
-        "Railway custom domain is attached from ops\\domain-readbacks\\2026-07-02-join-onetimeonetime-domain-task.json; GoDaddy DNS still must verify."
-      ]
-    },
-    {
       "id": "SETUP-ONETIME-ZOOM-001",
       "title": "Zoom session details",
       "missing_fields": [
-        "ONE_TIME_ZOOM_SESSION_ALIAS_or_private_keyholder_path"
+        "ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias"
       ],
-      "warnings": []
+      "warnings": [
+        "Zoom account/client credentials are present by safe keyholder alias; class session/join details are still a separate setup item."
+      ]
     },
     {
       "id": "SETUP-ONETIME-VIMEO-001",
@@ -378,7 +386,9 @@
         "VIMEO_ACCESS_TOKEN_alias_or_keyholder_path",
         "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS"
       ],
-      "warnings": []
+      "warnings": [
+        "Vimeo client credentials are present by safe keyholder alias; upload/readback still needs an access token alias."
+      ]
     },
     {
       "id": "SETUP-ONETIME-STRIPE-001",
@@ -387,13 +397,14 @@
         "rabbi_stripe_test_secret_key_alias_or_test_key_status",
         "67_month_product_price_id_or_alias"
       ],
-      "warnings": []
+      "warnings": [
+        "Live Stripe key appears configured; sandbox-only smoke must not use it."
+      ]
     },
     {
       "id": "SETUP-ONETIME-WHAPI-001",
       "title": "Whapi/WAPI provider details",
       "missing_fields": [
-        "whapi_wapi_token_alias",
         "whapi_wapi_instance_id",
         "whapi_wapi_phone_number"
       ],
@@ -403,7 +414,6 @@
       "id": "SETUP-ONETIME-CAMPAIGN-001",
       "title": "Campaign seed / real campaign",
       "missing_fields": [
-        "join_domain_live_first",
         "final_campaign_copy",
         "exact_recipient_segment_or_list",
         "suppression_unsubscribe_proof",

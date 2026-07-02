@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T12:41:45.410Z",
+  "generated_at": "2026-07-02T15:45:01.517Z",
   "mode": "read_only_newest_drive_recording_trace",
   "no_production_mutation": true,
   "read_only_authorization_phrase": "READ_EXTERNAL_PRODUCTION_STATE",
@@ -74,8 +74,8 @@
     "torah_entries_scope": 47,
     "accountability_events": 0,
     "content_outputs": 1,
-    "intake_parse_runs": 44,
-    "raw_intake_rows": 46
+    "intake_parse_runs": 45,
+    "raw_intake_rows": 47
   },
   "structured_output_summary": {
     "parser": null,
@@ -132,8 +132,8 @@
       "sha256": "487e9f3034b947ebb8c26336f228fd9404b68683a4b6936b536c9a26f997c482"
     },
     "intake_record": {
-      "status": "UNKNOWN",
-      "evidence": "No linked raw/canonical intake row was found."
+      "status": "CONFIRMED",
+      "evidence": "linked intake"
     },
     "queue_record": {
       "status": "CONFIRMED",
@@ -260,8 +260,8 @@
         "sha256": "487e9f3034b947ebb8c26336f228fd9404b68683a4b6936b536c9a26f997c482"
       },
       "intake_record": {
-        "status": "UNKNOWN",
-        "evidence": "No linked raw/canonical intake row was found."
+        "status": "CONFIRMED",
+        "evidence": "linked intake"
       },
       "queue_record": {
         "status": "CONFIRMED",

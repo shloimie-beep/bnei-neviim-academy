@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T12:59:26.840Z",
+  "generated_at": "2026-07-02T15:37:42.626Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "domain": "join.onetimeonetime.com",
@@ -12,7 +12,16 @@
   "dns_mutation_performed": false,
   "apex_root_mutation_performed": false,
   "apex_root_must_remain_untouched": true,
-  "verified": false,
+  "verified": true,
+  "dns_readback": {
+    "checked_at": "2026-07-02T15:37:42.626Z",
+    "cname_name": "join.onetimeonetime.com",
+    "cname_value": "awaz36ln.up.railway.app",
+    "txt_name": "_railway-verify.join.onetimeonetime.com",
+    "txt_value": "railway-verify=73e92e55cb07e5a0abdb0a72f204d437d915c3134e844af12f419407632a97d6",
+    "apex_root_mutation_performed": false,
+    "www_mutation_performed": false
+  },
   "certificate_status": "CERTIFICATE_STATUS_TYPE_VALIDATING_OWNERSHIP",
   "required_dns_records": [
     {
@@ -23,7 +32,7 @@
       "value": "awaz36ln.up.railway.app",
       "ttl": "default",
       "purpose": "traffic_route",
-      "status": "requires_update"
+      "status": "verified"
     },
     {
       "provider": "GoDaddy",
@@ -33,13 +42,13 @@
       "value": "railway-verify=73e92e55cb07e5a0abdb0a72f204d437d915c3134e844af12f419407632a97d6",
       "ttl": "default",
       "purpose": "ownership_verification",
-      "status": "requires_update"
+      "status": "verified"
     }
   ],
   "operator_task": {
-    "title": "Add GoDaddy DNS records for join.onetimeonetime.com",
+    "title": "GoDaddy DNS records for join.onetimeonetime.com verified",
     "owner": "Shloimie",
-    "next_action": "In GoDaddy DNS for onetimeonetime.com, add the CNAME and TXT records listed above. Do not edit apex/root records.",
+    "next_action": "No DNS action remains for join.onetimeonetime.com. Continue setup checks and live smoke after deployment.",
     "after_done": "Run npm run one-time:setup:check -- --write-report, then run the One Time deploy/live-smoke packet after secrets are configured."
   }
 }

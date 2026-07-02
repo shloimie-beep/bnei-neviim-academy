@@ -1,13 +1,23 @@
 {
   "run_id": "2026-07-02-background-drive-ui-launch-continuation",
   "title": "Background Agent, Drive UI Recording, Mock Data, Railway Provisioning",
-  "updated_at": "2026-07-02T13:05:00+03:00",
+  "updated_at": "2026-07-02T15:42:42+03:00",
   "sources": [
     {
       "source_id": "RAW-20260702-006",
       "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
       "captured_at": "2026-07-02T15:45:00+03:00",
       "content_fingerprint": "pending-closeout",
+      "privacy_classification": "internal_goal_mode_packet_no_secrets_no_private_rows",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_goal_mode_packet"
+    },
+    {
+      "source_id": "RAW-20260702-007",
+      "source_path": "raw-input/RAW-20260702-007-finalize-pr64-keyholder-domain-launch.md",
+      "captured_at": "2026-07-02T15:42:42+03:00",
+      "content_fingerprint": "pending-final-closeout",
       "privacy_classification": "internal_goal_mode_packet_no_secrets_no_private_rows",
       "workspace": "rabbi_sheller_provider",
       "project": "one_time_mishnah_class",
@@ -84,6 +94,55 @@
       "source_statement": "No bulk campaign, live payment, WhatsApp broadcast, apex/root DNS mutation, hard delete, paid-user cancellation, GHL runtime, secret exposure, or private-data evidence leak.",
       "requirement_id": "REQ-20260702-110",
       "classification": "guardrail"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S001",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Finish/merge PR #64 if validation still passes.",
+      "requirement_id": "REQ-20260702-110",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S002",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Verify GoDaddy DNS for join.onetimeonetime.com and run setup/domain smoke.",
+      "requirement_id": "REQ-20260702-107",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S003",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Perform deep keyholder alias discovery without exposing values.",
+      "requirement_id": "REQ-20260702-108",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S004",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Update setup checker/scripts if they miss real aliases or current Railway CLI behavior.",
+      "requirement_id": "REQ-20260702-108",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S005",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Use the separate One Time Railway/DB setup and run every safe unblocked setup/readback/smoke step.",
+      "requirement_id": "REQ-20260702-106",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S006",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Deploy/live smoke only when safe gates are satisfied; otherwise record exact blockers.",
+      "requirement_id": "REQ-20260702-110",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S007",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Keep the worktree clean by preserving real work in a commit/PR and leaving only true operator/provider actions.",
+      "requirement_id": "REQ-20260702-110",
+      "classification": "requirement"
     }
   ],
   "requirements": [
@@ -326,21 +385,25 @@
       "depends_on": [
         "REQ-20260702-101"
       ],
-      "implementation_status": "Guarded Railway apply succeeded: reused one-time-production, linked production, verified/created one-time-postgres and one-time-web, set non-secret One Time variables and DATABASE_URL service reference. Secrets/deploy/domain were skipped in that apply.",
+      "implementation_status": "Separate One Time Railway target exists. Corrected the one-time-web DATABASE_URL service reference to the actual One Time Postgres service and verified non-empty Railway readback. Safe provider env values for Resend, Zoom, and Vimeo client credentials were pushed to one-time-web with deploy skipped and fingerprint readback matched.",
       "can_continue_without_operator": true,
-      "next_action": "Add GoDaddy DNS records, then configure required secrets/provider aliases before deploy/live smoke.",
+      "next_action": "Deploy one-time-web after PR #64 validation/merge; run DB bootstrap from inside the deployed Railway service if local internal DB access remains blocked.",
       "acceptance_criteria": [
         "No BNA shared project mutation",
         "No secret exposure",
         "Report mutation or exact blocker"
       ],
       "evidence": [
-        "ops/one-time-mishnah/onetime-railway-provisioning-report.json"
+        "ops/one-time-mishnah/onetime-railway-provisioning-report.json",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md",
+        "ops/qa-runs/2026-07-02T15-39-35-269Z-provider-env-railway-audit.md"
       ],
       "verification": [
         "PASS npm run one-time:railway-provision:check -- --write-report",
         "PASS npm run one-time:railway-provision:apply -- --apply --confirm PROVISION_ONE_TIME_INSTANCE --skip-secrets --skip-deploy --skip-domain --write-report --json",
-        "PASS npm run one-time:railway-target:guard"
+        "PASS npm run one-time:railway-target:guard",
+        "PASS Railway variable readback DATABASE_URL present length=98",
+        "PASS provider env Railway audit required_matched=8"
       ],
       "implementation_files": [
         "scripts/check-onetime-external-setup-readiness.mjs",
@@ -348,13 +411,13 @@
         "ops/one-time-mishnah/onetime-railway-provisioning-report.json"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-02T13:05:00+03:00"
+      "updated_at": "2026-07-02T15:42:42+03:00"
     },
     {
       "id": "REQ-20260702-107",
       "title": "Record join-domain DNS readback or exact task",
       "expected_result": "join.onetimeonetime.com domain/DNS status or exact GoDaddy task is recorded without apex/root mutation.",
-      "status": "blocked",
+      "status": "done",
       "source_id": "RAW-20260702-006",
       "source_statement_ids": [
         "RAW-20260702-006-S006"
@@ -369,9 +432,9 @@
       "depends_on": [
         "REQ-20260702-106"
       ],
-      "implementation_status": "Attached join.onetimeonetime.com to Railway one-time-web and captured DNS records. DNS itself was not mutated; apex/root remains untouched.",
+      "implementation_status": "GoDaddy DNS for join.onetimeonetime.com is verified by DNS readback: CNAME join -> awaz36ln.up.railway.app and TXT _railway-verify.join present. Apex/root and www were not mutated.",
       "can_continue_without_operator": true,
-      "next_action": "Shloimie adds GoDaddy CNAME join -> awaz36ln.up.railway.app and TXT _railway-verify.join -> railway-verify=73e92e55cb07e5a0abdb0a72f204d437d915c3134e844af12f419407632a97d6.",
+      "next_action": "Run deploy/live smoke after PR #64 merge and one-time-web deployment.",
       "acceptance_criteria": [
         "join subdomain only",
         "apex/root untouched",
@@ -382,8 +445,9 @@
         "ops/one-time-mishnah/launch-unblocker/2026-07-02-godaddy-join-subdomain-instructions.md"
       ],
       "verification": [
-        "PASS railway domain join.onetimeonetime.com --service one-time-web --json",
-        "PASS npm run one-time:setup:check -- --write-report reports join domain attached, DNS still missing"
+        "PASS Resolve-DnsName join.onetimeonetime.com CNAME",
+        "PASS Resolve-DnsName _railway-verify.join.onetimeonetime.com TXT",
+        "PASS npm run one-time:setup:check reports join domain ready"
       ],
       "implementation_files": [
         "ops/domain-readbacks/2026-07-02-join-onetimeonetime-domain-task.md",
@@ -391,10 +455,7 @@
         "ops/one-time-mishnah/launch-unblocker/2026-07-02-godaddy-join-subdomain-instructions.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-02T13:05:00+03:00",
-      "blocker": "Railway custom domain is attached, but GoDaddy DNS records for join.onetimeonetime.com have not been created/verified.",
-      "blocker_owner": "Shloimie / GoDaddy account owner",
-      "blocker_next_action": "Add CNAME join -> awaz36ln.up.railway.app and TXT _railway-verify.join -> railway-verify=73e92e55cb07e5a0abdb0a72f204d437d915c3134e844af12f419407632a97d6, leaving apex/root untouched."
+      "updated_at": "2026-07-02T15:42:42+03:00"
     },
     {
       "id": "REQ-20260702-108",
@@ -415,9 +476,9 @@
       "depends_on": [
         "REQ-20260702-101"
       ],
-      "implementation_status": "Ran safe provider checks/readbacks. Resend send path is configured but no send occurred. Vimeo lacks access token/drop-folder alias. Stripe has live key and sandbox smoke blocked API calls. Whapi/WAPI and Zoom details remain missing.",
+      "implementation_status": "Deep keyholder alias discovery and provider readbacks completed. Resend domain is verified. Zoom account/client credentials work in read-only auth. Vimeo client credentials work in read-only auth, but no user access token alias/drop-folder alias was found. Stripe keyholder currently has a live key, not a sandbox test key/product price. Whapi/WAPI token material exists locally, but One Time scoped instance/phone aliases remain missing. Safe Resend/Zoom/Vimeo client env values were propagated to one-time-web and verified by fingerprint.",
       "can_continue_without_operator": true,
-      "next_action": "Provide Zoom alias, Vimeo token/drop-folder aliases, Rabbi Stripe test key/product price, and Whapi/WAPI token/instance/phone/Rabbi recipient.",
+      "next_action": "Provide or label the remaining exact aliases: One Time Zoom session/join alias, VIMEO_ACCESS_TOKEN, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS, Rabbi Stripe test key and $67/month price/product aliases, Whapi/WAPI instance/phone aliases.",
       "acceptance_criteria": [
         "No real broadcast",
         "No live payment",
@@ -427,22 +488,26 @@
       "evidence": [
         "ops/provider-config-readbacks/2026-07-02-one-time-provider-setup-status.md",
         "ops/one-time-mishnah/integration-smokes/2026-07-02T12-56-56-475Z-resend-vimeo-stripe-safe-smoke.md",
-        "ops/one-time-mishnah/launch-unblocker/2026-07-02-rabbi-whatsapp-setup-message.md"
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-rabbi-whatsapp-setup-message.md",
+        "ops/keyholder-readbacks/2026-07-02-one-time-provider-alias-inventory.md",
+        "ops/qa-runs/2026-07-02T15-39-30-010Z-provider-credential-diagnostics.md",
+        "ops/qa-runs/2026-07-02T15-39-35-269Z-provider-env-railway-audit.md"
       ],
       "verification": [
-        "PASS npm run one-time:smoke:resend-vimeo-stripe",
-        "PASS npm run stripe:sandbox-smoke (blocked live key, no API calls)",
-        "PASS no WhatsApp send because provider/safe recipient missing"
+        "PASS npm run keyholder:diagnose -- --json",
+        "PASS node scripts/provider-credentials-diagnostics.mjs --json",
+        "PASS provider env propagation pushed 8/8 safe variables to one-time-web with deploy skipped",
+        "PASS provider env Railway audit matched 8/8 required values"
       ],
       "implementation_files": [
         "ops/provider-config-readbacks/2026-07-02-one-time-provider-setup-status.md",
         "ops/provider-config-readbacks/2026-07-02-one-time-provider-setup-status.json"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-02T13:05:00+03:00",
-      "blocker": "Provider inputs are still missing or unsafe for live actions: Whapi/WAPI token/instance/phone, Vimeo token/drop-folder alias, Stripe test key/product price, Zoom details.",
+      "updated_at": "2026-07-02T15:42:42+03:00",
+      "blocker": "Remaining provider/campaign setup is exact: Zoom session/join alias, Vimeo access token and Drive drop-folder alias, Stripe sandbox key/product price, Whapi/WAPI instance/phone, and campaign copy/list/suppression/approval.",
       "blocker_owner": "Shloimie / provider account owners",
-      "blocker_next_action": "Provide keyholder aliases/fingerprints and setup details; do not paste secret values into the repo or chat."
+      "blocker_next_action": "Provide or label the remaining exact aliases: One Time Zoom session/join alias, VIMEO_ACCESS_TOKEN, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS, Rabbi Stripe test key and $67/month price/product aliases, Whapi/WAPI instance/phone aliases."
     },
     {
       "id": "REQ-20260702-109",
@@ -463,9 +528,9 @@
       "depends_on": [
         "REQ-20260702-101"
       ],
-      "implementation_status": "Updated top visible task readback. The top task is now GoDaddy DNS for join.onetimeonetime.com; Railway and DB tasks are marked done/service-reference ready.",
+      "implementation_status": "Top task changed after DNS completion: PR #64 validation/merge/deploy is the Codex task; Shloimie/provider top task is supplying the remaining exact provider aliases.",
       "can_continue_without_operator": true,
-      "next_action": "After DNS is added, rerun setup checker.",
+      "next_action": "Finalize PR #64 and continue deploy; Shloimie supplies the single highest-value missing provider alias if deploy blocks on provider setup.",
       "acceptance_criteria": [
         "Top task names separate One Time Railway target when setup is blocked",
         "Internal handoffs not shown as human tasks"
@@ -485,7 +550,7 @@
         "ops/task-view-readbacks/2026-07-02-one-time-top-task-readback.json"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-02T13:05:00+03:00"
+      "updated_at": "2026-07-02T15:42:42+03:00"
     },
     {
       "id": "REQ-20260702-110",
@@ -514,9 +579,9 @@
         "REQ-20260702-108",
         "REQ-20260702-109"
       ],
-      "implementation_status": "Committed edec1133, pushed branch codex/one-time-ui-recording-clean-integration-20260702, and opened draft PR #64. Merge/deploy/live smoke are blocked until PR review plus external DNS/provider setup are complete.",
+      "implementation_status": "PR #64 finalization is in progress. DNS and DB gates are now ready, provider env values were propagated safely, but DB bootstrap apply is blocked from local because Railway Postgres resolves to an internal host; run bootstrap from inside deployed one-time-web after deploy. Validation/commit/push/merge/deploy still pending for this continuation batch.",
       "can_continue_without_operator": true,
-      "next_action": "Review/merge PR #64 after external blockers are handled, then run post-setup deploy/live-smoke packet.",
+      "next_action": "Run full validation, commit/push PR #64 updates, mark ready/merge if checks pass, deploy one-time-web, then run DB bootstrap via Railway SSH and live smoke.",
       "acceptance_criteria": [
         "All requirements terminal",
         "Guardrails held",
@@ -529,10 +594,10 @@
       "verification": [],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-07-02T13:05:00+03:00",
-      "blocker": "PR exists but merge/deploy/live smoke cannot truthfully complete until external DNS/provider setup blockers are resolved and PR review/merge is allowed.",
-      "blocker_owner": "Shloimie / repo maintainer / external provider owners",
-      "blocker_next_action": "Add GoDaddy DNS for join.onetimeonetime.com, provide remaining provider aliases, review PR #64, then run the post-setup deploy/live-smoke packet.",
+      "updated_at": "2026-07-02T15:42:42+03:00",
+      "blocker": "DB bootstrap cannot run from local Railway env because the Postgres host is internal-only; deploy one-time-web first and run bootstrap inside the Railway service.",
+      "blocker_owner": "Codex / Railway deployment runtime",
+      "blocker_next_action": "Run full validation, commit/push PR #64 updates, mark ready/merge if checks pass, deploy one-time-web, then run DB bootstrap via Railway SSH and live smoke.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64",
       "implementation_commit": "edec1133",
       "pushed_commit": "edec1133"

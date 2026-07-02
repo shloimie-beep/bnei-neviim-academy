@@ -1,0 +1,63 @@
+{
+  "status": "dry_run_ready_approval_required",
+  "generated_at": "2026-07-02T16:10:00Z",
+  "command": "npm run content:sync-drive-library -- --dry-run --no-ai",
+  "no_drive_mutation": true,
+  "live_transcript_jobs_with_text": 79,
+  "real_transcript_jobs_selected": 63,
+  "website_articles_selected": 24,
+  "created_docs": 0,
+  "updated_docs": 0,
+  "skipped_unchanged_docs": 0,
+  "ai_breakdowns_generated": 0,
+  "ai_breakdowns_planned": 0,
+  "target_folder": "40 Content Library - Marketing / 01 Transcript Library",
+  "scoped_backlog_plan": [
+    {
+      "job_id": 101,
+      "action": "create_doc",
+      "title": "#101 - Drive Voice 260702_100126",
+      "reason": "Transcript exists in app storage but no private Drive transcript-library doc was found."
+    },
+    {
+      "job_id": 100,
+      "action": "create_doc",
+      "title": "#100 - Drive Voice 260702_114208",
+      "reason": "Transcript exists in app storage but no private Drive transcript-library doc was found."
+    },
+    {
+      "job_id": 85,
+      "action": "create_doc",
+      "title": "#85 - Lessons on Cleanliness, Gaava, and Ein Hara",
+      "reason": "Transcript exists in app storage but no private Drive transcript-library doc was found."
+    },
+    {
+      "job_id": 84,
+      "action": "create_doc",
+      "title": "#84 - Youth Discussion on Adventure, Learning, and Growth",
+      "reason": "Transcript exists in app storage but no private Drive transcript-library doc was found."
+    },
+    {
+      "job_id": 83,
+      "action": "update_doc",
+      "title": "#83 - BNA Mobile App UI and Functionality Updates",
+      "reason": "Existing document should be updated to the transcript-document contract."
+    },
+    {
+      "job_id": 82,
+      "action": "create_doc",
+      "title": "#82 - Bnei Neviim Platform Mobile and CRM Improvements",
+      "reason": "Transcript exists in app storage but no private Drive transcript-library doc was found."
+    }
+  ],
+  "approval_required": [
+    "APPROVE_20260702_PRIVATE_DRIVE_TRANSCRIPT_DOC_SYNC_FOR_BACKLOG_AND_FUTURE_UPLOADS",
+    "APPROVE_20260702_BACKLOG_TRANSCRIBE_AND_PRIVATE_DRIVE_DOC_SYNC_APPLY_EXACT_PACKET_ONLY"
+  ],
+  "guardrails": [
+    "No raw transcript bodies in GitHub evidence.",
+    "No public publishing.",
+    "No student score/progress apply.",
+    "Idempotent create/update required before applying Drive writes."
+  ]
+}

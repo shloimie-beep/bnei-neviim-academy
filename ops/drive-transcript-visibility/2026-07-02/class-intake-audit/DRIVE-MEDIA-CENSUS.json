@@ -1,0 +1,177 @@
+[
+  {
+    "file": {
+      "id_ref": {
+        "present": true,
+        "redacted": "drive_file:53a4253cbf36",
+        "sha256": "53a4253cbf36313f32ff7defaf33d23c829507bcf2bb8880ba4b6ee2a690fb25"
+      },
+      "name_ref": "drive_file_name:7d400edfc858",
+      "mime_type": "audio/mp4",
+      "created_time": "2026-06-30T10:03:55.474Z",
+      "modified_time": "2026-06-30T10:03:56.374Z",
+      "size_bytes": 125590131,
+      "folder_label": "processing_temporary",
+      "folder_ref": {
+        "present": true,
+        "redacted": "drive_folder:be7a97895ce8",
+        "sha256": "be7a97895ce8f6994a52b9ae2a86ee4a5d1d5e7e1aa6e7d146c799cc7aaffc10"
+      },
+      "likely_recording": true
+    },
+    "match_status": "matched",
+    "matched_job_refs": [
+      "content_job:91"
+    ]
+  },
+  {
+    "file": {
+      "id_ref": {
+        "present": true,
+        "redacted": "drive_file:f07607f3f9f8",
+        "sha256": "f07607f3f9f8e561f84c5adfc662ccab021d33823cc54ca9fd6d6f863b7d9c50"
+      },
+      "name_ref": "drive_file_name:dff3761f46d9",
+      "mime_type": "audio/mp4",
+      "created_time": "2026-07-02T10:05:00.939Z",
+      "modified_time": "2026-07-02T10:05:01.318Z",
+      "size_bytes": 90266771,
+      "folder_label": "processed_recordings",
+      "folder_ref": {
+        "present": true,
+        "redacted": "drive_folder:5e3be11f49e3",
+        "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+      },
+      "likely_recording": true
+    },
+    "match_status": "matched",
+    "matched_job_refs": [
+      "content_job:101"
+    ]
+  },
+  {
+    "file": {
+      "id_ref": {
+        "present": true,
+        "redacted": "drive_file:debea47870e7",
+        "sha256": "debea47870e70f342ebc7b2e2fb2872472e32998067ee6addb8b78a44a845ad8"
+      },
+      "name_ref": "drive_file_name:85446fd7a9eb",
+      "mime_type": "audio/mp4",
+      "created_time": "2026-07-02T10:05:00.399Z",
+      "modified_time": "2026-07-02T10:05:00.828Z",
+      "size_bytes": 72024883,
+      "folder_label": "processed_recordings",
+      "folder_ref": {
+        "present": true,
+        "redacted": "drive_folder:5e3be11f49e3",
+        "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+      },
+      "likely_recording": true
+    },
+    "match_status": "matched",
+    "matched_job_refs": [
+      "content_job:100"
+    ]
+  },
+  {
+    "file": {
+      "id_ref": {
+        "present": true,
+        "redacted": "drive_file:37748c80efbe",
+        "sha256": "37748c80efbe5adc20dceef0b441b92acc556883642c9c336a1173ef670c6bdf"
+      },
+      "name_ref": "drive_file_name:22bc9ef4414b",
+      "mime_type": "audio/mp4",
+      "created_time": "2026-06-29T10:34:58.349Z",
+      "modified_time": "2026-06-29T10:34:59.479Z",
+      "size_bytes": 148543552,
+      "folder_label": "processed_recordings",
+      "folder_ref": {
+        "present": true,
+        "redacted": "drive_folder:5e3be11f49e3",
+        "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+      },
+      "likely_recording": true
+    },
+    "match_status": "matched",
+    "matched_job_refs": [
+      "content_job:85"
+    ]
+  },
+  {
+    "file": {
+      "id_ref": {
+        "present": true,
+        "redacted": "drive_file:8679173269d9",
+        "sha256": "8679173269d94e40fb6d327938cd8aeb46575346f240c02422d02e89d108fa61"
+      },
+      "name_ref": "drive_file_name:bac3202a4328",
+      "mime_type": "audio/mp4",
+      "created_time": "2026-06-28T10:12:51.702Z",
+      "modified_time": "2026-06-28T10:12:52.349Z",
+      "size_bytes": 112501859,
+      "folder_label": "processed_recordings",
+      "folder_ref": {
+        "present": true,
+        "redacted": "drive_folder:5e3be11f49e3",
+        "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+      },
+      "likely_recording": true
+    },
+    "match_status": "matched",
+    "matched_job_refs": [
+      "content_job:84"
+    ]
+  },
+  {
+    "file": {
+      "id_ref": {
+        "present": true,
+        "redacted": "drive_file:9f6f75a5d602",
+        "sha256": "9f6f75a5d602bcf8ab6df7ed078a3d61f05e6bfc61a6d1f75742c2cea303847d"
+      },
+      "name_ref": "drive_file_name:68530ef33fdf",
+      "mime_type": "audio/mp4",
+      "created_time": "2026-06-25T12:15:54.513Z",
+      "modified_time": "2026-06-25T12:15:54.665Z",
+      "size_bytes": 21259170,
+      "folder_label": "processed_recordings",
+      "folder_ref": {
+        "present": true,
+        "redacted": "drive_folder:5e3be11f49e3",
+        "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+      },
+      "likely_recording": true
+    },
+    "match_status": "matched",
+    "matched_job_refs": [
+      "content_job:83"
+    ]
+  },
+  {
+    "file": {
+      "id_ref": {
+        "present": true,
+        "redacted": "drive_file:fb12b8ff735c",
+        "sha256": "fb12b8ff735cf71ed3edbec16cd9479eb4c3d9e7f3e403374ec8725a2b2ca0c4"
+      },
+      "name_ref": "drive_file_name:5271a0be7b9c",
+      "mime_type": "audio/mp4",
+      "created_time": "2026-06-25T12:15:54.398Z",
+      "modified_time": "2026-06-25T12:15:54.478Z",
+      "size_bytes": 9514992,
+      "folder_label": "processed_recordings",
+      "folder_ref": {
+        "present": true,
+        "redacted": "drive_folder:5e3be11f49e3",
+        "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+      },
+      "likely_recording": true
+    },
+    "match_status": "matched",
+    "matched_job_refs": [
+      "content_job:82"
+    ]
+  }
+]

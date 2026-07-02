@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-07-02T13:01:10+03:00",
-  "source_raw_id": "RAW-20260702-006",
+  "generated_at": "2026-07-02T15:42:42+03:00",
+  "source_raw_id": "RAW-20260702-007",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
-  "top_task_id": "TASK-20260702-003",
+  "top_task_id": "TASK-20260702-004",
   "visible_lane": "Pending",
   "summary": {
     "railway_target": "done_by_codex_guarded_apply",
-    "separate_database_service": "done_by_codex_guarded_apply",
-    "railway_custom_domain_attached": true,
-    "dns_mutation_performed": false,
-    "ready_count": "2/8"
+    "separate_database_service": "done_service_reference_ready_non_empty",
+    "join_dns_verified": true,
+    "provider_env_railway_matched": "8/8 safe values",
+    "ready_count": "3/8"
   },
   "tasks": [
     {
@@ -20,9 +20,11 @@
       "owner": "Codex / Railway account",
       "status": "done",
       "evidence": "ops/one-time-mishnah/onetime-railway-provisioning-report.json",
-      "clears_requirements": ["REQ-20260701-701", "REQ-20260701-717"],
-      "result": "Codex reused one-time-production, linked production, verified/created one-time-web and one-time-postgres, and set non-secret One Time runtime variables.",
-      "forbidden_respected": ["apex_root_domain_cutover", "live_payment", "real_campaign_send", "real_whatsapp_send", "hard_delete", "production_data_merge"]
+      "clears_requirements": [
+        "REQ-20260701-701",
+        "REQ-20260701-717"
+      ],
+      "result": "Codex reused one-time-production, linked production, verified/created one-time-web, and set One Time runtime variables."
     },
     {
       "task_id": "TASK-20260702-002",
@@ -30,82 +32,65 @@
       "priority": 2,
       "owner": "Codex / Railway account",
       "status": "done_service_reference_ready",
-      "evidence": "ops/one-time-mishnah/onetime-railway-provisioning-report.json",
-      "clears_requirements": ["REQ-20260701-701", "REQ-20260701-717"],
-      "result": "one-time-postgres exists and one-time-web has DATABASE_URL set to the Railway service reference.",
-      "remaining_verification": "Database bootstrap apply still waits for the deployed/service runtime or a safe One Time DB URL alias; dry-run bootstrap passed."
+      "evidence": "ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.json",
+      "result": "one-time-web has a non-empty DATABASE_URL service reference to the separate One Time Postgres service.",
+      "remaining_verification": "Local DB bootstrap apply is blocked by Railway internal host; run from inside deployed one-time-web."
     },
     {
       "task_id": "TASK-20260702-003",
-      "title": "Add GoDaddy DNS records for join.onetimeonetime.com",
+      "title": "Verify join.onetimeonetime.com DNS",
       "priority": 3,
-      "owner": "Shloimie / domain owner",
-      "status": "pending_external_dns",
-      "clears_requirements": ["REQ-20260701-702", "REQ-20260701-703", "REQ-20260701-704", "REQ-20260701-717"],
-      "missing_fields": ["ONE_TIME_JOIN_DNS_CONFIGURED"],
-      "records": [
-        {
-          "type": "CNAME",
-          "host": "join",
-          "value": "awaz36ln.up.railway.app"
-        },
-        {
-          "type": "TXT",
-          "host": "_railway-verify.join",
-          "value": "railway-verify=73e92e55cb07e5a0abdb0a72f204d437d915c3134e844af12f419407632a97d6"
-        }
+      "owner": "Codex / DNS readback",
+      "status": "done",
+      "evidence": "ops/domain-readbacks/2026-07-02-join-onetimeonetime-domain-task.json",
+      "clears_requirements": [
+        "REQ-20260701-702",
+        "REQ-20260701-703",
+        "REQ-20260701-704",
+        "REQ-20260701-717"
       ],
-      "forbidden": ["apex_root_domain_mutation"],
-      "verification_after_setup": ["npm run one-time:setup:check -- --write-report", "post-setup deploy/live-smoke packet"]
+      "result": "CNAME and TXT records resolve. Apex/root and www were not mutated."
     },
     {
       "task_id": "TASK-20260702-004",
-      "title": "Provide Zoom session alias",
+      "title": "Provide remaining One Time provider aliases",
       "priority": 4,
-      "owner": "Shloimie / Rabbi",
+      "owner": "Shloimie / provider account owners",
       "status": "pending_external_input",
-      "missing_fields": ["ONE_TIME_ZOOM_SESSION_ALIAS_or_private_keyholder_path"],
-      "forbidden": ["raw_zoom_link_in_tracked_files", "public_zoom_link"]
+      "missing_fields": [
+        "ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias",
+        "VIMEO_ACCESS_TOKEN_alias_or_keyholder_path",
+        "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS",
+        "rabbi_stripe_test_secret_key_alias_or_test_key_status",
+        "67_month_product_price_id_or_alias",
+        "whapi_wapi_instance_id",
+        "whapi_wapi_phone_number"
+      ],
+      "forbidden": [
+        "raw_zoom_link_in_tracked_files",
+        "production_media_mutation_without_packet",
+        "live_payment",
+        "whatsapp_broadcast"
+      ]
     },
     {
       "task_id": "TASK-20260702-005",
-      "title": "Provide Vimeo and Drive intake aliases",
-      "priority": 5,
-      "owner": "Shloimie / Vimeo account owner",
-      "status": "pending_external_input",
-      "missing_fields": ["VIMEO_ACCESS_TOKEN_alias_or_keyholder_path", "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS"],
-      "forbidden": ["paste_vimeo_token", "production_media_mutation_without_packet"]
-    },
-    {
-      "task_id": "TASK-20260702-006",
-      "title": "Provide Rabbi Stripe sandbox setup",
-      "priority": 6,
-      "owner": "Shloimie / Rabbi",
-      "status": "pending_external_input",
-      "missing_fields": ["rabbi_stripe_test_secret_key_alias_or_test_key_status", "67_month_product_price_id_or_alias"],
-      "forbidden": ["real_card_details", "live_payment", "invented_refund_or_legal_policy"],
-      "last_smoke": "Live Stripe key detected; sandbox smoke refused API calls."
-    },
-    {
-      "task_id": "TASK-20260702-007",
-      "title": "Provide Rabbi Whapi/WAPI setup",
-      "priority": 7,
-      "owner": "Shloimie / Rabbi",
-      "status": "pending_external_input",
-      "missing_fields": ["whapi_wapi_token_alias", "whapi_wapi_instance_id", "whapi_wapi_phone_number", "rabbi_safe_recipient_phone"],
-      "forbidden": ["real_whatsapp_send_without_later_exact_packet", "broadcast", "GHL_or_LeadConnector_runtime"]
-    },
-    {
-      "task_id": "TASK-20260702-008",
       "title": "Prepare campaign seed requirements",
-      "priority": 8,
+      "priority": 5,
       "owner": "Shloimie",
-      "status": "blocked_until_join_live",
-      "missing_fields": ["join_domain_live_first", "final_campaign_copy", "exact_recipient_segment_or_list", "suppression_unsubscribe_proof", "explicit_seed_packet_approval"],
-      "forbidden": ["real_bulk_campaign_send_from_this_task"]
+      "status": "blocked_until_join_live_smoke_passes",
+      "missing_fields": [
+        "final_campaign_copy",
+        "exact_recipient_segment_or_list",
+        "suppression_unsubscribe_proof",
+        "explicit_seed_packet_approval"
+      ],
+      "forbidden": [
+        "real_bulk_campaign_send_from_this_task"
+      ]
     }
   ],
   "external_write_performed": true,
-  "external_write_scope": "Railway project/service/database/domain attachment only; no DNS record mutation, deploy, email, WhatsApp, Stripe, Vimeo, Zoom, or data delete.",
+  "external_write_scope": "Railway setup/env propagation only; no DNS apex/root mutation, deploy, email, WhatsApp, Stripe, Vimeo upload, Zoom mutation, campaign send, or hard delete.",
   "secret_values_printed": false
 }

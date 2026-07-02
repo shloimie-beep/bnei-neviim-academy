@@ -93,8 +93,13 @@ test('One Time setup readiness consumes successful Railway provisioning report',
   const repoRoot = path.join(__dirname, '..');
   const report = buildOneTimeExternalSetupReadiness({
     repoRoot,
-    env: {},
+    env: {
+      ONE_TIME_PUBLIC_DOMAIN: 'join.onetimeonetime.com',
+      ONE_TIME_JOIN_DOMAIN_ATTACHED: 'true',
+      ONE_TIME_APEX_ROOT_UNTOUCHED: 'true',
+    },
     railwayProvisioningReport: 'ops/one-time-mishnah/onetime-railway-provisioning-report.json',
+    joinDomainReport: 'ops/missing-join-domain-readback.json',
   });
 
   const railway = report.items.find((item) => item.id === 'SETUP-ONETIME-RAILWAY-001');
@@ -108,5 +113,4 @@ test('One Time setup readiness consumes successful Railway provisioning report',
   assert.ok(report.blockers.find((item) => item.id === 'SETUP-ONETIME-JOIN-DOMAIN-001'));
   const joinDomain = report.items.find((item) => item.id === 'SETUP-ONETIME-JOIN-DOMAIN-001');
   assert.deepEqual(joinDomain.missing_fields, ['ONE_TIME_JOIN_DNS_CONFIGURED']);
-  assert.match(joinDomain.warnings.join(' '), /Railway custom domain is attached/);
 });

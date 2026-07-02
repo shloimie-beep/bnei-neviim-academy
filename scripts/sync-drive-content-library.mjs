@@ -2,10 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import vm from 'vm';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import { google } from 'googleapis';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
+const integrationSecretLoader = require('../src/lib/integrations/secret-loader');
+const aiCredentialResolver = require('../src/lib/integrations/ai-credential-resolver');
 const repoRoot = path.resolve(__dirname, '..');
 const secretsDir = path.join(repoRoot, '.secrets');
 const clientPath = path.join(secretsDir, 'google-oauth-client.json');
@@ -100,6 +104,10 @@ function loadConfig() {
     ...parseEnvFile(path.join(repoRoot, '.env.local')),
     ...process.env,
   };
+  const openaiCredentialCandidates = aiCredentialResolver.loadOpenAiCredentialCandidates({
+    env,
+    repoRoot,
+  });
   const pipeline = env.GOOGLE_DRIVE_PIPELINE_CONFIG
     ? JSON.parse(env.GOOGLE_DRIVE_PIPELINE_CONFIG)
     : readJsonIfExists(pipelinePath) || {};
@@ -108,10 +116,15 @@ function loadConfig() {
     username: env.OPS_USERNAME || '',
     password: env.OPS_PASSWORD || '',
     pipeline,
-    openaiApiKey: readSecret('OPENAI_API_KEY', env),
+    openaiApiKey: openaiCredentialCandidates[0]?.apiKey || readSecret('OPENAI_API_KEY', env),
     openaiBaseUrl: (env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, ''),
     openaiModel: env.OPENAI_MODEL || 'gpt-4.1-mini',
-    kimiApiKey: readSecret('KIMI_API_KEY', env),
+    kimiApiKey: integrationSecretLoader.loadConfigValue({
+      envName: 'KIMI_API_KEY',
+      names: ['kimi-api-key'],
+      fileNames: ['kimi-api-key.txt'],
+      repoRoot,
+    }) || readSecret('KIMI_API_KEY', env),
     kimiBaseUrl: (env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1').replace(/\/+$/, ''),
     kimiModel: env.KIMI_MODEL || 'kimi-k2.6',
   };

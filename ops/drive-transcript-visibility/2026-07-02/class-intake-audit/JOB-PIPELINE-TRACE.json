@@ -1,0 +1,905 @@
+[
+  {
+    "kind": "content_job",
+    "job_id": 101,
+    "title": "content_job:101",
+    "created_at": "2026-07-02T07:09:42.584Z",
+    "updated_at": "2026-07-02T07:26:55.442Z",
+    "status": "transcribed",
+    "drive_stage": "03 Transcribed",
+    "transcript_chars": 39920,
+    "parser": null,
+    "fingerprint_sha256": "487e9f3034b947ebb8c26336f228fd9404b68683a4b6936b536c9a26f997c482",
+    "stage_order": [
+      "source_discovered",
+      "source_fingerprint",
+      "intake_record",
+      "queue_record",
+      "download",
+      "transcription_request",
+      "transcription_result",
+      "parser_request",
+      "structured_output",
+      "class_session_match",
+      "student_name_alias_match",
+      "ambiguity_review",
+      "score_progress_proposal",
+      "question_proposal",
+      "profile_note_proposal",
+      "accountability_proposal",
+      "canonical_write_status",
+      "operations_read_model_visibility",
+      "parent_student_visibility",
+      "retry_dedup_status"
+    ],
+    "stages": {
+      "source_discovered": {
+        "status": "CONFIRMED",
+        "evidence": "content job 101",
+        "source_ref": {
+          "drive_file": {
+            "present": true,
+            "redacted": "drive_file:f07607f3f9f8",
+            "sha256": "f07607f3f9f8e561f84c5adfc662ccab021d33823cc54ca9fd6d6f863b7d9c50"
+          },
+          "drive_folder": {
+            "present": true,
+            "redacted": "drive_folder:5e3be11f49e3",
+            "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+          }
+        }
+      },
+      "source_fingerprint": {
+        "status": "CONFIRMED",
+        "evidence": "487e9f3034b947eb",
+        "sha256": "487e9f3034b947ebb8c26336f228fd9404b68683a4b6936b536c9a26f997c482"
+      },
+      "intake_record": {
+        "status": "CONFIRMED",
+        "evidence": "linked intake"
+      },
+      "queue_record": {
+        "status": "CONFIRMED",
+        "evidence": "status=transcribed stage=03 Transcribed"
+      },
+      "download": {
+        "status": "CONFIRMED",
+        "evidence": "Download/transcript evidence exists."
+      },
+      "transcription_request": {
+        "status": "CONFIRMED",
+        "evidence": "Transcript or transcription metadata exists."
+      },
+      "transcription_result": {
+        "status": "CONFIRMED",
+        "evidence": "39920 transcript chars"
+      },
+      "parser_request": {
+        "status": "UNKNOWN",
+        "evidence": "Transcript exists but parser request is not visible."
+      },
+      "structured_output": {
+        "status": "UNKNOWN",
+        "evidence": "No structured class output was found."
+      },
+      "class_session_match": {
+        "status": "UNKNOWN",
+        "evidence": "No class-session signal."
+      },
+      "student_name_alias_match": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student names found."
+      },
+      "ambiguity_review": {
+        "status": "UNKNOWN",
+        "evidence": "No student names to review."
+      },
+      "score_progress_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No progress signals found."
+      },
+      "question_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student questions found."
+      },
+      "profile_note_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No profile-note candidates found."
+      },
+      "accountability_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No accountability events found."
+      },
+      "canonical_write_status": {
+        "status": "UNKNOWN",
+        "evidence": "No structured output to compare."
+      },
+      "operations_read_model_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Operations-backed row is visible."
+      },
+      "parent_student_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Progress/accountability rows exist for downstream views."
+      },
+      "retry_dedup_status": {
+        "status": "CONFIRMED",
+        "evidence": "No duplicate or retry marker found."
+      }
+    }
+  },
+  {
+    "kind": "content_job",
+    "job_id": 100,
+    "title": "content_job:100",
+    "created_at": "2026-07-02T07:07:35.662Z",
+    "updated_at": "2026-07-02T07:32:17.894Z",
+    "status": "blocked",
+    "drive_stage": "03 Transcribed",
+    "transcript_chars": 39206,
+    "parser": "canonical-intake-parser",
+    "fingerprint_sha256": "b8d8d888945113e840714db1c020c9709bc54f5a4a5346d2dc5b966dd2da4149",
+    "stage_order": [
+      "source_discovered",
+      "source_fingerprint",
+      "intake_record",
+      "queue_record",
+      "download",
+      "transcription_request",
+      "transcription_result",
+      "parser_request",
+      "structured_output",
+      "class_session_match",
+      "student_name_alias_match",
+      "ambiguity_review",
+      "score_progress_proposal",
+      "question_proposal",
+      "profile_note_proposal",
+      "accountability_proposal",
+      "canonical_write_status",
+      "operations_read_model_visibility",
+      "parent_student_visibility",
+      "retry_dedup_status"
+    ],
+    "stages": {
+      "source_discovered": {
+        "status": "CONFIRMED",
+        "evidence": "content job 100",
+        "source_ref": {
+          "drive_file": {
+            "present": true,
+            "redacted": "drive_file:debea47870e7",
+            "sha256": "debea47870e70f342ebc7b2e2fb2872472e32998067ee6addb8b78a44a845ad8"
+          },
+          "drive_folder": {
+            "present": true,
+            "redacted": "drive_folder:5e3be11f49e3",
+            "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+          }
+        }
+      },
+      "source_fingerprint": {
+        "status": "CONFIRMED",
+        "evidence": "b8d8d888945113e8",
+        "sha256": "b8d8d888945113e840714db1c020c9709bc54f5a4a5346d2dc5b966dd2da4149"
+      },
+      "intake_record": {
+        "status": "CONFIRMED",
+        "evidence": "RAW-20260702-002"
+      },
+      "queue_record": {
+        "status": "CONFIRMED",
+        "evidence": "status=blocked stage=03 Transcribed"
+      },
+      "download": {
+        "status": "CONFIRMED",
+        "evidence": "Download/transcript evidence exists."
+      },
+      "transcription_request": {
+        "status": "CONFIRMED",
+        "evidence": "Transcript or transcription metadata exists."
+      },
+      "transcription_result": {
+        "status": "CONFIRMED",
+        "evidence": "39206 transcript chars"
+      },
+      "parser_request": {
+        "status": "CONFIRMED",
+        "evidence": "canonical-intake-parser"
+      },
+      "structured_output": {
+        "status": "CONFIRMED",
+        "evidence": "Canonical parser output exists but class/progress output is empty."
+      },
+      "class_session_match": {
+        "status": "CONFIRMED",
+        "evidence": "1 class session row(s)"
+      },
+      "student_name_alias_match": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student names found."
+      },
+      "ambiguity_review": {
+        "status": "UNKNOWN",
+        "evidence": "No student names to review."
+      },
+      "score_progress_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No progress signals found."
+      },
+      "question_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student questions found."
+      },
+      "profile_note_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No profile-note candidates found."
+      },
+      "accountability_proposal": {
+        "status": "CONFIRMED",
+        "evidence": "5 persisted event(s), 0 parsed candidate(s)"
+      },
+      "canonical_write_status": {
+        "status": "CONFIRMED",
+        "evidence": "class=1 group=0 events=5"
+      },
+      "operations_read_model_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Operations-backed row is visible."
+      },
+      "parent_student_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Progress/accountability rows exist for downstream views."
+      },
+      "retry_dedup_status": {
+        "status": "CONFIRMED",
+        "evidence": "No duplicate or retry marker found."
+      }
+    }
+  },
+  {
+    "kind": "content_job",
+    "job_id": 91,
+    "title": "content_job:91",
+    "created_at": "2026-06-30T07:20:18.925Z",
+    "updated_at": "2026-06-30T07:20:18.925Z",
+    "status": "ingested",
+    "drive_stage": "02 Ingesting",
+    "transcript_chars": 0,
+    "parser": null,
+    "fingerprint_sha256": "c71aeaadabaa53879d74b21d948523a6b6b26af6af532327ca605a286bd5849d",
+    "stage_order": [
+      "source_discovered",
+      "source_fingerprint",
+      "intake_record",
+      "queue_record",
+      "download",
+      "transcription_request",
+      "transcription_result",
+      "parser_request",
+      "structured_output",
+      "class_session_match",
+      "student_name_alias_match",
+      "ambiguity_review",
+      "score_progress_proposal",
+      "question_proposal",
+      "profile_note_proposal",
+      "accountability_proposal",
+      "canonical_write_status",
+      "operations_read_model_visibility",
+      "parent_student_visibility",
+      "retry_dedup_status"
+    ],
+    "stages": {
+      "source_discovered": {
+        "status": "CONFIRMED",
+        "evidence": "content job 91",
+        "source_ref": {
+          "drive_file": {
+            "present": true,
+            "redacted": "drive_file:53a4253cbf36",
+            "sha256": "53a4253cbf36313f32ff7defaf33d23c829507bcf2bb8880ba4b6ee2a690fb25"
+          },
+          "drive_folder": {
+            "present": true,
+            "redacted": "drive_folder:be7a97895ce8",
+            "sha256": "be7a97895ce8f6994a52b9ae2a86ee4a5d1d5e7e1aa6e7d146c799cc7aaffc10"
+          }
+        }
+      },
+      "source_fingerprint": {
+        "status": "CONFIRMED",
+        "evidence": "c71aeaadabaa5387",
+        "sha256": "c71aeaadabaa53879d74b21d948523a6b6b26af6af532327ca605a286bd5849d"
+      },
+      "intake_record": {
+        "status": "UNKNOWN",
+        "evidence": "No linked raw/canonical intake row was found."
+      },
+      "queue_record": {
+        "status": "CONFIRMED",
+        "evidence": "status=ingested stage=02 Ingesting"
+      },
+      "download": {
+        "status": "CONFIRMED",
+        "evidence": "Download/transcript evidence exists."
+      },
+      "transcription_request": {
+        "status": "UNKNOWN",
+        "evidence": "No transcription request metadata was found."
+      },
+      "transcription_result": {
+        "status": "UNKNOWN",
+        "evidence": "No transcript text was found."
+      },
+      "parser_request": {
+        "status": "SKIPPED",
+        "evidence": "Parser requires transcript text."
+      },
+      "structured_output": {
+        "status": "UNKNOWN",
+        "evidence": "No structured class output was found."
+      },
+      "class_session_match": {
+        "status": "UNKNOWN",
+        "evidence": "No class-session signal."
+      },
+      "student_name_alias_match": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student names found."
+      },
+      "ambiguity_review": {
+        "status": "UNKNOWN",
+        "evidence": "No student names to review."
+      },
+      "score_progress_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No progress signals found."
+      },
+      "question_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student questions found."
+      },
+      "profile_note_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No profile-note candidates found."
+      },
+      "accountability_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No accountability events found."
+      },
+      "canonical_write_status": {
+        "status": "UNKNOWN",
+        "evidence": "No structured output to compare."
+      },
+      "operations_read_model_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Operations-backed row is visible."
+      },
+      "parent_student_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Progress/accountability rows exist for downstream views."
+      },
+      "retry_dedup_status": {
+        "status": "CONFIRMED",
+        "evidence": "No duplicate or retry marker found."
+      }
+    }
+  },
+  {
+    "kind": "content_job",
+    "job_id": 85,
+    "title": "content_job:85",
+    "created_at": "2026-06-29T07:38:51.058Z",
+    "updated_at": "2026-06-29T07:40:59.524Z",
+    "status": "transcribed",
+    "drive_stage": "04 Parsed",
+    "transcript_chars": 58847,
+    "parser": "canonical-intake-parser",
+    "fingerprint_sha256": "79e58962f8d5ccc1c1d0d2340b66eb9479e9c46d124c71e76afca6aff6db7205",
+    "stage_order": [
+      "source_discovered",
+      "source_fingerprint",
+      "intake_record",
+      "queue_record",
+      "download",
+      "transcription_request",
+      "transcription_result",
+      "parser_request",
+      "structured_output",
+      "class_session_match",
+      "student_name_alias_match",
+      "ambiguity_review",
+      "score_progress_proposal",
+      "question_proposal",
+      "profile_note_proposal",
+      "accountability_proposal",
+      "canonical_write_status",
+      "operations_read_model_visibility",
+      "parent_student_visibility",
+      "retry_dedup_status"
+    ],
+    "stages": {
+      "source_discovered": {
+        "status": "CONFIRMED",
+        "evidence": "content job 85",
+        "source_ref": {
+          "drive_file": {
+            "present": true,
+            "redacted": "drive_file:37748c80efbe",
+            "sha256": "37748c80efbe5adc20dceef0b441b92acc556883642c9c336a1173ef670c6bdf"
+          },
+          "drive_folder": {
+            "present": true,
+            "redacted": "drive_folder:5e3be11f49e3",
+            "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+          }
+        }
+      },
+      "source_fingerprint": {
+        "status": "CONFIRMED",
+        "evidence": "79e58962f8d5ccc1",
+        "sha256": "79e58962f8d5ccc1c1d0d2340b66eb9479e9c46d124c71e76afca6aff6db7205"
+      },
+      "intake_record": {
+        "status": "CONFIRMED",
+        "evidence": "RAW-20260629-001"
+      },
+      "queue_record": {
+        "status": "CONFIRMED",
+        "evidence": "status=transcribed stage=04 Parsed"
+      },
+      "download": {
+        "status": "CONFIRMED",
+        "evidence": "Download/transcript evidence exists."
+      },
+      "transcription_request": {
+        "status": "CONFIRMED",
+        "evidence": "Transcript or transcription metadata exists."
+      },
+      "transcription_result": {
+        "status": "CONFIRMED",
+        "evidence": "58847 transcript chars"
+      },
+      "parser_request": {
+        "status": "CONFIRMED",
+        "evidence": "canonical-intake-parser"
+      },
+      "structured_output": {
+        "status": "CONFIRMED",
+        "evidence": "Canonical parser output exists but class/progress output is empty."
+      },
+      "class_session_match": {
+        "status": "CONFIRMED",
+        "evidence": "1 class session row(s)"
+      },
+      "student_name_alias_match": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student names found."
+      },
+      "ambiguity_review": {
+        "status": "UNKNOWN",
+        "evidence": "No student names to review."
+      },
+      "score_progress_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No progress signals found."
+      },
+      "question_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student questions found."
+      },
+      "profile_note_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No profile-note candidates found."
+      },
+      "accountability_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No accountability events found."
+      },
+      "canonical_write_status": {
+        "status": "CONFIRMED",
+        "evidence": "class=1 group=0 events=0"
+      },
+      "operations_read_model_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Operations-backed row is visible."
+      },
+      "parent_student_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Progress/accountability rows exist for downstream views."
+      },
+      "retry_dedup_status": {
+        "status": "CONFIRMED",
+        "evidence": "No duplicate or retry marker found."
+      }
+    }
+  },
+  {
+    "kind": "content_job",
+    "job_id": 84,
+    "title": "content_job:84",
+    "created_at": "2026-06-28T07:15:42.239Z",
+    "updated_at": "2026-06-28T07:17:34.652Z",
+    "status": "transcribed",
+    "drive_stage": "04 Parsed",
+    "transcript_chars": 49429,
+    "parser": "canonical-intake-parser",
+    "fingerprint_sha256": "be8d74a12f302c32e46080d2c80a24019c0ae7f974138bfb9c7b70c3407ad189",
+    "stage_order": [
+      "source_discovered",
+      "source_fingerprint",
+      "intake_record",
+      "queue_record",
+      "download",
+      "transcription_request",
+      "transcription_result",
+      "parser_request",
+      "structured_output",
+      "class_session_match",
+      "student_name_alias_match",
+      "ambiguity_review",
+      "score_progress_proposal",
+      "question_proposal",
+      "profile_note_proposal",
+      "accountability_proposal",
+      "canonical_write_status",
+      "operations_read_model_visibility",
+      "parent_student_visibility",
+      "retry_dedup_status"
+    ],
+    "stages": {
+      "source_discovered": {
+        "status": "CONFIRMED",
+        "evidence": "content job 84",
+        "source_ref": {
+          "drive_file": {
+            "present": true,
+            "redacted": "drive_file:8679173269d9",
+            "sha256": "8679173269d94e40fb6d327938cd8aeb46575346f240c02422d02e89d108fa61"
+          },
+          "drive_folder": {
+            "present": true,
+            "redacted": "drive_folder:5e3be11f49e3",
+            "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+          }
+        }
+      },
+      "source_fingerprint": {
+        "status": "CONFIRMED",
+        "evidence": "be8d74a12f302c32",
+        "sha256": "be8d74a12f302c32e46080d2c80a24019c0ae7f974138bfb9c7b70c3407ad189"
+      },
+      "intake_record": {
+        "status": "CONFIRMED",
+        "evidence": "RAW-20260628-001"
+      },
+      "queue_record": {
+        "status": "CONFIRMED",
+        "evidence": "status=transcribed stage=04 Parsed"
+      },
+      "download": {
+        "status": "CONFIRMED",
+        "evidence": "Download/transcript evidence exists."
+      },
+      "transcription_request": {
+        "status": "CONFIRMED",
+        "evidence": "Transcript or transcription metadata exists."
+      },
+      "transcription_result": {
+        "status": "CONFIRMED",
+        "evidence": "49429 transcript chars"
+      },
+      "parser_request": {
+        "status": "CONFIRMED",
+        "evidence": "canonical-intake-parser"
+      },
+      "structured_output": {
+        "status": "CONFIRMED",
+        "evidence": "Canonical parser output exists but class/progress output is empty."
+      },
+      "class_session_match": {
+        "status": "CONFIRMED",
+        "evidence": "1 class session row(s)"
+      },
+      "student_name_alias_match": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student names found."
+      },
+      "ambiguity_review": {
+        "status": "UNKNOWN",
+        "evidence": "No student names to review."
+      },
+      "score_progress_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No progress signals found."
+      },
+      "question_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student questions found."
+      },
+      "profile_note_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No profile-note candidates found."
+      },
+      "accountability_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No accountability events found."
+      },
+      "canonical_write_status": {
+        "status": "CONFIRMED",
+        "evidence": "class=1 group=0 events=0"
+      },
+      "operations_read_model_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Operations-backed row is visible."
+      },
+      "parent_student_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Progress/accountability rows exist for downstream views."
+      },
+      "retry_dedup_status": {
+        "status": "CONFIRMED",
+        "evidence": "No duplicate or retry marker found."
+      }
+    }
+  },
+  {
+    "kind": "content_job",
+    "job_id": 83,
+    "title": "content_job:83",
+    "created_at": "2026-06-25T09:20:09.474Z",
+    "updated_at": "2026-06-25T09:23:02.121Z",
+    "status": "transcribed",
+    "drive_stage": "04 Parsed",
+    "transcript_chars": 9025,
+    "parser": "canonical-intake-parser",
+    "fingerprint_sha256": "0e2bf35c08ff4c847e78184e03ac6dedcbf18e43e3e56271955c44f2a01dab30",
+    "stage_order": [
+      "source_discovered",
+      "source_fingerprint",
+      "intake_record",
+      "queue_record",
+      "download",
+      "transcription_request",
+      "transcription_result",
+      "parser_request",
+      "structured_output",
+      "class_session_match",
+      "student_name_alias_match",
+      "ambiguity_review",
+      "score_progress_proposal",
+      "question_proposal",
+      "profile_note_proposal",
+      "accountability_proposal",
+      "canonical_write_status",
+      "operations_read_model_visibility",
+      "parent_student_visibility",
+      "retry_dedup_status"
+    ],
+    "stages": {
+      "source_discovered": {
+        "status": "CONFIRMED",
+        "evidence": "content job 83",
+        "source_ref": {
+          "drive_file": {
+            "present": true,
+            "redacted": "drive_file:9f6f75a5d602",
+            "sha256": "9f6f75a5d602bcf8ab6df7ed078a3d61f05e6bfc61a6d1f75742c2cea303847d"
+          },
+          "drive_folder": {
+            "present": true,
+            "redacted": "drive_folder:5e3be11f49e3",
+            "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+          }
+        }
+      },
+      "source_fingerprint": {
+        "status": "CONFIRMED",
+        "evidence": "0e2bf35c08ff4c84",
+        "sha256": "0e2bf35c08ff4c847e78184e03ac6dedcbf18e43e3e56271955c44f2a01dab30"
+      },
+      "intake_record": {
+        "status": "CONFIRMED",
+        "evidence": "RAW-20260625-002"
+      },
+      "queue_record": {
+        "status": "CONFIRMED",
+        "evidence": "status=transcribed stage=04 Parsed"
+      },
+      "download": {
+        "status": "CONFIRMED",
+        "evidence": "Download/transcript evidence exists."
+      },
+      "transcription_request": {
+        "status": "CONFIRMED",
+        "evidence": "Transcript or transcription metadata exists."
+      },
+      "transcription_result": {
+        "status": "CONFIRMED",
+        "evidence": "9025 transcript chars"
+      },
+      "parser_request": {
+        "status": "CONFIRMED",
+        "evidence": "canonical-intake-parser"
+      },
+      "structured_output": {
+        "status": "CONFIRMED",
+        "evidence": "Canonical parser output exists but class/progress output is empty."
+      },
+      "class_session_match": {
+        "status": "CONFIRMED",
+        "evidence": "1 class session row(s)"
+      },
+      "student_name_alias_match": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student names found."
+      },
+      "ambiguity_review": {
+        "status": "UNKNOWN",
+        "evidence": "No student names to review."
+      },
+      "score_progress_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No progress signals found."
+      },
+      "question_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student questions found."
+      },
+      "profile_note_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No profile-note candidates found."
+      },
+      "accountability_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No accountability events found."
+      },
+      "canonical_write_status": {
+        "status": "CONFIRMED",
+        "evidence": "class=1 group=0 events=0"
+      },
+      "operations_read_model_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Operations-backed row is visible."
+      },
+      "parent_student_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Progress/accountability rows exist for downstream views."
+      },
+      "retry_dedup_status": {
+        "status": "CONFIRMED",
+        "evidence": "No duplicate or retry marker found."
+      }
+    }
+  },
+  {
+    "kind": "content_job",
+    "job_id": 82,
+    "title": "content_job:82",
+    "created_at": "2026-06-25T09:16:46.290Z",
+    "updated_at": "2026-06-25T09:19:27.361Z",
+    "status": "transcribed",
+    "drive_stage": "04 Parsed",
+    "transcript_chars": 5309,
+    "parser": "canonical-intake-parser",
+    "fingerprint_sha256": "2f59b3bd574fc6ed2ba7d669544d0fbdc8e8d995a38f9a9bec2375d23d86e356",
+    "stage_order": [
+      "source_discovered",
+      "source_fingerprint",
+      "intake_record",
+      "queue_record",
+      "download",
+      "transcription_request",
+      "transcription_result",
+      "parser_request",
+      "structured_output",
+      "class_session_match",
+      "student_name_alias_match",
+      "ambiguity_review",
+      "score_progress_proposal",
+      "question_proposal",
+      "profile_note_proposal",
+      "accountability_proposal",
+      "canonical_write_status",
+      "operations_read_model_visibility",
+      "parent_student_visibility",
+      "retry_dedup_status"
+    ],
+    "stages": {
+      "source_discovered": {
+        "status": "CONFIRMED",
+        "evidence": "content job 82",
+        "source_ref": {
+          "drive_file": {
+            "present": true,
+            "redacted": "drive_file:fb12b8ff735c",
+            "sha256": "fb12b8ff735cf71ed3edbec16cd9479eb4c3d9e7f3e403374ec8725a2b2ca0c4"
+          },
+          "drive_folder": {
+            "present": true,
+            "redacted": "drive_folder:5e3be11f49e3",
+            "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+          }
+        }
+      },
+      "source_fingerprint": {
+        "status": "CONFIRMED",
+        "evidence": "2f59b3bd574fc6ed",
+        "sha256": "2f59b3bd574fc6ed2ba7d669544d0fbdc8e8d995a38f9a9bec2375d23d86e356"
+      },
+      "intake_record": {
+        "status": "CONFIRMED",
+        "evidence": "RAW-20260625-001"
+      },
+      "queue_record": {
+        "status": "CONFIRMED",
+        "evidence": "status=transcribed stage=04 Parsed"
+      },
+      "download": {
+        "status": "CONFIRMED",
+        "evidence": "Download/transcript evidence exists."
+      },
+      "transcription_request": {
+        "status": "CONFIRMED",
+        "evidence": "Transcript or transcription metadata exists."
+      },
+      "transcription_result": {
+        "status": "CONFIRMED",
+        "evidence": "5309 transcript chars"
+      },
+      "parser_request": {
+        "status": "CONFIRMED",
+        "evidence": "canonical-intake-parser"
+      },
+      "structured_output": {
+        "status": "CONFIRMED",
+        "evidence": "Canonical parser output exists but class/progress output is empty."
+      },
+      "class_session_match": {
+        "status": "CONFIRMED",
+        "evidence": "1 class session row(s)"
+      },
+      "student_name_alias_match": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student names found."
+      },
+      "ambiguity_review": {
+        "status": "UNKNOWN",
+        "evidence": "No student names to review."
+      },
+      "score_progress_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No progress signals found."
+      },
+      "question_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No parsed student questions found."
+      },
+      "profile_note_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No profile-note candidates found."
+      },
+      "accountability_proposal": {
+        "status": "UNKNOWN",
+        "evidence": "No accountability events found."
+      },
+      "canonical_write_status": {
+        "status": "CONFIRMED",
+        "evidence": "class=1 group=0 events=0"
+      },
+      "operations_read_model_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Operations-backed row is visible."
+      },
+      "parent_student_visibility": {
+        "status": "CONFIRMED",
+        "evidence": "Progress/accountability rows exist for downstream views."
+      },
+      "retry_dedup_status": {
+        "status": "CONFIRMED",
+        "evidence": "No duplicate or retry marker found."
+      }
+    }
+  }
+]

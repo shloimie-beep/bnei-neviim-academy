@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T13:11:43.406Z",
+  "generated_at": "2026-07-02T15:48:39.560Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -401,6 +401,8 @@
     "tasks-pending/2026-07-01-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md",
     "tasks-pending/2026-07-01-run-rabbi-onetime-visual-audit-resend-smoke.md",
     "tasks-pending/2026-07-02-background-drive-ui-launch-continuation.md",
+    "tasks-pending/2026-07-02-drive-transcript-visibility-openai2-kimi-fallback-parser-routing.md",
+    "tasks-pending/2026-07-02-finalize-pr64-keyholder-domain-launch.md",
     "tasks-pending/2026-07-02-one-time-clean-integration-from-pr62.md",
     "tasks-pending/2026-07-02-one-time-launch-execution-worktree-external-setup.md",
     "tasks-pending/2026-07-02-one-time-launch-unblocker.md",

@@ -1,0 +1,260 @@
+{
+  "generated_at": "2026-07-02T15:42:05.723Z",
+  "keyholder_dir": "C:\\Users\\User\\BNA-Keyholder",
+  "keyholder_exists": true,
+  "files": [
+    {
+      "name": "openai-api-key.txt",
+      "aliases": [
+        "openaiv2.txt"
+      ],
+      "label": "OpenAI API key",
+      "repo_secret": ".secrets/openai-api-key.txt",
+      "env_name": "OPENAI_API_KEY",
+      "keyholder": {
+        "name": "openaiv2.txt",
+        "exists": true,
+        "present": true,
+        "length": 164,
+        "normalized_length": 164,
+        "fingerprint": "f74957cf4b14",
+        "newline": false,
+        "carriage_return": false,
+        "bom": false,
+        "surrounding_quotes": false,
+        "normalization_changed": false,
+        "last_modified": "2026-06-16T17:27:47.707Z"
+      },
+      "keyholder_candidates": [
+        {
+          "name": "openai-api-key.txt",
+          "exists": true,
+          "present": false,
+          "length": 0,
+          "normalized_length": 0,
+          "fingerprint": "",
+          "newline": false,
+          "carriage_return": false,
+          "bom": false,
+          "surrounding_quotes": false,
+          "normalization_changed": false,
+          "last_modified": "2026-06-14T14:40:51.540Z"
+        },
+        {
+          "name": "openaiv2.txt",
+          "exists": true,
+          "present": true,
+          "length": 164,
+          "normalized_length": 164,
+          "fingerprint": "f74957cf4b14",
+          "newline": false,
+          "carriage_return": false,
+          "bom": false,
+          "surrounding_quotes": false,
+          "normalization_changed": false,
+          "last_modified": "2026-06-16T17:27:47.707Z"
+        }
+      ],
+      "repo_secret_present": true,
+      "repo_secret_fingerprint": "02079c0b5ca1",
+      "matches_repo_secret": false
+    },
+    {
+      "name": "buffer-api-key.txt",
+      "label": "Buffer API key",
+      "repo_secret": ".secrets/buffer-api-key.txt",
+      "env_name": "BUFFER_API_KEY",
+      "keyholder": {
+        "name": "buffer-api-key.txt",
+        "exists": true,
+        "present": true,
+        "length": 43,
+        "normalized_length": 43,
+        "fingerprint": "d7cd7464791f",
+        "newline": false,
+        "carriage_return": false,
+        "bom": false,
+        "surrounding_quotes": false,
+        "normalization_changed": false,
+        "last_modified": "2026-06-15T13:04:31.121Z"
+      },
+      "keyholder_candidates": [
+        {
+          "name": "buffer-api-key.txt",
+          "exists": true,
+          "present": true,
+          "length": 43,
+          "normalized_length": 43,
+          "fingerprint": "d7cd7464791f",
+          "newline": false,
+          "carriage_return": false,
+          "bom": false,
+          "surrounding_quotes": false,
+          "normalization_changed": false,
+          "last_modified": "2026-06-15T13:04:31.121Z"
+        }
+      ],
+      "repo_secret_present": true,
+      "repo_secret_fingerprint": "fae1a0748e70",
+      "matches_repo_secret": false
+    },
+    {
+      "name": "resend-api-key.txt",
+      "label": "Resend API key",
+      "repo_secret": ".secrets/resend-api-key.txt",
+      "env_name": "RESEND_API_KEY",
+      "keyholder": {
+        "name": "resend-api-key.txt",
+        "exists": true,
+        "present": true,
+        "length": 36,
+        "normalized_length": 36,
+        "fingerprint": "425f2ccf2704",
+        "newline": false,
+        "carriage_return": false,
+        "bom": false,
+        "surrounding_quotes": false,
+        "normalization_changed": false,
+        "last_modified": "2026-06-19T08:32:35.802Z"
+      },
+      "keyholder_candidates": [
+        {
+          "name": "resend-api-key.txt",
+          "exists": true,
+          "present": true,
+          "length": 36,
+          "normalized_length": 36,
+          "fingerprint": "425f2ccf2704",
+          "newline": false,
+          "carriage_return": false,
+          "bom": false,
+          "surrounding_quotes": false,
+          "normalization_changed": false,
+          "last_modified": "2026-06-19T08:32:35.802Z"
+        }
+      ],
+      "repo_secret_present": true,
+      "repo_secret_fingerprint": "425f2ccf2704",
+      "matches_repo_secret": true
+    },
+    {
+      "name": "stripe-secret-key.txt",
+      "label": "Stripe secret key",
+      "repo_secret": ".secrets/stripe-secret-key.txt",
+      "env_name": "STRIPE_SECRET_KEY",
+      "optional": true,
+      "keyholder": {
+        "name": "stripe-secret-key.txt",
+        "exists": true,
+        "present": true,
+        "length": 107,
+        "normalized_length": 107,
+        "fingerprint": "dcdee8231aac",
+        "newline": false,
+        "carriage_return": false,
+        "bom": false,
+        "surrounding_quotes": false,
+        "normalization_changed": false,
+        "last_modified": "2026-06-16T14:00:47.914Z"
+      },
+      "keyholder_candidates": [
+        {
+          "name": "stripe-secret-key.txt",
+          "exists": true,
+          "present": true,
+          "length": 107,
+          "normalized_length": 107,
+          "fingerprint": "dcdee8231aac",
+          "newline": false,
+          "carriage_return": false,
+          "bom": false,
+          "surrounding_quotes": false,
+          "normalization_changed": false,
+          "last_modified": "2026-06-16T14:00:47.914Z"
+        }
+      ],
+      "repo_secret_present": false,
+      "repo_secret_fingerprint": "",
+      "matches_repo_secret": false
+    },
+    {
+      "name": "railway-token.txt",
+      "label": "Railway project token",
+      "repo_secret": ".secrets/railway-token.txt",
+      "env_name": "RAILWAY_TOKEN",
+      "keyholder": {
+        "name": "railway-token.txt",
+        "exists": true,
+        "present": false,
+        "length": 0,
+        "normalized_length": 0,
+        "fingerprint": "",
+        "newline": false,
+        "carriage_return": false,
+        "bom": false,
+        "surrounding_quotes": false,
+        "normalization_changed": false,
+        "last_modified": "2026-06-14T14:40:51.542Z"
+      },
+      "keyholder_candidates": [
+        {
+          "name": "railway-token.txt",
+          "exists": true,
+          "present": false,
+          "length": 0,
+          "normalized_length": 0,
+          "fingerprint": "",
+          "newline": false,
+          "carriage_return": false,
+          "bom": false,
+          "surrounding_quotes": false,
+          "normalization_changed": false,
+          "last_modified": "2026-06-14T14:40:51.542Z"
+        }
+      ],
+      "repo_secret_present": true,
+      "repo_secret_fingerprint": "b4ba9a5fb8cb",
+      "matches_repo_secret": false
+    },
+    {
+      "name": "kimi-api-key.txt",
+      "label": "Kimi API key",
+      "repo_secret": ".secrets/kimi-api-key.txt",
+      "env_name": "KIMI_API_KEY",
+      "optional": true,
+      "keyholder": {
+        "name": "kimi-api-key.txt",
+        "exists": true,
+        "present": false,
+        "length": 0,
+        "normalized_length": 0,
+        "fingerprint": "",
+        "newline": false,
+        "carriage_return": false,
+        "bom": false,
+        "surrounding_quotes": false,
+        "normalization_changed": false,
+        "last_modified": "2026-06-14T14:40:51.542Z"
+      },
+      "keyholder_candidates": [
+        {
+          "name": "kimi-api-key.txt",
+          "exists": true,
+          "present": false,
+          "length": 0,
+          "normalized_length": 0,
+          "fingerprint": "",
+          "newline": false,
+          "carriage_return": false,
+          "bom": false,
+          "surrounding_quotes": false,
+          "normalization_changed": false,
+          "last_modified": "2026-06-14T14:40:51.542Z"
+        }
+      ],
+      "repo_secret_present": false,
+      "repo_secret_fingerprint": "",
+      "matches_repo_secret": false
+    }
+  ]
+}

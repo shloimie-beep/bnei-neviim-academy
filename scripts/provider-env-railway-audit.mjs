@@ -74,11 +74,11 @@ const PROVIDER_ENV_FIELDS = [
     requiredForProduction: true,
   },
   {
-    key: 'RESEND_FROM',
-    label: 'Resend from address',
+    key: 'RESEND_FROM_EMAIL',
+    label: 'Resend from email address',
     provider: 'resend',
-    fileNames: ['resend-from.txt', 'RESEND_FROM.txt', 'resend.txt'],
-    names: ['resend-from', 'resend'],
+    fileNames: ['resend-from-email.txt', 'RESEND_FROM_EMAIL.txt', 'resend.txt'],
+    names: ['resend-from-email', 'resend'],
     requiredForProduction: true,
   },
   {
@@ -197,23 +197,35 @@ function listRailwayVariables({ repoRoot, service, environment, runner = spawnSy
     return { ok: false, attempted: false, service, environment, reason: 'Both RAILWAY_TOKEN and RAILWAY_API_TOKEN are set.' };
   }
 
-  const railwayArgs = [
-    'variable',
-    'list',
-    '--service',
-    service,
-    '--environment',
-    environment,
-    '--json',
-  ];
+  const railwayArgs = ['variable', 'list', '--service', service, '--environment', environment, '--json'];
   const command = process.platform === 'win32' ? 'cmd.exe' : 'railway';
   const args = process.platform === 'win32' ? ['/d', '/s', '/c', 'railway.cmd', ...railwayArgs] : railwayArgs;
-  const result = runner(command, args, {
-    cwd: repoRoot,
-    env,
-    encoding: 'utf8',
-    maxBuffer: 1024 * 1024 * 4,
-  });
+
+  function runWithEnv(commandEnv) {
+    return runner(command, args, {
+      cwd: repoRoot,
+      env: commandEnv,
+      encoding: 'utf8',
+      maxBuffer: 1024 * 1024 * 4,
+    });
+  }
+
+  let result = runWithEnv(env);
+  let source = 'railway_cli';
+  if (
+    result.status !== 0 &&
+    /service.+not found|project.+not found|environment.+not found/i.test(String(result.stderr || result.stdout || '')) &&
+    (env.RAILWAY_TOKEN || env.RAILWAY_API_TOKEN)
+  ) {
+    const fallbackEnv = { ...process.env };
+    delete fallbackEnv.RAILWAY_TOKEN;
+    delete fallbackEnv.RAILWAY_API_TOKEN;
+    const fallback = runWithEnv(fallbackEnv);
+    if (fallback.status === 0 && !fallback.error) {
+      result = fallback;
+      source = 'railway_cli_session_fallback';
+    }
+  }
 
   if (result.error) {
     return {
@@ -242,7 +254,7 @@ function listRailwayVariables({ repoRoot, service, environment, runner = spawnSy
       service,
       environment,
       parsed: JSON.parse(result.stdout || '{}'),
-      source: 'railway_cli',
+      source,
     };
   } catch {
     return {

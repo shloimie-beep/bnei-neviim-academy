@@ -2,7 +2,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
+
+const require = createRequire(import.meta.url);
+const { loadSecret, safeSecretSourceLabel } = require('../src/lib/integrations/secret-loader');
 
 const DEFAULT_CHECKLIST_PATH = path.join(
   'ops',
@@ -75,6 +80,106 @@ function status(value) {
   return String(value || '').trim() ? 'configured' : 'missing';
 }
 
+function normalizeValue(value) {
+  return String(value || '').replace(/^\uFEFF/, '').trim();
+}
+
+function loadSecretCandidate({ envName, names = [], fileNames = [], repoRoot, inspectKeyholder = true }) {
+  if (!inspectKeyholder) return { configured: false, value: '', source: 'not configured' };
+  const loaded = loadSecret({ envName, names, fileNames, repoRoot });
+  const value = normalizeValue(loaded.value);
+  return {
+    configured: Boolean(value),
+    value,
+    source: loaded.configured ? safeSecretSourceLabel(loaded) : 'not configured',
+    length: value.length,
+  };
+}
+
+function configuredFromEnvOrSecret(env, envNames, secretSpecs, repoRoot, inspectKeyholder) {
+  const envValue = envNames.map((name) => normalizeValue(env[name])).find(Boolean);
+  if (envValue) return { configured: true, source: 'env', length: envValue.length, value: envValue };
+  for (const spec of secretSpecs) {
+    const loaded = loadSecretCandidate({ ...spec, repoRoot, inspectKeyholder });
+    if (loaded.configured) return loaded;
+  }
+  return { configured: false, source: 'not configured', length: 0, value: '' };
+}
+
+function loadRailwayTokenEnv(repoRoot) {
+  const env = { ...process.env };
+  const tokenPath = path.join(repoRoot, '.secrets', 'railway-token.txt');
+  if (!env.RAILWAY_TOKEN && !env.RAILWAY_API_TOKEN && fs.existsSync(tokenPath)) {
+    env.RAILWAY_TOKEN = fs.readFileSync(tokenPath, 'utf8').trim();
+  }
+  return env;
+}
+
+function runRailwayVariablesReadback({ repoRoot, service = 'one-time-web', environment = 'production' } = {}) {
+  const railwayArgs = ['variable', 'list', '--service', service, '--environment', environment, '--json'];
+  const command = process.platform === 'win32' ? 'cmd.exe' : 'railway';
+  const args = process.platform === 'win32' ? ['/d', '/s', '/c', 'railway.cmd', ...railwayArgs] : railwayArgs;
+
+  function runWithEnv(commandEnv) {
+    return spawnSync(command, args, {
+      cwd: repoRoot,
+      env: commandEnv,
+      encoding: 'utf8',
+      maxBuffer: 1024 * 1024 * 4,
+    });
+  }
+
+  const tokenEnv = loadRailwayTokenEnv(repoRoot);
+  let result = runWithEnv(tokenEnv);
+  let source = 'railway_token_or_env';
+  if (
+    result.status !== 0 &&
+    /service.+not found|project.+not found|environment.+not found/i.test(String(result.stderr || result.stdout || '')) &&
+    (tokenEnv.RAILWAY_TOKEN || tokenEnv.RAILWAY_API_TOKEN)
+  ) {
+    const fallbackEnv = { ...process.env };
+    delete fallbackEnv.RAILWAY_TOKEN;
+    delete fallbackEnv.RAILWAY_API_TOKEN;
+    const fallback = runWithEnv(fallbackEnv);
+    if (fallback.status === 0 && !fallback.error) {
+      result = fallback;
+      source = 'railway_cli_session_fallback';
+    }
+  }
+
+  if (result.error) {
+    return { ok: false, attempted: true, source, reason: result.error.message || 'Railway variable readback failed.' };
+  }
+  if (result.status !== 0) {
+    return {
+      ok: false,
+      attempted: true,
+      source,
+      reason: String(result.stderr || result.stdout || `Railway exited ${result.status}`).split(/\r?\n/)[0],
+    };
+  }
+  try {
+    const variables = JSON.parse(result.stdout || '{}');
+    const databaseUrl = normalizeValue(variables.DATABASE_URL);
+    return {
+      ok: true,
+      attempted: true,
+      source,
+      service,
+      environment,
+      key_count: Object.keys(variables).length,
+      database_url_present: Object.prototype.hasOwnProperty.call(variables, 'DATABASE_URL'),
+      database_url_length: databaseUrl.length,
+      database_url_usable: databaseUrl.length > 0,
+      one_time_public_domain_matches: variables.ONE_TIME_PUBLIC_DOMAIN === 'join.onetimeonetime.com',
+      default_workspace_matches: variables.DEFAULT_WORKSPACE_KEY === 'rabbi_sheller_provider',
+      default_project_matches: variables.DEFAULT_PROJECT_KEY === 'one_time_mishnah_class',
+    };
+  } catch {
+    return { ok: false, attempted: true, source, reason: 'Railway returned non-JSON variable output.' };
+  }
+}
+
 function expectedEnvMissing(env) {
   return Object.entries(ONE_TIME_EXPECTED_ENV)
     .filter(([key, expected]) => String(env[key] || '').trim() !== expected)
@@ -139,21 +244,30 @@ function successfulRailwayProvisioning(report) {
   );
 }
 
-function railwayReadiness(env, repoRoot, provisioningReportPath) {
+function railwayReadiness(env, repoRoot, provisioningReportPath, railwayVariables = null) {
   const serviceReady = status(env.ONE_TIME_RAILWAY_SERVICE || env.ONE_TIME_RAILWAY_SERVICE_LABEL) === 'configured';
   const projectReady = status(env.ONE_TIME_RAILWAY_PROJECT || env.ONE_TIME_RAILWAY_PROJECT_LABEL) === 'configured';
   const environmentReady = status(env.ONE_TIME_RAILWAY_ENVIRONMENT || env.ONE_TIME_RAILWAY_ENVIRONMENT_LABEL) === 'configured';
   const missingExpected = expectedEnvMissing(env);
   const provisioningReport = readJsonIfExists(provisioningReportPath, repoRoot);
   const provisionedByReport = successfulRailwayProvisioning(provisioningReport);
+  const railwayVariablesReady =
+    railwayVariables?.ok &&
+    railwayVariables.one_time_public_domain_matches &&
+    railwayVariables.default_workspace_matches &&
+    railwayVariables.default_project_matches;
   const envReady = serviceReady && projectReady && environmentReady && missingExpected.length === 0;
   const ready = envReady || provisionedByReport;
   return {
     ready,
     source: provisionedByReport ? 'railway_provisioning_report' : 'env',
     provisioning_report_path: provisionedByReport ? provisioningReportPath : '',
-    database_reference_ready: provisionedByReport && stepOk(provisioningReport, 'set_database_reference'),
+    database_reference_ready:
+      Boolean(railwayVariables?.database_url_usable) ||
+      (!railwayVariables && provisionedByReport && stepOk(provisioningReport, 'set_database_reference')),
     postgres_service_ready: provisionedByReport && stepOk(provisioningReport, 'create_or_verify_postgres'),
+    current_variables_ready: Boolean(railwayVariablesReady),
+    current_variables: railwayVariables,
     missing: ready
       ? []
       : [
@@ -171,11 +285,15 @@ function railwayReadiness(env, repoRoot, provisioningReportPath) {
 export function buildOneTimeExternalSetupReadiness(options = {}) {
   const env = options.env || process.env;
   const repoRoot = options.repoRoot || process.cwd();
+  const inspectKeyholder = options.inspectKeyholder ?? !options.env;
+  const inspectRailway = options.inspectRailway ?? !options.env;
   const checklist = readChecklist(options.checklist || DEFAULT_CHECKLIST_PATH, repoRoot);
+  const railwayVariables = options.railwayVariables || (inspectRailway ? runRailwayVariablesReadback({ repoRoot }) : null);
   const railway = railwayReadiness(
     env,
     repoRoot,
     options.railwayProvisioningReport || DEFAULT_RAILWAY_PROVISIONING_REPORT,
+    railwayVariables,
   );
   const joinDomainReport = readJsonIfExists(options.joinDomainReport || DEFAULT_JOIN_DOMAIN_REPORT, repoRoot);
   const joinDomainReportMatches =
@@ -189,11 +307,183 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     (truthy(env.ONE_TIME_JOIN_DNS_CONFIGURED) || joinDomainReport?.verified === true) &&
     (truthy(env.ONE_TIME_APEX_ROOT_UNTOUCHED) || joinDomainReport?.apex_root_must_remain_untouched === true);
 
-  const stripeSecret = String(env.STRIPE_SECRET_KEY || env.ONE_TIME_STRIPE_SECRET_KEY || '');
-  const stripeLiveKeyPresent = /^sk_live_/i.test(stripeSecret);
+  const localDatabase = configuredFromEnvOrSecret(
+    env,
+    ['ONE_TIME_DATABASE_URL', 'DATABASE_URL_ONE_TIME'],
+    [
+      {
+        envName: 'ONE_TIME_DATABASE_URL',
+        names: ['one-time-database-url', 'database-url-one-time'],
+        fileNames: ['one-time-database-url.txt', 'DATABASE_URL_ONE_TIME.txt'],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
+
+  const zoomCredentials = [
+    ['ZOOM_ACCOUNT_ID', ['zoom-account-id'], ['zoom-account-id.txt', 'ZOOM_ACCOUNT_ID.txt']],
+    ['ZOOM_CLIENT_ID', ['zoom-client-id'], ['zoom-client-id.txt', 'ZOOM_CLIENT_ID.txt']],
+    ['ZOOM_CLIENT_SECRET', ['zoom-client-secret'], ['zoom-client-secret.txt', 'ZOOM_CLIENT_SECRET.txt']],
+  ].map(([envName, names, fileNames]) =>
+    configuredFromEnvOrSecret(env, [envName], [{ envName, names, fileNames }], repoRoot, inspectKeyholder),
+  );
+  const zoomCredentialsReady = zoomCredentials.every((item) => item.configured);
+  const zoomSession = configuredFromEnvOrSecret(
+    env,
+    ['ONE_TIME_ZOOM_SESSION_ALIAS', 'ONE_TIME_ZOOM_DETAILS_ALIAS', 'ONE_TIME_ZOOM_JOIN_URL', 'ZOOM_MEETING_ID'],
+    [
+      {
+        envName: 'ONE_TIME_ZOOM_SESSION_ALIAS',
+        names: ['one-time-zoom-session', 'one-time-zoom-join-url', 'zoom-join-url', 'zoom-meeting-id'],
+        fileNames: [
+          'one-time-zoom-session.txt',
+          'one-time-zoom-join-url.txt',
+          'zoom-join-url.txt',
+          'zoom-meeting-id.txt',
+        ],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
+
+  const vimeoClientId = configuredFromEnvOrSecret(
+    env,
+    ['VIMEO_CLIENT_ID'],
+    [{ envName: 'VIMEO_CLIENT_ID', names: ['vimeo-client-id'], fileNames: ['vimeo-client-id.txt', 'VIMEO_CLIENT_ID.txt'] }],
+    repoRoot,
+    inspectKeyholder,
+  );
+  const vimeoClientSecret = configuredFromEnvOrSecret(
+    env,
+    ['VIMEO_CLIENT_SECRET'],
+    [
+      {
+        envName: 'VIMEO_CLIENT_SECRET',
+        names: ['vimeo-client-secret'],
+        fileNames: ['vimeo-client-secret.txt', 'VIMEO_CLIENT_SECRET.txt'],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
+  const vimeoAccess = configuredFromEnvOrSecret(
+    env,
+    ['VIMEO_ACCESS_TOKEN', 'ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS'],
+    [
+      {
+        envName: 'VIMEO_ACCESS_TOKEN',
+        names: ['vimeo-access-token', 'one-time-vimeo-access-token'],
+        fileNames: ['vimeo-access-token.txt', 'VIMEO_ACCESS_TOKEN.txt', 'one-time-vimeo-access-token.txt'],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
+  const driveDropFolder = configuredFromEnvOrSecret(
+    env,
+    ['ONE_TIME_DRIVE_DROP_FOLDER_ALIAS', 'ONE_TIME_DRIVE_DROP_FOLDER_ID', 'DRIVE_DROP_FOLDER_ID'],
+    [
+      {
+        envName: 'ONE_TIME_DRIVE_DROP_FOLDER_ALIAS',
+        names: ['one-time-drive-drop-folder', 'one-time-drive-folder', 'drive-drop-folder'],
+        fileNames: ['one-time-drive-drop-folder.txt', 'one-time-drive-folder.txt', 'drive-drop-folder.txt'],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
+
+  const stripeTestSecret = configuredFromEnvOrSecret(
+    env,
+    ['RABBI_STRIPE_TEST_SECRET_KEY', 'ONE_TIME_STRIPE_TEST_SECRET_KEY', 'STRIPE_TEST_SECRET_KEY'],
+    [
+      {
+        envName: 'RABBI_STRIPE_TEST_SECRET_KEY',
+        names: ['rabbi-stripe-test-secret-key', 'one-time-stripe-test-secret-key', 'stripe-test-secret-key'],
+        fileNames: [
+          'rabbi-stripe-test-secret-key.txt',
+          'one-time-stripe-test-secret-key.txt',
+          'stripe-test-secret-key.txt',
+          'RABBI_STRIPE_TEST_SECRET_KEY.txt',
+        ],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
+  const genericStripeSecret = configuredFromEnvOrSecret(
+    env,
+    ['STRIPE_SECRET_KEY', 'ONE_TIME_STRIPE_SECRET_KEY'],
+    [
+      {
+        envName: 'STRIPE_SECRET_KEY',
+        names: ['stripe-secret-key', 'stripe'],
+        fileNames: ['stripe-secret-key.txt', 'STRIPE_SECRET_KEY.txt', 'stripe.txt'],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
+  const stripePrice = configuredFromEnvOrSecret(
+    env,
+    ['ONE_TIME_STRIPE_PRICE_ID', 'ONE_TIME_STRIPE_PRICE_ALIAS', 'RABBI_STRIPE_PRICE_ID'],
+    [
+      {
+        envName: 'ONE_TIME_STRIPE_PRICE_ID',
+        names: ['one-time-stripe-price-id', 'rabbi-stripe-price-id', 'stripe-price-67'],
+        fileNames: ['one-time-stripe-price-id.txt', 'rabbi-stripe-price-id.txt', 'stripe-price-67.txt'],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
+  const stripeLiveKeyPresent = /^sk_live_/i.test(genericStripeSecret.value);
   const stripeTestKeyReady =
-    !stripeLiveKeyPresent &&
-    (status(env.ONE_TIME_STRIPE_TEST_SECRET_KEY_ALIAS) === 'configured' || /^sk_test_/i.test(stripeSecret));
+    /^sk_test_/i.test(stripeTestSecret.value) ||
+    (!stripeLiveKeyPresent && /^sk_test_/i.test(genericStripeSecret.value)) ||
+    status(env.ONE_TIME_STRIPE_TEST_SECRET_KEY_ALIAS) === 'configured';
+
+  const whapiToken = configuredFromEnvOrSecret(
+    env,
+    ['WHAPI_TOKEN', 'WAPI_API_KEY', 'WHAPI_API_TOKEN', 'WAPI_API_TOKEN', 'ONE_TIME_WHAPI_TOKEN_ALIAS'],
+    [
+      {
+        envName: 'WHAPI_API_TOKEN',
+        names: ['whapi-api-token', 'wapi-api-token', 'whapi-token', 'wapi-token'],
+        fileNames: ['whapi-api-token.txt', 'wapi-api-token.txt', 'whapi-token.txt', 'wapi-token.txt'],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
+  const whapiInstance = configuredFromEnvOrSecret(
+    env,
+    ['ONE_TIME_WHAPI_INSTANCE_ID', 'WHAPI_INSTANCE_ID', 'WAPI_INSTANCE_ID'],
+    [
+      {
+        envName: 'WHAPI_INSTANCE_ID',
+        names: ['whapi-instance-id', 'wapi-instance-id'],
+        fileNames: ['whapi-instance-id.txt', 'wapi-instance-id.txt'],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
+  const whapiPhone = configuredFromEnvOrSecret(
+    env,
+    ['ONE_TIME_WHAPI_PHONE', 'WHAPI_PHONE', 'WAPI_PHONE', 'BNA_WHATSAPP_NUMBER'],
+    [
+      {
+        envName: 'ONE_TIME_WHAPI_PHONE',
+        names: ['one-time-whapi-phone', 'whapi-phone', 'wapi-phone', 'bna-whatsapp-number'],
+        fileNames: ['one-time-whapi-phone.txt', 'whapi-phone.txt', 'wapi-phone.txt', 'bna-whatsapp-number.txt'],
+      },
+    ],
+    repoRoot,
+    inspectKeyholder,
+  );
 
   const items = [
     makeItem({
@@ -217,13 +507,16 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       id: 'SETUP-ONETIME-DB-001',
       title: 'Separate One Time database',
       clears: ['REQ-20260701-701'],
-      ready: status(env.ONE_TIME_DATABASE_URL || env.DATABASE_URL_ONE_TIME) === 'configured' || railway.database_reference_ready,
-      missing: status(env.ONE_TIME_DATABASE_URL || env.DATABASE_URL_ONE_TIME) === 'configured' || railway.database_reference_ready
+      ready: localDatabase.configured || railway.database_reference_ready,
+      missing: localDatabase.configured || railway.database_reference_ready
         ? []
-        : ['ONE_TIME_DATABASE_URL_or_DATABASE_URL_ONE_TIME_keyholder_alias'],
+        : ['DATABASE_URL_service_reference_resolves_non_empty_or_ONE_TIME_DATABASE_URL_alias'],
       warnings: [
         railway.database_reference_ready
-          ? `Ready from Railway Postgres service and DATABASE_URL service reference in ${railway.provisioning_report_path}.`
+          ? `Ready from current Railway DATABASE_URL service reference readback or ${railway.provisioning_report_path}.`
+          : '',
+        railway.current_variables?.ok && !railway.current_variables.database_url_usable
+          ? 'Railway one-time-web DATABASE_URL exists but resolves empty; set it to the actual One Time Postgres service reference before deploy.'
           : '',
       ],
       verification: ['npm run one-time:db:bootstrap'],
@@ -241,7 +534,9 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       ],
       warnings: [
         joinDomainReportMatches
-          ? `Railway custom domain is attached from ${options.joinDomainReport || DEFAULT_JOIN_DOMAIN_REPORT}; GoDaddy DNS still must verify.`
+          ? joinDomainReport?.verified === true
+            ? `Railway custom domain and GoDaddy DNS are verified from ${options.joinDomainReport || DEFAULT_JOIN_DOMAIN_REPORT}.`
+            : `Railway custom domain is attached from ${options.joinDomainReport || DEFAULT_JOIN_DOMAIN_REPORT}; GoDaddy DNS still must verify.`
           : '',
       ],
       verification: ['join-domain live smoke after deploy'],
@@ -250,24 +545,30 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       id: 'SETUP-ONETIME-ZOOM-001',
       title: 'Zoom session details',
       clears: ['REQ-20260701-708'],
-      ready: status(env.ONE_TIME_ZOOM_SESSION_ALIAS || env.ONE_TIME_ZOOM_DETAILS_ALIAS) === 'configured',
-      missing: status(env.ONE_TIME_ZOOM_SESSION_ALIAS || env.ONE_TIME_ZOOM_DETAILS_ALIAS) === 'configured'
+      ready: zoomSession.configured,
+      missing: zoomSession.configured
         ? []
-        : ['ONE_TIME_ZOOM_SESSION_ALIAS_or_private_keyholder_path'],
+        : ['ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias'],
+      warnings: [
+        zoomCredentialsReady
+          ? 'Zoom account/client credentials are present by safe keyholder alias; class session/join details are still a separate setup item.'
+          : 'Zoom account/client credential aliases were not all found.',
+      ],
       verification: ['member-gated class-link smoke; no public raw Zoom link'],
     }),
     makeItem({
       id: 'SETUP-ONETIME-VIMEO-001',
       title: 'Vimeo / Drive / OBS media setup',
       clears: ['REQ-20260701-713'],
-      ready:
-        status(env.VIMEO_ACCESS_TOKEN || env.ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS) === 'configured' &&
-        status(env.ONE_TIME_DRIVE_DROP_FOLDER_ALIAS) === 'configured',
+      ready: vimeoAccess.configured && driveDropFolder.configured,
       missing: [
-        status(env.VIMEO_ACCESS_TOKEN || env.ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS) === 'configured'
-          ? ''
-          : 'VIMEO_ACCESS_TOKEN_alias_or_keyholder_path',
-        status(env.ONE_TIME_DRIVE_DROP_FOLDER_ALIAS) === 'configured' ? '' : 'ONE_TIME_DRIVE_DROP_FOLDER_ALIAS',
+        vimeoAccess.configured ? '' : 'VIMEO_ACCESS_TOKEN_alias_or_keyholder_path',
+        driveDropFolder.configured ? '' : 'ONE_TIME_DRIVE_DROP_FOLDER_ALIAS',
+      ],
+      warnings: [
+        vimeoClientId.configured && vimeoClientSecret.configured
+          ? 'Vimeo client credentials are present by safe keyholder alias; upload/readback still needs an access token alias.'
+          : 'Vimeo client credential aliases were not all found.',
       ],
       verification: ['fingerprint-only Vimeo readback', 'Drive intake/drop-folder readback'],
     }),
@@ -275,12 +576,10 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       id: 'SETUP-ONETIME-STRIPE-001',
       title: 'Rabbi Stripe sandbox',
       clears: ['REQ-20260701-714'],
-      ready: stripeTestKeyReady && status(env.ONE_TIME_STRIPE_PRICE_ID || env.ONE_TIME_STRIPE_PRICE_ALIAS) === 'configured',
+      ready: stripeTestKeyReady && stripePrice.configured,
       missing: [
         stripeTestKeyReady ? '' : 'rabbi_stripe_test_secret_key_alias_or_test_key_status',
-        status(env.ONE_TIME_STRIPE_PRICE_ID || env.ONE_TIME_STRIPE_PRICE_ALIAS) === 'configured'
-          ? ''
-          : '67_month_product_price_id_or_alias',
+        stripePrice.configured ? '' : '67_month_product_price_id_or_alias',
       ],
       warnings: [stripeLiveKeyPresent ? 'Live Stripe key appears configured; sandbox-only smoke must not use it.' : ''],
       verification: ['sandbox Stripe smoke only; no live payment'],
@@ -288,16 +587,11 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     makeItem({
       id: 'SETUP-ONETIME-WHAPI-001',
       title: 'Whapi/WAPI provider details',
-      ready:
-        status(env.WHAPI_TOKEN || env.WAPI_API_KEY || env.ONE_TIME_WHAPI_TOKEN_ALIAS) === 'configured' &&
-        status(env.ONE_TIME_WHAPI_INSTANCE_ID || env.WHAPI_INSTANCE_ID) === 'configured' &&
-        status(env.ONE_TIME_WHAPI_PHONE) === 'configured',
+      ready: whapiToken.configured && whapiInstance.configured && whapiPhone.configured,
       missing: [
-        status(env.WHAPI_TOKEN || env.WAPI_API_KEY || env.ONE_TIME_WHAPI_TOKEN_ALIAS) === 'configured'
-          ? ''
-          : 'whapi_wapi_token_alias',
-        status(env.ONE_TIME_WHAPI_INSTANCE_ID || env.WHAPI_INSTANCE_ID) === 'configured' ? '' : 'whapi_wapi_instance_id',
-        status(env.ONE_TIME_WHAPI_PHONE) === 'configured' ? '' : 'whapi_wapi_phone_number',
+        whapiToken.configured ? '' : 'whapi_wapi_token_alias',
+        whapiInstance.configured ? '' : 'whapi_wapi_instance_id',
+        whapiPhone.configured ? '' : 'whapi_wapi_phone_number',
       ],
       verification: ['safe test send only in later exact packet'],
     }),
@@ -338,6 +632,7 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     secret_values_printed: false,
     mode: options.railwayOnly ? 'railway_only' : 'full_setup',
     checklist,
+    railway_variable_readback: railway.current_variables || null,
     ready_count: readyCount,
     total_count: scopedItems.length,
     all_required_external_setup_ready: blockers.length === 0,
