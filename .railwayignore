@@ -1,0 +1,68 @@
+# Keep Railway deploy uploads focused on runtime files.
+# The repo contains large local media, audits, screenshots, and evidence
+# packages that are source-of-truth for Codex but are not needed in the app
+# container.
+
+.git/
+.codex/
+.secrets/
+.runtime/
+.next/
+node_modules/
+
+media-inbox/
+media-drop/
+screenshots/
+renders/
+tmp/
+temp/
+install-packages/
+.tmp-lighthouse/
+logs/
+
+docs/
+memory/
+memory-topics/
+raw-input/
+tasks-pending/
+content-memory/
+agents/
+brand-kit/
+templates/
+tools/
+tests/
+
+# Exclude bulky ops evidence by default, then keep the small runtime/setup
+# files that server helpers and One Time database bootstrap can reference.
+ops/**
+!ops/
+!ops/action-registry.json
+!ops/action-registry/
+!ops/action-registry/actions.json
+!ops/route-registry.json
+!ops/openai-sidekick-capabilities.md
+!ops/agent-task-ledger.jsonl
+!ops/agent-changelog.md
+!ops/one-time-mishnah/
+!ops/one-time-mishnah/separate-instance-seed.sql
+!ops/one-time-mishnah/separate-instance-isolation-scan.sql
+
+*.log
+*.tmp
+*.bak
+*.zip
+*.tar
+*.tgz
+*.mp4
+*.mov
+*.m4a
+*.mp3
+*.wav
+*.webm
+*.sqlite
+*.sqlite3
+*.db
+
+lighthouse-report.html
+playwright-report/
+test-results/
