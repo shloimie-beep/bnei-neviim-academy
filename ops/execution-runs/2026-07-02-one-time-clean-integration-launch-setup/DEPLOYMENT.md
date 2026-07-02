@@ -13,3 +13,6 @@ database, and `join.onetimeonetime.com` gates are ready.
 
 Post-setup packet:
 `ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md`
+
+PR status: draft PR #63 is open and clean. Separate One Time deploy is still
+blocked until external setup readiness passes.

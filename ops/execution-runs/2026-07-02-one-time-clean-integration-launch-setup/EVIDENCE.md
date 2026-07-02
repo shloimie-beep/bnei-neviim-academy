@@ -51,3 +51,12 @@ recorded in the readiness report for:
 - Whapi/WAPI token, instance, and phone number.
 - Final campaign copy/list/suppression proof, gated until the live join link
   exists.
+
+## PR Evidence
+
+- Commit pushed:
+  `13e87314b10c18ce9eb76d53365eed1c3cd13d53`.
+- Draft PR #63:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/63`.
+- PR status after creation: draft, `mergeStateStatus=CLEAN`, base `master`,
+  head `codex/one-time-clean-integration-20260702`.

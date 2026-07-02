@@ -1,6 +1,6 @@
 # Status
 
-Current status: `in_progress`.
+Current status: `done`.
 
 - `REQ-20260702-901`: done. Clean branch
   `codex/one-time-clean-integration-20260702` was created from
@@ -14,7 +14,9 @@ Current status: `in_progress`.
   setup remains externally blocked by exact missing Railway/database/domain/
   provider fields recorded in
   `ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md`.
-- `REQ-20260702-905`: pending push/PR closeout.
+- `REQ-20260702-905`: done. Clean branch was committed, pushed, and opened as
+  draft PR #63:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/63`.
 
 Guardrails held: no external write, DNS mutation, email send, WhatsApp send,
 live Stripe payment, provider mutation, hard delete, secret exposure, or

@@ -12,7 +12,7 @@ Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 | REQ-20260702-902 | done | Add external setup readiness checker |
 | REQ-20260702-903 | done | Restore One Time setup tasks and closeout packets |
 | REQ-20260702-904 | done | Run safe readiness checks |
-| REQ-20260702-905 | in_progress | Push clean branch and leave next action |
+| REQ-20260702-905 | done | Push clean branch and leave next action |
 
 ## Guardrails
 
