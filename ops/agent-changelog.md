@@ -27944,6 +27944,8 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Safe checks passed: focused One Time/Railway tests, Railway provisioning
   dry-run, DB bootstrap dry-run, BNA run validation/source coverage/stale
   evidence, PQC, secrets audit, JSON validation, and `git diff --check`.
+- Draft PR #63 opened and is clean:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/63`.
 - Expected blockers remain exact: the setup checker reports `0/8` external
   setup areas ready, starting with separate One Time Railway target labels and
   required non-secret env values.

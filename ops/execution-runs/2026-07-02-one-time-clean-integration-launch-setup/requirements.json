@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-02-one-time-clean-integration-launch-setup",
   "title": "One Time Clean Integration From PR #62",
-  "updated_at": "2026-07-02T15:25:00+03:00",
+  "updated_at": "2026-07-02T15:45:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260702-005",
@@ -256,7 +256,7 @@
       "id": "REQ-20260702-905",
       "title": "Push clean branch and leave next action",
       "expected_result": "Clean branch is pushed with a PR or exact blocker, and forbidden external actions remain unperformed.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260702-005",
       "source_statement_ids": [
         "RAW-20260702-005-S006"
@@ -271,9 +271,9 @@
       "depends_on": [
         "REQ-20260702-904"
       ],
-      "implementation_status": "Validation passed; commit, push, and PR are pending.",
+      "implementation_status": "Clean branch committed, pushed, and opened as draft PR #63. Separate One Time deploy remains correctly blocked until external setup readiness passes.",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, open PR, then update this requirement with PR evidence.",
+      "next_action": "Operator supplies the external setup values in TASK-20260702-001 and related launch-unblocker tasks; then run the post-setup deploy/live-smoke packet.",
       "acceptance_criteria": [
         "Branch pushed.",
         "PR created or existing PR updated.",
@@ -281,16 +281,21 @@
         "NEXT-SESSION names the exact remaining setup task."
       ],
       "evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/63",
         "ops/execution-runs/2026-07-02-one-time-clean-integration-launch-setup/NEXT-SESSION.md"
       ],
       "verification": [
-        "PENDING: git commit",
-        "PENDING: git push",
-        "PENDING: gh pr create"
+        "PASS: git commit 13e87314b10c18ce9eb76d53365eed1c3cd13d53",
+        "PASS: git push -u origin codex/one-time-clean-integration-20260702",
+        "PASS: gh pr create -> https://github.com/shloimie-beep/bnei-neviim-academy/pull/63",
+        "PASS: gh pr view 63 reports mergeStateStatus CLEAN and isDraft true"
       ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-07-02T15:25:00+03:00"
+      "updated_at": "2026-07-02T15:45:00+03:00",
+      "implementation_commit": "13e87314b10c18ce9eb76d53365eed1c3cd13d53",
+      "pushed_commit": "13e87314b10c18ce9eb76d53365eed1c3cd13d53",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/63"
     }
   ]
 }
