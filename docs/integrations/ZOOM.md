@@ -13,6 +13,8 @@ Scope: One Time class meetings, setup-session planning, recording metadata, and 
 ## Current Local Implementation
 
 - Adapter: `src/lib/integrations/zoom.js`
+- One Time local media pipeline:
+  `src/platform/integrations/media-local-pipeline.js`
 - Existing safe operations:
   - config/readiness validation
   - required credential-name reporting
@@ -22,6 +24,10 @@ Scope: One Time class meetings, setup-session planning, recording metadata, and 
   - no-write webhook attendance event preview
   - no-write attendance correction draft
   - explicit meeting-create approval guard that currently throws instead of writing
+- One Time media pipeline turns Zoom recording metadata and participant events
+  into class-session handoff, attendance/minutes preview, correction draft, and
+  video-reference draft without storing raw meeting URLs or accepting live
+  webhooks.
 
 ## Configuration Names
 
@@ -59,3 +65,6 @@ Needed before writes:
 - Creating live Zoom meetings, registrants, webhook listeners, attendance
   writes, granting roles, or changing users remains blocked until explicit
   approval, release, and live smoke proof.
+- `node --test tests/one-time-media-local-pipeline.test.js` verifies Zoom
+  recording handoff, no raw URL/query secret exposure, and no meeting,
+  webhook, attendance, upload, publish, or notification writes.

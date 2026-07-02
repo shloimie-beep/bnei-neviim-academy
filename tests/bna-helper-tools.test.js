@@ -347,8 +347,10 @@ test('Operations exposes the HELPER-03 helper drawer, scoped context, and client
   assert.match(operations, /'report_problem'/);
   assert.match(operations, /displayName: workspace\.display_name \|\| workspaceBranding\?\.workspace_name_override/);
   assert.match(operations, /function helperFallbackDisplayName/);
-  assert.match(operations, /return 'BNA Operations Helper'/);
+  assert.match(operations, /return 'Operations Assistant'/);
   assert.match(operations, /function renderBnaHelperDock/);
+  assert.match(operations, /class="bna-helper-launcher"/);
+  assert.match(operations, /data-action-id="ACTION-OPERATIONS-HELPER-OPEN"/);
   assert.match(operations, /function renderBnaHelperScopeCard/);
   assert.match(operations, /function submitBnaHelperMessage/);
   assert.match(operations, /function executeBnaHelperPlan/);

@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-07-02T09:55:24+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "raw_id": "RAW-20260702-002",
+  "external_write_performed": false,
+  "email_send_performed": false,
+  "whatsapp_send_performed": false,
+  "live_payment_performed": false,
+  "dns_mutation_performed": false,
+  "production_delete_performed": false,
+  "ghl_runtime_added": false,
+  "local_verified_requirements": [
+    "REQ-20260701-705",
+    "REQ-20260701-706",
+    "REQ-20260701-707",
+    "REQ-20260701-709"
+  ],
+  "partial_verification_requirements": [
+    "REQ-20260701-717"
+  ],
+  "commands": [
+    { "command": "npm run pqc:all", "status": "pass" },
+    { "command": "npm run bna:run:status", "status": "pass" },
+    { "command": "npm run bna:run:next", "status": "pass_no_unblocked_batch_before_update" },
+    { "command": "npm run app:smoke:one-time-trial-referral", "status": "pass" },
+    { "command": "npm run app:smoke:one-time-payment-access-class-links", "status": "pass" },
+    { "command": "node --test tests/one-time-local-beta-product-contract.test.js tests/one-time-stripe-local-beta.test.js tests/one-time-class-course-ingestion.test.js tests/one-time-announcements-first-community.test.js tests/one-time-progress-rewards-local-beta.test.js", "status": "pass", "passed": 22 },
+    { "command": "node --test tests/one-time-focused-landing.test.js tests/rabbi-checkout-access.test.js tests/one-time-product-system.test.js tests/one-time-external-user-portal.test.js tests/one-time-role-auth-model.test.js", "status": "pass", "passed": 59 },
+    { "command": "npm run app:smoke:one-time-launch-safe-local", "status": "pass", "report": "ops/local-smokes/2026-07-02T06-47-35-826Z-one-time-launch-safe-local-smoke.md" },
+    { "command": "node --test tests/one-time-drive-dropoff-email-watch.test.js tests/one-time-media-local-pipeline.test.js tests/provider-api-usage-readiness.test.js tests/one-time-launch-readiness.test.js", "status": "pass", "passed": 27 },
+    { "command": "node --test tests/one-time-resend-local-outbox.test.js tests/assistant-campaign-control-contract.test.js tests/communications-integrations-contract.test.js tests/resend-client.test.js tests/resend-inbound-crm.test.js tests/resend-inbound-webhook.test.js", "status": "pass", "passed": 35 },
+    { "command": "npm run one-time:railway-target:guard", "status": "expected_blocked" },
+    { "command": "npm run one-time:railway-provision:check -- --write-report", "status": "pass_no_write" },
+    { "command": "npm run one-time:db:bootstrap", "status": "pass_no_write" },
+    { "command": "npm run railway:doctor", "status": "pass_current_bna_service" },
+    { "command": "npm run bna:run:blockers", "status": "pass" },
+    { "command": "npm run bna:run:source-coverage", "status": "pass" },
+    { "command": "npm run bna:run:stale-evidence", "status": "pass" },
+    { "command": "npm run bna:run:validate", "status": "pass" },
+    { "command": "npm run bna:run:status", "status": "pass" },
+    { "command": "npm run bna:run:source-coverage", "status": "pass", "source_statements": 31, "unmapped_executable_statements": 0 },
+    { "command": "npm run bna:run:stale-evidence", "status": "pass", "stale_evidence": 0 },
+    { "command": "npm run bna:run:next", "status": "pass_no_unblocked_batch_after_update" },
+    { "command": "npm run secrets:audit", "status": "pass" },
+    { "command": "git diff --check", "status": "pass_line_ending_warnings_only" }
+  ],
+  "remaining_operator_actions": [
+    "Provide exact separate One Time Railway project/service/environment labels.",
+    "Provide separate One Time database alias/keyholder label.",
+    "Set PUBLIC_SITE_MODE=one_time, DEFAULT_WORKSPACE_KEY=rabbi_sheller_provider, DEFAULT_PROJECT_KEY=one_time_mishnah_class, ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com in the One Time service.",
+    "Configure join.onetimeonetime.com only; do not touch apex/root.",
+    "Provide Zoom session details through private setup channel.",
+    "Provide Vimeo token alias/path and test-upload decisions.",
+    "Provide Rabbi Stripe test credential alias/path and $67/month product/price setup.",
+    "Provide final campaign copy/list/suppression/link proof before seed or real campaign packet.",
+    "Provide Rabbi Whapi/WAPI provider account/number/token/instance/webhook details before safe WhatsApp test-send packet."
+  ]
+}

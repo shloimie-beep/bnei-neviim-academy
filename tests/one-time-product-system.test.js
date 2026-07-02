@@ -209,6 +209,10 @@ test('SQL migrations create OneTime product system without final pricing or exte
 });
 
 test('server exposes scoped OneTime product APIs and public draft routes', () => {
+  const signupRouteBlock = server.slice(
+    server.indexOf("app.post(['/api/bna/product-leads', '/api/one-time/interest']"),
+    server.indexOf("app.get('/api/bna/one-time/calendar'"),
+  );
   [
     "app.get('/api/bna/one-time/product-system'",
     "app.get(['/api/bna/product-leads', '/api/bna/one-time/product-leads']",
@@ -222,24 +226,132 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /createOneTimeProductSystemSQL/);
   assert.match(server, /railway-migration-2026-06-16-one-time-product-system\.sql/);
   assert.match(server, /isScopedOpsPathAllowed[\s\S]*\/api\/bna\/one-time\/product-system/);
-  assert.match(server, /no_checkout: true/);
-  assert.match(server, /no_access_granted: true/);
-  assert.match(server, /external_write_performed: false/);
+  assert.match(signupRouteBlock, /no_checkout: true/);
+  assert.match(signupRouteBlock, /no_access_granted: false/);
+  assert.match(signupRouteBlock, /access_grant_performed: true/);
+  assert.match(signupRouteBlock, /trial_signup: trialSignup/);
+  assert.match(signupRouteBlock, /contact_tracking: contactTracking/);
+  assert.match(signupRouteBlock, /trial_access: trialAccess/);
+  assert.match(signupRouteBlock, /confirmation_email: confirmationEmail/);
+  assert.match(signupRouteBlock, /transactional_email_send_performed: confirmationEmail\.sent === true/);
+  assert.match(signupRouteBlock, /no_bulk_campaign_send: true/);
+  assert.match(signupRouteBlock, /imported_lead_send_performed: false/);
+  assert.match(signupRouteBlock, /campaign_send_performed: false/);
+  assert.match(signupRouteBlock, /external_crm_write_performed: false/);
   assert.match(server, /product_readiness: oneTimeProductReadinessView/);
-  assert.match(server, /app\.get\(\['\/one-time', '\/one-time\/mishnayos', '\/one-time\/us', '\/one-time\/uk', '\/one-time\/israel', '\/one-time\/interest', '\/one-time\/member-login'\]/);
+  assert.match(server, /app\.get\(\['\/one-time', '\/one-time\/mishnayos', '\/one-time\/us', '\/one-time\/uk', '\/one-time\/israel', '\/one-time\/interest'\]/);
+  assert.match(server, /app\.get\(\['\/rabbi-member', '\/rabbi\/member', '\/one-time\/member-login'\]/);
 });
 
-test('public OneTime draft page is noindex, interest-only, and has no checkout call', () => {
+test('OneTime launch signup writes only scoped first-party tracking records', () => {
+  const trackingBlock = server.slice(
+    server.indexOf('function oneTimeSignupTrackingTags'),
+    server.indexOf('async function oneTimeProductSystemPayload'),
+  );
+  assert.match(server, /function findExistingOneTimeProductLead/);
+  assert.match(server, /function ensureOneTimeSignupScopedTracking/);
+  assert.match(server, /function upsertOneTimeSignupContact/);
+  assert.match(server, /function upsertOneTimeSignupParentLead/);
+  assert.match(server, /function createOneTimeSignupTrackingCommunication/);
+  assert.match(server, /function attachOneTimeSignupTrackingToProductLead/);
+  assert.match(server, /FROM bna_product_leads[\s\S]*WHERE project_id = \$1[\s\S]*AND program_key = \$2/);
+  assert.match(server, /UPDATE bna_product_leads/);
+  assert.match(server, /dedupe_status: existing \? 'updated_existing_product_lead' : 'created_product_lead'/);
+  assert.match(server, /FROM bna_contacts[\s\S]*WHERE workspace_id = \$1/);
+  assert.match(server, /INSERT INTO bna_contacts/);
+  assert.match(server, /UPDATE bna_contacts/);
+  assert.match(server, /FROM bna_parent_leads[\s\S]*WHERE project_id = \$1/);
+  assert.match(server, /INSERT INTO bna_parent_leads/);
+  assert.match(server, /UPDATE bna_parent_leads/);
+  assert.match(server, /INSERT INTO bna_contact_communications/);
+  assert.match(server, /source: 'one_time_launch_signup'/);
+  assert.match(server, /ONE_TIME_PROVIDER_WORKSPACE_KEY/);
+  assert.match(server, /ONE_TIME_PROJECT_KEY/);
+  assert.match(server, /'one-time-trial-signup'/);
+  assert.match(server, /'one-time-no-send-until-approved'/);
+  assert.match(server, /'campaign_candidate_30_day_free'/);
+  assert.match(server, /no_send: true/);
+  assert.match(server, /no_checkout: true/);
+  assert.match(trackingBlock, /trial_access_grant_expected: true/);
+  assert.match(server, /external_write_performed: false/);
+  assert.match(server, /'web_assistant'/);
+  assert.match(server, /local trial access is handled through bna_access_grants/);
+  assert.doesNotMatch(trackingBlock, /GHL|GoHighLevel|LeadConnectorHQ|leadconnector\.hq/i);
+});
+
+test('OneTime launch signup grants idempotent 30-day local trial access without payment writes', () => {
+  const trialAccessBlock = server.slice(
+    server.indexOf('function oneTimeTrialAccessIdempotencyKey'),
+    server.indexOf('async function oneTimeProductSystemPayload'),
+  );
+  assert.match(server, /function ensureOneTimeTrialAccessGrant/);
+  assert.match(server, /function attachOneTimeTrialAccessMetadata/);
+  assert.match(server, /function oneTimeTrialAccessMetadata/);
+  assert.match(trialAccessBlock, /RABBI_TIER_KEYS\.LIVE_LIBRARY/);
+  assert.match(trialAccessBlock, /access_status = 'trial'/);
+  assert.match(trialAccessBlock, /startsAt: trialSignup\.trial_start_at/);
+  assert.match(trialAccessBlock, /expiresAt: trialSignup\.trial_end_at/);
+  assert.match(trialAccessBlock, /idempotencyKey/);
+  assert.match(trialAccessBlock, /source: 'one_time_trial_signup'/);
+  assert.match(trialAccessBlock, /payment_required_at_signup: false/);
+  assert.match(trialAccessBlock, /stripe_checkout_created: false/);
+  assert.match(trialAccessBlock, /subscription_created: false/);
+  assert.match(trialAccessBlock, /cancellation_or_refund_performed: false/);
+  assert.match(trialAccessBlock, /external_write_performed: false/);
+  assert.match(server, /access_grant_performed: true/);
+  assert.match(server, /preview_only: false/);
+  assert.doesNotMatch(trialAccessBlock, /stripeIntegration|greenInvoice|checkout-create|provider_checkout_url/);
+});
+
+test('OneTime launch signup sends one idempotent Resend confirmation only to the current signup', () => {
+  const confirmationBlock = server.slice(
+    server.indexOf('function oneTimeSignupConfirmationEmailIdempotencyKey'),
+    server.indexOf('async function oneTimeProductSystemPayload'),
+  );
+  assert.match(confirmationBlock, /function oneTimeSignupConfirmationEmailIdempotencyKey/);
+  assert.match(confirmationBlock, /function oneTimeSignupConfirmationEmailMetadata/);
+  assert.match(confirmationBlock, /async function existingOneTimeSignupConfirmationEmail/);
+  assert.match(confirmationBlock, /async function sendOneTimeSignupConfirmationEmail/);
+  assert.match(confirmationBlock, /templateKey: 'receipt_access'/);
+  assert.match(confirmationBlock, /!RESEND_API_KEY \|\| !RESEND_FROM_EMAIL/);
+  assert.match(confirmationBlock, /One Time signup confirmation requires the Resend sender identity/);
+  assert.match(confirmationBlock, /current_signup_recipient_only: true/);
+  assert.match(confirmationBlock, /no_bulk_campaign_send: true/);
+  assert.match(confirmationBlock, /imported_lead_send_performed: false/);
+  assert.match(confirmationBlock, /campaign_send_performed: false/);
+  assert.match(confirmationBlock, /whatsapp_send_performed: false/);
+  assert.match(confirmationBlock, /external_crm_write_performed: false/);
+  assert.match(confirmationBlock, /existingOneTimeSignupConfirmationEmail\(\{ projectId: project\.id, idempotencyKey \}\)/);
+  assert.match(confirmationBlock, /sendResendMessage\(\{/);
+  assert.match(confirmationBlock, /workspace: 'rabbi_sheller_provider'/);
+  assert.match(confirmationBlock, /from_email: ONE_TIME_EMAIL_FROM/);
+  assert.match(confirmationBlock, /reply_to: ONE_TIME_EMAIL_REPLY_TO/);
+  assert.doesNotMatch(confirmationBlock, /GHL|GoHighLevel|LeadConnectorHQ|leadconnector\.hq/i);
+});
+
+test('public OneTime trial page is noindex, no-card, and has no checkout call', () => {
   assert.match(oneTimeHtml, /<meta name="robots" content="noindex, nofollow">/);
   assert.match(oneTimeHtml, /OneTime Mishnayos/);
-  assert.match(oneTimeHtml, /Draft \/ noindex/);
-  assert.match(oneTimeHtml, /\$67 planned/);
-  assert.match(oneTimeHtml, /billing cadence still needs confirmation/);
+  assert.match(oneTimeHtml, /30-Day Free Trial/);
+  assert.match(oneTimeHtml, /Start 30 Days Free/);
+  assert.match(oneTimeHtml, /No card, no checkout/);
+  assert.match(oneTimeHtml, /No payment is collected during signup/);
+  assert.match(oneTimeHtml, /Your 30-day member access runs through/);
+  assert.match(oneTimeHtml, /sends only your signup confirmation email/);
+  assert.match(oneTimeHtml, /No payment, checkout, WhatsApp, imported-list email, campaign send, or external CRM write is approved by this form/);
+  assert.match(oneTimeHtml, /\$67\/month planned/);
+  assert.match(oneTimeHtml, /Watch Rabbi Video/);
+  assert.match(oneTimeHtml, /What Your Child Gets/);
+  assert.match(oneTimeHtml, /Private questions to Rabbi/);
+  assert.match(oneTimeHtml, /Parent progress basics/);
+  assert.match(oneTimeHtml, /name="timezone"/);
+  assert.match(oneTimeHtml, /name="utm_campaign"/);
+  assert.match(oneTimeHtml, /free_mishnayos_class/);
   assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
-  assert.match(oneTimeHtml, /No payment or external send is approved by this form/);
   assert.doesNotMatch(oneTimeHtml, /\/api\/rabbi\/checkout/);
   assert.doesNotMatch(oneTimeHtml, /Stripe checkout/i);
   assert.doesNotMatch(oneTimeHtml, /GreenInvoice checkout/i);
+  assert.doesNotMatch(oneTimeHtml, /zoom\.us|zoom\.com/i);
 });
 
 test('Operations provider workspace reads OneTime product system and labels pricing as pending', () => {

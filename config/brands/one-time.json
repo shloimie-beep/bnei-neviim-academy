@@ -1,13 +1,26 @@
 {
   "key": "one_time",
-  "name": "One Time Mishnah Class",
-  "short_name": "One Time",
-  "workspace_key": "one_time_mishnah_class",
+  "public_name": "OneTimeOneTime Mishnah",
+  "name": "OneTimeOneTime Mishnah",
+  "short_name": "OneTimeOneTime",
+  "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "audience": "partner_mishnah_program",
   "workspace_profile": "service_provider",
-  "primary_color": "#214f4b",
-  "accent_color": "#c8902e",
+  "brand_family": "rabbi_onetime",
+  "authoritative_palette": "rabbi_onetime_black_yellow",
+  "primary_color": "#080910",
+  "accent_color": "#ede518",
+  "palette": {
+    "black": "#080910",
+    "charcoal": "#15171d",
+    "yellow": "#ede518",
+    "white": "#ffffff",
+    "muted": "#8f97a8"
+  },
+  "forbidden_palette_sources": [
+    "bna_cream_navy_teal_cyan"
+  ],
   "secrets_included": false,
   "external_write_performed": false
 }

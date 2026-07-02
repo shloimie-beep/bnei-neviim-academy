@@ -1,0 +1,158 @@
+{
+  "generated_at": "2026-07-01T15:56:10.710Z",
+  "requirement_id": "REQ-20260701-613",
+  "scope": {
+    "workspace_key": "rabbi_sheller_provider",
+    "project_key": "one_time_mishnah_class",
+    "project_id_present": true
+  },
+  "audit_mode": "read_only_aggregate_counts",
+  "raw_people_or_payment_values_written": false,
+  "stripe_api_called": false,
+  "checkout_created": false,
+  "payment_link_created": false,
+  "charge_performed": false,
+  "subscription_changed": false,
+  "cancellation_or_refund_performed": false,
+  "external_write_performed": false,
+  "tables_available": {
+    "bna_members": true,
+    "bna_access_grants": true,
+    "bna_checkout_records": true,
+    "bna_payment_events": true,
+    "bna_payment_provider_settings": true,
+    "bna_product_tiers": true,
+    "signups": true
+  },
+  "columns_used": {
+    "bna_payment_events_status": "status",
+    "signups_payment_status": "payment_status"
+  },
+  "counts": {
+    "members_by_status_tier": [
+      {
+        "access_status": "active",
+        "access_tier": "library_only",
+        "count": 4
+      },
+      {
+        "access_status": "canceled",
+        "access_tier": "library_only",
+        "count": 4
+      },
+      {
+        "access_status": "canceled",
+        "access_tier": "live_plus_library",
+        "count": 2
+      },
+      {
+        "access_status": "trial",
+        "access_tier": "live_plus_library",
+        "count": 2
+      }
+    ],
+    "access_grants_by_status_source_tier": [
+      {
+        "status": "active",
+        "source": "one_time_trial_signup",
+        "tier_key": "live_library",
+        "count": 2
+      },
+      {
+        "status": "revoked",
+        "source": "manual_override",
+        "tier_key": "live_library",
+        "count": 2
+      }
+    ],
+    "checkout_records_by_provider_status": [],
+    "payment_events_by_provider_status": [],
+    "provider_settings_by_provider_mode": [
+      {
+        "provider": "green_invoice",
+        "mode": "live",
+        "enabled": false,
+        "secret_configured": false,
+        "count": 1
+      },
+      {
+        "provider": "green_invoice",
+        "mode": "test",
+        "enabled": false,
+        "secret_configured": false,
+        "count": 1
+      },
+      {
+        "provider": "stripe",
+        "mode": "live",
+        "enabled": false,
+        "secret_configured": false,
+        "count": 1
+      },
+      {
+        "provider": "stripe",
+        "mode": "test",
+        "enabled": false,
+        "secret_configured": false,
+        "count": 1
+      }
+    ],
+    "product_tiers_by_status": [
+      {
+        "status": "active",
+        "tier_key": "library_only",
+        "count": 1,
+        "stripe_link_configured_count": 0,
+        "green_invoice_link_configured_count": 0
+      },
+      {
+        "status": "active",
+        "tier_key": "live_library",
+        "count": 1,
+        "stripe_link_configured_count": 0,
+        "green_invoice_link_configured_count": 0
+      },
+      {
+        "status": "draft",
+        "tier_key": "interactive_zoom",
+        "count": 1,
+        "stripe_link_configured_count": 0,
+        "green_invoice_link_configured_count": 0
+      },
+      {
+        "status": "draft",
+        "tier_key": "library_live_low_touch",
+        "count": 1,
+        "stripe_link_configured_count": 0,
+        "green_invoice_link_configured_count": 0
+      },
+      {
+        "status": "draft",
+        "tier_key": "vip_high_touch",
+        "count": 1,
+        "stripe_link_configured_count": 0,
+        "green_invoice_link_configured_count": 0
+      }
+    ],
+    "legacy_signups_payment_status": [
+      {
+        "payment_status": "paid",
+        "count": 5
+      },
+      {
+        "payment_status": "partial",
+        "count": 1
+      },
+      {
+        "payment_status": "pending",
+        "count": 3
+      }
+    ]
+  },
+  "blockers_before_migration": [
+    "Need billing source of truth and exact paying-user list/segment owner before any migration.",
+    "Need explicit approval before Stripe/Green Invoice API calls, checkout/payment-link creation, subscription changes, cancellations, or refunds.",
+    "Need reconciliation rules for trial, active paid, comped/manual, expired, revoked, and refund-review access states before migration."
+  ],
+  "recommendation": "Use this aggregate as a pre-migration map only. Do not migrate, cancel, refund, charge, or change subscriptions until the billing source of truth and exact paying-user list/segment are approved."
+}

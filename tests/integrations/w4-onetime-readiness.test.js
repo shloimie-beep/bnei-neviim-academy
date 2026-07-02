@@ -12,18 +12,19 @@ function assertNoSecretValues(value) {
   assert.equal(/password["']?\s*[:=]\s*["'][^"']{4,}/i.test(text), false);
 }
 
-test('W4 One Time readiness composes Vimeo, Zoom, and Resend cards without external writes', () => {
+test('W4 One Time readiness composes Vimeo, Zoom, Resend, and Stripe cards without external writes', () => {
   const payload = buildOneTimeIntegrationReadinessPayload({
     checkedAt: '2026-06-19T00:00:00.000Z',
     videoHostingReadiness: { configured: true, connected: true, account_owner: 'Rabbi Elie Scheller' },
     zoomReadiness: { configured: true, connected: false, blocker: 'OAuth account owner approval required.' },
     resendReadiness: { configured: false, blocker: 'Domain is not verified.' },
+    stripeReadiness: { configured: true, connected: true, mode: 'test_mock', account_owner: 'Shloimie' },
   });
 
   assert.equal(payload.preview_only, true);
   assert.equal(payload.external_write_performed, false);
   assert.equal(payload.secret_values_included, false);
-  assert.deepEqual(payload.cards.map((card) => card.provider), ['vimeo', 'zoom', 'resend']);
+  assert.deepEqual(payload.cards.map((card) => card.provider), ['vimeo', 'zoom', 'resend', 'stripe']);
   assert.ok(payload.external_gates.includes('live_smoke_after_deploy'));
   assertNoSecretValues(payload);
 });
@@ -33,6 +34,7 @@ test('W4 One Time readiness blocks live provider mutations and uses mock connect
     videoHostingReadiness: { configured: true, connected: true },
     zoomReadiness: { configured: true, connected: true },
     resendReadiness: { configured: true, connected: true, domain_verified: true },
+    stripeReadiness: { configured: true, connected: true, mode: 'test_mock' },
   });
 
   for (const card of payload.cards) {
@@ -43,4 +45,5 @@ test('W4 One Time readiness blocks live provider mutations and uses mock connect
   assert.ok(payload.cards.find((card) => card.provider === 'vimeo').blocked_actions.includes('video_upload'));
   assert.ok(payload.cards.find((card) => card.provider === 'zoom').blocked_actions.includes('meeting_create'));
   assert.ok(payload.cards.find((card) => card.provider === 'resend').blocked_actions.includes('email_send'));
+  assert.ok(payload.cards.find((card) => card.provider === 'stripe').blocked_actions.includes('live_charge'));
 });

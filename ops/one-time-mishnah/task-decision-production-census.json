@@ -861,7 +861,7 @@
     },
     {
       "id": "completed_activity",
-      "label": "Completed / Activity",
+      "label": "Done / Activity",
       "description": "Closed work and recent task activity."
     },
     {
@@ -923,7 +923,7 @@
     "Blocked: human or external blockers only, with blocker owner and next action.",
     "Due Soon: open work due within seven days.",
     "Calendar: open work with due_date or planned_at.",
-    "Completed / Activity: done/archive/history rows with proof or verification notes.",
+    "Done / Activity: done/archive/history rows with proof or verification notes.",
     "Archived: archived, hidden, or duplicate-archived rows excluded from default active views."
   ],
   "duplicate_groups": [

@@ -36,6 +36,9 @@ test('integration readiness includes Thursday blockers and provider-owned status
   assert.match(server, /GoDaddy Delegate Access\/DNS is blocked until Thursday/);
   assert.match(server, /function buildWapiStatusCard/);
   assert.match(server, /provider_owned_readiness/);
+  assert.match(server, /api_token_fingerprint: outboundConfigured \? sha256Hex\(WAPI_API_TOKEN\)\.slice\(0, 12\) : null/);
+  assert.match(server, /phone_number_fingerprint: phoneConfigured \? sha256Hex\(WAPI_PHONE_NUMBER\)\.slice\(0, 12\) : null/);
+  assert.match(server, /webhook_route: '\/api\/webhooks\/wapi'/);
   assert.match(server, /function buildProviderScopedIntegrationsStatusCard/);
   assert.match(server, /bna_provider_secret_refs/);
   assert.match(operations, /Integration Readiness/);

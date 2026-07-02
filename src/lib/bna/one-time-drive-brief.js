@@ -453,7 +453,7 @@ function oneTimeOwnerAssignments() {
     {
       person_name: 'Shloimie',
       role: 'project admin',
-      access_level: 'manager',
+      access_level: 'admin',
       workspace_key: ONE_TIME_WORKSPACE_KEY,
       project_key: ONE_TIME_PROJECT_KEY,
     },

@@ -1,1 +1,4 @@
-module.exports = require('./service');
+module.exports = {
+  ...require('./service'),
+  ...require('./announcements-first'),
+};

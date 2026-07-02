@@ -7,6 +7,13 @@ const siteNav = fs.readFileSync('public/js/bna-site-nav.js', 'utf8');
 const siteNavCss = fs.readFileSync('public/css/bna-site-nav.css', 'utf8');
 const operations = fs.readFileSync('public/operations.html', 'utf8');
 
+function functionSlice(source, name) {
+  const start = source.indexOf(`function ${name}`);
+  assert.notEqual(start, -1, `missing function ${name}`);
+  const next = source.indexOf('\n        function ', start + 1);
+  return next === -1 ? source.slice(start) : source.slice(start, next);
+}
+
 const publicPages = [
   'public/index.html',
   'public/blog.html',
@@ -92,20 +99,22 @@ test('UI-01 audience pages keep safe public promises', () => {
   assert.match(parents, /Six months free for early users/);
 });
 
-test('UI-01 Operations topbar has useful chips and a single visible helper entry', () => {
+test('UI-01 Operations topbar stays clean and helper floats once', () => {
+  const mobileHeader = functionSlice(operations, 'renderMobileHeader');
+  const topbar = functionSlice(operations, 'renderOpsTopbar');
+  const helperDock = functionSlice(operations, 'renderBnaHelperDock');
   assert.doesNotMatch(operations, /Search current workspace/);
-  for (const label of ['Need decision', 'Codex Queue', 'Student accountability', 'Alerts']) {
-    assert.match(operations, new RegExp(label));
-  }
-  assert.match(operations, /function operationsTopbarStatusChips/);
   assert.match(operations, /platform: \['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'\]/);
-  assert.match(operations, /Ask \/ Search/);
+  assert.match(operations, /function renderOperationsSubnav/);
+  assert.match(operations, /function renderOperationsFilterRow/);
+  assert.match(operations, /class="ops-brand-topbar saas-topbar"/);
   assert.match(operations, /data-bna-helper-open="true"/);
-  assert.equal((operations.match(/data-bna-helper-open="true"/g) || []).length, 2);
-  assert.match(operations, /<header class="mobile-app-header">[\s\S]*data-bna-helper-open="true"/);
-  assert.match(operations, /<header class="ops-brand-topbar saas-topbar">[\s\S]*data-bna-helper-open="true"/);
-  assert.doesNotMatch(operations, /class="bna-helper-launcher"/);
-  assert.doesNotMatch(operations, /\.bna-helper-launcher/);
+  assert.equal((operations.match(/data-bna-helper-open="true"/g) || []).length, 1);
+  assert.doesNotMatch(operations, /Ask \/ Search/);
+  assert.doesNotMatch(mobileHeader, /data-bna-helper-open="true"/);
+  assert.doesNotMatch(topbar, /data-bna-helper-open="true"/);
+  assert.match(helperDock, /class="bna-helper-launcher"/);
+  assert.match(operations, /\.bna-helper-launcher/);
   assert.doesNotMatch(operations, /bna-bot-widget\.js/);
   assert.doesNotMatch(operations, /openTaskModal\(\)">New Task/);
 });

@@ -1,10 +1,14 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-19",
+  "updated_at": "2026-07-01",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
-    "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+    "related_goal_ids": [
+      "GOAL-CORE-002",
+      "GOAL-CORE-010",
+      "GOAL-CORE-015"
+    ]
   },
   "actions": [
     {
@@ -12,15 +16,38 @@
       "label": "BNA Helper",
       "surface": "operations",
       "route": "/operations",
-      "selector_hint": "[data-helper-open], .local-toolbar-helper, .mobile-helper-button",
-      "expected_behavior": "Opens the scoped Operations helper drawer.",
+      "selector_hint": ".bna-helper-launcher[data-bna-helper-open=\"true\"][data-action-id=\"ACTION-OPERATIONS-HELPER-OPEN\"]",
+      "expected_behavior": "Opens the scoped Operations helper drawer from the bottom-right floating launcher.",
       "permission": "super_admin",
       "status": "active",
       "test": {
         "type": "helper_command",
-        "expected_result": "Helper context returns scoped tools and no duplicate public helper widget."
+        "expected_result": "Helper context returns scoped tools, the Operations shell renders one floating helper launcher, and no duplicate public helper widget is present."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-BUFFER-SCHEDULE-CONFIRM",
+      "label": "Confirm Buffer schedule",
+      "surface": "operations_communications",
+      "route": "/operations?view=settings&section=communications",
+      "selector_hint": "[data-action-id=\"ACTION-BUFFER-SCHEDULE-CONFIRM\"]",
+      "expected_behavior": "Confirms a previously previewed Buffer schedule only after preview token and approval gates. In the Rabbi / One Time workspace this action is disabled and the server requires APPROVE_ONE_TIME_BUFFER_SCHEDULE in a future approved social packet.",
+      "permission": "super_admin",
+      "status": "approval_gated",
+      "external_write": true,
+      "test": {
+        "type": "contract",
+        "expected_result": "One Time social schedule confirmation is blocked without APPROVE_ONE_TIME_BUFFER_SCHEDULE; the visible button is disabled in the One Time workspace."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-PARENT-STUDENT-LOGIN-RESET",
@@ -35,7 +62,10 @@
         "type": "api",
         "expected_result": "Parent-scoped endpoint rejects cross-household student IDs."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006"
+      ]
     },
     {
       "action_id": "ACTION-HELPER-CREATE-AUTOMATION",
@@ -50,7 +80,11 @@
         "type": "helper_command",
         "expected_result": "Planner maps create automation/billing workflow language to create_automation without external writes."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-HELPER-CAPTURE-RAW-INTAKE",
@@ -66,7 +100,12 @@
         "type": "helper_command",
         "expected_result": "Planner maps ramble/goal-mode language to capture_raw_intake and parser returns raw ID/counts."
       },
-      "related_goal_ids": ["GOAL-CORE-007", "GOAL-CORE-008", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-007",
+        "GOAL-CORE-008",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-HELPER-RUN-WATCHDOG-AUDIT",
@@ -82,7 +121,10 @@
         "type": "helper_command",
         "expected_result": "Planner maps watchdog audit language to run_watchdog_audit."
       },
-      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-PROVIDER-CLASSROOM-DRAFT",
@@ -97,37 +139,109 @@
         "type": "helper_command",
         "expected_result": "No Google Classroom, payment, send, or access grant is performed."
       },
-      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-API-USAGE-PREVIEW-NAV",
+      "label": "API Usage",
+      "surface": "provider_portal",
+      "route": "/provider?api_usage_preview=1&section=api_usage",
+      "selector_hint": "[data-provider-nav=\"api_usage\"]",
+      "expected_behavior": "Deep-links or switches the provider portal to a feature-flagged API Usage preview with an honest not-instrumented empty state; refresh and browser back must preserve understandable section navigation, and it must not display fabricated requests, token counts, costs, prompts, secrets, or cross-workspace usage.",
+      "permission": "provider_owner/provider_admin with api_usage_preview or api_usage entitlement",
+      "status": "preview_feature_flag",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "API Usage nav appears only behind the preview flag/entitlement, shows the honest empty state, supports direct section deep-link/refresh/back behavior, and passes local responsive smoke at 390x844, 768x1024, and 1440x900 without horizontal overflow."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-SECTION-NAVIGATION",
+      "label": "Open provider workspace section",
+      "surface": "provider_portal",
+      "route": "/provider",
+      "selector_hint": "[data-provider-nav][data-action-id=\"ACTION-PROVIDER-SECTION-NAVIGATION\"]",
+      "expected_behavior": "Switches between provider-scoped workspace sections using the supported provider section graph, updates the same-origin section query state, preserves browser back/refresh behavior, and must not reveal BNA super-admin sections such as Platform Suite, Team/Admin, Accounting, credentials, deployment controls, or other providers.",
+      "permission": "authenticated provider workspace member",
+      "status": "active",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Provider navigation buttons carry this registered action id; local Rabbi Scheller provider navigation smoke direct-links and clicks every supported section at 390x844, 768x1024, and 1440x900 without wrong-scope nav, console errors, failed requests, or horizontal overflow."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
+      "label": "Open selected portal",
+      "surface": "portal_login",
+      "route": "/provider, /student, /parent",
+      "selector_hint": "#loginChooser a[data-action-id=\"ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION\"], #loginStatus a[data-action-id=\"ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION\"]",
+      "expected_behavior": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data.",
+      "permission": "authenticated identity with at least one resolved destination",
+      "status": "server_resolved_navigation",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Provider, student, and parent password login pages render chooser links with this registered action id, use only server-provided redirect_to values, and pass the local responsive chooser smoke at 390x844, 768x1024, and 1440x900."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
-      "label": "Join the Shir",
+      "label": "Start 30 Days Free",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "a[href=\"#interest\"].button.primary",
-      "expected_behavior": "Scrolls the public visitor to the OneTime interest form; does not create checkout, send messages, or grant access.",
+      "expected_behavior": "Scrolls the public visitor to the 30-day free trial signup form; does not create checkout, send messages, or expose Zoom.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "static_and_browser",
-        "expected_result": "Primary CTA points to #interest and no payment action fires."
+        "expected_result": "Primary CTA points to #interest, advertises the 30-day free/no-card signup, and no payment action fires."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-INTEREST-FORM",
-      "label": "Save join interest",
+      "label": "Start 30 Days Free",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "#interestForm button[type=\"submit\"]",
-      "expected_behavior": "Creates a first-party OneTime interest lead for review only; no checkout, external send, or access grant.",
+      "expected_behavior": "Creates or updates a first-party One Time trial-signup lead, grants 30-day local access, and sends at most one current-signup confirmation email; no checkout, WhatsApp, imported-list email, campaign send, or external CRM write.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "api_guarded",
-        "expected_result": "Posts only to /api/one-time/interest and returns a no-checkout/no-send confirmation."
+        "expected_result": "Posts only to /api/one-time/interest and returns a no-card, no-checkout, local-trial-access confirmation with at most one transactional signup email."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-LOGIN-LINK",
@@ -142,7 +256,12 @@
         "type": "route_privacy",
         "expected_result": "/rabbi-member or member entry shows safe login shell unless valid scoped member access is present."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "action_id": "ACTION-AGENT-RUN-PREPARE",
@@ -157,7 +276,11 @@
         "type": "api_and_static",
         "expected_result": "POST /api/bna/tasks/:taskId/agent-runs is Super Admin only and the Operations UI exposes the action only inside the Agents surface/task drawer."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-AGENT-RUN-HANDOFF",
@@ -172,7 +295,10 @@
         "type": "static",
         "expected_result": "Progress endpoint treats copied/opened as passive audit events and does not transition the run to running."
       },
-      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-AGENT-RUN-PROGRESS-EVIDENCE",
@@ -187,7 +313,11 @@
         "type": "api_and_static",
         "expected_result": "Progress/artifact routes require Super Admin scope and append run events/artifacts."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-AGENT-RUN-SUBMIT-SEAL",
@@ -202,7 +332,11 @@
         "type": "unit_and_static",
         "expected_result": "validateSealPayload enforces summary, criteria, and evidence; task close is gated by implementation_status and automated_gates_passed."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL",
@@ -217,7 +351,11 @@
         "type": "api_and_static",
         "expected_result": "Lifecycle routes require Super Admin scope, allowed transitions, and append audit events."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-SCOPED-AGENT-STATUS",
@@ -232,7 +370,12 @@
         "type": "browser_smoke",
         "expected_result": "tests/one-time-operations-ui-smoke.test.js renders [data-scoped-agent-status], verifies One Time tasks, and confirms Claim/Seal controls are absent for scoped users."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-DRIVE-BRIEF-PREVIEW",
@@ -247,7 +390,50 @@
         "type": "unit_and_static",
         "expected_result": "POST /api/bna/project-meetings/one-time-drive-brief/preview returns dry_run=true and Operations exposes only the preview action, not production mutation."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PRESENTATION-OPEN",
+      "label": "Open presentation",
+      "surface": "operations_content_library",
+      "route": "/operations?view=content",
+      "selector_hint": "content card/detail Open presentation link",
+      "expected_behavior": "Opens the preserved One Time Rabbi presentation or source-material item in Google Drive without mutating the file or changing visibility.",
+      "permission": "super_admin/project_admin",
+      "status": "active",
+      "test": {
+        "type": "static_and_unit",
+        "expected_result": "Presentation and source-material content jobs expose media_url or Drive file view URLs as Open presentation links."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PRESENTATION-DOWNLOAD",
+      "label": "Download presentation",
+      "surface": "operations_content_library",
+      "route": "/operations?view=content",
+      "selector_hint": "content card/detail Download presentation link",
+      "expected_behavior": "Downloads or exports the preserved One Time Rabbi PowerPoint/Google Slides/source-material file from Drive without changing the original file.",
+      "permission": "super_admin/project_admin",
+      "status": "active",
+      "test": {
+        "type": "static_and_unit",
+        "expected_result": "Presentation and source-material content jobs expose parse_json.download_url or derive a Drive/Slides download URL."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "action_id": "ACTION-OPERATIONS-PLATFORM-SUITE-NAV",
@@ -262,7 +448,324 @@
         "type": "browser_smoke",
         "expected_result": "Operations platform_suite view mounts [data-platform-ui-root] across desktop and mobile viewports without exposing secret values or live provider mutation controls."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-WORKSPACE-VIEW",
+      "label": "View One Time as Rabbi",
+      "surface": "operations",
+      "route": "/operations?workspace=rabbi_sheller_provider",
+      "selector_hint": "page-status-pill / ops-brand-chip One Time workspace switch",
+      "expected_behavior": "Switches the Operations workspace context between Super Admin and the One Time provider view without mutating records or exposing unrelated workspace data.",
+      "permission": "super_admin/project_owner/project_admin",
+      "status": "active",
+      "test": {
+        "type": "static_and_live_smoke",
+        "expected_result": "Operations workspace taxonomy smoke confirms One Time view is scoped and Super Admin can intentionally switch back."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-SMOKE",
+      "label": "Run One Time member-library smoke",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "selector_hint": "Run Smoke",
+      "expected_behavior": "Runs the bounded member-library smoke only with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and preserves rollback evidence.",
+      "permission": "super_admin/project_admin",
+      "status": "approval_gated",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "tests/one-time-member-library.test.js verifies the exact approval phrase and smoke/rollback path."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-CLASS-PACKAGE-PREVIEW",
+      "label": "Preview One Time class package",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "selector_hint": "Preview Package",
+      "expected_behavior": "Previews the selected One Time class package and linked assets without publishing, sending, billing, Drive/video-host, social, or external CRM writes.",
+      "permission": "super_admin/project_admin",
+      "status": "preview_only",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Preview endpoint returns package data and no external write flags."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-PREVIEW",
+      "label": "Preview One Time member visibility",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "selector_hint": "Member Preview",
+      "expected_behavior": "Shows whether the selected package would be visible for the chosen member tier without changing member-library state.",
+      "permission": "super_admin/project_admin",
+      "status": "preview_only",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Member preview endpoint performs no publish or notification writes."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-APPROVE",
+      "label": "Approve One Time member-library package",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "selector_hint": "Approve",
+      "expected_behavior": "Records internal package approval only when the exact member-library approval phrase is present; it does not publish or notify members.",
+      "permission": "super_admin/project_admin",
+      "status": "approval_gated",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Server approve-library route requires APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and appends audit evidence."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-PUBLISH",
+      "label": "Publish One Time member-library package",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "selector_hint": "Publish",
+      "expected_behavior": "Publishes a member-library item only after explicit destination, tier visibility, and APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING; previous published item is archived for rollback.",
+      "permission": "super_admin/project_admin",
+      "status": "approval_gated",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "tests/one-time-member-library.test.js verifies approval phrase, member-library readback, and rollback path."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-ROLLBACK",
+      "label": "Rollback One Time member-library item",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "selector_hint": "Rollback Latest",
+      "expected_behavior": "Archives the selected member-library item with a rollback note and keeps the source class package intact.",
+      "permission": "super_admin/project_admin",
+      "status": "approval_gated",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Rollback endpoint records archived state and live smoke confirms item no longer appears in member-library readback."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN",
+      "label": "Dry-run send live Zoom links",
+      "surface": "operations_live_classes",
+      "route": "/operations?view=live_classes",
+      "selector_hint": "Dry-run send",
+      "expected_behavior": "Calculates eligible/skipped recipients for a One Time live session and returns a summary without sending messages.",
+      "permission": "super_admin/project_admin",
+      "status": "preview_only",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "POST /api/bna/live-sessions/:id/send-zoom-link defaults to dryRun=true and reports no sends."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-LIVE-ZOOM-LINK-SEND",
+      "label": "Send live Zoom links",
+      "surface": "operations_live_classes",
+      "route": "/operations?view=live_classes",
+      "selector_hint": "Send links",
+      "expected_behavior": "Sends the current Zoom link only after the explicit Operations confirmation prompt and project-scoped recipient resolution.",
+      "permission": "super_admin/project_admin",
+      "status": "approval_gated",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "UI requires confirm before dryRun=false; server scopes recipients to the live-session project."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PARENT-ACCESS-CODE-GENERATE",
+      "label": "Generate parent access code",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "selector_hint": "Generate Access Code",
+      "expected_behavior": "Generates or rotates one parent access code only after an explicit confirmation prompt and shows the raw code once.",
+      "permission": "super_admin",
+      "status": "approval_gated",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Operations UI confirms rotation and server endpoint is admin-only."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-PARENT-ACCESS-LINK-OPEN",
+      "label": "Open parent portal link",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "selector_hint": "Open Parent Portal",
+      "expected_behavior": "Creates a short-lived parent portal link and opens it locally; no email or WhatsApp send runs.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "UI calls parent-access/link with send_email=false and send_whatsapp=false for open mode."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-PARENT-ACCESS-LINK-EMAIL",
+      "label": "Email parent portal login link",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "selector_hint": "Email Login Link",
+      "expected_behavior": "Sends one short-lived parent portal login link by email through the admin-only parent access endpoint.",
+      "permission": "super_admin",
+      "status": "approval_gated",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Single-family email link action stays on explicit per-parent button and is not a bulk campaign."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PARENT-ACCESS-LINK-WHATSAPP",
+      "label": "WhatsApp parent portal login link",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "selector_hint": "WhatsApp Login Link",
+      "expected_behavior": "Sends one short-lived parent portal login link by WhatsApp only after an explicit confirmation prompt and SEND_WHATSAPP server confirmation token.",
+      "permission": "super_admin",
+      "status": "approval_gated",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Server rejects WhatsApp sends unless confirm is SEND_WHATSAPP."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PARENT-PASSWORD-SETUP-PREVIEW",
+      "label": "Preview parent password setup",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "selector_hint": "Preview Password Setup",
+      "expected_behavior": "Shows the parent password setup/reset email preview with dry_run=true and no email send.",
+      "permission": "super_admin",
+      "status": "preview_only",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Password setup endpoint returns dry_run=true, no_send=true, and external_write_performed=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-PARENT-PASSWORD-SETUP-SEND",
+      "label": "Email parent password setup",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "selector_hint": "Email Password Setup",
+      "expected_behavior": "Sends one password setup/reset email only after the explicit UI confirmation and SEND_PARENT_PASSWORD_SETUP server confirmation token.",
+      "permission": "super_admin",
+      "status": "approval_gated",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Server rejects non-dry-run password setup unless confirm is SEND_PARENT_PASSWORD_SETUP."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-COMMUNICATIONS-OPEN-SETTINGS",
+      "label": "Open communications settings",
+      "surface": "operations",
+      "route": "/operations?view=communications&section=settings",
+      "selector_hint": "[data-action-id=\"ACTION-COMMUNICATIONS-OPEN-SETTINGS\"]",
+      "expected_behavior": "Moves from the Communications templates/settings placeholder into the Settings communications section; no send, draft, import, DNS, or external write occurs.",
+      "permission": "super_admin/project/provider scoped admin",
+      "status": "active",
+      "test": {
+        "type": "static_and_ui_smoke",
+        "expected_result": "Communications settings lane shows a local Settings shortcut instead of a no-op not-configured panel."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     }
   ]
 }

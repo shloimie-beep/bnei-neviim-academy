@@ -1,0 +1,62 @@
+{
+  "requirement_id": "REQ-20260701-606",
+  "status": "done",
+  "deployment_id": "2afaa69f-5812-46a7-941d-0bf3bee62094",
+  "sender": {
+    "provider": "resend",
+    "from_email": "info@onetimeonetime.com",
+    "from_name": "OneTimeOneTime Mishnah",
+    "reply_to": "info@onetimeonetime.com"
+  },
+  "behavior": {
+    "current_signup_recipient_only": true,
+    "transactional_confirmation_email": true,
+    "idempotent_by_product_lead_and_access_grant": true,
+    "duplicate_submit_skips_existing_confirmation": true
+  },
+  "live_smoke": {
+    "path": "ops/live-smokes/2026-07-01T15-45-55-623Z-one-time-signup-confirmation-live-smoke.json",
+    "safe_recipient_kind": "resend_delivered_test_address",
+    "first_confirmation_sent": true,
+    "first_confirmation_provider": "resend",
+    "provider_message_id_present": true,
+    "duplicate_confirmation_already_sent": true,
+    "duplicate_kept_product_id": true,
+    "duplicate_kept_member_id": true,
+    "duplicate_kept_access_grant_id": true
+  },
+  "guardrails": {
+    "bulk_campaign_send_performed": false,
+    "imported_lead_send_performed": false,
+    "campaign_send_performed": false,
+    "whatsapp_send_performed": false,
+    "checkout_created": false,
+    "payment_or_subscription_mutation_performed": false,
+    "cancellation_or_refund_performed": false,
+    "dns_mutation_performed": false,
+    "ghl_runtime_added": false,
+    "external_crm_write_performed": false,
+    "secrets_printed_or_committed": false
+  },
+  "verification": [
+    "PASS node --check server.js",
+    "PASS focused One Time/Rabbi/Resend tests",
+    "PASS expanded 67-test suite",
+    "PASS npm run watchdog:security",
+    "PASS npm run watchdog:actions",
+    "PASS npm run railway:doctor deployment 2afaa69f-5812-46a7-941d-0bf3bee62094 SUCCESS",
+    "PASS live synthetic Resend delivered-address signup confirmation smoke",
+    "PASS live Email/Resend UX no-send controls smoke",
+    "PASS live app smoke"
+  ],
+  "campaign_decision": {
+    "transactional_signup_confirmation_send_ready": true,
+    "real_campaign_send_authorized": false,
+    "remaining_required_before_campaign": [
+      "final copy",
+      "exact final recipient list or segment",
+      "final links/domain state",
+      "explicit campaign send approval"
+    ]
+  }
+}

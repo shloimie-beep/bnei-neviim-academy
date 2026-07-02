@@ -38,7 +38,7 @@ test('W4 One Time export manifest excludes secrets and production-only sources',
 
 test('W4 One Time export guard rejects BNA private records', () => {
   assert.deepEqual(assertNoBnaPrivateData([
-    { id: 'one-time-1', workspace_key: 'one_time_mishnah_class', privacy: 'partner_program' },
+    { id: 'one-time-1', workspace_key: 'rabbi_sheller_provider', privacy: 'partner_program' },
   ]), { ok: true, violations: [] });
 
   const result = assertNoBnaPrivateData([

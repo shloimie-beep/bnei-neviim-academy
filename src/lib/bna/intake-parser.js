@@ -215,12 +215,26 @@ function makeTicket(fragment, index, overrides = {}) {
   }, 'ticket', fragment, index, confidenceForFragment(fragment, overrides.confidence || 0.76));
 }
 
+function sectionTargetLaneForType(type = '') {
+  const normalized = String(type || '').trim();
+  if (normalized === 'goals' || normalized === 'goal') return 'Student Progress / Goals';
+  if (normalized === 'attendance') return 'Student Attendance';
+  if (normalized === 'assignments' || normalized === 'assignment') return 'Student Assignments';
+  if (normalized === 'behavior_notes' || normalized === 'behavior_note') return 'Student Behavior';
+  if (normalized === 'diet_nutrition_notes' || normalized === 'diet_nutrition_note') return 'Student Notes';
+  if (normalized === 'class_session_notes' || normalized === 'class_session_note') return 'Class Notes';
+  if (normalized === 'provider_leads' || normalized === 'provider_lead') return 'Provider Leads';
+  if (normalized === 'medical_note') return 'Review';
+  return null;
+}
+
 function makeSectionNote(type, fragment, index, fields = {}, baseConfidence = 0.78) {
   const title = fields.title || titleFromActionText(fragment.text, `${sectionKeyForItemType(type)} note`);
   return withCommonItemFields({
     title,
     summary: fields.summary || compactWhitespace(fragment.text),
     section_key: fields.section_key || sectionKeyForItemType(type),
+    target_lane: fields.target_lane || sectionTargetLaneForType(type),
     fields,
   }, type, fragment, index, confidenceForFragment(fragment, baseConfidence));
 }

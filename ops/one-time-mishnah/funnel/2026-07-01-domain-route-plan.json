@@ -1,0 +1,60 @@
+{
+  "requirement_id": "REQ-20260701-601",
+  "raw_id": "RAW-20260701-006",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "implemented_at": "2026-07-01T17:35:00+03:00",
+  "campaign_url": "https://onetimeonetime.com/?utm_source=email&utm_medium=launch&utm_campaign=free_mishnayos_class",
+  "host_root_routes": [
+    {
+      "host": "onetimeonetime.com",
+      "path": "/",
+      "serves": "public/one-time/index.html"
+    },
+    {
+      "host": "www.onetimeonetime.com",
+      "path": "/",
+      "serves": "public/one-time/index.html"
+    }
+  ],
+  "fallback_routes": [
+    "/one-time",
+    "/one-time/mishnayos",
+    "/one-time/us",
+    "/one-time/uk",
+    "/one-time/israel",
+    "/one-time/interest"
+  ],
+  "legacy_aliases": [
+    "/rabbi",
+    "/rabbi-preview",
+    "/one-time-mishnayos"
+  ],
+  "registry_rows": [
+    "https://onetimeonetime.com/",
+    "/one-time",
+    "/one-time/mishnayos"
+  ],
+  "guardrails": {
+    "dns_mutated": false,
+    "direct_zoom_exposed": false,
+    "private_member_data_exposed": false,
+    "payment_or_provider_write": false,
+    "bna_homepage_replaced": false
+  },
+  "verification": [
+    "PASS node --check server.js",
+    "PASS node --test tests/one-time-focused-landing.test.js tests/rabbi-checkout-access.test.js tests/one-time-local-hardening-audit.test.js tests/watchdog-route-security.test.js",
+    "PASS npm run watchdog:security",
+    "PASS Railway deployment 0ae3cb12-7f4f-4ae7-9bd9-7dd8f5a78be4 reached SUCCESS",
+    "PASS BNA root live smoke still serves BNA homepage",
+    "BLOCKED onetimeonetime.com apex is served by Google Frontend with legacy Rabbi preview content",
+    "BLOCKED www.onetimeonetime.com DNS returned ENOTFOUND"
+  ],
+  "deployment": {
+    "id": "0ae3cb12-7f4f-4ae7-9bd9-7dd8f5a78be4",
+    "status": "SUCCESS"
+  },
+  "live_smoke": "ops/live-smokes/2026-07-01T14-40-00Z-one-time-domain-route-live-smoke.md",
+  "deployment_gate": "Deployment succeeded, but production domain live smoke is blocked until DNS/hosting routes onetimeonetime.com and www.onetimeonetime.com to Railway."
+}

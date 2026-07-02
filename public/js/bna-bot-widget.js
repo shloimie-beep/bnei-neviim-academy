@@ -642,7 +642,28 @@
       cursor: wait;
     }
     @media (max-width: 520px) {
-      .bna-bot-launcher { right: 12px; bottom: 12px; }
+      .bna-bot-launcher {
+        right: 12px;
+        bottom: 12px;
+        width: 52px;
+        min-width: 52px;
+        min-height: 52px;
+        justify-content: center;
+        padding: 0;
+      }
+      .bna-bot-launcher span:not(.bna-bot-launcher-dot) {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+      .bna-bot-launcher::after {
+        content: "?";
+        font-size: 1rem;
+        line-height: 1;
+      }
       [dir="rtl"] .bna-bot-launcher { left: 12px; right: auto; }
       .bna-bot-nudge {
         right: 12px;

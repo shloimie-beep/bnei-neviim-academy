@@ -8,7 +8,14 @@ const student = fs.readFileSync('public/student.html', 'utf8');
 const provider = fs.readFileSync('public/provider.html', 'utf8');
 const server = fs.readFileSync('server.js', 'utf8');
 
-test('Operations uses the SaaS shell with global nav, workspace switcher, and nested subnav', () => {
+function functionSlice(source, name) {
+  const start = source.indexOf(`function ${name}`);
+  assert.notEqual(start, -1, `missing function ${name}`);
+  const next = source.indexOf('\n        function ', start + 1);
+  return next === -1 ? source.slice(start) : source.slice(start, next);
+}
+
+test('Operations uses the SaaS shell with sidebar modules, workspace switcher, and contextual subnav', () => {
   for (const id of [
     'dashboard',
     'pipelines',
@@ -52,17 +59,18 @@ test('Operations uses the SaaS shell with global nav, workspace switcher, and ne
   assert.doesNotMatch(operations, /\{ id: 'household', label: 'Parent Households'/);
   assert.doesNotMatch(operations, /\{ id: 'community', label: 'Community \/ Projects'/);
   assert.match(operations, /data-workspace-kind-filter="\$\{escapeHtml\(filter\.id\)\}"/);
-  assert.match(operations, /function renderSidebarSubnav/);
   assert.match(operations, /function currentSubnavConfig/);
-  assert.match(operations, /class="ops-sidebar-drilldown ops-nested-subnav"/);
+  assert.match(operations, /function renderOperationsSubnav/);
+  assert.match(operations, /function renderOperationsFilterRow/);
+  assert.match(operations, /data-operations-subnav/);
+  assert.match(operations, /data-operations-filter-row/);
   assert.match(operations, /class="ops-brand-topbar saas-topbar"/);
-  assert.match(operations, /const MODULE_TOOLBAR_PRIORITY = \[\s*'decisions',\s*'tasks',\s*'agents',\s*'platform_suite',\s*'calendar',\s*'students',\s*'content',\s*'community',\s*'accounting',\s*'automations',\s*'admin',\s*'integrations'\s*\]/);
-  assert.match(operations, /function renderModuleToolbar/);
-  assert.match(operations, /data-module-toolbar-priority="\$\{MODULE_TOOLBAR_PRIORITY\.join\(','\)\}"/);
+  assert.match(operations, /const TASK_PRIMARY_SUBTABS = \[/);
+  assert.match(operations, /const COMMUNICATIONS_SUBTABS = \[/);
   assert.match(operations, /openCommandTarget\('tasks', 'decisions'\)/);
-  assert.match(operations, /data-module-toolbar-id="\$\{escapeHtml\(item\.id\)\}"/);
   assert.match(operations, /function renderSectionNav\(tabs, activeId, handlerName\) \{\s*return '';/);
   assert.match(operations, /\.ops-app-shell\.drawer-open \.ops-main\s*{[\s\S]*display:\s*none/);
+  assert.doesNotMatch(functionSlice(operations, 'renderAppShell'), /renderModuleToolbar\(\)/);
 });
 
 test('Operations exposes provider, communications, API usage, settings, and disabled placeholders', () => {

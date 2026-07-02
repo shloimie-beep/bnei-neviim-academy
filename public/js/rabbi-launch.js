@@ -64,12 +64,11 @@
       const scopes = (tier.access_scopes || []).join(' + ') || 'library';
       const checkout = tier.checkout || {};
       const stripeReady = Boolean(checkout.stripe_price_configured || checkout.stripe_payment_link_url);
-      const greenReady = Boolean(checkout.green_invoice_item_configured || checkout.green_invoice_payment_link_url);
-      const checkoutReady = Boolean(stripeReady || greenReady);
+      const checkoutReady = Boolean(stripeReady);
       const statusClass = checkoutReady ? 'ready' : 'blocked';
       const statusText = checkoutReady
-        ? 'Payment link configured'
-        : 'Payment setup blocked: add a Stripe or Green Invoice link in Operations';
+        ? 'Stripe conversion link configured'
+        : '30-day free trial starts with no card. Stripe conversion setup is blocked until Operations approves it.';
       return `
         <article class="tier-card">
           <div>
@@ -82,8 +81,7 @@
             <span class="setup-status ${statusClass}">${escapeHtml(statusText)}</span>
           </div>
           <div class="tier-actions">
-            <button class="primary" type="button" ${stripeReady ? `onclick="RabbiLaunch.checkout('${escapeHtml(tier.tier_key)}', 'stripe')"` : 'disabled'}>Stripe checkout</button>
-            <button type="button" ${greenReady ? `onclick="RabbiLaunch.checkout('${escapeHtml(tier.tier_key)}', 'green_invoice')"` : 'disabled'}>Green Invoice checkout</button>
+            <button class="primary" type="button" ${stripeReady ? `onclick="RabbiLaunch.checkout('${escapeHtml(tier.tier_key)}', 'stripe')"` : 'disabled'}>Stripe conversion</button>
           </div>
         </article>
       `;

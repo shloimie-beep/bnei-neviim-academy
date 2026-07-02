@@ -11,8 +11,10 @@ test('One Time login is promoted to a scoped external admin workspace', () => {
   assert.match(serverJs, /const platformAllowedViews = \[[\s\S]*'agents'[\s\S]*'admin'[\s\S]*'settings'[\s\S]*\]/);
   assert.match(serverJs, /const providerAllowedViews = \[[\s\S]*'tasks'[\s\S]*'content'[\s\S]*'integrations'[\s\S]*\]/);
   assert.match(serverJs, /role: 'project_owner'/);
+  assert.match(serverJs, /role: 'one_time_admin'/);
   assert.match(serverJs, /role: 'project_manager'/);
   assert.match(serverJs, /allowedViews: ownerAllowedViews/);
+  assert.match(serverJs, /allowedViews: adminAllowedViews/);
   assert.match(serverJs, /allowedViews: managerAllowedViews/);
   assert.match(serverJs, /const ONE_TIME_OPS_USERNAME/);
   assert.match(serverJs, /old ONE_TIME_OPS_USERNAME maps to manager role/);
@@ -21,7 +23,7 @@ test('One Time login is promoted to a scoped external admin workspace', () => {
   assert.match(serverJs, /account_type: 'external_user'/);
   assert.match(serverJs, /account_type: 'internal_admin'/);
   assert.match(serverJs, /access_level: 'owner'/);
-  assert.match(serverJs, /access_level: 'manager'/);
+  assert.match(serverJs, /access_level: 'admin'/);
 });
 
 test('One Time admin can receive a short-lived one-click Operations access link', () => {
@@ -31,7 +33,7 @@ test('One Time admin can receive a short-lived one-click Operations access link'
   assert.match(serverJs, /OPS_ACCESS_LINK_TTL_MS = 1000 \* 60 \* 20/);
   assert.match(serverJs, /function oneTimeOperationsReturnPath/);
   assert.match(serverJs, /workspace', 'rabbi_sheller_provider'/);
-  assert.match(serverJs, /view', 'tasks'/);
+  assert.match(serverJs, /view', 'dashboard'/);
   assert.match(serverJs, /app\.post\('\/api\/bna\/ops-access-links'/);
   assert.match(serverJs, /Only the platform admin can create Operations access links/);
   assert.match(serverJs, /app\.get\('\/operations-access'/);
@@ -45,9 +47,10 @@ test('One Time external admin appears in super-admin user management without par
   assert.match(serverJs, /account_owner: true/);
   assert.match(serverJs, /admin_for_owner: 'Rabbi Elie Scheller'/);
   assert.match(serverJs, /ONE_TIME_OWNER_USERNAME/);
+  assert.match(serverJs, /ONE_TIME_ADMIN_USERNAME/);
   assert.match(serverJs, /ONE_TIME_MANAGER_USERNAME/);
   assert.match(serverJs, /login_username: ONE_TIME_OWNER_USERNAME \|\| null/);
-  assert.match(serverJs, /login_username: ONE_TIME_MANAGER_USERNAME \|\| ONE_TIME_OPS_USERNAME \|\| null/);
+  assert.match(serverJs, /login_username: ONE_TIME_ADMIN_USERNAME \|\| ONE_TIME_MANAGER_USERNAME \|\| ONE_TIME_OPS_USERNAME \|\| null/);
   assert.match(operationsHtml, /data-super-admin-user-management/);
   assert.match(operationsHtml, /adminExternalUserRows/);
   assert.match(operationsHtml, /one_time_mishnah_class/);
@@ -125,7 +128,7 @@ test('Workflow B reactivation card documents list segmentation before any sends'
 });
 
 test('One Time Operations maps Rabbi email contacts as a no-send staging section', () => {
-  assert.match(operationsHtml, /id: 'email_contacts', label: 'Email Contacts'/);
+  assert.match(operationsHtml, /id: 'email_contacts', label: 'Email Audience'/);
   assert.match(operationsHtml, /function oneTimeEmailContactLeads/);
   assert.match(operationsHtml, /one-time-list:rabbi-email-contacts/);
   assert.match(operationsHtml, /one-time-no-send-until-approved/);

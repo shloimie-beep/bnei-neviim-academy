@@ -39,3 +39,34 @@ Every standing goal carries:
 | GOAL-CORE-013 | Communications alerting | Important communications create alerts/follow-up. | Parent/accountability/payment/provider urgency must not be buried. | Communications | Email, WAPI, forms, portal messages | Important inbound signals create redacted alert/follow-up records without auto-sending. | Communications alert watchdog | Redacted summary and local alert/task proof | Create communications follow-up task. | `WATCH-* important communication lacks alert: {source}` |
 | GOAL-CORE-014 | Coherent providers/classrooms | Service-provider/classroom/community configuration remains coherent. | Provider pages, billing, classrooms, and portals must align. | Provider/classroom | Public provider pages, provider portal, Operations settings | Provider route, plan, classroom, entitlement, and access state agree. | Route/content/helper audits | Provider route/settings smoke | Create provider configuration repair task. | `WATCH-* provider config drift {provider}: expected {state}` |
 | GOAL-CORE-015 | Evidence before done | Completion requires item-by-item evidence. | "Done" without proof recreates the same missed-work loop. | Agent lifecycle | Tasks, registers, ledger, changelog, watchdog | Done items have ID, inspected files, verification, proof path, ledger/changelog, and deploy/live proof when app-visible. | Watchdog audit and register scans | Register final audit row plus proof | Reopen or create repair task. | `WATCH-* done-without-proof {item_id}: add proof or reopen` |
+| GOAL-CORE-016 | Vague quality compiler | Vague product-quality language is accepted from the operator and compiled into exact requirements before implementation. | Broad phrases like "clean", "sloppy", or "million-dollar app" otherwise turn into unfinished work. | Product protocol | Rambles, ChatGPT packets, Codex packets, UI/product registers | The operator may be vague; the assistant/agent may not remain vague. Compiler output includes scope, screens, IA, visual/data/action requirements, screenshots, tests, deploy gates, and terminal criteria. | Ramble protocol/template tests, source coverage audit | Register with compiler fields and source statement mapping | Create protocol repair task and block vague implementation prompt. | `WATCH-* vague implementation prompt from RAW {raw_id}: compile into product specs first` |
+| GOAL-CORE-017 | Super-ramble packet split | Oversized rambles are decomposed into staged prompt packets instead of one giant Codex task. | One huge prompt loses source coverage, evidence, and closeout discipline. | Product protocol | Raw intake, prompt packets, execution registers | Super-rambles create parent raw input, manifest, scoped child packets, packet roles/stages, handback rules, and separate provider setup packets. | Prompt-packet manifest review and source coverage audit | Manifest plus child packet files where needed | Split the packet and update the parent manifest before implementation. | `WATCH-* unsplit super-ramble RAW {raw_id}: create manifest and child packets` |
+
+## Product Quality Standard References
+
+`GOAL-CORE-001` uses the concrete standard in
+`docs/PRODUCT-QUALITY-COMPILER.md`, including the Million-Dollar App Quality
+Standard, screenshot-first UI loop, and `ops/visual-quality-rubric.md` defect
+taxonomy. UI cleanup claims require screenshot evidence at the required
+viewports or an exact blocker.
+
+## Product Quality Enforcement
+
+`GOAL-CORE-016` and `GOAL-CORE-017` are enforced by:
+
+- `ops/product-quality-compiler.schema.json`
+- `scripts/validate-product-quality-packets.mjs`
+- `ops/product-quality-compiler/fixtures/`
+- `ops/product-quality-compiler/evals/`
+- `scripts/watchdog-product-quality-drift.mjs`
+
+Broad product/UI rambles are not ready for Codex implementation until their
+compiled packet passes Product Quality Compiler validation. Broad product/UI
+closeout must run the protocol drift watchdog or record an exact blocker.
+
+Ramble Protocol v3 also requires `docs/RAMBLE-ROUTER.md`,
+`docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md`, `docs/PACKET-DAG.md`,
+`docs/CONTEXT-BUDGET-AND-PACKET-SPLITTING.md`, and
+`docs/REPO-SURFACE-MAP.md` for broad product-quality rambles. The next Rabbi /
+One Time UI cleanup must begin with `00-control-tower` and
+`01-current-state-visual-audit`, not implementation.

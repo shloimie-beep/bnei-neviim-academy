@@ -1,0 +1,47 @@
+{
+  "contract_version": "bna-chatgpt-ramble-dropoff-v1",
+  "packet_id": "RAW-20260626-901-helper-control-plane",
+  "raw_id": "RAW-20260626-901",
+  "requirement_ids": [
+    "REQ-20260626-901"
+  ],
+  "task_ids": [
+    "TASK-20260626-901"
+  ],
+  "created_at": "2026-06-26T12:00:00+03:00",
+  "source": {
+    "channel": "chatgpt",
+    "actor": "Shloimie Dratler",
+    "repo": "shloimie-beep/bnei-neviim-academy"
+  },
+  "workspace_key": "bna",
+  "project_key": "bna",
+  "status": "queued",
+  "goal_mode_execution_requested": true,
+  "operator_intent": "Build a durable ChatGPT ramble drop-off queue that background agents/Codex can pick up and execute, and apply the helper control-plane bundle.",
+  "raw_text_path": "raw-input/RAW-20260626-901-chatgpt-ramble-agent-dropoff.md",
+  "primary_task_path": "tasks-pending/2026-06-26-chatgpt-ramble-agent-dropoff.md",
+  "attachments": [
+    {
+      "path": "ops/chatgpt-ramble-dropoff/incoming/RAW-20260626-901-helper-control-plane/attachments/bna-helper-control-plane-code.zip",
+      "sha256": "017ee06bef516c1cf378e58bb49dd6c70a484ba14c690af3c38f062067ea576f",
+      "kind": "implementation_bundle",
+      "description": "Generated BNA helper control-plane code package"
+    }
+  ],
+  "required_agent_behavior": [
+    "Audit existing repo files first.",
+    "Apply generated code where it matches the repo structure.",
+    "Do not invent routes or actions.",
+    "Run tests.",
+    "Record evidence and blockers.",
+    "Update AGENTS.md with the ChatGPT ramble drop-off operating rule."
+  ],
+  "acceptance_criteria": [
+    "Drop-off packet can be claimed by a repo script.",
+    "Claim creates raw-input, tasks-pending, and ledger records.",
+    "Helper control-plane bundle is applied and tested.",
+    "Agent fleet has a safe documented pickup path.",
+    "No /mnt/data path is used as a real agent queue."
+  ]
+}

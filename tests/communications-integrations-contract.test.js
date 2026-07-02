@@ -7,6 +7,7 @@ const operations = fs.readFileSync('public/operations.html', 'utf8');
 const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
 const bufferOps = fs.readFileSync('scripts/buffer-ops.mjs', 'utf8');
 const envExample = fs.readFileSync('.env.example', 'utf8');
+const actionRegistry = JSON.parse(fs.readFileSync('ops/action-registry.json', 'utf8'));
 
 test('server exposes protected Buffer, Resend, draft, schedule, email, and DNS endpoints', () => {
   [
@@ -40,8 +41,30 @@ test('Operations UI renders Communications integrations without exposing secret 
   assert.match(operations, /getBufferIntegrationHealth/);
   assert.match(operations, /getResendIntegrationHealth/);
   assert.match(operations, /Confirm schedule/);
+  assert.match(operations, /data-action-id="ACTION-BUFFER-SCHEDULE-CONFIRM"/);
+  assert.match(operations, /One Time Buffer scheduling requires a future approved social packet/);
+  assert.match(operations, /data-one-time-buffer-setup/);
+  assert.match(operations, /Provider Buffer draft creation is locked for One Time in this run/);
+  assert.match(operations, /create_provider_draft: !currentWorkspaceIsOneTime\(\)/);
   assert.doesNotMatch(operations, /BUFFER_API_KEY/);
   assert.doesNotMatch(operations, /RESEND_API_KEY/);
+});
+
+test('One Time Buffer draft and schedule writes stay blocked until future approval packet', () => {
+  assert.match(server, /function isOneTimeSocialPostRow\(row = \{\}\)/);
+  assert.match(server, /APPROVE_ONE_TIME_BUFFER_DRAFT/);
+  assert.match(server, /One Time Buffer draft creation is blocked until a future approved social packet/);
+  assert.match(server, /buffer_provider_draft_blocked: true/);
+  assert.match(server, /one_time_buffer_draft_blocked/);
+  assert.match(server, /APPROVE_ONE_TIME_BUFFER_SCHEDULE/);
+  assert.match(server, /One Time Buffer scheduling is not approved in this packet/);
+
+  const action = actionRegistry.actions.find((row) => row.action_id === 'ACTION-BUFFER-SCHEDULE-CONFIRM');
+  assert.ok(action, 'ACTION-BUFFER-SCHEDULE-CONFIRM is registered');
+  assert.equal(action.status, 'approval_gated');
+  assert.equal(action.external_write, true);
+  assert.match(action.expected_behavior, /disabled/);
+  assert.match(action.expected_behavior, /APPROVE_ONE_TIME_BUFFER_SCHEDULE/);
 });
 
 test('Telegram Buffer path is draft-only and /accounts uses readiness-aware API', () => {

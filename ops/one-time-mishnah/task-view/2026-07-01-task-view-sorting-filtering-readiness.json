@@ -1,0 +1,19 @@
+{
+  "date": "2026-07-01",
+  "requirement_id": "REQ-20260701-716",
+  "status": "local_verified_deploy_blocked",
+  "result": "Operations task cards sort newest active work first, move terminal/history records below active work, expose workspace/project/owner scope, and hide One Time internal tech-only cards from project-scoped provider users unless explicitly shared or provider-actionable.",
+  "files_changed": [
+    "public/operations.html",
+    "server.js",
+    "tests/workspace-task-no-stale-agent.test.js"
+  ],
+  "verification": [
+    "PASS: node --check server.js",
+    "PASS: node --test tests\\workspace-task-no-stale-agent.test.js tests\\operations-task-queue-visibility.test.js tests\\operations-task-comments-and-dictation.test.js tests\\one-time-operations-ui-smoke.test.js",
+    "PASS: route/action registry JSON parse"
+  ],
+  "external_writes": false,
+  "deploy_live_smoke": "blocked_until_release_target_available",
+  "blocker": "App-visible Operations UI work still needs deploy/live smoke evidence after the One Time/BNA release target is available."
+}

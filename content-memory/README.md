@@ -17,12 +17,22 @@ The long-term flow is:
      for video style, camera direction, ratios, audience, or review guardrails
    - `content-memory/*/examples.md`
    - recent approved outputs from the app database
-4. Real content transcripts and website articles sync into Drive as readable
-   Google Docs for article generation and marketing organization.
+4. Raw transcript bodies stay in private Drive/app storage. GitHub receives
+   privacy-safe transcript digests under `transcript-digests/`, not full raw
+   class transcript bodies by default.
 5. Approved drafts become examples for future drafts.
 6. Brand-kit suggestions are reviewed before being promoted into stable voice.
 
 The folders are not meant to be random storage. They are prompt context.
+
+## Transcript Privacy Rule
+
+Use `npm run content:export-digests` for repo-side memory. The old raw
+transcript exporter is blocked unless an owner explicitly approves
+`--include-raw-transcript`, and stale deletion requires `--delete-stale`.
+
+See `docs/content-transcript-digest-policy.md` for the current Drive-first raw
+storage and GitHub digest policy.
 
 ## Sourcing Lanes
 

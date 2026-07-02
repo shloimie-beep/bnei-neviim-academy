@@ -31,8 +31,14 @@ function fakeDb({ corrections = [] } = {}) {
   ]);
   return {
     async query(sql, params = []) {
+      if (/information_schema\.columns/.test(sql)) {
+        return { rows: [{ exists: false }] };
+      }
       if (/information_schema\.tables/.test(sql)) {
         return { rows: [{ exists: tables.has(params[0]) }] };
+      }
+      if (/FROM bna_projects/.test(sql)) {
+        return { rows: [{ id: 7, project_key: params[0] || 'one_time_mishnah_class' }] };
       }
       if (/FROM bna_wapi_contacts/.test(sql)) {
         return {
@@ -161,6 +167,23 @@ test('WAPI phonebook report is dry-run and groups local rows by phone/chat', asy
   assert.ok(groupChat);
 });
 
+test('WAPI phonebook report supports workspace scope and excludes unscoped directory rows', async () => {
+  const report = await buildWapiPhonebookReport({
+    db: fakeDb(),
+    limit: 20,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  });
+  assert.equal(report.success, true);
+  assert.equal(report.scope.workspace_key, 'rabbi_sheller_provider');
+  assert.equal(report.scope.project_key, 'one_time_mishnah_class');
+  assert.equal(report.summary.wapi_contacts_considered, 0);
+  assert.equal(report.summary.wapi_chats_considered, 0);
+  assert.equal(report.summary.communications_considered, 1);
+  assert.equal(report.phonebook.some((group) => /BNA updates group/i.test(group.display_name)), false);
+  assert.ok(report.guardrails.some((line) => /excluded unscoped WAPI directory rows/.test(line)));
+});
+
 test('WAPI phonebook correction overlay keeps corrections local and visible', async () => {
   assert.equal(normalizeWapiPhonebookCorrectionType('friend'), 'friend_non_lead');
   assert.equal(normalizeWapiPhonebookCorrectionType('school interest'), 'school_interest');
@@ -263,7 +286,8 @@ test('WAPI phonebook report is exposed as guarded Operations tooling', () => {
   assert.match(server, /app\.get\('\/api\/bna\/wapi\/phonebook-report'/);
   assert.match(server, /app\.post\('\/api\/bna\/wapi\/phonebook-corrections'/);
   assert.match(server, /APPLY_WAPI_CORRECTION/);
-  assert.match(server, /account-wide and requires an unscoped Operations admin login/);
+  assert.match(server, /needs a workspace\/project scope for this Operations login/);
+  assert.match(server, /phonebook corrections are account-wide and require an unscoped Operations admin login/);
   assert.match(server, /applyWapiPhonebookCrmWrites/);
   assert.match(server, /lead_candidate_created_from_wapi_phonebook/);
   assert.match(wapiPhonebookLib, /create_lead_candidate/);
@@ -285,12 +309,18 @@ test('WAPI phonebook report is exposed as guarded Operations tooling', () => {
   assert.match(operations, /addWapiPhonebookNote/);
   assert.match(operations, /wapi_phonebook_workspace/);
   assert.match(operations, /needsWapiPhonebookData/);
+  assert.match(operations, /getWapiPhonebookReport\(100, workspaceDataProjectFilters\(\)\)/);
   assert.match(operations, /Corrections Applied/);
   assert.match(operations, /never sends WhatsApp messages/);
   assert.match(operations, /No WhatsApp message was sent/);
   assert.match(operations, /No WhatsApp message, broadcast, or external CRM write/);
+  assert.match(operations, /data-one-time-whatsapp-setup/);
+  assert.match(operations, /BNA WhatsApp contacts must not appear in One Time/);
+  assert.match(operations, /No real WhatsApp send, broadcast, contact-list send, external CRM write, or cross-workspace contact merge/);
 
   assert.match(packageJson, /"wapi:phonebook-report": "node scripts\/wapi-phonebook-report\.mjs"/);
+  assert.match(reportScript, /workspace_key/);
+  assert.match(wapiPhonebookLib, /Scoped workspace report excluded unscoped WAPI directory rows/);
   assert.match(reportScript, /Dry-run only/);
   assert.doesNotMatch(reportScript, /SEND_WHATSAPP|fetch\(/);
 });

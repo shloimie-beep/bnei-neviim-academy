@@ -1,0 +1,11 @@
+{
+  "packet_id": "RAW-20260626-901-helper-control-plane",
+  "files": [
+    "packet.json",
+    "RAW.md",
+    "CODEX_PROMPT.md",
+    "status.json",
+    "attachments/bna-helper-control-plane-code.zip"
+  ],
+  "attachment_sha256": "017ee06bef516c1cf378e58bb49dd6c70a484ba14c690af3c38f062067ea576f"
+}

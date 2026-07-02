@@ -21,10 +21,12 @@ test('One Time UI design delta audit is no-write and covers required surfaces', 
   assert.equal(audit.required_surfaces.length, REQUIRED_SURFACES.length);
   assert.ok(audit.required_surfaces.some((surface) => surface.id === 'agents' && surface.status === 'pass'));
   assert.ok(audit.required_surfaces.some((surface) => surface.id === 'classroom' && surface.status === 'pass'));
-  assert.ok(audit.checks.some((check) => check.id === 'top_toolbar_contract' && check.status === 'pass'));
-  assert.ok(audit.checks.some((check) => check.id === 'module_toolbar_mobile_scroll' && check.status === 'pass'));
+  assert.ok(audit.checks.some((check) => check.id === 'topbar_contextual_shell_contract' && check.status === 'pass'));
+  assert.ok(audit.checks.some((check) => check.id === 'operations_subnav_mobile_scroll' && check.status === 'pass'));
+  assert.ok(audit.checks.some((check) => check.id === 'module_toolbar_removed_from_shell' && check.status === 'pass'));
+  assert.ok(audit.checks.some((check) => check.id === 'floating_helper_single_launcher' && check.status === 'pass'));
   assert.ok(audit.checks.some((check) => check.id === 'ops_audit_storage_state'));
-  assert.ok(['pass', 'needs_review', 'needs_operator_decision'].includes(audit.status));
+  assert.equal(audit.status, 'pass');
 
   const md = renderMarkdown(audit);
   assert.match(md, /Credential-free current-state delta audit/i);

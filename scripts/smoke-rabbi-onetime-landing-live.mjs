@@ -92,23 +92,29 @@ async function main() {
       'OneTimeOneTime - Rabbi Eli Scheller',
       '--yellow: #ffd400',
       'Preview mode only. The BNA homepage is not replaced.',
-      'The public prices stay at $67 and $149',
-      'Payment setup',
+      'The launch trial starts with no credit card and no payment method.',
+      'Paid conversion is Stripe-only after Operations approves the test-mode path.',
+      'Stripe-only conversion',
       'No live charge',
       '/js/rabbi-launch.js',
     ], '/rabbi');
-    pass('/rabbi has OneTime branding, price copy, and safe setup language');
+    expectIncludes(page.text, [
+      'Green Invoice and live billing are outside the current launch packet.',
+    ], '/rabbi');
+    pass('/rabbi has OneTime branding, no-card trial copy, and safe setup language');
 
     const js = await fetchText(options.baseUrl, '/js/rabbi-launch.js', 'application/javascript,*/*;q=0.8');
     assert(js.response.status === 200, `/js/rabbi-launch.js expected 200, got ${js.response.status}`);
     expectIncludes(js.text, [
       '/api/rabbi/tiers',
       '/api/rabbi/checkout',
-      'Payment setup blocked: add a Stripe or Green Invoice link in Operations',
+      '30-day free trial starts with no card.',
+      'Stripe conversion setup is blocked',
       'stripeReady',
-      'greenReady',
     ], 'rabbi-launch.js');
-    pass('Rabbi launch script keeps blocked payment-link state explicit');
+    assert(!js.text.includes('greenReady'), 'rabbi-launch.js still contains greenReady checkout branch');
+    assert(!js.text.includes('Green Invoice checkout'), 'rabbi-launch.js still contains Green Invoice checkout copy');
+    pass('Rabbi launch script keeps Stripe conversion blocked without Green Invoice checkout branch');
 
     const tiersResponse = await fetch(`${options.baseUrl}/api/rabbi/tiers`, {
       headers: {

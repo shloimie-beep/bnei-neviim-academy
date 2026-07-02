@@ -53,9 +53,19 @@ function parseEnvFile(filePath) {
   return env;
 }
 
-function readJsonIfExists(filePath) {
+function parseJsonConfig(raw, sourceLabel) {
+  const text = String(raw || '').trim();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`Invalid JSON in ${sourceLabel}`);
+  }
+}
+
+function readJsonIfExists(filePath, sourceLabel = filePath) {
   if (!fs.existsSync(filePath)) return null;
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  return parseJsonConfig(fs.readFileSync(filePath, 'utf8'), sourceLabel);
 }
 
 function readSecret(name, env = {}) {
@@ -69,40 +79,81 @@ function readSecret(name, env = {}) {
   return '';
 }
 
-function loadClient() {
-  const parsed = readJsonIfExists(clientPath);
-  const client = parsed?.web || parsed?.installed;
-  if (!client?.client_id || !client?.client_secret) {
-    throw new Error(`Invalid Google OAuth client JSON at ${clientPath}`);
-  }
+function loadRuntimeEnv(env = process.env) {
   return {
-    clientId: client.client_id,
-    clientSecret: client.client_secret,
-    redirectUri: process.env.GOOGLE_REDIRECT_URI || client.redirect_uris?.[0],
+    ...parseEnvFile(path.join(repoRoot, '.env.local')),
+    ...env,
   };
 }
 
-function loadRefreshToken(env = process.env) {
-  if (env.GOOGLE_REFRESH_TOKEN) return env.GOOGLE_REFRESH_TOKEN;
-  if (fs.existsSync(tokenPath)) return fs.readFileSync(tokenPath, 'utf8').trim();
-  throw new Error(`Missing Google refresh token at ${tokenPath}`);
+function normalizeGoogleOAuthClient(parsed, sourceLabel, env = {}) {
+  const client = parsed?.web || parsed?.installed || parsed;
+  if (!client?.client_id || !client?.client_secret) {
+    throw new Error(
+      `Invalid Google OAuth client config in ${sourceLabel}: expected client_id and client_secret.`
+    );
+  }
+  return {
+    clientId: String(client.client_id).trim(),
+    clientSecret: String(client.client_secret).trim(),
+    redirectUri: env.GOOGLE_REDIRECT_URI || client.redirect_uris?.[0],
+    source: sourceLabel,
+  };
 }
 
-function authWithRefreshToken(env = process.env) {
-  const client = loadClient();
+function loadClient(env = process.env, paths = {}) {
+  const clientFilePath = paths.clientPath || clientPath;
+  const clientId = String(env.GOOGLE_CLIENT_ID || '').trim();
+  const clientSecret = String(env.GOOGLE_CLIENT_SECRET || '').trim();
+  if (clientId || clientSecret) {
+    if (!clientId || !clientSecret) {
+      throw new Error('Incomplete Google OAuth env config: set both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.');
+    }
+    return {
+      clientId,
+      clientSecret,
+      redirectUri: env.GOOGLE_REDIRECT_URI || undefined,
+      source: 'GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET',
+    };
+  }
+
+  const inlineClientJson = env.GOOGLE_OAUTH_CLIENT_JSON || env.GOOGLE_OAUTH_CLIENT_CONFIG || '';
+  if (String(inlineClientJson).trim()) {
+    return normalizeGoogleOAuthClient(
+      parseJsonConfig(inlineClientJson, 'GOOGLE_OAUTH_CLIENT_JSON'),
+      'GOOGLE_OAUTH_CLIENT_JSON',
+      env
+    );
+  }
+
+  const parsed = readJsonIfExists(clientFilePath, `Google OAuth client file ${clientFilePath}`);
+  if (!parsed) {
+    throw new Error(
+      `Google OAuth client is not configured. Set GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET, ` +
+      `GOOGLE_OAUTH_CLIENT_JSON, or provide ${clientFilePath}.`
+    );
+  }
+  return normalizeGoogleOAuthClient(parsed, `Google OAuth client file ${clientFilePath}`, env);
+}
+
+function loadRefreshToken(env = process.env, paths = {}) {
+  if (env.GOOGLE_REFRESH_TOKEN) return env.GOOGLE_REFRESH_TOKEN;
+  const refreshTokenPath = paths.tokenPath || tokenPath;
+  if (fs.existsSync(refreshTokenPath)) return fs.readFileSync(refreshTokenPath, 'utf8').trim();
+  throw new Error(`Missing Google refresh token. Set GOOGLE_REFRESH_TOKEN or provide ${refreshTokenPath}.`);
+}
+
+function authWithRefreshToken(env = process.env, paths = {}) {
+  const client = loadClient(env, paths);
   const auth = new google.auth.OAuth2(client.clientId, client.clientSecret, client.redirectUri);
-  auth.setCredentials({ refresh_token: loadRefreshToken(env) });
+  auth.setCredentials({ refresh_token: loadRefreshToken(env, paths) });
   return auth;
 }
 
-function loadConfig() {
-  const env = {
-    ...parseEnvFile(path.join(repoRoot, '.env.local')),
-    ...process.env,
-  };
+function loadConfig(env = loadRuntimeEnv()) {
   const pipeline = env.GOOGLE_DRIVE_PIPELINE_CONFIG
-    ? JSON.parse(env.GOOGLE_DRIVE_PIPELINE_CONFIG)
-    : readJsonIfExists(pipelinePath) || {};
+    ? parseJsonConfig(env.GOOGLE_DRIVE_PIPELINE_CONFIG, 'GOOGLE_DRIVE_PIPELINE_CONFIG')
+    : readJsonIfExists(pipelinePath, `Google Drive pipeline file ${pipelinePath}`) || {};
   return {
     appUrl: (env.BNA_APP_URL || env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org').replace(/\/+$/, ''),
     username: env.OPS_USERNAME || '',
@@ -987,8 +1038,9 @@ function printSummary(summary) {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-  const config = loadConfig();
-  const auth = authWithRefreshToken();
+  const env = loadRuntimeEnv();
+  const config = loadConfig(env);
+  const auth = authWithRefreshToken(env);
   const drive = google.drive({ version: 'v3', auth });
   const docs = google.docs({ version: 'v1', auth });
   const summary = {
@@ -1050,7 +1102,20 @@ async function main() {
   printSummary(summary);
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.stack || error.message : String(error));
-  process.exitCode = 1;
-});
+export {
+  authWithRefreshToken,
+  loadClient,
+  loadConfig,
+  loadRefreshToken,
+  loadRuntimeEnv,
+  normalizeGoogleOAuthClient,
+  parseJsonConfig,
+  readJsonIfExists,
+};
+
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.stack || error.message : String(error));
+    process.exitCode = 1;
+  });
+}

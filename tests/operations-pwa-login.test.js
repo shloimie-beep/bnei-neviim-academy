@@ -51,7 +51,9 @@ test('public navigation keeps Operations out of prospect-facing menus', () => {
 test('Operations login preserves only safe Operations return paths', () => {
   assert.match(loginHtml, /function operationsReturnTo\(\)/);
   assert.match(loginHtml, /url\.origin !== window\.location\.origin \|\| url\.pathname !== '\/operations'/);
-  assert.match(loginHtml, /window\.location\.href = operationsReturnTo\(\)/);
+  assert.match(loginHtml, /fetch\('\/api\/bna\/me'/);
+  assert.match(loginHtml, /returnTo: operationsReturnTo\(\)/);
+  assert.match(loginHtml, /window\.location\.href = data\.redirect_to \|\| operationsReturnTo\(\)/);
   assert.match(loginHtml, /window\.location\.replace\(operationsReturnTo\(\)\)/);
   assert.match(loginHtml, /data\.authenticated === true \|\| data\.success === true/);
   assert.match(loginHtml, /redirectIfAlreadySignedIn\(\)/);

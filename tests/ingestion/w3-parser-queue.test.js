@@ -24,7 +24,7 @@ test('W3 parser emits the required schema and resolves One Time aliases', () => 
 
   assert.equal(parsed.schema_valid, true);
   assert.equal(parsed.workspace.project_key, 'one_time_mishnah_class');
-  assert.equal(parsed.workspace.key, 'one_time_mishnah_class');
+  assert.equal(parsed.workspace.key, 'rabbi_sheller_provider');
   for (const key of [
     'participants',
     'decisions',

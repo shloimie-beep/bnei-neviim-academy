@@ -23,6 +23,22 @@ provider uploads until Shloimie chooses the host/account model.
 8. Approval queue reviews privacy, audience, and rollback.
 9. Provider upload/publish happens only after host decision and exact approval.
 
+## Local One Time Dry Run
+
+`src/platform/integrations/media-local-pipeline.js` now gives the One Time beta a
+provider-neutral local handoff for:
+
+- Zoom recordings: meeting ID, recording ID, participant events, attendance
+  preview, correction draft, and video-reference draft.
+- Vimeo assets: pasted Vimeo URL parsing, embed URL mapping, video-reference
+  draft, and member-library draft.
+- Approved drop-folder videos: file-name/checksum or Drive ID metadata,
+  privacy-review routing, and provider-neutral video-reference draft.
+
+The dry run deliberately performs no upload, Drive permission change, Zoom
+meeting/webhook/attendance write, library publication, notification, deploy, or
+production mutation.
+
 ## Current Guardrails
 
 - `GET /api/bna/integrations/video-hosting/status` is readiness only.
@@ -30,6 +46,8 @@ provider uploads until Shloimie chooses the host/account model.
 - `POST /api/bna/video-library/:id/upload-preview` is preview only.
 - `POST /api/bna/video-library/:id/upload` is blocked until provider decision,
   account owner, upload capability, and approval are documented.
+- The One Time local media pipeline has focused coverage in
+  `tests/one-time-media-local-pipeline.test.js`.
 
 ## Open Inputs
 

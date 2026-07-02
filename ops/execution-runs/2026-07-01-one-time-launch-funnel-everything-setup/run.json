@@ -1,0 +1,25 @@
+{
+  "run_id": "2026-07-01-one-time-launch-funnel-everything-setup",
+  "title": "One Time Launch Funnel Everything Setup",
+  "created_at": "2026-07-01T14:18:15.791Z",
+  "updated_at": "2026-07-01T14:18:15.791Z",
+  "active": false,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260701-006",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "guardrails": [
+    "No secrets printed, committed, screenshotted, or pasted into reports",
+    "No bulk real campaign email send without final copy, exact segment/list, and explicit final send command",
+    "No WhatsApp sends in this packet",
+    "No live Stripe payments or subscription changes",
+    "No existing paying-user cancellation or refund action",
+    "No DNS mutation from Codex",
+    "No GHL, GoHighLevel, LeadConnector, or external CRM runtime",
+    "No BNA classroom/content/contact data mixed into One Time"
+  ],
+  "raw_ids": [
+    "RAW-20260701-006"
+  ]
+}

@@ -38,7 +38,16 @@ function oneTimeManagerIdentity() {
   });
 }
 
-test('One Time canonical assignments name Rabbi Scheller and Shloimie without changing legacy roles', () => {
+function oneTimeAdminIdentity() {
+  return decorateOneTimeIdentity({
+    username: 'shloimie-admin@example.test',
+    role: 'one_time_admin',
+    scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+    displayName: 'Shloimie',
+  });
+}
+
+test('One Time canonical assignments name Rabbi Scheller as owner and Shloimie as workspace admin', () => {
   assert.deepEqual(oneTimeCanonicalOwnerAssignments(), [
     {
       person_name: 'Rabbi Elie Scheller',
@@ -53,13 +62,13 @@ test('One Time canonical assignments name Rabbi Scheller and Shloimie without ch
     },
     {
       person_name: 'Shloimie',
-      canonical_role: ONE_TIME_CANONICAL_ROLES.WORKSPACE_MANAGER,
-      canonical_role_label: 'Workspace Manager',
+      canonical_role: ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN,
+      canonical_role_label: 'Workspace Admin',
       platform_role: ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN,
       platform_role_label: 'Platform Super Admin',
       compatibility_role: 'project admin',
-      identity_role: 'project_manager',
-      access_level: 'manager',
+      identity_role: 'one_time_admin',
+      access_level: 'admin',
       workspace_key: ONE_TIME_WORKSPACE_KEY,
       project_key: ONE_TIME_PROJECT_KEY,
       account_type: 'internal_admin',
@@ -69,11 +78,37 @@ test('One Time canonical assignments name Rabbi Scheller and Shloimie without ch
 
 test('server identity payload exposes canonical One Time role metadata with backwards-compatible roles', () => {
   assert.match(serverJs, /decorateOneTimeIdentity\(\{[\s\S]*role: 'project_owner'[\s\S]*displayName: 'Rabbi Elie Scheller'/);
+  assert.match(serverJs, /decorateOneTimeIdentity\(\{[\s\S]*role: 'one_time_admin'[\s\S]*displayName: 'Shloimie'/);
   assert.match(serverJs, /decorateOneTimeIdentity\(\{[\s\S]*role: 'project_manager'[\s\S]*displayName: 'Shloimie'/);
+  assert.match(serverJs, /ownerAllowedViews = \[[^\]]*'api_usage'[\s\S]*'settings'\]/);
+  assert.match(serverJs, /adminAllowedViews = \[[^\]]*'api_usage'[\s\S]*'settings'\]/);
+  assert.match(serverJs, /managerAllowedViews = \[[^\]]*'api_usage'[\s\S]*'integrations'\]/);
+  assert.doesNotMatch(serverJs, /ownerAllowedViews = \[[^\]]*'platform_suite'/);
+  assert.doesNotMatch(serverJs, /adminAllowedViews = \[[^\]]*'platform_suite'/);
+  assert.doesNotMatch(serverJs, /managerAllowedViews = \[[^\]]*'platform_suite'/);
+  assert.doesNotMatch(serverJs, /ownerAllowedViews = \[[^\]]*'admin'/);
+  assert.doesNotMatch(serverJs, /adminAllowedViews = \[[^\]]*'admin'/);
+  assert.doesNotMatch(serverJs, /managerAllowedViews = \[[^\]]*'admin'/);
+  assert.doesNotMatch(serverJs, /ownerAllowedViews = \[[^\]]*'accounting'/);
+  assert.doesNotMatch(serverJs, /adminAllowedViews = \[[^\]]*'accounting'/);
+  assert.doesNotMatch(serverJs, /managerAllowedViews = \[[^\]]*'accounting'/);
   assert.match(serverJs, /canonical_role: identity\?\.canonical_role/);
   assert.match(serverJs, /workspace_role_label: identity\?\.workspace_role_label/);
   assert.match(serverJs, /canonical_role_label: oneTimeOwnerCanonical\.canonical_role_label/);
   assert.match(serverJs, /platform_role: oneTimeManagerCanonical\.platform_role/);
+});
+
+test('Operations login disambiguates same visible username across platform and One Time admin roles', () => {
+  assert.match(serverJs, /const sessionRoleMatch = rawUser\.match\(\//);
+  assert.match(serverJs, /const preferredRole = String\(options\.preferredRole \|\| ''\)/);
+  assert.match(serverJs, /function operationsReturnPathTargetsOneTime\(value\)/);
+  assert.match(serverJs, /preferredRole: operationsReturnPathTargetsOneTime\(requestedReturnTo\) \? 'one_time_admin' : ''/);
+  assert.match(serverJs, /const roleAllowed = \(role\) => !sessionRole \|\| sessionRole === role/);
+  assert.match(serverJs, /sessionUsername: `one_time_admin:\$\{user\}`/);
+  assert.match(serverJs, /sessionUsername: `super_admin:\$\{OPS_USERNAME\}`/);
+  assert.match(serverJs, /function opsSessionUsername\(identity = \{\}\)/);
+  assert.match(serverJs, /issueSession\(opsSessionUsername\(identity\)\)/);
+  assert.match(serverJs, /issueSession\(opsSessionUsername\(destination\.identity\), db\)/);
 });
 
 test('decorated One Time identities keep route roles while adding canonical labels', () => {
@@ -89,6 +124,12 @@ test('decorated One Time identities keep route roles while adding canonical labe
   assert.equal(manager.workspace_role_label, 'Workspace Manager');
   assert.equal(manager.platform_role, '');
 
+  const admin = oneTimeAdminIdentity();
+  assert.equal(admin.role, 'one_time_admin');
+  assert.equal(admin.workspace_role, ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN);
+  assert.equal(admin.workspace_role_label, 'Workspace Admin');
+  assert.equal(admin.platform_role, '');
+
   const superAdmin = decorateOneTimeIdentity({ username: 'ops', role: 'super_admin', scope: { type: 'all', projectKey: null } });
   assert.equal(superAdmin.platform_role, ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN);
   assert.ok(superAdmin.canonical_roles.includes(ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN));
@@ -97,7 +138,7 @@ test('decorated One Time identities keep route roles while adding canonical labe
 test('One Time user list filtering excludes unrelated BNA and family users', () => {
   const users = [
     { id: 1, person_name: 'Rabbi Elie Scheller', role: 'project owner', access_level: 'owner', project_key: ONE_TIME_PROJECT_KEY, workspace_key: ONE_TIME_WORKSPACE_KEY },
-    { id: 2, person_name: 'Shloimie', role: 'project admin', access_level: 'manager', project_key: ONE_TIME_PROJECT_KEY, workspace_key: ONE_TIME_WORKSPACE_KEY },
+    { id: 2, person_name: 'Shloimie', role: 'project admin', access_level: 'admin', project_key: ONE_TIME_PROJECT_KEY, workspace_key: ONE_TIME_WORKSPACE_KEY },
     { id: 3, person_name: 'One Time Parent', role: 'parent', project_scope: ONE_TIME_PROJECT_KEY, account_type: 'member_parent' },
     { id: 4, person_name: 'BNA Parent', role: 'parent', project_key: 'bna', workspace_key: 'bna' },
     { id: 5, person_name: 'Family Child', role: 'child', workspace_key: 'dratler_family' },
@@ -111,21 +152,21 @@ test('One Time user list filtering excludes unrelated BNA and family users', () 
 
 test('One Time role permissions deny cross-workspace writes and protect workspace owner changes', () => {
   const owner = oneTimeOwnerIdentity();
-  const manager = oneTimeManagerIdentity();
+  const admin = oneTimeAdminIdentity();
 
   assert.equal(canOneTimeIdentity('read_workspace_users', owner, { workspace_key: ONE_TIME_WORKSPACE_KEY }).allowed, true);
   const crossWorkspace = canOneTimeIdentity('read_workspace_users', owner, { workspace_key: 'bna', project_key: 'bna' });
   assert.equal(crossWorkspace.allowed, false);
   assert.match(crossWorkspace.reason, /workspace scope mismatch/);
 
-  const managerOwnerChange = canOneTimeIdentity('change_workspace_role', manager, {
+  const managerOwnerChange = canOneTimeIdentity('change_workspace_role', admin, {
     workspace_key: ONE_TIME_WORKSPACE_KEY,
     target_role: ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER,
   });
   assert.equal(managerOwnerChange.allowed, false);
   assert.match(managerOwnerChange.reason, /workspace owner/);
 
-  const managerRemoval = canOneTimeIdentity('remove_workspace_user', manager, {
+  const managerRemoval = canOneTimeIdentity('remove_workspace_user', admin, {
     workspace_key: ONE_TIME_WORKSPACE_KEY,
     target_role: ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF,
   });

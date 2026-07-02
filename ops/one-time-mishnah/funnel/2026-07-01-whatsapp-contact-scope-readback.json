@@ -1,0 +1,49 @@
+{
+  "generated_at": "2026-07-01T15:51:40.100Z",
+  "requirement_id": "REQ-20260701-609",
+  "scope": {
+    "workspace_key": "rabbi_sheller_provider",
+    "project_key": "one_time_mishnah_class",
+    "project_id": 2,
+    "account_wide": false
+  },
+  "success": true,
+  "dry_run": true,
+  "no_send": true,
+  "external_write_performed": false,
+  "production_mutation_performed": false,
+  "raw_phonebook_values_written": false,
+  "raw_names_emails_phones_or_message_bodies_written": false,
+  "source_table_availability": {
+    "bna_wapi_contacts": true,
+    "bna_wapi_chats": true,
+    "bna_contact_communications": true,
+    "bna_wapi_phonebook_corrections": true
+  },
+  "summary": {
+    "phonebook_groups": 100,
+    "communications_considered": 0,
+    "wapi_contacts_considered": 0,
+    "wapi_chats_considered": 0,
+    "unscoped_wapi_directory_rows_excluded": true,
+    "manual_correction_candidates": 0,
+    "manual_corrections_applied": 0,
+    "recommended_types": {
+      "school_interest": 100
+    }
+  },
+  "guardrails": [
+    "Dry-run/read-only report only.",
+    "No WhatsApp messages are sent.",
+    "No contact tags, lead stages, or provider records are changed.",
+    "Nati Freeze/Fries stays friend/non-lead unless real message evidence shows school interest.",
+    "Scoped workspace report excluded unscoped WAPI directory rows to prevent BNA/Rabbi cross-workspace leakage."
+  ],
+  "findings": [
+    {
+      "type": "scope_guard_active",
+      "severity": "info",
+      "summary": "Scoped One Time WAPI report excluded unscoped WAPI directory rows to prevent BNA/Rabbi cross-workspace leakage."
+    }
+  ]
+}

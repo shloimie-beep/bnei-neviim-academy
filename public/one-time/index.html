@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Worldwide OneTime Mishnayos - Draft Offer</title>
+  <title>Worldwide OneTime Mishnayos - 30-Day Free Trial</title>
   <link rel="icon" href="/images/one-time-logo-black.png">
   <style>
     :root {
@@ -237,7 +237,10 @@
 
     .tier-grid,
     .region-grid,
-    .calendar-grid {
+    .calendar-grid,
+    .feature-grid,
+    .step-grid,
+    .faq-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
@@ -305,6 +308,46 @@
 
     .calendar-card p {
       color: rgba(255, 255, 255, 0.74);
+    }
+
+    .video-band {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.1fr);
+      gap: 24px;
+      align-items: stretch;
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .video-frame {
+      height: min(560px, 62vw);
+      min-height: 300px;
+      max-height: 620px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .video-frame img {
+      width: 100%;
+      height: 100%;
+      min-height: 300px;
+      object-fit: cover;
+      display: block;
+      opacity: 0.82;
+    }
+
+    .video-copy {
+      display: grid;
+      align-content: center;
+      gap: 14px;
+    }
+
+    .video-copy p,
+    .final-cta p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.78);
     }
 
     .artifact-row {
@@ -395,6 +438,20 @@
       font-weight: 800;
     }
 
+    .final-cta {
+      display: grid;
+      gap: 18px;
+      align-items: center;
+      color: var(--white);
+      background: var(--ink);
+    }
+
+    .final-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
     footer {
       padding: 26px clamp(18px, 5vw, 70px);
       color: rgba(255, 255, 255, 0.76);
@@ -422,6 +479,10 @@
       .tier-grid,
       .region-grid,
       .calendar-grid,
+      .feature-grid,
+      .step-grid,
+      .faq-grid,
+      .video-band,
       .interest,
       .two-col {
         grid-template-columns: 1fr;
@@ -429,6 +490,10 @@
 
       .artifact-row {
         grid-template-columns: 1fr;
+      }
+
+      .video-frame {
+        height: 360px;
       }
     }
 
@@ -454,12 +519,14 @@
       <span>Worldwide OneTime Mishnayos</span>
     </a>
     <nav class="topnav" aria-label="OneTime">
-      <span class="draft-pill">Draft / noindex</span>
+      <span class="draft-pill">Launch offer</span>
       <a href="#offer">Offer</a>
+      <a href="#watch">Video</a>
       <a href="#library">Library</a>
+      <a href="#faq">FAQ</a>
       <a href="#calendar">Live Class</a>
-      <a href="#interest">Join the Shir</a>
-      <a href="/one-time/member-login">Member Login</a>
+      <a href="#interest">Start Free</a>
+      <a href="/member-login">Member Login</a>
     </nav>
   </header>
 
@@ -469,52 +536,68 @@
         <span class="eyebrow">Live from Eretz Yisrael</span>
         <h1>Worldwide OneTime Mishnayos</h1>
         <p class="hero-copy">
-          The live Mishnah shir kids can look forward to, led by Rabbi Eli Scheller with warmth, stories, replay/library access, and a parent-aware portal path.
+          Sign up during the launch window and get 30 days free from signup with Rabbi Eli Scheller: live class access, the replay library, private questions, and parent progress basics. No card, no checkout, and no direct Zoom link on the public page.
         </p>
         <div class="hero-actions">
-          <a class="button primary" href="#interest">Join the Shir</a>
+          <a class="button primary" href="#interest">Start 30 Days Free</a>
+          <a class="button secondary" href="#watch">Watch Rabbi Video</a>
         </div>
       </div>
     </section>
 
     <section class="intro-strip" aria-label="Program status">
       <div class="strip-cell">
-        <strong>Focused offer</strong>
-        <span>Worldwide Mishnayos class / shir, not a full school rebuild.</span>
+        <strong>30 days free</strong>
+        <span>Access starts immediately from the signup date during the launch window.</span>
       </div>
       <div class="strip-cell">
-        <strong>Price</strong>
-        <span>$67 is the planned main offer; billing cadence still needs confirmation.</span>
+        <strong>Live class</strong>
+        <span>Rabbi Scheller teaches through the protected member/class page.</span>
       </div>
       <div class="strip-cell">
-        <strong>Class model</strong>
-        <span>Live from Eretz Yisrael with replay/library support after review.</span>
+        <strong>Replays</strong>
+        <span>Videos and library items appear after review through the member path.</span>
       </div>
       <div class="strip-cell">
-        <strong>Safety</strong>
-        <span>Student replies stay private and moderated before anything is shown publicly.</span>
+        <strong>Progress</strong>
+        <span>Attendance v1 is automatic class-link click tracking, not manual attendance.</span>
+      </div>
+    </section>
+
+    <section class="video-band" id="watch">
+      <div class="video-frame" aria-label="Rabbi video preview">
+        <img src="/images/one-time-existing-site-preview.jpg" alt="One Time Mishnayos video preview">
+      </div>
+      <div class="video-copy">
+        <span class="eyebrow">Watch Rabbi Video</span>
+        <h2>Meet the class before you join.</h2>
+        <p>Rabbi Scheller's video belongs in the One Time classroom through Vimeo once the account is ready. This public page keeps the invitation safe and sends families into the protected member path after signup.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#interest">Start 30 Days Free</a>
+          <a class="button secondary" href="/member-login">Member Login</a>
+        </div>
       </div>
     </section>
 
     <section id="offer">
       <div class="section-head">
-        <h2>One Simple Starting Offer</h2>
-        <p>This draft keeps the public path focused on the live Mishnayos class. Checkout stays unavailable until the provider, billing cadence, and public copy are approved.</p>
+        <h2>Start With 30 Days Free</h2>
+        <p>The launch signup is simple: join the Mishnayos trial now, no card required. Paid continuation happens separately after the free period and only through an approved payment path.</p>
       </div>
       <div class="tier-grid">
         <article class="card">
-          <h3>Worldwide Mishnayos Shir</h3>
-          <p>Live class access with replay/library support and a simple parent-aware member path.</p>
-          <span class="price-pending">$67 planned</span>
+          <h3>30-Day Mishnayos Trial</h3>
+          <p>Live class, available replays, private questions to Rabbi, and basic parent/student/member access for 30 days from signup.</p>
+          <span class="price-pending">30 days free</span>
           <ul class="candidate-list">
-            <li>Billing cadence needs Rabbi/Shloimie confirmation</li>
-            <li>Payment provider/link is not connected yet</li>
-            <li>No charge, access grant, or external send is enabled</li>
+            <li>No credit card is required at signup</li>
+            <li>No payment is collected during signup</li>
+            <li>Member access stays gated behind the login path</li>
           </ul>
         </article>
         <article class="card">
-          <h3>Student Library</h3>
-          <p>Class recordings, live-session notes, Rabbi messages, and student replies stay inside a protected member experience.</p>
+          <h3>Protected Video Library</h3>
+          <p>Class recordings, replay videos, live-session notes, Rabbi messages, and student replies stay inside the protected member experience.</p>
           <span class="price-pending">Private after login</span>
           <ul class="candidate-list">
             <li>Member access is separate from BNA parent/student portals</li>
@@ -523,13 +606,13 @@
           </ul>
         </article>
         <article class="card">
-          <h3>VIP Summer Module</h3>
-          <p>A future high-touch class option for a smaller group, not part of this public offer until approved.</p>
-          <span class="price-pending">Future upsell</span>
+          <h3>After The Trial</h3>
+          <p>Paid continuation is handled separately after the free period, with no automatic charge from this signup.</p>
+          <span class="price-pending">$67/month planned</span>
           <ul class="candidate-list">
-            <li>Likely $400-$500</li>
-            <li>About 30 kids, 12 weeks, pending dates</li>
-            <li>Keep internal until Rabbi confirms scope</li>
+            <li>Payment setup is not collected here</li>
+            <li>Continuation details remain separate from signup</li>
+            <li>No Stripe or billing action runs from this page</li>
           </ul>
         </article>
       </div>
@@ -537,75 +620,133 @@
 
     <section class="region-band" id="library">
       <div class="section-head">
-        <h2>Library, Replies, And Parent Visibility</h2>
-        <p>The member side stays protected. Kids send replies privately, and Rabbi/admin review decides what can be shared.</p>
+        <h2>What Your Child Gets</h2>
+        <p>The member side stays protected. Kids learn with Rabbi, rewatch available classes, and send questions privately without student-to-student posting.</p>
       </div>
       <div class="region-grid">
         <article class="card region-card" data-region-card="israel">
           <h3>Live class</h3>
-          <p>Rabbi Scheller can teach live from Eretz Yisrael once Zoom, schedule, and recording permissions are confirmed.</p>
+          <p>Rabbi Scheller teaches the live Mishnah class through a member-gated class page once the session details are ready.</p>
         </article>
         <article class="card region-card" data-region-card="uk">
-          <h3>Private replies</h3>
-          <p>Students can send replies or questions privately from their portal for Rabbi/admin review.</p>
+          <h3>Video library and replays</h3>
+          <p>Available recordings and class materials are shown only through the protected member experience.</p>
         </article>
         <article class="card region-card" data-region-card="us">
-          <h3>Moderated sharing</h3>
-          <p>Rabbi can choose selected answers or prompts for community display; students cannot publish directly.</p>
+          <h3>Private questions to Rabbi</h3>
+          <p>Students can send questions privately for Rabbi/admin review; there is no public student-to-student chat.</p>
+        </article>
+        <article class="card region-card" data-region-card="worldwide">
+          <h3>Parent progress basics</h3>
+          <p>Parent/student views can show schedule, access status, and attendance by class-link click.</p>
         </article>
       </div>
     </section>
 
     <section id="calendar">
       <div class="section-head">
-        <h2>Readiness Before Launch</h2>
-        <p>The meeting should settle the account access and permissions needed before the page can move from draft to launch-ready.</p>
+        <h2>Live Class, Attendance, And Access</h2>
+        <p>The signup starts the no-card trial setup and keeps class links, recordings, and payment decisions in the proper protected workflows.</p>
       </div>
       <div class="calendar-grid">
         <article class="card calendar-card">
-          <h3>Zoom and Vimeo</h3>
-          <p>Confirm class access, recordings, background-video rights, and whether API management is available.</p>
+          <h3>Class access</h3>
+          <p>Class details stay behind member access checks. The public page never exposes direct Zoom links.</p>
           <div class="artifact-row">
-            <span>Zoom pending</span>
-            <span>Vimeo pending</span>
-            <span>Rights pending</span>
+            <span>Gated login</span>
+            <span>No public Zoom</span>
+            <span>Access review</span>
           </div>
         </article>
         <article class="card calendar-card">
-          <h3>Email and domain</h3>
-          <p>Confirm Resend/domain setup, GoDaddy delegate access, and approved relaunch copy before any send.</p>
+          <h3>Click attendance</h3>
+          <p>Attendance v1 records class-link views and clicks automatically. No manual attendance is needed for launch.</p>
           <div class="artifact-row">
-            <span>GoDaddy</span>
-            <span>Resend</span>
-            <span>No send yet</span>
+            <span>Link viewed</span>
+            <span>Link clicked</span>
+            <span>Progress basics</span>
           </div>
         </article>
         <article class="card calendar-card">
-          <h3>Payment</h3>
-          <p>The $67 plan needs a provider of record, cadence, refund/access policy, and approved payment link.</p>
+          <h3>Payment later</h3>
+          <p>The trial signup does not collect payment. Paid continuation requires a separate approved checkout path.</p>
           <div class="artifact-row">
-            <span>$67</span>
-            <span>Provider pending</span>
-            <span>No checkout yet</span>
+            <span>No card</span>
+            <span>No checkout</span>
+            <span>No auto-charge</span>
           </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="section-head">
+        <h2>How It Works</h2>
+        <p>The launch flow is intentionally simple: signup first, access immediately, reminders later, payment only after the free period.</p>
+      </div>
+      <div class="step-grid">
+        <article class="card">
+          <h3>1. Sign up free</h3>
+          <p>Enter parent contact details and optional student/timezone details. The form creates or updates one scoped One Time signup.</p>
+        </article>
+        <article class="card">
+          <h3>2. Open member access</h3>
+          <p>The confirmation points to the member/class page where live class and replay access can be shown after login.</p>
+        </article>
+        <article class="card">
+          <h3>3. Continue after 30 days</h3>
+          <p>After the free period, the intended continuation is Rabbi's Stripe product at $67/month, only through the approved payment path.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="region-band" id="faq">
+      <div class="section-head">
+        <h2>FAQ</h2>
+        <p>Short answers for the launch offer.</p>
+      </div>
+      <div class="faq-grid">
+        <article class="card">
+          <h3>When do the 30 days start?</h3>
+          <p>They start from your signup date during the launch window.</p>
+        </article>
+        <article class="card">
+          <h3>Is a card required?</h3>
+          <p>No. The launch signup does not collect a card, create checkout, or run a payment.</p>
+        </article>
+        <article class="card">
+          <h3>Where is the Zoom link?</h3>
+          <p>It is not public. The class link is shown through the member/class page for active members.</p>
+        </article>
+        <article class="card">
+          <h3>Can my child ask Rabbi questions?</h3>
+          <p>Yes. Private questions belong inside the protected member/classroom path and remain reviewed.</p>
+        </article>
+        <article class="card">
+          <h3>Are replays included?</h3>
+          <p>Available videos and replays are included during the free access period through the protected library.</p>
+        </article>
+        <article class="card">
+          <h3>What happens after the free period?</h3>
+          <p>The intended paid continuation is $67/month through Rabbi's Stripe account after the approved conversion flow is ready.</p>
         </article>
       </div>
     </section>
 
     <section class="interest" id="interest">
       <div class="section-head">
-        <h2>Join Interest Review</h2>
-        <p>This form saves a first-party OneTime interest lead for internal review. It does not create a checkout, send a message, grant access, or write to an external CRM.</p>
+        <h2>Start Your 30-Day Free Trial</h2>
+        <p>This form saves a first-party One Time trial signup, grants the 30-day trial, and sends only your signup confirmation email. It does not create a checkout, collect a card, send WhatsApp, contact imported lists, or write to an external CRM.</p>
       </div>
       <div class="form-panel">
         <form id="interestForm">
           <div class="two-col">
             <label>
-              Parent name
+              Parent/adult name
               <input name="parent_name" autocomplete="name" placeholder="Name">
             </label>
             <label>
-              Region
+              Country/market
               <select name="region">
                 <option value="worldwide">Worldwide</option>
                 <option value="israel">Israel</option>
@@ -626,17 +767,27 @@
           </div>
           <div class="two-col">
             <label>
-              Learner name
+              Student name optional
               <input name="student_name" placeholder="Student or learner">
             </label>
             <label>
-              Format
+              Time zone optional
+              <input name="timezone" autocomplete="off" placeholder="Example: America/New_York">
+            </label>
+          </div>
+          <div class="two-col">
+            <label>
+              Trial path
               <select name="preferred_class_format">
-                <option value="library_live_low_touch">Worldwide Mishnayos shir</option>
+                <option value="library_live_low_touch">30-day free Mishnayos trial</option>
                 <option value="not_sure">Not sure yet</option>
                 <option value="interactive_zoom">Interactive Zoom</option>
                 <option value="vip_high_touch">VIP high-touch</option>
               </select>
+            </label>
+            <label>
+              Questions for Rabbi optional
+              <input name="question_topic" placeholder="Example: class level, age, schedule">
             </label>
           </div>
           <label>
@@ -645,12 +796,27 @@
           </label>
           <label class="checkbox-line">
             <input name="consent" type="checkbox">
-            <span>Save this interest note for OneTime review. No payment or external send is approved by this form.</span>
+            <span>Start my 30-day free One Time trial setup and send my confirmation email. No payment, checkout, WhatsApp, imported-list email, campaign send, or external CRM write is approved by this form.</span>
           </label>
           <input type="hidden" name="source_landing_page" value="/one-time">
-          <button class="button primary" type="submit">Save join interest</button>
+          <input type="hidden" name="utm_source" value="">
+          <input type="hidden" name="utm_medium" value="">
+          <input type="hidden" name="utm_campaign" value="">
+          <input type="hidden" name="utm_content" value="">
+          <input type="hidden" name="campaign_url" value="https://join.onetimeonetime.com/?utm_source=email&utm_medium=launch&utm_campaign=free_mishnayos_class">
+          <button class="button primary" type="submit">Start 30 Days Free</button>
           <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
         </form>
+      </div>
+    </section>
+
+    <section class="final-cta" aria-label="Final signup call to action">
+      <span class="eyebrow">Ready for launch access</span>
+      <h2>Start the Mishnayos class free for 30 days.</h2>
+      <p>Signup grants the local 30-day access path. Real campaign sends, WhatsApp reminders, live payments, and production Zoom/Vimeo changes stay blocked until the exact operator approvals are in place.</p>
+      <div class="final-actions">
+        <a class="button primary" href="#interest">Start 30 Days Free</a>
+        <a class="button secondary" href="/member-login">Member Login</a>
       </div>
     </section>
   </main>
@@ -664,11 +830,22 @@
       const region = location.pathname.split('/').filter(Boolean)[1] || 'worldwide';
       const regionSelect = document.querySelector('select[name="region"]');
       const source = document.querySelector('input[name="source_landing_page"]');
+      const params = new URLSearchParams(location.search);
+      const utmDefaults = {
+        utm_source: 'email',
+        utm_medium: 'launch',
+        utm_campaign: 'free_mishnayos_class',
+        utm_content: '',
+      };
       const cards = document.querySelectorAll('[data-region-card]');
       if (regionSelect && ['israel', 'uk', 'us'].includes(region)) {
         regionSelect.value = region;
       }
       if (source) source.value = location.pathname || '/one-time';
+      Object.keys(utmDefaults).forEach((key) => {
+        const field = document.querySelector(`input[name="${key}"]`);
+        if (field) field.value = params.get(key) || utmDefaults[key];
+      });
       cards.forEach((card) => {
         if (card.getAttribute('data-region-card') === region) card.classList.add('active');
       });
@@ -680,6 +857,21 @@
         event.preventDefault();
         const data = Object.fromEntries(new FormData(form).entries());
         data.consent = Boolean(form.elements.consent && form.elements.consent.checked);
+        data.signup_flow = 'no_card_30_day_trial';
+        data.status = 'reviewing';
+        data.metadata = {
+          signup_flow: 'no_card_30_day_trial',
+          trial_days: 30,
+          source_url: `${location.pathname || '/one-time'}${location.search || ''}`,
+          campaign_url: data.campaign_url || '',
+          utm_source: data.utm_source || '',
+          utm_medium: data.utm_medium || '',
+          utm_campaign: data.utm_campaign || '',
+          utm_content: data.utm_content || '',
+          question_topic: data.question_topic || '',
+          no_card_required: true,
+          join_domain: 'join.onetimeonetime.com',
+        };
         data.interested_tiers = data.preferred_class_format && data.preferred_class_format !== 'not_sure'
           ? [data.preferred_class_format]
           : ['library_live_low_touch'];
@@ -692,10 +884,25 @@
           });
           const payload = await response.json();
           if (!response.ok || !payload.success) throw new Error(payload.error || 'Unable to save interest');
-          status.textContent = 'Saved for internal OneTime review. No checkout, send, or access grant was created.';
+          const trialEnd = payload.trial_signup && payload.trial_signup.trial_end_at
+            ? new Date(payload.trial_signup.trial_end_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+            : '';
+          const email = payload.confirmation_email || {};
+          let emailCopy = ' Confirmation email was not sent by this request.';
+          if (email.sent) emailCopy = ' Confirmation email sent.';
+          else if (email.already_sent) emailCopy = ' Confirmation email was already sent.';
+          else if (email.reason === 'missing_recipient_email') emailCopy = ' Add an email address to receive the confirmation.';
+          else if (email.failed) emailCopy = ' Confirmation email could not be sent yet; access is still active.';
+          status.textContent = trialEnd
+            ? `Trial signup saved. Your 30-day member access runs through ${trialEnd}.${emailCopy} No checkout, payment, WhatsApp, campaign send, or external CRM write was created.`
+            : `Trial signup saved. Your member access is being prepared.${emailCopy} No checkout, payment, WhatsApp, campaign send, or external CRM write was created.`;
           form.reset();
           if (regionSelect && ['israel', 'uk', 'us'].includes(region)) regionSelect.value = region;
           if (source) source.value = location.pathname || '/one-time';
+          Object.keys(utmDefaults).forEach((key) => {
+            const field = document.querySelector(`input[name="${key}"]`);
+            if (field) field.value = params.get(key) || utmDefaults[key];
+          });
         } catch (err) {
           status.textContent = err.message;
         }

@@ -123,6 +123,8 @@
     }
 
     .hero-inner {
+      max-width: 100%;
+      min-width: 0;
       width: min(880px, 100%);
     }
 
@@ -135,7 +137,9 @@
       font-size: 13px;
       font-weight: 900;
       margin-bottom: 16px;
+      max-width: 100%;
       padding: 8px 12px;
+      white-space: normal;
     }
 
     .eyebrow {
@@ -149,11 +153,12 @@
     }
 
     h1 {
-      font-size: clamp(3rem, 8.8vw, 6.6rem);
+      font-size: clamp(2.35rem, 8.8vw, 6.6rem);
       letter-spacing: 0;
       line-height: 0.94;
       margin: 0;
       max-width: 850px;
+      overflow-wrap: anywhere;
     }
 
     .hero p {
@@ -161,6 +166,7 @@
       font-size: clamp(1.04rem, 2.2vw, 1.34rem);
       margin: 20px 0 0;
       max-width: 690px;
+      overflow-wrap: anywhere;
     }
 
     .hero-actions {
@@ -182,8 +188,10 @@
       font: inherit;
       font-weight: 900;
       justify-content: center;
+      max-width: 100%;
       min-height: 44px;
       padding: 10px 16px;
+      text-align: center;
       text-decoration: none;
     }
 
@@ -424,6 +432,13 @@
         min-height: min(620px, calc(100svh - 124px));
       }
 
+      .hero-inner,
+      .hero p,
+      .hero-actions {
+        max-width: 100%;
+        min-width: 0;
+      }
+
       .intro-strip,
       .layout,
       .note-grid {
@@ -488,15 +503,15 @@
       <div class="section-inner">
         <div class="section-head">
           <span class="eyebrow">Membership options</span>
-          <h2>Two OneTime paths, with payment setup guarded.</h2>
-          <p>The public prices stay at $67 and $149. Checkout opens only when a Stripe price/payment link or Green Invoice payment link is configured.</p>
+          <h2>OneTime paths, with a 30-day free start.</h2>
+          <p>The launch trial starts with no credit card and no payment method. Paid conversion is Stripe-only after Operations approves the test-mode path.</p>
         </div>
         <div class="layout">
           <div id="tiers" class="tiers"></div>
           <aside class="checkout-panel" id="setup">
             <span class="eyebrow">Payment setup</span>
             <h2>Buyer details</h2>
-            <p class="muted">Enter buyer details before using a configured checkout link. If payment links are missing, the page records the blocker instead of creating a live charge.</p>
+            <p class="muted">Enter buyer details for preview. No card is collected at signup, and missing Stripe setup records a blocker instead of creating a live charge.</p>
             <form id="checkoutForm">
               <label>Name <input name="name" autocomplete="name"></label>
               <label>Email <input name="email" type="email" autocomplete="email" required></label>
@@ -522,8 +537,8 @@
             <p>This page is the Rabbi Scheller landing preview served at `/rabbi`, `/rabbi-preview`, and `/one-time-mishnayos`.</p>
           </article>
           <article class="note-card">
-            <strong>Payment placeholders</strong>
-            <p>Operations can store Stripe or Green Invoice payment links per tier. Without keys or links, checkout remains blocked.</p>
+            <strong>Stripe-only conversion</strong>
+            <p>Operations can store Stripe payment links per tier. Green Invoice and live billing are outside the current launch packet.</p>
           </article>
           <article class="note-card">
             <strong>Member access</strong>

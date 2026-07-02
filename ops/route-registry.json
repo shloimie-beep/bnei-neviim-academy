@@ -1,10 +1,15 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-19",
+  "updated_at": "2026-07-01",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
-    "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-015"]
+    "related_goal_ids": [
+      "GOAL-CORE-003",
+      "GOAL-CORE-006",
+      "GOAL-CORE-009",
+      "GOAL-CORE-015"
+    ]
   },
   "routes": [
     {
@@ -17,7 +22,72 @@
       "expected_logged_out_behavior": "load_anonymous_public_homepage",
       "expected_logged_in_behavior": "load_anonymous_public_homepage",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003"]
+      "related_goal_ids": [
+        "GOAL-CORE-003"
+      ]
+    },
+    {
+      "route": "https://join.onetimeonetime.com/",
+      "surface": "one_time_public_campaign_root",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "hostnames": [
+        "join.onetimeonetime.com"
+      ],
+      "expected_logged_out_behavior": "load_one_time_public_campaign_landing_without_private_member_data",
+      "expected_logged_in_behavior": "load_one_time_public_campaign_landing_without_private_member_data",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time",
+      "security_expectation": "Host-specific join subdomain root route only: no DNS mutation, apex/root onetimeonetime.com remains untouched, no direct Zoom link, no private member/classroom data, no payment action, and no external provider write.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "https://join.onetimeonetime.com/member-login",
+      "surface": "one_time_member_login_alias",
+      "access": "public_entry",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "hostnames": [
+        "join.onetimeonetime.com"
+      ],
+      "expected_logged_out_behavior": "show_member_login_or_safe_entry_without_private_library_data",
+      "expected_logged_in_behavior": "load_own_member_library_only",
+      "privacy_risk": "high",
+      "canonical_target": "/one-time/member-login",
+      "security_expectation": "Host-specific member entry only: login/session APIs must enforce active member access; no public Zoom link, private classroom data, payment action, external provider write, or apex/root DNS change.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "https://join.onetimeonetime.com/member",
+      "surface": "one_time_member_class_dashboard_alias",
+      "access": "public_entry",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "hostnames": [
+        "join.onetimeonetime.com"
+      ],
+      "expected_logged_out_behavior": "show_member_login_or_safe_entry_without_private_library_data",
+      "expected_logged_in_behavior": "load_member_class_dashboard_when_active_access_exists",
+      "privacy_risk": "high",
+      "canonical_target": "/rabbi-member",
+      "security_expectation": "Host-specific member/class dashboard alias: active member access gates library and live class data; no raw Zoom link is exposed without session/member access; no payment action, external provider write, or apex/root DNS change.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/he",
@@ -29,7 +99,9 @@
       "expected_logged_out_behavior": "load_anonymous_public_hebrew_homepage_or_alias",
       "expected_logged_in_behavior": "load_anonymous_public_hebrew_homepage_or_alias",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003"]
+      "related_goal_ids": [
+        "GOAL-CORE-003"
+      ]
     },
     {
       "route": "/school",
@@ -41,7 +113,9 @@
       "expected_logged_out_behavior": "load_anonymous_school_information",
       "expected_logged_in_behavior": "load_anonymous_school_information",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003"]
+      "related_goal_ids": [
+        "GOAL-CORE-003"
+      ]
     },
     {
       "route": "/parents",
@@ -53,7 +127,9 @@
       "expected_logged_out_behavior": "load_anonymous_parent_information",
       "expected_logged_in_behavior": "load_anonymous_parent_information",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003"]
+      "related_goal_ids": [
+        "GOAL-CORE-003"
+      ]
     },
     {
       "route": "/signup.html",
@@ -65,7 +141,9 @@
       "expected_logged_out_behavior": "load_public_signup_intake",
       "expected_logged_in_behavior": "load_public_signup_intake",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003"]
+      "related_goal_ids": [
+        "GOAL-CORE-003"
+      ]
     },
     {
       "route": "/parent/login",
@@ -77,7 +155,10 @@
       "expected_logged_out_behavior": "show_parent_login_or_access_request",
       "expected_logged_in_behavior": "show_explicit_continue_or_switch_parent",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/student/login",
@@ -89,7 +170,10 @@
       "expected_logged_out_behavior": "show_student_login_shell_without_private_data",
       "expected_logged_in_behavior": "show_explicit_continue_or_switch_student",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/parent",
@@ -101,7 +185,9 @@
       "expected_logged_out_behavior": "redirect_to_login_or_show_anonymous_shell_without_private_data",
       "expected_logged_in_behavior": "own_parent_dashboard_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/student",
@@ -113,7 +199,9 @@
       "expected_logged_out_behavior": "show_student_login_shell_without_private_data",
       "expected_logged_in_behavior": "own_student_dashboard_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/provider",
@@ -125,7 +213,11 @@
       "expected_logged_out_behavior": "show_safe_provider_login_and_join_entry",
       "expected_logged_in_behavior": "own_provider_workspace_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/operations",
@@ -137,7 +229,10 @@
       "expected_logged_out_behavior": "redirect_to_operations_login",
       "expected_logged_in_behavior": "authorized_operations_dashboard_only",
       "privacy_risk": "critical",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-009"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-009"
+      ]
     },
     {
       "route": "/operations-login.html",
@@ -149,7 +244,10 @@
       "expected_logged_out_behavior": "show_operations_login_without_private_data",
       "expected_logged_in_behavior": "redirect_to_authorized_operations_dashboard",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/api/bna/helper/execute",
@@ -161,7 +259,11 @@
       "expected_logged_out_behavior": "reject_unauthorized",
       "expected_logged_in_behavior": "execute_registered_helper_tool_with_scope_and_confirmation_gates",
       "privacy_risk": "critical",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "route": "/api/bna/helper/plan",
@@ -173,7 +275,11 @@
       "expected_logged_out_behavior": "reject_unauthorized",
       "expected_logged_in_behavior": "return_scoped_helper_plan_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "route": "/api/bna/intake/parse",
@@ -185,7 +291,30 @@
       "expected_logged_out_behavior": "reject_unauthorized",
       "expected_logged_in_behavior": "create_raw_intake_parse_run_and_scoped_review_items",
       "privacy_risk": "critical",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-007", "GOAL-CORE-008"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-007",
+        "GOAL-CORE-008"
+      ]
+    },
+    {
+      "route": "/api/bna/pending-briefs",
+      "surface": "operations_internal_handoff_compat",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_empty_redacted_compat_payload_without_tasks_pending_titles_or_file_bodies",
+      "privacy_risk": "critical",
+      "canonical_target": "/api/bna/ops/queue-health",
+      "security_expectation": "Compatibility only: no tasks-pending/*.md file enumeration, no brief bodies, and no visible Pending Briefs/Planned Briefs/Implementation Briefs operator lane.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/service-providers",
@@ -197,7 +326,10 @@
       "expected_logged_out_behavior": "load_public_provider_index_only",
       "expected_logged_in_behavior": "load_public_provider_index_only",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/become-service-provider",
@@ -209,7 +341,10 @@
       "expected_logged_out_behavior": "load_provider_join_intake",
       "expected_logged_in_behavior": "load_provider_join_intake",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/provider-signup",
@@ -221,7 +356,10 @@
       "expected_logged_out_behavior": "load_provider_join_intake",
       "expected_logged_in_behavior": "load_provider_join_intake",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/providers/:slug",
@@ -233,7 +371,10 @@
       "expected_logged_out_behavior": "load_public_provider_profile_only",
       "expected_logged_in_behavior": "load_public_provider_profile_only",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/rabbi",
@@ -245,7 +386,10 @@
       "expected_logged_out_behavior": "load_one_time_public_landing",
       "expected_logged_in_behavior": "load_one_time_public_landing",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/one-time",
@@ -258,7 +402,10 @@
       "expected_logged_in_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
       "privacy_risk": "normal",
       "canonical_target": "/one-time/mishnayos",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/one-time/mishnayos",
@@ -271,7 +418,111 @@
       "expected_logged_in_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
       "privacy_risk": "normal",
       "canonical_target": "/one-time",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time/us",
+      "surface": "one_time_public_focused_offer_geo_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
+      "expected_logged_in_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time/uk",
+      "surface": "one_time_public_focused_offer_geo_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
+      "expected_logged_in_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time/israel",
+      "surface": "one_time_public_focused_offer_geo_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
+      "expected_logged_in_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time/interest",
+      "surface": "one_time_public_interest_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_worldwide_onetime_mishnayos_offer_interest_section_without_private_member_data",
+      "expected_logged_in_behavior": "load_worldwide_onetime_mishnayos_offer_interest_section_without_private_member_data",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time#interest",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time/member-login",
+      "surface": "one_time_member_login_alias",
+      "access": "public_entry",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "show_member_login_or_safe_entry_without_private_library_data",
+      "expected_logged_in_behavior": "load_own_member_library_only",
+      "privacy_risk": "high",
+      "canonical_target": "/rabbi-member",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/api/one-time/interest",
+      "surface": "one_time_public_interest_api",
+      "access": "public_intake",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "accept_public_trial_signup_payload_grant_local_trial_and_send_at_most_one_current_signup_confirmation",
+      "expected_logged_in_behavior": "accept_public_trial_signup_payload_grant_local_trial_and_send_at_most_one_current_signup_confirmation",
+      "privacy_risk": "high",
+      "canonical_target": "/api/bna/product-leads",
+      "security_expectation": "First-party trial signup intake only: grants local 30-day access and sends at most one current-signup Resend confirmation email; no checkout creation, WhatsApp send, imported-list send, campaign send, external CRM write, payment write, direct Zoom exposure, or production credential exposure.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/rabbi-member",
@@ -283,7 +534,11 @@
       "expected_logged_out_behavior": "show_member_login_or_safe_entry_without_private_library_data",
       "expected_logged_in_behavior": "load_own_member_library_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/member-library",
@@ -295,7 +550,11 @@
       "expected_logged_out_behavior": "redirect_to_login_or_show_member_entry_without_private_library_data",
       "expected_logged_in_behavior": "load_own_member_library_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/member",
@@ -307,7 +566,10 @@
       "expected_logged_out_behavior": "redirect_to_login_or_show_member_entry_without_private_data",
       "expected_logged_in_behavior": "load_own_member_portal_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/one-time-classroom",
@@ -319,7 +581,11 @@
       "expected_logged_out_behavior": "redirect_to_login_or_show_classroom_entry_without_private_data",
       "expected_logged_in_behavior": "load_scoped_one_time_classroom_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/google/oauth/start",
@@ -331,7 +597,11 @@
       "expected_logged_out_behavior": "reject_unauthorized",
       "expected_logged_in_behavior": "start_google_oauth_for_authorized_admin_only",
       "privacy_risk": "critical",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009"
+      ]
     },
     {
       "route": "/api/bna/integrations/zoom/session-automation-preview",
@@ -344,7 +614,12 @@
       "expected_logged_in_behavior": "return_no_write_zoom_session_creation_registrant_join_redirect_preview",
       "privacy_risk": "high",
       "security_expectation": "Preview only: no Zoom meeting, registrant, join redirect, webhook, attendance write, notification send, or portal publish is performed.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/integrations/zoom/webhook-attendance-preview",
@@ -357,7 +632,12 @@
       "expected_logged_in_behavior": "return_no_write_zoom_webhook_attendance_mapping_preview",
       "privacy_risk": "high",
       "security_expectation": "Preview only: no live webhook is accepted and no attendance row is mutated.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/integrations/zoom/attendance-correction-preview",
@@ -370,7 +650,12 @@
       "expected_logged_in_behavior": "return_no_write_zoom_attendance_correction_draft",
       "privacy_risk": "high",
       "security_expectation": "Preview only: correction drafts require operator review and do not mutate attendance rows.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/video-library/recording-pipeline-preview",
@@ -383,7 +668,12 @@
       "expected_logged_in_behavior": "return_no_write_recording_transcript_summary_vimeo_pipeline_preview",
       "privacy_risk": "high",
       "security_expectation": "Preview only: no provider webhook, recording fetch, upload, publish, unpublish, delete, member visibility, watch-progress write, or notification send is performed.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/video-library/:id/publication-preview",
@@ -396,7 +686,12 @@
       "expected_logged_in_behavior": "return_no_write_vimeo_publication_readiness_preview",
       "privacy_risk": "high",
       "security_expectation": "Preview only: publication, unpublishing, deletion, member visibility, and provider writes stay disabled until explicit operator approval.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/video-library/:id/retention-preview",
@@ -409,7 +704,12 @@
       "expected_logged_in_behavior": "return_no_write_recording_retention_deletion_preview",
       "privacy_risk": "high",
       "security_expectation": "Preview only: source recording deletion remains disabled until retention, backup, playback smoke, and operator approval are recorded.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/one-time/transcript-privacy",
@@ -422,7 +722,12 @@
       "expected_logged_in_behavior": "return_no_write_transcript_privacy_readiness_without_raw_transcript_text",
       "privacy_risk": "critical",
       "security_expectation": "Readiness only: no raw transcript body is returned, no vector/public-helper corpus is mutated, and cross-student/private retrieval remains blocked.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/gamification/badge-readiness",
@@ -435,7 +740,12 @@
       "expected_logged_in_behavior": "return_no_write_badge_policy_readiness_without_awarding_or_reversing_badges",
       "privacy_risk": "high",
       "security_expectation": "Readiness only: no badge award, reversal, external notification, access grant, prize/credit, or public individual leaderboard is enabled.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/one-time/community-moderation-readiness",
@@ -448,7 +758,12 @@
       "expected_logged_in_behavior": "return_no_write_community_moderation_readiness_without_raw_private_message_text",
       "privacy_risk": "critical",
       "security_expectation": "Readiness only: no public/member post publication, external notification, unrestricted student messaging, deletion without history, or raw private question exposure is enabled.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/one-time/study-assistant-readiness",
@@ -461,7 +776,12 @@
       "expected_logged_in_behavior": "return_no_write_study_assistant_readiness_without_source_text_or_answer_generation",
       "privacy_risk": "critical",
       "security_expectation": "Readiness only: no unrestricted AI chat, Sefaria/API ingestion, arbitrary translation merge, source corpus mutation, raw source text, raw transcript retrieval, cross-student retrieval, or assistant answer generation is enabled.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/project-meetings/one-time-drive-brief/preview",
@@ -475,7 +795,12 @@
       "privacy_risk": "high",
       "canonical_target": "/api/bna/project-meetings/one-time-drive-brief/preview",
       "security_expectation": "No production writes, no external integration writes, no raw transcript persisted, and all derived records scoped to one_time_mishnah_class/rabbi_sheller_provider.",
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/api/bna/one-time/integrations/readiness",
@@ -489,7 +814,153 @@
       "privacy_risk": "high",
       "canonical_target": "/api/bna/one-time/integrations/readiness",
       "security_expectation": "Readiness only: no Vimeo upload, Zoom mutation, Resend send, DNS write, deploy, secret copy, or production database write is performed.",
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/resend/inbound",
+      "surface": "public_resend_inbound_webhook",
+      "access": "public_signed_webhook",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "accept_only_valid_resend_svix_signed_email_received_events",
+      "expected_logged_in_behavior": "accept_only_valid_resend_svix_signed_email_received_events",
+      "privacy_risk": "critical",
+      "canonical_target": "/api/resend/inbound",
+      "security_expectation": "Public webhook path requires valid Resend/Svix headers and RESEND_WEBHOOK_SECRET verification before fetching received email content; non-email.received events are ignored with 2xx; recognized OneTime inbound mail is scoped to rabbi_sheller_provider/one_time_mishnah_class and no secret headers are stored.",
+      "smoke_expectation": "invalid_signature_rejected_valid_received_event_fetches_resend_email_and_writes_scoped_crm_message_without_send",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/email-workflow-preview",
+      "surface": "operations_api_one_time_email_workflow_preview",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_draft_only_one_time_email_sequence_without_sending_or_contact_values",
+      "privacy_risk": "high",
+      "canonical_target": "/api/bna/one-time/email-workflow-preview",
+      "security_expectation": "Preview only: no Resend send, no fallback BNA-domain send, no DNS mutation, no raw contact list values, and all workflow metadata is scoped to rabbi_sheller_provider/one_time_mishnah_class.",
+      "smoke_expectation": "authenticated_preview_only_sender_sequence_and_resend_readiness_no_external_writes",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/contact-readiness",
+      "surface": "operations_api_one_time_contact_readiness",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_aggregate_one_time_contact_segment_status_batch_and_no_send_counts_without_contact_values",
+      "privacy_risk": "high",
+      "canonical_target": "/api/bna/one-time/contact-readiness",
+      "security_expectation": "Aggregate readiness only: no names, emails, phones, raw rows, email sends, WhatsApp sends, external CRM writes, DNS mutation, or campaign launch.",
+      "smoke_expectation": "authenticated_aggregate_contact_readiness_no_private_values_no_external_writes",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/trial-signup-preview",
+      "surface": "operations_api_one_time_trial_signup_preview",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_no_write_no_card_trial_signup_preview_without_charge_checkout_or_send",
+      "privacy_risk": "high",
+      "canonical_target": "/api/bna/one-time/trial-signup-preview",
+      "security_expectation": "Preview only: no parent lead write, no list write, no referral reward, no email send, no checkout creation, no payment method collection, no live charge, no access grant outside preview, and all metadata is scoped to rabbi_sheller_provider/one_time_mishnah_class.",
+      "smoke_expectation": "authenticated_preview_only_30_day_no_card_trial_no_send_no_checkout_no_charge",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/presentation-intake",
+      "surface": "operations_api_one_time_presentation_intake",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "preserve_one_time_powerpoint_or_google_slides_as_scoped_content_job_with_open_download_links_and_one_email_notification",
+      "privacy_risk": "high",
+      "canonical_target": "/api/bna/one-time/presentation-intake",
+      "security_expectation": "Only authenticated Operations callers may ingest files; writes are scoped to rabbi_sheller_provider/one_time_mishnah_class; duplicate Drive files do not re-send email; no Drive mutation, publish action, or member visibility change is performed.",
+      "smoke_expectation": "authenticated_dry_run_powerpoint_intake_preserves_drive_file_download_url_and_skips_or_blocks_email_without_silent_success",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/drive-dropoff-intake",
+      "surface": "operations_api_one_time_drive_dropoff_intake",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "preserve_approved_one_time_drive_dropoff_or_powerpoint_office_upload_as_scoped_content_job_and_send_at_most_one_email_notification",
+      "privacy_risk": "high",
+      "canonical_target": "/api/bna/one-time/drive-dropoff-intake",
+      "security_expectation": "Only authenticated Operations callers may ingest files from approved One Time Drive dropoff folders, including the current 04 Content and Media Intake office upload folder for PowerPoint/Google Slides only; writes are scoped to rabbi_sheller_provider/one_time_mishnah_class; duplicate Drive files do not re-send email once email_sent is true; no Drive mutation, Telegram notification, publish action, or member visibility change is performed.",
+      "smoke_expectation": "authenticated_invalid_folder_request_rejects_without_db_write_or_email_and_anonymous_request_rejects_unauthorized",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/assistant/control-plane/readiness",
+      "surface": "operations_api_assistant_control_plane_readiness",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_read_only_assistant_control_plane_table_and_index_readiness",
+      "privacy_risk": "high",
+      "canonical_target": "/api/bna/assistant/control-plane/readiness",
+      "security_expectation": "Readiness only: no assistant rows, external sends, publish actions, charges, DNS changes, OAuth actions, connector calls, secret values, or row payloads are returned or mutated.",
+      "smoke_expectation": "authenticated_read_only_schema_metadata_no_rows_or_secret_values",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-015"
+      ]
     }
   ]
 }

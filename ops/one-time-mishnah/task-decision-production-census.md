@@ -40,7 +40,7 @@ Tasks seen: 864
 | Blocked | Open work blocked by a human or external account/system. |
 | Due Soon | Open work due within seven days. |
 | Calendar | Open work with a planned or due date. |
-| Completed / Activity | Closed work and recent task activity. |
+| Done / Activity | Closed work and recent task activity. |
 | Archived | Reversible archive, duplicate, or hidden records. |
 
 ## Default Decision Views
@@ -81,7 +81,7 @@ Tasks seen: 864
 - Blocked: human or external blockers only, with blocker owner and next action.
 - Due Soon: open work due within seven days.
 - Calendar: open work with due_date or planned_at.
-- Completed / Activity: done/archive/history rows with proof or verification notes.
+- Done / Activity: done/archive/history rows with proof or verification notes.
 - Archived: archived, hidden, or duplicate-archived rows excluded from default active views.
 
 ## Duplicate Groups

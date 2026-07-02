@@ -22,6 +22,13 @@ test('One Time WhatsApp operator workspace keeps the three-pane no-send contract
 });
 
 test('One Time email lane exposes draft, readiness, recipient, and approval gates', () => {
+  assert.match(operations, /data-communications-channel-rail/);
+  assert.match(operations, /data-operations-subnav/);
+  assert.match(operations, /function renderCommunicationCompactFilterRow/);
+  assert.match(operations, /communications: \{ tabs: COMMUNICATIONS_SUBTABS/);
+  assert.doesNotMatch(operations, /currentView === 'communications'\) return '<button class="primary-button" onclick="createCommunicationNotePrompt\(\)">New Message<\/button>'/);
+  assert.match(operations, /data-communications-readiness-details/);
+  assert.match(operations, /Readiness, screening, and import tools/);
   assert.match(operations, /data-email-operator-workspace/);
   assert.match(operations, /data-email-readiness-gates/);
   assert.match(operations, /data-email-draft-editor/);
@@ -37,14 +44,16 @@ test('One Time email lane exposes draft, readiness, recipient, and approval gate
   assert.match(operations, /reply_to: replyTo/);
   assert.match(operations, /template_key: templateKey/);
   assert.match(operations, /related_record: relatedRecord/);
+  assert.match(operations, /getOneTimeContactReadiness\(\)/);
+  assert.match(server, /privacy: \{\s*no_private_values: true,\s*names_returned: false,\s*emails_returned: false,\s*phones_returned: false,\s*raw_rows_returned: false,/);
 });
 
 test('Resend draft and send endpoints preserve reply-to while keeping external send approval-gated', () => {
   assert.match(server, /const replyTo = normalizeEmail\(body\.reply_to \|\| body\.replyTo \|\| body\.metadata\?\.reply_to/);
   assert.match(server, /reply_to: row\.reply_to \|\| metadata\.reply_to \|\| null/);
-  assert.match(server, /\.\.\.\(replyTo \? \{ reply_to: replyTo \} : \{\}\)/);
+  assert.match(server, /\.\.\.\(\(runtimeConfig\.replyTo \|\| identity\.replyTo\) \? \{ reply_to: runtimeConfig\.replyTo \|\| identity\.replyTo \} : \{\}\)/);
   assert.match(server, /resendConfirm = body\.confirm \|\| body\.confirmation_phrase/);
   assert.match(resendClient, /async function sendResendEmail\(\{ from, to, cc = \[\], bcc = \[\], replyTo = null/);
-  assert.match(resendClient, /\.\.\.\(replyTo \? \{ reply_to: replyTo \} : \{\}\)/);
+  assert.match(resendClient, /\.\.\.\(\(replyTo \|\| config\.replyTo\) \? \{ reply_to: replyTo \|\| config\.replyTo \} : \{\}\)/);
   assert.match(externalActions, /'resend:send': 'SEND_RESEND_EMAIL'/);
 });

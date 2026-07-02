@@ -1,0 +1,942 @@
+You are ready to move from “setup” into **actual funnel implementation**.
+
+The key decision is now fixed:
+
+**Campaign traffic should go to Rabbi’s One Time landing page on `onetimeonetime.com`, not to the academy URL and not directly to Zoom.**
+
+Use the BNA repo/backend as the shared platform, but expose Rabbi’s public experience through the One Time domain. That lets backend fixes, CRM fixes, email tracking, and future workspace improvements stay in the shared codebase while the public user sees Rabbi’s brand.
+
+The repo already has a One Time route family under `/one-time`, with `/one-time/member-login` listed as part of the service-provider config.  It also has older `/rabbi` launch/member/payment code, and tests confirm `/rabbi`, `/rabbi-preview`, and `/one-time-mishnayos` currently serve `public/rabbi.html`.  So the next job is to consolidate those into one clean funnel, not create another parallel route.
+
+The WhatsApp provider should follow the existing repo direction first: **Whapi/WAPI**, not WATI, unless you explicitly decide to switch providers later. The repo’s connector list names Whapi/WAPI for WhatsApp and Buffer for social scheduling.
+
+## Business plan for this launch
+
+Use this funnel:
+
+```text
+Email campaign
+  → onetimeonetime.com landing page
+  → signup form
+  → scoped CRM contact
+  → 30-day free access grant
+  → confirmation email
+  → member/classroom page
+  → reminders
+  → Stripe conversion sequence before day 30
+```
+
+Default rule: **30 days free from signup.**
+
+Do not use a vague “free until kinks are worked out” in the product logic. Internally, you can extend people manually if needed, but the system should have one clear default.
+
+For Zoom security: do **not** make the public landing page expose the raw Zoom link. The confirmation email should link to a member/class session page. That page can show the Zoom link to people with access. A raw Zoom link can always be forwarded, so the best practical protection is gated access, rotating session links/passcodes, waiting room, and tracking who signed up.
+
+Existing paid users: do **not** mass-cancel them. First audit who is paying, what they have access to, and what billing system is charging them. Then migrate/grandfather them.
+
+## Full Codex prompt
+
+````md
+BNA_GOAL_MODE_EXECUTION_PACKET
+
+Repo:
+shloimie-beep/bnei-neviim-academy
+
+Title:
+Build One Time Launch Funnel: Landing Domain, Signup, CRM, 30-Day Free Access, Confirmation Email, WhatsApp Setup, Vimeo Pipeline, Zoom/Class Security, and Member Flow
+
+Primary objective:
+Build the real One Time / Rabbi Sheller launch funnel end-to-end.
+
+Traffic from the email campaign must go to Rabbi’s actual One Time public landing domain, not the academy URL.
+
+Canonical public campaign URL:
+`https://onetimeonetime.com/?utm_source=email&utm_medium=launch&utm_campaign=free_mishnayos_class`
+
+Internal fallback route:
+`/one-time`
+
+Legacy/alias route:
+`/rabbi`
+
+Business decisions captured:
+- New signups get 30 days free from signup.
+- Do not keep offering 30/45/countdown options unless Shloimie explicitly reopens the decision.
+- Campaign email links to the landing page, not raw Zoom.
+- After signup, the user receives access to the member/class page and a confirmation email.
+- The confirmation email should link to the member/class session page, not expose the raw Zoom link as the primary link.
+- Existing paying users are not mass-cancelled; they must be audited and migrated.
+- Rabbi / One Time has separate provider-specific classroom/content/community data.
+- Shared platform code, patterns, route/action contracts, CRM logic, and provider setup panels should apply to future workspaces.
+- No GHL.
+
+Current known status:
+- Product Quality Protocol/Ramble Protocol v3 is merged.
+- Rabbi / One Time visual audit ran.
+- Resend is send-ready for approved/test sends.
+- No real campaign has been sent yet.
+- Real campaign send is blocked only until final copy, exact recipient segment/list, and final landing/member links are explicit.
+- One Time brand = black + yellow.
+- BNA brand = cream/navy/teal/cyan.
+
+Run every runnable subpacket. Do not stop at “packet created” if implementation is safe and within this packet’s scope.
+
+Hard safety:
+- Do not expose secrets.
+- Do not commit secrets.
+- Do not bulk-send the real campaign in this packet unless final copy + recipient segment + final send command are explicitly included.
+- Do not send WhatsApp messages in this packet.
+- Do not run live Stripe payments.
+- Do not cancel existing paid users.
+- Do not hard-delete production records.
+- Do not add GHL.
+- Do not mix BNA classroom/content/contact data into One Time.
+
+================================================================================
+0. Source of truth and preflight
+================================================================================
+
+Read:
+
+- `BNA-START-HERE.md`
+- `AGENTS.md`
+- `docs/BNA-RAMBLE-TO-DONE.md`
+- `docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md`
+- `memory-topics/brand-kits.md`
+- `memory-topics/provider-pipelines.md`
+- `memory-topics/email-resend.md`
+- `config/brands/one-time.json`
+- `config/service-provider-sites/one-time.json`
+- `ops/one-time-mishnah/operator-ui-review/ROUTE-MAP.md`
+- `ops/ui-audits/2026-07-01-rabbi-onetime-current-state/report.md`
+- `ops/ui-audits/2026-07-01-rabbi-onetime-current-state/recommended-child-packets.md`
+- `ops/provider-config-readbacks/2026-07-01-resend-smoke-readback.md`
+- latest Resend readiness/readback reports
+- `tests/rabbi-checkout-access.test.js`
+- `tests/one-time-external-user-portal.test.js`
+- `tests/one-time-community-moderation-workflow.test.js`
+- `public/rabbi.html`
+- `public/rabbi-member.html`
+- `public/js/rabbi-launch.js`
+- `public/js/rabbi-member.js`
+- `public/one-time/index.html` if present
+- `public/css/one-time-shared-review.css` if present
+- `server.js`
+- `src/lib/bna/rabbi-site.js`
+- `src/lib/bna/rabbi-access.js`
+- `src/lib/bna/rabbi-products.js`
+- `src/lib/bna/rabbi-payments.js`
+- `src/lib/bna/one-time-product-system.js`
+- `ops/route-registry.json`
+- `ops/action-registry.json`
+- `package.json`
+- existing WhatsApp/WAPI/Whapi files/scripts/tests
+- existing Vimeo/Drive intake files/scripts/tests
+- existing Zoom/class/live-session files/scripts/tests
+
+Run:
+
+```bash
+git status --short
+git branch --show-current
+git rev-parse HEAD
+npm run bna:run:status
+npm run bna:run:next
+npm run pqc:all
+````
+
+Do not reset, clean, discard, or overwrite unrelated changes.
+
+================================================================================
+
+1. Raw intake and requirement register
+   ================================================================================
+
+Create raw input:
+
+`RAW-YYYYMMDD-###-one-time-launch-funnel-everything-setup`
+
+Preserve this operator intent:
+
+* Shloimie wants the full One Time launch funnel set up now.
+* Traffic should go to Rabbi’s actual landing domain `onetimeonetime.com`.
+* The landing page should collect info and grant 30 days free.
+* The system must track who clicked, signed up, got access, and needs follow-up.
+* The confirmation email should send the class/member link.
+* Reminder automation should be created.
+* WhatsApp setup should be available in Rabbi’s settings via Whapi/WAPI provider setup.
+* Vimeo credentials exist in the BNA keyholder and belong to Rabbi/One Time.
+* OBS recordings should land in a local Google Drive folder, sync to Drive, upload to Vimeo, and appear in the One Time classroom.
+* Zoom/class link security must be addressed.
+* Existing paying users should be audited/migrated, not mass-cancelled.
+* Prompts must not present unnecessary options. Convert ramble into clear defaults.
+
+Create requirement register:
+
+`tasks-pending/YYYY-MM-DD-one-time-launch-funnel-everything-setup.md`
+
+Suggested requirements:
+
+* REQ-001: Canonical domain and route consolidation.
+* REQ-002: Landing page CTA and signup form.
+* REQ-003: Scoped One Time CRM lead creation/tracking.
+* REQ-004: 30-day free access grant.
+* REQ-005: Member login/classroom success path.
+* REQ-006: Confirmation email after signup.
+* REQ-007: Reminder automation sequence.
+* REQ-008: WhatsApp/Whapi provider setup panel.
+* REQ-009: WhatsApp CRM scoping and contamination hardening.
+* REQ-010: Buffer/social setup panel.
+* REQ-011: Vimeo/Drive/OBS media pipeline.
+* REQ-012: Zoom/class-link security model.
+* REQ-013: Existing paying users migration audit.
+* REQ-014: First campaign packet readiness.
+* REQ-015: Tests, screenshots, deploy/live-smoke.
+
+================================================================================
+2. Canonical domain and route consolidation
+===========================================
+
+Goal:
+`https://onetimeonetime.com/` serves the One Time landing page.
+
+Implementation model:
+
+* Same BNA repo/codebase.
+* Same shared platform backend.
+* Host/domain-specific public One Time experience.
+* One Time data remains scoped to `rabbi_sheller_provider` / `one_time_mishnah_class`.
+
+Tasks:
+
+1. Audit all relevant routes:
+
+   * `/one-time`
+   * `/one-time/mishnayos`
+   * `/one-time/us`
+   * `/one-time/uk`
+   * `/one-time/israel`
+   * `/one-time/interest`
+   * `/one-time/member-login`
+   * `/rabbi`
+   * `/rabbi-preview`
+   * `/one-time-mishnayos`
+   * any current `/api/rabbi/*`
+   * any current `/api/one-time/*`
+
+2. Implement or verify host-based routing:
+
+   * host `onetimeonetime.com` root serves One Time landing;
+   * host `www.onetimeonetime.com` serves or redirects to One Time landing;
+   * `bneineviimacademy.org/` stays BNA homepage;
+   * `/one-time` remains internal/fallback route;
+   * `/rabbi` becomes alias/redirect only after compatibility is proven.
+
+3. Update route registry.
+
+4. Add/adjust tests:
+
+   * BNA homepage is not replaced;
+   * One Time domain root serves One Time landing;
+   * `/one-time` works;
+   * `/rabbi` does not fork stale content;
+   * member login route works.
+
+5. Produce DNS/Railway checklist:
+
+   * custom domain: `onetimeonetime.com`
+   * optional `www.onetimeonetime.com`
+   * required Railway CNAME/TXT records
+   * target service/environment
+   * deploy/live-smoke requirement
+
+Do not mutate DNS from code. Record exact manual DNS records if missing.
+
+Write:
+
+* `ops/one-time-mishnah/funnel/YYYY-MM-DD-domain-route-plan.md`
+* `ops/one-time-mishnah/funnel/YYYY-MM-DD-domain-route-plan.json`
+
+================================================================================
+3. Landing page CTA and signup form
+===================================
+
+Goal:
+Landing page is One Time black/yellow, clear, and conversion-focused.
+
+Default CTA:
+`Start 30 Days Free`
+
+Required page structure:
+
+1. campaign bar:
+   `Start 30 Days Free`
+2. hero:
+
+   * OneTimeOneTime Mishnah
+   * Learn Mishnayos Live with Rabbi Eli Scheller
+   * free launch class / 30-day free access promise
+3. primary CTA:
+   `Start 30 Days Free`
+4. secondary CTA:
+   `Watch Rabbi Scheller`
+5. proof/media strip if approved by current config
+6. program value pillars
+7. how it works
+8. class/library preview
+9. parent/student/member portal preview
+10. private questions to Rabbi explanation
+11. FAQ
+12. final CTA
+13. member login link
+
+Brand:
+
+* black + yellow only for One Time primary identity.
+* Do not use BNA cream/navy/teal as One Time primary palette.
+* If Replit design screenshots exist, inspect and map them to tokens.
+* If missing, create `DESIGN_REFERENCE_GAP` but still improve from current config.
+
+Signup form fields:
+
+* parent/adult name
+* email
+* phone
+* student name optional
+* country/time zone optional
+* hidden `utm_source`
+* hidden `utm_medium`
+* hidden `utm_campaign`
+* hidden `campaign_id`
+* hidden `source_route`
+* hidden `source_domain`
+
+Behavior:
+
+* create/update scoped One Time contact;
+* create/update member/pending member;
+* grant 30 days free access;
+* show success screen with member/class access link;
+* send confirmation email if Resend ready;
+* if email fails, keep signup/access successful and record email blocker.
+
+================================================================================
+4. CRM lead tracking
+====================
+
+Create/update contact scoped to:
+
+* workspace_key: `rabbi_sheller_provider`
+* project_key: `one_time_mishnah_class`
+
+Lifecycle stage:
+`Free Class Signup`
+
+Tracking fields:
+
+* `campaign_id`
+* `utm_source`
+* `utm_medium`
+* `utm_campaign`
+* `email_message_id`
+* `email_event_id`
+* `landing_page_viewed_at`
+* `signup_at`
+* `free_access_started_at`
+* `free_access_until`
+* `source_route`
+* `source_domain`
+* `suppression_status`
+* `phone`
+* `student_name`
+* `last_activity_at`
+
+Idempotency:
+
+* same normalized email + workspace/project updates existing One Time contact/member;
+* repeated signup does not create duplicate lead spam;
+* BNA contacts do not appear in One Time scope;
+* One Time contacts do not appear in BNA scope.
+
+Readback:
+
+* route/API/test proves signup created a scoped contact;
+* route/API/test proves stage and free access are visible in CRM;
+* WhatsApp/BNA contact contamination audit must be included.
+
+================================================================================
+5. 30-day free access
+=====================
+
+Public rule:
+`30 days free from signup`
+
+Internal fields:
+
+* `access_status = free_launch_access`
+* `free_access_started_at = now`
+* `free_access_until = signup_at + 30 days`
+* `payment_required_now = false`
+* `paid_plan_later = 67/month`
+* `stripe_status = not_required_for_free_launch`
+
+Member access grants:
+
+* current live class/session page;
+* replay/library area if available;
+* worksheets/resources if available;
+* private questions to Rabbi;
+* support form;
+* no public student-to-student chat.
+
+Tests:
+
+* free access expires 30 days after signup;
+* member with active free access can view allowed content;
+* expired free access shows payment/renewal state but does not break support access.
+
+================================================================================
+6. Member login and classroom flow
+==================================
+
+Audit and wire:
+
+* `/one-time/member-login`
+* current `public/rabbi-member.html`
+* `public/js/rabbi-member.js`
+* `/api/rabbi/member/request-login`
+* `/api/rabbi/member/login`
+* `/api/rabbi/member/session`
+* `/api/rabbi/member/library`
+* `/api/rabbi/member/live-sessions`
+* `/api/rabbi/member/questions`
+* `/api/rabbi/member/support-tickets`
+
+Canonical flow:
+
+* user signs up;
+* system grants free access;
+* success page provides member/class access link;
+* confirmation email provides same access link;
+* member login lets returning users access their dashboard/classroom.
+
+Member dashboard must show:
+
+* current class/live session;
+* Zoom/class access button through member/class page;
+* replay/library;
+* worksheets/resources;
+* private question form to Rabbi;
+* support form;
+* free access expiration;
+* no public student-to-student chat.
+
+================================================================================
+7. Confirmation email and automation sequence
+=============================================
+
+Confirmation email:
+
+Subject:
+`Your OneTimeOneTime Mishnah class access`
+
+From:
+`OneTimeOneTime Mishnah <info@onetimeonetime.com>`
+
+Reply-to:
+`info@onetimeonetime.com`
+
+Primary link:
+member/class access page, not raw public Zoom link.
+
+Body includes:
+
+* greeting;
+* class/member access button;
+* 30-day free access note;
+* private question note;
+* support/contact line;
+* unsubscribe/suppression footer.
+
+Send behavior:
+
+* send immediately after signup if Resend is ready;
+* if send fails, keep signup/access and create retry/support task.
+
+Automation records:
+
+* immediate confirmation;
+* class reminder before live class;
+* post-class follow-up;
+* day 23 payment reminder;
+* day 28 payment reminder;
+* day 30 payment/Stripe conversion email.
+
+Automation fields:
+
+* trigger;
+* condition;
+* action;
+* suppression;
+* provider;
+* last run;
+* next run;
+* status;
+* readback;
+* workspace/project.
+
+Do not bulk-send real campaign in this packet unless final copy/list/command are explicit.
+
+================================================================================
+8. First campaign packet
+========================
+
+Generate:
+
+`ops/prompt-packets/YYYY-MM-DD-provider-config-readback/11-one-time-first-class-invitation-campaign.md`
+
+Campaign packet must use:
+
+Landing link:
+`https://onetimeonetime.com/?utm_source=email&utm_medium=launch&utm_campaign=free_mishnayos_class`
+
+Recipient source:
+exact One Time CRM segment/list only.
+
+Required exclusions:
+
+* unsubscribed
+* bounced
+* suppressed
+* duplicate
+* non-One-Time
+* cross-workspace contacts
+* test-only contacts unless seed-send
+
+Real send remains blocked until:
+
+* final recipient segment/list;
+* final subject;
+* final email body;
+* final landing/member/class link verified;
+* Resend readback good;
+* unsubscribe/suppression handling good.
+
+Create seed-send packet:
+`ops/prompt-packets/YYYY-MM-DD-provider-config-readback/12-one-time-test-seed-send.md`
+
+================================================================================
+9. WhatsApp / Whapi setup panel and CRM scoping
+===============================================
+
+Use current repo connector direction:
+Whapi/WAPI.
+
+Do not switch to WATI unless Shloimie creates an explicit provider-change Decision.
+
+Create/update One Time workspace settings panel:
+
+Section:
+`WhatsApp Setup`
+
+State:
+`Not configured` until credentials exist.
+
+Show:
+
+* provider: Whapi/WAPI
+* setup steps:
+
+  1. create/pay for provider account;
+  2. connect Rabbi/One Time WhatsApp number;
+  3. paste API token/instance settings into secure provider settings;
+  4. run test connection;
+  5. enable reminders after test pass.
+* no raw token after save;
+* show fingerprint/status only.
+
+Actions:
+
+* Open setup instructions
+* Save token
+* Test connection
+* Send test WhatsApp to safe internal number
+* Enable reminders
+
+Action states:
+
+* Save token: `NEEDS_SHLOIMIE_SETUP` or `WORKS_NOW`
+* Test connection: `BLOCKED_EXTERNAL_SETUP` until configured
+* Send WhatsApp reminder: disabled until configured and test passed
+
+CRM hardening:
+
+* Whapi/WAPI phonebook, conversations, and messages must be scoped to workspace/project.
+* BNA WhatsApp contacts must not show in Rabbi CRM.
+* Rabbi WhatsApp contacts must not show in BNA.
+* If existing contamination exists, create a reversible cleanup/quarantine plan.
+* Do not send WhatsApp messages in this packet unless safe test recipient and config are present.
+
+Add route/action registry entries.
+
+================================================================================
+10. Buffer/social setup panel
+=============================
+
+Use current repo connector direction:
+Buffer.
+
+Create/update One Time workspace settings panel:
+
+Section:
+`Social Scheduler Setup`
+
+State:
+`Not configured`
+
+Show:
+
+* provider: Buffer
+* setup steps:
+
+  1. connect social accounts;
+  2. save provider token/reference securely;
+  3. create drafts;
+  4. approve publishing.
+
+Actions:
+
+* Save Buffer config
+* Test connection
+* Create draft
+* Publish post
+
+Action states:
+
+* Publish post disabled unless explicitly approved.
+* No social post should be published in this packet.
+
+================================================================================
+11. Vimeo / Drive / OBS media pipeline
+======================================
+
+Goal:
+Recording appears in One Time classroom through Vimeo.
+
+Known operator context:
+
+* OBS records locally.
+* Shloimie wants OBS to save into a local Google Drive folder.
+* Google Drive syncs file to Drive.
+* One Time intake picks up the file.
+* Vimeo uploads to Rabbi/One Time Vimeo account.
+* Classroom stores and displays the Vimeo video.
+* Vimeo client ID and client secret are in BNA keyholder and belong to Rabbi/One Time.
+
+Do not print Vimeo secrets.
+Do not commit secrets.
+Do not expose private media.
+
+Create/run what is safe:
+
+A. Design the pipeline:
+`ops/one-time-mishnah/media-pipeline/YYYY-MM-DD-drive-vimeo-classroom-pipeline.md`
+`ops/one-time-mishnah/media-pipeline/YYYY-MM-DD-drive-vimeo-classroom-pipeline.json`
+
+B. Keyholder/readiness:
+
+* check by alias/fingerprint only:
+
+  * Vimeo client ID
+  * Vimeo client secret
+  * Vimeo access token if needed
+* if access token missing, create exact OAuth/token setup instruction.
+
+C. Drive folder:
+
+* identify or create intended One Time recording intake folder if existing Drive tooling can do this safely;
+* otherwise output exact Drive folder requirement and owner action.
+* add local OBS folder recommendation:
+  `Google Drive/OneTimeOneTime/Recordings/Incoming`
+  or existing repo-approved folder name.
+
+D. Upload flow:
+
+* scan/sync metadata from Drive folder;
+* create content job;
+* upload test/small sample to Vimeo only if credentials and safe test file exist;
+* otherwise create dry-run with exact blocker;
+* store Vimeo video ID/embed URL;
+* create/update One Time classroom item;
+* set privacy/embed rules:
+
+  * not public searchable;
+  * embeddable only where intended if Vimeo plan supports it;
+  * member/class page displays embed/link.
+
+E. Fallback:
+
+* manual Vimeo upload + paste URL must work before automated upload is trusted.
+
+F. Tests:
+
+* dry-run class recording intake;
+* test video metadata import;
+* Vimeo readiness smoke;
+* classroom readback.
+
+Do not upload production class video unless exact test/publish command is included.
+Do not merge BNA classroom data.
+
+================================================================================
+12. Zoom / class link security
+==============================
+
+Problem:
+Raw Zoom links can be forwarded.
+
+Default implementation:
+
+* do not put raw Zoom link on the public landing page;
+* store Zoom/class link in One Time live session record;
+* after signup/free access, user gets member/class access page;
+* class page shows the Zoom link only to active/free/paid access users;
+* confirmation email links to the class/member access page.
+
+Add support for:
+
+* session passcode;
+* waiting room note;
+* link rotation per class;
+* attendance/check-in tracking if possible;
+* manual revoke/expire old links;
+* optional Zoom registration/unique join links later.
+
+Create:
+`ops/one-time-mishnah/live-class/YYYY-MM-DD-zoom-security-access-model.md`
+
+Implement if existing live-session model supports it:
+
+* live session record stores meeting URL securely enough for member display;
+* access check required before displaying;
+* public page never exposes it;
+* CRM activity records class link accessed.
+
+If existing code cannot support this yet:
+
+* create exact implementation packet.
+
+================================================================================
+13. Existing paying users migration audit
+=========================================
+
+Do not cancel subscriptions.
+
+Create:
+
+`ops/prompt-packets/YYYY-MM-DD-one-time-paying-users-migration/01-existing-paying-users-audit.md`
+
+If safe read-only access exists, audit:
+
+* current paying users;
+* source system: Replit/Stripe/old app;
+* active/canceled/unknown;
+* current promised access;
+* current access actually available;
+* email/phone/contact mapping;
+* migration stage.
+
+Classify:
+
+* existing_paid_member
+* legacy_trial
+* unknown_status
+* needs_support_contact
+* needs_billing_review
+
+Plan:
+
+* grant transition access in new member section;
+* do not mass cancel;
+* do not issue refunds;
+* do not change subscriptions until billing source and user list are verified;
+* create support communication if access is disrupted.
+
+================================================================================
+14. Cleanup stale/unused UI
+===========================
+
+Delete/hide/deprecate stale UI only when proven unused or superseded.
+
+Rules:
+
+* Do not hard-delete production data.
+* Do not delete routes that tests or external links still expect.
+* If `/rabbi` is stale, redirect/alias it.
+* Remove duplicate CTA panels, confusing no-send notes, and irrelevant super-admin/provider setup noise from normal user views.
+* Move support/provider setup diagnostics into settings/support drawer.
+* Update route/action registry.
+
+================================================================================
+15. Tests, screenshots, deploy
+==============================
+
+Run focused tests:
+
+```bash
+node --test tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js tests/one-time-community-moderation-workflow.test.js
+```
+
+Add/update tests for:
+
+* One Time domain root routing;
+* `/one-time` fallback;
+* `/rabbi` alias/redirect;
+* landing signup form;
+* scoped CRM lead creation;
+* 30-day free access grant;
+* member login/class access;
+* confirmation email;
+* reminder automation metadata;
+* Whapi/WAPI setup panel;
+* Buffer setup panel;
+* Vimeo/Drive pipeline dry-run;
+* Zoom link not exposed publicly;
+* workspace/contact contamination prevention.
+
+Run:
+
+```bash
+npm run pqc:all
+npm run bna:run:status
+npm run bna:run:validate
+npm run bna:run:source-coverage
+npm run bna:run:stale-evidence
+npm run secrets:audit
+git diff --check
+```
+
+Run screenshots for affected public/member routes:
+
+* 1440
+* 1024
+* 768
+* 430
+* 390
+
+Deploy/live-smoke if app-visible changes are made and Railway target is available.
+
+Commit, push, PR, merge if passing.
+
+================================================================================
+16. Final response format
+=========================
+
+Return:
+
+## Summary
+
+What was implemented and what was only packetized.
+
+## Public funnel
+
+* canonical domain
+* landing URL
+* signup route
+* member login route
+* `/rabbi` status
+
+## CRM/free access
+
+* contact creation
+* lifecycle stage
+* 30-day free access
+* readback
+
+## Email
+
+* confirmation email status
+* reminder automation status
+* first campaign packet status
+* can real campaign send now: yes/no with exact blocker
+
+## WhatsApp
+
+* provider
+* setup panel status
+* CRM scoping status
+* test/send status
+
+## Social
+
+* Buffer setup panel status
+
+## Vimeo/Drive/OBS
+
+* keyholder readiness
+* Drive folder/intake status
+* Vimeo upload status
+* classroom readback
+* fallback manual paste URL status
+
+## Zoom/security
+
+* whether raw Zoom is public
+* class/member access link behavior
+* security notes
+
+## Existing paying users
+
+* audit packet path
+* whether any subscription was touched
+
+## Files changed
+
+List.
+
+## Tests/smokes/screenshots
+
+Pass/fail.
+
+## PR/deploy status
+
+Branch, PR, merge, deployment/live-smoke.
+
+## Next exact action for Shloimie
+
+Only the missing items:
+
+* final campaign copy;
+* final recipient segment;
+* final class/live session details;
+* Whapi/WAPI account/token if not configured;
+* Vimeo token if not configured;
+* Zoom meeting/link if not configured;
+* Replit screenshots if visual matching still needed.
+
+```
+
+## What you need to do
+
+You personally need to provide or confirm only these:
+
+1. **Final email copy**
+   Subject and body.
+
+2. **Recipient segment**
+   Example: “all One Time leads imported from the Rabbi email list, excluding unsubscribed/bounced/suppressed.”
+
+3. **Class/live session details**
+   Date, time, Zoom meeting or class session link.
+
+4. **Whapi/WAPI account**
+   Rabbi probably needs his own WhatsApp provider account/number. The settings panel should guide him, but someone has to create/pay for that provider account.
+
+5. **Vimeo token/readiness**
+   You said client ID and client secret are in keyholder. Codex must check whether an access token is also needed. Client ID/secret alone may not be enough to upload.
+
+6. **DNS for `onetimeonetime.com`**
+   If it is not already pointed at Railway, Codex should tell you the exact Railway DNS records to set.
+
+For Zoom: if you want maximum simplicity, accept that links can be forwarded. If you want more control, make the confirmation email point to the member/class page, and show the Zoom link only after signup/access. That is the default I put in the prompt.
+```

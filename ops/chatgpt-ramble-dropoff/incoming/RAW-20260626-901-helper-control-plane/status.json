@@ -1,0 +1,27 @@
+{
+  "packet_id": "RAW-20260626-901-helper-control-plane",
+  "status": "done",
+  "created_at": "2026-06-26T12:00:00+03:00",
+  "claimed_at": "2026-06-26T08:22:48.130Z",
+  "claimed_by": "agent-fleet",
+  "result": {
+    "status": "done_verified_local",
+    "completed_at": "2026-06-26T11:26:05+03:00",
+    "summary": "Applied the ChatGPT ramble drop-off workflow, helper control-plane bundle, supervisor pickup hook, npm scripts, AGENTS protocol addendum, and local evidence records.",
+    "verification": [
+      "PASS node --test tests/chatgpt-ramble-dropoff.test.js",
+      "PASS node --test tests/helper-control-plane.test.js",
+      "PASS node --test tests/helper-control-plane-matrix.test.js",
+      "PASS node --test tests/two-week-class-intake-audit.test.js",
+      "PASS node --test tests/watchdog-action-registry.test.js",
+      "PASS node scripts/agent-fleet-supervisor.mjs --once --dry-run --no-reconcile --no-telegram --max-tasks 1",
+      "PASS node scripts/agent-fleet-ramble-dropoff.mjs --once",
+      "PASS npm test 1156/1156"
+    ],
+    "no_deploy_reason": "Packet hard constraints forbid external writes/deploys; this batch is local repo workflow code and tests only."
+  },
+  "updated_at": "2026-06-26T11:26:05+03:00",
+  "picked_up_at": "2026-06-26T08:22:48.134Z",
+  "raw_path": "raw-input/RAW-20260626-901-chatgpt-ramble-agent-dropoff.md",
+  "task_path": "tasks-pending/2026-06-26-chatgpt-ramble-agent-dropoff.md"
+}

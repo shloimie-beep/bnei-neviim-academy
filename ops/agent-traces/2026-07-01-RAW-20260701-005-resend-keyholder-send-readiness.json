@@ -1,0 +1,210 @@
+{
+  "trace_schema_version": "agent-trace.v2",
+  "trace_id": "TRACE-20260701-005-resend-secret-send-readiness",
+  "parent_raw_id": "RAW-20260701-005",
+  "raw_id": "RAW-20260701-005",
+  "created_at": "2026-07-01T16:27:09+03:00",
+  "goal_tool_used": true,
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "packet_ids": [
+    "PKT-20260701-109"
+  ],
+  "stage_transitions": [
+    "raw_capture",
+    "source_readback",
+    "keyholder_redacted_metadata_check",
+    "railway_secret_persistence",
+    "webhook_status_patch",
+    "safe_test_sends",
+    "live_smoke",
+    "send_readiness_decision",
+    "trace_schema_repair"
+  ],
+  "source_files_read": [
+    "BNA-START-HERE.md",
+    "AGENTS.md",
+    "docs/BNA-RAMBLE-TO-DONE.md",
+    "memory-topics/email-resend.md",
+    "docs/integrations/RESEND.md",
+    "ops/provider-config-readbacks/2026-07-01-resend-smoke-readback.md",
+    "ops/prompt-packets/2026-07-01-provider-config-readback/09-resend-send-enabled-smoke.md",
+    "server.js",
+    "src/lib/integrations/resend-client.js",
+    "src/lib/integrations/resend-inbound-crm.js",
+    "scripts/smoke-email.mjs",
+    "scripts/smoke-email-resend-ux-live.mjs",
+    "tests/resend-client.test.js",
+    "tests/resend-inbound-crm.test.js",
+    "tests/resend-inbound-webhook.test.js",
+    "package.json",
+    "ops/execution-runs/latest.json",
+    "ops/execution-runs/2026-06-29-rabbi-onetime-comms-crm-email-import/NEXT-SESSION.md",
+    "tasks-pending/2026-07-01-onetime-resend-secret-send-readiness.md",
+    "ops/route-registry.json",
+    "ops/action-registry.json"
+  ],
+  "source_statements_mapped": [
+    "RAW-20260701-005-S001: install/persist Resend API key and webhook signing secret without exposing values",
+    "RAW-20260701-005-S002: verify webhook endpoint, signed behavior, and selected/recommended event coverage",
+    "RAW-20260701-005-S003: run only safe/owned test sends",
+    "RAW-20260701-005-S004: decide whether real campaign can send",
+    "RAW-20260701-005-S005: keep bulk campaign send blocked until final copy, final segment/list, and explicit final send command",
+    "RAW-20260701-005-S006: do not print secrets, commit secrets, mutate DNS, add GHL, run Stripe, or send imported leads"
+  ],
+  "compiler_schema_version": "pqc.v2",
+  "router_classification": [
+    "PROVIDER_SETUP",
+    "COMMUNICATIONS_EMAIL",
+    "SECURITY_PRIVACY",
+    "EXTERNAL_WRITE_REQUEST",
+    "DECISION_REQUIRED",
+    "VERIFIER_CLOSEOUT"
+  ],
+  "packet_dag_transitions": [
+    "Resend secret install and webhook verification completed before launch-funnel campaign work",
+    "Real campaign send left blocked for a later explicit campaign packet"
+  ],
+  "context_budget_decisions": [
+    "Scope limited to Resend provider configuration, webhook verification, safe test sends, and send-readiness decision.",
+    "No landing page, CRM interface, WhatsApp, Stripe, DNS, or recipient-list implementation was bundled into this packet."
+  ],
+  "repo_surface_map_path": "docs/REPO-SURFACE-MAP.md",
+  "visual_audit_evidence": {
+    "performed": false,
+    "reason": "No UI implementation was performed. The UX smoke was browser evidence only and did not approve sends or external writes."
+  },
+  "validation_results": [
+    "PASS node --check server.js in release worktree after webhook route patch",
+    "PASS node --test tests/resend-client.test.js tests/resend-inbound-crm.test.js tests/resend-inbound-webhook.test.js: 22/22 in release worktree",
+    "PASS local Resend readiness via API: onetimeonetime.com verified, send_allowed=true",
+    "PASS Railway variables redacted readback: RESEND_API_KEY and RESEND_WEBHOOK_SECRET present by fingerprint only",
+    "PASS Railway deployment fba337c9-2ca9-4734-a3ea-5ef73a28e452 reached SUCCESS after variable apply",
+    "PASS Railway deployment 99b21d37-1297-40c4-841e-8dca32ddf8d5 reached SUCCESS after signed status-event route patch",
+    "PASS live /api/bna/resend/status configured readback",
+    "PASS live /api/bna/integrations/resend/health configured and connected readback",
+    "PASS live invalid Svix probe returned 401",
+    "PASS live signed email.delivered probe accepted and stored with raw payload hidden",
+    "PASS official Resend delivered/bounced/suppressed test sends",
+    "PASS live Email/Resend UX smoke with send controls locked",
+    "BLOCKED real email.received proof needs an external sender or Resend replay with actual received email ID",
+    "BLOCKED real/bulk campaign send needs final copy, exact recipient segment/list, final links, and explicit send approval"
+  ],
+  "tool_actions_taken": [
+    "created keyholder alias metadata without printing values",
+    "set Railway variables using redacted secret handling",
+    "deployed Railway variable changes",
+    "patched webhook/status-event handling",
+    "ran clean-base redeploy",
+    "ran safe Resend test sends to official test recipients",
+    "ran live webhook/status/UX smokes",
+    "recorded Resend send-readiness handoff",
+    "repaired Product Quality drift wording in the handoff",
+    "repaired this agent trace to the required schema"
+  ],
+  "tool_actions_skipped": [
+    "bulk campaign send",
+    "send to imported leads or contacts",
+    "WhatsApp send",
+    "Stripe/payment/access mutation",
+    "DNS mutation",
+    "GHL/LeadConnector runtime addition",
+    "secret value display or screenshot",
+    "raw received-email body commit"
+  ],
+  "skipped_action_reasons": [
+    "Bulk campaign requires final approved copy, exact recipient segment/list, final links, and explicit final send command.",
+    "Imported leads/contacts are not authorized recipients for this packet.",
+    "WhatsApp, Stripe, DNS, and GHL are explicitly out of scope.",
+    "Secrets may be reported only by redacted metadata and fingerprints."
+  ],
+  "browser_routes_visited": [
+    "https://bneineviimacademy.org/api/bna/resend/status",
+    "https://bneineviimacademy.org/api/bna/integrations/resend/health",
+    "https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider&view=communications"
+  ],
+  "screenshots_captured": [],
+  "aria_snapshots_captured": [],
+  "accessibility_scans": [],
+  "tests_run": [
+    "node --check server.js",
+    "node --test tests/resend-client.test.js tests/resend-inbound-crm.test.js tests/resend-inbound-webhook.test.js",
+    "npm run railway:doctor with explicit target",
+    "scripts/smoke-email.mjs against safe Resend test recipients",
+    "scripts/smoke-email-resend-ux-live.mjs",
+    "npm run watchdog:protocol-drift after handoff repair",
+    "npm run pqc:trace:validate after trace repair"
+  ],
+  "watchdogs_run": [
+    "npm run watchdog:protocol-drift",
+    "npm run pqc:trace:validate"
+  ],
+  "external_actions_blocked": [
+    "Bulk/real campaign email send",
+    "Imported lead/contact sends",
+    "WhatsApp send",
+    "Stripe/payment/access mutation",
+    "DNS mutation",
+    "GHL/LeadConnector runtime write",
+    "Secret disclosure"
+  ],
+  "decisions_created_or_updated": [
+    "DEC-20260701-501: Real/bulk campaign send approval remains Needs operator decision.",
+    "DEC-20260701-502: Inbound received-email proof remains blocked on external sender or Resend replay."
+  ],
+  "blockers": [
+    {
+      "id": "DEC-20260701-501",
+      "summary": "Real campaign send requires final copy, final recipient list/segment, final links, and explicit final send approval.",
+      "owner": "Shloimie",
+      "status": "needs_operator_decision"
+    },
+    {
+      "id": "DEC-20260701-502",
+      "summary": "Real email.received proof requires an external sender or Resend replay that creates an actual received email ID; Gmail connector reauthentication blocked the prior attempt.",
+      "owner": "Shloimie or connected external sender",
+      "status": "blocked_external_tooling"
+    }
+  ],
+  "implementation_files_changed": [
+    "server.js",
+    "src/lib/integrations/resend-client.js",
+    "src/lib/integrations/resend-inbound-crm.js",
+    "tests/resend-client.test.js",
+    "tests/resend-inbound-crm.test.js",
+    "tests/resend-inbound-webhook.test.js",
+    "ops/provider-config-readbacks/2026-07-01-resend-smoke-readback.md",
+    "ops/live-smokes/2026-07-01T13-45-39-993Z-resend-clean-deploy-live-proof.md",
+    "ops/live-smokes/2026-07-01T13-46-50-223Z-email-resend-ux-live-smoke.md",
+    "tasks-pending/2026-07-01-onetime-resend-secret-send-readiness.md",
+    "ops/agent-traces/2026-07-01-RAW-20260701-005-resend-keyholder-send-readiness.json"
+  ],
+  "commits": [],
+  "PR": null,
+  "deployment": {
+    "required": true,
+    "variable_deployment_id": "fba337c9-2ca9-4734-a3ea-5ef73a28e452",
+    "superseded_code_patch_deployment_id": "be2c5db3-94d0-49ff-bdd8-68a6e5019e74",
+    "final_code_patch_deployment_id": "99b21d37-1297-40c4-841e-8dca32ddf8d5",
+    "status": "success",
+    "final_base_commit": "57af99434f83fb2af5af45946d15ac019e13953f"
+  },
+  "live_smoke": {
+    "required": true,
+    "status": "passed_with_inbound_received_blocker",
+    "evidence_paths": [
+      "ops/live-smokes/2026-07-01T13-45-39-993Z-resend-clean-deploy-live-proof.md",
+      "ops/live-smokes/2026-07-01T13-46-50-223Z-email-resend-ux-live-smoke.md"
+    ]
+  },
+  "final_status": "resend_send_ready_campaign_blocked",
+  "next_packet": "ops/prompt-packets/2026-07-01-provider-config-readback/11-one-time-first-class-invitation-campaign.md",
+  "evidence_paths": [
+    "ops/provider-config-readbacks/2026-07-01-resend-smoke-readback.md",
+    "tasks-pending/2026-07-01-onetime-resend-secret-send-readiness.md",
+    "ops/live-smokes/2026-07-01T13-45-39-993Z-resend-clean-deploy-live-proof.md",
+    "ops/live-smokes/2026-07-01T13-46-50-223Z-email-resend-ux-live-smoke.md",
+    "ops/watchdog-audits/2026-07-01-product-quality-drift.md",
+    "ops/agent-traces/2026-07-01-RAW-20260701-005-resend-keyholder-send-readiness.json"
+  ]
+}

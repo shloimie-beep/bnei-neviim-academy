@@ -210,7 +210,7 @@
 
         async function redirectIfAlreadySignedIn() {
             try {
-                const response = await fetch('/api/bna/auth/me', {
+                const response = await fetch('/api/bna/me', {
                     credentials: 'same-origin',
                     headers: { 'Accept': 'application/json' }
                 });
@@ -241,7 +241,8 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         username: document.getElementById('username').value.trim(),
-                        password: document.getElementById('password').value
+                        password: document.getElementById('password').value,
+                        returnTo: operationsReturnTo()
                     })
                 });
 
@@ -249,7 +250,7 @@
 
                 if (data.success) {
                     localStorage.setItem('bna_ops_session', data.sessionId || '');
-                    window.location.href = operationsReturnTo();
+                    window.location.href = data.redirect_to || operationsReturnTo();
                 } else {
                     errorEl.textContent = data.error || 'Invalid Operations credentials. Use the Operations admin email or username, not a parent, student, or provider login.';
                     errorEl.classList.add('show');

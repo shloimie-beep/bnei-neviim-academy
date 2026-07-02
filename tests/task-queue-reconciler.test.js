@@ -89,6 +89,23 @@ test('reconciler detects an existing app-wide UI brand task', async () => {
   assert.equal(findUiBrandTask([task])?.id, 401);
 });
 
+test('reconciler treats completed repo UI brand evidence as existing work', async () => {
+  const { UI_BRAND_TASK_TITLE, repoHasUiBrandTaskEvidence } = await loadReconciler();
+
+  assert.equal(
+    repoHasUiBrandTaskEvidence([
+      `- [x] ${UI_BRAND_TASK_TITLE}: live task #402 is done/verified after deployment and smoke checks.`,
+    ]),
+    true
+  );
+  assert.equal(
+    repoHasUiBrandTaskEvidence([
+      `- [ ] ${UI_BRAND_TASK_TITLE}: backfill this if the live task is missing.`,
+    ]),
+    false
+  );
+});
+
 test('reconciler summarizes content job 56 outputs for manual routing audit', async () => {
   const { auditContentJob56 } = await loadReconciler();
   const result = auditContentJob56([

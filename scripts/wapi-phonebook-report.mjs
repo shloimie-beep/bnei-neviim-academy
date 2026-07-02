@@ -12,9 +12,12 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const secretsDir = path.join(repoRoot, '.secrets');
 
 function parseArgs(argv = process.argv.slice(2)) {
+  const valueFor = (name) => argv.find((arg) => arg.startsWith(`${name}=`))?.split('=').slice(1).join('=') || '';
   return {
     json: argv.includes('--json'),
     limit: Math.max(1, Math.min(Number(argv.find((arg) => /^--limit=/.test(arg))?.split('=')[1] || 100), 500)),
+    workspace_key: valueFor('--workspace_key') || valueFor('--workspace') || '',
+    project_key: valueFor('--project_key') || valueFor('--project') || '',
   };
 }
 
@@ -64,6 +67,11 @@ function printReport(report) {
   console.log('BNA WAPI phonebook grouping report');
   console.log(`Mode: dry-run / read-only`);
   console.log(`Generated: ${report.generated_at}`);
+  if (report.scope?.workspace_key || report.scope?.project_key) {
+    console.log(`Scope: ${[report.scope.workspace_key, report.scope.project_key].filter(Boolean).join(' / ')}`);
+  } else {
+    console.log('Scope: account-wide super-admin report');
+  }
   console.log(`Phonebook groups: ${report.summary.phonebook_groups}`);
   console.log(`Manual correction candidates: ${report.summary.manual_correction_candidates}`);
   console.log(`No send: ${report.no_send ? 'yes' : 'no'}`);
@@ -86,7 +94,12 @@ async function main() {
   if (!url) throw new Error('DATABASE_URL or .secrets/railway-database-url.txt is required');
   const db = new Pool({ connectionString: url, ssl: { rejectUnauthorized: false } });
   try {
-    const report = await buildWapiPhonebookReport({ db, limit: args.limit });
+    const report = await buildWapiPhonebookReport({
+      db,
+      limit: args.limit,
+      workspace_key: args.workspace_key,
+      project_key: args.project_key,
+    });
     if (args.json) console.log(JSON.stringify(report, null, 2));
     else printReport(report);
   } finally {

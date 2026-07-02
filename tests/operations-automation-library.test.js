@@ -4,6 +4,13 @@ const test = require('node:test');
 
 const operations = fs.readFileSync('public/operations.html', 'utf8');
 
+function functionSlice(name) {
+  const start = operations.indexOf(`function ${name}`);
+  assert.notEqual(start, -1, `missing function ${name}`);
+  const next = operations.indexOf('\n        function ', start + 1);
+  return next === -1 ? operations.slice(start) : operations.slice(start, next);
+}
+
 test('Operations Settings Automations renders a read-only automation and prompt library', () => {
   assert.match(operations, /function renderAutomationLibrarySettings/);
   assert.match(operations, /Automation Library/);
@@ -31,7 +38,8 @@ test('Operations Automations count is based on the library, not support-ticket p
 });
 
 test('Automation library does not expose a live run or enable handler', () => {
+  const automationLibrary = functionSlice('renderAutomationLibrarySettings');
   assert.doesNotMatch(operations, /runAutomationLibraryItem/);
   assert.doesNotMatch(operations, /enableAutomationLibraryItem/);
-  assert.doesNotMatch(operations, /SEND_WHATSAPP[\s\S]*renderAutomationLibrarySettings/);
+  assert.doesNotMatch(automationLibrary, /SEND_WHATSAPP/);
 });

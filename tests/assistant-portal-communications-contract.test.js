@@ -18,13 +18,25 @@ test('active email paths normalize sender identity and reject Office P', () => {
   assert.match(server, /function academySenderIdentity/);
   assert.match(server, /function safeSenderDisplayName/);
   assert.match(server, /Bnei Neviim Academy Office/);
-  assert.match(server, /Rabbi Scheller Office/);
+  assert.match(server, /ONE_TIME_EMAIL_FROM_NAME/);
   assert.match(server, /EMAIL_PROVIDER/);
   assert.match(server, /async function sendResendMessage/);
   assert.match(server, /async function sendEmail/);
   assert.match(envExample, /EMAIL_PROVIDER=gmail/);
-  assert.match(envExample, /RESEND_FROM_NAME=Bnei Neviim Academy Office/);
+  assert.match(envExample, /RESEND_DOMAIN=onetimeonetime\.com/);
+  assert.match(envExample, /RESEND_FROM_EMAIL=info@onetimeonetime\.com/);
+  assert.match(envExample, /RESEND_FROM_NAME=OneTimeOneTime Mishnah/);
+  assert.match(envExample, /RESEND_REPLY_TO=info@onetimeonetime\.com/);
   assert.doesNotMatch(activeEmailSources, /Office P|office p/);
+});
+
+test('Resend inbound webhook is Svix verified before CRM write', () => {
+  assert.match(server, /app\.post\('\/api\/resend\/inbound', handleResendInboundWebhook\)/);
+  assert.match(server, /verifyResendWebhookSignature/);
+  assert.match(server, /svix-id/);
+  assert.match(server, /processResendInboundEvent/);
+  assert.match(server, /resend_inbound_endpoint: '\/api\/resend\/inbound'/);
+  assert.match(server, /resend_webhook_configured/);
 });
 
 test('communications store full message bodies and are exposed through scoped APIs', () => {

@@ -61,6 +61,12 @@ const {
   hasTelegramNoteToCrmIntent,
   parseTelegramNoteToCrm,
 } = require('../src/lib/bna/telegram-note-to-crm');
+const {
+  ONE_TIME_PRESENTATION_DRIVE_STAGE,
+  ONE_TIME_PRESENTATION_SOURCE_FOLDER_ID,
+  ONE_TIME_CONTENT_MEDIA_FOLDER_ID,
+  isOneTimePresentationFile,
+} = require('../src/lib/bna/one-time-presentation-intake');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,6 +90,7 @@ const agentChangelogFile = path.join(repoRoot, 'ops', 'agent-changelog.md');
 const BNA_BRIDGE_PROFILE = 'bna';
 const RABBI_ELIE_BRIDGE_PROFILE = 'rabbi-elie-scheller';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
+const seenOneTimePresentationDriveIds = new Set();
 const RABBI_ELIE_AGENT_FILES = [
   'agents/rabbi-elie-scheller/AGENTS.md',
   'agents/rabbi-elie-scheller/MEMORY.md',
@@ -392,18 +399,29 @@ function loadConfig() {
 
 function loadGoogleDriveAuth() {
   const env = loadBridgeEnv();
-  const inlineClient = parseJsonConfig(
-    env.GOOGLE_OAUTH_CLIENT_JSON || env.GOOGLE_OAUTH_CLIENT_CONFIG || '',
-    'GOOGLE_OAUTH_CLIENT_JSON'
-  );
-  const fileClient = fs.existsSync(googleOAuthClientFile)
-    ? parseJsonConfig(fs.readFileSync(googleOAuthClientFile, 'utf8'), '.secrets/google-oauth-client.json')
-    : null;
-  const parsed = inlineClient || fileClient || {};
-  const client = parsed.web || parsed.installed || {};
-  const clientId = env.GOOGLE_CLIENT_ID || client.client_id || '';
-  const clientSecret = env.GOOGLE_CLIENT_SECRET || client.client_secret || '';
-  const redirectUri = env.GOOGLE_REDIRECT_URI || client.redirect_uris?.[0];
+  const envClientId = String(env.GOOGLE_CLIENT_ID || '').trim();
+  const envClientSecret = String(env.GOOGLE_CLIENT_SECRET || '').trim();
+  if ((envClientId || envClientSecret) && (!envClientId || !envClientSecret)) {
+    throw new Error('Incomplete Google OAuth env config: set both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.');
+  }
+
+  let clientId = envClientId;
+  let clientSecret = envClientSecret;
+  let redirectUri = env.GOOGLE_REDIRECT_URI || undefined;
+  if (!clientId || !clientSecret) {
+    const inlineClient = parseJsonConfig(
+      env.GOOGLE_OAUTH_CLIENT_JSON || env.GOOGLE_OAUTH_CLIENT_CONFIG || '',
+      'GOOGLE_OAUTH_CLIENT_JSON'
+    );
+    const fileClient = fs.existsSync(googleOAuthClientFile)
+      ? parseJsonConfig(fs.readFileSync(googleOAuthClientFile, 'utf8'), '.secrets/google-oauth-client.json')
+      : null;
+    const parsed = inlineClient || fileClient || {};
+    const client = parsed.web || parsed.installed || {};
+    clientId = client.client_id || '';
+    clientSecret = client.client_secret || '';
+    redirectUri = redirectUri || client.redirect_uris?.[0];
+  }
   const refreshToken = env.GOOGLE_REFRESH_TOKEN || (
     fs.existsSync(googleRefreshTokenFile)
       ? fs.readFileSync(googleRefreshTokenFile, 'utf8').trim()
@@ -1096,6 +1114,44 @@ async function listDriveWebsiteImageFiles() {
     files: await listDriveFilesFromFolder(drive, websiteFolderId, { imageOnly: true }),
     folderId: websiteFolderId,
   };
+}
+
+async function listOneTimePresentationDriveFiles() {
+  const auth = loadGoogleDriveAuth();
+  const drive = google.drive({ version: 'v3', auth });
+  const folderIds = [
+    process.env.ONE_TIME_PRESENTATION_DRIVE_FOLDER_ID,
+    ONE_TIME_PRESENTATION_SOURCE_FOLDER_ID,
+    ONE_TIME_CONTENT_MEDIA_FOLDER_ID,
+  ].filter(Boolean);
+  const uniqueFolderIds = [...new Set(folderIds)];
+  const listedGroups = await Promise.all(uniqueFolderIds.map(async (folderId) => {
+    try {
+      const files = await listDriveFilesFromFolder(drive, folderId, { pageSize: 10 });
+      return files.map((file) => ({ ...file, sourceFolderId: folderId }));
+    } catch (error) {
+      log(`One Time presentation folder watch skipped ${folderId}: ${error instanceof Error ? error.message : String(error)}`);
+      return [];
+    }
+  }));
+  const seen = new Set();
+  const files = listedGroups
+    .flat()
+    .filter((file) => {
+      if (!file?.id || seen.has(file.id)) return false;
+      seen.add(file.id);
+      return isOneTimePresentationFile(file);
+    })
+    .sort((a, b) => new Date(b.createdTime || b.modifiedTime || 0) - new Date(a.createdTime || a.modifiedTime || 0));
+  return { drive, files, folderIds: uniqueFolderIds };
+}
+
+function describePresentationEmailNotification(notification = {}) {
+  if (notification.sent) return `Email: sent to ${notification.to}.`;
+  if (notification.dry_run) return `Email: dry run for ${notification.to || 'configured recipient'}.`;
+  if (notification.blocked) return `Email blocked: ${notification.blocker || notification.error || 'missing email configuration'}.`;
+  if (notification.skipped) return `Email skipped: ${notification.reason || 'already processed'}.`;
+  return 'Email: no send result returned.';
 }
 
 function shouldAttachDriveContext(text) {
@@ -5986,6 +6042,37 @@ function isAudioVideoMime(mimeType) {
   return /^audio\//i.test(String(mimeType || '')) || /^video\//i.test(String(mimeType || ''));
 }
 
+function isSpreadsheetMime(mimeType = '') {
+  const normalized = String(mimeType || '').toLowerCase();
+  return [
+    'text/csv',
+    'text/tab-separated-values',
+    'application/csv',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.oasis.opendocument.spreadsheet',
+  ].includes(normalized) || /\b(spreadsheet|excel|csv)\b/.test(normalized);
+}
+
+function isSpreadsheetDocument(descriptor = {}) {
+  const extension = path.extname(String(descriptor.filename || '')).toLowerCase();
+  return ['.csv', '.tsv', '.xlsx', '.xls', '.ods'].includes(extension) || isSpreadsheetMime(descriptor.mimeType);
+}
+
+function safeTelegramErrorMessage(error, fallback = 'The action could not be completed.') {
+  const raw = error instanceof Error ? error.message : String(error || '');
+  const redacted = raw
+    .replace(/sk-[A-Za-z0-9_-]{8,}/g, '[redacted-api-key]')
+    .replace(/Bearer\s+[A-Za-z0-9._-]{8,}/gi, 'Bearer [redacted]');
+
+  if (/incorrect api key|invalid[_\s-]*api[_\s-]*key|api key provided|authorization|bearer/i.test(redacted)) {
+    return 'AI provider configuration error. The file was saved, but transcription cannot run until the provider key is fixed.';
+  }
+
+  const compact = redacted.replace(/\s+/g, ' ').trim();
+  return compact ? compact.slice(0, 500) : fallback;
+}
+
 function isImageMime(mimeType) {
   return /^image\//i.test(String(mimeType || ''));
 }
@@ -8447,6 +8534,42 @@ async function handleMediaMessage(config, msg) {
     return true;
   }
 
+  if (descriptor.kind === 'document' && isSpreadsheetDocument(descriptor)) {
+    const job = buildJob({
+      kind: 'spreadsheet-document',
+      chatId,
+      messageId,
+      caption,
+      localPath: download.localPath,
+      mediaUrl: '',
+      mimeType: descriptor.mimeType,
+      targets: [],
+      publishNow: false,
+      summary: 'Spreadsheet saved for contact/import review.',
+      status: 'queued',
+      notes: [
+        'Spreadsheet document saved locally.',
+        'Not sent to transcription.',
+        'Not routed to Content pipeline.',
+        'No Buffer/social draft handoff.',
+      ],
+    });
+    saveJob(job);
+    const relativePath = path.relative(repoRoot, download.localPath).replace(/\\/g, '/');
+    const replyLines = [
+      `Saved spreadsheet to ${relativePath}.`,
+      'Detected spreadsheet/contact-list file; I did not run transcription, create a Content job, or queue Buffer/social drafting.',
+      'If this belongs in One Time/Rabbi contacts, it will be handled by the guarded first-party CRM import/review path with no-send tags.',
+    ];
+    appendMemoryEntry('Telegram Spreadsheet Asset', replyLines.join('\n'), {
+      chat_id: chatId,
+      message_id: messageId,
+      job_id: job.id,
+    });
+    await sendReply(config.botToken, chatId, [`Saved job ${job.id}.`, ...replyLines].join('\n'), messageId);
+    return true;
+  }
+
   const publishIntent = parsePublishIntent(caption);
   const job = buildJob({
     kind: `media-${descriptor.kind}`,
@@ -8558,7 +8681,7 @@ async function handleMediaMessage(config, msg) {
         }
         replyLines.push(`Transcript captured (${transcriptText.length} characters).`);
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
+        const message = safeTelegramErrorMessage(error, 'Transcription could not be completed.');
         log(`Transcription failed: ${message}`);
         replyLines.push(`Transcription not completed: ${message}`);
       }
@@ -8836,7 +8959,7 @@ async function handleDropIngestCommand(config, msg) {
         }
         replyLines.push(`Transcript captured (${transcriptText.length} characters).`);
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
+        const message = safeTelegramErrorMessage(error, 'Transcription could not be completed.');
         log(`Drop transcription failed: ${message}`);
         replyLines.push(`Transcription not completed: ${message}`);
       }
@@ -9670,7 +9793,7 @@ async function handleDriveIngestCommand(config, msg) {
         }
         replyLines.push(`Transcript captured (${transcriptText.length} characters).`);
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
+        const message = safeTelegramErrorMessage(error, 'Transcription could not be completed.');
         log(`Drive transcription failed: ${message}`);
         replyLines.push(`Transcription not completed: ${message}`);
       }
@@ -10744,6 +10867,53 @@ async function maybeAutoIngestDrive(config) {
   return true;
 }
 
+async function maybeAutoIngestOneTimePresentations(config) {
+  const chatId = config.allowedChatIds[0];
+  if (!chatId) return false;
+  if (!config.opsUsername || !config.opsPassword) {
+    log('One Time presentation auto-watch skipped: Operations credentials are not configured.');
+    return false;
+  }
+
+  let listed;
+  try {
+    listed = await listOneTimePresentationDriveFiles();
+  } catch (error) {
+    log(`One Time presentation auto-watch skipped: ${error instanceof Error ? error.message : String(error)}`);
+    return false;
+  }
+
+  if (!listed.files.length) return false;
+
+  for (const file of listed.files) {
+    if (seenOneTimePresentationDriveIds.has(file.id)) continue;
+    const folderId = file.sourceFolderId || file.parents?.[0] || '';
+    try {
+      log(`One Time presentation auto-watch preserving ${file.name} (${file.id}) from folder ${folderId || 'unknown'}`);
+      const result = await appRequest(config, 'POST', '/api/bna/one-time/presentation-intake', {
+        file,
+        title: file.name,
+        mime_type: file.mimeType,
+        media_url: file.webViewLink,
+        drive_file_id: file.id,
+        drive_folder_id: folderId,
+        drive_stage: ONE_TIME_PRESENTATION_DRIVE_STAGE,
+        notify_email: true,
+      });
+      seenOneTimePresentationDriveIds.add(file.id);
+      const emailNotification = result?.email_notification || {};
+      if (result?.created || emailNotification.sent || emailNotification.blocked || emailNotification.dry_run) {
+        log(`One Time presentation auto-watch stored ${file.name}; ${describePresentationEmailNotification(emailNotification)}`);
+        return true;
+      }
+    } catch (error) {
+      log(`One Time presentation auto-watch failed for ${file.name || file.id}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  return false;
+}
+
 async function maybeAutoPublishWebsiteImage(config) {
   const chatId = config.allowedChatIds[0];
   if (!chatId) return false;
@@ -10906,6 +11076,24 @@ async function main() {
 
   while (true) {
     try {
+      if (!isScopedProjectBot(config) && !busy && Date.now() >= nextDriveWatchAt) {
+        nextDriveWatchAt = Date.now() + config.driveWatchIntervalMs;
+        busy = true;
+        try {
+          const oneTimePresentationIngested = await maybeAutoIngestOneTimePresentations(config);
+          const websiteImagePublished = oneTimePresentationIngested
+            ? false
+            : await maybeAutoPublishWebsiteImage(config);
+          if (!oneTimePresentationIngested && !websiteImagePublished) {
+            await maybeAutoIngestDrive(config);
+          }
+        } catch (error) {
+          log(`Drive auto-watch failed: ${error instanceof Error ? error.message : String(error)}`);
+        } finally {
+          busy = false;
+        }
+      }
+
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 15000);
       const updates = await telegramRequest(
@@ -10924,8 +11112,11 @@ async function main() {
         nextDriveWatchAt = Date.now() + config.driveWatchIntervalMs;
         busy = true;
         try {
-          const websiteImagePublished = await maybeAutoPublishWebsiteImage(config);
-          if (!websiteImagePublished) {
+          const oneTimePresentationIngested = await maybeAutoIngestOneTimePresentations(config);
+          const websiteImagePublished = oneTimePresentationIngested
+            ? false
+            : await maybeAutoPublishWebsiteImage(config);
+          if (!oneTimePresentationIngested && !websiteImagePublished) {
             await maybeAutoIngestDrive(config);
           }
         } catch (error) {

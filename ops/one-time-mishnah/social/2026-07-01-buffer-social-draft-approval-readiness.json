@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-07-01T21:45:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "requirement_id": "REQ-20260701-712",
+  "status": "done_local_verified_no_external_write",
+  "provider": "buffer",
+  "social_scheduler_direction": "buffer",
+  "one_time_local_drafts_allowed": true,
+  "buffer_provider_draft_write_allowed": false,
+  "buffer_schedule_write_allowed": false,
+  "auto_publish_allowed": false,
+  "required_future_approval": {
+    "buffer_draft": "APPROVE_ONE_TIME_BUFFER_DRAFT",
+    "buffer_schedule": "APPROVE_ONE_TIME_BUFFER_SCHEDULE"
+  },
+  "external_write_performed": false,
+  "files": [
+    "server.js",
+    "public/operations.html",
+    "tests/communications-integrations-contract.test.js"
+  ],
+  "verification": [
+    "PASS node --check server.js",
+    "PASS node --test tests\\communications-integrations-contract.test.js tests\\provider-integrations-secret-storage.test.js tests\\operations-settings-dashboard-consolidation.test.js tests\\operations-module-scoping.test.js",
+    "PASS route/action registry JSON parse"
+  ],
+  "guardrails": [
+    "No Buffer draft write",
+    "No Buffer schedule write",
+    "No Buffer publish",
+    "No Buffer media attach",
+    "No ad spend",
+    "No email send",
+    "No WhatsApp send",
+    "No external CRM/GHL/LeadConnector runtime write",
+    "No provider mutation",
+    "No deploy or live smoke"
+  ]
+}

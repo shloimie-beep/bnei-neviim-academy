@@ -13,6 +13,8 @@ Scope: One Time Mishnah Class video library, upload planning, embed planning, an
 ## Current Local Implementation
 
 - Adapter: `src/lib/integrations/vimeo.js`
+- One Time local media pipeline:
+  `src/platform/integrations/media-local-pipeline.js`
 - Existing safe operations:
   - normalize/redact token input
   - read-only `/me` auth check
@@ -22,6 +24,9 @@ Scope: One Time Mishnah Class video library, upload planning, embed planning, an
   - no-write publication readiness preview
   - no-write retention/deletion preview
   - manual Vimeo URL attachment preview
+- One Time media pipeline maps a pasted Vimeo URL into a scoped video asset and
+  member-library draft, keeps publication disabled, and records the live upload
+  and publish gates.
 - External writes remain blocked unless an explicit future approval gate is passed.
 
 ## Configuration Names
@@ -60,3 +65,6 @@ Needed before writes:
 - Upload, privacy, folder, publication, unpublishing, deletion, entitlement,
   watch-progress, notification, member-library publish, and webhook writes are
   not enabled by this follow-up batch.
+- `node --test tests/one-time-media-local-pipeline.test.js` verifies Vimeo URL
+  parsing, idempotent video-reference/library-draft creation, and no upload or
+  member-library publication.

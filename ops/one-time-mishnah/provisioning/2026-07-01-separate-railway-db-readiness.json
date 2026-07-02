@@ -1,0 +1,67 @@
+{
+  "generated_at": "2026-07-02T10:21:20.402Z",
+  "apply_requested": false,
+  "apply_allowed": false,
+  "external_write_performed": false,
+  "secret_values_printed": false,
+  "target_domain": "join.onetimeonetime.com",
+  "target_guard": {
+    "generated_at": "2026-07-02T10:21:20.401Z",
+    "external_write_performed": false,
+    "secret_values_printed": false,
+    "target_domain": "join.onetimeonetime.com",
+    "forbidden_domains": [
+      "onetimeonetime.com",
+      "www.onetimeonetime.com",
+      "bneineviimacademy.org",
+      "www.bneineviimacademy.org"
+    ],
+    "apex_root_untouched_required": true,
+    "service_present": false,
+    "service_label": "missing",
+    "environment": "production",
+    "checks": [
+      {
+        "key": "PUBLIC_SITE_MODE",
+        "expected": "one_time",
+        "present": false,
+        "matches": false,
+        "value_status": "missing"
+      },
+      {
+        "key": "DEFAULT_WORKSPACE_KEY",
+        "expected": "rabbi_sheller_provider",
+        "present": false,
+        "matches": false,
+        "value_status": "missing"
+      },
+      {
+        "key": "DEFAULT_PROJECT_KEY",
+        "expected": "one_time_mishnah_class",
+        "present": false,
+        "matches": false,
+        "value_status": "missing"
+      },
+      {
+        "key": "ONE_TIME_PUBLIC_DOMAIN",
+        "expected": "join.onetimeonetime.com",
+        "present": false,
+        "matches": false,
+        "value_status": "missing"
+      }
+    ],
+    "ready": false,
+    "blocker": "Missing explicit One Time Railway service target. PUBLIC_SITE_MODE missing; expected one_time. DEFAULT_WORKSPACE_KEY missing; expected rabbi_sheller_provider. DEFAULT_PROJECT_KEY missing; expected one_time_mishnah_class. ONE_TIME_PUBLIC_DOMAIN missing; expected join.onetimeonetime.com."
+  },
+  "required_confirmation": "CONFIRM_ONE_TIME_RAILWAY_PROVISION=join.onetimeonetime.com",
+  "blocked_live_actions": [
+    "create_or_select_railway_project",
+    "create_or_select_railway_service",
+    "create_or_attach_postgres_database",
+    "write_railway_variables",
+    "add_custom_domain",
+    "trigger_deploy_or_promote",
+    "mutate_dns"
+  ],
+  "blocker": "Missing explicit One Time Railway service target. PUBLIC_SITE_MODE missing; expected one_time. DEFAULT_WORKSPACE_KEY missing; expected rabbi_sheller_provider. DEFAULT_PROJECT_KEY missing; expected one_time_mishnah_class. ONE_TIME_PUBLIC_DOMAIN missing; expected join.onetimeonetime.com."
+}

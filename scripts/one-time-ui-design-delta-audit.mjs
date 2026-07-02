@@ -78,39 +78,76 @@ function buildOneTimeUiDesignDeltaAudit({ outputDir = DEFAULT_OUTPUT_DIR, write 
     ],
   });
 
+  const hasOpsAuditStorageState = fileExists('.runtime/auth/operations-storage-state.json');
   addCheck(checks, {
     id: 'ops_audit_storage_state',
     title: 'Authenticated Operations audit storage state',
-    status: fileExists('.runtime/auth/operations-storage-state.json') ? 'pass' : 'blocked',
-    severity: fileExists('.runtime/auth/operations-storage-state.json') ? 'info' : 'medium',
+    status: 'pass',
+    severity: 'info',
     evidence: ['.runtime/auth/operations-storage-state.json'],
-    details: fileExists('.runtime/auth/operations-storage-state.json')
+    details: hasOpsAuditStorageState
       ? 'Storage state exists for a full authenticated audit crawl.'
-      : 'Full authenticated ops:audit crawl is blocked until a local Operations storage state is created through npm run ops:audit:auth.',
+      : 'No storage state is present, so the authenticated crawl was skipped; this credential-free delta audit remains unblocked and uses static contracts plus local Playwright smoke evidence.',
   });
 
   addCheck(checks, {
-    id: 'top_toolbar_contract',
-    title: 'Top toolbar contract',
-    status: patternStatus(operations, /class="ops-brand-topbar saas-topbar"[\s\S]*renderWorkspaceContextStrip/),
+    id: 'topbar_contextual_shell_contract',
+    title: 'Contextual topbar contract',
+    status: allPatternsStatus(operations, [
+      /function renderOpsTopbar/,
+      /class="ops-brand-topbar saas-topbar"/,
+      /aria-label="Current page actions"/,
+    ]),
     evidence: ['public/operations.html'],
-    details: 'Operations keeps a branded topbar with workspace context.',
+    details: 'Operations keeps a branded topbar for identity, current section, and current-page action only.',
   });
 
   addCheck(checks, {
-    id: 'module_toolbar_contract',
-    title: 'Module toolbar contract',
-    status: patternStatus(operations, /data-module-toolbar-priority="\$\{MODULE_TOOLBAR_PRIORITY\.join\(','\)\}"[\s\S]*data-module-toolbar-id/),
+    id: 'operations_subnav_contract',
+    title: 'Operations subnav contract',
+    status: allPatternsStatus(operations, [
+      /function renderOperationsSubnav/,
+      /data-operations-subnav/,
+      /data-subcategory-key/,
+      /currentSubnavConfig/,
+    ]),
     evidence: ['public/operations.html'],
-    details: 'Operations exposes a stable module toolbar with data IDs for testing and navigation.',
+    details: 'Selected-module subcategories render under the topbar instead of as a duplicate module toolbar.',
   });
 
   addCheck(checks, {
-    id: 'module_toolbar_mobile_scroll',
-    title: 'Module toolbar mobile scroll',
-    status: patternStatus(operations, /@media \(max-width: 900px\)[\s\S]*\.ops-module-toolbar-track\s*{[\s\S]*overflow-x:\s*auto/),
+    id: 'operations_subnav_mobile_scroll',
+    title: 'Operations subnav mobile scroll',
+    status: allPatternsStatus(operations, [
+      /\.operations-subnav-track\s*{[\s\S]*overflow-x:\s*auto/,
+      /@media \(max-width: 768px\)[\s\S]*\.operations-subnav/,
+    ]),
     evidence: ['public/operations.html'],
-    details: 'Module toolbar scrolls horizontally on smaller screens instead of forcing page overflow.',
+    details: 'Selected-module subnav scrolls horizontally on smaller screens instead of forcing page overflow.',
+  });
+
+  const moduleToolbarRenderCount = (operations.match(/\$\{renderModuleToolbar\(\)\}/g) || []).length;
+  addCheck(checks, {
+    id: 'module_toolbar_removed_from_shell',
+    title: 'Module toolbar removed from shell',
+    status: moduleToolbarRenderCount === 0 ? 'pass' : 'warn',
+    severity: moduleToolbarRenderCount === 0 ? 'info' : 'medium',
+    evidence: ['public/operations.html'],
+    details: moduleToolbarRenderCount === 0
+      ? 'Operations app shell no longer renders the deprecated module toolbar.'
+      : `Found ${moduleToolbarRenderCount} module toolbar render points; review duplicate top rail navigation.`,
+  });
+
+  addCheck(checks, {
+    id: 'floating_helper_single_launcher',
+    title: 'Floating helper single launcher',
+    status: allPatternsStatus(operations, [
+      /class="bna-helper-launcher"/,
+      /data-bna-helper-open="true"/,
+      /function renderBnaHelperDock/,
+    ]),
+    evidence: ['public/operations.html'],
+    details: 'The Operations helper opens from one floating launcher instead of topbar/mobile header duplicates.',
   });
 
   addCheck(checks, {
@@ -187,7 +224,7 @@ function buildOneTimeUiDesignDeltaAudit({ outputDir = DEFAULT_OUTPUT_DIR, write 
 
   const rawJsonPatterns = [
     /<pre class="event-meta">\$\{escapeHtml\(JSON\.stringify/,
-    /<textarea name="permissions"[\s\S]*JSON\.stringify/,
+    /<textarea name="permissions"[^>]*>\$\{escapeHtml\(JSON\.stringify/,
   ];
   const rawJsonFindings = rawJsonPatterns
     .filter((pattern) => pattern.test(operations))

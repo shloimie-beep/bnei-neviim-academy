@@ -214,6 +214,7 @@ function loadConfig() {
     watchdogImprovementMaxDecisions: Number(env.WATCHDOG_IMPROVEMENT_MAX_DECISIONS || 5),
     watchdogImprovementDedupeMs: Number(env.WATCHDOG_IMPROVEMENT_DEDUPE_MS || 14 * 24 * 60 * 60 * 1000),
     taskQueueReconcile: String(env.AGENT_FLEET_TASK_RECONCILE || '1') !== '0',
+    rambleDropoffPickup: String(env.AGENT_FLEET_RAMBLE_DROPOFF || '1') !== '0',
   };
 }
 
@@ -2922,6 +2923,37 @@ async function runTaskQueueReconcilerBeforeClaim(config, args) {
   return result;
 }
 
+function parseDropoffPickupOutput(stdout = '') {
+  try {
+    return JSON.parse(String(stdout || '').trim());
+  } catch {
+    return null;
+  }
+}
+
+async function runRambleDropoffBeforeClaim(config, args) {
+  if (!config.rambleDropoffPickup) return null;
+  const command = `node scripts/agent-fleet-ramble-dropoff.mjs --once${args.dryRun ? ' --dry-run' : ''}`;
+  const result = await runShellCommand(command, Math.min(config.verifyTimeoutMs, 60 * 1000));
+  const parsed = parseDropoffPickupOutput(result.stdout);
+  if (!result.ok) {
+    console.error(`ChatGPT ramble drop-off pickup failed before claim: ${result.stderr || result.stdout}`);
+  } else if (parsed?.picked_up !== false && result.stdout) {
+    console.log(result.stdout.trim());
+  }
+  if (parsed?.packet_id) {
+    return {
+      ok: parsed.ok !== false,
+      dry_run: Boolean(parsed.dry_run),
+      message: `Picked up ChatGPT ramble drop-off packet ${parsed.packet_id}`,
+      packet_id: parsed.packet_id,
+      raw_path: parsed.raw_path,
+      task_path: parsed.task_path,
+    };
+  }
+  return null;
+}
+
 async function processAgentJob(config, job, state, args) {
   if (args.dryRun) {
     return {
@@ -3018,6 +3050,8 @@ async function status(config) {
 }
 
 async function runOnce(config, args) {
+  const dropoffOutcome = await runRambleDropoffBeforeClaim(config, args);
+  if (dropoffOutcome) return [dropoffOutcome];
   await runTaskQueueReconcilerBeforeClaim(config, args);
   const state = loadState();
   const tasks = await loadTasks(config);

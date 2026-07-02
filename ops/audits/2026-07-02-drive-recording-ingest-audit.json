@@ -1,0 +1,58 @@
+{
+  "audit_id": "AUD-20260702-DRIVE-RECORDING-INGEST",
+  "raw_id": "RAW-20260702-004",
+  "generated_at": "2026-07-02T13:50:00+03:00",
+  "privacy": {
+    "raw_transcripts_included": false,
+    "full_drive_ids_included": false,
+    "private_payloads_included": false
+  },
+  "recordings": [
+    {
+      "title": "Voice 260702_114208.m4a",
+      "content_job_id": 100,
+      "chunks": 8,
+      "status": "blocked",
+      "drive_stage": "03 Transcribed",
+      "transcript_chars": 39206,
+      "parse_run_id": 57,
+      "parse_status": "partially_filed",
+      "filed_count": 254,
+      "needs_review_count": 528,
+      "parse_counts": {
+        "tasks": 14,
+        "class_notes": 22,
+        "daily_torah_updates": 5,
+        "torah_learning_entries": 5,
+        "accountability_events": 218,
+        "review": 528
+      }
+    },
+    {
+      "title": "Voice 260702_100126.m4a",
+      "content_job_id": 101,
+      "chunks": 10,
+      "status": "transcribed",
+      "drive_stage": "03 Transcribed",
+      "transcript_chars": 39920,
+      "parse_run_id": null,
+      "parse_status": "not_run",
+      "filed_count": 0,
+      "needs_review_count": 0
+    }
+  ],
+  "overall_status": "partially_processed_needs_review",
+  "findings": [
+    "Initial running bridge transcription failed with stale or bad OpenAI key; fresh keyholder diagnostic passed.",
+    "Job 100 was transcribed and partially filed but left a large review backlog.",
+    "Job 101 was transcribed but not auto-parsed to avoid repeating the over-extraction issue.",
+    "Telegram polling conflict 409 errors are present in runtime logs.",
+    "Provider error details should be stored as generic blockers only."
+  ],
+  "recommended_next_actions": [
+    "Review parse run 57 before trusting filed and review items.",
+    "Hold job 101 auto-filing until parser over-extraction guardrails are tightened.",
+    "Restart the bridge with the working keyholder OpenAI source and enforce one polling instance.",
+    "Add stuck-stage and transcript-digest watchdog coverage."
+  ]
+}

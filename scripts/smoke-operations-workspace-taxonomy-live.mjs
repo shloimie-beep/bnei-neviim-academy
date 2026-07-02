@@ -190,13 +190,13 @@ async function main() {
       const { text } = await requestText(`${appUrl}/operations?workspace=platform&view=admin&section=workspaces`, {
         headers: { Authorization: auth },
       });
-      for (const expected of ['Workspace type selector', 'Specific workspace', 'Dratler Family', 'Family Directory']) {
+      for (const expected of ['Workspace type selector', 'Specific workspace', 'Dratler Family']) {
         assert(text.includes(expected), `Operations HTML missing ${expected}`);
       }
-      for (const stale of ['Family App / Home Accountability', 'Family Accountability']) {
+      for (const stale of ['Family App / Home Accountability', 'Family Accountability', 'Family Directory']) {
         assert(!text.includes(stale), `Operations HTML still exposes ${stale}`);
       }
-      return { checked_terms: ['Workspace type selector', 'Specific workspace', 'Dratler Family', 'Family Directory'] };
+      return { checked_terms: ['Workspace type selector', 'Specific workspace', 'Dratler Family'] };
     });
   } finally {
     const paths = writeReports(report);

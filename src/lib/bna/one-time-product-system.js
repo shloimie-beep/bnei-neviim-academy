@@ -304,7 +304,7 @@ const ONE_TIME_PRODUCT_READINESS_SECTIONS = Object.freeze([
         key: 'provider_of_record',
         label: 'Provider of record',
         status: 'needs_operator_decision',
-        note: 'Stripe, Green Invoice, or manual bridge must be explicitly approved before live billing.',
+        note: 'Stripe-only conversion is required for the current 30-day free/no-card launch; live billing still needs explicit approval.',
       },
       {
         key: 'no_charge_cards_or_invoices',

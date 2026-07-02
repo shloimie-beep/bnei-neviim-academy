@@ -1,0 +1,632 @@
+ M .env.example
+ M AGENTIC-MEMORY.md
+ M AGENTS.md
+ M GOAL-MODE.md
+ M MEMORY.md
+ M QUALITY-GOALS.md
+ M TASKS.md
+ M config/brands/one-time.json
+ M content-memory/README.md
+ M docs/BNA-RAMBLE-TO-DONE.md
+ M docs/architecture/workspace-community-provider-role-map.md
+ M docs/install-package/README.md
+ M docs/integrations/RESEND.md
+ M docs/integrations/STRIPE.md
+ M docs/integrations/VIMEO.md
+ M docs/integrations/ZOOM.md
+ M docs/integrations/onetime-vimeo-zoom-resend-readiness.md
+ M docs/integrations/video-hosting-decision.md
+ M docs/local-setup.md
+ M memory-topics/rabbi-scheller-onetime.md
+ M memory-topics/service-provider-classrooms.md
+ M memory-topics/workspace-model.md
+ M ops/action-registry.json
+ M ops/action-registry/actions.json
+ M ops/agent-changelog.md
+ M ops/agent-task-ledger.jsonl
+ M ops/execution-runs/2026-06-21-one-time-master-completion/BATCH-STATUS.md
+ M ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md
+ M ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md
+ M ops/execution-runs/2026-06-21-one-time-master-completion/NEXT-SESSION.md
+ M ops/execution-runs/2026-06-21-one-time-master-completion/SOURCE.md
+ M ops/execution-runs/2026-06-21-one-time-master-completion/STATUS.md
+ M ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md
+ M ops/execution-runs/2026-06-21-one-time-master-completion/requirements.json
+ M ops/execution-runs/2026-06-21-one-time-master-completion/run.json
+ M ops/execution-runs/latest.json
+ M ops/one-time-mishnah-class/drive-social-ingestion-map.md
+ M ops/one-time-mishnah/task-decision-production-census.json
+ M ops/one-time-mishnah/task-decision-production-census.md
+ M ops/playwright-smokes/2026-06-19-agent-control-browser-local/desktop-list.png
+ M ops/playwright-smokes/2026-06-19-agent-control-browser-local/desktop-run.png
+ M ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png
+ M ops/playwright-smokes/2026-06-19-agent-control-browser-local/mobile-360-list.png
+ M ops/playwright-smokes/2026-06-19-agent-control-browser-local/mobile-390-run.png
+ M ops/playwright-smokes/2026-06-19-agent-control-browser-local/tablet-run.png
+ M ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png
+ M ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png
+ M ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json
+ M ops/preflight/20260613-234309/dirty-worktree.patch
+ M ops/route-registry.json
+ M ops/task-decision-census/latest.json
+ M ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.json
+ M ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.md
+ M package.json
+ M public/js/bna-bot-widget.js
+ M public/js/rabbi-launch.js
+ M public/js/rabbi-member.js
+ M public/one-time/index.html
+ M public/operations-login.html
+ M public/operations.html
+ M public/parent-login.html
+ M public/parent.html
+ M public/provider.html
+ M public/rabbi.html
+ M public/student.html
+ M scripts/agent-fleet-supervisor.mjs
+ M scripts/export-content-transcripts.mjs
+ M scripts/one-time-ui-design-delta-audit.mjs
+ M scripts/smoke-operations-workspace-taxonomy-live.mjs
+ M scripts/smoke-rabbi-onetime-landing-live.mjs
+ M scripts/sync-drive-content-library.mjs
+ M scripts/task-decision-census.mjs
+ M scripts/task-queue-reconciler.mjs
+ M scripts/telegram-kimi-bridge.mjs
+ M scripts/wapi-phonebook-report.mjs
+ M server.js
+ M src/lib/actions/actions/operations.js
+ M src/lib/actions/registry.js
+ M src/lib/bna/intake-parser.js
+ M src/lib/bna/one-time-drive-brief.js
+ M src/lib/bna/one-time-product-system.js
+ M src/lib/bna/one-time-role-model.js
+ M src/lib/bna/telegram-action-router.js
+ M src/lib/bna/wapi-phonebook-report.js
+ M src/lib/integrations/resend-client.js
+ M src/platform/brands/index.js
+ M src/platform/community/index.js
+ M src/platform/domain/index.js
+ M src/platform/ingestion/canonical-parser.js
+ M src/platform/ingestion/intake-source.js
+ M src/platform/instances/one-time.js
+ M src/platform/integrations/readiness.js
+ M tasks-pending/2026-06-19-one-time-master-recovery-register.md
+ M tasks-pending/_template-goal-mode-correction-output.md
+ M tasks-pending/_template-ramble-intake.md
+ M tests/action-registry-telegram-ui-bot.test.js
+ M tests/assistant-portal-communications-contract.test.js
+ M tests/bna-helper-tools.test.js
+ M tests/communications-integrations-contract.test.js
+ M tests/communications-screening-import-ui.test.js
+ M tests/google-workspace-settings-contract.test.js
+ M tests/ingestion/w3-parser-queue.test.js
+ M tests/instances/w4-onetime-instance.test.js
+ M tests/intake-parser-class-recording.test.js
+ M tests/intake-parser.test.js
+ M tests/integrations/w4-onetime-readiness.test.js
+ M tests/one-time-communications-workspace.test.js
+ M tests/one-time-drive-brief-ingestion.test.js
+ M tests/one-time-external-user-portal.test.js
+ M tests/one-time-focused-landing.test.js
+ M tests/one-time-operations-ui-smoke.test.js
+ M tests/one-time-product-system.test.js
+ M tests/one-time-role-auth-model.test.js
+ M tests/one-time-ui-design-delta-audit.test.js
+ M tests/operations-content-library-taxonomy.test.js
+ M tests/operations-pwa-login.test.js
+ M tests/operations-saas-crm-redesign.test.js
+ M tests/operations-shell-navigation-contract.test.js
+ M tests/operations-student-detail-scope.test.js
+ M tests/operations-task-comments-and-dictation.test.js
+ M tests/provider-integrations-secret-storage.test.js
+ M tests/public-content-contamination-guard.test.js
+ M tests/rabbi-checkout-access.test.js
+ M tests/rabbi-task-dialogue.test.js
+ M tests/resend-client.test.js
+ M tests/task-decision-census.test.js
+ M tests/task-queue-reconciler.test.js
+ M tests/telegram-media-routing.test.js
+ M tests/telegram-runtime-status.test.js
+ M tests/ui-01-public-operations-shell.test.js
+ M tests/wapi-phonebook-report.test.js
+ M tests/watchdog-action-registry.test.js
+ M tests/whapi-log-sync-contract.test.js
+ M tests/workspace-task-no-stale-agent.test.js
+?? config/brands/bna.json
+?? content-memory/transcript-digests/
+?? docs/AGENT-TRACE-OBSERVABILITY.md
+?? docs/BROWSER-AGENT-SECURITY.md
+?? docs/CONTEXT-BUDGET-AND-PACKET-SPLITTING.md
+?? docs/DESIGN-REFERENCE-CAPTURE.md
+?? docs/PACKET-DAG.md
+?? docs/PRODUCT-QUALITY-COMPILER.md
+?? docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md
+?? docs/RAMBLE-ROUTER.md
+?? docs/REPO-SURFACE-MAP.md
+?? docs/SUPER-RAMBLE-PACKET-SPLITTING.md
+?? docs/UI-PATTERN-REFERENCE.md
+?? docs/UI-STATE-MATRIX.md
+?? docs/VISUAL-QUALITY-HARNESS.md
+?? docs/architecture/telegram-control-plane.md
+?? docs/content-transcript-digest-policy.md
+?? docs/helper-control-plane-integration.md
+?? docs/operator-walkthroughs/
+?? docs/product/one-time-announcements-first-community.md
+?? docs/product/one-time-class-course-ingestion.md
+?? docs/product/one-time-local-beta-startup-seed-reset.md
+?? docs/product/one-time-pilot-product-model.md
+?? docs/product/one-time-progress-rewards-local-beta.md
+?? docs/product/one-time-reliability-security-registry-hardening.md
+?? docs/product/one-time-roles-and-portals.md
+?? docs/product/provider-directory-and-consent.md
+?? docs/product/provider-telegram-onboarding.md
+?? docs/releases/
+?? memory-topics/brand-kits.md
+?? memory-topics/design-references.md
+?? memory-topics/email-resend.md
+?? memory-topics/one-time-rabbi-sheller.md
+?? memory-topics/provider-pipelines.md
+?? memory-topics/stripe-payments.md
+?? memory-topics/workspace-scope-isolation.md
+?? memory/2026-06-20.md
+?? memory/2026-06-22.md
+?? memory/2026-06-23.md
+?? memory/2026-06-24.md
+?? memory/2026-06-25.md
+?? memory/2026-06-26.md
+?? memory/2026-06-28.md
+?? memory/2026-06-29.md
+?? memory/2026-06-30.md
+?? memory/2026-07-01.md
+?? memory/2026-07-02.md
+?? ops/action-registry/one-time-action-coverage.json
+?? ops/action-registry/one-time-action-coverage.md
+?? ops/action-registry/universal-action-parity.json
+?? ops/action-registry/universal-action-parity.md
+?? ops/agent-traces/
+?? ops/audits/2026-06-19-active-queue-reconciliation.md
+?? ops/audits/2026-06-23-rabbi-scheller-route-map.json
+?? ops/audits/2026-06-23-rabbi-scheller-workspace-parity-audit.md
+?? ops/audits/2026-06-24-telegram-action-parity.json
+?? ops/audits/2026-06-24-telegram-action-parity.md
+?? ops/audits/2026-06-24-telegram-system-truth.json
+?? ops/audits/2026-06-24-telegram-system-truth.md
+?? ops/audits/2026-07-01-domain-renewal-forwarding-audit.md
+?? ops/chatgpt-ramble-dropoff/
+?? ops/class-drive-intake/
+?? ops/design-references/
+?? ops/drive-audits/2026-06-23T06-29-03-146Z-google-drive-audit.json
+?? ops/drive-audits/2026-06-23T06-29-03-146Z-google-drive-audit.md
+?? ops/drive-audits/2026-06-23T06-33-live-content-jobs-summary.md
+?? ops/drive-audits/2026-06-23T09-30-14-937Z-google-drive-audit.json
+?? ops/drive-audits/2026-06-23T09-30-14-937Z-google-drive-audit.md
+?? ops/drive-audits/2026-06-23T09-31-drive-class-intake-recovery.md
+?? ops/drive-audits/2026-06-29-onetime-drive-intake-notification-diagnosis.md
+?? ops/execution-runs/2026-06-19-onetime-local-beta-hardening/
+?? ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/
+?? ops/execution-runs/2026-06-28-onetime-launch-workflow-safe-mode/
+?? ops/execution-runs/2026-06-29-rabbi-onetime-comms-crm-email-import/
+?? ops/execution-runs/2026-07-01-one-time-launch-funnel-everything-setup/
+?? ops/execution-runs/2026-07-01-one-time-separate-instance-launch-funnel/
+?? ops/helper-control-plane-evaluation-matrix.json
+?? ops/imports/2026-06-28-downloads-spreadsheet-inventory.json
+?? ops/imports/2026-06-28-one-time-launch-contacts-import.md
+?? ops/imports/2026-06-29-one-time-launch-contacts-import-applied.md
+?? ops/imports/2026-06-29-one-time-launch-contacts-readback.json
+?? ops/imports/2026-06-29-one-time-launch-contacts-readback.md
+?? ops/imports/2026-06-30-telegram-one-time-phonebook-extra-contacts-6-applied.md
+?? ops/imports/2026-06-30-telegram-one-time-phonebook-extra-contacts-6-dry-run.md
+?? ops/imports/2026-06-30-telegram-one-time-phonebook-extra-contacts-6-readback.md
+?? ops/imports/2026-06-30-telegram-one-time-phonebook-import-applied.md
+?? ops/imports/2026-06-30-telegram-one-time-phonebook-import-dry-run.md
+?? ops/imports/2026-06-30-telegram-one-time-phonebook-readback.md
+?? ops/imports/2026-06-30-telegram-spreadsheet-routing-repair.md
+?? ops/local-smokes/2026-06-28T12-41-15-465Z-one-time-launch-safe-local-smoke.json
+?? ops/local-smokes/2026-06-28T12-41-15-465Z-one-time-launch-safe-local-smoke.md
+?? ops/local-smokes/2026-06-28T12-46-06-467Z-one-time-launch-safe-local-smoke.json
+?? ops/local-smokes/2026-06-28T12-46-06-467Z-one-time-launch-safe-local-smoke.md
+?? ops/local-smokes/2026-07-02T06-47-35-826Z-one-time-launch-safe-local-smoke.json
+?? ops/local-smokes/2026-07-02T06-47-35-826Z-one-time-launch-safe-local-smoke.md
+?? ops/one-time-mishnah/2026-06-28-onetime-email-dns-handoff.md
+?? ops/one-time-mishnah/2026-06-28-onetime-overlap-audit.md
+?? ops/one-time-mishnah/decisions/
+?? ops/one-time-mishnah/funnel/
+?? ops/one-time-mishnah/launch-unblocker/
+?? ops/one-time-mishnah/live-class/
+?? ops/one-time-mishnah/media-pipeline/
+?? ops/one-time-mishnah/provisioning/
+?? ops/one-time-mishnah/secrets/
+?? ops/one-time-mishnah/social/
+?? ops/one-time-mishnah/task-view/
+?? ops/operator-setup/
+?? ops/playwright-smokes/2026-06-23-portal-agnostic-login-chooser-local/
+?? ops/playwright-smokes/2026-06-23-rabbi-scheller-operations-navigation-local/
+?? ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-api-usage-local/
+?? ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-navigation-local/
+?? ops/playwright-smokes/2026-06-29-rabbi-onetime-communications-layout-local/
+?? ops/playwright-smokes/2026-06-30-operations-ia-local/
+?? ops/playwright-smokes/2026-07-01-one-time-join-landing-local/
+?? ops/pro-codex/inbox/2026-06-26-chatgpt-ramble-agent-dropoff.md
+?? ops/product-quality-compiler.schema.json
+?? ops/product-quality-compiler/
+?? ops/prompt-packets/
+?? ops/provider-config-readbacks/
+?? ops/qa-runs/2026-06-23T06-32-54-117Z-openai-diagnostics.json
+?? ops/qa-runs/2026-06-23T06-32-54-117Z-openai-diagnostics.md
+?? ops/qa-runs/2026-06-23T08-15-32-502Z-openai-diagnostics.json
+?? ops/qa-runs/2026-06-23T08-15-32-502Z-openai-diagnostics.md
+?? ops/qa-runs/2026-06-23T08-21-38-032Z-openai-diagnostics.json
+?? ops/qa-runs/2026-06-23T08-21-38-032Z-openai-diagnostics.md
+?? ops/qa-runs/2026-06-24-telegram-end-to-end.json
+?? ops/qa-runs/2026-06-24-telegram-end-to-end.md
+?? ops/qa-runs/2026-07-02T10-12-49-944Z-openai-diagnostics.json
+?? ops/qa-runs/2026-07-02T10-12-49-944Z-openai-diagnostics.md
+?? ops/system-audits/2026-06-20T17-45-47-985Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-20T17-47-42-557Z-task-queue-reconciler.md
+?? ops/system-audits/2026-06-30-current-systems-closeout.md
+?? ops/task-decision-census/2026-06-21T08-55-18-056Z-task-decision-census.json
+?? ops/task-decision-census/2026-06-21T08-55-18-056Z-task-decision-census.md
+?? ops/task-decision-census/2026-06-21T08-59-21-573Z-task-decision-census.json
+?? ops/task-decision-census/2026-06-21T08-59-21-573Z-task-decision-census.md
+?? ops/task-decision-census/2026-06-21T08-59-45-057Z-task-decision-census.json
+?? ops/task-decision-census/2026-06-21T08-59-45-057Z-task-decision-census.md
+?? ops/task-decision-census/2026-06-21T09-00-25-038Z-task-decision-census.json
+?? ops/task-decision-census/2026-06-21T09-00-25-038Z-task-decision-census.md
+?? ops/ui-audits/2026-06-30-operations-ia-redesign.json
+?? ops/ui-audits/2026-06-30-operations-ia-redesign.md
+?? ops/ui-audits/2026-07-01-rabbi-onetime-current-state/
+?? ops/visual-quality-rubric.md
+?? ops/watchdog-audits/2026-06-20T18-32-watchdog-ui-smoke.md
+?? ops/watchdog-audits/2026-06-20T18-54-communications-alerts.md
+?? ops/watchdog-audits/2026-06-20T18-54-content-routing.md
+?? ops/watchdog-audits/2026-06-20T18-54-raw-intake-drift.md
+?? ops/watchdog-audits/2026-06-20T18-54-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-20T18-54-watchdog-audit.md
+?? ops/watchdog-audits/2026-06-20T18-54-watchdog-link-audit.md
+?? ops/watchdog-audits/2026-06-20T18-54-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-20T18-57-communications-alerts.md
+?? ops/watchdog-audits/2026-06-20T18-57-content-routing.md
+?? ops/watchdog-audits/2026-06-20T18-57-raw-intake-drift.md
+?? ops/watchdog-audits/2026-06-20T18-57-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-20T18-57-watchdog-audit.md
+?? ops/watchdog-audits/2026-06-20T18-57-watchdog-link-audit.md
+?? ops/watchdog-audits/2026-06-20T18-57-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-20T18-58-watchdog-ui-smoke.md
+?? ops/watchdog-audits/2026-06-20T18-58-watchdog-visual-baseline.md
+?? ops/watchdog-audits/2026-06-20T19-14-communications-alerts.md
+?? ops/watchdog-audits/2026-06-20T19-14-content-routing.md
+?? ops/watchdog-audits/2026-06-20T19-14-raw-intake-drift.md
+?? ops/watchdog-audits/2026-06-20T19-14-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-20T19-14-watchdog-audit.md
+?? ops/watchdog-audits/2026-06-20T19-14-watchdog-link-audit.md
+?? ops/watchdog-audits/2026-06-20T19-14-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-20T19-15-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-20T19-15-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-20T19-16-communications-alerts.md
+?? ops/watchdog-audits/2026-06-20T19-16-content-routing.md
+?? ops/watchdog-audits/2026-06-20T19-16-raw-intake-drift.md
+?? ops/watchdog-audits/2026-06-20T19-16-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-20T19-16-watchdog-audit.md
+?? ops/watchdog-audits/2026-06-20T19-16-watchdog-link-audit.md
+?? ops/watchdog-audits/2026-06-20T19-16-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-23T06-35-content-routing.md
+?? ops/watchdog-audits/2026-06-23T09-31-content-routing.md
+?? ops/watchdog-audits/2026-06-23T15-40-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T15-40-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-23T15-42-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T15-42-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-23T15-44-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T15-44-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-23T16-06-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T16-16-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T16-17-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T16-28-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T16-43-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T16-44-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T16-53-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T16-54-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T17-03-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T17-04-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T17-08-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T17-19-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T17-54-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T18-32-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T18-38-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T20-02-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T20-24-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T20-42-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T20-51-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-23T21-03-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-24T12-58-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-24T12-58-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-26T08-23-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-26T08-23-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-26T08-25-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-26T08-25-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-26T08-27-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-28T06-20-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-28T06-52-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-28T09-27-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-28T12-27-communications-alerts.md
+?? ops/watchdog-audits/2026-06-28T12-27-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-28T12-29-communications-alerts.md
+?? ops/watchdog-audits/2026-06-28T12-29-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-28T12-47-communications-alerts.md
+?? ops/watchdog-audits/2026-06-28T12-47-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-29T13-35-communications-alerts.md
+?? ops/watchdog-audits/2026-06-29T13-35-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-29T14-45-communications-alerts.md
+?? ops/watchdog-audits/2026-06-29T14-45-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-30-product-quality-drift.json
+?? ops/watchdog-audits/2026-06-30-product-quality-drift.md
+?? ops/watchdog-audits/2026-06-30T06-02-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-30T06-02-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-30T06-17-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-30T06-17-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-30T06-52-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-30T06-52-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-30T07-01-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-30T07-01-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-30T11-47-content-routing.md
+?? ops/watchdog-audits/2026-06-30T11-49-communications-alerts.md
+?? ops/watchdog-audits/2026-06-30T12-19-57-203Z-navigation-ia-watchdog.json
+?? ops/watchdog-audits/2026-06-30T12-19-57-203Z-navigation-ia-watchdog.md
+?? ops/watchdog-audits/2026-06-30T12-25-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-30T12-25-watchdog-ui-smoke.md
+?? ops/watchdog-audits/2026-06-30T12-30-24-350Z-navigation-ia-watchdog.json
+?? ops/watchdog-audits/2026-06-30T12-30-24-350Z-navigation-ia-watchdog.md
+?? ops/watchdog-audits/2026-06-30T12-30-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-30T12-30-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-30T12-31-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-30T12-31-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-30T12-38-58-074Z-navigation-ia-watchdog.json
+?? ops/watchdog-audits/2026-06-30T12-38-58-074Z-navigation-ia-watchdog.md
+?? ops/watchdog-audits/2026-06-30T12-38-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-30T12-38-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-06-30T12-39-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-30T12-39-watchdog-ui-smoke.md
+?? ops/watchdog-audits/2026-06-30T15-29-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-06-30T15-29-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-07-01-product-quality-drift.json
+?? ops/watchdog-audits/2026-07-01-product-quality-drift.md
+?? ops/watchdog-audits/2026-07-01T14-35-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-07-01T14-46-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-07-01T15-01-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-07-01T15-02-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-07-01T15-02-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-07-01T15-03-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-07-01T15-03-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-07-01T15-15-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-07-01T15-15-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-07-01T15-26-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-07-01T15-26-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-07-01T15-40-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-07-01T15-40-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-07-01T15-51-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-07-01T15-51-watchdog-security-routes.md
+?? ops/watchdog-audits/2026-07-01T15-52-watchdog-action-audit.md
+?? ops/watchdog-audits/2026-07-02-product-quality-drift.json
+?? ops/watchdog-audits/2026-07-02-product-quality-drift.md
+?? ops/worktree-reconciliation/
+?? raw-input/RAW-20260617-020-telegram-row-redacted-pointer.md
+?? raw-input/RAW-20260618-002-operations-ui-audit-harness-redacted-pointer.md
+?? raw-input/RAW-20260620-001-onetime-local-beta-hardening-super-prompt.md
+?? raw-input/RAW-20260622-001-github-issue-7-canonical-agent-execution-system.md
+?? raw-input/RAW-20260623-001-drive-class-intake-parser-stuck.md
+?? raw-input/RAW-20260623-002-operator-laptop-bootstrap-package.md
+?? raw-input/RAW-20260623-003-provider-portal-password-invalid.md
+?? raw-input/RAW-20260623-004-super-admin-universal-portal-login.md
+?? raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md
+?? raw-input/RAW-20260623-006-rabbi-scheller-workspace-parity-audit.md
+?? raw-input/RAW-20260623-007-super-admin-one-time-view.md
+?? raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md
+?? raw-input/RAW-20260624-002-clean-slate-control-tower.md
+?? raw-input/RAW-20260624-003-class-drive-intake-goal.md
+?? raw-input/RAW-20260624-004-public-ui-visual-polish-marketing-navigation.md
+?? raw-input/RAW-20260624-006-operator-env-secret-export.md
+?? raw-input/RAW-20260624-007-parent-trip-reminder-contact-roster.md
+?? raw-input/RAW-20260625-001-parent-return-delay-update.md
+?? raw-input/RAW-20260625-002-issue-18-20-kickoff.md
+?? raw-input/RAW-20260625-003-final-integration-release-packet.md
+?? raw-input/RAW-20260625-004-drive-transcript-library-sync-oauth-error.md
+?? raw-input/RAW-20260626-002-two-week-class-intake-audit.md
+?? raw-input/RAW-20260626-003-agent-review-dropoff-public-helper-guardrails.md
+?? raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt
+?? raw-input/RAW-20260626-004-transcript-drive-digest-rebuild.md
+?? raw-input/RAW-20260626-005-transcript-drive-digest-rebuild-duplicate-verification.md
+?? raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md
+?? raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md
+?? raw-input/RAW-20260626-901-chatgpt-ramble-agent-dropoff.md
+?? raw-input/RAW-20260628-001-rabbi-scheller-account-ui-audit.md
+?? raw-input/RAW-20260628-002-rabbi-workspace-login-ui-fix.md
+?? raw-input/RAW-20260628-003-rabbi-onetime-launch-readiness.md
+?? raw-input/RAW-20260628-004-shloimie-same-login-workspace-admin-glitch.md
+?? raw-input/RAW-20260628-005-onetime-launch-workflow-safe-mode.md
+?? raw-input/RAW-20260628-006-issue-41-parser-question-score-task-content-backlog.md
+?? raw-input/RAW-20260629-001-issue-41-owner-decision-general-class-questions.md
+?? raw-input/RAW-20260629-002-issue-41-debugger-solid-flow-hardening.md
+?? raw-input/RAW-20260629-003-drive-score-attendance-progress-visibility.md
+?? raw-input/RAW-20260629-004-rabbi-onetime-comms-crm-email-import-source.txt
+?? raw-input/RAW-20260629-004-rabbi-onetime-comms-crm-email-import.md
+?? raw-input/RAW-20260629-005-onetime-resend-inbound-crm-source.txt
+?? raw-input/RAW-20260629-005-onetime-resend-inbound-crm.md
+?? raw-input/RAW-20260629-006-onetime-drive-intake-email-notification-missed.md
+?? raw-input/RAW-20260630-001-onetime-powerpoint-preserve-download-email.md
+?? raw-input/RAW-20260630-002-deploy-grade-telegram-followup.md
+?? raw-input/RAW-20260630-003-onetime-contacts-communications-ui-email-readiness.md
+?? raw-input/RAW-20260630-004-onetime-drive-dropoff-email-only-notifier.md
+?? raw-input/RAW-20260630-005-current-systems-closeout-source.txt
+?? raw-input/RAW-20260630-005-current-systems-closeout.md
+?? raw-input/RAW-20260630-006-operations-ia-ui-cleanup-source.txt
+?? raw-input/RAW-20260630-006-operations-ia-ui-cleanup.md
+?? raw-input/RAW-20260630-007-onetime-powerpoint-email-missed-phone-link.md
+?? raw-input/RAW-20260630-008-onetime-powerpoint-email-recipient-routing.md
+?? raw-input/RAW-20260630-009-product-quality-compiler-protocol-source.txt
+?? raw-input/RAW-20260630-009-product-quality-compiler-protocol.md
+?? raw-input/RAW-20260630-010-telegram-one-time-phonebook-crm-import.md
+?? raw-input/RAW-20260630-011-telegram-spreadsheet-transcription-routing-error.md
+?? raw-input/RAW-20260630-012-telegram-one-time-extra-phonebook-import.md
+?? raw-input/RAW-20260630-013-product-quality-compiler-validator-drift-watchdog-source.txt
+?? raw-input/RAW-20260630-013-product-quality-compiler-validator-drift-watchdog.md
+?? raw-input/RAW-20260701-001-ramble-protocol-v3-product-quality-operating-system.md
+?? raw-input/RAW-20260701-002-huda-progress-correction.md
+?? raw-input/RAW-20260701-003-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md
+?? raw-input/RAW-20260701-004-namecheap-com-renewal-risk-audit.md
+?? raw-input/RAW-20260701-005-onetime-resend-secret-send-readiness.md
+?? raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt
+?? raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup.md
+?? raw-input/RAW-20260701-007-one-time-separate-instance-launch-funnel-source.txt
+?? raw-input/RAW-20260701-007-one-time-separate-instance-launch-funnel.md
+?? raw-input/RAW-20260702-001-runnable-packet-permission-onetime-email.md
+?? raw-input/RAW-20260702-002-one-time-launch-unblocker.md
+?? raw-input/RAW-20260702-003-one-time-launch-execution-worktree-external-setup.md
+?? scripts/Sync-BNA.ps1
+?? scripts/agent-fleet-ramble-dropoff.mjs
+?? scripts/audit-two-week-class-intake.cjs
+?? scripts/bootstrap-onetime-database.mjs
+?? scripts/build-operator-laptop-installer.ps1
+?? scripts/build-rabbi-scheller-route-map.mjs
+?? scripts/chatgpt-ramble-dropoff.mjs
+?? scripts/check-onetime-external-setup-readiness.mjs
+?? scripts/class-drive-intake-owner-decision-packet.cjs
+?? scripts/class-drive-intake-reconcile.cjs
+?? scripts/content-card-topic-audit.cjs
+?? scripts/export-content-digests.cjs
+?? scripts/generate-one-time-action-coverage.mjs
+?? scripts/generate-universal-action-parity.mjs
+?? scripts/import-one-time-launch-contacts.mjs
+?? scripts/inventory-downloads-spreadsheets.mjs
+?? scripts/one-time-browser-acceptance.mjs
+?? scripts/one-time-drive-dropoff-email-watch.mjs
+?? scripts/one-time-local-beta.mjs
+?? scripts/one-time-local-hardening-audit.mjs
+?? scripts/one-time-synthetic-pilot.mjs
+?? scripts/provision-onetime-railway-instance.mjs
+?? scripts/railway-target-guard.mjs
+?? scripts/register-one-time-drive-dropoff-notifier.ps1
+?? scripts/smoke-email-resend-ux.mjs
+?? scripts/smoke-one-time-crm-contacts-ux.mjs
+?? scripts/smoke-one-time-launch-safe-local.mjs
+?? scripts/smoke-one-time-payment-access-class-links.mjs
+?? scripts/smoke-one-time-resend-vimeo-stripe.mjs
+?? scripts/smoke-one-time-trial-referral.mjs
+?? scripts/smoke-portal-agnostic-login-chooser-local.mjs
+?? scripts/smoke-rabbi-scheller-operations-navigation-local.mjs
+?? scripts/smoke-rabbi-scheller-provider-api-usage-local.mjs
+?? scripts/smoke-rabbi-scheller-provider-navigation-local.mjs
+?? scripts/stripe-sandbox-smoke.mjs
+?? scripts/validate-agent-traces.mjs
+?? scripts/validate-product-quality-packets.mjs
+?? scripts/watchdog-navigation-ia.mjs
+?? scripts/watchdog-product-quality-drift.mjs
+?? src/lib/bna/class-drive-intake-reconcile.js
+?? src/lib/bna/content-card-view-model.js
+?? src/lib/bna/helper/control-plane/
+?? src/lib/bna/helper/destination-resolver.js
+?? src/lib/bna/one-time-drive-dropoff-email.js
+?? src/lib/bna/one-time-launch-readiness.js
+?? src/lib/bna/one-time-presentation-intake.js
+?? src/lib/bna/outbound-text-safety.js
+?? src/lib/bna/provider-api-usage.js
+?? src/lib/bna/ramble-agent-dropoff/
+?? src/lib/bna/transcript-digest-export.js
+?? src/lib/bna/two-week-class-intake-audit.js
+?? src/lib/integrations/resend-inbound-crm.js
+?? src/platform/assistant/
+?? src/platform/community/announcements-first.js
+?? src/platform/domain/provider-directory-consent.js
+?? src/platform/ingestion/one-time-class-course-builder.js
+?? src/platform/integrations/media-local-pipeline.js
+?? src/platform/integrations/resend-local-outbox.js
+?? src/platform/integrations/stripe-local-beta.js
+?? src/platform/progress/
+?? tasks-pending/2026-06-20-website-ramble-correction-audit.md
+?? tasks-pending/2026-06-22-github-issue-7-canonical-agent-execution-queued.md
+?? tasks-pending/2026-06-23-drive-class-intake-parser-stuck.md
+?? tasks-pending/2026-06-23-operator-laptop-bootstrap-package.md
+?? tasks-pending/2026-06-23-rabbi-scheller-workspace-parity-audit.md
+?? tasks-pending/2026-06-23-super-admin-one-time-view.md
+?? tasks-pending/2026-06-23-super-admin-universal-portal-login.md
+?? tasks-pending/2026-06-23-telegram-website-control-plane-addendum.md
+?? tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md
+?? tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md
+?? tasks-pending/2026-06-24-integration-navigation-owner-review-closeout.md
+?? tasks-pending/2026-06-24-operator-env-secret-export.md
+?? tasks-pending/2026-06-24-parent-trip-reminder-contact-roster.md
+?? tasks-pending/2026-06-24-public-ui-visual-polish-marketing-navigation.md
+?? tasks-pending/2026-06-25-drive-transcript-library-sync-oauth-error.md
+?? tasks-pending/2026-06-25-intake-files-telegram-audio-check.md
+?? tasks-pending/2026-06-25-parent-return-delay-update.md
+?? tasks-pending/2026-06-26-agent-review-dropoff-public-helper-guardrails.md
+?? tasks-pending/2026-06-26-chatgpt-ramble-agent-dropoff.md
+?? tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md
+?? tasks-pending/2026-06-26-two-week-class-intake-audit.md
+?? tasks-pending/2026-06-28-onetime-launch-workflow-safe-mode.md
+?? tasks-pending/2026-06-28-rabbi-onetime-launch-readiness.md
+?? tasks-pending/2026-06-28-rabbi-scheller-account-ui-audit.md
+?? tasks-pending/2026-06-28-rabbi-workspace-login-ui-fix.md
+?? tasks-pending/2026-06-28-shloimie-same-login-workspace-admin-glitch.md
+?? tasks-pending/2026-06-29-onetime-resend-inbound-crm.md
+?? tasks-pending/2026-06-29-rabbi-onetime-comms-crm-email-import.md
+?? tasks-pending/2026-06-30-current-systems-closeout.md
+?? tasks-pending/2026-06-30-onetime-contacts-communications-ui-email-readiness.md
+?? tasks-pending/2026-06-30-operations-ia-ui-cleanup.md
+?? tasks-pending/2026-06-30-product-quality-compiler-protocol.md
+?? tasks-pending/2026-06-30-product-quality-compiler-validator-drift-watchdog.md
+?? tasks-pending/2026-06-30-telegram-spreadsheet-routing-worker-release.md
+?? tasks-pending/2026-07-01-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md
+?? tasks-pending/2026-07-01-one-time-launch-funnel-everything-setup.md
+?? tasks-pending/2026-07-01-one-time-separate-instance-launch-funnel.md
+?? tasks-pending/2026-07-01-onetime-resend-secret-send-readiness.md
+?? tasks-pending/2026-07-01-ramble-protocol-v3-product-quality-operating-system.md
+?? tasks-pending/2026-07-02-one-time-launch-execution-worktree-external-setup.md
+?? tasks-pending/2026-07-02-one-time-launch-unblocker.md
+?? tests/assistant-action-planner-contract.test.js
+?? tests/assistant-automation-builder-contract.test.js
+?? tests/assistant-campaign-control-contract.test.js
+?? tests/assistant-chart-dashboard-config-contract.test.js
+?? tests/assistant-control-center-contract.test.js
+?? tests/assistant-control-plane-data-model.test.js
+?? tests/assistant-draft-versioning-contract.test.js
+?? tests/assistant-file-media-intake-contract.test.js
+?? tests/assistant-parent-self-service-contract.test.js
+?? tests/assistant-problem-resolution-contract.test.js
+?? tests/assistant-provider-onboarding-studio-contract.test.js
+?? tests/assistant-reminder-notifications-contract.test.js
+?? tests/chatgpt-ramble-dropoff.test.js
+?? tests/class-drive-intake-owner-decision-packet.test.js
+?? tests/content-card-view-model.test.js
+?? tests/helper-control-plane-matrix.test.js
+?? tests/helper-control-plane.test.js
+?? tests/one-time-announcements-first-community.test.js
+?? tests/one-time-class-course-ingestion.test.js
+?? tests/one-time-drive-dropoff-email-watch.test.js
+?? tests/one-time-launch-readiness.test.js
+?? tests/one-time-local-beta-product-contract.test.js
+?? tests/one-time-local-beta-startup-reset.test.js
+?? tests/one-time-local-hardening-audit.test.js
+?? tests/one-time-media-local-pipeline.test.js
+?? tests/one-time-paying-users-migration-audit-packet.test.js
+?? tests/one-time-presentation-intake.test.js
+?? tests/one-time-progress-rewards-local-beta.test.js
+?? tests/one-time-provider-directory-consent.test.js
+?? tests/one-time-resend-local-outbox.test.js
+?? tests/one-time-separate-instance-provisioning.test.js
+?? tests/one-time-stripe-local-beta.test.js
+?? tests/one-time-synthetic-pilot.test.js
+?? tests/operations-one-time-view-as.test.js
+?? tests/operations-task-queue-visibility.test.js
+?? tests/operator-laptop-installer.test.js
+?? tests/outbound-text-safety.test.js
+?? tests/portal-agnostic-auth-contract.test.js
+?? tests/portal-operations-login-fallback.test.js
+?? tests/provider-api-usage-readiness.test.js
+?? tests/rabbi-scheller-auth-navigation-contract.test.js
+?? tests/rabbi-scheller-route-map-contract.test.js
+?? tests/rabbi-scheller-tenant-isolation-contract.test.js
+?? tests/resend-inbound-crm.test.js
+?? tests/resend-inbound-webhook.test.js
+?? tests/sync-drive-content-library-auth.test.mjs
+?? tests/transcript-digest-export.test.js
+?? tests/two-week-class-intake-audit.test.js
+?? tests/universal-control-plane-scope-policy.test.js

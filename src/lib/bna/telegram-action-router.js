@@ -160,7 +160,7 @@ function extractDecisionOptionLabel(text = '') {
 
 function extractWorkspaceKey(text = '') {
   const value = normalized(text);
-  if (/\b(one time|one-time|mishnah|mishna|rabbi|sheller)\b/.test(value)) return 'one_time_mishnah_class';
+  if (/\b(one time|one-time|mishnah|mishna|rabbi|sheller)\b/.test(value)) return 'rabbi_sheller_provider';
   if (/\b(bna|school|academy|bnei neviim)\b/.test(value)) return 'bna';
   if (/\bplatform\b/.test(value)) return 'platform';
   const match = compact(text).match(/\b(?:workspace|project)\s+([a-z0-9 _-]{2,80})\b/i);
@@ -215,7 +215,7 @@ function providerClassroomInputs(text = '') {
     student_to_student_chat_enabled: false,
     teacher_moderation_required: true,
     public_display_enabled: publicDisplay,
-    workspace_key: extractWorkspaceKey(text) || 'one_time_mishnah_class',
+    workspace_key: extractWorkspaceKey(text) || 'rabbi_sheller_provider',
   };
 }
 

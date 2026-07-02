@@ -19,6 +19,14 @@ BNA memory has layers. Do not collapse them into one junk drawer.
    lifecycle records.
 7. Watchdog evidence: check results, screenshots, reports, and repair tasks.
 8. Changelog/ledger: append-only record of verified agent work.
+9. Agent trace: broad ramble/compiler/implementation/verification loops record
+   source files read, packets, validation, tools, browser evidence, screenshots,
+   skipped external actions, blockers, tests, deployment, final status, and next
+   packet under `ops/agent-traces/`.
+10. Packet DAG: broad product-quality rambles use router classification,
+    control-tower packets, visual-audit packets, scoped implementation packets,
+    verifier/deploy packets, context budgets, and drift watchdog evidence
+    before Done.
 
 ## Rules
 

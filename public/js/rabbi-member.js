@@ -150,6 +150,13 @@
     renderAll();
   }
 
+  function memberCanonicalPath() {
+    const host = String(window.location.hostname || '').toLowerCase();
+    if (host === 'join.onetimeonetime.com') return '/member';
+    if (String(window.location.pathname || '').startsWith('/one-time/')) return '/one-time/member-login';
+    return '/rabbi-member';
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     $('loginForm')?.addEventListener('submit', requestLogin);
     const params = new URLSearchParams(window.location.search);
@@ -157,7 +164,7 @@
     if (token) {
       try {
         await loginWithToken(token);
-        window.history.replaceState({}, '', '/rabbi-member');
+        window.history.replaceState({}, '', memberCanonicalPath());
         return;
       } catch (error) {
         state.notice = error.message || 'Login link could not be opened.';

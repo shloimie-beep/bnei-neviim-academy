@@ -1,0 +1,36 @@
+{
+  "requirement_id": "REQ-20260701-604",
+  "status": "done",
+  "checked_at": "2026-07-01T18:28:25+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "endpoint": "/api/one-time/interest",
+  "access_model": {
+    "member_table": "bna_members",
+    "grant_table": "bna_access_grants",
+    "member_access_status": "trial",
+    "member_access_tier": "live_plus_library",
+    "grant_status": "active",
+    "scopes": ["library", "live"],
+    "expires_at_source": "trial_signup.trial_end_at",
+    "trial_days": 30,
+    "idempotency_scope": "one_time_trial_signup:product_lead_id"
+  },
+  "external_writes_performed": false,
+  "no_send": true,
+  "no_checkout": true,
+  "access_grant_performed": true,
+  "stripe_checkout_created": false,
+  "subscription_created": false,
+  "cancellation_or_refund_performed": false,
+  "verification": [
+    "PASS: node --check server.js",
+    "PASS: focused One Time/Rabbi access tests",
+    "PASS: expanded One Time/Resend/communications/watchdog tests",
+    "PASS: npm run watchdog:security",
+    "PASS: npm run watchdog:actions",
+    "PASS: Railway deployment 5661544b-b960-48a4-8ef5-41489815e5b1 reached SUCCESS",
+    "PASS: live synthetic duplicate access smoke"
+  ],
+  "live_smoke": "ops/live-smokes/2026-07-01T15-28-00Z-one-time-thirty-day-access-live-smoke.md"
+}

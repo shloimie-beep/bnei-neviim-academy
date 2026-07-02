@@ -123,6 +123,27 @@ test('class recording content stays separate from task extraction', () => {
   assert.ok(parsed.tasks.length >= 1);
 });
 
+test('voice audio rambles split task UI update and operator configuration lanes', () => {
+  const parsed = parseIntakeText({
+    raw_input: [
+      'Audio ramble: Task for Codex: fix the basic Operations UI buttons and spacing.',
+      'Update the Telegram bot status card.',
+      'Make sure voice/audio recordings are transcribed, split into tasks, and implemented with proof.',
+      'Decision: I will configure the bot separately later.',
+    ].join(' '),
+    source_type: 'voice',
+    source_date: '2026-06-25',
+  });
+
+  assertCanonicalShape(parsed);
+  assert.ok(parsed.requirements.length >= 1);
+  assert.ok(parsed.tasks.length >= 2);
+  assert.equal(parsed.decisions.length, 1);
+  assert.ok(parsed.tasks.some((task) => /Operations UI buttons and spacing/i.test(task.title)));
+  assert.ok(parsed.tasks.some((task) => /Telegram bot status card/i.test(task.title)));
+  assert.match(parsed.decisions[0].source_quote, /configure the bot separately/i);
+});
+
 test('Google Classroom requests become backlog tickets only', () => {
   const parsed = parseIntakeText({
     raw_input: 'Please create a Google Classroom course and add students with assignments.',

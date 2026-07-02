@@ -77,7 +77,7 @@ function inferSourceKind({ mime_type: mimeType, filename, source_kind: sourceKin
 function normalizeWorkspace(value = '') {
   const key = normalizeKey(value, '');
   if (!key) return null;
-  if (/(one_time|onetime|mishnah|mishna|scheller|sheller)/.test(key)) return 'one_time_mishnah_class';
+  if (/(one_time|onetime|mishnah|mishna|scheller|sheller)/.test(key)) return 'rabbi_sheller_provider';
   if (/(bna|bnei_neviim|academy)/.test(key)) return 'bna';
   return key;
 }

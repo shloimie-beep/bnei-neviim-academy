@@ -1,0 +1,16 @@
+{
+    "generated_at":  "2026-07-02T13:22:09.8152461+03:00",
+    "branch":  "codex/closeout-vimeo-media-20260624",
+    "head":  "6f57d91037d559faa171c71565e6403e62126407",
+    "total_changed":  632,
+    "modified_or_staged_count":  134,
+    "untracked_count":  498,
+    "focused_launch_files_count":  3,
+    "focused_launch_files":  [
+                                 "?? memory/2026-07-02.md",
+                                 "?? raw-input/RAW-20260702-003-one-time-launch-execution-worktree-external-setup.md",
+                                 "?? tasks-pending/2026-07-02-one-time-launch-execution-worktree-external-setup.md"
+                             ],
+    "broad_cleanup_policy":  "Do not run git add ., git reset, git clean, or broad checkout. Stage only explicit launch/protocol files after review.",
+    "commit_blocker":  "Large mixed dirty worktree contains many unrelated modified and untracked files from prior work."
+}

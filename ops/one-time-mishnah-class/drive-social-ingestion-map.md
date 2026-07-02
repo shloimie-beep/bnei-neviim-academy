@@ -8,13 +8,17 @@ Drive root: [One Time Mishnah Class - Rabbi Elie Scheller](https://drive.google.
 
 - Content jobs: one_time_mishnah_class / rabbi_sheller_provider
 - Drive fields: bna_content_jobs.drive_file_id, bna_content_jobs.drive_folder_id, bna_content_jobs.drive_stage
+- PowerPoint/Slides intake: `/api/bna/one-time/presentation-intake` preserves original Drive files, stores open/download URLs, and sends the Shloimie email notification when an email recipient and provider are configured.
+- Drive dropoff email notifier: `scripts/one-time-drive-dropoff-email-watch.mjs` is the scheduled production path for Rabbi Drive dropoffs. It watches the approved video/audio drop folder, slideshows/source-materials folder, and the current `04 Content and Media Intake` office upload folder for PowerPoint/Google Slides files. It calls `/api/bna/one-time/drive-dropoff-intake` and sends email notifications only. It does not start Telegram polling, and Telegram `409 conflict` logs are out of scope unless they actively break this email-only watcher.
 - Output table: bna_content_outputs
 - Output types: facebook_post, linkedin_post, youtube_description, whatsapp_update, weekly_newsletter, website_blog
 - Guard: Buffer/social writes require explicit approval and configured connector settings.
 
 ## Drive Lanes
 
-- [04.00 Upload Here - Rabbi Video Drops](https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t) - one_time_video_drop. Raw Rabbi video/audio drops and source media waiting for ingestion.
+- [04.00 Upload Here - Rabbi Video Drops](https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t) - one_time_video_drop. Raw Rabbi video/audio drops and source media waiting for ingestion; first ingestion creates a content job classified as `video_audio_for_transcription` and sends one email with Drive open/download links when `ONETIME_DRIVE_DROPOFF_NOTIFY_EMAIL` or an approved fallback recipient is configured.
+- [04.05 Upload Here - Slideshows and Source Materials](https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp) - one_time_presentation_source_material. Rabbi PowerPoint/Google Slides/source-sheet files are preserved as full original Drive files, surfaced as content jobs with open/download links, classified as `slideshow_source_sheet_material`, and notify Shloimie by email on first ingestion when `ONETIME_DRIVE_DROPOFF_NOTIFY_EMAIL`, `ONETIME_POWERPOINT_NOTIFY_EMAIL`, or an admin/Shloimie fallback email is configured.
+- [04 Content and Media Intake](https://drive.google.com/drive/folders/1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv) - current Academy office upload URL used by Rabbi PowerPoint drops. The email watcher accepts presentation-like files from this folder and rejects non-presentation files from this broader folder so random uploads do not trigger source-material emails.
 - [04.10 Ingestion Queue - Transcribe and Parse](https://drive.google.com/drive/folders/1E5wS4ZCUzdtN5T0CRKXl7U_qiJ6bHUw8) - one_time_ingestion_queue. Files being turned into transcripts, source notes, clip plans, and draft content jobs.
 - [04.30 Social Output Drafts - Platform Review](https://drive.google.com/drive/folders/17M05atqKqWw8L206Dx8X9ZcOPTRuLu9h) - one_time_social_output_review. Facebook, LinkedIn, YouTube, Instagram, WhatsApp status, and email/newsletter drafts awaiting Shloimie/Rabbi review.
 - [04.90 Approved and Posted Social Outputs](https://drive.google.com/drive/folders/1DDTvKxcpXCTrFtJGDWu1ZiAQDH4YqmDh) - one_time_social_approved_posted. Approved exports, destination URLs, screenshots, metrics, and rollback notes after an approved post/draft.

@@ -295,7 +295,7 @@ test('Telegram routes normal operations to typed actions before Codex', () => {
   const moveWorkspaceRoute = classifyTelegramActionRequest({ text: 'Move task #195 to One Time workspace' });
   assert.equal(moveWorkspaceRoute.action_id, 'move_task_workspace');
   assert.equal(moveWorkspaceRoute.inputs.task_id, 195);
-  assert.equal(moveWorkspaceRoute.inputs.workspace_key, 'one_time_mishnah_class');
+  assert.equal(moveWorkspaceRoute.inputs.workspace_key, 'rabbi_sheller_provider');
   assert.equal(moveWorkspaceRoute.dry_run, true);
   const oneTimeLibraryRoute = classifyTelegramActionRequest({
     text: 'Create One Time video library item for Mishnah review recording https://example.com/video.mp4',

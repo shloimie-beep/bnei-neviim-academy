@@ -1,0 +1,1106 @@
+{
+  "run_id": "2026-07-01-one-time-launch-funnel-everything-setup",
+  "title": "One Time Launch Funnel Everything Setup",
+  "updated_at": "2026-07-01T19:26:00+03:00",
+  "sources": [
+    {
+      "source_id": "RAW-20260701-006",
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "captured_at": "2026-07-01T17:18:15+03:00",
+      "content_fingerprint": "sha256:468a10a81c829764a738241317a46cf9c4666dd16d9b720346afb012c453bfac",
+      "privacy_classification": "internal_goal_mode_packet_no_secrets_no_contact_rows",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_attachment"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260701-006-S001",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Create or continue the Codex goal, preserve the raw packet, create the launch-funnel requirement register, run the execution CLI, and keep evidence-based terminal statuses.",
+      "requirement_id": "REQ-20260701-616",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S002",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Campaign traffic should go to https://onetimeonetime.com/?utm_source=email&utm_medium=launch&utm_campaign=free_mishnayos_class, not the academy URL or direct Zoom.",
+      "requirement_id": "REQ-20260701-601",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S003",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "/one-time is an internal fallback and /rabbi is a legacy or alias route that should remain compatible.",
+      "requirement_id": "REQ-20260701-601",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S004",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "The launch funnel needs a usable One Time landing page, signup form, and CTA for the 30-day free Mishnayos class.",
+      "requirement_id": "REQ-20260701-602",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S005",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Signup must create or update scoped first-party One Time lead/contact tracking, not GHL or shared BNA data.",
+      "requirement_id": "REQ-20260701-603",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S006",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "The user receives 30 days of free access from signup.",
+      "requirement_id": "REQ-20260701-604",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S007",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "The member flow should take a signer-up user to a member/classroom page instead of exposing Zoom directly.",
+      "requirement_id": "REQ-20260701-605",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S008",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Send a confirmation email after signup and prepare a reminder sequence without bulk campaign sending.",
+      "requirement_id": "REQ-20260701-606",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S009",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Prepare class reminder automation metadata, but final live schedule and details still require operator approval.",
+      "requirement_id": "REQ-20260701-607",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S010",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Set up WhatsApp through Whapi/WAPI when credentials and number are available, but do not send WhatsApp messages in this packet.",
+      "requirement_id": "REQ-20260701-608",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S011",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Harden WhatsApp phonebook and communication scoping so One Time, BNA, and unrelated data do not mix.",
+      "requirement_id": "REQ-20260701-609",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S012",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Prepare Buffer/social setup state without publishing social posts from this packet.",
+      "requirement_id": "REQ-20260701-610",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S013",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Prepare the Vimeo, Drive, and OBS class-recording pipeline and check Vimeo credential readiness safely.",
+      "requirement_id": "REQ-20260701-611",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S014",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Define a secure Zoom/class-link model where the link is gated to member/class pages and final Zoom details remain operator-owned.",
+      "requirement_id": "REQ-20260701-612",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S015",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Audit existing paying users before any migration and do not cancel, refund, or change subscriptions in this packet.",
+      "requirement_id": "REQ-20260701-613",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S016",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "The real campaign cannot send until final copy, final recipient list or segment, links, and explicit final send approval are supplied.",
+      "requirement_id": "REQ-20260701-614",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S017",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Run tests, smokes, screenshots, deployment proof, and final audit evidence before marking app-visible or server-visible work done.",
+      "requirement_id": "REQ-20260701-615",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260701-006-S018",
+      "source_id": "RAW-20260701-006",
+      "source_statement": "Do not print or commit secrets, mutate DNS, add GHL, run Stripe, send WhatsApp, send imported leads, bulk-send a campaign, or mix BNA and One Time records.",
+      "requirement_id": "REQ-20260701-616",
+      "classification": "guardrail"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260701-601",
+      "title": "Canonical One Time Domain And Route Consolidation",
+      "expected_result": "Requests for the One Time campaign domain root resolve to the One Time landing experience while the BNA academy homepage remains separate, /one-time remains an internal fallback, and /rabbi remains a compatible legacy alias.",
+      "status": "blocked",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S002",
+        "RAW-20260701-006-S003"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "server_routing",
+      "priority": "P0",
+      "batch_id": "B1",
+      "depends_on": [
+        "REQ-20260701-616"
+      ],
+      "implementation_status": "Host-routing implementation, route registry coverage, route-plan evidence, focused local tests, Railway deploy, and BNA-root live smoke are complete. Real onetimeonetime.com proof is blocked because the domain is not reaching Railway.",
+      "can_continue_without_operator": false,
+      "next_action": "Wait for domain owner to route onetimeonetime.com and www.onetimeonetime.com to Railway, then rerun the live smoke.",
+      "acceptance_criteria": [
+        "Host onetimeonetime.com root serves the One Time landing page for campaign URLs.",
+        "Host www.onetimeonetime.com is handled as a One Time campaign domain.",
+        "BNA academy root remains the BNA/public homepage.",
+        "/one-time keeps working as the internal fallback.",
+        "/rabbi keeps working as the legacy/alias route.",
+        "No DNS records are changed."
+      ],
+      "evidence": [
+        "server.js",
+        "ops/route-registry.json",
+        "tests/one-time-focused-landing.test.js",
+        "ops/one-time-mishnah/funnel/2026-07-01-domain-route-plan.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-domain-route-plan.json",
+        "ops/watchdog-audits/2026-07-01T14-35-watchdog-security-routes.md",
+        "ops/live-smokes/2026-07-01T14-40-00Z-one-time-domain-route-live-smoke.md",
+        "ops/live-smokes/2026-07-01T16-26-00Z-one-time-domain-route-resmoke.md",
+        "ops/live-smokes/2026-07-01T16-26-00Z-one-time-domain-route-resmoke.json"
+      ],
+      "verification": [
+        "PASS: node --check server.js",
+        "PASS: node --test tests/one-time-focused-landing.test.js tests/rabbi-checkout-access.test.js tests/one-time-local-hardening-audit.test.js tests/watchdog-route-security.test.js",
+        "PASS: npm run watchdog:security",
+        "PASS: npm run railway:doctor after deployment 0ae3cb12-7f4f-4ae7-9bd9-7dd8f5a78be4 reached SUCCESS",
+        "PASS: live smoke confirmed BNA root remains BNA homepage",
+        "BLOCKED: onetimeonetime.com served by Google Frontend with legacy Rabbi preview page, not Railway focused landing",
+        "BLOCKED: www.onetimeonetime.com DNS returned ENOTFOUND",
+        "BLOCKED: 2026-07-01T19:26+03:00 read-only resmoke confirmed onetimeonetime.com still serves Google Frontend legacy content, www still fails to fetch, and BNA root still serves Railway"
+      ],
+      "implementation_files": [
+        "server.js",
+        "ops/route-registry.json",
+        "tests/rabbi-checkout-access.test.js",
+        "ops/one-time-mishnah/funnel/2026-07-01-domain-route-plan.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-01T19:26:00+03:00",
+      "deployment_id": "0ae3cb12-7f4f-4ae7-9bd9-7dd8f5a78be4",
+      "deployed_commit": "local-railway-upload-dirty-worktree",
+      "live_smoke": "ops/live-smokes/2026-07-01T14-40-00Z-one-time-domain-route-live-smoke.md",
+      "blocker": "onetimeonetime.com is not routed to the Railway app: apex is served by Google Frontend with the legacy Rabbi preview page, and www.onetimeonetime.com does not resolve.",
+      "blocker_owner": "Shloimie/domain owner",
+      "blocker_next_action": "Point onetimeonetime.com and www.onetimeonetime.com to the Railway app or otherwise route them to the deployed Express service; then rerun the One Time domain route live smoke."
+    },
+    {
+      "id": "REQ-20260701-602",
+      "title": "Landing Signup CTA Definition And Implementation",
+      "expected_result": "The One Time launch page presents the 30-day free Mishnayos class offer with a working signup CTA and form, implemented only after the current-state visual audit and Definition of Ready are present.",
+      "status": "done",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S004"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "ui_product_quality",
+      "priority": "P0",
+      "batch_id": "B2",
+      "depends_on": [
+        "REQ-20260701-616"
+      ],
+      "implementation_status": "Current-state visual audit, Definition of Ready, 30-day free/no-card landing copy, trial-signup CTA/form copy, trial preview response metadata, route/action registry updates, focused tests, local screenshot audit, Railway deploy, and live BNA fallback smoke are complete. Real campaign-domain proof remains blocked under REQ-20260701-601.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue with REQ-20260701-603 scoped One Time lead/contact tracking and dedupe. Real campaign send still waits for the REQ-20260701-601 domain blocker, final copy, final segment/list, final links, and explicit send approval.",
+      "acceptance_criteria": [
+        "Current-state screenshot/audit evidence exists for desktop and mobile.",
+        "Definition of Ready names routes, states, CTA behavior, form fields, privacy text, accessibility, and action registry requirements.",
+        "Signup CTA submits to the scoped One Time signup endpoint.",
+        "No direct Zoom URL is exposed on the landing page."
+      ],
+      "evidence": [
+        "ops/ui-audits/2026-07-01-rabbi-onetime-current-state/report.md",
+        "ops/ui-audits/2026-07-01-rabbi-onetime-current-state/audit.json",
+        "ops/ui-audits/2026-07-01-rabbi-onetime-current-state/post-implementation-audit.json",
+        "ops/prompt-packets/2026-07-01-one-time-launch-funnel/02-landing-signup-definition-of-ready.md",
+        "public/one-time/index.html",
+        "server.js",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-07-01T15-01-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-01T15-02-watchdog-security-routes.md",
+        "ops/live-smokes/2026-07-01T15-08-00Z-one-time-landing-signup-live-smoke.md"
+      ],
+      "verification": [
+        "PASS: node --check server.js",
+        "PASS: node --test tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/one-time-launch-readiness.test.js",
+        "PASS: node --test tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js",
+        "PASS: npm run watchdog:actions",
+        "PASS: npm run watchdog:security",
+        "PASS: node scripts/generate-one-time-action-coverage.mjs",
+        "PASS: node scripts/generate-universal-action-parity.mjs",
+        "PASS: local desktop/mobile Playwright audit found 30-day free copy, no payment links, and no direct Zoom links",
+        "PASS: Railway deployment dfc18e8e-d533-4841-a266-4adb36fe5fc7 reached SUCCESS",
+        "PASS: live BNA fallback /one-time smoke serves Start 30 Days Free copy with no payment links and no direct Zoom links",
+        "BLOCKED: live onetimeonetime.com campaign domain still serves non-Railway legacy content and www still fails to resolve or reach the app"
+      ],
+      "implementation_files": [
+        "public/one-time/index.html",
+        "server.js",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "tests/one-time-focused-landing.test.js",
+        "tests/one-time-product-system.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-01T18:08:00+03:00",
+      "deployment_id": "dfc18e8e-d533-4841-a266-4adb36fe5fc7",
+      "deployed_commit": "local-railway-upload-dirty-worktree",
+      "live_smoke": "ops/live-smokes/2026-07-01T15-08-00Z-one-time-landing-signup-live-smoke.md"
+    },
+    {
+      "id": "REQ-20260701-603",
+      "title": "Scoped One Time Lead Tracking",
+      "expected_result": "Signup creates or updates first-party One Time lead/contact records in rabbi_sheller_provider / one_time_mishnah_class with no GHL runtime and no BNA data mixing.",
+      "status": "done",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S005"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "contacts_pipeline",
+      "priority": "P0",
+      "batch_id": "B3",
+      "depends_on": [
+        "REQ-20260701-616"
+      ],
+      "implementation_status": "Scoped product-lead dedupe, Rabbi-workspace contact upsert, project-scoped parent lead upsert, internal communication note logging, focused tests, watchdogs, Railway deploy, and live synthetic duplicate signup smoke are complete. The endpoint remains no-send/no-checkout/no-access-grant/no-external-write.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue with REQ-20260701-604 30-day free access grant. Real campaign sending still waits for the REQ-20260701-601 domain blocker, final copy, final segment/list, final links, and explicit send approval.",
+      "acceptance_criteria": [
+        "Signup records include rabbi_sheller_provider and one_time_mishnah_class scope.",
+        "Imported leads are not sent to during this packet.",
+        "No GHL, GoHighLevel, LeadConnector, or external CRM runtime is added.",
+        "Duplicate signup updates or links the existing scoped record."
+      ],
+      "evidence": [
+        "server.js",
+        "tests/one-time-product-system.test.js",
+        "tests/one-time-focused-landing.test.js",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/one-time-mishnah/funnel/2026-07-01-scoped-lead-tracking-readback.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-scoped-lead-tracking-readback.json",
+        "ops/watchdog-audits/2026-07-01T15-15-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-07-01T15-15-watchdog-action-audit.md",
+        "ops/live-smokes/2026-07-01T15-18-00Z-one-time-scoped-lead-tracking-live-smoke.md",
+        "ops/live-smokes/2026-07-01T15-18-00Z-one-time-scoped-lead-tracking-live-smoke.json"
+      ],
+      "verification": [
+        "PASS: node --check server.js",
+        "PASS: node --test tests/one-time-product-system.test.js tests/one-time-focused-landing.test.js tests/one-time-launch-readiness.test.js",
+        "PASS: node --test tests/one-time-product-system.test.js tests/one-time-focused-landing.test.js tests/one-time-launch-readiness.test.js tests/resend-inbound-crm.test.js tests/communications-integrations-contract.test.js tests/watchdog-route-security.test.js tests/watchdog-action-registry.test.js",
+        "PASS: npm run watchdog:security",
+        "PASS: npm run watchdog:actions",
+        "PASS: node scripts/generate-one-time-action-coverage.mjs",
+        "PASS: node scripts/generate-universal-action-parity.mjs",
+        "PASS: Railway deployment 4fae9506-f07c-4d49-b01a-f200d392ce27 reached SUCCESS",
+        "PASS: live BNA fallback synthetic duplicate signup smoke kept product/contact/parent-lead IDs stable and returned no_send/no_checkout/no_access_granted/external_write_performed=false"
+      ],
+      "implementation_files": [
+        "server.js",
+        "tests/one-time-product-system.test.js",
+        "tests/one-time-focused-landing.test.js",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/one-time-mishnah/funnel/2026-07-01-scoped-lead-tracking-readback.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-01T18:18:23+03:00",
+      "deployment_id": "4fae9506-f07c-4d49-b01a-f200d392ce27",
+      "deployed_commit": "local-railway-upload-dirty-worktree",
+      "live_smoke": "ops/live-smokes/2026-07-01T15-18-00Z-one-time-scoped-lead-tracking-live-smoke.md"
+    },
+    {
+      "id": "REQ-20260701-604",
+      "title": "Thirty Day Free Access Grant",
+      "expected_result": "A valid One Time signup receives a 30-day free access grant starting at signup time without charging, subscribing, cancelling, or refunding anyone.",
+      "status": "done",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S006"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "access_control",
+      "priority": "P0",
+      "batch_id": "B3",
+      "depends_on": [
+        "REQ-20260701-603"
+      ],
+      "implementation_status": "Public One Time signup now grants idempotent local 30-day trial access through bna_members and bna_access_grants, with trial member status, library/live scopes, a 30-day expiry from signup, focused tests, watchdogs, Railway deploy, and live synthetic duplicate access smoke complete. No checkout, payment, subscription, cancellation, refund, email, WhatsApp, social, or external CRM write occurred.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue with REQ-20260701-605 member login and classroom success path. Access grants now exist; next step is verifying the gated member/classroom route and login delivery path without exposing direct Zoom publicly.",
+      "acceptance_criteria": [
+        "Access starts at the signup timestamp.",
+        "Access expires 30 days after signup.",
+        "No Stripe payment, subscription, cancellation, refund, or billing mutation occurs.",
+        "Tests cover active, expired, and missing access states."
+      ],
+      "evidence": [
+        "server.js",
+        "public/one-time/index.html",
+        "tests/one-time-product-system.test.js",
+        "tests/one-time-focused-landing.test.js",
+        "tests/rabbi-checkout-access.test.js",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/one-time-mishnah/funnel/2026-07-01-thirty-day-free-access-readback.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-thirty-day-free-access-readback.json",
+        "ops/watchdog-audits/2026-07-01T15-26-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-07-01T15-26-watchdog-action-audit.md",
+        "ops/live-smokes/2026-07-01T15-28-00Z-one-time-thirty-day-access-live-smoke.md",
+        "ops/live-smokes/2026-07-01T15-28-00Z-one-time-thirty-day-access-live-smoke.json"
+      ],
+      "verification": [
+        "PASS: node --check server.js",
+        "PASS: node --test tests/one-time-product-system.test.js tests/one-time-focused-landing.test.js tests/rabbi-checkout-access.test.js tests/one-time-launch-readiness.test.js",
+        "PASS: node --test tests/one-time-product-system.test.js tests/one-time-focused-landing.test.js tests/rabbi-checkout-access.test.js tests/one-time-launch-readiness.test.js tests/resend-inbound-crm.test.js tests/communications-integrations-contract.test.js tests/watchdog-route-security.test.js tests/watchdog-action-registry.test.js",
+        "PASS: npm run watchdog:security",
+        "PASS: npm run watchdog:actions",
+        "PASS: node scripts/generate-one-time-action-coverage.mjs",
+        "PASS: node scripts/generate-universal-action-parity.mjs",
+        "PASS: Railway deployment 5661544b-b960-48a4-8ef5-41489815e5b1 reached SUCCESS",
+        "PASS: live BNA fallback synthetic duplicate access smoke kept product/member/access-grant IDs stable and returned trial library/live access with no checkout/payment/send/external write"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/one-time/index.html",
+        "tests/one-time-product-system.test.js",
+        "tests/one-time-focused-landing.test.js",
+        "tests/rabbi-checkout-access.test.js",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/one-time-mishnah/funnel/2026-07-01-thirty-day-free-access-readback.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-01T18:28:25+03:00",
+      "deployment_id": "5661544b-b960-48a4-8ef5-41489815e5b1",
+      "deployed_commit": "local-railway-upload-dirty-worktree",
+      "live_smoke": "ops/live-smokes/2026-07-01T15-28-00Z-one-time-thirty-day-access-live-smoke.md"
+    },
+    {
+      "id": "REQ-20260701-605",
+      "title": "Member Login And Classroom Success Path",
+      "expected_result": "After signup, a user can reach the One Time member/class page through the approved login flow, and class content/session details are gated behind access checks.",
+      "status": "done",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S007"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "member_portal",
+      "priority": "P0",
+      "batch_id": "B3",
+      "depends_on": [
+        "REQ-20260701-604"
+      ],
+      "implementation_status": "Existing member-login, member session, member library, live-session, and classroom entry routes were inspected and verified against the new 30-day trial signup flow. The deployed member path provides a safe public login shell, dry-run magic-login flow, authenticated library/live access state, and anonymous/private-data rejection without exposing direct Zoom links to anonymous users. Final live Zoom/session details remain a separate operator decision under REQ-20260701-612.",
+      "can_continue_without_operator": true,
+      "next_action": "No further action for this requirement. Final Zoom/session details and live link configuration remain blocked under REQ-20260701-612.",
+      "acceptance_criteria": [
+        "Signup success provides an approved member-login or class-page next step.",
+        "Member page checks access before showing class/session data.",
+        "Direct Zoom links are not exposed to anonymous users.",
+        "Legacy aliases remain compatible."
+      ],
+      "evidence": [
+        "server.js",
+        "public/rabbi-member.html",
+        "public/js/rabbi-member.js",
+        "public/one-time-classroom.html",
+        "ops/route-registry.json",
+        "ops/action-registry.json",
+        "ops/live-smokes/2026-07-01T16-07-50-327Z-one-time-member-path-live-smoke.md",
+        "ops/live-smokes/2026-07-01T16-07-50-327Z-one-time-member-path-live-smoke/report.json"
+      ],
+      "verification": [
+        "PASS: node --test tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js tests/one-time-product-system.test.js tests/one-time-focused-landing.test.js",
+        "PASS: live member-path smoke reused an existing safe synthetic member, created/exchanged a dry-run login token without sending email, verified anonymous member APIs returned 401, verified invalid classroom access returned 401/403 without private data, and captured anonymous/logged-in Playwright screenshots",
+        "PASS: live authenticated member APIs returned library/live access state; anonymous responses exposed zero Zoom or private media values"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/rabbi-member.html",
+        "public/js/rabbi-member.js",
+        "public/one-time-classroom.html",
+        "ops/route-registry.json",
+        "ops/action-registry.json",
+        "tests/rabbi-checkout-access.test.js",
+        "tests/one-time-external-user-portal.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-01T19:08:24+03:00",
+      "deployment_id": "2afaa69f-5812-46a7-941d-0bf3bee62094",
+      "deployed_commit": "local-railway-upload-dirty-worktree",
+      "live_smoke": "ops/live-smokes/2026-07-01T16-07-50-327Z-one-time-member-path-live-smoke.md"
+    },
+    {
+      "id": "REQ-20260701-606",
+      "title": "Signup Confirmation Email",
+      "expected_result": "A safe single-user signup confirmation email is available through the Resend-ready One Time sender path, while bulk campaign sends remain blocked.",
+      "status": "done",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S008"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "email_transactional",
+      "priority": "P0",
+      "batch_id": "B4",
+      "depends_on": [
+        "REQ-20260701-603",
+        "REQ-20260701-604"
+      ],
+      "implementation_status": "Public /api/one-time/interest now sends an idempotent single-recipient transactional signup confirmation through the One Time Resend sender after the local 30-day trial grant commits. The path is current-signup-recipient only, skips duplicate submits as already sent, and keeps bulk campaign, imported-list, WhatsApp, checkout/payment/subscription/cancellation/refund, DNS, GHL, and external CRM writes blocked. Focused tests, expanded suite, action/security watchdogs, Railway deployment, safe Resend delivered-address live smoke, Email/Resend UX smoke, Rabbi landing smoke, and live app smoke pass.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue with the next unblocked batch from npm run bna:run:next. Real launch campaign sending remains blocked until final copy, exact recipient list/segment, final links/domain state, and explicit campaign send approval are supplied.",
+      "acceptance_criteria": [
+        "Confirmation uses info@onetimeonetime.com sender/reply-to configuration.",
+        "Only the current signup recipient receives the confirmation.",
+        "No bulk/imported lead send path is invoked.",
+        "Tests cover disabled/missing API key and safe test send behavior."
+      ],
+      "evidence": [
+        "server.js",
+        "public/one-time/index.html",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "tests/one-time-product-system.test.js",
+        "tests/one-time-focused-landing.test.js",
+        "tests/one-time-local-hardening-audit.test.js",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/one-time-mishnah/funnel/2026-07-01-signup-confirmation-email-readback.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-signup-confirmation-email-readback.json",
+        "ops/watchdog-audits/2026-07-01T15-40-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-07-01T15-40-watchdog-action-audit.md",
+        "ops/live-smokes/2026-07-01T15-45-55-623Z-one-time-signup-confirmation-live-smoke.md",
+        "ops/live-smokes/2026-07-01T15-45-55-623Z-one-time-signup-confirmation-live-smoke.json",
+        "ops/live-smokes/2026-07-01T15-46-12-598Z-rabbi-onetime-landing-smoke.md",
+        "ops/live-smokes/2026-07-01T15-46-14-452Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "PASS: node --check server.js",
+        "PASS: node --test tests/one-time-product-system.test.js tests/one-time-focused-landing.test.js tests/one-time-local-hardening-audit.test.js tests/resend-client.test.js tests/rabbi-checkout-access.test.js",
+        "PASS: node --test tests/one-time-product-system.test.js tests/one-time-focused-landing.test.js tests/rabbi-checkout-access.test.js tests/one-time-launch-readiness.test.js tests/resend-client.test.js tests/resend-inbound-crm.test.js tests/resend-inbound-webhook.test.js tests/communications-integrations-contract.test.js tests/watchdog-route-security.test.js tests/watchdog-action-registry.test.js tests/one-time-resend-local-outbox.test.js tests/one-time-communications-workspace.test.js tests/assistant-campaign-control-contract.test.js (67 tests)",
+        "PASS: npm run watchdog:security",
+        "PASS: npm run watchdog:actions",
+        "PASS: node scripts/generate-one-time-action-coverage.mjs",
+        "PASS: node scripts/generate-universal-action-parity.mjs",
+        "PASS: npm run railway:doctor after deployment 2afaa69f-5812-46a7-941d-0bf3bee62094 reached SUCCESS",
+        "PASS: live synthetic signup to Resend delivered test address sent one confirmation via provider resend with provider message id present",
+        "PASS: live duplicate signup skipped confirmation as already sent and reused product/member/access-grant IDs",
+        "PASS: npm run app:smoke:email-resend-ux reported bulk_send_enabled=false, test_send_enabled=false, email_send_performed=false",
+        "PASS: npm run app:smoke:rabbi-onetime-landing",
+        "PASS: npm run app:smoke"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/one-time/index.html",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "tests/one-time-product-system.test.js",
+        "tests/one-time-focused-landing.test.js",
+        "tests/one-time-local-hardening-audit.test.js",
+        "ops/one-time-mishnah/funnel/2026-07-01-signup-confirmation-email-readback.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-01T18:46:30+03:00",
+      "deployment_id": "2afaa69f-5812-46a7-941d-0bf3bee62094",
+      "deployed_commit": "local-railway-upload-dirty-worktree",
+      "live_smoke": "ops/live-smokes/2026-07-01T15-45-55-623Z-one-time-signup-confirmation-live-smoke.md"
+    },
+    {
+      "id": "REQ-20260701-607",
+      "title": "Reminder Automation Sequence Metadata",
+      "expected_result": "Reminder email sequence metadata is drafted in dry-run form and remains disabled until final class schedule, timing, and operator approval are supplied.",
+      "status": "needs_operator_decision",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S009"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "email_automation",
+      "priority": "P1",
+      "batch_id": "B4",
+      "depends_on": [
+        "REQ-20260701-606"
+      ],
+      "implementation_status": "Dry-run reminder sequence metadata is prepared and disabled. Activation remains blocked until final class schedule, reminder cadence, approved copy, eligible recipient source, suppression policy, approved seed/test member, and explicit activation approval are supplied.",
+      "can_continue_without_operator": false,
+      "next_action": "Wait for final class schedule, reminder cadence, approved copy, eligible recipient source, suppression policy, approved seed/test member, and explicit activation approval before enabling reminders.",
+      "acceptance_criteria": [
+        "Reminder metadata names schedule offsets and templates.",
+        "Reminder sends stay disabled until explicit approval.",
+        "Final schedule and copy are linked before activation."
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/funnel/2026-07-01-reminder-sequence-metadata.md"
+      ],
+      "verification": [
+        "PASS: dry-run metadata packet created with disabled windows, eligibility rules, required inputs, idempotency keys, and no-send guardrails",
+        "BLOCKED: activation needs final class schedule, cadence, copy, eligible recipients, suppression policy, approved seed/test member, and explicit approval"
+      ],
+      "implementation_files": [
+        "ops/one-time-mishnah/funnel/2026-07-01-reminder-sequence-metadata.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-01T19:13:57+03:00",
+      "blocker": "Need final class schedule, reminder timing, and approved copy before reminder activation.",
+      "blocker_owner": "Shloimie",
+      "blocker_next_action": "Provide final live class date/time, reminder cadence, and approved reminder copy."
+    },
+    {
+      "id": "REQ-20260701-608",
+      "title": "WhatsApp Whapi Setup Panel With Sends Disabled",
+      "expected_result": "WhatsApp setup/readiness can be represented for the One Time workspace when Whapi/WAPI account details are available, but no WhatsApp messages are sent from this packet.",
+      "status": "blocked",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S010"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "whatsapp_provider_setup",
+      "priority": "P1",
+      "batch_id": "B5",
+      "depends_on": [
+        "REQ-20260701-616"
+      ],
+      "implementation_status": "Whapi/WAPI setup blocker packet is prepared. Existing Operations WAPI tooling and scoped phonebook report remain no-send/read-only; provider setup verification remains blocked until exact credential alias/path and approved sending number are supplied.",
+      "can_continue_without_operator": false,
+      "next_action": "Wait for Whapi/WAPI account, token, and sending number details; then add setup/readiness state with send actions disabled.",
+      "acceptance_criteria": [
+        "No WhatsApp send action is executed.",
+        "Any UI setup action is registered as disabled or setup-only until credentials exist.",
+        "Credentials are never committed or printed."
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/funnel/2026-07-01-whapi-wapi-readiness-blocker.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-whatsapp-contact-scope-readback.md",
+        "src/lib/bna/wapi-phonebook-report.js",
+        "scripts/wapi-phonebook-report.mjs",
+        "public/operations.html",
+        "ops/action-registry.json"
+      ],
+      "verification": [
+        "PASS: blocker packet created with required credential alias/path, approved sending number, account owner, and explicit approval gates",
+        "PASS: existing scoped WAPI phonebook readback proves dry-run/no-send behavior and unscoped row exclusion",
+        "BLOCKED: provider setup verification requires Whapi/WAPI credential alias/path and approved sending number"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "ops/action-registry.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-01T19:13:57+03:00",
+      "blocker": "Need Whapi/WAPI account, token, and sending number from the operator before setup can be verified.",
+      "blocker_owner": "Shloimie",
+      "blocker_next_action": "Provide exact keyholder alias/path for Whapi/WAPI credentials and the approved sending number; do not paste the value in chat."
+    },
+    {
+      "id": "REQ-20260701-609",
+      "title": "WhatsApp Contact Scope Hardening",
+      "expected_result": "One Time WhatsApp-related contact and communication records remain scoped to rabbi_sheller_provider / one_time_mishnah_class and cannot contaminate BNA or unrelated workspaces.",
+      "status": "already_satisfied",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S011"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "scope_privacy",
+      "priority": "P1",
+      "batch_id": "B5",
+      "depends_on": [
+        "REQ-20260701-603"
+      ],
+      "implementation_status": "Existing first-party WAPI/WhatsApp phonebook tooling already enforces One Time workspace/project scope, dry-run/no-send behavior, no external CRM runtime, scoped report filtering, and local correction previews. A redacted live scoped readback for rabbi_sheller_provider / one_time_mishnah_class succeeded, excluded unscoped WAPI directory rows, wrote no raw names/phones/chats/message bodies, and performed no send or external write. Focused WAPI/contact/communications tests and action/security watchdogs pass.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue with the next unblocked batch from npm run bna:run:next. WhatsApp sends remain prohibited until a future explicit approval packet and provider credentials/number decisions exist.",
+      "acceptance_criteria": [
+        "Workspace and project keys are required for One Time communication records.",
+        "No WhatsApp send occurs.",
+        "No external CRM runtime is introduced.",
+        "Any contamination finding has a cleanup/quarantine record."
+      ],
+      "evidence": [
+        "src/lib/bna/wapi-phonebook-report.js",
+        "scripts/wapi-phonebook-report.mjs",
+        "server.js",
+        "public/operations.html",
+        "tests/wapi-phonebook-report.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/telegram-note-to-crm.test.js",
+        "ops/one-time-mishnah/funnel/2026-07-01-whatsapp-contact-scope-readback.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-whatsapp-contact-scope-readback.json",
+        "ops/watchdog-audits/2026-07-01T15-51-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-01T15-51-watchdog-security-routes.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json"
+      ],
+      "verification": [
+        "PASS: redacted live WAPI phonebook scope readback for rabbi_sheller_provider / one_time_mishnah_class",
+        "PASS: node --test tests/wapi-phonebook-report.test.js tests/one-time-communications-workspace.test.js tests/communications-integrations-contract.test.js tests/outbound-text-safety.test.js tests/telegram-note-to-crm.test.js tests/watchdog-action-registry.test.js",
+        "PASS: npm run watchdog:actions",
+        "PASS: npm run watchdog:security",
+        "PASS: node scripts/generate-one-time-action-coverage.mjs",
+        "PASS: node scripts/generate-universal-action-parity.mjs"
+      ],
+      "implementation_files": [
+        "src/lib/bna/wapi-phonebook-report.js",
+        "scripts/wapi-phonebook-report.mjs",
+        "server.js",
+        "public/operations.html",
+        "tests/wapi-phonebook-report.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/telegram-note-to-crm.test.js",
+        "ops/one-time-mishnah/funnel/2026-07-01-whatsapp-contact-scope-readback.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-01T18:52:00+03:00",
+      "live_smoke": "ops/one-time-mishnah/funnel/2026-07-01-whatsapp-contact-scope-readback.md"
+    },
+    {
+      "id": "REQ-20260701-610",
+      "title": "Buffer Social Setup State",
+      "expected_result": "Buffer/social setup state is visible or documented for One Time with publish actions disabled until explicit approval.",
+      "status": "done",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S012"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "social_provider_setup",
+      "priority": "P2",
+      "batch_id": "B5",
+      "depends_on": [
+        "REQ-20260701-616"
+      ],
+      "implementation_status": "Buffer setup/readiness inspection, One Time schedule guard, UI disabled state, action registry coverage, deployment, and live smoke are complete.",
+      "can_continue_without_operator": true,
+      "next_action": "No further action for this requirement; future social scheduling still requires an approved social packet and APPROVE_ONE_TIME_BUFFER_SCHEDULE.",
+      "acceptance_criteria": [
+        "No Buffer/social post is published.",
+        "Any visible publish action is disabled or requires explicit approval.",
+        "Setup state is scoped to One Time."
+      ],
+      "evidence": [
+        "server.js",
+        "public/operations.html",
+        "ops/action-registry.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/one-time-mishnah/social/2026-07-01-buffer-social-setup-readback.md",
+        "ops/watchdog-audits/2026-07-01T14-46-watchdog-action-audit.md",
+        "ops/live-smokes/2026-07-01T14-50-00Z-one-time-buffer-social-live-smoke.md"
+      ],
+      "verification": [
+        "PASS: node --check server.js",
+        "PASS: node --test tests/communications-integrations-contract.test.js tests/watchdog-action-registry.test.js",
+        "PASS: npm run watchdog:actions",
+        "PASS: node scripts/generate-one-time-action-coverage.mjs",
+        "PASS: node scripts/generate-universal-action-parity.mjs",
+        "PASS: Railway deployment b75c6cec-31ea-4b23-8308-71606a3175ba reached SUCCESS",
+        "PASS: live Operations HTML smoke includes ACTION-BUFFER-SCHEDULE-CONFIRM and One Time disabled-state copy without secret placeholders"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "ops/action-registry.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-01T17:50:00+03:00",
+      "deployment_id": "b75c6cec-31ea-4b23-8308-71606a3175ba",
+      "deployed_commit": "local-railway-upload-dirty-worktree",
+      "live_smoke": "ops/live-smokes/2026-07-01T14-50-00Z-one-time-buffer-social-live-smoke.md"
+    },
+    {
+      "id": "REQ-20260701-611",
+      "title": "Vimeo Drive OBS Media Pipeline Readiness",
+      "expected_result": "The One Time media pipeline for recording, Drive dropoff, Vimeo upload/readiness, and classroom publishing is documented and dry-run checked without exposing secrets or uploading production media unless separately approved.",
+      "status": "blocked",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S013"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "media_pipeline",
+      "priority": "P1",
+      "batch_id": "B6",
+      "depends_on": [
+        "REQ-20260701-616"
+      ],
+      "implementation_status": "Keyholder-only metadata check, redacted fingerprint readback, local no-write media pipeline tests, and Drive/Vimeo/OBS/classroom pipeline packet are complete. Vimeo API auth/upload readiness is blocked because no VIMEO_ACCESS_TOKEN file was found in the Vimeo-named keyholder scan.",
+      "can_continue_without_operator": false,
+      "next_action": "Wait for the exact keyholder alias or local path for VIMEO_ACCESS_TOKEN and Vimeo owner/plan/scope/private-test-folder decisions before running API auth or upload readiness checks.",
+      "acceptance_criteria": [
+        "Only the BNA keyholder path is inspected for Vimeo credentials.",
+        "Secret values are not printed or committed.",
+        "Pipeline packet names recording, upload, review, publish, and member-classroom states.",
+        "Production upload remains blocked unless explicitly approved."
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/media-pipeline/2026-07-01-drive-vimeo-classroom-pipeline.md",
+        "ops/one-time-mishnah/media-pipeline/2026-07-01-drive-vimeo-classroom-pipeline.json",
+        "docs/integrations/VIMEO.md",
+        "src/lib/integrations/vimeo.js",
+        "src/platform/integrations/media-local-pipeline.js",
+        "tests/one-time-media-local-pipeline.test.js"
+      ],
+      "verification": [
+        "PASS: keyholder filename scan found Vimeo client ID and client secret files only",
+        "PASS: redacted fingerprint readback for the exact Vimeo client ID and client secret files",
+        "PASS: node --test tests/one-time-media-local-pipeline.test.js",
+        "BLOCKED: VIMEO_ACCESS_TOKEN was not found in the Vimeo-named keyholder filename scan, so API auth/upload readiness was not run"
+      ],
+      "implementation_files": [
+        "ops/one-time-mishnah/media-pipeline/2026-07-01-drive-vimeo-classroom-pipeline.md",
+        "ops/one-time-mishnah/media-pipeline/2026-07-01-drive-vimeo-classroom-pipeline.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-01T18:05:00+03:00",
+      "blocker": "VIMEO_ACCESS_TOKEN was not found in the Vimeo-named keyholder filename scan; Vimeo app/token owner, plan/quota, upload scopes, privacy/embed policy, private test folder, and synthetic upload-smoke file are not confirmed.",
+      "blocker_owner": "Shloimie/Vimeo account owner",
+      "blocker_next_action": "Provide the exact keyholder alias or local path for VIMEO_ACCESS_TOKEN and confirm the Vimeo owner/plan/scope/private-test-folder decisions; do not paste the token value in chat."
+    },
+    {
+      "id": "REQ-20260701-612",
+      "title": "Zoom And Class Link Security Model",
+      "expected_result": "Zoom/live-class details are modeled as gated member-session data; anonymous campaign traffic and public pages do not expose direct Zoom links.",
+      "status": "needs_operator_decision",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S014"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "live_class_security",
+      "priority": "P0",
+      "batch_id": "B3",
+      "depends_on": [
+        "REQ-20260701-601"
+      ],
+      "implementation_status": "Zoom/class-link security model is documented. Existing deployed member/login/classroom behavior was verified: public pages do not expose Zoom links, member APIs require token/access validation, and invalid classroom access reveals no private media or Zoom values. Final live Zoom/session configuration remains blocked until approved details are supplied.",
+      "can_continue_without_operator": false,
+      "next_action": "Wait for final Zoom meeting/class details before configuring live session records; meanwhile keep public pages free of Zoom links.",
+      "acceptance_criteria": [
+        "Public pages do not expose direct Zoom links.",
+        "Member page reveals session links only after access check.",
+        "Final Zoom/class details are not invented by Codex."
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/live-class/2026-07-01-zoom-security-access-model.md",
+        "ops/live-smokes/2026-07-01T16-07-50-327Z-one-time-member-path-live-smoke.md",
+        "server.js",
+        "public/js/rabbi-member.js",
+        "public/one-time-classroom.html"
+      ],
+      "verification": [
+        "PASS: security model packet created with access rules and required inputs",
+        "PASS: live member-path smoke verified anonymous member APIs reject missing token and invalid classroom access exposes no Zoom/private media values",
+        "BLOCKED: final Zoom/session records require approved Zoom/session URL or account-managed meeting details"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/js/rabbi-member.js",
+        "public/one-time-classroom.html",
+        "ops/one-time-mishnah/live-class/2026-07-01-zoom-security-access-model.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-01T19:13:57+03:00",
+      "blocker": "Need final Zoom meeting or class-session details before configuring a live gated session.",
+      "blocker_owner": "Shloimie",
+      "blocker_next_action": "Provide the approved Zoom/session details and date/time when ready; do not paste private access details into tracked files."
+    },
+    {
+      "id": "REQ-20260701-613",
+      "title": "Existing Paying Users Migration Audit",
+      "expected_result": "Existing paying users are audited read-only and classified for migration without cancelling, refunding, charging, or changing subscriptions.",
+      "status": "done",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S015"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "billing_access_audit",
+      "priority": "P1",
+      "batch_id": "B7",
+      "depends_on": [
+        "REQ-20260701-604"
+      ],
+      "implementation_status": "Read-only aggregate paying-user/access audit completed for One Time/Rabbi local representations. The audit inspected local member access, access grants, checkout records, payment events, provider settings, product tier link counts, and legacy signup payment-status counts without exposing raw names, emails, phones, customer IDs, payment links, invoice URLs, or raw payment rows. No Stripe/Green Invoice API call, checkout, payment link, charge, subscription change, cancellation, refund, or external write occurred. Migration remains blocked until the billing source of truth, exact paying-user list/segment, reconciliation rules, and explicit billing-change approval are supplied.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue with the next unblocked batch from npm run bna:run:next. Any actual migration, charge, cancellation, refund, subscription change, payment-link creation, or provider API call remains blocked until explicit operator approval and billing source-of-truth decisions.",
+      "acceptance_criteria": [
+        "No Stripe command or billing mutation runs.",
+        "No cancellation, refund, charge, or subscription change occurs.",
+        "Audit classifies existing paid users and identifies required operator decisions before migration."
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/funnel/2026-07-01-paying-users-migration-audit.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-paying-users-migration-audit.json",
+        "tests/rabbi-checkout-access.test.js",
+        "tests/one-time-stripe-local-beta.test.js",
+        "tests/integrations/w4-onetime-readiness.test.js",
+        "tests/int05-integrations-closeout.test.js",
+        "scripts/smoke-one-time-payment-access-class-links.mjs"
+      ],
+      "verification": [
+        "PASS: read-only aggregate DB audit wrote ops/one-time-mishnah/funnel/2026-07-01-paying-users-migration-audit.md/json",
+        "PASS: redaction scan found no raw names, emails, phones, customer IDs, payment links, invoice URLs, or raw payment rows in the audit artifacts",
+        "PASS: node --test tests/rabbi-checkout-access.test.js tests/one-time-stripe-local-beta.test.js tests/integrations/w4-onetime-readiness.test.js tests/int05-integrations-closeout.test.js",
+        "PASS: node scripts/smoke-one-time-payment-access-class-links.mjs external_write_performed=false"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/platform/integrations/stripe-local-beta.js",
+        "scripts/smoke-one-time-payment-access-class-links.mjs",
+        "tests/rabbi-checkout-access.test.js",
+        "tests/one-time-stripe-local-beta.test.js",
+        "tests/integrations/w4-onetime-readiness.test.js",
+        "tests/int05-integrations-closeout.test.js",
+        "ops/one-time-mishnah/funnel/2026-07-01-paying-users-migration-audit.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-paying-users-migration-audit.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-01T18:59:22+03:00",
+      "live_smoke": "ops/one-time-mishnah/funnel/2026-07-01-paying-users-migration-audit.md"
+    },
+    {
+      "id": "REQ-20260701-614",
+      "title": "First Campaign Readiness Packet",
+      "expected_result": "First campaign and seed-send packets exist with all real campaign sending blocked until final copy, final recipient segment/list, links, and explicit operator send command are supplied.",
+      "status": "needs_operator_decision",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S016"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "campaign_readiness",
+      "priority": "P0",
+      "batch_id": "B8",
+      "depends_on": [
+        "REQ-20260701-601",
+        "REQ-20260701-606"
+      ],
+      "implementation_status": "Blocked first campaign, seed-send, and consolidated real-send operator decision handoff packets are prepared. Real campaign send remains blocked until final subject/body, exact recipient segment/list, suppression proof, final links/domain state, seed proof, and explicit send command are supplied.",
+      "can_continue_without_operator": false,
+      "next_action": "Wait for final subject/body, exact recipient segment/list, suppression proof, final links/domain state, seed recipients/proof, and explicit final send command.",
+      "acceptance_criteria": [
+        "Campaign packet names exact blockers before send.",
+        "Seed-send packet is limited to safe test recipients.",
+        "Bulk campaign send remains disabled.",
+        "Imported leads are not sent to in this packet."
+      ],
+      "evidence": [
+        "ops/prompt-packets/2026-07-01-provider-config-readback/11-one-time-first-class-invitation-campaign.md",
+        "ops/prompt-packets/2026-07-01-provider-config-readback/12-one-time-test-seed-send.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-real-send-operator-decision-handoff.md"
+      ],
+      "verification": [
+        "PASS: campaign readiness packet created with exact real-send blockers and forbidden actions",
+        "PASS: seed-send packet created with seed-recipient rules, stop rule, and no-send guardrails",
+        "BLOCKED: real send needs final copy, exact segment/list, final links/domain state, seed proof, and explicit campaign-send approval",
+        "PASS: consolidated real-send operator decision handoff created with domain, copy, segment, suppression, seed, explicit-send, reminder, WAPI, Vimeo, and Zoom gates"
+      ],
+      "implementation_files": [
+        "ops/prompt-packets/2026-07-01-provider-config-readback/11-one-time-first-class-invitation-campaign.md",
+        "ops/prompt-packets/2026-07-01-provider-config-readback/12-one-time-test-seed-send.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-real-send-operator-decision-handoff.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-01T19:31:00+03:00",
+      "blocker": "Need final campaign subject/body, exact recipient segment or list, final landing/member links, and explicit final send command.",
+      "blocker_owner": "Shloimie",
+      "blocker_next_action": "Approve final campaign copy and exact recipient segment/list, then explicitly authorize the real send in a later packet."
+    },
+    {
+      "id": "REQ-20260701-615",
+      "title": "Verification Deploy And Live Smoke Evidence",
+      "expected_result": "Changed app-visible/server-visible work has focused tests, watchdog checks, screenshot or browser evidence where needed, deployment proof, and live-smoke evidence before terminal Done.",
+      "status": "blocked",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S017"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "verification",
+      "priority": "P0",
+      "batch_id": "B9",
+      "depends_on": [
+        "REQ-20260701-601"
+      ],
+      "implementation_status": "Safe app-visible/server-visible batches have focused test, watchdog, deployment, live-smoke, and screenshot evidence where applicable. The aggregate verification gate is blocked only for final campaign-domain proof and final real-campaign send readiness because the One Time domain is not routed to Railway and final send approvals/details are still missing.",
+      "can_continue_without_operator": false,
+      "next_action": "Wait for the domain owner/final campaign decisions, then rerun the domain live smoke and final campaign readiness checks.",
+      "acceptance_criteria": [
+        "Focused tests pass or exact blockers are recorded.",
+        "PQC/watchdog checks pass or exact blockers are recorded.",
+        "Browser/screenshot evidence exists for UI-visible changes.",
+        "Deployment/live-smoke proof exists before app-visible Done."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-07-01-one-time-launch-funnel-everything-setup/TEST-RESULTS.md",
+        "ops/execution-runs/2026-07-01-one-time-launch-funnel-everything-setup/EVIDENCE.md",
+        "ops/execution-runs/2026-07-01-one-time-launch-funnel-everything-setup/DEPLOYMENT.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-launch-funnel-verification-closeout.md",
+        "ops/live-smokes/2026-07-01T15-08-00Z-one-time-landing-signup-live-smoke.md",
+        "ops/live-smokes/2026-07-01T15-18-00Z-one-time-scoped-lead-tracking-live-smoke.md",
+        "ops/live-smokes/2026-07-01T15-28-00Z-one-time-thirty-day-access-live-smoke.md",
+        "ops/live-smokes/2026-07-01T16-07-50-327Z-one-time-member-path-live-smoke.md",
+        "ops/live-smokes/2026-07-01T15-45-55-623Z-one-time-signup-confirmation-live-smoke.md",
+        "ops/live-smokes/2026-07-01T15-46-14-452Z-live-app-smoke.md",
+        "ops/one-time-mishnah/funnel/2026-07-01-real-send-operator-decision-handoff.md",
+        "ops/live-smokes/2026-07-01T16-26-00Z-one-time-domain-route-resmoke.md",
+        "ops/live-smokes/2026-07-01T16-26-00Z-one-time-domain-route-resmoke.json"
+      ],
+      "verification": [
+        "PASS: npm run pqc:all",
+        "PASS: focused One Time/Rabbi/Resend/contact/access/member tests across completed batches",
+        "PASS: npm run watchdog:actions and npm run watchdog:security after app-visible changes",
+        "PASS: Railway deployments reached SUCCESS for completed app-visible/server-visible batches",
+        "PASS: live BNA fallback landing/signup, scoped lead, access, signup confirmation, member path, email UX no-send, Rabbi/One Time landing, and app smokes",
+        "BLOCKED: final onetimeonetime.com campaign-domain smoke is blocked by external DNS/hosting",
+        "BLOCKED: real campaign send readiness is blocked by final copy/list/link/approval decisions",
+        "PASS: consolidated real-send operator decision handoff records the remaining proof needed before real campaign send readiness",
+        "PASS: read-only campaign-domain resmoke refreshed blocker evidence without DNS mutation or send"
+      ],
+      "implementation_files": [
+        "tests/rabbi-checkout-access.test.js",
+        "tests/one-time-external-user-portal.test.js",
+        "tests/one-time-community-moderation-workflow.test.js",
+        "ops/execution-runs/2026-07-01-one-time-launch-funnel-everything-setup/TEST-RESULTS.md",
+        "ops/execution-runs/2026-07-01-one-time-launch-funnel-everything-setup/EVIDENCE.md",
+        "ops/execution-runs/2026-07-01-one-time-launch-funnel-everything-setup/DEPLOYMENT.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-01T19:26:00+03:00",
+      "live_smoke": "ops/one-time-mishnah/funnel/2026-07-01-launch-funnel-verification-closeout.md",
+      "blocker": "Final campaign-domain proof and real-campaign send readiness are blocked because onetimeonetime.com is not routed to Railway, www.onetimeonetime.com does not resolve, and final campaign copy/list/links/approval are not supplied.",
+      "blocker_owner": "Shloimie/domain owner",
+      "blocker_next_action": "Route onetimeonetime.com and www.onetimeonetime.com to the deployed Railway app, provide final campaign subject/body and exact recipient segment/list, confirm final links, and explicitly authorize the real campaign send in a later packet."
+    },
+    {
+      "id": "REQ-20260701-616",
+      "title": "Goal Protocol And Product Quality Gate Cleanup",
+      "expected_result": "The launch-funnel packet is registered with raw/source provenance, the active execution run is validator-ready, current Product Quality drift findings are repaired, and hard safety guardrails remain explicit before broad implementation.",
+      "status": "done",
+      "source_id": "RAW-20260701-006",
+      "source_statement_ids": [
+        "RAW-20260701-006-S001",
+        "RAW-20260701-006-S018"
+      ],
+      "source_path": "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "protocol",
+      "priority": "P0",
+      "batch_id": "B1",
+      "depends_on": [],
+      "implementation_status": "Raw intake, requirement register, run shell, structured requirements JSON, previous Resend handoff repair, trace repair, and Product Quality gate are complete.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue with REQ-20260701-601 canonical One Time domain and route consolidation.",
+      "acceptance_criteria": [
+        "requirements.json validates.",
+        "npm run bna:run:next reports the next unblocked requirement.",
+        "Existing PQC drift findings are repaired.",
+        "npm run pqc:all passes before broad UI/product implementation.",
+        "Hard guardrails are recorded in the run and requirement register."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup.md",
+        "tasks-pending/2026-07-01-one-time-launch-funnel-everything-setup.md",
+        "ops/execution-runs/2026-07-01-one-time-launch-funnel-everything-setup/requirements.json",
+        "tasks-pending/2026-07-01-onetime-resend-secret-send-readiness.md",
+        "ops/watchdog-audits/2026-07-01-product-quality-drift.md",
+        "ops/agent-traces/2026-07-01-RAW-20260701-005-resend-secret-send-readiness.json"
+      ],
+      "verification": [
+        "PASS: npm run bna:run:validate",
+        "PASS: npm run bna:run:next",
+        "PASS: npm run watchdog:protocol-drift",
+        "PASS: npm run pqc:trace:validate",
+        "PASS: npm run pqc:all"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260701-006-one-time-launch-funnel-everything-setup.md",
+        "tasks-pending/2026-07-01-one-time-launch-funnel-everything-setup.md",
+        "ops/execution-runs/2026-07-01-one-time-launch-funnel-everything-setup/requirements.json",
+        "tasks-pending/2026-07-01-onetime-resend-secret-send-readiness.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-01T17:32:12+03:00"
+    }
+  ]
+}

@@ -255,6 +255,21 @@ function findUiBrandTask(tasks = []) {
     tasks.find((task) => /brand shell|million-dollar SaaS UI/i.test(taskTitle(task)));
 }
 
+function repoHasUiBrandTaskEvidence(texts = []) {
+  const haystack = texts.filter(Boolean).join('\n');
+  if (!haystack.includes(UI_BRAND_TASK_TITLE)) return false;
+  return /\b(done|verified|completed|deployed)\b/i.test(haystack);
+}
+
+function loadUiBrandRepoEvidence() {
+  const texts = [];
+  for (const filePath of [tasksPath, changelogPath, ledgerPath]) {
+    if (!fs.existsSync(filePath)) continue;
+    texts.push(fs.readFileSync(filePath, 'utf8'));
+  }
+  return repoHasUiBrandTaskEvidence(texts);
+}
+
 function reconcileTasksMarkdown(text) {
   let next = String(text || '');
   const changes = [];
@@ -319,6 +334,12 @@ function writeReport(audit) {
     ...(audit.actions.length
       ? audit.actions.map((item) => `- ${item.ok === false ? 'FAIL' : 'OK'} ${item.action}${item.task_id ? ` #${item.task_id}` : ''}: ${item.message || ''}`)
       : ['- none']),
+    '',
+    '## Repo Evidence',
+    `- UI brand task known from repo: ${audit.repo_evidence?.ui_brand_task_known ? 'yes' : 'no'}`,
+    ...(audit.repo_changes.length
+      ? audit.repo_changes.map((item) => `- ${item.action}${item.id ? ` (${item.id})` : ''}: ${item.message || ''}`)
+      : ['- no repo-only reconciliation notes']),
     '',
     '## Content Job 56',
     `- ${audit.content_job_56?.found ? `found with ${audit.content_job_56.output_count} outputs` : audit.content_job_56?.action || 'not checked'}`,
@@ -388,6 +409,9 @@ async function runReconciler(options = {}, config = loadConfig()) {
     true_blockers: [],
     repo_changes: [],
     content_job_56: null,
+    repo_evidence: {
+      ui_brand_task_known: false,
+    },
     actions: [],
   };
 
@@ -488,7 +512,9 @@ async function runReconciler(options = {}, config = loadConfig()) {
   }
 
   const uiTask = findUiBrandTask(tasks);
-  if (!uiTask) {
+  const uiBrandKnownFromRepo = loadUiBrandRepoEvidence();
+  audit.repo_evidence.ui_brand_task_known = uiBrandKnownFromRepo;
+  if (!uiTask && !(!audit.live_tasks_loaded && uiBrandKnownFromRepo)) {
     const action = {
       action: 'create_missing_ui_brand_task',
       title: UI_BRAND_TASK_TITLE,
@@ -515,6 +541,12 @@ async function runReconciler(options = {}, config = loadConfig()) {
       action.task_id = created?.task?.id || null;
     }
     audit.actions.push(action);
+  } else if (!uiTask && uiBrandKnownFromRepo) {
+    audit.repo_changes.push({
+      id: 'ui-brand-shell',
+      action: 'skip_duplicate_ui_brand_backfill_no_live',
+      message: 'Repo evidence already records the app-wide UI brand shell task as completed/verified.',
+    });
   }
 
   if (fs.existsSync(tasksPath)) {
@@ -566,6 +598,7 @@ export {
   classifyMachineTask,
   findUiBrandTask,
   isTrueBlocker,
+  repoHasUiBrandTaskEvidence,
   reconcileTasksMarkdown,
   runReconciler,
   taskLooksLikeUiBrandShell,

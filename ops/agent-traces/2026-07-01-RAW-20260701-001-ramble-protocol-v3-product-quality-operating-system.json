@@ -1,0 +1,185 @@
+{
+  "trace_schema_version": "agent-trace.v2",
+  "trace_id": "TRACE-20260701-001-ramble-protocol-v3",
+  "parent_raw_id": "RAW-20260701-001",
+  "raw_id": "RAW-20260701-001",
+  "packet_ids": [
+    "PKT-20260701-701",
+    "PKT-20260701-702"
+  ],
+  "stage_transitions": [
+    "STAGE_0_RAW_CAPTURE",
+    "STAGE_1_SPEC_COMPILER",
+    "STAGE_2_CODEX_PROMPT_GENERATION",
+    "STAGE_4_INDEPENDENT_VERIFICATION",
+    "STAGE_6_CLOSEOUT"
+  ],
+  "source_files_read": [
+    "BNA-START-HERE.md",
+    "AGENTS.md",
+    "docs/BNA-RAMBLE-TO-DONE.md",
+    "MEMORY.md",
+    "TASKS.md",
+    "SYSTEM-STATE.md",
+    "README.md",
+    "GOAL-MODE.md",
+    "QUALITY-GOALS.md",
+    "AGENTIC-MEMORY.md",
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/SUPER-RAMBLE-PACKET-SPLITTING.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "docs/AGENT-TRACE-OBSERVABILITY.md",
+    "ops/visual-quality-rubric.md",
+    "ops/prompt-packets/README.md",
+    "ops/product-quality-compiler.schema.json",
+    "package.json",
+    "scripts/validate-product-quality-packets.mjs",
+    "scripts/watchdog-product-quality-drift.mjs",
+    "scripts/validate-agent-traces.mjs",
+    "tasks-pending/_template-ramble-intake.md",
+    "tasks-pending/_template-goal-mode-correction-output.md",
+    "ops/execution-runs/latest.json",
+    "ops/execution-runs/2026-06-29-rabbi-onetime-comms-crm-email-import/NEXT-SESSION.md",
+    "ops/action-registry.json",
+    "ops/route-registry.json"
+  ],
+  "source_statements_mapped": [
+    "SRC-20260701-001",
+    "SRC-20260701-002",
+    "SRC-20260701-003",
+    "SRC-20260701-004",
+    "SRC-20260701-005",
+    "SRC-20260701-006",
+    "SRC-20260701-007",
+    "SRC-20260701-008",
+    "SRC-20260701-009",
+    "SRC-20260701-010",
+    "SRC-20260701-011",
+    "SRC-20260701-012"
+  ],
+  "repo_surface_map_path": "docs/REPO-SURFACE-MAP.md",
+  "router_classification": [
+    "SOURCE_OF_TRUTH_UPDATE",
+    "PRODUCT_QUALITY",
+    "SUPER_RAMBLE",
+    "UI_VISUAL_AUDIT",
+    "SECURITY_PRIVACY"
+  ],
+  "packet_dag_transitions": [
+    "raw capture -> router -> product quality compiler -> packet DAG -> control tower -> visual audit -> implementation packets blocked until DoR"
+  ],
+  "context_budget_decisions": [
+    "Implementation packets must stay one major surface, up to three routes, up to four high-risk files, and split if exceeded."
+  ],
+  "visual_audit_evidence": [
+    "No Rabbi UI visual audit was run in this protocol/tooling task.",
+    "Future Rabbi UI cleanup must generate 00-control-tower and 01-current-state-visual-audit packets first."
+  ],
+  "compiler_schema_version": "pqc.v2",
+  "validation_results": [
+    "node --check scripts/validate-product-quality-packets.mjs: PASS",
+    "node --check scripts/watchdog-product-quality-drift.mjs: PASS",
+    "node --check ops/product-quality-compiler/evals/run-product-quality-compiler-evals.mjs: PASS",
+    "npm run pqc:validate:fixtures: PASS",
+    "npm run pqc:evals: PASS",
+    "npm run watchdog:protocol-drift: PASS",
+    "npm run pqc:all: PASS",
+    "npm run bna:run:status: PASS",
+    "npm run bna:run:validate: PASS",
+    "npm run bna:run:source-coverage: PASS",
+    "npm run bna:run:stale-evidence: PASS",
+    "npm run secrets:audit: PASS",
+    "JSON/JSONL validation: PASS",
+    "git diff --check: PASS"
+  ],
+  "tool_actions_taken": [
+    "created raw intake",
+    "created requirement register",
+    "created v3 router/DAG/context/surface-map docs",
+    "updated product-quality docs and templates",
+    "extended schema, validator, eval runner, drift watchdog, and trace validator",
+    "created v3 fixtures and prompt-packet templates",
+    "created Rabbi / One Time sample packet set"
+  ],
+  "tool_actions_skipped": [
+    "Rabbi UI implementation",
+    "email sends",
+    "Stripe/payment runs",
+    "DNS/provider mutations",
+    "Drive/Zoom/Vimeo/WhatsApp/Telegram writes",
+    "access grants",
+    "GHL runtime"
+  ],
+  "skipped_action_reasons": [
+    "This packet is protocol/tooling enforcement only.",
+    "External writes require later exact provider setup or approval packets.",
+    "Rabbi UI implementation must wait for control tower, current-state visual audit, and Definition of Ready."
+  ],
+  "browser_routes_visited": [],
+  "screenshots_captured": [],
+  "aria_snapshots_captured": [],
+  "accessibility_scans": [],
+  "tests_run": [
+    "node --check scripts/validate-product-quality-packets.mjs",
+    "node --check scripts/watchdog-product-quality-drift.mjs",
+    "node --check ops/product-quality-compiler/evals/run-product-quality-compiler-evals.mjs",
+    "node --check scripts/validate-agent-traces.mjs",
+    "npm run pqc:validate",
+    "npm run pqc:validate:fixtures",
+    "npm run pqc:evals",
+    "npm run watchdog:protocol-drift",
+    "npm run pqc:trace:validate",
+    "npm run pqc:all",
+    "npm run bna:run:status",
+    "npm run bna:run:validate",
+    "npm run bna:run:source-coverage",
+    "npm run bna:run:stale-evidence",
+    "npm run secrets:audit",
+    "git diff --check",
+    "JSON/JSONL validation"
+  ],
+  "watchdogs_run": [
+    "npm run watchdog:protocol-drift"
+  ],
+  "external_actions_blocked": [
+    "email",
+    "Stripe",
+    "DNS/provider mutation",
+    "Drive/Zoom/Vimeo/WhatsApp/Telegram writes",
+    "access grants",
+    "GHL runtime"
+  ],
+  "decisions_created_or_updated": [
+    "Reused DEC-20260630-NO-GHL-FIRST-PARTY-CRM"
+  ],
+  "blockers": [],
+  "implementation_files_changed": [
+    "docs/RAMBLE-ROUTER.md",
+    "docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md",
+    "docs/PACKET-DAG.md",
+    "docs/CONTEXT-BUDGET-AND-PACKET-SPLITTING.md",
+    "docs/REPO-SURFACE-MAP.md",
+    "ops/product-quality-compiler.schema.json",
+    "scripts/validate-product-quality-packets.mjs",
+    "scripts/watchdog-product-quality-drift.mjs",
+    "scripts/validate-agent-traces.mjs",
+    "ops/product-quality-compiler/evals/run-product-quality-compiler-evals.mjs"
+  ],
+  "commits": [],
+  "PR": null,
+  "deployment": "not required: protocol/tooling docs/scripts only; no app-visible or server-visible runtime behavior changed",
+  "live_smoke": "not required for this protocol/tooling packet",
+  "final_status": "done_verified",
+  "next_packet": "Generate Rabbi Sheller / One Time 00-control-tower and 01-current-state-visual-audit packets using Ramble Protocol v3 / Product Quality Operating System.",
+  "evidence_paths": [
+    "raw-input/RAW-20260701-001-ramble-protocol-v3-product-quality-operating-system.md",
+    "tasks-pending/2026-07-01-ramble-protocol-v3-product-quality-operating-system.md",
+    "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "ops/product-quality-compiler/evals/latest-eval-report.md",
+    "ops/watchdog-audits/2026-07-01-product-quality-drift.md",
+    "ops/agent-traces/2026-07-01-RAW-20260701-001-ramble-protocol-v3-product-quality-operating-system.md"
+  ]
+}

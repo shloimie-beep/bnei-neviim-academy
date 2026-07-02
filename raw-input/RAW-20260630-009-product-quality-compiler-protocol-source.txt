@@ -1,0 +1,73 @@
+Source channel: codex_chat
+Received: 2026-06-30
+Raw ID: RAW-20260630-009
+
+BNA_GOAL_MODE_EXECUTION_PACKET
+
+Objective:
+Update the BNA/Rabbi Sheller ramble protocol so vague operator language like
+"make it a million-dollar app," "clean it up," "make it GHL-like," "this is
+sloppy," "make it work," "finish the whole thing," "community section," "CRM,"
+"pipeline," "configured," and "launch-ready" is never passed to Codex as vague
+implementation work.
+
+Instead, the protocol must force the assistant/agent layer to compile those
+vague phrases into exact product-quality requirements, UI and visual design
+specifications, information architecture requirements, workflow requirements,
+data/display requirements, action/button state requirements, role/scope/privacy
+requirements, mobile/tablet/desktop screenshot requirements, implementation
+batches, ChatGPT prompt-generation packets when scope is too large, Codex
+execution packets, verification gates, and deploy/live-smoke closeout rules.
+
+Task boundary:
+This task is protocol/documentation/tooling only. Do not implement the Rabbi
+CRM UI in this task. Do not start broad UI redesign. Do not send email. Do not
+run Stripe. Do not mutate external providers. This task updates the agent loop
+so later implementation packets become specific enough to finish the product.
+
+Operator decisions captured:
+- No GHL.
+- Keep first-party BNA / One Time Operations as the CRM/community/Mishnayos
+  platform.
+- GHL-like means adopting useful CRM/product patterns, not adding GHL runtime.
+- Email/Resend and Stripe are later setup/provider packets. They should not
+  block the UI/product-quality protocol.
+- Rabbi/One Time UI must be founder-demo-quality, not "good enough."
+- "Million-dollar app" means visual polish, workflow completeness, speed,
+  credibility, business readiness, UX clarity, and functional finish.
+- Broad rambles may need multiple ChatGPT prompt-generation sessions before
+  Codex implementation. That multi-session workflow must become part of the
+  protocol.
+
+Required raw-intake intent:
+- vague rambles must be accepted;
+- the assistant/agent must become specific;
+- giant prompts should split into multiple ChatGPT/Codex packets;
+- "million-dollar app" must compile into concrete specs;
+- screenshot proof is mandatory for UI cleanup;
+- mobile proof is mandatory for UI cleanup;
+- deploy/live smoke is mandatory for app-visible closeout;
+- sloppy UI should be replaced, not preserved as a museum;
+- no GHL.
+
+Requested protocol additions:
+- Product Quality Compiler.
+- Million-Dollar App Quality Standard.
+- Visual Defect Taxonomy.
+- Super-Ramble Packet Splitter.
+- Vague Phrase Expansion Dictionary.
+- Role/View Scope Compiler.
+- IA compiler rules for categories, subcategories, and filters.
+- Screenshot-first UI loop.
+- Automatic batch compiler.
+- Prompt-packet output contract.
+- First-party/no-GHL interpretation for GHL-like language.
+- Test-data and sloppy-system replacement rules.
+- Email/Stripe as late provider packets, not UI blockers.
+- Rabbi / One Time examples.
+
+Forbidden actions for this task:
+- no GHL runtime, LeadConnector references beyond no-GHL policy, external CRM
+  writes, email sends, Stripe actions, DNS/provider mutations, access grants,
+  Drive/WhatsApp/Telegram/Zoom/Vimeo external writes, production data deletion,
+  or secret exposure.

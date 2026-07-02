@@ -1,0 +1,70 @@
+BNA_GOAL_MODE_EXECUTION_PACKET
+
+Title:
+Product Quality Compiler Validator + Protocol Drift Watchdog
+
+Primary objective:
+Turn the Product Quality Compiler / Super-Ramble Packet Splitter protocol from
+documentation into an enforced operating system.
+
+Operator intent to preserve:
+- Shloimie wants to ramble vaguely.
+- The assistant/agent must compile vague rambles into exact implementation specs.
+- "Make it look nice" must become a professional, enforceable product-quality packet.
+- "Million-dollar app" means visual polish, workflow completeness, speed, credibility, responsiveness, accessibility, data clarity, and actual working states.
+- The protocol must not remain optional documentation.
+- Missing scope, screenshots, roles, blockers, done criteria, or out-of-scope must fail validation.
+- UI cleanup requires screenshots and mobile proof.
+- App-visible work requires deploy/live-smoke proof.
+- No GHL. "GHL-like" means first-party CRM patterns only.
+- Broad rambles should split into multiple ChatGPT prompt-generation packets when needed.
+- Each packet must know which stage of the parent ramble process it belongs to.
+- Final implementation packets should be independently runnable where possible, with one control-tower verifier at the end.
+
+Required additions:
+1. machine-readable schema validation;
+2. Definition of Ready gate before Codex implementation;
+3. Definition of Done gate after implementation;
+4. state matrix requirement for every UI screen;
+5. executable visual/accessibility harness contracts;
+6. agent eval fixtures for vague ramble compilation;
+7. browser-agent security rules;
+8. trace/observability requirements;
+9. UI pattern reference map;
+10. protocol drift watchdog;
+11. package scripts/tests that fail when protocol packets are vague or incomplete.
+
+Hard boundaries:
+- Do not implement Rabbi CRM UI in this task.
+- Do not send email.
+- Do not run Stripe.
+- Do not mutate external providers.
+- Do not add GHL runtime.
+- This is a protocol/tooling enforcement task.
+
+Source statement map:
+- SRC-001: Read BNA source-of-truth files and active run state before editing.
+- SRC-002: Create raw intake RAW-YYYYMMDD-### and dated requirement register.
+- SRC-003: Add ops/product-quality-compiler.schema.json with packet enums, required fields, ID/code patterns, and cross-field rules.
+- SRC-004: Add valid and invalid product-quality packet fixtures.
+- SRC-005: Add scripts/validate-product-quality-packets.mjs with reports, exit codes, failure codes, --fixtures, --strict, and explicit path support.
+- SRC-006: Add Definition of Ready for Codex UI/product implementation.
+- SRC-007: Add Definition of Done for product/UI work.
+- SRC-008: Add docs/UI-STATE-MATRIX.md.
+- SRC-009: Add docs/VISUAL-QUALITY-HARNESS.md and practical harness contract.
+- SRC-010: Add docs/UI-PATTERN-REFERENCE.md.
+- SRC-011: Add deterministic compiler eval fixtures and runner.
+- SRC-012: Add scripts/watchdog-product-quality-drift.mjs and watchdog reports.
+- SRC-013: Add docs/BROWSER-AGENT-SECURITY.md and link it from the protocol.
+- SRC-014: Add docs/AGENT-TRACE-OBSERVABILITY.md and trace validation if practical.
+- SRC-015: Add WCAG 2.2/mobile accessibility baseline to the visual rubric.
+- SRC-016: Add package scripts: pqc:validate, pqc:validate:fixtures, pqc:evals, watchdog:protocol-drift, pqc:all, and trace script if implemented.
+- SRC-017: Update AGENTS.md, docs/BNA-RAMBLE-TO-DONE.md, and templates so future packets cannot omit readiness/done/schema/trace/screenshot/state/security sections.
+- SRC-018: No GHL runtime, no LeadConnector, no external provider writes, no email/Stripe/DNS/payment/access/Zoom/Vimeo/Drive/WhatsApp/Telegram mutations.
+- SRC-019: Run the requested validation commands and record pass/fail evidence.
+- SRC-020: Update ledger, changelog, memory, requirement register, and final handoff.
+
+Acceptance summary:
+The packet is complete only when the schema, validator, fixtures, evals,
+watchdog, docs, package scripts, source-of-truth links, templates, accessibility
+rubric, and closeout records exist and validation results are recorded.

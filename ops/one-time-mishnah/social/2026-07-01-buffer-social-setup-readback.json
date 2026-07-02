@@ -1,0 +1,32 @@
+{
+  "requirement_id": "REQ-20260701-610",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "generated_at": "2026-07-01T17:47:00+03:00",
+  "action_registry_id": "ACTION-BUFFER-SCHEDULE-CONFIRM",
+  "one_time_schedule_approval_phrase": "APPROVE_ONE_TIME_BUFFER_SCHEDULE",
+  "local_status": "done_deployed_live_smoked",
+  "verification": [
+    "PASS node --check server.js",
+    "PASS node --test tests/communications-integrations-contract.test.js tests/watchdog-action-registry.test.js",
+    "PASS npm run watchdog:actions",
+    "PASS node scripts/generate-one-time-action-coverage.mjs",
+    "PASS node scripts/generate-universal-action-parity.mjs",
+    "PASS Railway deployment b75c6cec-31ea-4b23-8308-71606a3175ba reached SUCCESS",
+    "PASS ops/live-smokes/2026-07-01T14-50-00Z-one-time-buffer-social-live-smoke.md"
+  ],
+  "guardrails": {
+    "buffer_post_created": false,
+    "buffer_post_scheduled": false,
+    "buffer_post_published": false,
+    "social_external_write": false,
+    "secrets_exposed": false,
+    "ghl_runtime_added": false
+  },
+  "deployment": {
+    "id": "b75c6cec-31ea-4b23-8308-71606a3175ba",
+    "status": "SUCCESS"
+  },
+  "live_smoke": "ops/live-smokes/2026-07-01T14-50-00Z-one-time-buffer-social-live-smoke.md",
+  "deployment_gate": "Complete."
+}

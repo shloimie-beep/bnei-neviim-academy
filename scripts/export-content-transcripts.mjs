@@ -7,6 +7,21 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
 const outputDir = path.join(repoRoot, 'content-memory', 'transcripts');
 
+function parseArgs(argv) {
+  const options = {
+    includeRawTranscript: false,
+    deleteStale: false,
+  };
+  for (const arg of argv) {
+    if (arg === '--include-raw-transcript') options.includeRawTranscript = true;
+    else if (arg === '--delete-stale') options.deleteStale = true;
+    else {
+      throw new Error(`Unknown argument: ${arg}`);
+    }
+  }
+  return options;
+}
+
 function parseEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return {};
   const env = {};
@@ -129,6 +144,14 @@ function renderIndex(jobs, generatedAt) {
 }
 
 async function main() {
+  const options = parseArgs(process.argv.slice(2));
+  if (!options.includeRawTranscript) {
+    throw new Error(
+      'Refusing to export raw transcript bodies into tracked GitHub files by default. ' +
+      'Use npm run content:export-digests for repo-safe memory. If a private owner explicitly approves raw export, rerun with --include-raw-transcript.'
+    );
+  }
+
   const config = loadConfig();
   const data = await appRequest(config, '/api/bna/content-jobs');
   const jobs = Array.isArray(data.jobs) ? data.jobs : [];
@@ -148,13 +171,18 @@ async function main() {
 
   fs.writeFileSync(path.join(outputDir, 'index.md'), renderIndex(jobsWithTranscripts, generatedAt));
 
-  for (const name of fs.readdirSync(outputDir)) {
-    if (name.endsWith('.md') && !expectedFiles.has(name)) {
-      fs.unlinkSync(path.join(outputDir, name));
+  if (options.deleteStale) {
+    for (const name of fs.readdirSync(outputDir)) {
+      if (name.endsWith('.md') && !expectedFiles.has(name)) {
+        fs.unlinkSync(path.join(outputDir, name));
+      }
     }
   }
 
-  console.log(`Exported ${jobsWithTranscripts.length} transcript file(s) to ${path.relative(repoRoot, outputDir)}`);
+  console.log(
+    `Exported ${jobsWithTranscripts.length} raw transcript file(s) to ${path.relative(repoRoot, outputDir)}. ` +
+    `Deleted stale files: ${options.deleteStale ? 'yes' : 'no'}`
+  );
 }
 
 main().catch((error) => {

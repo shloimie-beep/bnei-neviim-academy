@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-07-02T10:51:03.352Z",
+  "tracked_changed_count": 134,
+  "untracked_count": 1211,
+  "stage_candidate_count": 510,
+  "excluded_count": 835,
+  "exclusions": {
+    "prefixes": [
+      "ops/playwright-smokes/",
+      "ops/preflight/",
+      "ops/imports/",
+      "ops/drive-audits/",
+      "ops/qa-runs/",
+      "ops/local-smokes/",
+      "ops/live-smokes/",
+      "ops/ui-audits/",
+      "ops/watchdog-audits/",
+      "ops/system-audits/",
+      "ops/task-decision-census/",
+      "content-memory/transcript-digests/",
+      "media-inbox/",
+      "media-drop/",
+      "ops/one-time-mishnah/secrets/"
+    ],
+    "reason": "generated screenshots/smokes/imports/media/private-risk evidence/local diagnostics are preserved locally and not pushed in deploy source commit"
+  }
+}

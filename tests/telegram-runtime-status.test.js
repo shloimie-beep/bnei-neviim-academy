@@ -87,6 +87,8 @@ test('academy bridge can use env-based Google Drive auth on hosted worker', () =
   assert.match(bridge, /function loadBridgeEnv\(\)/);
   assert.match(bridge, /env\.GOOGLE_CLIENT_ID/);
   assert.match(bridge, /env\.GOOGLE_CLIENT_SECRET/);
+  assert.match(bridge, /Incomplete Google OAuth env config/);
+  assert.match(bridge, /if \(!clientId \|\| !clientSecret\)/);
   assert.match(bridge, /env\.GOOGLE_REFRESH_TOKEN/);
   assert.match(bridge, /GOOGLE_DRIVE_PIPELINE_CONFIG/);
   assert.match(bridge, /Google Drive pipeline root ID is configured, but Telegram Drive intake needs GOOGLE_DRIVE_PIPELINE_CONFIG/);

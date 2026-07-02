@@ -1,0 +1,78 @@
+{
+  "requirement_id": "REQ-20260701-611",
+  "run_id": "2026-07-01-one-time-launch-funnel-everything-setup",
+  "generated_at": "2026-07-01T18:05:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "status": "blocked",
+  "scope": "Vimeo, Drive, OBS, and gated classroom media pipeline readiness",
+  "inspected_keyholder_scope": {
+    "folder": "C:\\Users\\User\\BNA-Keyholder",
+    "filename_filter": "Vimeo-named files only",
+    "read_exact_files": [
+      "vimeo-client-id.txt",
+      "vimeo-client-secret.txt"
+    ],
+    "did_not_search": [
+      "Downloads",
+      "all .txt files",
+      "unrelated personal files"
+    ]
+  },
+  "redacted_credentials": [
+    {
+      "name": "vimeo-client-id.txt",
+      "present": true,
+      "trimmed_length": 40,
+      "sha256_prefix": "a1ce14a700bb"
+    },
+    {
+      "name": "vimeo-client-secret.txt",
+      "present": true,
+      "trimmed_length": 128,
+      "sha256_prefix": "8bbbec6b699d"
+    }
+  ],
+  "missing_or_unverified": [
+    "VIMEO_ACCESS_TOKEN was not found in the Vimeo-named keyholder filename scan",
+    "Vimeo app/token owner is not confirmed",
+    "Vimeo seat, plan, quota, and upload scope are not confirmed",
+    "Private test folder and synthetic upload-smoke file are not confirmed"
+  ],
+  "current_runnable_path": [
+    "OBS or Zoom recording",
+    "approved Drive/dropoff source location",
+    "source video and transcript review",
+    "manual Vimeo upload with private or unlisted privacy",
+    "paste Vimeo URL into scoped One Time Operations/member-library draft",
+    "provider review and access-control gate",
+    "publish only to gated One Time member/classroom surface"
+  ],
+  "future_automation_gate": [
+    "exact keyholder alias or local path for VIMEO_ACCESS_TOKEN",
+    "Vimeo app/token owner decision",
+    "seat, plan, quota, and upload-scope decision",
+    "privacy and embed-domain policy",
+    "private test folder",
+    "synthetic non-production test video",
+    "explicit approval to run upload smoke"
+  ],
+  "verification": [
+    {
+      "command": "keyholder filename scan and redacted fingerprint readback",
+      "result": "PASS"
+    },
+    {
+      "command": "node --test tests/one-time-media-local-pipeline.test.js",
+      "result": "PASS"
+    }
+  ],
+  "external_writes_performed": false,
+  "production_media_touched": false,
+  "secret_values_disclosed": false,
+  "blocker": {
+    "owner": "Shloimie/Vimeo account owner",
+    "summary": "Need VIMEO_ACCESS_TOKEN plus Vimeo account, plan, scope, privacy, and test-upload decisions before API auth or upload readiness can be verified.",
+    "next_action": "Provide the exact keyholder alias or local path for VIMEO_ACCESS_TOKEN and confirm the Vimeo owner/plan/scope/private-test-folder decisions without pasting the token value in chat."
+  }
+}

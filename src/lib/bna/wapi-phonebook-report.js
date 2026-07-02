@@ -27,6 +27,34 @@ function compactText(value = '', max = 240) {
   return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
+function normalizeScopeKey(value = '') {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/['"]/g, '')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function normalizeWorkspaceScope(value = '') {
+  const normalized = normalizeScopeKey(value);
+  if (['one_time', 'one_time_mishnah', 'one_time_mishnah_class', 'rabbi_sheller', 'rabbi_scheller_provider'].includes(normalized)) {
+    return 'rabbi_sheller_provider';
+  }
+  if (['bnei_neviim', 'bnei_neviim_academy', 'bna_school'].includes(normalized)) return 'bna';
+  return normalized;
+}
+
+function normalizeProjectScope(value = '') {
+  const normalized = normalizeScopeKey(value);
+  if (['one_time', 'one_time_mishnah', 'one_time_mishna', 'mishnah', 'mishna'].includes(normalized)) {
+    return 'one_time_mishnah_class';
+  }
+  if (['bnei_neviim', 'bnei_neviim_academy', 'bna_school'].includes(normalized)) return 'bna';
+  return normalized;
+}
+
 function uniquePush(list, value) {
   const text = compactText(value, 240);
   if (!text) return;
@@ -511,6 +539,21 @@ async function tableExists(db, tableName) {
   }
 }
 
+async function columnExists(db, tableName, columnName) {
+  try {
+    const result = await db.query(
+      `SELECT EXISTS (
+         SELECT 1 FROM information_schema.columns
+         WHERE table_schema = 'public' AND table_name = $1 AND column_name = $2
+       ) AS exists`,
+      [tableName, columnName]
+    );
+    return Boolean(result.rows[0]?.exists);
+  } catch {
+    return false;
+  }
+}
+
 async function queryIfTable(db, tableName, sql, params = []) {
   if (!(await tableExists(db, tableName))) return [];
   try {
@@ -680,15 +723,114 @@ function applyWapiPhonebookCorrectionToGroup(group = {}, correction = {}) {
   };
 }
 
-async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
+async function resolveProjectId(db, projectKey = '') {
+  const key = normalizeProjectScope(projectKey);
+  if (!key) return null;
+  try {
+    const result = await db.query('SELECT id FROM bna_projects WHERE project_key = $1 LIMIT 1', [key]);
+    return result.rows[0]?.id || null;
+  } catch {
+    return null;
+  }
+}
+
+function scopedWapiDirectoryQuery(baseSelect, tableName, orderBy, limit, scope = {}, columns = {}) {
+  const workspaceKey = normalizeWorkspaceScope(scope.workspace_key || scope.workspaceKey || '');
+  const projectKey = normalizeProjectScope(scope.project_key || scope.projectKey || '');
+  if (!workspaceKey && !projectKey) {
+    return { sql: `${baseSelect}\n      FROM ${tableName}\n      ${orderBy}\n      LIMIT $1`, params: [limit] };
+  }
+  if (!columns.workspace_key && !columns.project_key) {
+    return null;
+  }
+  const where = [];
+  const params = [limit];
+  if (columns.workspace_key && workspaceKey) {
+    params.push(workspaceKey);
+    where.push(`COALESCE(workspace_key, '') = $${params.length}`);
+  }
+  if (columns.project_key && projectKey) {
+    params.push(projectKey);
+    where.push(`COALESCE(project_key, '') = $${params.length}`);
+  }
+  if (!where.length) return null;
+  return {
+    sql: `${baseSelect}\n      FROM ${tableName}\n      WHERE (${where.join(' OR ')})\n      ${orderBy}\n      LIMIT $1`,
+    params,
+  };
+}
+
+async function buildWapiPhonebookReport({ db, limit = 100, workspace_key = '', project_key = '' } = {}) {
   if (!db?.query) throw new Error('db with query(sql, params) is required');
   const boundedLimit = Math.max(1, Math.min(Number(limit || 100), 500));
-  const [hasWapiContacts, hasWapiChats, hasCommunications] = await Promise.all([
+  const workspaceKey = normalizeWorkspaceScope(workspace_key);
+  const projectKey = normalizeProjectScope(project_key || (workspaceKey === 'rabbi_sheller_provider' ? 'one_time_mishnah_class' : workspaceKey === 'bna' ? 'bna' : ''));
+  const scoped = Boolean(workspaceKey || projectKey);
+  const projectId = await resolveProjectId(db, projectKey);
+  const [
+    hasWapiContacts,
+    hasWapiChats,
+    hasCommunications,
+    hasWapiContactsWorkspace,
+    hasWapiContactsProject,
+    hasWapiChatsWorkspace,
+    hasWapiChatsProject,
+  ] = await Promise.all([
     tableExists(db, 'bna_wapi_contacts'),
     tableExists(db, 'bna_wapi_chats'),
     tableExists(db, 'bna_contact_communications'),
+    columnExists(db, 'bna_wapi_contacts', 'workspace_key'),
+    columnExists(db, 'bna_wapi_contacts', 'project_key'),
+    columnExists(db, 'bna_wapi_chats', 'workspace_key'),
+    columnExists(db, 'bna_wapi_chats', 'project_key'),
   ]);
   const groups = new Map();
+  const wapiContactsQuery = scopedWapiDirectoryQuery(`
+      SELECT id, provider_contact_id, display_name, push_name, phone, saved, last_synced_at, updated_at, created_at`,
+    'bna_wapi_contacts',
+    'ORDER BY last_synced_at DESC NULLS LAST, updated_at DESC NULLS LAST, id DESC',
+    boundedLimit * 2,
+    { workspace_key: workspaceKey, project_key: projectKey },
+    { workspace_key: hasWapiContactsWorkspace, project_key: hasWapiContactsProject }
+  );
+  const wapiChatsQuery = scopedWapiDirectoryQuery(`
+      SELECT id, provider_chat_id, chat_type, display_name, phone, is_group, last_message_at,
+             last_message_preview, last_synced_at, updated_at, created_at`,
+    'bna_wapi_chats',
+    'ORDER BY last_message_at DESC NULLS LAST, last_synced_at DESC NULLS LAST, id DESC',
+    boundedLimit * 2,
+    { workspace_key: workspaceKey, project_key: projectKey },
+    { workspace_key: hasWapiChatsWorkspace, project_key: hasWapiChatsProject }
+  );
+  const communicationParams = [boundedLimit * 4];
+  const communicationScopeClauses = [];
+  if (scoped) {
+    if (projectId) {
+      communicationParams.push(projectId);
+      communicationScopeClauses.push(`c.project_id = $${communicationParams.length}`);
+      communicationScopeClauses.push(`l.project_id = $${communicationParams.length}`);
+      communicationScopeClauses.push(`s.project_id = $${communicationParams.length}`);
+      communicationScopeClauses.push(`st.project_id = $${communicationParams.length}`);
+    }
+    if (projectKey) {
+      communicationParams.push(projectKey);
+      communicationScopeClauses.push(`COALESCE(c.source_context->>'project_key', '') = $${communicationParams.length}`);
+      communicationScopeClauses.push(`COALESCE(c.metadata->>'project_key', '') = $${communicationParams.length}`);
+    }
+    if (workspaceKey) {
+      communicationParams.push(workspaceKey);
+      communicationScopeClauses.push(`COALESCE(c.source_context->>'workspace_key', '') = $${communicationParams.length}`);
+      communicationScopeClauses.push(`COALESCE(c.metadata->>'workspace_key', '') = $${communicationParams.length}`);
+    }
+  }
+  const scopedCommunicationFilter = scoped
+    ? `AND (${communicationScopeClauses.length ? communicationScopeClauses.join(' OR ') : 'FALSE'})`
+    : '';
+  const scopedProjectIdFilter = scoped ? (projectId ? 'AND project_id = $2' : 'AND FALSE') : '';
+  const scopedTablesWithoutDirectoryScope = scoped && (
+    (hasWapiContacts && !wapiContactsQuery) ||
+    (hasWapiChats && !wapiChatsQuery)
+  );
   const [
     wapiContacts,
     wapiChats,
@@ -701,43 +843,41 @@ async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
     contacts,
     corrections,
   ] = await Promise.all([
-    queryIfTable(db, 'bna_wapi_contacts', `
-      SELECT id, provider_contact_id, display_name, push_name, phone, saved, last_synced_at, updated_at, created_at
-      FROM bna_wapi_contacts
-      ORDER BY last_synced_at DESC NULLS LAST, updated_at DESC NULLS LAST, id DESC
-      LIMIT $1`, [boundedLimit * 2]),
-    queryIfTable(db, 'bna_wapi_chats', `
-      SELECT id, provider_chat_id, chat_type, display_name, phone, is_group, last_message_at,
-             last_message_preview, last_synced_at, updated_at, created_at
-      FROM bna_wapi_chats
-      ORDER BY last_message_at DESC NULLS LAST, last_synced_at DESC NULLS LAST, id DESC
-      LIMIT $1`, [boundedLimit * 2]),
+    wapiContactsQuery ? queryIfTable(db, 'bna_wapi_contacts', wapiContactsQuery.sql, wapiContactsQuery.params) : [],
+    wapiChatsQuery ? queryIfTable(db, 'bna_wapi_chats', wapiChatsQuery.sql, wapiChatsQuery.params) : [],
     queryIfTable(db, 'bna_contact_communications', `
-      SELECT id, contact_type, lead_id, signup_id, student_id, channel, direction, summary, body,
-             follow_up_required, occurred_at, created_at, source, source_context, metadata
-      FROM bna_contact_communications
-      WHERE channel = 'whatsapp' OR source = 'wapi'
-      ORDER BY occurred_at DESC NULLS LAST, created_at DESC, id DESC
-      LIMIT $1`, [boundedLimit * 4]),
+      SELECT c.id, c.contact_type, c.lead_id, c.signup_id, c.student_id, c.channel, c.direction, c.summary, c.body,
+             c.follow_up_required, c.occurred_at, c.created_at, c.source, c.source_context, c.metadata
+      FROM bna_contact_communications c
+      LEFT JOIN bna_parent_leads l ON l.id = c.lead_id
+      LEFT JOIN signups s ON s.id = c.signup_id
+      LEFT JOIN bna_students st ON st.id = c.student_id
+      WHERE (c.channel = 'whatsapp' OR c.source = 'wapi')
+        ${scopedCommunicationFilter}
+      ORDER BY c.occurred_at DESC NULLS LAST, c.created_at DESC, c.id DESC
+      LIMIT $1`, communicationParams),
     queryIfTable(db, 'bna_parent_leads', `
       SELECT id, parent_name, student_name, parent_phone, other_phones, lead_type, status, source, updated_at, created_at
       FROM bna_parent_leads
       WHERE COALESCE(status, 'interested') <> 'archived'
+        ${scopedProjectIdFilter}
       ORDER BY updated_at DESC NULLS LAST, created_at DESC, id DESC
-      LIMIT $1`, [boundedLimit * 3]),
+      LIMIT $1`, scoped && projectId ? [boundedLimit * 3, projectId] : [boundedLimit * 3]),
     queryIfTable(db, 'signups', `
       SELECT id, parent_name, student_name, parent_phone, status, created_at
       FROM signups
       WHERE COALESCE(status, 'new') <> 'archived'
+        ${scopedProjectIdFilter}
       ORDER BY updated_at DESC NULLS LAST, created_at DESC, id DESC
-      LIMIT $1`, [boundedLimit * 3]),
+      LIMIT $1`, scoped && projectId ? [boundedLimit * 3, projectId] : [boundedLimit * 3]),
     queryIfTable(db, 'bna_students', `
       SELECT id, name, parent_name, parent_phone, status, tags, updated_at, created_at
       FROM bna_students
       WHERE COALESCE(status, 'active') NOT IN ('inactive', 'archived')
+        ${scopedProjectIdFilter}
       ORDER BY updated_at DESC NULLS LAST, created_at DESC, id DESC
-      LIMIT $1`, [boundedLimit * 3]),
-    queryIfTable(db, 'bna_service_provider_profiles', `
+      LIMIT $1`, scoped && projectId ? [boundedLimit * 3, projectId] : [boundedLimit * 3]),
+    scoped ? [] : queryIfTable(db, 'bna_service_provider_profiles', `
       SELECT id, display_name, phone, status, updated_at, created_at
       FROM bna_service_provider_profiles
       WHERE COALESCE(status, 'draft') <> 'archived'
@@ -748,9 +888,10 @@ async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
              contact_phone, whatsapp_phone, status, updated_at, created_at
       FROM bna_service_providers
       WHERE COALESCE(status, 'pending_review') <> 'archived'
+        ${scopedProjectIdFilter}
       ORDER BY updated_at DESC NULLS LAST, created_at DESC, id DESC
-      LIMIT $1`, [boundedLimit * 2]),
-    queryIfTable(db, 'bna_contacts', `
+      LIMIT $1`, scoped && projectId ? [boundedLimit * 2, projectId] : [boundedLimit * 2]),
+    scoped ? [] : queryIfTable(db, 'bna_contacts', `
       SELECT id, full_name, primary_phone, status, source, updated_at, created_at
       FROM bna_contacts
       WHERE COALESCE(status, 'lead') <> 'archived'
@@ -759,8 +900,14 @@ async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
     queryIfTable(db, 'bna_wapi_phonebook_corrections', `
       SELECT id, phonebook_key, correction_type, notes, applied_by, applied_at, created_at
       FROM bna_wapi_phonebook_corrections
+      ${scoped ? `WHERE (
+        COALESCE(source_context->>'workspace_key', '') = $2
+        OR COALESCE(metadata->>'workspace_key', '') = $2
+        OR COALESCE(source_context->>'project_key', '') = $3
+        OR COALESCE(metadata->>'project_key', '') = $3
+      )` : ''}
       ORDER BY applied_at DESC NULLS LAST, id DESC
-      LIMIT $1`, [boundedLimit * 4]),
+      LIMIT $1`, scoped ? [boundedLimit * 4, workspaceKey, projectKey] : [boundedLimit * 4]),
   ]);
 
   for (const row of wapiContacts) addWapiContact(groups, row);
@@ -821,6 +968,12 @@ async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
     generated_at: new Date().toISOString(),
     no_send: true,
     external_write_performed: false,
+    scope: {
+      workspace_key: workspaceKey || null,
+      project_key: projectKey || null,
+      project_id: projectId || null,
+      account_wide: !scoped,
+    },
     source_table_availability: {
       bna_wapi_contacts: hasWapiContacts,
       bna_wapi_chats: hasWapiChats,
@@ -832,6 +985,7 @@ async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
       communications_considered: communications.length,
       wapi_contacts_considered: wapiContacts.length,
       wapi_chats_considered: wapiChats.length,
+      unscoped_wapi_directory_rows_excluded: scopedTablesWithoutDirectoryScope,
       manual_correction_candidates: manualCorrectionCandidates.length,
       manual_corrections_applied: corrections.length,
       recommended_types: byType,
@@ -843,6 +997,7 @@ async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
       'No WhatsApp messages are sent.',
       'No contact tags, lead stages, or provider records are changed.',
       'Nati Freeze/Fries stays friend/non-lead unless real message evidence shows school interest.',
+      ...(scopedTablesWithoutDirectoryScope ? ['Scoped workspace report excluded unscoped WAPI directory rows to prevent BNA/Rabbi cross-workspace leakage.'] : []),
     ],
   };
 }

@@ -19,6 +19,56 @@ result = { buildRecordingIntakeTranscript, classifyMediaRouting, shouldAutoSendG
   return sandbox.result;
 }
 
+function loadSpreadsheetUploadHelpers() {
+  const bridgePath = path.join(__dirname, '..', 'scripts', 'telegram-kimi-bridge.mjs');
+  const bridge = fs.readFileSync(bridgePath, 'utf8');
+  const start = bridge.indexOf('function isSpreadsheetMime');
+  const end = bridge.indexOf('function runProcess', start);
+  assert.ok(start > 0 && end > start, 'spreadsheet upload helpers should be found');
+  const sandbox = { path };
+  vm.runInNewContext(`${bridge.slice(start, end)}
+result = { isSpreadsheetDocument, safeTelegramErrorMessage };`, sandbox);
+  return sandbox.result;
+}
+
+test('Telegram spreadsheet documents bypass transcription and Content routing', () => {
+  const { isSpreadsheetDocument, safeTelegramErrorMessage } = loadSpreadsheetUploadHelpers();
+  const bridge = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'telegram-kimi-bridge.mjs'), 'utf8');
+
+  assert.equal(isSpreadsheetDocument({ filename: 'contacts-3.xlsx', mimeType: '' }), true);
+  assert.equal(isSpreadsheetDocument({ filename: 'contacts.csv', mimeType: 'text/plain' }), true);
+  assert.equal(
+    isSpreadsheetDocument({
+      filename: 'contacts-upload',
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    }),
+    true
+  );
+  assert.equal(isSpreadsheetDocument({ filename: 'source.pdf', mimeType: 'application/pdf' }), false);
+
+  const branchIndex = bridge.indexOf("kind: 'spreadsheet-document'");
+  const publishIntentIndex = bridge.indexOf('const publishIntent = parsePublishIntent(caption);');
+  assert.ok(branchIndex > 0, 'spreadsheet branch should build spreadsheet jobs');
+  assert.ok(publishIntentIndex > branchIndex, 'spreadsheet branch should run before publish/content routing');
+  assert.match(bridge, /descriptor\.kind === 'document' && isSpreadsheetDocument\(descriptor\)/);
+  assert.match(bridge, /I did not run transcription, create a Content job, or queue Buffer\/social drafting/);
+
+  const sanitized = safeTelegramErrorMessage(
+    new Error(
+      'OpenAI transcription 401: {"error":{"message":"Incorrect API key provided: '
+        + 'sk-' + 'testsecret1234567890'
+        + '"}}'
+    )
+  );
+  assert.equal(
+    sanitized,
+    'AI provider configuration error. The file was saved, but transcription cannot run until the provider key is fixed.'
+  );
+  assert.doesNotMatch(sanitized, /sk-/);
+  assert.doesNotMatch(sanitized, /\{/);
+  assert.equal((bridge.match(/safeTelegramErrorMessage\(error, 'Transcription could not be completed\.'\)/g) || []).length, 3);
+});
+
 test('task and student recordings with incidental WhatsApp wording are parser-only', () => {
   const { classifyMediaRouting } = loadMediaRouting();
   const transcript = [
@@ -144,4 +194,17 @@ test('mixed recording parser preserves absent Torah scores as zero percent daily
   assert.match(server, /daily_completion_percentage: 0/);
   assert.match(server, /daily_completed_boolean: false/);
   assert.match(server, /do not create a group_goal_entries row for an absence/);
+});
+
+test('content recording parse persists Torah progress rows alongside canonical intake', () => {
+  const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
+  const route = server.slice(
+    server.indexOf('async function parseMixedRecordingSource'),
+    server.indexOf("app.post('/api/bna/intake/parse'")
+  );
+
+  assert.match(route, /generateMixedRecordingProgressParse/);
+  assert.match(route, /progressOnlyMixedRecordingParse/);
+  assert.match(route, /persistMixedRecordingParse/);
+  assert.match(route, /mergeMixedRecordingCounts/);
 });

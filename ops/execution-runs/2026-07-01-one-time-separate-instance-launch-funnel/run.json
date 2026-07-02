@@ -1,0 +1,25 @@
+{
+  "run_id": "2026-07-01-one-time-separate-instance-launch-funnel",
+  "title": "One Time Separate Instance Launch Funnel",
+  "created_at": "2026-07-01T17:58:45.276Z",
+  "updated_at": "2026-07-01T22:00:00+03:00",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260701-007",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "guardrails": [
+    "No secrets exposed",
+    "No bulk campaign send",
+    "No real WhatsApp send",
+    "No live Stripe without approval",
+    "No apex/root DNS mutation",
+    "No paid-user cancellation",
+    "No GHL runtime",
+    "No BNA/One Time data mixing"
+  ],
+  "raw_ids": [
+    "RAW-20260701-007"
+  ]
+}

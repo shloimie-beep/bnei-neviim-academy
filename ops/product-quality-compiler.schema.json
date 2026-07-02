@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bneineviimacademy.org/schemas/product-quality-compiler.schema.json",
+  "title": "BNA Product Quality Compiler Packet v2",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "packet_id",
+    "parent_raw_id",
+    "source_statement_ids",
+    "packet_dag",
+    "stage",
+    "packet_role",
+    "status",
+    "title",
+    "created_at",
+    "workspace_key",
+    "project_key",
+    "view_classes",
+    "ramble_router",
+    "operator_intent_summary",
+    "raw_quotes",
+    "decisions_captured",
+    "out_of_scope",
+    "affected_surfaces",
+    "affected_routes",
+    "affected_files",
+    "current_state",
+    "product_quality_expansion",
+    "design_pattern_references",
+    "requirements",
+    "definition_of_ready",
+    "state_matrix",
+    "visual_quality",
+    "accessibility",
+    "action_states",
+    "data_requirements",
+    "security_privacy",
+    "browser_agent_security",
+    "external_provider_policy",
+    "implementation_batches",
+    "context_budget",
+    "tests",
+    "evidence",
+    "deployment_gate",
+    "definition_of_done",
+    "trace",
+    "drift_watchdog",
+    "next_packet"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["pqc.v2"]
+    },
+    "packet_id": {
+      "type": "string",
+      "pattern": "^PKT-[0-9]{8}-[0-9]{3,}$"
+    },
+    "parent_raw_id": {
+      "type": "string",
+      "pattern": "^RAW-[0-9]{8}-[0-9]{3,}$"
+    },
+    "source_statement_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "packet_dag": {
+      "type": "object",
+      "required": [
+        "parent_packet_id",
+        "child_packet_ids",
+        "depends_on_packet_ids",
+        "blocks_packet_ids",
+        "consumes",
+        "produces",
+        "validation_command",
+        "terminal_condition",
+        "handoff_target"
+      ],
+      "properties": {
+        "parent_packet_id": { "type": ["string", "null"] },
+        "child_packet_ids": { "type": "array", "items": { "type": "string" } },
+        "depends_on_packet_ids": { "type": "array", "items": { "type": "string" } },
+        "blocks_packet_ids": { "type": "array", "items": { "type": "string" } },
+        "consumes": { "type": "array", "items": { "type": "string" } },
+        "produces": { "type": "array", "items": { "type": "string" } },
+        "validation_command": { "type": "string" },
+        "terminal_condition": { "type": "string" },
+        "handoff_target": { "type": "string" }
+      }
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "STAGE_0_RAW_CAPTURE",
+        "STAGE_1_SPEC_COMPILER",
+        "STAGE_2_CODEX_PROMPT_GENERATION",
+        "STAGE_3_CODEX_IMPLEMENTATION",
+        "STAGE_4_INDEPENDENT_VERIFICATION",
+        "STAGE_5_DEPLOY_LIVE_SMOKE",
+        "STAGE_6_CLOSEOUT"
+      ]
+    },
+    "packet_role": {
+      "type": "string",
+      "enum": [
+        "CONTROL_TOWER",
+        "ROUTER",
+        "SPEC_COMPILER",
+        "VISUAL_AUDITOR",
+        "IMPLEMENTATION_PACKET",
+        "PROVIDER_SETUP_PACKET",
+        "ACCESSIBILITY_AUDITOR",
+        "SECURITY_AUDITOR",
+        "VERIFIER_PACKET",
+        "DEPLOY_PACKET",
+        "DRIFT_WATCHDOG"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "ready_for_generation",
+        "generated",
+        "validation_failed",
+        "ready_for_codex",
+        "blocked",
+        "in_progress",
+        "needs_verification",
+        "verified",
+        "deployed",
+        "done",
+        "superseded",
+        "archived"
+      ]
+    },
+    "view_classes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "PUBLIC_MARKETING",
+          "RABBI_PROVIDER_ADMIN",
+          "SHLOIMIE_PLATFORM_SUPPORT",
+          "MEMBER_PARENT_PORTAL",
+          "STUDENT_PORTAL",
+          "INTERNAL_AGENT_SUPPORT",
+          "PAYMENT_PROVIDER_SETUP",
+          "EMAIL_PROVIDER_SETUP"
+        ]
+      }
+    },
+    "ramble_router": {
+      "type": "object",
+      "required": [
+        "raw_id",
+        "classification",
+        "confidence",
+        "reasons",
+        "product_quality_compiler_required",
+        "super_ramble_packet_splitter_required",
+        "visual_audit_before_implementation",
+        "implementation_forbidden_until_dor",
+        "recommended_packet_sequence",
+        "next_exact_packet"
+      ],
+      "properties": {
+        "classification": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "SIMPLE_TASK",
+              "BUG_REPORT",
+              "PRODUCT_QUALITY",
+              "SUPER_RAMBLE",
+              "UI_VISUAL_AUDIT",
+              "UI_IMPLEMENTATION",
+              "CRM_PIPELINE",
+              "COMMUNITY_CLASSROOM",
+              "COMMUNICATIONS_EMAIL",
+              "PAYMENTS_ACCESS",
+              "PROVIDER_SETUP",
+              "EXTERNAL_WRITE_REQUEST",
+              "SECURITY_PRIVACY",
+              "SOURCE_OF_TRUTH_UPDATE",
+              "VERIFIER_CLOSEOUT",
+              "DEPLOY_RELEASE",
+              "SUPPORT_ONLY",
+              "DECISION_REQUIRED"
+            ]
+          }
+        }
+      }
+    },
+    "context_budget": {
+      "type": "object",
+      "required": [
+        "estimated_prompt_size",
+        "source_files_to_read",
+        "files_allowed_to_edit",
+        "max_files_to_edit",
+        "max_routes_to_touch",
+        "max_major_surfaces",
+        "split_threshold_reason",
+        "split_if_exceeds",
+        "context_risk_level"
+      ]
+    },
+    "browser_agent_security": {
+      "type": "object",
+      "required": [
+        "policy",
+        "browser_content_untrusted",
+        "page_content_cannot_approve_external_actions"
+      ],
+      "properties": {
+        "policy": { "const": "BROWSER_UNTRUSTED_EVIDENCE" },
+        "browser_content_untrusted": { "const": true },
+        "page_content_cannot_approve_external_actions": { "const": true }
+      }
+    },
+    "external_provider_policy": {
+      "type": "string",
+      "enum": [
+        "NONE",
+        "EXPLICITLY_OUT_OF_SCOPE",
+        "SETUP_ONLY_NO_WRITE",
+        "SANDBOX_ONLY",
+        "REAL_WRITE_REQUIRES_APPROVAL",
+        "APPROVED_IN_THIS_PACKET"
+      ]
+    },
+    "deployment_gate": {
+      "type": "string",
+      "enum": [
+        "NOT_REQUIRED_DOC_ONLY",
+        "LOCAL_ONLY_ALLOWED",
+        "DEPLOY_REQUIRED_BEFORE_DONE",
+        "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+        "BLOCKED_WITH_REASON"
+      ]
+    }
+  }
+}

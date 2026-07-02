@@ -59,14 +59,10 @@ test('Rabbi product, payment, access, and page helpers use the One Time contract
     display_name: 'Live + Library',
     stripe_price_id: 'price_test_123',
     stripe_payment_link_url: 'https://buy.stripe.test/live',
-    green_invoice_item_id: 'green_item_123',
-    green_invoice_payment_link_url: 'https://green.test/live',
     access_scopes: ['library', 'live'],
   });
   assert.equal(tier.checkout.stripe_price_id, 'price_test_123');
-  assert.equal(tier.checkout.green_invoice_item_id, 'green_item_123');
   assert.equal(tier.checkout.stripe_price_configured, true);
-  assert.equal(tier.checkout.green_invoice_item_configured, true);
 
   assert.equal(stripeCheckoutStatus('checkout.session.completed', { payment_status: 'paid' }), 'paid');
   assert.equal(stripeCheckoutStatus('checkout.session.expired', {}), 'expired');
@@ -86,6 +82,7 @@ test('Rabbi product, payment, access, and page helpers use the One Time contract
     { status: 'revoked', scopes: ['live'] },
   ]);
   assert.deepEqual(activeGrantScopes([{ status: 'active', scopes: ['library', 'live'] }]), ['library', 'live']);
+  assert.deepEqual(activeGrantScopes([{ status: 'active', scopes: ['library'], expires_at: '2000-01-01T00:00:00.000Z' }]), []);
   assert.equal(member.has_library_access, true);
   assert.equal(member.has_live_access, false);
 
@@ -191,6 +188,9 @@ test('server exposes scoped Rabbi admin, public, member, and webhook routes', ()
   assert.match(server, /stripe_not_configured/);
   assert.match(server, /tier\.stripe_price_id && process\.env\.RABBI_STRIPE_SECRET_KEY/);
   assert.match(server, /providerBlocker\('green_invoice'\)/);
+  assert.match(server, /idempotencyKey/);
+  assert.match(server, /expiresAt/);
+  assert.match(server, /COALESCE\(\$9::timestamptz, NOW\(\)\)/);
   assert.match(server, /APPROVE_RABBI_PUBLIC_REPLACEMENT_PREVIEW/);
   assert.match(server, /RABBI_ALLOW_PUBLIC_REPLACEMENT/);
   assert.match(server, /start_at is required/);
@@ -207,18 +207,22 @@ test('public preview pages and Operations launch panel keep Rabbi launch separat
   assert.match(publicRabbiHtml, /Preview mode only\. The BNA homepage is not replaced\./);
   assert.match(publicRabbiHtml, /OneTimeOneTime - Rabbi Eli Scheller/);
   assert.match(publicRabbiHtml, /--yellow: #ffd400/);
-  assert.match(publicRabbiHtml, /The public prices stay at \$67 and \$149/);
+  assert.match(publicRabbiHtml, /The launch trial starts with no credit card and no payment method/);
   assert.match(publicRabbiHtml, /Payment setup/);
   assert.match(publicRabbiHtml, /\/js\/rabbi-launch\.js/);
   assert.match(publicRabbiJs, /\/api\/rabbi\/tiers/);
   assert.match(publicRabbiJs, /\/api\/rabbi\/checkout/);
-  assert.match(publicRabbiJs, /Payment setup blocked: add a Stripe or Green Invoice link in Operations/);
+  assert.match(publicRabbiJs, /30-day free trial starts with no card/);
   assert.match(publicRabbiJs, /stripeReady/);
-  assert.match(publicRabbiJs, /greenReady/);
+  assert.doesNotMatch(publicRabbiJs, /greenReady/);
+  assert.doesNotMatch(publicRabbiJs, /Green Invoice checkout/);
   assert.match(publicRabbiMemberHtml, /Library and live class access are shown only when an active grant exists\./);
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/request-login/);
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/library/);
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/live-sessions/);
+  assert.match(publicRabbiMemberJs, /function memberCanonicalPath\(\)/);
+  assert.match(publicRabbiMemberJs, /host === 'join\.onetimeonetime\.com'\) return '\/member'/);
+  assert.match(publicRabbiMemberJs, /window\.history\.replaceState\(\{\}, '', memberCanonicalPath\(\)\)/);
   assert.doesNotMatch(publicRabbiMemberJs, /zoom_url.*state\.member\?\.has_live_access/s);
 
   assert.match(operationsHtml, /Launch \/ Checkout/);

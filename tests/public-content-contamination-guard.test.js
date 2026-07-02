@@ -32,6 +32,7 @@ test('class-note extraction treats backend, task, attendance, and Torah progress
 
 test('Operations Content Library routes corrupted Torah-section task notes to Operations topic', () => {
   assert.match(operations, /function contentLooksOperationalAdminRemarkFromHaystack/);
-  assert.match(operations, /wrong section\|railway\|api\|database\|server\|deploy/);
-  assert.match(operations, /if \(contentLooksOperationalAdminRemarkFromHaystack\(haystack\)\) return 'operations';/);
+  assert.match(operations, /wrong section/);
+  assert.match(operations, /railway\|api\|database\|server\|deploy/);
+  assert.match(operations, /if \(contentLooksOperationalAdminRemarkFromHaystack\(haystack\)\) scores\.operations = Math\.max\(scores\.operations, 1\);/);
 });

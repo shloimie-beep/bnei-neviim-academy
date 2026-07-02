@@ -50,6 +50,7 @@ function buildOneTimeIntegrationReadinessCards({
   videoHostingReadiness,
   zoomReadiness,
   resendReadiness,
+  stripeReadiness,
 } = {}) {
   return [
     buildIntegrationCard('vimeo', 'Vimeo / video hosting', videoHostingReadiness, {
@@ -67,6 +68,11 @@ function buildOneTimeIntegrationReadinessCards({
       blockedActions: ['email_send', 'dns_guessing', 'fallback_send_without_approval'],
       requiredExternalGates: ['Exact DNS records and verified sending domain are required before live email.'],
     }),
+    buildIntegrationCard('stripe', 'Stripe payments', stripeReadiness, {
+      safeActions: ['readiness_status', 'checkout_mock_preview', 'webhook_mock_event'],
+      blockedActions: ['live_charge', 'product_write', 'price_write', 'checkout_create', 'refund_write'],
+      requiredExternalGates: ['Operator must approve Stripe account ownership, test buyer/session, and rollback path before live billing.'],
+    }),
   ];
 }
 
@@ -82,13 +88,13 @@ function buildOneTimeIntegrationReadinessPayload(options = {}) {
     secret_values_included: false,
     cards: buildOneTimeIntegrationReadinessCards(options),
     external_gates: [
-      'operator_approves_single_tenant_split',
-      'railway_service_or_environment_created',
-      'production_database_url_created_and_migrated',
-      'partner_domain_dns_configured',
+      'shared_bna_backend_workspace_scope_audited',
+      'partner_domain_dns_configured_for_onetimeonetime_com',
       'vimeo_or_video_hosting_account_authorized',
       'zoom_account_authorized',
-      'resend_domain_verified',
+      'resend_domain_verified_for_info_onetimeonetime_com',
+      'one_time_stripe_test_account_confirmed',
+      'explicit_approval_before_live_send_or_charge',
       'live_smoke_after_deploy',
     ],
     instance,

@@ -111,13 +111,13 @@ test('One Time owner assignments put Rabbi Elie as Owner and Shloimie as Admin',
     {
       person_name: 'Shloimie',
       role: 'project admin',
-      access_level: 'manager',
+      access_level: 'admin',
       workspace_key: ONE_TIME_WORKSPACE_KEY,
       project_key: ONE_TIME_PROJECT_KEY,
     },
   ]);
   assert.match(serverJs, /Rabbi Elie Scheller'[\s\S]*role: 'project owner'[\s\S]*access_level: 'owner'/);
-  assert.match(serverJs, /Shloimie'[\s\S]*role: 'project admin'[\s\S]*access_level: 'manager'/);
+  assert.match(serverJs, /Shloimie'[\s\S]*role: 'project admin'[\s\S]*access_level: 'admin'/);
 });
 
 test('server and Operations expose no-write One Time Drive brief preview controls', () => {

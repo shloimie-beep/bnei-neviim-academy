@@ -314,10 +314,15 @@
             statusEl.classList.remove('error');
             const body = Object.fromEntries(new FormData(form).entries());
             try {
-                await request('/api/parent/auth/login', {
+                const result = await request('/api/parent/auth/login', {
                     method: 'POST',
                     body: JSON.stringify(body),
                 });
+                if (result.portal_redirect && result.redirect_to) {
+                    statusEl.textContent = 'Opening Operations...';
+                    window.location.href = result.redirect_to;
+                    return;
+                }
                 statusEl.textContent = 'Opening your portal...';
                 window.location.href = '/parent';
             } catch (error) {

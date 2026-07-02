@@ -64,6 +64,19 @@ const {
   hasPromptPlanningIntent,
 } = require('./src/lib/bna/telegram-planning-intent');
 const {
+  ONE_TIME_PRESENTATION_DRIVE_STAGE,
+  ONE_TIME_PRESENTATION_MIME_TYPES,
+  isOneTimePresentationFile,
+  buildOneTimePresentationContentJobPayload,
+  buildOneTimePresentationEmail,
+} = require('./src/lib/bna/one-time-presentation-intake');
+const {
+  ONE_TIME_DROPOFF_WORKSPACE_KEY,
+  buildOneTimeDriveDropoffContentJobPayload,
+  buildOneTimeDriveDropoffEmail,
+  hasOneTimeDriveDropoffEmailSent,
+} = require('./src/lib/bna/one-time-drive-dropoff-email');
+const {
   createAgentControlSQL,
   normalizeAgentRunStatus,
   normalizeVerificationMode,
@@ -108,6 +121,9 @@ const {
   normalizeWapiPhonebookCorrectionType,
 } = require('./src/lib/bna/wapi-phonebook-report');
 const {
+  assertOutboundTextReadable,
+} = require('./src/lib/bna/outbound-text-safety');
+const {
   buildBufferAssets,
 } = require('./src/lib/bna/buffer-media-assets');
 const {
@@ -116,6 +132,7 @@ const {
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
 const bufferIntegration = require('./src/lib/integrations/buffer-client');
 const resendIntegration = require('./src/lib/integrations/resend-client');
+const resendInboundCrm = require('./src/lib/integrations/resend-inbound-crm');
 const stripeIntegration = require('./src/lib/integrations/stripe');
 const zoomIntegration = require('./src/lib/integrations/zoom');
 const videoHostingIntegration = require('./src/lib/integrations/video-hosting');
@@ -134,8 +151,23 @@ const {
   buildStudyAssistantReadiness,
 } = require('./src/lib/bna/study-assistant-readiness');
 const {
+  ONE_TIME_DOMAIN: ONE_TIME_EMAIL_DOMAIN,
+  ONE_TIME_FROM_EMAIL: ONE_TIME_EMAIL_FROM,
+  ONE_TIME_FROM_NAME: ONE_TIME_EMAIL_FROM_NAME,
+  ONE_TIME_REPLY_TO: ONE_TIME_EMAIL_REPLY_TO,
+  ONE_TIME_WORKSPACE_KEY: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+  buildOneTimeEmailWorkflowPreview,
+  buildOneTimeTrialSignupPreview,
+} = require('./src/lib/bna/one-time-launch-readiness');
+const {
   buildOneTimeIntegrationReadinessPayload,
 } = require('./src/platform/integrations/readiness');
+const {
+  ASSISTANT_DATA_MODEL_TABLES,
+} = require('./src/platform/assistant/control-plane');
+const {
+  buildAssistantControlCenterSnapshot,
+} = require('./src/platform/assistant/control-center');
 const {
   parseIntakeText,
   PARSER_VERSION: INTAKE_PARSER_VERSION,
@@ -2477,8 +2509,8 @@ const ONE_TIME_OPS_PASSWORD =
   process.env.RABBI_ELIE_SCHELLER_OPS_PASSWORD ||
   '';
 
-// Two-login architecture: owner (Rabbi) vs manager (Shloimie)
-// Backward compatibility: if new env vars are missing, old ONE_TIME_OPS_* maps to manager
+// Two-login architecture: owner (Rabbi) vs Shloimie workspace admin/manager.
+// Backward compatibility: if new env vars are missing, old ONE_TIME_OPS_* maps to manager.
 const ONE_TIME_OWNER_USERNAME =
   process.env.ONE_TIME_OWNER_USERNAME ||
   process.env.RABBI_ELIE_OWNER_USERNAME ||
@@ -2487,13 +2519,19 @@ const ONE_TIME_OWNER_PASSWORD =
   process.env.ONE_TIME_OWNER_PASSWORD ||
   process.env.RABBI_ELIE_OWNER_PASSWORD ||
   '';
+const ONE_TIME_ADMIN_USERNAME =
+  process.env.ONE_TIME_ADMIN_USERNAME ||
+  process.env.SHLOIMIE_ONE_TIME_USERNAME ||
+  '';
+const ONE_TIME_ADMIN_PASSWORD =
+  process.env.ONE_TIME_ADMIN_PASSWORD ||
+  process.env.SHLOIMIE_ONE_TIME_PASSWORD ||
+  '';
 const ONE_TIME_MANAGER_USERNAME =
   process.env.ONE_TIME_MANAGER_USERNAME ||
-  process.env.SHLOIMIE_ONE_TIME_USERNAME ||
   '';
 const ONE_TIME_MANAGER_PASSWORD =
   process.env.ONE_TIME_MANAGER_PASSWORD ||
-  process.env.SHLOIMIE_ONE_TIME_PASSWORD ||
   '';
 const TELEGRAM_CHAT_ID_BNA =
   process.env.TELEGRAM_CHAT_ID_BNA ||
@@ -2516,6 +2554,20 @@ const WAPI_API_TOKEN =
   usableSecretValue(process.env.WHAPI_API_TOKEN) ||
   usableSecretValue(readLocalSecretFile('wapi-api-token.txt')) ||
   usableSecretValue(readLocalSecretFile('whapi-api-token.txt'));
+const WAPI_PHONE_NUMBER =
+  process.env.WAPI_PHONE_NUMBER ||
+  process.env.WHAPI_PHONE_NUMBER ||
+  process.env.ONE_TIME_WHATSAPP_PHONE ||
+  '';
+const WAPI_INSTANCE_ID =
+  process.env.WAPI_INSTANCE_ID ||
+  process.env.WHAPI_INSTANCE_ID ||
+  process.env.WHAPI_CHANNEL_ID ||
+  '';
+const WAPI_WEBHOOK_URL =
+  process.env.WAPI_WEBHOOK_URL ||
+  process.env.WHAPI_WEBHOOK_URL ||
+  '';
 const WAPI_SEND_TIMEOUT_MS = Math.max(
   1000,
   Number(process.env.WAPI_SEND_TIMEOUT_MS || process.env.WHAPI_SEND_TIMEOUT_MS || 15000)
@@ -2871,12 +2923,12 @@ const RESEND_DOMAIN = resendRuntimeConfig.domain || '';
 const RESEND_FROM = resendRuntimeConfig.from || '';
 const RESEND_FROM_EMAIL = normalizeEmail(resendRuntimeConfig.fromEmail || process.env.RESEND_FROM_EMAIL);
 const RESEND_FROM_NAME = String(resendRuntimeConfig.fromName || process.env.RESEND_FROM_NAME || '').trim();
-const RESEND_REPLY_TO = normalizeEmail(process.env.RESEND_REPLY_TO || integrationConfigValue('RESEND_REPLY_TO', ['resend-api-key', 'resend'], ['resend-api-key.txt', 'RESEND_REPLY_TO.txt', 'resend.txt']));
+const RESEND_REPLY_TO = normalizeEmail(resendRuntimeConfig.replyTo || process.env.RESEND_REPLY_TO || integrationConfigValue('RESEND_REPLY_TO', ['resend-reply-to'], ['resend-reply-to.txt', 'RESEND_REPLY_TO.txt']));
 const RESEND_SEND_FALLBACK_APPROVED = Boolean(resendRuntimeConfig.fallbackApproved);
 const RESEND_WEBHOOK_SECRET = integrationSecretLoader.loadSecret({
   envName: 'RESEND_WEBHOOK_SECRET',
-  names: ['resend-api-key', 'resend-webhook-secret', 'resend'],
-  fileNames: ['resend-api-key.txt', 'RESEND_WEBHOOK_SECRET.txt', 'resend.txt'],
+  names: ['resend-webhook-secret'],
+  fileNames: ['resend-webhook-secret.txt', 'RESEND_WEBHOOK_SECRET.txt'],
   repoRoot: __dirname,
 }).value || usableSecretValue(process.env.RESEND_WEBHOOK_SECRET);
 const stripeRuntimeConfig = stripeIntegration.getStripeConfig({ repoRoot: __dirname });
@@ -4066,13 +4118,36 @@ function safeSenderDisplayName(value, fallback = 'Bnei Neviim Academy Office') {
   return raw;
 }
 
+function isOneTimeEmailScope(workspace = null) {
+  const workspaceKey = typeof workspace === 'string'
+    ? workspace
+    : (workspace?.workspace_key || workspace?.workspace || workspace?.project_key || workspace?.project || workspace?.key || '');
+  const projectKey = typeof workspace === 'string'
+    ? workspace
+    : (workspace?.project_key || workspace?.project || workspace?.workspace_project_key || '');
+  return (
+    normalizeWorkspaceKey(workspaceKey) === ONE_TIME_PROVIDER_WORKSPACE_KEY
+    || normalizeProjectKey(projectKey) === ONE_TIME_PROJECT_KEY
+    || /rabbi|scheller|sheller|one[_-]?time|mishnah|mishna/i.test(`${workspaceKey || ''} ${projectKey || ''}`)
+  );
+}
+
 function academySenderIdentity(workspace = null) {
   const workspaceKey = typeof workspace === 'string'
     ? workspace
     : (workspace?.workspace_key || workspace?.project_key || workspace?.key || '');
-  const fallbackName = /rabbi|scheller|sheller|one_time/i.test(String(workspaceKey || ''))
-    ? 'Rabbi Scheller Office'
-    : 'Bnei Neviim Academy Office';
+  if (isOneTimeEmailScope(workspace)) {
+    return {
+      fromName: ONE_TIME_EMAIL_FROM_NAME,
+      shortLabel: ONE_TIME_EMAIL_FROM_NAME,
+      fromEmail: ONE_TIME_EMAIL_FROM,
+      replyTo: ONE_TIME_EMAIL_REPLY_TO,
+      workspaceKey: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      projectKey: ONE_TIME_PROJECT_KEY,
+      oneTime: true,
+    };
+  }
+  const fallbackName = 'Bnei Neviim Academy Office';
   const envName = RESEND_FROM_NAME || process.env.MAIL_FROM_NAME || process.env.GMAIL_FROM_NAME || '';
   const fromName = safeSenderDisplayName(envName, fallbackName);
   return {
@@ -4084,23 +4159,33 @@ function academySenderIdentity(workspace = null) {
 }
 
 function resendServerRuntimeConfig(identity = academySenderIdentity()) {
-  const fromEmail = RESEND_FROM_EMAIL || normalizeEmail(RESEND_FROM);
-  const fromName = RESEND_FROM_NAME || identity.fromName || '';
-  const from = RESEND_FROM || (fromEmail ? (fromName ? `${fromName} <${fromEmail}>` : fromEmail) : '');
+  const oneTimeIdentity = Boolean(identity?.oneTime || normalizeEmail(identity?.fromEmail) === ONE_TIME_EMAIL_FROM);
+  const fromEmail = oneTimeIdentity
+    ? ONE_TIME_EMAIL_FROM
+    : (RESEND_FROM_EMAIL || normalizeEmail(RESEND_FROM) || normalizeEmail(identity?.fromEmail));
+  const fromName = oneTimeIdentity
+    ? ONE_TIME_EMAIL_FROM_NAME
+    : (RESEND_FROM_NAME || identity?.fromName || '');
+  const from = oneTimeIdentity
+    ? `${ONE_TIME_EMAIL_FROM_NAME} <${ONE_TIME_EMAIL_FROM}>`
+    : (RESEND_FROM || (fromEmail ? (fromName ? `${fromName} <${fromEmail}>` : fromEmail) : ''));
   return {
     apiKey: RESEND_API_KEY,
     apiBase: RESEND_API_BASE_URL,
     accountOwner: RESEND_ACCOUNT_OWNER,
     providerAccount: RESEND_PROVIDER_ACCOUNT,
-    domain: RESEND_DOMAIN || resendIntegration.domainFromEmail(fromEmail),
+    domain: oneTimeIdentity ? ONE_TIME_EMAIL_DOMAIN : (RESEND_DOMAIN || resendIntegration.domainFromEmail(fromEmail)),
     from,
     fromEmail,
     fromName,
+    replyTo: oneTimeIdentity ? ONE_TIME_EMAIL_REPLY_TO : (RESEND_REPLY_TO || identity?.replyTo || null),
     fallbackApproved: RESEND_SEND_FALLBACK_APPROVED,
   };
 }
 
 async function sendResendMessage({ to, subject, text, html, workspace = null }) {
+  assertOutboundTextReadable(subject, 'Email subject');
+  assertOutboundTextReadable(text || html, 'Email body');
   if (!RESEND_API_KEY || !RESEND_FROM_EMAIL) {
     const error = new Error('Resend is not configured: RESEND_API_KEY and RESEND_FROM_EMAIL are required');
     error.statusCode = 503;
@@ -4127,7 +4212,7 @@ async function sendResendMessage({ to, subject, text, html, workspace = null }) 
       subject,
       text: text || '',
       html: html || (text ? String(text).replace(/\n/g, '<br>') : ''),
-      ...(identity.replyTo ? { reply_to: identity.replyTo } : {}),
+      ...((runtimeConfig.replyTo || identity.replyTo) ? { reply_to: runtimeConfig.replyTo || identity.replyTo } : {}),
     }),
   });
   const payload = await response.json().catch(() => ({}));
@@ -4142,6 +4227,8 @@ async function sendResendMessage({ to, subject, text, html, workspace = null }) 
 }
 
 async function sendGmailMessage({ to, subject, text, html, workspace = null }) {
+  assertOutboundTextReadable(subject, 'Email subject');
+  assertOutboundTextReadable(text || html, 'Email body');
   const auth = createGoogleClientFromRefreshToken();
   const gmail = google.gmail({ version: 'v1', auth });
   const identity = academySenderIdentity(workspace);
@@ -4161,6 +4248,275 @@ async function sendEmail({ workspace = null, to, subject, text, html }) {
     return sendResendMessage({ workspace, to, subject, text, html });
   }
   return sendGmailMessage({ workspace, to, subject, text, html });
+}
+
+function oneTimePresentationNotifyEmailRecipient() {
+  return [
+    process.env.ONETIME_DRIVE_DROPOFF_NOTIFY_EMAIL,
+    process.env.ONETIME_POWERPOINT_NOTIFY_EMAIL,
+    process.env.ONE_TIME_POWERPOINT_NOTIFY_EMAIL,
+    process.env.SHLOIMIE_EMAIL,
+    process.env.EMAIL_CC_SHLOIMIE,
+    process.env.OPS_ADMIN_EMAIL,
+    process.env.OPERATIONS_ADMIN_EMAIL,
+    process.env.BNA_ADMIN_EMAIL,
+  ].map(normalizeEmail).find(Boolean) || '';
+}
+
+async function recordOneTimePresentationEmailResult({ job, project, notification }) {
+  if (!job?.id || !notification) return null;
+  const result = await pool.query(
+    `UPDATE bna_content_jobs
+     SET parse_json = COALESCE(parse_json, '{}'::jsonb) || $2::jsonb,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      job.id,
+      JSON.stringify({
+        presentation_email_notification: notification,
+      }),
+    ]
+  );
+  await logCommunication({
+    projectId: project?.id || job.project_id || null,
+    channel: 'email',
+    direction: 'outbound',
+    communicationType: 'one_time_powerpoint_received',
+    toAddress: notification.to || null,
+    subject: notification.subject || null,
+    bodyText: notification.body_text || null,
+    bodyHtml: notification.body_html || null,
+    externalMessageId: notification.external_message_id || null,
+    provider: notification.provider || EMAIL_PROVIDER || 'gmail',
+    status: notification.sent ? 'sent' : notification.blocked ? 'blocked' : notification.dry_run ? 'dry_run' : 'skipped',
+    metadata: {
+      content_job_id: job.id,
+      drive_file_id: job.drive_file_id || null,
+      drive_stage: job.drive_stage || null,
+      notification,
+    },
+  });
+  return result.rows[0] || null;
+}
+
+async function sendOneTimePresentationNotificationEmail({ job, project, payload, dryRun = false, created = false }) {
+  const email = buildOneTimePresentationEmail({
+    ...payload,
+    title: job.title || payload.title,
+    drive_file_id: job.drive_file_id || payload.drive_file_id,
+    media_url: job.media_url || payload.media_url,
+    mime_type: job.mime_type || payload.mime_type,
+    parse_json: {
+      ...(payload.parse_json || {}),
+      ...(parseJsonMaybe(job.parse_json) || {}),
+    },
+  });
+  const recipient = oneTimePresentationNotifyEmailRecipient();
+  const base = {
+    attempted_at: new Date().toISOString(),
+    sent: false,
+    to: recipient || null,
+    subject: email.subject,
+    body_text: email.text,
+    body_html: email.html,
+    provider: EMAIL_PROVIDER || 'gmail',
+    created_content_job: Boolean(created),
+  };
+  if (!created) {
+    return {
+      ...base,
+      attempted: false,
+      skipped: true,
+      reason: 'duplicate_content_job_no_resend',
+    };
+  }
+  if (!recipient) {
+    return {
+      ...base,
+      attempted: false,
+      blocked: true,
+      blocker: 'Set ONETIME_POWERPOINT_NOTIFY_EMAIL, SHLOIMIE_EMAIL, OPS_ADMIN_EMAIL, OPERATIONS_ADMIN_EMAIL, or BNA_ADMIN_EMAIL to enable Rabbi PowerPoint email notifications.',
+    };
+  }
+  if (dryRun) {
+    return {
+      ...base,
+      attempted: false,
+      dry_run: true,
+      sent: false,
+    };
+  }
+  try {
+    const sent = await sendEmail({
+      workspace: 'rabbi_sheller_provider',
+      to: recipient,
+      subject: email.subject,
+      text: email.text,
+      html: email.html,
+    });
+    return {
+      ...base,
+      attempted: true,
+      sent: true,
+      provider: sent?.provider || EMAIL_PROVIDER || 'gmail',
+      external_message_id: sent?.data?.id || sent?.data?.messageId || sent?.id || null,
+    };
+  } catch (err) {
+    return {
+      ...base,
+      attempted: true,
+      sent: false,
+      blocked: true,
+      error: limitText(err.message || String(err), 500),
+    };
+  }
+}
+
+function oneTimeDriveDropoffNotifyEmailRecipient(input = {}) {
+  return [
+    input.notify_email_to,
+    input.recipient_email,
+    input.to,
+    process.env.ONETIME_DRIVE_DROPOFF_NOTIFY_EMAIL,
+    process.env.ONETIME_POWERPOINT_NOTIFY_EMAIL,
+    process.env.ONE_TIME_POWERPOINT_NOTIFY_EMAIL,
+    process.env.SHLOIMIE_EMAIL,
+    process.env.EMAIL_CC_SHLOIMIE,
+    process.env.OPS_ADMIN_EMAIL,
+    process.env.OPERATIONS_ADMIN_EMAIL,
+    process.env.BNA_ADMIN_EMAIL,
+  ].map(normalizeEmail).find(Boolean) || '';
+}
+
+async function recordOneTimeDriveDropoffEmailResult({ job, project, notification }) {
+  if (!job?.id || !notification) return null;
+  const parsePatch = {
+    dropoff_email_notification: notification,
+    drive_dropoff_email_sent: Boolean(notification.sent),
+  };
+  if (notification.sent) {
+    parsePatch.email_sent = true;
+    parsePatch.drive_dropoff_email_notified_at = notification.attempted_at || new Date().toISOString();
+  }
+  const result = await pool.query(
+    `UPDATE bna_content_jobs
+     SET parse_json = COALESCE(parse_json, '{}'::jsonb) || $2::jsonb,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      job.id,
+      JSON.stringify(parsePatch),
+    ]
+  );
+  await logCommunication({
+    projectId: project?.id || job.project_id || null,
+    channel: 'email',
+    direction: 'outbound',
+    communicationType: 'one_time_drive_dropoff_received',
+    toAddress: notification.to || null,
+    subject: notification.subject || null,
+    bodyText: notification.body_text || null,
+    bodyHtml: notification.body_html || null,
+    externalMessageId: notification.external_message_id || null,
+    provider: notification.provider || EMAIL_PROVIDER || 'gmail',
+    status: notification.sent ? 'sent' : notification.blocked ? 'blocked' : notification.dry_run ? 'dry_run' : 'skipped',
+    metadata: {
+      content_job_id: job.id,
+      drive_file_id: job.drive_file_id || null,
+      drive_stage: job.drive_stage || null,
+      notification,
+    },
+  });
+  return result.rows[0] || null;
+}
+
+async function sendOneTimeDriveDropoffNotificationEmail({
+  job,
+  project,
+  payload,
+  recipientEmail = '',
+  dryRun = false,
+  shouldSend = true,
+}) {
+  const emailPayload = {
+    ...payload,
+    id: job.id || payload.id,
+    job_id: job.id || payload.job_id,
+    title: job.title || payload.title,
+    drive_file_id: job.drive_file_id || payload.drive_file_id,
+    media_url: job.media_url || payload.media_url,
+    mime_type: job.mime_type || payload.mime_type,
+    parse_json: {
+      ...(payload.parse_json || {}),
+      ...(parseJsonMaybe(job.parse_json) || {}),
+    },
+  };
+  const email = buildOneTimeDriveDropoffEmail(emailPayload, { jobId: job.id });
+  const recipient = oneTimeDriveDropoffNotifyEmailRecipient({
+    notify_email_to: recipientEmail,
+  });
+  const base = {
+    attempted_at: new Date().toISOString(),
+    sent: false,
+    to: recipient || null,
+    subject: email.subject,
+    body_text: email.text,
+    body_html: email.html,
+    provider: EMAIL_PROVIDER || 'gmail',
+    content_job_id: job.id || null,
+    classification: emailPayload.parse_json?.drive_dropoff_classification || null,
+    watched_folder_label: emailPayload.parse_json?.watched_folder_label || null,
+  };
+  if (!shouldSend) {
+    return {
+      ...base,
+      attempted: false,
+      skipped: true,
+      reason: 'duplicate_drive_file_email_already_sent',
+    };
+  }
+  if (!recipient) {
+    return {
+      ...base,
+      attempted: false,
+      blocked: true,
+      blocker: 'Set ONETIME_DRIVE_DROPOFF_NOTIFY_EMAIL, ONETIME_POWERPOINT_NOTIFY_EMAIL, SHLOIMIE_EMAIL, OPS_ADMIN_EMAIL, OPERATIONS_ADMIN_EMAIL, or BNA_ADMIN_EMAIL to enable One Time Drive dropoff email notifications.',
+    };
+  }
+  if (dryRun) {
+    return {
+      ...base,
+      attempted: false,
+      dry_run: true,
+      sent: false,
+    };
+  }
+  try {
+    const sent = await sendEmail({
+      workspace: ONE_TIME_DROPOFF_WORKSPACE_KEY,
+      to: recipient,
+      subject: email.subject,
+      text: email.text,
+      html: email.html,
+    });
+    return {
+      ...base,
+      attempted: true,
+      sent: true,
+      provider: sent?.provider || EMAIL_PROVIDER || 'gmail',
+      external_message_id: sent?.data?.id || sent?.data?.messageId || sent?.id || null,
+    };
+  } catch (err) {
+    return {
+      ...base,
+      attempted: true,
+      sent: false,
+      blocked: true,
+      error: limitText(err.message || String(err), 500),
+    };
+  }
 }
 
 async function logCommunication({
@@ -8283,75 +8639,143 @@ async function applyDeviceAccessAction({
   };
 }
 
-function identifyOpsUser(username, password = null) {
-  const user = String(username || '').trim();
+function identifyOpsUser(username, password = null, options = {}) {
+  const rawUser = String(username || '').trim();
   const pass = password === null || password === undefined ? null : String(password || '');
+  if (!rawUser) return null;
+  const sessionRoleMatch = rawUser.match(/^(super_admin|project_owner|one_time_admin|project_manager):(.+)$/i);
+  const sessionRole = sessionRoleMatch ? sessionRoleMatch[1].toLowerCase() : '';
+  const preferredRole = String(options.preferredRole || '').trim().toLowerCase();
+  const user = sessionRoleMatch ? String(sessionRoleMatch[2] || '').trim() : rawUser;
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
+  const roleAllowed = (role) => !sessionRole || sessionRole === role;
   const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
-  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  // Owner gets full provider view + settings; manager gets provider view without sensitive admin
-  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
+  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  // Owner and workspace admin get full provider workspace views. Manager keeps a narrower legacy view.
+  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const adminAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
 
-  if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
-    if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
+  if (
+    preferredRole === 'one_time_admin' &&
+    roleAllowed('one_time_admin') &&
+    ONE_TIME_ADMIN_USERNAME &&
+    ONE_TIME_ADMIN_PASSWORD &&
+    normalizedUser === ONE_TIME_ADMIN_USERNAME.toLowerCase() &&
+    (pass === null || pass === ONE_TIME_ADMIN_PASSWORD)
+  ) {
     return decorateOneTimeIdentity({
-      username: OPS_USERNAME,
-      role: 'super_admin',
-      scope: { type: 'all', projectKey: null },
-      allowedViews: platformAllowedViews,
+      username: user,
+      sessionUsername: `one_time_admin:${user}`,
+      role: 'one_time_admin',
+      scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+      allowedViews: adminAllowedViews,
+      displayName: 'Shloimie',
     });
   }
 
-  // Two-login architecture: owner (Rabbi Elie Scheller) vs manager (Shloimie)
+  if (roleAllowed('super_admin') && OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
+    if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) {
+      if (sessionRole) return null;
+    } else {
+      return decorateOneTimeIdentity({
+        username: OPS_USERNAME,
+        sessionUsername: `super_admin:${OPS_USERNAME}`,
+        role: 'super_admin',
+        scope: { type: 'all', projectKey: null },
+        allowedViews: platformAllowedViews,
+      });
+    }
+  }
+
+  // Two-login architecture: owner (Rabbi Elie Scheller) vs Shloimie workspace admin/manager
   if (
+    roleAllowed('project_owner') &&
     ONE_TIME_OWNER_USERNAME &&
     ONE_TIME_OWNER_PASSWORD &&
     normalizedUser === ONE_TIME_OWNER_USERNAME.toLowerCase()
   ) {
-    if (pass !== null && pass !== ONE_TIME_OWNER_PASSWORD) return null;
-    return decorateOneTimeIdentity({
-      username: user,
-      role: 'project_owner',
-      scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
-      allowedViews: ownerAllowedViews,
-      displayName: 'Rabbi Elie Scheller',
-    });
+    if (pass !== null && pass !== ONE_TIME_OWNER_PASSWORD) {
+      if (sessionRole) return null;
+    } else {
+      return decorateOneTimeIdentity({
+        username: user,
+        sessionUsername: `project_owner:${user}`,
+        role: 'project_owner',
+        scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+        allowedViews: ownerAllowedViews,
+        displayName: 'Rabbi Elie Scheller',
+      });
+    }
   }
 
   if (
+    roleAllowed('one_time_admin') &&
+    ONE_TIME_ADMIN_USERNAME &&
+    ONE_TIME_ADMIN_PASSWORD &&
+    normalizedUser === ONE_TIME_ADMIN_USERNAME.toLowerCase()
+  ) {
+    if (pass !== null && pass !== ONE_TIME_ADMIN_PASSWORD) {
+      if (sessionRole) return null;
+    } else {
+      return decorateOneTimeIdentity({
+        username: user,
+        sessionUsername: `one_time_admin:${user}`,
+        role: 'one_time_admin',
+        scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+        allowedViews: adminAllowedViews,
+        displayName: 'Shloimie',
+      });
+    }
+  }
+
+  if (
+    roleAllowed('project_manager') &&
     ONE_TIME_MANAGER_USERNAME &&
     ONE_TIME_MANAGER_PASSWORD &&
     normalizedUser === ONE_TIME_MANAGER_USERNAME.toLowerCase()
   ) {
-    if (pass !== null && pass !== ONE_TIME_MANAGER_PASSWORD) return null;
-    return decorateOneTimeIdentity({
-      username: user,
-      role: 'project_manager',
-      scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
-      allowedViews: managerAllowedViews,
-      displayName: 'Shloimie',
-    });
+    if (pass !== null && pass !== ONE_TIME_MANAGER_PASSWORD) {
+      if (sessionRole) return null;
+    } else {
+      return decorateOneTimeIdentity({
+        username: user,
+        sessionUsername: `project_manager:${user}`,
+        role: 'project_manager',
+        scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+        allowedViews: managerAllowedViews,
+        displayName: 'Shloimie',
+      });
+    }
   }
 
   // Backward compatibility: old ONE_TIME_OPS_USERNAME maps to manager role
   if (
+    roleAllowed('project_manager') &&
     ONE_TIME_OPS_USERNAME &&
     ONE_TIME_OPS_PASSWORD &&
     normalizedUser === ONE_TIME_OPS_USERNAME.toLowerCase()
   ) {
-    if (pass !== null && pass !== ONE_TIME_OPS_PASSWORD) return null;
-    return decorateOneTimeIdentity({
-      username: user,
-      role: 'project_manager',
-      scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
-      allowedViews: managerAllowedViews,
-      displayName: 'Shloimie',
-    });
+    if (pass !== null && pass !== ONE_TIME_OPS_PASSWORD) {
+      if (sessionRole) return null;
+    } else {
+      return decorateOneTimeIdentity({
+        username: user,
+        sessionUsername: `project_manager:${user}`,
+        role: 'project_manager',
+        scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+        allowedViews: managerAllowedViews,
+        displayName: 'Shloimie',
+      });
+    }
   }
 
   return null;
+}
+
+function opsSessionUsername(identity = {}) {
+  return identity.sessionUsername || identity.username || '';
 }
 
 function isScopedOpsPathAllowed(req, identity = null) {
@@ -8379,6 +8803,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/helper/knowledge' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/helper/action-log' && method === 'GET') return true;
   if (/^\/api\/bna\/helper\/runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/assistant/control-plane/readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/intake/parse' && method === 'POST') return true;
   if (routePath === '/api/bna/intake/parse-runs' && method === 'GET') return true;
   if (/^\/api\/bna\/intake\/parse-runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
@@ -8395,8 +8820,12 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/one-time/community-moderation-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/study-assistant-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/integrations/readiness' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/email-workflow-preview' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/trial-signup-preview' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/calendar' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/source-prep-jobs' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/one-time/drive-dropoff-intake' && method === 'POST') return true;
+  if (routePath === '/api/bna/one-time/presentation-intake' && method === 'POST') return true;
   if (routePath === '/api/bna/product-leads' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/one-time/product-leads' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/classes' && ['GET', 'POST'].includes(method)) return true;
@@ -8750,11 +9179,23 @@ function safeOperationsReturnPath(value) {
   }
 }
 
+function operationsReturnPathTargetsOneTime(value) {
+  const requested = safeOperationsReturnPath(value);
+  try {
+    const url = new URL(requested, 'https://bna.local');
+    const workspace = normalizeWorkspaceKey(url.searchParams.get('workspace') || '');
+    const project = normalizeProjectKey(url.searchParams.get('project') || url.searchParams.get('project_key') || '');
+    return workspace === 'rabbi_sheller_provider' || project === ONE_TIME_PROJECT_KEY;
+  } catch {
+    return false;
+  }
+}
+
 function oneTimeOperationsReturnPath(value) {
   const requested = safeOperationsReturnPath(value);
   const url = new URL(requested, 'https://bna.local');
   if (!url.searchParams.get('workspace')) url.searchParams.set('workspace', 'rabbi_sheller_provider');
-  if (!url.searchParams.get('view')) url.searchParams.set('view', 'tasks');
+  if (!url.searchParams.get('view')) url.searchParams.set('view', 'dashboard');
   return `${url.pathname}${url.search}${url.hash}`;
 }
 
@@ -8766,6 +9207,277 @@ async function issueSession(username, db = pool) {
     [sessionId, username, expiresAt]
   );
   return sessionId;
+}
+
+async function maybeHandleOpsPortalFallback(req, res, {
+  username,
+  password,
+  returnTo = '/operations',
+  source = 'portal_login',
+} = {}) {
+  const identity = identifyOpsUser(username, password, {
+    preferredRole: operationsReturnPathTargetsOneTime(returnTo) ? 'one_time_admin' : '',
+  });
+  if (!identity) return false;
+  const redirectTo = identity.scope?.type === 'project'
+    ? oneTimeOperationsReturnPath(returnTo)
+    : safeOperationsReturnPath(returnTo);
+  const sessionId = await issueSession(opsSessionUsername(identity));
+  setSessionCookie(res, sessionId);
+  res.json({
+    success: true,
+    portal_redirect: true,
+    redirect_to: redirectTo,
+    user: identity.username,
+    role: identity.role,
+    scope: identity.scope,
+    allowedViews: identity.allowedViews,
+    message: 'Opening Operations with your Operations login.',
+    source,
+  });
+  return true;
+}
+
+function safePortalReturnPath(value, portal) {
+  const fallbackByPortal = {
+    operations: '/operations',
+    provider: '/provider',
+    parent: '/parent',
+    student: '/student',
+  };
+  const fallback = fallbackByPortal[portal] || '/';
+  if (portal === 'operations') return safeOperationsReturnPath(value || fallback);
+  const raw = String(value || '').trim();
+  if (!raw) return fallback;
+  try {
+    const url = new URL(raw, 'https://bna.local');
+    if (url.origin !== 'https://bna.local') return fallback;
+    const allowedPath = fallbackByPortal[portal];
+    if (!allowedPath || url.pathname !== allowedPath) return fallback;
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return fallback;
+  }
+}
+
+function portalDestinationRedirect(destination, returnTo = '') {
+  if (destination?.portal === 'operations') {
+    return destination.identity?.scope?.type === 'project'
+      ? oneTimeOperationsReturnPath(returnTo)
+      : safeOperationsReturnPath(returnTo);
+  }
+  return safePortalReturnPath(returnTo, destination?.portal);
+}
+
+function publicPortalDestination(destination, returnTo = '') {
+  return {
+    id: destination.id,
+    portal: destination.portal,
+    role: destination.role,
+    label: destination.label,
+    workspace_key: destination.workspace_key || null,
+    project_key: destination.project_key || null,
+    redirect_to: portalDestinationRedirect(destination, returnTo),
+  };
+}
+
+async function collectPortalLoginDestinations({ username, password, db = pool } = {}) {
+  const rawUsername = String(username || '').trim();
+  const rawPassword = String(password || '');
+  if (!rawUsername || !rawPassword) return [];
+  const destinations = [];
+
+  const opsIdentity = identifyOpsUser(rawUsername, rawPassword);
+  if (opsIdentity) {
+    destinations.push({
+      id: `operations:${opsIdentity.username}`,
+      portal: 'operations',
+      role: opsIdentity.role,
+      label: opsIdentity.displayName || opsIdentity.username || 'Operations',
+      workspace_key: opsIdentity.scope?.type === 'project' ? 'rabbi_sheller_provider' : 'bna',
+      project_key: opsIdentity.scope?.projectKey || null,
+      identity: opsIdentity,
+    });
+  }
+
+  const provider = (await db.query(
+    `SELECT *
+     FROM bna_service_providers
+     WHERE lower(COALESCE(login_username, '')) = lower($1)
+       AND password_hash IS NOT NULL
+       AND status NOT IN ('draft', 'rejected', 'archived')
+     LIMIT 1`,
+    [rawUsername]
+  )).rows[0] || null;
+  if (provider && verifyParentPassword(rawPassword, provider.password_hash)) {
+    destinations.push({
+      id: `provider:${provider.id}`,
+      portal: 'provider',
+      role: 'service_provider',
+      label: provider.provider_name || provider.display_name || provider.contact_name || 'Provider workspace',
+      workspace_key: provider.workspace_key || provider.project_key || null,
+      project_key: provider.project_key || null,
+      provider,
+    });
+  }
+
+  const parentEmail = normalizeEmail(rawUsername);
+  if (parentEmail) {
+    const parentAccount = (await db.query(
+      `SELECT parent_email, password_hash
+       FROM bna_parent_password_accounts
+       WHERE lower(parent_email) = $1
+       LIMIT 1`,
+      [parentEmail]
+    )).rows[0] || null;
+    if (parentAccount && verifyParentPassword(rawPassword, parentAccount.password_hash)) {
+      const records = await findParentAccessRecords(parentEmail, db);
+      if (parentAccessEligible(records)) {
+        destinations.push({
+          id: `parent:${parentEmail}`,
+          portal: 'parent',
+          role: 'parent',
+          label: parentEmail,
+          workspace_key: records.workspace?.project_key || records.signups?.[0]?.project_key || records.students?.[0]?.project_key || null,
+          project_key: records.workspace?.project_key || records.signups?.[0]?.project_key || records.students?.[0]?.project_key || null,
+          parentEmail,
+        });
+      }
+    }
+  }
+
+  const studentUsername = normalizeStudentLoginUsername(rawUsername);
+  if (studentUsername) {
+    const studentAccount = (await db.query(
+      `SELECT a.student_id, a.username, a.password_hash, a.status,
+              s.id, s.name, s.name_en, s.name_he, s.status AS student_status
+       FROM bna_student_password_accounts a
+       JOIN bna_students s ON s.id = a.student_id
+       WHERE a.username_normalized = $1
+         AND a.status = 'active'
+         AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+       LIMIT 1`,
+      [studentUsername]
+    )).rows[0] || null;
+    if (studentAccount && verifyStudentPassword(rawPassword, studentAccount.password_hash)) {
+      destinations.push({
+        id: `student:${studentAccount.student_id}`,
+        portal: 'student',
+        role: 'student',
+        label: studentAccount.name || studentAccount.name_en || studentAccount.username || 'Student',
+        workspace_key: null,
+        project_key: null,
+        student: studentAccount,
+      });
+    }
+  }
+
+  return destinations;
+}
+
+async function issuePortalDestinationSession(destination, res, { db = pool, returnTo = '' } = {}) {
+  const redirectTo = portalDestinationRedirect(destination, returnTo);
+  if (destination.portal === 'operations') {
+    const sessionId = await issueSession(opsSessionUsername(destination.identity), db);
+    setSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      user: destination.identity.username,
+      role: destination.identity.role,
+      scope: destination.identity.scope,
+      allowedViews: destination.identity.allowedViews,
+      redirect_to: redirectTo,
+    };
+  }
+  if (destination.portal === 'provider') {
+    const sessionId = await issueProviderSession(destination.provider.id, db);
+    await db.query(`UPDATE bna_service_providers SET last_login_at = NOW(), updated_at = NOW() WHERE id = $1`, [destination.provider.id]);
+    setProviderSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      role: destination.role,
+      provider_id: destination.provider.id,
+      provider_name: destination.provider.provider_name || destination.provider.display_name || null,
+      redirect_to: redirectTo,
+    };
+  }
+  if (destination.portal === 'parent') {
+    const sessionId = await issueParentSession(destination.parentEmail, db);
+    await db.query(
+      `UPDATE bna_parent_password_accounts
+       SET last_login_at = NOW(),
+           updated_at = NOW()
+       WHERE lower(parent_email) = $1`,
+      [destination.parentEmail]
+    );
+    setParentSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      role: destination.role,
+      email: destination.parentEmail,
+      redirect_to: redirectTo,
+    };
+  }
+  if (destination.portal === 'student') {
+    const studentId = Number(destination.student.student_id || destination.student.id);
+    const sessionId = await issueStudentSession(studentId, db, {
+      login_method: 'portal_agnostic_username_password',
+      raw_password_stored: false,
+    });
+    await db.query(
+      `UPDATE bna_student_password_accounts
+       SET last_login_at = NOW(),
+           updated_at = NOW()
+       WHERE student_id = $1`,
+      [studentId]
+    );
+    setStudentSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      role: destination.role,
+      student: {
+        id: studentId,
+        name: destination.student.name || destination.student.name_en || null,
+      },
+      redirect_to: redirectTo,
+    };
+  }
+  const error = new Error('Unsupported login destination');
+  error.statusCode = 400;
+  throw error;
+}
+
+async function maybeHandleOtherPortalLogin(req, res, {
+  username,
+  password,
+  currentPortal,
+  returnTo = '',
+  source = 'portal_login',
+  db = pool,
+} = {}) {
+  const destinations = (await collectPortalLoginDestinations({ username, password, db }))
+    .filter((destination) => destination.portal !== currentPortal);
+  if (!destinations.length) return false;
+  if (destinations.length > 1) {
+    return res.json({
+      success: true,
+      chooser_required: true,
+      message: 'Choose which portal or workspace to open.',
+      destinations: destinations.map((destination) => publicPortalDestination(destination, returnTo)),
+      source,
+    });
+  }
+  const destination = destinations[0];
+  const sessionPayload = await issuePortalDestinationSession(destination, res, { db, returnTo });
+  res.json({
+    success: true,
+    portal_redirect: true,
+    redirect_to: sessionPayload.redirect_to,
+    role: destination.role,
+    destination: publicPortalDestination(destination, returnTo),
+    source,
+  });
+  return true;
 }
 
 async function createOpsAccessLink({
@@ -8835,7 +9547,7 @@ async function redeemOpsAccessLink(token, db = pool) {
       return null;
     }
     await client.query(`UPDATE bna_ops_access_links SET used_at = NOW() WHERE id = $1`, [link.id]);
-    const sessionId = await issueSession(identity.username, client);
+    const sessionId = await issueSession(opsSessionUsername(identity), client);
     await client.query('COMMIT');
     return {
       sessionId,
@@ -9705,8 +10417,78 @@ app.post('/api/webhooks/stripe/rabbi', express.raw({ type: 'application/json', l
 });
 
 // Middleware
-app.use(express.json({ limit: '25mb' }));
+app.use(express.json({
+  limit: '25mb',
+  verify: (req, res, buf) => {
+    const url = String(req.originalUrl || req.url || '');
+    if (url.startsWith('/api/resend/inbound') || url.startsWith('/api/bna/resend/inbound')) {
+      req.rawBody = buf.toString('utf8');
+    }
+  },
+}));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+
+const ONE_TIME_JOIN_HOSTS = new Set(['join.onetimeonetime.com']);
+const ONE_TIME_JOIN_LANDING_PATHS = new Set([
+  '/',
+  '/one-time',
+  '/one-time/mishnayos',
+  '/one-time/us',
+  '/one-time/uk',
+  '/one-time/israel',
+  '/one-time/interest',
+]);
+const ONE_TIME_JOIN_MEMBER_PATHS = new Set([
+  '/member-login',
+  '/member',
+  '/one-time/member-login',
+  '/rabbi-member',
+  '/rabbi/member',
+]);
+
+function normalizedRequestHostname(req) {
+  const forwardedHost = String(req.headers['x-forwarded-host'] || '').split(',')[0].trim();
+  const host = forwardedHost || String(req.headers.host || req.get?.('host') || '').split(',')[0].trim();
+  return host.toLowerCase().replace(/\.$/, '').replace(/:\d+$/, '');
+}
+
+function isOneTimeJoinHostRequest(req) {
+  return ONE_TIME_JOIN_HOSTS.has(normalizedRequestHostname(req));
+}
+
+function oneTimeJoinRouteKind(req) {
+  const method = String(req.method || '').toUpperCase();
+  if (method !== 'GET' && method !== 'HEAD') return null;
+  if (!isOneTimeJoinHostRequest(req)) return null;
+  const routePath = req.path || '/';
+  if (ONE_TIME_JOIN_LANDING_PATHS.has(routePath)) return 'landing';
+  if (ONE_TIME_JOIN_MEMBER_PATHS.has(routePath)) return 'member';
+  return null;
+}
+
+function sendOneTimeCampaignLanding(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Vary', 'Host');
+  res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
+}
+
+function sendOneTimeMemberEntry(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Vary', 'Host');
+  res.sendFile(path.join(__dirname, 'public', 'rabbi-member.html'));
+}
+
+app.use((req, res, next) => {
+  const oneTimeJoinKind = oneTimeJoinRouteKind(req);
+  if (oneTimeJoinKind === 'landing') {
+    return sendOneTimeCampaignLanding(req, res);
+  }
+  if (oneTimeJoinKind === 'member') {
+    return sendOneTimeMemberEntry(req, res);
+  }
+  return next();
+});
+
 app.use(express.static('public', {
   setHeaders(res, filePath) {
     if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
@@ -11449,6 +12231,342 @@ CREATE TABLE IF NOT EXISTS bna_assistant_onboarding_intakes (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS assistant_channels (
+  id SERIAL PRIMARY KEY,
+  channel_key TEXT NOT NULL UNIQUE,
+  display_name TEXT NOT NULL,
+  adapter_kind TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'disabled', 'archived')),
+  workspace_key TEXT,
+  project_key TEXT,
+  channel_metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_identities (
+  id SERIAL PRIMARY KEY,
+  identity_key TEXT NOT NULL UNIQUE,
+  person_id INTEGER,
+  user_account_id INTEGER,
+  telegram_user_id TEXT,
+  email TEXT,
+  role_key TEXT NOT NULL DEFAULT 'viewer',
+  workspace_key TEXT,
+  project_key TEXT,
+  relationship_scope JSONB DEFAULT '{}'::jsonb,
+  consent_state JSONB DEFAULT '{}'::jsonb,
+  revoked_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_conversations (
+  id SERIAL PRIMARY KEY,
+  conversation_key TEXT NOT NULL UNIQUE,
+  channel_id INTEGER REFERENCES assistant_channels(id) ON DELETE SET NULL,
+  identity_id INTEGER REFERENCES assistant_identities(id) ON DELETE SET NULL,
+  parent_conversation_key TEXT,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'waiting', 'planned', 'approval_pending', 'running', 'completed', 'blocked', 'archived')),
+  workspace_key TEXT,
+  project_key TEXT,
+  role_key TEXT,
+  active_object_type TEXT,
+  active_object_id TEXT,
+  selected_child_id TEXT,
+  selected_provider_id TEXT,
+  selected_course_id TEXT,
+  selected_campaign_id TEXT,
+  current_draft_id TEXT,
+  current_draft_version_id TEXT,
+  pending_preview_id TEXT,
+  pending_approval_id TEXT,
+  last_channel_key TEXT,
+  state JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  last_message_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_messages (
+  id SERIAL PRIMARY KEY,
+  message_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT NOT NULL,
+  channel_key TEXT NOT NULL,
+  identity_key TEXT,
+  sender_type TEXT NOT NULL DEFAULT 'user' CHECK (sender_type IN ('user', 'assistant', 'system', 'tool', 'agent')),
+  body_redacted TEXT,
+  source_envelope_id TEXT,
+  channel_message_id TEXT,
+  reply_to_message_key TEXT,
+  attachments JSONB DEFAULT '[]'::jsonb,
+  privacy_classification TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_context_objects (
+  id SERIAL PRIMARY KEY,
+  context_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  object_type TEXT NOT NULL,
+  object_id TEXT NOT NULL,
+  workspace_key TEXT,
+  project_key TEXT,
+  role_scope TEXT,
+  relationship_scope JSONB DEFAULT '{}'::jsonb,
+  source_envelope_id TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_action_plans (
+  id SERIAL PRIMARY KEY,
+  plan_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  message_key TEXT,
+  actor_identity_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  mode TEXT NOT NULL DEFAULT 'plan' CHECK (mode IN ('answer', 'read', 'act', 'plan', 'agent_work')),
+  action_id TEXT,
+  action_category TEXT,
+  inputs JSONB DEFAULT '{}'::jsonb,
+  missing_inputs JSONB DEFAULT '[]'::jsonb,
+  dry_run BOOLEAN DEFAULT TRUE,
+  preview_required BOOLEAN DEFAULT FALSE,
+  approval_required BOOLEAN DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'planned' CHECK (status IN ('planned', 'needs_input', 'preview_ready', 'approval_pending', 'approved', 'running', 'completed', 'blocked', 'failed', 'cancelled', 'archived')),
+  planner_version TEXT,
+  idempotency_key TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_action_runs (
+  id SERIAL PRIMARY KEY,
+  run_key TEXT NOT NULL UNIQUE,
+  plan_key TEXT,
+  action_id TEXT,
+  actor_identity_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  dry_run BOOLEAN DEFAULT TRUE,
+  approval_id TEXT,
+  idempotency_key TEXT,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'running', 'succeeded', 'failed', 'blocked', 'cancelled', 'archived')),
+  result JSONB DEFAULT '{}'::jsonb,
+  error_message TEXT,
+  audit_event_id TEXT,
+  started_at TIMESTAMP,
+  completed_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_previews (
+  id SERIAL PRIMARY KEY,
+  preview_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  plan_key TEXT,
+  draft_version_key TEXT,
+  preview_type TEXT NOT NULL,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  real_data BOOLEAN DEFAULT FALSE,
+  sample_data BOOLEAN DEFAULT TRUE,
+  payload JSONB DEFAULT '{}'::jsonb,
+  blockers JSONB DEFAULT '[]'::jsonb,
+  external_action BOOLEAN DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'ready', 'approved', 'applied', 'expired', 'archived')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_approvals (
+  id SERIAL PRIMARY KEY,
+  approval_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  plan_key TEXT,
+  run_key TEXT,
+  preview_key TEXT,
+  requested_by_identity_key TEXT,
+  approver_identity_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  risk_level TEXT NOT NULL DEFAULT 'low',
+  approval_policy TEXT NOT NULL DEFAULT 'none',
+  nonce_hash TEXT,
+  expires_at TIMESTAMP,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'expired', 'cancelled', 'used', 'archived')),
+  decision_summary TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  decided_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_drafts (
+  id SERIAL PRIMARY KEY,
+  draft_key TEXT NOT NULL UNIQUE,
+  object_type TEXT NOT NULL,
+  object_id TEXT,
+  conversation_key TEXT,
+  channel_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  active_version_key TEXT,
+  approval_state TEXT NOT NULL DEFAULT 'draft',
+  use_state TEXT NOT NULL DEFAULT 'not_scheduled',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_draft_versions (
+  id SERIAL PRIMARY KEY,
+  version_key TEXT NOT NULL UNIQUE,
+  draft_key TEXT NOT NULL,
+  parent_version_key TEXT,
+  editor_identity_key TEXT,
+  channel_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  prompt_instruction TEXT,
+  content JSONB DEFAULT '{}'::jsonb,
+  change_summary TEXT,
+  approval_state TEXT NOT NULL DEFAULT 'draft',
+  active_state TEXT NOT NULL DEFAULT 'inactive',
+  scheduled_use_state TEXT NOT NULL DEFAULT 'not_scheduled',
+  rollback_to_version_key TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_templates (
+  id SERIAL PRIMARY KEY,
+  template_key TEXT NOT NULL UNIQUE,
+  template_type TEXT NOT NULL,
+  name TEXT NOT NULL,
+  channel_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  content JSONB DEFAULT '{}'::jsonb,
+  version_key TEXT,
+  status TEXT NOT NULL DEFAULT 'draft',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_saved_views (
+  id SERIAL PRIMARY KEY,
+  view_key TEXT NOT NULL UNIQUE,
+  owner_identity_key TEXT,
+  view_type TEXT NOT NULL,
+  name TEXT NOT NULL,
+  workspace_key TEXT,
+  project_key TEXT,
+  role_scope TEXT,
+  object_scope JSONB DEFAULT '{}'::jsonb,
+  config JSONB DEFAULT '{}'::jsonb,
+  active_version_key TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_reminders (
+  id SERIAL PRIMARY KEY,
+  reminder_key TEXT NOT NULL UNIQUE,
+  actor_identity_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  timezone TEXT,
+  recurrence_rule TEXT,
+  trigger JSONB DEFAULT '{}'::jsonb,
+  delivery_channels JSONB DEFAULT '[]'::jsonb,
+  quiet_hours JSONB DEFAULT '{}'::jsonb,
+  consent_state JSONB DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'paused', 'sent', 'completed', 'cancelled', 'failed', 'archived')),
+  next_run_at TIMESTAMP,
+  last_run_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_notifications (
+  id SERIAL PRIMARY KEY,
+  notification_key TEXT NOT NULL UNIQUE,
+  reminder_key TEXT,
+  conversation_key TEXT,
+  recipient_identity_key TEXT,
+  channel_key TEXT NOT NULL,
+  workspace_key TEXT,
+  project_key TEXT,
+  payload JSONB DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'sent', 'delivered', 'failed', 'cancelled', 'archived')),
+  dedupe_key TEXT,
+  sent_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_onboarding_sessions (
+  id SERIAL PRIMARY KEY,
+  onboarding_key TEXT NOT NULL UNIQUE,
+  provider_profile_id INTEGER,
+  identity_key TEXT,
+  conversation_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  stage TEXT NOT NULL DEFAULT 'start',
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'waiting', 'submitted', 'approved', 'blocked', 'archived')),
+  collected_fields JSONB DEFAULT '{}'::jsonb,
+  asset_refs JSONB DEFAULT '[]'::jsonb,
+  studio_draft_refs JSONB DEFAULT '{}'::jsonb,
+  integration_blockers JSONB DEFAULT '[]'::jsonb,
+  approval_state TEXT NOT NULL DEFAULT 'draft',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_delivery_outbox (
+  id SERIAL PRIMARY KEY,
+  delivery_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  channel_key TEXT NOT NULL,
+  recipient_identity_key TEXT,
+  payload JSONB DEFAULT '{}'::jsonb,
+  idempotency_key TEXT,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'sending', 'sent', 'failed', 'dead_lettered', 'cancelled')),
+  attempts INTEGER NOT NULL DEFAULT 0,
+  next_attempt_at TIMESTAMP,
+  last_error TEXT,
+  sent_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_dead_letters (
+  id SERIAL PRIMARY KEY,
+  dead_letter_key TEXT NOT NULL UNIQUE,
+  source_table TEXT NOT NULL,
+  source_key TEXT,
+  channel_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  reason TEXT NOT NULL,
+  payload_redacted JSONB DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'reviewing', 'replayed', 'resolved', 'archived')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  resolved_at TIMESTAMP
+);
+
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_threads_actor ON bna_assistant_threads(actor_type, actor_id, actor_email);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_threads_status ON bna_assistant_threads(status, updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_messages_thread ON bna_assistant_messages(thread_id, created_at ASC);
@@ -11457,6 +12575,24 @@ CREATE INDEX IF NOT EXISTS idx_bna_assistant_onboarding_intakes_actor
   ON bna_assistant_onboarding_intakes(actor_type, actor_id, actor_email, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_onboarding_intakes_review
   ON bna_assistant_onboarding_intakes(review_status, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_assistant_identities_scope ON assistant_identities(workspace_key, project_key, role_key);
+CREATE INDEX IF NOT EXISTS idx_assistant_conversations_scope ON assistant_conversations(workspace_key, project_key, status, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_messages_conversation ON assistant_messages(conversation_key, created_at ASC);
+CREATE INDEX IF NOT EXISTS idx_assistant_context_objects_scope ON assistant_context_objects(workspace_key, project_key, object_type, object_id);
+CREATE INDEX IF NOT EXISTS idx_assistant_action_plans_status ON assistant_action_plans(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_action_runs_status ON assistant_action_runs(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_previews_status ON assistant_previews(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_approvals_status ON assistant_approvals(status, workspace_key, project_key, expires_at);
+CREATE INDEX IF NOT EXISTS idx_assistant_drafts_object ON assistant_drafts(object_type, object_id, workspace_key, project_key);
+CREATE INDEX IF NOT EXISTS idx_assistant_draft_versions_draft ON assistant_draft_versions(draft_key, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_templates_scope ON assistant_templates(template_type, workspace_key, project_key, status);
+CREATE INDEX IF NOT EXISTS idx_assistant_saved_views_owner ON assistant_saved_views(owner_identity_key, view_type, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_reminders_status ON assistant_reminders(status, next_run_at);
+CREATE INDEX IF NOT EXISTS idx_assistant_notifications_status ON assistant_notifications(status, channel_key, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_onboarding_sessions_status ON assistant_onboarding_sessions(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_delivery_outbox_status ON assistant_delivery_outbox(status, next_attempt_at);
+CREATE INDEX IF NOT EXISTS idx_assistant_dead_letters_status ON assistant_dead_letters(status, created_at DESC);
 `;
 
 const createBnaHelperSQL = `
@@ -12275,7 +13411,7 @@ CREATE TABLE IF NOT EXISTS bna_email_log (
   provider TEXT DEFAULT 'gmail',
   language TEXT DEFAULT 'en',
   provider_message_id TEXT,
-  status TEXT NOT NULL DEFAULT 'sent' CHECK (status IN ('sent', 'failed', 'skipped', 'queued', 'delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'webhook_received')),
+  status TEXT NOT NULL DEFAULT 'sent' CHECK (status IN ('sent', 'failed', 'skipped', 'queued', 'delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'suppressed', 'webhook_received')),
   error TEXT,
   metadata JSONB,
   sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -12291,7 +13427,7 @@ ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS provider TEXT DEFAULT 'gmail'
 ALTER TABLE bna_email_log DROP CONSTRAINT IF EXISTS bna_email_log_status_check;
 ALTER TABLE bna_email_log
   ADD CONSTRAINT bna_email_log_status_check
-  CHECK (status IN ('sent', 'failed', 'skipped', 'queued', 'delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'webhook_received'));
+  CHECK (status IN ('sent', 'failed', 'skipped', 'queued', 'delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'suppressed', 'webhook_received'));
 `;
 
 const createCommunicationsIntegrationsSQL = `
@@ -12466,6 +13602,24 @@ CREATE TABLE IF NOT EXISTS bna_communications (
   occurred_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_communications_resend_event_id
+ON bna_communications ((metadata->>'resend_event_id'))
+WHERE provider = 'resend'
+  AND direction = 'inbound'
+  AND COALESCE(metadata->>'resend_event_id', '') <> '';
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_communications_resend_received_email_id
+ON bna_communications ((metadata->>'resend_received_email_id'))
+WHERE provider = 'resend'
+  AND direction = 'inbound'
+  AND COALESCE(metadata->>'resend_received_email_id', '') <> '';
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_communications_resend_email_message_id
+ON bna_communications ((metadata->>'email_message_id'))
+WHERE provider = 'resend'
+  AND direction = 'inbound'
+  AND COALESCE(metadata->>'email_message_id', '') <> '';
 
 CREATE TABLE IF NOT EXISTS bna_message_connectors (
   id SERIAL PRIMARY KEY,
@@ -29934,7 +31088,7 @@ async function ensureDefaultProjects(db = pool) {
     || { person_name: 'Rabbi Elie Scheller', role: 'project owner', access_level: 'owner' };
   const oneTimeManagerAssignment = oneTimeAssignments.find((assignment) => assignment.person_name === 'Shloimie')
     || oneTimeAssignments.find((assignment) => assignment.access_level === 'manager')
-    || { person_name: 'Shloimie', role: 'project admin', access_level: 'manager' };
+    || { person_name: 'Shloimie', role: 'project admin', access_level: 'admin' };
   const oneTimeOwnerCanonical = oneTimeCanonicalAssignments.find((assignment) => assignment.person_name === oneTimeOwnerAssignment.person_name)
     || oneTimeCanonicalAssignments[0]
     || {};
@@ -29960,13 +31114,13 @@ async function ensureDefaultProjects(db = pool) {
   await ensureProjectMember(oneTime, oneTimeManagerAssignment.person_name, {
     role: oneTimeManagerAssignment.role,
     access_level: oneTimeManagerAssignment.access_level,
-    login_username: ONE_TIME_MANAGER_USERNAME || ONE_TIME_OPS_USERNAME || null,
+    login_username: ONE_TIME_ADMIN_USERNAME || ONE_TIME_MANAGER_USERNAME || ONE_TIME_OPS_USERNAME || null,
     metadata: {
       account_type: 'internal_admin',
       project_scope: ONE_TIME_PROJECT_KEY,
       workspace_scope: 'rabbi_sheller_provider',
-      canonical_role: oneTimeManagerCanonical.canonical_role || 'workspace_manager',
-      canonical_role_label: oneTimeManagerCanonical.canonical_role_label || 'Workspace Manager',
+      canonical_role: oneTimeManagerCanonical.canonical_role || 'workspace_admin',
+      canonical_role_label: oneTimeManagerCanonical.canonical_role_label || 'Workspace Admin',
       platform_role: oneTimeManagerCanonical.platform_role || 'platform_super_admin',
       platform_role_label: oneTimeManagerCanonical.platform_role_label || 'Platform Super Admin',
       compatibility_role: oneTimeManagerCanonical.compatibility_role || oneTimeManagerAssignment.role,
@@ -39239,6 +40393,85 @@ app.post('/api/bna/communications', requireAdmin, async (req, res) => {
   }
 });
 
+function resendInboundResponse(result = {}) {
+  return {
+    success: Boolean(result.success),
+    ignored: Boolean(result.ignored),
+    duplicate: Boolean(result.duplicate),
+    fetched: Boolean(result.fetched),
+    reason: result.reason || null,
+    event_type: result.event_type || 'email.received',
+    communication_id: result.communication_id || null,
+    contact_id: result.contact_id || null,
+    provider_message_id: result.provider_message_id || null,
+    email_message_id: result.email_message_id || null,
+    thread_key: result.thread_key || null,
+    workspace_key: result.workspace_key || null,
+    project_key: result.project_key || null,
+    attachment_count: Number(result.attachment_count || 0),
+  };
+}
+
+async function handleResendInboundWebhook(req, res) {
+  const rawPayload = typeof req.rawBody === 'string'
+    ? req.rawBody
+    : JSON.stringify(req.body && typeof req.body === 'object' ? req.body : {});
+  let event;
+  try {
+    event = resendIntegration.verifyResendWebhookSignature({
+      payload: rawPayload,
+      headers: req.headers,
+      webhookSecret: RESEND_WEBHOOK_SECRET,
+    });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Resend inbound webhook verification failed');
+    const status = Number(err?.status || err?.statusCode || 401);
+    if (status === 401) {
+      return res.status(401).json({ success: false, error: 'Unauthorized Resend webhook' });
+    }
+    return res.status(status).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+
+  event.__svix_id = String(req.headers['svix-id'] || '').trim();
+  const eventType = String(event.type || event.event || '').trim();
+  if (eventType !== 'email.received') {
+    return res.status(200).json({
+      success: true,
+      ignored: true,
+      reason: 'unsupported_event_type',
+      event_type: eventType || null,
+    });
+  }
+
+  try {
+    const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, pool);
+    const workspaceId = await getWorkspaceIdForProjectKey(ONE_TIME_PROJECT_KEY, pool);
+    const identity = academySenderIdentity(ONE_TIME_PROVIDER_WORKSPACE_KEY);
+    const runtimeConfig = resendServerRuntimeConfig(identity);
+    const result = await resendInboundCrm.processResendInboundEvent({
+      db: pool,
+      event,
+      workspaceId,
+      projectId: project?.id || null,
+      fetchReceivedEmail: (emailId) => resendIntegration.getReceivedEmail(emailId, {
+        config: runtimeConfig,
+        fetchImpl: fetch,
+      }),
+    });
+    return res.status(200).json(resendInboundResponse(result));
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Resend inbound webhook processing failed');
+    return res.status(safe.status || 500).json({
+      success: false,
+      error: safe.error,
+      blocker: safe.blocker,
+    });
+  }
+}
+
+app.post('/api/resend/inbound', handleResendInboundWebhook);
+app.post('/api/bna/resend/inbound', handleResendInboundWebhook);
+
 app.post('/api/bna/resend/webhook', async (req, res) => {
   const suppliedSecret = String(req.headers['x-resend-webhook-secret'] || req.query.secret || '').trim();
   if (RESEND_WEBHOOK_SECRET && suppliedSecret !== RESEND_WEBHOOK_SECRET) {
@@ -39254,8 +40487,10 @@ app.post('/api/bna/resend/webhook', async (req, res) => {
     'email.delivery_delayed': 'delivery_delayed',
     'email.bounced': 'bounced',
     'email.complained': 'complained',
+    'email.failed': 'failed',
     'email.opened': 'opened',
     'email.clicked': 'clicked',
+    'email.suppressed': 'suppressed',
   })[eventType] || eventType.replace(/^email\./, '') || 'webhook_received';
   try {
     let updated = [];
@@ -39271,7 +40506,7 @@ app.post('/api/bna/resend/webhook', async (req, res) => {
       )).rows;
       await pool.query(
         `UPDATE bna_email_log
-         SET status = CASE WHEN $2 IN ('delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed') THEN $2 ELSE status END,
+         SET status = CASE WHEN $2 IN ('delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'failed', 'suppressed') THEN $2 ELSE status END,
              metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
          WHERE provider_message_id = $1`,
         [messageId, status, JSON.stringify({ resend_event: eventType })]
@@ -39303,7 +40538,17 @@ app.get('/api/bna/resend/status', requireAdmin, async (req, res) => {
     success: true,
     email_provider: EMAIL_PROVIDER,
     resend_configured: Boolean(RESEND_API_KEY && RESEND_FROM_EMAIL),
+    resend_webhook_configured: Boolean(RESEND_WEBHOOK_SECRET),
     resend_from_email: RESEND_FROM_EMAIL || null,
+    resend_inbound_endpoint: '/api/resend/inbound',
+    one_time_sender_identity: {
+      domain: ONE_TIME_EMAIL_DOMAIN,
+      from_name: ONE_TIME_EMAIL_FROM_NAME,
+      from_email: ONE_TIME_EMAIL_FROM,
+      reply_to: ONE_TIME_EMAIL_REPLY_TO,
+      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+    },
     sender_identity: {
       from_name: identity.fromName,
       from_email: identity.fromEmail,
@@ -39422,6 +40667,13 @@ function socialPostView(row = {}) {
     created_at: row.created_at || null,
     updated_at: row.updated_at || null,
   };
+}
+
+function isOneTimeSocialPostRow(row = {}) {
+  const metadata = sanitizeIntegrationMetadata(row.metadata);
+  const projectKey = normalizeProjectKey(metadata.project_key || metadata.project || '');
+  const workspaceKey = normalizeWorkspaceKey(metadata.workspace_key || metadata.workspace || '');
+  return projectKey === ONE_TIME_PROJECT_KEY || workspaceKey === 'rabbi_sheller_provider';
 }
 
 function emailDraftView(row = {}) {
@@ -39763,6 +41015,8 @@ function buildGhlSocialStatusCard() {
 function buildWapiStatusCard() {
   const outboundConfigured = Boolean(WAPI_API_TOKEN);
   const webhookConfigured = Boolean(String(process.env.WAPI_WEBHOOK_SECRET || '').trim());
+  const phoneConfigured = Boolean(String(WAPI_PHONE_NUMBER || '').trim());
+  const instanceConfigured = Boolean(String(WAPI_INSTANCE_ID || '').trim());
   return integrationStatusCard({
     provider: 'wapi',
     label: 'WAPI / WhatsApp',
@@ -39776,6 +41030,14 @@ function buildWapiStatusCard() {
     details: {
       outbound_configured: outboundConfigured,
       inbound_webhook_configured: webhookConfigured,
+      phone_number_configured: phoneConfigured,
+      phone_number_fingerprint: phoneConfigured ? sha256Hex(WAPI_PHONE_NUMBER).slice(0, 12) : null,
+      instance_id_configured: instanceConfigured,
+      instance_id_fingerprint: instanceConfigured ? sha256Hex(WAPI_INSTANCE_ID).slice(0, 12) : null,
+      api_token_fingerprint: outboundConfigured ? sha256Hex(WAPI_API_TOKEN).slice(0, 12) : null,
+      webhook_url_configured: Boolean(String(WAPI_WEBHOOK_URL || '').trim()),
+      webhook_url_fingerprint: WAPI_WEBHOOK_URL ? sha256Hex(WAPI_WEBHOOK_URL).slice(0, 12) : null,
+      webhook_route: '/api/webhooks/wapi',
       provider_account_model: 'separate workspace/provider connection required',
       live_send_confirmation: 'SEND_WHATSAPP',
     },
@@ -39926,6 +41188,93 @@ app.get('/api/bna/integrations/status', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/assistant/control-plane/readiness', requireAdmin, async (req, res) => {
+  try {
+    const expectedTables = [...ASSISTANT_DATA_MODEL_TABLES];
+    const expectedIndexes = [
+      'idx_assistant_identities_scope',
+      'idx_assistant_conversations_scope',
+      'idx_assistant_messages_conversation',
+      'idx_assistant_context_objects_scope',
+      'idx_assistant_action_plans_status',
+      'idx_assistant_action_runs_status',
+      'idx_assistant_previews_status',
+      'idx_assistant_approvals_status',
+      'idx_assistant_drafts_object',
+      'idx_assistant_draft_versions_draft',
+      'idx_assistant_templates_scope',
+      'idx_assistant_saved_views_owner',
+      'idx_assistant_reminders_status',
+      'idx_assistant_notifications_status',
+      'idx_assistant_onboarding_sessions_status',
+      'idx_assistant_delivery_outbox_status',
+      'idx_assistant_dead_letters_status',
+    ];
+    const [tableResult, indexResult] = await Promise.all([
+      pool.query(
+        `SELECT table_name
+           FROM information_schema.tables
+          WHERE table_schema = 'public'
+            AND table_name = ANY($1::text[])
+          ORDER BY table_name`,
+        [expectedTables]
+      ),
+      pool.query(
+        `SELECT indexname
+           FROM pg_indexes
+          WHERE schemaname = 'public'
+            AND indexname = ANY($1::text[])
+          ORDER BY indexname`,
+        [expectedIndexes]
+      ),
+    ]);
+    const tablesPresent = tableResult.rows.map((row) => row.table_name).sort();
+    const indexesPresent = indexResult.rows.map((row) => row.indexname).sort();
+    const tableSet = new Set(tablesPresent);
+    const indexSet = new Set(indexesPresent);
+    const missingTables = expectedTables.filter((table) => !tableSet.has(table));
+    const missingIndexes = expectedIndexes.filter((indexName) => !indexSet.has(indexName));
+    res.json({
+      success: true,
+      requirement_id: 'REQ-20260623-012',
+      status: missingTables.length || missingIndexes.length ? 'incomplete' : 'implemented_read_only',
+      canonical_model: 'assistant_control_plane_v1',
+      tables_expected: expectedTables.length,
+      tables_present: tablesPresent.length,
+      missing_tables: missingTables,
+      indexes_expected: expectedIndexes.length,
+      indexes_present: indexesPresent.length,
+      missing_indexes: missingIndexes,
+      channel_metadata_adapter_scoped: true,
+      legacy_bna_assistant_tables_preserved: true,
+      no_write_guard: [
+        'read_only_information_schema_and_pg_indexes_queries_only',
+        'no_assistant_rows_created_or_updated',
+        'no_external_send_publish_charge_dns_oauth_or_connector_call',
+        'no_secret_values_returned',
+      ],
+    });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Assistant control-plane readiness failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
+
+app.get('/api/bna/assistant/control-center', requireAdmin, async (req, res) => {
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') {
+      return res.status(403).json({ success: false, error: 'Assistant Control Center is Super Admin only.' });
+    }
+    res.json(await buildAssistantControlCenterSnapshot({
+      db: pool,
+      actor: req.opsIdentity || {},
+    }));
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Assistant Control Center failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
+
 app.get('/api/bna/one-time/integrations/readiness', requireAdmin, async (req, res) => {
   try {
     const resendConfig = resendServerRuntimeConfig();
@@ -39953,6 +41302,236 @@ app.get('/api/bna/one-time/integrations/readiness', requireAdmin, async (req, re
     });
   } catch (err) {
     const safe = safeIntegrationError(err, 'One Time integration readiness failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
+
+app.get('/api/bna/one-time/email-workflow-preview', requireAdmin, async (req, res) => {
+  try {
+    await assertRabbiAdminAccess(req);
+    const readiness = await getResendReadinessForResponse().catch((err) => ({
+      configured: Boolean(RESEND_API_KEY),
+      connected: false,
+      domain: ONE_TIME_EMAIL_DOMAIN,
+      domain_verified: false,
+      send_allowed: false,
+      blocker: err.message || 'Resend readiness check failed; One Time email remains preview-only.',
+    }));
+    const preview = buildOneTimeEmailWorkflowPreview({
+      resendReadiness: {
+        ...readiness,
+        domain: readiness.domain || ONE_TIME_EMAIL_DOMAIN,
+      },
+      ctaUrl: req.query.cta || `https://${ONE_TIME_EMAIL_DOMAIN}/one-time`,
+    });
+    res.json({
+      success: true,
+      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+      provider: 'resend',
+      from_email: ONE_TIME_EMAIL_FROM,
+      no_send: true,
+      external_write_performed: false,
+      ...preview,
+    });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'One Time email workflow preview failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
+
+function countRowsToMap(rows = [], keyField = 'key') {
+  return (Array.isArray(rows) ? rows : []).reduce((acc, row) => {
+    const key = String(row[keyField] || 'unknown').trim() || 'unknown';
+    acc[key] = Number(row.count || 0);
+    return acc;
+  }, {});
+}
+
+app.get('/api/bna/one-time/contact-readiness', requireAdmin, async (req, res) => {
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    const projectId = project.id;
+    const oneTimeListTag = 'one-time-list:rabbi-email-contacts';
+    const [leadAggregate, sourceStatusRows, batchRows, planRows, memberAggregate, studentAggregate, signupAggregate, leakAggregate] = await Promise.all([
+      pool.query(
+        `SELECT
+           COUNT(*)::int AS total_leads,
+           COUNT(*) FILTER (WHERE trim(COALESCE(parent_email, '')) <> '' OR trim(COALESCE(parent_phone, '')) <> '')::int AS contactable_leads,
+           COUNT(*) FILTER (WHERE COALESCE(tags, '{}'::text[]) @> ARRAY[$2]::text[])::int AS email_audience,
+           COUNT(*) FILTER (WHERE COALESCE(tags, '{}'::text[]) @> ARRAY['campaign_candidate_30_day_free']::text[])::int AS campaign_candidates,
+           COUNT(*) FILTER (WHERE COALESCE(tags, '{}'::text[]) @> ARRAY['warm_uncontacted']::text[] OR interest_level = 'warm')::int AS warm_leads,
+           COUNT(*) FILTER (WHERE COALESCE(tags, '{}'::text[]) @> ARRAY['active_old_app']::text[] OR COALESCE(metadata, '{}'::jsonb)->>'source_status' = 'active')::int AS active_old_app,
+           COUNT(*) FILTER (WHERE COALESCE(tags, '{}'::text[]) @> ARRAY['imported_needs_review']::text[])::int AS needs_review,
+            COUNT(*) FILTER (WHERE lower(COALESCE(COALESCE(metadata, '{}'::jsonb)->>'no_send', 'false')) = 'true' OR COALESCE(tags, '{}'::text[]) @> ARRAY['no_send']::text[] OR COALESCE(tags, '{}'::text[]) @> ARRAY['one-time-no-send-until-approved']::text[])::int AS no_send,
+           COUNT(*) FILTER (WHERE COALESCE(metadata, '{}'::jsonb)->>'source_status' IN ('unsubscribed', 'cleaned', 'cancelled', 'canceled') OR COALESCE(tags, '{}'::text[]) && ARRAY['one-time-status:unsubscribed','one-time-status:cleaned','one-time-status:cancelled','one-time-status:canceled']::text[])::int AS suppressed
+         FROM bna_parent_leads
+         WHERE project_id = $1
+           AND COALESCE(status, 'interested') <> 'archived'`,
+        [projectId, oneTimeListTag]
+      ),
+      pool.query(
+        `SELECT COALESCE(NULLIF(COALESCE(metadata, '{}'::jsonb)->>'source_status', ''), 'unknown') AS source_status,
+                COUNT(*)::int AS count
+         FROM bna_parent_leads
+         WHERE project_id = $1
+           AND COALESCE(tags, '{}'::text[]) @> ARRAY[$2]::text[]
+           AND COALESCE(status, 'interested') <> 'archived'
+         GROUP BY 1
+         ORDER BY count DESC, source_status ASC`,
+        [projectId, oneTimeListTag]
+      ),
+      pool.query(
+        `SELECT COALESCE(NULLIF(COALESCE(metadata, '{}'::jsonb)->>'import_batch_id', ''), 'manual_or_unknown') AS import_batch_id,
+                COUNT(*)::int AS count
+         FROM bna_parent_leads
+         WHERE project_id = $1
+           AND COALESCE(tags, '{}'::text[]) @> ARRAY[$2]::text[]
+           AND COALESCE(status, 'interested') <> 'archived'
+         GROUP BY 1
+         ORDER BY count DESC, import_batch_id ASC`,
+        [projectId, oneTimeListTag]
+      ),
+      pool.query(
+        `SELECT COALESCE(NULLIF(COALESCE(metadata, '{}'::jsonb)->>'source_plan', ''), 'unknown') AS source_plan,
+                COUNT(*)::int AS count
+         FROM bna_parent_leads
+         WHERE project_id = $1
+           AND COALESCE(tags, '{}'::text[]) @> ARRAY[$2]::text[]
+           AND COALESCE(status, 'interested') <> 'archived'
+         GROUP BY 1
+         ORDER BY count DESC, source_plan ASC
+         LIMIT 20`,
+        [projectId, oneTimeListTag]
+      ),
+      pool.query(
+        `SELECT
+           COUNT(*)::int AS total_members,
+           COUNT(*) FILTER (WHERE access_enabled IS DISTINCT FROM FALSE AND access_status IN ('active', 'trial'))::int AS active_members,
+           COUNT(*) FILTER (WHERE trim(COALESCE(email, '')) <> '')::int AS members_with_email,
+           COUNT(*) FILTER (WHERE trim(COALESCE(phone, '')) <> '')::int AS members_with_phone
+         FROM bna_members
+         WHERE project_id = $1`,
+        [projectId]
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS total_students,
+                COUNT(*) FILTER (WHERE trim(COALESCE(parent_email, '')) <> '')::int AS students_with_parent_email
+         FROM bna_students
+         WHERE project_id = $1
+           AND COALESCE(status, 'active') <> 'archived'`,
+        [projectId]
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS total_parent_records,
+                COUNT(*) FILTER (WHERE trim(COALESCE(parent_email, '')) <> '')::int AS parents_with_email
+         FROM signups
+         WHERE project_id = $1
+           AND COALESCE(status, 'new') <> 'archived'`,
+        [projectId]
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS count
+         FROM bna_parent_leads
+         WHERE COALESCE(tags, '{}'::text[]) @> ARRAY[$2]::text[]
+           AND (
+             (project_id IS NOT NULL AND project_id <> $1)
+             OR COALESCE(metadata, '{}'::jsonb)->>'project_key' = 'bna'
+             OR COALESCE(metadata, '{}'::jsonb)->>'workspace_key' = 'bna'
+           )`,
+        [projectId, oneTimeListTag]
+      ),
+    ]);
+    const lead = leadAggregate.rows[0] || {};
+    const member = memberAggregate.rows[0] || {};
+    const student = studentAggregate.rows[0] || {};
+    const signup = signupAggregate.rows[0] || {};
+    const noSend = Number(lead.no_send || 0);
+    const suppressed = Number(lead.suppressed || 0);
+    const campaignCandidates = Number(lead.campaign_candidates || 0);
+    const requiredEnv = [
+      RESEND_API_KEY ? null : 'RESEND_API_KEY',
+      RESEND_FROM_EMAIL ? null : 'RESEND_FROM_EMAIL',
+      RESEND_WEBHOOK_SECRET ? null : 'RESEND_WEBHOOK_SECRET',
+    ].filter(Boolean);
+    res.json({
+      success: true,
+      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+      privacy: {
+        no_private_values: true,
+        names_returned: false,
+        emails_returned: false,
+        phones_returned: false,
+        raw_rows_returned: false,
+      },
+      summary: {
+        crm_contact_records: Number(lead.total_leads || 0) + Number(member.total_members || 0),
+        uploaded_contact_leads: Number(lead.total_leads || 0),
+        contactable_leads: Number(lead.contactable_leads || 0),
+        email_audience: Number(lead.email_audience || 0),
+        campaign_candidates: campaignCandidates,
+        warm_leads: Number(lead.warm_leads || 0),
+        active_old_app: Number(lead.active_old_app || 0),
+        active_members: Number(member.active_members || 0),
+        members: Number(member.total_members || 0),
+        parents: Number(signup.total_parent_records || 0),
+        students: Number(student.total_students || 0),
+        needs_review: Number(lead.needs_review || 0),
+        suppressed,
+        no_send: noSend,
+        sendable_now: 0,
+        bna_leak_matches: Number(leakAggregate.rows[0]?.count || 0),
+      },
+      segments: [
+        { id: 'all_contacts', label: 'All Contacts', count: Number(lead.total_leads || 0) + Number(member.total_members || 0), description: 'CRM contact records in the One Time workspace.' },
+        { id: 'warm_leads', label: 'Warm Leads', count: Number(lead.warm_leads || 0), description: 'Imported or prior-contact leads that are not suppressed.' },
+        { id: 'active_members', label: 'Active Members', count: Number(member.active_members || 0), description: 'Active or trial member records on the One Time website/app side.' },
+        { id: 'parents', label: 'Parents', count: Number(signup.total_parent_records || 0), description: 'Parent/signup records scoped to One Time.' },
+        { id: 'students', label: 'Students', count: Number(student.total_students || 0), description: 'Student records scoped to One Time.' },
+        { id: 'email_audience', label: 'Email Audience', count: Number(lead.email_audience || 0), description: 'Rows tagged as Rabbi email contacts.' },
+        { id: 'needs_review', label: 'Needs Review', count: Number(lead.needs_review || 0), description: 'Imported rows requiring manual review before outreach.' },
+        { id: 'suppressed_no_send', label: 'Suppressed / No-send', count: Math.max(suppressed, noSend), description: 'Rows blocked from send by source status or no-send policy.' },
+      ],
+      source_status_counts: countRowsToMap(sourceStatusRows.rows, 'source_status'),
+      import_batch_counts: countRowsToMap(batchRows.rows, 'import_batch_id'),
+      source_plan_counts: countRowsToMap(planRows.rows, 'source_plan'),
+      email_readiness: {
+        no_send_launch_pack: true,
+        actual_send_approved: false,
+        sendable_now: 0,
+        resend_required_env: requiredEnv,
+        blockers: [
+          'All campaign contacts remain no-send until copy, sender, suppressions, unsubscribe handling, and test recipient are approved.',
+          ...requiredEnv.map((name) => `${name} is not configured on the server.`),
+        ],
+      },
+    });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'One Time contact readiness failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
+
+app.get('/api/bna/one-time/trial-signup-preview', requireAdmin, async (req, res) => {
+  try {
+    await assertRabbiAdminAccess(req);
+    const preview = buildOneTimeTrialSignupPreview({
+      parent_name: req.query.parent_name || 'One Time Prospect',
+      parent_email: req.query.email || 'prospect@example.test',
+      student_name: req.query.student_name || 'One Time learner',
+      referral_code: req.query.referral_code || '',
+      source_landing_page: req.query.source_landing_page || '/one-time',
+    });
+    res.json({
+      success: true,
+      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+      no_send: true,
+      ...preview,
+    });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'One Time trial signup preview failed');
     res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
   }
 });
@@ -40350,37 +41929,51 @@ async function createSocialDraft(req, res) {
   let providerDraft = null;
   let setupBlocker = null;
   let readiness = null;
-  if (provider === 'buffer' && (body.create_provider_draft === true || body.createProviderDraft === true || body.provider_draft === true)) {
+  const wantsProviderDraft = body.create_provider_draft === true || body.createProviderDraft === true || body.provider_draft === true;
+  if (provider === 'buffer' && wantsProviderDraft) {
     readiness = await getBufferReadinessForResponse();
-    try {
-      providerDraft = await bufferIntegration.createBufferDraftPost({
-        channelIds,
-        text,
-        media,
-        metadata,
-      }, { config: bufferServerRuntimeConfig(), fetchImpl: fetch });
-      const providerIds = providerDraft.posts.map((post) => post.id).filter(Boolean).join(',');
+    if (isOneTimeSocialPostRow(created)) {
+      setupBlocker = 'One Time Buffer draft creation is blocked until a future approved social packet supplies exact source, channel, copy, timing, rollback/no-post policy, and APPROVE_ONE_TIME_BUFFER_DRAFT.';
       draft = (await pool.query(
         `UPDATE bna_social_posts
-         SET status = 'provider_draft',
-             provider_post_id = $1,
+         SET error = $1,
              metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
              updated_at = NOW()
          WHERE id = $3
          RETURNING *`,
-        [providerIds || null, JSON.stringify({ buffer_post_ids: providerDraft.posts.map((post) => post.id).filter(Boolean) }), created.id]
+        [setupBlocker, JSON.stringify({ buffer_provider_draft_blocked: true, external_write_performed: false }), created.id]
       )).rows[0];
-    } catch (err) {
-      const safe = safeIntegrationError(err, 'Buffer draft creation failed');
-      setupBlocker = safe.blocker;
-      draft = (await pool.query(
-        `UPDATE bna_social_posts
-         SET error = $1,
-             updated_at = NOW()
-         WHERE id = $2
-         RETURNING *`,
-        [safe.blocker, created.id]
-      )).rows[0];
+    } else {
+      try {
+        providerDraft = await bufferIntegration.createBufferDraftPost({
+          channelIds,
+          text,
+          media,
+          metadata,
+        }, { config: bufferServerRuntimeConfig(), fetchImpl: fetch });
+        const providerIds = providerDraft.posts.map((post) => post.id).filter(Boolean).join(',');
+        draft = (await pool.query(
+          `UPDATE bna_social_posts
+           SET status = 'provider_draft',
+               provider_post_id = $1,
+               metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+               updated_at = NOW()
+           WHERE id = $3
+           RETURNING *`,
+          [providerIds || null, JSON.stringify({ buffer_post_ids: providerDraft.posts.map((post) => post.id).filter(Boolean) }), created.id]
+        )).rows[0];
+      } catch (err) {
+        const safe = safeIntegrationError(err, 'Buffer draft creation failed');
+        setupBlocker = safe.blocker;
+        draft = (await pool.query(
+          `UPDATE bna_social_posts
+           SET error = $1,
+               updated_at = NOW()
+           WHERE id = $2
+           RETURNING *`,
+          [safe.blocker, created.id]
+        )).rows[0];
+      }
     }
   }
 
@@ -40390,6 +41983,8 @@ async function createSocialDraft(req, res) {
     provider_draft: providerDraft ? { provider: 'buffer', post_ids: providerDraft.posts.map((post) => post.id).filter(Boolean) } : null,
     readiness,
     setup_blocker: setupBlocker,
+    external_write_performed: Boolean(providerDraft),
+    one_time_buffer_draft_blocked: Boolean(setupBlocker && isOneTimeSocialPostRow(draft)),
   });
 }
 
@@ -40463,6 +42058,19 @@ async function confirmBufferSchedule(req, res) {
   const row = (await pool.query('SELECT * FROM bna_social_posts WHERE id = $1 LIMIT 1', [id])).rows[0];
   if (!row) return res.status(404).json({ error: 'Social schedule preview was not found' });
   assertScopedDraftMetadataAccess(req, row.metadata || {});
+  if (isOneTimeSocialPostRow(row)) {
+    const oneTimeApproval = String(body.approval_phrase || body.approvalPhrase || '').trim();
+    if (oneTimeApproval !== 'APPROVE_ONE_TIME_BUFFER_SCHEDULE') {
+      return res.status(409).json({
+        success: false,
+        scheduled: false,
+        external_write_performed: false,
+        required_approval_phrase: 'APPROVE_ONE_TIME_BUFFER_SCHEDULE',
+        setup_blocker: 'One Time Buffer scheduling is blocked until a future social approval packet supplies the exact approval phrase.',
+        error: 'One Time Buffer scheduling is not approved in this packet.',
+      });
+    }
+  }
   if (row.confirmation_token_hash !== confirmationTokenHash(token)) return res.status(409).json({ error: 'Confirmation token does not match this preview' });
   if (row.confirmation_expires_at && Date.parse(row.confirmation_expires_at) < Date.now()) return res.status(409).json({ error: 'Confirmation token expired; create a fresh preview' });
   try {
@@ -43834,6 +45442,12 @@ app.post('/api/provider-portal/login', async (req, res) => {
   }
 
   try {
+    if (await maybeHandleOpsPortalFallback(req, res, {
+      username,
+      password,
+      source: 'provider_portal_login',
+    })) return;
+
     const provider = (await pool.query(
       `SELECT *
        FROM bna_service_providers
@@ -43845,6 +45459,13 @@ app.post('/api/provider-portal/login', async (req, res) => {
     )).rows[0] || null;
 
     if (!provider || !verifyParentPassword(password, provider.password_hash)) {
+      if (await maybeHandleOtherPortalLogin(req, res, {
+        username,
+        password,
+        currentPortal: 'provider',
+        returnTo: '/provider',
+        source: 'provider_portal_login',
+      })) return;
       clearProviderSessionCookie(res);
       return res.status(401).json({ success: false, error: 'Invalid provider credentials' });
     }
@@ -45405,7 +47026,19 @@ app.get('/api/bna/students', requireAdmin, async (req, res) => {
         COALESCE(bot_settings.settings, '[]'::json) AS bot_settings,
         COALESCE(bot_settings.active_count, 0) AS active_bot_count,
         COALESCE(bot_settings.needs_route_count, 0) AS bot_needs_route_count,
-        next_check.next_check_in_date
+        next_check.next_check_in_date,
+        latest_event.latest_accountability_at,
+        COALESCE(attendance_counts.attendance_record_count, 0) AS attendance_record_count,
+        COALESCE(attendance_counts.attendance_present_count, 0) AS attendance_present_count,
+        CASE
+          WHEN COALESCE(attendance_counts.attendance_record_count, 0) > 0
+            THEN ROUND((attendance_counts.attendance_present_count::numeric / attendance_counts.attendance_record_count::numeric) * 100)::int
+          ELSE NULL
+        END AS attendance_percent,
+        latest_attendance.attendance_status AS latest_attendance_status,
+        latest_attendance.attendance_at AS latest_attendance_at,
+        latest_progress.progress_percent AS latest_progress_percent,
+        latest_progress.progress_at AS latest_progress_at
        FROM bna_students s
        LEFT JOIN (
          SELECT student_id, COUNT(*) AS open_goals
@@ -45425,6 +47058,44 @@ app.get('/api/bna/students', requireAdmin, async (req, res) => {
          WHERE next_check_in_date IS NOT NULL AND next_check_in_date >= CURRENT_DATE
          GROUP BY student_id
        ) next_check ON next_check.student_id = s.id
+       LEFT JOIN LATERAL (
+         SELECT MAX(GREATEST(
+           COALESCE(a.updated_at, 'epoch'::timestamp),
+           COALESCE(a.occurred_at, 'epoch'::timestamp),
+           COALESCE(a.created_at, 'epoch'::timestamp)
+         )) AS latest_accountability_at
+         FROM bna_accountability_events a
+         WHERE a.student_id = s.id
+       ) latest_event ON TRUE
+       LEFT JOIN (
+         SELECT student_id,
+                COUNT(*) FILTER (
+                  WHERE COALESCE(NULLIF(trim(attendance_status), ''), '') <> ''
+                ) AS attendance_record_count,
+                COUNT(*) FILTER (
+                  WHERE lower(regexp_replace(COALESCE(attendance_status, ''), '[^a-z0-9]+', '_', 'g')) IN ('present', 'here', 'attended')
+                ) AS attendance_present_count
+         FROM bna_accountability_events
+         GROUP BY student_id
+       ) attendance_counts ON attendance_counts.student_id = s.id
+       LEFT JOIN LATERAL (
+         SELECT a.attendance_status,
+                COALESCE(a.occurred_at, a.created_at, a.updated_at) AS attendance_at
+         FROM bna_accountability_events a
+         WHERE a.student_id = s.id
+           AND COALESCE(NULLIF(trim(a.attendance_status), ''), '') <> ''
+         ORDER BY COALESCE(a.occurred_at, a.created_at, a.updated_at) DESC NULLS LAST, a.id DESC
+         LIMIT 1
+       ) latest_attendance ON TRUE
+       LEFT JOIN LATERAL (
+         SELECT a.progress_percent,
+                COALESCE(a.occurred_at, a.created_at, a.updated_at) AS progress_at
+         FROM bna_accountability_events a
+         WHERE a.student_id = s.id
+           AND a.progress_percent IS NOT NULL
+         ORDER BY COALESCE(a.occurred_at, a.created_at, a.updated_at) DESC NULLS LAST, a.id DESC
+         LIMIT 1
+       ) latest_progress ON TRUE
        LEFT JOIN (
          SELECT student_id, COUNT(*) AS questions
          FROM bna_accountability_events
@@ -47746,6 +49417,12 @@ app.post('/api/student-portal/login', async (req, res) => {
     return res.status(400).json({ error: 'Username and password are required' });
   }
 
+  if (await maybeHandleOpsPortalFallback(req, res, {
+    username,
+    password,
+    source: 'student_portal_login',
+  })) return;
+
   const persistentFailureCount = await countPersistentStudentPasswordAuthFailures(req, usernameNormalized);
   if (persistentFailureCount !== null && persistentFailureCount >= STUDENT_PORTAL_AUTH_MAX_FAILURES) {
     await recordPersistentStudentPasswordAuthAttempt(req, usernameNormalized, {
@@ -47773,6 +49450,14 @@ app.post('/api/student-portal/login', async (req, res) => {
       [usernameNormalized]
     )).rows[0];
     if (!account || !verifyStudentPassword(password, account.password_hash)) {
+      if (await maybeHandleOtherPortalLogin(req, res, {
+        username,
+        password,
+        currentPortal: 'student',
+        returnTo: '/student',
+        source: 'student_portal_login',
+        db: client,
+      })) return;
       await recordPersistentStudentPasswordAuthAttempt(req, usernameNormalized, {
         outcome: 'failure',
         metadata: { reason: 'invalid_username_or_password' },
@@ -48540,9 +50225,25 @@ app.post('/api/student-portal/worksheets/:id/submit', async (req, res) => {
 });
 
 app.post('/api/parent-portal/login', async (req, res) => {
-  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
+  const parentIdentity = String((req.body || {}).parent_email || (req.body || {}).email || (req.body || {}).username || (req.body || {}).login_username || '').trim();
+  const parentEmail = normalizeEmail(parentIdentity);
   const password = String((req.body || {}).password || '');
+  if ((!parentEmail || !password) && parentIdentity && password) {
+    if (await maybeHandleOtherPortalLogin(req, res, {
+      username: parentIdentity,
+      password,
+      currentPortal: 'parent',
+      returnTo: '/parent',
+      source: 'parent_portal_password_login',
+    })) return;
+  }
   if (!parentEmail || !password) return res.status(400).json({ error: 'Parent email and password are required' });
+
+  if (await maybeHandleOpsPortalFallback(req, res, {
+    username: parentIdentity,
+    password,
+    source: 'parent_portal_password_login',
+  })) return;
 
   const client = await pool.connect();
   try {
@@ -48554,6 +50255,14 @@ app.post('/api/parent-portal/login', async (req, res) => {
       [parentEmail]
     )).rows[0];
     if (!account || !verifyParentPassword(password, account.password_hash)) {
+      if (await maybeHandleOtherPortalLogin(req, res, {
+        username: parentIdentity || parentEmail,
+        password,
+        currentPortal: 'parent',
+        returnTo: '/parent',
+        source: 'parent_portal_password_login',
+        db: client,
+      })) return;
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     const records = await findParentAccessRecords(parentEmail, client);
@@ -48681,35 +50390,35 @@ app.post('/api/bna/auth/setup-password', async (req, res) => {
 });
 
 app.post('/api/bna/auth/login', async (req, res) => {
-  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
-  const password = String((req.body || {}).password || '');
-  if (!parentEmail || !password) return res.status(400).json({ error: 'email and password are required' });
+  const body = req.body || {};
+  const username = limitText(body.username || body.login_username || body.identity || body.parent_email || body.email, 160);
+  const password = String(body.password || '');
+  const returnTo = body.returnTo || body.return_to || '';
+  if (!username || !password) return res.status(400).json({ error: 'username/email and password are required' });
   const client = await pool.connect();
   try {
-    const account = (await client.query(
-      `SELECT parent_email, password_hash
-       FROM bna_parent_password_accounts
-       WHERE lower(parent_email) = $1
-       LIMIT 1`,
-      [parentEmail]
-    )).rows[0];
-    if (!account || !verifyParentPassword(password, account.password_hash)) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+    const destinations = await collectPortalLoginDestinations({ username, password, db: client });
+    if (!destinations.length) {
+      return res.status(401).json({ error: 'Invalid username or password' });
     }
-    const records = await findParentAccessRecords(parentEmail, client);
-    if (!parentAccessEligible(records)) {
-      return res.status(404).json({ error: 'No active student or signup is linked to this email' });
+    if (destinations.length > 1) {
+      return res.json({
+        success: true,
+        chooser_required: true,
+        message: 'Choose which portal or workspace to open.',
+        destinations: destinations.map((destination) => publicPortalDestination(destination, returnTo)),
+      });
     }
-    const sessionId = await issueParentSession(parentEmail, client);
-    await client.query(
-      `UPDATE bna_parent_password_accounts
-       SET last_login_at = NOW(),
-           updated_at = NOW()
-       WHERE lower(parent_email) = $1`,
-      [parentEmail]
-    );
-    setParentSessionCookie(res, sessionId);
-    res.json({ success: true, role: 'parent' });
+    const destination = destinations[0];
+    const sessionPayload = await issuePortalDestinationSession(destination, res, { db: client, returnTo });
+    res.json({
+      success: true,
+      role: destination.role,
+      portal: destination.portal,
+      destination: publicPortalDestination(destination, returnTo),
+      redirect_to: sessionPayload.redirect_to,
+      ...sessionPayload,
+    });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   } finally {
@@ -48719,8 +50428,18 @@ app.post('/api/bna/auth/login', async (req, res) => {
 
 app.post('/api/bna/auth/logout', async (req, res) => {
   const cookies = parseCookies(req);
+  await clearSession(cookies[SESSION_COOKIE_NAME]).catch(() => {});
   await clearParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => {});
-  clearParentSessionCookie(res);
+  await clearProviderSession(cookies[PROVIDER_SESSION_COOKIE_NAME]).catch(() => {});
+  await clearStudentSession(cookies[STUDENT_SESSION_COOKIE_NAME]).catch(() => {});
+  const secure = responseUsesSecureCookie(res) ? '; Secure' : '';
+  res.setHeader('Set-Cookie', [
+    `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`,
+    `${ACTIVE_WORKSPACE_COOKIE_NAME}=; Path=/; SameSite=Lax; Max-Age=0${secure}`,
+    `${PARENT_SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`,
+    `${PROVIDER_SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`,
+    `${STUDENT_SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`,
+  ]);
   res.json({ success: true });
 });
 
@@ -48729,6 +50448,12 @@ app.post('/api/parent/auth/login', async (req, res) => {
   const accessCode = String((req.body || {}).access_code || (req.body || {}).accessCode || '').trim();
   if (!identity || !accessCode) return res.status(400).json({ error: 'Email or phone and access code are required' });
   try {
+    if (await maybeHandleOpsPortalFallback(req, res, {
+      username: identity,
+      password: accessCode,
+      source: 'parent_public_access_login',
+    })) return;
+
     const account = await getParentAccountForLogin(identity, accessCode);
     if (!account) return res.status(401).json({ error: 'Invalid parent login' });
     const parentEmail = normalizeEmail(account.login_email || account.person_email || identity) || `parent-${account.parent_person_id}@local`;
@@ -52836,6 +54561,409 @@ app.post('/api/bna/content-bundles/:id/generate', requireAdmin, async (req, res)
   }
 });
 
+function publicEmailNotificationView(notification = {}) {
+  if (!notification || typeof notification !== 'object') return notification;
+  const {
+    to,
+    body_text: bodyText,
+    body_html: bodyHtml,
+    ...safeNotification
+  } = notification;
+  return {
+    ...safeNotification,
+    recipient_configured: Boolean(to),
+    body_included: Boolean(bodyText || bodyHtml),
+  };
+}
+
+app.post('/api/bna/one-time/drive-dropoff-intake', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const rawFile = body.file && typeof body.file === 'object' ? body.file : body;
+  const file = {
+    id: rawFile.id || rawFile.drive_file_id || body.drive_file_id,
+    name: rawFile.name || rawFile.title || rawFile.filename || body.title,
+    title: rawFile.title || body.title,
+    mimeType: rawFile.mimeType || rawFile.mime_type || body.mime_type,
+    webViewLink: rawFile.webViewLink || rawFile.web_view_link || rawFile.media_url || rawFile.url || body.media_url,
+    parents: rawFile.parents || (body.drive_folder_id ? [body.drive_folder_id] : []),
+    size: rawFile.size || body.size,
+    createdTime: rawFile.createdTime || rawFile.created_time || body.created_time,
+    modifiedTime: rawFile.modifiedTime || rawFile.modified_time || body.modified_time,
+  };
+
+  let payload;
+  try {
+    payload = buildOneTimeDriveDropoffContentJobPayload(file, {
+      folderId: body.drive_folder_id,
+      status: body.status || 'needs_approval',
+    });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+
+  payload.parse_json = {
+    ...(parseJsonMaybe(body.parse_json) || {}),
+    ...payload.parse_json,
+    intake_source: body.intake_source || 'one_time_drive_dropoff_email_watcher',
+  };
+
+  if (!payload.drive_file_id && !payload.media_url) {
+    return res.status(400).json({ error: 'drive_file_id or media_url is required to preserve the Drive dropoff source' });
+  }
+
+  const dryRunEmail = body.email_dry_run === true || body.dry_run_email === true;
+  const notifyEmail = body.notify_email !== false;
+  const recipientEmail = body.notify_email_to || body.recipient_email || body.to || '';
+  const client = await pool.connect();
+  let project = null;
+  let job = null;
+  let created = false;
+  let alreadySent = false;
+
+  try {
+    await client.query('BEGIN');
+    project = await resolveProjectForScopedWrite(req, payload, client);
+    assertProjectAccess(req, project);
+
+    let existing = null;
+    if (payload.drive_file_id) {
+      existing = (await client.query(
+        `SELECT *
+         FROM bna_content_jobs
+         WHERE project_id = $1
+           AND drive_file_id = $2
+         ORDER BY created_at DESC
+         LIMIT 1`,
+        [project.id, payload.drive_file_id]
+      )).rows[0] || null;
+    }
+    if (!existing && payload.media_url) {
+      existing = (await client.query(
+        `SELECT *
+         FROM bna_content_jobs
+         WHERE project_id = $1
+           AND media_url = $2
+           AND (drive_stage IS NULL OR drive_stage = '' OR drive_stage = $3)
+         ORDER BY created_at DESC
+         LIMIT 1`,
+        [project.id, payload.media_url, payload.drive_stage]
+      )).rows[0] || null;
+    }
+
+    if (existing) {
+      alreadySent = hasOneTimeDriveDropoffEmailSent(parseJsonMaybe(existing.parse_json));
+      const updateResult = await client.query(
+        `UPDATE bna_content_jobs
+         SET title = $2,
+             source_type = 'google_drive',
+             media_url = COALESCE($3, media_url),
+             drive_file_id = COALESCE($4, drive_file_id),
+             drive_folder_id = COALESCE($5, drive_folder_id),
+             drive_stage = $6,
+             mime_type = COALESCE($7, mime_type),
+             caption = COALESCE($8, caption),
+             notes = COALESCE($9, notes),
+             parse_json = COALESCE(parse_json, '{}'::jsonb) || $10::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [
+          existing.id,
+          payload.title,
+          payload.media_url || null,
+          payload.drive_file_id || null,
+          payload.drive_folder_id || null,
+          payload.drive_stage,
+          payload.mime_type || null,
+          payload.caption || null,
+          payload.notes || null,
+          JSON.stringify(payload.parse_json || {}),
+        ]
+      );
+      job = updateResult.rows[0];
+    } else {
+      const insertResult = await client.query(
+        `INSERT INTO bna_content_jobs (
+          project_id, title, source_type, media_url, drive_file_id, drive_folder_id, drive_stage,
+          mime_type, caption, status, parse_json, notes
+        ) VALUES ($1, $2, 'google_drive', $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11)
+        RETURNING *`,
+        [
+          project.id,
+          payload.title,
+          payload.media_url || null,
+          payload.drive_file_id || null,
+          payload.drive_folder_id || null,
+          payload.drive_stage,
+          payload.mime_type || null,
+          payload.caption || null,
+          payload.status || 'needs_approval',
+          JSON.stringify(payload.parse_json || {}),
+          payload.notes || null,
+        ]
+      );
+      job = insertResult.rows[0];
+      created = true;
+    }
+
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+
+  let emailNotification = notifyEmail
+    ? await sendOneTimeDriveDropoffNotificationEmail({
+      job,
+      project,
+      payload,
+      recipientEmail,
+      dryRun: dryRunEmail,
+      shouldSend: !alreadySent,
+    })
+    : {
+      attempted: false,
+      sent: false,
+      skipped: true,
+      reason: 'email_disabled_for_request',
+    };
+  let updatedJob = job;
+  let notificationError = null;
+
+  if (notifyEmail && !alreadySent) {
+    try {
+      updatedJob = await recordOneTimeDriveDropoffEmailResult({ job, project, notification: emailNotification }) || job;
+    } catch (err) {
+      notificationError = limitText(err.message || String(err), 500);
+      emailNotification = {
+        ...emailNotification,
+        record_error: notificationError,
+      };
+    }
+  }
+
+  res.json({
+    success: true,
+    created,
+    already_sent: alreadySent,
+    job: updatedJob,
+    email_notification: publicEmailNotificationView(emailNotification),
+    notification_error: notificationError,
+  });
+});
+
+app.post('/api/bna/one-time/presentation-intake', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const rawFile = body.file && typeof body.file === 'object' ? body.file : body;
+  const file = {
+    id: rawFile.id || rawFile.drive_file_id || body.drive_file_id,
+    name: rawFile.name || rawFile.title || rawFile.filename || body.title,
+    title: rawFile.title || body.title,
+    mimeType: rawFile.mimeType || rawFile.mime_type || body.mime_type,
+    webViewLink: rawFile.webViewLink || rawFile.web_view_link || rawFile.media_url || rawFile.url || body.media_url,
+    parents: rawFile.parents || (body.drive_folder_id ? [body.drive_folder_id] : []),
+    size: rawFile.size || body.size,
+    createdTime: rawFile.createdTime || rawFile.created_time || body.created_time,
+    modifiedTime: rawFile.modifiedTime || rawFile.modified_time || body.modified_time,
+  };
+
+  if (!isOneTimePresentationFile(file)) {
+    return res.status(400).json({
+      error: 'presentation file is required',
+      expected_mime_types: Array.from(ONE_TIME_PRESENTATION_MIME_TYPES),
+    });
+  }
+
+  const payload = buildOneTimePresentationContentJobPayload(file, {
+    folderId: body.drive_folder_id,
+    status: body.status || 'needs_approval',
+  });
+  payload.parse_json = {
+    ...(parseJsonMaybe(body.parse_json) || {}),
+    ...payload.parse_json,
+    intake_source: body.intake_source || 'one_time_drive_presentation_watcher',
+  };
+
+  if (!payload.drive_file_id && !payload.media_url) {
+    return res.status(400).json({ error: 'drive_file_id or media_url is required to preserve the presentation source' });
+  }
+
+  const dryRunEmail = body.email_dry_run === true || body.dry_run_email === true;
+  const notifyEmail = body.notify_email !== false;
+  const forceNotify = body.force_notify === true || body.force_email === true;
+  const client = await pool.connect();
+  let project = null;
+  let job = null;
+  let created = false;
+  let alreadySent = false;
+
+  try {
+    await client.query('BEGIN');
+    project = await resolveProjectForScopedWrite(req, payload, client);
+    assertProjectAccess(req, project);
+
+    let existing = null;
+    if (payload.drive_file_id) {
+      existing = (await client.query(
+        `SELECT *
+         FROM bna_content_jobs
+         WHERE project_id = $1
+           AND drive_file_id = $2
+           AND (drive_stage IS NULL OR drive_stage = '' OR drive_stage = $3)
+         ORDER BY created_at DESC
+         LIMIT 1`,
+        [project.id, payload.drive_file_id, ONE_TIME_PRESENTATION_DRIVE_STAGE]
+      )).rows[0] || null;
+    }
+    if (!existing && payload.media_url) {
+      existing = (await client.query(
+        `SELECT *
+         FROM bna_content_jobs
+         WHERE project_id = $1
+           AND media_url = $2
+           AND (drive_stage IS NULL OR drive_stage = '' OR drive_stage = $3)
+         ORDER BY created_at DESC
+         LIMIT 1`,
+        [project.id, payload.media_url, ONE_TIME_PRESENTATION_DRIVE_STAGE]
+      )).rows[0] || null;
+    }
+
+    if (existing) {
+      alreadySent = hasOneTimeDriveDropoffEmailSent(parseJsonMaybe(existing.parse_json));
+      const updateResult = await client.query(
+        `UPDATE bna_content_jobs
+         SET title = $2,
+             source_type = 'google_drive',
+             media_url = COALESCE($3, media_url),
+             drive_file_id = COALESCE($4, drive_file_id),
+             drive_folder_id = COALESCE($5, drive_folder_id),
+             drive_stage = $6,
+             mime_type = COALESCE($7, mime_type),
+             caption = COALESCE($8, caption),
+             notes = COALESCE($9, notes),
+             parse_json = COALESCE(parse_json, '{}'::jsonb) || $10::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [
+          existing.id,
+          payload.title,
+          payload.media_url || null,
+          payload.drive_file_id || null,
+          payload.drive_folder_id || null,
+          payload.drive_stage,
+          payload.mime_type || null,
+          payload.caption || null,
+          payload.notes || null,
+          JSON.stringify(payload.parse_json || {}),
+        ]
+      );
+      job = updateResult.rows[0];
+    } else {
+      const insertResult = await client.query(
+        `INSERT INTO bna_content_jobs (
+          project_id, title, source_type, media_url, drive_file_id, drive_folder_id, drive_stage,
+          mime_type, caption, status, parse_json, notes
+        ) VALUES ($1, $2, 'google_drive', $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11)
+        RETURNING *`,
+        [
+          project.id,
+          payload.title,
+          payload.media_url || null,
+          payload.drive_file_id || null,
+          payload.drive_folder_id || null,
+          payload.drive_stage,
+          payload.mime_type || null,
+          payload.caption || null,
+          payload.status || 'needs_approval',
+          JSON.stringify(payload.parse_json || {}),
+          payload.notes || null,
+        ]
+      );
+      job = insertResult.rows[0];
+      created = true;
+    }
+
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+
+  let emailNotification = notifyEmail
+    ? await sendOneTimePresentationNotificationEmail({
+      job,
+      project,
+      payload,
+      dryRun: dryRunEmail,
+      created: created || (!alreadySent && forceNotify) || (!alreadySent && !created),
+    })
+    : {
+      attempted: false,
+      sent: false,
+      skipped: true,
+      reason: 'email_disabled_for_request',
+    };
+  let updatedJob = job;
+  let notificationError = null;
+
+  if (notifyEmail && !alreadySent) {
+    try {
+      updatedJob = await recordOneTimePresentationEmailResult({ job, project, notification: emailNotification }) || job;
+      await createInAppNotification({
+        eventType: 'rabbi_content_added',
+        projectId: project.id,
+        workspaceKey: 'rabbi_sheller_provider',
+        recipientLabel: 'Shloimie',
+        recipientRole: 'provider_admin',
+        title: `Rabbi PowerPoint received: ${job.title}`,
+        body: limitText([
+          'Original presentation preserved in Google Drive.',
+          payload.parse_json?.open_url ? `Open: ${payload.parse_json.open_url}` : '',
+          payload.parse_json?.download_url ? `Download: ${payload.parse_json.download_url}` : '',
+          emailNotification.sent ? 'Email notification sent.' : '',
+          emailNotification.blocked ? `Email notification blocked: ${emailNotification.blocker || emailNotification.error || 'missing email configuration'}` : '',
+        ].filter(Boolean).join('\n'), 1200),
+        priority: emailNotification.sent ? 'normal' : 'high',
+        relatedType: 'content_job',
+        relatedId: job.id,
+        sourceTable: 'bna_content_jobs',
+        sourceId: job.id,
+        sourceContext: {
+          source: 'one_time_presentation_intake',
+          presentation_intake: true,
+          drive_stage: payload.drive_stage,
+          drive_file_id: payload.drive_file_id || null,
+          open_url: payload.parse_json?.open_url || null,
+          download_url: payload.parse_json?.download_url || null,
+          email_send_performed: Boolean(emailNotification.sent),
+          email_send_blocked: Boolean(emailNotification.blocked),
+        },
+        createdBy: req.opsUser || 'drive_watcher',
+      });
+    } catch (err) {
+      notificationError = limitText(err.message || String(err), 500);
+      emailNotification = {
+        ...emailNotification,
+        record_error: notificationError,
+      };
+    }
+  }
+
+  res.json({
+    success: true,
+    created,
+    already_sent: alreadySent,
+    job: updatedJob,
+    email_notification: emailNotification,
+    notification_error: notificationError,
+  });
+});
+
 app.post('/api/bna/content-jobs', requireAdmin, async (req, res) => {
   const {
     title,
@@ -53587,6 +55715,50 @@ function mixedRecordingCountsFromApply(applied = null, intake = {}) {
   };
 }
 
+function progressOnlyMixedRecordingParse(parsed = {}, job = {}, students = []) {
+  const groupGoalEntries = Array.isArray(parsed.group_goal_entries) ? parsed.group_goal_entries.slice(0, 60) : [];
+  const dailyTorahUpdates = synthesizeAbsentDailyTorahUpdates({
+    job,
+    students,
+    dailyTorahUpdates: Array.isArray(parsed.daily_torah_updates) ? parsed.daily_torah_updates.slice(0, 60) : [],
+  });
+  if (!groupGoalEntries.length && !dailyTorahUpdates.length) return null;
+  return {
+    tasks: [],
+    accountability_events: [],
+    group_goal_entries: groupGoalEntries,
+    daily_torah_updates: dailyTorahUpdates,
+    class_notes: [],
+    report: {
+      ...(parsed.report || {}),
+      progress_only_persist: true,
+    },
+  };
+}
+
+function mergeMixedRecordingCounts(base = {}, progress = {}) {
+  const next = { ...base };
+  for (const key of ['group_goal_entries', 'daily_torah_updates', 'torah_learning_entries']) {
+    next[key] = Number(base[key] || 0) + Number(progress[key] || 0);
+  }
+  if (progress.accountability_events) {
+    next.accountability_events = Number(base.accountability_events || 0) + Number(progress.accountability_events || 0);
+  }
+  return next;
+}
+
+async function generateMixedRecordingProgressParse({ job = {}, students = [] } = {}) {
+  try {
+    return await generateMixedRecordingParse({ job, students });
+  } catch (error) {
+    return basicMixedRecordingParse({
+      job,
+      students,
+      error: error instanceof Error ? error : new Error(String(error || 'Mixed recording progress parse failed.')),
+    });
+  }
+}
+
 async function parseMixedRecordingSource({
   job = {},
   instruction = '',
@@ -53604,6 +55776,8 @@ async function parseMixedRecordingSource({
   ].filter(Boolean).join('\n\n').trim();
   const sourceId = job.id || job.source_message_id || job.local_path || intakeStableHash(rawInput).slice(0, 24);
   const sourceType = contentBacked ? 'content_recording' : 'recording_intake';
+  const parseProjectKey = projectKey || DEFAULT_PROJECT_KEY;
+  const students = await activeStudentsForMixedRecordingParse({ projectKey: parseProjectKey });
   const intake = await createCanonicalIntakeParseRun({
     rawInput,
     source_type: sourceType,
@@ -53614,22 +55788,47 @@ async function parseMixedRecordingSource({
     dry_run: Boolean(dryRun),
   });
   const parsed = mixedRecordingParsedFromCanonical(intake.parsed);
+  const progressParsed = await generateMixedRecordingProgressParse({ job, students });
+  const progressOnlyParsed = progressOnlyMixedRecordingParse(progressParsed, job, students);
   if (dryRun) {
+    const progressCounts = progressOnlyParsed ? {
+      group_goal_entries: progressOnlyParsed.group_goal_entries.length,
+      daily_torah_updates: progressOnlyParsed.daily_torah_updates.length,
+      torah_learning_entries: progressOnlyParsed.daily_torah_updates.length,
+    } : {};
     return {
       success: true,
       dry_run: true,
       raw_intake: intake.raw_intake,
       parse_run: intake.parse_run,
       parsed,
+      progress_parse: progressOnlyParsed ? {
+        parsed: progressOnlyParsed,
+        counts: progressCounts,
+        report: progressParsed.report || {},
+      } : null,
       items: intake.items,
       review_items: intake.review_items,
-      counts: mixedRecordingCountsFromApply(null, intake),
+      counts: mergeMixedRecordingCounts(mixedRecordingCountsFromApply(null, intake), progressCounts),
       report: parsed.report,
     };
   }
 
-  const applied = await fileIntakeParseRun(intake.parse_run.id, { projectKey: projectKey || DEFAULT_PROJECT_KEY });
-  const counts = mixedRecordingCountsFromApply(applied, intake);
+  const applied = await fileIntakeParseRun(intake.parse_run.id, { projectKey: parseProjectKey });
+  let progressApplied = null;
+  if (progressOnlyParsed) {
+    progressApplied = await persistMixedRecordingParse({
+      job,
+      parsed: progressOnlyParsed,
+      students,
+      previousParse,
+      dryRun: false,
+      archiveSourceAfterParse: false,
+      contentBacked: false,
+      projectKey: parseProjectKey,
+    });
+  }
+  const counts = mergeMixedRecordingCounts(mixedRecordingCountsFromApply(applied, intake), progressApplied?.counts || {});
   const nextParse = {
     ...(previousParse || {}),
     intake_parse_run_id: intake.parse_run.id,
@@ -53644,6 +55843,11 @@ async function parseMixedRecordingSource({
       source_table: contentBacked && job.id ? 'bna_content_jobs' : null,
       counts,
       report: parsed.report,
+      progress_parse: progressOnlyParsed ? {
+        persisted_at: new Date().toISOString(),
+        counts: progressApplied?.counts || {},
+        report: progressParsed.report || {},
+      } : null,
     },
   };
   if (contentBacked && job.id) {
@@ -55509,6 +57713,7 @@ async function sendWapiTextMessage({ to, body, typingTime = 0, noLinkPreview = t
   const message = String(body || '').trim();
   if (!recipient) throw new Error('WhatsApp recipient is required');
   if (!message) throw new Error('WhatsApp message body is required');
+  assertOutboundTextReadable(message, 'WhatsApp message body');
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), Math.max(1000, Number(timeoutMs || WAPI_SEND_TIMEOUT_MS)));
@@ -55518,7 +57723,7 @@ async function sendWapiTextMessage({ to, body, typingTime = 0, noLinkPreview = t
       method: 'POST',
       headers: {
         Authorization: `Bearer ${WAPI_API_TOKEN}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
       },
       signal: controller.signal,
       body: JSON.stringify({
@@ -56364,15 +58569,39 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
     )).rows[0] || null;
     res.json({
       success: true,
+      provider: 'whapi_wapi',
+      spoken_aliases: ['Wappy'],
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+      provider_account_status: WAPI_API_TOKEN ? 'token_configured' : 'missing_provider_token',
       inbound_webhook_configured: Boolean(String(process.env.WAPI_WEBHOOK_SECRET || '').trim()),
       outbound_configured: Boolean(WAPI_API_TOKEN),
       sync_configured: Boolean(WAPI_API_TOKEN),
+      phone_number_configured: Boolean(String(WAPI_PHONE_NUMBER || '').trim()),
+      phone_number_fingerprint: WAPI_PHONE_NUMBER ? sha256Hex(WAPI_PHONE_NUMBER).slice(0, 12) : null,
+      api_token_configured: Boolean(WAPI_API_TOKEN),
+      api_token_fingerprint: WAPI_API_TOKEN ? sha256Hex(WAPI_API_TOKEN).slice(0, 12) : null,
+      instance_id_configured: Boolean(String(WAPI_INSTANCE_ID || '').trim()),
+      instance_id_fingerprint: WAPI_INSTANCE_ID ? sha256Hex(WAPI_INSTANCE_ID).slice(0, 12) : null,
+      webhook_url_configured: Boolean(String(WAPI_WEBHOOK_URL || '').trim()),
+      webhook_url_fingerprint: WAPI_WEBHOOK_URL ? sha256Hex(WAPI_WEBHOOK_URL).slice(0, 12) : null,
       outbound_base_url: WAPI_API_BASE_URL,
+      setup_webhook_route: '/api/webhooks/wapi',
       send_endpoint: '/api/bna/contact-communications/send-whatsapp',
       sync_endpoint: '/api/bna/wapi/sync',
+      send_enabled_status: WAPI_API_TOKEN ? 'configured_requires_SEND_WHATSAPP_confirmation' : 'disabled_missing_provider_token',
+      last_test_status: latestSyncRun ? (latestSyncRun.status || 'sync_run_recorded') : 'not_tested',
       latest_sync_run: latestSyncRun,
       required_outbound_env: WAPI_API_TOKEN ? [] : ['WAPI_API_TOKEN or WHAPI_API_TOKEN'],
       required_sync_env: WAPI_API_TOKEN ? [] : ['WAPI_API_TOKEN or WHAPI_API_TOKEN'],
+      required_setup_env: [
+        WAPI_API_TOKEN ? null : 'WAPI_API_TOKEN or WHAPI_API_TOKEN',
+        WAPI_PHONE_NUMBER ? null : 'WAPI_PHONE_NUMBER or WHAPI_PHONE_NUMBER',
+        WAPI_INSTANCE_ID ? null : 'WAPI_INSTANCE_ID or WHAPI_INSTANCE_ID',
+        process.env.WAPI_WEBHOOK_SECRET ? null : 'WAPI_WEBHOOK_SECRET',
+      ].filter(Boolean),
+      no_real_send_performed: true,
+      external_write_performed: false,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -56380,12 +58609,38 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
 });
 
 app.get('/api/bna/wapi/phonebook-report', requireAdmin, async (req, res) => {
-  if (req.opsIdentity?.scope?.type !== 'all') {
-    return res.status(403).json({ error: 'Whapi phonebook grouping is account-wide and requires an unscoped Operations admin login.' });
-  }
   try {
     const limit = Math.max(1, Math.min(Number(req.query.limit || 100), 500));
-    const report = await buildWapiPhonebookReport({ db: pool, limit });
+    const requestedWorkspace = normalizeWorkspaceKey(
+      req.query.workspace ||
+      req.query.workspace_key ||
+      (req.opsIdentity?.scope?.type === 'project' ? defaultWorkspaceKeyForRequest(req) : '')
+    );
+    const requestedProject = normalizeProjectKey(
+      req.query.project ||
+      req.query.project_key ||
+      workspaceProjectKey(requestedWorkspace) ||
+      opsScopeProjectKey(req)
+    );
+    const accountWideRequested = !requestedWorkspace || ['platform', 'super_admin'].includes(requestedWorkspace) || requestedProject === 'all';
+
+    if (accountWideRequested) {
+      if (req.opsIdentity?.scope?.type !== 'all') {
+        return res.status(403).json({ error: 'Whapi phonebook grouping needs a workspace/project scope for this Operations login.' });
+      }
+      const report = await buildWapiPhonebookReport({ db: pool, limit });
+      return res.json(report);
+    }
+
+    const workspaceKey = assertWorkspaceAccess(req, requestedWorkspace);
+    const projectKey = requestedProject || workspaceProjectKey(workspaceKey);
+    assertProjectAccess(req, { project_key: projectKey });
+    const report = await buildWapiPhonebookReport({
+      db: pool,
+      limit,
+      workspace_key: workspaceKey,
+      project_key: projectKey,
+    });
     res.json(report);
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
@@ -68248,10 +70503,26 @@ async function getRabbiMemberWithGrants(memberId, projectId, db = pool) {
   return { member, grants };
 }
 
-async function createRabbiAccessGrant({ projectId, memberId, tier, checkoutRecordId = null, paymentEventId = null, source = 'manual', notes = '', metadata = {}, db = pool } = {}) {
+async function createRabbiAccessGrant({
+  projectId,
+  memberId,
+  tier,
+  checkoutRecordId = null,
+  paymentEventId = null,
+  source = 'manual',
+  notes = '',
+  metadata = {},
+  startsAt = null,
+  expiresAt = null,
+  idempotencyKey = '',
+  db = pool,
+} = {}) {
   const tierKey = normalizeRabbiTierKey(tier.tier_key || tier.tierKey);
   const scopes = grantScopesForTier(tierKey);
-  const existing = checkoutRecordId ? (await db.query(
+  const metadataWithIdempotency = idempotencyKey
+    ? { ...(metadata || {}), idempotency_key: idempotencyKey }
+    : (metadata || {});
+  let existing = checkoutRecordId ? (await db.query(
     `SELECT *
      FROM bna_access_grants
      WHERE project_id = $1
@@ -68263,12 +70534,26 @@ async function createRabbiAccessGrant({ projectId, memberId, tier, checkoutRecor
      LIMIT 1`,
     [projectId, memberId, checkoutRecordId, tierKey]
   )).rows[0] : null;
+  if (!existing && idempotencyKey) {
+    existing = (await db.query(
+      `SELECT *
+       FROM bna_access_grants
+       WHERE project_id = $1
+         AND member_id = $2
+         AND tier_key = $3
+         AND COALESCE(metadata, '{}'::jsonb)->>'idempotency_key' = $4
+         AND status = 'active'
+       ORDER BY id ASC
+       LIMIT 1`,
+      [projectId, memberId, tierKey, idempotencyKey]
+    )).rows[0] || null;
+  }
   if (existing) return existing;
   return (await db.query(
     `INSERT INTO bna_access_grants (
        project_id, member_id, checkout_record_id, payment_event_id, tier_id,
-       tier_key, scopes, status, source, notes, metadata, updated_at
-     ) VALUES ($1, $2, $3, $4, $5, $6, $7::text[], 'active', $8, $9, $10::jsonb, NOW())
+       tier_key, scopes, status, source, starts_at, expires_at, notes, metadata, updated_at
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7::text[], 'active', $8, COALESCE($9::timestamptz, NOW()), $10::timestamptz, $11, $12::jsonb, NOW())
      RETURNING *`,
     [
       projectId,
@@ -68279,8 +70564,10 @@ async function createRabbiAccessGrant({ projectId, memberId, tier, checkoutRecor
       tierKey,
       scopes,
       source,
+      startsAt || null,
+      expiresAt || null,
       limitText(notes || '', 2000) || null,
-      JSON.stringify(metadata || {}),
+      JSON.stringify(metadataWithIdempotency),
     ]
   )).rows[0];
 }
@@ -68335,7 +70622,7 @@ async function logRabbiEmailAttempt({
       ...(context.metadata || {}),
     },
   });
-  return { subject: template.subject, recipient, status, error };
+  return { subject: template.subject, recipient, status, error, provider, provider_message_id: providerMessageId };
 }
 
 async function maybeSendRabbiEmail({
@@ -68384,7 +70671,7 @@ async function maybeSendRabbiEmail({
   });
   try {
     const sent = await sendEmail({
-      workspace: 'one_time_mishnah_class',
+      workspace: 'rabbi_sheller_provider',
       to: recipient,
       subject: template.subject,
       text: template.text,
@@ -68922,11 +71209,170 @@ async function oneTimeCalendarRows({ projectId, view = 'week', audience = 'admin
   };
 }
 
+function oneTimeSignupPrimaryPhone(lead = {}) {
+  return lead.phone || lead.parent_phone || lead.whatsapp || lead.parent_whatsapp || '';
+}
+
+function oneTimeSignupStudentAge(value) {
+  const parsed = Number.parseInt(String(value || '').trim(), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function oneTimeSignupTrackingTags(lead = {}) {
+  const region = normalizeOneTimeRegion(lead.region || 'worldwide');
+  return normalizeTextArray([
+    'one-time-trial-signup',
+    'one-time-no-send-until-approved',
+    'campaign_candidate_30_day_free',
+    'trial_30_days_no_card',
+    'warm_uncontacted',
+    'no_send',
+    ONE_TIME_PRODUCT_PROGRAM_KEY,
+    ONE_TIME_PROJECT_KEY,
+    ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    region ? `one-time-region:${region}` : '',
+    lead.source_landing_page ? 'one-time-source:landing-page' : '',
+  ]);
+}
+
+function oneTimeSignupTrackingMetadata({
+  productLead = {},
+  rawInput = {},
+  trialSignup = {},
+  contact = null,
+  parentLead = null,
+  communication = null,
+  productDedupeStatus = '',
+  contactDedupeStatus = '',
+  parentLeadDedupeStatus = '',
+} = {}) {
+  return {
+    source: 'one_time_launch_signup',
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    program_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+    product_lead_id: productLead.id || null,
+    contact_id: contact?.id || null,
+    parent_lead_id: parentLead?.id || null,
+    communication_id: communication?.id || null,
+    signup_flow: trialSignup.signup_flow || rawInput.signup_flow || 'no_card_30_day_trial',
+    list_membership_status: trialSignup.list_membership_status || 'campaign_candidate_30_day_free',
+    access_status: trialSignup.access_status || 'trial',
+    trial_start_at: trialSignup.trial_start_at || null,
+    trial_end_at: trialSignup.trial_end_at || null,
+    trial_days: Number(trialSignup.policy?.trial?.days || rawInput.trial_days || 30),
+    source_landing_page: productLead.source_landing_page || rawInput.source_landing_page || rawInput.sourceLandingPage || '/one-time',
+    referral_code: rawInput.referral_code || rawInput.referralCode || rawInput.referral || null,
+    product_dedupe_status: productDedupeStatus || productLead.metadata?.dedupe_status || null,
+    contact_dedupe_status: contactDedupeStatus || null,
+    parent_lead_dedupe_status: parentLeadDedupeStatus || null,
+    no_send: true,
+    no_checkout: true,
+    no_access_granted: false,
+    trial_access_grant_expected: true,
+    external_write_performed: false,
+  };
+}
+
+async function findExistingOneTimeProductLead(lead = {}, { projectId, programKey = ONE_TIME_PRODUCT_PROGRAM_KEY, db = pool } = {}) {
+  const email = normalizeEmail(lead.email || lead.parent_email || '');
+  const phoneDigits = normalizePhoneDigits(oneTimeSignupPrimaryPhone(lead));
+  if (!projectId || (!email && !phoneDigits)) return null;
+  const result = await db.query(
+    `SELECT *
+     FROM bna_product_leads
+     WHERE project_id = $1
+       AND program_key = $2
+       AND COALESCE(status, 'new') <> 'archived'
+       AND (
+         ($3 <> '' AND lower(COALESCE(parent_email, '')) = $3)
+         OR ($4 <> '' AND (
+           regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $4
+           OR regexp_replace(COALESCE(parent_whatsapp, ''), '\\D', '', 'g') = $4
+         ))
+       )
+     ORDER BY updated_at DESC NULLS LAST, created_at ASC, id ASC
+     LIMIT 1`,
+    [projectId, programKey, email || '', phoneDigits || '']
+  );
+  return result.rows[0] || null;
+}
+
 async function createOneTimeProductLead(input = {}, db = pool) {
   const lead = validateOneTimeLead(input);
   const project = await getRabbiProject(db);
   const program = await getOneTimeProductProgram(project.id, db);
-  const row = (await db.query(
+  const existing = await findExistingOneTimeProductLead(lead, { projectId: project.id, db });
+  const baseMetadata = {
+    ...lead.metadata,
+    source: 'one_time_product_interest',
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    signup_flow: lead.metadata.signup_flow || input.signup_flow || 'no_card_30_day_trial',
+    trial_days: Number(lead.metadata.trial_days || input.trial_days || 30),
+    dedupe_status: existing ? 'updated_existing_product_lead' : 'created_product_lead',
+    no_checkout: true,
+    no_access_granted: false,
+    trial_access_grant_expected: true,
+    external_write_performed: false,
+  };
+  const row = existing
+    ? (await db.query(
+      `UPDATE bna_product_leads
+       SET program_id = COALESCE(program_id, $2),
+           product_key = $3,
+           region = $4,
+           audience = $5,
+           interested_tiers = (
+             SELECT ARRAY(
+               SELECT DISTINCT tier_value
+               FROM unnest(COALESCE(interested_tiers, ARRAY[]::text[]) || $6::text[]) AS tier_values(tier_value)
+               WHERE trim(tier_value) <> ''
+             )
+           ),
+           parent_name = COALESCE(NULLIF($7, ''), parent_name),
+           parent_email = COALESCE(NULLIF($8, ''), parent_email),
+           parent_phone = COALESCE(NULLIF($9, ''), parent_phone),
+           parent_whatsapp = COALESCE(NULLIF($10, ''), parent_whatsapp),
+           student_name = COALESCE(NULLIF($11, ''), student_name),
+           student_age = COALESCE(NULLIF($12, ''), student_age),
+           student_grade = COALESCE(NULLIF($13, ''), student_grade),
+           timezone = COALESCE(NULLIF($14, ''), timezone),
+           preferred_class_format = COALESCE(NULLIF($15, ''), preferred_class_format),
+           source_landing_page = COALESCE(NULLIF($16, ''), source_landing_page),
+           consent = consent OR $17,
+           notes = COALESCE(NULLIF($18, ''), notes),
+           status = CASE WHEN status = 'converted' THEN status ELSE $19 END,
+           no_send = TRUE,
+           external_write_performed = FALSE,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $20::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        existing.id,
+        program?.id || null,
+        ONE_TIME_PRODUCT_PROGRAM_KEY,
+        lead.region,
+        lead.audience,
+        lead.interested_tiers,
+        limitText(lead.parent_name, 180),
+        normalizeEmail(lead.email || '') || null,
+        limitText(lead.phone || '', 80) || null,
+        limitText(lead.whatsapp || '', 80) || null,
+        limitText(lead.student_name || '', 180) || null,
+        lead.student_age === null || lead.student_age === undefined ? '' : limitText(String(lead.student_age), 40),
+        limitText(lead.student_grade || '', 80) || null,
+        limitText(lead.timezone || '', 100) || null,
+        limitText(lead.preferred_class_format || '', 120) || null,
+        limitText(lead.source_landing_page || '/one-time', 220),
+        lead.consent,
+        limitText(lead.notes || '', 2000) || null,
+        lead.status === 'new' ? 'reviewing' : lead.status,
+        JSON.stringify(baseMetadata),
+      ]
+    )).rows[0]
+    : (await db.query(
     `INSERT INTO bna_product_leads (
        project_id, program_id, program_key, product_key, region, audience,
        interested_tiers, parent_name, parent_email, parent_phone,
@@ -68962,16 +71408,741 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       lead.consent,
       limitText(lead.notes || '', 2000) || null,
       lead.status,
+      JSON.stringify(baseMetadata),
+    ]
+  )).rows[0];
+  const view = oneTimeProductLeadView(row);
+  return {
+    ...view,
+    dedupe_status: view.metadata?.dedupe_status || (existing ? 'updated_existing_product_lead' : 'created_product_lead'),
+    created_new_product_lead: !existing,
+  };
+}
+
+async function upsertOneTimeSignupContact(productLead = {}, trialSignup = {}, db = pool) {
+  const workspaceId = await getWorkspaceIdForProjectKey(ONE_TIME_PROJECT_KEY, db);
+  const email = normalizeEmail(productLead.parent_email || trialSignup.parent?.email || '');
+  const phone = oneTimeSignupPrimaryPhone(productLead);
+  const phoneDigits = normalizePhoneDigits(phone);
+  const tags = oneTimeSignupTrackingTags(productLead);
+  const metadata = oneTimeSignupTrackingMetadata({ productLead, trialSignup, contactDedupeStatus: 'pending_contact_upsert' });
+  let existing = null;
+  if (workspaceId && (email || phoneDigits)) {
+    existing = (await db.query(
+      `SELECT *
+       FROM bna_contacts
+       WHERE workspace_id = $1
+         AND (
+           ($2 <> '' AND lower(COALESCE(primary_email, '')) = $2)
+           OR ($3 <> '' AND regexp_replace(COALESCE(primary_phone, ''), '\\D', '', 'g') = $3)
+         )
+       ORDER BY updated_at DESC NULLS LAST, created_at ASC, id ASC
+       LIMIT 1`,
+      [workspaceId, email || '', phoneDigits || '']
+    )).rows[0] || null;
+  }
+  const result = existing
+    ? await db.query(
+      `UPDATE bna_contacts
+       SET workspace_id = COALESCE(workspace_id, $1),
+           full_name = COALESCE(NULLIF($2, ''), full_name),
+           primary_email = COALESCE(NULLIF($3, ''), primary_email),
+           primary_phone = COALESCE(NULLIF($4, ''), primary_phone),
+           status = CASE WHEN COALESCE(status, 'lead') IN ('lead', 'prospect') THEN 'lead' ELSE status END,
+           source = COALESCE(NULLIF(source, ''), 'one_time_launch_signup'),
+           tags = (
+             SELECT ARRAY(
+               SELECT DISTINCT tag_value
+               FROM unnest(COALESCE(tags, ARRAY[]::text[]) || $5::text[]) AS tag_values(tag_value)
+               WHERE trim(tag_value) <> ''
+             )
+           ),
+           metadata = COALESCE(metadata, '{}'::jsonb) || $6::jsonb,
+           updated_at = NOW()
+       WHERE id = $7
+       RETURNING *`,
+      [
+        workspaceId,
+        productLead.parent_name || trialSignup.parent?.name || '',
+        email || '',
+        phone || '',
+        tags,
+        JSON.stringify({ ...metadata, contact_dedupe_status: 'updated_existing_contact' }),
+        existing.id,
+      ]
+    )
+    : await db.query(
+      `INSERT INTO bna_contacts (
+         workspace_id, full_name, primary_email, primary_phone, status, source, tags, metadata
+       ) VALUES ($1, $2, $3, $4, 'lead', 'one_time_launch_signup', $5, $6::jsonb)
+       RETURNING *`,
+      [
+        workspaceId,
+        productLead.parent_name || trialSignup.parent?.name || 'One Time prospect',
+        email || null,
+        phone || null,
+        tags,
+        JSON.stringify({ ...metadata, contact_dedupe_status: 'created_contact' }),
+      ]
+    );
+  return { contact: result.rows[0] || null, merged_existing: Boolean(existing) };
+}
+
+async function upsertOneTimeSignupParentLead(productLead = {}, trialSignup = {}, contact = null, db = pool) {
+  const project = await getRabbiProject(db);
+  const email = normalizeEmail(productLead.parent_email || trialSignup.parent?.email || '');
+  const phone = oneTimeSignupPrimaryPhone(productLead);
+  const phoneDigits = normalizePhoneDigits(phone);
+  const tags = oneTimeSignupTrackingTags(productLead);
+  const notes = limitText(productLead.notes || 'One Time 30-day free trial signup captured from launch landing page.', 2000);
+  let existing = null;
+  if (email || phoneDigits) {
+    existing = (await db.query(
+      `SELECT *
+       FROM bna_parent_leads
+       WHERE project_id = $1
+         AND COALESCE(status, 'interested') <> 'archived'
+         AND (
+           ($2 <> '' AND lower(COALESCE(parent_email, '')) = $2)
+           OR ($3 <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $3)
+         )
+       ORDER BY updated_at DESC NULLS LAST, created_at ASC, id ASC
+       LIMIT 1`,
+      [project.id, email || '', phoneDigits || '']
+    )).rows[0] || null;
+  }
+  const metadata = oneTimeSignupTrackingMetadata({
+    productLead,
+    trialSignup,
+    contact,
+    parentLeadDedupeStatus: existing ? 'updated_existing_parent_lead' : 'created_parent_lead',
+  });
+  const result = existing
+    ? await db.query(
+      `UPDATE bna_parent_leads
+       SET parent_name = COALESCE(NULLIF($2, ''), parent_name),
+           parent_phone = COALESCE(NULLIF($3, ''), parent_phone),
+           parent_email = COALESCE(NULLIF($4, ''), parent_email),
+           student_name = COALESCE(NULLIF($5, ''), student_name),
+           student_age = COALESCE($6, student_age),
+           student_grade = COALESCE(NULLIF($7, ''), student_grade),
+           lead_type = 'content_interest',
+           status = CASE WHEN status = 'archived' THEN status ELSE 'follow_up' END,
+           interest_level = CASE WHEN COALESCE(interest_level, 'unknown') = 'hot' THEN interest_level ELSE 'warm' END,
+           source = 'website_form',
+           source_detail = 'One Time 30-day free trial signup',
+           owner = 'Shloimie',
+           tags = (
+             SELECT ARRAY(
+               SELECT DISTINCT tag_value
+               FROM unnest(COALESCE(tags, ARRAY[]::text[]) || $8::text[]) AS tag_values(tag_value)
+               WHERE trim(tag_value) <> ''
+             )
+           ),
+           notes = COALESCE(NULLIF($9, ''), notes),
+           metadata = COALESCE(metadata, '{}'::jsonb) || $10::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        existing.id,
+        productLead.parent_name || trialSignup.parent?.name || '',
+        phone || '',
+        email || '',
+        productLead.student_name || trialSignup.student?.name || '',
+        oneTimeSignupStudentAge(productLead.student_age),
+        productLead.student_grade || '',
+        tags,
+        notes || '',
+        JSON.stringify(metadata),
+      ]
+    )
+    : await db.query(
+      `INSERT INTO bna_parent_leads (
+         project_id, parent_name, parent_phone, parent_email, student_name,
+         student_age, student_grade, lead_type, status, interest_level, source,
+         source_detail, owner, tags, notes, metadata
+       ) VALUES (
+         $1, $2, $3, $4, $5,
+         $6, $7, 'content_interest', 'new', 'warm', 'website_form',
+         'One Time 30-day free trial signup', 'Shloimie', $8, $9, $10::jsonb
+       )
+       RETURNING *`,
+      [
+        project.id,
+        productLead.parent_name || trialSignup.parent?.name || email || phone || 'One Time prospect',
+        phone || null,
+        email || null,
+        productLead.student_name || trialSignup.student?.name || null,
+        oneTimeSignupStudentAge(productLead.student_age),
+        productLead.student_grade || null,
+        tags,
+        notes || null,
+        JSON.stringify(metadata),
+      ]
+    );
+  return { parentLead: result.rows[0] || null, merged_existing: Boolean(existing), project };
+}
+
+async function createOneTimeSignupTrackingCommunication({
+  productLead = {},
+  trialSignup = {},
+  contact = null,
+  parentLead = null,
+  rawInput = {},
+  productDedupeStatus = '',
+  contactDedupeStatus = '',
+  parentLeadDedupeStatus = '',
+} = {}, db = pool) {
+  if (!parentLead?.id) return null;
+  const metadata = oneTimeSignupTrackingMetadata({
+    productLead,
+    rawInput,
+    trialSignup,
+    contact,
+    parentLead,
+    productDedupeStatus,
+    contactDedupeStatus,
+    parentLeadDedupeStatus,
+  });
+  const summary = 'One Time 30-day trial signup captured';
+  const body = [
+    `Parent: ${productLead.parent_name || trialSignup.parent?.name || 'One Time prospect'}`,
+    productLead.student_name || trialSignup.student?.name ? `Student: ${productLead.student_name || trialSignup.student?.name}` : '',
+    `Source: ${metadata.source_landing_page}`,
+    `Trial: ${metadata.trial_start_at || 'pending'} to ${metadata.trial_end_at || 'pending'}`,
+    'Guardrails: no email, WhatsApp, payment, checkout, or external CRM write was performed; local trial access is handled through bna_access_grants.',
+  ].filter(Boolean).join('\n');
+  const result = await db.query(
+    `INSERT INTO bna_contact_communications (
+       project_id, contact_type, lead_id, channel, direction, summary, body,
+       follow_up_required, occurred_at, created_by, source, source_context, metadata
+     ) VALUES (
+       $1, 'lead', $2, 'internal_note', 'internal_note', $3, $4,
+       TRUE, NOW(), 'one_time_launch_signup', 'web_assistant', $5::jsonb, $6::jsonb
+     )
+     RETURNING *`,
+    [
+      productLead.project_id || parentLead.project_id || null,
+      parentLead.id,
+      summary,
+      body,
+      JSON.stringify(metadata),
       JSON.stringify({
-        ...lead.metadata,
-        source: 'one_time_product_interest',
+        tags: oneTimeSignupTrackingTags(productLead),
+        contact_id: contact?.id || null,
+        product_lead_id: productLead.id || null,
+        no_send: true,
         no_checkout: true,
-        no_access_granted: true,
+        no_access_granted: false,
+        trial_access_grant_expected: true,
         external_write_performed: false,
       }),
     ]
+  );
+  return result.rows[0] || null;
+}
+
+async function attachOneTimeSignupTrackingToProductLead(productLead = {}, tracking = {}, db = pool) {
+  if (!productLead?.id) return productLead;
+  const result = await db.query(
+    `UPDATE bna_product_leads
+     SET metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      productLead.id,
+      JSON.stringify({
+        contact_tracking: tracking,
+        contact_id: tracking.contact_id || null,
+        parent_lead_id: tracking.parent_lead_id || null,
+        communication_id: tracking.communication_id || null,
+        no_send: true,
+        no_checkout: true,
+        no_access_granted: false,
+        trial_access_grant_expected: true,
+        external_write_performed: false,
+      }),
+    ]
+  );
+  const view = oneTimeProductLeadView(result.rows[0] || productLead);
+  return { ...view, contact_tracking: tracking };
+}
+
+async function ensureOneTimeSignupScopedTracking({ productLead = {}, trialSignup = {}, rawInput = {} } = {}, db = pool) {
+  const contactResult = await upsertOneTimeSignupContact(productLead, trialSignup, db);
+  const parentLeadResult = await upsertOneTimeSignupParentLead(productLead, trialSignup, contactResult.contact, db);
+  const productDedupeStatus = productLead.dedupe_status || productLead.metadata?.dedupe_status || null;
+  const contactDedupeStatus = contactResult.merged_existing ? 'updated_existing_contact' : 'created_contact';
+  const parentLeadDedupeStatus = parentLeadResult.merged_existing ? 'updated_existing_parent_lead' : 'created_parent_lead';
+  const communication = await createOneTimeSignupTrackingCommunication({
+    productLead,
+    trialSignup,
+    contact: contactResult.contact,
+    parentLead: parentLeadResult.parentLead,
+    rawInput,
+    productDedupeStatus,
+    contactDedupeStatus,
+    parentLeadDedupeStatus,
+  }, db);
+  return {
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    program_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+    product_lead_id: productLead.id || null,
+    parent_lead_id: parentLeadResult.parentLead?.id || null,
+    contact_id: contactResult.contact?.id || null,
+    communication_id: communication?.id || null,
+    product_dedupe_status: productDedupeStatus,
+    contact_dedupe_status: contactDedupeStatus,
+    parent_lead_dedupe_status: parentLeadDedupeStatus,
+    required_tags: oneTimeSignupTrackingTags(productLead),
+    no_send: true,
+    no_checkout: true,
+    no_access_granted: false,
+    trial_access_grant_expected: true,
+    external_write_performed: false,
+  };
+}
+
+function oneTimeTrialAccessIdempotencyKey(productLead = {}) {
+  return `one_time_trial_signup:${productLead.id || normalizeEmail(productLead.parent_email || '') || normalizePhoneDigits(oneTimeSignupPrimaryPhone(productLead)) || 'unknown'}`;
+}
+
+function oneTimeTrialAccessMetadata({
+  productLead = {},
+  trialSignup = {},
+  contactTracking = {},
+  rawInput = {},
+  idempotencyKey = '',
+} = {}) {
+  return {
+    source: 'one_time_trial_signup',
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    program_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+    product_lead_id: productLead.id || null,
+    contact_id: contactTracking.contact_id || null,
+    parent_lead_id: contactTracking.parent_lead_id || null,
+    communication_id: contactTracking.communication_id || null,
+    signup_flow: trialSignup.signup_flow || 'no_card_30_day_trial',
+    trial_days: Number(trialSignup.policy?.trial?.days || rawInput.trial_days || 30),
+    trial_start_at: trialSignup.trial_start_at || null,
+    trial_end_at: trialSignup.trial_end_at || null,
+    idempotency_key: idempotencyKey,
+    no_send: true,
+    no_checkout: true,
+    payment_required_at_signup: false,
+    stripe_checkout_created: false,
+    subscription_created: false,
+    cancellation_or_refund_performed: false,
+    external_write_performed: false,
+  };
+}
+
+async function attachOneTimeTrialAccessMetadata({
+  productLead = {},
+  contactTracking = {},
+  trialAccess = {},
+  db = pool,
+} = {}) {
+  const metadata = {
+    trial_access: trialAccess,
+    member_id: trialAccess.member_id || null,
+    access_grant_id: trialAccess.access_grant_id || null,
+    trial_start_at: trialAccess.trial_start_at || null,
+    trial_end_at: trialAccess.trial_end_at || null,
+    no_access_granted: false,
+    no_checkout: true,
+    external_write_performed: false,
+  };
+  if (productLead.id) {
+    await db.query(
+      `UPDATE bna_product_leads
+       SET metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [productLead.id, JSON.stringify(metadata)]
+    );
+  }
+  if (contactTracking.parent_lead_id) {
+    await db.query(
+      `UPDATE bna_parent_leads
+       SET metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [contactTracking.parent_lead_id, JSON.stringify(metadata)]
+    );
+  }
+}
+
+async function ensureOneTimeTrialAccessGrant({ productLead = {}, trialSignup = {}, contactTracking = {}, rawInput = {} } = {}, db = pool) {
+  const project = await getRabbiProject(db);
+  const trialTierKey = RABBI_TIER_KEYS.LIVE_LIBRARY;
+  const tier = await getRabbiTierOr404(project.id, trialTierKey, db);
+  const idempotencyKey = oneTimeTrialAccessIdempotencyKey(productLead);
+  const metadata = oneTimeTrialAccessMetadata({ productLead, trialSignup, contactTracking, rawInput, idempotencyKey });
+  const member = await ensureRabbiMember({
+    projectId: project.id,
+    displayName: productLead.parent_name || trialSignup.parent?.name || '',
+    email: productLead.parent_email || trialSignup.parent?.email || '',
+    phone: oneTimeSignupPrimaryPhone(productLead),
+    notes: 'Created from One Time 30-day free trial signup.',
+    metadata,
+    db,
+  });
+  const updatedMember = (await db.query(
+    `UPDATE bna_members
+     SET access_tier = $2,
+         access_status = 'trial',
+         access_enabled = TRUE,
+         notes = COALESCE(NULLIF($3, ''), notes),
+         metadata = COALESCE(metadata, '{}'::jsonb) || $4::jsonb,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      member.id,
+      rabbiCompatibleMemberAccessTier(tier.tier_key),
+      'One Time 30-day free trial access from signup.',
+      JSON.stringify(metadata),
+    ]
   )).rows[0];
-  return oneTimeProductLeadView(row);
+  const grant = await createRabbiAccessGrant({
+    projectId: project.id,
+    memberId: updatedMember.id,
+    tier,
+    source: 'one_time_trial_signup',
+    startsAt: trialSignup.trial_start_at,
+    expiresAt: trialSignup.trial_end_at,
+    idempotencyKey,
+    notes: '30-day free One Time trial grant from public signup. No payment or checkout was created.',
+    metadata,
+    db,
+  });
+  const trialAccess = {
+    access_granted: true,
+    no_access_granted: false,
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    member_id: Number(updatedMember.id),
+    access_grant_id: Number(grant.id),
+    tier_key: normalizeRabbiTierKey(grant.tier_key),
+    member_access_tier: updatedMember.access_tier,
+    member_access_status: updatedMember.access_status,
+    scopes: normalizeScopes(grant.scopes),
+    source: grant.source || 'one_time_trial_signup',
+    trial_start_at: grant.starts_at || trialSignup.trial_start_at,
+    trial_end_at: grant.expires_at || trialSignup.trial_end_at,
+    expires_at: grant.expires_at || trialSignup.trial_end_at,
+    idempotency_key: idempotencyKey,
+    login_route: '/one-time/member-login',
+    login_delivery_pending: true,
+    no_send: true,
+    no_checkout: true,
+    payment_required_at_signup: false,
+    stripe_checkout_created: false,
+    subscription_created: false,
+    cancellation_or_refund_performed: false,
+    external_write_performed: false,
+  };
+  await attachOneTimeTrialAccessMetadata({ productLead, contactTracking, trialAccess, db });
+  return trialAccess;
+}
+
+function oneTimeSignupConfirmationEmailIdempotencyKey({ productLead = {}, trialAccess = {} } = {}) {
+  return `one_time_signup_confirmation:${productLead.id || normalizeEmail(productLead.parent_email || '') || 'unknown'}:${trialAccess.access_grant_id || 'trial'}`;
+}
+
+function oneTimeSignupConfirmationEmailMetadata({
+  productLead = {},
+  trialSignup = {},
+  trialAccess = {},
+  contactTracking = {},
+  idempotencyKey = '',
+} = {}) {
+  return {
+    source: 'one_time_signup_confirmation',
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    program_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+    product_lead_id: productLead.id || null,
+    member_id: trialAccess.member_id || null,
+    access_grant_id: trialAccess.access_grant_id || null,
+    contact_id: contactTracking.contact_id || null,
+    parent_lead_id: contactTracking.parent_lead_id || null,
+    communication_id: contactTracking.communication_id || null,
+    signup_flow: trialSignup.signup_flow || 'no_card_30_day_trial',
+    trial_start_at: trialAccess.trial_start_at || trialSignup.trial_start_at || null,
+    trial_end_at: trialAccess.trial_end_at || trialSignup.trial_end_at || null,
+    idempotency_key: idempotencyKey,
+    from_email: ONE_TIME_EMAIL_FROM,
+    reply_to: ONE_TIME_EMAIL_REPLY_TO,
+    transactional_signup_confirmation: true,
+    current_signup_recipient_only: true,
+    no_bulk_campaign_send: true,
+    imported_lead_send_performed: false,
+    campaign_send_performed: false,
+    no_checkout: true,
+    payment_required_at_signup: false,
+    whatsapp_send_performed: false,
+    external_crm_write_performed: false,
+  };
+}
+
+async function existingOneTimeSignupConfirmationEmail({ projectId, idempotencyKey = '' } = {}, db = pool) {
+  if (!projectId || !idempotencyKey) return null;
+  return (await db.query(
+    `SELECT id, provider, provider_message_id, status, recipient_email, subject, sent_at, created_at
+     FROM bna_email_log
+     WHERE project_id = $1
+       AND template_key = 'receipt_access'
+       AND email_type = 'receipt_access'
+       AND COALESCE(metadata, '{}'::jsonb)->>'idempotency_key' = $2
+       AND status IN ('sent', 'delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'suppressed', 'webhook_received')
+     ORDER BY created_at DESC, id DESC
+     LIMIT 1`,
+    [projectId, idempotencyKey]
+  )).rows[0] || null;
+}
+
+async function attachOneTimeSignupConfirmationEmailMetadata({
+  productLead = {},
+  contactTracking = {},
+  confirmationEmail = {},
+  db = pool,
+} = {}) {
+  const metadata = {
+    confirmation_email: {
+      status: confirmationEmail.status || null,
+      sent: confirmationEmail.sent === true,
+      skipped: confirmationEmail.skipped === true,
+      failed: confirmationEmail.failed === true,
+      already_sent: confirmationEmail.already_sent === true,
+      reason: confirmationEmail.reason || null,
+      email_log_id: confirmationEmail.email_log_id || confirmationEmail.existing_email_log_id || null,
+      provider: confirmationEmail.provider || null,
+      provider_message_id: confirmationEmail.provider_message_id || null,
+      idempotency_key: confirmationEmail.idempotency_key || null,
+      external_send_performed: confirmationEmail.external_send_performed === true,
+      no_bulk_campaign_send: true,
+      imported_lead_send_performed: false,
+      campaign_send_performed: false,
+      external_crm_write_performed: false,
+    },
+    confirmation_email_status: confirmationEmail.status || null,
+    email_send_performed: confirmationEmail.sent === true,
+    no_bulk_campaign_send: true,
+    imported_lead_send_performed: false,
+    campaign_send_performed: false,
+    external_crm_write_performed: false,
+  };
+  if (productLead.id) {
+    await db.query(
+      `UPDATE bna_product_leads
+       SET metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [productLead.id, JSON.stringify(metadata)]
+    );
+  }
+  if (contactTracking.parent_lead_id) {
+    await db.query(
+      `UPDATE bna_parent_leads
+       SET metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [contactTracking.parent_lead_id, JSON.stringify(metadata)]
+    );
+  }
+}
+
+async function sendOneTimeSignupConfirmationEmail({
+  req,
+  productLead = {},
+  trialSignup = {},
+  trialAccess = {},
+  contactTracking = {},
+} = {}) {
+  const project = await getRabbiProject();
+  const recipient = normalizeEmail(productLead.parent_email || trialSignup.parent?.email || '');
+  const idempotencyKey = oneTimeSignupConfirmationEmailIdempotencyKey({ productLead, trialAccess });
+  const baseResult = {
+    template_key: 'receipt_access',
+    idempotency_key: idempotencyKey,
+    recipient_present: Boolean(recipient),
+    current_signup_recipient_only: true,
+    no_bulk_campaign_send: true,
+    imported_lead_send_performed: false,
+    campaign_send_performed: false,
+    whatsapp_send_performed: false,
+    external_crm_write_performed: false,
+    external_send_performed: false,
+  };
+  if (!recipient) {
+    return {
+      ...baseResult,
+      status: 'skipped',
+      skipped: true,
+      sent: false,
+      failed: false,
+      reason: 'missing_recipient_email',
+    };
+  }
+  const existing = await existingOneTimeSignupConfirmationEmail({ projectId: project.id, idempotencyKey });
+  if (existing) {
+    return {
+      ...baseResult,
+      status: 'skipped',
+      skipped: true,
+      sent: false,
+      failed: false,
+      already_sent: true,
+      reason: 'confirmation_already_sent',
+      existing_email_log_id: existing.id,
+      provider: existing.provider || null,
+      provider_message_id: existing.provider_message_id || null,
+    };
+  }
+  const member = trialAccess.member_id
+    ? (await pool.query(
+      `SELECT * FROM bna_members
+       WHERE project_id = $1 AND id = $2
+       LIMIT 1`,
+      [project.id, trialAccess.member_id]
+    )).rows[0] || null
+    : null;
+  if (!member) {
+    const metadata = oneTimeSignupConfirmationEmailMetadata({
+      productLead,
+      trialSignup,
+      trialAccess,
+      contactTracking,
+      idempotencyKey,
+    });
+    const logged = await logRabbiEmailAttempt({
+      projectId: project.id,
+      accessGrant: trialAccess.access_grant_id ? { id: trialAccess.access_grant_id } : null,
+      templateKey: 'receipt_access',
+      to: recipient,
+      context: { memberUrl: rabbiAdminUrl(req, '/one-time/member-login'), metadata },
+      status: 'skipped',
+      error: 'Missing trial member for signup confirmation',
+      provider: 'setup_required',
+      dryRun: false,
+    });
+    return {
+      ...baseResult,
+      status: logged.status || 'skipped',
+      skipped: true,
+      sent: false,
+      failed: false,
+      reason: 'missing_trial_member',
+      error: logged.error || 'Missing trial member for signup confirmation',
+    };
+  }
+  if (!RESEND_API_KEY || !RESEND_FROM_EMAIL) {
+    const metadata = oneTimeSignupConfirmationEmailMetadata({
+      productLead,
+      trialSignup,
+      trialAccess,
+      contactTracking,
+      idempotencyKey,
+    });
+    const logged = await logRabbiEmailAttempt({
+      projectId: project.id,
+      member,
+      accessGrant: trialAccess.access_grant_id ? { id: trialAccess.access_grant_id } : null,
+      templateKey: 'receipt_access',
+      to: recipient,
+      context: { memberUrl: rabbiAdminUrl(req, '/one-time/member-login'), metadata },
+      status: 'skipped',
+      error: 'One Time signup confirmation requires the Resend sender identity.',
+      provider: 'setup_required',
+      dryRun: false,
+    });
+    return {
+      ...baseResult,
+      subject: logged.subject || null,
+      status: logged.status || 'skipped',
+      skipped: true,
+      sent: false,
+      failed: false,
+      reason: 'resend_sender_not_configured',
+      error: logged.error || 'One Time signup confirmation requires the Resend sender identity.',
+      provider: logged.provider || 'setup_required',
+    };
+  }
+  const metadata = oneTimeSignupConfirmationEmailMetadata({
+    productLead,
+    trialSignup,
+    trialAccess,
+    contactTracking,
+    idempotencyKey,
+  });
+  const memberUrl = rabbiAdminUrl(req, '/one-time/member-login');
+  const context = {
+    programName: 'One Time Mishnayos',
+    loginUrl: memberUrl,
+    memberUrl,
+    metadata,
+  };
+  const accessGrant = trialAccess.access_grant_id ? { id: trialAccess.access_grant_id } : null;
+  const template = buildRabbiEmailTemplate('receipt_access', {
+    recipientName: member.display_name || '',
+    memberName: member.display_name || '',
+    ...context,
+  });
+  let result;
+  try {
+    const sent = await sendResendMessage({
+      workspace: 'rabbi_sheller_provider',
+      to: recipient,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+    });
+    result = await logRabbiEmailAttempt({
+      projectId: project.id,
+      member,
+      accessGrant,
+      templateKey: 'receipt_access',
+      to: recipient,
+      context,
+      status: 'sent',
+      provider: sent?.provider || 'resend',
+      providerMessageId: sent?.data?.id || null,
+      dryRun: false,
+    });
+  } catch (error) {
+    const safeEmailError = safeIntegrationError(error, 'One Time signup confirmation email failed');
+    result = await logRabbiEmailAttempt({
+      projectId: project.id,
+      member,
+      accessGrant,
+      templateKey: 'receipt_access',
+      to: recipient,
+      context,
+      status: 'failed',
+      provider: 'resend',
+      error: safeEmailError.blocker || safeEmailError.message,
+      dryRun: false,
+    });
+  }
+  return {
+    ...baseResult,
+    subject: result.subject || null,
+    status: result.status || 'failed',
+    sent: result.status === 'sent',
+    skipped: result.status === 'skipped',
+    failed: result.status === 'failed',
+    reason: result.status === 'sent' ? null : (result.error || 'confirmation_email_not_sent'),
+    error: result.error || null,
+    provider: result.provider || null,
+    provider_message_id: result.provider_message_id || null,
+    external_send_performed: result.status === 'sent',
+  };
 }
 
 async function oneTimeProductSystemPayload(req) {
@@ -69166,19 +72337,151 @@ app.get(['/api/bna/product-leads', '/api/bna/one-time/product-leads'], requireAd
 });
 
 app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) => {
+  let client;
   try {
-    const lead = await createOneTimeProductLead(req.body || {});
+    client = await pool.connect();
+    await client.query('BEGIN');
+    let lead = await createOneTimeProductLead(req.body || {}, client);
+    let trialSignup = buildOneTimeTrialSignupPreview({
+      parent_name: lead.parent_name,
+      parent_email: lead.parent_email,
+      student_name: lead.student_name,
+      source_landing_page: lead.source_landing_page || req.body?.source_landing_page || '/one-time',
+      referral_code: req.body?.referral_code || req.body?.referralCode || '',
+    });
+    const contactTracking = await ensureOneTimeSignupScopedTracking({
+      productLead: lead,
+      trialSignup,
+      rawInput: req.body || {},
+    }, client);
+    const trialAccess = await ensureOneTimeTrialAccessGrant({
+      productLead: lead,
+      trialSignup,
+      contactTracking,
+      rawInput: req.body || {},
+    }, client);
+    lead = await attachOneTimeSignupTrackingToProductLead(lead, contactTracking, client);
+    lead = {
+      ...lead,
+      trial_access: trialAccess,
+      metadata: {
+        ...(lead.metadata || {}),
+        trial_access: trialAccess,
+      },
+    };
+    trialSignup = {
+      ...trialSignup,
+      preview_only: false,
+      local_write_performed: true,
+      access_grant_performed: true,
+      member_id: trialAccess.member_id,
+      access_grant_id: trialAccess.access_grant_id,
+      access_status: 'trial',
+      access_scopes: trialAccess.scopes,
+      trial_start_at: trialAccess.trial_start_at || trialSignup.trial_start_at,
+      trial_end_at: trialAccess.trial_end_at || trialSignup.trial_end_at,
+      email_send_performed: false,
+      stripe_checkout_created: false,
+      live_charge_performed: false,
+    };
+    await client.query('COMMIT');
+    let confirmationEmail;
+    try {
+      confirmationEmail = await sendOneTimeSignupConfirmationEmail({
+        req,
+        productLead: lead,
+        trialSignup,
+        trialAccess,
+        contactTracking,
+      });
+    } catch (emailError) {
+      const safeEmailError = safeIntegrationError(emailError, 'One Time signup confirmation email failed');
+      confirmationEmail = {
+        template_key: 'receipt_access',
+        idempotency_key: oneTimeSignupConfirmationEmailIdempotencyKey({ productLead: lead, trialAccess }),
+        status: 'failed',
+        sent: false,
+        skipped: false,
+        failed: true,
+        reason: safeEmailError.blocker || safeEmailError.message,
+        error: safeEmailError.message,
+        recipient_present: Boolean(normalizeEmail(lead.parent_email || trialSignup.parent?.email || '')),
+        current_signup_recipient_only: true,
+        no_bulk_campaign_send: true,
+        imported_lead_send_performed: false,
+        campaign_send_performed: false,
+        whatsapp_send_performed: false,
+        external_crm_write_performed: false,
+        external_send_performed: false,
+      };
+    }
+    try {
+      await attachOneTimeSignupConfirmationEmailMetadata({
+        productLead: lead,
+        contactTracking,
+        confirmationEmail,
+      });
+    } catch (metadataError) {
+      const safeMetadataError = safeIntegrationError(metadataError, 'One Time confirmation email metadata update failed');
+      confirmationEmail = {
+        ...confirmationEmail,
+        metadata_update_status: 'failed',
+        metadata_update_error: safeMetadataError.message,
+      };
+    }
+    lead = {
+      ...lead,
+      confirmation_email: confirmationEmail,
+      metadata: {
+        ...(lead.metadata || {}),
+        confirmation_email: {
+          status: confirmationEmail.status,
+          sent: confirmationEmail.sent === true,
+          skipped: confirmationEmail.skipped === true,
+          failed: confirmationEmail.failed === true,
+          already_sent: confirmationEmail.already_sent === true,
+          idempotency_key: confirmationEmail.idempotency_key || null,
+          no_bulk_campaign_send: true,
+          imported_lead_send_performed: false,
+          campaign_send_performed: false,
+          external_crm_write_performed: false,
+        },
+      },
+    };
+    trialSignup = {
+      ...trialSignup,
+      email_send_performed: confirmationEmail.sent === true,
+      confirmation_email_status: confirmationEmail.status,
+      confirmation_email_already_sent: confirmationEmail.already_sent === true,
+    };
     res.json({
       success: true,
       lead,
-      no_send: true,
+      trial_signup: trialSignup,
+      contact_tracking: contactTracking,
+      trial_access: trialAccess,
+      confirmation_email: confirmationEmail,
+      no_send: confirmationEmail.sent !== true,
+      no_bulk_campaign_send: true,
       no_checkout: true,
-      no_access_granted: true,
-      external_write_performed: false,
-      message: 'Interest saved for internal OneTime review.',
+      no_access_granted: false,
+      access_grant_performed: true,
+      transactional_email_send_performed: confirmationEmail.sent === true,
+      external_send_performed: confirmationEmail.external_send_performed === true,
+      imported_lead_send_performed: false,
+      campaign_send_performed: false,
+      whatsapp_send_performed: false,
+      external_crm_write_performed: false,
+      external_write_performed: confirmationEmail.external_send_performed === true,
+      message: confirmationEmail.sent
+        ? 'Trial signup saved, 30-day One Time access was granted locally, and one confirmation email was sent. No checkout, payment, WhatsApp, campaign, imported-list send, or external CRM write was created by this request.'
+        : 'Trial signup saved and 30-day One Time access was granted locally. Confirmation email was not sent by this request; no checkout, payment, WhatsApp, campaign, imported-list send, or external CRM write was created.',
     });
   } catch (err) {
+    if (client) await client.query('ROLLBACK').catch(() => {});
     res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  } finally {
+    if (client) client.release();
   }
 });
 
@@ -70890,7 +74193,7 @@ async function sendLiveZoomLinkToMember({ member, session, dryRun = true, create
       providerMessageId,
       status: 'sent',
       metadata: {
-        workspace_key: 'one_time_mishnah_class',
+        workspace_key: 'rabbi_sheller_provider',
         live_session_id: session.id,
         member_id: member.id,
         link_version: session.link_version || null,
@@ -73846,7 +77149,9 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
     FROM enriched
     WHERE ${outerWhere.join(' AND ')}
     ORDER BY
-      CASE status_bucket WHEN 'decisions' THEN 1 WHEN 'pending' THEN 2 WHEN 'tasks' THEN 3 WHEN 'done' THEN 4 ELSE 5 END,
+      CASE WHEN status_bucket = 'done' OR ${archivedSql} THEN 1 ELSE 0 END,
+      COALESCE(effective_last_activity_at, updated_at, created_at) DESC,
+      CASE status_bucket WHEN 'pending' THEN 1 WHEN 'decisions' THEN 2 WHEN 'tasks' THEN 3 WHEN 'done' THEN 4 ELSE 5 END,
       CASE urgency WHEN 'urgent' THEN 1 WHEN 'today' THEN 2 WHEN 'this_week' THEN 3 ELSE 4 END,
       COALESCE(due_date, created_at::date) ASC,
       created_at DESC
@@ -74072,13 +77377,21 @@ app.get('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
        LIMIT 80`,
       [req.params.id]
     )).rows;
+    const linkedTaskParams = [req.params.id];
+    const linkedTaskWhere = ['child.parent_task_id = $1'];
+    const linkedTaskScopedProjectKey = opsScopeProjectKey(req);
+    if (linkedTaskScopedProjectKey) {
+      linkedTaskParams.push(linkedTaskScopedProjectKey);
+      linkedTaskWhere.push(`p.project_key = $${linkedTaskParams.length}`);
+    }
     const linkedTasks = (await pool.query(
-      `SELECT id, title, display_title, stage, task_kind, assigned_to, agent_status, decision_required, created_at, updated_at
-       FROM bna_tasks
-       WHERE parent_task_id = $1
-       ORDER BY updated_at DESC, created_at DESC
+      `SELECT child.id, child.title, child.display_title, child.stage, child.task_kind, child.assigned_to, child.agent_status, child.decision_required, child.created_at, child.updated_at
+       FROM bna_tasks child
+       LEFT JOIN bna_projects p ON p.id = child.project_id
+       WHERE ${linkedTaskWhere.join(' AND ')}
+       ORDER BY child.updated_at DESC, child.created_at DESC
        LIMIT 40`,
-      [req.params.id]
+      linkedTaskParams
     )).rows;
     const activeDecisionQueue = (await pool.query(
       `SELECT *
@@ -75465,10 +78778,16 @@ app.post('/api/operations/login', async (req, res) => {
     return res.status(429).json({ success: false, error: 'Too many login attempts. Try again shortly.' });
   }
 
-  const identity = identifyOpsUser(username, password);
+  const requestedReturnTo = req.body?.returnTo || req.query?.returnTo || '';
+  const identity = identifyOpsUser(username, password, {
+    preferredRole: operationsReturnPathTargetsOneTime(requestedReturnTo) ? 'one_time_admin' : '',
+  });
   if (identity) {
     clearOpsLoginRate(req, username);
-    const sessionId = await issueSession(identity.username);
+    const redirectTo = identity.scope?.type === 'project'
+      ? oneTimeOperationsReturnPath(requestedReturnTo)
+      : safeOperationsReturnPath(requestedReturnTo);
+    const sessionId = await issueSession(opsSessionUsername(identity));
     setSessionCookie(res, sessionId);
     res.json({
       success: true,
@@ -75477,6 +78796,7 @@ app.post('/api/operations/login', async (req, res) => {
       role: identity.role,
       scope: identity.scope,
       allowedViews: identity.allowedViews,
+      redirect_to: redirectTo,
     });
   } else {
     recordOpsLoginFailure(req, username);

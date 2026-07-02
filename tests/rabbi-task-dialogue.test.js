@@ -84,7 +84,8 @@ test('Operations renders a four-column Rabbi dialogue board with card and drawer
   assert.match(operations, /rabbi-dialogue-board/);
   assert.match(operations, /task\.why_exists/);
   assert.match(operations, /task\.next_action/);
-  assert.match(operations, /task\.bot_created \? '<span class="badge">Bot-created<\/span>'/);
+  assert.match(operations, /function renderTaskCardPrimaryAction/);
+  assert.match(operations, /function renderTaskCardOverflowActions/);
   assert.match(operations, /task\.blocked_reason/);
   assert.match(operations, /getTaskDetail\(id\)/);
   assert.match(operations, /expandedTaskActivity/);

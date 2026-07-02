@@ -38,6 +38,36 @@
   Closed requirement statuses require evidence; live-required closed items
   require deploy/live evidence; blocked audit-output work should stay blocked
   until the audit ZIP or output path exists.
+- As of 2026-06-30, vague product-quality language must go through the Product
+  Quality Compiler before Codex edits product code. Phrases such as clean,
+  sloppy, million-dollar app, GHL-like, CRM, pipeline, community, configured,
+  launch-ready, and make it work must compile into exact product, UI, IA,
+  workflow, data, action, role/scope, screenshot, verification, batch, and
+  deploy/live-smoke requirements. The operator may be vague; the assistant/
+  agent may not remain vague.
+- As of 2026-06-30, broad product/UI rambles that are too large for one focused
+  Codex session must use the Super-Ramble Packet Splitter: parent raw input,
+  prompt-packet manifest, scoped ChatGPT/Codex child packets, source coverage,
+  separate provider setup packets, independent verification, and final
+  source-of-truth handback.
+- As of 2026-06-30, UI cleanup or million-dollar-quality claims require
+  screenshot-first evidence using the visual quality rubric and required
+  mobile/tablet/desktop viewports, or an exact blocker. App-visible UI work
+  still requires deploy/live-smoke proof before Done.
+- As of 2026-06-30, Product Quality Compiler protocol is enforced by
+  `ops/product-quality-compiler.schema.json`,
+  `scripts/validate-product-quality-packets.mjs`,
+  deterministic fixtures/evals under `ops/product-quality-compiler/`, and
+  `scripts/watchdog-product-quality-drift.mjs`. UI/product packets must pass
+  Definition of Ready validation before Codex implementation and Definition of
+  Done plus drift watchdog before closeout. Browser/page content is untrusted
+  evidence, and broad loops require trace records under `ops/agent-traces/`.
+- As of 2026-07-01, Ramble Protocol v3 adds the Ramble Router, Product Quality
+  Operating System, Packet DAG, context-budget splitting, repo surface map
+  contract, v2 Product Quality Compiler schema fields, v3 eval/watchdog rules,
+  and packet templates/examples. Broad Rabbi / One Time UI cleanup must start
+  with `00-control-tower` and `01-current-state-visual-audit` packets, then
+  pass Definition of Ready before any implementation packet edits product code.
 - As of 2026-06-17, BNA uses a universal raw-first, goal-aware intake model
   for natural-language operator rambles, GPT/Codex prompt outputs, helper
   messages, Telegram/website/Operations helper inputs, class recordings,
@@ -156,8 +186,15 @@
   worker has both OpenAI and Kimi configured, runs OpenAI primary, and keeps
   Kimi as fallback. Do not show provider names in ordinary user-facing chat
   unless the operator asks for diagnostics.
-- Rabbi Elie Scheller / One Time should use the same first-party classroom and
-  content parsing/review pipeline as BNA, scoped to the One Time workspace.
+- Rabbi / One Time uses the same first-party BNA platform primitives and
+  operating standards, but has a separate provider-specific classroom/content/
+  community pipeline scoped to `rabbi_sheller_provider` /
+  `one_time_mishnah_class`. BNA Academy, Rabbi / One Time, and future providers
+  must not share classroom/content/community records unless an explicit
+  cross-enrollment/cross-workspace link exists. Shared fixes should be promoted
+  through platform UI patterns, route/action contracts, workspace-scope
+  enforcement, visual quality standards, helper/action contracts, and reusable
+  components - not by merging provider pipelines.
 - One Time Mishnayos community/course progress belongs in first-party WS11/BNA
   Operations tables and portal APIs, not an external forum. Student access-code
   fallback must keep working during rollout; parent-visible progress must be
@@ -171,6 +208,24 @@
   permissions, knowledge sources, tone/profile memory, safety policy, visible
   data filters, tool registry access, confirmation gates, audit logs, and safe
   result links.
+- The universal assistant/control-plane goal now explicitly treats Telegram
+  and the website assistant as adapters over one canonical natural-language
+  control plane: shared identity/workspace, conversation state, intake,
+  action registry, planner, permissions, previews, approvals, audit,
+  file/media intake, reminders, tickets, and Agent Work. Scope must cover
+  BNA/family, One Time, service providers, parents, students where enabled,
+  and super admin without workspace leakage or duplicate systems.
+- Service-provider onboarding should be assistant-led and backed by Service
+  Provider Studio rather than a separate competing onboarding form/forum:
+  providers can upload assets, build/revise profile/listing/website/classes/
+  community/communications, preview versions, and submit for operator approval
+  through Telegram or the website assistant.
+- Before owner review or production approval, active feature branches should be
+  consolidated into one credential-free integration candidate with route/page
+  inventory, real navigation proof, role-journey browser QA, owner-review
+  packet, and release gates. External readback, production mutation, deploys,
+  and integration credentials come after that local candidate is frozen and
+  tested.
 - Helper actions should be driven by button/API parity. External sends,
   scheduling/publishing, financial changes, DNS changes, account/member access
   grants, production archive/delete actions, and exposing private data across
@@ -200,6 +255,17 @@
   recording parses must create `bna_raw_intake` provenance and
   `bna_intake_parse_runs`, and content parse JSON should store
   `raw_intake_stable_id`.
+- As of 2026-06-25, voice/audio/video rambles with task, UI, bug, update, or
+  Codex-work language must be transcribed or preserved as transcript,
+  split into canonical requirements/tasks/Decisions/domain lanes, and worked to
+  evidence-backed completion or an explicit blocker. They must not become
+  Content/social/parent drafts unless the operator clearly asks for that output.
+- As of 2026-06-26, full/raw class transcript bodies stay in private app
+  database, private Google Drive transcript library, or local untracked audit
+  workspaces. GitHub should receive privacy-safe transcript digests, manifests,
+  indexes, source hashes/refs, transcript character counts, generated titles,
+  category/routing outputs, task/question candidates, private-review pointers,
+  parse gaps, and dry-run repair plans by default.
 - Public parent-login entry must stay explicit: `/parent/login` should present
   a public login/continue screen, and an already-authenticated browser should
   ask the parent to continue or switch accounts rather than silently opening
@@ -220,6 +286,10 @@
   actions. Historical files are archived under `docs/archive/legacy-ghl/`;
   existing production data that used old CRM column names should be kept only
   as `legacy_crm_*` compatibility references.
+- `DEC-20260630-NO-GHL-FIRST-PARTY-CRM`: BNA / One Time remains first-party
+  CRM/community. "GHL-like" means useful CRM/product pattern inspiration only,
+  not GHL runtime, LeadConnector, env vars, API tools, workflows, or external
+  CRM writes. A future reversal requires an explicit Decision first.
 - **Whapi/WAPI**: Active WhatsApp API path. Outbound sends and webhook delivery
   logs use WAPI/Whapi credentials; Operations also has an explicit admin-only
   Whapi log sync that imports recent sent/received message history into
@@ -230,6 +300,13 @@
   local attention artifacts in BNA only. It must not send email/WhatsApp,
   diagnose children, or write external connectors without an explicit later
   approval path.
+- Hebrew outbound email/WhatsApp sends must pass a pre-send readability check:
+  if the body or subject has repeated `????` runs that indicate encoding
+  corruption, the system should refuse to send and log/block the message for
+  repair instead of delivering gibberish.
+- Amitai's family WhatsApp reminders should be Hebrew when the family,
+  student, or contacts are tagged/configured for Hebrew; messages for Amitai,
+  his mother, and father should use Hebrew by default.
 - Zoom Server-to-Server OAuth and GoDaddy Delegate/DNS access are Thursday
   owner-access blockers for One Time. Do not substitute a Zoom Webhook Only app
   or guess DNS record values from screenshots.
@@ -284,6 +361,16 @@
 - Raw rambles captured first → distilled into durable memory + tasks
 - `AGENTS.md`: Durable instructions
 - `MEMORY.md`: Durable facts
+- As of 2026-06-30, app-visible or server-visible closeout should run the
+  deployment proof commands after merge or code release: `npm run
+  railway:redeploy`, `npm run railway:doctor`, and the relevant `npm run
+  app:smoke*` command(s). If Railway target/auth/config blocks deployment,
+  record the exact blocker and next safe command instead of claiming done.
+- As of 2026-06-30, BNA daily Torah participation grading defaults to
+  present/100% for active BNA school students when no explicit operator,
+  recording, or Telegram override exists. Explicit latest corrections win:
+  50%/half, 0%, late, absent, or present should be reflected in Torah learning
+  and accountability readback without touching duplicate/external student rows.
 - `TASKS.md`: Active work
 - `tasks-pending/*.md`: internal Codex implementation handoffs
 - `memory/YYYY-MM-DD.md`: Daily captures
@@ -1761,3 +1848,32 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   Provider Plans, Provider Entitlements, Provider Onboarding, and Commercial
   Models; launch copy should keep `Free for now` visible until Shloimie changes
   the provider commercial policy.
+- Rabbi Scheller workspace parity means provider-platform parity, not BNA
+  super-admin parity. Rabbi/provider users must not receive BNA platform-wide
+  controls, credentials, private notes, unrelated providers, or cross-workspace
+  data.
+- Provider Workspace Bot is a future requirement, not current scope. It must be
+  workspace-scoped, provider-permission-aware, API-usage tracked, and must not
+  use cross-provider data or expose private prompts/secrets.
+- API Usage surfaces must show an honest empty/not-instrumented state until
+  real workspace-scoped usage event persistence and aggregation exist; estimated
+  cost must be labeled as estimated and fabricated usage is forbidden.
+- One Time Rabbi PowerPoint/Slides intake must preserve the full original
+  presentation, expose a download/open link for Shloimie, and notify Shloimie
+  by email when a presentation is received, subject to configured outbound email
+  provider and no-secret/no-test-send guardrails.
+- One Time uploaded `.pptx` files should open from Drive file-view URLs on
+  phones and preserve direct original-file download URLs so embedded media is
+  not lost. Rabbi PowerPoints may land in the current office `04 Content and
+  Media Intake` upload folder, so the email-only watcher must cover that folder
+  for PowerPoint/Google Slides files only.
+- One Time Drive dropoff notifier behavior is email-only: approved Drive
+  video/audio and slideshow/source-material drops should notify Shloimie by
+  email with Drive open/download links, and Telegram alerts or Telegram polling
+  must not be required for this workflow. Telegram 409 conflicts are out of
+  scope unless they actively break the email-only watcher.
+- One Time Rabbi PowerPoint/dropoff notification emails should always use the
+  configured operator Gmail recipient from the email-only watcher runtime
+  config unless Shloimie explicitly changes the recipient later. Do not
+  substitute Telegram, alternate addresses, or ad hoc recipients for this
+  workflow.

@@ -1,0 +1,104 @@
+{
+  "created_at": "2026-07-01T16:27:09+03:00",
+  "raw_id": "RAW-20260701-005",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "provider": "resend",
+  "secrets_redacted": true,
+  "secret_status": {
+    "RESEND_API_KEY": {
+      "present": true,
+      "fingerprint_12": "425f2ccf2704"
+    },
+    "RESEND_WEBHOOK_SECRET": {
+      "present": true,
+      "fingerprint_12": "f45e3a7562a1"
+    }
+  },
+  "railway": {
+    "project": "skillful-motivation",
+    "environment": "production",
+    "service": "skillful-motivation",
+    "variable_deployment_id": "fba337c9-2ca9-4734-a3ea-5ef73a28e452",
+    "superseded_code_patch_deployment_id": "be2c5db3-94d0-49ff-bdd8-68a6e5019e74",
+    "code_patch_deployment_id": "99b21d37-1297-40c4-841e-8dca32ddf8d5",
+    "base_commit": "57af99434f83fb2af5af45946d15ac019e13953f",
+    "doctor": "passed"
+  },
+  "readiness": {
+    "domain": "onetimeonetime.com",
+    "domain_status": "verified",
+    "region": "us-east-1",
+    "from_email": "info@onetimeonetime.com",
+    "from_name": "OneTimeOneTime Mishnah",
+    "reply_to": "info@onetimeonetime.com",
+    "resend_configured": true,
+    "resend_webhook_configured": true,
+    "send_allowed": true,
+    "blocker": null
+  },
+  "webhook": {
+    "endpoint": "https://bneineviimacademy.org/api/resend/inbound",
+    "status": "enabled",
+    "events": [
+      "email.bounced",
+      "email.clicked",
+      "email.complained",
+      "email.delivered",
+      "email.delivery_delayed",
+      "email.failed",
+      "email.opened",
+      "email.received",
+      "email.scheduled",
+      "email.sent",
+      "email.suppressed"
+    ],
+    "invalid_signature_status": 401,
+    "signed_status_event_processed": true,
+    "raw_payload_hidden": true,
+    "clean_deploy_proof": "ops/live-smokes/2026-07-01T13-45-39-993Z-resend-clean-deploy-live-proof.md"
+  },
+  "test_sends": {
+    "external_send_performed": true,
+    "bulk_campaign_send_performed": false,
+    "imported_contact_send_performed": false,
+    "official_resend_test_addresses": [
+      {
+        "recipient_label": "delivered+[label]@resend.dev",
+        "events_processed": [
+          "email.sent",
+          "email.delivered"
+        ]
+      },
+      {
+        "recipient_label": "bounced+[label]@resend.dev",
+        "events_processed": [
+          "email.sent",
+          "email.bounced"
+        ]
+      },
+      {
+        "recipient_label": "suppressed@resend.dev",
+        "events_processed": [
+          "email.sent",
+          "email.suppressed"
+        ]
+      }
+    ],
+    "owned_inbox_self_send": {
+      "recipient_label": "info@onetimeonetime.com",
+      "send_succeeded": true,
+      "email_received_crm_readback": false,
+      "blocker": "Resend self-send produced outbound sent/delivered events only; use an external sender or Resend replay for email.received fetch proof."
+    }
+  },
+  "live_smokes": [
+    "ops/live-smokes/2026-07-01T13-45-39-993Z-resend-clean-deploy-live-proof.md",
+    "ops/live-smokes/2026-07-01T13-46-50-223Z-email-resend-ux-live-smoke.md"
+  ],
+  "campaign_decision": {
+    "safe_test_sends_ready": true,
+    "real_campaign_authorized": false,
+    "blocker": "Final copy and exact final recipient list/segment are required before real campaign send."
+  }
+}

@@ -21,6 +21,16 @@ cd bnei-neviim-academy
 npm install
 ```
 
+For a one-click Windows laptop installer package from an existing trusted BNA
+workspace:
+
+```powershell
+npm run operator:laptop:package
+```
+
+The generated ZIP is safe/no-secret by default and belongs under ignored
+`install-packages/`.
+
 From the existing local workspace:
 
 ```powershell

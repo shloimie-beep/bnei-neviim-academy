@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T08:38:33.874Z",
+  "updated_at": "2026-06-24T07:32:35+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -53,9 +53,80 @@
       "workspace": "rabbi_sheller_provider",
       "project": "one_time_mishnah_class",
       "source_type": "google_drive_dry_run_parse"
+    },
+    {
+      "source_id": "RAW-20260622-001",
+      "source_path": "raw-input/RAW-20260622-001-github-issue-7-canonical-agent-execution-system.md",
+      "connector_id": "github:shloimie-beep/bnei-neviim-academy#7",
+      "captured_at": "2026-06-22T15:05:02+03:00",
+      "content_fingerprint": "sha256:076efb56d5e1bd0838136355221ceed1f50a829c888a3a71330b8e440bbf1435",
+      "privacy_classification": "internal_operations_prompt_no_secrets_observed",
+      "workspace": "bna_platform",
+      "project": "ramble_to_agent_execution_system",
+      "source_type": "github_issue",
+      "external_url": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/7",
+      "external_issue_number": 7,
+      "external_comment_id": 4767984220,
+      "canonical_parent_id": "PARENT-20260622-001",
+      "queue_registration_requirement_id": "REQ-20260622-001",
+      "queue_status": "queued_after_current_active_run",
+      "implementation_status": "deferred_until_current_run_closed_or_explicitly_paused",
+      "active_run_guardrail": "Do not create a second active execution-run pointer; do not disturb PR #5 or the active worktree."
+    },
+    {
+      "source_id": "RAW-20260623-005",
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "connector_id": "github:shloimie-beep/bnei-neviim-academy#7:comment:4780321517",
+      "captured_at": "2026-06-23T18:31:46+03:00",
+      "content_fingerprint": "github-comment-4780321517-plus-codex-chat-expanded-packet",
+      "privacy_classification": "internal_operations_prompt_no_secrets_observed",
+      "workspace": "bna_platform",
+      "project": "universal_natural_language_control_plane",
+      "source_type": "github_issue_comment_and_codex_chat",
+      "external_url": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/7#issuecomment-4780321517",
+      "external_issue_number": 7,
+      "external_comment_id": 4780321517,
+      "canonical_parent_id": "PARENT-20260622-001",
+      "queue_registration_requirement_id": "REQ-20260623-010",
+      "linked_existing_source_id": "RAW-20260622-001",
+      "queue_status": "active_in_existing_execution_run",
+      "implementation_status": "execution_requirements_appended_after_one_time_run_closed",
+      "active_run_guardrail": "Do not create duplicate assistant, bot, action registry, intake, agent queue, provider onboarding, or execution-run systems."
+    },
+    {
+      "source_id": "RAW-20260624-001",
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "captured_at": "2026-06-24T00:34:00+03:00",
+      "content_fingerprint": "sha256:66b133fa2b3f69d524a4ec05eceb93369edaab3ccfc3c92f47b82de43bb0eee6",
+      "privacy_classification": "internal_operations_prompt_no_secrets_observed",
+      "workspace": "bna_platform",
+      "project": "integration_navigation_owner_review",
+      "source_type": "codex_chat",
+      "requirement_register": "tasks-pending/2026-06-24-integration-navigation-owner-review-closeout.md",
+      "queue_status": "active_in_existing_execution_run",
+      "implementation_status": "registered_pending_integration_branch",
+      "active_run_guardrail": "Credential-free only: no production readback, production DB mutation, backfill, deploy, external send, upload, publish, charge, DNS, OAuth/account-owner action, or secret request."
     }
   ],
   "source_statements": [
+    {
+      "statement_id": "STMT-20260622-001-0001",
+      "source_id": "RAW-20260622-001",
+      "source_statement": "GitHub issue #7 requests a future unified ramble-to-execution operating system, but the current active run and PR #5 must remain the active implementation sequence; register the issue as one queued canonical source and defer implementation until the current run is closed or explicitly paused.",
+      "classification": "context_only",
+      "queue_status": "queued_after_current_active_run",
+      "canonical_parent_id": "PARENT-20260622-001",
+      "queue_registration_requirement_id": "REQ-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0001",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Append the universal natural-language control-plane addendum to GitHub issue #7 so Telegram and the website assistant become adapters over one canonical action registry, permissions, approval, audit, intake, preview, reminder, ticket, file/media, and Agent Work system, scoped for service providers, parents, students where enabled, super admin, BNA/family, and One Time.",
+      "classification": "context_only",
+      "queue_status": "appended_to_parent_issue_7_source",
+      "canonical_parent_id": "PARENT-20260622-001",
+      "queue_registration_requirement_id": "REQ-20260623-010"
+    },
     {
       "statement_id": "STMT-20260621-001-0001",
       "source_id": "RAW-20260621-001",
@@ -180,6 +251,219 @@
       "source_id": "RAW-20260621-001",
       "source_statement": "Run final verification, push PR #5 branch, deploy safe bundle, smoke production, and leave only genuine external actions.",
       "requirement_id": "REQ-20260619-314",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0002",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Register the Telegram plus website-assistant addendum under the existing issue #7 parent source without creating duplicate systems.",
+      "requirement_id": "REQ-20260623-010",
+      "classification": "partially_implemented",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0003",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Define the shared assistant control-plane contract for Telegram, website assistant, Operations helper, provider portal, parent portal, student portal where enabled, and future approved channels.",
+      "requirement_id": "REQ-20260623-011",
+      "classification": "partially_implemented",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0004",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Add the shared assistant data model for channels, identities, conversations, messages, context objects, action plans/runs, previews, approvals, drafts/versions, templates, saved views, reminders, notifications, onboarding sessions, delivery outbox, and dead letters.",
+      "requirement_id": "REQ-20260623-012",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0005",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Make the action registry the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
+      "requirement_id": "REQ-20260623-013",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0006",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Implement one registry-constrained natural-language planner and runner shared by Telegram and website assistant adapters.",
+      "requirement_id": "REQ-20260623-014",
+      "classification": "implemented",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0007",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Create the shared preview, draft, template, versioning, compare, active-version, rollback, and approval model.",
+      "requirement_id": "REQ-20260623-015",
+      "classification": "implemented",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0008",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Unify file/media/forwarded-message intake for Telegram and website uploads.",
+      "requirement_id": "REQ-20260623-016",
+      "classification": "implemented",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0009",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Replace separate service-provider onboarding form/forum behavior with assistant-led onboarding backed by Service Provider Studio.",
+      "requirement_id": "REQ-20260623-017",
+      "classification": "implemented",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0010",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Add parent natural-language self-service for linked-child chart/dashboard layouts, allowed updates, reminders, questions, support tickets, and communication preferences.",
+      "requirement_id": "REQ-20260623-018",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0011",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Add the canonical natural-language chart and dashboard configuration model.",
+      "requirement_id": "REQ-20260623-019",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0012",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Add super-admin natural-language control for campaigns, drip sequences, segments, versioning, previews, approval, scheduling, monitoring, failures, and Agent Work.",
+      "requirement_id": "REQ-20260623-020",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0013",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Add natural-language automation builder with typed triggers, conditions, delays, branches, template versions, dry run, readable/diagram preview, versioning, enable/disable, audit, retries, and approval gates.",
+      "requirement_id": "REQ-20260623-021",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0014",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Implement natural-language ticketing/problem resolution across Telegram and website assistant.",
+      "requirement_id": "REQ-20260623-022",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0015",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Unify reminders and proactive notifications across Telegram, in-app, email, SMS/WhatsApp where configured.",
+      "requirement_id": "REQ-20260623-023",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0016",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Scope the control plane across BNA/family, One Time, service providers, providers, parents, students where enabled, and super-admin contexts without workspace leakage.",
+      "requirement_id": "REQ-20260623-024",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0017",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Add Operations Assistant Control Center for conversations, actor/role/workspace, planned actions, previews, approvals, automations, campaigns, reminders, Agent Work, tickets, deliveries, failures, and audit history.",
+      "requirement_id": "REQ-20260623-025",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260623-005-0018",
+      "source_id": "RAW-20260623-005",
+      "source_statement": "Complete cross-channel QA, release gates, documentation, live synthetic journeys, deployment/live-smoke evidence, and final ChatGPT return packet sections for Telegram and website parity.",
+      "requirement_id": "REQ-20260623-026",
+      "classification": "missing",
+      "canonical_parent_id": "PARENT-20260622-001"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0001",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Create a clean integration branch from current origin/master and integrate PR #12, PR #13, and the final pushed SHA from the currently running agent into one owner-review candidate.",
+      "requirement_id": "REQ-20260624-001",
+      "classification": "implemented"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0002",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Run clean install, full test suite, secret audit, security watchdogs, route watchdogs, independent clean-worktree verification, and add CI/status checks if missing.",
+      "requirement_id": "REQ-20260624-002",
+      "classification": "needs_operator_decision"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0003",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Automatically inventory every public HTML page, server UI route, API route, alias, redirect, literal and JavaScript-generated link, form action, window.location destination, manifest entry, service-worker route, login/logout destination, and assistant/API deep link.",
+      "requirement_id": "REQ-20260624-003",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0004",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Produce the canonical route matrix and fix broken links, dead ends, auth loops, unexplained orphan pages, duplicate canonical destinations, missing return paths, and inconsistent shared navigation.",
+      "requirement_id": "REQ-20260624-004",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0005",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Canonicalize the One Time journey across /one-time, /rabbi, /rabbi-member, /member-library, /member, and /one-time-classroom.",
+      "requirement_id": "REQ-20260624-005",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0006",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Repair the public, provider, parent, student, provider-participant, One Time, and Operations information architecture and navigation.",
+      "requirement_id": "REQ-20260624-006",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0007",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Make website assistant parity visible and correctly scoped on actual user surfaces, not only in action contracts or Operations UI hooks.",
+      "requirement_id": "REQ-20260624-007",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0008",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Run credential-free desktop/mobile browser journeys for anonymous public visitor, parents, student, provider admin, provider participant/member, One Time member, super-admin, wrong-role, and logged-out access using synthetic local fixtures and mock integrations.",
+      "requirement_id": "REQ-20260624-008",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0009",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Rerun and reconcile the existing UX/click-map backlog, classifying prior issues as resolved, still reproducible, superseded, false positive, intentionally deferred, or external-credential blocked.",
+      "requirement_id": "REQ-20260624-009",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0010",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Add permanent release tests for complete page discovery, dead links, orphan pages, missing route implementations, duplicate canonical pages, form destinations, auth recovery paths, return paths, mobile navigation, route registry drift, and visible controls without handlers.",
+      "requirement_id": "REQ-20260624-010",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260624-001-0011",
+      "source_id": "RAW-20260624-001",
+      "source_statement": "Produce the owner-review packet: applied/not-applied matrix, canonical sitemap, route inventory, navigation graph, orphan/duplicate report, role-flow QA, UX backlog reconciliation, screenshots, review script, release SHA, and final blocker list.",
+      "requirement_id": "REQ-20260624-011",
       "classification": "missing"
     }
   ],
@@ -451,7 +735,7 @@
       "id": "REQ-20260619-303",
       "title": "Workspace users and roles",
       "expected_result": "One Time users and roles are scoped correctly and cross-workspace access is denied.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0005"
@@ -466,35 +750,89 @@
       "depends_on": [
         "REQ-20260619-302"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Complete scoped Users model/UI, role lifecycle, audit logs, and negative authorization tests.",
+      "next_action": "Closed after clean branch deploy and live smoke; continue Batch 5 / REQ-20260621-502.",
       "acceptance_criteria": [
         "Rabbi scoped to One Time",
         "Shloimie can intentionally switch",
         "negative tests pass"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "src/lib/bna/one-time-role-model.js",
+        "src/platform/assistant/control-plane.js",
+        "tests/universal-control-plane-scope-policy.test.js",
+        "tests/one-time-role-auth-model.test.js",
+        "tests/one-time-rbac-negative-isolation.test.js",
+        "tests/workspace-rbac-negative-isolation.test.js",
+        "public/operations.html",
+        "scripts/task-decision-census.mjs",
+        "ops/task-decision-census/latest.json",
+        "ops/one-time-mishnah/task-decision-production-census.json",
+        "ops/one-time-mishnah/task-decision-production-census.md",
+        "docs/architecture/workspace-community-provider-role-map.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/live-smokes/2026-06-23T15-59-34-390Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-23T16-00-48-379Z-batch4-control-plane-live-smoke.md",
+        "ops/live-smokes/2026-06-23T16-01-39-450Z-operations-workspace-taxonomy-live-smoke.md"
+      ],
+      "verification": [
+        "node --check src/platform/assistant/control-plane.js",
+        "node --test tests/universal-control-plane-scope-policy.test.js",
+        "node --test tests/one-time-role-auth-model.test.js tests/one-time-rbac-negative-isolation.test.js tests/workspace-rbac-negative-isolation.test.js tests/universal-assistant-mvp.test.js",
+        "node --test tests/one-time-role-auth-model.test.js tests/one-time-rbac-negative-isolation.test.js tests/workspace-rbac-negative-isolation.test.js tests/one-time-external-user-portal.test.js tests/operations-people-filter.test.js tests/workspace-person-household-provider-contract.test.js",
+        "node --test tests/rabbi-task-dialogue.test.js",
+        "node --test tests/task-decision-census.test.js tests/workspace-task-no-stale-agent.test.js tests/operations-task-comments-and-dictation.test.js tests/operations-task-queue-visibility.test.js",
+        "npm test",
+        "clean worktree npm test PASS 1069/1069 at C:/Users/User/Documents/Codex/2026-06-23/one-time-batch4-control-plane",
+        "npm run railway:doctor PASS deployment 641ac75e-d6d7-4379-a27c-4f7a4d9d3dbf",
+        "npm run app:smoke PASS report ops/live-smokes/2026-06-23T15-59-34-390Z-live-app-smoke.md",
+        "focused Batch 4 live smoke PASS report ops/live-smokes/2026-06-23T16-00-48-379Z-batch4-control-plane-live-smoke.md",
+        "clean-branch operations workspace taxonomy live smoke PASS report ops/live-smokes/2026-06-23T16-01-39-450Z-operations-workspace-taxonomy-live-smoke.md"
+      ],
       "implementation_files": [
         "server.js",
         "public/operations.html",
+        "scripts/task-decision-census.mjs",
+        "ops/task-decision-census/latest.json",
+        "ops/one-time-mishnah/task-decision-production-census.json",
+        "ops/one-time-mishnah/task-decision-production-census.md",
+        "src/platform/assistant/control-plane.js",
         "docs/architecture/workspace-community-provider-role-map.md",
-        "tests/one-time-rbac-negative-isolation.test.js"
+        "tests/universal-control-plane-scope-policy.test.js",
+        "tests/one-time-rbac-negative-isolation.test.js",
+        "tests/rabbi-task-dialogue.test.js",
+        "tests/workspace-task-no-stale-agent.test.js",
+        "tests/operations-task-comments-and-dictation.test.js",
+        "tests/operations-task-queue-visibility.test.js",
+        "tests/task-decision-census.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "bcb0e153aac41bf5452c80f83bf184e972c979d2",
+      "pushed_commit": "bcb0e153aac41bf5452c80f83bf184e972c979d2",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_id": "641ac75e-d6d7-4379-a27c-4f7a4d9d3dbf",
+      "deployed_commit": "bcb0e153aac41bf5452c80f83bf184e972c979d2",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-23T15-59-34-390Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-23T16-00-48-379Z-batch4-control-plane-live-smoke.md",
+        "ops/live-smokes/2026-06-23T16-01-39-450Z-operations-workspace-taxonomy-live-smoke.md"
+      ],
+      "deployment_evidence": [
+        "GitHub draft PR #13 https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+        "Railway deployment 641ac75e-d6d7-4379-a27c-4f7a4d9d3dbf SUCCESS",
+        "ops/live-smokes/2026-06-23T15-59-34-390Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-23T16-00-48-379Z-batch4-control-plane-live-smoke.md",
+        "ops/live-smokes/2026-06-23T16-01-39-450Z-operations-workspace-taxonomy-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T19:02:22+03:00"
     },
     {
       "id": "REQ-20260621-502",
       "title": "Visible action registry and dead-button coverage",
       "expected_result": "Every visible action is working, disabled with a setup/blocker path, or intentionally informational.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0006"
@@ -509,36 +847,68 @@
       "depends_on": [
         "REQ-20260619-303"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Inventory visible controls, wire working actions or exact disabled blockers, and add coverage tests.",
+      "next_action": "Continue with next unblocked batch: REQ-20260619-304 Operations UI/design-system correction.",
       "acceptance_criteria": [
         "action coverage report exists",
         "dead-button tests pass",
         "external-write controls stay gated"
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
+      "evidence": [
+        "ops/action-registry.json",
         "ops/action-registry/one-time-action-coverage.md",
         "ops/action-registry/one-time-action-coverage.json",
         "public/operations.html",
-        "server.js",
+        "scripts/generate-one-time-action-coverage.mjs",
+        "tests/watchdog-action-registry.test.js",
+        "ops/watchdog-audits/2026-06-23T16-28-watchdog-action-audit.md",
+        "ops/live-smokes/2026-06-23T16-37-19-965Z-batch5-action-coverage-live-smoke.md",
+        "ops/live-smokes/2026-06-23T16-39-27-702Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-23T16-39-50-955Z-operations-workspace-taxonomy-live-smoke.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md"
+      ],
+      "verification": [
+        "node --check scripts/generate-one-time-action-coverage.mjs",
+        "node scripts/generate-one-time-action-coverage.mjs PASS One Time action coverage ok (40 controls)",
+        "npm run watchdog:actions PASS report ops/watchdog-audits/2026-06-23T16-28-watchdog-action-audit.md",
+        "node --test tests/watchdog-action-registry.test.js PASS main worktree 4/4",
+        "clean worktree node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js PASS 9/9",
+        "clean worktree related action/UI pack PASS 69/69",
+        "clean worktree browser smokes PASS agent control 2/2, One Time Operations UI 1/1, Service Provider Studio 1/1",
+        "clean worktree npm test PASS 1071/1071",
+        "npm run railway:doctor PASS deployment c93a9311-4eb0-4982-8c14-b5f7a9cd5c8e SUCCESS",
+        "focused Batch 5 action coverage live smoke PASS report ops/live-smokes/2026-06-23T16-37-19-965Z-batch5-action-coverage-live-smoke.md",
+        "npm run app:smoke PASS report ops/live-smokes/2026-06-23T16-39-27-702Z-live-app-smoke.md",
+        "clean-branch operations workspace taxonomy live smoke PASS report ops/live-smokes/2026-06-23T16-39-50-955Z-operations-workspace-taxonomy-live-smoke.md"
+      ],
+      "implementation_files": [
+        "ops/action-registry.json",
+        "ops/action-registry/one-time-action-coverage.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "public/operations.html",
+        "scripts/generate-one-time-action-coverage.mjs",
         "tests/watchdog-action-registry.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "e22bd90db50190a26c9a4536b8ec7ae6cb4dd0b1",
+      "pushed_commit": "e22bd90db50190a26c9a4536b8ec7ae6cb4dd0b1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "GitHub draft PR #13 https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+        "Railway deployment c93a9311-4eb0-4982-8c14-b5f7a9cd5c8e SUCCESS",
+        "ops/live-smokes/2026-06-23T16-37-19-965Z-batch5-action-coverage-live-smoke.md",
+        "ops/live-smokes/2026-06-23T16-39-27-702Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-23T16-39-50-955Z-operations-workspace-taxonomy-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T19:45:00+03:00"
     },
     {
       "id": "REQ-20260619-304",
       "title": "Operations UI and design-system correction",
       "expected_result": "Operations and One Time surfaces are usable, scan-friendly, responsive, and live-verified.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0007"
@@ -553,36 +923,77 @@
       "depends_on": [
         "REQ-20260621-502"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Use the existing audit harness and fix sidebar/filter rail separation, horizontal filters, toolbar, buttons, cards, and mobile behavior.",
+      "next_action": "Continue with next unblocked batch after validation: first-party communications parent requirement / REQ-20260619-305, including WhatsApp UX child REQ-20260621-503 and Email/Resend UX child REQ-20260621-504.",
       "acceptance_criteria": [
         "no duplicated top rail navigation",
         "horizontal filters scroll",
         "no horizontal overflow",
         "screenshots captured"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "public/operations.html",
+        "scripts/one-time-ui-design-delta-audit.mjs",
+        "tests/one-time-ui-design-delta-audit.test.js",
+        "ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.md",
+        "ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.json",
+        "ops/action-registry/one-time-action-coverage.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png",
+        "ops/live-smokes/2026-06-23T16-59-39-550Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-23T17-00-15-340Z-operations-workspace-taxonomy-live-smoke.md",
+        "ops/live-smokes/2026-06-23T17-01-12-970Z-batch6-operations-ui-live-smoke.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md"
+      ],
+      "verification": [
+        "clean worktree node --check scripts/one-time-ui-design-delta-audit.mjs PASS",
+        "clean worktree node scripts/one-time-ui-design-delta-audit.mjs PASS status pass",
+        "clean worktree node --test tests/one-time-ui-design-delta-audit.test.js tests/operations-shell-navigation-contract.test.js tests/operations-saas-crm-redesign.test.js tests/operations-ws01-layout-readability.test.js PASS 16/16",
+        "clean worktree node --test Batch 6 focused action/UI pack PASS 59/59",
+        "clean worktree node --test tests/one-time-operations-ui-smoke.test.js PASS 1/1 with desktop/mobile screenshots",
+        "clean worktree npm run watchdog:actions PASS severity ok finding_count 0",
+        "clean worktree npm test PASS 1071/1071",
+        "Railway doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "npm run app:smoke PASS report ops/live-smokes/2026-06-23T16-59-39-550Z-live-app-smoke.md",
+        "npm run app:smoke:operations-workspace-taxonomy PASS report ops/live-smokes/2026-06-23T17-00-15-340Z-operations-workspace-taxonomy-live-smoke.md",
+        "focused Batch 6 Operations UI live smoke PASS report ops/live-smokes/2026-06-23T17-01-12-970Z-batch6-operations-ui-live-smoke.md"
+      ],
       "implementation_files": [
         "public/operations.html",
-        "public/rabbi.html",
-        "tools/ops-ui-audit.js",
-        "tests/one-time-ui-design-delta-audit.test.js"
+        "scripts/one-time-ui-design-delta-audit.mjs",
+        "tests/one-time-ui-design-delta-audit.test.js",
+        "ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.md",
+        "ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.json",
+        "ops/action-registry/one-time-action-coverage.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "GitHub draft PR #13 https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "ops/live-smokes/2026-06-23T16-59-39-550Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-23T17-00-15-340Z-operations-workspace-taxonomy-live-smoke.md",
+        "ops/live-smokes/2026-06-23T17-01-12-970Z-batch6-operations-ui-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:05:00+03:00"
     },
     {
       "id": "REQ-20260619-305",
       "title": "First-party communications parent requirement",
       "expected_result": "Communications UX is usable, workspace-scoped, and no-send by default.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0008",
@@ -598,33 +1009,49 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Implement child WhatsApp and Email/Resend requirements.",
+      "next_action": "Closed: WhatsApp UX and Email/Resend UX child requirements are deployed and live-smoked in no-send mode. Continue to next unblocked batch.",
       "acceptance_criteria": [
         "WhatsApp child verified",
         "Email child verified"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db includes the communications workspace, WAPI/Whapi no-send UI, Resend domain/status/webhook readback, and sender/domain decision gate.",
+        "Focused local communications suite passed 36/36 in the clean worktree.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS.",
+        "Live WhatsApp UX smoke passed: ops/live-smokes/2026-06-23T17-09-51-981Z-whatsapp-ux-live-smoke.md.",
+        "Live Email/Resend UX smoke passed: ops/live-smokes/2026-06-23T17-09-52-093Z-email-resend-ux-live-smoke.md.",
+        "Live communications screening smoke passed: ops/live-smokes/2026-06-23T17-10-27-503Z-communications-screening-live-smoke.md."
+      ],
+      "verification": [
+        "node --test tests/one-time-communications-workspace.test.js tests/communications-screening-import-ui.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js tests/intake-parser-communications.test.js tests/resend-client.test.js tests/wapi-phonebook-report.test.js PASS 36/36",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "npm run app:smoke:whatsapp-ux PASS report ops/live-smokes/2026-06-23T17-09-51-981Z-whatsapp-ux-live-smoke.md",
+        "npm run app:smoke:email-resend-ux PASS report ops/live-smokes/2026-06-23T17-09-52-093Z-email-resend-ux-live-smoke.md",
+        "npm run app:smoke:communications-screening PASS report ops/live-smokes/2026-06-23T17-10-27-503Z-communications-screening-live-smoke.md"
+      ],
       "implementation_files": [
         "public/operations.html",
         "server.js",
         "ops/communications/wapi-crm-audit-and-plan.md"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS; code already included in Batch 6 deploy, then verified by communications-focused live smokes.",
+        "No email send, WhatsApp send, external CRM write, DNS mutation, account change, billing action, real WAPI outbound action, or Resend production send was performed."
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:15:00+03:00"
     },
     {
       "id": "REQ-20260621-503",
       "title": "WhatsApp UX",
       "expected_result": "WhatsApp UX shows scoped conversations, details, related work, notes, and no-send guarded controls.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0008"
@@ -639,34 +1066,50 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Complete three-pane desktop and sequential mobile WhatsApp conversation workspace.",
+      "next_action": "Closed: WhatsApp three-pane desktop, mobile back navigation, workspace-scoped readback, hidden raw provider payloads, and no-send guardrails are deployed/live-smoked.",
       "acceptance_criteria": [
         "three panes desktop",
         "mobile back navigation",
         "raw provider payloads hidden by default"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db includes the communications workspace, WAPI/Whapi no-send UI, Resend domain/status/webhook readback, and sender/domain decision gate.",
+        "Focused local communications suite passed 36/36 in the clean worktree.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS.",
+        "Live WhatsApp UX smoke passed: ops/live-smokes/2026-06-23T17-09-51-981Z-whatsapp-ux-live-smoke.md.",
+        "Live Email/Resend UX smoke passed: ops/live-smokes/2026-06-23T17-09-52-093Z-email-resend-ux-live-smoke.md.",
+        "Live communications screening smoke passed: ops/live-smokes/2026-06-23T17-10-27-503Z-communications-screening-live-smoke.md."
+      ],
+      "verification": [
+        "node --test tests/one-time-communications-workspace.test.js tests/communications-screening-import-ui.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js tests/intake-parser-communications.test.js tests/resend-client.test.js tests/wapi-phonebook-report.test.js PASS 36/36",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "npm run app:smoke:whatsapp-ux PASS report ops/live-smokes/2026-06-23T17-09-51-981Z-whatsapp-ux-live-smoke.md",
+        "npm run app:smoke:email-resend-ux PASS report ops/live-smokes/2026-06-23T17-09-52-093Z-email-resend-ux-live-smoke.md",
+        "npm run app:smoke:communications-screening PASS report ops/live-smokes/2026-06-23T17-10-27-503Z-communications-screening-live-smoke.md"
+      ],
       "implementation_files": [
         "public/operations.html",
         "server.js",
         "tests/wapi-phonebook-report.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS; code already included in Batch 6 deploy, then verified by communications-focused live smokes.",
+        "No email send, WhatsApp send, external CRM write, DNS mutation, account change, billing action, real WAPI outbound action, or Resend production send was performed."
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:15:00+03:00"
     },
     {
       "id": "REQ-20260621-504",
       "title": "Email and Resend UX",
       "expected_result": "Email operations are usable without live sends and Resend readiness is separated from sender/domain readiness.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0009"
@@ -681,17 +1124,30 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Complete email workspace, Resend domain readback/status UI, webhook verification/storage, and sender/domain Decision.",
+      "next_action": "Closed: Email draft workspace, Resend domain/status/event readback, webhook mock coverage, locked send gate, and sender/domain Decision are deployed/live-smoked.",
       "acceptance_criteria": [
         "send disabled",
         "domain list/status readable",
         "webhook route tested with mocks",
         "one sender/domain Decision exists"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db includes the communications workspace, WAPI/Whapi no-send UI, Resend domain/status/webhook readback, and sender/domain decision gate.",
+        "Focused local communications suite passed 36/36 in the clean worktree.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS.",
+        "Live WhatsApp UX smoke passed: ops/live-smokes/2026-06-23T17-09-51-981Z-whatsapp-ux-live-smoke.md.",
+        "Live Email/Resend UX smoke passed: ops/live-smokes/2026-06-23T17-09-52-093Z-email-resend-ux-live-smoke.md.",
+        "Live communications screening smoke passed: ops/live-smokes/2026-06-23T17-10-27-503Z-communications-screening-live-smoke.md."
+      ],
+      "verification": [
+        "node --test tests/one-time-communications-workspace.test.js tests/communications-screening-import-ui.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js tests/intake-parser-communications.test.js tests/resend-client.test.js tests/wapi-phonebook-report.test.js PASS 36/36",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "npm run app:smoke:whatsapp-ux PASS report ops/live-smokes/2026-06-23T17-09-51-981Z-whatsapp-ux-live-smoke.md",
+        "npm run app:smoke:email-resend-ux PASS report ops/live-smokes/2026-06-23T17-09-52-093Z-email-resend-ux-live-smoke.md",
+        "npm run app:smoke:communications-screening PASS report ops/live-smokes/2026-06-23T17-10-27-503Z-communications-screening-live-smoke.md"
+      ],
       "implementation_files": [
         "docs/integrations/RESEND.md",
         "src/lib/integrations/resend-client.js",
@@ -699,19 +1155,22 @@
         "public/operations.html",
         "tests/resend-client.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS; code already included in Batch 6 deploy, then verified by communications-focused live smokes.",
+        "No email send, WhatsApp send, external CRM write, DNS mutation, account change, billing action, real WAPI outbound action, or Resend production send was performed."
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:15:00+03:00"
     },
     {
       "id": "REQ-20260619-306",
       "title": "Product, scheduling, booking, portals, and billing foundations",
       "expected_result": "One Time product, schedule, booking, portals, and billing/access foundations are usable without live charges.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0010"
@@ -726,37 +1185,63 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Complete configurable products, schedule/availability, booking, parent/student/provider portals, and billing/access states.",
+      "next_action": "Closed: product offers, schedule/availability, booking intent, portal foundations, and billing/access readiness are deployed and live-smoked with no live charges or external writes. Continue to next unblocked batch.",
       "acceptance_criteria": [
         "no guessed final pricing entitlements",
         "booking intent records created",
         "portals scoped and usable"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db includes One Time product, scheduling, booking, portal, and billing/access readiness foundations.",
+        "Focused local product/portal/billing suite passed 20/20 in the clean worktree.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS.",
+        "Live One Time Product Booking smoke passed and created only internal One Time class-event and appointment-intent records: ops/live-smokes/2026-06-23T17-16-03-089Z-one-time-product-booking-live-smoke.md.",
+        "Live One Time Payment Access/Class Links smoke passed with no checkout, payment link, charge, invoice, subscription, access grant, email, WhatsApp, external CRM write, Zoom meeting, registrant, or join-link mutation: ops/live-smokes/2026-06-23T17-16-03-292Z-one-time-payment-access-class-links-live-smoke.md.",
+        "Live One Time Shared Review smoke passed across landing, provider, parent, student, classroom, email, and Operations surfaces at mobile/tablet/desktop widths: ops/live-smokes/2026-06-23T17-16-03-566Z-one-time-shared-review-live-smoke.md."
+      ],
+      "verification": [
+        "node --test tests/one-time-product-system.test.js tests/rabbi-checkout-access.test.js tests/rabbi-member-portal-access.test.js tests/rabbi-parent-portal.test.js tests/provider-classroom-local-contract.test.js tests/parent-portal-contract.test.js tests/student-portal-auth-policy.test.js PASS 20/20",
+        "node --check src/lib/bna/one-time-product-system.js PASS",
+        "node --check scripts/smoke-one-time-product-booking-live.mjs PASS",
+        "node --check scripts/smoke-one-time-payment-access-class-links-live.mjs PASS",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "node scripts/smoke-one-time-product-booking-live.mjs PASS report ops/live-smokes/2026-06-23T17-16-03-089Z-one-time-product-booking-live-smoke.md",
+        "npm run app:smoke:one-time-payment-access-class-links PASS report ops/live-smokes/2026-06-23T17-16-03-292Z-one-time-payment-access-class-links-live-smoke.md",
+        "npm run app:smoke:one-time-shared-review PASS report ops/live-smokes/2026-06-23T17-16-03-566Z-one-time-shared-review-live-smoke.md"
+      ],
       "implementation_files": [
         "src/platform/instances/one-time.js",
         "server.js",
         "public/parent.html",
         "public/student.html",
         "public/provider.html",
-        "tests/one-time-product-system.test.js"
+        "tests/one-time-product-system.test.js",
+        "src/lib/bna/one-time-product-system.js",
+        "railway-migration-2026-06-16-one-time-product-system.sql",
+        "public/operations.html",
+        "public/one-time/index.html",
+        "scripts/smoke-one-time-product-booking-live.mjs",
+        "scripts/smoke-one-time-payment-access-class-links-live.mjs",
+        "scripts/smoke-one-time-shared-review-live.mjs"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS; code already included in Batch 6 deploy, then verified by product/schedule/booking/portal/billing-focused live smokes.",
+        "Only internal One Time class-event and appointment-intent records were created by the product booking live smoke. No live charge, checkout, invoice, subscription, access grant, email, WhatsApp, external CRM write, DNS mutation, real Zoom meeting/registrant/join-link mutation, upload, or external calendar write was performed."
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:28:00+03:00"
     },
     {
       "id": "REQ-20260619-307",
       "title": "Zoom meeting and attendance foundation",
       "expected_result": "Zoom foundation is production-ready in code without creating a real class meeting.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0012"
@@ -771,34 +1256,58 @@
       "depends_on": [
         "REQ-20260619-306"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Complete API client, token caching, session models, webhook verification, attendance calculations, and mocked tests.",
+      "next_action": "Closed: Zoom API readiness, token-cache scaffolding, meeting/registrant request builders, webhook signature/idempotency/replay protection, attendance reconciliation, correction drafts, Operations readiness UI, and production no-write live smoke are complete. Continue to next unblocked batch.",
       "acceptance_criteria": [
         "host start URL never exposed",
         "dashboard click is not attendance",
         "webhooks idempotent and replay-protected"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db includes the Zoom attendance/session automation foundation.",
+        "Zoom integration helper covers token caching, meeting and registrant request builders, secure defaults, webhook signature verification, replay/idempotency protection, attendance reconciliation that ignores dashboard clicks, and correction drafts: src/lib/integrations/zoom.js.",
+        "Protected server endpoints expose status, meeting preview, session automation preview, webhook attendance preview, and correction preview while live meeting creation remains blocked: server.js.",
+        "Operations Live Classes readiness panel shows Zoom automation readiness, dashboard-click guardrails, webhook processing, and no-write copy: public/operations.html.",
+        "Focused local Zoom/product/portal suite passed 53/53 in the clean worktree.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS.",
+        "Live One Time Zoom Attendance smoke passed: ops/live-smokes/2026-06-23T17-23-08-813Z-one-time-zoom-attendance-live-smoke.md."
+      ],
+      "verification": [
+        "node --check src/lib/integrations/zoom.js PASS",
+        "node --check scripts/smoke-one-time-zoom-attendance-live.mjs PASS",
+        "node --test tests/one-time-zoom-attendance-automation.test.js tests/live-class-infrastructure.test.js tests/rabbi-checkout-access.test.js tests/one-time-product-system.test.js tests/provider-classroom-local-contract.test.js tests/parent-student-portal-contract.test.js PASS 53/53",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "node scripts/smoke-one-time-zoom-attendance-live.mjs PASS report ops/live-smokes/2026-06-23T17-23-08-813Z-one-time-zoom-attendance-live-smoke.md"
+      ],
       "implementation_files": [
         "src/lib/integrations/zoom.js",
         "server.js",
-        "tests/one-time-zoom-attendance-automation.test.js"
+        "public/operations.html",
+        "docs/integrations/ZOOM.md",
+        "docs/integrations/zoom-setup.md",
+        "ops/route-registry.json",
+        "tests/one-time-zoom-attendance-automation.test.js",
+        "tests/live-class-infrastructure.test.js",
+        "scripts/smoke-one-time-zoom-attendance-live.mjs"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS; code already included in Batch 6 deploy, then verified by Zoom attendance-focused live smoke.",
+        "Live smoke confirmed zoom_status_readable=true, token_cache_reported=true, workflow_foundation_reported=true, webhook_processing_reported=true, meeting_create_blocked=true, external_write_performed=false, zoom_meeting_created=false, and Operations UI checked at 1440px and 390px.",
+        "No Zoom meeting, registrant, webhook attendance write, attendance correction, recording read, transcript read, summary read, external send, portal publish, participant invite, host start URL exposure, or raw Zoom join URL exposure was performed."
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:25:00+03:00"
     },
     {
       "id": "REQ-20260619-308",
       "title": "Vimeo, member-library, recording, transcript, and publication pipeline",
       "expected_result": "Manual Vimeo member-library pipeline works now; automated upload waits on user token; recordings never publish directly from webhook.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0011"
@@ -814,37 +1323,62 @@
         "REQ-20260619-306",
         "REQ-20260619-307"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Make manual Vimeo workflow fully usable and automated upload readiness disabled behind feature flag; complete recording/publication states.",
+      "next_action": "Closed: manual Vimeo URL validation, recording pipeline preview, review/approve/publish/rollback states, upload feature-flag disablement, retention gates, member-library UI, and production smoke are complete. Continue to next unblocked batch.",
       "acceptance_criteria": [
         "manual Vimeo URL validation",
         "review/approve/publish/unpublish states",
         "upload feature flag disabled",
         "retention gates enforced"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db includes the recording/Vimeo/member-library pipeline.",
+        "Video hosting helper covers manual Vimeo URL parsing, recording pipeline preview, file selection, transcript/summary readiness, retry/dead-letter/idempotency, review/correction/approval/rejection, publication/unpublish/retention, entitlement, and watch-progress handoff: src/lib/integrations/video-hosting.js.",
+        "Protected server endpoints expose video-hosting status, recording pipeline preview, publication preview, retention preview, class package manager APIs, package preview, approval, publish, rollback, member preview, and a smoke endpoint while Vimeo upload remains blocked: server.js.",
+        "Operations One Time Library shows the Recording/Vimeo Pipeline readiness panel and Class Package Manager controls: public/operations.html.",
+        "Focused local recording/Vimeo/member-library suite passed 30/30 in the clean worktree.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS.",
+        "Live One Time Vimeo Member Library smoke passed: ops/live-smokes/2026-06-23T17-28-42-169Z-one-time-vimeo-member-library-live-smoke.md."
+      ],
+      "verification": [
+        "node --check src/lib/integrations/video-hosting.js PASS",
+        "node --check scripts/smoke-one-time-vimeo-member-library-live.mjs PASS",
+        "node --test tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-member-library.test.js tests/one-time-content-library-workspace.test.js tests/live-class-infrastructure.test.js tests/provider-classroom-local-contract.test.js tests/provider-integrations-secret-storage.test.js tests/operations-content-library-taxonomy.test.js PASS 30/30",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "node scripts/smoke-one-time-vimeo-member-library-live.mjs PASS report ops/live-smokes/2026-06-23T17-28-42-169Z-one-time-vimeo-member-library-live-smoke.md"
+      ],
       "implementation_files": [
         "src/lib/integrations/vimeo.js",
         "src/lib/integrations/video-hosting.js",
         "server.js",
         "public/operations.html",
-        "tests/one-time-recording-vimeo-pipeline.test.js"
+        "public/member-library.html",
+        "docs/integrations/VIMEO.md",
+        "ops/route-registry.json",
+        "tests/one-time-recording-vimeo-pipeline.test.js",
+        "tests/one-time-member-library.test.js",
+        "tests/one-time-content-library-workspace.test.js",
+        "tests/provider-integrations-secret-storage.test.js",
+        "scripts/smoke-one-time-vimeo-member-library-live.mjs"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS; code already included in Batch 6 deploy, then verified by Vimeo/member-library-focused live smoke.",
+        "Live smoke confirmed vimeo_selected=true, manual_vimeo_ready=true, automated_upload_enabled=false, temporary_class_created=true, temporary_class_archived=true, temporary_item_published=true, temporary_item_rolled_back=true, member_library_smoke_rolled_back=true, and Operations/member-library UI checked at 1440px and 390px.",
+        "The live smoke created temporary internal One Time class/library records, published a smoke-scoped item, rolled it back, and archived the temporary class. No Vimeo upload, provider publish/unpublish/delete, email, WhatsApp, payment, Zoom meeting, participant invite, real member access grant, or external portal write was performed."
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:30:00+03:00"
     },
     {
       "id": "REQ-20260619-309",
       "title": "Transcript privacy",
       "expected_result": "Transcript content cannot expose one child to another and raw guessed speaker identity is never treated as reviewed student data.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0013"
@@ -859,34 +1393,61 @@
       "depends_on": [
         "REQ-20260619-308"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Complete transcript versioning, visibility classes, speaker confidence, matching/review rules, and tests.",
+      "next_action": "Closed: transcript versioning/readiness, visibility classes, speaker confidence, match confidence thresholds, manual-review rules, parent-visible reviewed feedback requirements, retrieval boundaries, public-helper guardrails, and body-free production smoke are complete. Continue to next unblocked batch.",
       "acceptance_criteria": [
         "confidence thresholds enforced",
         "manual review for uncertain mapping",
         "parent-visible feedback is reviewed"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db includes the transcript privacy and knowledge-scope foundation.",
+        "Transcript privacy helper models versions, timestamped segments, speaker confidence, privacy classes, match methods/confidence, student/parent/staff retrieval boundaries, and public-helper safe retrieval without returning raw text: src/lib/bna/transcript-privacy.js.",
+        "Protected server endpoint exposes transcript privacy readiness while member-safe classroom payloads blank transcript text/notes/segments: server.js.",
+        "Operations One Time Library shows the Transcript Privacy / Knowledge Scope readiness panel with guessed-speaker and live-smoke guardrails: public/operations.html.",
+        "Public helper retrieval only allows bounded reviewed safe snippets and blocks raw/unapproved transcript dumps: src/lib/bna/public-helper-retrieval.js.",
+        "Focused local transcript privacy suite passed 54/54 in the clean worktree.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS.",
+        "Live One Time Transcript Privacy smoke passed: ops/live-smokes/2026-06-23T17-33-56-257Z-one-time-transcript-privacy-live-smoke.md."
+      ],
+      "verification": [
+        "node --check src/lib/bna/transcript-privacy.js PASS",
+        "node --check scripts/smoke-one-time-transcript-privacy-live.mjs PASS",
+        "node --test tests/one-time-transcript-privacy.test.js tests/public-helper-context.test.js tests/public-helper-privacy.test.js tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-zoom-attendance-automation.test.js tests/provider-classroom-local-contract.test.js tests/parent-student-portal-contract.test.js tests/one-time-content-library-workspace.test.js PASS 54/54",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "node scripts/smoke-one-time-transcript-privacy-live.mjs PASS report ops/live-smokes/2026-06-23T17-33-56-257Z-one-time-transcript-privacy-live-smoke.md"
+      ],
       "implementation_files": [
         "src/lib/bna/transcript-privacy.js",
+        "src/lib/bna/public-helper-retrieval.js",
         "server.js",
-        "tests/one-time-transcript-privacy.test.js"
+        "public/operations.html",
+        "public/parent.html",
+        "public/student.html",
+        "ops/route-registry.json",
+        "tests/one-time-transcript-privacy.test.js",
+        "tests/public-helper-context.test.js",
+        "tests/public-helper-privacy.test.js",
+        "scripts/smoke-one-time-transcript-privacy-live.mjs"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS; code already included in Batch 6 deploy, then verified by transcript privacy live smoke.",
+        "Live smoke confirmed requirement REQ-20260619-309, status implemented_read_only, classes_seen=14, segments_seen=14, body-free/no-write readiness API, and Operations panel marker/guardrail text.",
+        "No transcript content write, student record write, public helper corpus write, portal data write, raw transcript body, staff-private note, cross-student private segment, send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was performed."
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:35:00+03:00"
     },
     {
       "id": "REQ-20260619-310",
       "title": "Gamification",
       "expected_result": "Badges are server-side, evidence-backed, reversible, audited, and not public-leaderboard driven.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0014"
@@ -902,34 +1463,62 @@
         "REQ-20260619-306",
         "REQ-20260619-307"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Complete event-driven badge awarding, thresholds, idempotency, reversal, audit, and parent-safe explanations.",
+      "next_action": "Closed: server-side badge catalog, thresholds, idempotency keys, event-driven award candidates, Rabbi-awarded badge audit path, reversal audit path, parent-safe explanations, no-public-leaderboard guardrails, and read-only production smoke are complete. Continue to next unblocked batch.",
       "acceptance_criteria": [
         "automatic badges idempotent",
         "Rabbi-awarded badges audited",
         "no public individual leaderboard"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db includes the gamification and badge audit foundation.",
+        "Gamification helper defines event types, automatic and Rabbi-awarded badge catalog, thresholds, points, stable idempotency keys, award/reversal drafts, readiness, and parent-safe explanations: src/lib/bna/gamification.js.",
+        "Server declares badge audit schema, readiness route, Rabbi award route, reversal route, audit/idempotency helpers, and member-safe classroom payload with empty public leaderboard: server.js.",
+        "Operations Community ledger shows the Gamification / Badge Audit readiness panel and no-write/no-leaderboard guardrails: public/operations.html.",
+        "Public One Time classroom shows approved participation without a ranked public leaderboard: public/one-time-classroom.html.",
+        "Focused local gamification/badge/community/portal suite passed 57/57 in the clean worktree.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS.",
+        "Live One Time Gamification smoke passed: ops/live-smokes/2026-06-23T17-38-46-447Z-one-time-gamification-live-smoke.md."
+      ],
+      "verification": [
+        "node --check src/lib/bna/gamification.js PASS",
+        "node --check scripts/smoke-one-time-gamification-live.mjs PASS",
+        "node --test tests/gamification-events.test.js tests/one-time-gamification-badge-audit.test.js tests/ws11-community-model-contract.test.js tests/parent-progress-privacy.test.js tests/provider-classroom-local-contract.test.js tests/parent-student-portal-contract.test.js tests/one-time-community-moderation-workflow.test.js PASS 57/57",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "node scripts/smoke-one-time-gamification-live.mjs PASS report ops/live-smokes/2026-06-23T17-38-46-447Z-one-time-gamification-live-smoke.md"
+      ],
       "implementation_files": [
         "src/lib/bna/gamification.js",
+        "server.js",
+        "public/operations.html",
+        "public/one-time-classroom.html",
+        "public/parent.html",
+        "public/student.html",
+        "ops/route-registry.json",
         "tests/gamification-events.test.js",
-        "tests/one-time-gamification-badge-audit.test.js"
+        "tests/one-time-gamification-badge-audit.test.js",
+        "tests/ws11-community-model-contract.test.js",
+        "tests/parent-progress-privacy.test.js",
+        "scripts/smoke-one-time-gamification-live.mjs"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS; code already included in Batch 6 deploy, then verified by gamification live smoke.",
+        "Live smoke confirmed requirement REQ-20260619-310, status implemented_read_only, 11 automatic badges, 6 Rabbi-awarded badges, no-write readiness API, and Operations badge panel marker/guardrails.",
+        "No gamification event creation, badge award, badge reversal, notification, access grant, prize/credit change, public individual leaderboard, negative-point action, external CRM/GHL write, send, charge, Zoom/Vimeo/Google/DNS mutation, or secret exposure was performed."
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:40:00+03:00"
     },
     {
       "id": "REQ-20260619-311",
       "title": "Community",
       "expected_result": "Community is moderated, private-safe, auditable, and has no unrestricted student direct messaging.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0015"
@@ -944,34 +1533,60 @@
       "depends_on": [
         "REQ-20260619-306"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Complete announcements, moderated cohort discussions, private questions, parent visibility, staff notes, report/flag flow, and private-to-public workflow.",
+      "next_action": "Closed: announcements, moderated cohort discussions, private questions, parent-visible communication, staff-only notes, report/flag flow, edit/delete history, private-to-public anonymization, no unrestricted student messaging, and read-only production smoke are complete. Continue to next unblocked batch.",
       "acceptance_criteria": [
         "private-to-public workflow preserves original/published link",
         "no identifying data published",
         "visibility enforced"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db includes the community moderation foundation.",
+        "Community moderation helper defines visibility/review states, private question moderation drafts, private-to-public anonymization previews, report flags, edit/delete history, and no-unrestricted-student-messaging guardrails: src/lib/bna/community-moderation.js.",
+        "Server declares community moderation schema/audit trail, private-first classroom response route, and read-only community moderation readiness API: server.js.",
+        "Operations shows the Community / Moderation Workflow readiness panel and private-to-public/no-unrestricted-messaging guardrails: public/operations.html.",
+        "Public One Time classroom keeps replies private/submitted for review and does not expose an active bot or unrestricted student-to-student messaging surface: public/one-time-classroom.html.",
+        "Focused local community/moderation suite passed 53/53 in the clean worktree.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS.",
+        "Live One Time Community smoke passed: ops/live-smokes/2026-06-23T17-43-01-034Z-one-time-community-live-smoke.md."
+      ],
+      "verification": [
+        "node --check src/lib/bna/community-moderation.js PASS",
+        "node --check scripts/smoke-one-time-community-live.mjs PASS",
+        "node --test tests/one-time-community-moderation-workflow.test.js tests/ws11-community-model-contract.test.js tests/provider-classroom-settings-contract.test.js tests/provider-classroom-local-contract.test.js tests/parent-progress-privacy.test.js tests/one-time-gamification-badge-audit.test.js tests/parent-student-portal-contract.test.js PASS 53/53",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "node scripts/smoke-one-time-community-live.mjs PASS report ops/live-smokes/2026-06-23T17-43-01-034Z-one-time-community-live-smoke.md"
+      ],
       "implementation_files": [
         "src/lib/bna/community-moderation.js",
         "src/platform/community/index.js",
-        "tests/one-time-community-moderation-workflow.test.js"
+        "server.js",
+        "public/operations.html",
+        "public/one-time-classroom.html",
+        "ops/route-registry.json",
+        "tests/one-time-community-moderation-workflow.test.js",
+        "tests/ws11-community-model-contract.test.js",
+        "tests/provider-classroom-settings-contract.test.js",
+        "scripts/smoke-one-time-community-live.mjs"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS; code already included in Batch 6 deploy, then verified by community moderation live smoke.",
+        "Live smoke confirmed requirement REQ-20260619-311, status implemented_read_only, threads_seen=0, messages_seen=0, pending_moderation=0, no-write readiness API, and Operations community panel marker/guardrails.",
+        "No thread creation, message creation, approval, public post, parent-visible message, staff note, notification, delete/purge action, unrestricted student-to-student messaging, unreviewed publication, public promotion write, external notification, send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was performed."
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:45:00+03:00"
     },
     {
       "id": "REQ-20260619-312",
       "title": "Sefaria and study-assistant readiness",
       "expected_result": "Study assistant foundation is ready but disabled, with approved sources and authorization before retrieval.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0016"
@@ -986,28 +1601,54 @@
       "depends_on": [
         "REQ-20260619-309"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Complete approved source-version model, scoped retrieval, disabled feature flag, and guardrail tests.",
+      "next_action": "Closed: approved source-version metadata, scoped retrieval previews, licensing/citation/privacy gates, disabled assistant feature flag, Operations readiness panel, and read-only production smoke are complete. Continue to final verification; do not enable ingestion, portal publishing, retrieval chat, or answer generation without approval.",
       "acceptance_criteria": [
         "no arbitrary versions",
         "no raw unreviewed transcripts",
         "citations not fabricated",
         "feature flag disabled"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db includes the Sefaria/study-assistant readiness foundation.",
+        "Study assistant readiness helper defines approved source-version metadata, content hashing without body return, scoped retrieval previews, restricted/raw/cross-student blockers, licensing/citation/privacy gates, disabled feature flag, and prohibited live behaviors: src/lib/bna/study-assistant-readiness.js.",
+        "Server exposes protected no-write study assistant readiness API and additive source-version/audit schema without enabling chat, source corpus mutation, arbitrary version ingestion, or portal publishing: server.js.",
+        "Operations shows the Sefaria / Study Assistant readiness panel and guardrails: public/operations.html.",
+        "Route registry declares the private no-write readiness route: ops/route-registry.json.",
+        "Focused local study-assistant/privacy/portal/community suite passed 47/47 in the clean worktree.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS.",
+        "Live One Time Study Assistant smoke passed: ops/live-smokes/2026-06-23T17-48-36-925Z-one-time-study-assistant-live-smoke.md."
+      ],
+      "verification": [
+        "node --check src/lib/bna/study-assistant-readiness.js PASS",
+        "node --check scripts/smoke-one-time-study-assistant-live.mjs PASS",
+        "node --test tests/one-time-study-assistant-readiness.test.js tests/one-time-transcript-privacy.test.js tests/public-helper-context.test.js tests/public-helper-privacy.test.js tests/provider-classroom-local-contract.test.js tests/parent-student-portal-contract.test.js tests/one-time-community-moderation-workflow.test.js PASS 47/47",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "node scripts/smoke-one-time-study-assistant-live.mjs PASS report ops/live-smokes/2026-06-23T17-48-36-925Z-one-time-study-assistant-live-smoke.md"
+      ],
       "implementation_files": [
         "src/lib/bna/study-assistant-readiness.js",
-        "tests/one-time-study-assistant-readiness.test.js"
+        "server.js",
+        "public/operations.html",
+        "ops/route-registry.json",
+        "tests/one-time-study-assistant-readiness.test.js",
+        "tests/one-time-transcript-privacy.test.js",
+        "tests/public-helper-context.test.js",
+        "tests/public-helper-privacy.test.js",
+        "scripts/smoke-one-time-study-assistant-live.mjs"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS; code already included in Batch 6 deploy, then verified by study assistant live smoke.",
+        "Live smoke confirmed requirement REQ-20260619-312, status implemented_read_only, source_versions_seen=10, assistant_ready_sources=0, protected readiness API, and Operations panel marker/guardrails.",
+        "No Sefaria/API ingestion, source corpus mutation, portal publishing, answer generation, chat session creation, arbitrary version ingestion, arbitrary translation merge, raw transcript retrieval, raw source body return, cross-student retrieval, external send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was performed."
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-23T20:50:00+03:00"
     },
     {
       "id": "REQ-20260619-313",
@@ -1059,7 +1700,7 @@
       "id": "REQ-20260619-314",
       "title": "Final verification and release",
       "expected_result": "All unblocked work is verified, pushed, deployed when safe, and live-smoked; only external actions remain.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0018"
@@ -1088,9 +1729,9 @@
         "REQ-20260619-311",
         "REQ-20260619-312"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "deployed_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Run final checks, push PR branch, deploy safe bundle, smoke, and update PR #5; do not merge.",
+      "next_action": "Closed: all unblocked active-run requirements are terminal. REQ-20260619-313 remains a needs-operator-decision terminal blocker for separate One Time paid infrastructure, ownership, and DNS. Continue queued Telegram plus website-assistant control-plane addendum work without creating duplicate systems.",
       "acceptance_criteria": [
         "full tests pass",
         "secret audit passes",
@@ -1098,18 +1739,1844 @@
         "Railway deploy/live smoke recorded",
         "PR #5 updated"
       ],
+      "evidence": [
+        "Clean PR #13 branch codex/one-time-batch4-control-plane-20260623 is clean at commit 2291d03a47ab0d9ec39b78561bc8e41361d959db.",
+        "Remote branch refs/heads/codex/one-time-batch4-control-plane-20260623 resolves to 2291d03a47ab0d9ec39b78561bc8e41361d959db.",
+        "PR #5 is merged; draft PR #13 is the current clean deploy/release candidate for the active run.",
+        "Full clean-worktree npm test passed 1071/1071.",
+        "Tracked secret audit passed: 4100 tracked paths checked, 0 tracked secret-risk files found.",
+        "Action watchdog passed with zero findings: ops/watchdog-audits/2026-06-23T17-54-watchdog-action-audit.md.",
+        "Railway doctor confirmed deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS for skillful-motivation / production.",
+        "Standard live app smoke passed: ops/live-smokes/2026-06-23T17-55-00-705Z-live-app-smoke.md.",
+        "Final register surfaces live smoke passed: ops/live-smokes/2026-06-23T17-55-27-727Z-final-register-surfaces-live-smoke.md.",
+        "Operations workspace taxonomy live smoke passed: ops/live-smokes/2026-06-23T17-55-27-745Z-operations-workspace-taxonomy-live-smoke.md.",
+        "All active-run requirements except external Option B infrastructure/DNS are done, deployed, and live-smoked or already terminal."
+      ],
+      "verification": [
+        "git status --porcelain clean in clean worktree",
+        "git rev-parse HEAD -> 2291d03a47ab0d9ec39b78561bc8e41361d959db",
+        "git ls-remote origin refs/heads/codex/one-time-batch4-control-plane-20260623 -> 2291d03a47ab0d9ec39b78561bc8e41361d959db",
+        "npm test PASS 1071/1071 in clean worktree",
+        "npm run secrets:audit PASS 4100 tracked paths checked, 0 tracked secret-risk files found",
+        "npm run watchdog:actions PASS severity ok, finding_count 0",
+        "npm run railway:doctor PASS deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS",
+        "npm run app:smoke PASS report ops/live-smokes/2026-06-23T17-55-00-705Z-live-app-smoke.md",
+        "npm run app:smoke:final-register-surfaces PASS report ops/live-smokes/2026-06-23T17-55-27-727Z-final-register-surfaces-live-smoke.md",
+        "npm run app:smoke:operations-workspace-taxonomy PASS report ops/live-smokes/2026-06-23T17-55-27-745Z-operations-workspace-taxonomy-live-smoke.md"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "public/one-time-classroom.html",
+        "public/member-library.html",
+        "public/parent.html",
+        "public/student.html",
+        "src/lib/bna/one-time-product-system.js",
+        "src/lib/bna/transcript-privacy.js",
+        "src/lib/bna/gamification.js",
+        "src/lib/bna/community-moderation.js",
+        "src/lib/bna/study-assistant-readiness.js",
+        "src/lib/integrations/zoom.js",
+        "src/lib/integrations/video-hosting.js",
+        "src/lib/integrations/resend-client.js",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/",
+        "ops/live-smokes/2026-06-23T17-55-00-705Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-23T17-55-27-727Z-final-register-surfaces-live-smoke.md",
+        "ops/live-smokes/2026-06-23T17-55-27-745Z-operations-workspace-taxonomy-live-smoke.md"
+      ],
+      "implementation_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pushed_commit": "2291d03a47ab0d9ec39b78561bc8e41361d959db",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment e9949680-4330-454c-9b1c-b61dce2d475b SUCCESS for service skillful-motivation in production; deployed commit is 2291d03a47ab0d9ec39b78561bc8e41361d959db.",
+        "Standard live app smoke passed public health, operations login/session, protected reads, Torah public/admin scope, task create/comment/delete, signup dry-run, Buffer diagnostics, and Drive website image lane.",
+        "Final register surfaces smoke passed provider public/portal routes, Operations internal-first markers, helper tools, recording intake dry-run provenance RAW-20260623-019, calendar API, and automations API.",
+        "Operations workspace taxonomy smoke passed canonical taxonomy categories Super Admin, School, Service Provider, Family with 4 workspaces, no duplicate keys, and no stale visible terms.",
+        "No live external send, billing charge, DNS mutation, real Zoom meeting creation, real Vimeo upload/publication, hard delete, live badge award/reversal write, prize/credit issuance, access grant, public leaderboard exposure, unreviewed community publication, unrestricted student messaging, transcript publication, vector corpus mutation, Sefaria/API ingestion, answer generation, separate One Time infrastructure provisioning, PR merge, external CRM/GHL write, or secret exposure was performed."
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T20:58:00+03:00"
+    },
+    {
+      "id": "REQ-20260623-010",
+      "title": "Register Telegram plus website-assistant addendum",
+      "expected_result": "The Telegram plus website-assistant addendum is attached to the existing issue #7 parent source and execution run without duplicate systems.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0002"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "addendum-registration",
+      "depends_on": [],
+      "implementation_status": "registered",
+      "can_continue_without_operator": true,
+      "next_action": "Closed: addendum source, register, visible task queue, and ledger/changelog records exist. Continue REQ-20260623-011.",
+      "acceptance_criteria": [
+        "raw pointer exists",
+        "register exists",
+        "no visible Task fan-out",
+        "no second execution run",
+        "queue sequencing is explicit"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+        "tasks-pending/2026-06-23-telegram-website-control-plane-addendum.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/requirements.json",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/SOURCE.md",
+        "TASKS.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "verification": [
+        "npm run bna:run:validate PASS before addendum implementation sequencing",
+        "npm run bna:run:source-coverage PASS before addendum implementation sequencing",
+        "ledger JSONL parse PASS"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+        "tasks-pending/2026-06-23-telegram-website-control-plane-addendum.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/requirements.json",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/NEXT-SESSION.md",
+        "TASKS.md"
+      ],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-23T21:05:00+03:00"
+    },
+    {
+      "id": "REQ-20260623-011",
+      "title": "Shared assistant control-plane contract",
+      "expected_result": "One documented contract covers Telegram, website assistant, Operations helper, provider portal, parent portal, student portal where enabled, and future approved channels as adapters over shared identity, workspace, conversation, action, permission, approval, preview, intake, reminder, ticket, and Agent Work services.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0003"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "architecture",
+      "priority": "P0",
+      "batch_id": "L",
+      "depends_on": [
+        "REQ-20260623-010"
+      ],
+      "implementation_status": "verified_local_contract",
+      "can_continue_without_operator": true,
+      "next_action": "Closed: shared assistant control-plane contract is documented, exported, and covered by focused tests. Continue the next dependency-ready addendum batch.",
+      "acceptance_criteria": [
+        "shared contract covers all listed channels",
+        "contract covers identity/workspace/conversation/source envelope/planner/permissions/previews/approvals/audit/file intake/reminders/tickets/Agent Work",
+        "channel adapters may not duplicate business logic"
+      ],
+      "evidence": [
+        "docs/architecture/telegram-control-plane.md defines Telegram and website assistant as adapters over one canonical control plane.",
+        "src/platform/assistant/control-plane.js exports CONTROL_PLANE_CONTRACT, SHARED_CONTROL_PLANE_LAYERS, ADAPTER_ONLY_RESPONSIBILITIES, and FORBIDDEN_DUPLICATE_SYSTEMS.",
+        "tests/universal-control-plane-scope-policy.test.js locks the shared layers, adapter-only responsibilities, no duplicate systems, typed-action requirement, and browser-click-substitution ban."
+      ],
+      "verification": [
+        "node --check src/platform/assistant/control-plane.js PASS",
+        "node --test tests/universal-control-plane-scope-policy.test.js PASS 8/8"
+      ],
+      "implementation_files": [
+        "docs/architecture/telegram-control-plane.md",
+        "src/platform/assistant/control-plane.js",
+        "tests/universal-control-plane-scope-policy.test.js"
+      ],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-23T21:12:00+03:00"
+    },
+    {
+      "id": "REQ-20260623-012",
+      "title": "Shared assistant data model",
+      "expected_result": "One canonical model exists for channels, identities, conversations, messages, context objects, action plans/runs, previews, approvals, drafts/versions, templates, saved views, reminders, notifications, onboarding sessions, delivery outbox, and dead letters.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0004"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "schema",
+      "priority": "P0",
+      "batch_id": "L",
+      "depends_on": [
+        "REQ-20260623-011"
+      ],
+      "implementation_status": "deployed_live_smoked",
+      "can_continue_without_operator": true,
+      "next_action": "Closed. Continue with the next unblocked addendum requirement selected by npm run bna:run:next.",
+      "acceptance_criteria": [
+        "one canonical Telegram/website assistant representation",
+        "channel-specific metadata remains adapter-scoped",
+        "migrations/tests are idempotent"
+      ],
+      "evidence": [
+        "src/platform/assistant/control-plane.js exports ASSISTANT_DATA_MODEL_TABLES with 18 canonical shared assistant tables.",
+        "server.js createAssistantSQL bootstraps 18 shared assistant tables plus 17 indexes idempotently.",
+        "server.js exposes authenticated read-only /api/bna/assistant/control-plane/readiness returning schema/index readiness only.",
+        "ops/route-registry.json declares /api/bna/assistant/control-plane/readiness as private Operations API with no-write readiness expectation.",
+        "ops/live-smokes/2026-06-23T18-25-13-013Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-23T18-26-39-444Z-assistant-control-plane-readiness-live-smoke.md"
+      ],
+      "verification": [
+        "clean worktree: node --check server.js",
+        "clean worktree: node --check src/platform/assistant/control-plane.js",
+        "clean worktree: node --test tests/assistant-control-plane-data-model.test.js tests/universal-control-plane-scope-policy.test.js tests/universal-assistant-mvp.test.js tests/universal-assistant-contract.test.js tests/assistant-portal-communications-contract.test.js tests/community-weekly-updates-contract.test.js tests/developer-tester-ticket-capture.test.js (PASS 49/49)",
+        "clean worktree: node -e \"JSON.parse(require('fs').readFileSync('ops/route-registry.json','utf8'))\"",
+        "main workspace: node --check server.js",
+        "main workspace: node --check src/platform/assistant/control-plane.js",
+        "main workspace: node --test tests/assistant-control-plane-data-model.test.js tests/universal-control-plane-scope-policy.test.js (PASS 13/13)",
+        "main workspace: npm run app:smoke (PASS)",
+        "main workspace: authenticated live GET /api/bna/assistant/control-plane/readiness (PASS; 18/18 tables, 17/17 indexes, no-write guard)"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/platform/assistant/control-plane.js",
+        "tests/assistant-control-plane-data-model.test.js",
+        "tests/universal-control-plane-scope-policy.test.js",
+        "docs/architecture/telegram-control-plane.md",
+        "ops/route-registry.json"
+      ],
+      "implementation_commit": "ee2fe192, 7d351b6f",
+      "pushed_commit": "7d351b6f",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway direct upload deployment 04756fab-bd9c-4f6b-869a-39668f64c419 reached SUCCESS via npm run railway:doctor.",
+        "Standard production smoke: ops/live-smokes/2026-06-23T18-25-13-013Z-live-app-smoke.md",
+        "Assistant control-plane readiness smoke: ops/live-smokes/2026-06-23T18-26-39-444Z-assistant-control-plane-readiness-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T21:27:00+03:00"
+    },
+    {
+      "id": "REQ-20260623-013",
+      "title": "Single action parity source",
+      "expected_result": "The action registry is the one parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0005"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "action_registry",
+      "priority": "P0",
+      "batch_id": "P",
+      "depends_on": [
+        "REQ-20260623-011"
+      ],
+      "implementation_status": "deployed_live_smoked",
+      "can_continue_without_operator": true,
+      "next_action": "Closed. Continue with the next unblocked addendum requirement selected by npm run bna:run:next.",
+      "acceptance_criteria": [
+        "every visible control classified",
+        "no executable action without handler/permissions/approval where risky",
+        "release gate reports counts"
+      ],
+      "evidence": [
+        "scripts/generate-universal-action-parity.mjs generates the universal action parity gate from the existing root and detailed action registries plus visible UI hooks.",
+        "ops/action-registry/universal-action-parity.json reports 133 registry rows, 22 visible UI controls, 22/22 classified controls, 0 missing contracts, 0 missing handlers, 0 missing tests, and 0 risky actions without approval on the clean PR branch.",
+        "ops/action-registry/universal-action-parity.md summarizes parity sources for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
+        "tests/watchdog-action-registry.test.js gates the universal parity artifact and release-gate rules.",
+        "ops/live-smokes/2026-06-23T18-41-53-481Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "clean worktree: node --check scripts/generate-universal-action-parity.mjs",
+        "clean worktree: node scripts/generate-one-time-action-coverage.mjs (ok, 40 controls)",
+        "clean worktree: node scripts/generate-universal-action-parity.mjs (ok, 22 visible controls, 133 registry rows)",
+        "clean worktree: node --test tests/watchdog-action-registry.test.js (PASS 5/5)",
+        "clean worktree: node --test tests/action-registry-telegram-ui-bot.test.js (PASS 33/33)",
+        "clean worktree: npm run watchdog:actions (PASS severity ok, 0 findings)",
+        "main workspace: node --check scripts/generate-universal-action-parity.mjs",
+        "main workspace: node --test tests/watchdog-action-registry.test.js (PASS 5/5)",
+        "main workspace: node --test tests/action-registry-telegram-ui-bot.test.js (PASS 33/33)",
+        "main workspace: npm run watchdog:actions (PASS severity ok, 0 findings)",
+        "Railway doctor: deployment e4b035db-e309-4402-b19c-4a26774aab8d SUCCESS",
+        "main workspace: npm run app:smoke (PASS)"
+      ],
+      "implementation_files": [
+        "scripts/generate-universal-action-parity.mjs",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/action-registry/universal-action-parity.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/one-time-action-coverage.md",
+        "tests/watchdog-action-registry.test.js"
+      ],
+      "implementation_commit": "19a85636ed60f9d1b148abdbc3df2e49f6fb9e4d",
+      "pushed_commit": "19a85636ed60f9d1b148abdbc3df2e49f6fb9e4d",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway direct upload deployment e4b035db-e309-4402-b19c-4a26774aab8d reached SUCCESS via npm run railway:doctor.",
+        "Standard production smoke: ops/live-smokes/2026-06-23T18-41-53-481Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T21:42:00+03:00"
+    },
+    {
+      "id": "REQ-20260623-014",
+      "title": "Shared registry-constrained natural-language planner and runner",
+      "expected_result": "Telegram and website assistant adapters use one planner/runner that sees only allowed actions, rejects unknown actions, collects missing inputs, supports dry-run/preview/approval, and never executes from model text alone.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0006"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "planner_runner",
+      "priority": "P0",
+      "batch_id": "L",
+      "depends_on": [
+        "REQ-20260623-012",
+        "REQ-20260623-013"
+      ],
+      "implementation_status": "deployed_live_smoked",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260623-015 shared drafts/templates/previews/versioning model.",
+      "acceptance_criteria": [
+        "allowed-action schema is actor scoped",
+        "unknown action IDs rejected",
+        "missing inputs collected conversationally",
+        "risky actions produce preview/approval",
+        "machine implementation creates Agent Work"
+      ],
+      "evidence": [
+        "Added src/platform/assistant/action-planner.js as the shared registry-constrained planner/runner contract for Telegram, website assistant, Operations helper, automation, and Agent Work source channels.",
+        "Planner schema is generated from visibleActionsForActor(listActions(), actor), so actors see only role/workspace-authorized action IDs.",
+        "Planner rejects unknown requested action IDs and permission-denied requested actions before any runner call.",
+        "Planner infers structured inputs for task, decision, ticket, Codex Agent Work, provider Google Business link, and provider question actions; missing required inputs are returned as focused questions.",
+        "runPlannedAssistantAction executes only through src/lib/actions/runner.js runAction, preserving dry-run, approval, actor, workspace, source, and audit behavior.",
+        "Added tests/assistant-action-planner-contract.test.js covering cross-channel parity, role filtering, unknown/denied action rejection, parent-vs-admin Codex routing, missing provider input collection, and approval preview through the canonical runner."
+      ],
+      "verification": [
+        "node --check src/platform/assistant/action-planner.js PASS",
+        "node --test tests/assistant-action-planner-contract.test.js PASS 6/6",
+        "node --test tests/assistant-action-planner-contract.test.js tests/universal-control-plane-scope-policy.test.js tests/action-registry-telegram-ui-bot.test.js PASS 47/47 in main workspace",
+        "node --test tests/assistant-action-planner-contract.test.js tests/universal-control-plane-scope-policy.test.js tests/action-registry-telegram-ui-bot.test.js PASS 47/47 in clean PR worktree",
+        "npm run railway:doctor PASS after deployment d61bbb67-c6bd-409a-89a1-c0e9c63e11e6 reached SUCCESS",
+        "npm run app:smoke PASS: ops/live-smokes/2026-06-23T18-53-31-401Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/action-planner.js",
+        "tests/assistant-action-planner-contract.test.js",
+        "src/lib/actions/registry.js",
+        "src/lib/actions/permissions.js",
+        "src/lib/actions/runner.js"
+      ],
+      "implementation_commit": "12a586f0",
+      "pushed_commit": "12a586f0",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway direct upload deployment d61bbb67-c6bd-409a-89a1-c0e9c63e11e6 reached SUCCESS via npm run railway:doctor.",
+        "Standard production smoke: ops/live-smokes/2026-06-23T18-53-31-401Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T21:54:00+03:00"
+    },
+    {
+      "id": "REQ-20260623-015",
+      "title": "Shared drafts, templates, previews, and versioning",
+      "expected_result": "A reusable model covers drafts, templates, previews, versions, compare, active-version, rollback, and approvals for messages, campaigns, landing pages, chart layouts, worksheets, course outlines, automations, and support macros.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0007"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "drafts_versions",
+      "priority": "P0",
+      "batch_id": "L",
+      "depends_on": [
+        "REQ-20260623-012"
+      ],
+      "implementation_status": "deployed_live_smoked",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260623-016 unified file/media/forwarded-message intake.",
+      "acceptance_criteria": [
+        "versions include required metadata",
+        "active/scheduled/use state recorded",
+        "rollback relationship recorded",
+        "assistant asks only material save/replace/audience questions"
+      ],
+      "evidence": [
+        "Added src/platform/assistant/draft-versioning.js as the shared draft/template/version/preview contract over the existing assistant_drafts, assistant_draft_versions, assistant_templates, and assistant_previews data model.",
+        "Contract covers emails, SMS, WhatsApp copy, Telegram messages, announcements, landing-page copy, website sections, chart layouts, worksheets, course outlines, onboarding scripts, automations, and support macros.",
+        "Draft/version rows include object type/id, parent version, editor/actor, channel, audience scope, prompt/instruction, content/config, change summary, approval state, active state, scheduled/use state, rollback relationship, and created time.",
+        "Preview rows identify draft version, real vs sample data, audience/workspace, blockers, external-action risk, status, and payload.",
+        "Role/workspace/relationship checks reuse the shared control-plane actionPolicy/assertActionPolicy rather than a separate permission system.",
+        "Draft content validation rejects raw code/CSS injection fields and strings before version/template/preview construction.",
+        "Added tests/assistant-draft-versioning-contract.test.js for object coverage, version creation, previews, parent linked-child scope, provider Studio website drafts, rollback/compare, templates, injection rejection, and clarification questions."
+      ],
+      "verification": [
+        "node --check src/platform/assistant/draft-versioning.js PASS",
+        "node --test tests/assistant-draft-versioning-contract.test.js PASS 8/8",
+        "node --test tests/assistant-draft-versioning-contract.test.js tests/assistant-action-planner-contract.test.js tests/assistant-control-plane-data-model.test.js tests/universal-control-plane-scope-policy.test.js tests/action-registry-telegram-ui-bot.test.js PASS 60/60 in main workspace",
+        "node --test tests/assistant-draft-versioning-contract.test.js tests/assistant-action-planner-contract.test.js tests/assistant-control-plane-data-model.test.js tests/universal-control-plane-scope-policy.test.js tests/action-registry-telegram-ui-bot.test.js PASS 60/60 in clean PR worktree",
+        "npm run railway:doctor PASS after deployment be818786-b5ab-416a-bbb3-0818c79cfc76 reached SUCCESS",
+        "npm run app:smoke first attempt timed out at command limit before report; rerun PASS: ops/live-smokes/2026-06-23T19-05-47-613Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/draft-versioning.js",
+        "tests/assistant-draft-versioning-contract.test.js",
+        "src/platform/assistant/control-plane.js",
+        "server.js"
+      ],
+      "implementation_commit": "bc4c6348",
+      "pushed_commit": "bc4c6348",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway direct upload deployment be818786-b5ab-416a-bbb3-0818c79cfc76 reached SUCCESS via npm run railway:doctor.",
+        "Standard production smoke: ops/live-smokes/2026-06-23T19-05-47-613Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T22:08:00+03:00"
+    },
+    {
+      "id": "REQ-20260623-016",
+      "title": "Unified file/media/forwarded-message intake",
+      "expected_result": "Telegram forwards and website uploads use one intake pipeline with source envelope, fingerprint/dedupe, type/size/privacy checks, transcript/OCR/metadata, workspace/object resolution, preview, linked outcomes, status, retry, and evidence.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0008"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "file_intake",
+      "priority": "P0",
+      "batch_id": "L-I",
+      "depends_on": [
+        "REQ-20260623-012"
+      ],
+      "implementation_status": "deployed_live_smoked",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to the next dependency-ready addendum requirement selected by npm run bna:run:next.",
+      "acceptance_criteria": [
+        "source provenance preserved",
+        "idempotency and progress status",
+        "privacy and role/workspace scope",
+        "human review for ambiguous student/person matching"
+      ],
+      "evidence": [
+        "Added src/platform/assistant/file-media-intake.js as the shared file/media/forwarded-message intake contract for Telegram, website assistant, and future adapters.",
+        "The contract wraps the existing canonical ingestion source record from src/platform/ingestion/intake-source.js instead of adding another intake pipeline.",
+        "Uploads/forwards produce immutable source envelopes, stable content fingerprints, idempotency keys, type/size/virus-scan checks, privacy classification, transcript/OCR metadata, workspace/object resolution, preview metadata, linked planned outcomes, retry/resume key, and no-duplicate-content-job evidence.",
+        "Adapter routing keeps Telegram buttons and website cards as transport rendering only; channel-specific business logic remains disallowed.",
+        "Outcome planning covers provider brand assets, worksheets/resources, class/course media, assistant draft versions, ticket attachments, contact notes, and manual review.",
+        "Parent linked-child and provider workspace checks reuse shared actionPolicy/assertActionPolicy; ambiguous person/student matches require human review.",
+        "Added tests/assistant-file-media-intake-contract.test.js for cross-channel fingerprint/dedupe parity, source envelopes, safety checks, privacy classification, outcome routing, ambiguous matching, relationship enforcement, and duplicate detection."
+      ],
+      "verification": [
+        "node --check src/platform/assistant/file-media-intake.js PASS",
+        "node --test tests/assistant-file-media-intake-contract.test.js PASS 8/8",
+        "node --test tests/assistant-file-media-intake-contract.test.js tests/telegram-media-routing.test.js tests/assistant-draft-versioning-contract.test.js tests/assistant-action-planner-contract.test.js tests/universal-control-plane-scope-policy.test.js PASS 42/42 in main workspace",
+        "node --test tests/assistant-file-media-intake-contract.test.js tests/telegram-media-routing.test.js tests/assistant-draft-versioning-contract.test.js tests/assistant-action-planner-contract.test.js tests/universal-control-plane-scope-policy.test.js PASS 41/41 in clean PR worktree",
+        "npm run railway:doctor PASS after deployment 6a3c0cfe-44bb-4154-8f1c-00bcf6f9a169 reached SUCCESS",
+        "npm run app:smoke PASS: ops/live-smokes/2026-06-23T19-14-56-082Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/file-media-intake.js",
+        "tests/assistant-file-media-intake-contract.test.js",
+        "src/platform/ingestion/intake-source.js",
+        "tests/telegram-media-routing.test.js"
+      ],
+      "implementation_commit": "be1383a2",
+      "pushed_commit": "be1383a2",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway direct upload deployment 6a3c0cfe-44bb-4154-8f1c-00bcf6f9a169 reached SUCCESS via npm run railway:doctor.",
+        "Standard production smoke: ops/live-smokes/2026-06-23T19-14-56-082Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T22:17:00+03:00"
+    },
+    {
+      "id": "REQ-20260623-017",
+      "title": "Assistant-led service-provider onboarding through Studio",
+      "expected_result": "Service-provider onboarding moves through assistant-led Telegram/website sessions backed by Service Provider Studio, with profile/listing/website/brand/classes/community/communications drafts, previews, versions, and operator approval gates.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0009"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "service_provider_workspaces",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "provider_self_service",
+      "priority": "P0",
+      "batch_id": "M",
+      "depends_on": [
+        "REQ-20260623-014",
+        "REQ-20260623-015",
+        "REQ-20260623-016"
+      ],
+      "implementation_status": "deployed_live_smoked",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to the next dependency-ready addendum requirement selected by npm run bna:run:next.",
+      "acceptance_criteria": [
+        "provider can continue across Telegram and website",
+        "assets feed Studio drafts",
+        "listing/website/class/course/community previews exist",
+        "publish remains operator gated"
+      ],
+      "evidence": [
+        "Added src/platform/assistant/provider-onboarding-studio.js as the assistant-led service-provider onboarding contract backed by Service Provider Studio.",
+        "The contract defines the secure_start, identity_business, offer, brand_website, classroom_community, communications, integrations, review, and launch stages.",
+        "Providers can start in Telegram and continue the same onboarding session in the website assistant without creating a duplicate onboarding system.",
+        "Studio draft package generation creates profile/listing, website, course/community, brand asset, communications, preview, and launch-gate structures using shared draft/versioning and file/media intake contracts.",
+        "Legacy provider form policy is classified as adapter_capture_only, with assistant_onboarding_sessions as canonical and service_provider_studio as the creation/editing system; separate forum/page-builder paths are disallowed.",
+        "Launch gate requires public listing preview, landing-page preview, portal configuration, class/course draft, communication templates, integration readiness, asset review, and operator approval; publish remains false.",
+        "Updated file/media intake provider-asset classifier so hero/photos/gallery assets route to Service Provider Studio asset review.",
+        "Added tests/assistant-provider-onboarding-studio-contract.test.js covering stages, cross-channel continuation, Studio draft package, asset intake reuse, launch gate, and legacy form policy."
+      ],
+      "verification": [
+        "node --check src/platform/assistant/provider-onboarding-studio.js PASS",
+        "node --test tests/assistant-provider-onboarding-studio-contract.test.js PASS 6/6",
+        "node --test tests/assistant-provider-onboarding-studio-contract.test.js tests/assistant-file-media-intake-contract.test.js tests/assistant-draft-versioning-contract.test.js tests/assistant-action-planner-contract.test.js tests/universal-control-plane-scope-policy.test.js tests/service-provider-directory.test.js tests/universal-assistant-contract.test.js PASS 59/59 in main workspace",
+        "node --test tests/assistant-provider-onboarding-studio-contract.test.js tests/assistant-file-media-intake-contract.test.js tests/assistant-draft-versioning-contract.test.js tests/assistant-action-planner-contract.test.js tests/universal-control-plane-scope-policy.test.js tests/service-provider-directory.test.js tests/universal-assistant-contract.test.js PASS 59/59 in clean PR worktree",
+        "npm run railway:doctor PASS after deployment 24301b82-8b71-45e4-b0a9-aa3d2f236cad reached SUCCESS",
+        "npm run app:smoke PASS: ops/live-smokes/2026-06-23T19-25-10-625Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/provider-onboarding-studio.js",
+        "src/platform/assistant/file-media-intake.js",
+        "tests/assistant-provider-onboarding-studio-contract.test.js",
+        "tests/service-provider-directory.test.js",
+        "tests/universal-assistant-contract.test.js"
+      ],
+      "implementation_commit": "a1186d5c",
+      "pushed_commit": "a1186d5c",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway direct upload deployment 24301b82-8b71-45e4-b0a9-aa3d2f236cad reached SUCCESS via npm run railway:doctor.",
+        "Standard production smoke: ops/live-smokes/2026-06-23T19-25-10-625Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T22:27:00+03:00"
+    },
+    {
+      "id": "REQ-20260623-018",
+      "title": "Parent natural-language self-service",
+      "expected_result": "Parents can safely customize linked-child chart/dashboard layouts, allowed updates, reminders, questions, support tickets, and communication preferences without altering official records or accessing another child.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0010"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "parent_self_service",
+      "priority": "P0",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260623-014",
+        "REQ-20260623-015"
+      ],
+      "implementation_status": "done",
+      "can_continue_without_operator": true,
+      "next_action": "Done. Select the next dependency-ready addendum batch with npm run bna:run:next.",
+      "acceptance_criteria": [
+        "relationship scope enforced",
+        "official attendance/scores protected",
+        "preview/apply/rollback layouts",
+        "cross-child and guessed IDs rejected"
+      ],
+      "evidence": [
+        "src/platform/assistant/parent-self-service.js",
+        "tests/assistant-parent-self-service-contract.test.js",
+        "ops/live-smokes/2026-06-23T19-37-26-570Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "PASS main-workspace node --check src/platform/assistant/parent-self-service.js",
+        "PASS main-workspace node --test tests/assistant-parent-self-service-contract.test.js (6/6)",
+        "PASS main-workspace focused assistant/control-plane suite (47/47)",
+        "PASS clean-worktree node --check src/platform/assistant/parent-self-service.js",
+        "PASS clean-worktree focused assistant/control-plane suite (47/47)",
+        "PASS npm run railway:doctor deployment c8abec9b-5f50-481d-8d5c-7c39714ffa3a status SUCCESS",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-23T19-37-26-570Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/parent-self-service.js",
+        "tests/assistant-parent-self-service-contract.test.js",
+        "src/platform/assistant/draft-versioning.js",
+        "src/platform/assistant/control-plane.js"
+      ],
+      "implementation_commit": "c77501e1",
+      "pushed_commit": "c77501e1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "PR #13 commit c77501e1 pushed to codex/one-time-batch4-control-plane-20260623",
+        "Railway deployment c8abec9b-5f50-481d-8d5c-7c39714ffa3a status SUCCESS",
+        "Standard live app smoke ops/live-smokes/2026-06-23T19-37-26-570Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T22:40:37+03:00"
+    },
+    {
+      "id": "REQ-20260623-019",
+      "title": "Natural-language chart and dashboard configuration model",
+      "expected_result": "Chart definitions, templates, dashboard layouts, layout versions, metric visibility, role/workspace/student scope, date ranges, display preferences, approval state, preview, compare, rollback, responsive output, and accessible alternatives are enforced without code/CSS injection.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0011"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "chart_dashboard",
+      "priority": "P0",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260623-015",
+        "REQ-20260623-018"
+      ],
+      "implementation_status": "done",
+      "can_continue_without_operator": true,
+      "next_action": "Done. Select the next dependency-ready addendum batch with npm run bna:run:next.",
+      "acceptance_criteria": [
+        "natural-language patch maps to validated config",
+        "role/relationship enforcement",
+        "live preview/version/rollback",
+        "no arbitrary code or CSS injection"
+      ],
+      "evidence": [
+        "src/platform/assistant/chart-dashboard-config.js",
+        "tests/assistant-chart-dashboard-config-contract.test.js",
+        "ops/live-smokes/2026-06-23T19-51-57-448Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "PASS main-workspace node --check src/platform/assistant/chart-dashboard-config.js",
+        "PASS main-workspace node --check src/platform/assistant/parent-self-service.js",
+        "PASS main-workspace chart/parent/control-plane suite (20/20)",
+        "PASS main-workspace focused assistant suite (59/59)",
+        "PASS clean-worktree node --check src/platform/assistant/chart-dashboard-config.js",
+        "PASS clean-worktree node --check src/platform/assistant/parent-self-service.js",
+        "PASS clean-worktree focused assistant suite (59/59)",
+        "PASS npm run railway:doctor deployment 5196fc2f-1e56-4a6f-a1ff-e44649831540 status SUCCESS",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-23T19-51-57-448Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/chart-dashboard-config.js",
+        "src/platform/assistant/parent-self-service.js",
+        "src/platform/assistant/control-plane.js",
+        "tests/assistant-chart-dashboard-config-contract.test.js",
+        "tests/assistant-parent-self-service-contract.test.js"
+      ],
+      "implementation_commit": "f68e9d3d",
+      "pushed_commit": "f68e9d3d",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "PR #13 commit f68e9d3d pushed to codex/one-time-batch4-control-plane-20260623",
+        "Railway deployment 5196fc2f-1e56-4a6f-a1ff-e44649831540 status SUCCESS",
+        "Standard live app smoke ops/live-smokes/2026-06-23T19-51-57-448Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T22:54:17+03:00"
+    },
+    {
+      "id": "REQ-20260623-020",
+      "title": "Super-admin campaign and drip-sequence control",
+      "expected_result": "Super admin can operate authorized campaigns, drip sequences, segments, versioning, previews, approval, scheduling, monitoring, failures, and Agent Work through natural language with send safety gates.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0012"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "super_admin",
+      "priority": "P0",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260623-014",
+        "REQ-20260623-015"
+      ],
+      "implementation_status": "done",
+      "can_continue_without_operator": true,
+      "next_action": "Done. Select the next dependency-ready addendum batch with npm run bna:run:next.",
+      "acceptance_criteria": [
+        "audience preview before send",
+        "consent/suppression checked",
+        "sender readiness and rate limits",
+        "explicit approval for live send",
+        "idempotency and audit"
+      ],
+      "evidence": [
+        "src/platform/assistant/campaign-control.js",
+        "tests/assistant-campaign-control-contract.test.js",
+        "ops/action-registry/universal-action-parity.md",
+        "ops/live-smokes/2026-06-23T20-05-05-992Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "PASS main-workspace node --check src/platform/assistant/campaign-control.js",
+        "PASS main-workspace campaign/planner/action-registry suite (52/52)",
+        "PASS main-workspace focused assistant/action suite (97/97)",
+        "PASS main-workspace parity generators and npm run watchdog:actions (0 findings)",
+        "PASS clean-worktree node --check campaign/planner/operations modules",
+        "PASS clean-worktree focused assistant/action suite (97/97)",
+        "PASS clean-worktree npm run watchdog:actions (0 findings)",
+        "PASS npm run railway:doctor deployment b796a1b9-8de7-43ea-90fb-0f9a87a9304b status SUCCESS",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-23T20-05-05-992Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/campaign-control.js",
+        "src/platform/assistant/action-planner.js",
+        "src/platform/assistant/control-plane.js",
+        "src/lib/actions/registry.js",
+        "src/lib/actions/actions/operations.js",
+        "tests/assistant-campaign-control-contract.test.js",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/action-registry/universal-action-parity.md"
+      ],
+      "implementation_commit": "8a7c1c66",
+      "pushed_commit": "8a7c1c66",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "PR #13 commit 8a7c1c66 pushed to codex/one-time-batch4-control-plane-20260623",
+        "Railway deployment b796a1b9-8de7-43ea-90fb-0f9a87a9304b status SUCCESS",
+        "Standard live app smoke ops/live-smokes/2026-06-23T20-05-05-992Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T23:06:03+03:00"
+    },
+    {
+      "id": "REQ-20260623-021",
+      "title": "Natural-language automation builder",
+      "expected_result": "Authorized users can describe automations compiled only into typed triggers, conditions, delays, branches, template versions, dry runs, readable/diagram previews, versions, enable/disable, audit, retries, and approval gates.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0013"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "automation_builder",
+      "priority": "P1",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260623-014",
+        "REQ-20260623-015"
+      ],
+      "implementation_status": "completed",
+      "can_continue_without_operator": true,
+      "next_action": "Terminal status reached after scoped implementation, verification, deploy, and live smoke.",
+      "acceptance_criteria": [
+        "typed triggers/actions only",
+        "scope validation",
+        "sample-event simulation",
+        "dry run/versioning/audit",
+        "external actions connector gated"
+      ],
+      "evidence": [
+        "src/platform/assistant/automation-builder.js",
+        "tests/assistant-automation-builder-contract.test.js",
+        "ops/action-registry/actions.json",
+        "ops/action-registry/universal-action-parity.md",
+        "ops/live-smokes/2026-06-23T20-19-39-519Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "PASS main focused assistant/action suite 97/97",
+        "PASS clean focused assistant/action suite 97/97",
+        "PASS node scripts/generate-universal-action-parity.mjs: 22 visible controls, 137 registry rows",
+        "PASS node scripts/generate-one-time-action-coverage.mjs: 40 controls",
+        "PASS npm run watchdog:actions: 0 findings",
+        "PASS npm run railway:doctor deployment 8006f53f-d12b-4a38-9233-26b9f217d26b SUCCESS",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-23T20-19-39-519Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/automation-builder.js",
+        "src/platform/assistant/action-planner.js",
+        "src/lib/actions/registry.js",
+        "src/lib/actions/actions/operations.js",
+        "tests/assistant-automation-builder-contract.test.js",
+        "ops/action-registry/actions.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/action-registry/universal-action-parity.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/one-time-action-coverage.md"
+      ],
+      "implementation_commit": "6137985a",
+      "pushed_commit": "6137985a",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 8006f53f-d12b-4a38-9233-26b9f217d26b SUCCESS",
+        "Live smoke ops/live-smokes/2026-06-23T20-19-39-519Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T23:20:20+03:00"
+    },
+    {
+      "id": "REQ-20260623-022",
+      "title": "Natural-language ticketing and problem resolution",
+      "expected_result": "User problem reports across Telegram and website assistant create/update deduped tickets with role/route/object/device/file context, safe help, routing to provider/admin/support/Agent Work, status notifications, and evidence/user-confirmed closure.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0014"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "ticketing",
+      "priority": "P0",
+      "batch_id": "L-N-O",
+      "depends_on": [
+        "REQ-20260623-014",
+        "REQ-20260623-016"
+      ],
+      "implementation_status": "completed",
+      "can_continue_without_operator": true,
+      "next_action": "Terminal status reached after scoped implementation, verification, deploy, and live smoke.",
+      "acceptance_criteria": [
+        "existing ticket search/dedupe",
+        "safe troubleshooting",
+        "sensitive billing/security privacy",
+        "technical bugs become Agent Work",
+        "closure requires evidence or user confirmation"
+      ],
+      "evidence": [
+        "src/platform/assistant/problem-resolution.js",
+        "tests/assistant-problem-resolution-contract.test.js",
+        "ops/action-registry/actions.json",
+        "ops/action-registry/universal-action-parity.md",
+        "ops/live-smokes/2026-06-23T20-31-58-654Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "PASS main problem/planner/action-registry suite 45/45",
+        "PASS main focused assistant/action suite 103/103",
+        "PASS clean problem/planner/action-registry suite 45/45",
+        "PASS clean focused assistant/action suite 103/103",
+        "PASS clean parity generators: 22 visible controls, 137 registry rows, 40 One Time controls",
+        "PASS clean npm run watchdog:actions: 0 findings",
+        "PASS npm run railway:doctor deployment 7cc4fbe0-2d98-4496-b44f-f38e3a4c87e0 SUCCESS",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-23T20-31-58-654Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/problem-resolution.js",
+        "src/lib/actions/registry.js",
+        "src/lib/actions/actions/operations.js",
+        "tests/assistant-problem-resolution-contract.test.js",
+        "ops/action-registry/actions.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/action-registry/universal-action-parity.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/one-time-action-coverage.md"
+      ],
+      "implementation_commit": "75c91c72",
+      "pushed_commit": "75c91c72",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 7cc4fbe0-2d98-4496-b44f-f38e3a4c87e0 SUCCESS",
+        "Live smoke ops/live-smokes/2026-06-23T20-31-58-654Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T23:32:58+03:00"
+    },
+    {
+      "id": "REQ-20260623-023",
+      "title": "Unified reminders and proactive notifications",
+      "expected_result": "Telegram, in-app, email, and SMS/WhatsApp where configured use one reminder/notification scheduler with consent, timezone, recurrence, quiet hours, dedupe, retry, pause/cancel, and status.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0015"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "reminders",
+      "priority": "P1",
+      "batch_id": "L-N-O",
+      "depends_on": [
+        "REQ-20260623-012"
+      ],
+      "implementation_status": "completed",
+      "can_continue_without_operator": true,
+      "next_action": "Add shared reminder/notification model and natural-language action contracts.",
+      "acceptance_criteria": [
+        "actor and audience scoped",
+        "timezone and recurrence",
+        "delivery channel preferences",
+        "quiet hours and dedupe",
+        "retry/status/audit"
+      ],
+      "evidence": [
+        "src/platform/assistant/reminder-notifications.js",
+        "tests/assistant-reminder-notifications-contract.test.js",
+        "ops/action-registry/actions.json",
+        "ops/action-registry/universal-action-parity.md",
+        "ops/watchdog-audits/2026-06-23T20-42-watchdog-action-audit.md",
+        "ops/live-smokes/2026-06-23T20-44-13-808Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "PASS main reminder/planner/action-registry suite 45/45",
+        "PASS main focused assistant/action suite 109/109",
+        "PASS clean reminder/planner/action-registry suite 45/45",
+        "PASS clean focused assistant/action suite 109/109",
+        "PASS clean parity generators: 22 visible controls, 138 registry rows, 40 One Time controls",
+        "PASS clean npm run watchdog:actions: 0 findings",
+        "PASS npm run railway:doctor deployment a811771e-60e1-43f9-902c-70b0865d78ed SUCCESS",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-23T20-44-13-808Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/reminder-notifications.js",
+        "src/platform/assistant/action-planner.js",
+        "src/lib/actions/registry.js",
+        "src/lib/actions/actions/operations.js",
+        "tests/assistant-reminder-notifications-contract.test.js",
+        "ops/action-registry/actions.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/action-registry/universal-action-parity.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/one-time-action-coverage.md",
+        "ops/watchdog-audits/2026-06-23T20-42-watchdog-action-audit.md"
+      ],
+      "implementation_commit": "1acdb699",
+      "pushed_commit": "1acdb699",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment a811771e-60e1-43f9-902c-70b0865d78ed SUCCESS",
+        "Live smoke ops/live-smokes/2026-06-23T20-44-13-808Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T23:45:25+03:00"
+    },
+    {
+      "id": "REQ-20260623-024",
+      "title": "Role and workspace security across all scopes",
+      "expected_result": "BNA/family, One Time, service-provider, parent, student, and super-admin capabilities are role- and workspace-scoped with tests for guessed IDs, cross-child references, private forwarded content, group chats, and cross-workspace leakage.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0016"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "security_scope",
+      "priority": "P0",
+      "batch_id": "L-Q",
+      "depends_on": [
+        "REQ-20260623-011"
+      ],
+      "implementation_status": "completed",
+      "can_continue_without_operator": true,
+      "next_action": "Extend role/workspace security tests and enforce shared policy in assistant/control-plane adapters.",
+      "acceptance_criteria": [
+        "family/One Time/provider/parent/student/super-admin scope isolation",
+        "group chat restrictions",
+        "private content redaction",
+        "cross-workspace rejection"
+      ],
+      "evidence": [
+        "src/platform/assistant/control-plane.js",
+        "tests/universal-control-plane-scope-policy.test.js",
+        "ops/watchdog-audits/2026-06-23T20-51-watchdog-action-audit.md",
+        "ops/live-smokes/2026-06-23T20-53-13-014Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "PASS main scope-policy suite 10/10",
+        "PASS main focused assistant/action suite 119/119",
+        "PASS clean scope-policy suite 10/10",
+        "PASS clean focused assistant/action suite 119/119",
+        "PASS clean npm run watchdog:actions: 0 findings",
+        "PASS npm run railway:doctor deployment 6620b95b-0771-4e38-9fb9-1e6c4921e2bd SUCCESS",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-23T20-53-13-014Z-live-app-smoke.md"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/control-plane.js",
+        "tests/universal-control-plane-scope-policy.test.js",
+        "ops/watchdog-audits/2026-06-23T20-51-watchdog-action-audit.md"
+      ],
+      "implementation_commit": "dd905201",
+      "pushed_commit": "dd905201",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 6620b95b-0771-4e38-9fb9-1e6c4921e2bd SUCCESS",
+        "Live smoke ops/live-smokes/2026-06-23T20-53-13-014Z-live-app-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-23T23:53:13+03:00"
+    },
+    {
+      "id": "REQ-20260623-025",
+      "title": "Operations Assistant Control Center",
+      "expected_result": "Operations exposes conversations, actor/role/workspace, planned actions, previews, pending approvals, automation drafts, campaigns, reminders, Agent Work, ticket routing, deliveries, failures, and audit history for the assistant control plane.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0017"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "operations_ui",
+      "priority": "P1",
+      "batch_id": "O-P",
+      "depends_on": [
+        "REQ-20260623-012",
+        "REQ-20260623-013"
+      ],
+      "implementation_status": "completed",
+      "can_continue_without_operator": true,
+      "next_action": "Add a Super Admin Assistant Control Center readback/management surface using shared model and action registry.",
+      "acceptance_criteria": [
+        "shows current conversations/actions/previews/approvals",
+        "shows automations/campaigns/reminders/Agent Work/tickets/deliveries/failures/audit",
+        "answers action coverage and blocked-work questions"
+      ],
+      "evidence": [
+        "src/platform/assistant/control-center.js",
+        "tests/assistant-control-center-contract.test.js",
+        "public/operations.html",
+        "server.js",
+        "ops/watchdog-audits/2026-06-23T21-03-watchdog-action-audit.md",
+        "ops/live-smokes/2026-06-23T21-07-46-763Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "PASS main control-center/data-model/scope suite 18/18",
+        "PASS main focused assistant/action suite 122/122",
+        "PASS clean control-center/data-model/scope suite 18/18",
+        "PASS clean focused assistant/action suite 122/122",
+        "PASS clean npm run watchdog:actions: 0 findings",
+        "PASS npm run railway:doctor deployment 02944240-4c1b-477b-a57f-5f6140e80400 SUCCESS",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-23T21-07-46-763Z-live-app-smoke.md",
+        "PASS focused live /api/bna/assistant/control-center readback status 200 requirement REQ-20260623-025"
+      ],
+      "implementation_files": [
+        "src/platform/assistant/control-center.js",
+        "server.js",
+        "public/operations.html",
+        "tests/assistant-control-center-contract.test.js",
+        "ops/watchdog-audits/2026-06-23T21-03-watchdog-action-audit.md"
+      ],
+      "implementation_commit": "296a276a",
+      "pushed_commit": "296a276a",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 02944240-4c1b-477b-a57f-5f6140e80400 SUCCESS",
+        "Live smoke ops/live-smokes/2026-06-23T21-07-46-763Z-live-app-smoke.md",
+        "Focused live control-center readback status 200"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-24T00:09:26+03:00"
+    },
+    {
+      "id": "REQ-20260623-026",
+      "title": "Cross-channel QA and final Telegram/website parity release",
+      "expected_result": "Telegram and website assistant parity is verified with unit, integration, security, parity, restart/resume, live synthetic Telegram/website/provider/parent/admin/files/approval journeys, docs, and final return-packet sections; no unblocked requirement remains.",
+      "status": "done",
+      "source_id": "RAW-20260623-005",
+      "source_statement_ids": [
+        "STMT-20260623-005-0018"
+      ],
+      "source_path": "raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md",
+      "workspace_key": "bna_platform",
+      "project_key": "universal_natural_language_control_plane",
+      "owner": "Codex",
+      "category": "final_verification",
+      "priority": "P0",
+      "batch_id": "Q",
+      "depends_on": [
+        "REQ-20260623-011",
+        "REQ-20260623-012",
+        "REQ-20260623-013",
+        "REQ-20260623-014",
+        "REQ-20260623-015",
+        "REQ-20260623-016",
+        "REQ-20260623-017",
+        "REQ-20260623-018",
+        "REQ-20260623-019",
+        "REQ-20260623-020",
+        "REQ-20260623-021",
+        "REQ-20260623-022",
+        "REQ-20260623-023",
+        "REQ-20260623-024",
+        "REQ-20260623-025"
+      ],
+      "implementation_status": "completed",
+      "can_continue_without_operator": true,
+      "next_action": "No unblocked addendum work remains. Keep REQ-20260619-313 as needs_operator_decision until Shloimie/Rabbi approve the separate One Time paid infrastructure, ownership, and DNS path.",
+      "acceptance_criteria": [
+        "Telegram/website/action-plan parity tests pass",
+        "provider/parent/admin/file/approval journeys pass",
+        "live synthetic journeys pass or are explicitly blocked",
+        "docs and return packet include required sections",
+        "no unblocked requirement remains"
+      ],
+      "evidence": [
+        "docs/product/provider-telegram-onboarding.md",
+        "ops/audits/2026-06-24-telegram-system-truth.md",
+        "ops/audits/2026-06-24-telegram-system-truth.json",
+        "ops/audits/2026-06-24-telegram-action-parity.md",
+        "ops/audits/2026-06-24-telegram-action-parity.json",
+        "ops/qa-runs/2026-06-24-telegram-end-to-end.md",
+        "ops/qa-runs/2026-06-24-telegram-end-to-end.json",
+        ".runtime/telegram-audit/CHATGPT-RETURN-PACKET.md",
+        ".runtime/telegram-audit/CHATGPT-RETURN-PACKET.json",
+        "ops/live-smokes/2026-06-23T21-16-19-796Z-live-app-smoke.md",
+        "Focused live /api/bna/assistant/control-center readback status 200"
+      ],
+      "verification": [
+        "PASS final artifact JSON parse for ops/audits/2026-06-24-telegram-system-truth.json, ops/audits/2026-06-24-telegram-action-parity.json, ops/qa-runs/2026-06-24-telegram-end-to-end.json, and .runtime/telegram-audit/CHATGPT-RETURN-PACKET.json",
+        "PASS clean-worktree control-center/data-model/scope suite 18/18",
+        "PASS clean-worktree focused assistant/action suite 122/122",
+        "PASS npm run watchdog:actions with 0 findings",
+        "PASS npm run railway:doctor deployment 359bd3c5-8cdc-4b70-a2eb-535e03f8d62e SUCCESS",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-23T21-16-19-796Z-live-app-smoke.md",
+        "PASS focused live /api/bna/assistant/control-center readback status 200, total_actions=79, telegram_ready=79, website_ready=79, blocker_count=0",
+        "PASS npm run bna:run:validate with 35 done and 1 needs_operator_decision",
+        "PASS npm run bna:run:source-coverage with 0 unmapped executable statements",
+        "PASS npm run bna:run:next selected no unblocked executable batch",
+        "PASS no browser-click substitution, no external send, no publish, no charge, no DNS mutation, no OAuth/account-owner action, and no duplicate action/intake/agent/provider-onboarding systems"
+      ],
+      "implementation_files": [
+        "ops/audits/",
+        "ops/qa-runs/",
+        "docs/architecture/telegram-control-plane.md",
+        "docs/product/provider-telegram-onboarding.md",
+        ".runtime/telegram-audit/",
+        "tests/"
+      ],
+      "implementation_commit": "6560b8f0",
+      "pushed_commit": "6560b8f0",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 359bd3c5-8cdc-4b70-a2eb-535e03f8d62e SUCCESS",
+        "Live smoke ops/live-smokes/2026-06-23T21-16-19-796Z-live-app-smoke.md",
+        "Focused live control-center readback status 200"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-24T00:23:57+03:00"
+    },
+    {
+      "id": "REQ-20260624-001",
+      "title": "Consolidate active PRs into one owner-review integration branch",
+      "expected_result": "One clean credential-free integration branch and PR from origin/master contains PR #12, PR #13, and any discoverable final running-agent SHA, with conflicts resolved and one exact release-candidate SHA.",
+      "status": "done",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0001"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "bna_platform",
+      "project_key": "integration_navigation_owner_review",
+      "owner": "Codex",
+      "category": "integration_branch",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [],
+      "implementation_status": "completed",
+      "can_continue_without_operator": true,
+      "next_action": "Proceed to REQ-20260624-003 route/page inventory while REQ-20260624-002 CI workflow creation remains blocked on GitHub workflow-scope permission.",
+      "acceptance_criteria": [
+        "PR #12, PR #13, and final running-agent SHA are identified or precisely blocked",
+        "Clean integration branch is based on current origin/master",
+        "Conflicts are resolved without losing user/unrelated work",
+        "One owner-review PR and exact release-candidate SHA exist"
+      ],
+      "evidence": [
+        "Draft integration PR #14 https://github.com/shloimie-beep/bnei-neviim-academy/pull/14",
+        "Integration branch codex/integration-navigation-owner-review-20260624",
+        "Release-candidate SHA fc4d88145276ff18465214c926cb90c4020b4be0",
+        "Merged PR #12 head 428ee78682a201b233b2f3da71bf0205b48812ad",
+        "Merged PR #13 head 6560b8f02580e5f182a95df84ad8d5383403d887",
+        "Current origin/master base a9528b2d9467174d76d4c25bfb028f9308f24b4f",
+        "PR #12 superseded comment https://github.com/shloimie-beep/bnei-neviim-academy/pull/12#issuecomment-4785588642",
+        "PR #13 superseded comment https://github.com/shloimie-beep/bnei-neviim-academy/pull/13#issuecomment-4785588651"
+      ],
+      "verification": [
+        "PASS gh pr view 12 head 428ee78682a201b233b2f3da71bf0205b48812ad base master state OPEN draft true checks []",
+        "PASS gh pr view 13 head 6560b8f02580e5f182a95df84ad8d5383403d887 base master state OPEN draft true checks []",
+        "PASS created worktree from origin/master a9528b2d9467174d76d4c25bfb028f9308f24b4f",
+        "PASS merged PR #12 cleanly",
+        "PASS merged PR #13 cleanly",
+        "PASS pushed branch codex/integration-navigation-owner-review-20260624",
+        "PASS opened draft PR #14 with mergeStateStatus CLEAN",
+        "PASS PR #12 and PR #13 commented as superseded for owner-review purposes"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "ops/route-registry.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json"
+      ],
+      "implementation_commit": "fc4d88145276ff18465214c926cb90c4020b4be0",
+      "pushed_commit": "fc4d88145276ff18465214c926cb90c4020b4be0",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/14",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-24T03:27:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-002",
+      "title": "Validate the integrated release candidate without credentials or deploy",
+      "expected_result": "The integrated release candidate passes clean install, full tests, secret audit, security/route watchdogs, and independent clean-worktree verification, and has an independent CI/status check path if missing.",
+      "status": "needs_operator_decision",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0002"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "bna_platform",
+      "project_key": "integration_navigation_owner_review",
+      "owner": "Codex",
+      "category": "validation_ci",
+      "priority": "P0",
+      "batch_id": "B",
+      "depends_on": [
+        "REQ-20260624-001"
+      ],
+      "implementation_status": "local_validation_passed_ci_workflow_blocked",
+      "can_continue_without_operator": false,
+      "next_action": "Continue credential-free route inventory and navigation work in REQ-20260624-003 while this independent CI/status-check decision remains open.",
+      "acceptance_criteria": [
+        "Clean install succeeds",
+        "Full test suite passes or failures are fixed/blocked precisely",
+        "Secret audit and watchdogs pass",
+        "Independent clean-worktree verification passes",
+        "CI/status check path exists"
+      ],
+      "evidence": [
+        "npm ci passed on integration worktree",
+        "npm test passed 1202/1202 on integration worktree",
+        "npm run secrets:audit passed with 4191 tracked paths checked and 0 tracked secret-risk files found",
+        "npm run watchdog:links passed with 0 findings after route alias registration",
+        "npm run watchdog:actions passed with 0 findings",
+        "npm run watchdog:security passed with 0 findings",
+        "GitHub push rejection: refusing to allow an OAuth App to create or update workflow .github/workflows/credential-free-ci.yml without workflow scope"
+      ],
+      "verification": [
+        "PASS npm ci",
+        "PASS npm test 1202/1202",
+        "PASS npm run secrets:audit",
+        "PASS node --test tests/watchdog-action-registry.test.js 5/5",
+        "PASS npm run watchdog:links report ops/watchdog-audits/2026-06-24T03-22-watchdog-link-audit.md 0 findings",
+        "PASS npm run watchdog:actions report ops/watchdog-audits/2026-06-24T03-22-watchdog-action-audit.md 0 findings",
+        "PASS npm run watchdog:security report ops/watchdog-audits/2026-06-24T03-22-watchdog-security-routes.md 0 findings",
+        "BLOCKED CI workflow push due missing GitHub workflow scope"
+      ],
+      "implementation_files": [
+        "package.json",
+        "ops/route-registry.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "tests/"
+      ],
+      "implementation_commit": "fc4d88145276ff18465214c926cb90c4020b4be0",
+      "pushed_commit": "fc4d88145276ff18465214c926cb90c4020b4be0",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/14",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-24T03:27:00+03:00",
+      "blocker": "GitHub rejected pushing .github/workflows/credential-free-ci.yml because the current OAuth app lacks workflow scope.",
+      "blocker_owner": "Shloimie / GitHub repository token owner",
+      "blocker_next_action": "Approve a workflow-scope GitHub credential or have a repository owner add the credential-free CI workflow; alternatively explicitly accept PR #14 without independent GitHub status checks for this pass."
+    },
+    {
+      "id": "REQ-20260624-003",
+      "title": "Generate complete route and page inventory",
+      "expected_result": "A generated inventory discovers every public HTML page, server UI/API route, alias, redirect, literal and JS-generated link, form action, window.location target, manifest route, service-worker route, login/logout destination, and assistant/API deep link.",
+      "status": "done",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0003"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "bna_platform",
+      "project_key": "integration_navigation_owner_review",
+      "owner": "Codex",
+      "category": "route_inventory",
+      "priority": "P0",
+      "batch_id": "C",
+      "depends_on": [
+        "REQ-20260624-001"
+      ],
+      "implementation_status": "implemented_verified_pushed",
+      "can_continue_without_operator": true,
+      "next_action": "Continue with REQ-20260624-004 to repair or intentionally classify the 44 customer-facing orphan-review rows and 26 duplicate implementation groups found by the generated inventory.",
+      "acceptance_criteria": [
+        "Inventory is generated automatically, not hand-listed only",
+        "All required destination categories are represented",
+        "Each page row includes URL, implementation, audience, auth, inbound/outbound, back path, status, dependency, review readiness"
+      ],
+      "evidence": [
+        "PR #14 commit 094ca7c6 adds scripts/generate-owner-review-route-inventory.mjs, npm script owner-review:routes, generated docs/owner-review/ROUTE-INVENTORY.csv, CANONICAL-SITEMAP.md, NAVIGATION-GRAPH.md, ORPHAN-AND-DUPLICATE-PAGES.md, and ROUTE-INVENTORY.json.",
+        "Generated route inventory summary: 689 route rows, 34 HTML pages, 753 server route declarations, 584 API routes, 71 linked destinations, 182 client edges, 9 manifest edges, 13 service-worker edges, 0 missing implementation rows, 44 customer-facing orphan-review rows, and 26 duplicate implementation groups.",
+        "The inventory generator scans public HTML, server app routes, aliases, redirects, literal anchors, JavaScript location/fetch/generated navigation helpers, form actions, manifests, service-worker entries, and public static targets."
+      ],
+      "verification": [
+        "PASS npm run owner-review:routes on integration worktree",
+        "PASS node --test tests/owner-review-route-inventory.test.js",
+        "PASS git push origin codex/integration-navigation-owner-review-20260624 at 094ca7c6634b3ade13d158e15b0716907c367d3a"
+      ],
+      "implementation_files": [
+        "scripts/",
+        "tests/",
+        "docs/owner-review/ROUTE-INVENTORY.csv",
+        "docs/owner-review/CANONICAL-SITEMAP.md",
+        "ops/route-registry.json"
+      ],
+      "implementation_commit": "094ca7c6634b3ade13d158e15b0716907c367d3a",
+      "pushed_commit": "094ca7c6634b3ade13d158e15b0716907c367d3a",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/14",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-24T03:39:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-004",
+      "title": "Repair navigation graph, orphan pages, duplicates, and dead ends",
+      "expected_result": "All customer-facing pages are discoverable or intentionally classified, broken links/dead ends/auth loops/duplicate canonical pages/missing return paths are repaired, and internal-only pages are explicit.",
+      "status": "done",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0004"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "bna_platform",
+      "project_key": "integration_navigation_owner_review",
+      "owner": "Codex",
+      "category": "navigation_architecture",
+      "priority": "P0",
+      "batch_id": "D",
+      "depends_on": [
+        "REQ-20260624-003"
+      ],
+      "implementation_status": "done",
+      "can_continue_without_operator": true,
+      "next_action": "Done. Continue with REQ-20260624-005/006 for remaining One Time journey and broader role IA browser QA, using PR #14 commit e4378c31 as the navigation-inventory repair baseline.",
+      "acceptance_criteria": [
+        "Zero unexplained customer-facing orphan pages",
+        "Internal-only pages are explicitly classified",
+        "Forms target implemented endpoints",
+        "Protected pages have login/recovery paths",
+        "Public nav targets return expected local statuses"
+      ],
+      "evidence": [
+        "PR #14 commit e4378c31 includes regenerated owner-review route inventory artifacts, canonical sitemap, navigation graph, and orphan/duplicate report showing 0 orphan-review rows and 0 duplicate implementation groups.",
+        "PR #14 commit e4378c31 updates the shared public nav, public/helper/provider join CTAs, One Time landing/member/library/classroom/participant navigation, and parent handbook discovery path.",
+        "The repaired inventory summary is 689 route rows, 34 HTML pages, 753 server route declarations, 584 API routes, 74 linked destinations, 207 client edges, 9 manifest edges, 13 service-worker edges, 92 forms without explicit actions, 0 missing implementation rows, 0 customer-facing orphan-review rows, and 0 duplicate implementation groups."
+      ],
+      "verification": [
+        "PASS npm run owner-review:routes: 689 routes, 34 HTML pages, 0 orphan-review rows",
+        "PASS node --test tests\\owner-review-route-inventory.test.js tests\\final-register-surfaces-closeout.test.js tests\\watchdog-action-registry.test.js",
+        "PASS node --test focused provider/public route suite 36/36 after canonical /providers/join update",
+        "PASS npm test: 1203/1203",
+        "PASS npm run secrets:audit: 4198 tracked paths checked, 0 tracked secret-risk files found",
+        "PASS npm run watchdog:links: 0 findings",
+        "PASS npm run watchdog:actions: 0 findings",
+        "PASS npm run watchdog:security: 0 findings",
+        "PASS git push origin codex/integration-navigation-owner-review-20260624 at e4378c31c7d70f7d3c2c8505d3907ff29d7e2a5f"
+      ],
+      "implementation_files": [
+        "scripts/generate-owner-review-route-inventory.mjs",
+        "docs/owner-review/ROUTE-INVENTORY.csv",
+        "docs/owner-review/ROUTE-INVENTORY.json",
+        "docs/owner-review/CANONICAL-SITEMAP.md",
+        "docs/owner-review/NAVIGATION-GRAPH.md",
+        "docs/owner-review/ORPHAN-AND-DUPLICATE-PAGES.md",
+        "public/js/bna-site-nav.js",
+        "public/js/bna-helper-knowledge.js",
+        "public/index.html",
+        "public/service-providers.html",
+        "public/provider.html",
+        "public/parents.html",
+        "public/rabbi.html",
+        "public/rabbi-member.html",
+        "public/member-library.html",
+        "public/one-time-classroom.html",
+        "public/provider-participant.html",
+        "scripts/smoke-public-route-privacy.mjs",
+        "scripts/smoke-public-navigation-positioning-live.mjs",
+        "scripts/smoke-final-register-surfaces-live.mjs",
+        "tests/public-helper-bot-landing-sodas.test.js",
+        "tests/public-route-privacy-contract.test.js",
+        "tests/service-provider-directory.test.js",
+        "tests/signup-permissions-mobile-homepage.test.js",
+        "tests/ui-01-public-operations-shell.test.js",
+        "tests/workspace-person-household-provider-contract.test.js"
+      ],
+      "implementation_commit": "e4378c31c7d70f7d3c2c8505d3907ff29d7e2a5f",
+      "pushed_commit": "e4378c31c7d70f7d3c2c8505d3907ff29d7e2a5f",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/14",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-24T06:56:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-005",
+      "title": "Canonicalize the One Time member journey",
+      "expected_result": "One Time has one obvious journey from public landing through member access, member home, library, classroom/live class, questions/support, account/logout, and return-to-site across /one-time, /rabbi, /rabbi-member, /member-library, /member, and /one-time-classroom.",
+      "status": "done",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0005"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "one_time_journey",
+      "priority": "P0",
+      "batch_id": "E",
+      "depends_on": [
+        "REQ-20260624-004"
+      ],
+      "implementation_status": "implemented_verified_pushed",
+      "can_continue_without_operator": true,
+      "next_action": "Done. Continue with REQ-20260624-006 broader role information architecture using PR #14 commit 3375c9fe as the canonical One Time journey baseline.",
+      "acceptance_criteria": [
+        "One Time landing, member access, member home, library, classroom, questions/support, account/logout, and return-to-site are navigable",
+        "Preview/internal pages are labeled internal or removed from user nav",
+        "Route registry reflects canonical destinations"
+      ],
+      "evidence": [
+        "PR #14 commit 3375c9fe canonicalizes the One Time journey: /one-time -> /rabbi-member -> /member-library -> /one-time-classroom -> /rabbi-member#support -> /rabbi-member?logout=1 -> public site return.",
+        "PR #14 branch contains owner-review docs with route inventory reporting 689 route rows, 34 HTML pages, 0 orphan-review rows, and 0 duplicate implementation groups after the One Time canonicalization.",
+        "PR #14 branch contains local Playwright evidence under ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local with desktop/mobile screenshots and report.",
+        "tasks-pending/2026-06-24-integration-navigation-owner-review-closeout.md"
+      ],
+      "verification": [
+        "npm run one-time:smoke:canonical-journey-local PASS on PR #14 commit 3375c9fe; local no-DB mode, no external writes.",
+        "node --test tests\\one-time-canonical-journey.test.js tests\\one-time-product-system.test.js tests\\public-route-privacy-contract.test.js tests\\live-class-infrastructure.test.js tests\\owner-review-route-inventory.test.js PASS 23/23.",
+        "npm test PASS 1207/1207 on PR #14 commit 3375c9fe.",
+        "npm run owner-review:routes PASS: 689 routes, 34 HTML pages, 0 orphan-review rows.",
+        "npm run secrets:audit PASS: 4198 tracked paths, 0 tracked secret-risk files.",
+        "npm run watchdog:links PASS 0 findings; npm run watchdog:actions PASS 0 findings; npm run watchdog:security PASS 0 findings."
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/one-time/index.html",
+        "public/rabbi-member.html",
+        "public/js/rabbi-member.js",
+        "public/member-library.html",
+        "public/one-time-classroom.html",
+        "public/provider-participant.html",
+        "public/member.html",
+        "ops/route-registry.json",
+        "scripts/smoke-public-route-privacy.mjs",
+        "scripts/smoke-one-time-canonical-journey-local.mjs",
+        "tests/one-time-canonical-journey.test.js",
+        "tests/one-time-product-system.test.js",
+        "tests/public-route-privacy-contract.test.js",
+        "docs/owner-review/CANONICAL-SITEMAP.md",
+        "docs/owner-review/ROUTE-INVENTORY.csv",
+        "docs/owner-review/NAVIGATION-GRAPH.md",
+        "docs/owner-review/ORPHAN-AND-DUPLICATE-PAGES.md"
+      ],
+      "implementation_commit": "3375c9fe33e3eb7efe6e0333067265e6d3429756",
+      "pushed_commit": "3375c9fe33e3eb7efe6e0333067265e6d3429756",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/14",
+      "deployment_required": false,
+      "deployment_evidence": [
+        "Deployment intentionally blocked by credential-free owner-review assignment; PR #14 is not deployed."
+      ],
+      "live_required": false,
+      "updated_at": "2026-06-24T07:10:46+03:00"
+    },
+    {
+      "id": "REQ-20260624-006",
+      "title": "Repair integrated information architecture across public and portal surfaces",
+      "expected_result": "Public, provider, parent, student, provider-participant, One Time, and Operations surfaces have coherent navigation, safe auth failure handling, help/assistant entry, account/logout, and return paths.",
+      "status": "done",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0006"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "bna_platform",
+      "project_key": "integration_navigation_owner_review",
+      "owner": "Codex",
+      "category": "information_architecture",
+      "priority": "P0",
+      "batch_id": "F",
+      "depends_on": [
+        "REQ-20260624-004"
+      ],
+      "implementation_status": "implemented_verified_pushed",
+      "can_continue_without_operator": true,
+      "next_action": "Done. Continue with REQ-20260624-007 website assistant visibility and scoping on intended user surfaces.",
+      "acceptance_criteria": [
+        "Public nav emphasizes intended consumer destinations and does not make Operations primary consumer nav unless justified",
+        "Provider flow works directory to profile to join/login/workspace/Studio/content",
+        "Parent/student portals have clear home/help/account/logout and safe bad-link handling",
+        "Operations remains discoverable for admins without dominating public nav"
+      ],
+      "evidence": [
+        "PR #14 commit ca49a140 repairs owner-review information architecture: shared public nav has direct School, Families, Provider Directory, One Time, Blog, FAQ, Portal Login, and Register entries while Operations stays out of consumer nav.",
+        "PR #14 commit ca49a140 adds stable parent/student/provider portal topbar home/help/account navigation paths and keeps Operations/Admin access separate.",
+        "PR #14 branch contains regenerated owner-review route inventory with 689 routes, 34 HTML pages, 0 orphan-review rows, and updated navigation graph.",
+        "tasks-pending/2026-06-24-integration-navigation-owner-review-closeout.md"
+      ],
+      "verification": [
+        "npm run owner-review:routes PASS: 689 routes, 34 HTML pages, 0 orphan-review rows.",
+        "node --test tests\\ui-01-public-operations-shell.test.js tests\\public-route-privacy-contract.test.js tests\\signup-permissions-mobile-homepage.test.js tests\\workspace-person-household-provider-contract.test.js tests\\owner-review-route-inventory.test.js PASS 27/27.",
+        "node scripts\\generate-universal-action-parity.mjs PASS after visible nav changes.",
+        "node --test tests\\watchdog-action-registry.test.js PASS 5/5.",
+        "npm test PASS 1207/1207 on PR #14 commit ca49a140.",
+        "npm run secrets:audit PASS: 4213 tracked paths, 0 tracked secret-risk files.",
+        "npm run watchdog:links PASS 0 findings; npm run watchdog:actions PASS 0 findings; npm run watchdog:security PASS 0 findings."
+      ],
+      "implementation_files": [
+        "public/js/bna-site-nav.js",
+        "public/parent.html",
+        "public/student.html",
+        "public/provider.html",
+        "tests/ui-01-public-operations-shell.test.js",
+        "tests/public-route-privacy-contract.test.js",
+        "docs/owner-review/CANONICAL-SITEMAP.md",
+        "docs/owner-review/ROUTE-INVENTORY.csv",
+        "docs/owner-review/NAVIGATION-GRAPH.md",
+        "docs/owner-review/ORPHAN-AND-DUPLICATE-PAGES.md",
+        "ops/action-registry/universal-action-parity.json"
+      ],
+      "implementation_commit": "ca49a1404ab619dc37319ad2f6108049e9c2f347",
+      "pushed_commit": "ca49a1404ab619dc37319ad2f6108049e9c2f347",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/14",
+      "deployment_required": false,
+      "deployment_evidence": [
+        "Deployment intentionally blocked by credential-free owner-review assignment; PR #14 is not deployed."
+      ],
+      "live_required": false,
+      "updated_at": "2026-06-24T07:19:42+03:00"
+    },
+    {
+      "id": "REQ-20260624-007",
+      "title": "Expose shared website assistant visibly on intended user surfaces",
+      "expected_result": "Public visitor, parent, student, provider, One Time member, and Operations surfaces show a scoped shared assistant/help entry with continuity, state handling, preview/approval paths, unsupported-work handoff, and no duplicate assistant implementation.",
+      "status": "done",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0007"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "bna_platform",
+      "project_key": "integration_navigation_owner_review",
+      "owner": "Codex",
+      "category": "assistant_visibility",
+      "priority": "P0",
+      "batch_id": "G",
+      "depends_on": [
+        "REQ-20260624-006"
+      ],
+      "implementation_status": "completed",
+      "can_continue_without_operator": true,
+      "next_action": "Done. Continue with REQ-20260624-008 credential-free desktop/mobile browser QA across primary roles.",
+      "acceptance_criteria": [
+        "Each intended surface has a discoverable scoped assistant/help entry",
+        "Wording explains scope/access without exposing private data",
+        "Empty/loading/failure/unauthorized states are present",
+        "Preview/approval UI exists where needed",
+        "No duplicate page-specific bot architecture is added"
+      ],
+      "evidence": [
+        "PR #14 commit d853b920 exposes the shared assistant across public, parent, student, provider, One Time member, provider participant, and Operations helper surfaces.",
+        "Shared widget now normalizes One Time member pages to surface one_time_member and exposes window.BNAAssistant plus data-bna-assistant-open launchers.",
+        "One Time member pages load /js/bna-helper-knowledge.js and /js/bna-bot-widget.js with scoped Assistant/help navigation.",
+        "Owner-review route inventory regenerated on PR #14 with 689 routes, 34 HTML pages, and 0 orphan-review rows.",
+        "One Time action coverage and universal action parity artifacts regenerated on PR #14."
+      ],
+      "verification": [
+        "PASS focused assistant/portal/One Time/provider route contracts 66/66",
+        "PASS npm run owner-review:routes: 689 routes, 34 HTML pages, 0 orphan-review rows",
+        "PASS node scripts/generate-universal-action-parity.mjs: 22 visible controls, 138 registry rows",
+        "PASS node scripts/generate-one-time-action-coverage.mjs: 40 controls",
+        "PASS node --check server.js",
+        "PASS node --check public/js/bna-bot-widget.js",
+        "PASS npm run one-time:smoke:canonical-journey-local",
+        "PASS npm test 1208/1208",
+        "PASS npm run secrets:audit: 4216 tracked paths checked, 0 tracked secret-risk files found",
+        "PASS npm run watchdog:links: 0 findings",
+        "PASS npm run watchdog:actions: 0 findings",
+        "PASS npm run watchdog:security: 0 findings",
+        "PASS git push origin codex/integration-navigation-owner-review-20260624 at d853b920"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/js/bna-bot-widget.js",
+        "public/parent.html",
+        "public/student.html",
+        "public/provider.html",
+        "public/rabbi-member.html",
+        "public/member-library.html",
+        "public/one-time-classroom.html",
+        "public/provider-participant.html",
+        "tests/universal-assistant-contract.test.js",
+        "tests/assistant-portal-communications-contract.test.js",
+        "tests/public-route-privacy-contract.test.js",
+        "docs/owner-review/ROUTE-INVENTORY.csv",
+        "docs/owner-review/CANONICAL-SITEMAP.md",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/report.md",
+        "ops/watchdog-audits/2026-06-24T04-30-watchdog-link-audit.md",
+        "ops/watchdog-audits/2026-06-24T04-30-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-24T04-30-watchdog-security-routes.md"
+      ],
+      "implementation_commit": "d853b9205626e6ea50bd3b639b7718b1f374040d",
+      "pushed_commit": "d853b9205626e6ea50bd3b639b7718b1f374040d",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/14",
+      "deployment_required": false,
+      "deployment_evidence": [
+        "Deployment intentionally blocked by credential-free owner-review assignment; PR #14 is not deployed."
+      ],
+      "live_required": false,
+      "updated_at": "2026-06-24T07:32:35+03:00"
+    },
+    {
+      "id": "REQ-20260624-008",
+      "title": "Run credential-free role browser QA on desktop and mobile",
+      "expected_result": "Synthetic local browser journeys verify public, parent one-child, parent multi-child, student, provider admin, provider participant/member, One Time member, super-admin, wrong-role, and logged-out flows with mock integrations and no external writes.",
+      "status": "not_started",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0008"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "bna_platform",
+      "project_key": "integration_navigation_owner_review",
+      "owner": "Codex",
+      "category": "browser_role_qa",
+      "priority": "P0",
+      "batch_id": "H",
+      "depends_on": [
+        "REQ-20260624-005",
+        "REQ-20260624-006",
+        "REQ-20260624-007"
+      ],
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "next_action": "Create/run Playwright role journeys on desktop and mobile with synthetic local fixtures and mock integrations, starting from PR #14 commit d853b920.",
+      "acceptance_criteria": [
+        "Navigation/back/deep-link/refresh/login/logout states are covered",
+        "Empty/loading/failure/API error states are covered",
+        "Console errors, broken images, internal link statuses, mobile tap targets, and keyboard navigation are checked",
+        "No real send, publish, upload, charge, or external mutation occurs"
+      ],
       "evidence": [],
       "verification": [],
       "implementation_files": [
+        "scripts/",
+        "tests/",
+        "ops/playwright-smokes/",
+        "docs/owner-review/ROLE-FLOW-QA.md"
+      ],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-24T07:32:35+03:00"
+    },
+    {
+      "id": "REQ-20260624-009",
+      "title": "Rerun and reconcile UX click-map backlog",
+      "expected_result": "The prior UX/click-map backlog is rerun against the integrated branch with synthetic account coverage and each prior issue is classified.",
+      "status": "not_started",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0009"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "bna_platform",
+      "project_key": "integration_navigation_owner_review",
+      "owner": "Codex",
+      "category": "ux_backlog_reconciliation",
+      "priority": "P1",
+      "batch_id": "I",
+      "depends_on": [
+        "REQ-20260624-008"
+      ],
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "next_action": "Find and rerun the existing UX/click-map harness, then classify prior findings.",
+      "acceptance_criteria": [
+        "Prior issues are classified as resolved, still reproducible, superseded, false positive, intentionally deferred, or external-credential blocked",
+        "Priority areas are explicitly addressed or classified",
+        "Authenticated walkthrough gaps are covered with synthetic credentials"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "scripts/",
+        "ops/ui-audits/",
+        "ops/playwright-smokes/",
+        "docs/owner-review/UX-BACKLOG-RECONCILIATION.md"
+      ],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-24T00:34:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-010",
+      "title": "Add permanent navigation and release gates",
+      "expected_result": "Permanent tests fail for incomplete page discovery, dead links, orphan pages, missing route implementations, duplicate canonical pages, bad form destinations, missing auth recovery, missing return paths, mobile nav issues, registry/doc drift, and visible controls without handlers.",
+      "status": "not_started",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0010"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "bna_platform",
+      "project_key": "integration_navigation_owner_review",
+      "owner": "Codex",
+      "category": "release_gates",
+      "priority": "P0",
+      "batch_id": "J",
+      "depends_on": [
+        "REQ-20260624-003",
+        "REQ-20260624-004"
+      ],
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "next_action": "Add or replace watchdog/release tests based on the complete inventory.",
+      "acceptance_criteria": [
+        "All-page discovery gate exists",
+        "Dead-link/orphan/duplicate/form/auth/return-path gates exist",
+        "Visible control handler gate exists",
+        "Release gates run in package scripts and CI/status path"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "scripts/",
+        "tests/",
+        "package.json",
+        ".github/workflows/"
+      ],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-24T00:34:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-011",
+      "title": "Produce owner-review packet and final external blocker list",
+      "expected_result": "The owner-review packet gives Shloimie the applied/not-applied matrix, canonical sitemap, route inventory, navigation graph, orphan/duplicate report, role-flow QA, UX reconciliation, screenshots, review script, release SHA, and blockers limited to genuine external approvals.",
+      "status": "not_started",
+      "source_id": "RAW-20260624-001",
+      "source_statement_ids": [
+        "STMT-20260624-001-0011"
+      ],
+      "source_path": "raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md",
+      "workspace_key": "bna_platform",
+      "project_key": "integration_navigation_owner_review",
+      "owner": "Codex",
+      "category": "owner_review_packet",
+      "priority": "P0",
+      "batch_id": "K",
+      "depends_on": [
+        "REQ-20260624-001",
+        "REQ-20260624-002",
+        "REQ-20260624-003",
+        "REQ-20260624-004",
+        "REQ-20260624-005",
+        "REQ-20260624-006",
+        "REQ-20260624-007",
+        "REQ-20260624-008",
+        "REQ-20260624-009",
+        "REQ-20260624-010"
+      ],
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "next_action": "Assemble the owner-review packet after all credential-free implementation and verification requirements are terminal.",
+      "acceptance_criteria": [
+        "APPLIED-NOT-APPLIED-MATRIX.md exists",
+        "CANONICAL-SITEMAP.md exists",
+        "ROUTE-INVENTORY.csv exists",
+        "NAVIGATION-GRAPH.md exists",
+        "ORPHAN-AND-DUPLICATE-PAGES.md exists",
+        "ROLE-FLOW-QA.md exists",
+        "UX-BACKLOG-RECONCILIATION.md exists",
+        "OWNER-REVIEW-SCRIPT.md exists",
+        "Desktop/mobile evidence exists",
+        "Final blocker list includes only genuine external items"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "docs/owner-review/",
+        "ops/playwright-smokes/",
         "ops/execution-runs/2026-06-21-one-time-master-completion/"
       ],
       "implementation_commit": "",
       "pushed_commit": "",
-      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
-      "deployment_required": true,
+      "pull_request": "",
+      "deployment_required": false,
       "deployment_evidence": [],
-      "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "live_required": false,
+      "updated_at": "2026-06-24T00:34:00+03:00"
     }
   ],
   "source_statement_matrix": {

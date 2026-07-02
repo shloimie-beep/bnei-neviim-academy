@@ -150,7 +150,7 @@ function mapCanonicalParserOutput(parsed = {}, input = {}) {
   const rawText = input.raw_text || input.raw_input || input.text || parsed.raw_input || '';
   output.workspace.project_key = normalizeProjectKey(rawText, input);
   if (output.workspace.project_key === 'one_time_mishnah_class') {
-    output.workspace.key = 'one_time_mishnah_class';
+    output.workspace.key = 'rabbi_sheller_provider';
     output.workspace.resolution_status = 'high_confidence_alias';
   }
 
