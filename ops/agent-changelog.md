@@ -28020,3 +28020,15 @@ Actions: 1. Active machine tasks: 22.
   validation/source coverage/stale evidence, JSON validation, `git diff
   --check`, and tracked secret audit. `one-time:setup:check` intentionally
   exits blocked because five provider/campaign setup areas remain incomplete.
+
+## 2026-07-02 - Drive Transcript Visibility and Parser Routing Audit
+
+- Registered `RAW-20260702-DRIVE-TRANSCRIPT-VISIBILITY-OPENAI2-KIMI-FALLBACK-PARSER-ROUTING` and created the evidence bundle under `ops/drive-transcript-visibility/2026-07-02/`.
+- Added a reusable OpenAI credential resolver and wired transcription/media-ingest paths to try runtime env, `keyholder:openaiv2.txt`, `keyholder:openai-api-key.txt`, and `.secrets/openai-api-key.txt` without logging secrets.
+- Confirmed `openaiv2.txt` is selected and valid against OpenAI model/response smokes; Railway `OPENAI_API_KEY` readback matches the selected fingerprint.
+- Recorded Kimi as post-transcription AI fallback only. No configured/verified Kimi audio transcription endpoint exists in this repo.
+- Traced job `101`: transcript exists with 39,920 characters and stage `03 Transcribed`, but parser output and private Drive transcript-library doc are missing.
+- Audited the 2026-06-25 through 2026-07-02 backlog: 7 Drive recordings/jobs, 0 Drive orphans, 1 stuck in ingesting, 6 GitHub-safe digest gaps, and 1 dry-run parser repair candidate.
+- Ran private Drive Transcript Library dry-run/no-AI sync: planned creates for jobs `101`, `100`, `85`, `84`, `82`, and update for `83`; no Drive writes were performed.
+- Preserved guardrails: no raw transcripts in GitHub, no Drive mutation, no paid transcription retry, no public publishing, no sends, no score/progress/grading writes, and no secret exposure.
+- Verification passed: targeted tests 28/28, keyholder/OpenAI diagnostics, Drive intake audit, Drive library dry-run, privacy-safe digest export, tracked secret audit, JSON parse checks, and BNA run validation.
