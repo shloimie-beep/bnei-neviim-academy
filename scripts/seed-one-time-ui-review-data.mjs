@@ -238,7 +238,7 @@ function buildExtensionSql(fixture) {
     sqlLiteral(row[2]),
     sqlLiteral(row[3]),
     sqlLiteral('today'),
-    sqlLiteral('ui_review_seed'),
+    sqlLiteral('manual'),
     sqlLiteral(row[4]),
     sqlLiteral(PROJECT_KEY),
     sqlLiteral('task'),
