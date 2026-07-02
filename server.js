@@ -11623,6 +11623,7 @@ CREATE TABLE IF NOT EXISTS bna_tasks (
   related_signup_id INTEGER,
   created_by TEXT NOT NULL DEFAULT 'system',
   assigned_to TEXT,
+  decision_required BOOLEAN DEFAULT FALSE,
   verified_at TIMESTAMP,
   verification_notes TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -12428,6 +12429,7 @@ ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS decision_reprocess_requested_at T
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS decision_reprocessed_at TIMESTAMP;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS decision_last_activity_at TIMESTAMP;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS decision_hidden_at TIMESTAMP;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS decision_required BOOLEAN DEFAULT FALSE;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS next_action_label TEXT;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMP;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS stale_at TIMESTAMP;
