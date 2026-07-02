@@ -10192,6 +10192,24 @@ app.use(express.json({
   },
 }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+
+function isOneTimeLaunchHost(req) {
+  const host = String(req.headers.host || '').split(':')[0].trim().toLowerCase();
+  return IS_ONE_TIME_SINGLE_TENANT || host === 'join.onetimeonetime.com';
+}
+
+function sendOneTimeLandingPage(req, res, next) {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'), (error) => {
+    if (error) next(error);
+  });
+}
+
+app.get(/^\/$/, (req, res, next) => {
+  if (!isOneTimeLaunchHost(req)) return next();
+  return sendOneTimeLandingPage(req, res, next);
+});
+
 app.use(express.static('public', {
   setHeaders(res, filePath) {
     if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
