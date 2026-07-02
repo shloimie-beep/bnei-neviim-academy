@@ -6,6 +6,8 @@ const {
   DISABLED_FEATURES,
   ENABLED_MODULES,
   NON_SECRET_VARIABLES,
+  ONE_TIME_PUBLIC_DOMAIN,
+  ONE_TIME_PUBLIC_URL,
   REQUIRED_SECRET_VARIABLES,
   buildOneTimeRailwayPlan,
   buildOneTimeRailwayProvisioningChecklist,
@@ -38,7 +40,7 @@ test('Railway plan is redacted, uses separate services, and does not target shar
     SESSION_SECRET: 'do-not-print',
     ONE_TIME_OWNER_USERNAME: 'owner',
     ONE_TIME_OWNER_PASSWORD: 'password',
-  }, { baseUrl: 'https://app.onetimeonetime.com' });
+  }, { baseUrl: ONE_TIME_PUBLIC_URL });
   assert.equal(plan.railway.project_name, 'one-time-production');
   assert.equal(plan.railway.web_service_name, 'one-time-web');
   assert.equal(plan.railway.postgres_service_name, 'one-time-postgres');
@@ -47,6 +49,8 @@ test('Railway plan is redacted, uses separate services, and does not target shar
   assert.equal(plan.variables.non_secret.APP_INSTANCE, 'onetime');
   assert.equal(plan.variables.non_secret.DEFAULT_WORKSPACE_KEY, 'rabbi_sheller_provider');
   assert.equal(plan.variables.non_secret.DEFAULT_PROJECT_KEY, 'one_time_mishnah_class');
+  assert.equal(plan.variables.non_secret.ONE_TIME_PUBLIC_DOMAIN, ONE_TIME_PUBLIC_DOMAIN);
+  assert.equal(plan.variables.non_secret.APP_URL, ONE_TIME_PUBLIC_URL);
   assert.equal(plan.variables.non_secret.STUDENT_BOT_ENABLED, 'false');
   assert.equal(plan.variables.non_secret.BNA_ACCOUNTABILITY_ENABLED, 'false');
   assert.ok(REQUIRED_SECRET_VARIABLES.includes('DATABASE_URL'));
@@ -101,7 +105,7 @@ test('separate-instance live smoke checks the deployed API health route first', 
 });
 
 test('Railway provisioning checklist is redacted and guarded against the shared project', () => {
-  const plan = buildOneTimeRailwayPlan({}, { baseUrl: 'https://app.onetimeonetime.com' });
+  const plan = buildOneTimeRailwayPlan({}, { baseUrl: ONE_TIME_PUBLIC_URL });
   const target = assertOneTimeRailwayTarget(plan);
   const checklist = buildOneTimeRailwayProvisioningChecklist(plan);
   assert.equal(target.ok, true, target.failures.join(', '));
@@ -109,6 +113,7 @@ test('Railway provisioning checklist is redacted and guarded against the shared 
   assert.equal(checklist.target.forbidden_project, 'skillful-motivation');
   assert.ok(checklist.safety_guards.some((line) => /Do not add services to skillful-motivation/.test(line)));
   assert.ok(checklist.apply_checklist.some((step) => step.key === 'set_non_secret_variables'));
+  assert.ok(checklist.apply_checklist.some((step) => step.key === 'attach_domain' && step.command.includes(ONE_TIME_PUBLIC_DOMAIN)));
   const secretStep = checklist.apply_checklist.find((step) => step.key === 'set_required_secrets');
   assert.ok(secretStep.secret_names.includes('SESSION_SECRET'));
   assert.ok(!secretStep.secret_names.includes('DATABASE_URL'));

@@ -10,6 +10,8 @@ const {
 const ONE_TIME_APP_INSTANCE = 'onetime';
 const ONE_TIME_BRAND_KEY = 'onetime';
 const ONE_TIME_PUBLIC_LANGUAGE = 'en';
+const ONE_TIME_PUBLIC_DOMAIN = 'join.onetimeonetime.com';
+const ONE_TIME_PUBLIC_URL = `https://${ONE_TIME_PUBLIC_DOMAIN}`;
 
 const ENABLED_MODULES = Object.freeze([
   'Overview',
@@ -49,6 +51,7 @@ const NON_SECRET_VARIABLES = Object.freeze({
   APP_INSTANCE: ONE_TIME_APP_INSTANCE,
   DEFAULT_WORKSPACE_KEY: ONE_TIME_WORKSPACE_KEY,
   DEFAULT_PROJECT_KEY: ONE_TIME_PROJECT_KEY,
+  ONE_TIME_PUBLIC_DOMAIN,
   BRAND_KEY: ONE_TIME_BRAND_KEY,
   PUBLIC_LANGUAGE: ONE_TIME_PUBLIC_LANGUAGE,
   BNA_RAILWAY_PROCESS: 'web',
@@ -134,7 +137,8 @@ function secretReadiness(name, env = process.env) {
 }
 
 function buildOneTimeRailwayPlan(env = process.env, options = {}) {
-  const baseUrl = options.baseUrl || env.APP_URL || env.BNA_APP_URL || 'https://app.onetimeonetime.com';
+  const publicDomain = options.publicDomain || env.ONE_TIME_PUBLIC_DOMAIN || ONE_TIME_PUBLIC_DOMAIN;
+  const baseUrl = options.baseUrl || env.APP_URL || env.BNA_APP_URL || `https://${publicDomain}`;
   const publicVariables = Object.fromEntries(PUBLIC_URL_VARIABLES.map((name) => [name, baseUrl]));
   const runtimeFlags = buildOneTimeRuntimeFlags({ ...env, APP_MODE: 'single_tenant', APP_INSTANCE: ONE_TIME_APP_INSTANCE });
   return {
@@ -645,7 +649,7 @@ function buildOneTimeRailwayProvisioningChecklist(plan = buildOneTimeRailwayPlan
   const webService = railway.web_service_name;
   const postgresService = railway.postgres_service_name;
   const environment = railway.environment || 'production';
-  const domain = 'app.onetimeonetime.com';
+  const domain = String(nonSecretVariables.ONE_TIME_PUBLIC_DOMAIN || ONE_TIME_PUBLIC_DOMAIN);
   const nonSecretVariablePairs = Object.entries(nonSecretVariables).map(([key, value]) => `${key}=${value}`);
   return {
     requirement_id: plan.requirement_id || 'REQ-20260619-313',
@@ -655,7 +659,7 @@ function buildOneTimeRailwayProvisioningChecklist(plan = buildOneTimeRailwayPlan
       'Do not clone or import the BNA production database.',
       'Do not print or pass secret values on the command line.',
       'Do not create real Zoom meetings, send email/WhatsApp, charge cards, or upload Vimeo videos during UI-review provisioning.',
-      'Do not attach app.onetimeonetime.com before verifying the command is scoped to the One Time web service.',
+      `Do not attach ${domain} before verifying the command is scoped to the One Time web service.`,
     ],
     read_only_checks: [
       ['railway', 'whoami'],
@@ -724,7 +728,7 @@ function buildOneTimeRailwayProvisioningChecklist(plan = buildOneTimeRailwayPlan
     verification_commands: [
       'npm run bna:run:validate',
       'node scripts/audit-secrets.mjs',
-      'npm run app:smoke:onetime-separate-instance -- https://app.onetimeonetime.com',
+      `npm run app:smoke:onetime-separate-instance -- https://${domain}`,
       'npm run bna:run:next',
     ],
   };
@@ -734,6 +738,8 @@ module.exports = {
   ONE_TIME_APP_INSTANCE,
   ONE_TIME_BRAND_KEY,
   ONE_TIME_PUBLIC_LANGUAGE,
+  ONE_TIME_PUBLIC_DOMAIN,
+  ONE_TIME_PUBLIC_URL,
   ENABLED_MODULES,
   DISABLED_FEATURES,
   NON_SECRET_VARIABLES,

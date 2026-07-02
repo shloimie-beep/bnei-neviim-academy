@@ -51,7 +51,7 @@ test('Railway target guard blocks BNA deploys pointed at One Time', async () => 
       environment_name: 'production',
       service_name: 'one-time-web',
       expected_domain: 'bneineviimacademy.org',
-      custom_domains: ['app.onetimeonetime.com'],
+      custom_domains: ['join.onetimeonetime.com'],
     },
   });
 

@@ -1,8 +1,9 @@
 {
-  "mode": "apply",
-  "ok": false,
+  "mode": "dry_run",
+  "ok": true,
   "mutation_performed": false,
-  "started_at": "2026-06-22T05:41:37.685Z",
+  "confirmation_required": "PROVISION_ONE_TIME_INSTANCE",
+  "apply_command": "npm run one-time:railway-provision:apply -- --apply --confirm PROVISION_ONE_TIME_INSTANCE",
   "target": {
     "ok": true,
     "failures": [],
@@ -11,15 +12,97 @@
     "web_service": "one-time-web",
     "postgres_service": "one-time-postgres"
   },
-  "steps": [],
-  "blockers": [
-    "Missing confirmation phrase: --confirm PROVISION_ONE_TIME_INSTANCE"
+  "safety_guards": [
+    "Do not add services to skillful-motivation.",
+    "Do not clone or import the BNA production database.",
+    "Do not print or pass secret values on the command line.",
+    "Do not create real Zoom meetings, send email/WhatsApp, charge cards, or upload Vimeo videos during UI-review provisioning.",
+    "Do not attach join.onetimeonetime.com before verifying the command is scoped to the One Time web service."
   ],
-  "dns_records": [],
+  "planned_steps": [
+    {
+      "key": "create_or_reuse_project",
+      "command": "railway init --name one-time-production --json",
+      "note": "Run only if railway list --json proves no intended One Time project exists."
+    },
+    {
+      "key": "link_target_project",
+      "command": "railway link --project <one-time-production-project-id> --environment production --json",
+      "note": "Use a temp link directory or an explicit One Time project token; never link to the shared project."
+    },
+    {
+      "key": "create_postgres",
+      "command": "railway add --database postgres --service one-time-postgres --json",
+      "note": "Create or verify the one-time-postgres Postgres service in the One Time project."
+    },
+    {
+      "key": "create_web",
+      "command": "railway add --service one-time-web --json",
+      "note": "Create or verify the one-time-web application service in the One Time project."
+    },
+    {
+      "key": "set_non_secret_variables",
+      "command": "railway variable set --service one-time-web --environment production --skip-deploys APP_MODE=single_tenant APP_INSTANCE=onetime DEFAULT_WORKSPACE_KEY=rabbi_sheller_provider DEFAULT_PROJECT_KEY=one_time_mishnah_class ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com BRAND_KEY=onetime PUBLIC_LANGUAGE=en BNA_RAILWAY_PROCESS=web BNA_COOKIE_SECURE=true STUDENT_BOT_ENABLED=false BNA_ACCOUNTABILITY_ENABLED=false SEFARIA_STUDY_ASSISTANT_ENABLED=false APP_URL=https://join.onetimeonetime.com BNA_APP_URL=https://join.onetimeonetime.com NEXT_PUBLIC_APP_URL=https://join.onetimeonetime.com PUBLIC_BASE_URL=https://join.onetimeonetime.com APP_BASE_URL=https://join.onetimeonetime.com",
+      "note": "Safe to print; values are non-secret One Time runtime flags and public URLs."
+    },
+    {
+      "key": "set_database_reference",
+      "command": "railway variable set --service one-time-web --environment production --skip-deploys DATABASE_URL=${{ one-time-postgres.DATABASE_URL }}",
+      "note": "Use the Railway service reference for the One Time Postgres database."
+    },
+    {
+      "key": "set_required_secrets",
+      "command": "railway variable set --service one-time-web --environment production --skip-deploys <SECRET_NAME>",
+      "secret_names": [
+        "SESSION_SECRET",
+        "ONE_TIME_OWNER_USERNAME",
+        "ONE_TIME_OWNER_PASSWORD",
+        "ONE_TIME_MANAGER_USERNAME",
+        "ONE_TIME_MANAGER_PASSWORD"
+      ],
+      "note": "Set each required secret through stdin or approved Railway secret tooling. Do not print values."
+    },
+    {
+      "key": "set_optional_readiness_secrets",
+      "command": "railway variable set --service one-time-web --environment production --skip-deploys <OPTIONAL_SECRET_NAME>",
+      "secret_names": [
+        "RESEND_API_KEY",
+        "RESEND_WEBHOOK_SECRET",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "ZOOM_ACCOUNT_ID",
+        "ZOOM_CLIENT_ID",
+        "ZOOM_CLIENT_SECRET",
+        "VIMEO_CLIENT_ID",
+        "VIMEO_CLIENT_SECRET",
+        "VIMEO_ACCESS_TOKEN"
+      ],
+      "note": "Only set optional integration credentials that already exist in approved secure storage."
+    },
+    {
+      "key": "deploy_web",
+      "command": "railway up . --project <one-time-production-project-id> --service one-time-web --environment production --detach --message One Time pilot review deployment",
+      "note": "Deploy the canonical branch; do not merge PR #5."
+    },
+    {
+      "key": "attach_domain",
+      "command": "railway domain join.onetimeonetime.com --service one-time-web --json",
+      "note": "Capture fresh CNAME/TXT records returned for this exact service."
+    }
+  ],
+  "database_steps": [
+    "Run npm run one-time:db:bootstrap -- --json first to review migration checksums without mutating the database.",
+    "After the separate One Time database is available, run npm run one-time:db:bootstrap -- --apply --confirm BOOTSTRAP_ONE_TIME_DATABASE with APP_INSTANCE=onetime, DEFAULT_WORKSPACE_KEY=rabbi_sheller_provider, and DEFAULT_PROJECT_KEY=one_time_mishnah_class.",
+    "Confirm the bootstrap report applies the existing migration chain, ops/one-time-mishnah/separate-instance-seed.sql, and ops/one-time-mishnah/separate-instance-isolation-scan.sql with zero BNA-private rows."
+  ],
   "verification_commands": [
     "npm run bna:run:validate",
     "node scripts/audit-secrets.mjs",
-    "npm run app:smoke:onetime-separate-instance -- https://app.onetimeonetime.com",
+    "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com",
     "npm run bna:run:next"
+  ],
+  "remaining_blockers": [
+    "Railway account auth must allow railway list/init/add/variable/up/domain for the One Time project.",
+    "Manual DNS remains separate after Railway returns fresh join.onetimeonetime.com records."
   ]
 }

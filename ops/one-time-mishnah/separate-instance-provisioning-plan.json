@@ -67,6 +67,7 @@
         "APP_INSTANCE": "onetime",
         "DEFAULT_WORKSPACE_KEY": "rabbi_sheller_provider",
         "DEFAULT_PROJECT_KEY": "one_time_mishnah_class",
+        "ONE_TIME_PUBLIC_DOMAIN": "join.onetimeonetime.com",
         "BRAND_KEY": "onetime",
         "PUBLIC_LANGUAGE": "en",
         "BNA_RAILWAY_PROCESS": "web",
@@ -74,11 +75,11 @@
         "STUDENT_BOT_ENABLED": "false",
         "BNA_ACCOUNTABILITY_ENABLED": "false",
         "SEFARIA_STUDY_ASSISTANT_ENABLED": "false",
-        "APP_URL": "https://app.onetimeonetime.com",
-        "BNA_APP_URL": "https://app.onetimeonetime.com",
-        "NEXT_PUBLIC_APP_URL": "https://app.onetimeonetime.com",
-        "PUBLIC_BASE_URL": "https://app.onetimeonetime.com",
-        "APP_BASE_URL": "https://app.onetimeonetime.com"
+        "APP_URL": "https://join.onetimeonetime.com",
+        "BNA_APP_URL": "https://join.onetimeonetime.com",
+        "NEXT_PUBLIC_APP_URL": "https://join.onetimeonetime.com",
+        "PUBLIC_BASE_URL": "https://join.onetimeonetime.com",
+        "APP_BASE_URL": "https://join.onetimeonetime.com"
       },
       "required_secret_names": [
         {
