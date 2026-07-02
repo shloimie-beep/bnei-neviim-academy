@@ -27924,3 +27924,29 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Guardrails held: no Rabbi UI implementation, no Stripe, no DNS mutation, no
   GHL/LeadConnector runtime, no bulk campaign, no hard delete, no production
   CRM/contact mutation, and no secret exposure.
+
+## 2026-07-02 - One Time Clean Integration From PR #62
+
+- Registered `RAW-20260702-005` and
+  `tasks-pending/2026-07-02-one-time-clean-integration-from-pr62.md`.
+- Created clean branch `codex/one-time-clean-integration-20260702` from
+  current `origin/master`; PR #62 remains source material only and was not
+  force-merged.
+- Added `npm run one-time:setup:check` and
+  `npm run one-time:railway-target:guard` backed by
+  `scripts/check-onetime-external-setup-readiness.mjs`.
+- Restored selected One Time launch-unblocker artifacts, including top visible
+  operator tasks, join-only GoDaddy instructions, WhatsApp setup-message draft,
+  and the post-setup deploy/live-smoke packet.
+- Corrected active One Time provisioning from `app.onetimeonetime.com` to
+  `join.onetimeonetime.com` and added non-secret
+  `ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com`.
+- Safe checks passed: focused One Time/Railway tests, Railway provisioning
+  dry-run, DB bootstrap dry-run, BNA run validation/source coverage/stale
+  evidence, PQC, secrets audit, JSON validation, and `git diff --check`.
+- Expected blockers remain exact: the setup checker reports `0/8` external
+  setup areas ready, starting with separate One Time Railway target labels and
+  required non-secret env values.
+- Guardrails held: no external provider mutation, DNS mutation, email send,
+  WhatsApp send, live Stripe payment, paid-user cancellation, hard delete,
+  secret exposure, GHL/LeadConnector runtime, or Rabbi UI implementation.

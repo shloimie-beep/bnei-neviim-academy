@@ -155,7 +155,7 @@ const ONE_TIME_BLOCKER_TYPES = Object.freeze({
     consequence: 'Provisioning early can create topology drift, DNS confusion, or a partially owned partner deployment.',
     exact_next_action: 'Get explicit approval to resume the separate Railway/domain requirement before any provisioning or DNS work.',
     dependent_module_action: 'one_time.deployment.separate_instance',
-    patterns: ['railway', 'separate instance', 'app.onetimeonetime.com', 'dns hookup', 'domain provisioning'],
+    patterns: ['railway', 'separate instance', 'join.onetimeonetime.com', 'dns hookup', 'domain provisioning'],
   }),
   ghl_leadconnector_conflict: Object.freeze({
     id: 'ghl_leadconnector_conflict',

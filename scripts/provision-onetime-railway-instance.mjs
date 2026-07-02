@@ -181,6 +181,8 @@ function extractCreatedProject(payload) {
 }
 
 function buildDryRun(checklist, options = {}) {
+  const domainStep = checklist.apply_checklist.find((step) => step.key === 'attach_domain');
+  const publicDomain = domainStep?.command?.[2] || 'join.onetimeonetime.com';
   const applySteps = checklist.apply_checklist
     .filter((step) => !(options.skipDeploy && step.key === 'deploy_web'))
     .filter((step) => !(options.skipDomain && step.key === 'attach_domain'))
@@ -204,7 +206,7 @@ function buildDryRun(checklist, options = {}) {
     verification_commands: checklist.verification_commands,
     remaining_blockers: [
       'Railway account auth must allow railway list/init/add/variable/up/domain for the One Time project.',
-      'Manual DNS remains separate after Railway returns fresh app.onetimeonetime.com records.',
+      `Manual DNS remains separate after Railway returns fresh ${publicDomain} records.`,
     ],
   };
 }
@@ -384,7 +386,9 @@ function applyProvisioning(plan, checklist, options) {
   }
 
   if (!options.skipDomain) {
-    const domainStep = runCommand([RAILWAY_BIN, 'domain', 'app.onetimeonetime.com', '--service', checklist.target.web_service, '--json']);
+    const attachDomainStep = checklist.apply_checklist.find((step) => step.key === 'attach_domain');
+    const publicDomain = attachDomainStep?.command?.[2] || 'join.onetimeonetime.com';
+    const domainStep = runCommand([RAILWAY_BIN, 'domain', publicDomain, '--service', checklist.target.web_service, '--json']);
     const domainPayload = parseJson(domainStep.stdout);
     report.steps.push({ key: 'attach_domain', command: domainStep.command, ok: domainStep.ok, status: domainStep.status, stderr: domainStep.stderr });
     if (!domainStep.ok) {

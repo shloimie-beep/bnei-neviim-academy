@@ -1,0 +1,445 @@
+{
+  "generated_at": "2026-07-02T12:19:47.519Z",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "external_write_performed": false,
+  "provider_mutation_performed": false,
+  "dns_mutation_performed": false,
+  "email_send_performed": false,
+  "whatsapp_send_performed": false,
+  "live_payment_performed": false,
+  "secret_values_printed": false,
+  "mode": "full_setup",
+  "checklist": {
+    "path": "ops\\one-time-mishnah\\launch-unblocker\\2026-07-02-operator-external-setup-checklist.json",
+    "present": true,
+    "source_raw_ids": [
+      "RAW-20260701-007",
+      "RAW-20260702-002"
+    ],
+    "post_setup_execution_packet": "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md",
+    "setup_items": [
+      {
+        "id": "SETUP-ONETIME-RAILWAY-001",
+        "priority": 1,
+        "title": "Separate One Time Railway target",
+        "clears_requirements": [
+          "REQ-20260701-701"
+        ],
+        "required_fields": [
+          "railway_project_label",
+          "railway_service_label",
+          "railway_environment_label",
+          "confirm_separate_from_bna_production",
+          "confirm_codex_may_run_no_write_guard_after_setup"
+        ],
+        "required_env_values": {
+          "PUBLIC_SITE_MODE": "one_time",
+          "DEFAULT_WORKSPACE_KEY": "rabbi_sheller_provider",
+          "DEFAULT_PROJECT_KEY": "one_time_mishnah_class",
+          "ONE_TIME_PUBLIC_DOMAIN": "join.onetimeonetime.com"
+        },
+        "forbidden": [
+          "apex_root_domain_cutover",
+          "live_payment",
+          "real_campaign_send",
+          "real_whatsapp_send",
+          "hard_delete",
+          "production_data_merge"
+        ],
+        "verification_commands_after_setup": [
+          "npm run one-time:railway-target:guard",
+          "npm run one-time:railway-provision:check -- --write-report",
+          "npm run railway:doctor"
+        ]
+      },
+      {
+        "id": "SETUP-ONETIME-DB-001",
+        "priority": 2,
+        "title": "Separate One Time database",
+        "clears_requirements": [
+          "REQ-20260701-701"
+        ],
+        "required_fields": [
+          "ONE_TIME_DATABASE_URL_or_DATABASE_URL_ONE_TIME_keyholder_alias",
+          "confirm_database_separate_from_bna_main_database",
+          "confirm_codex_may_run_bootstrap_readback_after_no_write_checks"
+        ],
+        "forbidden": [
+          "paste_database_url",
+          "hard_delete",
+          "merge_bna_and_onetime_data"
+        ],
+        "verification_commands_after_setup": [
+          "npm run one-time:db:bootstrap",
+          "npm run bna:run:validate"
+        ]
+      },
+      {
+        "id": "SETUP-ONETIME-JOIN-DOMAIN-001",
+        "priority": 3,
+        "title": "Join subdomain only",
+        "clears_requirements": [
+          "REQ-20260701-702",
+          "REQ-20260701-703",
+          "REQ-20260701-704",
+          "REQ-20260701-717"
+        ],
+        "required_fields": [
+          "join_onetimeonetime_com_custom_domain_attached",
+          "railway_dns_record_created_for_join_subdomain_only",
+          "confirm_apex_root_untouched"
+        ],
+        "forbidden": [
+          "apex_root_domain_mutation"
+        ],
+        "verification_after_setup": [
+          "live_smoke_join_root",
+          "live_smoke_member_login",
+          "live_smoke_member_access",
+          "live_smoke_one_time_fallback",
+          "live_smoke_rabbi_compatibility",
+          "live_smoke_bna_root_separation"
+        ]
+      },
+      {
+        "id": "SETUP-ONETIME-ZOOM-001",
+        "priority": 4,
+        "title": "Zoom session details",
+        "clears_requirements": [
+          "REQ-20260701-708"
+        ],
+        "required_fields": [
+          "class_session_date_time",
+          "private_zoom_link_or_meeting_details_in_keyholder",
+          "rotation_policy",
+          "member_display_label",
+          "fallback_message_if_unscheduled"
+        ],
+        "forbidden": [
+          "raw_zoom_link_in_tracked_files",
+          "public_zoom_link"
+        ]
+      },
+      {
+        "id": "SETUP-ONETIME-VIMEO-001",
+        "priority": 5,
+        "title": "Vimeo / Drive / OBS media setup",
+        "clears_requirements": [
+          "REQ-20260701-713"
+        ],
+        "required_fields": [
+          "VIMEO_ACCESS_TOKEN_keyholder_alias",
+          "vimeo_account_owner",
+          "vimeo_plan_scope_confirmation",
+          "private_test_folder_decision",
+          "safe_test_upload_file_or_no_upload_decision",
+          "drive_intake_drop_folder_alias",
+          "obs_drive_sync_decision"
+        ],
+        "forbidden": [
+          "paste_vimeo_token",
+          "production_media_mutation_without_packet"
+        ],
+        "verification_after_setup": [
+          "token_status_readback_by_fingerprint_only",
+          "safe_test_upload_if_explicitly_approved",
+          "failure_creates_internal_task_and_sdratler_alert_path"
+        ]
+      },
+      {
+        "id": "SETUP-ONETIME-STRIPE-001",
+        "priority": 6,
+        "title": "Rabbi Stripe sandbox",
+        "clears_requirements": [
+          "REQ-20260701-714"
+        ],
+        "required_fields": [
+          "rabbi_stripe_test_secret_key_alias",
+          "stripe_publishable_key_alias_if_needed",
+          "stripe_webhook_secret_alias_if_needed",
+          "67_month_product_price_ids_or_sandbox_create_permission",
+          "confirm_sandbox_only"
+        ],
+        "forbidden": [
+          "real_card_details",
+          "live_payment",
+          "invented_refund_or_legal_policy"
+        ],
+        "verification_after_setup": [
+          "sandbox_checkout_subscription_access_smoke",
+          "webhook_readback_smoke_if_configured",
+          "TEST_prefixed_reversible_access_grant_or_extension"
+        ]
+      },
+      {
+        "id": "SETUP-ONETIME-WHAPI-001",
+        "priority": 7,
+        "title": "Whapi/WAPI provider details",
+        "required_fields": [
+          "provider_account",
+          "phone_number",
+          "token_keyholder_alias",
+          "instance_id_or_alias",
+          "webhook_url_status",
+          "safe_test_recipient_for_later_packet"
+        ],
+        "forbidden": [
+          "real_whatsapp_send_without_later_exact_packet"
+        ]
+      },
+      {
+        "id": "SETUP-ONETIME-CAMPAIGN-001",
+        "priority": 8,
+        "title": "Campaign seed / real campaign",
+        "clears_requirements": [
+          "REQ-20260701-709",
+          "REQ-20260701-710"
+        ],
+        "precondition": "join.onetimeonetime.com live link exists",
+        "required_fields": [
+          "final_campaign_copy",
+          "exact_recipient_segment_or_list_source",
+          "suppression_unsubscribe_proof",
+          "final_join_member_links",
+          "seed_recipient_sdratler_gmail",
+          "explicit_seed_packet_approval",
+          "separate_explicit_real_send_command_if_seed_passes"
+        ],
+        "forbidden": [
+          "real_campaign_send_from_this_checklist"
+        ]
+      }
+    ]
+  },
+  "ready_count": 0,
+  "total_count": 8,
+  "all_required_external_setup_ready": false,
+  "post_setup_execution_packet": "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md",
+  "items": [
+    {
+      "id": "SETUP-ONETIME-RAILWAY-001",
+      "title": "Separate One Time Railway target",
+      "clears_requirements": [
+        "REQ-20260701-701"
+      ],
+      "ready": false,
+      "missing_fields": [
+        "railway_project_service_environment_label",
+        "PUBLIC_SITE_MODE",
+        "DEFAULT_WORKSPACE_KEY",
+        "DEFAULT_PROJECT_KEY",
+        "ONE_TIME_PUBLIC_DOMAIN"
+      ],
+      "warnings": [
+        "Missing explicit One Time Railway target. PUBLIC_SITE_MODE missing or mismatch; expected one_time. DEFAULT_WORKSPACE_KEY missing or mismatch; expected rabbi_sheller_provider. DEFAULT_PROJECT_KEY missing or mismatch; expected one_time_mishnah_class. ONE_TIME_PUBLIC_DOMAIN missing or mismatch; expected join.onetimeonetime.com."
+      ],
+      "verification_after_setup": [
+        "npm run one-time:railway-target:guard",
+        "npm run one-time:railway-provision:check -- --write-report"
+      ]
+    },
+    {
+      "id": "SETUP-ONETIME-DB-001",
+      "title": "Separate One Time database",
+      "clears_requirements": [
+        "REQ-20260701-701"
+      ],
+      "ready": false,
+      "missing_fields": [
+        "ONE_TIME_DATABASE_URL_or_DATABASE_URL_ONE_TIME_keyholder_alias"
+      ],
+      "warnings": [],
+      "verification_after_setup": [
+        "npm run one-time:db:bootstrap"
+      ]
+    },
+    {
+      "id": "SETUP-ONETIME-JOIN-DOMAIN-001",
+      "title": "Join subdomain only",
+      "clears_requirements": [
+        "REQ-20260701-702",
+        "REQ-20260701-703",
+        "REQ-20260701-704",
+        "REQ-20260701-717"
+      ],
+      "ready": false,
+      "missing_fields": [
+        "ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com",
+        "ONE_TIME_JOIN_DOMAIN_ATTACHED",
+        "ONE_TIME_JOIN_DNS_CONFIGURED",
+        "ONE_TIME_APEX_ROOT_UNTOUCHED"
+      ],
+      "warnings": [],
+      "verification_after_setup": [
+        "join-domain live smoke after deploy"
+      ]
+    },
+    {
+      "id": "SETUP-ONETIME-ZOOM-001",
+      "title": "Zoom session details",
+      "clears_requirements": [
+        "REQ-20260701-708"
+      ],
+      "ready": false,
+      "missing_fields": [
+        "ONE_TIME_ZOOM_SESSION_ALIAS_or_private_keyholder_path"
+      ],
+      "warnings": [],
+      "verification_after_setup": [
+        "member-gated class-link smoke; no public raw Zoom link"
+      ]
+    },
+    {
+      "id": "SETUP-ONETIME-VIMEO-001",
+      "title": "Vimeo / Drive / OBS media setup",
+      "clears_requirements": [
+        "REQ-20260701-713"
+      ],
+      "ready": false,
+      "missing_fields": [
+        "VIMEO_ACCESS_TOKEN_alias_or_keyholder_path",
+        "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS"
+      ],
+      "warnings": [],
+      "verification_after_setup": [
+        "fingerprint-only Vimeo readback",
+        "Drive intake/drop-folder readback"
+      ]
+    },
+    {
+      "id": "SETUP-ONETIME-STRIPE-001",
+      "title": "Rabbi Stripe sandbox",
+      "clears_requirements": [
+        "REQ-20260701-714"
+      ],
+      "ready": false,
+      "missing_fields": [
+        "rabbi_stripe_test_secret_key_alias_or_test_key_status",
+        "67_month_product_price_id_or_alias"
+      ],
+      "warnings": [],
+      "verification_after_setup": [
+        "sandbox Stripe smoke only; no live payment"
+      ]
+    },
+    {
+      "id": "SETUP-ONETIME-WHAPI-001",
+      "title": "Whapi/WAPI provider details",
+      "clears_requirements": [],
+      "ready": false,
+      "missing_fields": [
+        "whapi_wapi_token_alias",
+        "whapi_wapi_instance_id",
+        "whapi_wapi_phone_number"
+      ],
+      "warnings": [],
+      "verification_after_setup": [
+        "safe test send only in later exact packet"
+      ]
+    },
+    {
+      "id": "SETUP-ONETIME-CAMPAIGN-001",
+      "title": "Campaign seed / real campaign",
+      "clears_requirements": [
+        "REQ-20260701-709",
+        "REQ-20260701-710"
+      ],
+      "ready": false,
+      "missing_fields": [
+        "join_domain_live_first",
+        "final_campaign_copy",
+        "exact_recipient_segment_or_list",
+        "suppression_unsubscribe_proof",
+        "explicit_seed_packet_approval"
+      ],
+      "warnings": [],
+      "verification_after_setup": [
+        "seed packet to sdratler@gmail.com after live link only"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "SETUP-ONETIME-RAILWAY-001",
+      "title": "Separate One Time Railway target",
+      "missing_fields": [
+        "railway_project_service_environment_label",
+        "PUBLIC_SITE_MODE",
+        "DEFAULT_WORKSPACE_KEY",
+        "DEFAULT_PROJECT_KEY",
+        "ONE_TIME_PUBLIC_DOMAIN"
+      ],
+      "warnings": [
+        "Missing explicit One Time Railway target. PUBLIC_SITE_MODE missing or mismatch; expected one_time. DEFAULT_WORKSPACE_KEY missing or mismatch; expected rabbi_sheller_provider. DEFAULT_PROJECT_KEY missing or mismatch; expected one_time_mishnah_class. ONE_TIME_PUBLIC_DOMAIN missing or mismatch; expected join.onetimeonetime.com."
+      ]
+    },
+    {
+      "id": "SETUP-ONETIME-DB-001",
+      "title": "Separate One Time database",
+      "missing_fields": [
+        "ONE_TIME_DATABASE_URL_or_DATABASE_URL_ONE_TIME_keyholder_alias"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "SETUP-ONETIME-JOIN-DOMAIN-001",
+      "title": "Join subdomain only",
+      "missing_fields": [
+        "ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com",
+        "ONE_TIME_JOIN_DOMAIN_ATTACHED",
+        "ONE_TIME_JOIN_DNS_CONFIGURED",
+        "ONE_TIME_APEX_ROOT_UNTOUCHED"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "SETUP-ONETIME-ZOOM-001",
+      "title": "Zoom session details",
+      "missing_fields": [
+        "ONE_TIME_ZOOM_SESSION_ALIAS_or_private_keyholder_path"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "SETUP-ONETIME-VIMEO-001",
+      "title": "Vimeo / Drive / OBS media setup",
+      "missing_fields": [
+        "VIMEO_ACCESS_TOKEN_alias_or_keyholder_path",
+        "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "SETUP-ONETIME-STRIPE-001",
+      "title": "Rabbi Stripe sandbox",
+      "missing_fields": [
+        "rabbi_stripe_test_secret_key_alias_or_test_key_status",
+        "67_month_product_price_id_or_alias"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "SETUP-ONETIME-WHAPI-001",
+      "title": "Whapi/WAPI provider details",
+      "missing_fields": [
+        "whapi_wapi_token_alias",
+        "whapi_wapi_instance_id",
+        "whapi_wapi_phone_number"
+      ],
+      "warnings": []
+    },
+    {
+      "id": "SETUP-ONETIME-CAMPAIGN-001",
+      "title": "Campaign seed / real campaign",
+      "missing_fields": [
+        "join_domain_live_first",
+        "final_campaign_copy",
+        "exact_recipient_segment_or_list",
+        "suppression_unsubscribe_proof",
+        "explicit_seed_packet_approval"
+      ],
+      "warnings": []
+    }
+  ]
+}
