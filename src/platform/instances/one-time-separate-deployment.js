@@ -273,6 +273,33 @@ function buildOneTimeSeedSql(manifest = buildOneTimeSeedManifest()) {
 
 BEGIN;
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_bna_projects_project_key
+  ON bna_projects(project_key);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_course_lessons_course_slug_conflict
+  ON bna_course_lessons(course_id, slug);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_time_seed_support_tickets_ticket_number_conflict
+  ON bna_support_tickets(ticket_number);
+
+UPDATE bna_students s
+SET name = 'TEST Archived BNA Seed ' || s.id::text,
+    name_en = 'TEST Archived BNA Seed ' || s.id::text,
+    name_he = NULL,
+    parent_name = NULL,
+    parent_email = NULL,
+    parent_phone = NULL,
+    status = 'inactive',
+    tags = ARRAY(
+      SELECT DISTINCT tag_value
+      FROM unnest(COALESCE(s.tags, ARRAY[]::text[]) || ARRAY['archived_wrong_instance_seed', 'one_time_bootstrap_cleanup']) AS tag_values(tag_value)
+      WHERE tag_value <> ''
+    ),
+    notes = 'Archived/redacted by One Time bootstrap because this BNA Torah seed row was created in the separate One Time instance before single-tenant seed guards were active.',
+    updated_at = NOW()
+FROM bna_projects p
+WHERE p.id = COALESCE(s.project_id, s.workspace_id)
+  AND p.project_key <> '${ONE_TIME_PROJECT_KEY}'
+  AND COALESCE(s.notes, '') LIKE 'Seeded for Torah learning group goal%';
+
 INSERT INTO bna_projects (project_key, name, short_name, description, status, metadata)
 VALUES (
   '${ONE_TIME_PROJECT_KEY}',
@@ -527,7 +554,8 @@ function buildOneTimeIsolationScanSql() {
   return `SELECT 'bna_students_outside_onetime' AS check_name, COUNT(*)::int AS count
 FROM bna_students s
 LEFT JOIN bna_projects p ON p.id = COALESCE(s.project_id, s.workspace_id)
-WHERE COALESCE(p.project_key, '') <> '${ONE_TIME_PROJECT_KEY}';
+WHERE COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+  AND COALESCE(p.project_key, '') <> '${ONE_TIME_PROJECT_KEY}';
 
 SELECT 'bna_payments_present' AS check_name, COUNT(*)::int AS count
 FROM bna_payment_intake;
