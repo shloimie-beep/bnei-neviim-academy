@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T16:14:36.055Z",
+  "generated_at": "2026-07-02T18:02:27.624Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -215,10 +215,10 @@
   "railway_variable_readback": {
     "ok": true,
     "attempted": true,
-    "source": "railway_cli_session_fallback",
+    "source": "railway_token_or_env",
     "service": "one-time-web",
     "environment": "production",
-    "key_count": 37,
+    "key_count": 40,
     "database_url_present": true,
     "database_url_length": 98,
     "database_url_usable": true,
@@ -340,6 +340,7 @@
       "clears_requirements": [],
       "ready": false,
       "missing_fields": [
+        "whapi_wapi_token_alias",
         "whapi_wapi_instance_id",
         "whapi_wapi_phone_number"
       ],
@@ -405,6 +406,7 @@
       "id": "SETUP-ONETIME-WHAPI-001",
       "title": "Whapi/WAPI provider details",
       "missing_fields": [
+        "whapi_wapi_token_alias",
         "whapi_wapi_instance_id",
         "whapi_wapi_phone_number"
       ],
