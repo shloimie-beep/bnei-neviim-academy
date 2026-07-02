@@ -15937,9 +15937,11 @@ CREATE TABLE IF NOT EXISTS bna_class_sessions (
   newsletter_draft TEXT,
   source_media_url TEXT,
   transcript_text TEXT,
+  metadata JSONB DEFAULT '{}',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
 `;
 
 const createOneTimeQuestionReviewsSQL = `
@@ -58395,6 +58397,8 @@ async function parseMixedRecordingSource({
   archiveSourceAfterParse = false,
   contentBacked = false,
   projectKey = '',
+  noAi = false,
+  noProgressWrites = false,
 } = {}) {
   const rawInput = [
     instruction ? `Operator instruction:\n${instruction}` : '',
@@ -58412,12 +58416,19 @@ async function parseMixedRecordingSource({
     source_table: contentBacked && job.id ? 'bna_content_jobs' : null,
     created_by: 'recording_parser',
     dry_run: Boolean(dryRun),
+    aiStructuredJson: noAi ? null : undefined,
   });
   const parsed = mixedRecordingParsedFromCanonical(intake.parsed);
   const effectiveProjectKey = projectKey || inferProjectKeyFromTranscript(rawInput) || DEFAULT_PROJECT_KEY;
   const students = await activeStudentsForMixedRecordingParse({ projectKey: effectiveProjectKey });
   const progressOnlyParsed = progressOnlyMixedRecordingParsePayload(
-    await generateMixedRecordingParse({ job, students })
+    noAi
+      ? basicMixedRecordingParse({
+          job,
+          students,
+          error: new Error('No-AI parser mode requested for repair run.'),
+        })
+      : await generateMixedRecordingParse({ job, students })
   );
   if (dryRun) {
     const progressOnlyDryRun = await persistMixedRecordingParse({
@@ -58473,13 +58484,30 @@ async function parseMixedRecordingSource({
       [JSON.stringify(nextParse), Boolean(archiveSourceAfterParse), job.id]
     );
   }
-  const progressOnlyResult = await persistProgressOnlyMixedRecordingParse({
-    job,
-    previousParse: nextParse,
-    projectKey: effectiveProjectKey,
-    students,
-    progressOnlyParsed,
-  });
+  const progressOnlyResult = noProgressWrites
+    ? {
+        skipped_existing: true,
+        blocked_by_policy: true,
+        counts: {
+          group_goal_entries: 0,
+          daily_torah_updates: 0,
+          torah_learning_entries: 0,
+          accountability_events: 0,
+        },
+        created: {
+          group_goal_entries: [],
+          daily_torah_updates: [],
+          torah_learning_entries: [],
+          accountability_events: [],
+        },
+      }
+    : await persistProgressOnlyMixedRecordingParse({
+        job,
+        previousParse: nextParse,
+        projectKey: effectiveProjectKey,
+        students,
+        progressOnlyParsed,
+      });
   const combinedParse = {
     ...nextParse,
     canonical_mixed_recording_parse: nextParse.mixed_recording_parse,
@@ -58490,6 +58518,7 @@ async function parseMixedRecordingSource({
         parsed_at: new Date().toISOString(),
         applied_at: progressOnlyResult.skipped_existing ? null : new Date().toISOString(),
         skipped_existing: Boolean(progressOnlyResult.skipped_existing),
+        apply_blocked_by_policy: Boolean(progressOnlyResult.blocked_by_policy),
         counts: progressOnlyResult.counts || {},
         group_goal_entries: progressOnlyParsed.group_goal_entries.length,
         daily_torah_updates: progressOnlyParsed.daily_torah_updates.length,
@@ -58807,6 +58836,8 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
     force = false,
     instruction = '',
     archive_source_after_parse = false,
+    no_ai = false,
+    no_progress_writes = false,
   } = req.body || {};
 
   try {
@@ -58846,6 +58877,8 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
       archiveSourceAfterParse: Boolean(archive_source_after_parse),
       contentBacked: true,
       projectKey: opsScopeProjectKey(req) || '',
+      noAi: Boolean(no_ai),
+      noProgressWrites: Boolean(no_progress_writes),
     });
     return res.json(result);
   } catch (err) {
