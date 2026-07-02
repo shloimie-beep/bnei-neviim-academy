@@ -228,10 +228,10 @@ function buildExtensionSql(fixture) {
     jsonLiteral(seedMeta(row[6])),
   ]);
   const taskRows = [
-    ['TEST One Time next setup task - Railway target', 'Provide or verify One Time Railway project/service/database target.', 'needs_decision', 'technology', 'Shloimie', 'Railway target values', 'Open Railway and create/verify one-time-production, one-time-web, and one-time-postgres.'],
-    ['TEST One Time setup blocker - Whapi/WAPI token', 'Provide Rabbi-owned Whapi/WAPI account, phone, and token alias.', 'needs_decision', 'communications', 'Shloimie', 'Whapi/WAPI token and phone', 'Add token to BNA keyholder and rerun setup check.'],
-    ['TEST One Time setup blocker - Stripe sandbox', 'Provide Rabbi Stripe test credential alias and $67/month test price.', 'needs_decision', 'finance', 'Shloimie', 'Stripe test alias/product/price', 'Create sandbox product/price or provide existing test price ID.'],
-    ['TEST One Time setup blocker - Zoom protected link', 'Provide member-gated Zoom session details.', 'needs_decision', 'operations', 'Rabbi Elie Scheller', 'Zoom session details', 'Provide protected Zoom link or meeting metadata.'],
+    ['TEST One Time next setup task - Railway target', 'Provide or verify One Time Railway project/service/database target.', 'needs_decision', 'technology', 'Shloimie', 'shloimie', 'Open Railway and create/verify one-time-production, one-time-web, and one-time-postgres.'],
+    ['TEST One Time setup blocker - Whapi/WAPI token', 'Provide Rabbi-owned Whapi/WAPI account, phone, and token alias.', 'needs_decision', 'communications', 'Shloimie', 'shloimie', 'Add token to BNA keyholder and rerun setup check.'],
+    ['TEST One Time setup blocker - Stripe sandbox', 'Provide Rabbi Stripe test credential alias and $67/month test price.', 'needs_decision', 'finance', 'Shloimie', 'shloimie', 'Create sandbox product/price or provide existing test price ID.'],
+    ['TEST One Time setup blocker - Zoom protected link', 'Provide member-gated Zoom session details.', 'needs_decision', 'operations', 'Rabbi Elie Scheller', 'rabbi', 'Provide protected Zoom link or meeting metadata.'],
   ].map((row, index) => [
     sqlLiteral(row[0]),
     sqlLiteral(row[1]),
