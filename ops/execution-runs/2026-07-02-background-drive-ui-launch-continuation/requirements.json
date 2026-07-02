@@ -250,9 +250,9 @@
       "depends_on": [
         "REQ-20260702-101"
       ],
-      "implementation_status": "Newest Drive recording was found and is transcribed, but no structured class output or UI correction parse output was available. Raw transcript body was not committed.",
+      "implementation_status": "Newest Drive recording/content job 101 was found and is transcribed. OpenAI keyholder v2 now validates and transcription credential fallback is implemented locally, but job 101 has no visible structured parser output and no private Drive transcript-library doc yet. Raw transcript body was not committed.",
       "can_continue_without_operator": true,
-      "next_action": "Inspect or repair parser result for content_job 101 / drive_file:f07607f3f9f8; if still missing, Shloimie provides the file ID/folder/name/time for the intended UI correction recording.",
+      "next_action": "Restore app/API reachability for dry-run reprocess, run dry-run parser repair for content_job 101, then apply private Drive transcript doc sync only after exact approval.",
       "acceptance_criteria": [
         "No transcript body exposed",
         "Redacted file/job IDs only",
@@ -260,22 +260,33 @@
       ],
       "evidence": [
         "ops/drive-traces/2026-07-02-newest-ui-correction-recording-trace.md",
-        "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.md"
+        "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.md",
+        "ops/drive-transcript-visibility/2026-07-02/JOB-101-TRACE.md",
+        "ops/drive-transcript-visibility/2026-07-02/BACKLOG-20260625-20260702.md",
+        "ops/drive-transcript-visibility/2026-07-02/DRIVE-TRANSCRIPT-LIBRARY-PLAN.md",
+        "ops/drive-transcript-visibility/2026-07-02/VERIFICATION.md"
       ],
       "verification": [
         "PASS npm run drive:trace-newest-recording (PARTIAL)",
         "PASS npm run content:drive-intake-audit (PARTIAL)",
-        "PASS npm run app:smoke:class-upload-trace"
+        "PASS npm run app:smoke:class-upload-trace",
+        "PASS npm run keyholder:diagnose",
+        "PASS npm run openai:diagnose",
+        "PASS npm run content:sync-drive-library -- --dry-run --no-ai",
+        "PASS npm run content:export-digests -- --privacy-scan"
       ],
       "implementation_files": [
         "ops/drive-traces/2026-07-02-newest-ui-correction-recording-trace.md",
-        "ops/drive-traces/2026-07-02-newest-ui-correction-recording-trace.json"
+        "ops/drive-traces/2026-07-02-newest-ui-correction-recording-trace.json",
+        "src/lib/integrations/ai-credential-resolver.js",
+        "scripts/telegram-kimi-bridge.mjs",
+        "scripts/sync-drive-content-library.mjs"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-02T13:05:00+03:00",
-      "blocker": "Newest Drive recording is discovered and transcribed, but no structured class/UI correction parse output exists.",
+      "updated_at": "2026-07-02T19:20:00+03:00",
+      "blocker": "Content job 101 is discovered and transcribed, but no structured parser/class/UI output exists and no private Drive transcript-library doc has been written.",
       "blocker_owner": "Drive intake/parser pipeline",
-      "blocker_next_action": "Repair or rerun structured parser for content_job 101 without committing raw transcript text."
+      "blocker_next_action": "Run dry-run parser repair for content_job 101 without committing raw transcript text; Drive doc sync requires APPROVE_20260702_PRIVATE_DRIVE_TRANSCRIPT_DOC_SYNC_FOR_BACKLOG_AND_FUTURE_UPLOADS."
     },
     {
       "id": "REQ-20260702-104",
