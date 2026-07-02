@@ -1,0 +1,606 @@
+{
+  "run_id": "2026-07-02-background-drive-ui-launch-continuation",
+  "title": "Background Agent, Drive UI Recording, Mock Data, Railway Provisioning",
+  "updated_at": "2026-07-02T15:42:42+03:00",
+  "sources": [
+    {
+      "source_id": "RAW-20260702-006",
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "captured_at": "2026-07-02T15:45:00+03:00",
+      "content_fingerprint": "pending-closeout",
+      "privacy_classification": "internal_goal_mode_packet_no_secrets_no_private_rows",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_goal_mode_packet"
+    },
+    {
+      "source_id": "RAW-20260702-007",
+      "source_path": "raw-input/RAW-20260702-007-finalize-pr64-keyholder-domain-launch.md",
+      "captured_at": "2026-07-02T15:42:42+03:00",
+      "content_fingerprint": "pending-final-closeout",
+      "privacy_classification": "internal_goal_mode_packet_no_secrets_no_private_rows",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_goal_mode_packet"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260702-006-S001",
+      "source_id": "RAW-20260702-006",
+      "source_statement": "Verify whether background agent/fleet is running and run one safe batch if not.",
+      "requirement_id": "REQ-20260702-102",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-006-S002",
+      "source_id": "RAW-20260702-006",
+      "source_statement": "Trace newest Drive recording/UI correction ramble and do not claim processing without proof.",
+      "requirement_id": "REQ-20260702-103",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-006-S003",
+      "source_id": "RAW-20260702-006",
+      "source_statement": "Convert UI corrections into Product Quality packets and split broad work.",
+      "requirement_id": "REQ-20260702-104",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-006-S004",
+      "source_id": "RAW-20260702-006",
+      "source_statement": "Create safe TEST/mock data for One Time UI review.",
+      "requirement_id": "REQ-20260702-105",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-006-S005",
+      "source_id": "RAW-20260702-006",
+      "source_statement": "Codex is authorized to provision separate One Time Railway project/service/database if guarded scripts support it.",
+      "requirement_id": "REQ-20260702-106",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-006-S006",
+      "source_id": "RAW-20260702-006",
+      "source_statement": "Create or verify join.onetimeonetime.com task and do not touch apex/root.",
+      "requirement_id": "REQ-20260702-107",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-006-S007",
+      "source_id": "RAW-20260702-006",
+      "source_statement": "Verify WhatsApp, Vimeo, Stripe, and Zoom setup panels/tasks and continue local work.",
+      "requirement_id": "REQ-20260702-108",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-006-S008",
+      "source_id": "RAW-20260702-006",
+      "source_statement": "Ensure Shloimie sees the next exact top task.",
+      "requirement_id": "REQ-20260702-109",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-006-S009",
+      "source_id": "RAW-20260702-006",
+      "source_statement": "Do not force-merge PR #62; extract cleanly from current origin/master.",
+      "requirement_id": "REQ-20260702-101",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-006-S010",
+      "source_id": "RAW-20260702-006",
+      "source_statement": "No bulk campaign, live payment, WhatsApp broadcast, apex/root DNS mutation, hard delete, paid-user cancellation, GHL runtime, secret exposure, or private-data evidence leak.",
+      "requirement_id": "REQ-20260702-110",
+      "classification": "guardrail"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S001",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Finish/merge PR #64 if validation still passes.",
+      "requirement_id": "REQ-20260702-110",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S002",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Verify GoDaddy DNS for join.onetimeonetime.com and run setup/domain smoke.",
+      "requirement_id": "REQ-20260702-107",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S003",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Perform deep keyholder alias discovery without exposing values.",
+      "requirement_id": "REQ-20260702-108",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S004",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Update setup checker/scripts if they miss real aliases or current Railway CLI behavior.",
+      "requirement_id": "REQ-20260702-108",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S005",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Use the separate One Time Railway/DB setup and run every safe unblocked setup/readback/smoke step.",
+      "requirement_id": "REQ-20260702-106",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S006",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Deploy/live smoke only when safe gates are satisfied; otherwise record exact blockers.",
+      "requirement_id": "REQ-20260702-110",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260702-007-S007",
+      "source_id": "RAW-20260702-007",
+      "source_statement": "Keep the worktree clean by preserving real work in a commit/PR and leaving only true operator/provider actions.",
+      "requirement_id": "REQ-20260702-110",
+      "classification": "requirement"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-101",
+      "title": "Create clean UI-recording integration branch",
+      "expected_result": "A clean branch from current origin/master carries the clean PR #63 launch setup commits without force-merging PR #62.",
+      "status": "done",
+      "source_id": "RAW-20260702-006",
+      "source_statement_ids": [
+        "RAW-20260702-006-S009"
+      ],
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "reconciliation",
+      "priority": "P0",
+      "batch_id": "B0",
+      "depends_on": [],
+      "implementation_status": "Created branch codex/one-time-ui-recording-clean-integration-20260702 from origin/master and cherry-picked clean PR #63 commits.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue background/Drive/mock/Railway batches.",
+      "acceptance_criteria": [
+        "No force-merge of PR #62",
+        "Branch starts from origin/master",
+        "Clean setup commits included"
+      ],
+      "evidence": [
+        "tasks-pending/2026-07-02-background-drive-ui-launch-continuation.md"
+      ],
+      "verification": [
+        "PASS: git switch -c codex/one-time-ui-recording-clean-integration-20260702 origin/master",
+        "PASS: cherry-pick clean PR #63 commits"
+      ],
+      "implementation_files": [
+        "tasks-pending/2026-07-02-background-drive-ui-launch-continuation.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:45:00+03:00"
+    },
+    {
+      "id": "REQ-20260702-102",
+      "title": "Verify background agent/fleet status",
+      "expected_result": "Agent fleet running/not-running status, queue status, safe once-batch result, and next command are recorded.",
+      "status": "blocked",
+      "source_id": "RAW-20260702-006",
+      "source_statement_ids": [
+        "RAW-20260702-006-S001"
+      ],
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "agent_fleet",
+      "priority": "P0",
+      "batch_id": "B1",
+      "depends_on": [
+        "REQ-20260702-101"
+      ],
+      "implementation_status": "Agent fleet status/readiness/browser health were checked. Supervisor is not running; readiness is not OK because of active pointer drift/branch drift. One safe once-batch was attempted and timed out with task #1736 observed running afterward.",
+      "can_continue_without_operator": true,
+      "next_action": "After branch/pointer state is clean, run npm run agent:fleet:status, npm run agent:fleet:readiness, then npm run agent:fleet:restart only if readiness is OK.",
+      "acceptance_criteria": [
+        "Status is recorded",
+        "No unsupported watcher claim",
+        "One safe batch attempted or blocker recorded"
+      ],
+      "evidence": [
+        "ops/agent-fleet-readbacks/2026-07-02-background-agent-readback.md",
+        "ops/agent-fleet-hardening/2026-07-02T12-36-07-266Z-agent-fleet-readiness.md"
+      ],
+      "verification": [
+        "PASS npm run agent:fleet:status",
+        "PASS npm run agent:fleet:readiness (overall OK false)",
+        "PASS npm run agent:browser:health",
+        "TIMEOUT npm run agent:fleet:once after safe single-task attempt"
+      ],
+      "implementation_files": [
+        "ops/agent-fleet-readbacks/2026-07-02-background-agent-readback.md",
+        "ops/agent-fleet-readbacks/2026-07-02-background-agent-readback.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T13:05:00+03:00",
+      "blocker": "Agent fleet supervisor is not running reliably; readiness reports active pointer drift and branch drift.",
+      "blocker_owner": "Codex / local operator environment",
+      "blocker_next_action": "Repair active pointer/branch drift, then run npm run agent:fleet:readiness and npm run agent:fleet:once again."
+    },
+    {
+      "id": "REQ-20260702-103",
+      "title": "Trace newest Drive recording and UI correction status",
+      "expected_result": "Newest Drive recording trace is summarized with redacted IDs and parser/UI-correction status.",
+      "status": "blocked",
+      "source_id": "RAW-20260702-006",
+      "source_statement_ids": [
+        "RAW-20260702-006-S002"
+      ],
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "drive_trace",
+      "priority": "P0",
+      "batch_id": "B1",
+      "depends_on": [
+        "REQ-20260702-101"
+      ],
+      "implementation_status": "Newest Drive recording was found and is transcribed, but no structured class output or UI correction parse output was available. Raw transcript body was not committed.",
+      "can_continue_without_operator": true,
+      "next_action": "Inspect or repair parser result for content_job 101 / drive_file:f07607f3f9f8; if still missing, Shloimie provides the file ID/folder/name/time for the intended UI correction recording.",
+      "acceptance_criteria": [
+        "No transcript body exposed",
+        "Redacted file/job IDs only",
+        "UI correction parse status explicit"
+      ],
+      "evidence": [
+        "ops/drive-traces/2026-07-02-newest-ui-correction-recording-trace.md",
+        "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.md"
+      ],
+      "verification": [
+        "PASS npm run drive:trace-newest-recording (PARTIAL)",
+        "PASS npm run content:drive-intake-audit (PARTIAL)",
+        "PASS npm run app:smoke:class-upload-trace"
+      ],
+      "implementation_files": [
+        "ops/drive-traces/2026-07-02-newest-ui-correction-recording-trace.md",
+        "ops/drive-traces/2026-07-02-newest-ui-correction-recording-trace.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T13:05:00+03:00",
+      "blocker": "Newest Drive recording is discovered and transcribed, but no structured class/UI correction parse output exists.",
+      "blocker_owner": "Drive intake/parser pipeline",
+      "blocker_next_action": "Repair or rerun structured parser for content_job 101 without committing raw transcript text."
+    },
+    {
+      "id": "REQ-20260702-104",
+      "title": "Generate UI correction Product Quality packet DAG",
+      "expected_result": "UI correction recording packet manifest/control/source coverage/recommended child packets exist, with a parser blocker if recording corrections are unavailable.",
+      "status": "done",
+      "source_id": "RAW-20260702-006",
+      "source_statement_ids": [
+        "RAW-20260702-006-S003"
+      ],
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "protocol",
+      "priority": "P0",
+      "batch_id": "B2",
+      "depends_on": [
+        "REQ-20260702-101"
+      ],
+      "implementation_status": "Created UI correction packet DAG/control/source coverage/recommended child packets. Child UI implementation packets are blocked until recording parse output or explicit visual-audit source corrections are available.",
+      "can_continue_without_operator": true,
+      "next_action": "Run 02/03/04 child packets only after parser/source coverage exists; otherwise start from existing Rabbi/One Time visual audit findings.",
+      "acceptance_criteria": [
+        "No giant implementation packet",
+        "Drive parser blocker explicit if applicable",
+        "Child packet list created"
+      ],
+      "evidence": [
+        "ops/prompt-packets/2026-07-02-ui-correction-recording/manifest.json",
+        "ops/prompt-packets/2026-07-02-ui-correction-recording/recommended-child-packets.md"
+      ],
+      "verification": [
+        "PASS packet DAG files created",
+        "BLOCKED source recording corrections unavailable from Drive parser"
+      ],
+      "implementation_files": [
+        "ops/prompt-packets/2026-07-02-ui-correction-recording/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T13:05:00+03:00"
+    },
+    {
+      "id": "REQ-20260702-105",
+      "title": "Create safe One Time TEST/mock UI review data scripts",
+      "expected_result": "Dry-run seed and cleanup scripts create reversible TEST-prefixed SQL/report artifacts without external sends/payments.",
+      "status": "done",
+      "source_id": "RAW-20260702-006",
+      "source_statement_ids": [
+        "RAW-20260702-006-S004"
+      ],
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "setup_readiness",
+      "priority": "P0",
+      "batch_id": "B3",
+      "depends_on": [
+        "REQ-20260702-101"
+      ],
+      "implementation_status": "Created guarded TEST/mock UI-review seed and cleanup scripts. Dry-run passed and wrote fixture SQL/report. Apply is blocked until a safe One Time DB runtime/alias is available.",
+      "can_continue_without_operator": true,
+      "next_action": "After One Time DB/runtime is ready, run npm run one-time:seed:ui-review -- --apply --confirm SEED_ONE_TIME_UI_REVIEW_DATA only against the scoped One Time DB.",
+      "acceptance_criteria": [
+        "TEST-prefixed",
+        "Scoped",
+        "Reversible",
+        "Dry-run first"
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/mock-data/2026-07-02-ui-review-seed-readback.md",
+        "ops/one-time-mishnah/mock-data/2026-07-02-ui-review-cleanup-readback.md"
+      ],
+      "verification": [
+        "PASS node --check scripts/seed-one-time-ui-review-data.mjs",
+        "PASS node --check scripts/cleanup-one-time-ui-review-data.mjs",
+        "PASS node --test tests/one-time-ui-review-data-seed.test.js",
+        "PASS npm run one-time:seed:ui-review",
+        "PASS npm run one-time:cleanup:ui-review"
+      ],
+      "implementation_files": [
+        "scripts/seed-one-time-ui-review-data.mjs",
+        "scripts/cleanup-one-time-ui-review-data.mjs",
+        "tests/one-time-ui-review-data-seed.test.js",
+        "package.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T13:05:00+03:00"
+    },
+    {
+      "id": "REQ-20260702-106",
+      "title": "Attempt guarded One Time Railway provisioning",
+      "expected_result": "Guarded provisioning is applied if scripts and auth support it, or exact Railway UI steps are recorded.",
+      "status": "done",
+      "source_id": "RAW-20260702-006",
+      "source_statement_ids": [
+        "RAW-20260702-006-S005"
+      ],
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "deployment_readiness",
+      "priority": "P0",
+      "batch_id": "B4",
+      "depends_on": [
+        "REQ-20260702-101"
+      ],
+      "implementation_status": "Separate One Time Railway target exists. Corrected the one-time-web DATABASE_URL service reference to the actual One Time Postgres service and verified non-empty Railway readback. Safe provider env values for Resend, Zoom, and Vimeo client credentials were pushed to one-time-web with deploy skipped and fingerprint readback matched.",
+      "can_continue_without_operator": true,
+      "next_action": "Deploy one-time-web after PR #64 validation/merge; run DB bootstrap from inside the deployed Railway service if local internal DB access remains blocked.",
+      "acceptance_criteria": [
+        "No BNA shared project mutation",
+        "No secret exposure",
+        "Report mutation or exact blocker"
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/onetime-railway-provisioning-report.json",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md",
+        "ops/qa-runs/2026-07-02T15-39-35-269Z-provider-env-railway-audit.md"
+      ],
+      "verification": [
+        "PASS npm run one-time:railway-provision:check -- --write-report",
+        "PASS npm run one-time:railway-provision:apply -- --apply --confirm PROVISION_ONE_TIME_INSTANCE --skip-secrets --skip-deploy --skip-domain --write-report --json",
+        "PASS npm run one-time:railway-target:guard",
+        "PASS Railway variable readback DATABASE_URL present length=98",
+        "PASS provider env Railway audit required_matched=8"
+      ],
+      "implementation_files": [
+        "scripts/check-onetime-external-setup-readiness.mjs",
+        "tests/one-time-external-setup-readiness.test.js",
+        "ops/one-time-mishnah/onetime-railway-provisioning-report.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:42:42+03:00"
+    },
+    {
+      "id": "REQ-20260702-107",
+      "title": "Record join-domain DNS readback or exact task",
+      "expected_result": "join.onetimeonetime.com domain/DNS status or exact GoDaddy task is recorded without apex/root mutation.",
+      "status": "done",
+      "source_id": "RAW-20260702-006",
+      "source_statement_ids": [
+        "RAW-20260702-006-S006"
+      ],
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "deployment_readiness",
+      "priority": "P0",
+      "batch_id": "B4",
+      "depends_on": [
+        "REQ-20260702-106"
+      ],
+      "implementation_status": "GoDaddy DNS for join.onetimeonetime.com is verified by DNS readback: CNAME join -> awaz36ln.up.railway.app and TXT _railway-verify.join present. Apex/root and www were not mutated.",
+      "can_continue_without_operator": true,
+      "next_action": "Run deploy/live smoke after PR #64 merge and one-time-web deployment.",
+      "acceptance_criteria": [
+        "join subdomain only",
+        "apex/root untouched",
+        "exact DNS target or blocker"
+      ],
+      "evidence": [
+        "ops/domain-readbacks/2026-07-02-join-onetimeonetime-domain-task.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-godaddy-join-subdomain-instructions.md"
+      ],
+      "verification": [
+        "PASS Resolve-DnsName join.onetimeonetime.com CNAME",
+        "PASS Resolve-DnsName _railway-verify.join.onetimeonetime.com TXT",
+        "PASS npm run one-time:setup:check reports join domain ready"
+      ],
+      "implementation_files": [
+        "ops/domain-readbacks/2026-07-02-join-onetimeonetime-domain-task.md",
+        "ops/domain-readbacks/2026-07-02-join-onetimeonetime-domain-task.json",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-godaddy-join-subdomain-instructions.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:42:42+03:00"
+    },
+    {
+      "id": "REQ-20260702-108",
+      "title": "Verify provider setup panels/tasks",
+      "expected_result": "WhatsApp, Vimeo, Stripe, and Zoom local setup status and exact blockers are recorded.",
+      "status": "blocked",
+      "source_id": "RAW-20260702-006",
+      "source_statement_ids": [
+        "RAW-20260702-006-S007"
+      ],
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "provider_setup",
+      "priority": "P1",
+      "batch_id": "B5",
+      "depends_on": [
+        "REQ-20260702-101"
+      ],
+      "implementation_status": "Deep keyholder alias discovery and provider readbacks completed. Resend domain is verified. Zoom account/client credentials work in read-only auth. Vimeo client credentials work in read-only auth, but no user access token alias/drop-folder alias was found. Stripe keyholder currently has a live key, not a sandbox test key/product price. Whapi/WAPI token material exists locally, but One Time scoped instance/phone aliases remain missing. Safe Resend/Zoom/Vimeo client env values were propagated to one-time-web and verified by fingerprint.",
+      "can_continue_without_operator": true,
+      "next_action": "Provide or label the remaining exact aliases: One Time Zoom session/join alias, VIMEO_ACCESS_TOKEN, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS, Rabbi Stripe test key and $67/month price/product aliases, Whapi/WAPI instance/phone aliases.",
+      "acceptance_criteria": [
+        "No real broadcast",
+        "No live payment",
+        "No production upload",
+        "No public Zoom link"
+      ],
+      "evidence": [
+        "ops/provider-config-readbacks/2026-07-02-one-time-provider-setup-status.md",
+        "ops/one-time-mishnah/integration-smokes/2026-07-02T12-56-56-475Z-resend-vimeo-stripe-safe-smoke.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-rabbi-whatsapp-setup-message.md",
+        "ops/keyholder-readbacks/2026-07-02-one-time-provider-alias-inventory.md",
+        "ops/qa-runs/2026-07-02T15-39-30-010Z-provider-credential-diagnostics.md",
+        "ops/qa-runs/2026-07-02T15-39-35-269Z-provider-env-railway-audit.md"
+      ],
+      "verification": [
+        "PASS npm run keyholder:diagnose -- --json",
+        "PASS node scripts/provider-credentials-diagnostics.mjs --json",
+        "PASS provider env propagation pushed 8/8 safe variables to one-time-web with deploy skipped",
+        "PASS provider env Railway audit matched 8/8 required values"
+      ],
+      "implementation_files": [
+        "ops/provider-config-readbacks/2026-07-02-one-time-provider-setup-status.md",
+        "ops/provider-config-readbacks/2026-07-02-one-time-provider-setup-status.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:42:42+03:00",
+      "blocker": "Remaining provider/campaign setup is exact: Zoom session/join alias, Vimeo access token and Drive drop-folder alias, Stripe sandbox key/product price, Whapi/WAPI instance/phone, and campaign copy/list/suppression/approval.",
+      "blocker_owner": "Shloimie / provider account owners",
+      "blocker_next_action": "Provide or label the remaining exact aliases: One Time Zoom session/join alias, VIMEO_ACCESS_TOKEN, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS, Rabbi Stripe test key and $67/month price/product aliases, Whapi/WAPI instance/phone aliases."
+    },
+    {
+      "id": "REQ-20260702-109",
+      "title": "Verify top task view next-action behavior",
+      "expected_result": "Top visible task is read back and stale/internal tasks are lower or scoped.",
+      "status": "done",
+      "source_id": "RAW-20260702-006",
+      "source_statement_ids": [
+        "RAW-20260702-006-S008"
+      ],
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "evidence",
+      "priority": "P1",
+      "batch_id": "B6",
+      "depends_on": [
+        "REQ-20260702-101"
+      ],
+      "implementation_status": "Top task changed after DNS completion: PR #64 validation/merge/deploy is the Codex task; Shloimie/provider top task is supplying the remaining exact provider aliases.",
+      "can_continue_without_operator": true,
+      "next_action": "Finalize PR #64 and continue deploy; Shloimie supplies the single highest-value missing provider alias if deploy blocks on provider setup.",
+      "acceptance_criteria": [
+        "Top task names separate One Time Railway target when setup is blocked",
+        "Internal handoffs not shown as human tasks"
+      ],
+      "evidence": [
+        "ops/task-view-readbacks/2026-07-02-one-time-top-task-readback.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md"
+      ],
+      "verification": [
+        "PASS node --test tests/one-time-task-view-model.test.js",
+        "PASS top task readback created"
+      ],
+      "implementation_files": [
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.json",
+        "ops/task-view-readbacks/2026-07-02-one-time-top-task-readback.md",
+        "ops/task-view-readbacks/2026-07-02-one-time-top-task-readback.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:42:42+03:00"
+    },
+    {
+      "id": "REQ-20260702-110",
+      "title": "Validate, push PR, and close out blockers",
+      "expected_result": "All runnable work is validated and pushed, with exact remaining operator task.",
+      "status": "blocked",
+      "source_id": "RAW-20260702-006",
+      "source_statement_ids": [
+        "RAW-20260702-006-S010"
+      ],
+      "source_path": "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "closeout",
+      "priority": "P0",
+      "batch_id": "B7",
+      "depends_on": [
+        "REQ-20260702-101",
+        "REQ-20260702-102",
+        "REQ-20260702-103",
+        "REQ-20260702-104",
+        "REQ-20260702-105",
+        "REQ-20260702-106",
+        "REQ-20260702-107",
+        "REQ-20260702-108",
+        "REQ-20260702-109"
+      ],
+      "implementation_status": "PR #64 finalization is in progress. DNS and DB gates are now ready, provider env values were propagated safely, but DB bootstrap apply is blocked from local because Railway Postgres resolves to an internal host; run bootstrap from inside deployed one-time-web after deploy. Validation/commit/push/merge/deploy still pending for this continuation batch.",
+      "can_continue_without_operator": true,
+      "next_action": "Run full validation, commit/push PR #64 updates, mark ready/merge if checks pass, deploy one-time-web, then run DB bootstrap via Railway SSH and live smoke.",
+      "acceptance_criteria": [
+        "All requirements terminal",
+        "Guardrails held",
+        "PR or exact blocker",
+        "One top operator task"
+      ],
+      "evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64"
+      ],
+      "verification": [],
+      "implementation_files": [],
+      "deployment_required": false,
+      "updated_at": "2026-07-02T15:42:42+03:00",
+      "blocker": "DB bootstrap cannot run from local Railway env because the Postgres host is internal-only; deploy one-time-web first and run bootstrap inside the Railway service.",
+      "blocker_owner": "Codex / Railway deployment runtime",
+      "blocker_next_action": "Run full validation, commit/push PR #64 updates, mark ready/merge if checks pass, deploy one-time-web, then run DB bootstrap via Railway SSH and live smoke.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64",
+      "implementation_commit": "edec1133",
+      "pushed_commit": "edec1133"
+    }
+  ]
+}

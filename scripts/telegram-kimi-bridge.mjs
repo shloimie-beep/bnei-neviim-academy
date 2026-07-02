@@ -22,6 +22,7 @@ const {
   shouldBlockContentDraftEditIntent,
 } = require('../src/lib/bna/telegram-content-intent');
 const integrationSecretLoader = require('../src/lib/integrations/secret-loader');
+const aiCredentialResolver = require('../src/lib/integrations/ai-credential-resolver');
 const {
   isConfirmationText,
   isHandlerBlocked,
@@ -294,7 +295,11 @@ function loadConfig() {
     : '';
 
   const env = loadBridgeEnv();
-  const openaiSecret = integrationSecretLoader.loadConfigValue({
+  const openaiCredentialCandidates = aiCredentialResolver.loadOpenAiCredentialCandidates({
+    env,
+    repoRoot,
+  });
+  const openaiSecret = openaiCredentialCandidates[0]?.apiKey || integrationSecretLoader.loadConfigValue({
     envName: 'OPENAI_API_KEY',
     names: ['openai-api-key', 'openaiv2'],
     fileNames: ['openai-api-key.txt', 'openaiv2.txt'],
@@ -371,6 +376,16 @@ function loadConfig() {
     kimiApiModel: env.KIMI_MODEL || 'kimi-k2.6',
     kimiTimeoutMs: Number(env.KIMI_BRIDGE_TIMEOUT_MS || 240000),
     openaiApiKey: openaiSecret || env.OPENAI_API_KEY || '',
+    openaiCredentialSource: openaiCredentialCandidates[0]?.source || (openaiSecret ? 'configured' : ''),
+    openaiTranscriptionCandidates: openaiCredentialCandidates.length
+      ? openaiCredentialCandidates
+      : (openaiSecret ? [{
+          provider: 'openai',
+          source: 'configured:OPENAI_API_KEY',
+          source_type: 'configured',
+          apiKey: openaiSecret,
+          fingerprint: aiCredentialResolver.fingerprintSecret(openaiSecret),
+        }] : []),
     openaiBaseUrl: env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
     openaiSummaryModel: env.OPENAI_MODEL || 'gpt-4.1-mini',
     openaiResearchModel: env.OPENAI_RESEARCH_MODEL || env.OPENAI_MODEL || 'gpt-4.1-mini',
@@ -6740,8 +6755,117 @@ async function prepareTranscriptionInputs(config, localPath, descriptor) {
   return createTranscriptionAudioChunks(localPath, descriptor);
 }
 
-async function transcribeSingleMediaWithOpenAI(config, localPath, descriptor) {
-  if (!config.openaiApiKey) {
+function transcriptionRedactionSecrets(config = {}) {
+  return [
+    config.openaiApiKey,
+    config.kimiApiKey,
+    ...((config.openaiTranscriptionCandidates || []).map((candidate) => candidate.apiKey)),
+  ].filter(Boolean);
+}
+
+function sanitizeTranscriptionError(config, value) {
+  return aiCredentialResolver.redactProviderError(value, transcriptionRedactionSecrets(config));
+}
+
+function openAiTranscriptionProviders(config = {}) {
+  const candidates = Array.isArray(config.openaiTranscriptionCandidates)
+    ? config.openaiTranscriptionCandidates
+    : [];
+  const providers = candidates.map((candidate) => ({
+    kind: 'openai',
+    label: 'OpenAI',
+    source: candidate.source || 'configured',
+    source_type: candidate.source_type || 'configured',
+    apiKey: candidate.apiKey,
+    fingerprint: candidate.fingerprint || aiCredentialResolver.fingerprintSecret(candidate.apiKey),
+    baseUrl: config.openaiBaseUrl,
+    model: config.openaiTranscriptionModel,
+  })).filter((provider) => provider.apiKey);
+
+  if (!providers.length && config.openaiApiKey) {
+    providers.push({
+      kind: 'openai',
+      label: 'OpenAI',
+      source: config.openaiCredentialSource || 'configured:OPENAI_API_KEY',
+      source_type: 'configured',
+      apiKey: config.openaiApiKey,
+      fingerprint: aiCredentialResolver.fingerprintSecret(config.openaiApiKey),
+      baseUrl: config.openaiBaseUrl,
+      model: config.openaiTranscriptionModel,
+    });
+  }
+
+  const seen = new Set();
+  return providers.filter((provider) => {
+    if (!provider.fingerprint) return false;
+    if (seen.has(provider.fingerprint)) return false;
+    seen.add(provider.fingerprint);
+    return true;
+  });
+}
+
+function kimiTranscriptionCapability(config = {}) {
+  return {
+    provider: 'kimi',
+    configured: Boolean(config.kimiApiKey),
+    status: config.kimiApiKey
+      ? 'not_attempted_unsupported_for_audio_transcription'
+      : 'not_configured',
+    note: 'Kimi/Moonshot is configured here for OpenAI-compatible chat/files workflows; no verified audio transcription endpoint is wired for this repo.',
+  };
+}
+
+function buildTranscriptionBlockedStatus(config, attempts = [], reason = '') {
+  const openaiAuthFailed = attempts.some((attempt) => attempt.error_class === 'auth_invalid_key');
+  const fallbackAttempted = attempts.length > 1 || openaiAuthFailed;
+  return {
+    provider: 'none',
+    model: config.openaiTranscriptionModel || '',
+    status: 'blocked',
+    transcript_status: 'transcription_blocked_provider_auth_or_unavailable',
+    openai_auth_failed: openaiAuthFailed,
+    fallback_attempted: fallbackAttempted,
+    fallback_provider: fallbackAttempted ? 'openai_keyholder_candidate' : 'none',
+    fallback_result: 'blocked',
+    retryable: true,
+    error_class: openaiAuthFailed ? 'auth_invalid_key' : 'transcription_provider_unavailable',
+    reason: sanitizeTranscriptionError(config, reason || 'No configured transcription provider succeeded.'),
+    provider_attempts: attempts,
+    kimi_fallback: kimiTranscriptionCapability(config),
+    next_action: openaiAuthFailed
+      ? 'Install/validate a working OpenAI transcription key in the worker environment or keyholder; Kimi remains available only for post-transcription AI stages until a real audio transcription endpoint is verified.'
+      : 'Configure a real audio transcription provider or attach an existing text/VTT/SRT/Google Doc transcript beside the media.',
+  };
+}
+
+function attachTranscriptionStatusToError(error, status) {
+  error.transcription_status = status;
+  error.transcriptionStatus = status;
+  return error;
+}
+
+function transcriptionFailureRecord(error, config = {}) {
+  return error?.transcription_status || error?.transcriptionStatus || {
+    provider: 'none',
+    status: 'blocked',
+    transcript_status: 'transcription_blocked_provider_auth_or_unavailable',
+    fallback_attempted: false,
+    fallback_provider: 'none',
+    fallback_result: 'blocked',
+    retryable: true,
+    error_class: 'transcription_error',
+    reason: sanitizeTranscriptionError(config, error instanceof Error ? error.message : String(error || 'Transcription failed')),
+    next_action: 'Review transcription provider configuration and retry this job once credentials/provider support are fixed.',
+  };
+}
+
+function isTranscriptionBlockedRecord(record) {
+  return String(record?.transcript_status || '') === 'transcription_blocked_provider_auth_or_unavailable';
+}
+
+async function transcribeSingleMediaWithOpenAI(config, localPath, descriptor, provider = {}) {
+  const apiKey = provider.apiKey || config.openaiApiKey;
+  if (!apiKey) {
     throw new Error('OPENAI_API_KEY is not configured for transcription');
   }
 
@@ -6752,10 +6876,11 @@ async function transcribeSingleMediaWithOpenAI(config, localPath, descriptor) {
 
   const buffer = fs.readFileSync(localPath);
   const form = new FormData();
-  form.append('model', config.openaiTranscriptionModel);
+  const model = provider.model || config.openaiTranscriptionModel;
+  form.append('model', model);
   form.append('file', new Blob([buffer], { type: descriptor.mimeType }), descriptor.filename);
 
-  if (config.openaiTranscriptionModel.includes('diarize')) {
+  if (String(model || '').includes('diarize')) {
     form.append('response_format', 'diarized_json');
     form.append('chunking_strategy', 'auto');
   } else {
@@ -6769,10 +6894,11 @@ async function transcribeSingleMediaWithOpenAI(config, localPath, descriptor) {
   const timeout = Number.isFinite(config.openaiRequestTimeoutMs)
     ? config.openaiRequestTimeoutMs
     : 10 * 60 * 1000;
-  const response = await fetch(`${config.openaiBaseUrl.replace(/\/+$/, '')}/audio/transcriptions`, {
+  const baseUrl = provider.baseUrl || config.openaiBaseUrl;
+  const response = await fetch(`${baseUrl.replace(/\/+$/, '')}/audio/transcriptions`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${config.openaiApiKey}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: form,
     signal: AbortSignal.timeout(timeout),
@@ -6780,7 +6906,14 @@ async function transcribeSingleMediaWithOpenAI(config, localPath, descriptor) {
 
   const body = await response.text();
   if (!response.ok) {
-    throw new Error(`OpenAI transcription ${response.status}: ${body.slice(0, 500)}`);
+    const errorClass = aiCredentialResolver.classifyProviderHttpError(response.status, body);
+    const error = new Error(`OpenAI transcription ${response.status}: ${sanitizeTranscriptionError(config, body)}`);
+    error.provider = 'openai';
+    error.provider_source = provider.source || 'configured';
+    error.status = response.status;
+    error.error_class = errorClass;
+    error.retryable = errorClass !== 'bad_request';
+    throw error;
   }
 
   return JSON.parse(body);
@@ -6788,45 +6921,90 @@ async function transcribeSingleMediaWithOpenAI(config, localPath, descriptor) {
 
 async function transcribeMediaWithOpenAI(config, localPath, descriptor) {
   const prepared = await prepareTranscriptionInputs(config, localPath, descriptor);
-  const chunks = [];
+  const providers = openAiTranscriptionProviders(config);
+  const attempts = [];
 
-  for (let index = 0; index < prepared.chunks.length; index += 1) {
-    const chunk = prepared.chunks[index];
-    log(`OpenAI transcription chunk ${index + 1}/${prepared.chunks.length}: ${path.relative(repoRoot, chunk.localPath).replace(/\\/g, '/')}`);
-    const transcription = await transcribeSingleMediaWithOpenAI(
-      config,
-      chunk.localPath,
-      chunk.descriptor
-    );
-    log(`OpenAI transcription chunk ${index + 1}/${prepared.chunks.length} complete`);
-    chunks.push({
-      index: index + 1,
-      local_path: path.relative(repoRoot, chunk.localPath).replace(/\\/g, '/'),
-      size_bytes: chunk.size,
-      transcription,
-    });
+  for (const provider of providers) {
+    const chunks = [];
+    try {
+      for (let index = 0; index < prepared.chunks.length; index += 1) {
+        const chunk = prepared.chunks[index];
+        log(`OpenAI transcription (${provider.source}) chunk ${index + 1}/${prepared.chunks.length}: ${path.relative(repoRoot, chunk.localPath).replace(/\\/g, '/')}`);
+        const transcription = await transcribeSingleMediaWithOpenAI(
+          config,
+          chunk.localPath,
+          chunk.descriptor,
+          provider
+        );
+        log(`OpenAI transcription (${provider.source}) chunk ${index + 1}/${prepared.chunks.length} complete`);
+        chunks.push({
+          index: index + 1,
+          local_path: path.relative(repoRoot, chunk.localPath).replace(/\\/g, '/'),
+          size_bytes: chunk.size,
+          transcription,
+        });
+      }
+
+      const text = chunks
+        .map((chunk) => {
+          const chunkText = getTranscriptText(chunk.transcription);
+          return prepared.chunks.length > 1 ? `[part ${chunk.index}]\n${chunkText}` : chunkText;
+        })
+        .filter(Boolean)
+        .join('\n\n')
+        .trim();
+
+      return {
+        provider: 'openai',
+        provider_source: provider.source,
+        model: provider.model,
+        status: 'transcribed',
+        transcript_status: 'transcribed',
+        fallback_attempted: attempts.length > 0,
+        fallback_provider: attempts.length > 0 ? 'openai_keyholder_candidate' : 'none',
+        fallback_result: attempts.length > 0 ? 'success' : 'not_needed',
+        text,
+        chunks,
+        provider_attempts: attempts.concat([{
+          provider: 'openai',
+          source: provider.source,
+          status: 'success',
+          error_class: null,
+        }]),
+        kimi_fallback: kimiTranscriptionCapability(config),
+        processing: {
+          mode: prepared.mode,
+          chunk_count: chunks.length,
+          chunks_dir: prepared.chunksDir
+            ? path.relative(repoRoot, prepared.chunksDir).replace(/\\/g, '/')
+            : null,
+        },
+      };
+    } catch (error) {
+      const errorClass = error?.error_class || 'provider_error';
+      attempts.push({
+        provider: 'openai',
+        source: provider.source,
+        status: 'failed',
+        error_class: errorClass,
+        http_status: error?.status || null,
+        retryable: error?.retryable !== false,
+        message: sanitizeTranscriptionError(config, error instanceof Error ? error.message : String(error)),
+      });
+      if (errorClass === 'auth_invalid_key') continue;
+      const blocked = buildTranscriptionBlockedStatus(config, attempts, error instanceof Error ? error.message : String(error));
+      throw attachTranscriptionStatusToError(error, blocked);
+    }
   }
 
-  const text = chunks
-    .map((chunk) => {
-      const chunkText = getTranscriptText(chunk.transcription);
-      return prepared.chunks.length > 1 ? `[part ${chunk.index}]\n${chunkText}` : chunkText;
-    })
-    .filter(Boolean)
-    .join('\n\n')
-    .trim();
-
-  return {
-    text,
-    chunks,
-    processing: {
-      mode: prepared.mode,
-      chunk_count: chunks.length,
-      chunks_dir: prepared.chunksDir
-        ? path.relative(repoRoot, prepared.chunksDir).replace(/\\/g, '/')
-        : null,
-    },
-  };
+  const blocked = buildTranscriptionBlockedStatus(
+    config,
+    attempts,
+    providers.length
+      ? 'All configured OpenAI transcription credentials failed.'
+      : 'No OpenAI transcription credential is configured.'
+  );
+  throw attachTranscriptionStatusToError(new Error(blocked.reason), blocked);
 }
 
 async function generateWhatsAppDraft(config, transcriptText, caption) {
@@ -8709,7 +8887,7 @@ async function handleMediaMessage(config, msg) {
   }
 
   const caption = getTelegramMessageText(msg);
-  
+
   // Check file size first (Telegram bot API limit is ~20MB for downloads)
   const MAX_TELEGRAM_BOT_FILE_SIZE = 20 * 1024 * 1024; // 20MB
   if (descriptor.fileSize && descriptor.fileSize > MAX_TELEGRAM_BOT_FILE_SIZE) {
@@ -8725,7 +8903,7 @@ async function handleMediaMessage(config, msg) {
     );
     return true;
   }
-  
+
   let download;
   try {
     download = await downloadTelegramFile(config.botToken, descriptor.fileId, descriptor.filename);
@@ -8881,7 +9059,8 @@ async function handleMediaMessage(config, msg) {
         }
         replyLines.push(`Transcript captured (${transcriptText.length} characters).`);
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
+        transcription = transcriptionFailureRecord(error, config);
+        const message = sanitizeTranscriptionError(config, error instanceof Error ? error.message : String(error));
         log(`Transcription failed: ${message}`);
         replyLines.push(`Transcription not completed: ${message}`);
       }
@@ -8950,7 +9129,13 @@ async function handleMediaMessage(config, msg) {
         media_url: job.mediaUrl || null,
         mime_type: descriptor.mimeType,
         caption,
-        status: whatsAppDraft || facebookDraft ? 'needs_approval' : transcriptText ? 'transcribed' : 'ingested',
+        status: whatsAppDraft || facebookDraft
+          ? 'needs_approval'
+          : transcriptText
+            ? 'transcribed'
+            : isTranscriptionBlockedRecord(transcription)
+              ? 'blocked'
+              : 'ingested',
         transcript_text: transcriptText || null,
         transcript_json: transcription || null,
         parse_json: null,
@@ -9159,7 +9344,8 @@ async function handleDropIngestCommand(config, msg) {
         }
         replyLines.push(`Transcript captured (${transcriptText.length} characters).`);
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
+        transcription = transcriptionFailureRecord(error, config);
+        const message = sanitizeTranscriptionError(config, error instanceof Error ? error.message : String(error));
         log(`Drop transcription failed: ${message}`);
         replyLines.push(`Transcription not completed: ${message}`);
       }
@@ -9242,7 +9428,13 @@ async function handleDropIngestCommand(config, msg) {
         media_url: null,
         mime_type: descriptor.mimeType,
         caption,
-        status: whatsAppDraft || facebookDraft ? 'needs_approval' : transcriptText ? 'transcribed' : 'ingested',
+        status: whatsAppDraft || facebookDraft
+          ? 'needs_approval'
+          : transcriptText
+            ? 'transcribed'
+            : isTranscriptionBlockedRecord(transcription)
+              ? 'blocked'
+              : 'ingested',
         transcript_text: transcriptText || null,
         transcript_json: transcription || null,
         parse_json: null,
@@ -9818,15 +10010,19 @@ async function reprocessDriveContentJob(config, jobId, options = {}) {
         : null,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const transcriptionStatus = transcriptionFailureRecord(error, config);
+    const message = sanitizeTranscriptionError(config, error instanceof Error ? error.message : String(error));
     try {
       await appRequest(config, 'PATCH', `/api/bna/content-jobs/${jobId}`, {
         status: 'blocked',
+        transcript_json: transcriptionStatus,
         notes: appendContentJobNote(job.notes, [
           `Reprocess failed (${new Date().toISOString()}):`,
           `- Drive file: ${driveFile.name || driveFile.id} (${driveFile.id}).`,
           localPath ? `- Downloaded to: ${path.relative(repoRoot, localPath).replace(/\\/g, '/')}.` : '',
           `- Error: ${message}`,
+          `- Transcript status: ${transcriptionStatus.transcript_status || 'blocked'}.`,
+          `- Next action: ${transcriptionStatus.next_action || 'Review provider configuration and retry.'}`,
         ]),
       });
     } catch (patchError) {
@@ -9993,7 +10189,8 @@ async function handleDriveIngestCommand(config, msg) {
         }
         replyLines.push(`Transcript captured (${transcriptText.length} characters).`);
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
+        transcription = transcriptionFailureRecord(error, config);
+        const message = sanitizeTranscriptionError(config, error instanceof Error ? error.message : String(error));
         log(`Drive transcription failed: ${message}`);
         replyLines.push(`Transcription not completed: ${message}`);
       }
@@ -10089,7 +10286,13 @@ async function handleDriveIngestCommand(config, msg) {
         drive_stage: finalDriveStage,
         mime_type: descriptor.mimeType,
         caption,
-        status: whatsAppDraft || facebookDraft ? 'needs_approval' : transcriptText ? 'transcribed' : 'ingested',
+        status: whatsAppDraft || facebookDraft
+          ? 'needs_approval'
+          : transcriptText
+            ? 'transcribed'
+            : isTranscriptionBlockedRecord(transcription)
+              ? 'blocked'
+              : 'ingested',
         transcript_text: transcriptText || null,
         transcript_json: transcription || null,
         parse_json: null,

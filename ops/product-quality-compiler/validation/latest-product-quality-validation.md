@@ -1,6 +1,6 @@
 # Product Quality Compiler Validation
 
-Generated: 2026-07-01T12:14:23.085Z
+Generated: 2026-07-02T15:48:34.505Z
 Mode: fixtures
 Files scanned: 13
 Passed: 13
@@ -164,4 +164,3 @@ Actual failure codes: PQC_MISSING_STATE_MATRIX, PQC_MISSING_SCREENSHOTS, PQC_VAG
 ## PASS ops/product-quality-compiler/fixtures/valid-v3-browser-prompt-injection.json
 
 ## PASS ops/product-quality-compiler/fixtures/valid-v3-router-dag-just-finish-it.json
-

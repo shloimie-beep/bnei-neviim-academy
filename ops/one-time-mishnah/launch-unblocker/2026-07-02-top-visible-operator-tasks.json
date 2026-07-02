@@ -1,0 +1,96 @@
+{
+  "generated_at": "2026-07-02T15:42:42+03:00",
+  "source_raw_id": "RAW-20260702-007",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "top_task_id": "TASK-20260702-004",
+  "visible_lane": "Pending",
+  "summary": {
+    "railway_target": "done_by_codex_guarded_apply",
+    "separate_database_service": "done_service_reference_ready_non_empty",
+    "join_dns_verified": true,
+    "provider_env_railway_matched": "8/8 safe values",
+    "ready_count": "3/8"
+  },
+  "tasks": [
+    {
+      "task_id": "TASK-20260702-001",
+      "title": "Separate One Time Railway target",
+      "priority": 1,
+      "owner": "Codex / Railway account",
+      "status": "done",
+      "evidence": "ops/one-time-mishnah/onetime-railway-provisioning-report.json",
+      "clears_requirements": [
+        "REQ-20260701-701",
+        "REQ-20260701-717"
+      ],
+      "result": "Codex reused one-time-production, linked production, verified/created one-time-web, and set One Time runtime variables."
+    },
+    {
+      "task_id": "TASK-20260702-002",
+      "title": "Separate One Time database service/reference",
+      "priority": 2,
+      "owner": "Codex / Railway account",
+      "status": "done_service_reference_ready",
+      "evidence": "ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.json",
+      "result": "one-time-web has a non-empty DATABASE_URL service reference to the separate One Time Postgres service.",
+      "remaining_verification": "Local DB bootstrap apply is blocked by Railway internal host; run from inside deployed one-time-web."
+    },
+    {
+      "task_id": "TASK-20260702-003",
+      "title": "Verify join.onetimeonetime.com DNS",
+      "priority": 3,
+      "owner": "Codex / DNS readback",
+      "status": "done",
+      "evidence": "ops/domain-readbacks/2026-07-02-join-onetimeonetime-domain-task.json",
+      "clears_requirements": [
+        "REQ-20260701-702",
+        "REQ-20260701-703",
+        "REQ-20260701-704",
+        "REQ-20260701-717"
+      ],
+      "result": "CNAME and TXT records resolve. Apex/root and www were not mutated."
+    },
+    {
+      "task_id": "TASK-20260702-004",
+      "title": "Provide remaining One Time provider aliases",
+      "priority": 4,
+      "owner": "Shloimie / provider account owners",
+      "status": "pending_external_input",
+      "missing_fields": [
+        "ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias",
+        "VIMEO_ACCESS_TOKEN_alias_or_keyholder_path",
+        "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS",
+        "rabbi_stripe_test_secret_key_alias_or_test_key_status",
+        "67_month_product_price_id_or_alias",
+        "whapi_wapi_instance_id",
+        "whapi_wapi_phone_number"
+      ],
+      "forbidden": [
+        "raw_zoom_link_in_tracked_files",
+        "production_media_mutation_without_packet",
+        "live_payment",
+        "whatsapp_broadcast"
+      ]
+    },
+    {
+      "task_id": "TASK-20260702-005",
+      "title": "Prepare campaign seed requirements",
+      "priority": 5,
+      "owner": "Shloimie",
+      "status": "blocked_until_join_live_smoke_passes",
+      "missing_fields": [
+        "final_campaign_copy",
+        "exact_recipient_segment_or_list",
+        "suppression_unsubscribe_proof",
+        "explicit_seed_packet_approval"
+      ],
+      "forbidden": [
+        "real_bulk_campaign_send_from_this_task"
+      ]
+    }
+  ],
+  "external_write_performed": true,
+  "external_write_scope": "Railway setup/env propagation only; no DNS apex/root mutation, deploy, email, WhatsApp, Stripe, Vimeo upload, Zoom mutation, campaign send, or hard delete.",
+  "secret_values_printed": false
+}

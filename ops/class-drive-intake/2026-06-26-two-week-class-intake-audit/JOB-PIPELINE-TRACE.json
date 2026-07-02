@@ -2809,7 +2809,7 @@
       },
       "question_proposal": {
         "status": "CONFIRMED",
-        "evidence": "1 parsed student question(s)"
+        "evidence": "3 parsed student question(s)"
       },
       "profile_note_proposal": {
         "status": "UNKNOWN",
@@ -2817,11 +2817,11 @@
       },
       "accountability_proposal": {
         "status": "CONFIRMED",
-        "evidence": "10 persisted event(s), 0 parsed candidate(s)"
+        "evidence": "11 persisted event(s), 0 parsed candidate(s)"
       },
       "canonical_write_status": {
         "status": "CONFIRMED",
-        "evidence": "class=1 group=4 events=10"
+        "evidence": "class=1 group=4 events=11"
       },
       "operations_read_model_visibility": {
         "status": "CONFIRMED",
@@ -3204,11 +3204,11 @@
       },
       "accountability_proposal": {
         "status": "CONFIRMED",
-        "evidence": "7 persisted event(s), 0 parsed candidate(s)"
+        "evidence": "8 persisted event(s), 0 parsed candidate(s)"
       },
       "canonical_write_status": {
         "status": "CONFIRMED",
-        "evidence": "class=1 group=0 events=7"
+        "evidence": "class=1 group=0 events=8"
       },
       "operations_read_model_visibility": {
         "status": "CONFIRMED",
@@ -3333,11 +3333,11 @@
       },
       "accountability_proposal": {
         "status": "CONFIRMED",
-        "evidence": "2 persisted event(s), 0 parsed candidate(s)"
+        "evidence": "3 persisted event(s), 0 parsed candidate(s)"
       },
       "canonical_write_status": {
         "status": "CONFIRMED",
-        "evidence": "class=1 group=0 events=2"
+        "evidence": "class=1 group=0 events=3"
       },
       "operations_read_model_visibility": {
         "status": "CONFIRMED",
@@ -3454,7 +3454,7 @@
       },
       "question_proposal": {
         "status": "CONFIRMED",
-        "evidence": "3 parsed student question(s)"
+        "evidence": "5 parsed student question(s)"
       },
       "profile_note_proposal": {
         "status": "UNKNOWN",
@@ -3462,11 +3462,11 @@
       },
       "accountability_proposal": {
         "status": "CONFIRMED",
-        "evidence": "3 persisted event(s), 0 parsed candidate(s)"
+        "evidence": "5 persisted event(s), 0 parsed candidate(s)"
       },
       "canonical_write_status": {
         "status": "CONFIRMED",
-        "evidence": "class=1 group=0 events=3"
+        "evidence": "class=1 group=0 events=5"
       },
       "operations_read_model_visibility": {
         "status": "CONFIRMED",
@@ -3583,7 +3583,7 @@
       },
       "question_proposal": {
         "status": "CONFIRMED",
-        "evidence": "2 parsed student question(s)"
+        "evidence": "3 parsed student question(s)"
       },
       "profile_note_proposal": {
         "status": "UNKNOWN",
@@ -3591,11 +3591,11 @@
       },
       "accountability_proposal": {
         "status": "CONFIRMED",
-        "evidence": "7 persisted event(s), 0 parsed candidate(s)"
+        "evidence": "9 persisted event(s), 0 parsed candidate(s)"
       },
       "canonical_write_status": {
         "status": "CONFIRMED",
-        "evidence": "class=1 group=0 events=7"
+        "evidence": "class=1 group=0 events=9"
       },
       "operations_read_model_visibility": {
         "status": "CONFIRMED",

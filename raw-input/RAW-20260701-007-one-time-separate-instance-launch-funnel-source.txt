@@ -1,0 +1,95 @@
+BNA_GOAL_MODE_EXECUTION_PACKET
+
+Title:
+Provision Separate One Time Launch Instance and Build Full Launch Funnel:
+Domain, Database, Landing, Signup, CRM, 30-Day Access, Email, WhatsApp,
+Vimeo, Zoom Security, Tasks, and Migration.
+
+Primary objective:
+Set up the full One Time / Rabbi Sheller launch system using the same GitHub
+repo, but as a separate One Time Railway project/service with a separate One
+Time database and provider secrets.
+
+Locked decisions from Shloimie:
+1. Same GitHub repo.
+2. Separate Railway project/service for One Time.
+3. Separate One Time database.
+4. One Time deploys from the same repo, but not every BNA change should
+   auto-deploy to One Time until launch is stable.
+5. join.onetimeonetime.com is temporary launch/campaign domain.
+6. Do not touch onetimeonetime.com apex/root yet.
+7. 30-day launch offer: sign up during the launch window and get 30 days free
+   from signup.
+8. 30-day free access includes live class, video library/replays, private
+   questions to Rabbi, basic parent/student/member view, and link-click
+   attendance.
+9. Attendance v1 = automatic link click tracking. No manual attendance.
+10. Zoom link is not public. It is shown from the member/class page and sent
+    shortly before class. Rotate links/passcodes when practical.
+11. WhatsApp provider follows the existing repo connector direction:
+    Whapi/WAPI. If "Wappy" is the spoken name, Codex should map it to the
+    repo's existing Whapi/WAPI connector unless the repo proves otherwise.
+12. Vimeo is the video host. Drive is the intake/storage/drop folder.
+13. Existing paying users are audited and migrated, not canceled.
+14. Rabbi uses his own Stripe account. One product for now: $67/month.
+15. As soon as someone signs up free, they get access. As soon as someone pays
+    after the free period, Stripe grants access automatically.
+16. Shloimie should log into the One Time admin workspace directly. BNA
+    super-admin cross-instance summary can be added later and should not block
+    launch.
+
+Public campaign URL:
+https://join.onetimeonetime.com/?utm_source=email&utm_medium=launch&utm_campaign=free_mishnayos_class
+
+Do not send campaign traffic to bneineviimacademy.org.
+Do not touch or replace the current apex/root onetimeonetime.com yet.
+Do not bulk-send the real campaign until final copy and exact recipient segment
+are explicit.
+Do not cancel existing paying users.
+Do not add GHL.
+Do not merge BNA data into One Time.
+
+Hard safety:
+- Do not print, commit, screenshot, or expose secrets.
+- Do not bulk-send the real campaign.
+- Do not send WhatsApp messages to real contacts.
+- Do not run live Stripe payment except test/sandbox or exact approved Stripe
+  live smoke if separately authorized.
+- Do not mutate DNS apex/root.
+- Do not hard-delete production records.
+- Do not cancel paid users.
+- Do not expose raw private contact/student/parent data in repo evidence.
+
+Requested work areas:
+- Read source of truth and run preflight.
+- Create raw intake, requirement register, and Decisions.
+- Provision or verify separate One Time Railway project/service/database,
+  variables/secrets, explicit promote deploy policy, and secret split report.
+- Configure join.onetimeonetime.com without touching apex/root.
+- Consolidate host routing for join root, member-login/member routes,
+  /one-time fallback, /rabbi compatibility, and BNA root separation.
+- Build One Time black/yellow landing/signup funnel with Start 30 Days Free,
+  required sections, required fields, scoped contact/member/access/email
+  behavior, and idempotency.
+- Build member/classroom access, 30-day access, private questions, basic
+  parent/student/member view, video/replay library, support, and attendance.
+- Implement Attendance v1 by automatic class-link click tracking.
+- Keep Zoom link member-gated and never public.
+- Implement confirmation email and reminder automation with suppression and
+  conversion reminders; seed only after landing/member links are ready.
+- Generate first campaign packet and seed-send packet using the join URL.
+- Use Whapi/WAPI for WhatsApp setup/scoping; no real WhatsApp sends here.
+- Keep Buffer/social draft/approve only.
+- Use Drive as recording intake/storage/drop and Vimeo as host/player.
+- Configure Stripe $67/month and access automation using Rabbi's own Stripe,
+  sandbox/test first and no live payment without exact later approval.
+- Audit existing paying users from Replit/old Stripe and migrate, not cancel.
+- Fix Operations task display rules: newest active first, stale down,
+  workspace/owner filters, and Rabbi vs Shloimie/internal separation.
+- Run focused tests, PQC, bna run validators, source coverage, stale evidence,
+  secrets audit, git diff check, screenshots, deploy/live smoke when safe, and
+  report exact remaining actions.
+
+Source was provided in Codex chat by Shloimie on 2026-07-01 as the next
+goal-mode execution packet. This raw record preserves the operative wording and
+decisions without secrets or contact rows.

@@ -1,0 +1,119 @@
+{
+  "seed_key": "one_time_ui_review_20260702",
+  "requirement_id": "REQ-20260702-105",
+  "generated_at": "2026-07-02T12:55:48.382Z",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "safety": {
+    "test_prefixed": true,
+    "reversible": true,
+    "external_writes": false,
+    "real_payment": false,
+    "real_email_or_whatsapp_send": false,
+    "raw_private_data": false
+  },
+  "review_people": [
+    {
+      "key": "TEST-ONETIME-ADULT-LEAD",
+      "name": "TEST One Time Adult Lead",
+      "role": "parent",
+      "stage": "New Lead",
+      "email_state": "not_sent",
+      "payment_state": "none"
+    },
+    {
+      "key": "TEST-ONETIME-STUDENT-MEMBER",
+      "name": "TEST One Time Student Member",
+      "role": "student",
+      "stage": "Free Class Signup",
+      "email_state": "delivered",
+      "payment_state": "trial"
+    },
+    {
+      "key": "TEST-ONETIME-PAID-MEMBER",
+      "name": "TEST One Time Paid Member",
+      "role": "parent",
+      "stage": "Paid Member",
+      "email_state": "clicked",
+      "payment_state": "sandbox_paid"
+    },
+    {
+      "key": "TEST-ONETIME-FREE-TRIAL",
+      "name": "TEST One Time Free Trial Member",
+      "role": "parent",
+      "stage": "Free Access / Trial",
+      "email_state": "sent",
+      "payment_state": "trial"
+    },
+    {
+      "key": "TEST-ONETIME-INACTIVE",
+      "name": "TEST One Time Inactive Member",
+      "role": "parent",
+      "stage": "Inactive",
+      "email_state": "opened",
+      "payment_state": "expired"
+    },
+    {
+      "key": "TEST-ONETIME-BOUNCED",
+      "name": "TEST One Time Bounced Contact",
+      "role": "viewer",
+      "stage": "Email Clicked",
+      "email_state": "bounced",
+      "payment_state": "none"
+    },
+    {
+      "key": "TEST-ONETIME-WHATSAPP",
+      "name": "TEST One Time WhatsApp Contact",
+      "role": "viewer",
+      "stage": "Interested",
+      "email_state": "suppressed",
+      "payment_state": "none"
+    }
+  ],
+  "pipeline_stages": [
+    "New Lead",
+    "Email Clicked",
+    "Free Class Signup",
+    "Free Access / Trial",
+    "Member Active",
+    "Paid Member",
+    "Inactive"
+  ],
+  "class_review": {
+    "title": "TEST One Time Launch Review Class",
+    "live_session_state": "protected_member_link",
+    "attendance_events": [
+      "class_link_viewed",
+      "class_link_clicked",
+      "attended_by_click"
+    ],
+    "private_question": "TEST private Mishnah question to Rabbi",
+    "public_qa_preview": "TEST Rabbi-selected public Q&A preview",
+    "video_item": "TEST Vimeo Placeholder Review Replay"
+  },
+  "setup_states": {
+    "stripe": [
+      "sandbox_pending",
+      "paid",
+      "failed"
+    ],
+    "email": [
+      "sent",
+      "delivered",
+      "clicked",
+      "bounced"
+    ],
+    "whatsapp": [
+      "not_configured",
+      "token_missing",
+      "test_pending"
+    ],
+    "vimeo": [
+      "placeholder_ready",
+      "token_missing"
+    ],
+    "zoom": [
+      "protected_link_missing"
+    ]
+  }
+}

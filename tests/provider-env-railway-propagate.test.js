@@ -14,7 +14,7 @@ const ENV_KEYS = [
   'VIMEO_CLIENT_SECRET',
   'VIMEO_ACCESS_TOKEN',
   'RESEND_API_KEY',
-  'RESEND_FROM',
+  'RESEND_FROM_EMAIL',
   'RESEND_DOMAIN',
   'RAILWAY_TOKEN',
   'RAILWAY_API_TOKEN',
@@ -127,7 +127,7 @@ test('Resend API key propagation is independent from sender/domain readiness', a
   assert.equal(report.summary.attempted, 1);
   assert.equal(report.summary.pushed, 1);
   assert.equal(report.fields.find((field) => field.key === 'RESEND_API_KEY').status, 'set');
-  assert.equal(report.fields.find((field) => field.key === 'RESEND_FROM').status, 'missing_local');
+  assert.equal(report.fields.find((field) => field.key === 'RESEND_FROM_EMAIL').status, 'missing_local');
   assert.equal(calls.length, 1);
   assert.equal(calls[0].input, 'resend-test-key');
   assert.doesNotMatch(JSON.stringify(report), /resend-test-key|railway-test-token/);

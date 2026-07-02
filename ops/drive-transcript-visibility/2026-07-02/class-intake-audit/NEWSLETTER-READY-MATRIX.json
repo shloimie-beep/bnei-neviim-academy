@@ -1,0 +1,96 @@
+[
+  {
+    "job_ref": "content_job:101",
+    "job_id": 101,
+    "class_date": "2026-07-02",
+    "transcript_chars": 39920,
+    "parser": null,
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "structured_output_not_confirmed",
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:100",
+    "job_id": 100,
+    "class_date": "2026-07-02",
+    "transcript_chars": 39206,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:91",
+    "job_id": 91,
+    "class_date": "2026-06-30",
+    "transcript_chars": 0,
+    "parser": null,
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "missing_transcript",
+      "structured_output_not_confirmed",
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:85",
+    "job_id": 85,
+    "class_date": "2026-06-29",
+    "transcript_chars": 58847,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:84",
+    "job_id": 84,
+    "class_date": "2026-06-28",
+    "transcript_chars": 49429,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:83",
+    "job_id": 83,
+    "class_date": "2026-06-25",
+    "transcript_chars": 9025,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:82",
+    "job_id": 82,
+    "class_date": "2026-06-25",
+    "transcript_chars": 5309,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  }
+]

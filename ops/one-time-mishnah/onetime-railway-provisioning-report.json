@@ -1,8 +1,8 @@
 {
   "mode": "apply",
-  "ok": false,
-  "mutation_performed": false,
-  "started_at": "2026-06-22T05:41:37.685Z",
+  "ok": true,
+  "mutation_performed": true,
+  "started_at": "2026-07-02T12:56:22.064Z",
   "target": {
     "ok": true,
     "failures": [],
@@ -11,15 +11,85 @@
     "web_service": "one-time-web",
     "postgres_service": "one-time-postgres"
   },
-  "steps": [],
-  "blockers": [
-    "Missing confirmation phrase: --confirm PROVISION_ONE_TIME_INSTANCE"
+  "steps": [
+    {
+      "key": "reuse_project",
+      "ok": true,
+      "project": "one-time-production",
+      "project_id_known": true
+    },
+    {
+      "key": "link_project",
+      "command": "railway link --project ce55ef20-1418-4ad3-aafa-f877fb992dc8 --environment production --json",
+      "ok": true,
+      "status": 0,
+      "stderr": ""
+    },
+    {
+      "key": "create_or_verify_postgres",
+      "command": "railway add --database postgres --service one-time-postgres --json",
+      "ok": true,
+      "status": 0,
+      "stderr": ""
+    },
+    {
+      "key": "create_or_verify_web",
+      "command": "railway add --service one-time-web --json",
+      "ok": true,
+      "status": 0,
+      "stderr": ""
+    },
+    {
+      "key": "set_non_secret_variables",
+      "command": "railway variable set --service one-time-web --environment production --skip-deploys APP_MODE=single_tenant APP_INSTANCE=onetime DEFAULT_WORKSPACE_KEY=rabbi_sheller_provider DEFAULT_PROJECT_KEY=one_time_mishnah_class ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com BRAND_KEY=onetime PUBLIC_LANGUAGE=en BNA_RAILWAY_PROCESS=web BNA_COOKIE_SECURE=true STUDENT_BOT_ENABLED=false BNA_ACCOUNTABILITY_ENABLED=false SEFARIA_STUDY_ASSISTANT_ENABLED=false APP_URL=https://join.onetimeonetime.com BNA_APP_URL=https://join.onetimeonetime.com NEXT_PUBLIC_APP_URL=https://join.onetimeonetime.com PUBLIC_BASE_URL=https://join.onetimeonetime.com APP_BASE_URL=https://join.onetimeonetime.com",
+      "ok": true,
+      "status": 0,
+      "stderr": ""
+    },
+    {
+      "key": "set_database_reference",
+      "command": "railway variable set --service one-time-web --environment production --skip-deploys DATABASE_URL=${{ one-time-postgres.DATABASE_URL }}",
+      "ok": true,
+      "status": 0,
+      "stderr": ""
+    }
   ],
+  "blockers": [],
   "dns_records": [],
   "verification_commands": [
     "npm run bna:run:validate",
     "node scripts/audit-secrets.mjs",
-    "npm run app:smoke:onetime-separate-instance -- https://app.onetimeonetime.com",
+    "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com",
     "npm run bna:run:next"
-  ]
+  ],
+  "read_only_checks": [
+    {
+      "command": "railway whoami",
+      "ok": true,
+      "status": 0,
+      "stderr": ""
+    },
+    {
+      "command": "railway list --json",
+      "ok": true,
+      "status": 0,
+      "stderr": ""
+    },
+    {
+      "command": "railway status --json",
+      "ok": true,
+      "status": 0,
+      "stderr": ""
+    }
+  ],
+  "auth": {
+    "account_readable": true,
+    "target_project_visible": true,
+    "target_project_id_known": true,
+    "forbidden_project_visible": true,
+    "current_link_mentions_forbidden_project": false,
+    "target_project_id": "[known]",
+    "blocked_reason": ""
+  },
+  "completed_at": "2026-07-02T12:56:43.912Z"
 }

@@ -27924,3 +27924,99 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Guardrails held: no Rabbi UI implementation, no Stripe, no DNS mutation, no
   GHL/LeadConnector runtime, no bulk campaign, no hard delete, no production
   CRM/contact mutation, and no secret exposure.
+
+## 2026-07-02 - One Time Clean Integration From PR #62
+
+- Registered `RAW-20260702-005` and
+  `tasks-pending/2026-07-02-one-time-clean-integration-from-pr62.md`.
+- Created clean branch `codex/one-time-clean-integration-20260702` from
+  current `origin/master`; PR #62 remains source material only and was not
+  force-merged.
+- Added `npm run one-time:setup:check` and
+  `npm run one-time:railway-target:guard` backed by
+  `scripts/check-onetime-external-setup-readiness.mjs`.
+- Restored selected One Time launch-unblocker artifacts, including top visible
+  operator tasks, join-only GoDaddy instructions, WhatsApp setup-message draft,
+  and the post-setup deploy/live-smoke packet.
+- Corrected active One Time provisioning from `app.onetimeonetime.com` to
+  `join.onetimeonetime.com` and added non-secret
+  `ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com`.
+- Safe checks passed: focused One Time/Railway tests, Railway provisioning
+  dry-run, DB bootstrap dry-run, BNA run validation/source coverage/stale
+  evidence, PQC, secrets audit, JSON validation, and `git diff --check`.
+- Draft PR #63 opened and is clean:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/63`.
+- Expected blockers remain exact: the setup checker reports `0/8` external
+  setup areas ready, starting with separate One Time Railway target labels and
+  required non-secret env values.
+- Guardrails held: no external provider mutation, DNS mutation, email send,
+  WhatsApp send, live Stripe payment, paid-user cancellation, hard delete,
+  secret exposure, GHL/LeadConnector runtime, or Rabbi UI implementation.
+
+## 2026-07-02T12:36:30+03:00 - Task queue reconciler apply run
+
+Report: ops/system-audits/2026-07-02T12-36-30-523Z-task-queue-reconciler.md
+
+Actions: 1. Active machine tasks: 22.
+- create_missing_ui_brand_task #1851: Backfill missed app-wide UI/brand shell task from Telegram messages 1003, 1011, and 1111.
+
+## 2026-07-02 - One Time Background / Drive / Railway Continuation
+
+- Registered `RAW-20260702-006` and active run
+  `2026-07-02-background-drive-ui-launch-continuation`.
+- Verified agent fleet/background state. Supervisor is not reliably running;
+  readiness remains blocked by pointer/branch drift after one safe once-batch
+  attempt timed out.
+- Traced newest Drive recording. It was found and transcribed, but parser/UI
+  correction output is missing; no raw transcript body was committed.
+- Created Product Quality UI correction packet DAG under
+  `ops/prompt-packets/2026-07-02-ui-correction-recording/`.
+- Added guarded TEST/mock UI-review seed and cleanup scripts plus tests. Dry-run
+  passed; DB apply waits for a safe One Time DB runtime/alias.
+- Ran guarded Railway provisioning. `one-time-production`, `one-time-web`, and
+  `one-time-postgres` are present/linked; non-secret variables and
+  `DATABASE_URL` service reference were set.
+- Attached Railway custom domain `join.onetimeonetime.com` and recorded exact
+  GoDaddy CNAME/TXT tasks. No GoDaddy DNS mutation was performed.
+- Safe provider readbacks ran. Resend path is configured but no send occurred;
+  Vimeo, Stripe sandbox, Whapi/WAPI, and Zoom remain exact external blockers.
+- Updated top task readback: Shloimie's top task is now GoDaddy DNS for
+  `join.onetimeonetime.com`.
+- Pushed commit `edec1133` to
+  `codex/one-time-ui-recording-clean-integration-20260702` and opened draft
+  PR #64: https://github.com/shloimie-beep/bnei-neviim-academy/pull/64.
+- Guardrails held: no bulk campaign, live payment, WhatsApp broadcast,
+  apex/root DNS mutation, hard delete, paid-user cancellation, GHL runtime,
+  secret exposure, raw private-data evidence leak, email send, Vimeo upload, or
+  Zoom mutation.
+
+## 2026-07-02 - PR #64 Join DNS, Keyholder Discovery, Railway Env Readback
+
+- Verified `join.onetimeonetime.com` GoDaddy DNS by readback: CNAME points to
+  Railway and TXT verification matches the expected Railway value. Apex/root
+  and `www` were not touched.
+- Ran safe keyholder alias discovery by filename/fingerprint only. Resend,
+  Zoom account credentials, and Vimeo client credentials were found; Vimeo
+  upload access token, One Time Drive drop-folder alias, Rabbi Stripe sandbox
+  key/price, Whapi/WAPI instance/phone, and Zoom class-session/join alias
+  remain exact blockers.
+- Fixed One Time setup readiness to consume current Railway CLI-session
+  readback, real keyholder aliases, and verified DNS evidence. Current setup
+  checker status is `3/8` ready: Railway target, database reference, and join
+  DNS.
+- Corrected the One Time Railway `DATABASE_URL` service reference to the
+  active Postgres service and verified non-empty variable readback without
+  exposing values.
+- Propagated safe keyholder-backed provider env values to the separate One
+  Time Railway service with deploy skipped, then verified remote fingerprints.
+- Attempted guarded One Time DB bootstrap. Local execution is blocked because
+  the Railway internal Postgres host is not resolvable from this machine; next
+  bootstrap should run from the deployed Railway service after PR merge/deploy.
+- Added read-only Drive/transcript visibility evidence. Job `101` has a
+  transcript but no confirmed structured parser output yet; no raw transcript
+  body was committed and no production class/student/question/progress writes
+  were performed.
+- Validation passed: focused One Time/provider/credential tests, PQC, BNA run
+  validation/source coverage/stale evidence, JSON validation, `git diff
+  --check`, and tracked secret audit. `one-time:setup:check` intentionally
+  exits blocked because five provider/campaign setup areas remain incomplete.

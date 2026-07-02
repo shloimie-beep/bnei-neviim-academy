@@ -1,0 +1,41 @@
+{
+  "manifest_id": "MANIFEST-20260702-ONETIME-POST-SETUP-LIVE-CLOSEOUT",
+  "created_at": "2026-07-02T10:12:00+03:00",
+  "parent_raw_ids": ["RAW-20260701-007", "RAW-20260702-002"],
+  "active_run": "ops/execution-runs/2026-07-01-one-time-separate-instance-launch-funnel",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "purpose": "Run the exact deploy/live-smoke closeout sequence after the separate One Time Railway service, database, and join subdomain are configured.",
+  "status": "blocked_until_external_setup",
+  "external_setup_checklist": "ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.md",
+  "packets": [
+    {
+      "packet_id": "PKT-20260702-717",
+      "file": "00-railway-db-join-domain-deploy-live-smoke.md",
+      "stage": "STAGE_5_DEPLOY_LIVE_SMOKE",
+      "packet_role": "DEPLOY_PACKET",
+      "depends_on_requirements": ["REQ-20260701-701", "REQ-20260701-702"],
+      "closes_or_advances_requirements": [
+        "REQ-20260701-703",
+        "REQ-20260701-704",
+        "REQ-20260701-705",
+        "REQ-20260701-706",
+        "REQ-20260701-707",
+        "REQ-20260701-716",
+        "REQ-20260701-717"
+      ],
+      "status": "blocked_until_external_setup",
+      "terminal_condition": "All deployment/live-smoke evidence is recorded or exact blockers are written back to the active run."
+    }
+  ],
+  "forbidden_actions": [
+    "apex_root_dns_mutation",
+    "live_stripe_payment",
+    "real_campaign_send",
+    "real_whatsapp_send",
+    "provider_purchase",
+    "production_hard_delete",
+    "secret_exposure",
+    "ghl_runtime_or_leadconnector_addition"
+  ]
+}
