@@ -17,28 +17,28 @@ Do not change:
 - apex/root forwarding
 - any BNA domain
 
-## Required Railway Step First
+## Railway Step Completed
 
-In the separate One Time Railway service, add a custom domain for:
-
-```text
-join.onetimeonetime.com
-```
-
-Railway will show the required DNS target. Use that provider-generated value;
-do not guess it.
+Codex attached the custom domain `join.onetimeonetime.com` to the separate
+One Time Railway service `one-time-web`.
 
 ## GoDaddy DNS Step
 
-In GoDaddy DNS for `onetimeonetime.com`, create or update only the `join`
-record:
+In GoDaddy DNS for `onetimeonetime.com`, create/update only these records:
 
 | Field | Value |
 | --- | --- |
-| Type | `CNAME` unless Railway gives a different exact type |
+| Type | `CNAME` |
 | Name/Host | `join` |
-| Value/Points to | Railway-provided target for the One Time service |
-| TTL | Default or 600 seconds if available |
+| Value/Points to | `awaz36ln.up.railway.app` |
+| TTL | Default |
+
+| Field | Value |
+| --- | --- |
+| Type | `TXT` |
+| Name/Host | `_railway-verify.join` |
+| Value | `railway-verify=73e92e55cb07e5a0abdb0a72f204d437d915c3134e844af12f419407632a97d6` |
+| TTL | Default |
 
 If GoDaddy already has a `join` record, update only that record after verifying
 it is not used for another active service.
@@ -50,8 +50,8 @@ After the DNS record is saved, provide only:
 - Railway project label;
 - Railway service label;
 - Railway environment label;
-- the DNS record type for `join`;
-- whether Railway shows the domain as attached/validating/active;
+- whether GoDaddy has saved the `join` CNAME and `_railway-verify.join` TXT records;
+- whether Railway shows the domain as validating/active;
 - confirmation that apex/root `onetimeonetime.com` was not changed.
 
 Do not send secrets, API tokens, private database URLs, or screenshots that show

@@ -27952,3 +27952,37 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Guardrails held: no external provider mutation, DNS mutation, email send,
   WhatsApp send, live Stripe payment, paid-user cancellation, hard delete,
   secret exposure, GHL/LeadConnector runtime, or Rabbi UI implementation.
+
+## 2026-07-02T12:36:30+03:00 - Task queue reconciler apply run
+
+Report: ops/system-audits/2026-07-02T12-36-30-523Z-task-queue-reconciler.md
+
+Actions: 1. Active machine tasks: 22.
+- create_missing_ui_brand_task #1851: Backfill missed app-wide UI/brand shell task from Telegram messages 1003, 1011, and 1111.
+
+## 2026-07-02 - One Time Background / Drive / Railway Continuation
+
+- Registered `RAW-20260702-006` and active run
+  `2026-07-02-background-drive-ui-launch-continuation`.
+- Verified agent fleet/background state. Supervisor is not reliably running;
+  readiness remains blocked by pointer/branch drift after one safe once-batch
+  attempt timed out.
+- Traced newest Drive recording. It was found and transcribed, but parser/UI
+  correction output is missing; no raw transcript body was committed.
+- Created Product Quality UI correction packet DAG under
+  `ops/prompt-packets/2026-07-02-ui-correction-recording/`.
+- Added guarded TEST/mock UI-review seed and cleanup scripts plus tests. Dry-run
+  passed; DB apply waits for a safe One Time DB runtime/alias.
+- Ran guarded Railway provisioning. `one-time-production`, `one-time-web`, and
+  `one-time-postgres` are present/linked; non-secret variables and
+  `DATABASE_URL` service reference were set.
+- Attached Railway custom domain `join.onetimeonetime.com` and recorded exact
+  GoDaddy CNAME/TXT tasks. No GoDaddy DNS mutation was performed.
+- Safe provider readbacks ran. Resend path is configured but no send occurred;
+  Vimeo, Stripe sandbox, Whapi/WAPI, and Zoom remain exact external blockers.
+- Updated top task readback: Shloimie’s top task is now GoDaddy DNS for
+  `join.onetimeonetime.com`.
+- Guardrails held: no bulk campaign, live payment, WhatsApp broadcast,
+  apex/root DNS mutation, hard delete, paid-user cancellation, GHL runtime,
+  secret exposure, raw private-data evidence leak, email send, Vimeo upload, or
+  Zoom mutation.

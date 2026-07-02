@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-07-02T13:01:30+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "external_writes_performed": {
+    "email_send": false,
+    "whatsapp_send": false,
+    "stripe_payment": false,
+    "vimeo_upload": false,
+    "zoom_mutation": false,
+    "dns_mutation": false
+  },
+  "resend": {
+    "status": "send_path_configured_but_no_send_performed",
+    "from_email": "info@onetimeonetime.com",
+    "seed_recipient_authorized_later": "sdratler@gmail.com",
+    "evidence": "ops/one-time-mishnah/integration-smokes/2026-07-02T12-56-56-475Z-resend-vimeo-stripe-safe-smoke.json",
+    "next_action": "After join.onetimeonetime.com is live, run an exact seed-send packet to sdratler@gmail.com only."
+  },
+  "vimeo": {
+    "status": "blocked_missing_access_token",
+    "missing": ["VIMEO_ACCESS_TOKEN_alias_or_keyholder_path", "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS"],
+    "evidence": "ops/one-time-mishnah/integration-smokes/2026-07-02T12-56-56-475Z-resend-vimeo-stripe-safe-smoke.json",
+    "next_action": "Provide Vimeo token alias and Drive drop-folder alias; no production upload."
+  },
+  "stripe": {
+    "status": "blocked_live_key_present_sandbox_key_missing",
+    "missing": ["rabbi_stripe_test_secret_key_alias_or_test_key_status", "67_month_product_price_id_or_alias"],
+    "evidence": "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-07-02T12-56-55-459Z-stripe-sandbox-smoke.json",
+    "next_action": "Provide Rabbi Stripe test credential alias and $67/month sandbox product/price; no live payment."
+  },
+  "whapi_wapi": {
+    "status": "blocked_missing_provider_sender",
+    "missing": ["whapi_wapi_token_alias", "whapi_wapi_instance_id", "whapi_wapi_phone_number", "rabbi_safe_recipient_phone"],
+    "evidence": "ops/one-time-mishnah/launch-unblocker/2026-07-02-rabbi-whatsapp-setup-message.json",
+    "next_action": "Provide Rabbi phone and Whapi/WAPI token/instance/sender alias; then exactly one setup message can be sent by later packet."
+  },
+  "zoom": {
+    "status": "blocked_missing_private_session_alias",
+    "missing": ["ONE_TIME_ZOOM_SESSION_ALIAS_or_private_keyholder_path"],
+    "next_action": "Provide private Zoom link/details alias, schedule, display label, rotation policy, and fallback message."
+  }
+}

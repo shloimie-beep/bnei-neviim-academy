@@ -1,0 +1,55 @@
+{
+  "raw_id": "RAW-20260702-006",
+  "requirement_id": "REQ-20260702-102",
+  "generated_at": "2026-07-02T15:50:00+03:00",
+  "supervisor_running": false,
+  "status_before_once": {
+    "observable_codex_jobs": 12,
+    "ready_to_claim": 12,
+    "queue_health": {
+      "fresh": 0,
+      "stale": 294,
+      "blocked": 58,
+      "unknown": 277,
+      "do_not_redo": 701
+    }
+  },
+  "readiness": {
+    "overall_ok": false,
+    "critical_findings": [
+      "active_pointer_drift"
+    ],
+    "warnings": [
+      "branch_drift",
+      "unknown lane statuses"
+    ],
+    "report_paths": [
+      "ops/agent-fleet-hardening/2026-07-02T12-36-07-266Z-agent-fleet-readiness.md",
+      "ops/agent-fleet-hardening/2026-07-02T12-36-07-266Z-agent-fleet-readiness.json"
+    ]
+  },
+  "browser_health": {
+    "ok": true,
+    "profile_root_outside_repo": true,
+    "most_app_profiles_require_reauth": true
+  },
+  "once_batch": {
+    "command": "npm run agent:fleet:once",
+    "result": "timed_out",
+    "timeout_ms": 180000,
+    "post_status": {
+      "supervisor_running": false,
+      "job_344_task_1736": "running",
+      "observable_codex_jobs": 12,
+      "ready_to_claim": 12
+    }
+  },
+  "external_write_performed": false,
+  "provider_mutation_performed": false,
+  "dns_mutation_performed": false,
+  "email_send_performed": false,
+  "whatsapp_send_performed": false,
+  "live_payment_performed": false,
+  "secret_values_printed": false,
+  "terminal_status": "blocked_needs_agent_fleet_readiness_repair"
+}

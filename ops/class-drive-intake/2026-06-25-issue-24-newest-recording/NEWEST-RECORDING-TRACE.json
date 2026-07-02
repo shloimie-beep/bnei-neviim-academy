@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T14:59:20.955Z",
+  "generated_at": "2026-07-02T12:41:45.410Z",
   "mode": "read_only_newest_drive_recording_trace",
   "no_production_mutation": true,
   "read_only_authorization_phrase": "READ_EXTERNAL_PRODUCTION_STATE",
@@ -20,8 +20,8 @@
   "drive_readback": {
     "skipped": false,
     "reason": "",
-    "files_seen": 355,
-    "likely_recording_files_seen": 302
+    "files_seen": 385,
+    "likely_recording_files_seen": 332
   },
   "selection": {
     "source": "google_drive_readback",
@@ -30,14 +30,14 @@
     "selected_file": {
       "id_ref": {
         "present": true,
-        "redacted": "drive_file:9f6f75a5d602",
-        "sha256": "9f6f75a5d602bcf8ab6df7ed078a3d61f05e6bfc61a6d1f75742c2cea303847d"
+        "redacted": "drive_file:f07607f3f9f8",
+        "sha256": "f07607f3f9f8e561f84c5adfc662ccab021d33823cc54ca9fd6d6f863b7d9c50"
       },
-      "name_ref": "drive_file_name:68530ef33fdf",
+      "name_ref": "drive_file_name:dff3761f46d9",
       "mime_type": "audio/mp4",
-      "created_time": "2026-06-25T12:15:54.513Z",
-      "modified_time": "2026-06-25T12:15:54.665Z",
-      "size_bytes": 21259170,
+      "created_time": "2026-07-02T10:05:00.939Z",
+      "modified_time": "2026-07-02T10:05:01.318Z",
+      "size_bytes": 90266771,
       "folder_label": "BNA_DRIVE_SIMPLIFIED_PROCESSED_RECORDINGS_FOLDER_ID",
       "folder_ref": {
         "present": true,
@@ -47,19 +47,19 @@
       "likely_recording": true
     },
     "selected_job": {
-      "job_id": 83,
-      "job_ref": "content_job:83",
+      "job_id": 101,
+      "job_ref": "content_job:101",
       "source_type": "google_drive",
       "status": "transcribed",
-      "drive_stage": "04 Parsed",
-      "created_at": "2026-06-25T09:20:09.474Z",
-      "updated_at": "2026-06-25T09:23:02.121Z",
+      "drive_stage": "03 Transcribed",
+      "created_at": "2026-07-02T07:09:42.584Z",
+      "updated_at": "2026-07-02T07:26:55.442Z",
       "processed_at": null,
-      "transcript_chars": 9025,
+      "transcript_chars": 39920,
       "drive_file_ref": {
         "present": true,
-        "redacted": "drive_file:9f6f75a5d602",
-        "sha256": "9f6f75a5d602bcf8ab6df7ed078a3d61f05e6bfc61a6d1f75742c2cea303847d"
+        "redacted": "drive_file:f07607f3f9f8",
+        "sha256": "f07607f3f9f8e561f84c5adfc662ccab021d33823cc54ca9fd6d6f863b7d9c50"
       },
       "drive_folder_ref": {
         "present": true,
@@ -69,23 +69,23 @@
     }
   },
   "related_counts": {
-    "class_sessions": 1,
+    "class_sessions": 0,
     "group_goal_entries": 0,
-    "torah_entries_scope": 36,
+    "torah_entries_scope": 47,
     "accountability_events": 0,
     "content_outputs": 1,
-    "intake_parse_runs": 41,
-    "raw_intake_rows": 42
+    "intake_parse_runs": 44,
+    "raw_intake_rows": 46
   },
   "structured_output_summary": {
-    "parser": "canonical-intake-parser",
+    "parser": null,
     "class_notes": 0,
     "daily_torah_updates": 0,
     "group_goal_entries": 0,
     "accountability_events": 0,
     "tasks": 0,
-    "intake_parse_run_ref": "parse_run:54",
-    "raw_intake_stable_id": "RAW-20260625-002"
+    "intake_parse_run_ref": null,
+    "raw_intake_stable_id": null
   },
   "stage_order": [
     "source_discovered",
@@ -112,12 +112,12 @@
   "stage_trace": {
     "source_discovered": {
       "status": "CONFIRMED",
-      "evidence": "content job 83",
+      "evidence": "content job 101",
       "source_ref": {
         "drive_file": {
           "present": true,
-          "redacted": "drive_file:9f6f75a5d602",
-          "sha256": "9f6f75a5d602bcf8ab6df7ed078a3d61f05e6bfc61a6d1f75742c2cea303847d"
+          "redacted": "drive_file:f07607f3f9f8",
+          "sha256": "f07607f3f9f8e561f84c5adfc662ccab021d33823cc54ca9fd6d6f863b7d9c50"
         },
         "drive_folder": {
           "present": true,
@@ -128,16 +128,16 @@
     },
     "source_fingerprint": {
       "status": "CONFIRMED",
-      "evidence": "0e2bf35c08ff4c84",
-      "sha256": "0e2bf35c08ff4c847e78184e03ac6dedcbf18e43e3e56271955c44f2a01dab30"
+      "evidence": "487e9f3034b947eb",
+      "sha256": "487e9f3034b947ebb8c26336f228fd9404b68683a4b6936b536c9a26f997c482"
     },
     "intake_record": {
-      "status": "CONFIRMED",
-      "evidence": "RAW-20260625-002"
+      "status": "UNKNOWN",
+      "evidence": "No linked raw/canonical intake row was found."
     },
     "queue_record": {
       "status": "CONFIRMED",
-      "evidence": "status=transcribed stage=04 Parsed"
+      "evidence": "status=transcribed stage=03 Transcribed"
     },
     "download": {
       "status": "CONFIRMED",
@@ -149,19 +149,19 @@
     },
     "transcription_result": {
       "status": "CONFIRMED",
-      "evidence": "9025 transcript chars"
+      "evidence": "39920 transcript chars"
     },
     "parser_request": {
-      "status": "CONFIRMED",
-      "evidence": "canonical-intake-parser"
+      "status": "UNKNOWN",
+      "evidence": "Transcript exists but parser request is not visible."
     },
     "structured_output": {
-      "status": "CONFIRMED",
-      "evidence": "Canonical parser output exists but class/progress output is empty."
+      "status": "UNKNOWN",
+      "evidence": "No structured class output was found."
     },
     "class_session_match": {
-      "status": "CONFIRMED",
-      "evidence": "1 class session row(s)"
+      "status": "UNKNOWN",
+      "evidence": "No class-session signal."
     },
     "student_name_alias_match": {
       "status": "UNKNOWN",
@@ -188,8 +188,8 @@
       "evidence": "No accountability events found."
     },
     "canonical_write_status": {
-      "status": "CONFIRMED",
-      "evidence": "class=1 group=0 events=0"
+      "status": "UNKNOWN",
+      "evidence": "No structured output to compare."
     },
     "operations_read_model_visibility": {
       "status": "CONFIRMED",
@@ -206,15 +206,15 @@
   },
   "pipeline_row": {
     "kind": "content_job",
-    "job_id": 83,
-    "title": "content_job:83",
-    "created_at": "2026-06-25T09:20:09.474Z",
-    "updated_at": "2026-06-25T09:23:02.121Z",
+    "job_id": 101,
+    "title": "content_job:101",
+    "created_at": "2026-07-02T07:09:42.584Z",
+    "updated_at": "2026-07-02T07:26:55.442Z",
     "status": "transcribed",
-    "drive_stage": "04 Parsed",
-    "transcript_chars": 9025,
-    "parser": "canonical-intake-parser",
-    "fingerprint_sha256": "0e2bf35c08ff4c847e78184e03ac6dedcbf18e43e3e56271955c44f2a01dab30",
+    "drive_stage": "03 Transcribed",
+    "transcript_chars": 39920,
+    "parser": null,
+    "fingerprint_sha256": "487e9f3034b947ebb8c26336f228fd9404b68683a4b6936b536c9a26f997c482",
     "stage_order": [
       "source_discovered",
       "source_fingerprint",
@@ -240,12 +240,12 @@
     "stages": {
       "source_discovered": {
         "status": "CONFIRMED",
-        "evidence": "content job 83",
+        "evidence": "content job 101",
         "source_ref": {
           "drive_file": {
             "present": true,
-            "redacted": "drive_file:9f6f75a5d602",
-            "sha256": "9f6f75a5d602bcf8ab6df7ed078a3d61f05e6bfc61a6d1f75742c2cea303847d"
+            "redacted": "drive_file:f07607f3f9f8",
+            "sha256": "f07607f3f9f8e561f84c5adfc662ccab021d33823cc54ca9fd6d6f863b7d9c50"
           },
           "drive_folder": {
             "present": true,
@@ -256,16 +256,16 @@
       },
       "source_fingerprint": {
         "status": "CONFIRMED",
-        "evidence": "0e2bf35c08ff4c84",
-        "sha256": "0e2bf35c08ff4c847e78184e03ac6dedcbf18e43e3e56271955c44f2a01dab30"
+        "evidence": "487e9f3034b947eb",
+        "sha256": "487e9f3034b947ebb8c26336f228fd9404b68683a4b6936b536c9a26f997c482"
       },
       "intake_record": {
-        "status": "CONFIRMED",
-        "evidence": "RAW-20260625-002"
+        "status": "UNKNOWN",
+        "evidence": "No linked raw/canonical intake row was found."
       },
       "queue_record": {
         "status": "CONFIRMED",
-        "evidence": "status=transcribed stage=04 Parsed"
+        "evidence": "status=transcribed stage=03 Transcribed"
       },
       "download": {
         "status": "CONFIRMED",
@@ -277,19 +277,19 @@
       },
       "transcription_result": {
         "status": "CONFIRMED",
-        "evidence": "9025 transcript chars"
+        "evidence": "39920 transcript chars"
       },
       "parser_request": {
-        "status": "CONFIRMED",
-        "evidence": "canonical-intake-parser"
+        "status": "UNKNOWN",
+        "evidence": "Transcript exists but parser request is not visible."
       },
       "structured_output": {
-        "status": "CONFIRMED",
-        "evidence": "Canonical parser output exists but class/progress output is empty."
+        "status": "UNKNOWN",
+        "evidence": "No structured class output was found."
       },
       "class_session_match": {
-        "status": "CONFIRMED",
-        "evidence": "1 class session row(s)"
+        "status": "UNKNOWN",
+        "evidence": "No class-session signal."
       },
       "student_name_alias_match": {
         "status": "UNKNOWN",
@@ -316,8 +316,8 @@
         "evidence": "No accountability events found."
       },
       "canonical_write_status": {
-        "status": "CONFIRMED",
-        "evidence": "class=1 group=0 events=0"
+        "status": "UNKNOWN",
+        "evidence": "No structured output to compare."
       },
       "operations_read_model_visibility": {
         "status": "CONFIRMED",
@@ -335,9 +335,9 @@
   },
   "verdict": {
     "status": "PARTIAL",
-    "summary": "Newest recording has a pipeline issue at student_name_alias_match.",
-    "blocker": "No parsed student names found.",
-    "next_action": "Inspect the named pipeline stage before claiming production processing."
+    "summary": "Newest recording has no confirmed structured class output.",
+    "blocker": "No structured class output was found.",
+    "next_action": "Inspect parser request/result for the content job; preserve the Issue #18 no-backfill guardrail."
   },
-  "exact_next_action": "Inspect the named pipeline stage before claiming production processing."
+  "exact_next_action": "Inspect parser request/result for the content job; preserve the Issue #18 no-backfill guardrail."
 }

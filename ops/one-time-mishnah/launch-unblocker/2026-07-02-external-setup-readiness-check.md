@@ -1,36 +1,36 @@
 # One Time External Setup Readiness Check
 
-Generated: 2026-07-02T12:19:47.519Z
+Generated: 2026-07-02T13:10:18.064Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: full_setup
 External write performed: false
 Secret values printed: false
-Ready items: 0/8
+Ready items: 2/8
 All external setup ready: false
 
 ## Items
 
 ### SETUP-ONETIME-RAILWAY-001 - Separate One Time Railway target
 
-Ready: false
+Ready: true
 Clears: REQ-20260701-701
-Missing: railway_project_service_environment_label, PUBLIC_SITE_MODE, DEFAULT_WORKSPACE_KEY, DEFAULT_PROJECT_KEY, ONE_TIME_PUBLIC_DOMAIN
-Warnings: Missing explicit One Time Railway target. PUBLIC_SITE_MODE missing or mismatch; expected one_time. DEFAULT_WORKSPACE_KEY missing or mismatch; expected rabbi_sheller_provider. DEFAULT_PROJECT_KEY missing or mismatch; expected one_time_mishnah_class. ONE_TIME_PUBLIC_DOMAIN missing or mismatch; expected join.onetimeonetime.com.
+Missing: none
+Warnings: Ready from guarded Railway provisioning report: ops\one-time-mishnah\onetime-railway-provisioning-report.json.
 
 ### SETUP-ONETIME-DB-001 - Separate One Time database
 
-Ready: false
+Ready: true
 Clears: REQ-20260701-701
-Missing: ONE_TIME_DATABASE_URL_or_DATABASE_URL_ONE_TIME_keyholder_alias
-Warnings: none
+Missing: none
+Warnings: Ready from Railway Postgres service and DATABASE_URL service reference in ops\one-time-mishnah\onetime-railway-provisioning-report.json.
 
 ### SETUP-ONETIME-JOIN-DOMAIN-001 - Join subdomain only
 
 Ready: false
 Clears: REQ-20260701-702, REQ-20260701-703, REQ-20260701-704, REQ-20260701-717
-Missing: ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com, ONE_TIME_JOIN_DOMAIN_ATTACHED, ONE_TIME_JOIN_DNS_CONFIGURED, ONE_TIME_APEX_ROOT_UNTOUCHED
-Warnings: none
+Missing: ONE_TIME_JOIN_DNS_CONFIGURED
+Warnings: Railway custom domain is attached from ops\domain-readbacks\2026-07-02-join-onetimeonetime-domain-task.json; GoDaddy DNS still must verify.
 
 ### SETUP-ONETIME-ZOOM-001 - Zoom session details
 

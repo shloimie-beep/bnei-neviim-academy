@@ -84,6 +84,8 @@
     "one-time:railway-provision:apply": "node scripts/provision-onetime-railway-instance.mjs",
     "one-time:db:bootstrap": "node scripts/bootstrap-onetime-database.mjs --json",
     "one-time:setup:check": "node scripts/check-onetime-external-setup-readiness.mjs --json",
+    "one-time:seed:ui-review": "node scripts/seed-one-time-ui-review-data.mjs --json --write-report",
+    "one-time:cleanup:ui-review": "node scripts/cleanup-one-time-ui-review-data.mjs --json --write-report",
     "audit:hebrew-rtl": "node scripts/audit-hebrew-rtl-ui-labels.mjs",
     "helper:parity": "node scripts/generate-helper-tool-parity-map.mjs",
     "smoke:int05-integrations": "node scripts/smoke-int05-integrations-ui.mjs",

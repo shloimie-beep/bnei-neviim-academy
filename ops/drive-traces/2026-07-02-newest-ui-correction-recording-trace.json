@@ -1,0 +1,52 @@
+{
+  "raw_id": "RAW-20260702-006",
+  "requirement_id": "REQ-20260702-103",
+  "generated_at": "2026-07-02T15:50:00+03:00",
+  "mode": "read_only_ui_correction_recording_trace",
+  "newest_recording": {
+    "status": "PARTIAL",
+    "selected_drive_file_ref": "drive_file:f07607f3f9f8",
+    "mime_type": "audio/mp4",
+    "created_time": "2026-07-02T10:05:00.939Z",
+    "folder_label": "BNA_DRIVE_SIMPLIFIED_PROCESSED_RECORDINGS_FOLDER_ID",
+    "selected_content_job_ref": "content_job:101",
+    "job_status": "transcribed",
+    "drive_stage": "03 Transcribed",
+    "transcript_chars": 39920,
+    "transcript_body_included": false
+  },
+  "parser_status": {
+    "intake_record": "unknown",
+    "parser_request": "unknown",
+    "structured_output": "unknown",
+    "parsed_task_count": 0,
+    "ui_correction_statement_count": 0,
+    "requirement_ids_created_from_recording": []
+  },
+  "related_smoke": {
+    "command": "npm run app:smoke:class-upload-trace",
+    "ok": true,
+    "job_id": 78,
+    "result": "processed_readback_verified",
+    "note": "Historical parsed job smoke passed; not proof that newest job 101 has structured output."
+  },
+  "blockers": [
+    {
+      "id": "DRIVE-UI-20260702-001",
+      "owner": "Codex",
+      "reason": "Newest recording is discovered/transcribed but has no structured parser output.",
+      "next_action": "Run or inspect a no-write parser/reprocess packet for content_job:101 without exporting raw transcript body."
+    }
+  ],
+  "evidence_paths": [
+    "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.md",
+    "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.json",
+    "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-VERDICT.md",
+    "ops/live-smokes/2026-07-02T12-40-06-658Z-class-upload-trace-live-smoke.md"
+  ],
+  "external_write_performed": false,
+  "drive_write_performed": false,
+  "production_data_mutation_performed": false,
+  "secret_values_printed": false,
+  "raw_transcript_body_exported": false
+}

@@ -1,0 +1,35 @@
+{
+  "run_id": "2026-07-02-background-drive-ui-launch-continuation",
+  "title": "Background Agent, Drive UI Recording, Mock Data, Railway Provisioning",
+  "created_at": "2026-07-02T15:45:00+03:00",
+  "updated_at": "2026-07-02T13:05:00+03:00",
+  "active": true,
+  "status": "in_progress",
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260702-006",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "related_prs": [
+    62,
+    63
+  ],
+  "provisioning": {
+    "railway_project_service_database": "done_guarded_apply",
+    "join_domain_attached": true,
+    "dns_mutation_performed": false,
+    "deploy_live_smoke": "blocked_pending_dns_and_provider_setup"
+  },
+  "guardrails": [
+    "No force-merge of PR #62",
+    "No real bulk campaign send",
+    "No live Stripe payment",
+    "No WhatsApp broadcast",
+    "No apex/root onetimeonetime.com DNS mutation",
+    "No production hard delete",
+    "No paid-user cancellation",
+    "No GHL/LeadConnector runtime",
+    "No secret exposure",
+    "No raw private contact/student/parent data in repo evidence"
+  ]
+}

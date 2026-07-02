@@ -1,0 +1,96 @@
+{
+  "generated_at": "2026-07-02T12:56:55.457Z",
+  "scope": "stripe_sandbox_billing_lifecycle",
+  "status": "live_key_blocked",
+  "config_state": "live_disabled",
+  "live_mode_disabled": true,
+  "no_real_customer_data": true,
+  "no_real_funds": true,
+  "external_write_performed": false,
+  "configuration": {
+    "provider": "stripe",
+    "state": "live_disabled",
+    "effective_mode": "live",
+    "requested_mode": "live",
+    "key_mode": "live",
+    "secret_configured": true,
+    "webhook_secret_configured": false,
+    "publishable_key_configured": false,
+    "account_owner_configured": true,
+    "account_owner": "unknown",
+    "live_billing_enabled": false,
+    "live_approved": false,
+    "sandbox_api_verified": false,
+    "missing": [
+      "STRIPE_WEBHOOK_SECRET or RABBI_STRIPE_WEBHOOK_SECRET",
+      "test-mode STRIPE_SECRET_KEY or RABBI_STRIPE_SECRET_KEY (sk_test/rk_test)"
+    ],
+    "blockers": [
+      "Live Stripe billing requires explicit live mode, live billing enablement, and final approval."
+    ],
+    "safe_to_create_checkout_session": false,
+    "safe_to_create_live_charge": false,
+    "secret_fingerprint": "dcdee8231aac",
+    "webhook_secret_fingerprint": null,
+    "secrets_included": false
+  },
+  "account": null,
+  "objects": {
+    "product": null,
+    "price": null,
+    "customer": null,
+    "checkout_session": null
+  },
+  "lifecycle": {
+    "duplicate_verified": true,
+    "states": {
+      "pricing": true,
+      "trial": true,
+      "checkout": true,
+      "payment_method": true,
+      "successful_payment": true,
+      "failed_payment": true,
+      "retry": true,
+      "renewal": true,
+      "cancellation": true,
+      "entitlement": true,
+      "invoice_receipt": true,
+      "member_billing": true,
+      "provider_revenue": true,
+      "test_live_mode": true
+    },
+    "revenue": {
+      "tenant_id": "one_time_mishnah_class",
+      "provider_id": "rabbi_scheller",
+      "currency": "USD",
+      "gross_collected_cents": 6700,
+      "failed_cents": 6700,
+      "refunded_cents": 0,
+      "pending_cents": 6700,
+      "net_collected_cents": 6700,
+      "invoice_count": 1,
+      "successful_renewal_count": 1,
+      "scope": "tenant_provider",
+      "secrets_included": false
+    },
+    "latest_entitlement": {
+      "member_id": "stripe_sandbox_smoke_member",
+      "tenant_id": "one_time_mishnah_class",
+      "provider_id": "rabbi_scheller",
+      "entitlement_state": "scheduled_cancellation",
+      "access_enabled": true,
+      "scopes": [],
+      "reason": "cancel_at_period_end",
+      "trial_ends_at": "2027-05-29T16:26:40.000Z",
+      "current_period_end": "2027-06-28T16:26:40.000Z",
+      "grace_until": "2026-07-09T12:56:55.458Z",
+      "retry_state": "scheduled"
+    },
+    "audit_event_count": 8
+  },
+  "cleanup": [],
+  "webhook_signature_verified": false,
+  "notes": [
+    "A live Stripe key is configured. Sandbox smoke blocked all Stripe API calls to avoid live-mode effects."
+  ]
+}

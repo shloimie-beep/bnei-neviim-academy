@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-07-02T12:59:26.840Z",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "domain": "join.onetimeonetime.com",
+  "railway_project": "one-time-production",
+  "railway_project_id_redacted": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+  "railway_service": "one-time-web",
+  "railway_service_id_redacted": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+  "railway_environment": "production",
+  "custom_domain_attached_in_railway": true,
+  "dns_mutation_performed": false,
+  "apex_root_mutation_performed": false,
+  "apex_root_must_remain_untouched": true,
+  "verified": false,
+  "certificate_status": "CERTIFICATE_STATUS_TYPE_VALIDATING_OWNERSHIP",
+  "required_dns_records": [
+    {
+      "provider": "GoDaddy",
+      "type": "CNAME",
+      "host": "join",
+      "name": "join.onetimeonetime.com",
+      "value": "awaz36ln.up.railway.app",
+      "ttl": "default",
+      "purpose": "traffic_route",
+      "status": "requires_update"
+    },
+    {
+      "provider": "GoDaddy",
+      "type": "TXT",
+      "host": "_railway-verify.join",
+      "name": "_railway-verify.join.onetimeonetime.com",
+      "value": "railway-verify=73e92e55cb07e5a0abdb0a72f204d437d915c3134e844af12f419407632a97d6",
+      "ttl": "default",
+      "purpose": "ownership_verification",
+      "status": "requires_update"
+    }
+  ],
+  "operator_task": {
+    "title": "Add GoDaddy DNS records for join.onetimeonetime.com",
+    "owner": "Shloimie",
+    "next_action": "In GoDaddy DNS for onetimeonetime.com, add the CNAME and TXT records listed above. Do not edit apex/root records.",
+    "after_done": "Run npm run one-time:setup:check -- --write-report, then run the One Time deploy/live-smoke packet after secrets are configured."
+  }
+}

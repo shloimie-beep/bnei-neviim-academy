@@ -1,0 +1,89 @@
+{
+  "raw_id": "RAW-20260702-006",
+  "packet_set_id": "PKTSET-20260702-UI-CORRECTION-RECORDING",
+  "created_at": "2026-07-02T15:55:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "source_trace": "ops/drive-traces/2026-07-02-newest-ui-correction-recording-trace.json",
+  "recording_parser_status": "blocked_no_structured_output",
+  "no_raw_transcript_body_included": true,
+  "packets": [
+    {
+      "packet_id": "PKT-20260702-201",
+      "file": "00-control-tower.md",
+      "role": "CONTROL_TOWER",
+      "status": "ready",
+      "depends_on": []
+    },
+    {
+      "packet_id": "PKT-20260702-202",
+      "file": "01-source-coverage.md",
+      "role": "SPEC_COMPILER",
+      "status": "ready",
+      "depends_on": ["PKT-20260702-201"]
+    },
+    {
+      "packet_id": "PKT-20260702-203",
+      "file": "02-brand-kit-and-design-reference-alignment.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "blocked_waiting_recording_parse_or_visual_audit_selection",
+      "depends_on": ["PKT-20260702-202"]
+    },
+    {
+      "packet_id": "PKT-20260702-204",
+      "file": "03-ia-nav-filter-cleanup.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "blocked_waiting_recording_parse_or_visual_audit_selection",
+      "depends_on": ["PKT-20260702-202"]
+    },
+    {
+      "packet_id": "PKT-20260702-205",
+      "file": "04-crm-pipeline-contact-detail.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "blocked_waiting_recording_parse_or_visual_audit_selection",
+      "depends_on": ["PKT-20260702-202"]
+    },
+    {
+      "packet_id": "PKT-20260702-206",
+      "file": "05-community-classes-questions-provider-pipeline.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "blocked_waiting_recording_parse_or_visual_audit_selection",
+      "depends_on": ["PKT-20260702-202"]
+    },
+    {
+      "packet_id": "PKT-20260702-207",
+      "file": "06-content-library-provider-pipeline.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "blocked_waiting_recording_parse_or_visual_audit_selection",
+      "depends_on": ["PKT-20260702-202"]
+    },
+    {
+      "packet_id": "PKT-20260702-208",
+      "file": "07-member-parent-student-basic-portal.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "blocked_waiting_recording_parse_or_visual_audit_selection",
+      "depends_on": ["PKT-20260702-202"]
+    },
+    {
+      "packet_id": "PKT-20260702-209",
+      "file": "08-task-view-next-action-cleanup.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "ready_for_readback_or_focused_fix",
+      "depends_on": ["PKT-20260702-202"]
+    },
+    {
+      "packet_id": "PKT-20260702-210",
+      "file": "09-mock-data-and-test-identities.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "status": "ready",
+      "depends_on": ["PKT-20260702-201"]
+    },
+    {
+      "packet_id": "PKT-20260702-211",
+      "file": "10-verifier-deploy-live-smoke.md",
+      "role": "VERIFIER_PACKET",
+      "status": "blocked_until_child_packets_or_external_setup_ready",
+      "depends_on": ["PKT-20260702-203", "PKT-20260702-204", "PKT-20260702-205", "PKT-20260702-206", "PKT-20260702-207", "PKT-20260702-208", "PKT-20260702-209", "PKT-20260702-210"]
+    }
+  ]
+}

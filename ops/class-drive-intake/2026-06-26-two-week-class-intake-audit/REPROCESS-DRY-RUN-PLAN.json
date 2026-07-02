@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-28T06:34:09.997Z",
+  "generated_at": "2026-07-02T12:42:03.470Z",
   "safe_to_apply": false,
   "guardrail": "NOT SAFE TO APPLY - Issue #18 guardrail preserved; no class backfill writes attempted.",
   "row_level_change_plan": [],

@@ -1,6 +1,6 @@
 # GitHub Export Gaps
 
-Generated: 2026-06-28T06:34:09.989Z
+Generated: 2026-07-02T12:42:03.459Z
 
 | Job | Class date | Transcript chars | Exported | Expected file | Status |
 | --- | --- | --- | --- | --- | --- |

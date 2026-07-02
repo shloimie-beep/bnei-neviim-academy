@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T12:19:47.519Z",
+  "generated_at": "2026-07-02T13:10:18.064Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -212,7 +212,7 @@
       }
     ]
   },
-  "ready_count": 0,
+  "ready_count": 2,
   "total_count": 8,
   "all_required_external_setup_ready": false,
   "post_setup_execution_packet": "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md",
@@ -223,16 +223,10 @@
       "clears_requirements": [
         "REQ-20260701-701"
       ],
-      "ready": false,
-      "missing_fields": [
-        "railway_project_service_environment_label",
-        "PUBLIC_SITE_MODE",
-        "DEFAULT_WORKSPACE_KEY",
-        "DEFAULT_PROJECT_KEY",
-        "ONE_TIME_PUBLIC_DOMAIN"
-      ],
+      "ready": true,
+      "missing_fields": [],
       "warnings": [
-        "Missing explicit One Time Railway target. PUBLIC_SITE_MODE missing or mismatch; expected one_time. DEFAULT_WORKSPACE_KEY missing or mismatch; expected rabbi_sheller_provider. DEFAULT_PROJECT_KEY missing or mismatch; expected one_time_mishnah_class. ONE_TIME_PUBLIC_DOMAIN missing or mismatch; expected join.onetimeonetime.com."
+        "Ready from guarded Railway provisioning report: ops\\one-time-mishnah\\onetime-railway-provisioning-report.json."
       ],
       "verification_after_setup": [
         "npm run one-time:railway-target:guard",
@@ -245,11 +239,11 @@
       "clears_requirements": [
         "REQ-20260701-701"
       ],
-      "ready": false,
-      "missing_fields": [
-        "ONE_TIME_DATABASE_URL_or_DATABASE_URL_ONE_TIME_keyholder_alias"
+      "ready": true,
+      "missing_fields": [],
+      "warnings": [
+        "Ready from Railway Postgres service and DATABASE_URL service reference in ops\\one-time-mishnah\\onetime-railway-provisioning-report.json."
       ],
-      "warnings": [],
       "verification_after_setup": [
         "npm run one-time:db:bootstrap"
       ]
@@ -265,12 +259,11 @@
       ],
       "ready": false,
       "missing_fields": [
-        "ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com",
-        "ONE_TIME_JOIN_DOMAIN_ATTACHED",
-        "ONE_TIME_JOIN_DNS_CONFIGURED",
-        "ONE_TIME_APEX_ROOT_UNTOUCHED"
+        "ONE_TIME_JOIN_DNS_CONFIGURED"
       ],
-      "warnings": [],
+      "warnings": [
+        "Railway custom domain is attached from ops\\domain-readbacks\\2026-07-02-join-onetimeonetime-domain-task.json; GoDaddy DNS still must verify."
+      ],
       "verification_after_setup": [
         "join-domain live smoke after deploy"
       ]
@@ -361,37 +354,14 @@
   ],
   "blockers": [
     {
-      "id": "SETUP-ONETIME-RAILWAY-001",
-      "title": "Separate One Time Railway target",
-      "missing_fields": [
-        "railway_project_service_environment_label",
-        "PUBLIC_SITE_MODE",
-        "DEFAULT_WORKSPACE_KEY",
-        "DEFAULT_PROJECT_KEY",
-        "ONE_TIME_PUBLIC_DOMAIN"
-      ],
-      "warnings": [
-        "Missing explicit One Time Railway target. PUBLIC_SITE_MODE missing or mismatch; expected one_time. DEFAULT_WORKSPACE_KEY missing or mismatch; expected rabbi_sheller_provider. DEFAULT_PROJECT_KEY missing or mismatch; expected one_time_mishnah_class. ONE_TIME_PUBLIC_DOMAIN missing or mismatch; expected join.onetimeonetime.com."
-      ]
-    },
-    {
-      "id": "SETUP-ONETIME-DB-001",
-      "title": "Separate One Time database",
-      "missing_fields": [
-        "ONE_TIME_DATABASE_URL_or_DATABASE_URL_ONE_TIME_keyholder_alias"
-      ],
-      "warnings": []
-    },
-    {
       "id": "SETUP-ONETIME-JOIN-DOMAIN-001",
       "title": "Join subdomain only",
       "missing_fields": [
-        "ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com",
-        "ONE_TIME_JOIN_DOMAIN_ATTACHED",
-        "ONE_TIME_JOIN_DNS_CONFIGURED",
-        "ONE_TIME_APEX_ROOT_UNTOUCHED"
+        "ONE_TIME_JOIN_DNS_CONFIGURED"
       ],
-      "warnings": []
+      "warnings": [
+        "Railway custom domain is attached from ops\\domain-readbacks\\2026-07-02-join-onetimeonetime-domain-task.json; GoDaddy DNS still must verify."
+      ]
     },
     {
       "id": "SETUP-ONETIME-ZOOM-001",

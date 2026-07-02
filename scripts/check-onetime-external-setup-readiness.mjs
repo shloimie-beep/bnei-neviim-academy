@@ -18,6 +18,18 @@ const DEFAULT_REPORT_BASE = path.join(
   '2026-07-02-external-setup-readiness-check',
 );
 
+const DEFAULT_RAILWAY_PROVISIONING_REPORT = path.join(
+  'ops',
+  'one-time-mishnah',
+  'onetime-railway-provisioning-report.json',
+);
+
+const DEFAULT_JOIN_DOMAIN_REPORT = path.join(
+  'ops',
+  'domain-readbacks',
+  '2026-07-02-join-onetimeonetime-domain-task.json',
+);
+
 const ONE_TIME_EXPECTED_ENV = Object.freeze({
   PUBLIC_SITE_MODE: 'one_time',
   DEFAULT_WORKSPACE_KEY: 'rabbi_sheller_provider',
@@ -31,6 +43,8 @@ function parseArgs(argv = []) {
     writeReport: false,
     railwayOnly: false,
     checklist: DEFAULT_CHECKLIST_PATH,
+    railwayProvisioningReport: DEFAULT_RAILWAY_PROVISIONING_REPORT,
+    joinDomainReport: DEFAULT_JOIN_DOMAIN_REPORT,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -39,6 +53,12 @@ function parseArgs(argv = []) {
     else if (arg === '--railway-only') args.railwayOnly = true;
     else if (arg === '--checklist') {
       args.checklist = argv[index + 1] || args.checklist;
+      index += 1;
+    } else if (arg === '--railway-provisioning-report') {
+      args.railwayProvisioningReport = argv[index + 1] || args.railwayProvisioningReport;
+      index += 1;
+    } else if (arg === '--join-domain-report') {
+      args.joinDomainReport = argv[index + 1] || args.joinDomainReport;
       index += 1;
     }
   }
@@ -88,18 +108,58 @@ function readChecklist(checklistPath, repoRoot) {
   };
 }
 
-function railwayReadiness(env) {
+function readJsonIfExists(filePath, repoRoot) {
+  const fullPath = path.resolve(repoRoot, filePath || '');
+  if (!filePath || !fs.existsSync(fullPath)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function stepOk(report, key) {
+  return Array.isArray(report?.steps) && report.steps.some((step) => step.key === key && step.ok === true);
+}
+
+function successfulRailwayProvisioning(report) {
+  return Boolean(
+    report &&
+      report.ok === true &&
+      report.mutation_performed === true &&
+      report.target?.target_project === 'one-time-production' &&
+      report.target?.web_service === 'one-time-web' &&
+      report.target?.postgres_service === 'one-time-postgres' &&
+      (stepOk(report, 'reuse_project') || stepOk(report, 'create_project')) &&
+      stepOk(report, 'link_project') &&
+      stepOk(report, 'create_or_verify_postgres') &&
+      stepOk(report, 'create_or_verify_web') &&
+      stepOk(report, 'set_non_secret_variables') &&
+      stepOk(report, 'set_database_reference'),
+  );
+}
+
+function railwayReadiness(env, repoRoot, provisioningReportPath) {
   const serviceReady = status(env.ONE_TIME_RAILWAY_SERVICE || env.ONE_TIME_RAILWAY_SERVICE_LABEL) === 'configured';
   const projectReady = status(env.ONE_TIME_RAILWAY_PROJECT || env.ONE_TIME_RAILWAY_PROJECT_LABEL) === 'configured';
   const environmentReady = status(env.ONE_TIME_RAILWAY_ENVIRONMENT || env.ONE_TIME_RAILWAY_ENVIRONMENT_LABEL) === 'configured';
   const missingExpected = expectedEnvMissing(env);
-  const ready = serviceReady && projectReady && environmentReady && missingExpected.length === 0;
+  const provisioningReport = readJsonIfExists(provisioningReportPath, repoRoot);
+  const provisionedByReport = successfulRailwayProvisioning(provisioningReport);
+  const envReady = serviceReady && projectReady && environmentReady && missingExpected.length === 0;
+  const ready = envReady || provisionedByReport;
   return {
     ready,
-    missing: [
-      serviceReady && projectReady && environmentReady ? '' : 'railway_project_service_environment_label',
-      ...missingExpected,
-    ],
+    source: provisionedByReport ? 'railway_provisioning_report' : 'env',
+    provisioning_report_path: provisionedByReport ? provisioningReportPath : '',
+    database_reference_ready: provisionedByReport && stepOk(provisioningReport, 'set_database_reference'),
+    postgres_service_ready: provisionedByReport && stepOk(provisioningReport, 'create_or_verify_postgres'),
+    missing: ready
+      ? []
+      : [
+          serviceReady && projectReady && environmentReady ? '' : 'railway_project_service_environment_label',
+          ...missingExpected,
+        ],
     warning: ready
       ? ''
       : `Missing explicit One Time Railway target. ${missingExpected
@@ -112,13 +172,22 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
   const env = options.env || process.env;
   const repoRoot = options.repoRoot || process.cwd();
   const checklist = readChecklist(options.checklist || DEFAULT_CHECKLIST_PATH, repoRoot);
-  const railway = railwayReadiness(env);
+  const railway = railwayReadiness(
+    env,
+    repoRoot,
+    options.railwayProvisioningReport || DEFAULT_RAILWAY_PROVISIONING_REPORT,
+  );
+  const joinDomainReport = readJsonIfExists(options.joinDomainReport || DEFAULT_JOIN_DOMAIN_REPORT, repoRoot);
+  const joinDomainReportMatches =
+    joinDomainReport?.domain === 'join.onetimeonetime.com' &&
+    joinDomainReport?.custom_domain_attached_in_railway === true &&
+    joinDomainReport?.apex_root_mutation_performed === false;
 
   const joinDomainReady =
-    env.ONE_TIME_PUBLIC_DOMAIN === 'join.onetimeonetime.com' &&
-    truthy(env.ONE_TIME_JOIN_DOMAIN_ATTACHED) &&
-    truthy(env.ONE_TIME_JOIN_DNS_CONFIGURED) &&
-    truthy(env.ONE_TIME_APEX_ROOT_UNTOUCHED);
+    (env.ONE_TIME_PUBLIC_DOMAIN === 'join.onetimeonetime.com' || joinDomainReportMatches) &&
+    (truthy(env.ONE_TIME_JOIN_DOMAIN_ATTACHED) || joinDomainReportMatches) &&
+    (truthy(env.ONE_TIME_JOIN_DNS_CONFIGURED) || joinDomainReport?.verified === true) &&
+    (truthy(env.ONE_TIME_APEX_ROOT_UNTOUCHED) || joinDomainReport?.apex_root_must_remain_untouched === true);
 
   const stripeSecret = String(env.STRIPE_SECRET_KEY || env.ONE_TIME_STRIPE_SECRET_KEY || '');
   const stripeLiveKeyPresent = /^sk_live_/i.test(stripeSecret);
@@ -133,7 +202,12 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       clears: ['REQ-20260701-701'],
       ready: railway.ready,
       missing: railway.missing,
-      warnings: [railway.warning],
+      warnings: [
+        railway.warning,
+        railway.source === 'railway_provisioning_report'
+          ? `Ready from guarded Railway provisioning report: ${railway.provisioning_report_path}.`
+          : '',
+      ],
       verification: [
         'npm run one-time:railway-target:guard',
         'npm run one-time:railway-provision:check -- --write-report',
@@ -143,10 +217,15 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       id: 'SETUP-ONETIME-DB-001',
       title: 'Separate One Time database',
       clears: ['REQ-20260701-701'],
-      ready: status(env.ONE_TIME_DATABASE_URL || env.DATABASE_URL_ONE_TIME) === 'configured',
-      missing: status(env.ONE_TIME_DATABASE_URL || env.DATABASE_URL_ONE_TIME) === 'configured'
+      ready: status(env.ONE_TIME_DATABASE_URL || env.DATABASE_URL_ONE_TIME) === 'configured' || railway.database_reference_ready,
+      missing: status(env.ONE_TIME_DATABASE_URL || env.DATABASE_URL_ONE_TIME) === 'configured' || railway.database_reference_ready
         ? []
         : ['ONE_TIME_DATABASE_URL_or_DATABASE_URL_ONE_TIME_keyholder_alias'],
+      warnings: [
+        railway.database_reference_ready
+          ? `Ready from Railway Postgres service and DATABASE_URL service reference in ${railway.provisioning_report_path}.`
+          : '',
+      ],
       verification: ['npm run one-time:db:bootstrap'],
     }),
     makeItem({
@@ -155,10 +234,15 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       clears: ['REQ-20260701-702', 'REQ-20260701-703', 'REQ-20260701-704', 'REQ-20260701-717'],
       ready: joinDomainReady,
       missing: [
-        env.ONE_TIME_PUBLIC_DOMAIN === 'join.onetimeonetime.com' ? '' : 'ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com',
-        truthy(env.ONE_TIME_JOIN_DOMAIN_ATTACHED) ? '' : 'ONE_TIME_JOIN_DOMAIN_ATTACHED',
-        truthy(env.ONE_TIME_JOIN_DNS_CONFIGURED) ? '' : 'ONE_TIME_JOIN_DNS_CONFIGURED',
-        truthy(env.ONE_TIME_APEX_ROOT_UNTOUCHED) ? '' : 'ONE_TIME_APEX_ROOT_UNTOUCHED',
+        env.ONE_TIME_PUBLIC_DOMAIN === 'join.onetimeonetime.com' || joinDomainReportMatches ? '' : 'ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com',
+        truthy(env.ONE_TIME_JOIN_DOMAIN_ATTACHED) || joinDomainReportMatches ? '' : 'ONE_TIME_JOIN_DOMAIN_ATTACHED',
+        truthy(env.ONE_TIME_JOIN_DNS_CONFIGURED) || joinDomainReport?.verified === true ? '' : 'ONE_TIME_JOIN_DNS_CONFIGURED',
+        truthy(env.ONE_TIME_APEX_ROOT_UNTOUCHED) || joinDomainReport?.apex_root_must_remain_untouched === true ? '' : 'ONE_TIME_APEX_ROOT_UNTOUCHED',
+      ],
+      warnings: [
+        joinDomainReportMatches
+          ? `Railway custom domain is attached from ${options.joinDomainReport || DEFAULT_JOIN_DOMAIN_REPORT}; GoDaddy DNS still must verify.`
+          : '',
       ],
       verification: ['join-domain live smoke after deploy'],
     }),
@@ -317,6 +401,8 @@ export async function main(argv = process.argv.slice(2), options = {}) {
   const report = buildOneTimeExternalSetupReadiness({
     ...options,
     checklist: args.checklist || options.checklist,
+    railwayProvisioningReport: args.railwayProvisioningReport || options.railwayProvisioningReport,
+    joinDomainReport: args.joinDomainReport || options.joinDomainReport,
     railwayOnly: args.railwayOnly || options.railwayOnly,
   });
   const paths = args.writeReport ? writeReport(report, options.repoRoot || process.cwd()) : null;
