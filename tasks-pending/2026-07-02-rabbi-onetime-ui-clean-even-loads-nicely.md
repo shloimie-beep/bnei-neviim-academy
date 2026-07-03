@@ -421,3 +421,23 @@ branch/PR/deploy/live-smoke path under `DEC-20260702-801`.
   Done. The last read-only production check showed
   `https://bneineviimacademy.org` had not yet received the local Library
   first-viewport contract.
+
+## Deploy Gate Readback
+
+- Evidence:
+  `ops/deploy-readbacks/2026-07-03-rabbi-onetime-ui-release-deploy-gate.md`
+- GitHub PR readback:
+  PR #87 is open, draft, mergeable, and clean; GitHub reports no checks.
+- Release branch gate:
+  passed on `codex/rabbi-onetime-ui-cleanup-release-20260703` at `9f7119a9`
+  with a clean pushed worktree.
+- Railway target:
+  default Railway state initially pointed at `one-time-production`; exact
+  ID/name-scoped target verification passed for the BNA
+  `skillful-motivation` production web service, current deployment
+  `00a36c08-15ab-4f63-876c-f9897700dbbf`, status `SUCCESS`.
+- Deploy gate:
+  blocked; no production mutation, deploy upload, or live verification was
+  performed. Required blockers include
+  `BNA_PRODUCTION_DEPLOY_APPROVED=approved` plus the repo's configured
+  integration/readback readiness gates.

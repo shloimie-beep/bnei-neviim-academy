@@ -28612,3 +28612,24 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke remains blocked until the PR is merged/released
   and `bneineviimacademy.org` is checked again for the Library first-viewport
   contract.
+
+## 2026-07-03 - Rabbi / One Time UI Release Deploy Gate Readback
+
+- Checked draft PR #87 after push: PR is open, draft, mergeable, clean, and has
+  no GitHub checks reported.
+- Ran `npm run bna:release-gate -- --json --expected-branch
+  codex/rabbi-onetime-ui-cleanup-release-20260703`; release branch gate passed
+  with clean pushed HEAD `9f7119a9`.
+- Ran Railway target discovery. The default Railway context still pointed at
+  `one-time-production`, so the target guard correctly blocked BNA deploy from
+  that context.
+- Verified the exact BNA Railway target using command-scoped project/service
+  IDs for `skillful-motivation` production. `npm run railway:doctor` passed and
+  read back current deployment `00a36c08-15ab-4f63-876c-f9897700dbbf` with
+  status `SUCCESS`.
+- Ran the deploy gate with the deploy confirmation phrase. It blocked before
+  mutation because `BNA_PRODUCTION_DEPLOY_APPROVED=approved` is not set and the
+  repo's broader integration/readback readiness gates are not ready.
+- No production mutation, deploy upload, live verification, external provider
+  write, send, payment/access/DNS/upload, GHL/LeadConnector runtime, or secret
+  exposure occurred.
