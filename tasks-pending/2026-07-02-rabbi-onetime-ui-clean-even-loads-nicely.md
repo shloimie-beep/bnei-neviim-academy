@@ -401,3 +401,23 @@ deploy-state check proved the current production Operations route has not
 received the Library first-viewport contract yet. No additional UI
 implementation packet is selected; the remaining work is a clean release
 branch/PR/deploy/live-smoke path under `DEC-20260702-801`.
+
+## Release PR Handoff
+
+- Clean release branch:
+  `codex/rabbi-onetime-ui-cleanup-release-20260703`
+- Commit:
+  `47ef9e17 fix Rabbi One Time UI cleanup release`
+- Draft PR:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/87`
+- Release-branch verification:
+  `npm run pqc:validate` for packet 21 passed; focused UI/static tests passed
+  11/11 after `npm ci`; `npm run watchdog:actions` passed with
+  `finding_count: 0`; `npm run watchdog:protocol-drift` passed with 0
+  findings; `npm run bna:run:next` passed validation and reported no next
+  unblocked executable batch.
+- Remaining blocker:
+  merge/release deploy/live smoke is still required before app-visible terminal
+  Done. The last read-only production check showed
+  `https://bneineviimacademy.org` had not yet received the local Library
+  first-viewport contract.

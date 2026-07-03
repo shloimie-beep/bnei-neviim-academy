@@ -28592,3 +28592,23 @@ Actions: 1. Active machine tasks: 22.
   domain did not accept current Operations login credentials.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked by `DEC-20260702-801` pending a clean release branch/PR/deploy path.
+
+## 2026-07-03 - Rabbi / One Time UI Cleanup Release PR Opened
+
+- Created clean release branch
+  `codex/rabbi-onetime-ui-cleanup-release-20260703` from current
+  `origin/master`, applied only the scoped Rabbi / One Time UI cleanup code,
+  tests, raw/register/packet records, compact audit evidence, and validation
+  reports.
+- Committed `47ef9e17 fix Rabbi One Time UI cleanup release` and pushed the
+  branch to GitHub.
+- Opened draft PR
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/87`.
+- Release-branch verification passed: packet 21 PQC validation, focused
+  UI/static test suite 11/11 after `npm ci`, action watchdog with
+  `finding_count: 0`, protocol drift watchdog with 0 findings, execution-run
+  validation with no next unblocked executable batch, and staged diff
+  whitespace check.
+- Production deploy/live-smoke remains blocked until the PR is merged/released
+  and `bneineviimacademy.org` is checked again for the Library first-viewport
+  contract.
