@@ -101,7 +101,7 @@
   "paymentNavContract": {
     "currentView": "service_providers",
     "section": "access",
-    "railText": "Payments Payment / Access Program Overview 1 Launch / Checkout 0 Mishnayos Membership 0 Membership Tiers 0 7:00 Class 0 Worksheets / Source Sheets 0 Questions / Posts 0 Payment / Access 0 Provider Settings 1"
+    "railText": "Payments Payment / Access Program Overview 0 Launch / Checkout 0 Mishnayos Membership 0 Membership Tiers 0 7:00 Class 0 Worksheets / Source Sheets 0 Questions / Posts 0 Payment / Access 0 Provider Settings 0"
   },
   "previewRequests": [
     {

@@ -28633,3 +28633,17 @@ Actions: 1. Active machine tasks: 22.
 - No production mutation, deploy upload, live verification, external provider
   write, send, payment/access/DNS/upload, GHL/LeadConnector runtime, or secret
   exposure occurred.
+
+## 2026-07-03 - Rabbi / One Time UI Goal Terminal Audit
+
+- Re-ran the release-branch evidence audit for `RAW-20260702-008`.
+- Packet 21 PQC validation passed and the focused local test suite passed
+  11/11 on the release worktree.
+- Updated `DEC-20260702-801`, `REQ-20260702-805`, and `REQ-20260702-823` in
+  the requirement register to remove stale pre-PR wording and point to the
+  exact deploy-gate blocker.
+- Added terminal audit evidence at
+  `ops/deploy-readbacks/2026-07-03-rabbi-onetime-ui-goal-terminal-audit.md`.
+- Verdict: selected UI cleanup packets are locally verified and terminal with
+  exact deploy blocker; production terminal Done still requires approval,
+  deploy, and live smoke after the repo's deploy/readiness gates clear.
