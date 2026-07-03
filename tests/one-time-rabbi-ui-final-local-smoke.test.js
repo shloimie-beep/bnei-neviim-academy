@@ -857,19 +857,31 @@ test('final local One Time/Rabbi UI QA harness covers scoped routes without exte
     await gotoRoute(page, baseUrl, REQUIRED_ROUTES[1]);
     await page.waitForFunction(() => typeof window.workspaceNavItems === 'function', null, { timeout: 15000 });
     const operationsContract = await page.evaluate(() => {
-      const navIds = window.workspaceNavItems().map((item) => item.id);
+      const navItems = window.workspaceNavItems().map((item) => ({
+        id: item.id,
+        label: item.label,
+        navKey: item.navKey || item.id,
+      }));
+      const navIds = navItems.map((item) => item.id);
       return {
         workspace: window.currentWorkspaceKey(),
         role: window.currentWorkspaceRoleLabel(),
         navIds,
+        navLabels: navItems.map((item) => item.label),
+        navKeys: navItems.map((item) => item.navKey),
         hasStudents: navIds.includes('students'),
         hasAccounting: navIds.includes('accounting'),
       };
     });
     assert.equal(operationsContract.workspace, 'rabbi_sheller_provider');
     assert.equal(operationsContract.role, 'Workspace Owner');
-    for (const expected of ['service_providers', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'tasks', 'agents', 'automations', 'integrations', 'api_usage', 'settings']) {
-      assert.ok(operationsContract.navIds.includes(expected), `operations missing approved module ${expected}`);
+    assert.deepEqual(operationsContract.navLabels, ['Overview', 'Members', 'Classes', 'Comms', 'Auto', 'Payments', 'Tasks', 'Setup']);
+    assert.deepEqual(operationsContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'settings_setup']);
+    for (const expected of ['service_providers', 'contacts', 'content', 'communications', 'automations', 'tasks', 'settings']) {
+      assert.ok(operationsContract.navIds.includes(expected), `operations missing Rabbi-facing module ${expected}`);
+    }
+    for (const hidden of ['dashboard', 'watchdog', 'agents', 'integrations', 'api_usage', 'studio', 'live_classes', 'calendar']) {
+      assert.equal(operationsContract.navIds.includes(hidden), false, `operations should demote support/raw module ${hidden}`);
     }
     assert.equal(operationsContract.hasStudents, false, 'students module must be hidden/demoted in One Time provider scope');
     assert.equal(operationsContract.hasAccounting, false, 'accounting module must be hidden/demoted in One Time provider scope');

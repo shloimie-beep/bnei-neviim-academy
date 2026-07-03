@@ -179,6 +179,7 @@
     if (isOneTimeMember) {
       return {
         ...base,
+        helperTitle: 'One Time Helper',
         surfaceLabel: 'One Time member help',
         intro: "Hi, I'm the One Time member assistant. I can help with member access, the library, the classroom, questions for Rabbi Scheller, support tickets, and account help. This scope does not show BNA school goals, parent dashboards, other students, or admin data.",
         cards: [
@@ -432,9 +433,15 @@
       border-left: 1px solid rgba(23, 32, 25, 0.12);
       box-shadow: -24px 0 70px rgba(27, 49, 32, 0.18);
       transform: translateX(105%);
+      visibility: hidden;
+      pointer-events: none;
       transition: transform 0.22s ease;
     }
-    .bna-bot-panel.is-open { transform: translateX(0); }
+    .bna-bot-panel.is-open {
+      transform: translateX(0);
+      visibility: visible;
+      pointer-events: auto;
+    }
     [dir="rtl"] .bna-bot-panel {
       right: auto;
       left: 0;
@@ -445,6 +452,50 @@
     }
     [dir="rtl"] .bna-bot-panel.is-open { transform: translateX(0); }
     [dir="rtl"] .bna-bot-launcher { right: auto; left: 18px; }
+    body.bna-assistant-surface-one-time-member .bna-bot-launcher {
+      border: 1px solid rgba(237, 229, 24, 0.48);
+      background: #080910;
+      color: #ffffff;
+      box-shadow: 0 16px 34px rgba(8, 9, 16, 0.34);
+    }
+    body.bna-assistant-surface-one-time-member .bna-bot-launcher-dot {
+      background: #ede518;
+      box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.22);
+    }
+    body.bna-assistant-surface-one-time-member .bna-bot-head {
+      border-bottom: 1px solid rgba(237, 229, 24, 0.36);
+      background: #080910;
+      color: #ffffff;
+    }
+    body.bna-assistant-surface-one-time-member .bna-bot-head span {
+      color: rgba(255, 255, 255, 0.74);
+    }
+    body.bna-assistant-surface-one-time-member .bna-bot-panel {
+      border-color: rgba(237, 229, 24, 0.28);
+      background: #15171d;
+      color: #ffffff;
+    }
+    body.bna-assistant-surface-one-time-member .bna-bot-form,
+    body.bna-assistant-surface-one-time-member .bna-bot-history {
+      background: #0f1117;
+      border-color: rgba(237, 229, 24, 0.18);
+    }
+    body.bna-assistant-surface-one-time-member .bna-bot-message.assistant,
+    body.bna-assistant-surface-one-time-member .bna-bot-history-state {
+      border-color: rgba(237, 229, 24, 0.18);
+      background: #080910;
+      color: #ffffff;
+    }
+    body.bna-assistant-surface-one-time-member .bna-bot-message.user,
+    body.bna-assistant-surface-one-time-member .bna-helper-action {
+      border-color: rgba(237, 229, 24, 0.6);
+      background: #ede518;
+      color: #080910;
+    }
+    body.bna-assistant-surface-one-time-member .bna-bot-send {
+      background: #ede518;
+      color: #080910;
+    }
     .bna-bot-head {
       display: grid;
       gap: 0.75rem;
@@ -713,6 +764,7 @@
   `;
   document.head.appendChild(style);
   document.body.classList.add('bna-universal-assistant-active');
+  document.body.classList.add(`bna-assistant-surface-${surface.replace(/_/g, '-')}`);
   const copy = surfaceConfig();
 
   const launcher = document.createElement('button');
@@ -732,6 +784,8 @@
   panel.className = 'bna-bot-panel assistant-shell';
   panel.id = 'bnaBotPanel';
   panel.setAttribute('aria-label', copy.helperTitle);
+  panel.setAttribute('aria-hidden', 'true');
+  if ('inert' in panel) panel.inert = true;
 
   panel.innerHTML = `
     <div class="bna-bot-head">
@@ -938,6 +992,8 @@
     panel.classList.toggle('is-open', open);
     launcher.classList.toggle('is-panel-open', open);
     launcher.setAttribute('aria-expanded', String(open));
+    panel.setAttribute('aria-hidden', String(!open));
+    if ('inert' in panel) panel.inert = !open;
     if (open) {
       clearPublicFollowup();
       keepAssistantComposerReachable();

@@ -8,33 +8,44 @@
   <link rel="icon" href="/favicon.ico" sizes="any">
   <style>
     :root {
-      --ink: #17201b;
-      --muted: #5f6a63;
-      --paper: #fbf7ed;
-      --panel: #ffffff;
-      --line: rgba(23, 32, 27, 0.14);
-      --green: #1b5b42;
-      --blue: #245d88;
-      --gold: #b98c25;
+      --ink: #ffffff;
+      --body-text: #f7f7f2;
+      --muted: #c4c8d2;
+      --paper: #080910;
+      --panel: #15171d;
+      --panel-strong: #0f1117;
+      --line: rgba(237, 229, 24, 0.2);
+      --yellow: #ede518;
+      --black: #080910;
+      --charcoal: #15171d;
+      --green: #ede518;
+      --blue: #ede518;
+      --gold: #ede518;
     }
 
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      color: var(--ink);
-      background: var(--paper);
+      color: var(--body-text);
+      background-color: var(--paper);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(237, 229, 24, 0.12), transparent 28%),
+        linear-gradient(180deg, #080910 0%, #0f1117 46%, #080910 100%),
+        var(--paper);
       font-family: Inter, "Segoe UI", Arial, sans-serif;
       line-height: 1.55;
     }
 
     header {
-      min-height: 36vh;
-      padding: 34px clamp(18px, 5vw, 68px);
+      min-height: 34vh;
+      padding: 36px clamp(18px, 5vw, 68px);
       display: grid;
       align-items: end;
+      border-bottom: 1px solid rgba(237, 229, 24, 0.28);
       background:
-        linear-gradient(180deg, rgba(8, 22, 17, 0.18), rgba(8, 22, 17, 0.7)),
-        url("/images/bna-social-preview.png") center / cover no-repeat;
+        linear-gradient(90deg, rgba(8, 9, 16, 1) 0%, rgba(8, 9, 16, 0.96) 42%, rgba(8, 9, 16, 0.6) 72%, rgba(8, 9, 16, 0.9) 100%),
+        url("/images/one-time/brand/onetime-hero-vertical.webp") right center / auto 122% no-repeat,
+        var(--black);
       color: #fff;
     }
 
@@ -49,6 +60,7 @@
       max-width: 640px;
       margin: 14px 0 0;
       font-size: 18px;
+      color: rgba(255, 255, 255, 0.82);
     }
 
     main {
@@ -68,7 +80,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--panel);
-      box-shadow: 0 18px 40px rgba(36, 48, 40, 0.08);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
       padding: 18px;
     }
 
@@ -83,6 +95,7 @@
     }
 
     h2, h3 { margin: 0 0 8px; letter-spacing: 0; }
+    h2, h3 { color: var(--ink); }
     p { color: var(--muted); }
 
     label {
@@ -102,7 +115,8 @@
       border-radius: 8px;
       padding: 10px 12px;
       font: inherit;
-      background: #fff;
+      background: #ffffff;
+      color: var(--black);
     }
 
     textarea {
@@ -115,7 +129,7 @@
       border: 0;
       border-radius: 8px;
       background: var(--green);
-      color: #fff;
+      color: var(--black);
       padding: 10px 13px;
       font-weight: 850;
       cursor: pointer;
@@ -136,7 +150,7 @@
       align-items: center;
       justify-content: flex-end;
       border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.94);
+      background: rgba(8, 9, 16, 0.96);
       padding: 10px clamp(16px, 4vw, 42px);
       backdrop-filter: blur(12px);
     }
@@ -145,12 +159,60 @@
       min-height: 34px;
       border: 1px solid var(--line);
       border-radius: 6px;
-      color: var(--green);
-      background: #fff;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.06);
       padding: 7px 10px;
       font-size: 13px;
       font-weight: 850;
       white-space: nowrap;
+    }
+
+    .member-topbar a[aria-current="page"],
+    .member-topbar a:hover,
+    .member-topbar a:focus-visible {
+      color: var(--black);
+      background: var(--yellow);
+      outline: 0;
+    }
+
+    .member-brand-lockup {
+      margin-right: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-width: min(100%, 220px);
+      color: var(--ink);
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .member-brand-lockup img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--yellow);
+      object-fit: contain;
+      padding: 4px;
+    }
+
+    .member-brand-lockup small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .member-hero-logo {
+      width: 76px;
+      height: 76px;
+      display: block;
+      margin-bottom: 14px;
+      border-radius: 12px;
+      background: var(--yellow);
+      object-fit: contain;
+      padding: 8px;
+      box-shadow: 0 14px 34px rgba(237, 229, 24, 0.18);
     }
 
     .content-stack {
@@ -176,8 +238,8 @@
     .badge {
       border: 1px solid var(--line);
       border-radius: 999px;
-      color: var(--muted);
-      background: #fffaf0;
+      color: var(--black);
+      background: var(--yellow);
       padding: 3px 8px;
       font-size: 12px;
       font-weight: 850;
@@ -206,23 +268,41 @@
     .notice {
       margin-top: 14px;
       border-left: 4px solid var(--gold);
-      background: #fff;
+      background: var(--panel-strong);
       border-radius: 6px;
       padding: 12px;
     }
 
     .soft-panel {
       color: var(--muted);
+      background: var(--panel-strong);
     }
 
     @media (max-width: 820px) {
       main { grid-template-columns: 1fr; }
       .split-fields { grid-template-columns: 1fr; }
+      .member-topbar {
+        justify-content: flex-start;
+      }
+      .member-brand-lockup {
+        width: 100%;
+      }
+      header {
+        min-height: 300px;
+        background:
+          linear-gradient(180deg, rgba(8, 9, 16, 0.78), rgba(8, 9, 16, 0.98)),
+          url("/images/one-time/brand/onetime-hero-vertical.webp") right bottom / auto 100% no-repeat,
+          var(--black);
+      }
     }
   </style>
 </head>
-<body>
+<body class="one-time-member-shell" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
   <nav class="member-topbar" aria-label="One Time member navigation">
+    <div class="member-brand-lockup" aria-label="One Time Mishnayos member area">
+      <img src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
+      <span>One Time Mishnayos<small>Member area</small></span>
+    </div>
     <a href="/one-time">One Time home</a>
     <a href="/rabbi-member" aria-current="page">Member home</a>
     <a href="/member-library">Library</a>
@@ -234,6 +314,7 @@
   </nav>
   <header>
     <div>
+      <img class="member-hero-logo" src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
       <span class="eyebrow">Preview Member Area</span>
       <h1>One Time Mishnayos</h1>
       <p>Library and live class access are shown only when an active grant exists.</p>

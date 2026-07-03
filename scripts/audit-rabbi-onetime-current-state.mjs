@@ -32,6 +32,12 @@ const ROUTES = [
     surface: 'CRM contacts / participants',
   },
   {
+    id: 'operations-crm-contacts',
+    route: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts',
+    viewClass: 'RABBI_PROVIDER_ADMIN',
+    surface: 'One Time CRM contact review',
+  },
+  {
     id: 'operations-communications',
     route: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers',
     viewClass: 'EMAIL_PROVIDER_SETUP',
@@ -233,6 +239,16 @@ async function redactPrivateEvidence(page, route) {
   }, isOperationsRoute(route));
 }
 
+async function waitForOperationsRender(page, route) {
+  if (!isOperationsRoute(route)) return;
+  await page.waitForFunction(() => {
+    const text = (document.body?.innerText || '').trim();
+    if (!text) return false;
+    if (/^Loading BNA Operations/i.test(text)) return false;
+    return Boolean(document.querySelector('.ops-app-shell, .ops-sidebar, .page-heading, [data-one-time-rabbi-dashboard]'));
+  }, null, { timeout: 15000 }).catch(() => null);
+}
+
 async function collectPageState(page, route, responseStatus) {
   return page.evaluate(({ route, responseStatus }) => {
     const text = document.body?.innerText || '';
@@ -246,12 +262,24 @@ async function collectPageState(page, route, responseStatus) {
       href: node.getAttribute('href') || '',
     })).slice(0, 160);
     const unlabeledButtons = buttons.filter((button) => !button.text && !button.aria).length;
-    const inputs = Array.from(document.querySelectorAll('input,select,textarea')).map((node) => {
+    const isVisibleFormControl = (node) => {
+      const type = String(node.getAttribute('type') || '').toLowerCase();
+      if (type === 'hidden' || node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
+      if (node.closest('[hidden], [aria-hidden="true"]')) return false;
+      const style = window.getComputedStyle(node);
+      if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) return false;
+      return Array.from(node.getClientRects()).some((rect) => rect.width > 0 && rect.height > 0);
+    };
+    const inputs = Array.from(document.querySelectorAll('input,select,textarea')).filter(isVisibleFormControl).map((node) => {
       const id = node.getAttribute('id') || '';
       const label = id ? document.querySelector(`label[for="${CSS.escape(id)}"]`) : null;
+      const ariaLabelledBy = node.getAttribute('aria-labelledby') || '';
+      const labelledBy = ariaLabelledBy
+        ? ariaLabelledBy.split(/\s+/).some((labelId) => labelId && document.getElementById(labelId))
+        : false;
       return {
         type: node.getAttribute('type') || node.tagName.toLowerCase(),
-        labelled: Boolean(label || node.getAttribute('aria-label') || node.getAttribute('placeholder')),
+        labelled: Boolean(label || labelledBy || node.closest('label') || node.getAttribute('aria-label') || node.getAttribute('placeholder') || node.getAttribute('title')),
       };
     });
     const forbiddenMatches = {
@@ -278,6 +306,7 @@ async function collectPageState(page, route, responseStatus) {
       has_h1: Boolean(document.querySelector('h1')),
       button_count: buttons.length,
       unlabeled_button_count: unlabeledButtons,
+      visible_input_count: inputs.length,
       inputs_without_labels: inputs.filter((input) => !input.labelled).length,
       horizontal_overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
       scroll_width: document.documentElement.scrollWidth,
@@ -425,6 +454,7 @@ async function captureRoute(browser, baseUrl, routeMeta, viewport, cookieHeader,
     const response = await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 60000 });
     responseStatus = response?.status() || 0;
     await page.waitForTimeout(1800);
+    await waitForOperationsRender(page, routeMeta.route);
   } catch (error) {
     navigationError = error.message;
   }
@@ -455,6 +485,7 @@ async function captureRoute(browser, baseUrl, routeMeta, viewport, cookieHeader,
     has_h1: false,
     button_count: 0,
     unlabeled_button_count: 0,
+    visible_input_count: 0,
     inputs_without_labels: 0,
     horizontal_overflow: false,
     scroll_width: viewport.width,
@@ -485,6 +516,7 @@ async function captureRoute(browser, baseUrl, routeMeta, viewport, cookieHeader,
     checks: {
       horizontal_overflow: state.horizontal_overflow,
       unlabeled_button_count: state.unlabeled_button_count,
+      visible_input_count: state.visible_input_count,
       inputs_without_labels: state.inputs_without_labels,
       has_h1: state.has_h1,
       browser_content_untrusted: true,
@@ -600,7 +632,7 @@ function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix }
     captures,
     findings,
     state_matrix: stateMatrix,
-    next_recommended_packet: '02-brand-kit-and-design-reference-alignment plus 03-ia-nav-filter-cleanup, then 04-crm-pipeline-contact-detail if audit findings confirm CRM structure gaps.',
+    next_recommended_packet: 'Manual screenshot review is required. Split any newly found defect into a focused Product Quality Compiler packet. Deploy/live-smoke remains blocked until DEC-20260702-801 is resolved.',
   };
   writeJson(path.join(outDir, 'report.json'), report);
 
@@ -641,7 +673,7 @@ function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix }
     '',
     '## Next Recommended Packet',
     '',
-    'Start with `02-brand-kit-and-design-reference-alignment` and `03-ia-nav-filter-cleanup`; run `04-crm-pipeline-contact-detail` after the audit screenshots are reviewed with Shloimie.',
+    'Manual screenshot review is required. Split any newly found defect into a focused Product Quality Compiler packet. Deploy/live-smoke remains blocked by `DEC-20260702-801`.',
   ].join('\n'));
 
   writeText(path.join(outDir, 'route-inventory.md'), [
@@ -690,11 +722,10 @@ function writeReports({ outDir, baseUrl, auth, captures, findings, stateMatrix }
   writeText(path.join(outDir, 'recommended-child-packets.md'), [
     '# Recommended Child Packets',
     '',
-    '1. `02-brand-kit-and-design-reference-alignment` - compare screenshots to the corrected One Time black/yellow kit and remove BNA palette bleed from One Time surfaces.',
-    '2. `03-ia-nav-filter-cleanup` - clean category/subcategory/filter redundancy found in Operations routes.',
-    '3. `04-crm-pipeline-contact-detail` - convert contacts/participants into first-party CRM list/detail/pipeline patterns only after reviewing redacted screenshots.',
-    '4. `05-community-classes-questions-provider-pipeline` - verify class/community/question separation and private-first moderation.',
-    '5. `12-mobile-polish` - address mobile overflow/action visibility after module-level fixes.',
+    '1. Review the latest redacted screenshots manually for any remaining route-specific defects that automation cannot classify.',
+    '2. Split any new defect into a focused Product Quality Compiler packet before implementation.',
+    '3. When `DEC-20260702-801` is resolved, run deploy/live-smoke for app-visible One Time Operations, review, and portal changes.',
+    '4. Keep CRM/community/classroom follow-ups first-party only; do not add GHL, LeadConnector, external CRM writes, sends, payments, access grants, DNS, uploads, or publishes without an explicit Decision.',
     '',
     'Do not implement all of these in one Codex session. Each implementation packet must pass Product Quality Compiler Definition of Ready first.',
   ].join('\n'));

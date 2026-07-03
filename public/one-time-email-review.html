@@ -107,6 +107,300 @@
     .error { color: #9a261d; border-color: #efb3ac; }
   </style>
   <link rel="stylesheet" href="/css/one-time-shared-review.css">
+  <style>
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] {
+      --email-review-bg: #080910;
+      --email-review-panel: #10131a;
+      --email-review-panel-2: #151a22;
+      --email-review-line: rgba(237, 229, 24, 0.2);
+      --email-review-soft-line: rgba(255, 255, 255, 0.12);
+      --email-review-text: #ffffff;
+      --email-review-muted: #bec8d2;
+      --email-review-chip: rgba(237, 229, 24, 0.12);
+      min-height: 100vh;
+      color: var(--email-review-text);
+      background:
+        radial-gradient(circle at top right, rgba(237, 229, 24, 0.16), transparent 28rem),
+        linear-gradient(180deg, #080910 0%, #0d141e 52%, #111923 100%) !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--email-review-line);
+      background: rgba(8, 9, 16, 0.92) !important;
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(16px);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .wrap {
+      width: min(1180px, calc(100% - 28px));
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] header .wrap {
+      padding: 14px 0;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] main.wrap {
+      display: grid;
+      gap: 16px;
+      padding-top: 20px;
+      padding-bottom: 44px;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .top {
+      gap: 18px;
+      align-items: center;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .brand-lockup {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      max-width: 560px;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .brand-mark {
+      width: 76px;
+      height: 54px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      border-radius: 8px;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .brand-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] h1 {
+      color: var(--email-review-text) !important;
+      font-size: clamp(1.45rem, 2.1vw, 2rem);
+      line-height: 1.05;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] header p,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-review-kicker {
+      color: var(--email-review-muted) !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] header p {
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-review-kicker {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--one-time-yellow) !important;
+      font-size: 0.76rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .nav {
+      justify-content: flex-end;
+      max-width: min(100%, 520px);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .nav a {
+      min-height: 36px;
+      border-color: var(--email-review-soft-line);
+      color: var(--email-review-text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .notice,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-template-summary {
+      border: 1px solid var(--email-review-line) !important;
+      border-radius: 8px;
+      color: var(--email-review-text);
+      background: linear-gradient(135deg, rgba(237, 229, 24, 0.16), rgba(237, 229, 24, 0.07)) !important;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .notice {
+      margin: 0;
+      padding: 11px 13px;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-template-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      flex-wrap: wrap;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-template-summary strong {
+      display: block;
+      color: var(--email-review-text);
+      font-size: 1rem;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-template-summary span {
+      color: var(--email-review-muted);
+      font-size: 0.9rem;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-template-summary .meta {
+      justify-content: flex-end;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .grid {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-template-card,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .empty,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .error {
+      min-width: 0;
+      border: 1px solid var(--email-review-soft-line) !important;
+      border-radius: 8px;
+      color: var(--email-review-text);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
+        var(--email-review-panel) !important;
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-template-card {
+      align-content: start;
+      gap: 13px;
+      padding: 15px;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .template-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] article h2 {
+      color: var(--email-review-text) !important;
+      font-size: 1.02rem;
+      line-height: 1.18;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] article p {
+      color: var(--email-review-muted);
+      font-size: 0.92rem;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .template-section {
+      display: grid;
+      gap: 5px;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .template-section strong {
+      color: var(--email-review-text);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .body-preview {
+      border-left: 3px solid var(--one-time-yellow);
+      border-radius: 0 8px 8px 0;
+      color: #f4f7fb;
+      background: rgba(255, 255, 255, 0.055);
+      padding: 10px 12px;
+      line-height: 1.45;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-color: rgba(237, 229, 24, 0.28);
+      color: #fffce0;
+      background: var(--email-review-chip);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .pill.status-no-send {
+      color: var(--one-time-black);
+      border-color: var(--one-time-yellow);
+      background: var(--one-time-yellow);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .pill.status-preview {
+      color: #c8f3ff;
+      border-color: rgba(11, 159, 201, 0.42);
+      background: rgba(11, 159, 201, 0.14);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .blocked-reason {
+      border-top: 1px solid var(--email-review-soft-line);
+      padding-top: 10px;
+      color: var(--email-review-muted);
+    }
+
+    @media (max-width: 760px) {
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .wrap {
+        width: min(100% - 18px, 100%);
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] header {
+        position: static;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .top,
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .nav {
+        align-items: flex-start;
+        justify-content: flex-start;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .brand-lockup {
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 9px;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .brand-mark {
+        width: 52px;
+        height: 38px;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] h1 {
+        font-size: 1.28rem;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] header p {
+        font-size: 0.82rem;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-review-kicker {
+        font-size: 0.68rem;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-template-summary {
+        align-items: stretch;
+        padding: 10px 12px;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .email-template-summary .meta {
+        justify-content: flex-start;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="email-review"] .template-header {
+        display: grid;
+      }
+    }
+  </style>
 </head>
 <body class="one-time-review-active" data-one-time-rabbi-dashboard="email-review" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
   <header>
@@ -114,8 +408,9 @@
       <div class="brand-lockup">
         <span class="brand-mark" aria-hidden="true"><img src="/images/one-time/brand/onetimelogo.webp" alt=""></span>
         <div>
-        <h1>One Time Email Review</h1>
-        <p>Preview-only parent, student, class, payment, and support templates. No live email can be sent from this page.</p>
+          <span class="email-review-kicker">Review-only email templates</span>
+          <h1>One Time Email Review</h1>
+          <p>Preview-only templates. No live email can be sent from this page.</p>
         </div>
       </div>
       <nav class="nav" aria-label="One Time review links">
@@ -128,40 +423,55 @@
     </div>
   </header>
   <main class="wrap">
-    <div class="notice">Email sending stays blocked for this review until Resend sender/domain setup, recipient policy, and launch approval are complete. This page performs no external write.</div>
+    <div class="notice">Email sending is blocked here until Resend sender/domain setup, recipient policy, and launch approval are complete. No external write.</div>
+    <section class="email-template-summary" aria-label="Email review status">
+      <div>
+        <strong id="templateCount">Loading templates...</strong>
+        <span>Preview-only until sender/domain and recipient policy are approved.</span>
+      </div>
+      <div class="meta" aria-label="Email sending status">
+        <span class="pill status-preview">preview_only</span>
+        <span class="pill status-no-send">No-send</span>
+      </div>
+    </section>
     <section id="templateList" class="grid" aria-live="polite">
       <div class="empty">Loading templates...</div>
     </section>
   </main>
   <script>
     const list = document.getElementById('templateList');
+    const templateCount = document.getElementById('templateCount');
     function escapeHtml(value) {
       return String(value ?? '').replace(/[&<>"']/g, (char) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
       })[char]);
     }
     function renderTemplate(item) {
+      const sendStatus = item.no_send ? 'No-send' : 'Send gated';
+      const readiness = item.send_readiness || 'preview_only';
       return `
-        <article>
-          <div>
-            <h2>${escapeHtml(item.label || item.key || 'Email template')}</h2>
-            <p>${escapeHtml(item.key || '')}</p>
+        <article class="email-template-card">
+          <div class="template-header">
+            <div>
+              <h2>${escapeHtml(item.label || item.key || 'Email template')}</h2>
+              <p>${escapeHtml(item.key || '')}</p>
+            </div>
+            <span class="pill status-no-send">${escapeHtml(sendStatus)}</span>
           </div>
-          <div>
+          <div class="template-section">
             <span class="pill">Subject</span>
             <p><strong>${escapeHtml(item.subject || '')}</strong></p>
           </div>
-          <div>
+          <div class="template-section">
             <span class="pill">Preview text</span>
             <p>${escapeHtml(item.preview_text || '')}</p>
           </div>
           <div class="body-preview">${escapeHtml(item.body_preview || '')}</div>
           <div class="meta">
             <span class="pill">${escapeHtml(item.recipient_scope || 'Recipient scope')}</span>
-            <span class="pill">${escapeHtml(item.send_readiness || 'preview_only')}</span>
-            <span class="pill">${item.no_send ? 'No-send' : 'Send enabled'}</span>
+            <span class="pill status-preview">${escapeHtml(readiness)}</span>
           </div>
-          <p>${escapeHtml(item.blocked_reason || 'No blocker recorded.')}</p>
+          <p class="blocked-reason">${escapeHtml(item.blocked_reason || 'No blocker recorded.')}</p>
         </article>
       `;
     }
@@ -171,8 +481,10 @@
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Could not load templates');
         const templates = Array.isArray(data.email_templates) ? data.email_templates : [];
+        templateCount.textContent = templates.length === 1 ? '1 template ready for review' : `${templates.length} templates ready for review`;
         list.innerHTML = templates.length ? templates.map(renderTemplate).join('') : '<div class="empty">No email templates were returned.</div>';
       } catch (error) {
+        templateCount.textContent = 'Template review could not load';
         list.innerHTML = `<div class="error">${escapeHtml(error.message || 'Could not load templates')}</div>`;
       }
     }

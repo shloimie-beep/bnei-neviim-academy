@@ -1,0 +1,688 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-820",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-818",
+      "PKT-20260702-819"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/design-references/2026-07-01-brand-kit-correction/BRAND-KIT-CORRECTION.md",
+      "memory-topics/one-time-rabbi-sheller.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-email-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-email-review-390-mobile.png",
+      "public/one-time-email-review.html",
+      "public/css/one-time-shared-review.css",
+      "ops/route-registry.json"
+    ],
+    "produces": [
+      "public/one-time-email-review.html",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/18-email-review-brand-layout.product-quality.json",
+    "terminal_condition": "The One Time email review route renders as a compact black/yellow review-only email template surface on desktop and mobile, with no send, payment, access grant, account, DNS, Resend, or external-provider behavior change.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Email Review Brand And Layout Cleanup",
+  "created_at": "2026-07-03T03:15:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "EMAIL_PROVIDER_SETUP",
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "COMMUNICATIONS_EMAIL",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.9,
+    "reasons": [
+      "Latest email-review screenshots show the route with an oversized logo masthead that consumes the first viewport before the review work surface.",
+      "The template cards still read as a pale generic review grid rather than a One Time black/yellow provider email review surface.",
+      "The fix can be scoped to visual layout and copy structure in the static review page without changing the email template endpoint, no-send policy, route access, registry, or external provider behavior."
+    ],
+    "affected_product_surfaces": [
+      "One Time email template review"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Resend sender/domain setup, recipient policy, DNS, real email sends, payment, checkout, and access grants remain out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability",
+      "10-automation-center-readability",
+      "11-participants-members-readability",
+      "12-program-payment-access-readability",
+      "13-communications-provider-messages-readability",
+      "14-program-overview-readability",
+      "15-settings-workspace-readability",
+      "16-member-login-brand-helper-readability",
+      "17-classroom-review-brand-layout",
+      "18-email-review-brand-layout"
+    ],
+    "next_exact_packet": "After this email-review cleanup, continue screenshot-reviewed IA/nav/filter cleanup or CRM contact-detail polish."
+  },
+  "operator_intent_summary": "Make the One Time email review page feel even, readable, and correctly branded by replacing the oversized masthead and pale generic cards with a compact One Time black/yellow preview-only email review surface.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No email template data contract, endpoint path, fetch behavior, send-readiness values, route registry, auth, entitlement, payment, checkout, account, access grant, recipient policy, DNS, Resend, or external-provider behavior change.",
+    "No live email send, bulk email, WhatsApp, Telegram, SMS, Stripe/payment, Drive, Vimeo, Zoom, DNS, account mutation, upload, publish, or external CRM write.",
+    "No GHL runtime or LeadConnector reference.",
+    "No raw private parent, student, member, provider, contact, email body beyond the existing synthetic review templates, token, secret, or credential evidence."
+  ],
+  "affected_surfaces": [
+    "One Time email template review"
+  ],
+  "affected_routes": [
+    "/one-time-email-review.html",
+    "/one-time-email-review"
+  ],
+  "affected_files": [
+    "public/one-time-email-review.html",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/one-time-email-review.html inline page styles, header markup, template card renderer, and no-send labels",
+      "public/css/one-time-shared-review.css shared review variables",
+      "ops/route-registry.json one_time_email_review route policy",
+      "tests/one-time-shared-review-branding.test.js review branding coverage",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js email route smoke coverage",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-email-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-email-review-390-mobile.png"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "Desktop first viewport is dominated by an oversized One Time logo masthead instead of a compact review work surface.",
+      "Template cards render as generic pale cards with weak visual grouping for subject, preview text, recipient scope, no-send status, and blocked reason.",
+      "Mobile page stacks 21 templates in a very long pale column without enough dark One Time framing or scannable template metadata."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely"
+    ],
+    "expanded_phrases": {
+      "clean": "The email review route should read as a polished One Time no-send review console, not a leftover generic card dump.",
+      "even": "Header, warning, template cards, chips, body previews, and blocked reasons should share consistent One Time black/yellow spacing, typography, and card structure.",
+      "loads nicely": "The first loaded desktop and mobile screenshots should show a compact header, visible no-send warning, and contained template cards with no horizontal overflow or layout jump."
+    },
+    "first_party_pattern_interpretation": "This remains a first-party BNA Operations / One Time review-only email surface scoped to rabbi_sheller_provider / one_time_mishnah_class, with no external email provider writes."
+  },
+  "design_pattern_references": [
+    "ops/design-references/2026-07-01-brand-kit-correction/BRAND-KIT-CORRECTION.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-820",
+      "statement": "Fix the One Time email review route so it uses a compact One Time black/yellow review-only layout with readable template cards and a clear no-send setup state.",
+      "expected_result": "Desktop and mobile screenshots show a compact branded header, visible blocked-send notice, dark/readable template cards, consistent chips, contained body-preview text, and no horizontal overflow, while the email review endpoint and no-send behavior remain unchanged.",
+      "acceptance_criteria": [
+        "The email review route no longer renders an oversized logo masthead that pushes the template review surface below the fold.",
+        "Template cards use dark One Time panels with readable headings, subject/preview/body blocks, recipient scope, preview-only status, no-send status, and blocked-reason copy.",
+        "The no-send/blocked-provider setup state remains visible before the template grid and cannot be mistaken for a live send surface.",
+        "Desktop, tablet, and mobile layouts have no horizontal overflow, clipped card text, or unreadable low-contrast template metadata.",
+        "The existing /api/one-time-review/email-templates fetch, review-only template count, route access, no-send values, and external-write policy remain unchanged."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and broad UI cleanup register exist for RAW-20260702-008.",
+      "Brand memory and design reference confirm One Time is black/yellow.",
+      "Latest desktop and mobile screenshots show the email review route with an oversized masthead and generic pale template cards.",
+      "The route registry already states the email review page is public-entry, review-only, and performs no sends or external writes.",
+      "The likely fix is scoped to one static page's markup/CSS only, with no email endpoint or provider setup mutation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time-email-review.html",
+      "viewport": 390,
+      "auth_role": "public_review",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the route before /api/one-time-review/email-templates resolves.",
+      "expected_visible_title": "One Time Email Review",
+      "expected_visible_message": "Loading templates",
+      "expected_primary_action": "Provider",
+      "expected_secondary_actions": [
+        "Parent",
+        "Student",
+        "Classroom"
+      ],
+      "forbidden_content": [
+        "live send confirmation",
+        "private member/contact data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Template list remains an aria-live region.",
+      "accessibility_expectation": "Loading copy is readable on mobile.",
+      "test_smoke_assertion": "Route loads before data with no console/page errors.",
+      "requirement_id": "REQ-20260702-820"
+    },
+    "empty": {
+      "route": "/one-time-email-review.html",
+      "viewport": 390,
+      "auth_role": "public_review_no_templates",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render the route with an empty email_templates response.",
+      "expected_visible_title": "One Time Email Review",
+      "expected_visible_message": "No email templates were returned.",
+      "expected_primary_action": "Provider",
+      "expected_secondary_actions": [
+        "One Time",
+        "Classroom"
+      ],
+      "forbidden_content": [
+        "empty state hidden below a giant logo",
+        "send button"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state remains inside the template list region.",
+      "accessibility_expectation": "Empty card has readable contrast.",
+      "test_smoke_assertion": "Empty state remains contained with no horizontal overflow.",
+      "requirement_id": "REQ-20260702-820"
+    },
+    "populated": {
+      "route": "/one-time-email-review.html",
+      "viewport": 1440,
+      "auth_role": "public_review",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the route with the shared One Time review template fixture.",
+      "expected_visible_title": "Parent invitation",
+      "expected_visible_message": "You are invited to One Time Mishnah",
+      "expected_primary_action": "Provider",
+      "expected_secondary_actions": [
+        "Parent",
+        "Student",
+        "Classroom"
+      ],
+      "forbidden_content": [
+        "oversized logo masthead",
+        "pale generic card dump"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Each template remains an article with a heading.",
+      "accessibility_expectation": "Cards and chips are readable and scannable.",
+      "test_smoke_assertion": "Focused probe confirms compact header and rendered template cards.",
+      "requirement_id": "REQ-20260702-820"
+    },
+    "filtered_empty": {
+      "route": "/one-time-email-review.html",
+      "viewport": 430,
+      "auth_role": "public_review_filtered_empty",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Simulate no templates matching a future filter or empty fixture response.",
+      "expected_visible_title": "One Time Email Review",
+      "expected_visible_message": "No email templates were returned.",
+      "expected_primary_action": "Provider",
+      "expected_secondary_actions": [
+        "Parent",
+        "Student"
+      ],
+      "forbidden_content": [
+        "hidden empty state",
+        "external send control"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The empty message remains in the aria-live template list.",
+      "accessibility_expectation": "Empty message remains readable and contained.",
+      "test_smoke_assertion": "No-template state fits mobile width.",
+      "requirement_id": "REQ-20260702-820"
+    },
+    "error": {
+      "route": "/one-time-email-review.html",
+      "viewport": 390,
+      "auth_role": "public_review_api_error",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Return a non-ok response from /api/one-time-review/email-templates.",
+      "expected_visible_title": "One Time Email Review",
+      "expected_visible_message": "Could not load templates",
+      "expected_primary_action": "Provider",
+      "expected_secondary_actions": [
+        "One Time"
+      ],
+      "forbidden_content": [
+        "raw API payload",
+        "stack trace"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error message is injected into the aria-live list region.",
+      "accessibility_expectation": "Error card remains high contrast and readable.",
+      "test_smoke_assertion": "Error state does not expose raw private data.",
+      "requirement_id": "REQ-20260702-820"
+    },
+    "blocked_setup": {
+      "route": "/one-time-email-review.html",
+      "viewport": 1440,
+      "auth_role": "public_review",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the route while Resend sender/domain and recipient policy are not approved.",
+      "expected_visible_title": "One Time Email Review",
+      "expected_visible_message": "Email sending stays blocked",
+      "expected_primary_action": "No-send",
+      "expected_secondary_actions": [
+        "preview_only"
+      ],
+      "forbidden_content": [
+        "send enabled",
+        "billing changed",
+        "domain configured"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked notice appears before the template list.",
+      "accessibility_expectation": "Blocked setup copy is readable and visually tied to no-send chips.",
+      "test_smoke_assertion": "API still returns send_disabled true and external_write_performed false.",
+      "requirement_id": "REQ-20260702-820"
+    },
+    "preview_only": {
+      "route": "/one-time-email-review.html",
+      "viewport": 390,
+      "auth_role": "public_review",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Inspect any rendered template card.",
+      "expected_visible_title": "Preview text",
+      "expected_visible_message": "preview_only",
+      "expected_primary_action": "No-send",
+      "expected_secondary_actions": [
+        "One selected parent",
+        "One linked student"
+      ],
+      "forbidden_content": [
+        "Send enabled as an active state",
+        "external write confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview-only and no-send labels remain text, not icon-only state.",
+      "accessibility_expectation": "Preview-only state is readable without color alone.",
+      "test_smoke_assertion": "All rendered template cards preserve no-send labels.",
+      "requirement_id": "REQ-20260702-820"
+    },
+    "success_readback": {
+      "route": "/one-time-email-review.html",
+      "viewport": 1024,
+      "auth_role": "public_review",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load the shared One Time review data fixture successfully.",
+      "expected_visible_title": "One Time Email Review",
+      "expected_visible_message": "21 templates",
+      "expected_primary_action": "Provider",
+      "expected_secondary_actions": [
+        "Classroom"
+      ],
+      "forbidden_content": [
+        "templates from another workspace",
+        "private contact export"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Template articles preserve headings and meaningful section labels.",
+      "accessibility_expectation": "Tablet layout uses two or three contained columns without overflow.",
+      "test_smoke_assertion": "Review data still returns 21 templates and external_write_performed false.",
+      "requirement_id": "REQ-20260702-820"
+    },
+    "permission_denied": {
+      "route": "/one-time-email-review.html",
+      "viewport": 390,
+      "auth_role": "public_review",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open as a logged-out visitor.",
+      "expected_visible_title": "One Time Email Review",
+      "expected_visible_message": "Preview-only parent, student, class, payment, and support templates.",
+      "expected_primary_action": "Provider",
+      "expected_secondary_actions": [
+        "Parent",
+        "Student"
+      ],
+      "forbidden_content": [
+        "login-required private data",
+        "member token"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Public-entry route does not require a private form to view synthetic templates.",
+      "accessibility_expectation": "Logged-out public review remains readable.",
+      "test_smoke_assertion": "Route registry expectation remains public_entry with no private member data.",
+      "requirement_id": "REQ-20260702-820"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time-email-review.html",
+      "viewport": 430,
+      "auth_role": "public_review_mobile",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile route and scroll to the first three template cards.",
+      "expected_visible_title": "Parent invitation",
+      "expected_visible_message": "No-send",
+      "expected_primary_action": "Provider",
+      "expected_secondary_actions": [
+        "Parent",
+        "Student",
+        "Classroom"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "clipped card labels"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile stacked cards retain article headings and readable labels.",
+      "accessibility_expectation": "Mobile cards have readable typography, chip wrapping, and target-safe nav links.",
+      "test_smoke_assertion": "Focused probe confirms mobile width has no overflow and card text is not clipped.",
+      "requirement_id": "REQ-20260702-820"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/one-time-email-review.html", "viewport": 1440, "state": "populated", "required": true },
+      { "route": "/one-time-email-review.html", "viewport": 1024, "state": "success_readback", "required": true },
+      { "route": "/one-time-email-review.html", "viewport": 768, "state": "success_readback", "required": true },
+      { "route": "/one-time-email-review.html", "viewport": 430, "state": "mobile_drawer_or_detail_state", "required": true },
+      { "route": "/one-time-email-review.html", "viewport": 390, "state": "mobile_drawer_or_detail_state", "required": true }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260702-820-001",
+        "route": "/one-time-email-review.html",
+        "viewport": 1440,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-email-review-1440-desktop.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout/screenshots/one-time-email-review-1440-desktop.png",
+        "defect_codes": [
+          "VQ-BRAND-001",
+          "VQ-LAYOUT-005",
+          "VQ-LAYOUT-006"
+        ],
+        "severity": "P1",
+        "user_impact": "The email-review screen starts as a huge logo area and then drops into a generic card grid, making the review task feel unfinished and hard to scan.",
+        "expected_fix": "Use a compact One Time black/yellow header and dark, structured template cards that surface no-send status and blocked setup state.",
+        "requirement_id": "REQ-20260702-820"
+      },
+      {
+        "finding_id": "VQ-20260702-820-002",
+        "route": "/one-time-email-review.html",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-email-review-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout/screenshots/one-time-email-review-390-mobile.png",
+        "defect_codes": [
+          "VQ-RESP-001",
+          "VQ-LAYOUT-005",
+          "VQ-ACTION-005"
+        ],
+        "severity": "P1",
+        "user_impact": "Mobile review requires scrolling through a long pale list with weak preview/no-send hierarchy.",
+        "expected_fix": "Make mobile cards compact, dark/readable, and explicit about preview-only/no-send state.",
+        "requirement_id": "REQ-20260702-820"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Email review nav links remain keyboard reachable and readable on dark header background.",
+      "The no-send notice remains visible before the template list.",
+      "Each template article keeps a clear heading and readable labels for subject, preview text, body preview, recipient scope, preview-only status, no-send state, and blocked reason.",
+      "Desktop, tablet, and mobile screenshots fit without horizontal overflow at 390, 430, 768, 1024, and 1440 widths."
+    ],
+    "test_expectations": [
+      "Audit has no generated h1/label/horizontal-overflow findings.",
+      "Focused email-review probe confirms compact header, dark card styling, no overflow, no console errors, and unchanged no-send labels.",
+      "Existing shared review and final local smoke tests still pass."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Load email templates",
+      "selector_or_action_key": "loadTemplates() / /api/one-time-review/email-templates",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time email review",
+      "external_write": false,
+      "handler_or_blocker": "Existing read-only review endpoint; unchanged by this visual packet.",
+      "registry_required": false
+    },
+    {
+      "label": "No-send",
+      "selector_or_action_key": "template.no_send rendered status label",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time email review",
+      "external_write": false,
+      "handler_or_blocker": "Existing no_send and send_readiness values remain the source of truth.",
+      "registry_required": false
+    },
+    {
+      "label": "Provider",
+      "selector_or_action_key": "header nav href /provider.html?review=one-time",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time email review",
+      "external_write": false,
+      "handler_or_blocker": "Existing review navigation link; no mutation.",
+      "registry_required": false
+    },
+    {
+      "label": "Classroom",
+      "selector_or_action_key": "header nav href /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time email review",
+      "external_write": false,
+      "handler_or_blocker": "Existing review navigation link; no mutation.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "read_paths": [
+      "Existing /api/one-time-review/email-templates fixture endpoint",
+      "Existing static /one-time-email-review.html route"
+    ],
+    "write_paths": [],
+    "fixtures_or_seed": [
+      "Existing shared One Time review data fixture with 21 preview-only templates"
+    ],
+    "data_privacy_notes": [
+      "Use synthetic review template screenshots only.",
+      "Do not commit raw private recipient lists, parent/student/member contact exports, tokens, secrets, sender credentials, or provider account details."
+    ],
+    "unchanged_contracts": [
+      "email_templates array length and keys",
+      "template no_send true values",
+      "template send_readiness preview_only values",
+      "blocked_reason copy",
+      "send_disabled true response",
+      "external_write_performed false response"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_scope": "Public-entry One Time review-only email template page using synthetic template data and no private recipient exports.",
+    "forbidden_data": [
+      "Raw private contact exports",
+      "real recipient email addresses",
+      "Resend API keys",
+      "DNS records or domain credentials",
+      "member tokens",
+      "payment account data",
+      "provider secrets"
+    ],
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "SETUP_ONLY_NO_WRITE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260702-820-001",
+      "scope": "Email review page-specific visual cleanup only.",
+      "instructions": [
+        "Add page-scoped styles after the shared review stylesheet so only body[data-one-time-rabbi-dashboard=\"email-review\"] is affected.",
+        "Make the header compact, dark, and balanced with a small One Time logo mark, readable title/copy, and wrapped nav links.",
+        "Render a scannable template summary row and dark One Time template cards with clear subject, preview text, body preview, meta chips, no-send state, and blocked reason.",
+        "Preserve loadTemplates(), escapeHtml(), endpoint URL, no-send labels, route links, and review-only copy."
+      ],
+      "files_allowed": [
+        "public/one-time-email-review.html",
+        "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "requirement_ids": [
+        "REQ-20260702-820"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/one-time-email-review.html",
+      "public/css/one-time-shared-review.css",
+      "tests/one-time-shared-review-branding.test.js",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "ops/route-registry.json"
+    ],
+    "files_allowed_to_edit": [
+      "public/one-time-email-review.html",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if the work expands into Resend setup, live sends, registry policy changes, Operations communications, CRM contact detail, or route/auth behavior.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required_commands": [
+      "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/18-email-review-brand-layout.product-quality.json",
+      "node --test tests/one-time-shared-review-branding.test.js tests/one-time-rabbi-ui-final-local-smoke.test.js tests/one-time-review-only-server.test.js",
+      "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "focused_browser_checks": [
+      "Desktop and mobile email-review screenshots have no horizontal overflow.",
+      "Header height is compact enough that the no-send notice and first template are visible without excessive blank masthead.",
+      "First template article has dark panel styling, readable h2 text, visible Preview text, preview_only, and No-send chips.",
+      "All template cards preserve no-send labels and no console/page errors occur."
+    ],
+    "skipped_or_blocked": [
+      "Production deploy/live-smoke blocked by DEC-20260702-801 until target is explicit.",
+      "Real Resend sender/domain, DNS, recipient policy, and live email send checks are out of scope."
+    ]
+  },
+  "evidence": {
+    "before_screenshots": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-email-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/screenshots/one-time-email-review-390-mobile.png"
+    ],
+    "after_screenshots": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout/screenshots/one-time-email-review-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout/screenshots/one-time-email-review-390-mobile.png"
+    ],
+    "report_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout/probe/email-review-brand-layout-probe.json",
+      "ops/watchdog-audits/"
+    ],
+    "register_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Packet validates with npm run pqc:validate.",
+      "The email review page implements compact One Time black/yellow review-only visual treatment without changing endpoint, no-send, route, send, payment, or provider behavior.",
+      "Focused desktop/mobile browser probe passes with no horizontal overflow, no console/page errors, compact header, readable dark cards, preserved preview_only and No-send labels, and unchanged 21-template fixture.",
+      "Full local Rabbi / One Time audit captures after screenshots with no automated findings.",
+      "Relevant tests and watchdogs pass, or exact blockers are recorded.",
+      "Register, ledger, and changelog record local verification evidence.",
+      "Production deploy/live-smoke is completed before terminal Done, or this requirement remains locally verified with DEC-20260702-801 as the blocker."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/18-email-review-brand-layout.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "apply_patch",
+      "shell tests",
+      "Playwright focused probe",
+      "full current-state audit"
+    ],
+    "skipped_actions_policy": "Do not run live email sends, external provider writes, DNS changes, payment changes, access grants, or production deploy without explicit target/approval.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout/",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No new Product Quality Compiler drift findings for the email-review packet, no GHL/external-write policy drift, and no unsupported terminal Done without deploy/live-smoke proof."
+  },
+  "app_visible": true,
+  "next_packet": {
+    "recommended": "Continue screenshot-reviewed IA/nav/filter cleanup or CRM contact-detail polish after this email-review page is locally verified.",
+    "blocked_by": [
+      "DEC-20260702-801 for terminal deploy/live-smoke Done"
+    ]
+  }
+}

@@ -1,0 +1,679 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-816",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-806",
+      "PKT-20260702-807",
+      "PKT-20260702-808",
+      "PKT-20260702-809",
+      "PKT-20260702-810",
+      "PKT-20260702-811",
+      "PKT-20260702-812",
+      "PKT-20260702-813",
+      "PKT-20260702-814",
+      "PKT-20260702-815"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-overview-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-overview-390-mobile.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/css/one-time-operations.css",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/14-program-overview-readability.product-quality.json",
+    "terminal_condition": "The One Time Program Overview route renders its metric summary, Mishnayos Membership detail panel, and Command Bot panel as readable dark One Time panels on desktop and mobile without changing navigation, bot action, payment, access, or provider behavior.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Program Overview Readability Cleanup",
+  "created_at": "2026-07-03T01:10:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.9,
+    "reasons": [
+      "Latest screenshots show the Program Overview route still mixes bright generic cards into the dark One Time shell.",
+      "The route is the first Rabbi workspace landing state, so uneven panels make the project feel unfinished.",
+      "The fix is visual and can be scoped to the existing route marker and One Time Operations CSS."
+    ],
+    "affected_product_surfaces": [
+      "One Time Operations Program Overview route"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Real payment, access grant, send, bot mutation, provider setup, and external account actions are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability",
+      "10-automation-center-readability",
+      "11-participants-members-readability",
+      "12-program-payment-access-readability",
+      "13-communications-provider-messages-readability",
+      "14-program-overview-readability"
+    ],
+    "next_exact_packet": "After this Program Overview readability cleanup, continue manual screenshot-reviewed packets for IA/nav/filter alignment, CRM contact detail polish, or remaining portal defects."
+  },
+  "operator_intent_summary": "Make the One Time Program Overview route feel even and loaded by replacing bright generic overview panels with contained readable One Time admin panels.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No service-provider tab, metric count, navigation, payment, checkout, access grant, bot preview, provider, participant, communications, data loader, route access, or API behavior change.",
+    "No external send, publish, upload, payment charge, access grant, Drive, Vimeo, Zoom, DNS, account, external CRM write, raw private evidence, or secret exposure.",
+    "No GHL runtime or LeadConnector reference."
+  ],
+  "affected_surfaces": [
+    "One Time Operations Program Overview route"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview"
+  ],
+  "affected_files": [
+    "public/css/one-time-operations.css",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/operations.html renderProviderProgramWorkspace",
+      "public/operations.html renderMetricButton",
+      "public/operations.html renderContactDetailItem",
+      "public/operations.html renderCommandBotPanel",
+      "public/css/one-time-operations.css One Time Program route overrides",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-overview-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-overview-390-mobile.png"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "The Program Overview route contains a bright metric summary card beside the dark hero.",
+      "The Mishnayos Membership detail panel and its detail tiles render as bright generic cards inside the dark One Time route surface.",
+      "The Command Bot Actions panel and no-actions state render as a large bright card instead of a proportionate dark panel."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely"
+    ],
+    "expanded_phrases": {
+      "clean": "The Program Overview should render as a cohesive One Time admin dashboard with readable dark panels and no bright generic-card islands.",
+      "even": "The route heading, metric summary, Mishnayos Membership detail grid, note, and Command Bot panel should share spacing, contrast, borders, and dark One Time surfaces.",
+      "loads nicely": "After Operations data loads, the first Program Overview screen should immediately present readable summary and membership information without visual style jumps or horizontal overflow."
+    },
+    "first_party_pattern_interpretation": "The route remains a first-party BNA Operations provider workspace view scoped to rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-816",
+      "statement": "Fix the One Time Program Overview readability so the metric summary, Mishnayos Membership detail panel, and Command Bot panel use contained readable One Time styling.",
+      "expected_result": "Desktop and mobile Program Overview screenshots show one cohesive dark route surface with readable metrics, membership details, and bot preview/empty state, with no horizontal overflow.",
+      "acceptance_criteria": [
+        "The existing Program Overview route marker is used for scoped styling.",
+        "The overview metric summary renders as dark readable buttons/cards that keep labels, values, and notes inside their bounds.",
+        "The Mishnayos Membership panel, detail cards, and admin-only note are readable on a dark One Time panel.",
+        "The Command Bot Actions panel and no-actions state are compact, dark, readable, and proportionate on desktop and mobile.",
+        "Navigation, bot preview, payment, access, provider, participant, communications, route access, and external-provider guardrails are unchanged."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and broad UI cleanup register exist for RAW-20260702-008.",
+      "Current screenshot evidence shows the Program Overview bright-card readability defects.",
+      "The route already has data-one-time-program-route=\"overview\" for scoped CSS targeting.",
+      "No payment, access, bot mutation, provider setup, credential, account, privacy, legal, or financial decision is required for local visual implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the Program Overview route before Operations data finishes loading.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Loading BNA Operations",
+      "expected_primary_action": "Program Overview",
+      "expected_secondary_actions": [
+        "Ask",
+        "Menu"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "raw private provider data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The Operations shell keeps one visible h1 and a readable route heading.",
+      "accessibility_expectation": "Loading and loaded states are readable.",
+      "test_smoke_assertion": "Audit waits for loading shell to clear before screenshot capture.",
+      "requirement_id": "REQ-20260702-816"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load Program Overview with no typed bot actions registered for the service provider page.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "No typed actions are registered for this page yet.",
+      "expected_primary_action": "Program Overview",
+      "expected_secondary_actions": [
+        "Launch / Checkout",
+        "Mishnayos Membership"
+      ],
+      "forbidden_content": [
+        "oversized bright bot empty card"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The no-actions state remains inside the Command Bot Actions section.",
+      "accessibility_expectation": "No-actions text remains readable without dominating the page.",
+      "test_smoke_assertion": "Command Bot empty state bounds fit within the route content.",
+      "requirement_id": "REQ-20260702-816"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1024,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load Program Overview with metric buttons and Mishnayos Membership detail fields.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Mishnayos Membership",
+      "expected_primary_action": "Program Overview",
+      "expected_secondary_actions": [
+        "Payment / Access",
+        "Provider Settings"
+      ],
+      "forbidden_content": [
+        "bright generic membership panel",
+        "low-contrast detail tiles"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Membership details remain grouped under the Mishnayos Membership heading.",
+      "accessibility_expectation": "Detail labels and values meet readable contrast.",
+      "test_smoke_assertion": "No console/page errors on the Program Overview route.",
+      "requirement_id": "REQ-20260702-816"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile Program Overview with no typed bot actions registered.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "0 typed actions",
+      "expected_primary_action": "Program Overview",
+      "expected_secondary_actions": [
+        "Launch / Checkout",
+        "Provider Settings"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "partially cut metric labels"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Program tabs retain labels and selected state.",
+      "accessibility_expectation": "Metric cards and detail tiles wrap within mobile width.",
+      "test_smoke_assertion": "Mobile screenshot has no horizontal overflow.",
+      "requirement_id": "REQ-20260702-816"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Operations data fails or returns default local product-system data.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "One Time Mishnah Class",
+      "expected_primary_action": "Program Overview",
+      "expected_secondary_actions": [
+        "Ask"
+      ],
+      "forbidden_content": [
+        "raw private error payload",
+        "unreadable fallback panel"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Fallback text remains visible in the route flow.",
+      "accessibility_expectation": "Fallback/error-adjacent content remains readable.",
+      "test_smoke_assertion": "Console/network errors are recorded in audit but page layout remains readable.",
+      "requirement_id": "REQ-20260702-816"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render Program Overview while provider setup, payment, send, and access actions remain gated elsewhere.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "participants, not BNA students",
+      "expected_primary_action": "Program Overview",
+      "expected_secondary_actions": [
+        "Payment / Access",
+        "Provider Settings"
+      ],
+      "forbidden_content": [
+        "newly enabled payment or access action"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Guardrail copy remains visible where rendered.",
+      "accessibility_expectation": "Preview/no-write state is readable.",
+      "test_smoke_assertion": "No payment, access, send, or bot mutation is triggered.",
+      "requirement_id": "REQ-20260702-816"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Route renders local preview/status information without executing provider actions.",
+      "expected_visible_title": "One Time Mishnah Class",
+      "expected_visible_message": "Revenue-share partner",
+      "expected_primary_action": "Program Overview",
+      "expected_secondary_actions": [
+        "Mishnayos Membership",
+        "Payment / Access"
+      ],
+      "forbidden_content": [
+        "external write confirmation",
+        "access-grant confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview/status information remains sectioned with headings.",
+      "accessibility_expectation": "Preview/status panels remain readable.",
+      "test_smoke_assertion": "No payment, access, provider, or bot mutation is triggered.",
+      "requirement_id": "REQ-20260702-816"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Program Overview and counts load successfully.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Mishnayos Membership",
+      "expected_primary_action": "Program Overview",
+      "expected_secondary_actions": [
+        "Launch / Checkout",
+        "Provider Settings"
+      ],
+      "forbidden_content": [
+        "bright generic overview cards",
+        "low-contrast detail note"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Toolbar tabs and overview panels keep semantic structure.",
+      "accessibility_expectation": "Counts, heading, membership details, and bot empty state are readable.",
+      "test_smoke_assertion": "Full route audit reports findings_count=0.",
+      "requirement_id": "REQ-20260702-816"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "logged_out_or_wrong_scope",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Operations without an authorized session.",
+      "expected_visible_title": "BNA Operations",
+      "expected_visible_message": "Sign in",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "private provider/member/payment/access metadata"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Login controls retain labels.",
+      "accessibility_expectation": "Route-specific CSS does not expose or distort the login state.",
+      "test_smoke_assertion": "Private route access remains unchanged.",
+      "requirement_id": "REQ-20260702-816"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile menu/helper while on the Program Overview route.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Provider Workspace Admin",
+      "expected_primary_action": "Menu",
+      "expected_secondary_actions": [
+        "Ask",
+        "Program Overview"
+      ],
+      "forbidden_content": [
+        "route content hidden behind closed helper",
+        "horizontal overflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile controls preserve aria states.",
+      "accessibility_expectation": "Route content stays readable before and after mobile chrome controls.",
+      "test_smoke_assertion": "Full mobile audit screenshot is non-overlapping.",
+      "requirement_id": "REQ-20260702-816"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+        "viewport": 1440,
+        "state": "success_readback",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+        "viewport": 1024,
+        "state": "populated",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+        "viewport": 768,
+        "state": "filtered_empty",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+        "viewport": 430,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+        "viewport": 390,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260702-816-001",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-overview-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-overview-390-mobile.png",
+        "defect_codes": [
+          "VQ-LAYOUT-001",
+          "VQ-CONTRAST-001",
+          "VQ-TEXT-001"
+        ],
+        "severity": "P1",
+        "user_impact": "The first Program Overview screen looks unfinished because the dark branded route shell contains unrelated bright cards and a large bright no-actions state.",
+        "expected_fix": "Add scoped Program Overview CSS so overview metrics, membership details, detail note, and command-bot empty state use contained readable One Time dark panels.",
+        "requirement_id": "REQ-20260702-816"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Program tabs and metric labels remain visible and readable.",
+      "Mishnayos Membership labels, values, and admin-only note meet readable contrast.",
+      "Command Bot empty-state copy remains readable and no action appears newly enabled."
+    ],
+    "test_expectations": [
+      "Audit has missing_h1=0.",
+      "Audit has visible unlabeled controls=0.",
+      "Program Overview screenshot/probe reports no horizontal overflow or clipped metric/detail text."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Program overview metric buttons",
+      "selector_or_action_key": "[data-one-time-program-route=\"overview\"] .metric-button",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Program",
+      "external_write": false,
+      "handler_or_blocker": "Existing setCurrentSection/switchView handlers; unchanged by this visual packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Command Bot preview actions",
+      "selector_or_action_key": "previewBotActionFromPanel()",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time Operations Program",
+      "external_write": false,
+      "handler_or_blocker": "Existing preview-only bot panel behavior; unchanged by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Mishnayos Membership detail display",
+      "selector_or_action_key": "renderProviderProgramWorkspace()",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time Operations Program",
+      "external_write": false,
+      "handler_or_blocker": "Display-only local status/detail rendering; no payment, access, provider, or external mutation.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "read_paths": [
+      "Existing Operations provider/product-system loaders"
+    ],
+    "write_paths": [],
+    "fixtures_or_seed": [
+      "Existing local One Time review/audit fixtures"
+    ],
+    "data_privacy_notes": [
+      "Use redacted local audit screenshots only.",
+      "Do not commit raw private provider, participant, payment, access, message, secret, or account data."
+    ],
+    "unchanged_contracts": [
+      "serviceProviderSection routing",
+      "renderMetricButton navigation handlers",
+      "renderContactDetailItem markup contract",
+      "renderCommandBotPanel preview behavior",
+      "route access and workspace scoping"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_scope": "Private Operations view scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+    "forbidden_data": [
+      "Raw private provider/member/payment/access/contact/message data",
+      "Secrets, API keys, tokens, session cookies, or account identifiers",
+      "External send/publish/upload/access-grant/payment proof"
+    ],
+    "required_checks": [
+      "No payment, checkout, access grant, message send, campaign, provider setup, or bot mutation.",
+      "No route access behavior change.",
+      "No new GHL/LeadConnector runtime.",
+      "No external CRM writes."
+    ],
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260702-816-A",
+      "scope": "Add scoped One Time Program Overview CSS overrides for overview metrics, membership details, note text, and command-bot panel/empty state.",
+      "files_allowed": [
+        "public/css/one-time-operations.css"
+      ],
+      "verification": [
+        "PQC validation",
+        "local One Time smoke test",
+        "focused Program Overview computed-style probe",
+        "full Rabbi / One Time current-state audit",
+        "watchdog:actions",
+        "watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "files_allowed_to_edit": [
+      "public/css/one-time-operations.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "This packet only covers Program Overview route presentation. IA redesign, CRM detail redesign, payments, access behavior, provider setup, and external systems must split into later packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "low"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/14-program-overview-readability.product-quality.json",
+      "expected_result": "Product Quality packet passes validation."
+    },
+    {
+      "command": "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "expected_result": "One Time review routes still pass without console/page errors or external writes."
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability",
+      "expected_result": "Full local visual audit captures 75 screenshots with no automated findings."
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected_result": "Action registry watchdog remains finding_count 0."
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected_result": "Protocol drift watchdog remains findings 0."
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-overview-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-overview-390-mobile.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-overview-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-overview-390-mobile.png"
+    ],
+    "record_updates": [
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Scoped Program Overview CSS is implemented.",
+      "Local screenshots show dark/readable metrics, Mishnayos Membership details, admin-only note, and Command Bot empty state on desktop/mobile.",
+      "Navigation, bot preview, payment, access, provider, participant, communications, and route access behavior are unchanged.",
+      "Watchdogs pass and records are updated."
+    ],
+    "terminal_status": "local_verified_deploy_live_smoke_blocked_until_DEC-20260702-801"
+  },
+  "trace": {
+    "raw_id": "RAW-20260702-008",
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/14-program-overview-readability.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "focused Playwright computed-style probe",
+      "node scripts/audit-rabbi-onetime-current-state.mjs",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "skipped_actions_policy": "No external provider, payment, checkout, access grant, message send, email, WhatsApp, Telegram, campaign, template, contact mutation, upload, DNS, account, bot mutation, or production deploy action in this local packet.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-overview-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/screenshots/operations-overview-390-mobile.png"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "requirement_ids": [
+      "REQ-20260702-816"
+    ],
+    "decision_ids": [
+      "DEC-20260702-801"
+    ],
+    "ledger_event": "rabbi_onetime_program_overview_readability_verified_local"
+  },
+  "drift_watchdog": {
+    "command": "npm run watchdog:protocol-drift",
+    "required": true,
+    "expected_result": "findings=0",
+    "record_report": true,
+    "blocker_policy": "If unrelated historical drift appears, record it separately and do not mark this packet terminally done without explaining scope."
+  },
+  "next_packet": {
+    "recommended": "Continue manual screenshot-reviewed cleanup for IA/nav/filter alignment, CRM contact detail polish, or remaining One Time portal defects.",
+    "path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "app_visible": true
+}

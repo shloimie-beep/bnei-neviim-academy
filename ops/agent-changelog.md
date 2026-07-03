@@ -28032,3 +28032,563 @@ Actions: 1. Active machine tasks: 22.
 - Ran private Drive Transcript Library dry-run/no-AI sync: planned creates for jobs `101`, `100`, `85`, `84`, `82`, and update for `83`; no Drive writes were performed.
 - Preserved guardrails: no raw transcripts in GitHub, no Drive mutation, no paid transcription retry, no public publishing, no sends, no score/progress/grading writes, and no secret exposure.
 - Verification passed: targeted tests 28/28, keyholder/OpenAI diagnostics, Drive intake audit, Drive library dry-run, privacy-safe digest export, tracked secret audit, JSON parse checks, and BNA run validation.
+
+## 2026-07-02 - Rabbi / One Time Operations Shell UI Cleanup
+
+- Registered `RAW-20260702-008` and created the scoped Product Quality packet
+  `PKT-20260702-802` for common Operations shell heading/label cleanup.
+- Updated `public/operations.html` so desktop, mobile, and initial loading
+  states expose route-level `h1` headings, and added accessible names to shared
+  topbar status/helper/date controls.
+- Updated `scripts/audit-rabbi-onetime-current-state.mjs` so visible form
+  controls only are counted for label findings, with visible-control readback in
+  accessibility JSON.
+- Local after-audit captured 75 screenshots across 15 routes and 5 viewports.
+  Operations results now show 0 missing `h1` captures and 0 visible unlabeled
+  form-control captures; remaining 5 P2 findings are isolated to One Time
+  Library support/debug visibility for the next packet.
+- Verification passed: PQC validation, inline Operations script parse,
+  `node --check scripts/audit-rabbi-onetime-current-state.mjs`,
+  `npm run one-time:seed:ui-review` dry-run with no mutation/external writes,
+  full local after-audit, and `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-02 - Rabbi / One Time Library UI Language And Layout Cleanup
+
+- Created and validated the second scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/03-one-time-library-support-language.product-quality.json`.
+- Updated One Time Library copy so normal proof/readback UI says
+  `Verification proof`, `verification item`, and `Run Verification` instead of
+  support/debug-oriented smoke wording.
+- Added scoped responsive form styling for One Time approval packet
+  `settings-grid` forms so the Class Package Manager fields align on desktop
+  and collapse cleanly on mobile.
+- Updated the action registry metadata for the member-library verification
+  control so its label and selector hint match the new visible UI copy.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/`; automated findings
+  are now 0, Operations missing `h1` count is 0, visible unlabeled controls are
+  0, and One Time Library support-noise readback is false for all audited
+  viewports.
+- Verification passed: PQC validation for packet 03, inline Operations script
+  parse, `node --check scripts/audit-rabbi-onetime-current-state.mjs`, full
+  local after-audit, screenshot spot-check of desktop/mobile library layout,
+  `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, and scoped
+  `git diff --check`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-02 - Rabbi / One Time Provider Workspace Contrast Cleanup
+
+- Created and validated the third scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/04-provider-workspace-contrast-readability.product-quality.json`.
+- Updated `public/operations.html` so the light Operations filter rail gives
+  active tabs and count pills explicit readable colors instead of inheriting the
+  earlier dark-shell active state.
+- Added a scoped One Time provider workspace heading treatment so the Program,
+  Members, and Payment/Access hero text is readable on the dark Operations
+  background without changing route, data, or action behavior.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/`; automated
+  findings are 0, Operations missing `h1` count is 0, visible unlabeled
+  controls are 0, and console/network error reports are empty.
+- Screenshot spot-checks passed for
+  `operations-overview-1440-desktop.png`,
+  `operations-overview-390-mobile.png`,
+  `operations-participants-1440-desktop.png`, and
+  `operations-access-1440-desktop.png`.
+- Verification passed: PQC validation for packet 04, inline Operations script
+  parse, `node --check scripts/audit-rabbi-onetime-current-state.mjs`, full
+  local after-audit, `npm run watchdog:actions`,
+  `npm run watchdog:protocol-drift`, JSON/JSONL parse, and scoped
+  `git diff --check`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-02 - Rabbi / One Time Mobile Helper Closed-State Cleanup
+
+- Created and validated the fourth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/05-mobile-helper-closed-state.product-quality.json`.
+- Updated `public/operations.html` so the BNA Helper panel is hidden and inert
+  while closed (`visibility: hidden`, `pointer-events: none`) and visible again
+  only when opened.
+- Added `aria-hidden` state to the helper dialog render path so closed helper
+  UI is not exposed as active page content, while the intentional Ask-open flow
+  still exposes the helper.
+- Focused browser probe passed and is saved at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-mobile-helper-closed/helper-closed-state-probe.json`.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-mobile-helper-closed/`; automated
+  findings are 0, Operations missing `h1` count is 0, visible unlabeled
+  controls are 0, and console/network error reports are empty.
+- Screenshot spot-checks passed for
+  `operations-overview-390-mobile.png` and `operations-library-390-mobile.png`;
+  the closed helper sheet no longer appears at the bottom of full-page mobile
+  captures.
+- Verification passed: PQC validation for packet 05, inline Operations script
+  parse, `node --check scripts/audit-rabbi-onetime-current-state.mjs`, helper
+  open/closed browser probe, full local after-audit,
+  `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, JSON/JSONL
+  parse, and scoped `git diff --check`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-02 - Rabbi / One Time Task Dialogue Lane Contrast Cleanup
+
+- Created and validated the fifth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/06-task-dialogue-lane-contrast.product-quality.json`.
+- Updated the One Time Operations CSS so Rabbi / One Time Dialogue Board lane
+  cards keep readable white titles, muted notes, and yellow count chips after
+  the shared BNA app shell styles load.
+- Kept task buckets, task filters, task actions, APIs, route access, helper
+  behavior, and external-provider behavior unchanged.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-task-dialogue-contrast/`;
+  automated findings are 0, Operations missing `h1` count is 0, visible
+  unlabeled controls are 0, and console/network error reports are empty.
+- Screenshot spot-checks passed for
+  `operations-tasks-390-mobile.png` and `operations-tasks-1440-desktop.png`;
+  the dialogue lane headings, notes, and count chips are readable on mobile and
+  desktop.
+- Verification passed: PQC validation for packet 06, inline Operations script
+  parse, `node --check scripts/audit-rabbi-onetime-current-state.mjs`, computed
+  style probe, full local after-audit, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-02 - Rabbi / One Time Tasks Route Layout Density Cleanup
+
+- Created and validated the sixth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/07-task-route-layout-density.product-quality.json`.
+- Updated `public/operations.html` so the One Time Tasks renderer marks its
+  route container with `data-one-time-task-route="dialogue"` only in the scoped
+  Rabbi / One Time task workspace.
+- Updated `public/css/one-time-operations.css` so the One Time Tasks route no
+  longer inherits the oversized portrait dashboard grid; it now renders as a
+  compact operational board with the dialogue lanes visible in the first
+  desktop/tablet viewport.
+- Kept task buckets, task filters, task actions, APIs, route access, helper
+  behavior, and external-provider behavior unchanged. The One Time filter
+  drawer now starts collapsed on the Tasks route while the existing filter
+  controls remain available from the `Filter` disclosure.
+- Hardened `scripts/audit-rabbi-onetime-current-state.mjs` so Operations
+  screenshots wait briefly for the initial `Loading BNA Operations...` shell to
+  clear before capture, avoiding timing-only false findings.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-task-route-density/`; automated
+  findings are 0, Operations missing `h1` count is 0, visible unlabeled
+  controls are 0, and console/network error reports are empty.
+- Screenshot spot-checks passed for
+  `operations-tasks-1440-desktop.png`,
+  `operations-tasks-1024-desktop-tablet.png`,
+  `operations-tasks-390-mobile.png`, and
+  `operations-participants-1024-desktop-tablet.png`.
+- Verification passed: PQC validation for packet 07, inline Operations script
+  parse, `node --check scripts/audit-rabbi-onetime-current-state.mjs`, layout
+  probe, full local after-audit, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-02 - Rabbi / One Time Provider Review Load Error Cleanup
+
+- Created and validated the seventh scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/08-provider-review-load-error.product-quality.json`.
+- Updated `public/provider.html` so the One Time provider review renderer
+  defines a safe `driveDropoffLinks` array before media/dropoff templates call
+  `renderDriveDropoffLinks`, removing the visible
+  `driveDropoffLinks is not defined` error from `/provider.html?review=one-time`.
+- Kept provider auth, login/session/setup, Drive link filtering/copy/open
+  behavior, uploads, APIs, and external-provider behavior unchanged.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-provider-review-load-error/`;
+  automated findings are 0 and provider-review console/network errors are
+  empty.
+- Screenshot spot-checks passed for
+  `provider-review-1440-desktop.png` and `provider-review-390-mobile.png`; the
+  page now shows the `Eli Scheller Workspace` review shell instead of the raw
+  error banner.
+- Verification passed: PQC validation for packet 08,
+  `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`, full local
+  after-audit, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`,
+  and scoped `git diff --check` with CRLF warnings only.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-02 - Rabbi / One Time Student Review Readability Cleanup
+
+- Created and validated the eighth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/09-student-review-mobile-readability.product-quality.json`.
+- Updated `public/student.html` so One Time review metrics render with a
+  review-only class, display machine status keys with spaces, and mark long
+  values for smaller text treatment.
+- Updated `public/css/one-time-shared-review.css` with student-review-only
+  title/intro contrast and metric sizing/wrapping so the first student review
+  screen no longer shows dark-on-dark title copy or clipped reward/status
+  metrics.
+- Kept student auth, access code, session, question/support forms, class links,
+  progress/reward data, APIs, parent/provider/member portals, and external
+  provider behavior unchanged.
+- Focused metric probe passed on 390px mobile and 1440px desktop; evidence is
+  saved at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/probe/student-metric-probe.json`.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-student-review-readability/`;
+  automated findings are 0 and student-review console/network errors are empty.
+- Screenshot spot-checks passed for
+  `student-review-390-mobile.png` and `student-review-1440-desktop.png`.
+- Verification passed: PQC validation for packet 09,
+  `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`, metric
+  probe, full local after-audit, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-02 - Rabbi / One Time Automation Center Readability Cleanup
+
+- Created and validated the ninth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/10-automation-center-readability.product-quality.json`.
+- Updated `public/operations.html` so the Automations Center route has a
+  scoped `data-one-time-automation-route="center"` marker for One Time-only
+  route styling.
+- Updated `public/css/one-time-operations.css` so the One Time Automations
+  Center uses a compact solid admin panel instead of inheriting the portrait
+  dashboard treatment; heading, toolbar count/copy, filters, and empty state
+  now stay readable and aligned on desktop and mobile.
+- Kept automation metadata, filters, helper action, edit/detail action, APIs,
+  route access, action registry, and external-provider behavior unchanged.
+- Focused computed-style probe passed on 390px mobile: toolbar title is white,
+  toolbar copy is readable muted text, empty-state text is white, and there is
+  no horizontal overflow.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-automation-center-readability/`;
+  automated findings are 0.
+- Screenshot spot-checks passed for
+  `operations-automations-1440-desktop.png` and
+  `operations-automations-390-mobile.png`.
+- Verification passed: PQC validation for packet 10,
+  `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`, computed
+  style probe, full local after-audit, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-02 - Rabbi / One Time Participants Readability Cleanup
+
+- Created and validated the tenth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/11-participants-members-readability.product-quality.json`.
+- Updated `public/operations.html` so the One Time Participants/Members route
+  has a scoped `data-one-time-participants-route="members"` marker.
+- Updated `public/css/one-time-operations.css` so the One Time contacts tab
+  rail wraps instead of clipping, the Participants/Members route uses readable
+  dark roster panels, and the mobile participant table becomes a labeled
+  row-card with no page overflow.
+- Reduced the Command Bot Actions no-action panel to a compact, readable dark
+  empty state.
+- Kept CRM/contact data, participant rows, top-tab handlers, command bot
+  preview behavior, APIs, action registry, route access, and external-provider
+  behavior unchanged.
+- Focused computed-style probes passed on 1440px desktop and 390px mobile:
+  contacts tabs wrap without clipped labels, route panels compute to the One
+  Time dark gradient, table text is readable, and the mobile route has no
+  horizontal overflow.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-participants-readability/`;
+  automated findings are 0.
+- Screenshot spot-checks passed for
+  `operations-participants-1440-desktop.png` and
+  `operations-participants-390-mobile.png`.
+- Verification passed: PQC validation for packet 11,
+  `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`, computed
+  style probes, full local after-audit, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-03 - Rabbi / One Time Payment Access Readability Cleanup
+
+- Created and validated the eleventh scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/12-program-payment-access-readability.product-quality.json`.
+- Updated `public/operations.html` so the One Time service-provider program
+  workspace carries a scoped `data-one-time-program-route` marker.
+- Updated `public/css/one-time-operations.css` so the One Time Program tab rail
+  wraps instead of clipping, the Payment / Access route uses readable dark
+  roster panels, and the mobile access table becomes a labeled row-card with no
+  page overflow.
+- Reduced the Command Bot Actions no-action panel on the Payment / Access route
+  to a compact, readable dark empty state.
+- Kept payment, payout, checkout, access-sync, access grants, connectors,
+  participant data, command bot preview behavior, APIs, route access, and
+  external-provider behavior unchanged.
+- Focused computed-style probes passed on 1440px desktop and 390px mobile:
+  service-provider tabs wrap without clipped labels, route panels compute to
+  the One Time dark surface, access table text is readable, the mobile access
+  table is labeled, and the route has no horizontal overflow.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/`;
+  automated findings are 0.
+- Screenshot spot-checks passed for
+  `operations-access-1440-desktop.png` and `operations-access-390-mobile.png`.
+- Verification passed: PQC validation for packet 12,
+  `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`, computed
+  style probe, full local after-audit, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-03 - Rabbi / One Time Communications Readability Cleanup
+
+- Created and validated the twelfth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/13-communications-provider-messages-readability.product-quality.json`.
+- Updated `public/operations.html` so the Communications route carries a scoped
+  `data-one-time-communications-route` marker.
+- Updated `public/css/one-time-operations.css` so the One Time Communications
+  tab rail wraps instead of clipping on mobile/desktop.
+- Reworked the Provider Messages route surface into the One Time dark treatment
+  and made the no-message empty state compact with solid dark contrast and
+  readable white text.
+- Kept message creation, contact communication records, email, WhatsApp,
+  Telegram, campaigns, templates, bot actions, APIs, route access, and
+  external-provider behavior unchanged.
+- Focused computed-style probes passed on 1440px desktop and 390px mobile:
+  Communications tabs wrap without clipped labels, the route has no horizontal
+  overflow, the empty state computes to a solid dark background with white text,
+  and the empty-state height is compact.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/`;
+  automated findings are 0.
+- Screenshot spot-checks passed for `operations-communications-1440-desktop.png`
+  and `operations-communications-390-mobile.png`.
+- Verification passed: PQC validation for packet 13,
+  `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`, computed
+  style probe, full local after-audit, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-03 - Rabbi / One Time Program Overview Readability Cleanup
+
+- Created and validated the thirteenth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/14-program-overview-readability.product-quality.json`.
+- Updated `public/css/one-time-operations.css` so the Program Overview route
+  opts out of the two-column dashboard hero treatment and renders as a single
+  cohesive One Time route surface.
+- Reworked the Overview metrics, Mishnayos Membership detail cards, admin-only
+  note, Command Bot empty state, and Command Bot log rows into dark/readable
+  One Time panels with solid card backgrounds and no horizontal overflow.
+- Kept program tab navigation, metric handlers, bot preview behavior, payment,
+  access, provider data, participant data, APIs, route access, and
+  external-provider behavior unchanged.
+- Focused computed-style probes passed on 1440px desktop and 390px mobile:
+  overview metrics render as a grid, metric/detail/log cards use solid dark
+  backgrounds, text contrast is above threshold, empty-state text is readable,
+  and the route has no horizontal overflow.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-program-overview-readability/`;
+  automated findings are 0.
+- Screenshot spot-checks passed for `operations-overview-1440-desktop.png` and
+  `operations-overview-390-mobile.png`.
+- Verification passed: PQC validation for packet 14,
+  `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`, computed
+  style probe, full local after-audit, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-03 - Rabbi / One Time Workspace Settings Readability Cleanup
+
+- Created and validated the fourteenth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/15-settings-workspace-readability.product-quality.json`.
+- Updated `public/operations.html` so the Workspace Settings route carries a
+  scoped `data-one-time-settings-route="workspace"` marker.
+- Updated `public/css/one-time-operations.css` so the Settings top filter rail
+  wraps, and the Workspace Settings page renders as a contained single-column
+  dark One Time surface.
+- Reworked the settings toolbar, category chips, settings panel, setting rows,
+  persisted badges, and active category chip into readable dark/yellow states
+  with no horizontal overflow on desktop or mobile.
+- Kept settings navigation, Save, Test Connection setup, Reset setup, APIs,
+  route access, action registry, and external-provider behavior unchanged.
+- Focused computed-style probes passed on 1440px desktop and 390px mobile:
+  settings tabs wrap without clipped labels, toolbar/panel/rows compute to
+  solid dark backgrounds, active-chip contrast is above threshold, and the
+  route has no horizontal overflow.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/`;
+  automated findings are 0.
+- Screenshot spot-checks passed for `operations-settings-1440-desktop.png` and
+  `operations-settings-390-mobile.png`.
+- Verification passed: PQC validation for packet 15,
+  `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`, computed
+  style probe, full local after-audit, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-03 - Rabbi / One Time Member Login Brand Helper Cleanup
+
+- Created and validated the fifteenth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/16-member-login-brand-helper-readability.product-quality.json`.
+- Updated `public/rabbi-member.html` so the member-login/member-home shell uses
+  the One Time black/yellow palette, One Time logo, and One Time hero image
+  instead of the old BNA Academy hero/social-preview treatment.
+- Updated `public/js/bna-bot-widget.js` so the One Time member helper title
+  reads `One Time Helper`, the closed helper panel is hidden, inert, and
+  `aria-hidden`, and the compact launcher remains readable on desktop and
+  mobile.
+- Kept member-login form behavior, member API calls, question/ticket actions,
+  member auth/session behavior, helper API behavior, route access, external
+  provider behavior, and action registry unchanged.
+- Focused brand/helper probes passed on 1440px desktop and 390px mobile:
+  One Time assets are present, BNA Academy text/image references are absent,
+  the body background is dark, the closed helper panel is hidden/inert, and
+  launcher/form contrast is above threshold.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/`;
+  automated findings are 0.
+- Screenshot spot-checks passed for `one-time-member-login-1440-desktop.png`
+  and `one-time-member-login-390-mobile.png`.
+- Verification passed: PQC validation for packet 16,
+  `node --check public/js/bna-bot-widget.js`, One Time journey/portal tests
+  40/40, `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`,
+  focused brand/helper probe, full local after-audit,
+  `npm run watchdog:actions`, and `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-03 - Rabbi / One Time Classroom Review Brand Layout Cleanup
+
+- Created and validated the sixteenth scoped Product Quality packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/17-classroom-review-brand-layout.product-quality.json`.
+- Updated `public/one-time-classroom.html` so the Classroom Review route uses a
+  dark One Time black/yellow classroom surface instead of the generic pale
+  review-card treatment.
+- Reworked the Today / Live lesson block so the video/player and lesson details
+  stack cleanly without visual overlap on desktop, tablet, or mobile.
+- Tightened the classroom panels, item cards, details rows, participation row,
+  Rabbi Threads area, response form, inputs, nav active state, chips, and
+  primary actions into readable One Time dark/yellow states.
+- Updated `config/brands/one-time.json` with the committed One Time asset
+  paths and explicit `review_only` flag expected by the One Time review
+  branding contracts.
+- Kept classroom access-code loading, review-mode API path, member API path,
+  reply submission, helper mounting, nav links, route access, no-write review
+  behavior, and all external-provider behavior unchanged.
+- Focused probes passed on 1440px desktop and 390px mobile: no horizontal
+  overflow, no media/details overlap, dark One Time body/panel colors, no BNA
+  school-goal leakage, visible no-write copy, eager video iframe loading, no
+  console errors, and contrast above threshold.
+- Full local after-audit captured 75 screenshots across 15 routes and 5
+  viewports at
+  `ops/ui-audits/2026-07-02-rabbi-onetime-classroom-review-brand-layout/`;
+  automated findings are 0.
+- Screenshot spot-checks passed for
+  `one-time-classroom-review-1440-desktop.png` and
+  `one-time-classroom-review-390-mobile.png`.
+- Verification passed: PQC validation for packet 17, classroom/community
+  tests plus One Time shared review/content command-center tests 27/27,
+  `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`, focused
+  classroom probe, full local after-audit, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked on `DEC-20260702-801` until an explicit live target is available.
+
+## 2026-07-03 - Rabbi / One Time Email Review Brand Layout Verified Locally
+
+- Created and validated the seventeenth Rabbi / One Time UI cleanup packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/18-email-review-brand-layout.product-quality.json`.
+- Updated `public/one-time-email-review.html` with page-scoped black/yellow One
+  Time review styling, a compact branded header, visible blocked-send status,
+  and dark/readable template cards with explicit `preview_only` and `No-send`
+  labels.
+- Preserved the existing `/api/one-time-review/email-templates` fetch,
+  21-template review fixture, route links, no-send/readiness labels, and
+  no-external-write behavior.
+- Verification passed: PQC packet 18, email review script parse, focused One
+  Time review tests 7/7, desktop/mobile email-review browser probe, full local
+  75-screenshot audit with no automated findings, `npm run watchdog:actions`,
+  and `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked by `DEC-20260702-801`.
+
+## 2026-07-03 - Rabbi / One Time Operations IA Nav Alignment Verified Locally
+
+- Created and validated the eighteenth Rabbi / One Time UI cleanup packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/19-operations-ia-nav-filter-alignment.product-quality.json`.
+- Updated the live Operations shell so the One Time provider sidebar shows
+  Rabbi-facing primary modules: Overview, Members, Classes, Comms, Auto,
+  Payments, Tasks, and Setup.
+- Added section-aware sidebar navigation so Payments opens Program Payment /
+  Access while Overview remains the default Program view.
+- Demoted Agents, Integrations, Reporting, and Watchdog out of the primary
+  Rabbi sidebar behind a Platform Support footer control, while preserving
+  direct diagnostic route access.
+- Updated focused Operations and final local UI smoke tests to assert the new
+  IA contract and support-route reachability.
+- Verification passed: PQC packet 19, inline Operations script parse, focused
+  IA/Operations/final local tests 8/8, full local 75-screenshot audit with no
+  automated findings, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked by `DEC-20260702-801`.
+
+## 2026-07-03 - Rabbi / One Time CRM Contact Detail Polish Verified Locally
+
+- Created and validated the nineteenth Rabbi / One Time UI cleanup packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/20-operations-crm-contact-detail-polish.product-quality.json`.
+- Added dedicated CRM Contacts coverage to the Rabbi / One Time screenshot audit
+  route list.
+- Reworked the One Time CRM empty state into a structured first-party review
+  surface with Source, No-send, Dedupe, and Next-step cards.
+- Added mobile-safe CRM contact cards for populated review rows while keeping
+  existing first-party note/follow-up/no-send behavior.
+- Preserved no-send/no-external-write policy: no GHL, LeadConnector, external
+  CRM write, email/WhatsApp/SMS/Telegram send, payment, access grant, DNS,
+  upload, or publish behavior was introduced.
+- Verification passed: PQC packet 20, inline Operations script parse,
+  audit-script syntax check, focused CRM tests 9/9, broader local smoke/static
+  suite 17/17, full local 80-screenshot audit with no automated findings,
+  `npm run watchdog:actions`, and `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked by `DEC-20260702-801`.
+
+## 2026-07-03 - Rabbi / One Time Library First Viewport Readability Verified Locally
+
+- Created and validated the twentieth Rabbi / One Time UI cleanup packet:
+  `ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/21-operations-library-first-viewport-readability.product-quality.json`.
+- Updated the live Operations One Time Library route so it marks the active
+  `one_time_library` content section for scoped presentation.
+- Added scoped One Time Library styling for a readable dark route heading,
+  high-contrast heading copy, a contained filter bar, and collapsed default
+  filters on that route only.
+- Tightened the Rabbi / One Time screenshot audit recommendation so future
+  reports point to manual screenshot review and `DEC-20260702-801`, not stale
+  early packet suggestions.
+- Verification passed: PQC packet 21, inline Operations script parse,
+  audit-script syntax check, focused Operations smoke 2/2, focused
+  desktop/mobile Library first-viewport probe, full local 80-screenshot audit
+  with no automated findings, latest desktop/mobile contact-sheet review with
+  no additional selected route-level defect, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Read-only live deploy-state check showed `https://bneineviimacademy.org`
+  still lacks the local Library contract: section marker absent, filters open
+  by default, and useful Library content starts at `928px`; the One Time join
+  domain did not accept current Operations login credentials.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked by `DEC-20260702-801` pending a clean release branch/PR/deploy path.

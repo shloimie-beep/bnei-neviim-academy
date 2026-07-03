@@ -75,6 +75,9 @@ test('One Time CRM Contacts UX keeps lead review scoped and no-send', () => {
   assert.match(operations, /No email, WhatsApp, payment, or external CRM write/);
   assert.match(operations, /Dedupe \/ review/);
   assert.match(operations, /data-one-time-crm-contact-row/);
+  assert.match(operations, /data-one-time-crm-empty-state/);
+  assert.match(operations, /data-one-time-crm-contact-card/);
+  assert.match(operations, /No One Time CRM contacts loaded yet/);
   assert.match(server, /app\.get\('\/api\/bna\/parent-leads'/);
   assert.match(server, /appendRequestedProjectScopeCondition\(req, conditions, params, 'l\.project_id'\)/);
 });

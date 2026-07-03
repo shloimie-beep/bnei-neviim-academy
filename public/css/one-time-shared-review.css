@@ -456,6 +456,91 @@ body.one-time-review-active .one-time-mini-card a {
   font-weight: 900;
 }
 
+body.one-time-review-active.one-time-student-review-active .hero {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid rgba(237, 229, 24, 0.24);
+  border-radius: 8px;
+  color: var(--one-time-white);
+  background:
+    linear-gradient(90deg, rgba(8, 9, 16, 0.96), rgba(8, 19, 35, 0.92)),
+    var(--one-time-black) !important;
+  box-shadow: 0 18px 42px rgba(8, 9, 16, 0.18);
+  padding: 18px 20px;
+}
+
+body.one-time-review-active.one-time-student-review-active .hero h1 {
+  max-width: 100%;
+  color: var(--one-time-white) !important;
+  font-size: clamp(32px, 4.2vw, 48px);
+  line-height: 1.02;
+  overflow-wrap: anywhere;
+}
+
+body.one-time-review-active.one-time-student-review-active .hero .eyebrow {
+  color: var(--one-time-yellow);
+}
+
+body.one-time-review-active.one-time-student-review-active .hero .hero-text {
+  max-width: 760px;
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+body.one-time-review-active .one-time-review-metric {
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 96px;
+  align-items: center;
+  justify-items: center;
+  border-radius: 8px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+body.one-time-review-active .one-time-review-metric strong {
+  display: block;
+  max-width: 100%;
+  color: inherit;
+  font-size: clamp(20px, 3vw, 30px);
+  line-height: 1.08;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+body.one-time-review-active .one-time-review-metric small {
+  display: block;
+  max-width: 100%;
+  margin-top: 6px;
+  line-height: 1.15;
+}
+
+body.one-time-review-active .one-time-review-hero-card .metric-grid {
+  align-items: stretch;
+}
+
+body.one-time-review-active .one-time-review-hero-card .one-time-review-metric {
+  min-height: 108px;
+}
+
+body.one-time-review-active.one-time-student-review-active .one-time-review-hero-card {
+  grid-template-columns: 1fr;
+}
+
+body.one-time-review-active.one-time-student-review-active .one-time-review-hero-card > div {
+  width: min(760px, 100%);
+}
+
+body.one-time-review-active.one-time-student-review-active .one-time-review-hero-card .metric-grid {
+  grid-template-columns: repeat(4, minmax(124px, 1fr));
+}
+
+body.one-time-review-active .one-time-review-metric-long strong {
+  font-size: clamp(18px, 2.2vw, 24px);
+}
+
 body.one-time-review-active .one-time-review-hero-card {
   overflow: hidden;
   color: var(--one-time-white);
@@ -607,6 +692,36 @@ body.one-time-view-as-readonly .overview-metric {
 }
 
 @media (max-width: 720px) {
+  body.one-time-review-active.one-time-student-review-active .hero {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+
+  body.one-time-review-active.one-time-student-review-active .hero h1 {
+    font-size: 32px;
+  }
+
+  body.one-time-review-active.one-time-student-review-active .hero-actions {
+    justify-content: flex-start;
+  }
+
+  body.one-time-review-active .one-time-review-metric {
+    min-height: 94px;
+    padding: 12px 10px;
+  }
+
+  body.one-time-review-active .one-time-review-metric strong {
+    font-size: clamp(18px, 7vw, 28px);
+  }
+
+  body.one-time-review-active .one-time-review-metric-long strong {
+    font-size: clamp(18px, 6vw, 24px);
+  }
+
+  body.one-time-review-active.one-time-student-review-active .one-time-review-hero-card .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .one-time-review-hero-card {
     grid-template-columns: 1fr;
   }

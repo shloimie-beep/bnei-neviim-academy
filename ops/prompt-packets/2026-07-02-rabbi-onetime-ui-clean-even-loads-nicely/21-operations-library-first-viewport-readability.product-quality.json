@@ -1,0 +1,706 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-823",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-805",
+      "PKT-20260702-821"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "scripts/audit-rabbi-onetime-current-state.mjs",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-crm-contact-detail-polish/screenshots/operations-library-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-crm-contact-detail-polish/screenshots/operations-library-390-mobile.png"
+    ],
+    "produces": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "scripts/audit-rabbi-onetime-current-state.mjs",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/probe/library-first-viewport-probe.json",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/21-operations-library-first-viewport-readability.product-quality.json",
+    "terminal_condition": "The One Time Library first viewport has a readable dark route heading, contained filter area, and no giant blank/low-contrast hero region on desktop or mobile.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "verified",
+  "title": "Operations Library First Viewport Readability",
+  "created_at": "2026-07-03T03:25:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "COMMUNITY_CLASSROOM",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.89,
+    "reasons": [
+      "Manual review of the latest 80-screenshot audit found the Operations Library desktop first viewport still has a giant empty dark region and low-contrast One Time Library heading.",
+      "The renderer uses the generic content page heading inside the dark One Time shell, which automated checks did not classify as a finding.",
+      "The fix is scoped to One Time Operations Content / One Time Library presentation only, with no content data, publishing, upload, Drive, Vimeo, Zoom, social, email, or external provider behavior change."
+    ],
+    "affected_product_surfaces": [
+      "One Time Operations Content Library",
+      "One Time Library first viewport",
+      "One Time Library filter/readability"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability",
+      "10-automation-center-readability",
+      "11-participants-members-readability",
+      "12-program-payment-access-readability",
+      "13-communications-provider-messages-readability",
+      "14-program-overview-readability",
+      "15-settings-workspace-readability",
+      "16-member-login-brand-helper-readability",
+      "17-classroom-review-brand-layout",
+      "18-email-review-brand-layout",
+      "19-operations-ia-nav-filter-alignment",
+      "20-operations-crm-contact-detail-polish",
+      "21-operations-library-first-viewport-readability"
+    ],
+    "next_exact_packet": "After this library first-viewport cleanup, rerun full audit and continue only if manual review finds another concrete defect or deploy/live-smoke becomes available."
+  },
+  "operator_intent_summary": "Fix the remaining One Time Library first-viewport visual defect so the page loads cleanly with readable heading copy and contained filters instead of a low-contrast dark blank area.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "fix everything",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No backend authorization, allowed-view policy, database query, route registry, action registry, payment, email, access grant, account, DNS, send, publish, upload, or external-provider mutation.",
+    "No GHL runtime, LeadConnector runtime, external CRM client, or external CRM write.",
+    "No removal of diagnostic support routes used by Shloimie/Codex; this packet only demotes them from the primary Rabbi sidebar."
+  ],
+  "affected_surfaces": [
+    "One Time Operations Library",
+    "One Time content route heading",
+    "One Time content filter panel"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/css/one-time-operations.css",
+    "scripts/audit-rabbi-onetime-current-state.mjs",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/operations.html workspaceNavViewIds, workspaceNavItems, renderSidebar, renderSidebarModuleList, currentNavItem, switchView, setCurrentSection",
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js module and support demotion definitions",
+      "tests/one-time-operations-ui-smoke.test.js provider nav expectations",
+      "latest Operations screenshots under ops/ui-audits/2026-07-02-rabbi-onetime-email-review-brand-layout/screenshots"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "Desktop Operations Library screenshot shows a large empty dark first-viewport region before useful library cards.",
+      "The One Time Library heading and description are low contrast against the dark One Time shell.",
+      "The open filter panel sits as a bright floating column and makes the first viewport feel unbalanced rather than clean."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely",
+      "CRM",
+      "community section"
+    ],
+    "expanded_phrases": {
+      "clean": "The One Time Library first viewport should immediately explain what Rabbi is looking at and show useful library status/content, not a dark empty gap with barely visible heading text.",
+      "even": "Primary modules should use consistent short labels, markers, section targets, and active states across desktop and mobile.",
+      "loads nicely": "The first rendered Operations viewport should expose the relevant One Time modules without a long platform-module wall or layout jump.",
+      "CRM": "Interpret CRM as first-party BNA/One Time contact review UX only: list/detail review, no-send state, dedupe state, source provenance, communication readback, and guarded direct actions. Do not add GHL, LeadConnector, external CRM APIs, or external CRM writes.",
+      "community section": "Community/class work remains first-party One Time classroom/community data and may be grouped under Rabbi modules without cross-workspace record bleed."
+    },
+    "first_party_pattern_interpretation": "Use the existing Rabbi IA and first-party BNA Operations routes. Support modules remain routable for diagnostics but are demoted from the Rabbi-facing primary sidebar."
+  },
+  "design_pattern_references": [
+    "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+    "tests/one-time-rabbi-dashboard-ia.test.js",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-823",
+      "statement": "Fix the One Time Operations Library first viewport so the route heading, description, filters, and first useful content load cleanly and readably on desktop and mobile.",
+      "expected_result": "Desktop and mobile screenshots show a compact/readable One Time Library heading surface, contained filters, and useful library status/content visible without a giant blank or low-contrast hero region.",
+      "acceptance_criteria": [
+        "The content route marks One Time Library state for scoped styling without affecting other content sections or non-One Time workspaces.",
+        "One Time Library page heading and description use readable light text on a contained dark panel.",
+        "Desktop first viewport no longer has a giant blank dark region before library status/cards.",
+        "Filters remain accessible and contained; mobile has no horizontal overflow.",
+        "No content publishing, Drive, Vimeo, Zoom, upload, email, social, payment, access, external provider, GHL, or LeadConnector behavior changes."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "RAW-20260702-008 and broad register exist.",
+      "Latest 80-screenshot audit exists and manual review identified a specific One Time Library first-viewport defect.",
+      "Operations Library code path and One Time scoped CSS are identified.",
+      "The change can stay in frontend presentation only."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "giant blank first viewport",
+        "low-contrast route heading",
+        "GHL",
+        "LeadConnector",
+        "external write"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "One Time Library route renders readable heading and contained filters with no console errors or horizontal overflow.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1440,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open the Operations route before asynchronous workspace/module data finishes rendering.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Scoped Rabbi Sheller video library review",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-823",
+      "expected_primary_sidebar_label": "Classes"
+    },
+    "empty": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "giant blank first viewport",
+        "low-contrast route heading",
+        "GHL",
+        "LeadConnector",
+        "external write"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "One Time Library route renders readable heading and contained filters with no console errors or horizontal overflow.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 390,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Use the local seeded/fixture state when no extra provider members are loaded.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Scoped Rabbi Sheller video library review",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-823",
+      "expected_primary_sidebar_label": "Classes"
+    },
+    "populated": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "giant blank first viewport",
+        "low-contrast route heading",
+        "GHL",
+        "LeadConnector",
+        "external write"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "One Time Library route renders readable heading and contained filters with no console errors or horizontal overflow.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1440,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open the One Time Operations overview after local fixture data has loaded.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Scoped Rabbi Sheller video library review",
+      "expected_primary_sidebar_label": "Classes",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-823"
+    },
+    "filtered_empty": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "giant blank first viewport",
+        "low-contrast route heading",
+        "GHL",
+        "LeadConnector",
+        "external write"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "One Time Library route renders readable heading and contained filters with no console errors or horizontal overflow.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 768,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open a scoped task filter with no matching fixture rows.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Scoped Rabbi Sheller video library review",
+      "expected_primary_sidebar_label": "Classes",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-823"
+    },
+    "error": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "giant blank first viewport",
+        "low-contrast route heading",
+        "GHL",
+        "LeadConnector",
+        "external write"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "One Time Library route renders readable heading and contained filters with no console errors or horizontal overflow.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1024,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Simulate a local data-fetch failure during focused probe if needed.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Scoped Rabbi Sheller video library review",
+      "expected_primary_sidebar_label": "Classes",
+      "screenshot_required": false,
+      "requirement_id": "REQ-20260702-823"
+    },
+    "blocked_setup": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "giant blank first viewport",
+        "low-contrast route heading",
+        "GHL",
+        "LeadConnector",
+        "external write"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "One Time Library route renders readable heading and contained filters with no console errors or horizontal overflow.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1440,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open the Program Payment / Access section while provider payment/access setup remains preview-only.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Scoped Rabbi Sheller video library review",
+      "expected_primary_sidebar_label": "Classes",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-823"
+    },
+    "preview_only": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "giant blank first viewport",
+        "low-contrast route heading",
+        "GHL",
+        "LeadConnector",
+        "external write"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "One Time Library route renders readable heading and contained filters with no console errors or horizontal overflow.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1440,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open the section-aware Payments sidebar item.",
+      "expected_visible_title": "One Time Library",
+      "expected_primary_sidebar_label": "Classes",
+      "expected_visible_message": "Scoped Rabbi Sheller video library review",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-823"
+    },
+    "success_readback": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "giant blank first viewport",
+        "low-contrast route heading",
+        "GHL",
+        "LeadConnector",
+        "external write"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "One Time Library route renders readable heading and contained filters with no console errors or horizontal overflow.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1440,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Use the demoted Platform Support footer control or direct switchView('agents').",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Scoped Rabbi Sheller video library review",
+      "expected_primary_sidebar_label": "Classes",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-823"
+    },
+    "permission_denied": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "giant blank first viewport",
+        "low-contrast route heading",
+        "GHL",
+        "LeadConnector",
+        "external write"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "One Time Library route renders readable heading and contained filters with no console errors or horizontal overflow.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1024,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Attempt to open a school-only view from the provider workspace.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Scoped Rabbi Sheller video library review",
+      "screenshot_required": false,
+      "requirement_id": "REQ-20260702-823",
+      "expected_primary_sidebar_label": "Classes"
+    },
+    "mobile_drawer_or_detail_state": {
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Platform Support",
+        "Help",
+        "Logout"
+      ],
+      "forbidden_content": [
+        "giant blank first viewport",
+        "low-contrast route heading",
+        "GHL",
+        "LeadConnector",
+        "external write"
+      ],
+      "aria_semantic_expectation": "Navigation and page regions remain semantic and screen-reader readable.",
+      "accessibility_expectation": "Labels, active states, and focusable controls remain readable and discoverable.",
+      "test_smoke_assertion": "One Time Library route renders readable heading and contained filters with no console errors or horizontal overflow.",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 390,
+      "auth_role": "one_time_owner",
+      "how_to_enter_state": "Open the mobile Operations shell and then open Platform Support.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Scoped Rabbi Sheller video library review",
+      "expected_primary_sidebar_label": "Classes",
+      "screenshot_required": true,
+      "requirement_id": "REQ-20260702-823"
+    }
+  },
+  "visual_quality": {
+    "layout": "Compact dark One Time route heading, contained filter panel, and useful first content are visible in the first desktop and mobile viewport.",
+    "brand": "Keep existing One Time Operations black/yellow route treatment; do not introduce BNA cream/navy as the dominant One Time shell.",
+    "responsive": "Desktop and mobile navigation labels fit within their controls with no horizontal overflow.",
+    "screenshot_requirements": [
+      {
+        "viewport": 1440,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "required": true
+      },
+      {
+        "viewport": 1024,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "required": true
+      },
+      {
+        "viewport": 768,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "required": true
+      },
+      {
+        "viewport": 430,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "required": true
+      },
+      {
+        "viewport": 390,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "required": true
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Sidebar buttons retain accessible text labels.",
+      "Platform Support is a real button with readable text.",
+      "Active state must remain perceivable for duplicate service-provider section targets."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Filters",
+      "selector_or_action_key": "content filter details / content toolbar",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Library",
+      "external_write": false,
+      "handler_or_blocker": "Existing client-side filters only.",
+      "registry_required": false
+    },
+    {
+      "label": "Preview Drive Brief",
+      "selector_or_action_key": "data-preview-one-time-drive-brief",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time Operations Library",
+      "external_write": false,
+      "handler_or_blocker": "Existing no-write preview action; unchanged.",
+      "registry_required": true
+    },
+    {
+      "label": "Library publishing",
+      "selector_or_action_key": "APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING gated controls",
+      "action_state": "NEEDS_SHLOIMIE_SETUP",
+      "owner": "Shloimie",
+      "external_write": false,
+      "handler_or_blocker": "Publishing remains approval-gated and out of scope.",
+      "registry_required": true
+    },
+    {
+      "label": "External writes",
+      "selector_or_action_key": "Drive/Vimeo/Zoom/email/social/payment/access/GHL/LeadConnector writes",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Shloimie/keyholder decision if ever requested",
+      "external_write": false,
+      "handler_or_blocker": "Explicitly out of scope.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "allowed_to_change": [
+      "client-side navigation label/marker/section metadata",
+      "client-side smoke assertions"
+    ],
+    "must_not_change": [
+      "server authorization",
+      "workspace data filters",
+      "database schema",
+      "external provider configuration",
+      "route registry access policies"
+    ]
+  },
+  "security_privacy": {
+    "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class only",
+    "private_data_policy": "No raw private student, parent, member, provider, email body, credential, token, or secret evidence may be added.",
+    "no_ghl_runtime": true,
+    "external_writes": "forbidden",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260702-823-A",
+      "title": "Library first viewport readability",
+      "requirements": [
+        "REQ-20260702-823"
+      ],
+      "files_allowed": [
+        "public/operations.html",
+        "public/css/one-time-operations.css"
+      ],
+      "verification": [
+        "PQC validation",
+        "inline Operations script parse",
+        "focused browser layout probe",
+        "full Rabbi / One Time UI audit",
+        "watchdog:actions",
+        "watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/css/one-time-operations.css"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "scripts/audit-rabbi-onetime-current-state.mjs"
+    ],
+    "max_files_to_edit": 3,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "If implementation requires backend auth/data changes or broader CRM/contact-detail redesign, split into the next packet.",
+    "split_if_exceeds": "More than one shell and one test file, any external-provider behavior, or any server/database change.",
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/21-operations-library-first-viewport-readability.product-quality.json",
+      "inline Operations script parse",
+      "focused One Time Library browser layout probe",
+      "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:<port> --out=ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ]
+  },
+  "evidence": {
+    "required_artifacts": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/screenshots/operations-library-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/screenshots/operations-library-390-mobile.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/probe/library-first-viewport-probe.json",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/manual-review/latest-contact-sheet-review.md",
+      "ops/live-smokes/2026-07-03-rabbi-onetime-ui-deploy-state/library-first-viewport-live-deploy-state.md",
+      "ops/live-smokes/2026-07-03-rabbi-onetime-ui-deploy-state/library-first-viewport-live-deploy-state.json"
+    ],
+    "manual_review_required": true
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "status": "locally_verified_deploy_live_smoke_blocked",
+    "criteria": [
+      "Packet validates.",
+      "Live Operations sidebar uses Rabbi-facing labels with Platform Support demotion.",
+      "Support routes remain directly accessible and scoped.",
+      "Focused and full local audits pass.",
+      "Ledger and changelog record local verification.",
+      "Production deploy/live smoke is complete, or the register keeps deploy/live smoke explicitly blocked by DEC-20260702-801."
+    ]
+  },
+  "trace": {
+    "raw_id": "RAW-20260702-008",
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/21-operations-library-first-viewport-readability.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "read current IA and Operations shell",
+      "patch presentation-only nav metadata and tests",
+      "run local browser probes and screenshot audit",
+      "record local evidence"
+    ],
+    "skipped_actions_policy": "Skip deploy/live smoke until DEC-20260702-801 is resolved; skip all external writes.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/probe/library-first-viewport-probe.json",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/manual-review/latest-contact-sheet-review.md",
+      "ops/live-smokes/2026-07-03-rabbi-onetime-ui-deploy-state/library-first-viewport-live-deploy-state.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/screenshots/operations-library-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/screenshots/operations-library-390-mobile.png",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "requirement_ids": [
+      "REQ-20260702-823"
+    ],
+    "decision_ids": [
+      "DEC-20260702-801"
+    ],
+    "register": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No new protocol drift findings from this packet."
+  },
+  "next_packet": {
+    "recommended": "Manual screenshot defect follow-up or deploy/live-smoke",
+    "blockers": [
+      "Read-only live deploy-state check proved bneineviimacademy.org does not yet have the Library first-viewport contract: section marker absent, filters open, useful content top at 928px.",
+      "join.onetimeonetime.com did not accept the current Operations login credentials for this probe.",
+      "A clean release branch/PR/deploy path is still required before terminal Done."
+    ]
+  }
+}

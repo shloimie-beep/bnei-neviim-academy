@@ -486,9 +486,15 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     await page.waitForSelector('[data-preview-one-time-drive-brief]', { timeout: 15000 });
 
     const initialContract = await page.evaluate(() => {
-      const navItems = window.workspaceNavItems().map((item) => ({ id: item.id, label: item.label }));
+      const navItems = window.workspaceNavItems().map((item) => ({
+        id: item.id,
+        label: item.label,
+        navKey: item.navKey || item.id,
+        section: item.section || '',
+      }));
       const filterIds = Array.from(document.querySelectorAll('[data-top-filter-id]')).map((item) => item.getAttribute('data-top-filter-id'));
       const sidebarLabels = Array.from(document.querySelectorAll('.ops-sidebar-button')).map((item) => item.textContent.trim().replace(/\s+/g, ' '));
+      const footerLabels = Array.from(document.querySelectorAll('.ops-sidebar-footer .ops-sidebar-mini')).map((item) => item.textContent.trim().replace(/\s+/g, ' '));
       const workspaceOptions = Array.from(document.querySelectorAll('[data-workspace-option]')).map((button) => ({
         label: button.textContent.trim().replace(/\s+/g, ' '),
         disabled: button.getAttribute('aria-disabled') === 'true',
@@ -498,9 +504,12 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
         currentWorkspace: window.currentWorkspaceKey(),
         roleLabel: window.currentWorkspaceRoleLabel(),
         navIds: navItems.map((item) => item.id),
+        navKeys: navItems.map((item) => item.navKey),
         navLabels: navItems.map((item) => item.label),
+        navSections: navItems.map((item) => item.section),
         filterIds,
         sidebarLabels,
+        footerLabels,
         workspaceOptions,
         hasStudentsText: navItems.some((item) => item.id === 'students'),
         hasAccountingText: navItems.some((item) => item.id === 'accounting'),
@@ -512,8 +521,13 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
 
     assert.equal(initialContract.currentWorkspace, 'rabbi_sheller_provider');
     assert.equal(initialContract.roleLabel, 'Workspace Owner');
-    for (const expected of ['service_providers', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'tasks', 'agents', 'automations', 'integrations', 'api_usage', 'settings']) {
-      assert.ok(initialContract.navIds.includes(expected), `missing scoped nav item ${expected}`);
+    assert.deepEqual(initialContract.navLabels, ['Overview', 'Members', 'Classes', 'Comms', 'Auto', 'Payments', 'Tasks', 'Setup']);
+    assert.deepEqual(initialContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'settings_setup']);
+    for (const expected of ['service_providers', 'contacts', 'content', 'communications', 'automations', 'tasks', 'settings']) {
+      assert.ok(initialContract.navIds.includes(expected), `missing Rabbi-facing nav item ${expected}`);
+    }
+    for (const hidden of ['dashboard', 'watchdog', 'agents', 'integrations', 'api_usage', 'studio', 'live_classes', 'calendar']) {
+      assert.equal(initialContract.navIds.includes(hidden), false, `raw support nav item should be demoted: ${hidden}`);
     }
     assert.equal(initialContract.hasStudentsText, false);
     assert.equal(initialContract.hasAccountingText, false);
@@ -521,13 +535,31 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     assert.equal(initialContract.hasModuleToolbar, false);
     assert.ok(initialContract.filterIds.includes('meetings'));
     assert.ok(initialContract.filterIds.includes('one_time_library'));
-    assert.ok(initialContract.sidebarLabels.some((label) => /Agents/.test(label)));
+    assert.ok(initialContract.footerLabels.some((label) => /Platform Support/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Payments/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Tasks/.test(label)));
-    assert.ok(initialContract.sidebarLabels.some((label) => /Content/.test(label)));
-    assert.ok(initialContract.sidebarLabels.some((label) => /Community/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Classes/.test(label)));
+    assert.equal(initialContract.sidebarLabels.some((label) => /Agents|Reporting|Integrations|Watchdog/.test(label)), false);
     assert.ok(initialContract.workspaceOptions.some((option) => /Bnei Neviim Academy/.test(option.label) && option.disabled));
     assert.ok(initialContract.workspaceOptions.some((option) => /One Time Mishnah Class/.test(option.label) && option.current));
     assert.equal(initialContract.driveButton, true);
+
+    await page.locator('[data-sidebar-nav-key="payments_access"]').click();
+    await page.waitForSelector('[data-top-filter-rail][data-current-module="service_providers"] [data-top-filter-id="access"].active', { timeout: 10000 });
+    const paymentNavContract = await page.evaluate(() => ({
+      currentView: document.querySelector('[data-top-filter-rail]')?.getAttribute('data-current-module') || '',
+      section: window.currentSectionId(),
+      railText: document.querySelector('[data-top-filter-rail]')?.textContent.replace(/\s+/g, ' ').trim() || '',
+    }));
+    assert.equal(paymentNavContract.currentView, 'service_providers');
+    assert.equal(paymentNavContract.section, 'access');
+    assert.match(paymentNavContract.railText, /Payments|Payment \/ Access/);
+
+    await page.evaluate(() => {
+      window.switchView('content');
+      window.setCurrentSection('meetings');
+    });
+    await page.waitForSelector('[data-top-filter-rail][data-current-module="content"] [data-top-filter-id="meetings"].active', { timeout: 10000 });
 
     await page.getByRole('button', { name: 'Preview Drive Brief' }).click();
     await page.waitForSelector('[data-one-time-drive-brief-preview]', { timeout: 10000 });
@@ -597,6 +629,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
       ok: true,
       target: '/operations?workspace=rabbi_sheller_provider&view=content&section=meetings&nav=modules',
       initialContract,
+      paymentNavContract,
       previewRequests,
       mobileMetrics,
       screenshots: [
@@ -612,7 +645,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2));
     fs.writeFileSync(
       path.join(outDir, 'report.md'),
-      `# One Time Operations UI Local Smoke\n\nPASS. Scoped One Time owner UI rendered provider modules, hidden school-only Students/Accounting modules, exposed Agents as read-only scoped status, clicked the no-write Drive Brief preview, and passed mobile overflow checks.\n\n- Desktop: ${report.screenshots[0]}\n- Mobile Agents: ${report.screenshots[1]}\n- Production writes: no\n- Preview requests: ${previewRequests.length}\n`,
+      `# One Time Operations UI Local Smoke\n\nPASS. Scoped One Time owner UI rendered Rabbi-facing modules, demoted Platform Support, hidden school-only Students/Accounting modules, kept Agents as read-only scoped support status, opened Payments directly to Payment / Access, clicked the no-write Drive Brief preview, and passed mobile overflow checks.\n\n- Desktop: ${report.screenshots[0]}\n- Mobile Agents: ${report.screenshots[1]}\n- Production writes: no\n- Preview requests: ${previewRequests.length}\n`,
     );
   } finally {
     await browser.close();

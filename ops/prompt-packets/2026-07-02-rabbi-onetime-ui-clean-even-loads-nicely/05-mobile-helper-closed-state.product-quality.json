@@ -1,0 +1,622 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-807",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-806"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/report.json",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/screenshots/operations-overview-390-mobile.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/operations.html",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-mobile-helper-closed/report.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/05-mobile-helper-closed-state.product-quality.json",
+    "terminal_condition": "Closed BNA Helper panel is hidden/inert and no longer appears in mobile full-page screenshots unless opened intentionally, with after-audit evidence or a precise blocker.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Mobile Helper Closed State Screenshot Hygiene",
+  "created_at": "2026-07-02T21:50:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.9,
+    "reasons": [
+      "Mobile full-page screenshots show the BNA Helper bottom sheet at the end of the page even when it is not intentionally opened.",
+      "The helper panel is translated off-screen when closed, but full-page screenshot capture still includes the off-canvas fixed element.",
+      "The fix is confined to closed/open helper state styling and ARIA state; no helper API, tool execution, send, or confirmation behavior changes."
+    ],
+    "affected_product_surfaces": [
+      "Operations mobile BNA Helper shell"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Helper send/plan/execute behavior, email, social scheduling, payments, access grants, Drive, Vimeo, Zoom, DNS, and account mutations are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state"
+    ],
+    "next_exact_packet": "After this helper closed-state cleanup, either resolve deploy/live-smoke or choose the next defect from fresh screenshot review."
+  },
+  "operator_intent_summary": "Make the Rabbi / One Time mobile Operations UI load cleanly by preventing a closed helper panel from appearing as page content in full-page screenshots and accessibility state.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No helper API, planner, tool registry, confirmation, or execution behavior change.",
+    "No new helper action, prompt, send, email, social scheduling, payment, access grant, Drive, Vimeo, Zoom, DNS, account mutation, publish, unpublish, or delete.",
+    "No GHL runtime, LeadConnector reference, external CRM write, raw private evidence, or secret exposure.",
+    "No route/navigation/data model changes."
+  ],
+  "affected_surfaces": [
+    "Operations mobile BNA Helper shell"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "CSS .bna-helper-panel",
+      "CSS @media max-width 720px .bna-helper-panel",
+      "renderBnaHelperPanel",
+      "toggleBnaHelper",
+      "operations-overview-390-mobile screenshot"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "Closed helper panel content appears at the bottom of mobile full-page screenshots, making the initial mobile route look occluded by a helper drawer."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "loads nicely"
+    ],
+    "expanded_phrases": {
+      "clean": "The initial mobile page and screenshot evidence should not include closed off-canvas helper UI as visible page content.",
+      "loads nicely": "The mobile steady state should show the route content first; helper UI appears only after the Ask action opens it."
+    },
+    "first_party_pattern_interpretation": "The BNA Helper remains first-party Operations UI scoped to the current workspace and route."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md",
+    "docs/BROWSER-AGENT-SECURITY.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-807",
+      "statement": "Make the closed Operations BNA Helper panel hidden and inert so it does not pollute mobile full-page screenshots or accessibility state.",
+      "expected_result": "Mobile screenshots of Rabbi / One Time routes show route content without the closed helper bottom sheet; the Ask control still opens the helper when intentionally activated.",
+      "acceptance_criteria": [
+        "Closed `.bna-helper-panel` is visually hidden/inert rather than only translated off-screen.",
+        "Open `.bna-helper-panel.open` remains visible and usable.",
+        "The helper panel exposes `aria-hidden=true` while closed and `aria-hidden=false` while open.",
+        "Mobile Program Overview after-screenshot does not show the helper sheet unless the Ask action is clicked.",
+        "No helper API calls, send/plan/execute behavior, action registry semantics, or external-write behavior changes."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and register exist for RAW-20260702-008.",
+      "Current mobile screenshot evidence exists in ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/.",
+      "The issue is visible in mobile full-page screenshots and maps to one helper shell closed/open state.",
+      "Scope is limited to public/operations.html CSS/ARIA state.",
+      "No external provider, data, payment, send, or access decision is required for local implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load mobile Operations route before helper is opened.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Provider workspace content loads without a helper drawer covering the page.",
+      "expected_primary_action": "Ask",
+      "expected_secondary_actions": [
+        "Open navigation"
+      ],
+      "forbidden_content": [
+        "Closed helper sheet visible as page content",
+        "External-write confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Closed helper panel has aria-hidden true.",
+      "accessibility_expectation": "Closed helper controls are not exposed as visible form controls.",
+      "test_smoke_assertion": "Mobile screenshot does not include the helper panel unless opened.",
+      "requirement_id": "REQ-20260702-807"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=participants",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile Participants route with no typed helper action.",
+      "expected_visible_title": "Participants / Members",
+      "expected_visible_message": "No typed actions are registered for this page yet.",
+      "expected_primary_action": "Ask",
+      "expected_secondary_actions": [
+        "Open navigation"
+      ],
+      "forbidden_content": [
+        "Closed helper footer textarea visible at page bottom"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Ask button remains labelled; helper dialog stays hidden until requested.",
+      "accessibility_expectation": "No hidden helper textarea is counted as visible.",
+      "test_smoke_assertion": "Mobile route capture remains clean.",
+      "requirement_id": "REQ-20260702-807"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 430,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load populated One Time provider overview route.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Provider workspace content appears without off-canvas helper content in the screenshot.",
+      "expected_primary_action": "Ask",
+      "expected_secondary_actions": [
+        "Program filter rail"
+      ],
+      "forbidden_content": [
+        "Closed helper panel captured below page content"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Closed helper is aria-hidden.",
+      "accessibility_expectation": "Initial page content is not occluded by helper shell.",
+      "test_smoke_assertion": "430px screenshot is free of closed helper panel.",
+      "requirement_id": "REQ-20260702-807"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open One Time Library with filters/default local data.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Library route remains visible without helper drawer at page bottom.",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Ask"
+      ],
+      "forbidden_content": [
+        "Closed helper sheet visible in full-page capture"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Helper dialog hidden until Ask.",
+      "accessibility_expectation": "Closed helper controls are not visible controls.",
+      "test_smoke_assertion": "Library mobile screenshot stays route-focused.",
+      "requirement_id": "REQ-20260702-807"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Simulate or inspect error banner state without opening helper.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Some dashboard data could not load.",
+      "expected_primary_action": "Ask",
+      "expected_secondary_actions": [
+        "Open navigation"
+      ],
+      "forbidden_content": [
+        "Raw stack trace",
+        "Closed helper panel visible"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error route h1 remains visible.",
+      "accessibility_expectation": "Hidden helper does not affect error readability.",
+      "test_smoke_assertion": "Audit reports no console/network error caused by the helper shell change.",
+      "requirement_id": "REQ-20260702-807"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open access route where connector setup remains blocked.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "No payment, payout, or access sync fires until configured.",
+      "expected_primary_action": "Ask",
+      "expected_secondary_actions": [
+        "Program filter rail"
+      ],
+      "forbidden_content": [
+        "Closed helper panel visible",
+        "Payment write approved by page content"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Helper closed state remains hidden.",
+      "accessibility_expectation": "No hidden helper controls visible.",
+      "test_smoke_assertion": "Mobile access route capture stays route-focused.",
+      "requirement_id": "REQ-20260702-807"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile page without taking helper action.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Ask remains a preview/open action, not an already-open drawer.",
+      "expected_primary_action": "Ask",
+      "expected_secondary_actions": [
+        "Open navigation"
+      ],
+      "forbidden_content": [
+        "Helper drawer open by default"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Ask aria-expanded=false while helper is closed.",
+      "accessibility_expectation": "Closed helper is not in visible control count.",
+      "test_smoke_assertion": "Initial mobile capture shows Ask button, not open helper sheet.",
+      "requirement_id": "REQ-20260702-807"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Wait for local provider data to resolve.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Provider metrics and cards are visible; closed helper is absent from full-page screenshot.",
+      "expected_primary_action": "Ask",
+      "expected_secondary_actions": [
+        "Metric buttons"
+      ],
+      "forbidden_content": [
+        "Closed helper textarea at page bottom"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Closed helper aria-hidden true.",
+      "accessibility_expectation": "Route content remains primary.",
+      "test_smoke_assertion": "Mobile after-audit screenshot confirms clean closed state.",
+      "requirement_id": "REQ-20260702-807"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open route without Operations session.",
+      "expected_visible_title": "Operations Login or Access Denied",
+      "expected_visible_message": "Private One Time data is not shown.",
+      "expected_primary_action": "Log in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "Provider private data",
+        "Helper tool controls exposed"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Login/access denied heading is present.",
+      "accessibility_expectation": "Helper state change does not expose private content.",
+      "test_smoke_assertion": "Auth behavior unchanged.",
+      "requirement_id": "REQ-20260702-807"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Click Ask to intentionally open the helper after load.",
+      "expected_visible_title": "Shloimie's BNA Helper",
+      "expected_visible_message": "Ready for scoped Operations actions.",
+      "expected_primary_action": "Send",
+      "expected_secondary_actions": [
+        "Close"
+      ],
+      "forbidden_content": [
+        "External write executed without confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Open helper has aria-hidden=false and close button.",
+      "accessibility_expectation": "Open helper remains usable after the closed-state fix.",
+      "test_smoke_assertion": "Ask still opens helper when intentionally clicked.",
+      "requirement_id": "REQ-20260702-807"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "viewport": 1440,
+        "routes": [
+          "operations-overview"
+        ]
+      },
+      {
+        "viewport": 1024,
+        "routes": [
+          "operations-overview"
+        ]
+      },
+      {
+        "viewport": 768,
+        "routes": [
+          "operations-overview"
+        ]
+      },
+      {
+        "viewport": 430,
+        "routes": [
+          "operations-overview"
+        ]
+      },
+      {
+        "viewport": 390,
+        "routes": [
+          "operations-overview",
+          "operations-library"
+        ]
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-009",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+        "viewport": "390-mobile",
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/screenshots/operations-overview-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-mobile-helper-closed/screenshots/operations-overview-390-mobile.png",
+        "defect_codes": [
+          "VQ-MOBILE-001",
+          "VQ-RESP-001"
+        ],
+        "severity": "P2",
+        "user_impact": "Mobile full-page evidence looks like the route loaded with a large helper sheet covering the page.",
+        "expected_fix": "Hide and inert the helper panel while closed, while preserving intentional open behavior.",
+        "requirement_id": "REQ-20260702-807"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Closed helper dialog must be aria-hidden true.",
+      "Open helper dialog must switch to aria-hidden false.",
+      "Closed helper textarea and controls must not be counted as visible form controls.",
+      "Ask button aria-expanded must continue to reflect open/closed state."
+    ],
+    "minimum_checks": [
+      "Inline script parse passes.",
+      "Full audit has visible unlabeled controls=0.",
+      "Manual screenshot spot-check confirms closed helper is absent from initial mobile full-page capture.",
+      "Manual or browser probe confirms Ask still opens the helper."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Ask",
+      "selector_or_action_key": "ACTION-OPERATIONS-HELPER-OPEN",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "openBnaHelperFromLauncher(event)",
+      "registry_required": true
+    },
+    {
+      "label": "Close helper",
+      "selector_or_action_key": "[data-bna-helper-close]",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "toggleBnaHelper(false)",
+      "registry_required": false
+    },
+    {
+      "label": "Helper send/execute",
+      "selector_or_action_key": "data-bna-helper-form / data-bna-helper-action",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing helper confirmation guardrails remain unchanged.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "reads": [
+      "Existing local Operations route and helper context read when Ask is intentionally opened."
+    ],
+    "writes": [
+      "No database or external provider writes."
+    ],
+    "fixtures": [
+      "Existing One Time UI review route state."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "no_raw_private_evidence": true,
+    "no_secret_exposure": true,
+    "privacy_scope": "Closed helper and route screenshots must not expose raw private contact/student/parent data or secrets."
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260702-807-A",
+      "scope": "Closed/open visual and ARIA state for Operations BNA Helper panel.",
+      "instructions": [
+        "Add hidden/inert styling to `.bna-helper-panel` while closed and restore visibility/pointer behavior for `.bna-helper-panel.open`.",
+        "Add aria-hidden state to `renderBnaHelperPanel` so closed helper is hidden from accessibility state and open helper remains accessible.",
+        "Do not change helper API methods, plan/execute/send behavior, confirmation gates, or action registry semantics.",
+        "Verify the initial mobile full-page screenshot no longer includes the closed helper panel and the Ask button can still open it."
+      ],
+      "allowed_files": [
+        "public/operations.html",
+        "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "compact child packet under one helper shell surface",
+    "source_files_to_read": [
+      "public/operations.html",
+      "scripts/audit-rabbi-onetime-current-state.mjs",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/report.json"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if the work expands into helper behavior, tool registry, API changes, or broader mobile layout.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/05-mobile-helper-closed-state.product-quality.json",
+      "expected": "passes"
+    },
+    {
+      "command": "inline parse of public/operations.html script blocks",
+      "expected": "passes"
+    },
+    {
+      "command": "node --check scripts/audit-rabbi-onetime-current-state.mjs",
+      "expected": "passes"
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-mobile-helper-closed",
+      "expected": "captures screenshots with no automated findings"
+    },
+    {
+      "command": "browser probe: initial helper aria-hidden=true, after Ask click panel open=true",
+      "expected": "passes"
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected": "0 findings"
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/screenshots/operations-overview-390-mobile.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-mobile-helper-closed/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-mobile-helper-closed/screenshots/operations-overview-390-mobile.png"
+    ],
+    "recording_required": [
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Packet validates before implementation.",
+      "Closed helper panel is hidden/inert and aria-hidden true.",
+      "Ask still opens helper and switches aria-hidden false.",
+      "After-audit report and screenshots are captured.",
+      "Mobile screenshot spot-check confirms closed helper is absent from initial full-page capture.",
+      "Watchdog protocol drift passes.",
+      "Register, ledger, and changelog record evidence and any live-smoke blocker.",
+      "App-visible terminal Done remains blocked until deploy/live-smoke proof exists."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/05-mobile-helper-closed-state.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch CSS/ARIA edits",
+      "browser probe helper open/closed state",
+      "local Playwright audit screenshots",
+      "watchdog checks"
+    ],
+    "skipped_actions_policy": "Skip deploy/live smoke unless the explicit target is available; skip all external writes and provider mutations.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-mobile-helper-closed/"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md#remaining-next-packet"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 enforceable product-quality drift findings"
+  },
+  "next_packet": {
+    "recommendation": "After local verification, either run deploy/live-smoke if DEC-20260702-801 is resolved or select the next screenshot-reviewed child packet.",
+    "blocked_by": [
+      "DEC-20260702-801 for terminal production proof"
+    ]
+  },
+  "app_visible": true
+}
