@@ -35,8 +35,9 @@ explicit approval and readiness/readback blockers are cleared.
   `npm run watchdog:protocol-drift` passed with 0 findings.
 - Release PR:
   `https://github.com/shloimie-beep/bnei-neviim-academy/pull/87`, branch
-  `codex/rabbi-onetime-ui-cleanup-release-20260703`, pushed through
-  `a3363936`.
+  `codex/rabbi-onetime-ui-cleanup-release-20260703`; terminal-audit commit
+  `6fadb922`. Later PR bookkeeping commits may advance the branch without
+  changing this audit verdict.
 - Deploy blocker evidence:
   `ops/deploy-readbacks/2026-07-03-rabbi-onetime-ui-release-deploy-gate.md`.
 

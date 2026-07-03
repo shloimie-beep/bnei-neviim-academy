@@ -28647,3 +28647,6 @@ Actions: 1. Active machine tasks: 22.
 - Verdict: selected UI cleanup packets are locally verified and terminal with
   exact deploy blocker; production terminal Done still requires approval,
   deploy, and live smoke after the repo's deploy/readiness gates clear.
+- Follow-up consistency note: the terminal audit is anchored to commit
+  `6fadb922`; later bookkeeping commits on PR #87 may advance the branch
+  without changing the verdict.
