@@ -6,6 +6,35 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-04T21:56:41+03:00 - Studio content engine release branch validated
+
+Prepared clean branch `codex/studio-content-engine-release-20260704` stacked on
+PR #87 (`codex/rabbi-onetime-ui-cleanup-release-20260703`) for
+`RAW-20260702-010` / `TASK-20260702-010`.
+
+What changed:
+- Scoped the release branch to Studio content engine changes only.
+- Added the `jewish_guardrails` prompt layer to the Studio compiler and schema
+  contract.
+- Preserved Studio raw intake, Product Quality Compiler packets, requirement
+  register, local smoke screenshots, and watchdog evidence.
+- Expanded Studio browser smoke coverage for review pack preparation, reusable
+  character/guardrail library readback, mock render review, and no-send
+  handoff review.
+
+Verification:
+- PASS focused Studio suite 12/12 with browser smoke.
+- PASS `npm run studio:smoke` 1/1.
+- PASS Studio layout PQC validation.
+- PASS `npm run watchdog:actions` with finding_count 0.
+- PASS `npm run watchdog:protocol-drift` with findings 0.
+- PASS `git diff --check`.
+
+Remaining:
+- Push/open the stacked Studio PR.
+- App-visible terminal Done remains blocked until PR #87 and the Studio branch
+  are released through the production gate and live-smoked.
+
 ## 2026-06-28T15:49:00+03:00 - One Time launch workflow safe-mode deployed closeout
 
 Completed `RAW-20260628-005` / `REQ-20260628-013` through

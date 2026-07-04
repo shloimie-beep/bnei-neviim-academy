@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS bna_studio_prompt_layers (
 );
 ALTER TABLE bna_studio_prompt_layers DROP CONSTRAINT IF EXISTS bna_studio_prompt_layers_type_check;
 ALTER TABLE bna_studio_prompt_layers ADD CONSTRAINT bna_studio_prompt_layers_type_check
-  CHECK (layer_type IN ('system_policy', 'workspace_defaults', 'project_brief', 'character_bible', 'source_context', 'scene_instruction', 'correction_patch', 'renderer_contract', 'output_contract'));
+  CHECK (layer_type IN ('system_policy', 'workspace_defaults', 'project_brief', 'character_bible', 'jewish_guardrails', 'source_context', 'scene_instruction', 'correction_patch', 'renderer_contract', 'output_contract'));
 CREATE INDEX IF NOT EXISTS idx_bna_studio_prompt_layers_project
   ON bna_studio_prompt_layers (studio_project_id, scene_id, layer_type, version DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_studio_prompt_layers_project_id ON bna_studio_prompt_layers (project_id);
