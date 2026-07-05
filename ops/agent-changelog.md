@@ -29130,3 +29130,21 @@ Actions: 1. Active machine tasks: 0.
   `https://github.com/shloimie-beep/bnei-neviim-academy/pull/90`.
   No production deploy was run because the package is protocol/tooling/docs
   plus local agent automation, not an app-visible or server-visible release.
+
+## 2026-07-05 - PR 87 Resend Release Gate Correction
+
+- Corrected a PR #87 deploy-gate false positive: Resend readiness now matches
+  the runtime contract and accepts `RESEND_FROM_EMAIL` when the formatted
+  `RESEND_FROM` alias is absent, while still requiring the API key, domain, and
+  webhook secret.
+- Added regression coverage for the accepted sender-email path and the blocked
+  no-sender path in `tests/system-truth-scripts.test.js`.
+- Verification passed: `node --test tests/system-truth-scripts.test.js
+  tests/bna-production-closeout-gate.test.js` with 19/19 tests passing, and
+  local readiness readback now reports Resend ready without printing secret
+  values.
+- Production deploy remains blocked before mutation by OpenAI API key, Vimeo
+  access token, Rabbi Stripe key/mode, Rabbi Telegram worker token/deployment
+  verification, and database/Railway/Drive external readback readiness.
+- No production deploy, live smoke, external send/payment/access/DNS/credential
+  change, provider account write, or DB review mutation was performed.

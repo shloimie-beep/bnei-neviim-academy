@@ -34,7 +34,14 @@ const INTEGRATION_GROUPS = [
   {
     integration: 'resend',
     label: 'Resend email sending/domain',
-    fields: ['RESEND_API_KEY', 'RESEND_FROM', 'RESEND_FROM_EMAIL', 'RESEND_DOMAIN', 'RESEND_WEBHOOK_SECRET']
+    fields: ['RESEND_API_KEY', 'RESEND_FROM', 'RESEND_FROM_EMAIL', 'RESEND_DOMAIN', 'RESEND_WEBHOOK_SECRET'],
+    required: ['RESEND_API_KEY', 'RESEND_DOMAIN', 'RESEND_WEBHOOK_SECRET'],
+    anyOf: [
+      {
+        keys: ['RESEND_FROM', 'RESEND_FROM_EMAIL'],
+        blocker: 'RESEND_FROM or RESEND_FROM_EMAIL is not configured.'
+      }
+    ]
   },
   {
     integration: 'stripe',
@@ -69,7 +76,7 @@ export function collectIntegrationReadinessFields(context = {}) {
 }
 
 function readinessFieldByKey(fields = [], key) {
-  return fields.find((field) => field.key === key) || {
+  return fields.find((field) => field.key === key || field.name === key) || {
     key,
     configured: false,
     source: 'not configured'
@@ -86,9 +93,16 @@ function summarizeIntegrationGroup(fields, spec) {
       source: configured ? field.source : field.source === 'placeholder' ? 'placeholder' : 'not configured'
     };
   });
-  const missing = groupFields.filter((field) => !field.configured).map((field) => field.name);
+  const requiredKeys = Array.isArray(spec.required) ? spec.required : spec.fields;
+  const missing = groupFields
+    .filter((field) => requiredKeys.includes(field.name) && !field.configured)
+    .map((field) => field.name);
+  const missingAlternativeBlockers = (spec.anyOf || [])
+    .filter((alternative) => !(alternative.keys || []).some((key) => readinessFieldByKey(groupFields, key).configured))
+    .map((alternative) => alternative.blocker || `${(alternative.keys || []).join(' or ')} is not configured.`);
   const blockers = [
     ...missing.map((name) => `${name} is not configured.`),
+    ...missingAlternativeBlockers,
     ...(spec.blockers || [])
   ];
   return {

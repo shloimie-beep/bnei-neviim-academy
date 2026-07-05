@@ -107,16 +107,38 @@ The PR #87 production deploy gate blocked with no production mutation because:
 
 - `OPENAI_API_KEY` is not configured for OpenAI transcription/parser readiness.
 - `VIMEO_ACCESS_TOKEN` is not configured for Vimeo/member library readiness.
-- `RESEND_FROM` is not configured for Resend sending/domain readiness.
 - `RABBI_STRIPE_SECRET_KEY` and `RABBI_STRIPE_MODE` are not configured.
 - `TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER` is not configured, and Rabbi worker deployment state is not verified.
 - Database external readback readiness is blocked.
 - Railway external readback readiness is blocked.
 - Drive external readback readiness is blocked.
 
+Resend was removed from the deploy blocker list on 2026-07-05 after the
+release readiness helper was corrected to match the runtime contract: production
+send requires `RESEND_API_KEY`, `RESEND_DOMAIN`, `RESEND_WEBHOOK_SECRET`, and at
+least one sender identity from `RESEND_FROM` or `RESEND_FROM_EMAIL`.
+
 No production deploy, live verification write, external send, payment, DNS,
 Drive upload/share, credential change, provider account write, or DB review
 mutation was performed.
+
+## 2026-07-05 Resend gate correction readback
+
+- Updated `scripts/lib/integration-readiness.mjs` so `RESEND_FROM_EMAIL`
+  satisfies the Resend sender requirement when the formatted `RESEND_FROM`
+  alias is absent.
+- Added regression tests in `tests/system-truth-scripts.test.js` for both the
+  accepted `RESEND_FROM_EMAIL` path and the blocked missing-sender path.
+- PASS `node --test tests/system-truth-scripts.test.js tests/bna-production-closeout-gate.test.js`
+  with 19/19 tests passing.
+- PASS local readiness readback: Resend now reports ready with
+  `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_DOMAIN`, and
+  `RESEND_WEBHOOK_SECRET` configured from keyholder; no secret values printed.
+- Remaining deploy blockers are OpenAI API key, Vimeo access token, Rabbi
+  Stripe key/mode, Rabbi Telegram worker token/deployment verification, and
+  database/Railway/Drive external readback readiness.
+- No production deploy, live smoke, external send/payment/access/DNS/credential
+  mutation, provider account write, or DB review mutation was performed.
 
 ## Final audit
 
@@ -125,7 +147,7 @@ mutation was performed.
 | REQ-20260704-101 | Done | raw-input/RAW-20260704-001-ship-pr87-onetime-ui-live-cleanup.md, this register, memory/2026-07-04.md, ledger entry | raw-input, tasks-pending, memory, ledger | File creation | None |
 | REQ-20260704-102 | Done | PR #87 metadata and current dirty-worktree scope inspected; PR #87 is separate from local Studio/job cleanup changes. | No product files changed by this July 4 audit; PR #87 worktree stayed clean. | `gh pr view 87`, `gh pr diff 87 --name-only`, `git status`, Studio targeted diff readback | None. |
 | REQ-20260704-103 | Done | Focused PR #87 UI validation, PQC validation, action/protocol watchdogs, Studio focused tests, and Job 101 evidence readback. | No product files changed by this July 4 audit; Studio product changes are now in PR #87 via PR #89 merge. | Combined UI + Studio tests 23/23; PQC/actions/protocol checks passed. | None for local validation. |
-| REQ-20260704-104 | Blocked | PR #87 marked ready and remains pushed/mergeable/clean at final head `4e02b676`; deploy gate blocked in deploy mode with explicit readiness blockers. | GitHub PR #87 branch includes merged Studio work and current master. | Deploy gate blocked without production mutation. | Missing integration/readback readiness listed above; do not merge/deploy around the guard. |
+| REQ-20260704-104 | Blocked | PR #87 marked ready and remains pushed/mergeable/clean; Resend false-positive blocker corrected; deploy gate remains blocked in deploy mode with explicit readiness blockers. | GitHub PR #87 branch includes merged Studio work, current master, and the Resend gate correction. | Deploy gate blocked without production mutation. | Missing OpenAI/Vimeo/Rabbi Stripe/Rabbi Telegram/readback readiness listed above; do not merge/deploy around the guard. |
 | REQ-20260704-105 | Done / Blocked | `APPLY-CLOSEOUT.md` proves Job 101 parser output and private Drive transcript doc; `JOB-101-REVIEW-TRIAGE.md` preserves remaining cleanup blockers. | No raw transcript body committed. | Evidence readback only. | DB review cleanup and score/progress/grading writes remain blocked by readback/approval. |
 | REQ-20260704-106 | Done | This register, ledger, changelog, and final response. | tasks-pending, ledger, changelog, memory | Closeout records updated. | Goal remains active because deploy/live proof and Studio PR/release remain blocked. |
 | REQ-20260704-107 | Done / Blocked | PR #89 opened, pushed, and merged into PR #87; branch records include Studio raw intake, PQC packets, screenshots, watchdog reports, ledger, and changelog. | Studio release branch files only; main dirty worktree not staged. | PR #89 merged; PR #87 open, ready, mergeable, clean; combined local focused suite 23/23, PQC/actions/protocol checks passed. | PR #87 still needs production deploy/live smoke. |
