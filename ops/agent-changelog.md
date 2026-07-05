@@ -29340,3 +29340,28 @@ Actions: 1. Active machine tasks: 0.
   full `npm test` 1515/1515.
 - Pending before Done: commit, push, PR/merge, Railway deploy, and live smoke
   on the deployed One Time Operations UI.
+
+## 2026-07-05 - Release Captain And One Time UI Recovery Deployed
+
+- Merged PR #97 into `master` at
+  `e405bfe484db6515ccc52d4d9913938ee9e0d633` after implementation commit
+  `8ce40037`.
+- Live production source readback confirmed the deployed Operations bundle has
+  the new One Time sidebar keys (`live_class_schedule`, `program_schedule`,
+  `community_questions`, `reporting_readiness`, `connector_setup`) and renders
+  `renderSidebarSubnav()`.
+- Live production CSS readback confirmed black/yellow One Time tokens and no
+  stale teal/cyan literals `#0b9fc9`, `#08779c`, or `#b8dff0`.
+- Live verification passed: `npm run app:smoke:one-time-shared-review` against
+  `https://bneineviimacademy.org` at 390px, 768px, and 1440px, including the
+  authenticated One Time Operations route; `npm run app:smoke` also passed.
+- Railway deployment-ID readback is blocked from this shell: the current
+  Railway status resolves to the separate `one-time-production` project; when
+  explicit BNA target values are supplied, the target guard passes but
+  `railway link` returns `Unauthorized` and direct service status by name is not
+  found. Tracked evidence:
+  `ops/ui-audits/2026-07-05-release-captain-onetime-ui/live-closeout.md`.
+- No checkout session, charge, payment link creation, member creation, access
+  grant, live email/WhatsApp/SMS/Telegram send, DNS write, Drive upload/share,
+  external CRM write, provider account mutation, credential change, or
+  production data cleanup mutation was performed.
