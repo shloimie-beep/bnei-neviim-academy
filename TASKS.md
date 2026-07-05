@@ -6,16 +6,14 @@ not authorize active GHL runtime paths.
 
 ## Current Goal-Mode Cleanup
 
-- [ ] `RAW-20260705-007` / `REQ-20260705-201` through `REQ-20260705-206`:
-  Clean dirty worktree/release state and deploy safe app/server-visible work.
-  Register:
+- [x] `RAW-20260705-007` / `REQ-20260705-201` through `REQ-20260705-206`:
+  Cleaned dirty worktree/release state, merged the safe app/server-visible
+  work through PR #94, merged the live-smoke copy unblocker through PR #95,
+  verified Railway production deployments, and live-smoked the affected
+  surfaces. Register:
   `tasks-pending/2026-07-05-clean-dirty-worktrees-deploy-everything.md`.
-  Current release branch:
-  `codex/dirty-worktree-release-cleanup-20260705` from `origin/master`.
-  Scope includes the verified local OneTimeOneTime landing signup funnel,
-  Job 101 Contacts/helper fixes, Telegram/Google agent-fleet readiness fixes,
-  and ChatGPT dropoff fleet claim completion fix. External/provider/account
-  actions remain blocked unless exact approval exists.
+  External/provider/account actions remain gated by `DEC-20260705-201` unless
+  exact approval exists.
 
 ## Now
 
