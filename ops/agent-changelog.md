@@ -29278,3 +29278,41 @@ Actions: 1. Active machine tasks: 0.
   14 older findings in
   `ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md`.
   The new landing PQC packet validates.
+
+## 2026-07-05 - Dirty Worktree Release Cleanup Deployed
+
+- Merged PR #94 into `master` at
+  `a47b4e68024b82017874c76ad8c984785a93f361` after committing
+  `cffe4d04` on `codex/dirty-worktree-release-cleanup-20260705`.
+- Railway production auto-deployed PR #94 as deployment
+  `16f668d8-8cec-4319-8b3e-5aa0319dfc7e` with status `SUCCESS`.
+- The first full One Time shared-review live smoke exposed a missing visible
+  email-review coverage marker. Fixed it in commit `980e1c3d`, merged PR #95
+  at `cbfd5a1fd07af92bfa7edd57a7b023ed301d69dc`, and Railway deployed it as
+  `e99f7921-5691-4b83-b5a9-1c7dfd787f71` with status `SUCCESS`.
+- Live verification passed on the newest deployment:
+  - `npm run app:smoke`:
+    `ops/live-smokes/2026-07-05T13-10-14-373Z-live-app-smoke.md`
+  - `npm run app:smoke:rabbi-onetime-landing`:
+    `ops/live-smokes/2026-07-05T13-11-02-710Z-rabbi-onetime-landing-smoke.md`
+  - `npm run app:smoke:one-time-shared-review`:
+    `ops/live-smokes/2026-07-05T13-08-16-893Z-one-time-shared-review-live-smoke.md`
+  - `npm run app:smoke:one-time-crm-contacts-ux`:
+    `ops/live-smokes/2026-07-05T13-09-42-151Z-one-time-crm-contacts-ux-live-smoke.md`
+  - `npm run app:smoke:mobile-assistant-keyboard`:
+    `ops/live-smokes/2026-07-05T13-09-54-965Z-mobile-assistant-keyboard-live-smoke.md`
+  - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
+    passed health, instance-config, portal, parent, student, provider, and
+    classroom checks.
+- Approved release gate passed from a detached production checkout with
+  optional integrations/readback explicitly deferred. Railway status readback
+  confirmed the production project/service/domain and deployment commits.
+  `npm run railway:doctor` could not complete its `railway link` substep with
+  the project token (`Unauthorized`), so the readback path was used instead.
+- No checkout session, charge, payment link creation, member creation, access
+  grant, live email/WhatsApp/SMS/Telegram send, DNS write, Drive upload/share,
+  external CRM write, provider account mutation, or database cleanup mutation
+  was performed.
+- Remaining external/provider/account work stays gated by
+  `DEC-20260705-201`; it requires exact owner approval/credentials before any
+  future live write.
