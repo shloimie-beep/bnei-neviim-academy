@@ -332,7 +332,7 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /appointment_intents_internal_only: true/);
   assert.match(server, /\/api\/bna\/one-time\/calendar-events/);
   assert.match(server, /\/api\/bna\/one-time\/appointment-intents/);
-  assert.match(server, /app\.get\(\['\/one-time', '\/one-time\/mishnayos', '\/one-time\/us', '\/one-time\/uk', '\/one-time\/israel', '\/one-time\/interest'\]/);
+  assert.match(server, /app\.get\(\['\/one-time', '\/one-time\/', '\/one-time\/mishnayos', '\/one-time\/us', '\/one-time\/uk', '\/one-time\/israel', '\/one-time\/interest'\]/);
   assert.match(server, /app\.get\(\['\/one-time\/member-login', '\/member', '\/member-portal'\], redirectOneTimeMemberHome\)/);
 });
 

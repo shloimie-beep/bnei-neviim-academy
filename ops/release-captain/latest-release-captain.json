@@ -1,6 +1,6 @@
 {
   "ok": false,
-  "generated_at": "2026-07-05T13:52:38.313Z",
+  "generated_at": "2026-07-05T14:58:14.403Z",
   "mode": "release_captain_read_only",
   "production_mutation_performed": false,
   "external_write_performed": false,
@@ -13,21 +13,21 @@
     "After merge, run the approved deployment path and live smoke before marking app-visible work Done."
   ],
   "git": {
-    "branch": "codex/release-captain-onetime-ui-20260705",
+    "branch": "codex/onetime-canonical-target-routing-20260705",
     "expected_branch": null,
     "allow_detached": false,
     "detached_allowed": false,
     "branch_matches_expected": true,
-    "head": "9ee594573ed20d58d5a49fb6158418a89749f0fa",
-    "upstream": "",
-    "remote_branch": "origin/codex/release-captain-onetime-ui-20260705",
+    "head": "7fcee08770b58e75f70ddc3170a45c640650154e",
+    "upstream": "origin/master",
+    "remote_branch": "origin/codex/onetime-canonical-target-routing-20260705",
     "remote_head": "",
     "head_pushed": false,
     "dirty": {
-      "total": 37,
+      "total": 18,
       "staged": 0,
-      "modified": 29,
-      "untracked": 8,
+      "modified": 16,
+      "untracked": 2,
       "sample": [
         {
           "status": " M",
@@ -35,27 +35,11 @@
         },
         {
           "status": " M",
+          "path": "docs/architecture/onetime-single-tenant-split.md"
+        },
+        {
+          "status": " M",
           "path": "memory/2026-07-05.md"
-        },
-        {
-          "status": " M",
-          "path": "ops/action-registry/one-time-action-coverage.json"
-        },
-        {
-          "status": " M",
-          "path": "ops/action-registry/one-time-action-coverage.md"
-        },
-        {
-          "status": " M",
-          "path": "ops/action-registry/universal-action-parity.json"
-        },
-        {
-          "status": " M",
-          "path": "ops/action-registry/universal-action-parity.md"
-        },
-        {
-          "status": " M",
-          "path": "ops/agent-changelog.md"
         },
         {
           "status": " M",
@@ -63,39 +47,15 @@
         },
         {
           "status": " M",
-          "path": "ops/one-time-mishnah/operator-ui-review/qa-harness-local-report.json"
+          "path": "ops/release-captain/latest-release-captain.json"
         },
         {
           "status": " M",
-          "path": "ops/one-time-mishnah/operator-ui-review/qa-harness-local-report.md"
+          "path": "ops/release-captain/latest-release-captain.md"
         },
         {
           "status": " M",
-          "path": "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png"
-        },
-        {
-          "status": " M",
-          "path": "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png"
-        },
-        {
-          "status": " M",
-          "path": "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json"
-        },
-        {
-          "status": " M",
-          "path": "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md"
-        },
-        {
-          "status": " M",
-          "path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json"
-        },
-        {
-          "status": " M",
-          "path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
-        },
-        {
-          "status": " M",
-          "path": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md"
+          "path": "ops/route-registry.json"
         },
         {
           "status": " M",
@@ -111,74 +71,111 @@
         },
         {
           "status": " M",
-          "path": "public/css/one-time-operations.css"
-        },
-        {
-          "status": " M",
-          "path": "public/operations.html"
-        },
-        {
-          "status": " M",
-          "path": "scripts/validate-product-quality-packets.mjs"
-        },
-        {
-          "status": " M",
-          "path": "scripts/watchdog-product-quality-drift.mjs"
-        },
-        {
-          "status": " M",
-          "path": "src/platform/instances/one-time-rabbi-dashboard-ia.js"
-        },
-        {
-          "status": " M",
-          "path": "tests/one-time-operations-brand-css.test.js"
-        },
-        {
-          "status": " M",
-          "path": "tests/one-time-operations-ui-smoke.test.js"
-        },
-        {
-          "status": " M",
-          "path": "tests/one-time-rabbi-dashboard-ia.test.js"
-        },
-        {
-          "status": " M",
-          "path": "tests/one-time-rabbi-ui-final-local-smoke.test.js"
-        },
-        {
-          "status": "??",
-          "path": "ops/prompt-packets/2026-07-05-release-captain-onetime-ui-recovery/"
-        },
-        {
-          "status": "??",
-          "path": "ops/release-captain/"
-        },
-        {
-          "status": "??",
-          "path": "ops/ui-audits/2026-07-05-release-captain-onetime-ui/"
-        },
-        {
-          "status": "??",
-          "path": "ops/watchdog-audits/2026-07-05T13-45-watchdog-action-audit.md"
-        },
-        {
-          "status": "??",
-          "path": "raw-input/RAW-20260705-008-release-captain-onetime-ui-recovery.md"
-        },
-        {
-          "status": "??",
           "path": "scripts/release-captain.mjs"
         },
         {
-          "status": "??",
-          "path": "tasks-pending/2026-07-05-release-captain-onetime-ui-recovery.md"
+          "status": " M",
+          "path": "scripts/smoke-onetime-separate-instance-live.mjs"
+        },
+        {
+          "status": " M",
+          "path": "server.js"
+        },
+        {
+          "status": " M",
+          "path": "tests/one-time-focused-landing.test.js"
+        },
+        {
+          "status": " M",
+          "path": "tests/one-time-separate-instance-package.test.js"
+        },
+        {
+          "status": " M",
+          "path": "tests/release-captain.test.js"
         },
         {
           "status": "??",
-          "path": "tests/release-captain.test.js"
+          "path": "raw-input/RAW-20260705-009-onetime-canonical-target-routing.md"
+        },
+        {
+          "status": "??",
+          "path": "tasks-pending/2026-07-05-onetime-canonical-target-routing.md"
         }
       ]
     }
+  },
+  "target_gate": {
+    "target": "one-time-public",
+    "target_label": "One Time canonical public funnel",
+    "base_url": "https://join.onetimeonetime.com",
+    "canonical_domain": "join.onetimeonetime.com",
+    "expected_project": "one-time-production",
+    "expected_service": "one-time-web",
+    "expected_headline": "Your Child Can Love Learning Mishnayos",
+    "canonical_routes": [
+      "/",
+      "/one-time/"
+    ],
+    "checks": [
+      {
+        "route": "/",
+        "url": "https://join.onetimeonetime.com/",
+        "final_url": "https://join.onetimeonetime.com/",
+        "status": 200,
+        "title": "Learn Mishnayos Live with Rabbi Eli Scheller",
+        "ok": false,
+        "missing_text": [
+          "Your Child Can Love Learning Mishnayos"
+        ],
+        "forbidden_hits": [
+          "/Learn Mishnayos Live with Rabbi Eli Scheller/i"
+        ]
+      },
+      {
+        "route": "/one-time/",
+        "url": "https://join.onetimeonetime.com/one-time/",
+        "final_url": "https://join.onetimeonetime.com/one-time/",
+        "status": 200,
+        "title": "Learn Mishnayos Live with Rabbi Eli Scheller",
+        "ok": false,
+        "missing_text": [
+          "Your Child Can Love Learning Mishnayos"
+        ],
+        "forbidden_hits": [
+          "/Learn Mishnayos Live with Rabbi Eli Scheller/i"
+        ]
+      },
+      {
+        "route": "/api/one-time/instance-config",
+        "url": "https://join.onetimeonetime.com/api/one-time/instance-config",
+        "status": 200,
+        "ok": true,
+        "app_instance": "onetime",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class"
+      }
+    ],
+    "blockers": [
+      "https://join.onetimeonetime.com/ title is \"Learn Mishnayos Live with Rabbi Eli Scheller\"; expected the One Time focused funnel title.",
+      "https://join.onetimeonetime.com/ is missing required One Time funnel text: Your Child Can Love Learning Mishnayos.",
+      "https://join.onetimeonetime.com/ matched forbidden stale/BNA content: /Learn Mishnayos Live with Rabbi Eli Scheller/i.",
+      "https://join.onetimeonetime.com/one-time/ title is \"Learn Mishnayos Live with Rabbi Eli Scheller\"; expected the One Time focused funnel title.",
+      "https://join.onetimeonetime.com/one-time/ is missing required One Time funnel text: Your Child Can Love Learning Mishnayos.",
+      "https://join.onetimeonetime.com/one-time/ matched forbidden stale/BNA content: /Learn Mishnayos Live with Rabbi Eli Scheller/i."
+    ],
+    "warnings": [],
+    "secrets_redacted": true,
+    "production_mutation_performed": false,
+    "external_write_performed": false,
+    "railway_status": {
+      "ok": true,
+      "project_name": "one-time-production",
+      "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+      "project_name_present": true,
+      "service_name_present": true,
+      "domain_present": true
+    },
+    "ok": false
   },
   "active_run": {
     "run_dir": "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation",
@@ -223,7 +220,7 @@
     ]
   },
   "release_gate_blockers": [
-    "Current HEAD is not confirmed pushed to origin/codex/release-captain-onetime-ui-20260705.",
+    "Current HEAD is not confirmed pushed to origin/codex/onetime-canonical-target-routing-20260705.",
     "Working tree has dirty or untracked files; do not deploy from a mixed dirty worktree."
   ],
   "open_prs": [
@@ -256,6 +253,24 @@
     }
   ],
   "merged_prs": [
+    {
+      "number": 98,
+      "title": "[codex] Record One Time sidebar live closeout",
+      "branch": "codex/release-captain-onetime-ui-closeout-20260705",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/98"
+    },
+    {
+      "number": 97,
+      "title": "[codex] Install Release Captain and recover One Time sidebar",
+      "branch": "codex/release-captain-onetime-ui-20260705",
+      "base": "master",
+      "draft": false,
+      "merge_state": "UNKNOWN",
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/97"
+    },
     {
       "number": 96,
       "title": "Record dirty worktree deploy closeout",
@@ -309,24 +324,6 @@
       "draft": false,
       "merge_state": "UNKNOWN",
       "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/91"
-    },
-    {
-      "number": 90,
-      "title": "[codex] Publish ChatGPT dropoff workflow",
-      "branch": "codex/chatgpt-dropoff-publish-defaults-20260704",
-      "base": "master",
-      "draft": false,
-      "merge_state": "UNKNOWN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/90"
-    },
-    {
-      "number": 89,
-      "title": "Studio content engine release",
-      "branch": "codex/studio-content-engine-release-20260704",
-      "base": "codex/rabbi-onetime-ui-cleanup-release-20260703",
-      "draft": false,
-      "merge_state": "UNKNOWN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/89"
     }
   ],
   "command_health": {

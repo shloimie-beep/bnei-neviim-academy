@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T13:44:47.191Z",
+  "generated_at": "2026-07-05T14:58:09.725Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -453,6 +453,7 @@
     "tasks-pending/2026-07-04-ship-pr87-onetime-ui-live-cleanup.md",
     "tasks-pending/2026-07-05-chatgpt-dropoff-fleet-claim-completion-fix.md",
     "tasks-pending/2026-07-05-clean-dirty-worktrees-deploy-everything.md",
+    "tasks-pending/2026-07-05-onetime-canonical-target-routing.md",
     "tasks-pending/2026-07-05-onetime-landing-signup-funnel.md",
     "tasks-pending/2026-07-05-release-captain-onetime-ui-recovery.md",
     "tasks-pending/2026-07-05-telegram-agent-fleet-google-auth-audit.md",

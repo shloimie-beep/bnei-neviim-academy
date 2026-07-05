@@ -1,21 +1,21 @@
 # Release Captain
 
-Generated: 2026-07-05T13:52:38.313Z
+Generated: 2026-07-05T14:58:14.403Z
 
 State: **local changes need verify commit push**
 
 | Check | Value |
 | --- | --- |
-| Branch | codex/release-captain-onetime-ui-20260705 |
-| Head | 9ee594573ed2 |
-| Upstream |  |
+| Branch | codex/onetime-canonical-target-routing-20260705 |
+| Head | 7fcee08770b5 |
+| Upstream | origin/master |
 | Head pushed | no |
-| Dirty files | 37 |
+| Dirty files | 18 |
 | Active run | 2026-07-02-background-drive-ui-launch-continuation |
 
 ## Blockers
 
-- Current HEAD is not confirmed pushed to origin/codex/release-captain-onetime-ui-20260705.
+- Current HEAD is not confirmed pushed to origin/codex/onetime-canonical-target-routing-20260705.
 - Working tree has dirty or untracked files; do not deploy from a mixed dirty worktree.
 
 ## Next Actions
@@ -23,6 +23,23 @@ State: **local changes need verify commit push**
 - Finish the scoped edit batch, then run the focused tests and smokes.
 - Stage only the scoped files, commit, push, and open or update the PR.
 - After merge, run the approved deployment path and live smoke before marking app-visible work Done.
+
+## Target Gate
+
+| Field | Value |
+| --- | --- |
+| Target | one-time-public |
+| Base URL | https://join.onetimeonetime.com |
+| Expected project | one-time-production |
+| Expected service | one-time-web |
+| Result | blocked |
+
+- https://join.onetimeonetime.com/ title is "Learn Mishnayos Live with Rabbi Eli Scheller"; expected the One Time focused funnel title.
+- https://join.onetimeonetime.com/ is missing required One Time funnel text: Your Child Can Love Learning Mishnayos.
+- https://join.onetimeonetime.com/ matched forbidden stale/BNA content: /Learn Mishnayos Live with Rabbi Eli Scheller/i.
+- https://join.onetimeonetime.com/one-time/ title is "Learn Mishnayos Live with Rabbi Eli Scheller"; expected the One Time focused funnel title.
+- https://join.onetimeonetime.com/one-time/ is missing required One Time funnel text: Your Child Can Love Learning Mishnayos.
+- https://join.onetimeonetime.com/one-time/ matched forbidden stale/BNA content: /Learn Mishnayos Live with Rabbi Eli Scheller/i.
 
 ## Open PRs
 

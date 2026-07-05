@@ -6,6 +6,15 @@ not authorize active GHL runtime paths.
 
 ## Current Goal-Mode Cleanup
 
+- [ ] `RAW-20260705-009` / `REQ-20260705-501` through `REQ-20260705-510`:
+  Correct the One Time canonical target-routing mistake. The BNA-hosted
+  `/one-time` page is not sufficient proof; the canonical production target is
+  `https://join.onetimeonetime.com/one-time/`. Register:
+  `tasks-pending/2026-07-05-onetime-canonical-target-routing.md`. Required
+  report:
+  `ops/ui-audits/2026-07-05-onetime-canonical-target-routing/REPORT.md`.
+  Next: create target map, identify source split, install target-aware guard,
+  fix or block join-domain deployment, and direct-live-smoke the join target.
 - [x] `RAW-20260705-008` / `REQ-20260705-401` through `REQ-20260705-406`:
   Install a Release Captain workflow and recover the live Rabbi Scheller / One
   Time Mishnah class UI through a clean audited release. Register:

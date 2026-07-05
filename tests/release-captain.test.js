@@ -37,6 +37,17 @@ test('release captain classifies dirty local work as verify/commit/push work', a
   assert.ok(mod.nextActionsForState('local_changes_need_verify_commit_push', report).some((item) => /commit, push/i.test(item)));
 });
 
+test('release captain blocks ready state when the named target gate fails', async () => {
+  const mod = await loadReleaseCaptain();
+  const targetGate = {
+    ok: false,
+    blockers: ['https://join.onetimeonetime.com/one-time/ is missing required One Time funnel text.'],
+  };
+
+  assert.equal(mod.classifyReleaseState(gate(), targetGate), 'blocked_by_target_gate');
+  assert.ok(mod.nextActionsForState('blocked_by_target_gate', gate(), targetGate).some((item) => /target gate blocker/i.test(item)));
+});
+
 test('release captain catches detached and unpushed release states', async () => {
   const mod = await loadReleaseCaptain();
 
@@ -66,6 +77,68 @@ test('release captain renders a concise markdown report without implying externa
 
   assert.match(markdown, /Release Captain/);
   assert.match(markdown, /Dirty files \| 0/);
+  assert.match(markdown, /Target Gate/);
   assert.match(markdown, /#101/);
   assert.match(markdown, /read-only: no deploy, merge, production mutation, external send, payment, DNS, access grant, or secret print/i);
+});
+
+test('one-time public target gate verifies join domain routes and instance config', async () => {
+  const mod = await loadReleaseCaptain();
+  const landingHtml = '<!doctype html><title>Your Child Can Love Learning Mishnayos | OneTimeOneTime</title><body>OneTimeOneTime Mishnah Start 30 Days Free</body>';
+  const fetchCalls = [];
+  const fetchFn = async (url) => {
+    fetchCalls.push(url);
+    if (url.endsWith('/api/one-time/instance-config')) {
+      return {
+        status: 200,
+        url,
+        text: async () => JSON.stringify({
+          app_instance: 'onetime',
+          workspace_key: 'rabbi_sheller_provider',
+          project_key: 'one_time_mishnah_class',
+        }),
+      };
+    }
+    return {
+      status: 200,
+      url,
+      text: async () => landingHtml,
+    };
+  };
+  const runner = (command, args) => {
+    if (command === 'railway' && args.join(' ') === 'status --json') {
+      return {
+        ok: true,
+        stdout: JSON.stringify({
+          name: 'one-time-production',
+          services: { edges: [{ node: { name: 'one-time-web' } }] },
+          environments: {
+            edges: [{
+              node: {
+                serviceInstances: {
+                  edges: [{
+                    node: {
+                      serviceName: 'one-time-web',
+                      domains: { customDomains: [{ domain: 'join.onetimeonetime.com' }] },
+                    },
+                  }],
+                },
+              },
+            }],
+          },
+        }),
+      };
+    }
+    return { ok: true, stdout: '' };
+  };
+
+  const report = await mod.buildOneTimePublicTargetGate({ targetBaseUrl: 'https://join.onetimeonetime.com' }, { fetchFn, runner });
+
+  assert.equal(report.ok, true, report.blockers.join('\n'));
+  assert.equal(report.target, 'one-time-public');
+  assert.deepEqual(fetchCalls, [
+    'https://join.onetimeonetime.com/',
+    'https://join.onetimeonetime.com/one-time/',
+    'https://join.onetimeonetime.com/api/one-time/instance-config',
+  ]);
 });

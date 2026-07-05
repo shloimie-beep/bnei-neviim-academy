@@ -74,6 +74,8 @@
     "bna:intake:postgres": "node scripts/canonical-intake-postgres.mjs",
     "bna:release-gate": "node scripts/bna-production-closeout-gate.mjs",
     "release:captain": "node scripts/release-captain.mjs --write-report",
+    "release:captain:one-time-public": "node scripts/release-captain.mjs --write-report --target one-time-public",
+    "one-time:target:guard": "node scripts/release-captain.mjs --target one-time-public --strict --json",
     "bna:external-readback-gate": "node scripts/bna-external-readback-gate.mjs",
     "bna:return-packet": "node scripts/system-truth.mjs return-packet",
     "prompt:queue-contract": "node scripts/prompt-queue-contract.mjs",
