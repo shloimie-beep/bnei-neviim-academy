@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const http = require('node:http');
+const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const { chromium } = require('playwright');
@@ -10,7 +11,9 @@ const root = path.resolve(__dirname, '..');
 const publicRoot = path.join(root, 'public');
 const operationsHtmlPath = path.join(publicRoot, 'operations.html');
 const oneTimeHtmlPath = path.join(publicRoot, 'one-time', 'index.html');
-const reportDir = path.join(root, 'ops', 'one-time-mishnah', 'operator-ui-review');
+const reportDir = process.env.BNA_ONE_TIME_UI_REVIEW_REPORT_DIR
+  ? path.resolve(process.env.BNA_ONE_TIME_UI_REVIEW_REPORT_DIR)
+  : fs.mkdtempSync(path.join(os.tmpdir(), 'bna-one-time-ui-review-smoke-'));
 const reportPath = path.join(reportDir, 'qa-harness-local-report.json');
 
 const REQUIRED_ROUTES = [

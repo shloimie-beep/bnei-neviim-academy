@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T14:58:09.725Z",
+  "generated_at": "2026-07-05T20:07:17.434Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -275,6 +275,7 @@
     "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
     "ops/prompt-packets/2026-07-05-onetime-landing-signup-funnel/01-public-landing-signup-funnel.product-quality.json",
     "ops/prompt-packets/2026-07-05-release-captain-onetime-ui-recovery/01-operations-sidebar-release-captain.product-quality.json",
+    "ops/prompt-packets/2026-07-05-task-1851-bna-brand-shell-verification/01-bna-brand-shell-verifier.product-quality.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",
@@ -456,7 +457,10 @@
     "tasks-pending/2026-07-05-onetime-canonical-target-routing.md",
     "tasks-pending/2026-07-05-onetime-landing-signup-funnel.md",
     "tasks-pending/2026-07-05-release-captain-onetime-ui-recovery.md",
+    "tasks-pending/2026-07-05-repo-release-workflow-and-drive-email.md",
+    "tasks-pending/2026-07-05-task-1851-bna-brand-shell-verification.md",
     "tasks-pending/2026-07-05-telegram-agent-fleet-google-auth-audit.md",
+    "tasks-pending/2026-07-05-telegram-drive-sync-oauth-error-and-cleanup-continuation.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
   ],

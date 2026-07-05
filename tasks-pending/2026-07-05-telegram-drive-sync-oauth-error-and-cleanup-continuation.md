@@ -27,7 +27,7 @@ writes are in scope for this local repair batch.
 | REQ-20260705-803 | Harden local Telegram bridge launcher/status. | BNA academy / Telegram ops | Codex | P0 | Launcher supports status/stop/restart, archives stale locks, refuses a second local copy, deduplicates allowed chat IDs, and exposes duplicate poller conflicts as `blocked_conflict`. | yes, if hosted worker uses launcher changes | Done, deployed |
 | REQ-20260705-804 | Verify duplicate-poller state safely. | BNA academy / Telegram ops | Codex | P0 | Local guarded restart performs no sends, exits after three Telegram `409 Conflict` responses, and status reports `blocked_conflict` with the Telegram duplicate-poller message. | no | Done; external owner remains active |
 | REQ-20260705-805 | Publish and deploy/restart the correct BNA runtime. | BNA academy / release ops | Codex | P0 | Commit/push/PR contains only scoped files; after merge, deploy or restart the correct `skillful-motivation` BNA web/worker service and smoke/read back the Drive sync error path. | yes | Done, deployed and read back |
-| REQ-20260705-806 | Resume whole repo cleanup/hardening after this repair. | app-wide / agent ops | Codex | P1 | Continue stale release/worktree cleanup, active blockers, fleet policy/readiness, and release guardrails after the Telegram/Drive repair branch is published. | maybe | Pending |
+| REQ-20260705-806 | Resume whole repo cleanup/hardening after this repair. | app-wide / agent ops | Codex | P1 | Continue stale release/worktree cleanup, active blockers, fleet policy/readiness, and release guardrails after the Telegram/Drive repair branch is published. | maybe | In progress; local cleanup verified |
 
 ## Evidence Log
 
@@ -46,6 +46,8 @@ writes are in scope for this local repair batch.
 | 2026-07-05T19:20+00:00 | BNA academy worker deploy | Deployed from a clean detached worktree at `22b774cd` to `skillful-motivation / academy-telegram-worker`; deployment `f4acc3d5-7468-4584-9b08-c17e96bc80a2` reached `SUCCESS`. |
 | 2026-07-05T19:21+00:00 | Worker log readback | Startup log shows `Bridge starting`, `OpenAIKey=yes`, `KimiKey=yes`, and `AllowedChats=8202155026`; no new `Invalid Google OAuth client JSON`, `Drive content library sync failed`, or `getUpdates` conflict appeared in the post-deploy log window. |
 | 2026-07-05T19:21+00:00 | Telegram webhook readback | `getWebhookInfo` returned no webhook URL, `pending_update_count: 0`, and no last error. |
+| 2026-07-05T23:04+03:00 | Repo cleanup continuation | Reset generated report/screenshot churn, removed untracked smoke pickup/audit clutter, and patched five tests so default screenshot/report output goes to temp directories unless an explicit evidence env var is set. |
+| 2026-07-05T23:04+03:00 | Test-output hardening checks | PASS `node --check` for the five patched tests; PASS patched browser/DB group `node --test tests/one-time-database-bootstrap.test.js tests/agent-control-browser-smoke.test.js tests/one-time-operations-ui-smoke.test.js tests/one-time-rabbi-ui-final-local-smoke.test.js tests/service-provider-studio-browser-smoke.test.js` 8/8. |
 
 ## Findings
 
@@ -54,6 +56,7 @@ writes are in scope for this local repair batch.
 | FIND-20260705-801 | Drive sync auth | High | The deployed content-library sync path had regressed to reading `.secrets/google-oauth-client.json` first and throwing before valid Railway env credentials could be used. | Operator stack trace for content job `#102`; local source inspection. | Ship the env-first loader and deploy/restart the BNA worker/web service. |
 | FIND-20260705-802 | Telegram runtime ownership | High | Local bridge cannot be the active BNA bot poller right now because Telegram returns `409 Conflict`; another poller is already using the academy bot token. | Guarded local restart reached conflict 3/3 and status readback reports `blocked_conflict`. | Identify/keep exactly one owner, preferably hosted `academy-telegram-worker`; stop any duplicate runtime before enabling local polling. |
 | FIND-20260705-803 | Railway target safety | High | The local Railway CLI link currently points to One Time production, not the BNA academy worker project. | `railway status` returned `Project: one-time-production`, `Service: one-time-web`. | Do not run worker deploy/restart until targeting `skillful-motivation / academy-telegram-worker` intentionally. |
+| FIND-20260705-804 | Test-generated dirty worktree churn | Medium | Several test/smoke paths wrote into tracked evidence files by default, including One Time DB bootstrap reports, One Time UI review reports, and browser-smoke screenshot folders. | Dirty tracked files under `ops/one-time-mishnah/*` and `ops/playwright-smokes/2026-06-19-*` / `2026-06-23-*` after verification. | Redirect normal test output to temp dirs; keep explicit env-var overrides for intentional durable evidence capture. |
 
 ## Closeout Status
 
@@ -65,3 +68,11 @@ from a clean `22b774cd` worktree to Railway deployment
 After this repair is published, continue `REQ-20260705-806`: whole repo cleanup,
 release guardrails, stale worktree/artifact triage, and active blocker
 hardening.
+
+`REQ-20260705-806` continuation has started on
+`codex/repo-cleanup-followup-20260705`. The local cleanup branch now keeps the
+Task #1851 verification package as durable evidence, resets unrelated generated
+report/screenshot churn, removes untracked smoke pickup clutter, and hardens
+the tests that caused normal verification to rewrite tracked evidence files.
+This branch still needs scoped commit, push, PR, and merge closeout before the
+repo is clean on GitHub.

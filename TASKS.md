@@ -14,8 +14,10 @@ not authorize active GHL runtime paths.
   that commit, and `skillful-motivation / academy-telegram-worker` deployment
   `f4acc3d5-7468-4584-9b08-c17e96bc80a2` reached `SUCCESS`. Post-deploy
   worker logs show clean startup and no new Google OAuth JSON error or Telegram
-  duplicate-poller conflict in the checked window. Pending: resume broader
-  repo cleanup/hardening under `REQ-20260705-806`.
+  duplicate-poller conflict in the checked window. Cleanup continuation under
+  `REQ-20260705-806` is now hardening tests that were dirtying tracked
+  screenshots/reports and publishing the Task #1851 verification evidence as a
+  scoped repo-cleanup branch.
 - [ ] `RAW-20260705-010` / `REQ-20260705-601` through `REQ-20260705-608`:
   Repo release workflow and Rabbi Drive email reminder cleanup. Register:
   `tasks-pending/2026-07-05-repo-release-workflow-and-drive-email.md`.
