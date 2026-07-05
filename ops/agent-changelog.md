@@ -29393,3 +29393,29 @@ Actions: 1. Active machine tasks: 0.
   payment link, access grant, DNS change, Drive write, credential change,
   provider-account mutation, external CRM write, or broad stale PR merge was
   performed.
+
+## 2026-07-05 - Drive Dropoff Scheduler Repair Local Verification
+
+- Registered `RAW-20260705-010` for the repo release workflow status request
+  and Rabbi Drive PowerPoint/source-material email reminder request.
+- Confirmed the One Time public canonical fix is already pushed, merged,
+  deployed, and live-smoked on `join.onetimeonetime.com`.
+- Found the local Windows task `BNA One Time Drive Dropoff Email` was present
+  but broken: it pointed at missing
+  `scripts\one-time-drive-dropoff-email-watch.mjs` and returned last result
+  `1`.
+- Dry-ran the canonical notifier with recipient `sdratler@gmail.com`; it
+  checked the two approved Rabbi-facing folders, found 0 current items, and
+  sent 0 emails.
+- Hardened `scripts/register-one-time-drive-dropoff-notifier.ps1` to register
+  the task via ScheduledTasks APIs with working-directory support instead of
+  fragile `schtasks.exe` quoting.
+- Re-registered the task. Readback now executes `wscript.exe` with
+  `scripts\run-one-time-drive-dropoff-notifier.vbs` and
+  `sdratler@gmail.com`; forced run returned `LastTaskResult=0`.
+- Verification passed: focused notifier test 5/5, notifier script syntax
+  checks, dry-run Drive readback, scheduler action readback, and forced
+  scheduled-task run. No email, Drive write, payment/access/DNS/provider/CRM
+  write, credential change, or production data mutation was performed.
+- Pushed branch `codex/drive-dropoff-scheduler-repair-canonical-20260705` and
+  opened draft PR #100 for normal review/merge.

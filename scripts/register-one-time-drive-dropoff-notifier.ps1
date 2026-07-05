@@ -16,10 +16,31 @@ if (-not (Test-Path -LiteralPath $Runner)) {
 
 New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
 
-$taskRun = "wscript.exe `"$Runner`" `"$Recipient`""
-& schtasks.exe /Create /TN $TaskName /SC MINUTE /MO $EveryMinutes /TR $taskRun /F | Out-Null
-if ($LASTEXITCODE -ne 0) {
-  throw "schtasks.exe failed with exit code $LASTEXITCODE"
-}
+$Trigger = New-ScheduledTaskTrigger `
+  -Once `
+  -At (Get-Date).AddMinutes(1) `
+  -RepetitionInterval (New-TimeSpan -Minutes $EveryMinutes) `
+  -RepetitionDuration (New-TimeSpan -Days 3650)
 
-& schtasks.exe /Query /TN $TaskName /FO LIST
+$Action = New-ScheduledTaskAction `
+  -Execute "wscript.exe" `
+  -Argument "`"$Runner`" `"$Recipient`"" `
+  -WorkingDirectory $RepoRoot
+
+$Settings = New-ScheduledTaskSettingsSet `
+  -StartWhenAvailable `
+  -MultipleInstances IgnoreNew `
+  -AllowStartIfOnBatteries `
+  -DontStopIfGoingOnBatteries
+
+Register-ScheduledTask `
+  -TaskName $TaskName `
+  -Action $Action `
+  -Trigger $Trigger `
+  -Settings $Settings `
+  -Description "BNA One Time Drive drop-off email notifier" `
+  -Force | Out-Null
+
+Get-ScheduledTask -TaskName $TaskName | Select-Object TaskName,State,TaskPath
+Get-ScheduledTaskInfo -TaskName $TaskName |
+  Select-Object LastRunTime,NextRunTime,LastTaskResult,NumberOfMissedRuns
