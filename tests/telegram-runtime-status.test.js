@@ -95,6 +95,33 @@ test('academy bridge can use env-based Google Drive auth on hosted worker', () =
   assert.match(workerRunbook, /GOOGLE_DRIVE_PIPELINE_FOLDER_ID=\$\{\{skillful-motivation\.GOOGLE_DRIVE_PIPELINE_FOLDER_ID\}\}/);
 });
 
+test('academy bridge exits loudly after repeated duplicate getUpdates conflicts', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+
+  assert.match(bridge, /function isTelegramGetUpdatesConflict/);
+  assert.match(bridge, /TELEGRAM_GETUPDATES_CONFLICT_EXIT_THRESHOLD/);
+  assert.match(bridge, /runtime_status: 'blocked_conflict'/);
+  assert.match(bridge, /telegram_getupdates_conflict/);
+  assert.match(bridge, /Polling loop conflict/);
+  assert.match(bridge, /shutdownBridge\(2, 'blocked_conflict'/);
+  assert.match(bridge, /parsed\.runtime_status \|\| ''/);
+  assert.match(bridge, /String\(status \|\| ''\)\.startsWith\('blocked'\)/);
+});
+
+test('Telegram bridge launcher supports status stop restart and stale lock cleanup', () => {
+  const launcher = fs.readFileSync('scripts/start-telegram-kimi-bridge.ps1', 'utf8');
+  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+
+  assert.match(launcher, /param\(/);
+  assert.match(launcher, /\[switch\]\$Restart/);
+  assert.match(launcher, /\[switch\]\$Stop/);
+  assert.match(launcher, /\[switch\]\$Status/);
+  assert.match(launcher, /Move-BridgeLockAside/);
+  assert.match(launcher, /Use -Restart to replace it/);
+  assert.equal(pkg.scripts['telegram:kimi:restart'], 'powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1 -Restart');
+  assert.equal(pkg.scripts['telegram:kimi:status'], 'powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1 -Status');
+});
+
 test('academy Drive auto-watch prompt does not trigger platform draft generation', () => {
   const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
   const start = bridge.indexOf('const DEFAULT_DRIVE_INGEST_CAPTION');

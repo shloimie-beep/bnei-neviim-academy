@@ -62,6 +62,13 @@ function readJsonIfExists(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
+function loadRuntimeEnv(env = process.env) {
+  return {
+    ...parseEnvFile(path.join(repoRoot, '.env.local')),
+    ...env,
+  };
+}
+
 function readSecret(name, env = {}) {
   if (env[name]) return env[name];
   if (name === 'OPENAI_API_KEY' && fs.existsSync(openAiSecretPath)) {
@@ -73,37 +80,74 @@ function readSecret(name, env = {}) {
   return '';
 }
 
-function loadClient() {
-  const parsed = readJsonIfExists(clientPath);
-  const client = parsed?.web || parsed?.installed;
-  if (!client?.client_id || !client?.client_secret) {
-    throw new Error(`Invalid Google OAuth client JSON at ${clientPath}`);
+function parseJsonConfig(value, label) {
+  const raw = String(value || '').trim();
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (firstError) {
+    try {
+      return JSON.parse(Buffer.from(raw, 'base64').toString('utf8'));
+    } catch {
+      throw new Error(`${label} is not valid Google OAuth client JSON: ${firstError instanceof Error ? firstError.message : String(firstError)}`);
+    }
   }
+}
+
+function loadClient(env = process.env) {
+  const runtimeEnv = loadRuntimeEnv(env);
+  const directClientId = String(runtimeEnv.GOOGLE_CLIENT_ID || '').trim();
+  const directClientSecret = String(runtimeEnv.GOOGLE_CLIENT_SECRET || '').trim();
+  const inlineClientJson = runtimeEnv.GOOGLE_OAUTH_CLIENT_JSON || runtimeEnv.GOOGLE_OAUTH_CLIENT_CONFIG || '';
+  const parsed = inlineClientJson
+    ? parseJsonConfig(inlineClientJson, 'GOOGLE_OAUTH_CLIENT_JSON')
+    : (!directClientId || !directClientSecret) && fs.existsSync(clientPath)
+      ? readJsonIfExists(clientPath)
+      : null;
+  const client = parsed?.web || parsed?.installed || parsed || {};
+  const clientId = directClientId || client.client_id || client.clientId || '';
+  const clientSecret = directClientSecret || client.client_secret || client.clientSecret || '';
+
+  if (!clientId || !clientSecret) {
+    const checked = [
+      'GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET',
+      inlineClientJson ? 'GOOGLE_OAUTH_CLIENT_JSON' : '',
+      fs.existsSync(clientPath) ? clientPath : '',
+    ].filter(Boolean).join(', ');
+    throw new Error(`Google OAuth client is not configured. Checked ${checked || 'runtime env'}; set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET on the worker or provide valid GOOGLE_OAUTH_CLIENT_JSON / .secrets/google-oauth-client.json.`);
+  }
+
+  if (!client?.client_id || !client?.client_secret) {
+    return {
+      clientId,
+      clientSecret,
+      redirectUri: runtimeEnv.GOOGLE_REDIRECT_URI || client.redirect_uris?.[0] || client.redirectUri,
+    };
+  }
+
   return {
-    clientId: client.client_id,
-    clientSecret: client.client_secret,
-    redirectUri: process.env.GOOGLE_REDIRECT_URI || client.redirect_uris?.[0],
+    clientId,
+    clientSecret,
+    redirectUri: runtimeEnv.GOOGLE_REDIRECT_URI || client.redirect_uris?.[0],
   };
 }
 
 function loadRefreshToken(env = process.env) {
-  if (env.GOOGLE_REFRESH_TOKEN) return env.GOOGLE_REFRESH_TOKEN;
+  const runtimeEnv = loadRuntimeEnv(env);
+  if (runtimeEnv.GOOGLE_REFRESH_TOKEN) return runtimeEnv.GOOGLE_REFRESH_TOKEN;
   if (fs.existsSync(tokenPath)) return fs.readFileSync(tokenPath, 'utf8').trim();
   throw new Error(`Missing Google refresh token at ${tokenPath}`);
 }
 
 function authWithRefreshToken(env = process.env) {
-  const client = loadClient();
+  const client = loadClient(env);
   const auth = new google.auth.OAuth2(client.clientId, client.clientSecret, client.redirectUri);
   auth.setCredentials({ refresh_token: loadRefreshToken(env) });
   return auth;
 }
 
 function loadConfig() {
-  const env = {
-    ...parseEnvFile(path.join(repoRoot, '.env.local')),
-    ...process.env,
-  };
+  const env = loadRuntimeEnv();
   const openaiCredentialCandidates = aiCredentialResolver.loadOpenAiCredentialCandidates({
     env,
     repoRoot,
@@ -127,6 +171,7 @@ function loadConfig() {
     }) || readSecret('KIMI_API_KEY', env),
     kimiBaseUrl: (env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1').replace(/\/+$/, ''),
     kimiModel: env.KIMI_MODEL || 'kimi-k2.6',
+    env,
   };
 }
 
@@ -1001,7 +1046,7 @@ function printSummary(summary) {
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const config = loadConfig();
-  const auth = authWithRefreshToken();
+  const auth = authWithRefreshToken(config.env);
   const drive = google.drive({ version: 'v3', auth });
   const docs = google.docs({ version: 'v1', auth });
   const summary = {

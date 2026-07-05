@@ -6,16 +6,26 @@ not authorize active GHL runtime paths.
 
 ## Current Goal-Mode Cleanup
 
+- [ ] `RAW-20260705-012` / `REQ-20260705-801` through
+  `REQ-20260705-806`: Telegram Drive sync OAuth error and cleanup
+  continuation. Register:
+  `tasks-pending/2026-07-05-telegram-drive-sync-oauth-error-and-cleanup-continuation.md`.
+  Current status: local code fix is verified for the deployed content-library
+  sync auth regression, and the local Telegram bridge now reports
+  `blocked_conflict` instead of pretending to run when another bot poller owns
+  `@bneineviimacademy_bot`. Pending: commit/push/PR, deploy or restart the
+  correct BNA `skillful-motivation` runtime, and resume broader repo cleanup.
 - [ ] `RAW-20260705-010` / `REQ-20260705-601` through `REQ-20260705-608`:
   Repo release workflow and Rabbi Drive email reminder cleanup. Register:
   `tasks-pending/2026-07-05-repo-release-workflow-and-drive-email.md`.
   Current status: One Time public canonical work is pushed, merged, deployed,
   and live-smoked; the Drive drop-off scheduled task was repaired locally and
   now runs with result `0` to `sdratler@gmail.com` without sending old-file
-  emails. Scheduler hardening is pushed in draft PR #100. Pending before the
-  broader workflow is clean: merge/close PR #100, stale draft PR cleanup for
-  #51/#62/#63, agent-fleet readiness/blocker repair, and valid Operations
-  credentials for logged-in One Time visual proof.
+  emails. Scheduler hardening was merged through PR #100; stale draft PRs
+  #51/#62/#63 were closed as conflict-stale rather than broad-merged. Pending
+  before the broader workflow is clean: active-run blocker reconciliation,
+  agent-fleet policy/readiness cleanup, BNA Telegram worker deploy/readback,
+  and valid Operations credentials for logged-in One Time visual proof.
 - [x] `RAW-20260705-009` / `REQ-20260705-501` through `REQ-20260705-510`:
   Correct the One Time canonical target-routing mistake. The BNA-hosted
   `/one-time` page is not sufficient proof; the canonical production target is

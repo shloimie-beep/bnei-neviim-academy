@@ -85,6 +85,7 @@ const agentChangelogFile = path.join(repoRoot, 'ops', 'agent-changelog.md');
 const BNA_BRIDGE_PROFILE = 'bna';
 const RABBI_ELIE_BRIDGE_PROFILE = 'rabbi-elie-scheller';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
+const TELEGRAM_GETUPDATES_CONFLICT_EXIT_THRESHOLD = Number(process.env.TELEGRAM_GETUPDATES_CONFLICT_EXIT_THRESHOLD || 3);
 const RABBI_ELIE_AGENT_FILES = [
   'agents/rabbi-elie-scheller/AGENTS.md',
   'agents/rabbi-elie-scheller/MEMORY.md',
@@ -247,6 +248,9 @@ function releaseLock() {
     if (!fs.existsSync(lockFile)) return;
     const parsed = readBridgeLock();
     if (Number(parsed.pid) === process.pid) {
+      if (String(parsed.runtime_status || '').startsWith('blocked')) {
+        return;
+      }
       fs.unlinkSync(lockFile);
     }
   } catch {}
@@ -342,7 +346,9 @@ function loadConfig() {
         env.TELEGRAM_CHAT_ID_AHUVA,
       ])
     .filter(Boolean)
-    .map((value) => String(value).trim());
+    .map((value) => String(value).trim())
+    .filter(Boolean)
+    .filter((value, index, values) => values.indexOf(value) === index);
   const requestedPrimaryAgent = String(env.TELEGRAM_PRIMARY_AGENT || 'codex').trim().toLowerCase();
   const primaryAgent = requestedPrimaryAgent === 'kimi' ? 'codex' : (requestedPrimaryAgent || 'codex');
   const scopedOpsUsername = env.ONE_TIME_OPS_USERNAME || env.RABBI_ELIE_SCHELLER_OPS_USERNAME || '';
@@ -3213,6 +3219,15 @@ async function telegramRequest(botToken, method, payload = null, signal) {
   return data.result;
 }
 
+function isTelegramGetUpdatesConflict(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  return /Telegram getUpdates failed/i.test(message)
+    && (
+      /"error_code"\s*:\s*409/.test(message)
+      || /terminated by other getUpdates request/i.test(message)
+    );
+}
+
 async function telegramUploadFile(botToken, method, fields, fileField, localPath, filename) {
   const buffer = fs.readFileSync(localPath);
 
@@ -3359,7 +3374,16 @@ async function shutdownBridge(exitCode = 0, status = 'stopped', details = {}) {
       });
     }
   } finally {
-    releaseLock();
+    if (String(status || '').startsWith('blocked')) {
+      updateBridgeLock({
+        runtime_status: status,
+        runtime_error: details.lifecycle || status,
+        last_error_message: String(details.error_message || '').slice(0, 400),
+        runtime_reported_at: new Date().toISOString(),
+      });
+    } else {
+      releaseLock();
+    }
     process.exit(exitCode);
   }
 }
@@ -11423,6 +11447,7 @@ async function main() {
   let busy = false;
   let nextDriveWatchAt = 0;
   let nextTaskWatchAt = Date.now() + 5000;
+  let consecutiveGetUpdatesConflicts = 0;
   log(
     `Bridge starting. Profile=${config.bridgeProfileLabel} Bot=${botIdentity.username || botIdentity.firstName || botIdentity.id} TelegramDefault=${config.telegramDefaultReplyMode || 'openai'} BuildAgent=${config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled'} CodexModel=${config.codexModel || 'default'} ApiPath=${apiProviderPathLabel(config)} OpenAIKey=${config.openaiApiKey ? 'yes' : 'no'} KimiKey=${config.kimiApiKey ? 'yes' : 'no'} AllowedChats=${config.allowedChatIds.join(',') || 'all'}`
   );
@@ -11431,9 +11456,10 @@ async function main() {
   }
 
   while (true) {
+    let pollAbortTimeout = null;
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 15000);
+      pollAbortTimeout = setTimeout(() => controller.abort(), 15000);
       const updates = await telegramRequest(
         config.botToken,
         'getUpdates',
@@ -11444,7 +11470,16 @@ async function main() {
         },
         controller.signal,
       );
-      clearTimeout(timeout);
+      clearTimeout(pollAbortTimeout);
+      pollAbortTimeout = null;
+      if (consecutiveGetUpdatesConflicts > 0) {
+        updateBridgeLock({
+          runtime_status: 'running',
+          runtime_error: '',
+          telegram_getupdates_conflicts: 0,
+        });
+      }
+      consecutiveGetUpdatesConflicts = 0;
 
       if (!isScopedProjectBot(config) && !updates.length && !busy && Date.now() >= nextDriveWatchAt) {
         nextDriveWatchAt = Date.now() + config.driveWatchIntervalMs;
@@ -11558,8 +11593,30 @@ async function main() {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      log(`Polling loop error: ${message}`);
+      if (isTelegramGetUpdatesConflict(error)) {
+        consecutiveGetUpdatesConflicts += 1;
+        updateBridgeLock({
+          runtime_status: 'blocked_conflict',
+          runtime_error: 'telegram_getupdates_conflict',
+          telegram_getupdates_conflicts: consecutiveGetUpdatesConflicts,
+          last_error_message: message.slice(0, 400),
+        });
+        log(`Polling loop conflict ${consecutiveGetUpdatesConflicts}/${TELEGRAM_GETUPDATES_CONFLICT_EXIT_THRESHOLD}: ${message}`);
+        if (consecutiveGetUpdatesConflicts >= TELEGRAM_GETUPDATES_CONFLICT_EXIT_THRESHOLD) {
+          await shutdownBridge(2, 'blocked_conflict', {
+            lifecycle: 'telegram_getupdates_conflict',
+            error_message: message.slice(0, 400),
+            conflict_count: consecutiveGetUpdatesConflicts,
+          });
+          return;
+        }
+      } else {
+        consecutiveGetUpdatesConflicts = 0;
+        log(`Polling loop error: ${message}`);
+      }
       await new Promise((resolve) => setTimeout(resolve, 3000));
+    } finally {
+      if (pollAbortTimeout) clearTimeout(pollAbortTimeout);
     }
   }
 }
