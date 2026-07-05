@@ -22,11 +22,35 @@ Use these files consistently:
 - `TASKS.md`: active work queue, next actions, blockers
 - `ops/agent-task-ledger.jsonl`: append-only task trail shared by Telegram and Codex
 - `ops/agent-changelog.md`: completed agent work and verified changes
+- `ops/chatgpt-ramble-dropoff/README.md`: canonical no-paste ChatGPT-to-Codex
+  dropoff workflow
+- `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md`: directive to give
+  GitHub-connected ChatGPT when it should create a repo-visible packet
+- `ops/chatgpt-ramble-dropoff/github-comment-template.md`: exact marked
+  GitHub comment format for read-only ChatGPT connectors
 - `tasks-pending/*.md`: internal Codex handoff briefs for the next coding session
 - `memory/YYYY-MM-DD.md`: daily rambles, notes, raw captures, summaries
 - `PROJECT-NOTES.md`: local project migration notes and technical caveats
 
 Do not dump transient rambles into `AGENTS.md`.
+
+GitHub-connected ChatGPT reads committed/pushed GitHub state, not Codex's
+local dirty worktree. If a workflow, directive, prompt packet, or memory rule
+must be visible to ChatGPT through GitHub, Codex closeout must include a scoped
+commit and push, or the operator must be told plainly that ChatGPT cannot see
+the local-only change yet.
+
+Read order for GitHub-connected BNA agent sessions:
+
+1. `BNA-START-HERE.md`
+2. `AGENTS.md`
+3. `docs/BNA-RAMBLE-TO-DONE.md`
+4. `ops/execution-runs/latest.json` and the pointed run folder
+5. The newest relevant `tasks-pending/*.md`, `TASKS.md`, `MEMORY.md`, and
+   `memory-topics/*.md`
+6. For ChatGPT-generated implementation or audit work:
+   `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md`, then
+   `ops/chatgpt-ramble-dropoff/README.md`
 
 ## Memory Topic Lookup Before Acting
 
@@ -272,6 +296,35 @@ When Shloimie uses ChatGPT for a broad ramble, correction packet, architecture
 request, or implementation request, ChatGPT is the first audit/code-prep
 surface.
 
+Canonical automatic workflow:
+
+- Repo-file packet mode is preferred. When ChatGPT can write repo files or open
+  a PR, it must create a packet folder under
+  `ops/chatgpt-ramble-dropoff/incoming/<packet-id>/` using
+  `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md`.
+- The packet becomes eligible for automatic pickup only when `status.json` is
+  `ready_for_codex_audit` or `ready_for_codex_pickup`.
+- The agent fleet runs the dropoff ingestor before claiming work. Ready packets
+  are validated, checked for secret-like content, deduped, and queued as
+  Codex-owned observable jobs.
+- ChatGPT sandbox paths such as `/mnt/data`, ordinary chat output, and Drive
+  files are not automatically picked up unless a separate trusted connector or
+  watcher turns them into a repo-visible packet folder. GitHub comments marked
+  `BNA_CHATGPT_DROPOFF_PACKET` are collectable by
+  `scripts/chatgpt-dropoff-comment-collector.mjs` when the local GitHub CLI has
+  read access and the comment author is trusted.
+- ChatGPT may also create memory/preference packets. These are still input, not
+  authority. Codex must preserve the raw source, validate whether the preference
+  is durable, promote it to `MEMORY.md`, `memory-topics/*.md`, `AGENTS.md`, or
+  a requirement register only when appropriate, and reject or redact private
+  data, secrets, raw contact exports, and raw private message bodies.
+- ChatGPT sidekick packets should use `packet_type` values such as
+  `implementation_bundle`, `current_state_audit`, `memory_candidate`,
+  `preference_update`, or `prompt_packet`. Unknown packet types are allowed only
+  when the scope is clear and the normal audit/proof workflow still applies.
+- Codex still audits, adapts, tests, records evidence, and updates
+  `status.json`; ChatGPT-generated code is never proof by itself.
+
 Required workflow:
 
 1. ChatGPT preserves the raw ramble.
@@ -493,6 +546,32 @@ Public routes must not expose parent/student/provider/private Operations data.
   student-sensitive details, and screenshots with private data must not be
   committed to tracked files; use redacted summaries and stable IDs.
 
+## Publish And Deployment Closeout Default
+
+Codex should not leave completed scoped work as invisible local-only changes.
+After an executable task is implemented and verified, default closeout is:
+
+1. Clean transient/debug artifacts that should not be kept.
+2. Inspect `git status` and stage only files intentionally changed for the
+   current scoped task.
+3. Run the relevant tests, smokes, watchdogs, or documented readbacks.
+4. Commit with a concise scoped message.
+5. Push the commit to GitHub.
+6. For app-visible or server-visible changes, deploy or trigger the approved
+   release path and run live smoke/readback before calling the item Done.
+
+Do not commit, push, merge, or deploy unrelated dirty work, another Codex
+window's unfinished changes, secrets, raw private data, credential changes,
+payment/access/DNS/email/WhatsApp sends, production mutations, or work whose
+tests/release gate failed. If branch drift, auth, credentials, another active
+release lane, or deployment config blocks publishing, record the exact blocker,
+owner, recommended next command, and leave the item open or blocked.
+
+Documentation, prompt, and workflow changes that must be read by
+GitHub-connected ChatGPT are considered incomplete until committed and pushed.
+They usually do not require an app deployment unless they change the running
+server, client assets, database, or deployed automation.
+
 ## Definition of Done
 
 An item is done only when:
@@ -505,7 +584,10 @@ An item is done only when:
 5. Evidence is recorded in the requirement register or audit file.
 6. `ops/agent-task-ledger.jsonl` and `ops/agent-changelog.md` include the
    completed/verified/deployed/blocked record.
-7. App-visible or server-visible changes have deploy/live-smoke proof, unless
+7. Scoped changes were cleaned, staged intentionally, committed, and pushed to
+   GitHub, unless commit/push is explicitly blocked with an owner and next
+   action.
+8. App-visible or server-visible changes have deploy/live-smoke proof, unless
    deployment is explicitly blocked and the item remains open/blocked.
 
 ## Stale Document Warning
@@ -551,6 +633,10 @@ Keep `MEMORY.md` compact and curated.
   verification performed, and remaining decisions in the relevant
   `tasks-pending/` handoff, `ops/agent-changelog.md`, and
   `ops/agent-task-ledger.jsonl`.
+- After implementing scoped repo work, assume the expected closeout is clean,
+  verify, commit, push, and deploy/live-smoke when app-visible or
+  server-visible. If that cannot safely happen, say why and record the blocker
+  instead of leaving invisible local changes as "done."
 - After major ramble-derived closeouts, or when work status feels scattered
   across prompts/tasks/ledger/proof, run `npm run watchdog:audit` and use the
   newest `ops/watchdog-audits/*-watchdog-audit.md` report to identify stale

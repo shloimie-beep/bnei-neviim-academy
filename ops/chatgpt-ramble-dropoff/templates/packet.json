@@ -1,0 +1,26 @@
+{
+  "packet_id": "CHATGPT-DROPOFF-YYYYMMDD-001",
+  "schema_version": "bna.chatgpt_dropoff.v1",
+  "created_at": "YYYY-MM-DDTHH:mm:ssZ",
+  "source": "chatgpt",
+  "source_thread": "ChatGPT thread title or link if available",
+  "operator_raw_id": "RAW-YYYYMMDD-###",
+  "workspace": "app_wide",
+  "project": "helper_bot",
+  "status": "ready_for_codex_audit",
+  "priority": "normal",
+  "scope_summary": "",
+  "out_of_scope": [],
+  "expected_outputs": [],
+  "acceptance_criteria": [],
+  "files_included": [
+    "packet.json",
+    "RAW.md",
+    "CODEX_PROMPT.md",
+    "MANIFEST.json",
+    "status.json"
+  ],
+  "requires_operator_decision": false,
+  "external_write_required": false,
+  "secrets_included": false
+}

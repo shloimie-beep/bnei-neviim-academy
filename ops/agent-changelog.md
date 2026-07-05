@@ -75,6 +75,31 @@ Remaining:
 - Push/open the stacked Studio PR.
 - App-visible terminal Done remains blocked until PR #87 and the Studio branch
   are released through the production gate and live-smoked.
+## 2026-07-04 - PR 87 One Time UI Release Validation
+
+- Registered `RAW-20260704-001` after Shloimie asked to ship PR #87, fix the
+  live Rabbi/One Time UI mismatch, finish Studio work, and repair content job
+  101.
+- Validated PR #87 from the clean release worktree
+  `C:\Users\User\BNA-v2-rabbi-onetime-ui-release-20260703`; branch/head
+  `codex/rabbi-onetime-ui-cleanup-release-20260703` /
+  `9859d51d04db81fee1bd961594f6c256d9c77b84` is pushed, clean, mergeable, and
+  now marked ready for review.
+- Verification passed: PR #87 release gate dry-run, focused One Time UI tests
+  11/11, PQC packet 21 validation, action watchdog, protocol-drift watchdog,
+  and `git diff --check origin/master...HEAD`.
+- Deploy was attempted through the guarded release gate with approval env set
+  for this process, but no production deploy occurred. The gate blocked on
+  missing OpenAI, Vimeo access token, Resend from address, Rabbi Stripe
+  settings, Rabbi Telegram worker readiness, and database/Railway/Drive
+  external readback readiness.
+- Studio work was separately verified locally: focused Studio suite 12/12 and
+  `npm run studio:smoke` 1/1 passed. It is not part of PR #87 and remains
+  unpushed as separate dirty work.
+- Job 101 is not still blocked on parser/private Drive transcript repair:
+  `APPLY-CLOSEOUT.md` proves parser output and private transcript-doc readback.
+  Remaining Job 101 blockers are DB review-queue cleanup and score/progress/
+  grading writes, which still need safe DB readback or exact approval.
 
 ## 2026-06-28T15:49:00+03:00 - One Time launch workflow safe-mode deployed closeout
 
@@ -28103,6 +28128,106 @@ Actions: 1. Active machine tasks: 22.
 - Preserved guardrails: no raw transcripts in GitHub, no Drive mutation, no paid transcription retry, no public publishing, no sends, no score/progress/grading writes, and no secret exposure.
 - Verification passed: targeted tests 28/28, keyholder/OpenAI diagnostics, Drive intake audit, Drive library dry-run, privacy-safe digest export, tracked secret audit, JSON parse checks, and BNA run validation.
 
+## 2026-07-02 - Private Drive Transcript Docs and Job 101 Parser Closeout
+
+- Registered `RAW-20260702-APPLY-PRIVATE-DRIVE-TRANSCRIPT-DOCS-AND-JOB101-PARSER-CLOSEOUT` and closeout evidence at `ops/drive-transcript-visibility/2026-07-02/APPLY-CLOSEOUT.md`.
+- Applied the approved private Drive transcript-library sync for jobs `101`, `100`, `85`, `84`, `83`, and `82`. Initial apply created 5 docs and found 1 unchanged; forced scoped refresh updated exactly the 6 approved docs.
+- Tightened the private Drive transcript doc renderer to include Job ID/source metadata, private warning, ChatGPT visibility marker, review-only score/progress marker, and raw transcript only inside private Drive docs.
+- Confirmed Job `101` parser output exists, moved its content job stage to `04 Parsed`, and refreshed its Drive doc after the stage update.
+- Added guarded parser CLI/API flags for true dry-run, no-AI repair, and no-progress-write repair so long parser jobs do not require provider timeouts or score/progress writes.
+- Verified Drive/API search and connector first-paragraph readback for Job `101` without dumping raw transcript text into GitHub evidence.
+- Preserved guardrails: no raw transcript bodies in GitHub, no Job `91` paid transcription retry, no score/progress/grading apply, no public sharing/publishing, no send/social/Buffer action, no payment/account/DNS mutation, and no secret exposure.
+
+## 2026-07-02 - Rabbi WAPI Setup Page Check
+
+- Registered `RAW-20260702-009` and audit register
+  `tasks-pending/2026-07-02-rabbi-wapi-setup-page-check.md`.
+- Confirmed the sendable setup-center checklist link exists:
+  `https://bneineviimacademy.org/integration-setup.html#whatsapp-wapi`.
+- Confirmed the requested Rabbi-facing API-key paste-and-save flow is not
+  implemented. The page is a static/authenticated readiness checklist; the
+  backend helper `save_provider_api_key` is admin-only and records safe secret
+  references/fingerprints, not a public Rabbi token form.
+- Linked the current blocker to existing One Time setup evidence:
+  `ops/one-time-mishnah/launch-unblocker/2026-07-02-rabbi-whatsapp-setup-message.md`
+  and `TASK-20260702-004`.
+- Verification: live setup page HTTP 200, live readiness API logged-out HTTP
+  401, live JS contains `whatsapp-wapi`, focused setup/Wappy tests passed 8/8.
+  A broader walkthrough-link test has unrelated existing Resend anchor drift.
+  No WhatsApp send, external connector write, payment, DNS mutation, account
+  grant, or secret exposure occurred.
+
+## 2026-07-02 - Rabbi WAPI Setup Page Local Build
+
+- Registered `RAW-20260702-011` and implementation register
+  `tasks-pending/2026-07-02-rabbi-wapi-setup-page-build-send.md`.
+- Added the provider-login `WhatsApp / WAPI Setup` section at
+  `/provider?section=whatsapp_setup` with Whapi/WAPI setup steps, token field,
+  linked phone/instance fields, and save action
+  `ACTION-PROVIDER-WAPI-SETUP-SAVE`.
+- Added provider-session GET/POST API
+  `/api/provider-portal/integrations/whatsapp-wapi/setup`; it is limited to the
+  One Time provider workspace, stores integration plus secret-reference/
+  fingerprint metadata, returns no raw token, and performs no WhatsApp send.
+- Added route/action registry coverage and
+  `tests/provider-wapi-setup-portal.test.js`.
+- Verification passed: `node --check server.js`, focused tests 11/11, registry
+  JSON parse, `npm run watchdog:actions`, `npm run watchdog:security`,
+  `npm run watchdog:protocol-drift`, `npm run secrets:audit`, local HTTP 200
+  for the provider page, local logged-out API 401, and Playwright render smoke.
+- Screenshot evidence:
+  `ops/playwright-smokes/2026-07-02-rabbi-wapi-setup-local/desktop-after-spacing.png`.
+- No WhatsApp was sent. Live `/provider?section=whatsapp_setup` does not yet
+  contain the new section/action and live setup API returns 404; safe Rabbi
+  recipient phone lookup is blocked because the DB host did not resolve and
+  current setup evidence still lists `rabbi_safe_recipient_phone` as missing.
+
+## 2026-07-02 - Studio Content Engine Readiness Audit
+
+- Registered `RAW-20260702-010` and requirement register
+  `tasks-pending/2026-07-02-studio-content-engine-live-readiness.md`.
+- Inspected the existing Service Provider Studio domain module, schema, server
+  API routes, Operations UI, route/action registries, product docs, live smoke
+  evidence, and relevant memory topics.
+- Current finding: Studio exists and passes focused local checks, but it is
+  still a mock/internal-review workflow. The raw compiled prompt/job JSON/code
+  blocks need a polished review UX before Shloimie can use it as a finished
+  content-to-slideshow system.
+- Created and validated Product Quality control packet
+  `ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/00-control-tower.product-quality.json`.
+- Verification: focused Studio tests passed 11/11, `npm run studio:smoke`
+  passed, PQC validation passed, and live logged-out Studio route/API checks
+  returned expected 401. No product code, DB write, vendor call, send, upload,
+  publish, payment, access grant, DNS/account mutation, or secret exposure
+  occurred.
+
+## 2026-07-02 - Studio Review Readback UX Local Implementation
+
+- Created current-state audit
+  `ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/01-current-state-studio-audit.md`
+  and validated implementation packet
+  `ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/02-polished-review-ux.product-quality.json`.
+- Updated `public/operations.html` so compiled prompts, prompt layers,
+  correction previews, mock render jobs, and Content handoffs render as
+  structured review cards first. Raw prompt/payload details now stay behind
+  explicit Studio diagnostics expanders.
+- Added action-registry coverage for the Studio diagnostics expander and
+  updated Studio static/browser tests to assert Prompt Review, Job Review,
+  Handoff Review, no-vendor/no-external-write readbacks, and diagnostics.
+- Screenshot evidence updated:
+  `ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-prompt-review.png`
+  and `ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png`.
+- Verification passed: PQC packet 02 validation, focused Studio tests 12/12,
+  `npm run studio:smoke`, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`,
+  and scoped `git diff --check` with only CRLF warnings.
+- No AI-video vendor call, upload, publish, send, schedule, payment, access
+  grant, Drive/Vimeo write, DNS/account mutation, GHL/LeadConnector runtime,
+  or secret exposure occurred.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked until this slice is deployed and authenticated Studio live-smoke
+  evidence is captured. The wider Studio shell/right-rail layout is also a
+  separate next UX packet, not part of this readback slice.
+
 ## 2026-07-02 - Rabbi / One Time Operations Shell UI Cleanup
 
 - Registered `RAW-20260702-008` and created the scoped Product Quality packet
@@ -28579,6 +28704,101 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
 
+## 2026-07-02 - Job 101 Review Queue Triage
+
+- Reinterpreted Job `101` review output with Shloimie's clarification that the
+  transcript interleaved UI corrections with student/class interruptions and
+  other people speaking.
+- Reduced the operator-facing UI/system result to five canonical clusters:
+  Operations filters, contacts/interested parents/communication IA, mobile
+  bot/helper input, Rabbi/One Time workspace-scope isolation, and content/Drive
+  queue visibility.
+- Confirmed that a review item is only a parser candidate, not proof that a
+  background agent already implemented the item.
+- Recorded that related Rabbi/One Time UI packets were locally verified today,
+  but Job 101-specific contacts/communication IA and Samsung/default mobile
+  input issues are not completed from that parser run.
+- No DB review statuses were changed because fresh Supabase DNS readback failed;
+  student/private/score/progress rows were not closed or applied.
+
+## 2026-07-02 - Studio Prompt Character Guardrail Library Local Implementation
+
+- Created and validated the third Studio implementation packet:
+  `ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/03-prompt-character-guardrail-library.product-quality.json`.
+- Added a reusable Studio Library editor in Operations Studio Prompts for
+  character profiles, Jewish guardrails, and scenario tags, saved through the
+  existing scoped Studio project PATCH route.
+- Updated the Studio prompt compiler to format saved character profiles and add
+  a first-class `jewish_guardrails` prompt layer before source context.
+- Updated the Studio migration constraint, action registry, focused domain/API
+  contract/UI tests, and browser smoke so the saved library is read back and
+  reused during prompt compilation.
+- Verification passed: PQC packet 03, focused Studio tests 12/12,
+  `npm run studio:smoke`, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked until an authenticated live Studio smoke verifies the private
+  workflow after release.
+
+## 2026-07-02 - Studio Source To Review Pack Local Workflow
+
+- Created and validated the fourth Studio implementation packet:
+  `ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/04-source-to-slideshow-output-pipeline.product-quality.json`.
+- Added a `Prepare Review Pack` action to Operations Studio Source that chains
+  the existing scoped source, storyboard, prompt-compile, and mock-render APIs.
+- Added a readable `Review Pack` card that summarizes source provenance,
+  storyboard scenes, prompt layers, mock assets, and no-vendor/no-publish/
+  no-send/no-upload/no-external-write status.
+- Registered the new visible action as
+  `ACTION-STUDIO-PREPARE-REVIEW-PACK` and updated the focused Studio browser
+  smoke to exercise the single source-to-review workflow.
+- Verification passed: PQC packet 04, focused Studio tests 12/12,
+  `npm run studio:smoke`, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Screenshot evidence:
+  `ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-review-pack.png`
+  and
+  `ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-review-pack.png`.
+- Production deploy/live-smoke was not run. The desktop screenshot also shows
+  the inherited Studio right-rail layout is cramped; that remains a separate
+  Studio layout cleanup packet before the workflow should be considered
+  polished/live-ready.
+
+## 2026-07-02 - Studio Desktop Layout Cleanup Local Implementation
+
+- Created and validated the fifth Studio implementation packet:
+  `ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/05-studio-desktop-layout-cleanup.product-quality.json`.
+- Replaced the Studio view's shared vertical section-menu placement with a
+  Studio-specific horizontal tab strip and a stable project/detail workspace.
+- Added Studio-only layout CSS so the selected workflow renders in a full main
+  detail column on desktop and stacks cleanly on mobile/tablet.
+- Updated focused Studio UI/browser tests, including a browser width guard that
+  fails if the `Review Pack` card regresses into the narrow right rail.
+- Verification passed: PQC packet 05, focused Studio tests 12/12,
+  `npm run studio:smoke`, `npm run watchdog:actions`, and
+  `npm run watchdog:protocol-drift`.
+- Screenshot evidence regenerated at
+  `ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-review-pack.png`,
+  `desktop-prompt-review.png`, and `mobile-review-pack.png`.
+- Production deploy/live-smoke was not run; terminal app-visible Done remains
+  blocked until an authenticated live Studio smoke verifies the private
+  workflow after release.
+
+## 2026-07-02 - Rabbi WAPI Setup Portal Released, Send Blocked By Channel Auth
+
+- Merged PR #86 and deployed the Rabbi / One Time provider WAPI setup flow to
+  `https://bneineviimacademy.org/provider?section=whatsapp_setup`.
+- Railway deployment `00a36c08-15ab-4f63-876c-f9897700dbbf` for merge commit
+  `713ad6b3834cbdc3b340830d377f0c1c65bc3c6f` reached `SUCCESS`.
+- Live smoke passed: provider page contains the setup section/action/API
+  reference; logged-out setup API returns 401 and no raw secret.
+- Live Operations readback found one Rabbi provider phone with redacted proof
+  last4 `3006`; full phone was not recorded.
+- Audited WhatsApp send attempt id `2395` did not send: WAPI returned 401
+  `need channel authorization for send message`.
+- Remaining blocker: authorize/connect the configured Whapi/WAPI channel, then
+  rerun one setup-link send.
+
 ## 2026-07-03 - Rabbi / One Time Email Review Brand Layout Verified Locally
 
 - Created and validated the seventeenth Rabbi / One Time UI cleanup packet:
@@ -28720,3 +28940,172 @@ Actions: 1. Active machine tasks: 22.
 - Follow-up consistency note: the terminal audit is anchored to commit
   `6fadb922`; later bookkeeping commits on PR #87 may advance the branch
   without changing the verdict.
+## 2026-07-03 - Rabbi / One Time Unblocked Readiness Cleanup Verified
+
+- Registered `RAW-20260703-001` and the cleanup register
+  `tasks-pending/2026-07-03-unblocked-readiness-cleanup.md` for the operator
+  instruction to do whatever is not waiting on them.
+- Repaired stale One Time readiness contracts: current join subdomain in the
+  Railway provisioner test, Resend setup-center anchor, generated action
+  coverage/parity artifacts, separate-instance live-smoke redirect handling,
+  responsive One Time Operations CSS test expectations, and deterministic
+  external-setup readiness tests.
+- Fixed `scripts/check-onetime-external-setup-readiness.mjs` so current Railway
+  variable readback can mark the separate One Time target ready; the latest
+  setup report now shows Railway target, DB reference, and join subdomain ready
+  with `ready_count=3/8`.
+- Cleaned the agent fleet hardening audit so terminal lane status `done` no
+  longer produces stale warnings. The fleet readiness report now has only the
+  real coordination drift findings: active pointer drift against the legacy
+  Issue 20 parent run and branch drift from that old parent branch.
+- Verification passed: focused repaired tests, `npm test` 1495/1495,
+  `npm run app:smoke`, Rabbi landing smoke, separate One Time instance smoke,
+  `npm run watchdog:actions`, `npm run watchdog:security`,
+  `npm run bna:run:validate`, `npm run pqc:all`, and `git diff --check`.
+- Remaining external setup blockers are explicit and not Codex-owned without
+  later setup details/approval: Zoom session alias, Vimeo access token/drop
+  folder, Stripe sandbox key and $67 price, Whapi/WAPI instance and phone, and
+  campaign copy/list/suppression/seed approval.
+
+## 2026-07-03 - Keep-Fixing Queue And Watchdog Closeout
+
+- Registered `RAW-20260703-002` and the continuation register
+  `tasks-pending/2026-07-03-keep-fixing-everything-until-done.md` for the
+  operator instruction to keep fixing everything until done.
+- Fixed the Rabbi / One Time task-flow audit so private-scope setup/materials
+  collection and external-write/access setup tasks are not advertised as
+  Codex-ready. The latest audit reports 77 Rabbi / One Time tasks, 56
+  human/external blockers, and 0 Codex-ready tasks.
+- Closed the watchdog findings: added the 2026-07-03 website-correction
+  continuation marker, added proof paths to the clean-slate `TASKS.md` row,
+  and appended terminal ledger closeouts for stale Agent Review, clean-slate,
+  PowerPoint intake, phonebook import, and Agent Mode result records.
+- Fixed agent-fleet safety defects found during dry-run verification:
+  supervisor dry-run no longer runs the task reconciler in apply mode, the
+  reconciler treats the already completed UI brand task as satisfied instead
+  of backfilling duplicates, and observable agent jobs are claimable only when
+  linked to an active Codex-owned task.
+- A pre-fix supervisor dry-run triggered the old reconciler apply path and
+  logged duplicate UI brand task `#1859`; after the fix, `npm run
+  task:reconcile` reports 0 actions and `npm run agent:fleet:status` reports 0
+  claimable observable jobs.
+- Verification passed: focused Rabbi task-flow, reconciler, and agent-fleet
+  tests; `npm test` 1495/1495; `npm run watchdog:audit` 0 findings;
+  `npm run watchdog:actions` 0 findings; `npm run watchdog:security` 0
+  findings; `npm run bna:run:validate`; app smoke; Rabbi landing smoke;
+  separate One Time instance smoke; and `git diff --check` with line-ending
+  warnings only.
+- Remaining blockers are not local function fixes: One Time external setup
+  still needs Zoom session alias, Vimeo access token/drop folder, Stripe
+  sandbox key and $67 price, Whapi/WAPI instance and phone, and campaign
+  copy/list/suppression/seed approval. Release/deploy readiness still needs a
+  separate release coordination packet for active pointer and branch drift.
+
+## 2026-07-03T08:43:19+03:00 - Task queue reconciler apply run
+
+Report: ops/system-audits/2026-07-03T08-43-19-624Z-task-queue-reconciler.md
+
+Actions: 1. Active machine tasks: 0.
+- create_missing_ui_brand_task #1859: Backfill missed app-wide UI/brand shell task from Telegram messages 1003, 1011, and 1111.
+
+## 2026-07-03 - ChatGPT To Codex Dropoff Workflow Registered
+
+- Registered `RAW-20260703-005` and
+  `tasks-pending/2026-07-03-chatgpt-to-codex-dropoff-workflow.md` for the
+  operator request to let ChatGPT hand large code/planning packets to Codex
+  without manual pasteback.
+- Created `ops/chatgpt-ramble-dropoff/` with an incoming packet inbox,
+  templates, a GitHub comment template, and Codex pickup checklist.
+- Boundary recorded: ChatGPT packets are input, not proof. Codex must audit,
+  adapt to the actual repo, verify, and record evidence before marking work
+  Done. True automatic pickup from GitHub/Drive remains blocked until the
+  operator chooses and authorizes the external write channel.
+- Registered follow-up clarification `RAW-20260703-006` and added
+  `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md`, which tells ChatGPT to use
+  repo-file packet mode first, GitHub comment mode second, and plain chat
+  output only as a last resort.
+- Registered `RAW-20260703-007` and implemented automatic repo-visible packet
+  pickup: `scripts/chatgpt-dropoff-ingestor.mjs`, agent-fleet pre-claim
+  integration, `chatgpt:dropoff:*` npm scripts, env switches, docs, and tests.
+- Added Windows login recovery for the fleet. Task Scheduler refused access on
+  this machine, so `npm run agent:fleet:register-startup` installed the
+  current-user Startup fallback
+  `C:\Users\User\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\BNA-Agent-Fleet.vbs`.
+- Canonicalized the workflow in the agent docs: `AGENTS.md` now names the
+  dropoff README/directive as source-of-truth files, defines the BNA read
+  order, and describes repo-file packet mode as the automatic path. `BNA-START-HERE.md`,
+  `CHATGPT-DIRECTIVE.md`, and the dropoff README now point to the same
+  workflow and explicitly state that ordinary ChatGPT needs repo access or a
+  pasted/provided directive before it can see local files.
+- Verification passed: script syntax checks, focused ingestor/fleet tests 9/9,
+  dry scanner readback with zero packet folders queued, `agent:fleet:status`
+  showing supervisor PID 21636 running with ChatGPT dropoff ingest enabled,
+  startup fallback readback, and clean fleet startup logs.
+- Full test suite passed after the automation change: `npm test` 1498/1498.
+
+## 2026-07-03 - Helper Bot Dropoff Prompt Hardening
+
+- Registered `RAW-20260703-009` after the operator sent the helper-bot
+  parallel prompts to ChatGPT and asked to harden the path.
+- Hardened `scripts/chatgpt-dropoff-ingestor.mjs`: ready state must come from
+  `status.json`; packet IDs across `packet.json`, `status.json`, and
+  `MANIFEST.json` must agree; helper-bot packets must use one of the known lane
+  IDs and have a folder name matching `packet_id`; declared secrets and
+  declared external writes block pickup.
+- Updated the helper-bot prompt packet so each parallel lane names its exact
+  packet ID, and corrected the tests/smokes lane from the loose
+  `helper-bot-workspace-agent-05-tests` sample to
+  `helper-bot-workspace-agent-05-tests-dropoff`.
+- Verification passed: syntax checks, focused dropoff/fleet tests 10/10, prompt
+  readback for the fixed tests lane, dry dropoff scan with zero incoming
+  packets, and agent fleet status showing PID 21636 running with ChatGPT
+  dropoff ingest enabled. Full suite also passed: `npm test` 1499/1499.
+
+## 2026-07-03 - ChatGPT GitHub Comment Dropoff Collector
+
+- Registered `RAW-20260703-010` after ChatGPT reported repo-file creation
+  failed with `403 Resource not accessible by integration` and returned only a
+  local ZIP link.
+- Added `scripts/chatgpt-dropoff-comment-collector.mjs`, which scans GitHub
+  issue/PR comments for `BNA_CHATGPT_DROPOFF_PACKET`, requires trusted authors,
+  extracts complete fenced file blocks, and materializes them into
+  `ops/chatgpt-ramble-dropoff/incoming/<packet-id>/`.
+- Wired the collector into the agent fleet before the normal file ingestor, and
+  added `chatgpt:dropoff:comments:scan` / `chatgpt:dropoff:comments:apply`
+  npm scripts plus `.env.example` settings.
+- Updated the GitHub comment template, ChatGPT directive, dropoff README,
+  agent read-order docs, and helper-bot lane prompts so ChatGPT knows that a
+  local ZIP/download link is not collectable; it must post the full packet file
+  contents into a marked GitHub comment when repo writes fail.
+- Verification passed: syntax checks, focused collector/ingestor/fleet tests
+  13/13, read-only GitHub comment scan checked 35 comments with no marked
+  packets yet, dry packet scan found 0 incoming packets, agent fleet status
+  shows ChatGPT comment collection enabled, full `npm test` passed 1502/1502,
+  and the agent fleet was restarted onto PID 3556 with clean startup logs.
+
+## 2026-07-04 - Publish Closeout And ChatGPT Sidekick Defaults
+
+- Registered `RAW-20260704-002` and
+  `tasks-pending/2026-07-04-commit-push-deploy-and-chatgpt-sidekick-defaults.md`
+  after the operator clarified that completed scoped Codex work should not stay
+  local-only.
+- Hardened `AGENTS.md`, `BNA-START-HERE.md`, and `MEMORY.md`: Codex closeout
+  now defaults to clean, verify, scoped stage, commit, push, and
+  deploy/live-smoke for app-visible or server-visible changes when release
+  gates allow. Unrelated dirty work, another Codex window's unfinished files,
+  failing tests, branch/auth drift, secrets, and production-risk actions must
+  block or stay out of the scoped commit.
+- Hardened the ChatGPT sidekick workflow: GitHub-connected ChatGPT is told that
+  it reads committed/pushed GitHub state, not local Codex changes, and that
+  preference/memory updates should be handed off as `memory_candidate` or
+  `preference_update` packets/comments.
+- Updated the dropoff ingestor so packet type is preserved in the Codex pickup
+  task payload, and added a regression test for memory-candidate packets.
+- Verification passed: `node --check scripts/chatgpt-dropoff-ingestor.mjs`,
+  focused dropoff/comment/fleet tests 14/14, `rg` readback for the new
+  protocol language, and scoped `git diff --check` with CRLF warnings only.
+- Published the scoped package on branch
+  `codex/chatgpt-dropoff-publish-defaults-20260704` and opened draft PR #90:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/90`.
+  No production deploy was run because the package is protocol/tooling/docs
+  plus local agent automation, not an app-visible or server-visible release.
