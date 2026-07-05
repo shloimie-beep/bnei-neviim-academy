@@ -1,6 +1,8 @@
 const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const test = require('node:test');
 
 function runBootstrap(args = [], env = {}) {
@@ -27,7 +29,8 @@ test('One Time database bootstrap defaults to dry-run with migration checksums',
 });
 
 test('One Time database bootstrap refuses apply before confirmation and instance guards', () => {
-  const result = runBootstrap(['--apply', '--json'], {
+  const reportPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'bna-onetime-bootstrap-test-')), 'report.json');
+  const result = runBootstrap(['--apply', '--json', '--report', reportPath], {
     APP_INSTANCE: '',
     DEFAULT_WORKSPACE_KEY: '',
     DEFAULT_PROJECT_KEY: '',

@@ -1,0 +1,723 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260705-701",
+  "parent_raw_id": "RAW-20260705-011",
+  "source_statement_ids": [
+    "SRC-20260705-011-001",
+    "SRC-20260705-011-002",
+    "SRC-20260705-011-003",
+    "SRC-20260705-011-004",
+    "SRC-20260705-011-005"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260705-011-task-1851-bna-brand-shell-verification.md",
+      "tasks-pending/2026-07-05-task-1851-bna-brand-shell-verification.md",
+      "memory-topics/brand-kits.md",
+      "memory-topics/design-references.md",
+      "memory-topics/ui-quality-goals.md",
+      "public/css/bna-app-shell.css",
+      "public/js/app-select.js",
+      "public/operations.html",
+      "public/parent.html",
+      "public/student.html",
+      "public/provider.html",
+      "public/operations-login.html"
+    ],
+    "produces": [
+      "ops/playwright-smokes/task-1851-brand-shell-live-20260705/",
+      "ops/live-smokes/",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-05-task-1851-bna-brand-shell-verification/01-bna-brand-shell-verifier.product-quality.json",
+    "terminal_condition": "Task 1851 has fresh source inspection, static tests, desktop/mobile screenshot evidence, live smoke, and closeout records without worker-side deploy or production mutation.",
+    "handoff_target": "tasks-pending/2026-07-05-task-1851-bna-brand-shell-verification.md"
+  },
+  "stage": "STAGE_6_CLOSEOUT",
+  "packet_role": "VERIFIER_PACKET",
+  "status": "done",
+  "title": "Verifier for Task 1851 BNA brand shell and polished SaaS app shell",
+  "created_at": "2026-07-05T20:57:42+03:00",
+  "workspace_key": "bna_platform",
+  "project_key": "app_shell",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "RABBI_PROVIDER_ADMIN",
+    "PUBLIC_MARKETING"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260705-011",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "VERIFIER_CLOSEOUT",
+      "DEPLOY_RELEASE",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.92,
+    "reasons": [
+      "The assignment uses the product-quality phrase million-dollar SaaS UI polish.",
+      "The source asks for an app-wide branded shell, static toolbar, mobile menus, filters, and in-app dropdown behavior.",
+      "The source requires desktop/mobile screenshots and live smoke before terminal closeout."
+    ],
+    "affected_product_surfaces": [
+      "Operations app shell",
+      "Parent portal shell",
+      "Student portal shell",
+      "Provider portal shell",
+      "Operations login shell",
+      "Public/external service-provider and signup entry surfaces"
+    ],
+    "likely_external_provider_blockers": [
+      "Deploy is Tier 2 and owned by the parent release gate if code changes are required.",
+      "No email, WhatsApp, SMS, Telegram, Stripe, DNS, Drive, access-grant, or provider-account writes are authorized in this verifier packet."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "01-bna-brand-shell-verifier"
+    ],
+    "next_exact_packet": "If verification finds a shell defect, create a separate implementation packet for that exact route/component; otherwise close task 1851 as verified/already satisfied."
+  },
+  "operator_intent_summary": "Verify that the app-wide BNA brand shell request is actually satisfied across Operations, parent, student, provider, login, and public/external entry pages, including static branded toolbar, light professional palette, mobile-first section menus, top filters, in-app dropdowns, preserved button behavior, screenshot evidence, and live smoke.",
+  "raw_quotes": [
+    "Apply app-wide BNA brand shell and million-dollar SaaS UI polish.",
+    "Implement a crisp light BNA brand shell across Operations, parent/student/provider/external pages.",
+    "static branded toolbar, blue/yellow/light-orange palette, mobile-first side/sandwich section menus, top filters, in-app dropdowns instead of native mobile select sheets where supported, and no loss of existing button behavior.",
+    "Verify desktop and mobile UI screenshots plus live smoke before marking done."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260705-701",
+      "decision": "This worker verifies current source/live state and does not deploy; any deploy required by a new code gap goes through the parent release gate.",
+      "status": "decided"
+    }
+  ],
+  "out_of_scope": [
+    "No production deployment from this worker.",
+    "No production database mutation.",
+    "No external sends, charges, DNS changes, credential changes, Drive writes, access grants, provider-account mutations, GHL runtime, or LeadConnector runtime.",
+    "No change to One Time/Rabbi-specific black/yellow review branding unless a separate One Time packet explicitly scopes it.",
+    "No broad redesign beyond task 1851 verification unless a specific failing route/component is identified."
+  ],
+  "affected_surfaces": [
+    "BNA Operations shell",
+    "BNA parent portal shell",
+    "BNA student portal shell",
+    "BNA provider portal shell",
+    "BNA login/entry shells",
+    "Public and external BNA entry surfaces"
+  ],
+  "affected_routes": [
+    "/operations",
+    "/operations-login.html",
+    "/parent",
+    "/student",
+    "/provider",
+    "/signup.html",
+    "/service-providers"
+  ],
+  "affected_files": [
+    "public/css/bna-app-shell.css",
+    "public/js/app-select.js",
+    "public/operations.html",
+    "public/operations-login.html",
+    "public/parent.html",
+    "public/student.html",
+    "public/provider.html",
+    "public/service-providers.html",
+    "public/providers-join.html",
+    "ops/action-registry.json",
+    "ops/route-registry.json",
+    "tests/bna-brand-shell.test.js",
+    "tests/app-wide-brand-shell.test.js",
+    "tests/ui-01-public-operations-shell.test.js"
+  ],
+  "current_state": {
+    "summary": "Historical task #402 already implemented and deployed the shared shell. Task 1851 is a duplicate live task created by the reconciler and needs fresh verification evidence tied to its own task ID.",
+    "inspected": [
+      "BNA-START-HERE.md",
+      "AGENTS.md",
+      "docs/BNA-RAMBLE-TO-DONE.md",
+      "MEMORY.md",
+      "memory-topics/brand-kits.md",
+      "memory-topics/design-references.md",
+      "memory-topics/ui-quality-goals.md",
+      "public/css/bna-app-shell.css",
+      "public/js/app-select.js",
+      "public/operations.html",
+      "public/parent.html",
+      "public/student.html",
+      "public/provider.html",
+      "tests/bna-brand-shell.test.js",
+      "tests/app-wide-brand-shell.test.js",
+      "historical task #402 changelog and screenshots"
+    ],
+    "known_defects": [
+      "No task-1851-specific closeout evidence existed before this packet.",
+      "Current worktree contains unrelated dirty agent-fleet/dropoff files that must be left alone.",
+      "The broad visual watchdog found unrelated One Time home placeholder/tiny target issues; task-1851 BNA shell focused evidence passed."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "million-dollar",
+      "polish",
+      "crisp",
+      "GHL-like",
+      "mobile",
+      "portal"
+    ],
+    "expanded_phrases": {
+      "million-dollar": "The shell must look intentional and operator-grade: stable toolbar, readable typography, no horizontal overflow, consistent cards/controls, registered actions, and fresh screenshot/live-smoke evidence.",
+      "polish": "Spacing, palette, button states, filters, dropdowns, and mobile menu behavior must be consistent and verifiable, not merely claimed.",
+      "crisp": "UI surfaces should use restrained light styling, 8px control/card radii where applicable, aligned controls, and non-overlapping text.",
+      "GHL-like": "Use first-party BNA SaaS navigation patterns only; do not add GHL, LeadConnector, external CRM APIs, or external writes.",
+      "mobile": "390px and 430px routes must be usable with side/sandwich menu behavior, no horizontal overflow, and touch-safe controls.",
+      "portal": "Parent, student, provider, and login surfaces must carry the shared BNA shell while preserving each role's private scope."
+    },
+    "first_party_pattern_interpretation": "GHL-like means first-party BNA Operations/portal shell patterns: sticky topbar, side menu, top filter rail, in-app select menu, and action-state preservation inside BNA-owned code."
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/brand-kits.md",
+    "config/brands/bna.json"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260705-701",
+      "statement": "Verify app-wide BNA shell source coverage for Operations, parent, student, provider, login, and public/external entry routes.",
+      "expected_result": "Each surface loads the shared BNA shell or a deliberate BNA-compatible shell, with static brand bar, role-safe navigation, and no cross-workspace leakage.",
+      "acceptance_criteria": [
+        "Shared shell CSS is loaded by Operations, parent, student, provider, and login surfaces.",
+        "Operations has a branded topbar, mobile header, side navigation, and sticky/top filter rail behavior.",
+        "Parent, student, and provider routes have BNA brand topbars and portal navigation controls.",
+        "One Time/Rabbi-specific black/yellow review mode remains scoped and is not mixed into generic BNA shell verification."
+      ]
+    },
+    {
+      "id": "REQ-20260705-702",
+      "statement": "Validate this task-specific Product Quality Compiler packet before any code implementation.",
+      "expected_result": "The broad product-quality wording is compiled into exact routes, states, actions, tests, and evidence gates.",
+      "acceptance_criteria": [
+        "PQC validator passes for this packet.",
+        "The packet names deploy/live-smoke as a gate for app-visible Done.",
+        "External provider actions are explicitly out of scope."
+      ]
+    },
+    {
+      "id": "REQ-20260705-703",
+      "statement": "Run fresh static and focused tests for brand shell and button/select preservation.",
+      "expected_result": "Focused tests prove current source has shared shell classes, in-app select enhancer, top filters, and no loss of existing button behavior contracts.",
+      "acceptance_criteria": [
+        "Focused brand shell tests pass.",
+        "Static UI watchdog passes or reports only unrelated existing findings.",
+        "No unrelated dirty worktree changes are reverted or staged."
+      ]
+    },
+    {
+      "id": "REQ-20260705-704",
+      "statement": "Capture fresh desktop/mobile screenshots and live smoke for the current deployed app.",
+      "expected_result": "Task 1851 has current visual and live evidence, not only task #402 historical evidence.",
+      "acceptance_criteria": [
+        "Desktop 1440 and mobile 390/430 screenshots are captured for affected surfaces.",
+        "Browser metrics show no horizontal overflow on checked routes.",
+        "Live app smoke passes, or the blocker names missing credential/network owner and exact next command."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Raw intake exists for task 1851.",
+      "Task-specific requirement register exists.",
+      "Brand/design/UI memory topics were inspected.",
+      "Affected routes and files are explicit.",
+      "No code edits happen before PQC validation.",
+      "External writes and deploy are explicitly out of scope for this worker."
+    ],
+    "status": "met_for_verification"
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations",
+      "viewport": 1440,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "bna_platform / app_shell",
+      "how_to_enter_state": "Open Operations while private data/API calls are pending or unauthenticated.",
+      "expected_visible_title": "BNA Operations",
+      "expected_visible_message": "A branded shell or login path remains visible without broken layout.",
+      "expected_primary_action": "Navigate or sign in",
+      "expected_secondary_actions": ["BNA Helper", "mobile menu"],
+      "forbidden_content": ["private parent/student/provider data on logged-out shell"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Topbar/sidebar controls expose labels or accessible text.",
+      "accessibility_expectation": "No horizontal overflow and focus-visible style exists.",
+      "test_smoke_assertion": "Shared shell CSS and Operations topbar/mobile header are present.",
+      "requirement_id": "REQ-20260705-701"
+    },
+    "empty": {
+      "route": "/parent",
+      "viewport": 1024,
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "bna_platform / app_shell",
+      "how_to_enter_state": "Open parent portal without a parent session or with no rows loaded.",
+      "expected_visible_title": "BNA Parent Portal",
+      "expected_visible_message": "Parent portal shell remains branded and private.",
+      "expected_primary_action": "Sign in or request access",
+      "expected_secondary_actions": ["Assistant/help", "portal navigation"],
+      "forbidden_content": ["other-family records", "student private notes"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Brand topbar and portal menu controls are labelled.",
+      "accessibility_expectation": "Readable topbar and no clipped mobile text.",
+      "test_smoke_assertion": "Parent page includes shared shell CSS and brand topbar.",
+      "requirement_id": "REQ-20260705-701"
+    },
+    "populated": {
+      "route": "/operations?view=service_providers",
+      "viewport": 1440,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "bna_platform / app_shell",
+      "how_to_enter_state": "Open the Operations service providers view with existing application data or mocked read-only browser route.",
+      "expected_visible_title": "Workspace Directory",
+      "expected_visible_message": "Provider/service-provider information appears inside the BNA shell.",
+      "expected_primary_action": "Open section navigation",
+      "expected_secondary_actions": ["Top filters", "in-app dropdowns"],
+      "forbidden_content": ["GHL runtime", "LeadConnector runtime"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Section filters are keyboard reachable and labelled.",
+      "accessibility_expectation": "Cards and buttons wrap without overlap.",
+      "test_smoke_assertion": "Operations source contains top filter rail and in-app filter dropdown classes.",
+      "requirement_id": "REQ-20260705-703"
+    },
+    "filtered_empty": {
+      "route": "/operations?view=content",
+      "viewport": 768,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "bna_platform / app_shell",
+      "how_to_enter_state": "Apply a content/library filter with no matching rows.",
+      "expected_visible_title": "Content",
+      "expected_visible_message": "No matching rows with a clear filter reset path.",
+      "expected_primary_action": "Clear filter",
+      "expected_secondary_actions": ["Section menu", "top filters"],
+      "forbidden_content": ["unstructured button pile", "native mobile select sheet where enhanced select is supported"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filter buttons/dropdowns have accessible labels.",
+      "accessibility_expectation": "Top filter rail scrolls horizontally only where intentional.",
+      "test_smoke_assertion": "Filter rail and app-select enhancer are present.",
+      "requirement_id": "REQ-20260705-703"
+    },
+    "error": {
+      "route": "/provider",
+      "viewport": 430,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "bna_platform / app_shell",
+      "how_to_enter_state": "Open provider portal with no or invalid provider session.",
+      "expected_visible_title": "Provider portal",
+      "expected_visible_message": "Login/setup error is shown inside branded provider shell.",
+      "expected_primary_action": "Sign In",
+      "expected_secondary_actions": ["Public site", "Directory", "Assistant/help"],
+      "forbidden_content": ["cross-provider data", "Operations super-admin data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error text is visible and form controls are labelled.",
+      "accessibility_expectation": "Mobile topbar actions wrap without horizontal overflow.",
+      "test_smoke_assertion": "Provider page renders brand topbar and no horizontal overflow.",
+      "requirement_id": "REQ-20260705-704"
+    },
+    "blocked_setup": {
+      "route": "/operations-login.html",
+      "viewport": 390,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "bna_platform / app_shell",
+      "how_to_enter_state": "Open Operations login when credentials/session are missing.",
+      "expected_visible_title": "BNA Operations",
+      "expected_visible_message": "Sign-in or blocked setup message appears without helper-widget leakage before login.",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": ["Return to public site"],
+      "forbidden_content": ["Operations private data", "public helper widget before sign-in"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Login fields have accessible names.",
+      "accessibility_expectation": "Form fits 390px mobile viewport.",
+      "test_smoke_assertion": "Operations login loads shared BNA shell.",
+      "requirement_id": "REQ-20260705-701"
+    },
+    "preview_only": {
+      "route": "/service-providers",
+      "viewport": 1024,
+      "auth_role": "PUBLIC_MARKETING",
+      "workspace_project": "bna_platform / app_shell",
+      "how_to_enter_state": "Open public service-provider directory.",
+      "expected_visible_title": "Service Provider Network",
+      "expected_visible_message": "Public provider content remains anonymous-safe.",
+      "expected_primary_action": "Browse public providers",
+      "expected_secondary_actions": ["Join provider list", "portal login"],
+      "forbidden_content": ["private provider workspace rows", "raw contact exports"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Public navigation and CTA links are labelled.",
+      "accessibility_expectation": "Public cards align and wrap.",
+      "test_smoke_assertion": "Public/provider routes remain route-registry safe.",
+      "requirement_id": "REQ-20260705-701"
+    },
+    "success_readback": {
+      "route": "/student",
+      "viewport": 390,
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "bna_platform / app_shell",
+      "how_to_enter_state": "Open student portal login/shell.",
+      "expected_visible_title": "BNA Student Goal Board",
+      "expected_visible_message": "Student shell appears with child-safe branding and controls.",
+      "expected_primary_action": "Sign in or open student action",
+      "expected_secondary_actions": ["Assistant/help", "portal menu"],
+      "forbidden_content": ["adult/private notes", "admin/provider actions"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Student controls have accessible names.",
+      "accessibility_expectation": "No horizontal overflow on mobile.",
+      "test_smoke_assertion": "Student page includes shared shell CSS and brand topbar.",
+      "requirement_id": "REQ-20260705-704"
+    },
+    "permission_denied": {
+      "route": "/operations",
+      "viewport": 390,
+      "auth_role": "logged_out_or_wrong_role",
+      "workspace_project": "bna_platform / app_shell",
+      "how_to_enter_state": "Open a private route without the matching role.",
+      "expected_visible_title": "BNA Operations",
+      "expected_visible_message": "Redirect or login shell without private data.",
+      "expected_primary_action": "Sign in with authorized role",
+      "expected_secondary_actions": ["Public site"],
+      "forbidden_content": ["parent/student/provider private data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Redirect/login path is understandable.",
+      "accessibility_expectation": "Mobile login shell is usable.",
+      "test_smoke_assertion": "Route registry and live smoke protect private routes.",
+      "requirement_id": "REQ-20260705-704"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?view=tasks",
+      "viewport": 430,
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "bna_platform / app_shell",
+      "how_to_enter_state": "Open mobile Operations and activate the menu/section navigation.",
+      "expected_visible_title": "BNA Operations",
+      "expected_visible_message": "Mobile side/sandwich section menu opens without covering controls incoherently.",
+      "expected_primary_action": "Open or close mobile menu",
+      "expected_secondary_actions": ["Top filters", "BNA Helper"],
+      "forbidden_content": ["horizontal overflow", "uncloseable drawer"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Menu trigger updates aria-expanded.",
+      "accessibility_expectation": "Touch targets remain visible and large enough.",
+      "test_smoke_assertion": "Fresh screenshot captures mobile drawer/filter behavior.",
+      "requirement_id": "REQ-20260705-704"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?view=service_providers",
+        "viewport": 1440,
+        "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+        "workspace_project": "bna_platform / app_shell",
+        "required": true,
+        "requirement_id": "REQ-20260705-704"
+      },
+      {
+        "route": "/operations-login.html",
+        "viewport": 1024,
+        "auth_role": "logged_out_or_wrong_role",
+        "workspace_project": "bna_platform / app_shell",
+        "required": true,
+        "requirement_id": "REQ-20260705-704"
+      },
+      {
+        "route": "/provider",
+        "viewport": 768,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "bna_platform / app_shell",
+        "required": true,
+        "requirement_id": "REQ-20260705-704"
+      },
+      {
+        "route": "/parent",
+        "viewport": 430,
+        "auth_role": "MEMBER_PARENT_PORTAL",
+        "workspace_project": "bna_platform / app_shell",
+        "required": true,
+        "requirement_id": "REQ-20260705-704"
+      },
+      {
+        "route": "/student",
+        "viewport": 390,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "bna_platform / app_shell",
+        "required": true,
+        "requirement_id": "REQ-20260705-704"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260705-701",
+        "route": "/operations, /parent, /student, /provider",
+        "viewport": "390/430/768/1024/1440",
+        "screenshot_before": "ops/playwright-smokes/task-402-brand-shell-live-2026-06-10T11-41-50-488Z/report.md",
+        "screenshot_after_or_blocker": "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/report.md",
+        "defect_codes": ["VQ-SHELL-001"],
+        "severity": "P1",
+        "user_impact": "Task 1851 cannot be closed from historical task #402 evidence alone.",
+        "expected_fix": "Capture fresh desktop/mobile screenshots and live smoke tied to task 1851.",
+        "requirement_id": "REQ-20260705-704"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus BNA mobile/touch requirements.",
+    "required_checks": [
+      "focus-visible style exists in shared shell CSS",
+      "brand/menu controls have readable labels",
+      "390px and 430px viewports have no horizontal overflow",
+      "buttons and dropdowns preserve accessible text or aria labels"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Operations mobile menu",
+      "selector_or_action_key": ".menu-button",
+      "action_state": "WORKS_NOW",
+      "owner": "Operations shell",
+      "external_write": false,
+      "handler_or_blocker": "Existing Operations menu script toggles mobile/sidebar state.",
+      "registry_required": true
+    },
+    {
+      "label": "Operations top filters",
+      "selector_or_action_key": "[data-top-filter-rail=\"true\"], .filter-dropdown-button",
+      "action_state": "WORKS_NOW",
+      "owner": "Operations shell",
+      "external_write": false,
+      "handler_or_blocker": "Existing filter rail/dropdown handlers preserve local view filtering.",
+      "registry_required": true
+    },
+    {
+      "label": "In-app select menu enhancer",
+      "selector_or_action_key": "/js/app-select.js",
+      "action_state": "WORKS_NOW",
+      "owner": "Shared portal shell",
+      "external_write": false,
+      "handler_or_blocker": "Custom select enhancer mirrors native select value/change behavior while avoiding mobile native sheet where supported.",
+      "registry_required": false
+    },
+    {
+      "label": "Provider WAPI setup save",
+      "selector_or_action_key": "ACTION-PROVIDER-WAPI-SETUP-SAVE",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Provider portal",
+      "external_write": false,
+      "handler_or_blocker": "Writes only provider-scoped setup metadata/fingerprint when explicitly used; external WhatsApp sends remain blocked.",
+      "registry_required": true
+    },
+    {
+      "label": "Live deploy",
+      "selector_or_action_key": "parent release gate",
+      "action_state": "INTERNAL_SUPPORT_ONLY",
+      "owner": "Supervisor / release gate",
+      "external_write": false,
+      "handler_or_blocker": "No deploy is run by this worker; live smoke checks current deployment.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": [
+    "No production data writes.",
+    "Read only route/source inspection.",
+    "Fresh screenshot paths and live-smoke report paths.",
+    "Task-specific closeout rows in ledger/changelog."
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Public routes stay anonymous-safe.",
+      "Parent/student/provider portals must not expose unrelated private records.",
+      "One Time/Rabbi brand and data remain scoped to rabbi_sheller_provider / one_time_mishnah_class when review mode is active."
+    ],
+    "forbidden_content": [
+      "secrets",
+      "raw private message bodies",
+      "student-sensitive screenshots with private data",
+      "external provider approval from browser text",
+      "GHL or LeadConnector runtime"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "B0-register-and-validate",
+      "scope": "Create task-specific intake/register/PQC verifier packet only.",
+      "instructions": [
+        "Preserve task assignment source.",
+        "Compile exact routes, states, action preservation, tests, screenshots, and live-smoke gates.",
+        "Run PQC validation before UI/product code changes."
+      ]
+    },
+    {
+      "batch_id": "B1-source-and-static-verification",
+      "scope": "Verify existing shell source and focused tests.",
+      "instructions": [
+        "Inspect shared shell CSS, app-select enhancer, Operations/portal pages, route/action registries, and historical task #402 evidence.",
+        "Run focused brand-shell tests and relevant watchdogs.",
+        "Patch only if a specific failing requirement appears."
+      ]
+    },
+    {
+      "batch_id": "B2-visual-and-live-smoke",
+      "scope": "Capture fresh desktop/mobile screenshots and current live smoke.",
+      "instructions": [
+        "Use browser/Playwright screenshots for desktop and mobile shell routes.",
+        "Run live app smoke without deploy or production mutation.",
+        "Record blocker if credentials or network prevent live smoke."
+      ]
+    },
+    {
+      "batch_id": "B3-closeout",
+      "scope": "Record task-specific evidence for the supervisor.",
+      "instructions": [
+        "Update register final audit, ledger, and changelog with verification outcome.",
+        "Do not mark the live task done directly.",
+        "Leave unrelated dirty files untouched."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "BNA-START-HERE.md",
+      "AGENTS.md",
+      "docs/BNA-RAMBLE-TO-DONE.md",
+      "MEMORY.md",
+      "memory-topics/brand-kits.md",
+      "memory-topics/design-references.md",
+      "memory-topics/ui-quality-goals.md",
+      "public/css/bna-app-shell.css",
+      "public/js/app-select.js",
+      "public/operations.html",
+      "public/parent.html",
+      "public/student.html",
+      "public/provider.html",
+      "tests/bna-brand-shell.test.js",
+      "tests/app-wide-brand-shell.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "raw-input/RAW-20260705-011-task-1851-bna-brand-shell-verification.md",
+      "tasks-pending/2026-07-05-task-1851-bna-brand-shell-verification.md",
+      "ops/prompt-packets/2026-07-05-task-1851-bna-brand-shell-verification/01-bna-brand-shell-verifier.product-quality.json",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "max_files_to_edit": 5,
+    "max_routes_to_touch": 0,
+    "max_major_surfaces": 0,
+    "split_threshold_reason": "If source verification finds any code change, split into a separate route/component implementation packet.",
+    "split_if_exceeds": true,
+    "context_risk_level": "MEDIUM"
+  },
+  "tests": [
+    {
+      "command_or_check": "npm run pqc:validate ops/prompt-packets/2026-07-05-task-1851-bna-brand-shell-verification/01-bna-brand-shell-verifier.product-quality.json",
+      "expected_result": "Passes."
+    },
+    {
+      "command_or_check": "node --test tests/bna-brand-shell.test.js tests/app-wide-brand-shell.test.js tests/ui-01-public-operations-shell.test.js",
+      "expected_result": "Passes focused static shell contract tests."
+    },
+    {
+      "command_or_check": "npm run watchdog:ui",
+      "expected_result": "Passes static UI smoke for core routes."
+    },
+    {
+      "command_or_check": "npm run watchdog:visual -- --base-url=https://bneineviimacademy.org --screenshots=ops/playwright-smokes/task-1851-brand-shell-live-20260705",
+      "expected_result": "Captures desktop/tablet/mobile screenshots and reports no blocking visual findings for the checked shell routes."
+    },
+    {
+      "command_or_check": "npm run app:smoke",
+      "expected_result": "Passes current live app smoke, or records credential/network blocker."
+    }
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/watchdog-audits/",
+      "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/report.md",
+      "ops/live-smokes/",
+      "tasks-pending/2026-07-05-task-1851-bna-brand-shell-verification.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "Task 1851 has stable raw/register/PQC evidence.",
+      "PQC validation passes.",
+      "Relevant shell source files/routes/tests were inspected.",
+      "Focused static shell tests pass.",
+      "Fresh desktop/mobile screenshot evidence exists.",
+      "Live app smoke passes or exact blocker is recorded.",
+      "Ledger and changelog record the outcome.",
+      "Supervisor, not this worker, handles live task status."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260705-011-task-1851-bna-brand-shell-verification.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-05-task-1851-bna-brand-shell-verification/01-bna-brand-shell-verifier.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "create raw/register/PQC verifier packet",
+      "run PQC validation",
+      "run focused static tests",
+      "run UI/visual watchdogs",
+      "run live smoke",
+      "record ledger/changelog closeout"
+    ],
+    "skipped_actions_policy": "Skip production deploy, production mutation, external sends, charges, DNS, credentials, Drive writes, access grants, provider-account mutation, and unrelated dirty worktree cleanup.",
+    "blocker_decisions": [
+      "DEC-20260705-701"
+    ],
+    "evidence_paths": [
+      "tasks-pending/2026-07-05-task-1851-bna-brand-shell-verification.md",
+      "ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/report.md",
+      "ops/live-smokes/2026-07-05T18-02-41-116Z-live-app-smoke.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-05-task-1851-bna-brand-shell-verification.md",
+    "next_packet_path": "none unless verification fails"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "Run during closeout; unrelated known drift may be recorded with exact file/finding if it fails."
+  },
+  "next_packet": {
+    "type": "none",
+    "description": "No implementation packet is needed unless fresh verification identifies a route/component gap.",
+    "path": "none"
+  }
+}

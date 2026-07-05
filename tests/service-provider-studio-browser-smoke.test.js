@@ -1,5 +1,6 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 
@@ -7,7 +8,9 @@ const { chromium } = require('playwright');
 
 const ROOT = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(ROOT, 'public', 'operations.html'), 'utf8');
-const screenshotDir = path.join(ROOT, 'ops', 'playwright-smokes', '2026-06-23-service-provider-studio-local');
+const screenshotDir = process.env.BNA_SERVICE_PROVIDER_STUDIO_SMOKE_DIR
+  ? path.resolve(process.env.BNA_SERVICE_PROVIDER_STUDIO_SMOKE_DIR)
+  : fs.mkdtempSync(path.join(os.tmpdir(), 'bna-service-provider-studio-smoke-'));
 
 function json(body) {
   return {

@@ -1,14 +1,25 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const http = require('node:http');
+const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '..');
-const outDir = path.join(root, 'ops', 'playwright-smokes', '2026-06-19-agent-control-browser-local');
+const outDir = process.env.BNA_AGENT_CONTROL_BROWSER_SMOKE_DIR
+  ? path.resolve(process.env.BNA_AGENT_CONTROL_BROWSER_SMOKE_DIR)
+  : fs.mkdtempSync(path.join(os.tmpdir(), 'bna-agent-control-browser-smoke-'));
 const operationsHtmlPath = path.join(root, 'public', 'operations.html');
 const runKey = 'run_agent_control_smoke';
+
+function evidencePath(fileName) {
+  const fullPath = path.join(outDir, fileName);
+  const relativePath = path.relative(root, fullPath);
+  return relativePath.startsWith('..') || path.isAbsolute(relativePath)
+    ? fullPath.replace(/\\/g, '/')
+    : relativePath.replace(/\\/g, '/');
+}
 
 const allowedViews = [
   'dashboard',
@@ -661,7 +672,7 @@ test('Super Admin Agent Control browser smoke submits and seals a safe local run
       await page.waitForFunction(() => /Progress posted\.|Manual Agent Mode prompt reviewed/.test(document.body.textContent), null, { timeout: 15000 });
 
       await page.locator('input[name="title"]').fill('Interactive Agent Control smoke evidence');
-      await page.locator('input[name="path"]').fill('ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png');
+      await page.locator('input[name="path"]').fill(evidencePath('interactive-run.png'));
       const evidenceButton = page.getByRole('button', { name: 'Attach Evidence' });
       assert.equal(await evidenceButton.count(), 1);
       await evidenceButton.click();
@@ -710,7 +721,7 @@ test('Super Admin Agent Control browser smoke submits and seals a safe local run
         finalStatus: agentRun.status,
         artifactCount: runArtifacts.length,
         eventTypes: runEvents.map((event) => event.event_type),
-        screenshot: path.relative(root, path.join(outDir, 'interactive-run.png')).replace(/\\/g, '/'),
+        screenshot: evidencePath('interactive-run.png'),
         guardrails: {
           productionWrites: false,
           productionDataMutation: false,

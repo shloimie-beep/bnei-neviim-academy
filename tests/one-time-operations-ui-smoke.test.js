@@ -1,12 +1,15 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const http = require('node:http');
+const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '..');
-const outDir = path.join(root, 'ops', 'playwright-smokes', '2026-06-19-one-time-operations-ui-local');
+const outDir = process.env.BNA_ONE_TIME_OPERATIONS_UI_SMOKE_DIR
+  ? path.resolve(process.env.BNA_ONE_TIME_OPERATIONS_UI_SMOKE_DIR)
+  : fs.mkdtempSync(path.join(os.tmpdir(), 'bna-one-time-operations-ui-smoke-'));
 const operationsHtmlPath = path.join(root, 'public', 'operations.html');
 
 const ownerAllowedViews = [

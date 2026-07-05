@@ -29420,6 +29420,59 @@ Actions: 1. Active machine tasks: 0.
 - Pushed branch `codex/drive-dropoff-scheduler-repair-canonical-20260705` and
   opened draft PR #100 for normal review/merge.
 
+## 2026-07-05 - Task 1851 BNA Brand Shell Verification
+
+- Registered `RAW-20260705-011` and
+  `tasks-pending/2026-07-05-task-1851-bna-brand-shell-verification.md` for the
+  agent-fleet pickup of live task 1851.
+- Found the app-wide BNA brand shell had already been implemented and deployed
+  under historical task #402; this batch added task-1851-specific PQC,
+  screenshot, live-smoke, ledger, and register evidence.
+- Verification passed: PQC validation for the task packet, focused brand shell
+  tests 12/12, `npm run watchdog:ui` with zero findings,
+  `npm run watchdog:protocol-drift` with zero findings, focused live
+  desktop/mobile screenshots for `/`, `/signup.html`, `/service-providers`,
+  `/operations-login.html`, `/parent`, `/student`, and `/provider` at 390,
+  430, 768, and 1440 widths, and `npm run app:smoke`.
+- Evidence:
+  `ops/playwright-smokes/task-1851-brand-shell-live-20260705/focused-bna-shell/report.md`
+  and `ops/live-smokes/2026-07-05T18-02-41-116Z-live-app-smoke.md`.
+- Broad `watchdog:visual` also captured a wider screenshot matrix, but failed
+  only on unrelated `/one-time/` placeholder/tiny-target findings; those are
+  recorded as `WATCH-20260705-701` in the task register and remain separate
+  One Time visual cleanup work.
+- No code change, deploy, production mutation, external send, charge, DNS
+  change, Drive write, credential change, access grant, provider-account
+  mutation, or external CRM write was performed. The supervisor remains
+  responsible for marking the live task done.
+
+## 2026-07-05T18:17:34+03:00 - Agent task #1851 blocked: Apply app-wide BNA brand shell and million-dollar SaaS UI polish
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Registered Task 1851 as `RAW-20260705-011` / `REQ-20260705-701..705`, validated the Product Quality Compiler packet, and confirmed the app-wide BNA shell work is already implemented from the earlier Task #402 release. No product code changes were needed; I added verification evidence, ledger/changelog closeout, and recorded the unrelated One Time visual watchdog issue separately as `WATCH-20260705-701`.
+
+VERIFICATION: PASS `npm run pqc:validate ...`; PASS `node --test tests/bna-brand-shell.test.js tests/app-wide-brand-shell.test.js tests/ui-01-public-operations-shell.test.js` 12/12; PASS `npm run watchdog:ui`; PASS `npm run app:smoke`; PASS `npm run watchdog:protocol-drift`; PASS focused live Playwright screenshot smoke across public, Operations login, parent, student, provider routes. `npm run watchdog:visual` failed only on unrelated `/one-time/` findings, not the BNA shell scope.
+
+FILES: Changed `raw-input/RAW-20260705-011-task-1851-bna-brand-shell-verification.md`, `tasks-pending/2026-07-05-task-1851-bna-brand-shell-verification.md`, `ops/prompt-packets/2026-07-05-task-1851-bna-brand-shell-verification/`, `ops/playwright-smokes/task-1851-brand-shell-live-20260705/`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`. Inspected `public/css/bna-app-shell.css`, `public/js/app-select.js`, `public/operations.html`, `public/parent.html`, `public/student.html`, `public/provider.html`, `ops/action-registry.json`, and `ops/route-registry.json`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
+
+- source: agent_fleet
+- worker: Codex
+
 ## 2026-07-05 - Telegram Drive Sync OAuth Error Local Repair
 
 - Registered `RAW-20260705-012` and
@@ -29468,3 +29521,27 @@ Actions: 1. Active machine tasks: 0.
   Telegram `getUpdates` conflict lines.
 - Telegram `getWebhookInfo` returned no webhook URL, zero pending updates, and
   no last error.
+
+## 2026-07-05 - Repo Cleanup Follow-Up And Test Output Hardening
+
+- Continued `REQ-20260705-806` after the Telegram/Drive sync deploy.
+- Classified the remaining dirty worktree: Task #1851 evidence was durable and
+  should be published; skipped dropoff pickups, temporary helper/navigation
+  audit folders, old generated screenshots, and stale generated reports were
+  cleanup noise.
+- Reset unrelated generated tracked report/screenshot churn and removed
+  untracked transient smoke pickup/audit artifacts with exact path cleanup.
+- Hardened browser/local smoke tests so default output goes to temp folders
+  instead of tracked evidence paths:
+  `tests/agent-control-browser-smoke.test.js`,
+  `tests/one-time-operations-ui-smoke.test.js`,
+  `tests/one-time-rabbi-ui-final-local-smoke.test.js`, and
+  `tests/service-provider-studio-browser-smoke.test.js`.
+- Hardened `tests/one-time-database-bootstrap.test.js` so the guarded apply
+  failure writes its report to a temp path instead of the tracked One Time DB
+  bootstrap report.
+- Verification passed: `node --check` for all five patched tests and the
+  patched browser/DB group `node --test` 8/8.
+- No production data mutation, deploy, external send, Drive write, charge,
+  DNS/access/provider-account mutation, credential change, or external CRM
+  write was performed by this cleanup batch.
