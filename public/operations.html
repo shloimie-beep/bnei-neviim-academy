@@ -10207,6 +10207,7 @@
             const navItems = workspaceNavItems();
             const brandedTitle = workspaceBranding?.workspace_name_override || currentWorkspaceRecord().display_name || 'BNA Operations';
             const brandedSubtitle = workspaceBranding?.workspace_name_override ? 'Workspace dashboard' : 'CRM, school operations, providers, portals, usage, and automation in one workspace.';
+            const showCurrentSections = isProviderWorkspace() && currentWorkspaceIsOneTime();
             return `
                 <aside class="ops-sidebar" aria-label="BNA Operations navigation">
                     <button type="button" class="ops-sidebar-back" onclick="closeNavDrawer()">Back</button>
@@ -10218,6 +10219,7 @@
                     <nav class="ops-sidebar-nav">
                         ${renderSidebarModuleList(navItems)}
                     </nav>
+                    ${showCurrentSections ? renderSidebarSubnav() : ''}
                     <div class="ops-sidebar-footer">
                         ${isProviderWorkspace() && currentWorkspaceIsOneTime() && allowedViews().has('agents')
                             ? '<button type="button" class="ops-sidebar-mini" onclick="switchView(\'agents\')">Platform Support</button>'
@@ -34709,10 +34711,15 @@
             { id: 'service_providers', navKey: 'overview_package_status', section: 'overview', label: 'Overview', marker: 'OV' },
             { id: 'contacts', navKey: 'members_crm', section: 'participants', label: 'Members', marker: 'MB' },
             { id: 'content', navKey: 'classes_content', section: 'one_time_library', label: 'Classes', marker: 'CL' },
+            { id: 'live_classes', navKey: 'live_class_schedule', section: 'overview', label: 'Live Class', marker: 'LC' },
+            { id: 'calendar', navKey: 'program_schedule', section: 'provider', label: 'Schedule', marker: 'SC' },
+            { id: 'community', navKey: 'community_questions', section: 'overview', label: 'Community', marker: 'CO' },
             { id: 'communications', navKey: 'communications', section: 'providers', label: 'Comms', marker: 'CM' },
             { id: 'automations', navKey: 'automations', section: 'center', label: 'Auto', marker: 'AU' },
             { id: 'service_providers', navKey: 'payments_access', section: 'access', label: 'Payments', marker: 'PA' },
             { id: 'tasks', navKey: 'tasks_decisions', section: 'one_time', label: 'Tasks', marker: 'TS' },
+            { id: 'api_usage', navKey: 'reporting_readiness', section: 'provider', label: 'Reporting', marker: 'RP' },
+            { id: 'integrations', navKey: 'connector_setup', section: 'readiness', label: 'Connectors', marker: 'CN' },
             { id: 'settings', navKey: 'settings_setup', section: 'workspace', label: 'Setup', marker: 'SU' }
         ];
 
@@ -34823,8 +34830,6 @@
             const defaultSection = sameView.find(item => item.navKey === 'overview_package_status') || sameView[0];
             const oneTimeSupportLabels = {
                 agents: { id: 'agents', label: 'Platform Support', marker: 'PS' },
-                integrations: { id: 'integrations', label: 'Platform Support', marker: 'PS' },
-                api_usage: { id: 'api_usage', label: 'Platform Support', marker: 'PS' },
                 watchdog: { id: 'watchdog', label: 'Platform Support', marker: 'PS' }
             };
             if (isProviderWorkspace() && currentWorkspaceIsOneTime() && oneTimeSupportLabels[currentView]) return oneTimeSupportLabels[currentView];

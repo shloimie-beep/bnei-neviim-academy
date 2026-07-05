@@ -73,6 +73,7 @@
     "ramble:intake-contract": "node scripts/ramble-intake-contract.mjs",
     "bna:intake:postgres": "node scripts/canonical-intake-postgres.mjs",
     "bna:release-gate": "node scripts/bna-production-closeout-gate.mjs",
+    "release:captain": "node scripts/release-captain.mjs --write-report",
     "bna:external-readback-gate": "node scripts/bna-external-readback-gate.mjs",
     "bna:return-packet": "node scripts/system-truth.mjs return-packet",
     "prompt:queue-contract": "node scripts/prompt-queue-contract.mjs",

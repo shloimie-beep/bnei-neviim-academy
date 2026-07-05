@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T12:42:19.634Z",
+  "generated_at": "2026-07-05T13:44:47.191Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -274,6 +274,7 @@
     "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/05-tests-smokes-codex-dropoff.md",
     "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
     "ops/prompt-packets/2026-07-05-onetime-landing-signup-funnel/01-public-landing-signup-funnel.product-quality.json",
+    "ops/prompt-packets/2026-07-05-release-captain-onetime-ui-recovery/01-operations-sidebar-release-captain.product-quality.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",
@@ -453,165 +454,11 @@
     "tasks-pending/2026-07-05-chatgpt-dropoff-fleet-claim-completion-fix.md",
     "tasks-pending/2026-07-05-clean-dirty-worktrees-deploy-everything.md",
     "tasks-pending/2026-07-05-onetime-landing-signup-funnel.md",
+    "tasks-pending/2026-07-05-release-captain-onetime-ui-recovery.md",
     "tasks-pending/2026-07-05-telegram-agent-fleet-google-auth-audit.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
   ],
-  "finding_count": 14,
-  "findings": [
-    {
-      "finding_id": "PQD-001",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": 83,
-      "rule_id": "PQD-VAGUE-001",
-      "severity": "P1",
-      "evidence": "Vague phrase appears without compiler expansion: CRM",
-      "expected_fix": "Add Product Quality Compiler expansion or keep the phrase only in raw source/operator quote.",
-      "linked_requirement_id": null,
-      "blocker_allowed": false
-    },
-    {
-      "finding_id": "PQD-002",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-UI-READY-001",
-      "severity": "P1",
-      "evidence": "UI/product artifact lacks router classification.",
-      "expected_fix": "Add router classification before implementation.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-003",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-UI-READY-001",
-      "severity": "P1",
-      "evidence": "UI/product artifact lacks role/view class.",
-      "expected_fix": "Add role/view class before implementation.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-004",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-UI-READY-001",
-      "severity": "P1",
-      "evidence": "UI/product artifact lacks out-of-scope.",
-      "expected_fix": "Add out-of-scope before implementation.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-005",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-UI-READY-001",
-      "severity": "P1",
-      "evidence": "UI/product artifact lacks state matrix.",
-      "expected_fix": "Add state matrix before implementation.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-006",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-UI-READY-001",
-      "severity": "P1",
-      "evidence": "UI/product artifact lacks Definition of Ready.",
-      "expected_fix": "Add Definition of Ready before implementation.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-007",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-UI-READY-001",
-      "severity": "P1",
-      "evidence": "UI/product artifact lacks Definition of Done.",
-      "expected_fix": "Add Definition of Done before implementation.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-008",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-UI-READY-001",
-      "severity": "P1",
-      "evidence": "UI/product artifact lacks visual defect codes.",
-      "expected_fix": "Add visual defect codes before implementation.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-009",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-TRACE-001",
-      "severity": "P1",
-      "evidence": "UI/product artifact lacks context budget.",
-      "expected_fix": "Add context budget before implementation.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-010",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-TRACE-001",
-      "severity": "P1",
-      "evidence": "UI/product artifact lacks trace.",
-      "expected_fix": "Add trace before implementation.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-011",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-SCREENSHOT-001",
-      "severity": "P1",
-      "evidence": "UI cleanup artifact lacks screenshot requirement.",
-      "expected_fix": "Add before/after screenshots or exact screenshot blocker.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-012",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-MOBILE-001",
-      "severity": "P1",
-      "evidence": "UI cleanup artifact lacks mobile screenshot proof requirement.",
-      "expected_fix": "Add 430 and 390 mobile screenshot requirements.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-013",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-SCOPE-001",
-      "severity": "P1",
-      "evidence": "Support/admin content appears near Rabbi/member/student/parent scope without support drawer or role gate.",
-      "expected_fix": "Add support drawer/role-gate requirement.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    },
-    {
-      "finding_id": "PQD-014",
-      "file": "ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md",
-      "line": null,
-      "rule_id": "PQD-ROUTE-001",
-      "severity": "P2",
-      "evidence": "Route language lacks route registry expectation.",
-      "expected_fix": "Add route registry inspection/update requirement.",
-      "linked_requirement_id": null,
-      "blocker_allowed": true
-    }
-  ]
+  "finding_count": 0,
+  "findings": []
 }

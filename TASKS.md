@@ -6,6 +6,14 @@ not authorize active GHL runtime paths.
 
 ## Current Goal-Mode Cleanup
 
+- [ ] `RAW-20260705-008` / `REQ-20260705-401` through `REQ-20260705-406`:
+  Install a Release Captain workflow and recover the live Rabbi Scheller / One
+  Time Mishnah class UI through a clean audited release. Register:
+  `tasks-pending/2026-07-05-release-captain-onetime-ui-recovery.md`.
+  Local verification is complete: the Release Captain command exists, the One
+  Time side panel/brand/IA repair passed focused smokes, and `npm test` passed
+  1515/1515. Next: commit, push, PR/merge, Railway deploy, and live-smoke the
+  deployed One Time Operations UI before terminal Done.
 - [x] `RAW-20260705-007` / `REQ-20260705-201` through `REQ-20260705-206`:
   Cleaned dirty worktree/release state, merged the safe app/server-visible
   work through PR #94, merged the live-smoke copy unblocker through PR #95,

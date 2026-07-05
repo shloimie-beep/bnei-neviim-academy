@@ -875,12 +875,12 @@ test('final local One Time/Rabbi UI QA harness covers scoped routes without exte
     });
     assert.equal(operationsContract.workspace, 'rabbi_sheller_provider');
     assert.equal(operationsContract.role, 'Workspace Owner');
-    assert.deepEqual(operationsContract.navLabels, ['Overview', 'Members', 'Classes', 'Comms', 'Auto', 'Payments', 'Tasks', 'Setup']);
-    assert.deepEqual(operationsContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'settings_setup']);
-    for (const expected of ['service_providers', 'contacts', 'content', 'communications', 'automations', 'tasks', 'settings']) {
+    assert.deepEqual(operationsContract.navLabels, ['Overview', 'Members', 'Classes', 'Live Class', 'Schedule', 'Community', 'Comms', 'Auto', 'Payments', 'Tasks', 'Reporting', 'Connectors', 'Setup']);
+    assert.deepEqual(operationsContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'live_class_schedule', 'program_schedule', 'community_questions', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'reporting_readiness', 'connector_setup', 'settings_setup']);
+    for (const expected of ['service_providers', 'contacts', 'content', 'live_classes', 'calendar', 'community', 'communications', 'automations', 'tasks', 'api_usage', 'integrations', 'settings']) {
       assert.ok(operationsContract.navIds.includes(expected), `operations missing Rabbi-facing module ${expected}`);
     }
-    for (const hidden of ['dashboard', 'watchdog', 'agents', 'integrations', 'api_usage', 'studio', 'live_classes', 'calendar']) {
+    for (const hidden of ['dashboard', 'watchdog', 'agents', 'studio', 'platform_suite', 'admin', 'accounting', 'students']) {
       assert.equal(operationsContract.navIds.includes(hidden), false, `operations should demote support/raw module ${hidden}`);
     }
     assert.equal(operationsContract.hasStudents, false, 'students module must be hidden/demoted in One Time provider scope');
