@@ -168,6 +168,31 @@ Remaining deferred items for this UI deploy:
 - Rabbi Telegram worker deployment verification.
 - External database/Railway/Drive readback closeout for full done-state proof.
 
+## 2026-07-05 live deploy evidence
+
+| Field | Value |
+|---|---|
+| PR #87 state | Merged |
+| Merge commit | `3230cf8251b1e416068829eab73d8bdd72ff8f06` |
+| Railway deployment | `a6799b08-c6c7-4ba7-b61d-de6e9c81aa25` |
+| Railway status | `SUCCESS` |
+| Production domain | `https://bneineviimacademy.org` |
+| One Time domain smoke target | `https://join.onetimeonetime.com` |
+
+Live verification:
+
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-07-05T10-40-43-335Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:rabbi-onetime-landing`:
+  `ops/live-smokes/2026-07-05T10-40-39-486Z-rabbi-onetime-landing-smoke.md`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
+  after updating the smoke harness to follow the canonical `/one-time/`
+  redirect.
+
+No checkout session, charge, payment link creation, member creation, access
+grant, real email/WhatsApp/SMS/Telegram send, DNS write, Drive upload/share, or
+DB review cleanup mutation was performed by this deploy closeout.
+
 ## Final audit
 
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |
@@ -175,7 +200,7 @@ Remaining deferred items for this UI deploy:
 | REQ-20260704-101 | Done | raw-input/RAW-20260704-001-ship-pr87-onetime-ui-live-cleanup.md, this register, memory/2026-07-04.md, ledger entry | raw-input, tasks-pending, memory, ledger | File creation | None |
 | REQ-20260704-102 | Done | PR #87 metadata and current dirty-worktree scope inspected; PR #87 is separate from local Studio/job cleanup changes. | No product files changed by this July 4 audit; PR #87 worktree stayed clean. | `gh pr view 87`, `gh pr diff 87 --name-only`, `git status`, Studio targeted diff readback | None. |
 | REQ-20260704-103 | Done | Focused PR #87 UI validation, PQC validation, action/protocol watchdogs, Studio focused tests, and Job 101 evidence readback. | No product files changed by this July 4 audit; Studio product changes are now in PR #87 via PR #89 merge. | Combined UI + Studio tests 23/23; PQC/actions/protocol checks passed. | None for local validation. |
-| REQ-20260704-104 | Blocked | PR #87 marked ready and remains pushed/mergeable/clean; Resend false-positive blocker corrected; deploy gate remains blocked in deploy mode with explicit readiness blockers. | GitHub PR #87 branch includes merged Studio work, current master, and the Resend gate correction. | Deploy gate blocked without production mutation. | Missing OpenAI/Vimeo/Rabbi Stripe/Rabbi Telegram/readback readiness listed above; do not merge/deploy around the guard. |
+| REQ-20260704-104 | Done with deferred integrations | PR #87 merged at `3230cf8251b1e416068829eab73d8bdd72ff8f06`; Railway deployment `a6799b08-c6c7-4ba7-b61d-de6e9c81aa25` reached `SUCCESS`; live smokes passed. | GitHub PR #87 branch included merged Studio work, current master, keyholder readiness fixes, and approved deploy-deferral gate. | Deploy gate passed with explicit optional provider/readback deferrals; main app, Rabbi landing, and One Time instance smokes passed. | Vimeo access token/upload readback, Rabbi Telegram worker verification, and full external readback remain deferred. |
 | REQ-20260704-105 | Done / Blocked | `APPLY-CLOSEOUT.md` proves Job 101 parser output and private Drive transcript doc; `JOB-101-REVIEW-TRIAGE.md` preserves remaining cleanup blockers. | No raw transcript body committed. | Evidence readback only. | DB review cleanup and score/progress/grading writes remain blocked by readback/approval. |
-| REQ-20260704-106 | Done | This register, ledger, changelog, and final response. | tasks-pending, ledger, changelog, memory | Closeout records updated. | Goal remains active because deploy/live proof and Studio PR/release remain blocked. |
-| REQ-20260704-107 | Done / Blocked | PR #89 opened, pushed, and merged into PR #87; branch records include Studio raw intake, PQC packets, screenshots, watchdog reports, ledger, and changelog. | Studio release branch files only; main dirty worktree not staged. | PR #89 merged; PR #87 open, ready, mergeable, clean; combined local focused suite 23/23, PQC/actions/protocol checks passed. | PR #87 still needs production deploy/live smoke. |
+| REQ-20260704-106 | Done | This register, ledger, changelog, memory, and final response. | tasks-pending, ledger, changelog, memory | Closeout records updated with live deploy evidence. | Deferred integration/readback items remain explicitly open. |
+| REQ-20260704-107 | Done with deferred integrations | PR #89 opened, pushed, merged into PR #87, and shipped live via PR #87 merge/deploy. | Studio release files are included in PR #87 and live deployment. | PR #89 merged; PR #87 merged; Railway deployment succeeded; live smokes passed. | Vimeo access token/upload readback and full external readback remain deferred. |
