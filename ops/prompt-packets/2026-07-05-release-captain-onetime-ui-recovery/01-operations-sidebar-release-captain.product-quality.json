@@ -33,9 +33,9 @@
     "terminal_condition": "One Time Operations exposes the required Rabbi-facing modules and current module sections in the side panel, preserves privacy boundaries, and has a read-only release-captain report before deploy closeout.",
     "handoff_target": "tasks-pending/2026-07-05-release-captain-onetime-ui-recovery.md"
   },
-  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "stage": "STAGE_6_CLOSEOUT",
   "packet_role": "IMPLEMENTATION_PACKET",
-  "status": "verified",
+  "status": "done",
   "title": "One Time Operations Sidebar And Release Captain",
   "created_at": "2026-07-05T00:00:00+03:00",
   "workspace_key": "rabbi_sheller_provider",
@@ -508,7 +508,7 @@
       "ops/ui-audits/2026-07-05-release-captain-onetime-ui/report.md",
       "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
     ],
-    "status": "local verification passed; deploy/live-smoke pending"
+    "status": "local verification, PR merge, production source readback, and live smokes passed; Railway deployment-ID readback blocked by available token/target mismatch"
   },
   "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
   "definition_of_done": {
@@ -537,7 +537,8 @@
     ],
     "evidence_paths": [
       "ops/release-captain/latest-release-captain.md",
-      "ops/ui-audits/2026-07-05-release-captain-onetime-ui/report.md"
+      "ops/ui-audits/2026-07-05-release-captain-onetime-ui/report.md",
+      "ops/ui-audits/2026-07-05-release-captain-onetime-ui/live-closeout.md"
     ],
     "final_status_path": "tasks-pending/2026-07-05-release-captain-onetime-ui-recovery.md",
     "next_packet_path": "tasks-pending/2026-07-05-release-captain-onetime-ui-recovery.md"
@@ -548,9 +549,9 @@
     "expected_result": "No protocol drift introduced by the One Time sidebar/release-captain change."
   },
   "next_packet": {
-    "type": "deploy_live_smoke",
+    "type": "none",
     "path": "tasks-pending/2026-07-05-release-captain-onetime-ui-recovery.md",
-    "reason": "App-visible Operations UI changes require deploy and live-smoke proof before terminal Done."
+    "reason": "Terminal closeout is recorded; future work is limited to improving Railway deployment-ID readback access."
   },
   "app_visible": true
 }
