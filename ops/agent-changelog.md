@@ -28978,3 +28978,8 @@ Actions: 1. Active machine tasks: 0.
 - Verification passed: `node --check scripts/chatgpt-dropoff-ingestor.mjs`,
   focused dropoff/comment/fleet tests 14/14, `rg` readback for the new
   protocol language, and scoped `git diff --check` with CRLF warnings only.
+- Published the scoped package on branch
+  `codex/chatgpt-dropoff-publish-defaults-20260704` and opened draft PR #90:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/90`.
+  No production deploy was run because the package is protocol/tooling/docs
+  plus local agent automation, not an app-visible or server-visible release.
