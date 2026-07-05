@@ -1,0 +1,698 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-818",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-806",
+      "PKT-20260702-807",
+      "PKT-20260702-808",
+      "PKT-20260702-809",
+      "PKT-20260702-810",
+      "PKT-20260702-811",
+      "PKT-20260702-812",
+      "PKT-20260702-813",
+      "PKT-20260702-814",
+      "PKT-20260702-815",
+      "PKT-20260702-816",
+      "PKT-20260702-817"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/design-references/2026-07-01-brand-kit-correction/one-time-brand-reference.json",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/one-time-member-login-390-mobile.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/one-time-member-login-1440-desktop.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/rabbi-member.html",
+      "public/js/bna-bot-widget.js",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/16-member-login-brand-helper-readability.product-quality.json",
+    "terminal_condition": "The One Time member-login/member-home shell renders with black/yellow One Time branding and a closed helper by default on desktop and mobile without changing member login, forms, support/question APIs, redirects, auth, route access, or external-provider behavior.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Member Login Brand And Helper Readability Cleanup",
+  "created_at": "2026-07-03T01:55:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "MEMBER_PARENT_PORTAL"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.92,
+    "reasons": [
+      "Latest mobile screenshot for the legacy member-login alias shows the One Time member shell using a large BNA Academy hero mark instead of One Time black/yellow branding.",
+      "The member helper appears open in the full-page mobile audit screenshot even before the user asks for help.",
+      "The fix can be scoped to the member shell and shared helper closed-state behavior without changing member auth, forms, APIs, route access, sends, payments, or external providers."
+    ],
+    "affected_product_surfaces": [
+      "One Time member login/member home"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Real member login sends, access grants, payments, question sends, support routing, connector tests, and external writes are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability",
+      "10-automation-center-readability",
+      "11-participants-members-readability",
+      "12-program-payment-access-readability",
+      "13-communications-provider-messages-readability",
+      "14-program-overview-readability",
+      "15-settings-workspace-readability",
+      "16-member-login-brand-helper-readability"
+    ],
+    "next_exact_packet": "After this member-login cleanup, continue screenshot-reviewed brand/IA cleanup for member library/classroom or CRM contact-detail polish."
+  },
+  "operator_intent_summary": "Make the One Time member-login/member-home page feel clean and correctly branded by removing BNA logo/palette bleed and keeping the helper out of the loaded screenshot until requested.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No member login API, dry-run preview-login behavior, member session token, support ticket API, private question API, library API, live-session API, account/logout behavior, redirect behavior, route registry, auth, entitlement, payment, access grant, send, or external-provider behavior change.",
+    "No email, WhatsApp, Telegram, SMS, Stripe/payment, Drive, Vimeo, Zoom, DNS, account mutation, upload, publish, or external CRM write.",
+    "No GHL runtime or LeadConnector reference.",
+    "No raw private member, parent, student, provider, support, question, session, token, secret, or contact evidence."
+  ],
+  "affected_surfaces": [
+    "One Time member login/member home"
+  ],
+  "affected_routes": [
+    "/one-time/member-login",
+    "/rabbi-member"
+  ],
+  "affected_files": [
+    "public/rabbi-member.html",
+    "public/js/bna-bot-widget.js",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/rabbi-member.html inline member shell styles and nav/header markup",
+      "public/js/bna-bot-widget.js One Time member surface config and closed panel state",
+      "ops/design-references/2026-07-01-brand-kit-correction/one-time-brand-reference.json",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/one-time-member-login-390-mobile.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/one-time-member-login-1440-desktop.png"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "The member shell uses the BNA social preview image in its hero instead of One Time brand imagery.",
+      "The member shell uses cream/green/blue/gold colors instead of the authoritative One Time black/yellow palette.",
+      "The helper title says BNA Helper on a One Time member surface.",
+      "The helper panel is visible in the full-page mobile audit screenshot before the user opens Assistant/help."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely"
+    ],
+    "expanded_phrases": {
+      "clean": "The member-login/member-home page should immediately look like a One Time member surface, not a BNA Academy placeholder.",
+      "even": "Navigation, hero, cards, forms, helper launcher, and helper panel should share One Time black/yellow colors, spacing, readable contrast, and closed/open states.",
+      "loads nicely": "The first desktop/mobile screenshot should show the member login form and member modules without an offscreen/closed helper panel occupying the capture."
+    },
+    "first_party_pattern_interpretation": "The route remains a first-party One Time member portal shell scoped to rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "ops/design-references/2026-07-01-brand-kit-correction/one-time-brand-reference.json",
+    "ops/design-references/2026-07-01-brand-kit-correction/BRAND-KIT-CORRECTION.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-818",
+      "statement": "Fix the One Time member-login/member-home shell so it uses the One Time black/yellow brand and keeps the helper closed until explicitly opened.",
+      "expected_result": "Desktop and mobile screenshots show One Time logo/black/yellow styling, readable login/support/question cards, no BNA Academy hero/logo bleed, and no visible helper panel until Assistant/help or the launcher is activated.",
+      "acceptance_criteria": [
+        "The member shell uses One Time brand assets and black/yellow/white/muted colors instead of BNA social preview/green/blue/cream styling.",
+        "The member top navigation, hero, panels, cards, badges, inputs, and primary actions remain readable on desktop and mobile.",
+        "The helper launcher/title on One Time member surfaces is branded as One Time helper, while permissions/scope copy remains unchanged.",
+        "The shared helper panel is hidden/inert while closed and becomes visible only after Assistant/help or launcher activation.",
+        "Legacy aliases `/one-time/member-login`, `/member`, and `/member-portal` keep redirecting to `/rabbi-member`.",
+        "Member login, logout, private question, support ticket, library, live-session, auth, route access, API, and external-provider behavior remain unchanged."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and broad UI cleanup register exist for RAW-20260702-008.",
+      "Brand memory and design reference confirm One Time is black/yellow and must not use BNA cream/navy/teal/cyan/academy brand as its surface identity.",
+      "Current screenshots show member-login BNA hero/logo bleed and helper panel visibility in mobile full-page capture.",
+      "The likely fix is scoped to member shell markup/CSS plus shared helper closed-state and One Time member helper label.",
+      "No member data, auth, send, payment, access, connector, credential, privacy, legal, or financial decision is required for local visual implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time/member-login",
+      "viewport": 390,
+      "auth_role": "logged_out_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the legacy member-login alias before redirect and member shell scripts complete.",
+      "expected_visible_title": "One Time Mishnayos",
+      "expected_visible_message": "Request member link",
+      "expected_primary_action": "Request login",
+      "expected_secondary_actions": [
+        "Assistant/help",
+        "Return to public site"
+      ],
+      "forbidden_content": [
+        "BNA Academy hero mark",
+        "open helper panel before user action"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Navigation and login form keep accessible labels.",
+      "accessibility_expectation": "Initial mobile view is readable without helper overlap.",
+      "test_smoke_assertion": "Legacy alias redirects to /rabbi-member and loaded page has no horizontal overflow.",
+      "requirement_id": "REQ-20260702-818"
+    },
+    "empty": {
+      "route": "/rabbi-member",
+      "viewport": 390,
+      "auth_role": "logged_out_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open member home without a local member session.",
+      "expected_visible_title": "Request member link",
+      "expected_visible_message": "Request a member login link to view access.",
+      "expected_primary_action": "Request login",
+      "expected_secondary_actions": [
+        "Questions/support",
+        "Assistant/help"
+      ],
+      "forbidden_content": [
+        "BNA social preview hero",
+        "green/blue primary member styling"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Email input remains labeled.",
+      "accessibility_expectation": "Logged-out cards and forms have readable contrast.",
+      "test_smoke_assertion": "No member API mutation occurs while rendering logged-out state.",
+      "requirement_id": "REQ-20260702-818"
+    },
+    "populated": {
+      "route": "/rabbi-member",
+      "viewport": 1440,
+      "auth_role": "member_session_if_available",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open member home with or without existing safe local review session data.",
+      "expected_visible_title": "One Time Mishnayos",
+      "expected_visible_message": "Recorded Classes",
+      "expected_primary_action": "Request login",
+      "expected_secondary_actions": [
+        "Submit Question",
+        "Open Ticket"
+      ],
+      "forbidden_content": [
+        "BNA Academy logo as route hero",
+        "unreadable form controls"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Member modules remain sectioned.",
+      "accessibility_expectation": "Cards, actions, and badges fit in the desktop layout.",
+      "test_smoke_assertion": "Canonical journey smoke still passes.",
+      "requirement_id": "REQ-20260702-818"
+    },
+    "filtered_empty": {
+      "route": "/rabbi-member#support",
+      "viewport": 390,
+      "auth_role": "logged_out_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use the Questions/support anchor without a member session.",
+      "expected_visible_title": "Open a Ticket",
+      "expected_visible_message": "Open a member session to create support tickets.",
+      "expected_primary_action": "Open Ticket",
+      "expected_secondary_actions": [
+        "Submit Question"
+      ],
+      "forbidden_content": [
+        "support form hidden behind closed helper",
+        "horizontal overflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Support form labels remain present.",
+      "accessibility_expectation": "Support form fields and select controls fit on mobile.",
+      "test_smoke_assertion": "Support form remains visible and no helper panel overlaps while closed.",
+      "requirement_id": "REQ-20260702-818"
+    },
+    "error": {
+      "route": "/rabbi-member",
+      "viewport": 390,
+      "auth_role": "member_session_error_or_logged_out",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "A stored member session fails and the shell returns to logged-out member state.",
+      "expected_visible_title": "Request member link",
+      "expected_visible_message": "Could not load member access.",
+      "expected_primary_action": "Request login",
+      "expected_secondary_actions": [
+        "Assistant/help"
+      ],
+      "forbidden_content": [
+        "raw token",
+        "raw API error payload"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error/notice text is visible in the login card.",
+      "accessibility_expectation": "Error-adjacent notice remains readable.",
+      "test_smoke_assertion": "No raw token or private response body appears in page text.",
+      "requirement_id": "REQ-20260702-818"
+    },
+    "blocked_setup": {
+      "route": "/rabbi-member",
+      "viewport": 1440,
+      "auth_role": "logged_out_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the member page while real sends/access grants remain approval-gated.",
+      "expected_visible_title": "Request member link",
+      "expected_visible_message": "Request a member login link to view access.",
+      "expected_primary_action": "Request login",
+      "expected_secondary_actions": [
+        "Open Ticket"
+      ],
+      "forbidden_content": [
+        "newly enabled live send",
+        "newly enabled access grant"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked/no-session helper text remains readable.",
+      "accessibility_expectation": "Disabled or no-session state copy remains readable.",
+      "test_smoke_assertion": "No send, payment, access grant, or external write is triggered.",
+      "requirement_id": "REQ-20260702-818"
+    },
+    "preview_only": {
+      "route": "/rabbi-member",
+      "viewport": 390,
+      "auth_role": "logged_out_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit a dry-run login request only in existing safe preview mode.",
+      "expected_visible_title": "Request member link",
+      "expected_visible_message": "Member session opened.",
+      "expected_primary_action": "Request login",
+      "expected_secondary_actions": [
+        "Submit Question",
+        "Open Ticket"
+      ],
+      "forbidden_content": [
+        "live email sent confirmation",
+        "raw preview token"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Member state readback remains sectioned.",
+      "accessibility_expectation": "Preview state cards retain One Time contrast.",
+      "test_smoke_assertion": "Existing dryRun behavior remains unchanged and no live email is sent.",
+      "requirement_id": "REQ-20260702-818"
+    },
+    "success_readback": {
+      "route": "/rabbi-member",
+      "viewport": 1024,
+      "auth_role": "member_session_if_available",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Member shell and its module lists render successfully.",
+      "expected_visible_title": "One Time Mishnayos",
+      "expected_visible_message": "Live Sessions",
+      "expected_primary_action": "Request login",
+      "expected_secondary_actions": [
+        "Submit Question",
+        "Open Ticket"
+      ],
+      "forbidden_content": [
+        "BNA Academy hero/logo bleed",
+        "BNA Helper title on member surface"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Member modules retain headings and form labels.",
+      "accessibility_expectation": "Readback/module panels are readable across tablet width.",
+      "test_smoke_assertion": "Full local audit captures member-login screenshot with no automated findings.",
+      "requirement_id": "REQ-20260702-818"
+    },
+    "permission_denied": {
+      "route": "/rabbi-member",
+      "viewport": 390,
+      "auth_role": "logged_out_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open a no-session member route and attempt member-only form actions.",
+      "expected_visible_title": "Request member link",
+      "expected_visible_message": "Open a member session",
+      "expected_primary_action": "Request login",
+      "expected_secondary_actions": [
+        "Submit Question",
+        "Open Ticket"
+      ],
+      "forbidden_content": [
+        "private member data",
+        "student or parent records from another workspace"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Permission/no-session text remains visible.",
+      "accessibility_expectation": "No-session state remains readable.",
+      "test_smoke_assertion": "Logged-out page does not expose member/private API data.",
+      "requirement_id": "REQ-20260702-818"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/rabbi-member",
+      "viewport": 430,
+      "auth_role": "logged_out_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open and close Assistant/help on the mobile member page.",
+      "expected_visible_title": "One Time Helper",
+      "expected_visible_message": "One Time member help",
+      "expected_primary_action": "Send",
+      "expected_secondary_actions": [
+        "Close"
+      ],
+      "forbidden_content": [
+        "closed helper still visible in full-page screenshot",
+        "BNA Helper title on One Time member surface"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Closed helper has aria-hidden/inert behavior and open helper has accessible controls.",
+      "accessibility_expectation": "The helper opens only after user action and does not hide the member form when closed.",
+      "test_smoke_assertion": "Focused probe verifies helper closed state hidden/inert and open state visible.",
+      "requirement_id": "REQ-20260702-818"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/one-time/member-login", "viewport": 1440, "state": "success_readback", "required": true },
+      { "route": "/one-time/member-login", "viewport": 1024, "state": "success_readback", "required": true },
+      { "route": "/one-time/member-login", "viewport": 768, "state": "populated", "required": true },
+      { "route": "/one-time/member-login", "viewport": 430, "state": "mobile_drawer_or_detail_state", "required": true },
+      { "route": "/one-time/member-login", "viewport": 390, "state": "mobile_drawer_or_detail_state", "required": true }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260702-818-001",
+        "route": "/one-time/member-login",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/one-time-member-login-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-member-login-390-mobile.png",
+        "defect_codes": [
+          "VQ-BRAND-001",
+          "VQ-LAYOUT-007",
+          "VQ-CONTRAST-001"
+        ],
+        "severity": "P1",
+        "user_impact": "The One Time member page looks like a BNA Academy placeholder and the helper panel occupies the loaded mobile screenshot before the user asks for help.",
+        "expected_fix": "Use the One Time logo/black-yellow styling and make the closed helper hidden/inert until opened.",
+        "requirement_id": "REQ-20260702-818"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Member navigation links remain visible and readable.",
+      "Login, private question, and support forms keep visible/programmatic labels.",
+      "Closed helper panel is aria-hidden/inert and does not create screenshot or keyboard overlap.",
+      "Open helper panel keeps readable title, subtitle, close/history controls, message list, composer, and Send button."
+    ],
+    "test_expectations": [
+      "Audit has no generated h1/label/horizontal-overflow findings.",
+      "Focused helper probe confirms closed helper is hidden/inert and open helper is visible.",
+      "Member shell probe confirms no BNA hero image and no BNA Helper title on One Time member surface."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Request login",
+      "selector_or_action_key": "loginForm submit / requestLogin()",
+      "action_state": "TEST_ONLY",
+      "owner": "One Time member portal",
+      "external_write": false,
+      "handler_or_blocker": "Existing dryRun request-login behavior; unchanged by this visual packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Assistant/help",
+      "selector_or_action_key": "data-bna-assistant-open / window.BNAAssistant.open()",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time member portal",
+      "external_write": false,
+      "handler_or_blocker": "Existing helper open behavior; packet only fixes closed visibility and One Time title.",
+      "registry_required": false
+    },
+    {
+      "label": "Submit Question",
+      "selector_or_action_key": "questionForm submit / submitQuestion()",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time member portal",
+      "external_write": false,
+      "handler_or_blocker": "Existing authenticated private question behavior; unchanged.",
+      "registry_required": false
+    },
+    {
+      "label": "Open Ticket",
+      "selector_or_action_key": "supportForm submit / submitSupport()",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time member portal",
+      "external_write": false,
+      "handler_or_blocker": "Existing authenticated support behavior; unchanged.",
+      "registry_required": false
+    },
+    {
+      "label": "Account/logout",
+      "selector_or_action_key": "/rabbi-member?logout=1",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time member portal",
+      "external_write": false,
+      "handler_or_blocker": "Existing local member state clear behavior; unchanged.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "read_paths": [
+      "Existing rabbi-member localStorage member session",
+      "Existing /api/rabbi/member/* read endpoints when a session exists"
+    ],
+    "write_paths": [],
+    "fixtures_or_seed": [
+      "Existing local One Time member/canonical journey review fixtures"
+    ],
+    "data_privacy_notes": [
+      "Use redacted screenshots only.",
+      "Do not commit raw member session tokens, preview login tokens, private question bodies, support ticket details, contact details, or secrets."
+    ],
+    "unchanged_contracts": [
+      "redirectOneTimeMemberHome",
+      "requestLogin dryRun contract",
+      "loginWithToken/session storage contract",
+      "question/support form submit contracts",
+      "member library/live session read contracts",
+      "shared helper message API and permission scope"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_scope": "Public-entry member shell with private member data only after a valid One Time member session.",
+    "forbidden_data": [
+      "Raw member session token or preview login token",
+      "Raw private member/question/support/contact/student/parent/provider records",
+      "Secrets, API keys, account identifiers, or cookies",
+      "External send/publish/upload/access-grant/payment/connector proof"
+    ],
+    "required_checks": [
+      "No auth or API behavior changes.",
+      "No live send, payment, access grant, connector, account, or external-provider mutation.",
+      "No route registry behavior change.",
+      "No GHL/LeadConnector runtime."
+    ],
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260702-818-A",
+      "scope": "Update One Time member shell brand colors/assets and shared helper closed/open visual state for member surfaces.",
+      "files_allowed": [
+        "public/rabbi-member.html",
+        "public/js/bna-bot-widget.js"
+      ],
+      "verification": [
+        "PQC validation",
+        "local canonical journey/member tests",
+        "focused member-login brand/helper probe",
+        "full Rabbi / One Time current-state audit",
+        "watchdog:actions",
+        "watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/rabbi-member.html",
+      "public/js/bna-bot-widget.js",
+      "tests/one-time-canonical-journey.test.js",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "files_allowed_to_edit": [
+      "public/rabbi-member.html",
+      "public/js/bna-bot-widget.js",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 5,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "This packet only covers the member-login/member-home shell and shared helper closed state. Member library, classroom, parent/provider/student portal polish, real member sends, access grants, billing, and CRM work must split into later packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/16-member-login-brand-helper-readability.product-quality.json",
+      "expected_result": "Product Quality packet passes validation."
+    },
+    {
+      "command": "node --test tests/one-time-canonical-journey.test.js tests/one-time-external-user-portal.test.js",
+      "expected_result": "Member route aliases, navigation, logout, and member support/question contracts still pass."
+    },
+    {
+      "command": "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "expected_result": "One Time review routes still pass without console/page errors or external writes."
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper",
+      "expected_result": "Full local visual audit captures 75 screenshots with no automated findings and member-login screenshots reflect the One Time brand."
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected_result": "Action registry watchdog remains finding_count 0."
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected_result": "Protocol drift watchdog remains findings 0."
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/one-time-member-login-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-settings-workspace-readability/screenshots/one-time-member-login-390-mobile.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-member-login-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-member-login-390-mobile.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/probe/member-login-brand-helper-probe.json"
+    ],
+    "record_updates": [
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Member shell renders with One Time logo/black/yellow styling and no BNA social preview hero.",
+      "Helper title on member surfaces is One Time-branded and closed helper is hidden/inert before user action.",
+      "Legacy member aliases, member nav, login request, logout, private question, support ticket, library/live-session reads, auth, route access, and APIs are unchanged.",
+      "Focused probe, local tests, full audit screenshots, action watchdog, protocol drift watchdog, register, changelog, and ledger are updated."
+    ],
+    "terminal_status": "local_verified_deploy_live_smoke_blocked_until_DEC-20260702-801"
+  },
+  "trace": {
+    "raw_id": "RAW-20260702-008",
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/16-member-login-brand-helper-readability.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --test tests/one-time-canonical-journey.test.js tests/one-time-external-user-portal.test.js",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "focused Playwright member-login brand/helper probe",
+      "node scripts/audit-rabbi-onetime-current-state.mjs",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "skipped_actions_policy": "No member auth/API behavior change, no live email/member link send, no payment, no access grant, no question/support external write, no upload, no publish, no DNS/account mutation, no GHL/LeadConnector runtime, no production deploy in this local packet.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-member-login-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-member-login-brand-helper/screenshots/one-time-member-login-390-mobile.png"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "requirement_ids": [
+      "REQ-20260702-818"
+    ],
+    "decision_ids": [
+      "DEC-20260702-801"
+    ],
+    "ledger_event": "rabbi_onetime_member_login_brand_helper_verified_local"
+  },
+  "drift_watchdog": {
+    "command": "npm run watchdog:protocol-drift",
+    "required": true,
+    "expected_result": "findings=0"
+  },
+  "next_packet": {
+    "recommended": "Continue screenshot-reviewed cleanup for member library/classroom brand consistency, IA/nav/filter alignment, or CRM contact-detail polish.",
+    "path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "app_visible": true
+}

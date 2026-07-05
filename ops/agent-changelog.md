@@ -6,6 +6,96 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-05T07:23:11+03:00 - PR 87 master conflict resolved
+
+Merged current `origin/master` into PR #87 and resolved append-only conflicts in
+`ops/agent-changelog.md` and `ops/agent-task-ledger.jsonl` by preserving both
+sides. PR #87 now reads open, ready, mergeable, and clean at head
+`4e02b676622185c385cfe1f0c6b2262d7d45ca3d`.
+
+Verification:
+- PASS ledger JSONL parse with 1503 records.
+- PASS combined UI + Studio focused suite 23/23 after the master merge.
+- PASS `npm run secrets:audit`.
+- PASS `git diff --check origin/master...HEAD`.
+- PASS clean release gate dry-run.
+
+Blocked:
+- Production deploy/live smoke still did not run. The guarded deploy gate
+  blocked before mutation on missing OpenAI, Vimeo access token, Resend sender,
+  Rabbi Stripe settings, Rabbi Telegram worker readiness, and database/
+  Railway/Drive external readbacks.
+
+## 2026-07-05T07:16:34+03:00 - PR 87 combined release validated
+
+Merged Studio PR #89 into the PR #87 release branch. PR #87 now carries the
+Rabbi/One Time UI cleanup plus the Studio content engine release at head
+`0842e5e26bd5887942c12744cd23f08332285c09`.
+
+Verification:
+- PASS GitHub readback: PR #89 merged; PR #87 open, ready, mergeable, clean.
+- PASS combined focused UI + Studio suite 23/23.
+- PASS Rabbi/One Time PQC packet 21 validation.
+- PASS Studio PQC packet 05 validation.
+- PASS action watchdog and protocol-drift watchdog.
+- PASS `git diff --check origin/master...HEAD`.
+- PASS clean release gate dry-run for `codex/rabbi-onetime-ui-cleanup-release-20260703`.
+
+Blocked:
+- Production deploy/live smoke did not run. The guarded deploy gate blocked
+  before mutation on missing OpenAI, Vimeo access token, Resend sender,
+  Rabbi Stripe settings, Rabbi Telegram worker readiness, and database/
+  Railway/Drive external readbacks.
+
+Guardrails:
+- No production deploy, PR #87 merge to master, live verification write,
+  external send, payment/access/DNS/credential change, Drive publish/share, or
+  DB review mutation was performed.
+
+## 2026-07-05T07:08:27+03:00 - Studio content engine PR opened
+
+Opened PR #89 for `codex/studio-content-engine-release-20260704`, stacked on
+PR #87 (`codex/rabbi-onetime-ui-cleanup-release-20260703`):
+https://github.com/shloimie-beep/bnei-neviim-academy/pull/89
+
+GitHub readback:
+- PR #89 is open, ready for review, mergeable, and `mergeStateStatus=CLEAN`.
+- Branch was pushed to origin.
+
+Remaining:
+- PR #89 depends on PR #87.
+- Production deploy/live smoke remains blocked by the BNA release gate and
+  missing external/integration readbacks.
+
+## 2026-07-04T21:56:41+03:00 - Studio content engine release branch validated
+
+Prepared clean branch `codex/studio-content-engine-release-20260704` stacked on
+PR #87 (`codex/rabbi-onetime-ui-cleanup-release-20260703`) for
+`RAW-20260702-010` / `TASK-20260702-010`.
+
+What changed:
+- Scoped the release branch to Studio content engine changes only.
+- Added the `jewish_guardrails` prompt layer to the Studio compiler and schema
+  contract.
+- Preserved Studio raw intake, Product Quality Compiler packets, requirement
+  register, local smoke screenshots, and watchdog evidence.
+- Expanded Studio browser smoke coverage for review pack preparation, reusable
+  character/guardrail library readback, mock render review, and no-send
+  handoff review.
+
+Verification:
+- PASS focused Studio suite 12/12 with browser smoke.
+- PASS `npm run studio:smoke` 1/1.
+- PASS Studio layout PQC validation.
+- PASS `npm run watchdog:actions` with finding_count 0.
+- PASS `npm run watchdog:protocol-drift` with findings 0.
+- PASS `git diff --check`.
+
+Remaining:
+- Push/open the stacked Studio PR.
+- App-visible terminal Done remains blocked until PR #87 and the Studio branch
+  are released through the production gate and live-smoked.
+
 ## 2026-07-04 - PR 87 One Time UI Release Validation
 
 - Registered `RAW-20260704-001` after Shloimie asked to ship PR #87, fix the
@@ -28814,6 +28904,63 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked by `DEC-20260702-801` pending a clean release branch/PR/deploy path.
 
+## 2026-07-03 - Rabbi / One Time UI Cleanup Release PR Opened
+
+- Created clean release branch
+  `codex/rabbi-onetime-ui-cleanup-release-20260703` from current
+  `origin/master`, applied only the scoped Rabbi / One Time UI cleanup code,
+  tests, raw/register/packet records, compact audit evidence, and validation
+  reports.
+- Committed `47ef9e17 fix Rabbi One Time UI cleanup release` and pushed the
+  branch to GitHub.
+- Opened draft PR
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/87`.
+- Release-branch verification passed: packet 21 PQC validation, focused
+  UI/static test suite 11/11 after `npm ci`, action watchdog with
+  `finding_count: 0`, protocol drift watchdog with 0 findings, execution-run
+  validation with no next unblocked executable batch, and staged diff
+  whitespace check.
+- Production deploy/live-smoke remains blocked until the PR is merged/released
+  and `bneineviimacademy.org` is checked again for the Library first-viewport
+  contract.
+
+## 2026-07-03 - Rabbi / One Time UI Release Deploy Gate Readback
+
+- Checked draft PR #87 after push: PR is open, draft, mergeable, clean, and has
+  no GitHub checks reported.
+- Ran `npm run bna:release-gate -- --json --expected-branch
+  codex/rabbi-onetime-ui-cleanup-release-20260703`; release branch gate passed
+  with clean pushed HEAD `9f7119a9`.
+- Ran Railway target discovery. The default Railway context still pointed at
+  `one-time-production`, so the target guard correctly blocked BNA deploy from
+  that context.
+- Verified the exact BNA Railway target using command-scoped project/service
+  IDs for `skillful-motivation` production. `npm run railway:doctor` passed and
+  read back current deployment `00a36c08-15ab-4f63-876c-f9897700dbbf` with
+  status `SUCCESS`.
+- Ran the deploy gate with the deploy confirmation phrase. It blocked before
+  mutation because `BNA_PRODUCTION_DEPLOY_APPROVED=approved` is not set and the
+  repo's broader integration/readback readiness gates are not ready.
+- No production mutation, deploy upload, live verification, external provider
+  write, send, payment/access/DNS/upload, GHL/LeadConnector runtime, or secret
+  exposure occurred.
+
+## 2026-07-03 - Rabbi / One Time UI Goal Terminal Audit
+
+- Re-ran the release-branch evidence audit for `RAW-20260702-008`.
+- Packet 21 PQC validation passed and the focused local test suite passed
+  11/11 on the release worktree.
+- Updated `DEC-20260702-801`, `REQ-20260702-805`, and `REQ-20260702-823` in
+  the requirement register to remove stale pre-PR wording and point to the
+  exact deploy-gate blocker.
+- Added terminal audit evidence at
+  `ops/deploy-readbacks/2026-07-03-rabbi-onetime-ui-goal-terminal-audit.md`.
+- Verdict: selected UI cleanup packets are locally verified and terminal with
+  exact deploy blocker; production terminal Done still requires approval,
+  deploy, and live smoke after the repo's deploy/readiness gates clear.
+- Follow-up consistency note: the terminal audit is anchored to commit
+  `6fadb922`; later bookkeeping commits on PR #87 may advance the branch
+  without changing the verdict.
 ## 2026-07-03 - Rabbi / One Time Unblocked Readiness Cleanup Verified
 
 - Registered `RAW-20260703-001` and the cleanup register
@@ -28983,3 +29130,40 @@ Actions: 1. Active machine tasks: 0.
   `https://github.com/shloimie-beep/bnei-neviim-academy/pull/90`.
   No production deploy was run because the package is protocol/tooling/docs
   plus local agent automation, not an app-visible or server-visible release.
+
+## 2026-07-05 - PR 87 Resend Release Gate Correction
+
+- Corrected a PR #87 deploy-gate false positive: Resend readiness now matches
+  the runtime contract and accepts `RESEND_FROM_EMAIL` when the formatted
+  `RESEND_FROM` alias is absent, while still requiring the API key, domain, and
+  webhook secret.
+- Added regression coverage for the accepted sender-email path and the blocked
+  no-sender path in `tests/system-truth-scripts.test.js`.
+- Verification passed: `node --test tests/system-truth-scripts.test.js
+  tests/bna-production-closeout-gate.test.js` with 19/19 tests passing, and
+  local readiness readback now reports Resend ready without printing secret
+  values.
+- Production deploy remains blocked before mutation by OpenAI API key, Vimeo
+  access token, Rabbi Stripe key/mode, Rabbi Telegram worker token/deployment
+  verification, and database/Railway/Drive external readback readiness.
+- No production deploy, live smoke, external send/payment/access/DNS/credential
+  change, provider account write, or DB review mutation was performed.
+
+## 2026-07-05 - PR 87 Keyholder Deploy Follow-Up
+
+- Registered `RAW-20260705-001` after Shloimie clarified that OpenAI
+  `openaiv2.txt` is the correct key, asked to use the available keyholder
+  credentials, skip Rabbi Telegram for now, and push PR #87 live even with
+  missing optional provider keys.
+- Confirmed by redacted readback that OpenAI v2 exists locally and matches
+  Railway production; Vimeo access token is still absent; Stripe key exists in
+  keyholder; Railway production already has database, Resend, and Rabbi
+  Telegram token variables.
+- Set Railway production `STRIPE_SECRET_KEY`, `RABBI_STRIPE_SECRET_KEY`, and
+  `RABBI_STRIPE_MODE` from the approved keyholder Stripe secret using
+  `--skip-deploys`; no secret value was printed or committed.
+- Hardened the release gate to recognize the OpenAI v2 alias and to allow an
+  explicitly approved UI deploy while deferring optional provider integrations
+  and external readback proof.
+- Verification passed: `node --test tests/system-truth-scripts.test.js
+  tests/bna-production-closeout-gate.test.js` with 21/21 tests passing.

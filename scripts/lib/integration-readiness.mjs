@@ -5,7 +5,7 @@ const require = createRequire(import.meta.url);
 const { loadSecret, safeSecretSourceLabel, usableSecretValue } = require('../../src/lib/integrations/secret-loader');
 
 export const INTEGRATION_READINESS_FIELDS = [
-  ['OPENAI_API_KEY', ['openai-api-key.txt', 'OPENAI_API_KEY.txt']],
+  ['OPENAI_API_KEY', ['openaiv2.txt', 'openai-api-key.txt', 'OPENAI_API_KEY.txt']],
   ['VIMEO_CLIENT_ID', ['vimeo-client-id.txt', 'VIMEO_CLIENT_ID.txt', 'vimeo.txt']],
   ['VIMEO_CLIENT_SECRET', ['vimeo-client-secret.txt', 'VIMEO_CLIENT_SECRET.txt', 'vimeo.txt']],
   ['VIMEO_ACCESS_TOKEN', ['vimeo-access-token.txt', 'VIMEO_ACCESS_TOKEN.txt', 'vimeo.txt']],
@@ -29,12 +29,20 @@ const INTEGRATION_GROUPS = [
   {
     integration: 'vimeo',
     label: 'Vimeo video/member library',
-    fields: ['VIMEO_CLIENT_ID', 'VIMEO_CLIENT_SECRET', 'VIMEO_ACCESS_TOKEN']
+    fields: ['VIMEO_CLIENT_ID', 'VIMEO_CLIENT_SECRET', 'VIMEO_ACCESS_TOKEN'],
+    deployRequired: false
   },
   {
     integration: 'resend',
     label: 'Resend email sending/domain',
-    fields: ['RESEND_API_KEY', 'RESEND_FROM', 'RESEND_FROM_EMAIL', 'RESEND_DOMAIN', 'RESEND_WEBHOOK_SECRET']
+    fields: ['RESEND_API_KEY', 'RESEND_FROM', 'RESEND_FROM_EMAIL', 'RESEND_DOMAIN', 'RESEND_WEBHOOK_SECRET'],
+    required: ['RESEND_API_KEY', 'RESEND_DOMAIN', 'RESEND_WEBHOOK_SECRET'],
+    anyOf: [
+      {
+        keys: ['RESEND_FROM', 'RESEND_FROM_EMAIL'],
+        blocker: 'RESEND_FROM or RESEND_FROM_EMAIL is not configured.'
+      }
+    ]
   },
   {
     integration: 'stripe',
@@ -45,6 +53,7 @@ const INTEGRATION_GROUPS = [
     integration: 'rabbi_telegram',
     label: 'Rabbi Telegram worker',
     fields: ['TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER'],
+    deployRequired: false,
     blockers: ['Worker deployment state is not verified by local readiness scanning.']
   }
 ];
@@ -69,7 +78,7 @@ export function collectIntegrationReadinessFields(context = {}) {
 }
 
 function readinessFieldByKey(fields = [], key) {
-  return fields.find((field) => field.key === key) || {
+  return fields.find((field) => field.key === key || field.name === key) || {
     key,
     configured: false,
     source: 'not configured'
@@ -86,14 +95,22 @@ function summarizeIntegrationGroup(fields, spec) {
       source: configured ? field.source : field.source === 'placeholder' ? 'placeholder' : 'not configured'
     };
   });
-  const missing = groupFields.filter((field) => !field.configured).map((field) => field.name);
+  const requiredKeys = Array.isArray(spec.required) ? spec.required : spec.fields;
+  const missing = groupFields
+    .filter((field) => requiredKeys.includes(field.name) && !field.configured)
+    .map((field) => field.name);
+  const missingAlternativeBlockers = (spec.anyOf || [])
+    .filter((alternative) => !(alternative.keys || []).some((key) => readinessFieldByKey(groupFields, key).configured))
+    .map((alternative) => alternative.blocker || `${(alternative.keys || []).join(' or ')} is not configured.`);
   const blockers = [
     ...missing.map((name) => `${name} is not configured.`),
+    ...missingAlternativeBlockers,
     ...(spec.blockers || [])
   ];
   return {
     integration: spec.integration,
     label: spec.label,
+    deploy_required: spec.deployRequired !== false,
     ready: blockers.length === 0,
     fields: groupFields,
     blockers
@@ -111,9 +128,10 @@ export function buildIntegrationReadinessSummary(context = {}) {
   };
 }
 
-export function integrationReadinessBlockers(readiness = {}) {
+export function integrationReadinessBlockers(readiness = {}, options = {}) {
   const groups = Array.isArray(readiness.groups) ? readiness.groups : [];
   return groups
     .filter((group) => !group.ready)
+    .filter((group) => !(options.deferOptionalDeployIntegrations && group.deploy_required === false))
     .map((group) => `${group.label} readiness is blocked: ${group.blockers.join(' ')}`);
 }

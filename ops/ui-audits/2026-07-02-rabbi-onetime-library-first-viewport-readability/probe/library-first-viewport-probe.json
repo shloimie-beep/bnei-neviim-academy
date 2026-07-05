@@ -1,0 +1,109 @@
+{
+  "requirement_id": "REQ-20260702-823",
+  "packet_id": "PKT-20260702-823",
+  "generated_at": "2026-07-03T00:25:21.179Z",
+  "auth": {
+    "operations_login_available": true,
+    "blocker": null,
+    "secrets_redacted": true
+  },
+  "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+  "checks": [
+    "One Time Library section marker exists",
+    "heading and copy are high-luminance on dark One Time panel",
+    "filter details are collapsed by default for One Time Library",
+    "first useful library/status content appears in first viewport",
+    "no horizontal overflow on desktop or mobile"
+  ],
+  "results": [
+    {
+      "viewport": "1440-desktop",
+      "url": "http://127.0.0.1:8099/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "responseStatus": 200,
+      "screenshot": "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/probe/operations-library-1440-desktop-probe.png",
+      "thresholds": {
+        "minHeadingLuminance": 0.65,
+        "minCopyLuminance": 0.55,
+        "maxUsefulContentTop": 650
+      },
+      "metrics": {
+        "sectionPresent": true,
+        "headingPresent": true,
+        "headingTitle": "One Time Library",
+        "headingTitleColor": "rgb(255, 255, 255)",
+        "headingCopyColor": "rgb(219, 234, 254)",
+        "filterPresent": true,
+        "filterDefaultOpen": false,
+        "filterRect": {
+          "top": 283,
+          "bottom": 285,
+          "left": 1171,
+          "right": 1411,
+          "width": 240,
+          "height": 2
+        },
+        "usefulSelector": "One Time content library workspace",
+        "usefulRect": {
+          "top": 383,
+          "bottom": 7779,
+          "left": 265,
+          "right": 1153,
+          "width": 888,
+          "height": 7397
+        },
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalOverflow": false,
+        "bodyClass": "bna-shell bna-ops-shell-page one-time-operations-active",
+        "headingLuminance": 1,
+        "copyLuminance": 0.8106
+      },
+      "pass": true
+    },
+    {
+      "viewport": "390-mobile",
+      "url": "http://127.0.0.1:8099/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "responseStatus": 200,
+      "screenshot": "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/probe/operations-library-390-mobile-probe.png",
+      "thresholds": {
+        "minHeadingLuminance": 0.65,
+        "minCopyLuminance": 0.55,
+        "maxUsefulContentTop": 820
+      },
+      "metrics": {
+        "sectionPresent": true,
+        "headingPresent": true,
+        "headingTitle": "One Time Library",
+        "headingTitleColor": "rgb(255, 255, 255)",
+        "headingCopyColor": "rgb(219, 234, 254)",
+        "filterPresent": true,
+        "filterDefaultOpen": false,
+        "filterRect": {
+          "top": 345,
+          "bottom": 389,
+          "left": 17,
+          "right": 373,
+          "width": 356,
+          "height": 44
+        },
+        "usefulSelector": "One Time content library workspace",
+        "usefulRect": {
+          "top": 419,
+          "bottom": 14184,
+          "left": 17,
+          "right": 373,
+          "width": 356,
+          "height": 13765
+        },
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "horizontalOverflow": false,
+        "bodyClass": "bna-shell bna-ops-shell-page one-time-operations-active",
+        "headingLuminance": 1,
+        "copyLuminance": 0.8106
+      },
+      "pass": true
+    }
+  ],
+  "pass": true
+}

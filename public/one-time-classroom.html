@@ -279,8 +279,190 @@
     }
   </style>
   <link rel="stylesheet" href="/css/one-time-shared-review.css">
+  <style>
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] {
+      --ink: #f7f7f2;
+      --muted: #aeb9c6;
+      --line: rgba(237, 229, 24, 0.22);
+      --paper: #080910;
+      --panel: #14171f;
+      --accent: #ede518;
+      --accent-2: #ede518;
+      --soft: rgba(237, 229, 24, 0.1);
+      --warn: rgba(237, 229, 24, 0.12);
+      --shadow: 0 20px 52px rgba(0, 0, 0, 0.28);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 14% 0%, rgba(237, 229, 24, 0.13), transparent 30%),
+        linear-gradient(180deg, #080910 0%, #10131a 46%, #080910 100%) !important;
+      background-color: #080910 !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] main {
+      padding-top: 28px;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] header {
+      background: rgba(8, 9, 16, 0.96) !important;
+      border-bottom-color: rgba(237, 229, 24, 0.28) !important;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .topbar {
+      max-width: 1200px;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions a[aria-current="page"] button {
+      color: #080910 !important;
+      border-color: var(--accent) !important;
+      background: var(--accent) !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] #classroomContent {
+      display: grid;
+      gap: 18px;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .hero-copy,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .access-panel,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] section,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .panel,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .item,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] details,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .message,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .empty,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .bot-answer {
+      color: var(--ink);
+      border-color: var(--line) !important;
+      background: linear-gradient(180deg, rgba(21, 23, 29, 0.98), rgba(14, 16, 22, 0.98)) !important;
+      background-color: #15171d !important;
+      box-shadow: var(--shadow);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .hero-copy {
+      display: grid;
+      align-content: center;
+      min-height: 220px;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] h1,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] h2,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] h3,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] strong {
+      color: var(--ink) !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .hero-copy p,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] p,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .status,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .meta {
+      color: var(--muted) !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .pill,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .badge {
+      color: #080910 !important;
+      border-color: rgba(237, 229, 24, 0.5) !important;
+      background: var(--accent) !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .video-focus {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .video-embed,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .thumb {
+      width: 100%;
+      min-height: 0;
+      border-color: rgba(237, 229, 24, 0.34);
+      background: #080910;
+      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.28);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .today-details {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .today-details h3,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .today-details p {
+      margin: 0;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .item,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] details,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .message {
+      box-shadow: none;
+      background: rgba(8, 9, 16, 0.42) !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] summary {
+      color: var(--ink);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .thread {
+      border-left-color: var(--accent);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .response-form {
+      color: var(--ink);
+      border-color: rgba(237, 229, 24, 0.45) !important;
+      background: #11141b !important;
+      background-color: #11141b !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] label {
+      color: var(--ink);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] input,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] textarea {
+      color: #080910;
+      border-color: rgba(237, 229, 24, 0.42) !important;
+      background: #fffef2 !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .participation-marker {
+      color: #080910;
+      background: var(--accent);
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] a button:not(.primary) {
+      color: var(--ink) !important;
+      border-color: rgba(255, 255, 255, 0.18) !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] button.primary,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] button[type="submit"] {
+      color: #080910 !important;
+      border-color: var(--accent) !important;
+      background: var(--accent) !important;
+    }
+
+    @media (min-width: 841px) {
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .hero {
+        grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      }
+    }
+
+    @media (max-width: 840px) {
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] main {
+        width: min(100% - 24px, 640px);
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .hero-copy,
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .access-panel,
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] section {
+        padding: 16px;
+      }
+    }
+  </style>
 </head>
-<body class="one-time-review-active" data-one-time-rabbi-dashboard="classroom-review" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
+<body class="one-time-review-active one-time-classroom-review-shell" data-one-time-rabbi-dashboard="classroom-review" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
   <div class="shell">
     <header>
       <div class="topbar">
@@ -454,12 +636,12 @@
             <iframe
               src="${escapeHtml(embed)}"
               title="${escapeHtml(item.title || 'One Time lesson video')}"
-              loading="lazy"
+              loading="eager"
               allow="fullscreen; picture-in-picture"
               allowfullscreen></iframe>
           </div>
         ` : renderThumb(item)}
-        <div>
+        <div class="today-details">
           <h3>${escapeHtml(item.title || 'Today video')}</h3>
           <p>${escapeHtml(item.description || item.summary || 'Class video and materials appear here after review.')}</p>
           <div class="meta">

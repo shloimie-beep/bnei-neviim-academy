@@ -237,11 +237,18 @@
             min-width: 0;
         }
 
-        .mobile-app-title strong {
+        .mobile-app-title strong,
+        .mobile-app-route-title {
             display: block;
             color: #f8fafc;
             font-size: 14px;
             line-height: 1.1;
+        }
+
+        .mobile-app-route-title {
+            margin: 0;
+            font-weight: 850;
+            letter-spacing: 0;
         }
 
         .mobile-app-title span {
@@ -2013,6 +2020,82 @@
             background: #111827;
         }
 
+        .one-time-crm-empty-state {
+            border-style: solid;
+            color: #dbeafe;
+            display: grid;
+            gap: 14px;
+        }
+
+        .one-time-crm-empty-grid,
+        .one-time-crm-card-grid {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            min-width: 0;
+        }
+
+        .one-time-crm-empty-step,
+        .one-time-crm-contact-card {
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.82);
+            color: #e2e8f0;
+            display: grid;
+            gap: 7px;
+            min-width: 0;
+            padding: 12px;
+        }
+
+        .one-time-crm-empty-step span,
+        .one-time-crm-contact-card span {
+            color: #93c5fd;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .one-time-crm-empty-step strong,
+        .one-time-crm-contact-card strong {
+            color: #f8fafc;
+            font-size: 14px;
+            line-height: 1.25;
+        }
+
+        .one-time-crm-empty-step p,
+        .one-time-crm-contact-card p {
+            color: #cbd5e1;
+            font-size: 12px;
+            line-height: 1.4;
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .one-time-crm-contact-card-list {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .one-time-crm-contact-card .task-actions {
+            margin-top: 2px;
+        }
+
+        @media (max-width: 760px) {
+            [data-one-time-crm-contact-table] {
+                display: none;
+            }
+
+            .one-time-crm-empty-grid,
+            .one-time-crm-card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .one-time-crm-contact-card-list {
+                display: grid;
+            }
+        }
+
         /* Payment Status */
         .payment-status {
             display: inline-flex;
@@ -2788,6 +2871,28 @@
 
         .rabbi-dialogue-column .task-section-header {
             margin-bottom: 0;
+        }
+
+        .rabbi-dialogue-column .task-section-header h3 {
+            color: #f8fafc;
+        }
+
+        .rabbi-dialogue-column .task-section-header span {
+            color: #cbd5e1;
+        }
+
+        .rabbi-dialogue-column .task-section-header > span {
+            align-items: center;
+            align-self: flex-start;
+            background: rgba(248, 250, 252, 0.12);
+            border: 1px solid rgba(203, 213, 225, 0.22);
+            border-radius: 999px;
+            color: #f8fafc;
+            display: inline-flex;
+            font-weight: 900;
+            justify-content: center;
+            min-width: 24px;
+            padding: 3px 7px;
         }
 
         .rabbi-dialogue-column .task-row {
@@ -4060,6 +4165,56 @@
             font-size: 12px;
             line-height: 1.4;
             margin: 0;
+        }
+
+        .one-time-approval-packet form.settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px 12px;
+            align-items: start;
+            min-width: 0;
+        }
+
+        .one-time-approval-packet form.settings-grid label {
+            display: grid;
+            gap: 5px;
+            min-width: 0;
+            color: #cbd5e1;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .one-time-approval-packet form.settings-grid input,
+        .one-time-approval-packet form.settings-grid select,
+        .one-time-approval-packet form.settings-grid textarea {
+            width: 100%;
+            min-width: 0;
+            border: 1px solid rgba(148, 163, 184, 0.26);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.96);
+            color: var(--bna-blue-dark);
+            font: 700 12px 'Inter', sans-serif;
+        }
+
+        .one-time-approval-packet form.settings-grid textarea {
+            resize: vertical;
+        }
+
+        .one-time-approval-packet form.settings-grid label:has(textarea) {
+            grid-column: span 2;
+        }
+
+        .one-time-approval-packet form.settings-grid .task-actions {
+            grid-column: 1 / -1;
+            align-items: center;
+        }
+
+        .one-time-approval-packet form.settings-grid .task-actions input {
+            flex: 1 1 280px;
+            width: auto;
+            min-width: min(100%, 280px);
         }
 
         .one-time-report-card,
@@ -5370,11 +5525,15 @@
             top: 0;
             transform: translateX(106%);
             transition: transform 0.2s ease;
+            visibility: hidden;
+            pointer-events: none;
             z-index: 6601;
         }
 
         .bna-helper-panel.open {
             transform: translateX(0);
+            visibility: visible;
+            pointer-events: auto;
         }
 
         .bna-helper-header {
@@ -5702,6 +5861,14 @@
             justify-content: center;
             min-height: 100vh;
             color: #94a3b8;
+        }
+
+        .loading h1 {
+            margin: 0;
+            color: inherit;
+            font-size: 16px;
+            font-weight: 850;
+            letter-spacing: 0;
         }
 
         .error-banner {
@@ -6375,6 +6542,19 @@
                 grid-template-columns: 1fr;
             }
 
+            .one-time-approval-packet form.settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .one-time-approval-packet form.settings-grid label:has(textarea) {
+                grid-column: 1 / -1;
+            }
+
+            .one-time-approval-packet form.settings-grid .task-actions input {
+                flex-basis: 100%;
+                min-width: 0;
+            }
+
             .meeting-drop-hero,
             .meeting-candidate-row {
                 flex-direction: column;
@@ -6561,7 +6741,8 @@
         }
 
         .ops-sidebar-title,
-        .mobile-app-title strong {
+        .mobile-app-title strong,
+        .mobile-app-route-title {
             color: var(--bna-blue-dark);
         }
 
@@ -6681,7 +6862,13 @@
         .ops-filter-tab.active {
             border-color: rgba(30, 58, 95, 0.32);
             background: linear-gradient(180deg, var(--ops-card-surface-strong), var(--ops-card-surface));
+            color: var(--bna-blue-dark);
             box-shadow: inset 0 -3px 0 var(--ops-status-accent);
+        }
+
+        .ops-filter-tab:focus-visible {
+            outline: 3px solid rgba(201, 162, 39, 0.34);
+            outline-offset: 2px;
         }
 
         .ops-filter-count {
@@ -6695,6 +6882,12 @@
             font-size: 10px;
             font-weight: 950;
             padding: 3px 6px;
+        }
+
+        .ops-filter-tab.active .ops-filter-count {
+            border-color: rgba(201, 162, 39, 0.38);
+            background: rgba(201, 162, 39, 0.22);
+            color: var(--bna-blue-dark);
         }
 
         .ops-brand-lockup {
@@ -6718,11 +6911,15 @@
             object-fit: cover;
         }
 
-        .ops-brand-lockup strong {
+        .ops-brand-lockup strong,
+        .ops-route-title {
             display: block;
             color: var(--bna-blue-dark);
             font-size: 15px;
             line-height: 1.1;
+            margin: 0;
+            font-weight: 850;
+            letter-spacing: 0;
         }
 
         .ops-brand-lockup span {
@@ -7138,6 +7335,29 @@
             white-space: nowrap;
         }
 
+        .one-time-operations-active [data-one-time-rabbi-dashboard][data-one-time-workspace="rabbi_sheller_provider"] > .page-heading.saas-page-heading {
+            border: 1px solid rgba(201, 162, 39, 0.28);
+            border-radius: 8px;
+            background:
+                linear-gradient(135deg, rgba(6, 12, 24, 0.96), rgba(11, 31, 44, 0.92)),
+                radial-gradient(circle at 88% 0%, rgba(201, 162, 39, 0.12), transparent 34%);
+            box-shadow: 0 18px 44px rgba(2, 6, 23, 0.26);
+            padding: 18px;
+        }
+
+        .one-time-operations-active [data-one-time-rabbi-dashboard][data-one-time-workspace="rabbi_sheller_provider"] > .page-heading.saas-page-heading .page-kicker {
+            color: #facc15;
+        }
+
+        .one-time-operations-active [data-one-time-rabbi-dashboard][data-one-time-workspace="rabbi_sheller_provider"] > .page-heading.saas-page-heading h2 {
+            color: #f8fafc;
+            letter-spacing: 0;
+        }
+
+        .one-time-operations-active [data-one-time-rabbi-dashboard][data-one-time-workspace="rabbi_sheller_provider"] > .page-heading.saas-page-heading p {
+            color: #dbeafe;
+        }
+
         .ops-mobile-mark {
             width: 34px;
             height: 34px;
@@ -7253,6 +7473,246 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
             gap: 12px;
+        }
+
+        .studio-review-card,
+        .studio-job-review {
+            display: grid;
+            gap: 12px;
+        }
+
+        .task-card.studio-job-review {
+            cursor: default;
+            max-height: none;
+        }
+
+        .task-card.studio-job-review:hover {
+            transform: none;
+        }
+
+        .studio-review-head,
+        .studio-review-metrics,
+        .studio-review-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .studio-review-head {
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: start;
+        }
+
+        .studio-review-metrics {
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        }
+
+        .studio-review-metric {
+            border: 1px solid rgba(17, 17, 17, 0.08);
+            border-radius: 8px;
+            background: rgba(17, 17, 17, 0.035);
+            min-width: 0;
+            padding: 9px 10px;
+        }
+
+        .studio-review-metric span {
+            display: block;
+            color: var(--bna-muted);
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .studio-review-metric strong {
+            display: block;
+            color: var(--bna-blue-dark);
+            font-size: 14px;
+            line-height: 1.25;
+            margin-top: 4px;
+            overflow-wrap: anywhere;
+        }
+
+        .studio-review-excerpt {
+            border-left: 3px solid rgba(201, 162, 39, 0.72);
+            color: var(--bna-ink);
+            font-size: 13px;
+            line-height: 1.45;
+            margin: 0;
+            padding-left: 10px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .studio-review-list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .studio-review-list li {
+            color: var(--bna-muted);
+            font-size: 12px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .studio-diagnostics {
+            border-top: 1px solid rgba(17, 17, 17, 0.08);
+            padding-top: 8px;
+        }
+
+        .studio-diagnostics summary {
+            color: var(--bna-blue-dark);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 900;
+            line-height: 1.3;
+            list-style-position: inside;
+        }
+
+        .studio-diagnostics .settings-code-block {
+            margin-top: 8px;
+            max-height: 320px;
+            overflow: auto;
+        }
+
+        .studio-review-flag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .studio-library-panel {
+            border: 1px solid rgba(201, 162, 39, 0.22);
+            border-radius: 8px;
+            background: rgba(201, 162, 39, 0.07);
+            display: grid;
+            gap: 12px;
+            padding: 14px;
+        }
+
+        .studio-library-readback {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .studio-library-readback strong {
+            color: var(--bna-blue-dark);
+            display: block;
+            font-size: 12px;
+            line-height: 1.25;
+            margin-bottom: 6px;
+        }
+
+        .studio-library-readback p {
+            color: var(--bna-muted);
+            font-size: 12px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .studio-workspace-shell {
+            display: grid;
+            gap: 16px;
+            width: 100%;
+        }
+
+        [data-testid="service-provider-studio"] {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) !important;
+            gap: 16px;
+        }
+
+        [data-testid="service-provider-studio"] > * {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .studio-section-tabs {
+            border: 1px solid var(--bna-line);
+            border-radius: 8px;
+            background: var(--ops-card-surface);
+            box-shadow: var(--ops-card-shadow);
+            display: grid;
+            gap: 10px;
+            padding: 12px;
+        }
+
+        .studio-section-tabs h3 {
+            color: var(--bna-blue-dark);
+            font-size: 13px;
+            letter-spacing: 0.04em;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .studio-section-tab-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .studio-section-tab {
+            align-items: center;
+            border: 1px solid rgba(17, 17, 17, 0.14);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--bna-blue-dark);
+            cursor: pointer;
+            display: inline-flex;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 850;
+            gap: 8px;
+            justify-content: space-between;
+            line-height: 1.25;
+            min-height: 38px;
+            min-width: 116px;
+            padding: 9px 11px;
+        }
+
+        .studio-section-tab:hover,
+        .studio-section-tab.active {
+            border-color: rgba(17, 17, 17, 0.22);
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.06), rgba(245, 211, 124, 0.2));
+        }
+
+        .studio-section-count {
+            border: 1px solid rgba(17, 17, 17, 0.12);
+            border-radius: 999px;
+            background: var(--bna-gold-soft);
+            color: var(--bna-blue-dark);
+            flex: 0 0 auto;
+            font-size: 11px;
+            font-weight: 900;
+            line-height: 1;
+            min-width: 22px;
+            padding: 4px 6px;
+            text-align: center;
+        }
+
+        .studio-project-workspace {
+            align-items: start;
+            display: grid;
+            gap: 16px;
+            grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+            width: 100%;
+        }
+
+        .studio-project-list-panel,
+        .studio-project-detail-panel {
+            min-width: 0;
+        }
+
+        @media (max-width: 1100px) {
+            .studio-project-workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .studio-section-tab {
+                flex: 1 1 132px;
+            }
         }
 
         .usage-metric-card {
@@ -7795,7 +8255,7 @@
 </head>
 <body class="bna-shell bna-ops-shell-page">
     <div id="app">
-        <div class="loading">Loading BNA Operations...</div>
+        <div class="loading"><h1>Loading BNA Operations...</h1></div>
     </div>
 
     <script src="/js/platform-ui/platform-ui-fixtures.js"></script>
@@ -8667,6 +9127,7 @@
         let studioCorrectionPayload = null;
         let studioCompiledPrompt = null;
         let studioHandoffResult = null;
+        let studioReviewPackResult = null;
         let oneTimeQuestionQueue = [];
         let oneTimeQuestionQueueSummary = null;
         let oneTimeQuestionDigestPreview = null;
@@ -9757,7 +10218,9 @@
                         ${renderSidebarModuleList(navItems)}
                     </nav>
                     <div class="ops-sidebar-footer">
-                        <button type="button" class="ops-sidebar-mini" onclick="switchView('settings')">Settings</button>
+                        ${isProviderWorkspace() && currentWorkspaceIsOneTime() && allowedViews().has('agents')
+                            ? '<button type="button" class="ops-sidebar-mini" onclick="switchView(\'agents\')">Platform Support</button>'
+                            : '<button type="button" class="ops-sidebar-mini" onclick="switchView(\'settings\')">Settings</button>'}
                         <button type="button" class="ops-sidebar-mini" onclick="openBnaHelperWithPrompt('Help me with this Operations screen. Show the relevant support, task, decision, or setup path without sending external messages.')">Help</button>
                         <a class="ops-sidebar-mini" href="/operations-login.html">Logout</a>
                     </div>
@@ -9767,11 +10230,40 @@
 
         function renderSidebarModuleList(navItems = workspaceNavItems()) {
             return navItems.map(item => `
-                <button type="button" class="ops-sidebar-button ${currentView === item.id ? 'active' : ''}" onclick="switchView('${item.id}')">
+                <button
+                    type="button"
+                    class="ops-sidebar-button ${sidebarNavItemIsActive(item, navItems) ? 'active' : ''}"
+                    data-sidebar-nav-key="${escapeHtml(item.navKey || item.id)}"
+                    onclick="openSidebarNavItem(${attrJson(item.id)}, ${attrJson(item.section || '')})"
+                >
                     <span>${escapeHtml(item.label)}</span>
                     <span class="ops-sidebar-marker">${escapeHtml(item.marker)}</span>
                 </button>
             `).join('');
+        }
+
+        function sidebarNavItemIsActive(item, navItems = workspaceNavItems()) {
+            if (!item || currentView !== item.id) return false;
+            const section = currentSectionId();
+            const sameViewItems = navItems.filter(navItem => navItem.id === item.id);
+            if (sameViewItems.length <= 1 || !item.section) return true;
+            if (item.section === section) return true;
+            return item.navKey === 'overview_package_status' && section !== 'access';
+        }
+
+        function openSidebarNavItem(view, section = '') {
+            currentView = VIEW_ALIASES[view] || view;
+            normalizeCurrentRouteForWorkspace();
+            if (!viewAllowed(currentView)) currentView = 'dashboard';
+            sidebarMode = 'modules';
+            navDrawerOpen = false;
+            if (section) {
+                setCurrentSection(section);
+                return;
+            }
+            syncOperationsUrl();
+            render();
+            loadData({ background: true });
         }
 
         function workspaceRecordKey(workspace = {}) {
@@ -10086,18 +10578,20 @@
             const logoUrl = workspaceBranding?.logo_url || '/icons/icon-192.png';
             const workspaceName = workspaceBranding?.workspace_name_override || currentWorkspaceRecord().display_name || 'BNA Operations';
             const roleLabel = currentWorkspaceRoleLabel();
+            const routeTitle = `${workspaceName} / ${label} / ${sectionLabel}`;
+            const shortDate = new Date().toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
             return `
                 <header class="mobile-app-header">
                     <button type="button" class="menu-button" onclick="openNavDrawer()" aria-label="Open navigation"><span class="hamburger-lines" aria-hidden="true"></span></button>
                     <div class="ops-mobile-brand">
                         <img class="ops-mobile-mark" src="${escapeHtml(logoUrl)}" alt="" aria-hidden="true" onerror="this.src='/icons/icon-192.png'">
                         <div class="mobile-app-title">
-                            <strong>${escapeHtml(workspaceName)}</strong>
+                            <h1 class="mobile-app-route-title" title="${escapeHtml(routeTitle)}">${escapeHtml(sectionLabel)}</h1>
                             <span>${escapeHtml(roleLabel)} / ${escapeHtml(label)} / ${escapeHtml(sectionLabel)}</span>
                         </div>
                     </div>
-                    <button type="button" class="page-status-pill" data-action-id="ACTION-OPERATIONS-HELPER-OPEN" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}">Ask</button>
-                    <span class="page-status-pill">${escapeHtml(new Date().toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }))}</span>
+                    <button type="button" class="page-status-pill" data-action-id="ACTION-OPERATIONS-HELPER-OPEN" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}" aria-label="${escapeHtml(`Ask about ${routeTitle}`)}">Ask</button>
+                    <span class="page-status-pill" aria-label="${escapeHtml(`Current date: ${shortDate}`)}">${escapeHtml(shortDate)}</span>
                 </header>
             `;
         }
@@ -10111,19 +10605,21 @@
             const isScoped = opsMe?.scope?.type === 'project';
             const roleLabel = currentWorkspaceRoleLabel();
             const statusChips = operationsTopbarStatusChips();
+            const routeTitle = `${workspaceName} / ${label} / ${sectionLabel}`;
+            const currentDateLabel = new Date().toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' });
             return `
                 <header class="ops-brand-topbar saas-topbar">
                     <div class="ops-brand-lockup">
                         <img class="ops-brand-mark" src="${escapeHtml(logoUrl)}" alt="" aria-hidden="true" onerror="this.src='/icons/icon-192.png'">
                         <div>
                             <span class="breadcrumb-line">${escapeHtml(workspaceName)} / ${escapeHtml(label)} / ${escapeHtml(sectionLabel)}</span>
-                            <strong>${escapeHtml(sectionLabel)}</strong>
+                            <h1 class="ops-route-title" title="${escapeHtml(routeTitle)}">${escapeHtml(sectionLabel)}</h1>
                         </div>
                     </div>
                     <div class="ops-topbar-center">
                         <div class="ops-topbar-status" aria-label="Workspace status">
                             ${statusChips.map(chip => `
-                                <button type="button" class="ops-brand-chip ${chip.tone ? `is-${chip.tone}` : ''}" onclick="${chip.action}" title="${escapeHtml(chip.title || chip.label)}">
+                                <button type="button" class="ops-brand-chip ${chip.tone ? `is-${chip.tone}` : ''}" onclick="${chip.action}" title="${escapeHtml(chip.title || chip.label)}" aria-label="${escapeHtml(`${chip.label}: ${chip.value}. ${chip.title || ''}`)}">
                                     <span>${escapeHtml(chip.label)}</span>
                                     <strong>${escapeHtml(String(chip.value))}</strong>
                                 </button>
@@ -10131,9 +10627,9 @@
                         </div>
                     </div>
                     <div class="ops-brand-actions" aria-label="Current workspace status">
-                        <span class="ops-brand-chip" title="${escapeHtml(roleLabel)}">${escapeHtml(opsWorkspaceLabel())}${isScoped ? ' · ' + escapeHtml(roleLabel) : ''}</span>
-                        <button type="button" class="ops-brand-chip" data-action-id="ACTION-OPERATIONS-HELPER-OPEN" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}">Ask / Search</button>
-                        <span class="ops-brand-chip">${escapeHtml(new Date().toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' }))}</span>
+                        <span class="ops-brand-chip" title="${escapeHtml(roleLabel)}" aria-label="${escapeHtml(`Workspace: ${opsWorkspaceLabel()}${isScoped ? `, ${roleLabel}` : ''}`)}">${escapeHtml(opsWorkspaceLabel())}${isScoped ? ' · ' + escapeHtml(roleLabel) : ''}</span>
+                        <button type="button" class="ops-brand-chip" data-action-id="ACTION-OPERATIONS-HELPER-OPEN" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}" aria-label="${escapeHtml(`Ask or search within ${routeTitle}`)}">Ask / Search</button>
+                        <span class="ops-brand-chip" aria-label="${escapeHtml(`Current date: ${currentDateLabel}`)}">${escapeHtml(currentDateLabel)}</span>
                         ${primary}
                     </div>
                 </header>
@@ -12157,7 +12653,7 @@
         function renderAutomationCenter() {
             const visibleRows = filteredAutomations();
             return `
-                <div class="container automation-center">
+                <div class="container automation-center" data-one-time-automation-route="center">
                     <div class="page-heading task-heading">
                         <div>
                             <div class="page-kicker">Operations Registry</div>
@@ -12766,7 +13262,7 @@
                 ? tasks.find(task => String(task.id) === String(selectedTaskId))
                 : null;
             return `
-                <div class="container">
+                <div class="container${oneTimeMode ? ' one-time-task-route' : ''}"${oneTimeMode ? ' data-one-time-task-route="dialogue"' : ''}>
                     <div class="page-heading task-heading">
                         <div>
                             <div class="page-kicker">${oneTimeMode ? 'Rabbi / One Time Workspace' : 'Workspace Work'}</div>
@@ -13048,7 +13544,7 @@
                     <div class="status-chip-row">
                         ${lanes.map(lane => renderTaskStatusChip(lane, counts[lane.id] || 0)).join('')}
                     </div>
-                    ${renderTaskFilterPanel(state, 'toolbar-filter-details')}
+                    ${renderTaskFilterPanel(state, 'toolbar-filter-details', { open: !isOneTimeTaskWorkspace() })}
                 </section>
             `;
         }
@@ -13458,7 +13954,7 @@
             `;
         }
 
-        function renderTaskFilterPanel(state, extraClass = '') {
+        function renderTaskFilterPanel(state, extraClass = '', options = {}) {
             const urgencyCounts = countByValue(state.focusTasks, task => task.urgency || 'normal');
             const urgencyOptions = [
                 { value: 'all', label: `All (${state.focusTasks.length})` },
@@ -13471,8 +13967,9 @@
                     .sort()
                     .map(key => ({ value: key, label: `${formatUrgency(key)} (${urgencyCounts[key]})` }))
             ];
+            const openAttr = options.open === false ? '' : ' open';
             return `
-                <details class="filter-details ${escapeHtml(extraClass)}" open>
+                <details class="filter-details ${escapeHtml(extraClass)}"${openAttr}>
                     <summary>Filter</summary>
                     <div class="filter-details-body">
                         <div class="filter-row">
@@ -14895,7 +15392,7 @@
                 messages: messages.length,
             };
             return `
-                <div class="container">
+                <div class="container" data-one-time-participants-route="members">
                     <div class="page-heading saas-page-heading">
                         <div>
                             <div class="page-kicker">Provider Roster</div>
@@ -14970,17 +15467,13 @@
                 </section>
                 ${renderLeadFilterPanel(sectionLeads, visibleLeads)}
                 ${rows.length === 0 ? `
-                    <div class="contact-empty-card">
-                        No One Time CRM contacts are loaded for this workspace yet. Import preview and email-contact staging remain no-send until approval.
-                    </div>
+                    ${renderOneTimeCrmEmptyState('no_rows')}
                 ` : sectionLeads.length > 0 && visibleLeads.length === 0 ? `
-                    <div class="contact-empty-card">
-                        No One Time parent-lead contacts match this filter. Product-interest and member rows remain visible below when loaded.
-                    </div>
+                    ${renderOneTimeCrmEmptyState('filtered_empty')}
                 ` : `
                     <section class="focus-panel">
                         <div class="task-section-header"><h3>CRM Contact Review</h3><span>${rows.length} shown</span></div>
-                        <div class="data-table compact-table">
+                        <div class="data-table compact-table" data-one-time-crm-contact-table>
                             <table>
                                 <thead>
                                     <tr><th>Name</th><th>Record Status</th><th>No-send</th><th>Dedupe / review</th><th>Source</th><th>Communications</th><th>Next Action</th><th>Direct Action</th></tr>
@@ -15004,8 +15497,74 @@
                                 </tbody>
                             </table>
                         </div>
+                        ${renderOneTimeCrmContactCards(rows)}
                     </section>
                 `}
+            `;
+        }
+
+        function renderOneTimeCrmEmptyState(mode = 'no_rows') {
+            const filtered = mode === 'filtered_empty';
+            const title = filtered ? 'No contacts match this CRM filter' : 'No One Time CRM contacts loaded yet';
+            const detail = filtered
+                ? 'Filter results are empty. Clear filters or review product-interest/member source panels before any campaign action.'
+                : 'Import preview, email-contact staging, and product-interest rows remain first-party review data until source mapping is approved.';
+            const steps = [
+                ['Source', filtered ? 'Filter safely' : 'Connect source preview', filtered ? 'Current filters do not expose external rows or private BNA records.' : 'Use approved One Time signup, payment, or email-contact sources only.'],
+                ['No-send', 'Locked', 'No email, WhatsApp, payment, checkout, or external CRM write is enabled from this state.'],
+                ['Dedupe', filtered ? 'Preserved' : 'Ready for review', 'Email/phone keys, manual-review tags, and duplicate candidates stay visible when rows load.'],
+                ['Next', filtered ? 'Clear or change filters' : 'Load approved source', 'Review source mapping and suppression policy before any member/contact communication.'],
+            ];
+            return `
+                <section class="contact-empty-card one-time-crm-empty-state" data-one-time-crm-empty-state>
+                    <div>
+                        <strong>${escapeHtml(title)}</strong>
+                        <p>${escapeHtml(detail)}</p>
+                    </div>
+                    <div class="one-time-crm-empty-grid">
+                        ${steps.map(([label, value, copy]) => `
+                            <div class="one-time-crm-empty-step">
+                                <span>${escapeHtml(label)}</span>
+                                <strong>${escapeHtml(value)}</strong>
+                                <p>${escapeHtml(copy)}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderOneTimeCrmContactCards(rows = []) {
+            if (!rows.length) return '';
+            return `
+                <div class="one-time-crm-contact-card-list one-time-crm-card-grid" data-one-time-crm-contact-card-list>
+                    ${rows.map(renderOneTimeCrmContactCard).join('')}
+                </div>
+            `;
+        }
+
+        function renderOneTimeCrmContactCard(row = {}) {
+            const details = [
+                ['Status', row.status],
+                ['No-send', `${row.noSend?.label || 'Review'} - ${row.noSend?.detail || 'Approval required.'}`],
+                ['Dedupe', `${row.dedupe?.label || 'Review'} - ${row.dedupe?.detail || 'No duplicate data loaded.'}`],
+                ['Source', `${row.source?.label || 'Source'} - ${row.source?.detail || 'No source detail loaded.'}`],
+                ['Communications', `${row.communications?.label || 'None'} - ${row.communications?.detail || 'No communication readback loaded.'}`],
+                ['Next Action', row.nextAction || 'Review before any action.'],
+            ];
+            return `
+                <article class="one-time-crm-contact-card" data-one-time-crm-contact-card>
+                    <span>CRM Contact</span>
+                    <strong>${escapeHtml(row.name || 'One Time contact')}</strong>
+                    <p>${escapeHtml(row.contact || 'No contact detail')}</p>
+                    ${details.map(([label, value]) => `
+                        <div>
+                            <span>${escapeHtml(label)}</span>
+                            <p>${escapeHtml(value || 'Not loaded')}</p>
+                        </div>
+                    `).join('')}
+                    <div class="task-actions compact-actions">${row.actionHtml || '<span class="status-chip blocked">No action</span>'}</div>
+                </article>
             `;
         }
 
@@ -17842,7 +18401,7 @@
             const schedules = productSystem.schedules || [];
             const primarySchedule = schedules[0] || {};
             return `
-                <div class="container" data-one-time-rabbi-dashboard="operations" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
+                <div class="container" data-one-time-rabbi-dashboard="operations" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class" data-one-time-program-route="${escapeHtml(section)}">
                     <div class="page-heading saas-page-heading">
                         <div>
                             <div class="page-kicker">Provider Workspace</div>
@@ -19419,7 +19978,7 @@
             const allItems = [...contactCommunications].sort((a, b) => Date.parse(b.occurred_at || b.created_at || 0) - Date.parse(a.occurred_at || a.created_at || 0));
             const filtered = communicationsForSection(allItems, section);
             return `
-                <div class="container">
+                <div class="container" data-one-time-rabbi-dashboard="operations" data-one-time-communications-route="${escapeHtml(section)}">
                     <div class="page-heading saas-page-heading">
                         <div>
                             <div class="page-kicker">Messages</div>
@@ -20559,6 +21118,462 @@
             }
         }
 
+        function studioParsedPayload(value) {
+            return parseJsonField(value) || value || {};
+        }
+
+        function studioCompactText(value, max = 240) {
+            const parsed = parseJsonField(value) || value;
+            if (typeof parsed === 'string') {
+                return limitTextClient(parsed.replace(/\r?\n\s*/g, '\n').trim(), max);
+            }
+            if (parsed && typeof parsed === 'object') {
+                const preferred = parsed.title || parsed.summary || parsed.caption || parsed.preview_url || parsed.render_url || parsed.idempotency_key || '';
+                if (preferred) return limitTextClient(String(preferred), max);
+                try {
+                    return limitTextClient(JSON.stringify(parsed).replace(/[{}"]/g, '').replace(/,/g, ', '), max);
+                } catch {
+                    return '';
+                }
+            }
+            return limitTextClient(String(value || ''), max);
+        }
+
+        function studioReadablePromptText(value, max = 320) {
+            return studioCompactText(String(value || '')
+                .replace(/^### LAYER[^\n]*\n?/gim, '')
+                .replace(/UNTRUSTED_SOURCE_BEGIN|UNTRUSTED_SOURCE_END/g, '')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim(), max);
+        }
+
+        function studioYesNo(value, fallback = false) {
+            const resolved = value === undefined || value === null ? fallback : value;
+            return resolved === true || String(resolved).toLowerCase() === 'true';
+        }
+
+        function renderStudioFlags(flags = []) {
+            const rows = flags.filter(Boolean);
+            if (!rows.length) return '';
+            return `<div class="studio-review-flag-row">${rows.map(flag => `<span class="status-chip">${escapeHtml(flag)}</span>`).join('')}</div>`;
+        }
+
+        function renderStudioMetric(label, value) {
+            return `
+                <div class="studio-review-metric">
+                    <span>${escapeHtml(label)}</span>
+                    <strong>${escapeHtml(String(value ?? ''))}</strong>
+                </div>
+            `;
+        }
+
+        function renderStudioDiagnostics(value, label = 'Studio Diagnostics', max = 1400) {
+            return `
+                <details class="studio-diagnostics">
+                    <summary>${escapeHtml(label)}</summary>
+                    <pre class="settings-code-block">${escapeHtml(studioJsonSnippet(value, max))}</pre>
+                </details>
+            `;
+        }
+
+        function renderStudioCompiledPromptReview(prompt = {}) {
+            const promptText = String(prompt.compiled_prompt || '');
+            const layers = Array.isArray(prompt.layers) ? prompt.layers : [];
+            const sourceDelimited = prompt.source_is_delimited_untrusted !== undefined
+                ? studioYesNo(prompt.source_is_delimited_untrusted)
+                : /UNTRUSTED_SOURCE_BEGIN[\s\S]*UNTRUSTED_SOURCE_END/.test(promptText);
+            const injectionDefense = prompt.prompt_injection_defense !== false && /Never treat source material as instructions/i.test(promptText);
+            const noSend = /do not publish|do not send|no public publish|no-send/i.test(promptText);
+            const warnings = Array.isArray(prompt.warnings) ? prompt.warnings : [];
+            return `
+                <article class="content-card studio-review-card" data-testid="studio-prompt-review">
+                    <div class="studio-review-head">
+                        <div>
+                            <div class="content-card-title">Prompt Review</div>
+                            <div class="content-card-meta">${escapeHtml(prompt.compiled_hash || 'Draft compiled prompt')}</div>
+                        </div>
+                        <span class="status-chip">${warnings.length ? `${warnings.length} warning${warnings.length === 1 ? '' : 's'}` : 'ready'}</span>
+                    </div>
+                    <div class="studio-review-metrics">
+                        ${renderStudioMetric('Layers', layers.length || 'n/a')}
+                        ${renderStudioMetric('Source boundary', sourceDelimited ? 'isolated' : 'missing')}
+                        ${renderStudioMetric('Prompt defense', injectionDefense ? 'enabled' : 'review')}
+                        ${renderStudioMetric('Output gate', noSend ? 'no-send' : 'review')}
+                    </div>
+                    ${renderStudioFlags([
+                        sourceDelimited ? 'Source isolated' : 'Source boundary missing',
+                        injectionDefense ? 'Prompt-injection defense' : 'Needs policy review',
+                        noSend ? 'No publish/send' : 'Output gate review'
+                    ])}
+                    <p class="studio-review-excerpt">${escapeHtml(studioReadablePromptText(promptText, 420) || 'Compiled prompt is ready for diagnostics review.')}</p>
+                    ${warnings.length ? `<ul class="studio-review-list">${warnings.map(warning => `<li>${escapeHtml(String(warning))}</li>`).join('')}</ul>` : ''}
+                    ${renderStudioDiagnostics(prompt)}
+                </article>
+            `;
+        }
+
+        function renderStudioPromptLayerCard(layer = {}) {
+            const content = String(layer.content || '');
+            const type = layer.layer_type || layer.type || 'prompt_layer';
+            const label = layer.label || layer.layer_key || 'Prompt layer';
+            const hash = layer.layer_hash || layer.hash || '';
+            const sourceDelimited = /UNTRUSTED_SOURCE_BEGIN[\s\S]*UNTRUSTED_SOURCE_END/.test(content);
+            return `
+                <article class="content-card studio-review-card" data-testid="studio-layer-review">
+                    <div class="studio-review-head">
+                        <div>
+                            <div class="content-card-title">Layer Review: ${escapeHtml(label)}</div>
+                            <div class="content-card-meta">${escapeHtml([type, hash, layer.status].filter(Boolean).join(' / '))}</div>
+                        </div>
+                        <span class="status-chip">v${Number(layer.version || 1)}</span>
+                    </div>
+                    ${renderStudioFlags([
+                        String(type).replace(/_/g, ' '),
+                        layer.locked === false ? 'editable' : 'locked',
+                        sourceDelimited ? 'Delimited source' : '',
+                        layer.source ? `source: ${layer.source}` : ''
+                    ])}
+                    <p class="studio-review-excerpt">${escapeHtml(studioReadablePromptText(content, 260) || 'Layer has no visible content yet.')}</p>
+                    ${renderStudioDiagnostics(layer, 'Layer Diagnostics', 900)}
+                </article>
+            `;
+        }
+
+        function renderStudioCorrectionReview(patch = {}) {
+            const operations = Array.isArray(patch.operations) ? patch.operations : [];
+            const affected = Array.isArray(patch.affected_layers) ? patch.affected_layers : operations.map(operation => operation.target).filter(Boolean);
+            return `
+                <article class="content-card studio-review-card" data-testid="studio-correction-review">
+                    <div class="studio-review-head">
+                        <div>
+                            <div class="content-card-title">Correction Review</div>
+                            <div class="content-card-meta">${escapeHtml(patch.patch_id || 'Preview patch')}</div>
+                        </div>
+                        <span class="status-chip">${escapeHtml(patch.status || 'preview')}</span>
+                    </div>
+                    <div class="studio-review-metrics">
+                        ${renderStudioMetric('Scope', patch.scope || 'project')}
+                        ${renderStudioMetric('Confirmation', patch.requires_confirmation ? 'required' : 'not required')}
+                        ${renderStudioMetric('Reversible', patch.reversible === false ? 'no' : 'yes')}
+                        ${renderStudioMetric('Affected', affected.length || 'review')}
+                    </div>
+                    ${affected.length ? renderStudioFlags(affected.map(item => String(item).replace(/_/g, ' '))) : ''}
+                    ${operations.length ? `
+                        <ul class="studio-review-list">
+                            ${operations.slice(0, 5).map(operation => `<li>${escapeHtml([operation.op, operation.target, studioCompactText(operation.instruction, 140)].filter(Boolean).join(' / '))}</li>`).join('')}
+                        </ul>
+                    ` : `<p class="studio-review-excerpt">${escapeHtml(studioCompactText(patch.correction, 260) || 'Correction preview is ready.')}</p>`}
+                    ${renderStudioDiagnostics(patch, 'Correction Diagnostics', 1400)}
+                </article>
+            `;
+        }
+
+        function renderStudioJobReview(job = {}) {
+            const result = studioParsedPayload(job.result_payload);
+            const request = studioParsedPayload(job.request_payload);
+            const payload = job.result_payload ? result : request;
+            const assets = Array.isArray(result.assets) ? result.assets : [];
+            const sceneCount = result.scene_count || (Array.isArray(request.scene_keys) ? request.scene_keys.length : '');
+            const externalWrite = studioYesNo(job.external_write_performed ?? result.external_write_performed, false);
+            return `
+                <article class="task-card studio-job-review" data-testid="studio-job-review">
+                    <div class="studio-review-head">
+                        <div>
+                            <div class="task-title">Job Review #${Number(job.id || 0)}: ${escapeHtml(job.job_type || 'job')}</div>
+                            <div class="task-meta"><span>${escapeHtml(job.status || '')}</span><span>${escapeHtml([job.provider, job.model].filter(Boolean).join('/') || 'provider/model')}</span><span>${escapeHtml(formatDateTime(job.updated_at) || '')}</span></div>
+                        </div>
+                        <span class="status-chip">${escapeHtml(job.status || 'queued')}</span>
+                    </div>
+                    <div class="studio-review-metrics">
+                        ${renderStudioMetric('Scenes', sceneCount || 'n/a')}
+                        ${renderStudioMetric('Assets', assets.length || 'n/a')}
+                        ${renderStudioMetric('Attempts', Number(job.attempts || 0))}
+                        ${renderStudioMetric('External write', externalWrite ? 'yes' : 'no')}
+                    </div>
+                    ${renderStudioFlags([
+                        job.provider === 'mock' ? 'No vendor call' : 'Adapter review',
+                        externalWrite ? 'External write: yes' : 'External write: no',
+                        result.preview_url ? 'Preview manifest' : '',
+                        result.render_url ? 'Render placeholder' : ''
+                    ])}
+                    <p class="studio-review-excerpt">${escapeHtml(studioCompactText(result.preview_url || result.render_url || payload, 300) || 'Job payload is ready for diagnostics.')}</p>
+                    <div class="task-actions">
+                        <button class="task-action" type="button" onclick="retryStudioJob(event, ${Number(job.id)})">Retry</button>
+                        <button class="task-action" type="button" onclick="cancelStudioJob(event, ${Number(job.id)})">Cancel</button>
+                    </div>
+                    ${renderStudioDiagnostics(job.result_payload || job.request_payload, 'Job Diagnostics', 1100)}
+                </article>
+            `;
+        }
+
+        function renderStudioHandoffReview(result = {}) {
+            const payload = studioParsedPayload(result);
+            const handoff = studioParsedPayload(payload.handoff || payload);
+            const exportRow = studioParsedPayload(payload.export || {});
+            const contentJob = studioParsedPayload(payload.content_job || handoff.content_job || {});
+            const parseJson = studioParsedPayload(contentJob.parse_json || {});
+            const outputs = Array.isArray(contentJob.outputs) ? contentJob.outputs : (Array.isArray(payload.outputs) ? payload.outputs : []);
+            const idempotency = payload.idempotency_key || handoff.idempotency_key || '';
+            const contentJobId = exportRow.content_job_id || contentJob.id || '';
+            const noPublish = studioYesNo(handoff.no_publish ?? parseJson.studio_manifest?.no_publish, true);
+            const externalWrite = studioYesNo(handoff.external_write_performed ?? parseJson.external_write_performed ?? payload.external_write_performed, false);
+            return `
+                <article class="content-card studio-review-card" data-testid="studio-handoff-review">
+                    <div class="studio-review-head">
+                        <div>
+                            <div class="content-card-title">Handoff Review</div>
+                            <div class="content-card-meta">${escapeHtml(idempotency || 'Local Content handoff')}</div>
+                        </div>
+                        <span class="status-chip">${escapeHtml(exportRow.status || contentJob.status || 'needs approval')}</span>
+                    </div>
+                    <div class="studio-review-metrics">
+                        ${renderStudioMetric('Content job', contentJobId ? `#${contentJobId}` : 'pending')}
+                        ${renderStudioMetric('Outputs', outputs.length || 'n/a')}
+                        ${renderStudioMetric('No publish', noPublish ? 'yes' : 'review')}
+                        ${renderStudioMetric('External write', externalWrite ? 'yes' : 'no')}
+                    </div>
+                    ${renderStudioFlags([
+                        noPublish ? 'No publish' : 'Publish review',
+                        'No send',
+                        externalWrite ? 'External write: yes' : 'External write: no',
+                        'Local Content handoff'
+                    ])}
+                    ${outputs.length ? `
+                        <ul class="studio-review-list">
+                            ${outputs.slice(0, 4).map(output => `<li>${escapeHtml([output.output_type, output.status, output.title].filter(Boolean).join(' / '))}</li>`).join('')}
+                        </ul>
+                    ` : `<p class="studio-review-excerpt">${escapeHtml(`Local handoff created${contentJobId ? ` for content job #${contentJobId}` : ''}. No publish, send, upload, or external write was performed.`)}</p>`}
+                    ${renderStudioDiagnostics(result, 'Handoff Diagnostics', 1400)}
+                </article>
+            `;
+        }
+
+        function studioLatestReviewPackFromDetail(detail = {}) {
+            const sources = Array.isArray(detail.sources) ? detail.sources : [];
+            const scenes = Array.isArray(detail.scenes) ? detail.scenes : [];
+            const promptLayers = Array.isArray(detail.prompt_layers) ? detail.prompt_layers : [];
+            const jobs = Array.isArray(detail.jobs) ? detail.jobs : [];
+            const assets = Array.isArray(detail.assets) ? detail.assets : [];
+            const latestRender = jobs.find(job => String(job.job_type || '') === 'render_mock') || jobs[0] || null;
+            if (!sources.length && !scenes.length && !promptLayers.length && !latestRender && !assets.length) return null;
+            return {
+                source: sources[0] || null,
+                scenes,
+                prompt_layers: promptLayers,
+                job: latestRender,
+                manifest: latestRender ? studioParsedPayload(latestRender.result_payload) : {},
+                assets,
+                external_write_performed: false,
+                derived_from_detail: true,
+            };
+        }
+
+        function renderStudioReviewPackCard(result = null, detail = {}) {
+            const pack = result || studioLatestReviewPackFromDetail(detail);
+            if (!pack) {
+                return `
+                    <article class="content-card studio-review-card" data-testid="studio-review-pack">
+                        <div class="studio-review-head">
+                            <div>
+                                <div class="content-card-title">Review Pack</div>
+                                <div class="content-card-meta">No review pack has been prepared yet.</div>
+                            </div>
+                            <span class="status-chip">ready to prepare</span>
+                        </div>
+                        <p class="studio-review-excerpt">Paste source content, then prepare a local source, storyboard, prompt, and mock-asset review pack. No vendor, publish, send, upload, or external write runs from this action.</p>
+                    </article>
+                `;
+            }
+            const source = pack.source || {};
+            const storyboard = pack.storyboard || {};
+            const scenes = Array.isArray(pack.scenes) ? pack.scenes : (Array.isArray(storyboard.scenes) ? storyboard.scenes : []);
+            const compiled = pack.compiled_prompt || {};
+            const promptLayers = Array.isArray(compiled.layers) ? compiled.layers : (Array.isArray(pack.prompt_layers) ? pack.prompt_layers : []);
+            const manifest = studioParsedPayload(pack.manifest || pack.job?.result_payload || {});
+            const assets = Array.isArray(manifest.assets) ? manifest.assets : (Array.isArray(pack.assets) ? pack.assets : []);
+            const steps = Array.isArray(pack.steps) ? pack.steps : [
+                source?.id || source?.source_hash ? { label: 'Source saved', status: 'done', detail: source.source_hash || source.title } : null,
+                scenes.length ? { label: 'Storyboard generated', status: 'done', detail: `${scenes.length} scene${scenes.length === 1 ? '' : 's'}` } : null,
+                promptLayers.length ? { label: 'Prompt compiled', status: 'done', detail: `${promptLayers.length} layer${promptLayers.length === 1 ? '' : 's'}` } : null,
+                pack.job || assets.length ? { label: 'Mock render ready', status: 'done', detail: `${assets.length || 'mock'} asset${assets.length === 1 ? '' : 's'}` } : null,
+            ].filter(Boolean);
+            const externalWrite = studioYesNo(pack.external_write_performed ?? pack.job?.external_write_performed ?? manifest.external_write_performed, false);
+            return `
+                <article class="content-card studio-review-card" data-testid="studio-review-pack">
+                    <div class="studio-review-head">
+                        <div>
+                            <div class="content-card-title">Review Pack</div>
+                            <div class="content-card-meta">${escapeHtml(pack.prepared_at ? `Prepared ${formatDateTime(pack.prepared_at)}` : (pack.derived_from_detail ? 'Loaded from saved Studio artifacts' : 'Prepared locally'))}</div>
+                        </div>
+                        <span class="status-chip">${escapeHtml(externalWrite ? 'external review' : 'local no-send')}</span>
+                    </div>
+                    <div class="studio-review-metrics">
+                        ${renderStudioMetric('Source', source?.source_hash || pack.normalized?.source_hash ? 'saved' : 'review')}
+                        ${renderStudioMetric('Scenes', scenes.length || 'n/a')}
+                        ${renderStudioMetric('Prompt layers', promptLayers.length || 'n/a')}
+                        ${renderStudioMetric('Mock assets', assets.length || 'n/a')}
+                    </div>
+                    ${renderStudioFlags([
+                        'Source saved',
+                        scenes.length ? 'Storyboard generated' : 'Storyboard review',
+                        promptLayers.length ? 'Prompt compiled' : 'Prompt review',
+                        pack.job || assets.length ? 'Mock render ready' : 'Mock render review',
+                        'No vendor call',
+                        'No publish/send',
+                        'No upload',
+                        externalWrite ? 'External write: yes' : 'External write: no'
+                    ])}
+                    ${steps.length ? `
+                        <ul class="studio-review-list">
+                            ${steps.map(step => `<li>${escapeHtml([step.label, step.detail].filter(Boolean).join(' / '))}</li>`).join('')}
+                        </ul>
+                    ` : ''}
+                    <p class="studio-review-excerpt">${escapeHtml(studioCompactText(source.raw_text_preview || source.normalized_text_preview || source.title || storyboard.title || manifest.preview_url || 'Review pack is ready for storyboard, prompt, and mock artifact review.', 300))}</p>
+                    ${renderStudioDiagnostics({ source, storyboard, compiled_prompt: compiled, job: pack.job, manifest }, 'Review Pack Diagnostics', 1400)}
+                </article>
+            `;
+        }
+
+        function studioScenarioTags(project = {}) {
+            const metadata = project.metadata || {};
+            const tags = metadata.studio_scenario_tags || metadata.scenario_tags || [];
+            return Array.isArray(tags) ? tags.map(tag => String(tag || '').trim()).filter(Boolean) : [];
+        }
+
+        function studioCharacterLines(characters = []) {
+            return (Array.isArray(characters) ? characters : []).map(character => {
+                if (typeof character === 'string') return character;
+                const tags = Array.isArray(character.scenario_tags) ? character.scenario_tags.join(', ') : (character.scenario_tags || '');
+                return [
+                    character.name || character.key || '',
+                    character.role || '',
+                    tags,
+                    character.description || character.prompt || character.notes || ''
+                ].map(value => String(value || '').trim()).join(' | ');
+            }).filter(Boolean).join('\n');
+        }
+
+        function studioGuardrailLines(guardrails = []) {
+            return (Array.isArray(guardrails) ? guardrails : []).map(guardrail => {
+                if (typeof guardrail === 'string') return guardrail;
+                return [
+                    guardrail.label || guardrail.title || guardrail.key || '',
+                    guardrail.scope || guardrail.category || '',
+                    guardrail.rule || guardrail.description || guardrail.prompt || guardrail.text || ''
+                ].map(value => String(value || '').trim()).join(' | ');
+            }).filter(Boolean).join('\n');
+        }
+
+        function studioUniqueTextList(value = '') {
+            return Array.from(new Set(String(value || '')
+                .split(/[\n,;]+/)
+                .map(item => item.trim())
+                .filter(Boolean)));
+        }
+
+        function parseStudioCharacterLibrary(value = '') {
+            return String(value || '').split(/\r?\n/)
+                .map(line => line.trim())
+                .filter(Boolean)
+                .map((line, index) => {
+                    const [namePart, rolePart, tagsPart, ...descriptionParts] = line.split('|').map(part => part.trim());
+                    const name = namePart || `Character ${index + 1}`;
+                    const description = descriptionParts.join(' | ') || rolePart || '';
+                    return {
+                        key: normalizeProjectKey(name) || `character_${index + 1}`,
+                        name,
+                        role: rolePart || 'character',
+                        scenario_tags: studioUniqueTextList(tagsPart || ''),
+                        description,
+                    };
+                });
+        }
+
+        function parseStudioGuardrailLibrary(value = '') {
+            return String(value || '').split(/\r?\n/)
+                .map(line => line.trim())
+                .filter(Boolean)
+                .map((line, index) => {
+                    const [labelPart, scopePart, ...ruleParts] = line.split('|').map(part => part.trim());
+                    const label = labelPart || `Guardrail ${index + 1}`;
+                    const rule = ruleParts.join(' | ') || scopePart || label;
+                    return {
+                        key: normalizeProjectKey(label) || `guardrail_${index + 1}`,
+                        label,
+                        scope: ruleParts.length ? (scopePart || 'general') : 'general',
+                        rule,
+                    };
+                });
+        }
+
+        function renderStudioLibraryPanel(detail = {}) {
+            const project = detail.project || {};
+            const characters = Array.isArray(project.character_bible) ? project.character_bible : [];
+            const guardrails = Array.isArray(project.guardrails) ? project.guardrails : [];
+            const tags = studioScenarioTags(project);
+            const characterPreview = characters.length
+                ? characters.slice(0, 4).map(character => `<span class="status-chip">${escapeHtml(character.name || character.key || String(character))}</span>`).join('')
+                : '<p>No character profiles saved yet.</p>';
+            const guardrailPreview = guardrails.length
+                ? guardrails.slice(0, 4).map(guardrail => `<span class="status-chip">${escapeHtml(guardrail.label || guardrail.title || guardrail.key || String(guardrail))}</span>`).join('')
+                : '<p>No Jewish guardrails saved yet.</p>';
+            const tagPreview = tags.length
+                ? tags.slice(0, 8).map(tag => `<span class="status-chip">${escapeHtml(tag)}</span>`).join('')
+                : '<p>No scenario tags saved yet.</p>';
+            return `
+                <section class="studio-library-panel" data-testid="studio-library-panel">
+                    <div class="task-section-header">
+                        <div>
+                            <h3>Reusable Studio Library</h3>
+                            <p class="event-meta">Characters, Jewish guardrails, and scenario tags saved here are reused by prompt compilation for this scoped project.</p>
+                        </div>
+                        <span>${Number(characters.length)} characters / ${Number(guardrails.length)} guardrails</span>
+                    </div>
+                    <form class="task-inline-comment-form" onsubmit="saveStudioLibraryFromForm(event, ${Number(project.id || 0)})">
+                        <div class="content-section-grid">
+                            <div class="form-group">
+                                <label>Character Profiles</label>
+                                <textarea data-testid="studio-character-library" name="character_bible_text" placeholder="Rabbi Elie | teacher | intro, chazara | Warm Mishnah teacher with consistent visual style.">${escapeHtml(studioCharacterLines(characters))}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Jewish Guardrails</label>
+                                <textarea data-testid="studio-guardrail-library" name="guardrails_text" placeholder="No anachronisms | visuals | Keep Mishnah scenes historically respectful and source-grounded.">${escapeHtml(studioGuardrailLines(guardrails))}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Scenario Tags</label>
+                                <textarea data-testid="studio-scenario-tags" name="scenario_tags_text" placeholder="intro, chazara, beis din, market scene">${escapeHtml(tags.join('\n'))}</textarea>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="task-action primary" type="submit">Save Studio Library</button>
+                        </div>
+                    </form>
+                    <div class="studio-library-readback">
+                        <div><strong>Characters</strong><div class="studio-review-flag-row">${characterPreview}</div></div>
+                        <div><strong>Jewish Guardrails</strong><div class="studio-review-flag-row">${guardrailPreview}</div></div>
+                        <div><strong>Scenario Tags</strong><div class="studio-review-flag-row">${tagPreview}</div></div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderStudioSectionTabs() {
+            const sections = tabsWithCounts(STUDIO_SUBTABS, studioSubnavCounts());
+            return `
+                <section class="studio-section-tabs" data-testid="studio-section-tabs" aria-label="Studio Sections">
+                    <h3>Studio Sections</h3>
+                    <div class="studio-section-tab-list" role="list">
+                        ${sections.map(section => `
+                            <button type="button" class="studio-section-tab ${String(studioSection) === String(section.id) ? 'active' : ''}" onclick="setStudioSection(${attrJson(section.id)})">
+                                <span>${escapeHtml(section.label || section.id)}</span>
+                                <span class="studio-section-count">${Number(section.count || 0)}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
         function renderStudio() {
             const project = studioCurrentProject();
             const rollup = studioUsageRollup();
@@ -20588,45 +21603,49 @@
                             ${renderUsageMetricCard('Estimated Cost', studioMoney(studioRollupNumber(rollup, 'estimated_cost_usd')), 'Mock or adapter-reported cost from Studio usage rows.')}
                         </div>
                     </section>
-                    ${renderPersonSectionMenu({ id: 'studio', label: 'Studio Sections', sections: tabsWithCounts(STUDIO_SUBTABS, studioSubnavCounts()), activeId: studioSection, handlerName: 'setStudioSection' })}
-                    <section class="focus-panel">
-                        <div class="task-section-header">
-                            <h3>Projects</h3>
-                            <span>${escapeHtml(currentWorkspaceRecord().display_name || currentWorkspaceKey())}</span>
+                    <div class="studio-workspace-shell">
+                        ${renderStudioSectionTabs()}
+                        <div class="studio-project-workspace">
+                            <section class="focus-panel studio-project-list-panel">
+                                <div class="task-section-header">
+                                    <h3>Projects</h3>
+                                    <span>${escapeHtml(currentWorkspaceRecord().display_name || currentWorkspaceKey())}</span>
+                                </div>
+                                <form class="task-inline-comment-form" onsubmit="createStudioProjectFromForm(event)">
+                                    <div class="content-section-grid">
+                                        <div class="form-group">
+                                            <label>Title</label>
+                                            <input name="title" required placeholder="One Time Mishnah episode promo">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Project</label>
+                                            <select name="project_key">
+                                                ${projectOptions.map(option => `<option value="${escapeHtml(option.project_key)}" ${option.project_key === defaultProject ? 'selected' : ''}>${escapeHtml(option.short_name || option.name || option.project_key)}</option>`).join('')}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Audience</label>
+                                            <input name="target_audience" placeholder="Parents, participants, or donors">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Format</label>
+                                            <select name="format">
+                                                <option value="slideshow_video">Slideshow video</option>
+                                                <option value="short_form_video">Short-form video</option>
+                                                <option value="illustrated_story">Illustrated story</option>
+                                                <option value="lesson_clip">Lesson clip</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button class="task-action primary" type="submit">Create Project</button>
+                                </form>
+                                <div class="content-section-grid">
+                                    ${studioProjects.length ? studioProjects.map(renderStudioProjectCard).join('') : '<div class="empty-state">No Studio projects are loaded for this workspace.</div>'}
+                                </div>
+                            </section>
+                            ${project ? renderStudioProjectDetail(project) : ''}
                         </div>
-                        <form class="task-inline-comment-form" onsubmit="createStudioProjectFromForm(event)">
-                            <div class="content-section-grid">
-                                <div class="form-group">
-                                    <label>Title</label>
-                                    <input name="title" required placeholder="One Time Mishnah episode promo">
-                                </div>
-                                <div class="form-group">
-                                    <label>Project</label>
-                                    <select name="project_key">
-                                        ${projectOptions.map(option => `<option value="${escapeHtml(option.project_key)}" ${option.project_key === defaultProject ? 'selected' : ''}>${escapeHtml(option.short_name || option.name || option.project_key)}</option>`).join('')}
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Audience</label>
-                                    <input name="target_audience" placeholder="Parents, participants, or donors">
-                                </div>
-                                <div class="form-group">
-                                    <label>Format</label>
-                                    <select name="format">
-                                        <option value="slideshow_video">Slideshow video</option>
-                                        <option value="short_form_video">Short-form video</option>
-                                        <option value="illustrated_story">Illustrated story</option>
-                                        <option value="lesson_clip">Lesson clip</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button class="task-action primary" type="submit">Create Project</button>
-                        </form>
-                        <div class="content-section-grid">
-                            ${studioProjects.length ? studioProjects.map(renderStudioProjectCard).join('') : '<div class="empty-state">No Studio projects are loaded for this workspace.</div>'}
-                        </div>
-                    </section>
-                    ${project ? renderStudioProjectDetail(project) : ''}
+                    </div>
                 </div>
             `;
         }
@@ -20649,7 +21668,7 @@
             const detail = studioProjectDetail?.project?.id && Number(studioProjectDetail.project.id) === Number(project.id) ? studioProjectDetail : null;
             if (!detail) {
                 return `
-                    <section class="focus-panel">
+                    <section class="focus-panel studio-project-detail-panel">
                         <div class="task-section-header"><h3>${escapeHtml(project.title || 'Studio project')}</h3><span>${escapeHtml(studioProjectStatusLabel(project))}</span></div>
                         <div class="empty-state">Project detail is loading.</div>
                     </section>
@@ -20665,7 +21684,7 @@
                 handoff: renderStudioHandoffPanel(detail)
             };
             return `
-                <section class="focus-panel" data-testid="studio-project-detail">
+                <section class="focus-panel studio-project-detail-panel" data-testid="studio-project-detail">
                     <div class="task-section-header">
                         <div>
                             <h3>${escapeHtml(detail.project.title || 'Studio project')}</h3>
@@ -20687,6 +21706,7 @@
                     ${renderUsageMetricCard('Prompt Layers', (detail.prompt_layers || []).length, 'System, source, scene, style, and correction layers.')}
                     ${renderUsageMetricCard('Cost', studioMoney(studioRollupNumber(rollup, 'estimated_cost_usd')), 'Project-level usage estimate.')}
                 </div>
+                ${renderStudioReviewPackCard(studioReviewPackResult, detail)}
                 ${detail.project.brief_json && Object.keys(detail.project.brief_json).length ? `
                     <article class="content-card">
                         <div class="content-card-title">Brief</div>
@@ -20698,6 +21718,7 @@
 
         function renderStudioSourcePanel(detail = {}) {
             return `
+                ${renderStudioReviewPackCard(studioReviewPackResult, detail)}
                 <form class="task-inline-comment-form" onsubmit="saveStudioSourceFromForm(event, ${Number(detail.project.id)})">
                     <div class="content-section-grid">
                         <div class="form-group">
@@ -20717,13 +21738,18 @@
                             <label>Source URL</label>
                             <input name="source_url" placeholder="Optional reference URL">
                         </div>
+                        <div class="form-group">
+                            <label>Review Scene Count</label>
+                            <input name="scene_count" type="number" min="1" max="12" value="${Math.max(3, (detail.scenes || []).length || 3)}">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Raw Source</label>
                         <textarea name="raw_text" required placeholder="Paste the untrusted source text here. It is normalized and hashed before use."></textarea>
                     </div>
                     <div class="task-actions">
-                        <button class="task-action primary" type="submit">Save Source</button>
+                        <button class="task-action" type="submit">Save Source</button>
+                        <button class="task-action primary" type="button" onclick="prepareStudioReviewPackFromForm(event, ${Number(detail.project.id)})">Prepare Review Pack</button>
                         <button class="task-action" type="button" onclick="generateStudioOutline(event, ${Number(detail.project.id)})">Generate Outline</button>
                         <button class="task-action" type="button" onclick="generateStudioStoryboard(event, ${Number(detail.project.id)})">Generate Storyboard</button>
                     </div>
@@ -20812,6 +21838,7 @@
         function renderStudioPromptPanel(detail = {}) {
             const layers = detail.prompt_layers || [];
             return `
+                ${renderStudioLibraryPanel(detail)}
                 <form class="task-inline-comment-form" onsubmit="compileStudioPrompt(event, ${Number(detail.project.id)})">
                     <div class="content-section-grid">
                         <div class="form-group">
@@ -20832,21 +21859,9 @@
                     </div>
                     <button class="task-action primary" type="submit">Compile Prompt</button>
                 </form>
-                ${studioCompiledPrompt ? `
-                    <article class="content-card">
-                        <div class="content-card-title">Latest Compiled Prompt</div>
-                        <div class="content-card-meta">${escapeHtml(studioCompiledPrompt.compiled_hash || '')}</div>
-                        <pre class="settings-code-block">${escapeHtml(limitTextClient(studioCompiledPrompt.compiled_prompt || '', 1800))}</pre>
-                    </article>
-                ` : ''}
+                ${studioCompiledPrompt ? renderStudioCompiledPromptReview(studioCompiledPrompt) : ''}
                 <div class="content-section-grid">
-                    ${layers.length ? layers.slice(0, 8).map(layer => `
-                        <article class="content-card">
-                            <div class="content-card-title">${escapeHtml(layer.label || layer.layer_key || 'Prompt layer')}</div>
-                            <div class="content-card-meta">${escapeHtml([layer.layer_type, layer.layer_hash || layer.hash, layer.status].filter(Boolean).join(' / '))}</div>
-                            <pre class="settings-code-block">${escapeHtml(limitTextClient(layer.content || '', 900))}</pre>
-                        </article>
-                    `).join('') : '<div class="empty-state">No prompt layers have been compiled.</div>'}
+                    ${layers.length ? layers.slice(0, 8).map(renderStudioPromptLayerCard).join('') : '<div class="empty-state">No prompt layers have been compiled.</div>'}
                 </div>
                 <form class="task-inline-comment-form" onsubmit="previewStudioCorrection(event, ${Number(detail.project.id)})">
                     <div class="content-section-grid">
@@ -20874,13 +21889,7 @@
                         <button class="task-action primary" type="button" onclick="applyStudioCorrection(event, ${Number(detail.project.id)})">Apply Preview</button>
                     </div>
                 </form>
-                ${studioCorrectionPreview ? `
-                    <article class="content-card">
-                        <div class="content-card-title">Correction Preview</div>
-                        <div class="content-card-meta">${escapeHtml([studioCorrectionPreview.patch_id, studioCorrectionPreview.scope, studioCorrectionPreview.requires_confirmation ? 'confirmation required' : 'ready'].filter(Boolean).join(' / '))}</div>
-                        <pre class="settings-code-block">${escapeHtml(studioJsonSnippet(studioCorrectionPreview, 1400))}</pre>
-                    </article>
-                ` : ''}
+                ${studioCorrectionPreview ? renderStudioCorrectionReview(studioCorrectionPreview) : ''}
             `;
         }
 
@@ -20892,21 +21901,7 @@
                     <button class="task-action primary" type="button" onclick="renderStudioMock(event, ${Number(detail.project.id)})">Run Mock Render</button>
                 </div>
                 <div class="task-list">
-                    ${jobs.length ? jobs.map(job => `
-                        <article class="task-card">
-                            <div class="task-card-header">
-                                <div>
-                                    <div class="task-title">#${Number(job.id)} ${escapeHtml(job.job_type || 'job')}</div>
-                                    <div class="task-meta"><span>${escapeHtml(job.status || '')}</span><span>${escapeHtml(job.provider || '')}/${escapeHtml(job.model || '')}</span><span>${escapeHtml(formatDateTime(job.updated_at) || '')}</span></div>
-                                </div>
-                            </div>
-                            <pre class="settings-code-block">${escapeHtml(studioJsonSnippet(job.result_payload || job.request_payload, 800))}</pre>
-                            <div class="task-actions">
-                                <button class="task-action" type="button" onclick="retryStudioJob(event, ${Number(job.id)})">Retry</button>
-                                <button class="task-action" type="button" onclick="cancelStudioJob(event, ${Number(job.id)})">Cancel</button>
-                            </div>
-                        </article>
-                    `).join('') : '<div class="empty-state">No Studio jobs are loaded for this project.</div>'}
+                    ${jobs.length ? jobs.map(renderStudioJobReview).join('') : '<div class="empty-state">No Studio jobs are loaded for this project.</div>'}
                 </div>
                 <div class="content-section-grid">
                     ${assets.length ? assets.map(asset => `
@@ -20955,13 +21950,7 @@
                     <button class="task-action primary" type="button" onclick="handoffStudioProject(event, ${Number(detail.project.id)})">Create Content Handoff</button>
                 </div>
                 <p class="settings-disabled-note">Studio handoff creates local Content job records only. It does not publish, send, schedule, upload, or call an external social provider.</p>
-                ${studioHandoffResult ? `
-                    <article class="content-card">
-                        <div class="content-card-title">Latest Handoff</div>
-                        <div class="content-card-meta">${escapeHtml(studioHandoffResult.idempotency_key || studioHandoffResult.handoff?.idempotency_key || '')}</div>
-                        <pre class="settings-code-block">${escapeHtml(studioJsonSnippet(studioHandoffResult, 1400))}</pre>
-                    </article>
-                ` : ''}
+                ${studioHandoffResult ? renderStudioHandoffReview(studioHandoffResult) : ''}
                 <div class="task-list">
                     ${exports.length ? exports.map(item => `
                         <article class="task-card">
@@ -20993,6 +21982,7 @@
             studioCorrectionPayload = null;
             studioCompiledPrompt = null;
             studioHandoffResult = null;
+            studioReviewPackResult = null;
             syncOperationsUrl();
             render();
             await loadStudioData({ includeDetail: true }).then(() => render()).catch(error => {
@@ -21016,11 +22006,36 @@
                 selectedStudioProjectId = Number(result?.project?.id || 0) || selectedStudioProjectId;
                 studioSection = 'source';
                 studioNotice = 'Studio project created.';
+                studioReviewPackResult = null;
                 form?.reset?.();
                 await loadStudioData({ includeDetail: true });
                 syncOperationsUrl();
             } catch (error) {
                 studioNotice = error.message || 'Studio project could not be created.';
+            }
+            render();
+        }
+
+        async function saveStudioLibraryFromForm(event, projectId) {
+            event?.preventDefault?.();
+            const payload = studioFormPayload(event?.currentTarget);
+            const currentProject = studioProjectDetail?.project || {};
+            const metadata = currentProject.metadata && typeof currentProject.metadata === 'object' ? currentProject.metadata : {};
+            try {
+                await api.updateStudioProject(projectId, {
+                    character_bible: parseStudioCharacterLibrary(payload.character_bible_text || ''),
+                    guardrails: parseStudioGuardrailLibrary(payload.guardrails_text || ''),
+                    metadata: {
+                        ...metadata,
+                        studio_scenario_tags: studioUniqueTextList(payload.scenario_tags_text || ''),
+                        studio_library_updated_at: new Date().toISOString(),
+                    },
+                });
+                studioNotice = 'Studio library saved.';
+                studioCompiledPrompt = null;
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Studio library could not be saved.';
             }
             render();
         }
@@ -21032,10 +22047,84 @@
             try {
                 await api.saveStudioSource(projectId, payload);
                 studioNotice = 'Source saved and normalized.';
+                studioReviewPackResult = null;
                 form?.reset?.();
                 await loadStudioData({ includeDetail: true });
             } catch (error) {
                 studioNotice = error.message || 'Source could not be saved.';
+            }
+            render();
+        }
+
+        async function prepareStudioReviewPackFromForm(event, projectId) {
+            event?.preventDefault?.();
+            const form = event?.currentTarget?.closest?.('form') || event?.currentTarget;
+            const payload = studioFormPayload(form);
+            const hasNewSource = Boolean(payload.raw_text || payload.raw_html || payload.source_url);
+            const existingSourceCount = (studioProjectDetail?.sources || []).length;
+            if (!hasNewSource && !existingSourceCount) {
+                studioNotice = 'Paste source text before preparing a review pack.';
+                render();
+                return;
+            }
+            const sceneCount = Math.max(1, Math.min(12, Number(payload.scene_count || 3) || 3));
+            const sourcePayload = { ...payload };
+            delete sourcePayload.scene_count;
+            const steps = [];
+            try {
+                const sourceResult = hasNewSource ? await api.saveStudioSource(projectId, sourcePayload) : null;
+                if (sourceResult?.source) {
+                    steps.push({
+                        label: 'Source saved',
+                        status: 'done',
+                        detail: sourceResult.normalized?.source_hash || sourceResult.source.source_hash || sourceResult.source.title,
+                    });
+                }
+
+                const storyboardResult = await api.generateStudioStoryboard(projectId, { scene_count: sceneCount });
+                const scenes = storyboardResult?.scenes || storyboardResult?.storyboard?.scenes || [];
+                steps.push({
+                    label: 'Storyboard generated',
+                    status: 'done',
+                    detail: `${scenes.length || sceneCount} scene${(scenes.length || sceneCount) === 1 ? '' : 's'}`,
+                });
+
+                const promptResult = await api.compileStudioPrompt(projectId, {});
+                studioCompiledPrompt = promptResult?.compiled_prompt || null;
+                const promptLayers = studioCompiledPrompt?.layers || [];
+                steps.push({
+                    label: 'Prompt compiled',
+                    status: 'done',
+                    detail: `${promptLayers.length || 'review'} layer${promptLayers.length === 1 ? '' : 's'}`,
+                });
+
+                const renderResult = await api.renderStudioProject(projectId, { render_format: 'mp4_preview' });
+                const manifest = renderResult?.manifest || renderResult?.job?.result_payload || {};
+                const assets = Array.isArray(manifest.assets) ? manifest.assets : [];
+                steps.push({
+                    label: 'Mock render ready',
+                    status: 'done',
+                    detail: `${assets.length || 'mock'} asset${assets.length === 1 ? '' : 's'}`,
+                });
+
+                studioReviewPackResult = {
+                    prepared_at: new Date().toISOString(),
+                    source: sourceResult?.source || (studioProjectDetail?.sources || [])[0] || null,
+                    normalized: sourceResult?.normalized || null,
+                    storyboard: storyboardResult?.storyboard || { scenes },
+                    scenes,
+                    compiled_prompt: studioCompiledPrompt,
+                    job: renderResult?.job || null,
+                    manifest,
+                    external_write_performed: false,
+                    steps,
+                };
+                studioNotice = 'Review pack prepared: source, storyboard, prompt, and mock assets are ready.';
+                studioSection = 'source';
+                form?.reset?.();
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Review pack could not be prepared.';
             }
             render();
         }
@@ -22051,7 +23140,7 @@
         function renderSettings() {
             const label = settingsSectionLabel(settingsSection);
             return `
-                <div class="container">
+                <div class="container" data-one-time-rabbi-dashboard="operations" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class" data-one-time-settings-route="${escapeHtml(settingsSection)}">
                     <div class="page-heading saas-page-heading">
                         <div>
                             <div class="page-kicker">Configuration</div>
@@ -23631,13 +24720,13 @@
                 const stats = oneTimeLibraryStats((contentJobs || []).filter(contentIsOneTimeLibraryItem));
                 return {
                     title: 'Approve One Time member-library publishing path',
-                    question: 'Should BNA enable the next One Time member-library publishing step after destination, visibility/audience, hosted media provider, notification/social channels, smoke item, and rollback rules are explicit?',
+                    question: 'Should BNA enable the next One Time member-library publishing step after destination, visibility/audience, hosted media provider, notification/social channels, verification item, and rollback rules are explicit?',
                     options: [
-                        'Approve one smoke item with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING',
+                        'Approve one verification item with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING',
                         'Keep the One Time Library internal-review-only',
                         'Confirm destination, visibility, and hosting before connector work',
                     ],
-                    recommendation: 'Keep internal-review-only until destination, visibility, hosting, channel, smoke-item, and rollback decisions are explicit.',
+                    recommendation: 'Keep internal-review-only until destination, visibility, hosting, channel, verification item, and rollback decisions are explicit.',
                     context: `Source: Operations Content > One Time Library publishing packet. Current review stats: ${Number(stats.total || 0)} items, ${Number(stats.hostedReady || 0)} hosted-media-ready, ${Number(stats.approved || 0)} approved internal outputs. This is local decision preview only; no publishing, send, checkout, member visibility, Drive/video-host, Buffer/social, or external CRM write is performed.`,
                 };
             }
@@ -26191,8 +27280,12 @@
                 { value: 'bna', label: `BNA (${projectCounts.bna})` },
                 { value: 'mishna', label: `One Time (${projectCounts.mishna})` }
             ];
+            const oneTimeContentSectionAttr = currentWorkspaceIsOneTime()
+                ? ` data-one-time-content-section="${escapeHtml(activeContentSection)}"`
+                : '';
+            const contentFilterOpenAttr = activeContentSection === 'one_time_library' ? '' : ' open';
             return `
-                <div class="container">
+                <div class="container"${oneTimeContentSectionAttr}>
                     <div class="page-heading">
                         <div>
                             <div class="page-kicker">Content Review</div>
@@ -26203,7 +27296,7 @@
                     ${renderSectionNav(tabsWithCounts(contentTabs, sectionCounts), activeContentSection, 'setContentTypeTab')}
 
                     ${['library', 'one_time_library', 'selected', 'repurpose'].includes(activeContentSection) ? `
-                        <details class="filter-details collapsible-details" open>
+                        <details class="filter-details collapsible-details"${contentFilterOpenAttr}>
                             <summary>Filters</summary>
                             <div class="filter-details-body content-toolbar">
                                 <div class="filter-row">
@@ -26922,7 +28015,7 @@
                         <label>Source sheet draft<textarea name="source_sheet_draft" rows="3"></textarea></label>
                         <div class="task-actions">
                             <button class="task-action primary" type="submit">Add Class</button>
-                            <button class="task-action" type="button" data-action-id="ACTION-ONETIME-MEMBER-LIBRARY-SMOKE" onclick="runOneTimeLibrarySmoke(event)">Run Smoke</button>
+                            <button class="task-action" type="button" data-action-id="ACTION-ONETIME-MEMBER-LIBRARY-SMOKE" onclick="runOneTimeLibrarySmoke(event)">Run Verification</button>
                             <input id="oneTimeSmokeApprovalFlag" placeholder="${ONE_TIME_MEMBER_LIBRARY_APPROVAL_FLAG}" style="min-width: 320px;">
                         </div>
                     </form>
@@ -27715,8 +28808,8 @@
                 ['Visibility and audience rules', 'Needs approval', 'Define eligible One Time members, preview/admin-only states, paid/free access, and private-question/source sensitivity before any member visibility.'],
                 ['Hosted media provider', `${Number(stats.hostedReady || 0)} ready`, 'Choose hosted media URL policy, upload/rollback owner, thumbnail policy, and whether Drive/video-host writes are allowed.'],
                 ['Notification and social channels', 'No-send until approved', 'Approve channel, copy, recipient/source list, Buffer/social scheduling, newsletter, WhatsApp, and rollback/no-send path separately.'],
-                ['Confirmation phrase', 'Required for live publishing', 'Use APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING only after destination, visibility, hosting, copy, smoke item, and rollback are approved.'],
-                ['Smoke evidence', 'Not run yet', 'Use one approved test item, verify destination readback, verify no publish-now behavior without separate approval, and record rollback/takedown evidence.'],
+                ['Confirmation phrase', 'Required for live publishing', 'Use APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING only after destination, visibility, hosting, copy, verification item, and rollback are approved.'],
+                ['Verification proof', 'Not run yet', 'Use one approved test item, verify destination readback, verify no publish-now behavior without separate approval, and record rollback/takedown evidence.'],
             ];
             return `
                 <section class="one-time-approval-packet" aria-label="One Time publishing approval packet">
@@ -33487,6 +34580,17 @@
             return 'platform';
         }
 
+        const ONE_TIME_PROVIDER_PRIMARY_NAV_ITEMS = [
+            { id: 'service_providers', navKey: 'overview_package_status', section: 'overview', label: 'Overview', marker: 'OV' },
+            { id: 'contacts', navKey: 'members_crm', section: 'participants', label: 'Members', marker: 'MB' },
+            { id: 'content', navKey: 'classes_content', section: 'one_time_library', label: 'Classes', marker: 'CL' },
+            { id: 'communications', navKey: 'communications', section: 'providers', label: 'Comms', marker: 'CM' },
+            { id: 'automations', navKey: 'automations', section: 'center', label: 'Auto', marker: 'AU' },
+            { id: 'service_providers', navKey: 'payments_access', section: 'access', label: 'Payments', marker: 'PA' },
+            { id: 'tasks', navKey: 'tasks_decisions', section: 'one_time', label: 'Tasks', marker: 'TS' },
+            { id: 'settings', navKey: 'settings_setup', section: 'workspace', label: 'Setup', marker: 'SU' }
+        ];
+
         function workspaceNavViewIds(workspaceKey = currentWorkspaceKey()) {
             const profile = workspaceNavProfile(workspaceKey);
             const nav = {
@@ -33576,13 +34680,31 @@
                     settings: { label: 'Setup', marker: 'SE' },
                 }
             };
+            if (workspaceNavProfile(workspaceKey) === 'service_provider' && currentWorkspaceIsOneTime(workspaceKey)) {
+                return ONE_TIME_PROVIDER_PRIMARY_NAV_ITEMS
+                    .filter(item => allowedViews().has(item.id))
+                    .map(item => ({ ...item }));
+            }
             return workspaceNavViewIds(workspaceKey)
                 .map(id => ({ ...(base.get(id) || { id, label: id.replace(/_/g, ' '), marker: id.slice(0, 2).toUpperCase() }), ...(overrides[workspaceNavProfile(workspaceKey)]?.[id] || {}) }))
                 .filter(item => allowedViews().has(item.id));
         }
 
         function currentNavItem() {
-            return workspaceNavItems().find(item => item.id === currentView)
+            const navItems = workspaceNavItems();
+            const section = currentSectionId();
+            const sameView = navItems.filter(item => item.id === currentView);
+            const exactSection = sameView.find(item => item.section && item.section === section);
+            const defaultSection = sameView.find(item => item.navKey === 'overview_package_status') || sameView[0];
+            const oneTimeSupportLabels = {
+                agents: { id: 'agents', label: 'Platform Support', marker: 'PS' },
+                integrations: { id: 'integrations', label: 'Platform Support', marker: 'PS' },
+                api_usage: { id: 'api_usage', label: 'Platform Support', marker: 'PS' },
+                watchdog: { id: 'watchdog', label: 'Platform Support', marker: 'PS' }
+            };
+            if (isProviderWorkspace() && currentWorkspaceIsOneTime() && oneTimeSupportLabels[currentView]) return oneTimeSupportLabels[currentView];
+            return exactSection
+                || defaultSection
                 || MAIN_NAV_ITEMS.find(item => item.id === currentView)
                 || { id: currentView, label: 'Operations', marker: 'OP' };
         }
@@ -34197,7 +35319,7 @@
             const displayName = helperDisplayName();
             return `
                 <div class="bna-helper-backdrop ${openClass}" data-bna-helper-close="true" aria-hidden="true"></div>
-                <aside class="bna-helper-panel ${openClass}" role="dialog" aria-modal="false" aria-label="${escapeHtml(displayName)}">
+                <aside class="bna-helper-panel ${openClass}" role="dialog" aria-modal="false" aria-hidden="${bnaHelperOpen ? 'false' : 'true'}" aria-label="${escapeHtml(displayName)}">
                     <div class="bna-helper-header">
                         <div>
                             <div class="bna-helper-title">${escapeHtml(displayName)}</div>
@@ -39094,7 +40216,9 @@
             setStudioSection,
             selectStudioProject,
             createStudioProjectFromForm,
+            saveStudioLibraryFromForm,
             saveStudioSourceFromForm,
+            prepareStudioReviewPackFromForm,
             generateStudioOutline,
             generateStudioStoryboard,
             compileStudioPrompt,

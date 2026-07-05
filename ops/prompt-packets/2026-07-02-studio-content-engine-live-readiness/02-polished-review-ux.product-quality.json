@@ -1,0 +1,601 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-962",
+  "parent_raw_id": "RAW-20260702-010",
+  "source_statement_ids": [
+    "SRC-20260702-010-002",
+    "SRC-20260702-010-005"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-960",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-960"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260702-010-studio-content-engine-live-readiness.md",
+      "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/01-current-state-studio-audit.md",
+      "public/operations.html",
+      "ops/action-registry.json",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js"
+    ],
+    "produces": [
+      "public/operations.html",
+      "ops/action-registry.json",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-overview.png",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-prompt-review.png",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/02-polished-review-ux.product-quality.json",
+    "terminal_condition": "Studio prompt, job, and handoff readbacks use structured review cards by default, with raw payloads kept behind explicit diagnostics.",
+    "handoff_target": "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Studio review readback implementation packet",
+  "created_at": "2026-07-02T22:15:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-010",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "The operator saw code-like Studio output and asked to make the section usable.",
+      "The current audit isolates prompt, job, and handoff readbacks as the first UI implementation slice."
+    ],
+    "affected_workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+    "affected_view_classes": [
+      "SHLOIMIE_PLATFORM_SUPPORT",
+      "RABBI_PROVIDER_ADMIN"
+    ],
+    "affected_product_surfaces": [
+      "Operations Studio readbacks"
+    ],
+    "likely_external_provider_blockers": [
+      "AI-video vendor contract and credentials are not defined.",
+      "Real render, upload, publish, send, Drive write, Vimeo write, payment, access grant, GHL runtime, and external CRM writes remain out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "01-current-state-studio-audit",
+      "02-polished-review-ux",
+      "03-prompt-character-guardrail-library"
+    ],
+    "next_exact_packet": "After local verification, create the prompt/character/guardrail library packet."
+  },
+  "operator_intent_summary": "Replace code-looking Studio output with operator-facing review surfaces so One Time Studio can be discussed and used as a content-to-prompt workflow before real AI-video vendor integration.",
+  "raw_source": "I clicked on something and it showed a bunch of code ... make it actually live and working ... million dollar app",
+  "raw_quotes": [
+    "showed a bunch of code",
+    "drop in content and it will turn it into slideshows or prompts",
+    "patching prompts and adjusting output",
+    "million dollar app"
+  ],
+  "operator_quotes": [
+    "showed a bunch of code",
+    "make it actually live and working"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-961",
+      "decision": "AI-video vendor adapter scope remains blocked until vendor contract, API, cost, rights, and approval rules are captured.",
+      "status": "needs_operator_decision"
+    }
+  ],
+  "out_of_scope": [
+    "No AI-video vendor call.",
+    "No new prompt/character/guardrail schema in this packet.",
+    "No live render, upload, publish, send, schedule, payment, access grant, Drive write, Vimeo write, WhatsApp action, Telegram action, DNS change, GHL runtime, LeadConnector reference, external CRM write, hard delete, secret exposure, or raw private evidence.",
+    "No final approval workflow or deploy claim in this local implementation packet."
+  ],
+  "affected_surfaces": [
+    "Operations Studio prompt readbacks",
+    "Operations Studio job readbacks",
+    "Operations Studio handoff readbacks"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=jobs",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=handoff"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "ops/action-registry.json",
+    "tests/service-provider-studio-operations-ui.test.js",
+    "tests/service-provider-studio-browser-smoke.test.js"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "renderStudioPromptPanel",
+      "renderStudioJobsPanel",
+      "renderStudioHandoffPanel",
+      "Studio browser smoke"
+    ],
+    "known_blockers": [
+      "Live authenticated production smoke is not available inside this local packet.",
+      "AI-video vendor setup is not approved."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "million-dollar",
+      "make it work",
+      "working",
+      "live",
+      "clean"
+    ],
+    "expanded_phrases": {
+      "million-dollar": "The Studio readback must be credible in a founder/vendor meeting: scannable sections, explicit status, no debug-first payloads, and clear no-send safety.",
+      "make it work": "The mock workflow must visibly complete source, prompt, job, and handoff review states with readable readbacks.",
+      "working": "Every readback either shows status and next action or a specific empty/blocker state.",
+      "live": "App-visible terminal done still requires deploy and authenticated live smoke after local implementation.",
+      "clean": "Prompt, job, and handoff payloads render as concise review cards; raw code/JSON is only available inside diagnostics.",
+      "pipeline": "This packet improves the readback stage of the first-party Studio pipeline only; later packets handle reusable libraries and output generation."
+    },
+    "first_party_pattern_interpretation": "Studio remains a first-party BNA Operations workflow; external vendors are adapters only after a setup packet."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-965",
+      "statement": "Replace raw code/test-looking Studio readbacks with structured prompt, job, correction, and handoff review surfaces while preserving expandable diagnostics.",
+      "expected_result": "Operators see readable Studio review cards first and can open diagnostics only when they need the raw payload.",
+      "acceptance_criteria": [
+        "Prompt review shows hash, layer count, source-boundary and no-send safety flags, and a short excerpt.",
+        "Layer review cards show layer type, status, hash, safety flags, and readable excerpts.",
+        "Correction preview shows patch id, scope, confirmation state, affected operations, and diagnostics.",
+        "Job review shows job type, status, provider/model, scene/asset counts, no-external-write readback, and diagnostics.",
+        "Handoff review shows idempotency key, content job id, no-publish/no-send readback, external write readback, and diagnostics.",
+        "Raw payloads remain available only behind diagnostics controls."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Raw intake exists.",
+      "Control tower validates.",
+      "Current-state audit identifies the raw readback defect.",
+      "Implementation scope is limited to one major Studio readback surface.",
+      "External provider work is explicitly out of scope."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?view=studio&section=prompts",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Studio while detail loads.",
+      "expected_visible_title": "Universal Service Provider Studio",
+      "expected_visible_message": "Project detail is loading.",
+      "expected_primary_action": "None until loaded.",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["stack trace", "raw JSON as loading text"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Loading state is text, not color-only.",
+      "accessibility_expectation": "No layout shift that hides nav or actions.",
+      "test_smoke_assertion": "Studio route renders without script error.",
+      "requirement_id": "REQ-20260702-965"
+    },
+    "empty": {
+      "route": "/operations?view=studio&section=prompts",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Prompts before compilation.",
+      "expected_visible_title": "Compile Prompt",
+      "expected_visible_message": "No prompt layers have been compiled.",
+      "expected_primary_action": "Compile Prompt",
+      "expected_secondary_actions": ["Preview Correction"],
+      "forbidden_content": ["raw empty JSON"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state has readable text.",
+      "accessibility_expectation": "Primary action is reachable by keyboard.",
+      "test_smoke_assertion": "Empty prompt section does not show raw code blocks.",
+      "requirement_id": "REQ-20260702-965"
+    },
+    "populated": {
+      "route": "/operations?view=studio&section=prompts",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Compile a prompt in the smoke workflow.",
+      "expected_visible_title": "Prompt Review",
+      "expected_visible_message": "Compiled prompt hash and layer count are visible.",
+      "expected_primary_action": "Compile Prompt",
+      "expected_secondary_actions": ["Preview Correction", "Diagnostics"],
+      "forbidden_content": ["raw prompt as default page body"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Review card headings are semantic text.",
+      "accessibility_expectation": "Diagnostics summary has a clear accessible name.",
+      "test_smoke_assertion": "Body contains Prompt Review and Diagnostics after compile.",
+      "requirement_id": "REQ-20260702-965"
+    },
+    "filtered_empty": {
+      "route": "/operations?view=studio&section=jobs",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Jobs on a project with no jobs.",
+      "expected_visible_title": "Run Mock Render",
+      "expected_visible_message": "No Studio jobs are loaded for this project.",
+      "expected_primary_action": "Run Mock Render",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["empty raw object"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty jobs state is readable.",
+      "accessibility_expectation": "Button label is exact.",
+      "test_smoke_assertion": "Jobs empty state remains clear.",
+      "requirement_id": "REQ-20260702-965"
+    },
+    "error": {
+      "route": "/operations?view=studio&section=prompts",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Simulate prompt compile API failure.",
+      "expected_visible_title": "Universal Service Provider Studio",
+      "expected_visible_message": "Prompt could not be compiled.",
+      "expected_primary_action": "Compile Prompt",
+      "expected_secondary_actions": ["Retry later"],
+      "forbidden_content": ["stack trace", "secret", "raw provider payload"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error text is visible near the Studio shell.",
+      "accessibility_expectation": "Error is not color-only.",
+      "test_smoke_assertion": "Failure message is plain text.",
+      "requirement_id": "REQ-20260702-965"
+    },
+    "blocked_setup": {
+      "route": "/operations?view=studio&section=jobs",
+      "viewport": "768",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Choose a real provider in future setup.",
+      "expected_visible_title": "Job Review",
+      "expected_visible_message": "Provider setup is not approved for real external render.",
+      "expected_primary_action": "Run Mock Render",
+      "expected_secondary_actions": ["Diagnostics"],
+      "forbidden_content": ["real external render button"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup is text.",
+      "accessibility_expectation": "Disabled or blocked state is readable.",
+      "test_smoke_assertion": "Mock render is the only executable render path.",
+      "requirement_id": "REQ-20260702-965"
+    },
+    "preview_only": {
+      "route": "/operations?view=studio&section=handoff",
+      "viewport": "768",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Create no-send handoff.",
+      "expected_visible_title": "Handoff Review",
+      "expected_visible_message": "No publish and no external write are visible.",
+      "expected_primary_action": "Create Content Handoff",
+      "expected_secondary_actions": ["Diagnostics"],
+      "forbidden_content": ["publish", "send", "upload"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview-only readback is text.",
+      "accessibility_expectation": "Safety flags are not color-only.",
+      "test_smoke_assertion": "Handoff section includes No publish and External write: no.",
+      "requirement_id": "REQ-20260702-965"
+    },
+    "success_readback": {
+      "route": "/operations?view=studio&section=handoff",
+      "viewport": "430",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Complete mocked handoff.",
+      "expected_visible_title": "Handoff Review",
+      "expected_visible_message": "Content job id and idempotency key are visible.",
+      "expected_primary_action": "Create Content Handoff",
+      "expected_secondary_actions": ["Diagnostics"],
+      "forbidden_content": ["raw JSON as primary result"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Readback has a heading and metadata.",
+      "accessibility_expectation": "Text fits on mobile.",
+      "test_smoke_assertion": "Mobile screenshot captures Handoff Review.",
+      "requirement_id": "REQ-20260702-965"
+    },
+    "permission_denied": {
+      "route": "/operations?view=studio",
+      "viewport": "430",
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Studio while logged out.",
+      "expected_visible_title": "Operations",
+      "expected_visible_message": "Unauthorized or login required.",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["private Studio project", "prompt text", "source text"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Access denial has text.",
+      "accessibility_expectation": "No private data is exposed.",
+      "test_smoke_assertion": "Live logged-out route/API returns 401.",
+      "requirement_id": "REQ-20260702-965"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?view=studio&section=handoff",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile handoff review after smoke handoff.",
+      "expected_visible_title": "Handoff Review",
+      "expected_visible_message": "No publish/no-send readback remains visible.",
+      "expected_primary_action": "Create Content Handoff",
+      "expected_secondary_actions": ["Diagnostics"],
+      "forbidden_content": ["horizontal overflow", "raw JSON as first visible content"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Details summary is focusable.",
+      "accessibility_expectation": "Cards reflow to one column.",
+      "test_smoke_assertion": "390px screenshot shows Handoff Review without overlap.",
+      "requirement_id": "REQ-20260702-965"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?view=studio&section=prompts",
+        "viewport": 1440,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260702-965"
+      },
+      {
+        "route": "/operations?view=studio&section=prompts",
+        "viewport": 1024,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260702-965"
+      },
+      {
+        "route": "/operations?view=studio&section=jobs",
+        "viewport": 768,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260702-965"
+      },
+      {
+        "route": "/operations?view=studio&section=handoff",
+        "viewport": 430,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260702-965"
+      },
+      {
+        "route": "/operations?view=studio&section=handoff",
+        "viewport": 390,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260702-965"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260702-965",
+        "route": "/operations?view=studio&section=prompts",
+        "viewport": "1440",
+        "screenshot_before": "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-overview.png",
+        "screenshot_after_or_blocker": "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png",
+        "defect_codes": [
+          "VQ-IA-002",
+          "VQ-CRED-001",
+          "VQ-ACTION-003"
+        ],
+        "severity": "P1",
+        "user_impact": "Studio looks like a test/debug surface when reviewing prompts, jobs, and handoffs.",
+        "expected_fix": "Show prompt, layer, correction, job, and handoff summaries before diagnostics.",
+        "requirement_id": "REQ-20260702-965"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus BNA mobile touch and reflow requirements.",
+    "required_checks": [
+      "diagnostics summary has a text label",
+      "review cards use readable headings",
+      "mobile handoff screenshot has no overlap",
+      "raw diagnostics are not the first visible readback"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Open Studio Diagnostics",
+      "selector_or_action_key": "details.studio-diagnostics summary",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Native details summary expands local diagnostics only.",
+      "registry_required": true
+    },
+    {
+      "label": "Compile Prompt",
+      "selector_or_action_key": "compileStudioPrompt",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing scoped mock or adapter compile route.",
+      "registry_required": true
+    },
+    {
+      "label": "Create Content Handoff",
+      "selector_or_action_key": "handoffStudioProject",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing local no-send handoff route.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": [
+    "compiled_hash",
+    "compiled_prompt",
+    "prompt layer type/key/status/hash/content",
+    "correction patch id/scope/confirmation/operations",
+    "job type/status/provider/model/request/result payload",
+    "handoff idempotency key/content job id/no-publish/external write flags"
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Studio data remains scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "Raw source and raw payload diagnostics must stay inside private Operations."
+    ],
+    "forbidden_content": [
+      "secrets",
+      "student-private notes",
+      "unrelated workspace records",
+      "GHL runtime",
+      "LeadConnector references",
+      "external publish/send/upload controls"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260702-965-REVIEW-UX",
+      "scope": "Studio readback review cards and diagnostics controls only",
+      "instructions": [
+        "Add structured prompt, layer, correction, job, and handoff review renderers.",
+        "Move raw prompt and JSON payloads behind diagnostics details.",
+        "Add diagnostics action-registry coverage.",
+        "Update static and browser smoke tests."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "ops/action-registry.json",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "ops/action-registry.json",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Prompt library, output pipeline, and vendor setup are separate packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "MEDIUM"
+  },
+  "tests": [
+    {
+      "command_or_check": "npm run pqc:validate ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/02-polished-review-ux.product-quality.json",
+      "expected_result": "Passes."
+    },
+    {
+      "command_or_check": "node --test tests/service-provider-studio-operations-ui.test.js tests/service-provider-studio-browser-smoke.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js",
+      "expected_result": "Passes focused Studio tests."
+    },
+    {
+      "command_or_check": "npm run studio:smoke",
+      "expected_result": "Passes and updates local screenshot evidence."
+    },
+    {
+      "command_or_check": "npm run watchdog:actions",
+      "expected_result": "Passes or reports unrelated pre-existing action findings without blocking this scoped registry addition."
+    }
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-overview.png",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-prompt-review.png",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png",
+      "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "PQC packet validates.",
+      "Studio review readbacks render before diagnostics.",
+      "Focused Studio tests pass.",
+      "Local Studio smoke passes with updated screenshot evidence.",
+      "Action registry covers diagnostics controls.",
+      "Register, ledger, and changelog record local implementation and remaining deploy/live-smoke blocker.",
+      "Terminal done remains blocked until deployed and live-smoked with authenticated Operations."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260702-010-studio-content-engine-live-readiness.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/02-polished-review-ux.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "edit public/operations.html",
+      "edit ops/action-registry.json",
+      "edit focused Studio tests",
+      "run validator",
+      "run Studio tests",
+      "run Studio smoke"
+    ],
+    "skipped_actions_policy": "Skip vendor setup, external provider calls, deploy, live production writes, publish/send/upload, GHL runtime, and prompt-library schema changes.",
+    "blocker_decisions": [
+      "DEC-20260702-961"
+    ],
+    "evidence_paths": [
+      "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/01-current-state-studio-audit.md",
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-overview.png",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-prompt-review.png",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/03-prompt-character-guardrail-library.product-quality.json"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No enforceable product-quality drift finding for this implementation packet, or unrelated existing drift is recorded separately."
+  },
+  "next_packet": {
+    "type": "IMPLEMENTATION_PACKET",
+    "description": "Prompt, character, and Jewish guardrail library support for One Time Mishnah Studio.",
+    "path": "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/03-prompt-character-guardrail-library.product-quality.json"
+  }
+}

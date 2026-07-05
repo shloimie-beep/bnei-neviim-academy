@@ -1,0 +1,117 @@
+{
+  "raw_id": "RAW-20260702-012",
+  "content_job_id": 101,
+  "parse_run_id": 59,
+  "status": "triage_done_no_db_status_mutation",
+  "fresh_db_readback": {
+    "status": "blocked",
+    "reason": "Supabase host DNS lookup failed during this pass: getaddrinfo ENOTFOUND db.amipeuneopdbzuhlnimt.supabase.co"
+  },
+  "basis": [
+    "Job 101 apply closeout readback: parser counts tasks=4, class_notes=43, accountability_events=201, review=442",
+    "Earlier same-session review metadata readback by parse_run_id=59",
+    "Existing Rabbi / One Time UI background packets and ledger entries"
+  ],
+  "operator_correction": "Transcript contains UI/system updates interrupted by student/class/random speech; do not make Shloimie review hundreds of raw candidates.",
+  "review_item_meaning": {
+    "plain_english": "Review item means parser candidate, not implemented task.",
+    "details": [
+      "The parser saw a fragment that might be useful but was not confident enough to auto-file cleanly.",
+      "Some review rows are policy-blocked by design, especially student/private or score/progress material.",
+      "Some rows are duplicates, ASR fragments, or parser-instruction leakage.",
+      "Background agents only act after a review candidate is converted into a canonical task, packet, or already-authorized workflow."
+    ]
+  },
+  "clusters": [
+    {
+      "cluster_id": "J101-UI-001",
+      "title": "Fix Operations/top filter controls and oversized filter boxes",
+      "classification": "ui_fix",
+      "source_review_ids": [49755],
+      "source_item_ids": [37159],
+      "operator_intent": "The filter controls at the top of an Operations/One Time task view are too large or awkward and need compact layout cleanup.",
+      "background_agent_status": "partially_covered",
+      "evidence": "Existing Rabbi/One Time task route density packet REQ-20260702-809 locally collapsed One Time task filter drawer and moved board into first viewport.",
+      "remaining_action": "Verify whether the exact BNA Operations filter boxes from Job 101 are the same route; if not, create one focused Operations filter-layout packet."
+    },
+    {
+      "cluster_id": "J101-UI-002",
+      "title": "Unify contacts, interested parents, tags, and communications",
+      "classification": "product_ia_fix",
+      "source_review_ids": [49752, 49753, 49754, 49756, 50153, 50689, 50690, 50691, 51090],
+      "source_item_ids": [37152, 37153, 37154, 37160, 37727, 37842, 37843, 37844, 38417],
+      "operator_intent": "Contacts should be one clean system with tags/filters. Interested-parent actions and communication controls should be arranged logically instead of splitting email/contact lanes awkwardly.",
+      "background_agent_status": "not_done_from_job101",
+      "evidence": "Related broader Rabbi/One Time UI register leaves CRM/contact-detail polish and IA/nav/filter cleanup as future child packets.",
+      "remaining_action": "Create one canonical contact/communication IA packet; do not keep each repeated transcript fragment as a separate review item."
+    },
+    {
+      "cluster_id": "J101-UI-003",
+      "title": "Repair bot/mobile text input behavior on Samsung/default keyboard",
+      "classification": "mobile_ui_bug",
+      "source_review_ids": [49759, 49760],
+      "source_item_ids": [37163, 37164],
+      "operator_intent": "The bot/helper text input is showing an unacceptable default Samsung-style input/keyboard behavior and needs mobile QA/fix.",
+      "background_agent_status": "not_verified_done",
+      "evidence": "Existing mobile helper packet fixed closed-state visibility/inert behavior, but did not prove Samsung/default keyboard input behavior.",
+      "remaining_action": "Create a focused mobile input QA packet with Android/Samsung viewport or device check."
+    },
+    {
+      "cluster_id": "J101-UI-004",
+      "title": "Keep Rabbi/One Time records scoped out of unrelated BNA Operations views",
+      "classification": "workspace_scope_ui_fix",
+      "source_review_ids": [],
+      "source_item_ids": [],
+      "operator_intent": "Rabbi/One Time provider UI and data should not leak into unrelated BNA Operations dashboard context.",
+      "background_agent_status": "partially_covered",
+      "evidence": "RAW-20260702-008 and packets 02-09 locally improved Rabbi/One Time scoped UI. Deploy/live smoke remains blocked by DEC-20260702-801.",
+      "remaining_action": "Keep as workspace-scope verification in the Rabbi/One Time UI closeout; do not duplicate into hundreds of Job 101 review rows."
+    },
+    {
+      "cluster_id": "J101-OPS-005",
+      "title": "Save transcript/content material in the BNA content queue with Drive link",
+      "classification": "operations_routing",
+      "source_review_ids": [],
+      "source_item_ids": [],
+      "operator_intent": "Drive transcript/content should be findable from the BNA content queue and Drive transcript library.",
+      "background_agent_status": "already_satisfied_for_transcripts",
+      "evidence": "Job 101 and scoped backlog private Drive transcript docs were created and verified searchable/readable.",
+      "remaining_action": "No UI review action for transcript visibility. Future content queue UI polish remains separate."
+    }
+  ],
+  "noise_and_non_ui_buckets": [
+    {
+      "bucket": "student_or_class_interruptions",
+      "action": "Keep as class/student review where appropriate; do not turn into UI tasks."
+    },
+    {
+      "bucket": "torah_or_class_content",
+      "action": "Route to private class notes/content review/newsletter-safe review, not background agent UI work."
+    },
+    {
+      "bucket": "parser_instruction_leakage",
+      "examples": ["Split coding/app/dashboard/parser/website/bot/Railway/legacy CRM wording"],
+      "action": "Archive or supersede as parser artifact after a DB cleanup pass."
+    },
+    {
+      "bucket": "asr_repetition_or_fragment",
+      "action": "Deduplicate by normalized title/source hash and preserve only the cleanest candidate."
+    },
+    {
+      "bucket": "score_progress_grading",
+      "action": "Keep blocked unless APPROVE_20260702_SCORE_PROGRESS_GRADING_APPLY_EXACT_PACKET_ONLY is supplied with row-level before/after packet."
+    }
+  ],
+  "recommended_canonical_tasks": [
+    "Fix Operations top filter controls and compact filter-box layout",
+    "Unify Contacts, Interested Parents, tags, and communication filters",
+    "Repair mobile bot/helper text input behavior on Android/Samsung-style keyboard",
+    "Verify Rabbi/One Time workspace-scope isolation in Operations dashboard",
+    "Archive/supersede Job 101 parser-instruction leakage and duplicate review fragments"
+  ],
+  "db_cleanup_plan": {
+    "status": "blocked",
+    "reason": "Fresh DB readback failed; do not mutate review queue blind.",
+    "safe_next_step": "When DB is reachable, dry-run a cleanup that closes only instruction-leakage/duplicate UI fragments, keeps student/private/score rows open, and creates/links the five canonical tasks above."
+  }
+}

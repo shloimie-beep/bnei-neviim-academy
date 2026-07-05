@@ -1,0 +1,683 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-815",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805",
+      "PKT-20260702-806",
+      "PKT-20260702-807",
+      "PKT-20260702-808",
+      "PKT-20260702-809",
+      "PKT-20260702-810",
+      "PKT-20260702-811",
+      "PKT-20260702-812",
+      "PKT-20260702-813",
+      "PKT-20260702-814"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-communications-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-communications-390-mobile.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/13-communications-provider-messages-readability.product-quality.json",
+    "terminal_condition": "The One Time Communications Provider Messages route renders contained tabs and a readable, proportionate provider-message empty state on desktop and mobile without changing message, email, WhatsApp, bot, API, contact, or route-access behavior.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Communications Provider Messages Readability Cleanup",
+  "created_at": "2026-07-03T00:45:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "EMAIL_PROVIDER_SETUP"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "COMMUNICATIONS_EMAIL",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.9,
+    "reasons": [
+      "Fresh screenshots show the Communications subtab rail clipped on mobile.",
+      "The Provider Messages empty card is a large bright panel inside the One Time dark shell.",
+      "The route should stay read-only/no-send while the visible message lane becomes easier to scan."
+    ],
+    "affected_product_surfaces": [
+      "One Time Operations Communications Provider Messages route"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "Real email, WhatsApp, Telegram, message send, campaign send, provider announcement, contact mutation, and bot action execution are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "05-mobile-helper-closed-state",
+      "06-task-dialogue-lane-contrast",
+      "07-task-route-layout-density",
+      "08-provider-review-load-error",
+      "09-student-review-mobile-readability",
+      "10-automation-center-readability",
+      "11-participants-members-readability",
+      "12-program-payment-access-readability",
+      "13-communications-provider-messages-readability"
+    ],
+    "next_exact_packet": "After this communications readability cleanup, continue manual screenshot-reviewed packets for IA/nav/filter cleanup, CRM contact detail polish, or remaining portal defects."
+  },
+  "operator_intent_summary": "Make the One Time Communications Provider Messages route feel even and loaded by fixing the clipped communications tabs and the oversized bright empty message panel.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No message creation, contact communication creation, provider announcement, email, WhatsApp, Telegram, campaign, template, bot action, API, contact, route access, or helper behavior change.",
+    "No external send, publish, upload, payment, access grant, Drive, Vimeo, Zoom, DNS, account, external CRM write, raw private evidence, or secret exposure.",
+    "No GHL runtime or LeadConnector reference."
+  ],
+  "affected_surfaces": [
+    "One Time Operations Communications Provider Messages route"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/css/one-time-operations.css",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/operations.html COMMUNICATIONS_SUBTABS",
+      "public/operations.html renderCommunications",
+      "public/operations.html renderTopFilterRail",
+      "public/css/one-time-operations.css One Time Operations route overrides",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-communications-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-communications-390-mobile.png"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "The mobile Communications subtab rail cuts off labels after Student Messages.",
+      "The Provider Messages empty state is a bright, tall card that does not match the One Time dark route treatment.",
+      "The route lacks a narrow marker for scoped Communications-only One Time CSS."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely",
+      "communications"
+    ],
+    "expanded_phrases": {
+      "clean": "The Provider Messages lane should render as a compact route surface with readable tabs and an empty message state that fits the One Time admin shell.",
+      "even": "The Communications heading, subtab rail, Provider Messages panel, and no-message state should use consistent spacing, contrast, and containment.",
+      "loads nicely": "After Operations data loads, the provider-message lane should immediately show a readable route title, contained tabs, and a no-message state that does not dominate the screen.",
+      "communications": "For this packet, communications means read-only local Operations message-lane presentation only. It does not send, draft, create, import, sync, or mutate communication records."
+    },
+    "first_party_pattern_interpretation": "The communications route remains a first-party BNA Operations provider-readiness view scoped to rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-815",
+      "statement": "Fix One Time Communications Provider Messages readability so the Communications subtab rail is contained and the provider-message empty state is proportionate and readable.",
+      "expected_result": "Desktop and mobile Communications Provider Messages screenshots show wrapped/contained tabs, a readable route heading, and a compact dark no-message state with no horizontal overflow.",
+      "acceptance_criteria": [
+        "The Communications route has a scoped One Time route marker for CSS targeting.",
+        "The One Time Communications top filter rail wraps or contains all tabs on desktop and mobile without clipping labels.",
+        "The Provider Messages panel, count, and no-message copy are readable in the One Time dark theme.",
+        "The no-message empty state is visually quiet and proportionate to the Communications content.",
+        "Message, email, WhatsApp, Telegram, bot, API, contact, action registry, route access, and external-provider guardrails are unchanged."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and broad UI cleanup register exist for RAW-20260702-008.",
+      "Current screenshot evidence shows the communications tab clipping and empty-card readability defects.",
+      "The likely fix is scoped to route marker markup and One Time Operations CSS overrides.",
+      "No email, WhatsApp, Telegram, contact, campaign, bot, external provider, credential, account, privacy, or legal/financial decision is required for local visual implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the provider messages route before communications data finishes loading.",
+      "expected_visible_title": "Provider Messages",
+      "expected_visible_message": "Loading BNA Operations",
+      "expected_primary_action": "New Message",
+      "expected_secondary_actions": [
+        "Ask / Search",
+        "Menu"
+      ],
+      "forbidden_content": [
+        "clipped communications tabs",
+        "raw message payload"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The Operations shell keeps one visible h1 and a readable route heading.",
+      "accessibility_expectation": "Loading and loaded states are readable.",
+      "test_smoke_assertion": "Audit waits for loading shell to clear before screenshot capture.",
+      "requirement_id": "REQ-20260702-815"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load provider messages with no provider communication records.",
+      "expected_visible_title": "Provider Messages",
+      "expected_visible_message": "No messages match this lane.",
+      "expected_primary_action": "New Message",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "oversized bright empty message panel"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The empty message state remains inside the Provider Messages section.",
+      "accessibility_expectation": "Empty-state text remains readable without dominating the page.",
+      "test_smoke_assertion": "Provider Messages empty-state bounds fit within the route content.",
+      "requirement_id": "REQ-20260702-815"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+      "viewport": 1024,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load route with one or more provider communication records.",
+      "expected_visible_title": "Provider Messages",
+      "expected_visible_message": "records",
+      "expected_primary_action": "New Message",
+      "expected_secondary_actions": [
+        "Parent Messages",
+        "Student Messages",
+        "Provider Messages"
+      ],
+      "forbidden_content": [
+        "clipped tab labels",
+        "low-contrast message cards"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Communication cards remain list content under the Provider Messages heading.",
+      "accessibility_expectation": "Message cards and tab labels meet readable contrast.",
+      "test_smoke_assertion": "No console/page errors on the provider messages route.",
+      "requirement_id": "REQ-20260702-815"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile provider messages lane with no matching records.",
+      "expected_visible_title": "Provider Messages",
+      "expected_visible_message": "0 records",
+      "expected_primary_action": "Provider Messages",
+      "expected_secondary_actions": [
+        "Overview",
+        "Parent Messages"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "partially cut tab labels"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Tab buttons retain labels and selected state.",
+      "accessibility_expectation": "Tab labels are visible or wrapped within the rail.",
+      "test_smoke_assertion": "Mobile screenshot has no horizontal overflow.",
+      "requirement_id": "REQ-20260702-815"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Communications data fails or returns empty data.",
+      "expected_visible_title": "Provider Messages",
+      "expected_visible_message": "No messages match this lane.",
+      "expected_primary_action": "New Message",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "raw private message body",
+        "unreadable error or empty state"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty/error text remains visible in the route flow.",
+      "accessibility_expectation": "Error/empty state is not visually obscured.",
+      "test_smoke_assertion": "Console/network errors are recorded in audit but page layout remains readable.",
+      "requirement_id": "REQ-20260702-815"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render provider messages where outbound sends remain approval-gated.",
+      "expected_visible_title": "Provider Messages",
+      "expected_visible_message": "Provider",
+      "expected_primary_action": "New Message",
+      "expected_secondary_actions": [
+        "WhatsApp",
+        "Email"
+      ],
+      "forbidden_content": [
+        "send actions appearing newly enabled"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Guardrail copy remains visible where rendered.",
+      "accessibility_expectation": "No-send/preview state is readable.",
+      "test_smoke_assertion": "No outbound communication mutation is triggered.",
+      "requirement_id": "REQ-20260702-815"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Route renders message-lane previews without executing sends.",
+      "expected_visible_title": "Communications",
+      "expected_visible_message": "permission-aware lanes",
+      "expected_primary_action": "New Message",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "new send confirmation",
+        "external write confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview/no-record state remains a section with heading.",
+      "accessibility_expectation": "Preview/no-record state remains readable.",
+      "test_smoke_assertion": "No bot or send mutation is triggered.",
+      "requirement_id": "REQ-20260702-815"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+      "viewport": 1440,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Provider message route and counts load successfully.",
+      "expected_visible_title": "Provider Messages",
+      "expected_visible_message": "0 records",
+      "expected_primary_action": "New Message",
+      "expected_secondary_actions": [
+        "Overview",
+        "Parent Messages",
+        "Provider Messages"
+      ],
+      "forbidden_content": [
+        "clipped rail",
+        "bright oversized empty card"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Toolbar tabs and message panel keep semantic structure.",
+      "accessibility_expectation": "Counts, tabs, heading, and empty state are readable.",
+      "test_smoke_assertion": "Full route audit reports findings_count=0.",
+      "requirement_id": "REQ-20260702-815"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+      "viewport": 390,
+      "auth_role": "logged_out_or_wrong_scope",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Operations without an authorized session.",
+      "expected_visible_title": "BNA Operations",
+      "expected_visible_message": "Sign in",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "private communications metadata"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Login controls retain labels.",
+      "accessibility_expectation": "Route-specific CSS does not expose or distort the login state.",
+      "test_smoke_assertion": "Private route access remains unchanged.",
+      "requirement_id": "REQ-20260702-815"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+      "viewport": 390,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile menu/helper while on the Provider Messages route.",
+      "expected_visible_title": "Provider Messages",
+      "expected_visible_message": "Provider Workspace Admin",
+      "expected_primary_action": "Menu",
+      "expected_secondary_actions": [
+        "Ask",
+        "New Message"
+      ],
+      "forbidden_content": [
+        "route content hidden behind closed helper",
+        "horizontal overflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile controls preserve aria states.",
+      "accessibility_expectation": "Route content stays readable before and after mobile chrome controls.",
+      "test_smoke_assertion": "Full mobile audit screenshot is non-overlapping.",
+      "requirement_id": "REQ-20260702-815"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+        "viewport": 1440,
+        "state": "success_readback",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+        "viewport": 1024,
+        "state": "populated",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+        "viewport": 768,
+        "state": "filtered_empty",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+        "viewport": 430,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+        "viewport": 390,
+        "state": "mobile_drawer_or_detail_state",
+        "required": true
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260702-815-001",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=providers",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-communications-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-communications-390-mobile.png",
+        "defect_codes": [
+          "VQ-LAYOUT-001",
+          "VQ-CONTRAST-001",
+          "VQ-TEXT-001"
+        ],
+        "severity": "P1",
+        "user_impact": "The route looks unfinished because the mobile tab row cuts off labels and the no-message panel reads as an unrelated bright block inside the dark One Time shell.",
+        "expected_fix": "Add a route marker and scoped One Time communications CSS for wrapping tabs, readable provider-message panel text, and compact empty-state presentation.",
+        "requirement_id": "REQ-20260702-815"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Communications subtab labels remain visible and selected tab state remains clear.",
+      "Provider Messages heading, count, and no-message text meet readable contrast.",
+      "No communication action appears newly enabled by the visual cleanup."
+    ],
+    "test_expectations": [
+      "Audit has missing_h1=0.",
+      "Audit has visible unlabeled controls=0.",
+      "Provider messages screenshot/probe reports no horizontal overflow or clipped active tab label."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Communications top tabs",
+      "selector_or_action_key": "[data-top-filter-rail][data-current-module=\"communications\"] .ops-filter-tab",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Communications",
+      "external_write": false,
+      "handler_or_blocker": "Existing setCurrentSection handler; unchanged by this packet.",
+      "registry_required": false
+    },
+    {
+      "label": "New Message",
+      "selector_or_action_key": "createCommunicationNotePrompt()",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations Communications",
+      "external_write": false,
+      "handler_or_blocker": "Existing prompt/local note behavior; unchanged by this visual packet.",
+      "registry_required": false
+    },
+    {
+      "label": "Provider Messages row display",
+      "selector_or_action_key": "renderCommunications()",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "One Time Operations Communications",
+      "external_write": false,
+      "handler_or_blocker": "Display-only lane rendering; external sends remain outside this packet.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "read_paths": [
+      "Existing Operations contact communications loaders"
+    ],
+    "write_paths": [],
+    "fixtures_or_seed": [
+      "Existing local One Time review/audit fixtures"
+    ],
+    "data_privacy_notes": [
+      "Use redacted local audit screenshots only.",
+      "Do not commit raw private message/contact data, secrets, or account data."
+    ],
+    "unchanged_contracts": [
+      "Communications subtab ids",
+      "contactCommunications row shape",
+      "message card rendering",
+      "New Message prompt handler",
+      "route access and workspace scoping"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_scope": "Private Operations view scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+    "forbidden_data": [
+      "Raw private contact/student/parent/provider/message data",
+      "Secrets, API keys, tokens, session cookies, or account identifiers",
+      "External send/publish/upload/access-grant proof"
+    ],
+    "required_checks": [
+      "No email, WhatsApp, Telegram, campaign, or message send.",
+      "No contact communication creation or mutation.",
+      "No command bot mutation.",
+      "No new GHL/LeadConnector runtime.",
+      "No route access behavior change."
+    ],
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260702-815-A",
+      "scope": "Add route marker and scoped One Time Communications Provider Messages CSS overrides.",
+      "files_allowed": [
+        "public/operations.html",
+        "public/css/one-time-operations.css"
+      ],
+      "verification": [
+        "PQC validation",
+        "local One Time smoke test",
+        "full Rabbi / One Time current-state audit",
+        "watchdog:actions",
+        "watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "public/css/one-time-operations.css",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 5,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "This packet only covers the Communications Provider Messages route visuals. Message sending, campaigns, templates, WhatsApp/email setup, contact import, and CRM detail redesign must split into later packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "low"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/13-communications-provider-messages-readability.product-quality.json",
+      "expected_result": "Product Quality packet passes validation."
+    },
+    {
+      "command": "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "expected_result": "One Time review routes still pass without console/page errors or external writes."
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability",
+      "expected_result": "Full local visual audit captures 75 screenshots with no automated findings."
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected_result": "Action registry watchdog remains finding_count 0."
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected_result": "Protocol drift watchdog remains findings 0."
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-communications-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-payment-access-readability/screenshots/operations-communications-390-mobile.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-communications-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-communications-390-mobile.png"
+    ],
+    "record_updates": [
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Route marker and scoped CSS are implemented.",
+      "Local screenshots show contained Communications tabs and compact/readable Provider Messages empty state on desktop/mobile.",
+      "Message, email, WhatsApp, Telegram, bot, API, contact, and route access behavior are unchanged.",
+      "Watchdogs pass and records are updated."
+    ],
+    "terminal_status": "local_verified_deploy_live_smoke_blocked_until_DEC-20260702-801"
+  },
+  "trace": {
+    "raw_id": "RAW-20260702-008",
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/13-communications-provider-messages-readability.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "node scripts/audit-rabbi-onetime-current-state.mjs",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "skipped_actions_policy": "No external provider, message send, email, WhatsApp, Telegram, campaign, template, contact mutation, upload, DNS, account, bot mutation, payment, access grant, or production deploy action in this local packet.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-communications-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-communications-readability/screenshots/operations-communications-390-mobile.png"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "requirement_ids": [
+      "REQ-20260702-815"
+    ],
+    "decision_ids": [
+      "DEC-20260702-801"
+    ],
+    "ledger_event": "rabbi_onetime_communications_readability_verified_local"
+  },
+  "drift_watchdog": {
+    "command": "npm run watchdog:protocol-drift",
+    "required": true,
+    "expected_result": "findings=0",
+    "record_report": true,
+    "blocker_policy": "If unrelated historical drift appears, record it separately and do not mark this packet terminally done without explaining scope."
+  },
+  "next_packet": {
+    "recommended": "Continue manual screenshot-reviewed cleanup for IA/nav/filter cleanup, CRM contact detail polish, or remaining One Time portal defects.",
+    "path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "app_visible": true
+}

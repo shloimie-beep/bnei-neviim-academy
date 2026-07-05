@@ -1,0 +1,594 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-805",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-shell-labels/report.json",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/operations.html",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-language/report.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/03-one-time-library-support-language.product-quality.json",
+    "terminal_condition": "The One Time Library no longer exposes support/debug phrasing and the Class Package Manager form is aligned/readable, with after-audit evidence or a precise blocker.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "One Time Library Language And Form Layout Cleanup",
+  "created_at": "2026-07-02T21:12:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "The after-audit has five identical P2 support/debug visibility findings on the One Time Library route.",
+      "The visible phrase family is narrow and can be changed without touching provider writes or approval gates.",
+      "Manual screenshot review of the same route found the Class Package Manager form cramped and uneven."
+    ],
+    "affected_product_surfaces": [
+      "Operations Content / One Time Library"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "External publishing, Drive/video-host writes, sends, checkout, member visibility, and social scheduling are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "next route-specific brand or IA packet"
+    ],
+    "next_exact_packet": "After this route-specific cleanup, choose brand/IA cleanup only from fresh after-audit evidence."
+  },
+  "operator_intent_summary": "Make the Rabbi / One Time Mishnah UI cleaner by removing internal support/debug wording and tightening the Class Package Manager form layout in the normal One Time Library workflow.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260630-NO-GHL-FIRST-PARTY-CRM",
+      "decision": "CRM-like language means first-party BNA Operations patterns only.",
+      "status": "decided"
+    }
+  ],
+  "out_of_scope": [
+    "No content-library data model change.",
+    "No provider setup, send, payment, access grant, DNS, upload, publish, unpublish, delete, external connector write, or approval phrase behavior change.",
+    "No GHL runtime, LeadConnector reference, external CRM write, raw private evidence, or secret exposure."
+  ],
+  "affected_surfaces": [
+    "Operations Content / One Time Library"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "renderContentSection",
+      "renderOneTimeLibrarySection",
+      "approvalDecisionDraft",
+      "renderOneTimeClassManagerPanel",
+      "July 2 after-audit VQF-001 through VQF-005"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean"
+    ],
+    "expanded_phrases": {
+      "clean": "Normal Rabbi/provider UI should use action-oriented verification wording, while internal implementation terms stay in support/admin-only contexts and dense forms stay aligned/readable."
+    },
+    "first_party_pattern_interpretation": "The One Time Library remains a first-party BNA Operations workflow scoped to rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/UI-STATE-MATRIX.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-805",
+      "statement": "Remove internal support/debug wording and align the Class Package Manager form in the normal One Time Library workflow while preserving approval gates.",
+      "expected_result": "The route presents verification/readback language to Rabbi/provider users, the Class Package Manager form fields align cleanly, and the route no longer triggers automated support/debug visibility findings.",
+      "acceptance_criteria": [
+        "The visible One Time Library publishing approval section no longer labels normal user proof as smoke evidence.",
+        "Class Package Manager fields use a stable responsive grid with full-width controls, no label/input collisions, and clear action row.",
+        "Approval phrase, dry-run, publish, no-send, no-write, and rollback guardrails remain unchanged.",
+        "After-audit for the route has no VQ-IA-004/VQ-CRED-005 support/debug finding or records a precise blocker."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "After-audit evidence exists at ops/ui-audits/2026-07-02-rabbi-onetime-shell-labels/report.md.",
+      "All remaining automated findings are on one route and one phrase family.",
+      "Allowed implementation file is public/operations.html plus register/evidence files.",
+      "External/provider writes are out of scope."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open route while data is loading.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Loading state keeps a route heading and no internal debug wording.",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "stack trace",
+        "debug wording",
+        "raw private data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Route heading remains present.",
+      "accessibility_expectation": "Controls remain named.",
+      "test_smoke_assertion": "support_noise is false after load.",
+      "requirement_id": "REQ-20260702-805"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open with no One Time library rows.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "No One Time video library items match these filters yet.",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Preview Decision Draft"
+      ],
+      "forbidden_content": [
+        "smoke evidence",
+        "debug wording",
+        "stack trace"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Approval packet appears under clear heading.",
+      "accessibility_expectation": "No unlabeled visible controls.",
+      "test_smoke_assertion": "support_noise is false.",
+      "requirement_id": "REQ-20260702-805"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open with library records loaded.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Library records sit below user-facing verification wording.",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Preview Decision Draft"
+      ],
+      "forbidden_content": [
+        "smoke evidence",
+        "debug wording",
+        "raw transcript bodies"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Cards remain under section heading.",
+      "accessibility_expectation": "No new unlabeled controls.",
+      "test_smoke_assertion": "support_noise is false.",
+      "requirement_id": "REQ-20260702-805"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": "430",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Apply filters with no matches.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "No matching items, with clear reset path.",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "filters"
+      ],
+      "forbidden_content": [
+        "support/debug phrasing"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filter state stays below heading.",
+      "accessibility_expectation": "No horizontal overflow from copy.",
+      "test_smoke_assertion": "support_noise is false.",
+      "requirement_id": "REQ-20260702-805"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Observe data load error.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Error banner uses user-safe wording.",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "stack trace",
+        "secret env names"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error appears below heading.",
+      "accessibility_expectation": "Error is not color-only.",
+      "test_smoke_assertion": "No stack trace appears.",
+      "requirement_id": "REQ-20260702-805"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": "768",
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open while publishing destination remains unapproved.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Destination and approval requirements are clear without internal labels.",
+      "expected_primary_action": "Preview Decision Draft",
+      "expected_secondary_actions": [
+        "Copy Phrase"
+      ],
+      "forbidden_content": [
+        "external provider write",
+        "secret values"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked status is textual.",
+      "accessibility_expectation": "Buttons remain named.",
+      "test_smoke_assertion": "No external write action is enabled.",
+      "requirement_id": "REQ-20260702-805"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": "1440",
+      "auth_role": "SHLOIMIE_PLATFORM_SUPPORT",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open approval preview controls.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Preview controls say local decision preview and no external write.",
+      "expected_primary_action": "Preview Decision Draft",
+      "expected_secondary_actions": [
+        "Copy Phrase"
+      ],
+      "forbidden_content": [
+        "publish-now behavior"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview controls are under clear heading.",
+      "accessibility_expectation": "Controls have visible labels.",
+      "test_smoke_assertion": "Preview remains no-write.",
+      "requirement_id": "REQ-20260702-805"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open after data load succeeds.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Verification/readback proof copy is visible.",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": [
+        "Preview Decision Draft"
+      ],
+      "forbidden_content": [
+        "smoke evidence"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Readback appears under heading.",
+      "accessibility_expectation": "No new unlabeled controls.",
+      "test_smoke_assertion": "support_noise is false.",
+      "requirement_id": "REQ-20260702-805"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": "390",
+      "auth_role": "wrong_scope_user",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open without valid Operations auth.",
+      "expected_visible_title": "Operations Login or Access Denied",
+      "expected_visible_message": "Private One Time data is not shown.",
+      "expected_primary_action": "Log in",
+      "expected_secondary_actions": [
+        "Return to allowed workspace"
+      ],
+      "forbidden_content": [
+        "private records"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Permission state has a heading.",
+      "accessibility_expectation": "Login controls are labeled.",
+      "test_smoke_assertion": "No private data exposed.",
+      "requirement_id": "REQ-20260702-805"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile One Time Library.",
+      "expected_visible_title": "One Time Library",
+      "expected_visible_message": "Approval copy fits without support/debug wording.",
+      "expected_primary_action": "Ask",
+      "expected_secondary_actions": [
+        "Open navigation"
+      ],
+      "forbidden_content": [
+        "horizontal overflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile h1 remains present.",
+      "accessibility_expectation": "No shell-created horizontal overflow.",
+      "test_smoke_assertion": "support_noise is false at 390 mobile.",
+      "requirement_id": "REQ-20260702-805"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+        "viewport": 1440,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260702-805"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+        "viewport": 1024,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260702-805"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+        "viewport": 768,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260702-805"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+        "viewport": 430,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260702-805"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+        "viewport": 390,
+        "auth_role": "RABBI_PROVIDER_ADMIN",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260702-805"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-001",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+        "viewport": "1440-desktop",
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-shell-labels/screenshots/operations-library-1440-desktop.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-library-language/screenshots/operations-library-1440-desktop.png",
+        "defect_codes": [
+          "VQ-IA-004",
+          "VQ-CRED-005"
+        ],
+        "severity": "P2",
+        "user_impact": "Internal verification language appears in the Rabbi/provider workflow and makes the screen feel like a support console.",
+        "expected_fix": "Use plain verification/readback wording in normal UI and keep internal implementation terms out of the Rabbi workflow.",
+        "requirement_id": "REQ-20260702-805"
+      },
+      {
+        "finding_id": "VQF-002",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+        "viewport": "1440-desktop",
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-library-language/screenshots/operations-library-1440-desktop.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-library-1440-desktop.png",
+        "defect_codes": [
+          "VQ-LAYOUT-002"
+        ],
+        "severity": "P2",
+        "user_impact": "The Class Package Manager form looks cramped and uneven, making data entry feel fragile.",
+        "expected_fix": "Use a scoped responsive grid so labels, inputs, textareas, and actions align cleanly.",
+        "requirement_id": "REQ-20260702-805"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus BNA mobile/touch requirements.",
+    "required_checks": [
+      "route h1 remains present",
+      "no visible unlabeled form controls",
+      "no mobile overflow from changed copy"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Preview Decision Draft",
+      "selector_or_action_key": "ACTION-CREATE-DECISION-DRY-RUN",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Dry-run preview only; copy change must not alter action behavior.",
+      "registry_required": true
+    },
+    {
+      "label": "Copy Phrase",
+      "selector_or_action_key": "ACTION-COPY-APPROVAL-PHRASE",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Copies local approval phrase only.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": [
+    "after-audit support_noise flag",
+    "One Time Library route screenshots",
+    "route heading and visible control label counts"
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "One Time Library remains scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "No raw private content is committed."
+    ],
+    "forbidden_content": [
+      "secrets",
+      "raw private data",
+      "raw transcripts",
+      "GHL runtime"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260702-LIBRARY-LANGUAGE",
+      "scope": "One Time Library visible copy that triggered support/debug visibility findings, plus scoped Class Package Manager form layout.",
+      "instructions": [
+        "Replace the visible label Smoke evidence with Verification proof or readback proof.",
+        "Replace visible helper copy that says smoke evidence with verification/readback evidence.",
+        "Add scoped CSS for One Time Library forms so labels, inputs, textareas, and the action row align without overlap on desktop and mobile.",
+        "Do not rename backend API methods, approval phrases, action IDs, no-write policy, or internal implementation code paths.",
+        "Run PQC validation, parse checks, and after-audit evidence."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "small",
+    "source_files_to_read": [
+      "public/operations.html",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-shell-labels/report.json"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "max_files_to_edit": 3,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if work changes data model, publishing behavior, approval phrases, or any external provider setup.",
+    "split_if_exceeds": true,
+    "context_risk_level": "LOW"
+  },
+  "tests": [
+    {
+      "command_or_check": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/03-one-time-library-support-language.product-quality.json",
+      "expected_result": "Passes before implementation."
+    },
+    {
+      "command_or_check": "inline parse of public/operations.html script blocks",
+      "expected_result": "Passes."
+    },
+    {
+      "command_or_check": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:<port> --out=ops/ui-audits/2026-07-02-rabbi-onetime-library-language",
+      "expected_result": "The One Time Library support/debug finding is gone, or exact blocker is recorded."
+    },
+    {
+      "command_or_check": "npm run watchdog:protocol-drift",
+      "expected_result": "Passes."
+    }
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-language/report.md",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "PQC packet validates.",
+      "Visible copy uses user-facing verification/readback wording.",
+      "Class Package Manager form fields align cleanly in desktop and mobile screenshots.",
+      "No approval phrase or external write behavior changes.",
+      "After-audit has no support/debug visibility finding for One Time Library, or exact blocker is recorded.",
+      "Ledger/changelog/register closeout is updated."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/03-one-time-library-support-language.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "inspect after-audit finding",
+      "patch visible copy",
+      "run validation and after-audit"
+    ],
+    "skipped_actions_policy": "Skip any provider write, publish, send, payment, access grant, DNS, upload, approval phrase behavior change, or module redesign.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-shell-labels/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-language/report.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-02-ui-correction-recording/03-ia-nav-filter-cleanup.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No enforceable product-quality drift finding for this implementation packet."
+  },
+  "next_packet": {
+    "type": "IMPLEMENTATION_PACKET",
+    "description": "Brand or IA cleanup from fresh after-audit evidence.",
+    "path": "ops/prompt-packets/2026-07-02-ui-correction-recording/03-ia-nav-filter-cleanup.md"
+  }
+}

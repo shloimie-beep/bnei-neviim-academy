@@ -288,6 +288,120 @@ test('production closeout gate blocks deploy on missing integration readiness', 
   assert.doesNotMatch(JSON.stringify(report.integration_readiness), /secret-value|sk_live_|sk_test_|postgres:\/\//);
 });
 
+test('production closeout gate can defer optional integrations and external readback for approved deploy', async () => {
+  const mod = await loadGate();
+  const report = await mod.buildProductionCloseoutGateReport({
+    deploy: true,
+    confirmDeploy: mod.DEPLOY_CONFIRM_PHRASE,
+    deferOptionalIntegrations: true,
+    deferExternalReadback: true,
+    expectedBranch: 'codex/issue-8-complete-system-reconciliation',
+  }, {
+    repoRoot,
+    runCommand: fakeGitRunner(),
+    env: {
+      [mod.DEPLOY_APPROVAL_ENV]: 'approved',
+      [mod.DEFER_OPTIONAL_INTEGRATIONS_ENV]: 'approved',
+      [mod.DEFER_EXTERNAL_READBACK_ENV]: 'approved',
+    },
+    integrationReadiness: integrationReadiness([
+      {
+        integration: 'openai',
+        label: 'OpenAI transcription/parser',
+        deploy_required: true,
+        ready: true,
+        fields: [],
+        blockers: [],
+      },
+      {
+        integration: 'vimeo',
+        label: 'Vimeo video/member library',
+        deploy_required: false,
+        ready: false,
+        fields: [
+          { name: 'VIMEO_ACCESS_TOKEN', configured: false, source: 'not configured' },
+        ],
+        blockers: ['VIMEO_ACCESS_TOKEN is not configured.'],
+      },
+      {
+        integration: 'rabbi_telegram',
+        label: 'Rabbi Telegram worker',
+        deploy_required: false,
+        ready: false,
+        fields: [
+          { name: 'TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER', configured: false, source: 'not configured' },
+        ],
+        blockers: ['Worker deployment state is not verified by local readiness scanning.'],
+      },
+    ]),
+    externalReadbackGate: {
+      ...readyExternalReadbackGate,
+      ok: false,
+      scopes: [
+        { scope: 'database', ready: false, secrets_configured: 0, secrets_required: 1, config_configured: 0, config_required: 0 },
+        { scope: 'railway', ready: false, secrets_configured: 0, secrets_required: 1, config_configured: 0, config_required: 6 },
+        { scope: 'drive', ready: false, secrets_configured: 0, secrets_required: 4, config_configured: 0, config_required: 4 },
+      ],
+      blockers: [
+        'database readback gate is not ready; required configured state is missing.',
+        'railway readback gate is not ready; required configured state is missing.',
+        'drive readback gate is not ready; required configured state is missing.',
+      ],
+    },
+  });
+
+  assert.equal(report.ok, true);
+  assert.equal(report.mode, 'deploy_gate');
+  assert.equal(report.deploy_performed, false);
+  assert.equal(report.production_mutation_performed, false);
+  assert.equal(report.approval_gates.defer_optional_integrations.performed, true);
+  assert.equal(report.approval_gates.defer_external_readback.performed, true);
+  assert.doesNotMatch(report.blockers.join(' '), /Vimeo|Telegram|readback/);
+});
+
+test('production closeout gate requires approval before deferring deploy blockers', async () => {
+  const mod = await loadGate();
+  const report = await mod.buildProductionCloseoutGateReport({
+    deploy: true,
+    confirmDeploy: mod.DEPLOY_CONFIRM_PHRASE,
+    deferOptionalIntegrations: true,
+    deferExternalReadback: true,
+    expectedBranch: 'codex/issue-8-complete-system-reconciliation',
+  }, {
+    repoRoot,
+    runCommand: fakeGitRunner(),
+    env: {
+      [mod.DEPLOY_APPROVAL_ENV]: 'approved',
+    },
+    integrationReadiness: integrationReadiness([
+      {
+        integration: 'vimeo',
+        label: 'Vimeo video/member library',
+        deploy_required: false,
+        ready: false,
+        fields: [
+          { name: 'VIMEO_ACCESS_TOKEN', configured: false, source: 'not configured' },
+        ],
+        blockers: ['VIMEO_ACCESS_TOKEN is not configured.'],
+      },
+    ]),
+    externalReadbackGate: {
+      ...readyExternalReadbackGate,
+      ok: false,
+      scopes: [
+        { scope: 'database', ready: false, secrets_configured: 0, secrets_required: 1, config_configured: 0, config_required: 0 },
+      ],
+      blockers: ['database readback gate is not ready; required configured state is missing.'],
+    },
+  });
+
+  assert.equal(report.ok, false);
+  assert.ok(report.blockers.some((blocker) => /BNA_DEFER_OPTIONAL_INTEGRATIONS_APPROVED=approved/.test(blocker)));
+  assert.ok(report.blockers.some((blocker) => /BNA_DEFER_EXTERNAL_READBACK_APPROVED=approved/.test(blocker)));
+  assert.ok(report.blockers.some((blocker) => /Vimeo video\/member library readiness is blocked/.test(blocker)));
+  assert.ok(report.blockers.some((blocker) => /database external readback readiness is blocked/.test(blocker)));
+});
+
 test('production closeout gate blocks live verification on missing external readback readiness', async () => {
   const mod = await loadGate();
   const report = await mod.buildProductionCloseoutGateReport({

@@ -1,0 +1,672 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-806",
+  "parent_raw_id": "RAW-20260702-008",
+  "source_statement_ids": [
+    "SRC-20260702-008-002",
+    "SRC-20260702-008-004",
+    "SRC-20260702-008-005",
+    "SRC-20260702-008-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-802",
+      "PKT-20260702-805"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/report.json",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-overview-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-overview-390-mobile.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-participants-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-access-1440-desktop.png",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+    ],
+    "produces": [
+      "public/operations.html",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/report.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/04-provider-workspace-contrast-readability.product-quality.json",
+    "terminal_condition": "The Rabbi / One Time Operations provider workspace filter rail and provider heading are readable on desktop and mobile screenshots, with no behavior/data changes and after-audit evidence or a precise blocker.",
+    "handoff_target": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Provider Workspace Contrast And Filter Rail Readability",
+  "created_at": "2026-07-02T21:40:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-008",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.91,
+    "reasons": [
+      "Manual review of the latest after-audit screenshots shows the active top filter rail label is nearly unreadable because a dark active-state color wins over the light rail surface.",
+      "The shared provider heading band is visible on Program, Participants, and Payment/Access screenshots but its title and helper text are too low contrast against the dark panel.",
+      "The fix is confined to CSS/readability for the existing provider Operations shell and does not require data, route, workflow, registry, or external-provider changes."
+    ],
+    "affected_product_surfaces": [
+      "Operations Rabbi / One Time provider workspace shell"
+    ],
+    "likely_external_provider_blockers": [
+      "Production deploy/live-smoke target remains unresolved.",
+      "External publishing, email, WhatsApp, Stripe/payment, Drive, Vimeo, Zoom, DNS, and access-grant writes are out of scope."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "02-operations-shell-heading-labels",
+      "03-one-time-library-support-language",
+      "04-provider-workspace-contrast-readability",
+      "next screenshot-reviewed brand/IA/mobile packet"
+    ],
+    "next_exact_packet": "After this contrast/readability cleanup, choose the next packet only from fresh after-audit screenshot review or deploy/live-smoke blocker closeout."
+  },
+  "operator_intent_summary": "Make the Rabbi / One Time Mishnah Operations UI feel even and readable by fixing obvious low-contrast active tabs and provider heading text in the existing provider workspace shell.",
+  "raw_quotes": [
+    "so many UI mistakes",
+    "even",
+    "loads nicely",
+    "clean"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-801",
+      "decision": "Production deploy/live-smoke target is still required before terminal app-visible Done.",
+      "status": "open"
+    },
+    {
+      "id": "DEC-20260630-NO-GHL-FIRST-PARTY-CRM",
+      "decision": "CRM-like language means first-party BNA Operations patterns only.",
+      "status": "decided"
+    }
+  ],
+  "out_of_scope": [
+    "No navigation information architecture rewrite.",
+    "No provider data model, participant data, payment, access, content, classroom, or community workflow change.",
+    "No external connector write, email send, WhatsApp send, Stripe/payment action, Vimeo/Zoom/Drive write, DNS change, account mutation, access grant, publish, unpublish, or delete.",
+    "No GHL runtime, LeadConnector reference, external CRM write, raw private evidence, or secret exposure.",
+    "No change to approval phrases, authorization, route access, or API handlers."
+  ],
+  "affected_surfaces": [
+    "Operations Rabbi / One Time provider workspace shell"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=participants",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "renderTopFilterRail",
+      "renderProviderProgramWorkspace",
+      "CSS .ops-filter-tab active state",
+      "CSS .page-heading / .saas-page-heading in One Time Operations scope",
+      "instrumentOneTimeOperationsUi data attributes"
+    ],
+    "known_blockers": [
+      "Production deploy/live-smoke remains blocked until a target is explicit."
+    ],
+    "observed_visual_defects": [
+      "Active top filter tab text is low contrast on the light rail in operations-overview-1440-desktop and operations-overview-390-mobile.",
+      "Provider Workspace heading title and description are difficult to read on the dark panel in Program, Members, and Payment/Access screenshots."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clean",
+      "even",
+      "loads nicely"
+    ],
+    "expanded_phrases": {
+      "clean": "The shell should expose readable labels, route headings, and active states without low-contrast text or ambiguous selected tabs.",
+      "even": "Repeated shell elements should use the same readable contrast treatment across Program, Members, and Payment/Access routes.",
+      "loads nicely": "The initial and steady UI state should present legible navigation and heading content immediately at desktop and mobile sizes."
+    },
+    "first_party_pattern_interpretation": "This remains a first-party BNA Operations provider workspace scoped to rabbi_sheller_provider / one_time_mishnah_class."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md",
+    "ops/design-references/2026-07-01-brand-kit-correction/"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-806",
+      "statement": "Fix low-contrast selected top filter tabs and shared provider heading text in the Rabbi / One Time Operations provider workspace shell.",
+      "expected_result": "Active filter labels, count pills, provider heading title, kicker, and description are readable on the captured desktop and mobile routes while preserving existing navigation and data behavior.",
+      "acceptance_criteria": [
+        "The active top filter tab has an explicit readable text color in the light Operations rail and remains visually selected.",
+        "The provider workspace heading uses a scoped readable treatment in One Time Operations, not dark text on a dark panel.",
+        "Desktop screenshots for Program, Participants, and Payment/Access show readable selected tabs and heading text.",
+        "Mobile Program Overview screenshot shows the active rail item and provider heading readable without introducing horizontal page overflow.",
+        "No API handlers, route access, data loading, provider setup, or external-provider actions change."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and requirement register exist for RAW-20260702-008.",
+      "Current-state visual audit evidence exists in ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/.",
+      "The defect is visible in desktop and mobile screenshots and maps to one shared shell CSS surface.",
+      "Scope is limited to public CSS/markup readability in public/operations.html.",
+      "No external-write, payment, send, publish, or access decision is required for local implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1440,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load local Operations route before async data resolves.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Loading state preserves readable route heading and active shell navigation.",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "Raw private contact/student data",
+        "External-write confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "One h1 remains available for the route.",
+      "accessibility_expectation": "Active tabs and heading text meet readable contrast expectations.",
+      "test_smoke_assertion": "Audit captures the route without missing h1 or unlabeled visible controls.",
+      "requirement_id": "REQ-20260702-806"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=participants",
+      "viewport": 1024,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use local review data with no typed actions on the route.",
+      "expected_visible_title": "Participants / Members",
+      "expected_visible_message": "No typed actions are registered for this page yet.",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "BNA student accountability records",
+        "Hidden support/debug labels"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Top filter rail remains role=tablist with selected tab.",
+      "accessibility_expectation": "Selected tab label is readable on the light rail.",
+      "test_smoke_assertion": "Participants screenshot shows readable active tab and heading.",
+      "requirement_id": "REQ-20260702-806"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1440,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load seeded One Time provider workspace with program overview metrics.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "One Time Mishnah Class provider workspace description is readable.",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Program tabs",
+        "Metric buttons"
+      ],
+      "forbidden_content": [
+        "Low-contrast selected tab label",
+        "Dark heading text on dark panel"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Selected tab has aria-selected true and readable visible text.",
+      "accessibility_expectation": "Heading and paragraph text remain legible against the provider heading panel.",
+      "test_smoke_assertion": "Overview screenshot shows selected Program Overview tab and provider heading clearly.",
+      "requirement_id": "REQ-20260702-806"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 1440,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Payment / Access route with no configured connector sync.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "No payment, payout, or access sync fires until the connector is explicitly configured and confirmed.",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Program tabs"
+      ],
+      "forbidden_content": [
+        "Live payment action",
+        "Unreadable active tab"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Selected active section remains readable.",
+      "accessibility_expectation": "Provider heading and active filter rail contrast are readable.",
+      "test_smoke_assertion": "Access screenshot shows readable Payment / Access tab and heading.",
+      "requirement_id": "REQ-20260702-806"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 768,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Simulate dashboard data error or inspect error banner state in audit output.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Some dashboard data could not load.",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Ask / Search"
+      ],
+      "forbidden_content": [
+        "Raw stack trace",
+        "Secret values"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error banner does not remove route h1.",
+      "accessibility_expectation": "Error and heading text remain readable.",
+      "test_smoke_assertion": "Audit has no console/network errors from the CSS-only change.",
+      "requirement_id": "REQ-20260702-806"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=access",
+      "viewport": 430,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open access route where connector setup remains disabled/unconfirmed.",
+      "expected_visible_title": "Payment / Access",
+      "expected_visible_message": "No payment, payout, or access sync fires until the connector is explicitly configured and confirmed.",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Ask"
+      ],
+      "forbidden_content": [
+        "Payment write approved by page text",
+        "Access grant confirmation"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile route heading remains h1.",
+      "accessibility_expectation": "Mobile active filter and heading text are readable.",
+      "test_smoke_assertion": "Mobile access route captures without horizontal page overflow.",
+      "requirement_id": "REQ-20260702-806"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use local Operations route with no mutation action.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Provider workspace summary is readable.",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Ask"
+      ],
+      "forbidden_content": [
+        "Mutation confirmation",
+        "External-write approval"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Tab role and selected state remain intact.",
+      "accessibility_expectation": "Selected tab is readable at 390px.",
+      "test_smoke_assertion": "Mobile overview screenshot shows readable selected tab.",
+      "requirement_id": "REQ-20260702-806"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1024,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use seeded provider workspace readback after data resolves.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Provider workspace metrics and profile read back with readable labels.",
+      "expected_primary_action": "Open Schedule",
+      "expected_secondary_actions": [
+        "Launch",
+        "Program",
+        "Participants"
+      ],
+      "forbidden_content": [
+        "Unreadable selected tab",
+        "Low-contrast provider title"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Metric buttons and selected tab remain named.",
+      "accessibility_expectation": "Text contrast is readable in steady state.",
+      "test_smoke_assertion": "Desktop/tablet screenshot shows readable active rail and heading.",
+      "requirement_id": "REQ-20260702-806"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open route without Operations session.",
+      "expected_visible_title": "Operations Login or Access Denied",
+      "expected_visible_message": "Private One Time data is not shown.",
+      "expected_primary_action": "Log in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "Provider private data",
+        "Student or parent private data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Login/access denied heading is present.",
+      "accessibility_expectation": "CSS-only provider shell changes do not expose private route content.",
+      "test_smoke_assertion": "Audit login/auth state remains unchanged.",
+      "requirement_id": "REQ-20260702-806"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile Program Overview route with helper/drawer available.",
+      "expected_visible_title": "Program Overview",
+      "expected_visible_message": "Provider Workspace heading and top filter rail are readable on mobile.",
+      "expected_primary_action": "Ask",
+      "expected_secondary_actions": [
+        "Open navigation"
+      ],
+      "forbidden_content": [
+        "Horizontal page overflow",
+        "Unreadable active rail text"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile h1 remains route-specific.",
+      "accessibility_expectation": "Mobile tab and heading text are readable.",
+      "test_smoke_assertion": "390px screenshot shows active Program Overview tab and heading text clearly.",
+      "requirement_id": "REQ-20260702-806"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "viewport": 1440,
+        "routes": [
+          "operations-overview",
+          "operations-participants",
+          "operations-access"
+        ]
+      },
+      {
+        "viewport": 1024,
+        "routes": [
+          "operations-overview"
+        ]
+      },
+      {
+        "viewport": 768,
+        "routes": [
+          "operations-overview"
+        ]
+      },
+      {
+        "viewport": 430,
+        "routes": [
+          "operations-overview"
+        ]
+      },
+      {
+        "viewport": 390,
+        "routes": [
+          "operations-overview"
+        ]
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-006",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+        "viewport": "1440-desktop",
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-overview-1440-desktop.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/screenshots/operations-overview-1440-desktop.png",
+        "defect_codes": [
+          "VQ-CONTRAST-001",
+          "VQ-NAV-002"
+        ],
+        "severity": "P2",
+        "user_impact": "The selected Program Overview tab and provider heading are hard to read, making the route feel unfinished.",
+        "expected_fix": "Set explicit active filter text/count colors and scope a readable provider heading treatment to One Time Operations.",
+        "requirement_id": "REQ-20260702-806"
+      },
+      {
+        "finding_id": "VQF-007",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=participants",
+        "viewport": "1440-desktop",
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-participants-1440-desktop.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/screenshots/operations-participants-1440-desktop.png",
+        "defect_codes": [
+          "VQ-CONTRAST-001",
+          "VQ-NAV-002"
+        ],
+        "severity": "P2",
+        "user_impact": "The selected Members tab is visually ambiguous because active text contrast is too weak on the light rail.",
+        "expected_fix": "Make the selected filter pill readable without changing tab routing.",
+        "requirement_id": "REQ-20260702-806"
+      },
+      {
+        "finding_id": "VQF-008",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+        "viewport": "390-mobile",
+        "screenshot_before": "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-overview-390-mobile.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/screenshots/operations-overview-390-mobile.png",
+        "defect_codes": [
+          "VQ-CONTRAST-001",
+          "VQ-NAV-002"
+        ],
+        "severity": "P2",
+        "user_impact": "On mobile, the selected Program Overview pill and provider heading are hard to read at the top of the page.",
+        "expected_fix": "Keep the mobile rail horizontally scrollable but make the active label and provider heading readable.",
+        "requirement_id": "REQ-20260702-806"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Selected top filter tabs retain role=tab, aria-selected=true, and visible readable text.",
+      "The provider heading remains semantic page content under the route h1 and is readable against its background.",
+      "No visible form-control label regression is introduced."
+    ],
+    "minimum_checks": [
+      "Full audit report has missing_h1=0 for Operations captures.",
+      "Full audit report has visible unlabeled controls=0 for Operations captures.",
+      "Manual screenshot spot-check confirms selected tab and provider heading contrast on desktop and mobile."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Program top filter tabs",
+      "selector_or_action_key": ".ops-filter-tab",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "setCurrentSection(tab.id)",
+      "registry_required": false
+    },
+    {
+      "label": "Open Schedule",
+      "selector_or_action_key": "currentPrimaryAction service_providers schedule",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "setCurrentSection('schedule')",
+      "registry_required": true
+    },
+    {
+      "label": "External writes",
+      "selector_or_action_key": "send/payment/publish/access actions",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "Shloimie/keyholder",
+      "external_write": false,
+      "handler_or_blocker": "Out of scope for this CSS/readability packet.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "reads": [
+      "Existing local Operations route data used by the audit harness."
+    ],
+    "writes": [
+      "No database or external provider writes."
+    ],
+    "fixtures": [
+      "Existing One Time UI review seed/readback data."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "no_raw_private_evidence": true,
+    "no_secret_exposure": true,
+    "privacy_scope": "Provider workspace screenshots are redacted by the audit harness and must not expose raw private student/contact/parent data."
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260702-806-A",
+      "scope": "CSS-only readability treatment for One Time Operations top filter active tabs and provider heading.",
+      "instructions": [
+        "Add explicit color rules to the later light-theme .ops-filter-tab.active block so selected labels and counts remain readable.",
+        "Scope provider heading contrast styles to .one-time-operations-active [data-one-time-rabbi-dashboard] .page-heading.saas-page-heading so other Operations pages are not redesigned.",
+        "Do not change tab arrays, click handlers, API calls, data fetches, authorization, or external-write behavior.",
+        "Verify desktop and mobile screenshots after implementation."
+      ],
+      "allowed_files": [
+        "public/operations.html",
+        "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "compact child packet under one UI surface",
+    "source_files_to_read": [
+      "public/operations.html",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/report.json"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if the work expands beyond shared shell contrast/readability into IA, data cards, CRM detail, portals, or live deploy.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/04-provider-workspace-contrast-readability.product-quality.json",
+      "expected": "passes"
+    },
+    {
+      "command": "inline parse of public/operations.html script blocks",
+      "expected": "passes"
+    },
+    {
+      "command": "node --check scripts/audit-rabbi-onetime-current-state.mjs",
+      "expected": "passes"
+    },
+    {
+      "command": "node scripts/audit-rabbi-onetime-current-state.mjs --base=http://127.0.0.1:8095 --out=ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast",
+      "expected": "captures 75 screenshots with no automated findings"
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "expected": "0 findings"
+    }
+  ],
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-overview-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-overview-390-mobile.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-participants-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-library-layout/screenshots/operations-access-1440-desktop.png"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/report.md",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/screenshots/operations-overview-1440-desktop.png",
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/screenshots/operations-overview-390-mobile.png"
+    ],
+    "recording_required": [
+      "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Packet validates before implementation.",
+      "Scoped CSS/readability changes are implemented without behavior or data changes.",
+      "After-audit report and screenshots are captured.",
+      "Desktop and mobile screenshot spot-checks confirm readable active filter tabs and provider heading.",
+      "Watchdog protocol drift passes.",
+      "Register, ledger, and changelog record evidence and any live-smoke blocker.",
+      "App-visible terminal Done remains blocked until deploy/live-smoke proof exists."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/04-provider-workspace-contrast-readability.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch CSS edits",
+      "local Playwright audit screenshots",
+      "watchdog checks"
+    ],
+    "skipped_actions_policy": "Skip deploy/live smoke unless the explicit target is available; skip all external writes and provider mutations.",
+    "blocker_decisions": [
+      "DEC-20260702-801"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-02-rabbi-onetime-provider-contrast/"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+    "next_packet_path": "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md#remaining-next-packet"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 enforceable product-quality drift findings"
+  },
+  "next_packet": {
+    "recommendation": "After local verification, either run deploy/live-smoke if DEC-20260702-801 is resolved or select the next screenshot-reviewed child packet for brand/IA/mobile polish.",
+    "blocked_by": [
+      "DEC-20260702-801 for terminal production proof"
+    ]
+  },
+  "app_visible": true
+}

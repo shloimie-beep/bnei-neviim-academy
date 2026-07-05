@@ -60,6 +60,10 @@ test('One Time CRM Contacts UX shows scoped lead source, no-send, and dedupe sta
   assert.match(operations, /one-time-no-send-until-approved/);
   assert.match(operations, /one-time-campaign-staging/);
   assert.match(operations, /data-one-time-crm-contact-row/);
+  assert.match(operations, /data-one-time-crm-empty-state/);
+  assert.match(operations, /data-one-time-crm-contact-card/);
+  assert.match(operations, /one-time-crm-contact-card-list/);
+  assert.match(operations, /No One Time CRM contacts loaded yet/);
   assert.match(operations, /Duplicate contact review/);
   assert.match(operations, /Product interest/);
   assert.match(operations, /Member access/);

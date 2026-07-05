@@ -222,6 +222,26 @@
       ]
     },
     {
+      "action_id": "ACTION-PROVIDER-WAPI-SETUP-SAVE",
+      "label": "Save WhatsApp Setup",
+      "surface": "provider_portal",
+      "route": "/provider?section=whatsapp_setup",
+      "selector_hint": "[data-provider-wapi-setup-form] button[data-action-id=\"ACTION-PROVIDER-WAPI-SETUP-SAVE\"]",
+      "expected_behavior": "Saves Rabbi/One Time provider-scoped Whapi/WAPI setup details to BNA integration and secret-reference records for verification; the raw token is not rendered back, and no WhatsApp send, broadcast, payment, access grant, or external provider mutation runs from this action.",
+      "permission": "authenticated One Time provider workspace member",
+      "status": "active",
+      "test": {
+        "type": "static_and_api_contract",
+        "expected_result": "Provider portal exposes the WhatsApp setup form and posts to /api/provider-portal/integrations/whatsapp-wapi/setup; server route requires provider session, stores only secret-reference/fingerprint metadata, returns no raw token, and never uses SEND_WHATSAPP."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
       "label": "Open selected portal",
       "surface": "portal_login",
@@ -845,6 +865,28 @@
       ]
     },
     {
+      "action_id": "ACTION-STUDIO-PREPARE-REVIEW-PACK",
+      "label": "Prepare Review Pack",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=source",
+      "selector_hint": "button[onclick^=\"prepareStudioReviewPackFromForm\"]",
+      "expected_behavior": "Chains existing scoped Studio source, storyboard, prompt-compile, and mock-render APIs to prepare a local no-send review pack without vendor calls or external writes.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active_no_external_write",
+      "handler": "prepareStudioReviewPackFromForm",
+      "api_route": "/api/bna/studio/projects/:id/source, /api/bna/studio/projects/:id/storyboard, /api/bna/studio/projects/:id/prompt-compile, /api/bna/studio/projects/:id/render",
+      "test": {
+        "type": "browser_smoke",
+        "expected_result": "Studio browser smoke prepares a Review Pack and sees Source saved, Storyboard generated, Prompt compiled, Mock render ready, No vendor call, and No publish/send."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-STUDIO-GENERATE-STORYBOARD",
       "label": "Generate Storyboard",
       "surface": "operations_service_provider_studio",
@@ -880,6 +922,49 @@
       "test": {
         "type": "domain_and_browser_smoke",
         "expected_result": "Domain test checks prompt-injection boundaries and browser smoke shows the compiled prompt."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-OPEN-DIAGNOSTICS",
+      "label": "Open Studio Diagnostics",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio",
+      "selector_hint": "details.studio-diagnostics summary",
+      "expected_behavior": "Expands private local prompt, job, correction, or handoff diagnostics without making network calls or external writes.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "native_details_summary",
+      "test": {
+        "type": "browser_smoke",
+        "expected_result": "Studio browser smoke renders Studio Diagnostics while review cards stay visible by default."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-SAVE-LIBRARY",
+      "label": "Save Studio Library",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "selector_hint": "form[onsubmit^=\"saveStudioLibraryFromForm\"] button[type=\"submit\"]",
+      "expected_behavior": "Saves reusable character profiles, Jewish guardrails, and scenario tags to the scoped Studio project without external writes.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "saveStudioLibraryFromForm",
+      "api_route": "/api/bna/studio/projects/:id",
+      "test": {
+        "type": "domain_and_browser_smoke",
+        "expected_result": "Browser smoke saves library entries and prompt compile includes a Jewish guardrails layer."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -1019,11 +1104,11 @@
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-SMOKE",
-      "label": "Run One Time member-library smoke",
+      "label": "Run One Time member-library verification",
       "surface": "operations_content_one_time_library",
       "route": "/operations?view=content&section=one_time_library",
-      "selector_hint": "Run Smoke",
-      "expected_behavior": "Runs the bounded member-library smoke only with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and preserves rollback evidence.",
+      "selector_hint": "Run Verification",
+      "expected_behavior": "Runs the bounded member-library verification check only with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and preserves rollback evidence.",
       "permission": "super_admin/project_admin",
       "status": "approval_gated",
       "test": {

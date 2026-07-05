@@ -1,0 +1,313 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260702-980",
+  "parent_raw_id": "RAW-20260702-010",
+  "source_statement_ids": [
+    "SRC-20260702-010-005",
+    "SRC-20260702-010-007"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-960",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-967"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260702-969"
+    ],
+    "consumes": [
+      "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md",
+      "public/operations.html",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-review-pack.png"
+    ],
+    "produces": [
+      "public/operations.html",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/05-studio-desktop-layout-cleanup.product-quality.json",
+    "terminal_condition": "Studio project workflow renders in a full-width operator workspace on desktop and a clean single column on mobile, without the selected section being squeezed into the old right rail.",
+    "handoff_target": "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "Studio desktop layout cleanup packet",
+  "created_at": "2026-07-02T23:59:30+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260702-010",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.91,
+    "reasons": [
+      "The operator asked for a million-dollar app, not a technical/scaffold-looking workflow.",
+      "Review-pack screenshot evidence shows the Studio source workflow squeezed into a narrow right rail on desktop."
+    ],
+    "affected_workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+    "affected_view_classes": [
+      "SHLOIMIE_PLATFORM_SUPPORT",
+      "RABBI_PROVIDER_ADMIN"
+    ],
+    "affected_product_surfaces": [
+      "Operations Studio layout"
+    ],
+    "likely_external_provider_blockers": [
+      "No external provider work is required for layout cleanup."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "05-studio-desktop-layout-cleanup",
+      "06-ai-video-vendor-provider-setup",
+      "07-deploy-live-smoke"
+    ],
+    "next_exact_packet": "After layout cleanup, final vendor setup remains blocked on DEC-20260702-961 and deploy/live smoke remains required."
+  },
+  "operator_intent_summary": "Make Studio feel like a real app workspace, so Source, Review Pack, Storyboard, Prompts, Jobs, Usage, and Handoff are not cramped into a technical side rail.",
+  "raw_source": "million dollar app / actually live and working / drop in content",
+  "raw_quotes": [
+    "million dollar app",
+    "actually live and working",
+    "drop in content"
+  ],
+  "operator_quotes": [
+    "million dollar app"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260702-961",
+      "decision": "AI-video vendor adapter scope remains blocked until vendor contract, API, cost, rights, and approval rules are captured.",
+      "status": "needs_operator_decision"
+    }
+  ],
+  "out_of_scope": [
+    "No API, schema, auth, permission, external provider, publish, send, upload, payment, access grant, Drive, Vimeo, WhatsApp, Telegram, DNS, GHL, LeadConnector, or external CRM behavior change.",
+    "No broad Operations shell redesign; this is scoped to the Studio view layout."
+  ],
+  "affected_surfaces": [
+    "Operations Studio layout"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "tests/service-provider-studio-operations-ui.test.js",
+    "tests/service-provider-studio-browser-smoke.test.js"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "renderStudio",
+      "renderPersonSectionMenu",
+      "desktop-review-pack.png",
+      "mobile-review-pack.png"
+    ],
+    "known_blockers": [
+      "Terminal live-ready status still requires deploy/live authenticated smoke after release."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "million-dollar",
+      "working",
+      "live",
+      "clean"
+    ],
+    "expanded_phrases": {
+      "million-dollar": "Studio should use a full-width operator workspace, not a squeezed side-rail implementation.",
+      "working": "The primary review-pack workflow should be visible and scannable on desktop and mobile.",
+      "live": "Layout cleanup is local only until deployed and live-smoked.",
+      "clean": "Studio section navigation should be a compact horizontal control and the project detail should have a stable main content width."
+    },
+    "first_party_pattern_interpretation": "Layout remains first-party BNA Operations and does not add third-party runtime."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/UI-STATE-MATRIX.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260702-980",
+      "statement": "Clean up Studio desktop layout so the operator workflow is not squeezed into the right rail.",
+      "expected_result": "Studio uses a scoped full-width workspace with horizontal section tabs and a project/detail layout that gives the selected workflow enough width.",
+      "acceptance_criteria": [
+        "Studio no longer uses the shared person-section vertical menu as the primary desktop layout.",
+        "Section navigation is visible as a horizontal Studio tab strip.",
+        "Project detail renders in the main workspace column on desktop and stacks cleanly on mobile.",
+        "Review Pack, library, storyboard, prompt, jobs, and handoff cards keep readable widths.",
+        "Focused browser smoke screenshots show no right-rail squeeze."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "REQ-20260702-967 review-pack workflow is locally verified.",
+      "Desktop screenshot evidence shows the cramped layout.",
+      "Fix is scoped to Studio rendering/CSS in public/operations.html."
+    ]
+  },
+  "state_matrix": {
+    "loading": {"route": "/operations?view=studio", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open Studio while data loads.", "expected_visible_title": "Universal Service Provider Studio", "expected_visible_message": "Project detail is loading.", "expected_primary_action": "None until loaded.", "expected_secondary_actions": [], "forbidden_content": ["stack trace", "raw JSON"], "screenshot_required": true, "aria_semantic_expectation": "Loading text is visible.", "accessibility_expectation": "No trapped focus.", "test_smoke_assertion": "Studio route renders.", "requirement_id": "REQ-20260702-980"},
+    "empty": {"route": "/operations?view=studio&section=source", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open Source before review pack exists.", "expected_visible_title": "Review Pack", "expected_visible_message": "No review pack has been prepared yet.", "expected_primary_action": "Prepare Review Pack", "expected_secondary_actions": ["Save Source"], "forbidden_content": ["squeezed right rail"], "screenshot_required": true, "aria_semantic_expectation": "Source controls are visible.", "accessibility_expectation": "Controls keep readable width.", "test_smoke_assertion": "Source panel has full-width card.", "requirement_id": "REQ-20260702-980"},
+    "populated": {"route": "/operations?view=studio&section=source", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Prepare review pack.", "expected_visible_title": "Review Pack", "expected_visible_message": "Source saved, storyboard generated, prompt compiled, mock render ready.", "expected_primary_action": "Prepare Review Pack", "expected_secondary_actions": ["Open Storyboard", "Open Prompts", "Open Jobs"], "forbidden_content": ["right-rail squeeze"], "screenshot_required": true, "aria_semantic_expectation": "Review status chips are readable.", "accessibility_expectation": "No horizontal overflow.", "test_smoke_assertion": "Desktop review pack card has main-column width.", "requirement_id": "REQ-20260702-980"},
+    "filtered_empty": {"route": "/operations?view=studio&section=usage", "viewport": "1024", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open a section with no rows.", "expected_visible_title": "Usage", "expected_visible_message": "No active price catalog rows are loaded.", "expected_primary_action": "Studio section tab", "expected_secondary_actions": [], "forbidden_content": ["silent empty side rail"], "screenshot_required": true, "aria_semantic_expectation": "Empty state is text.", "accessibility_expectation": "No color-only status.", "test_smoke_assertion": "Section content still spans main workspace.", "requirement_id": "REQ-20260702-980"},
+    "error": {"route": "/operations?view=studio", "viewport": "1024", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Simulate detail load error.", "expected_visible_title": "Universal Service Provider Studio", "expected_visible_message": "Studio project detail could not load.", "expected_primary_action": "Open", "expected_secondary_actions": [], "forbidden_content": ["stack trace", "secret"], "screenshot_required": true, "aria_semantic_expectation": "Error is visible text.", "accessibility_expectation": "Error is not color-only.", "test_smoke_assertion": "Layout wrapper remains stable.", "requirement_id": "REQ-20260702-980"},
+    "blocked_setup": {"route": "/operations?view=studio&section=jobs", "viewport": "1024", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open Jobs before vendor setup.", "expected_visible_title": "Job Review", "expected_visible_message": "No vendor call.", "expected_primary_action": "Run Mock Render", "expected_secondary_actions": [], "forbidden_content": ["real vendor output"], "screenshot_required": true, "aria_semantic_expectation": "Blocked vendor status is text.", "accessibility_expectation": "Cards keep stable widths.", "test_smoke_assertion": "No vendor call remains visible.", "requirement_id": "REQ-20260702-980"},
+    "preview_only": {"route": "/operations?view=studio&section=prompts", "viewport": "768", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Compile prompt after saving library.", "expected_visible_title": "Prompt Review", "expected_visible_message": "Prompt layers are visible.", "expected_primary_action": "Compile Prompt", "expected_secondary_actions": ["Studio Diagnostics"], "forbidden_content": ["raw-first layout"], "screenshot_required": true, "aria_semantic_expectation": "Prompt cards have headings.", "accessibility_expectation": "Prompt text wraps.", "test_smoke_assertion": "Prompt review card is readable.", "requirement_id": "REQ-20260702-980"},
+    "success_readback": {"route": "/operations?view=studio&section=source", "viewport": "430", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Prepare review pack on mobile width.", "expected_visible_title": "Review Pack", "expected_visible_message": "Local no-send status is visible.", "expected_primary_action": "Prepare Review Pack", "expected_secondary_actions": ["Generate Storyboard"], "forbidden_content": ["overlap"], "screenshot_required": true, "aria_semantic_expectation": "Buttons remain visible text.", "accessibility_expectation": "Touch targets are usable.", "test_smoke_assertion": "Mobile review pack has no overlap.", "requirement_id": "REQ-20260702-980"},
+    "permission_denied": {"route": "/operations?view=studio", "viewport": "430", "auth_role": "anonymous", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open Studio while logged out.", "expected_visible_title": "Operations", "expected_visible_message": "Unauthorized or login required.", "expected_primary_action": "Sign in", "expected_secondary_actions": [], "forbidden_content": ["private Studio source"], "screenshot_required": true, "aria_semantic_expectation": "Access denial is text.", "accessibility_expectation": "No private data leaks.", "test_smoke_assertion": "Logged-out API remains 401.", "requirement_id": "REQ-20260702-980"},
+    "mobile_drawer_or_detail_state": {"route": "/operations?view=studio&section=source", "viewport": "390", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open prepared review pack on mobile.", "expected_visible_title": "Review Pack", "expected_visible_message": "Cards stack cleanly.", "expected_primary_action": "Prepare Review Pack", "expected_secondary_actions": ["Save Source"], "forbidden_content": ["horizontal overflow"], "screenshot_required": true, "aria_semantic_expectation": "Fields and labels remain visible.", "accessibility_expectation": "Touch targets are usable.", "test_smoke_assertion": "390px screenshot has no overlap.", "requirement_id": "REQ-20260702-980"}
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {"route": "/operations?view=studio&section=source", "viewport": 1440, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260702-980"},
+      {"route": "/operations?view=studio&section=source", "viewport": 1024, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260702-980"},
+      {"route": "/operations?view=studio&section=source", "viewport": 768, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260702-980"},
+      {"route": "/operations?view=studio&section=source", "viewport": 430, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260702-980"},
+      {"route": "/operations?view=studio&section=source", "viewport": 390, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260702-980"}
+    ],
+    "findings": [
+      {"finding_id": "VQF-20260702-980", "route": "/operations?view=studio&section=source", "viewport": "1440", "screenshot_before": "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-review-pack.png", "screenshot_after_or_blocker": "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-review-pack.png", "defect_codes": ["VQ-LAYOUT-001", "VQ-IA-002"], "severity": "P1", "user_impact": "The main Studio workflow is cramped into a narrow side rail on desktop.", "expected_fix": "Use a Studio-specific full-width layout and horizontal section tabs.", "requirement_id": "REQ-20260702-980"}
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus BNA mobile touch and reflow requirements.",
+    "required_checks": [
+      "section tabs are visible buttons",
+      "review pack has main-column width on desktop",
+      "mobile stacks without overlap",
+      "no horizontal overflow"
+    ]
+  },
+  "action_states": [
+    {"label": "Studio Section Tab", "selector_or_action_key": "setStudioSection", "action_state": "WORKS_NOW", "owner": "Codex", "external_write": false, "handler_or_blocker": "Switches local Studio subsection only.", "registry_required": false},
+    {"label": "Prepare Review Pack", "selector_or_action_key": "prepareStudioReviewPackFromForm", "action_state": "WORKS_NOW", "owner": "Codex", "external_write": false, "handler_or_blocker": "Existing registered no-send source-to-review workflow.", "registry_required": true}
+  ],
+  "data_requirements": [
+    "No schema change.",
+    "No API change.",
+    "Layout reads existing Studio counts and project detail only."
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Layout change does not change scoped data access."
+    ],
+    "forbidden_content": [
+      "secrets",
+      "raw private records in proof files",
+      "external provider credentials"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260702-980-LAYOUT",
+      "scope": "Studio view layout only",
+      "instructions": [
+        "Add Studio-specific layout CSS.",
+        "Replace shared person-section menu usage in Studio with horizontal Studio tabs.",
+        "Keep all existing Studio actions and APIs unchanged.",
+        "Update screenshots and focused tests."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-browser-smoke.test.js"
+    ],
+    "max_files_to_edit": 3,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if work touches shared Operations shell, auth, APIs, schema, or unrelated views.",
+    "split_if_exceeds": true,
+    "context_risk_level": "MEDIUM"
+  },
+  "tests": [
+    {"command_or_check": "npm run pqc:validate ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/05-studio-desktop-layout-cleanup.product-quality.json", "expected_result": "Passes."},
+    {"command_or_check": "node --test tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js tests/service-provider-studio-browser-smoke.test.js", "expected_result": "Passes focused Studio tests."},
+    {"command_or_check": "npm run studio:smoke", "expected_result": "Passes and regenerates desktop/mobile screenshots without right-rail squeeze."},
+    {"command_or_check": "npm run watchdog:actions", "expected_result": "Finding count remains 0."}
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-review-pack.png",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-review-pack.png",
+      "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "PQC packet validates.",
+      "Studio layout uses full-width workspace and horizontal tabs.",
+      "Focused Studio tests and smoke pass.",
+      "Screenshots show review pack no longer squeezed into right rail.",
+      "Register, ledger, and changelog record local verification and remaining deploy/live-smoke blocker."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260702-010-studio-content-engine-live-readiness.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/05-studio-desktop-layout-cleanup.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "edit Studio UI layout",
+      "run focused Studio tests"
+    ],
+    "skipped_actions_policy": "Skip shared shell redesign, API/schema/auth changes, vendor setup, deploy, publish/send/upload, and external writes.",
+    "blocker_decisions": [
+      "DEC-20260702-961"
+    ],
+    "evidence_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-review-pack.png",
+      "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-review-pack.png"
+    ],
+    "final_status_path": "tasks-pending/2026-07-02-studio-content-engine-live-readiness.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/06-ai-video-vendor-provider-setup.product-quality.json"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No enforceable product-quality drift finding for this implementation packet."
+  },
+  "next_packet": {
+    "type": "PROVIDER_SETUP_PACKET",
+    "description": "AI-video vendor provider setup after operator/vendor decision.",
+    "path": "ops/prompt-packets/2026-07-02-studio-content-engine-live-readiness/06-ai-video-vendor-provider-setup.product-quality.json"
+  }
+}

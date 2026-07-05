@@ -27,6 +27,7 @@ test('system truth script reports readiness by variable state only', () => {
   const readinessHelper = read('scripts/lib/integration-readiness.mjs');
   assert.match(script, /variable_state_only: true/);
   assert.doesNotMatch(script, /fingerprint\(loaded\.value\)|value: loaded\.value/);
+  assert.match(readinessHelper, /openaiv2\.txt/);
   assert.match(readinessHelper, /VIMEO_ACCESS_TOKEN/);
   assert.match(readinessHelper, /RESEND_DOMAIN/);
   assert.match(script, /CHATGPT-RETURN-PACKET\.md/);
@@ -52,6 +53,44 @@ test('integration readiness rejects placeholder loaded values without leaking th
   assert.equal(openaiKey.source, 'placeholder');
   assert.ok(groups.openai.blockers.some((blocker) => /OPENAI_API_KEY is not configured/.test(blocker)));
   assert.doesNotMatch(JSON.stringify(report), /TODO|secret-value-for|sk_live_|sk_test_|postgres:\/\//);
+});
+
+test('integration readiness accepts Resend sender email without formatted sender alias', async () => {
+  const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'lib', 'integration-readiness.mjs')).href);
+  const report = mod.buildIntegrationReadinessSummary({
+    generatedAt: '2026-07-05T00:00:00.000Z',
+    loadSecretFn: ({ envName }) => ({
+      configured: envName !== 'RESEND_FROM',
+      value: envName === 'RESEND_FROM' ? '' : `secret-value-for-${envName}`,
+      env_name: envName,
+      source_type: 'env',
+    }),
+  });
+
+  const groups = Object.fromEntries(report.groups.map((group) => [group.integration, group]));
+  assert.equal(groups.resend.ready, true);
+  assert.equal(groups.resend.fields.find((field) => field.name === 'RESEND_FROM').configured, false);
+  assert.equal(groups.resend.fields.find((field) => field.name === 'RESEND_FROM_EMAIL').configured, true);
+  assert.deepEqual(groups.resend.blockers, []);
+  assert.doesNotMatch(JSON.stringify(report), /secret-value-for/);
+});
+
+test('integration readiness blocks Resend when no sender identity is configured', async () => {
+  const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'lib', 'integration-readiness.mjs')).href);
+  const report = mod.buildIntegrationReadinessSummary({
+    generatedAt: '2026-07-05T00:00:00.000Z',
+    loadSecretFn: ({ envName }) => ({
+      configured: !['RESEND_FROM', 'RESEND_FROM_EMAIL'].includes(envName),
+      value: ['RESEND_FROM', 'RESEND_FROM_EMAIL'].includes(envName) ? '' : `secret-value-for-${envName}`,
+      env_name: envName,
+      source_type: 'env',
+    }),
+  });
+
+  const resend = report.groups.find((group) => group.integration === 'resend');
+  assert.equal(resend.ready, false);
+  assert.ok(resend.blockers.some((blocker) => /RESEND_FROM or RESEND_FROM_EMAIL is not configured/.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(report), /secret-value-for/);
 });
 
 test('return packet report keeps private and redacted packet paths explicit', async () => {

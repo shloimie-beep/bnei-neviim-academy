@@ -5,38 +5,44 @@
     "currentWorkspace": "rabbi_sheller_provider",
     "roleLabel": "Workspace Owner",
     "navIds": [
-      "dashboard",
-      "watchdog",
       "service_providers",
-      "agents",
       "contacts",
-      "community",
       "content",
-      "live_classes",
-      "calendar",
       "communications",
-      "tasks",
       "automations",
-      "integrations",
-      "api_usage",
+      "service_providers",
+      "tasks",
       "settings"
     ],
+    "navKeys": [
+      "overview_package_status",
+      "members_crm",
+      "classes_content",
+      "communications",
+      "automations",
+      "payments_access",
+      "tasks_decisions",
+      "settings_setup"
+    ],
     "navLabels": [
-      "Dashboard",
-      "Watchdog",
-      "Program",
-      "Agents",
+      "Overview",
       "Members",
-      "Community",
-      "Content",
-      "Live",
-      "Schedule",
-      "Communications",
+      "Classes",
+      "Comms",
+      "Auto",
+      "Payments",
       "Tasks",
-      "Automations",
-      "Integrations",
-      "Reporting",
-      "Settings"
+      "Setup"
+    ],
+    "navSections": [
+      "overview",
+      "participants",
+      "one_time_library",
+      "providers",
+      "center",
+      "access",
+      "one_time",
+      "workspace"
     ],
     "filterIds": [
       "library",
@@ -50,21 +56,19 @@
       "bundles"
     ],
     "sidebarLabels": [
-      "Dashboard DB",
-      "Watchdog WG",
-      "Program PG",
-      "Agents AG",
+      "Overview OV",
       "Members MB",
-      "Community CO",
-      "Content CT",
-      "Live LC",
-      "Schedule SC",
-      "Communications CM",
+      "Classes CL",
+      "Comms CM",
+      "Auto AU",
+      "Payments PA",
       "Tasks TS",
-      "Automations AU",
-      "Integrations IN",
-      "Reporting RP",
-      "Settings SE"
+      "Setup SU"
+    ],
+    "footerLabels": [
+      "Platform Support",
+      "Help",
+      "Logout"
     ],
     "workspaceOptions": [
       {
@@ -93,6 +97,11 @@
     "driveButton": true,
     "topRailModule": "content",
     "hasModuleToolbar": false
+  },
+  "paymentNavContract": {
+    "currentView": "service_providers",
+    "section": "access",
+    "railText": "Payments Payment / Access Program Overview 0 Launch / Checkout 0 Mishnayos Membership 0 Membership Tiers 0 7:00 Class 0 Worksheets / Source Sheets 0 Questions / Posts 0 Payment / Access 0 Provider Settings 0"
   },
   "previewRequests": [
     {

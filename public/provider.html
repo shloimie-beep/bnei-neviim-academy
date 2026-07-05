@@ -1834,6 +1834,7 @@
             const attendance = data.attendance || {};
             const links = data.links || {};
             const login = data.login_access || {};
+            const driveDropoffLinks = Array.isArray(data.drive_dropoff_links) ? data.drive_dropoff_links : [];
             document.getElementById('loginPanel').classList.add('hidden');
             document.getElementById('setupPanel').classList.add('hidden');
             document.getElementById('portalPanel').classList.remove('hidden');

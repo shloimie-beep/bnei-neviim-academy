@@ -3642,10 +3642,12 @@
         }
 
         function reviewMetric(label, value) {
+            const displayValue = String(value || 'Not available').replace(/_/g, ' ');
+            const longValueClass = displayValue.length > 12 ? ' one-time-review-metric-long' : '';
             return `
-                <article class="metric compact">
+                <article class="metric compact one-time-review-metric${longValueClass}">
                     <div>
-                        <strong>${escapeHtml(value || 'Not available')}</strong>
+                        <strong>${escapeHtml(displayValue)}</strong>
                         <small>${escapeHtml(label)}</small>
                     </div>
                 </article>
@@ -3654,6 +3656,7 @@
 
         function applyOneTimeReviewBrand() {
             document.body.classList.add('one-time-review-active');
+            document.body.classList.add('one-time-student-review-active');
             document.title = 'OneTimeOneTime Student Review';
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
