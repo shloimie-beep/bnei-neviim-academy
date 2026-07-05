@@ -29448,3 +29448,23 @@ Actions: 1. Active machine tasks: 0.
 - Live deploy/restart remains pending because this checkout is currently linked
   to Railway `one-time-production / one-time-web`, while the affected BNA worker
   belongs to `skillful-motivation / academy-telegram-worker`.
+
+## 2026-07-05 - Telegram Drive Sync OAuth Error Live Closeout
+
+- PR #101 merged to `master` at
+  `22b774cd7faffce9cbb08fae0bf1391b08aba8f4`.
+- BNA web service `skillful-motivation` auto-deployed the merge commit as
+  Railway deployment `c53fcf2a-75da-454b-9513-f858afa005e8`.
+- The academy Telegram worker was still on a June 23 deployment, so Codex
+  created a clean detached worktree at `22b774cd` and deployed only
+  `skillful-motivation / academy-telegram-worker` from that clean tree.
+- Academy worker deployment `f4acc3d5-7468-4584-9b08-c17e96bc80a2` reached
+  `SUCCESS`.
+- Redacted variable-presence readback found required worker Google and Telegram
+  variables configured without printing secret values.
+- Post-deploy worker logs showed clean bridge startup and task-watch
+  initialization; the checked post-deploy window had no new
+  `Invalid Google OAuth client JSON`, `Drive content library sync failed`, or
+  Telegram `getUpdates` conflict lines.
+- Telegram `getWebhookInfo` returned no webhook URL, zero pending updates, and
+  no last error.
