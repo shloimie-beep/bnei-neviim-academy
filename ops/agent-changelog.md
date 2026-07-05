@@ -6,6 +6,32 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-05T07:16:34+03:00 - PR 87 combined release validated
+
+Merged Studio PR #89 into the PR #87 release branch. PR #87 now carries the
+Rabbi/One Time UI cleanup plus the Studio content engine release at head
+`0842e5e26bd5887942c12744cd23f08332285c09`.
+
+Verification:
+- PASS GitHub readback: PR #89 merged; PR #87 open, ready, mergeable, clean.
+- PASS combined focused UI + Studio suite 23/23.
+- PASS Rabbi/One Time PQC packet 21 validation.
+- PASS Studio PQC packet 05 validation.
+- PASS action watchdog and protocol-drift watchdog.
+- PASS `git diff --check origin/master...HEAD`.
+- PASS clean release gate dry-run for `codex/rabbi-onetime-ui-cleanup-release-20260703`.
+
+Blocked:
+- Production deploy/live smoke did not run. The guarded deploy gate blocked
+  before mutation on missing OpenAI, Vimeo access token, Resend sender,
+  Rabbi Stripe settings, Rabbi Telegram worker readiness, and database/
+  Railway/Drive external readbacks.
+
+Guardrails:
+- No production deploy, PR #87 merge to master, live verification write,
+  external send, payment/access/DNS/credential change, Drive publish/share, or
+  DB review mutation was performed.
+
 ## 2026-07-05T07:08:27+03:00 - Studio content engine PR opened
 
 Opened PR #89 for `codex/studio-content-engine-release-20260704`, stacked on
