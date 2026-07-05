@@ -35,6 +35,7 @@ const PROMPT_LAYER_TYPES = [
   'workspace_defaults',
   'project_brief',
   'character_bible',
+  'jewish_guardrails',
   'source_context',
   'scene_instruction',
   'correction_patch',
@@ -304,6 +305,30 @@ function normalizePromptLayer(layer = {}, index = 0) {
   };
 }
 
+function formatStudioCharacterProfile(character = {}) {
+  if (typeof character === 'string') return `- ${safeText(character, 'Character')}`;
+  const name = safeText(character.name || character.key, 'Character');
+  const role = safeText(character.role || character.archetype);
+  const description = safeText(character.description || character.prompt || character.notes, 'No description yet.');
+  const scenarioTags = Array.isArray(character.scenario_tags)
+    ? character.scenario_tags.map((tag) => safeText(tag)).filter(Boolean)
+    : String(character.scenario_tags || '').split(/[,;\n]/).map((tag) => safeText(tag)).filter(Boolean);
+  return [
+    `- ${name}${role ? ` (${role})` : ''}: ${description}`,
+    scenarioTags.length ? `  Scenario tags: ${scenarioTags.join(', ')}` : '',
+    character.visual_prompt ? `  Visual prompt: ${safeText(character.visual_prompt)}` : '',
+    character.continuity_notes ? `  Continuity notes: ${safeText(character.continuity_notes)}` : '',
+  ].filter(Boolean).join('\n');
+}
+
+function formatStudioGuardrail(guardrail = {}) {
+  if (typeof guardrail === 'string') return `- ${safeText(guardrail, 'Guardrail')}`;
+  const label = safeText(guardrail.label || guardrail.title || guardrail.key, 'Guardrail');
+  const rule = safeText(guardrail.rule || guardrail.description || guardrail.prompt || guardrail.text, 'No rule text yet.');
+  const scope = safeText(guardrail.scope || guardrail.category);
+  return `- ${label}${scope ? ` [${scope}]` : ''}: ${rule}`;
+}
+
 function buildDefaultPromptLayers({ project = {}, source = {}, brief = {}, character_bible = [], guardrails = [], scene = null, correction_patches = [] } = {}) {
   const sourceRecord = source.normalized_text ? source : normalizeStudioSourceInput(source);
   const characters = Array.isArray(character_bible) ? character_bible : [];
@@ -358,8 +383,16 @@ function buildDefaultPromptLayers({ project = {}, source = {}, brief = {}, chara
       layer_key: 'character_bible',
       label: 'Character bible',
       content: characters.length
-        ? characters.map((character) => `- ${safeText(character.name || character.key, 'Character')}: ${safeText(character.description || character.role, 'No description')}`).join('\n')
+        ? characters.map(formatStudioCharacterProfile).join('\n')
         : 'No character bible entries yet.',
+    },
+    {
+      layer_type: 'jewish_guardrails',
+      layer_key: 'jewish_guardrails',
+      label: 'Jewish guardrails',
+      content: guardrailList.length
+        ? guardrailList.map(formatStudioGuardrail).join('\n')
+        : 'No Jewish guardrails entries yet.',
     },
     {
       layer_type: 'source_context',

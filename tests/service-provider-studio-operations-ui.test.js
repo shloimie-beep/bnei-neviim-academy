@@ -28,6 +28,7 @@ test('Studio client methods cover intake, storyboard, prompt, correction, render
     'getStudioProjects',
     'getStudioProject',
     'createStudioProject',
+    'updateStudioProject',
     'saveStudioSource',
     'generateStudioOutline',
     'generateStudioStoryboard',
@@ -53,7 +54,12 @@ test('Studio renderer exposes complete workflow panels without external publish 
     'renderStudioJobsPanel',
     'renderStudioUsagePanel',
     'renderStudioHandoffPanel',
+    'renderStudioLibraryPanel',
+    'renderStudioReviewPackCard',
+    'renderStudioSectionTabs',
+    'studio-project-workspace',
     'Save Source',
+    'Prepare Review Pack',
     'Generate Storyboard',
     'Compile Prompt',
     'Preview Correction',
@@ -62,7 +68,32 @@ test('Studio renderer exposes complete workflow panels without external publish 
     'Create Content Handoff',
     'No Content handoffs have been created',
   ].forEach((needle) => assert.match(block, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
+  [
+    'renderStudioCompiledPromptReview',
+    'renderStudioPromptLayerCard',
+    'renderStudioCorrectionReview',
+    'renderStudioJobReview',
+    'renderStudioHandoffReview',
+    'Reusable Studio Library',
+    'Save Studio Library',
+    'Character Profiles',
+    'Jewish Guardrails',
+    'Scenario Tags',
+    'Prompt Review',
+    'Layer Review',
+    'Correction Review',
+    'Job Review',
+    'Handoff Review',
+    'Review Pack',
+    'Studio Diagnostics',
+    'Source isolated',
+    'No vendor call',
+    'External write: no',
+  ].forEach((needle) => assert.match(operations, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
   assert.match(block, /It does not publish, send, schedule, upload, or call an external social provider/);
+  assert.match(operations, /details class="studio-diagnostics"/);
+  assert.match(operations, /studio-section-tabs/);
+  assert.doesNotMatch(block, /renderPersonSectionMenu\(\{ id: 'studio'/);
   assert.doesNotMatch(block, /Buffer|publishNow|sendEmail|grantMemberAccess|GoHighLevel|LeadConnector/i);
 });
 
@@ -74,7 +105,9 @@ test('Studio handlers are exported for inline Operations controls', () => {
     'setStudioSection',
     'selectStudioProject',
     'createStudioProjectFromForm',
+    'saveStudioLibraryFromForm',
     'saveStudioSourceFromForm',
+    'prepareStudioReviewPackFromForm',
     'compileStudioPrompt',
     'applyStudioCorrection',
     'handoffStudioProject',

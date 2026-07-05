@@ -32,6 +32,7 @@ test('Service Provider Studio schema is idempotent and covers the complete workf
   });
   assert.match(migration, /ON CONFLICT \(provider, model\) DO UPDATE SET/);
   assert.match(migration, /UNIQUE \(project_id, workspace_key\)/);
+  assert.match(migration, /'jewish_guardrails'/);
   assert.match(migration, /allow_paid_generation BOOLEAN NOT NULL DEFAULT FALSE/);
   assert.doesNotMatch(migration, /DROP TABLE/i);
 });
