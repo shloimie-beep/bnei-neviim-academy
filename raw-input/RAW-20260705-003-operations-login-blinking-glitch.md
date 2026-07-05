@@ -25,7 +25,7 @@ Can you fix the glitch? There's like, the screen is like blinking and glitching 
 
 - owner: Codex
 - category: app_bug
-- status: verified_local
+- status: Done
 - affected_routes:
   - `/operations-login.html`
   - `/operations`
@@ -65,7 +65,32 @@ Can you fix the glitch? There's like, the screen is like blinking and glitching 
 - Screenshot evidence:
   `ops/playwright-smokes/2026-07-05-operations-login-glitch/local-parent-session-login-stable.png`
 
+## Deploy And Live Verification
+
+- PR #92 merged to `master` at merge commit
+  `9327068b85f709b1bf0827f03d71d5a5521d2c79`.
+- PASS approved deploy gate with explicit BNA target and approved optional
+  provider/readback deferrals; no secret values printed.
+- PASS `npm run railway:doctor` against BNA Railway project
+  `skillful-motivation`, production service `skillful-motivation`.
+- PASS `npm run railway:redeploy`; Railway deployment
+  `e45e6ca7-5282-4ff2-939c-0d9e4b6ba54e` reached `SUCCESS`.
+- PASS live HTML readback for
+  `https://bneineviimacademy.org/operations-login.html?returnTo=%2Foperations`:
+  role-gated `isOperationsSession` check present, old
+  `data.authenticated === true || data.success === true` redirect condition
+  absent, and `/js/bna-bot-widget.js` absent.
+- PASS live Playwright smoke with `/api/bna/auth/me` mocked as an authenticated
+  parent session:
+  - stayed on `/operations-login.html?returnTo=%2Foperations`;
+  - preserved typed username `shloimie`;
+  - did not request `/js/bna-bot-widget.js`;
+  - found zero helper launcher/panel nodes;
+  - recorded one main-frame navigation.
+- Live screenshot evidence:
+  `ops/playwright-smokes/2026-07-05-operations-login-glitch/live-parent-session-login-stable.png`
+
 ## Remaining Closeout
 
-- Production deploy/live smoke still needs scoped commit/push and approved
-  release/deploy path from a clean branch.
+- None for this reported login glitch. Optional provider/readback gates unrelated
+  to this login page remain deferred and are not claimed complete.
