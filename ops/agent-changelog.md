@@ -29419,3 +29419,32 @@ Actions: 1. Active machine tasks: 0.
   write, credential change, or production data mutation was performed.
 - Pushed branch `codex/drive-dropoff-scheduler-repair-canonical-20260705` and
   opened draft PR #100 for normal review/merge.
+
+## 2026-07-05 - Telegram Drive Sync OAuth Error Local Repair
+
+- Registered `RAW-20260705-012` and
+  `tasks-pending/2026-07-05-telegram-drive-sync-oauth-error-and-cleanup-continuation.md`
+  for the Telegram-reported content job `#102` Drive transcript sync failure.
+- Restored `scripts/sync-drive-content-library.mjs` to prefer merged runtime
+  `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` credentials, support inline
+  OAuth client JSON, and pass merged env into refresh-token auth before falling
+  back to `.secrets/google-oauth-client.json`.
+- Added `tests/sync-drive-content-library-auth.test.mjs` regression coverage
+  proving a malformed OAuth client JSON file does not hide valid worker env
+  credentials.
+- Hardened `scripts/start-telegram-kimi-bridge.ps1` with status/stop/restart,
+  stale-lock archival, and duplicate local-instance refusal.
+- Hardened `scripts/telegram-kimi-bridge.mjs` so repeated Telegram
+  `getUpdates` `409 Conflict` errors become `blocked_conflict` and the local
+  status readback shows the duplicate-poller blocker.
+- Verification passed: `node --check scripts/sync-drive-content-library.mjs`,
+  `node --check scripts/telegram-kimi-bridge.mjs`,
+  `node --test tests/sync-drive-content-library-auth.test.mjs
+  tests/telegram-runtime-status.test.js` 14/14, and guarded local
+  `npm run telegram:kimi:restart` / `npm run telegram:kimi:status` readback.
+- No Telegram message, Drive write, production database mutation, credential
+  change, external send, DNS/payment/access/provider mutation, or CRM write was
+  performed.
+- Live deploy/restart remains pending because this checkout is currently linked
+  to Railway `one-time-production / one-time-web`, while the affected BNA worker
+  belongs to `skillful-motivation / academy-telegram-worker`.
