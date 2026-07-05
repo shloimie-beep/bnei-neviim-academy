@@ -6,6 +6,43 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-05T14:55:00+03:00 - Operations login blink loop deployed and live-smoked
+
+Completed `RAW-20260705-003` / `REQ-20260705-007` for the BNA Operations login
+glitch reported from `/operations-login.html?returnTo=%2Foperations`.
+
+What changed:
+- PR #92 fixed `public/operations-login.html` so the initial session check only
+  auto-redirects existing Operations roles and no longer loads the BNA Helper
+  widget before sign-in.
+- PR #92 merged to `master` at merge commit
+  `9327068b85f709b1bf0827f03d71d5a5521d2c79`.
+- Railway deployment `e45e6ca7-5282-4ff2-939c-0d9e4b6ba54e` reached
+  `SUCCESS` for the BNA `skillful-motivation` production service.
+
+Verification:
+- PASS focused login/auth suite 33/33:
+  `node --test tests/operations-pwa-login.test.js tests/portal-agnostic-auth-contract.test.js tests/portal-operations-login-fallback.test.js tests/universal-assistant-contract.test.js`.
+- PASS approved deploy gate with explicit BNA Railway target and approved
+  optional provider/readback deferrals; no secret values printed.
+- PASS `npm run railway:doctor` before and after deploy against BNA production.
+- PASS live HTML readback: role-gated `isOperationsSession` present, old
+  any-authenticated-session redirect condition absent, and
+  `/js/bna-bot-widget.js` absent.
+- PASS live Playwright smoke with an authenticated parent session mocked:
+  stayed on the login page, preserved typed username, requested no helper
+  widget, found no helper widget, and recorded one main-frame navigation.
+- Evidence:
+  `ops/playwright-smokes/2026-07-05-operations-login-glitch/live-parent-session-login-stable.png`.
+
+Guardrails:
+- No password value stored or printed.
+- No production data mutation beyond the approved app deploy.
+- No email, WhatsApp, SMS, Telegram send, checkout, charge, payment link,
+  access grant, DNS write, Drive write, or provider account mutation.
+- Optional provider/readback gates unrelated to the login page remain deferred
+  and are not claimed complete.
+
 ## 2026-07-05T07:23:11+03:00 - PR 87 master conflict resolved
 
 Merged current `origin/master` into PR #87 and resolved append-only conflicts in
