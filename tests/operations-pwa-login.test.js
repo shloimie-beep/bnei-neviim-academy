@@ -54,7 +54,9 @@ test('Operations login preserves only safe Operations return paths', () => {
   assert.match(loginHtml, /url\.origin !== window\.location\.origin \|\| !allowedPaths\.has\(url\.pathname\)/);
   assert.match(loginHtml, /window\.location\.href = operationsReturnTo\(\)/);
   assert.match(loginHtml, /window\.location\.replace\(operationsReturnTo\(\)\)/);
-  assert.match(loginHtml, /data\.authenticated === true \|\| data\.success === true/);
+  assert.match(loginHtml, /function isOperationsSession\(data\)/);
+  assert.match(loginHtml, /\['super_admin', 'project_owner', 'project_manager'\]\.includes\(role\)/);
+  assert.match(loginHtml, /response\.ok && isOperationsSession\(data\)/);
   assert.match(loginHtml, /redirectIfAlreadySignedIn\(\)/);
 });
 
@@ -77,6 +79,8 @@ test('Operations login remains stable while typing on mobile keyboards', () => {
   assert.match(loginHtml, /window\.visualViewport\?\.addEventListener\('resize', syncLoginViewport\)/);
   assert.match(loginHtml, /function loginTextEntryActive\(\)/);
   assert.match(loginHtml, /if \(loginTextEntryActive\(\)\) return;/);
+  assert.match(loginHtml, /function isOperationsSession\(data\)/);
+  assert.doesNotMatch(loginHtml, /\/js\/bna-bot-widget\.js/);
   assert.match(loginHtml, /@media \(max-width: 640px\)[\s\S]*input \{[\s\S]*font-size: 16px;/);
   assert.doesNotMatch(loginHtml, /html,\s*body\s*\{\s*width:\s*100%;\s*height:\s*100%;\s*\}/);
 });

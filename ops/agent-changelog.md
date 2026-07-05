@@ -29189,3 +29189,24 @@ Actions: 1. Active machine tasks: 0.
 - No checkout session, charge, payment link creation, member creation, access
   grant, real send, DNS write, Drive upload/share, or DB review cleanup
   mutation was performed.
+
+## 2026-07-05 - Operations Login Blink Loop Local Repair
+
+- Registered `RAW-20260705-003` after Shloimie reported that the BNA Operations
+  login page was blinking/glitching and not letting him log in.
+- Repaired `public/operations-login.html`: the initial `/api/bna/auth/me`
+  auto-redirect now only runs for Operations roles (`super_admin`,
+  `project_owner`, `project_manager`) instead of treating parent/provider
+  sessions as Operations sessions.
+- Removed the BNA Helper widget include from the unauthenticated Operations
+  login page so the helper dock and viewport handlers do not load while the
+  user is entering credentials.
+- Added regression coverage in `tests/operations-pwa-login.test.js`.
+- Verification passed: focused auth/login tests 33/33 and a Playwright local
+  browser smoke with an authenticated parent session mocked. The page stayed on
+  `/operations-login.html?returnTo=%2Foperations`, preserved the typed username,
+  made no `/js/bna-bot-widget.js` request, and rendered no helper launcher or
+  panel. Screenshot evidence:
+  `ops/playwright-smokes/2026-07-05-operations-login-glitch/local-parent-session-login-stable.png`.
+- No passwords, production data mutations, external sends, payments, access
+  grants, DNS changes, credential changes, or deploys were performed.

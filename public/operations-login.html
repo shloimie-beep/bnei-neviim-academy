@@ -237,6 +237,12 @@
             chooser.classList.add('show');
         }
 
+        function isOperationsSession(data) {
+            if (!data || (data.authenticated !== true && data.success !== true)) return false;
+            const role = String(data.role || data.legacy_role || '').toLowerCase();
+            return ['super_admin', 'project_owner', 'project_manager'].includes(role);
+        }
+
         function syncLoginViewport() {
             const height = window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight || 640;
             document.documentElement.style.setProperty('--login-vh', `${Math.max(420, Math.round(height))}px`);
@@ -270,7 +276,7 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 const data = await response.json().catch(() => ({}));
-                if (response.ok && (data.authenticated === true || data.success === true)) {
+                if (response.ok && isOperationsSession(data)) {
                     if (loginTextEntryActive()) return;
                     window.location.replace(operationsReturnTo());
                 }
@@ -330,6 +336,5 @@
             }
         });
     </script>
-    <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>
