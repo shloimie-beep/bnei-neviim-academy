@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T10:37:17.451Z",
+  "generated_at": "2026-07-05T12:49:09.171Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,40 +16,40 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "17bcc3206225dc4396ebba87b778f38d4012ce84ca266404ecd18cea40e86213",
+  "content_hash": "e819312044564b1945f140e1503130c0970885a10258b142d850b90d6f3dd719",
   "source_hashes": {
-    "ops/action-registry.json": "8c316b7857274fdb0bcf6a6c9f67f1ee72491b991ed3898cee3ef24609b6196d",
+    "ops/action-registry.json": "00d387bc82855305b2f3d8fc0c18fce81acca60e799edd21251a6f012d04d1de",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
-    "public/operations.html": "66ab0d5937392ed7c5c0342f6a6db13a531aa7c8461182e1d0001e9472ec3eaf",
+    "public/operations.html": "c3ed217aa80569d0cec08436bcce5fe354e4293e5693eddcca0de0a066b9d358",
     "public/parent.html": "ebed41f8db8ab749a4a0690f2e859292df33328f2cbe10ecae947f040a394d49",
-    "public/student.html": "aa0d8350eb82dae766a90b3e12ced2a298464c7b2cc4b04ff796704fcf910f01",
-    "public/provider.html": "aab743b33833b4ff5cf2d9eb2fea482f4c813769eab7e22219ea3942bd6347f8",
+    "public/student.html": "97a237b64e4eabfafc7b0c561410172e24f614f5b3ce36821a9e96e8a58dda47",
+    "public/provider.html": "a60302671afbdb0606b5d70e61381cc3faa01a27890bea5a28a2e065ea38e427",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 91,
+    "root_actions": 95,
     "detailed_actions": 80,
-    "total_registry_rows": 171,
-    "visible_controls": 39,
-    "visible_controls_classified": 39,
+    "total_registry_rows": 175,
+    "visible_controls": 40,
+    "visible_controls_classified": 40,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
     "blocked_connector": 11,
-    "risky_actions": 80,
+    "risky_actions": 83,
     "risky_without_approval": 0,
     "visible_by_classification": {
       "read_only": 6,
       "secure_deep_link_only": 5,
-      "preview_then_approve": 20,
+      "preview_then_approve": 21,
       "blocked_connector": 4,
       "not_applicable": 2,
       "executable": 2
     },
     "registry_by_classification": {
       "secure_deep_link_only": 19,
-      "executable": 17,
-      "preview_then_approve": 72,
+      "executable": 18,
+      "preview_then_approve": 75,
       "read_only": 50,
       "blocked_connector": 11,
       "not_applicable": 2
@@ -57,16 +57,16 @@
   },
   "parity_sources": {
     "ui_button": {
-      "count": 39
+      "count": 40
     },
     "telegram_request": {
       "count": 80
     },
     "website_assistant_request": {
-      "count": 171
+      "count": 175
     },
     "operations_helper_request": {
-      "count": 158
+      "count": 161
     },
     "automation_action": {
       "count": 76
@@ -80,7 +80,7 @@
       {
         "name": "all_visible_controls_classified",
         "passed": true,
-        "value": "39/39"
+        "value": "40/40"
       },
       {
         "name": "zero_visible_missing_contracts",
@@ -110,7 +110,7 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 171
+        "value": 175
       },
       {
         "name": "agent_work_handoff_parity_present",
@@ -384,7 +384,7 @@
       "approval_required": true,
       "risk": "high",
       "registry_layer": "root",
-      "result_renderer": "Runs the bounded member-library smoke only with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and preserves rollback evidence."
+      "result_renderer": "Runs the bounded member-library verification check only with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and preserves rollback evidence."
     },
     {
       "action_id": "ACTION-ONETIME-CLASS-PACKAGE-PREVIEW",
@@ -609,6 +609,20 @@
       "risk": "high",
       "registry_layer": "root",
       "result_renderer": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data."
+    },
+    {
+      "action_id": "ACTION-PROVIDER-WAPI-SETUP-SAVE",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Saves Rabbi/One Time provider-scoped Whapi/WAPI setup details to BNA integration and secret-reference records for verification; the raw token is not rendered back, and no WhatsApp send, broadcast, payment, access grant, or external provider mutation runs from this action."
     },
     {
       "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
@@ -979,6 +993,37 @@
       "audit_event": ""
     },
     {
+      "action_id": "ACTION-PROVIDER-WAPI-SETUP-SAVE",
+      "label": "Save WhatsApp Setup",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider?section=whatsapp_setup",
+      "permission": "authenticated One Time provider workspace member",
+      "allowed_roles": [
+        "authenticated One Time provider workspace member"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Saves Rabbi/One Time provider-scoped Whapi/WAPI setup details to BNA integration and secret-reference records for verification; the raw token is not rendered back, and no WhatsApp send, broadcast, payment, access grant, or external provider mutation runs from this action.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Save WhatsApp Setup"
+      ],
+      "result_renderer": "Saves Rabbi/One Time provider-scoped Whapi/WAPI setup details to BNA integration and secret-reference records for verification; the raw token is not rendered back, and no WhatsApp send, broadcast, payment, access grant, or external provider mutation runs from this action.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
       "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
       "label": "Open selected portal",
       "registry_layer": "root",
@@ -1042,7 +1087,7 @@
     },
     {
       "action_id": "ACTION-ONETIME-WATCH-RABBI-CTA",
-      "label": "Watch Rabbi Scheller",
+      "label": "See How It Works",
       "registry_layer": "root",
       "category": "",
       "surface": "one_time_public_focused_offer",
@@ -1052,23 +1097,23 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Scrolls to the embedded public Vimeo promo without exposing private member-library videos or TEST review links.",
+      "execution_handler": "Scrolls to the public explanation section without exposing private member-library videos or TEST review links.",
       "status": "active",
-      "classification": "preview_then_approve",
-      "risk": "high",
-      "preview_required": true,
-      "approval_required": true,
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
       "dry_run_supported": false,
-      "external_write_possible": true,
+      "external_write_possible": false,
       "handler_present": true,
       "permission_present": true,
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "Watch Rabbi Scheller"
+        "See How It Works"
       ],
-      "result_renderer": "Scrolls to the embedded public Vimeo promo without exposing private member-library videos or TEST review links.",
-      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "result_renderer": "Scrolls to the public explanation section without exposing private member-library videos or TEST review links.",
+      "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
     {
@@ -1940,6 +1985,37 @@
       "audit_event": ""
     },
     {
+      "action_id": "ACTION-STUDIO-PREPARE-REVIEW-PACK",
+      "label": "Prepare Review Pack",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=source",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "allowed_roles": [
+        "super_admin_or_provider_workspace_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "prepareStudioReviewPackFromForm",
+      "status": "active_no_external_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Prepare Review Pack"
+      ],
+      "result_renderer": "Chains existing scoped Studio source, storyboard, prompt-compile, and mock-render APIs to prepare a local no-send review pack without vendor calls or external writes.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
       "action_id": "ACTION-STUDIO-GENERATE-STORYBOARD",
       "label": "Generate Storyboard",
       "registry_layer": "root",
@@ -1998,6 +2074,68 @@
         "Compile Prompt"
       ],
       "result_renderer": "Compiles prompt layers with policy, workspace, brief, delimited untrusted source, correction, and no-send output contracts.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-STUDIO-OPEN-DIAGNOSTICS",
+      "label": "Open Studio Diagnostics",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "allowed_roles": [
+        "super_admin_or_provider_workspace_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "native_details_summary",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open Studio Diagnostics"
+      ],
+      "result_renderer": "Expands private local prompt, job, correction, or handoff diagnostics without making network calls or external writes.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-STUDIO-SAVE-LIBRARY",
+      "label": "Save Studio Library",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "allowed_roles": [
+        "super_admin_or_provider_workspace_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "saveStudioLibraryFromForm",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Save Studio Library"
+      ],
+      "result_renderer": "Saves reusable character profiles, Jewish guardrails, and scenario tags to the scoped Studio project without external writes.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -2189,7 +2327,7 @@
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-SMOKE",
-      "label": "Run One Time member-library smoke",
+      "label": "Run One Time member-library verification",
       "registry_layer": "root",
       "category": "",
       "surface": "operations_content_one_time_library",
@@ -2199,7 +2337,7 @@
         "super_admin/project_admin"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Runs the bounded member-library smoke only with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and preserves rollback evidence.",
+      "execution_handler": "Runs the bounded member-library verification check only with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and preserves rollback evidence.",
       "status": "approval_gated",
       "classification": "preview_then_approve",
       "risk": "high",
@@ -2212,9 +2350,9 @@
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "Run One Time member-library smoke"
+        "Run One Time member-library verification"
       ],
-      "result_renderer": "Runs the bounded member-library smoke only with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and preserves rollback evidence.",
+      "result_renderer": "Runs the bounded member-library verification check only with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and preserves rollback evidence.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -7876,8 +8014,11 @@
         "ACTION-STUDIO-GENERATE-STORYBOARD",
         "ACTION-STUDIO-HANDOFF-CONTENT",
         "ACTION-STUDIO-MOCK-RENDER",
+        "ACTION-STUDIO-OPEN-DIAGNOSTICS",
         "ACTION-STUDIO-OPEN-SOURCE",
+        "ACTION-STUDIO-PREPARE-REVIEW-PACK",
         "ACTION-STUDIO-PREVIEW-CORRECTION",
+        "ACTION-STUDIO-SAVE-LIBRARY",
         "ACTION-STUDIO-SAVE-SCENE",
         "ACTION-STUDIO-SAVE-SOURCE"
       ],
@@ -8174,6 +8315,7 @@
         "ACTION-ONETIME-LIVE-ZOOM-LINK-SEND",
         "ACTION-PARENT-ACCESS-LINK-WHATSAPP",
         "ACTION-PROVIDER-API-USAGE-PREVIEW-NAV",
+        "ACTION-PROVIDER-WAPI-SETUP-SAVE",
         "capture_provider_google_business_link",
         "generate_whatsapp_from_newsletter",
         "google_business_list_locations_preview",

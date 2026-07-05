@@ -15,13 +15,28 @@ test('mobile assistant panel uses keyboard offset and visible viewport height', 
 
 test('assistant composer is kept reachable after mobile viewport changes', () => {
   assert.match(widget, /function keepAssistantComposerReachable\(\)/);
+  assert.match(widget, /function scheduleAssistantKeyboardSync\(delay = 0\)/);
   assert.match(widget, /form\.scrollIntoView\(\{ block: 'end', inline: 'nearest' \}\)/);
   assert.match(widget, /threadEl\.scrollTop = threadEl\.scrollHeight/);
   assert.match(widget, /function handleAssistantViewportChange\(\)/);
   assert.match(widget, /window\.visualViewport\?\.addEventListener\('resize', handleAssistantViewportChange\)/);
   assert.match(widget, /window\.visualViewport\?\.addEventListener\('scroll', handleAssistantViewportChange\)/);
+  assert.match(widget, /window\.visualViewport\?\.addEventListener\('geometrychange', handleAssistantViewportChange\)/);
+  assert.match(widget, /window\.addEventListener\('orientationchange', \(\) => scheduleAssistantKeyboardSync\(140\)\)/);
   assert.match(widget, /document\.body\?\.classList\.toggle\('bna-assistant-keyboard-open', keyboardOffset > 40\)/);
   assert.match(widget, /setTimeout\(keepAssistantComposerReachable, 260\)/);
+  assert.match(widget, /setTimeout\(keepAssistantComposerReachable, 760\)/);
+});
+
+test('assistant textarea uses Android and Samsung keyboard friendly input hints', () => {
+  assert.match(widget, /interactive-widget=resizes-content/);
+  assert.match(widget, /inputmode="text"/);
+  assert.match(widget, /enterkeyhint="send"/);
+  assert.match(widget, /autocapitalize="sentences"/);
+  assert.match(widget, /font: 16px\/1\.25/);
+  assert.match(widget, /function resizeAssistantInput\(\)/);
+  assert.match(widget, /input\.addEventListener\('input', \(\) => \{/);
+  assert.match(widget, /input\.addEventListener\('compositionend', \(\) => scheduleAssistantKeyboardSync\(80\)\)/);
 });
 
 test('assistant sheet keeps internal scrolling without horizontal expansion', () => {

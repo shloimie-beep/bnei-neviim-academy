@@ -31,6 +31,20 @@ test('OAuth start requires an explicit configured-scope or Drive setup request',
   assert.match(server, /features: scopeFeatures/);
 });
 
+test('Google integration configured checks use the shared secrets-aware OAuth loader', () => {
+  const integrationOauthStartBlock = server.match(
+    /app\.get\('\/api\/integrations\/google\/oauth\/start'[\s\S]*?app\.get\('\/api\/integrations\/google\/oauth\/callback'/
+  )?.[0] || '';
+
+  assert.match(server, /function googleOAuthClientConfigured\(\) \{/);
+  assert.match(server, /const config = loadGoogleOAuthClient\(\);[\s\S]*return Boolean\(config\.clientId && config\.clientSecret\);/);
+  assert.match(server, /function googleIntegrationReadinessPayload\(\) \{\s*const oauthConfigured = googleOAuthClientConfigured\(\);/);
+  assert.match(server, /function providerGoogleBusinessStatus[\s\S]*const configured = googleOAuthClientConfigured\(\);/);
+  assert.match(server, /function buildGoogleDriveStatusCard\(\) \{\s*const oauthJsonPresent = googleOAuthClientConfigured\(\);/);
+  assert.match(integrationOauthStartBlock, /if \(!googleOAuthClientConfigured\(\)\)/);
+  assert.doesNotMatch(integrationOauthStartBlock, /process\.env\.GOOGLE_CLIENT_ID|process\.env\.GOOGLE_CLIENT_SECRET/);
+});
+
 test('role defaults and Classroom feature scopes avoid roster and profile-email scope creep', () => {
   assert.match(googleIntegrations, /\[GOOGLE_CONNECTION_ROLES\.ADMIN_TEACHER\]: \['identity'\]/);
   assert.match(googleIntegrations, /\[GOOGLE_CONNECTION_ROLES\.STUDENT\]: \['identity'\]/);

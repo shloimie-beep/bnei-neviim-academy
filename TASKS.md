@@ -4,6 +4,19 @@ Completed older entries that mention former GHL/legacy-CRM work are historical
 changelog context only. They are superseded by the current no-GHL policy and do
 not authorize active GHL runtime paths.
 
+## Current Goal-Mode Cleanup
+
+- [ ] `RAW-20260705-007` / `REQ-20260705-201` through `REQ-20260705-206`:
+  Clean dirty worktree/release state and deploy safe app/server-visible work.
+  Register:
+  `tasks-pending/2026-07-05-clean-dirty-worktrees-deploy-everything.md`.
+  Current release branch:
+  `codex/dirty-worktree-release-cleanup-20260705` from `origin/master`.
+  Scope includes the verified local OneTimeOneTime landing signup funnel,
+  Job 101 Contacts/helper fixes, Telegram/Google agent-fleet readiness fixes,
+  and ChatGPT dropoff fleet claim completion fix. External/provider/account
+  actions remain blocked unless exact approval exists.
+
 ## Now
 
 - [x] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /

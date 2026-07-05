@@ -1,0 +1,30 @@
+{
+  "packet_id": "chatgpt-dropoff-smoke-test-20260705-001",
+  "schema_version": "bna.chatgpt_dropoff.v1",
+  "source": "chatgpt",
+  "created_by": "ChatGPT",
+  "created_at": "2026-07-05",
+  "packet_type": "memory_candidate",
+  "status": "ready_for_codex_audit",
+  "target_workspace": "bna_platform",
+  "target_project": "chatgpt_codex_dropoff_workflow",
+  "target_folder": "ops/chatgpt-ramble-dropoff/incoming/chatgpt-dropoff-smoke-test-20260705-001/",
+  "scope_summary": "Harmless smoke test confirming ChatGPT can hand Codex a repo-visible packet or comment and that Codex can collect it automatically.",
+  "scope": [
+    "Confirm repo-visible ChatGPT-to-Codex dropoff path.",
+    "Confirm Codex can audit and collect this packet.",
+    "Record evidence without app/source edits."
+  ],
+  "out_of_scope": [
+    "App/source file edits.",
+    "Production code generation.",
+    "External writes or provider actions.",
+    "Private data, credentials, contact exports, or raw private messages."
+  ],
+  "secrets_included": false,
+  "private_data_included": false,
+  "external_writes_performed": false,
+  "app_source_edits_performed": false,
+  "production_code_generated": false,
+  "requires_codex_audit_before_apply": true
+}

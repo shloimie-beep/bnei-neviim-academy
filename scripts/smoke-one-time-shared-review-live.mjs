@@ -79,9 +79,9 @@ async function main() {
     {
       label: 'landing',
       path: '/one-time/',
-      expectedTitle: /Learn Mishnayos Live with Rabbi Eli(?:e)? Scheller/i,
-      requiredText: ['OneTimeOneTime Mishnah', 'START 30 DAYS FREE', 'WATCH RABBI SCHELLER', '$67 USD per month after a 30-day free trial', 'Member Login'],
-      requiredSelectors: ['img[src*="onetimelogo"]', 'img[src*="onetime-hero-vertical"]', 'iframe[src*="player.vimeo.com/video/1158542993"]'],
+      expectedTitle: /Your Child Can Love Learning Mishnayos/i,
+      requiredText: ['OneTimeOneTime Mishnah', 'Start 30 Days Free', 'See How It Works', 'Enrollment deadline will be posted before launch', 'Member Login'],
+      requiredSelectors: ['img[src*="onetimelogo"]', '.hero-media-placeholder', '#interestForm'],
       forbidTitle: /BNA|Bnei Neviim/i,
       forbidText: ['Bnei Neviim Academy', 'Huda Weber', 'Menachem Mendel', 'Dratler Family'],
     },

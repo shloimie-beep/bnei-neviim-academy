@@ -84,6 +84,33 @@ test('parent coordination audit catches pointer drift and duplicate canonical ta
   assert.ok(drift.findings.some((finding) => finding.type === 'duplicate_canonical_task'));
 });
 
+test('parent coordination audit supports active continuation run requirement IDs and no-upstream warnings', () => {
+  const audit = buildParentCoordinationAudit({
+    latest: { path: 'ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation' },
+    laneManifest: {
+      parent_run_path: 'ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation',
+      active_pointer_owner: 'parent',
+      lanes: [
+        { lane_id: 'agent-fleet', status: 'blocked', requirement_ids: ['REQ-20260702-102'] },
+      ],
+    },
+    requirements: {
+      requirements: [
+        { id: 'REQ-20260702-102', title: 'Verify background agent/fleet status', status: 'blocked' },
+      ],
+      tasks: [],
+    },
+    git: { branch: 'codex/chatgpt-dropoff-publish-defaults-20260704', upstream_missing: true },
+    expectedAgentFleetRequirementId: 'REQ-20260702-102',
+    finalRequirementId: null,
+  });
+
+  assert.equal(audit.ok, true);
+  assert.ok(audit.findings.some((finding) => finding.type === 'branch_has_no_upstream'));
+  assert.equal(audit.findings.some((finding) => finding.type === 'active_pointer_drift'), false);
+  assert.equal(audit.findings.some((finding) => finding.type === 'agent_fleet_lane_scope'), false);
+});
+
 test('startup shortcut matrix exposes start stop restart status and open-log controls', () => {
   const actions = new Set(buildStartupShortcutMatrix().map((item) => item.action));
   for (const action of ['start', 'stop', 'restart', 'status', 'open_log', 'watchdog_start', 'watchdog_stop', 'watchdog_status']) {
@@ -132,6 +159,7 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
         { id: 10, task_id: 501, status: 'queued' },
         { id: 11, task_id: 502, status: 'queued' },
         { id: 12, status: 'queued' },
+        { id: 13, task_id: 501, status: 'running' },
       ],
       [
         { id: 501, stage: 'assigned', assigned_to: 'Codex' },
@@ -142,6 +170,46 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
     ).map((job) => job.id),
     [10],
   );
+  assert.deepEqual(
+    supervisorModule.observableJobTaskIdsMissingFromTasks(
+      [
+        { id: 385, task_id: 1869, status: 'queued' },
+        { id: 386, task_id: 501, status: 'queued' },
+      ],
+      [{ id: 501, stage: 'assigned', assigned_to: 'Codex' }],
+    ),
+    [1869],
+  );
+  const hydratedTasks = supervisorModule.mergeTasksById(
+    [{ id: 501, stage: 'assigned', assigned_to: 'Codex' }],
+    [{ id: 1869, stage: 'assigned', assigned_to: 'Codex' }],
+  );
+  assert.deepEqual(
+    supervisorModule.filterObservableJobsForClaim(
+      [{ id: 385, task_id: 1869, status: 'queued' }],
+      hydratedTasks,
+      { tasks: {} },
+      { taskTimeoutMs: 1000, maxRetries: 2 },
+    ).map((job) => job.id),
+    [385],
+  );
+  assert.deepEqual(
+    supervisorModule.sortObservableJobsForClaim(
+      [
+        { id: 377, task_id: 1851, status: 'queued', created_at: '2026-07-05T10:00:00Z' },
+        { id: 385, task_id: 1869, status: 'queued', created_at: '2026-07-05T11:00:00Z' },
+      ],
+      [
+        { id: 1851, stage: 'assigned', assigned_to: 'Codex', source_channel: 'manual', urgency: 'urgent' },
+        { id: 1869, stage: 'assigned', assigned_to: 'Codex', source_channel: 'chatgpt_dropoff', urgency: 'this_week' },
+      ],
+    ).map((job) => job.id),
+    [385, 377],
+  );
+  assert.match(supervisor, /hydrateObservableJobTasks/);
+  assert.match(supervisor, /loadTaskById\(config, linkedTaskId\)/);
+  assert.match(supervisor, /notifyAgentFleet/);
+  assert.match(supervisor, /Could not send \${label}/);
   assert.match(supervisor, /permission_tier_3_blocked/);
   assert.match(supervisor, /Permission tiers: Tier 0/);
   assert.match(supervisor, /redactAgentFleetText/);
@@ -184,4 +252,8 @@ test('readiness script contains no-write synthetic GitHub and result bridge proo
   assert.match(script, /record_agent_result/);
   assert.match(script, /external_write_performed: false/);
   assert.match(script, /parent_run_not_marked_complete: true/);
+  assert.match(script, /resolveActiveRunRelativePath/);
+  assert.match(script, /synthesizeLaneManifest/);
+  assert.match(script, /upstream_missing/);
+  assert.match(script, /stdio: \['ignore', 'pipe', 'pipe'\]/);
 });

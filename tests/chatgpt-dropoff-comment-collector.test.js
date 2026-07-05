@@ -25,6 +25,7 @@ Status: ready_for_codex_audit
 Target folder: ops/chatgpt-ramble-dropoff/incoming/${packetId}/
 
 ### File: packet.json
+
 \`\`\`json
 {
   "packet_id": "${packetId}",
@@ -38,6 +39,7 @@ Target folder: ops/chatgpt-ramble-dropoff/incoming/${packetId}/
 \`\`\`
 
 ### File: RAW.md
+
 \`\`\`markdown
 # Raw
 
@@ -45,13 +47,19 @@ Audit the helper bot.
 \`\`\`
 
 ### File: CODEX_PROMPT.md
+
 \`\`\`markdown
 # Codex Prompt
 
 Inspect and apply only valid helper-bot audit changes.
+
+\`\`\`bash
+npm run chatgpt:dropoff:apply
+\`\`\`
 \`\`\`
 
 ### File: MANIFEST.json
+
 \`\`\`json
 {
   "packet_id": "${packetId}",
@@ -61,6 +69,7 @@ Inspect and apply only valid helper-bot audit changes.
 \`\`\`
 
 ### File: status.json
+
 \`\`\`json
 {
   "packet_id": "${packetId}",
@@ -84,6 +93,7 @@ test('ChatGPT GitHub comment collector parses and materializes full packet comme
   assert.equal(parsed.is_dropoff, true);
   assert.equal(parsed.packet_id, 'helper-bot-workspace-agent-01-audit-map');
   assert.deepEqual(parsed.findings, []);
+  assert.match(parsed.files['CODEX_PROMPT.md'], /npm run chatgpt:dropoff:apply/);
   assert.equal(fs.existsSync(path.join(packetDir, 'packet.json')), true);
   assert.equal(fs.existsSync(path.join(packetDir, 'RAW.md')), true);
   assert.equal(fs.existsSync(path.join(packetDir, 'COMMENT_SOURCE.json')), true);

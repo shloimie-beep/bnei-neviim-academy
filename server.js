@@ -455,11 +455,6 @@ const ONE_TIME_EMAIL_FROM = 'info@onetimeonetime.com';
 const ONE_TIME_EMAIL_FROM_NAME = 'OneTimeOneTime Mishnah';
 const ONE_TIME_EMAIL_REPLY_TO = ONE_TIME_EMAIL_FROM;
 const INSTANCE_RUNTIME_FLAGS = buildOneTimeRuntimeFlags(process.env);
-const IS_ONE_TIME_SINGLE_TENANT = Boolean(
-  INSTANCE_RUNTIME_FLAGS.single_tenant &&
-  INSTANCE_RUNTIME_FLAGS.app_instance === 'onetime' &&
-  INSTANCE_RUNTIME_FLAGS.project_key === ONE_TIME_PROJECT_KEY
-);
 const ONE_TIME_DRIVE_ROOT_ID = '16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2';
 const ONE_TIME_LIBRARY_APPROVAL_FLAG = 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING';
 const ONE_TIME_MEDIA_PROVIDERS = new Set(['vimeo', 'manual_url', 'drive', 'placeholder']);
@@ -3120,6 +3115,11 @@ function loadGoogleOAuthClient() {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || localClient.client_secret || '',
     redirectUri: process.env.GOOGLE_REDIRECT_URI || localClient.redirect_uris?.[0] || GOOGLE_REDIRECT_URI,
   };
+}
+
+function googleOAuthClientConfigured() {
+  const config = loadGoogleOAuthClient();
+  return Boolean(config.clientId && config.clientSecret);
 }
 
 function createGoogleOAuthClient(redirectUri = GOOGLE_REDIRECT_URI) {
@@ -10192,24 +10192,6 @@ app.use(express.json({
   },
 }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
-
-function isOneTimeLaunchHost(req) {
-  const host = String(req.headers.host || '').split(':')[0].trim().toLowerCase();
-  return IS_ONE_TIME_SINGLE_TENANT || host === 'join.onetimeonetime.com';
-}
-
-function sendOneTimeLandingPage(req, res, next) {
-  res.setHeader('Cache-Control', 'no-store');
-  res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'), (error) => {
-    if (error) next(error);
-  });
-}
-
-app.get(/^\/$/, (req, res, next) => {
-  if (!isOneTimeLaunchHost(req)) return next();
-  return sendOneTimeLandingPage(req, res, next);
-});
-
 app.use(express.static('public', {
   setHeaders(res, filePath) {
     if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
@@ -30086,7 +30068,7 @@ async function backfillProviderIndexSlugs(db = pool) {
 }
 
 function providerGoogleBusinessStatus(provider = {}, profile = null) {
-  const configured = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+  const configured = googleOAuthClientConfigured();
   const hasManualProfile = Boolean(provider.google_business_profile_url || profile?.metadata?.manual_google_profile_url);
   return {
     status: profile?.google_business_status || (hasManualProfile ? 'manual' : configured ? 'pending_oauth' : 'not_connected'),
@@ -30597,23 +30579,19 @@ async function initDb() {
     await ensureWorkspacePlatformDefaultsOnce();
     await ensureDefaultProjects();
     await seedDefaultAutomations();
+    await ensurePersonalWorkspacesAndPeople();
+    await ensureDefaultLearningCommunity();
     await ensureWs11CommunityFoundation();
     await ensureDefaultContentPrompts();
     await ensureDefaultAssignmentPrompts();
-    if (!IS_ONE_TIME_SINGLE_TENANT) {
-      await ensurePersonalWorkspacesAndPeople();
-      await ensureDefaultLearningCommunity();
-      await ensureInitialParentLeads();
-      await ensureDefaultServiceProviderDirectoryOnce();
-      await backfillProviderIndexSlugs();
-      await backfillIdentityLinks({ dryRun: false, limit: 50 });
-    }
+    await ensureInitialParentLeads();
+    await ensureDefaultServiceProviderDirectoryOnce();
+    await backfillProviderIndexSlugs();
+    await backfillIdentityLinks({ dryRun: false, limit: 50 });
     ensureWebsiteBlogDataFiles();
-    if (!IS_ONE_TIME_SINGLE_TENANT) {
-      await ensureStudentsFromSignups();
-      await ensureTorahSeedStudents();
-      await seedTodayTorahLearningSnapshot();
-    }
+    await ensureStudentsFromSignups();
+    await ensureTorahSeedStudents();
+    await seedTodayTorahLearningSnapshot();
     await cleanupExpiredSessions();
     await cleanupExpiredParentAuth();
     await cleanupExpiredStudentAuth();
@@ -35198,10 +35176,6 @@ async function linkExactStudentPerson({ person, name, workspaceId, householdId =
 }
 
 async function ensurePersonalWorkspacesAndPeople(db = pool) {
-  if (IS_ONE_TIME_SINGLE_TENANT) {
-    await ensureDefaultProjects(db);
-    return { skipped: true, reason: 'one_time_single_tenant' };
-  }
   const { bna: seededBna, oneTime } = await ensureDefaultProjects(db);
   const bna = seededBna || fallbackWorkspaceProjectRow('bna');
   const shloimie = (await upsertCanonicalPerson({
@@ -42151,7 +42125,7 @@ app.get('/api/google/connections/status', requireAdmin, async (req, res) => {
 });
 
 function googleIntegrationReadinessPayload() {
-  const oauthConfigured = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+  const oauthConfigured = googleOAuthClientConfigured();
   const configuredScopes = googleAuthService.parseGoogleScopeList(GOOGLE_SCOPES);
   const broadConfiguredScopes = configuredScopes.filter((scope) => (
     /\/auth\/drive$|gmail\.send|classroom\.rosters|classroom\.profile\.emails|classroom\.guardians|classroom\.profile\.photos|classroom\.student-submissions/i
@@ -42334,7 +42308,7 @@ app.post('/api/google/connections/:connectionId/disconnect', requireAdmin, disco
 app.post('/api/bna/integrations/google/connections/:connectionId/disconnect', requireAdmin, disconnectGoogleConnection);
 
 app.get('/api/integrations/google/oauth/start', requireAdmin, (req, res) => {
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  if (!googleOAuthClientConfigured()) {
     return res.status(503).json({
       success: false,
       configured: false,
@@ -43081,8 +43055,7 @@ function buildKeyholderStatusCard() {
 }
 
 function buildGoogleDriveStatusCard() {
-  const oauthJsonPresent = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
-    || fileExistsSafe(path.join(__dirname, '.secrets', 'google-oauth-client.json'));
+  const oauthJsonPresent = googleOAuthClientConfigured();
   const refreshTokenPresent = Boolean(process.env.GOOGLE_REFRESH_TOKEN)
     || fileExistsSafe(path.join(__dirname, '.secrets', 'google-refresh-token.txt'));
   const pipelineConfigPresent = Boolean(process.env.GOOGLE_DRIVE_PIPELINE_CONFIG || process.env.GOOGLE_DRIVE_PIPELINE_FOLDER_ID)
@@ -58718,6 +58691,8 @@ async function parseMixedRecordingSource({
   archiveSourceAfterParse = false,
   contentBacked = false,
   projectKey = '',
+  noAi = false,
+  noProgressWrites = false,
 } = {}) {
   const rawInput = [
     instruction ? `Operator instruction:\n${instruction}` : '',
@@ -58735,12 +58710,19 @@ async function parseMixedRecordingSource({
     source_table: contentBacked && job.id ? 'bna_content_jobs' : null,
     created_by: 'recording_parser',
     dry_run: Boolean(dryRun),
+    aiStructuredJson: noAi ? null : undefined,
   });
   const parsed = mixedRecordingParsedFromCanonical(intake.parsed);
   const effectiveProjectKey = projectKey || inferProjectKeyFromTranscript(rawInput) || DEFAULT_PROJECT_KEY;
   const students = await activeStudentsForMixedRecordingParse({ projectKey: effectiveProjectKey });
   const progressOnlyParsed = progressOnlyMixedRecordingParsePayload(
-    await generateMixedRecordingParse({ job, students })
+    noAi
+      ? basicMixedRecordingParse({
+          job,
+          students,
+          error: new Error('No-AI parser mode requested for repair run.'),
+        })
+      : await generateMixedRecordingParse({ job, students })
   );
   if (dryRun) {
     const progressOnlyDryRun = await persistMixedRecordingParse({
@@ -58796,13 +58778,30 @@ async function parseMixedRecordingSource({
       [JSON.stringify(nextParse), Boolean(archiveSourceAfterParse), job.id]
     );
   }
-  const progressOnlyResult = await persistProgressOnlyMixedRecordingParse({
-    job,
-    previousParse: nextParse,
-    projectKey: effectiveProjectKey,
-    students,
-    progressOnlyParsed,
-  });
+  const progressOnlyResult = noProgressWrites
+    ? {
+        skipped_existing: true,
+        blocked_by_policy: true,
+        counts: {
+          group_goal_entries: 0,
+          daily_torah_updates: 0,
+          torah_learning_entries: 0,
+          accountability_events: 0,
+        },
+        created: {
+          group_goal_entries: [],
+          daily_torah_updates: [],
+          torah_learning_entries: [],
+          accountability_events: [],
+        },
+      }
+    : await persistProgressOnlyMixedRecordingParse({
+        job,
+        previousParse: nextParse,
+        projectKey: effectiveProjectKey,
+        students,
+        progressOnlyParsed,
+      });
   const combinedParse = {
     ...nextParse,
     canonical_mixed_recording_parse: nextParse.mixed_recording_parse,
@@ -58813,6 +58812,7 @@ async function parseMixedRecordingSource({
         parsed_at: new Date().toISOString(),
         applied_at: progressOnlyResult.skipped_existing ? null : new Date().toISOString(),
         skipped_existing: Boolean(progressOnlyResult.skipped_existing),
+        apply_blocked_by_policy: Boolean(progressOnlyResult.blocked_by_policy),
         counts: progressOnlyResult.counts || {},
         group_goal_entries: progressOnlyParsed.group_goal_entries.length,
         daily_torah_updates: progressOnlyParsed.daily_torah_updates.length,
@@ -59130,6 +59130,8 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
     force = false,
     instruction = '',
     archive_source_after_parse = false,
+    no_ai = false,
+    no_progress_writes = false,
   } = req.body || {};
 
   try {
@@ -59169,6 +59171,8 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
       archiveSourceAfterParse: Boolean(archive_source_after_parse),
       contentBacked: true,
       projectKey: opsScopeProjectKey(req) || '',
+      noAi: Boolean(no_ai),
+      noProgressWrites: Boolean(no_progress_writes),
     });
     return res.json(result);
   } catch (err) {

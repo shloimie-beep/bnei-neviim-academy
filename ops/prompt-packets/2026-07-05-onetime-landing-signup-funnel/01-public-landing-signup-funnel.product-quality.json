@@ -1,0 +1,596 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260705-101",
+  "parent_raw_id": "RAW-20260705-005",
+  "source_statement_ids": [
+    "SRC-20260705-005-001",
+    "SRC-20260705-005-002",
+    "SRC-20260705-005-003",
+    "SRC-20260705-005-004",
+    "SRC-20260705-005-005"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260702-201",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-823"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260705-005-onetime-landing-signup-funnel.md",
+      "public/one-time/index.html",
+      "config/brands/one-time.json",
+      "config/service-provider-sites/one-time.json",
+      "public/images/one-time-existing-site-preview.jpg"
+    ],
+    "produces": [
+      "public/one-time/index.html",
+      "config/service-provider-sites/one-time.json",
+      "ops/action-registry.json",
+      "tests/one-time-focused-landing.test.js",
+      "tests/one-time-product-system.test.js",
+      "tests/one-time-shared-review-branding.test.js",
+      "scripts/smoke-one-time-shared-review-live.mjs",
+      "tasks-pending/2026-07-05-onetime-landing-signup-funnel.md"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-05-onetime-landing-signup-funnel/01-public-landing-signup-funnel.product-quality.json",
+    "terminal_condition": "The public /one-time page locally renders the requested black/white/yellow Mishnayos signup funnel without checkout, payment, send, access, or private Operations leakage.",
+    "handoff_target": "tasks-pending/2026-07-05-onetime-landing-signup-funnel.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "verified",
+  "title": "OneTimeOneTime Public Landing Signup Funnel",
+  "created_at": "2026-07-05T15:20:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "PUBLIC_MARKETING",
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260705-005",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "The operator requested a public UI/copy replacement for the OneTimeOneTime Mishnayos landing page.",
+      "The scope is one public marketing route with config/action/test echoes, not a multi-surface super-ramble.",
+      "The prompt explicitly requires placeholder media and forbids signup/payment logic changes."
+    ],
+    "affected_product_surfaces": [
+      "OneTimeOneTime public Mishnayos landing funnel"
+    ],
+    "likely_external_provider_blockers": [
+      "Final hero media rights/asset approval",
+      "Final live signup or checkout route approval",
+      "Production release gate and live smoke"
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "01-public-landing-signup-funnel"
+    ],
+    "next_exact_packet": "After local verification, publish/deploy/live-smoke from a clean release branch or replace placeholder media in a separate asset packet."
+  },
+  "operator_intent_summary": "Turn the public OneTimeOneTime Mishnayos page into a focused signup funnel for the upcoming class using the original black/white/yellow OneTimeOneTime site feel.",
+  "raw_quotes": [
+    "focused signup funnel",
+    "black/dark navy background, white text, bright yellow accents",
+    "strong serif hero headline",
+    "Use placeholders for images/videos for now",
+    "Replace the current ugly/basic landing page"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260705-101",
+      "decision": "Final hero media, final dark-header logo, and live signup/checkout URL are not approved in this packet.",
+      "status": "open"
+    },
+    {
+      "id": "DEC-20260705-102",
+      "decision": "Production deploy/live smoke requires a clean release gate.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No payment, checkout, Stripe, Green Invoice, charge, or access-grant behavior changes.",
+    "No email, WhatsApp, Zoom, Vimeo, Drive, DNS, Railway, GHL, LeadConnector, or external-provider writes.",
+    "No authentication/member-login route removal.",
+    "No private parent, student, provider, Operations, or test-access content on the public page."
+  ],
+  "affected_surfaces": [
+    "Public OneTimeOneTime Mishnayos landing page"
+  ],
+  "affected_routes": [
+    "/one-time"
+  ],
+  "affected_files": [
+    "public/one-time/index.html",
+    "config/service-provider-sites/one-time.json",
+    "ops/action-registry.json",
+    "tests/one-time-focused-landing.test.js",
+    "tests/one-time-product-system.test.js",
+    "tests/one-time-shared-review-branding.test.js",
+    "scripts/smoke-one-time-shared-review-live.mjs"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "server.js route mapping for /one-time and /one-time/mishnayos",
+      "public/one-time/index.html inline static page",
+      "config/brands/one-time.json black/yellow brand configuration",
+      "config/service-provider-sites/one-time.json site copy/nav",
+      "ops/action-registry.json and ops/route-registry.json",
+      "public/images/one-time-existing-site-preview.jpg",
+      "focused One Time landing/product/branding tests"
+    ],
+    "known_blockers": [
+      "Final hero media asset and live signup route are not approved.",
+      "Production deploy/live smoke is blocked until scoped publish/release gate is available."
+    ],
+    "observed_visual_defects": [
+      "The existing page still used the older Learn Mishnayos Live/Vimeo promo structure instead of the requested focused signup-funnel sections.",
+      "The old secondary CTA pointed to the public Vimeo promo instead of the requested See How It Works flow."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "ugly",
+      "clean",
+      "polished",
+      "focused signup funnel"
+    ],
+    "expanded_phrases": {
+      "ugly": "Replace the older generic public offer with the exact requested funnel sections, copy, and visual hierarchy.",
+      "clean": "Use one consistent dark/yellow visual language, readable spacing, stable responsive grid behavior, and no private/internal text.",
+      "polished": "Make the hero dominant, CTAs high contrast, cards aligned, mobile header non-overlapping, and text readable at desktop/tablet/mobile sizes.",
+      "focused signup funnel": "Route public actions to #start-free and the existing first-party interest form until a live checkout/signup URL is approved."
+    },
+    "first_party_pattern_interpretation": "The signup flow remains first-party BNA/One Time interest intake only. No GHL, LeadConnector, external CRM, checkout, or send runtime is added."
+  },
+  "design_pattern_references": [
+    "docs/DESIGN-REFERENCE-CAPTURE.md",
+    "ops/design-references/2026-07-05-onetime-landing-reference/brand-reference.json",
+    "public/images/one-time-existing-site-preview.jpg",
+    "config/brands/one-time.json"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260705-103",
+      "statement": "Implement the requested OneTimeOneTime public Mishnayos signup funnel at /one-time with placeholder media and safe CTAs.",
+      "expected_result": "The route shows the announcement bar, dark sticky header, dominant hero, yellow ticker, logo strip, program cards, who-it-is-for, feature grid, outcome, FAQ, and final Start Free form without changing payment or member-auth logic.",
+      "acceptance_criteria": [
+        "The page uses black/white/yellow OneTimeOneTime styling with CSS variables and serif display headlines.",
+        "All public CTA links use #start-free until live signup is approved.",
+        "The existing interest form posts only to /api/one-time/interest after consent.",
+        "The page keeps /rabbi-member as the canonical member login entry.",
+        "The page includes TODO comments for final hero media and dark-header logo replacement.",
+        "Mobile, tablet, and desktop layouts do not horizontally overflow."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw intake and requirement register exist.",
+      "One Time brand memory/config confirms black/yellow direction.",
+      "Original-site preview asset was inspected as the design reference.",
+      "The implementation is one public route and can avoid backend/payment/auth changes.",
+      "External media/signup decisions are recorded as blockers rather than guessed."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /one-time before campaign deadline API returns.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Enrollment deadline will be posted before launch",
+      "expected_primary_action": "Start 30 Days Free",
+      "expected_secondary_actions": ["See How It Works", "Member Login"],
+      "forbidden_content": ["Operations dashboard", "TEST-ONETIME-REVIEW-ACCESS", "Stripe checkout", "GHL", "LeadConnector"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Announcement, header nav, main sections, form, FAQ details, and footer remain semantic.",
+      "accessibility_expectation": "Hero and CTA text remains readable over the dark overlay.",
+      "test_smoke_assertion": "Page title, hero, CTA, and deadline placeholder render without console errors.",
+      "requirement_id": "REQ-20260705-103"
+    },
+    "empty": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /one-time on mobile with no configured deadline.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "No pressure. Try the class, worksheets, portal, and parent tracking for 30 days.",
+      "expected_primary_action": "Start 30 Days Free",
+      "expected_secondary_actions": ["See How It Works", "Member Login"],
+      "forbidden_content": ["horizontal overflow", "Operations dashboard", "private member-library videos"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile nav remains readable and scrollable without clipped labels.",
+      "accessibility_expectation": "Form labels and checkbox text remain readable.",
+      "test_smoke_assertion": "Mobile screenshot has no horizontal overflow.",
+      "requirement_id": "REQ-20260705-103"
+    },
+    "populated": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /one-time after campaign API returns.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Starting from the beginning on Rosh Chodesh Elul",
+      "expected_primary_action": "Start 30 Days Free",
+      "expected_secondary_actions": ["See How It Works", "Member Login"],
+      "forbidden_content": ["checkout", "payment link creation", "email send", "access grant"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Press logos and FAQ details expose useful accessible labels.",
+      "accessibility_expectation": "Yellow CTA contrast remains high on dark sections.",
+      "test_smoke_assertion": "Desktop route shows requested sections and no broken images.",
+      "requirement_id": "REQ-20260705-103"
+    },
+    "filtered_empty": {
+      "route": "/one-time",
+      "viewport": 768,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /one-time on tablet width.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Everything your child needs to stay connected.",
+      "expected_primary_action": "Start 30 Days Free",
+      "expected_secondary_actions": ["See How It Works", "Member Login"],
+      "forbidden_content": ["BNA Academy private scope", "family legacy records", "raw private message"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Tablet sections maintain heading hierarchy.",
+      "accessibility_expectation": "Cards wrap without text collision.",
+      "test_smoke_assertion": "Tablet viewport has no overlapping section text.",
+      "requirement_id": "REQ-20260705-103"
+    },
+    "error": {
+      "route": "/one-time",
+      "viewport": 1024,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Campaign API fails or is unavailable.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Campaign deadline unavailable",
+      "expected_primary_action": "Start 30 Days Free",
+      "expected_secondary_actions": ["See How It Works", "Member Login"],
+      "forbidden_content": ["fake reset countdown", "approved launch configuration"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Failure text is inside aria-live deadline note.",
+      "accessibility_expectation": "Deadline failure remains readable.",
+      "test_smoke_assertion": "Script handles campaign fetch failure without throwing.",
+      "requirement_id": "REQ-20260705-103"
+    },
+    "blocked_setup": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open page before final hero media/signup route is approved.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Start with 30 days free.",
+      "expected_primary_action": "Start Free",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["live checkout", "Stripe checkout", "GreenInvoice checkout"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Form labels stay connected to inputs.",
+      "accessibility_expectation": "Disabled/live-missing state is not hidden behind fake checkout copy.",
+      "test_smoke_assertion": "CTA points to #start-free and not an unapproved checkout route.",
+      "requirement_id": "REQ-20260705-103"
+    },
+    "preview_only": {
+      "route": "/one-time",
+      "viewport": 430,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile preview route locally.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Review-only launch funnel",
+      "expected_primary_action": "Start Free",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["No charge or external send was performed", "server-backed"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Footer and form remain reachable by keyboard.",
+      "accessibility_expectation": "Buttons fit within mobile width.",
+      "test_smoke_assertion": "Mobile 430 screenshot shows complete CTA/form path.",
+      "requirement_id": "REQ-20260705-103"
+    },
+    "success_readback": {
+      "route": "/one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit interest form against local review API fixture.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Your request was saved. We will follow up with next steps.",
+      "expected_primary_action": "Start Free",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["checkout session", "access granted", "email sent"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Form status announces result through aria-live.",
+      "accessibility_expectation": "Success message remains visible and high contrast.",
+      "test_smoke_assertion": "POST /api/one-time/interest returns preview success without external writes.",
+      "requirement_id": "REQ-20260705-103"
+    },
+    "permission_denied": {
+      "route": "/one-time",
+      "viewport": 1024,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Try to access member content from public route.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Member Login",
+      "expected_primary_action": "Start Free",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["member video library", "TEST-only member-library data", "private Operations text"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Member link remains a link to /rabbi-member, not embedded private data.",
+      "accessibility_expectation": "Public route does not expose private controls.",
+      "test_smoke_assertion": "Public text does not contain Operations dashboard/private routes.",
+      "requirement_id": "REQ-20260705-103"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "anonymous",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile FAQ details and scroll through final CTA.",
+      "expected_visible_title": "Your Child Can Love Learning Mishnayos",
+      "expected_visible_message": "Is there a free trial?",
+      "expected_primary_action": "Start Free",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["text overlap", "button overflow", "clipped FAQ answer"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "FAQ details can open using native summary controls.",
+      "accessibility_expectation": "FAQ and final CTA remain readable on narrow mobile.",
+      "test_smoke_assertion": "Mobile detail state has no horizontal overflow.",
+      "requirement_id": "REQ-20260705-103"
+    }
+  },
+  "visual_quality": {
+    "layout": "Dominant centered hero, yellow ticker, alternating light/dark funnel sections, responsive logo row, stable cards, and visible final form.",
+    "brand": "OneTimeOneTime black/white/yellow, not BNA cream/navy/teal.",
+    "responsive": "Desktop, tablet, and mobile layouts wrap without horizontal overflow or text collision.",
+    "screenshot_requirements": [
+      { "viewport": 1440, "route": "/one-time", "required": true },
+      { "viewport": 1024, "route": "/one-time", "required": true },
+      { "viewport": 768, "route": "/one-time", "required": true },
+      { "viewport": 430, "route": "/one-time", "required": true },
+      { "viewport": 390, "route": "/one-time", "required": true }
+    ],
+    "findings": []
+  },
+  "accessibility": {
+    "requirements": [
+      "Header nav and footer nav have aria labels.",
+      "Form labels remain visible and associated by nesting.",
+      "Campaign deadline note uses aria-live.",
+      "FAQ uses native details/summary controls.",
+      "CTA text remains high-contrast at all target viewport widths."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Start 30 Days Free",
+      "selector_or_action_key": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "action_state": "WORKS_NOW",
+      "owner": "public visitor",
+      "external_write": false,
+      "handler_or_blocker": "Anchor scrolls to #start-free; live signup route blocked by DEC-20260705-101.",
+      "registry_required": true
+    },
+    {
+      "label": "See How It Works",
+      "selector_or_action_key": "ACTION-ONETIME-WATCH-RABBI-CTA",
+      "action_state": "WORKS_NOW",
+      "owner": "public visitor",
+      "external_write": false,
+      "handler_or_blocker": "Anchor scrolls to #how-it-works.",
+      "registry_required": true
+    },
+    {
+      "label": "Request 30-Day Trial",
+      "selector_or_action_key": "ACTION-ONETIME-INTEREST-FORM",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "public visitor",
+      "external_write": false,
+      "handler_or_blocker": "Posts to /api/one-time/interest after consent; no checkout/send/access grant.",
+      "registry_required": true
+    },
+    {
+      "label": "Member Login",
+      "selector_or_action_key": "ACTION-ONETIME-MEMBER-LOGIN-LINK",
+      "action_state": "WORKS_NOW",
+      "owner": "member",
+      "external_write": false,
+      "handler_or_blocker": "Links to /rabbi-member safe member entry shell.",
+      "registry_required": true
+    },
+    {
+      "label": "Campaign Deadline Readback",
+      "selector_or_action_key": "ACTION-ONETIME-CAMPAIGN-TIMER-READBACK",
+      "action_state": "WORKS_NOW",
+      "owner": "public page",
+      "external_write": false,
+      "handler_or_blocker": "Reads /api/one-time/campaign only.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "allowed_to_change": [
+      "static public page markup and inline CSS",
+      "public site config copy/nav",
+      "action registry selectors/labels",
+      "focused tests and smoke expectations"
+    ],
+    "must_not_change": [
+      "payment/signup backend logic",
+      "member login route handlers",
+      "database schema",
+      "external provider clients",
+      "route access policies"
+    ]
+  },
+  "security_privacy": {
+    "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class only",
+    "private_data_policy": "No raw private student, parent, member, provider, email body, credential, token, or secret evidence may be added.",
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "external_writes": "forbidden",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260705-101-A",
+      "title": "Public landing funnel replacement",
+      "requirements": [
+        "REQ-20260705-103",
+        "REQ-20260705-104"
+      ],
+      "scope": "Replace /one-time static page and update config/action/test echoes.",
+      "files_allowed": [
+        "public/one-time/index.html",
+        "config/service-provider-sites/one-time.json",
+        "ops/action-registry.json",
+        "tests/one-time-focused-landing.test.js",
+        "tests/one-time-product-system.test.js",
+        "tests/one-time-shared-review-branding.test.js",
+        "scripts/smoke-one-time-shared-review-live.mjs"
+      ],
+      "verification": [
+        "PQC validation",
+        "focused One Time tests",
+        "local browser smoke and screenshots",
+        "watchdog:actions",
+        "watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "BNA-START-HERE.md",
+      "AGENTS.md",
+      "docs/BNA-RAMBLE-TO-DONE.md",
+      "memory-topics/one-time-rabbi-sheller.md",
+      "public/one-time/index.html",
+      "config/service-provider-sites/one-time.json",
+      "ops/action-registry.json",
+      "tests/one-time-focused-landing.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/one-time/index.html",
+      "config/service-provider-sites/one-time.json",
+      "ops/action-registry.json",
+      "tests/one-time-focused-landing.test.js",
+      "tests/one-time-product-system.test.js",
+      "tests/one-time-shared-review-branding.test.js",
+      "scripts/smoke-one-time-shared-review-live.mjs"
+    ],
+    "max_files_to_edit": 7,
+    "max_routes_to_touch": 1,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if final media, live checkout, payment/access, provider setup, or backend signup behavior is requested.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate ops/prompt-packets/2026-07-05-onetime-landing-signup-funnel/01-public-landing-signup-funnel.product-quality.json",
+      "node --check server.js",
+      "node --test tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/one-time-shared-review-branding.test.js",
+      "npm run one-time:smoke:canonical-journey-local",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ]
+  },
+  "evidence": {
+    "required_artifacts": [
+      "ops/playwright-smokes/2026-07-05-onetime-landing-signup-funnel/report.md",
+      "ops/playwright-smokes/2026-07-05-onetime-landing-signup-funnel/desktop-landing.png",
+      "ops/playwright-smokes/2026-07-05-onetime-landing-signup-funnel/tablet-landing.png",
+      "ops/playwright-smokes/2026-07-05-onetime-landing-signup-funnel/mobile-landing.png",
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "manual_review_required": false
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "status": "local_verified_deploy_live_smoke_blocked",
+    "criteria": [
+      "Raw/register/design/PQC records exist and validate.",
+      "The local /one-time page matches the requested copy and structure.",
+      "Focused tests and local browser smoke pass.",
+      "Action/protocol watchdogs pass or exact unrelated blockers are recorded.",
+      "Ledger and changelog record the local implementation and remaining deploy/live smoke blocker.",
+      "Production deploy/live smoke is completed later from a clean release branch before terminal app-visible Done."
+    ]
+  },
+  "trace": {
+    "raw_id": "RAW-20260705-005",
+    "raw_input_path": "raw-input/RAW-20260705-005-onetime-landing-signup-funnel.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-05-onetime-landing-signup-funnel/01-public-landing-signup-funnel.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "read current route/config/tests",
+      "patch public landing page and config/test echoes",
+      "run focused tests and local browser screenshots",
+      "record ledger/changelog and deployment blocker"
+    ],
+    "skipped_actions_policy": "Skip production deploy/live smoke until DEC-20260705-102 is resolved; skip final media replacement until DEC-20260705-101 is resolved.",
+    "blocker_decisions": [
+      "DEC-20260705-101",
+      "DEC-20260705-102"
+    ],
+    "evidence_paths": [
+      "ops/playwright-smokes/2026-07-05-onetime-landing-signup-funnel/report.md",
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "tasks-pending/2026-07-05-onetime-landing-signup-funnel.md",
+      "ops/agent-changelog.md",
+      "ops/agent-task-ledger.jsonl"
+    ],
+    "final_status_path": "tasks-pending/2026-07-05-onetime-landing-signup-funnel.md",
+    "next_packet_path": "tasks-pending/2026-07-05-onetime-landing-signup-funnel.md",
+    "requirement_ids": [
+      "REQ-20260705-103"
+    ],
+    "decision_ids": [
+      "DEC-20260705-101",
+      "DEC-20260705-102"
+    ],
+    "register": "tasks-pending/2026-07-05-onetime-landing-signup-funnel.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No new protocol drift findings from this landing packet."
+  },
+  "next_packet": {
+    "recommended": "Clean release branch, deploy/live smoke, or final media replacement after approved assets are supplied.",
+    "blockers": [
+      "Final hero media/logo/signup route approvals are external.",
+      "Current dirty branch state blocks safe production Done until scoped release gate is available."
+    ]
+  }
+}

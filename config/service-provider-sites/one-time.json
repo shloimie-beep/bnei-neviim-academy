@@ -24,7 +24,7 @@
   "assets": {
     "logo": "/images/one-time/brand/onetimelogo.webp",
     "hero_portrait": "/images/one-time/brand/onetime-hero-vertical.webp",
-    "vimeo_promo_embed": "https://player.vimeo.com/video/1158542993?h=daa31d3417",
+    "vimeo_promo_embed": "placeholder_until_final_hero_media_is_approved",
     "social_og": "/images/one-time/social/one-time-og-20260622.jpg",
     "press_logos": [
       {
@@ -62,10 +62,10 @@
   "copy": {
     "campaign_bar": "30 DAYS TO JOIN - START WITH 30 DAYS FREE",
     "eyebrow": "Worldwide Live Mishnayos",
-    "headline": "Learn Mishnayos Live with Rabbi Eli Scheller",
-    "subhead": "Live shiurim, daily accountability, practical worksheets, and direct interaction with the Rabbi - so boys can finish Mishnayos, love learning Torah, and keep going wherever they live.",
-    "primary_cta": "START 30 DAYS FREE",
-    "secondary_cta": "WATCH RABBI SCHELLER",
+    "headline": "Your Child Can Love Learning Mishnayos",
+    "subhead": "Join the daily live Mishnayos class built for kids - exciting, clear, accountable, and connected to Rabbi Eli Scheller.",
+    "primary_cta": "Start 30 Days Free",
+    "secondary_cta": "See How It Works",
     "member_cta": "Member Login",
     "offer": "$67 USD per month after a 30-day free trial",
     "campaign_contract": "ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY control the non-resetting countdown.",
@@ -74,11 +74,11 @@
   "nav": [
     {
       "label": "Watch",
-      "href": "#watch-rabbi"
+      "href": "#watch"
     },
     {
       "label": "Program",
-      "href": "#what-you-get"
+      "href": "#program"
     },
     {
       "label": "How It Works",
@@ -90,11 +90,11 @@
     },
     {
       "label": "Start Free",
-      "href": "#signup"
+      "href": "#start-free"
     },
     {
       "label": "Member Login",
-      "href": "/one-time/member-login"
+      "href": "/rabbi-member"
     }
   ],
   "proof_note": "Legacy site media/publication references are inventoried for review only and do not imply sponsorship, endorsement, or permission status.",

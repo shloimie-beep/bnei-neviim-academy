@@ -6,21 +6,24 @@ test('OneTime focused landing copy uses launch funnel offer and safe CTAs', () =
   const html = fs.readFileSync('public/one-time/index.html', 'utf8');
 
   assert.match(html, /OneTimeOneTime Mishnah/);
-  assert.match(html, /Learn Mishnayos Live with Rabbi Eli Scheller/);
-  assert.match(html, /START 30 DAYS FREE/);
-  assert.match(html, /WATCH RABBI SCHELLER/);
+  assert.match(html, /Your Child Can Love Learning Mishnayos/);
+  assert.match(html, /Start 30 Days Free/);
+  assert.match(html, /See How It Works/);
   assert.match(html, /Member Login/);
-  assert.match(html, /\$67 USD per month after a 30-day free trial/);
-  assert.match(html, /Inside The Program/);
+  assert.match(html, /Starting from the beginning on Rosh Chodesh Elul/);
+  assert.match(html, /INSIDE THE PROGRAM/);
+  assert.match(html, /AS SEEN ACROSS THE JEWISH WORLD/);
+  assert.match(html, /Everything your child needs to stay connected/);
   assert.match(html, /How It Works/);
   assert.match(html, /Quick answers before you start/);
   assert.match(html, /Your request was saved\. We will follow up with next steps\./);
-  assert.match(html, /https:\/\/player\.vimeo\.com\/video\/1158542993\?h=daa31d3417/);
+  assert.match(html, /TODO: replace with final hero video\/image/);
   assert.match(html, /\/api\/one-time\/campaign/);
   assert.match(html, /Consent is required before submitting/);
   assert.doesNotMatch(html, /private asset library/i);
   assert.doesNotMatch(html, /server-backed/i);
   assert.doesNotMatch(html, /video ID/i);
+  assert.doesNotMatch(html, /player\.vimeo\.com/);
   assert.doesNotMatch(html, /approved launch configuration/i);
   assert.doesNotMatch(html, /No charge or external send was performed/i);
   assert.doesNotMatch(html, /raw external page/i);
@@ -56,4 +59,6 @@ test('OneTime focused offer route and registries are declared', () => {
   assert.ok(actions.has('ACTION-ONETIME-CAMPAIGN-TIMER-READBACK'));
   assert.ok(actions.has('ACTION-ONETIME-INTEREST-FORM'));
   assert.ok(actions.has('ACTION-ONETIME-MEMBER-LOGIN-LINK'));
+  const joinAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-JOIN-SHIR-CTA');
+  assert.match(joinAction.selector_hint, /#start-free/);
 });

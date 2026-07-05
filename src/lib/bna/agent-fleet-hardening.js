@@ -165,6 +165,8 @@ function buildParentCoordinationAudit({
   laneManifest = {},
   requirements = {},
   git = {},
+  expectedAgentFleetRequirementId = 'REQ-20260624-045',
+  finalRequirementId = 'REQ-20260624-048',
 } = {}) {
   const findings = [];
   const reqs = Array.isArray(requirements.requirements) ? requirements.requirements : [];
@@ -188,10 +190,10 @@ function buildParentCoordinationAudit({
   const agentFleetLane = lanes.find((lane) => lane.lane_id === 'agent-fleet');
   if (!agentFleetLane) {
     findings.push({ severity: 'critical', type: 'missing_agent_fleet_lane', message: 'LANE-MANIFEST is missing the agent-fleet lane.' });
-  } else if (!agentFleetLane.requirement_ids?.includes('REQ-20260624-045')) {
-    findings.push({ severity: 'warn', type: 'agent_fleet_lane_scope', message: 'Agent-fleet lane does not claim REQ-20260624-045.' });
+  } else if (expectedAgentFleetRequirementId && !agentFleetLane.requirement_ids?.includes(expectedAgentFleetRequirementId)) {
+    findings.push({ severity: 'warn', type: 'agent_fleet_lane_scope', message: `Agent-fleet lane does not claim ${expectedAgentFleetRequirementId}.`, expected_requirement_id: expectedAgentFleetRequirementId });
   }
-  const allowedLaneStatuses = new Set(['queued', 'claimed', 'running', 'blocked', 'ready_for_integration', 'integrated', 'failed']);
+  const allowedLaneStatuses = new Set(['queued', 'claimed', 'running', 'blocked', 'ready_for_integration', 'integrated', 'done', 'failed']);
   for (const lane of lanes) {
     if (!allowedLaneStatuses.has(String(lane.status || ''))) {
       findings.push({ severity: 'warn', type: 'unknown_lane_status', message: `Lane ${lane.lane_id} has unknown status ${lane.status}.`, lane_id: lane.lane_id });
@@ -200,7 +202,10 @@ function buildParentCoordinationAudit({
   if (git.branch && laneManifest.parent_branch && git.branch !== laneManifest.parent_branch) {
     findings.push({ severity: 'warn', type: 'branch_drift', message: 'Current branch differs from parent branch.', branch: git.branch, parent_branch: laneManifest.parent_branch });
   }
-  const finalReq = reqs.find((item) => item.id === 'REQ-20260624-048');
+  if (git.upstream_missing) {
+    findings.push({ severity: 'warn', type: 'branch_has_no_upstream', message: 'Current branch has no configured upstream; push/set upstream before relying on publish status.', branch: git.branch || '' });
+  }
+  const finalReq = finalRequirementId ? reqs.find((item) => item.id === finalRequirementId) : null;
   const prerequisiteIds = finalReq?.depends_on || [];
   const nonTerminal = reqs.filter((item) => prerequisiteIds.includes(item.id) && !['done', 'blocked', 'already_satisfied', 'needs_operator_decision', 'failed', 'archived'].includes(item.status));
   if (finalReq?.status === 'done' && nonTerminal.length) {

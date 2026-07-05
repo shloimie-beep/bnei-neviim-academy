@@ -320,6 +320,16 @@ async function sendTelegramToChat(config, chatId, text) {
   return true;
 }
 
+async function notifyAgentFleet(config, text, { chatId = '', label = 'agent notification' } = {}) {
+  try {
+    if (chatId) return await sendTelegramToChat(config, chatId, text);
+    return await sendTelegram(config, text);
+  } catch (error) {
+    console.error(`Could not send ${label}: ${error instanceof Error ? error.message : String(error)}`);
+    return false;
+  }
+}
+
 function normalizeStage(stage) {
   const map = {
     inbox: 'raw_input',
@@ -399,9 +409,20 @@ function sortQueue(a, b) {
   return Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0);
 }
 
-async function loadTasks(config) {
-  const data = await appRequest(config, 'GET', '/api/bna/tasks');
+async function loadTasks(config, { limit = null, search = '' } = {}) {
+  const params = new URLSearchParams();
+  if (limit) params.set('limit', String(limit));
+  if (search) params.set('search', search);
+  const query = params.toString();
+  const data = await appRequest(config, 'GET', `/api/bna/tasks${query ? `?${query}` : ''}`);
   return Array.isArray(data.tasks) ? data.tasks : [];
+}
+
+async function loadTaskById(config, taskId) {
+  const id = Number(taskId || 0);
+  if (!Number.isFinite(id) || id <= 0) return null;
+  const data = await appRequest(config, 'GET', `/api/bna/tasks/${id}`);
+  return data.task || (data.id ? data : null);
 }
 
 async function loadAgentJobs(config, { status = 'queued', limit = 12 } = {}) {
@@ -552,9 +573,119 @@ function filterObservableJobsForClaim(jobs = [], tasks = [], state = { tasks: {}
       .filter(Number.isFinite)
   );
   return jobs.filter((job) => {
+    const status = String(job.status || 'queued').toLowerCase();
+    if (status !== 'queued') return false;
     const taskId = Number(job.task_id || job.taskId || 0);
     return Number.isFinite(taskId) && taskId > 0 && claimableTaskIds.has(taskId);
   });
+}
+
+function parseJsonish(value) {
+  if (!value) return {};
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(String(value || ''));
+  } catch {
+    return {};
+  }
+}
+
+function taskMapById(tasks = []) {
+  return new Map(
+    tasks
+      .map((task) => [Number(task?.id || 0), task])
+      .filter(([id]) => Number.isFinite(id) && id > 0)
+  );
+}
+
+function observableJobTask(job = {}, taskMap = new Map()) {
+  const taskId = Number(job.task_id || job.taskId || 0);
+  return taskMap.get(taskId) || null;
+}
+
+function isChatGptDropoffTask(task = {}) {
+  const sourceContext = parseJsonish(task.source_context);
+  const aiParsed = parseJsonish(task.ai_parsed);
+  return String(task.source_channel || '').toLowerCase() === 'chatgpt_dropoff' ||
+    String(task.created_by || '').toLowerCase() === 'chatgpt-dropoff-ingestor' ||
+    String(task.author || '').toLowerCase() === 'chatgpt-dropoff-ingestor' ||
+    String(sourceContext.source || '').toLowerCase() === 'chatgpt_dropoff_ingestor' ||
+    Boolean(aiParsed.source_packet_id);
+}
+
+function observableJobSortTuple(job = {}, taskMap = new Map()) {
+  const task = observableJobTask(job, taskMap) || {};
+  const dropoffRank = isChatGptDropoffTask(task) ? 0 : 1;
+  const urgency = urgencyRank(task.urgency);
+  const createdAt = Date.parse(task.created_at || job.created_at || 0);
+  const created = Number.isFinite(createdAt) ? createdAt : Number.MAX_SAFE_INTEGER;
+  const id = Number(job.id || job.job_id || 0);
+  return [dropoffRank, urgency, created, Number.isFinite(id) ? id : Number.MAX_SAFE_INTEGER];
+}
+
+function compareTuples(a = [], b = []) {
+  const length = Math.max(a.length, b.length);
+  for (let index = 0; index < length; index += 1) {
+    const diff = (a[index] ?? 0) - (b[index] ?? 0);
+    if (diff !== 0) return diff;
+  }
+  return 0;
+}
+
+function sortObservableJobsForClaim(jobs = [], tasks = []) {
+  const taskMap = taskMapById(tasks);
+  return [...jobs].sort((a, b) => compareTuples(
+    observableJobSortTuple(a, taskMap),
+    observableJobSortTuple(b, taskMap)
+  ));
+}
+
+function observableJobTaskIdsMissingFromTasks(jobs = [], tasks = []) {
+  const existingTaskIds = new Set(
+    tasks
+      .map((task) => Number(task?.id || 0))
+      .filter((id) => Number.isFinite(id) && id > 0)
+  );
+  return [...new Set(
+    jobs
+      .map((job) => Number(job?.task_id || job?.taskId || 0))
+      .filter((id) => Number.isFinite(id) && id > 0 && !existingTaskIds.has(id))
+  )];
+}
+
+function mergeTasksById(...taskLists) {
+  const byId = new Map();
+  for (const tasks of taskLists) {
+    for (const task of Array.isArray(tasks) ? tasks : []) {
+      const id = Number(task?.id || 0);
+      if (Number.isFinite(id) && id > 0) byId.set(id, task);
+    }
+  }
+  return [...byId.values()];
+}
+
+async function hydrateObservableJobTasks(config, jobs = [], tasks = []) {
+  const missingTaskIds = observableJobTaskIdsMissingFromTasks(jobs, tasks);
+  const fetchedTasks = [];
+  const errors = [];
+  for (const taskId of missingTaskIds.slice(0, 50)) {
+    try {
+      // Observable jobs may point at tasks outside the default task-list window.
+      // Fetch linked tasks directly so claim eligibility is based on the job's real task.
+      // eslint-disable-next-line no-await-in-loop
+      const task = await loadTaskById(config, taskId);
+      if (task?.id) fetchedTasks.push(task);
+      else errors.push({ task_id: taskId, message: 'Task endpoint returned no task.' });
+    } catch (error) {
+      errors.push({ task_id: taskId, message: error instanceof Error ? error.message : String(error) });
+    }
+  }
+  return {
+    tasks: mergeTasksById(tasks, fetchedTasks),
+    fetchedTasks,
+    missingTaskIds,
+    errors,
+  };
 }
 
 async function addTaskComment(config, taskId, body) {
@@ -1368,8 +1499,10 @@ async function processTask(config, task, state, options) {
         '',
         `Report: ${relative(reportPaths.mdPath)}`,
       ].join('\n');
-      if (agentJob?.source_chat_id) await sendTelegramToChat(config, agentJob.source_chat_id, message);
-      else await sendTelegram(config, message);
+      await notifyAgentFleet(config, message, {
+        chatId: agentJob?.source_chat_id || '',
+        label: `completion notification for task #${task.id}`,
+      });
     }
   } else {
     const exhausted = record.attempts >= config.maxRetries;
@@ -1405,8 +1538,10 @@ async function processTask(config, task, state, options) {
       });
     }
     if (!options.noTelegram) {
-      if (agentJob?.source_chat_id) await sendTelegramToChat(config, agentJob.source_chat_id, blockerNote);
-      else await sendTelegram(config, blockerNote);
+      await notifyAgentFleet(config, blockerNote, {
+        chatId: agentJob?.source_chat_id || '',
+        label: `blocker notification for task #${task.id}`,
+      });
     }
   }
 
@@ -3029,7 +3164,8 @@ async function processAgentJob(config, job, state, args) {
 
   const claimed = await claimAgentJob(config, job);
   const claimedJob = claimed.job || job;
-  const task = claimed.task || (claimedJob.task_id ? (await loadTasks(config)).find((item) => Number(item.id) === Number(claimedJob.task_id)) : null);
+  const linkedTaskId = Number(claimedJob.task_id || claimedJob.taskId || 0);
+  const task = claimed.task || (linkedTaskId ? await loadTaskById(config, linkedTaskId) : null);
   if (!task?.id) {
     const blocker = `Codex job #${claimedJob.id || claimedJob.job_id} is missing a linked task, so the fleet cannot execute it.`;
     await blockAgentJob(config, claimedJob, {
@@ -3038,8 +3174,10 @@ async function processAgentJob(config, job, state, args) {
       summary: blocker,
     });
     if (!args.noTelegram) {
-      if (claimedJob.source_chat_id) await sendTelegramToChat(config, claimedJob.source_chat_id, blocker);
-      else await sendTelegram(config, blocker);
+      await notifyAgentFleet(config, blocker, {
+        chatId: claimedJob.source_chat_id || '',
+        label: `missing-task notification for job #${claimedJob.id || claimedJob.job_id}`,
+      });
     }
     return { ok: false, blocked: true, message: blocker };
   }
@@ -3049,8 +3187,10 @@ async function processAgentJob(config, job, state, args) {
       `Codex started job #${claimedJob.id || claimedJob.job_id}${claimedJob.ticket_id ? ` for ticket #${claimedJob.ticket_id}` : ''}.`,
       `Task #${task.id}: ${taskReportTitle(task)}`,
     ].join('\n');
-    if (claimedJob.source_chat_id) await sendTelegramToChat(config, claimedJob.source_chat_id, started);
-    else await sendTelegram(config, started);
+    await notifyAgentFleet(config, started, {
+      chatId: claimedJob.source_chat_id || '',
+      label: `start notification for job #${claimedJob.id || claimedJob.job_id}`,
+    });
   }
 
   return processTask(config, { ...task, agent_job_id: claimedJob.id || claimedJob.job_id }, state, {
@@ -3060,11 +3200,8 @@ async function processAgentJob(config, job, state, args) {
 }
 
 async function status(config) {
-  const tasks = await loadTasks(config);
+  let tasks = await loadTasks(config);
   const state = loadState();
-  const queue = selectNextTasks(tasks, state, config, 12);
-  const active = tasks.filter((task) => isActiveStage(task.stage));
-  const codex = active.filter(isAgentOwnedTask);
   const auditStaleMinutes = Math.ceil(Math.max(config.taskTimeoutMs * 2, 45 * 60 * 1000) / 60000);
   let queueAudit = null;
   try {
@@ -3081,19 +3218,29 @@ async function status(config) {
   }
   const normalizedCounts = summarizeQueueHealthForStatus(queueAudit);
   let observableQueue = null;
+  let linkedTaskHydration = { fetchedTasks: [], missingTaskIds: [], errors: [] };
   try {
-    observableQueue = await appRequest(config, 'GET', '/api/bna/codex-queue/status?limit=12');
+    observableQueue = await appRequest(config, 'GET', '/api/bna/codex-queue/status?limit=50');
   } catch (error) {
     observableQueue = { error: error instanceof Error ? error.message : String(error), queue: { jobs: [] } };
   }
   const observableJobs = Array.isArray(observableQueue?.queue?.jobs) ? observableQueue.queue.jobs : [];
-  const claimableObservableJobs = filterObservableJobsForClaim(observableJobs, tasks, state, config);
+  linkedTaskHydration = await hydrateObservableJobTasks(config, observableJobs, tasks);
+  tasks = linkedTaskHydration.tasks;
+  const queue = selectNextTasks(tasks, state, config, 12);
+  const active = tasks.filter((task) => isActiveStage(task.stage));
+  const codex = active.filter(isAgentOwnedTask);
+  const claimableObservableJobs = sortObservableJobsForClaim(
+    filterObservableJobsForClaim(observableJobs, tasks, state, config),
+    tasks
+  );
   const lock = readJson(supervisorLockPath, null);
   const lines = [
     'Agent fleet status:',
     `- Supervisor: ${lock?.pid && processIsAlive(lock.pid) ? `running PID ${lock.pid}` : 'not running'}`,
     `- Observable Codex jobs: ${observableJobs.length}`,
     `- Claimable observable jobs: ${claimableObservableJobs.length}`,
+    `- Linked observable task lookup: fetched ${linkedTaskHydration.fetchedTasks.length}, missing ${linkedTaskHydration.errors.length}`,
     `- Active Codex task fallback: ${codex.length}`,
     `- Ready to claim: ${claimableObservableJobs.length || queue.length}`,
     `- Queue health: fresh ${normalizedCounts.active_fresh}, stale ${normalizedCounts.active_stale}, blocked ${normalizedCounts.blocked}, unknown ${normalizedCounts.abandoned_unknown}, do-not-redo ${normalizedCounts.do_not_redo}`,
@@ -3106,6 +3253,9 @@ async function status(config) {
     `- Startup shortcuts: ${buildStartupShortcutMatrix().map((item) => item.action).join(', ')}`,
   ];
   if (observableQueue?.error) lines.push(`- Observable queue read: ${observableQueue.error}`);
+  if (linkedTaskHydration.errors.length) {
+    lines.push(`- Linked task lookup warnings: ${linkedTaskHydration.errors.slice(0, 2).map((item) => `#${item.task_id} ${item.message}`).join('; ')}`);
+  }
   if (queueAudit?.warnings?.length) lines.push(`- Queue audit warnings: ${queueAudit.warnings.slice(0, 2).join('; ')}`);
   if (claimableObservableJobs.length) {
     lines.push('', 'Next claimable observable jobs:');
@@ -3128,15 +3278,16 @@ async function runOnce(config, args) {
   await runChatGptDropoffIngestBeforeClaim(config, args);
   await runTaskQueueReconcilerBeforeClaim(config, args);
   const state = loadState();
-  const tasks = await loadTasks(config);
+  let tasks = await loadTasks(config);
   const maxTasks = args.maxTasks && args.maxTasks > 0 ? args.maxTasks : 1;
   let selectedJobs = [];
   try {
-    selectedJobs = filterObservableJobsForClaim(
-      await loadAgentJobs(config, { status: 'queued', limit: Math.max(maxTasks * 4, 12) }),
-      tasks,
-      state,
-      config
+    const observableJobs = await loadAgentJobs(config, { status: 'queued', limit: Math.max(maxTasks * 10, 50) });
+    const linkedTaskHydration = await hydrateObservableJobTasks(config, observableJobs, tasks);
+    tasks = linkedTaskHydration.tasks;
+    selectedJobs = sortObservableJobsForClaim(
+      filterObservableJobsForClaim(observableJobs, tasks, state, config),
+      tasks
     ).slice(0, maxTasks);
   } catch (error) {
     console.error(`Observable agent job queue unavailable; falling back to task queue: ${error instanceof Error ? error.message : String(error)}`);
@@ -3338,10 +3489,13 @@ export {
   isAllowlistedSecretScanLine,
   isNonSensitiveSecretScanPlaceholder,
   isWatchdogImprovementDecision,
+  mergeTasksById,
   looksRawRambleTitle,
   looksWatchdogWarningRepairRequest,
+  observableJobTaskIdsMissingFromTasks,
   redactAgentFleetText,
   selectWatchdogImprovementFindingsForCreation,
+  sortObservableJobsForClaim,
   watchdogIncidentSignature,
   watchdogImprovementShouldRun,
   watchdogNotificationSignature,

@@ -199,13 +199,23 @@ function extractLine(body, label) {
 
 function parseFileBlocks(body = '') {
   const files = {};
-  const pattern = /(?:^|\n)###\s*File:\s*([^\n]+)\n```[^\n]*\n([\s\S]*?)\n```/g;
-  let match = pattern.exec(body);
-  while (match) {
+  const normalizedBody = String(body || '').replace(/\r\n/g, '\n');
+  const pattern = /^###\s*File:\s*([^\n]+)\s*$/gm;
+  const matches = [...normalizedBody.matchAll(pattern)];
+  for (let index = 0; index < matches.length; index += 1) {
+    const match = matches[index];
     const name = String(match[1] || '').trim().replace(/\\/g, '/');
     const baseName = path.posix.basename(name);
-    if (allowedPacketFiles.has(baseName)) files[baseName] = match[2].replace(/\s+$/g, '');
-    match = pattern.exec(body);
+    if (!allowedPacketFiles.has(baseName)) continue;
+    const headingEnd = normalizedBody.indexOf('\n', match.index) + 1;
+    const nextStart = matches[index + 1]?.index ?? normalizedBody.length;
+    const rawSection = normalizedBody.slice(headingEnd, nextStart);
+    const lines = rawSection.split('\n');
+    while (lines.length && !lines[0].trim()) lines.shift();
+    if (lines.length && /^```/.test(lines[0].trim())) lines.shift();
+    while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
+    if (lines.length && lines[lines.length - 1].trim() === '```') lines.pop();
+    files[baseName] = lines.join('\n').replace(/\s+$/g, '');
   }
   return files;
 }

@@ -1,9 +1,9 @@
 # Product Quality Compiler Validation
 
-Generated: 2026-07-03T01:01:13.578Z
+Generated: 2026-07-05T12:41:01.394Z
 Mode: default
 Files scanned: 1
 Passed: 1
 Failed: 0
 
-## PASS ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/21-operations-library-first-viewport-readability.product-quality.json
+## PASS ops/prompt-packets/2026-07-05-onetime-landing-signup-funnel/01-public-landing-signup-funnel.product-quality.json

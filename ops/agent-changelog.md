@@ -29247,3 +29247,34 @@ Actions: 1. Active machine tasks: 0.
   `ops/playwright-smokes/2026-07-05-operations-login-glitch/local-parent-session-login-stable.png`.
 - No passwords, production data mutations, external sends, payments, access
   grants, DNS changes, credential changes, or deploys were performed.
+
+## 2026-07-05 - Dirty Worktree Release Cleanup Branch
+
+- Registered `RAW-20260705-007` for the operator request to clean dirty
+  worktrees and deploy all safe work. Created clean branch
+  `codex/dirty-worktree-release-cleanup-20260705` from `origin/master` instead
+  of deploying the stale merged PR #90 checkout.
+- Preserved and renumbered local-only Telegram/Google audit records to avoid
+  the existing `RAW-20260705-001` keyholder record on master:
+  Telegram/Google audit is now `RAW-20260705-002`; repair request is now
+  `RAW-20260705-004`.
+- Brought forward verified local code/evidence for the OneTimeOneTime landing
+  signup funnel (`RAW-20260705-006`), Job 101 Contacts/helper fixes
+  (`RAW-20260702-012`), Telegram/Google agent-fleet readiness fixes
+  (`RAW-20260705-002` / `RAW-20260705-004`), and ChatGPT dropoff fleet claim
+  completion fix (`RAW-20260705-005`).
+- Verification in the clean branch passed: syntax checks, focused test suite
+  after resolving Playwright via the existing dependency tree, PQC validation,
+  One Time canonical local journey smoke, action watchdog with 0 findings,
+  agent-fleet readiness OK, active-run status/validation, secrets audit, and
+  `git diff --check`.
+- Full-suite verification passed after release-gate cleanup: `npm test`
+  1511/1511. During verification, stale test/report churn was fixed so the One
+  Time provisioner blocked-apply test writes to a temp report, One Time mobile
+  Operations table headers are not hidden with `display: none`, the Resend
+  walkthrough names `/integration-setup.html#resend-email`, and action parity
+  artifacts are current.
+- Non-blocking existing drift: `npm run watchdog:protocol-drift` still reports
+  14 older findings in
+  `ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md`.
+  The new landing PQC packet validates.

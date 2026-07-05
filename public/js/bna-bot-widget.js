@@ -327,6 +327,24 @@
     return fallbackPublicHelperData();
   }
 
+  function ensureAssistantViewportMeta() {
+    const wanted = 'interactive-widget=resizes-content';
+    let meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'viewport');
+      meta.setAttribute('content', `width=device-width, initial-scale=1, ${wanted}`);
+      document.head.appendChild(meta);
+      return;
+    }
+    const content = meta.getAttribute('content') || 'width=device-width, initial-scale=1';
+    if (!content.includes('interactive-widget=')) {
+      meta.setAttribute('content', `${content}, ${wanted}`);
+    }
+  }
+
+  ensureAssistantViewportMeta();
+
   const style = document.createElement('style');
   style.textContent = `
     :root {
@@ -696,10 +714,12 @@
       background: #fff;
       color: #172019;
       padding: 0.7rem 0.75rem;
-      font: 0.92rem "Trebuchet MS", Verdana, sans-serif;
+      font: 16px/1.25 "Trebuchet MS", Verdana, sans-serif;
       resize: none;
       overflow: auto;
       min-width: 0;
+      -webkit-text-size-adjust: 100%;
+      touch-action: manipulation;
     }
     .bna-bot-send {
       min-width: 52px;
@@ -810,7 +830,7 @@
     <div class="bna-bot-thread assistant-messages" data-thread></div>
     <div class="bna-bot-typing" data-typing><span class="bna-bot-spinner"></span><span>${escapeHtml(copy.thinking)}</span></div>
     <form class="bna-bot-form assistant-composer" data-chat-form>
-      <textarea class="bna-bot-input" name="message" rows="1" maxlength="4000" placeholder="${escapeAttr(copy.placeholder)}"></textarea>
+      <textarea class="bna-bot-input" name="message" rows="1" maxlength="4000" inputmode="text" enterkeyhint="send" autocapitalize="sentences" autocomplete="off" autocorrect="on" spellcheck="true" aria-label="${escapeAttr(copy.placeholder)}" placeholder="${escapeAttr(copy.placeholder)}"></textarea>
       <button class="bna-bot-send" type="submit" aria-label="${escapeAttr(copy.send)}">${escapeHtml(copy.send)}</button>
     </form>
   `;
@@ -833,20 +853,36 @@
   let publicAutoPromptTimer = null;
   let publicFollowupTimer = null;
   let publicTypingTimer = null;
+  let assistantKeyboardSyncTimer = null;
   let dismissedPublicPrompt = publicNudgesSuppressed();
+
+  function resizeAssistantInput() {
+    input.style.height = 'auto';
+    const nextHeight = Math.min(130, Math.max(44, input.scrollHeight || 44));
+    input.style.height = `${nextHeight}px`;
+  }
 
   function syncVisualViewportHeight() {
     const visualViewport = window.visualViewport;
-    const height = visualViewport?.height || window.innerHeight || document.documentElement.clientHeight;
-    const layoutHeight = window.innerHeight || height;
+    const height = visualViewport?.height || document.documentElement.clientHeight || window.innerHeight;
+    const layoutHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, height);
     const keyboardOffset = Math.max(0, layoutHeight - height - (visualViewport?.offsetTop || 0));
     document.documentElement.style.setProperty('--app-vh', `${Math.max(320, Math.round(height))}px`);
     document.documentElement.style.setProperty('--keyboard-offset', `${Math.round(keyboardOffset)}px`);
     document.body?.classList.toggle('bna-assistant-keyboard-open', keyboardOffset > 40);
   }
 
+  function scheduleAssistantKeyboardSync(delay = 0) {
+    if (assistantKeyboardSyncTimer) clearTimeout(assistantKeyboardSyncTimer);
+    assistantKeyboardSyncTimer = setTimeout(() => {
+      assistantKeyboardSyncTimer = null;
+      keepAssistantComposerReachable();
+    }, delay);
+  }
+
   function keepAssistantComposerReachable() {
     if (!panel.classList.contains('is-open')) return;
+    resizeAssistantInput();
     syncVisualViewportHeight();
     threadEl.scrollTop = threadEl.scrollHeight;
     if (!isMobileKeyboardSurface()) return;
@@ -859,6 +895,7 @@
     syncVisualViewportHeight();
     if (!panel.classList.contains('is-open')) return;
     window.requestAnimationFrame?.(keepAssistantComposerReachable);
+    scheduleAssistantKeyboardSync(80);
   }
 
   function isMobileKeyboardSurface() {
@@ -878,7 +915,9 @@
 
   window.visualViewport?.addEventListener('resize', handleAssistantViewportChange);
   window.visualViewport?.addEventListener('scroll', handleAssistantViewportChange);
+  window.visualViewport?.addEventListener('geometrychange', handleAssistantViewportChange);
   window.addEventListener('resize', handleAssistantViewportChange);
+  window.addEventListener('orientationchange', () => scheduleAssistantKeyboardSync(140));
   syncVisualViewportHeight();
 
   appendMessage('assistant', introCopy(), { actions: publicInitialHelperActions() });
@@ -1008,6 +1047,8 @@
       setOpen(true, { focus: true });
       const seeded = String(message || '').trim();
       if (seeded) input.value = seeded;
+      resizeAssistantInput();
+      scheduleAssistantKeyboardSync(80);
       focusAssistantInput({ force: true });
     },
     close() {
@@ -1084,6 +1125,8 @@
     if (userLabel) appendMessage('user', userLabel);
     if (!pathCopy) {
       input.value = '';
+      resizeAssistantInput();
+      scheduleAssistantKeyboardSync(80);
       focusAssistantInput({ force: true });
       return;
     }
@@ -1120,6 +1163,8 @@
       setOpen(true, { focus: false });
       if (action.label) appendMessage('user', action.label);
       input.value = action.prompt || '';
+      resizeAssistantInput();
+      scheduleAssistantKeyboardSync(80);
       focusAssistantInput({ force: true });
       return;
     }
@@ -1224,6 +1269,8 @@
     if (!text) return;
     appendMessage('user', text);
     input.value = '';
+    resizeAssistantInput();
+    scheduleAssistantKeyboardSync(80);
     if (isPublicLeadSurface() && looksLikeSafetyIssue(text)) {
       appendMessage('assistant', publicHelperData().safety || copy.unavailable);
       return;
@@ -1341,11 +1388,19 @@
       form.requestSubmit();
     }
   });
+  input.addEventListener('input', () => {
+    resizeAssistantInput();
+    scheduleAssistantKeyboardSync(80);
+  });
+  input.addEventListener('compositionend', () => scheduleAssistantKeyboardSync(80));
   input.addEventListener('focus', () => {
     keepAssistantComposerReachable();
     setTimeout(keepAssistantComposerReachable, 120);
     setTimeout(keepAssistantComposerReachable, 260);
+    setTimeout(keepAssistantComposerReachable, 520);
+    setTimeout(keepAssistantComposerReachable, 760);
   });
+  input.addEventListener('blur', () => scheduleAssistantKeyboardSync(120));
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       setHistoryOpen(false);
