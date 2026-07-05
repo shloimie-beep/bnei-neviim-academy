@@ -31,7 +31,7 @@ See `raw-input/RAW-20260704-001-ship-pr87-onetime-ui-live-cleanup.md`.
 |---|---|
 | PR #89 Studio status | Merged into PR #87 release branch |
 | PR #89 merge commit | `0842e5e26bd5887942c12744cd23f08332285c09` |
-| PR #87 current head | `0842e5e26bd5887942c12744cd23f08332285c09` |
+| PR #87 current head | `4e02b676622185c385cfe1f0c6b2262d7d45ca3d` |
 | PR #87 readback | open, ready, mergeable, `mergeStateStatus=CLEAN` |
 | Production deploy | not performed |
 | Reason deploy did not run | guarded deploy gate blocked before mutation on missing integration/readback readiness |
@@ -46,6 +46,18 @@ Combined release verification after merging Studio into PR #87:
 - PASS `git diff --check origin/master...HEAD`.
 - PASS `npm run bna:release-gate -- --json --expected-branch codex/rabbi-onetime-ui-cleanup-release-20260703` from a clean worktree.
 - BLOCKED `BNA_PRODUCTION_DEPLOY_APPROVED=approved npm run bna:release-gate -- --deploy --confirm-deploy DEPLOY_BNA_PRODUCTION_CLOSEOUT --expected-branch codex/rabbi-onetime-ui-cleanup-release-20260703 --json` before production mutation on the deploy blockers below.
+
+Final master-merge readback:
+
+- Merged current `origin/master` into PR #87 to clear GitHub's conflict state.
+- Resolved append-only conflicts in `ops/agent-changelog.md` and `ops/agent-task-ledger.jsonl` by preserving both sides.
+- PASS ledger JSONL parse after merge resolution - 1503 records.
+- PASS combined UI + Studio focused suite 23/23 after the master merge.
+- PASS `npm run secrets:audit` after the master merge.
+- PASS `git diff --check origin/master...HEAD`.
+- PASS PR #87 readback at head `4e02b676622185c385cfe1f0c6b2262d7d45ca3d`: open, ready, mergeable, `mergeStateStatus=CLEAN`.
+- PASS clean release gate dry-run at head `4e02b676622185c385cfe1f0c6b2262d7d45ca3d`.
+- BLOCKED deploy gate at head `4e02b676622185c385cfe1f0c6b2262d7d45ca3d` before production mutation on the same readiness blockers.
 
 ## Parsed requirements
 
@@ -74,13 +86,13 @@ Combined release verification after merging Studio into PR #87:
 | REQ-20260704-103 | Rabbi/One Time UI, Studio, Job101 evidence | Re-ran focused tests/watchdogs/smokes needed for release. | Done; combined UI + Studio focused tests 23/23; PQC/actions/protocol checks passed. | n/a | PR #87 head `0842e5e26bd5887942c12744cd23f08332285c09` | n/a |
 | REQ-20260704-104 | GitHub/Railway/live routes | Mark PR ready; do not merge/deploy around blocked release gate. | Blocked by deploy gate readiness list. | n/a | PR #87 head already pushed | Blocked; no production deploy or live smoke performed. |
 | REQ-20260704-105 | content_job:101 trace/review docs | Keep proven triage/parser/private-doc repair separate from blocked DB/approval actions. | Done/blockers recorded. | n/a | n/a | n/a |
-| REQ-20260704-107 | Studio content engine branch/PR | Carve Studio work out of dirty main worktree into a clean stacked PR, then merge it into PR #87. | Done; PR #89 merged into PR #87. | `322c848f`, `7d9f8818`, merge `0842e5e2` | PR #87 head `0842e5e26bd5887942c12744cd23f08332285c09` | Blocked; no production deploy or live smoke performed. |
+| REQ-20260704-107 | Studio content engine branch/PR | Carve Studio work out of dirty main worktree into a clean stacked PR, then merge it into PR #87. | Done; PR #89 merged into PR #87; PR #87 conflict with master resolved. | `322c848f`, `7d9f8818`, merge `0842e5e2`, final head `4e02b676` | PR #87 head `4e02b676622185c385cfe1f0c6b2262d7d45ca3d` | Blocked; no production deploy or live smoke performed. |
 
 ## Release and validation evidence
 
 | Area | Result | Evidence |
 |---|---|---|
-| PR #87 state | Ready for review, open, mergeable, clean, pushed, now includes Studio | `gh pr view 87 --json number,title,state,isDraft,mergeable,mergeStateStatus,statusCheckRollup,headRefName,url`; PR `https://github.com/shloimie-beep/bnei-neviim-academy/pull/87`; head `0842e5e26bd5887942c12744cd23f08332285c09` |
+| PR #87 state | Ready for review, open, mergeable, clean, pushed, now includes Studio and current master | `gh pr view 87 --json number,title,state,isDraft,mergeable,mergeStateStatus,statusCheckRollup,headRefName,url`; PR `https://github.com/shloimie-beep/bnei-neviim-academy/pull/87`; head `4e02b676622185c385cfe1f0c6b2262d7d45ca3d` |
 | PR #87 clean release gate | Passed in dry-run mode | `npm run bna:release-gate -- --json --expected-branch codex/rabbi-onetime-ui-cleanup-release-20260703` |
 | PR #87 focused UI + Studio tests | Passed 23/23 | `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-contacts-intake-cleanup.test.js tests/one-time-communications-workspace.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js tests/service-provider-studio-browser-smoke.test.js` |
 | PR #87 Product Quality packet | Passed | `npm run pqc:validate ops/prompt-packets/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely/21-operations-library-first-viewport-readability.product-quality.json` |
@@ -113,7 +125,7 @@ mutation was performed.
 | REQ-20260704-101 | Done | raw-input/RAW-20260704-001-ship-pr87-onetime-ui-live-cleanup.md, this register, memory/2026-07-04.md, ledger entry | raw-input, tasks-pending, memory, ledger | File creation | None |
 | REQ-20260704-102 | Done | PR #87 metadata and current dirty-worktree scope inspected; PR #87 is separate from local Studio/job cleanup changes. | No product files changed by this July 4 audit; PR #87 worktree stayed clean. | `gh pr view 87`, `gh pr diff 87 --name-only`, `git status`, Studio targeted diff readback | None. |
 | REQ-20260704-103 | Done | Focused PR #87 UI validation, PQC validation, action/protocol watchdogs, Studio focused tests, and Job 101 evidence readback. | No product files changed by this July 4 audit; Studio product changes are now in PR #87 via PR #89 merge. | Combined UI + Studio tests 23/23; PQC/actions/protocol checks passed. | None for local validation. |
-| REQ-20260704-104 | Blocked | PR #87 marked ready and remains pushed/mergeable/clean at combined head `0842e5e2`; deploy gate blocked in deploy mode with explicit readiness blockers. | GitHub PR #87 branch includes merged Studio work. | Deploy gate blocked without production mutation. | Missing integration/readback readiness listed above; do not merge/deploy around the guard. |
+| REQ-20260704-104 | Blocked | PR #87 marked ready and remains pushed/mergeable/clean at final head `4e02b676`; deploy gate blocked in deploy mode with explicit readiness blockers. | GitHub PR #87 branch includes merged Studio work and current master. | Deploy gate blocked without production mutation. | Missing integration/readback readiness listed above; do not merge/deploy around the guard. |
 | REQ-20260704-105 | Done / Blocked | `APPLY-CLOSEOUT.md` proves Job 101 parser output and private Drive transcript doc; `JOB-101-REVIEW-TRIAGE.md` preserves remaining cleanup blockers. | No raw transcript body committed. | Evidence readback only. | DB review cleanup and score/progress/grading writes remain blocked by readback/approval. |
 | REQ-20260704-106 | Done | This register, ledger, changelog, and final response. | tasks-pending, ledger, changelog, memory | Closeout records updated. | Goal remains active because deploy/live proof and Studio PR/release remain blocked. |
 | REQ-20260704-107 | Done / Blocked | PR #89 opened, pushed, and merged into PR #87; branch records include Studio raw intake, PQC packets, screenshots, watchdog reports, ledger, and changelog. | Studio release branch files only; main dirty worktree not staged. | PR #89 merged; PR #87 open, ready, mergeable, clean; combined local focused suite 23/23, PQC/actions/protocol checks passed. | PR #87 still needs production deploy/live smoke. |

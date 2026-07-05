@@ -6,6 +6,26 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-05T07:23:11+03:00 - PR 87 master conflict resolved
+
+Merged current `origin/master` into PR #87 and resolved append-only conflicts in
+`ops/agent-changelog.md` and `ops/agent-task-ledger.jsonl` by preserving both
+sides. PR #87 now reads open, ready, mergeable, and clean at head
+`4e02b676622185c385cfe1f0c6b2262d7d45ca3d`.
+
+Verification:
+- PASS ledger JSONL parse with 1503 records.
+- PASS combined UI + Studio focused suite 23/23 after the master merge.
+- PASS `npm run secrets:audit`.
+- PASS `git diff --check origin/master...HEAD`.
+- PASS clean release gate dry-run.
+
+Blocked:
+- Production deploy/live smoke still did not run. The guarded deploy gate
+  blocked before mutation on missing OpenAI, Vimeo access token, Resend sender,
+  Rabbi Stripe settings, Rabbi Telegram worker readiness, and database/
+  Railway/Drive external readbacks.
+
 ## 2026-07-05T07:16:34+03:00 - PR 87 combined release validated
 
 Merged Studio PR #89 into the PR #87 release branch. PR #87 now carries the
@@ -75,6 +95,7 @@ Remaining:
 - Push/open the stacked Studio PR.
 - App-visible terminal Done remains blocked until PR #87 and the Studio branch
   are released through the production gate and live-smoked.
+
 ## 2026-07-04 - PR 87 One Time UI Release Validation
 
 - Registered `RAW-20260704-001` after Shloimie asked to ship PR #87, fix the
