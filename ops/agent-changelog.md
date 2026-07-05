@@ -29316,3 +29316,27 @@ Actions: 1. Active machine tasks: 0.
 - Remaining external/provider/account work stays gated by
   `DEC-20260705-201`; it requires exact owner approval/credentials before any
   future live write.
+
+## 2026-07-05 - Release Captain And One Time UI Recovery Local Verification
+
+- Registered `RAW-20260705-008` for the operator request to make corrections
+  ship reliably and immediately recover the Rabbi Scheller / One Time Mishnah
+  Operations UI side panel.
+- Added a read-only Release Captain workflow:
+  `npm run release:captain` writes `ops/release-captain/latest-release-captain.md`
+  and classifies dirty, unpushed, blocked, and ready-to-ship states without
+  performing merges, deploys, external writes, sends, payment/access actions,
+  DNS changes, or secret reads.
+- Repaired the One Time Operations side panel and IA locally: expected
+  provider modules now include Overview, Members, Classes, Live Class,
+  Schedule, Community, Comms, Auto, Payments, Tasks, Reporting, Connectors, and
+  Setup; current-section subnav renders for the One Time workspace; unrelated
+  Platform Support labels are removed; One Time brand tokens are black +
+  yellow instead of stale blue/teal.
+- Local verification passed: Product Quality Compiler validation, Release
+  Captain unit test, One Time brand/IA/UI smokes, local One Time Rabbi UI final
+  smoke, action watchdog with 0 findings, protocol drift watchdog with 0
+  findings, secrets audit, BNA run status/validation, `git diff --check`, and
+  full `npm test` 1515/1515.
+- Pending before Done: commit, push, PR/merge, Railway deploy, and live smoke
+  on the deployed One Time Operations UI.

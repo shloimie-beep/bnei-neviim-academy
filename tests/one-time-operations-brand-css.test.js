@@ -10,14 +10,14 @@ test('One Time Operations brand stylesheet exists with scoped visual tokens', ()
   const css = fs.readFileSync(cssPath, 'utf8');
   const requiredTokens = [
     '--ot-ops-background: #080910',
-    '--ot-ops-panel: #10131a',
-    '--ot-ops-card: #081323',
-    '--ot-ops-card-strong: #102634',
+    '--ot-ops-panel: #101010',
+    '--ot-ops-card: #101010',
+    '--ot-ops-card-strong: #1d1a12',
     '--ot-ops-muted-text: #aeb9c6',
-    '--ot-ops-accent: #0b9fc9',
-    '--ot-ops-accent-deep: #08779c',
+    '--ot-ops-accent: #ede518',
+    '--ot-ops-accent-deep: #c9a227',
     '--ot-ops-warning-gated: #ede518',
-    '--ot-ops-success-ready: #08779c',
+    '--ot-ops-success-ready: #c9a227',
     '--ot-ops-preview-no-write: #faf9f4',
   ];
 
@@ -40,6 +40,14 @@ test('One Time Operations CSS is scoped and avoids global body overrides', () =>
   assert.doesNotMatch(css, /(^|\n)\s*\.ops-main\s*\{/);
   assert.doesNotMatch(css, /display:\s*none/i);
   assert.doesNotMatch(css, /visibility:\s*hidden/i);
+});
+
+test('One Time Operations avoids stale blue/cyan brand accents', () => {
+  const css = fs.readFileSync(cssPath, 'utf8');
+
+  for (const staleBlue of ['#0b9fc9', '#08779c', '#b8dff0', 'rgba(11, 159, 201', 'rgba(8, 119, 156']) {
+    assert.doesNotMatch(css, new RegExp(staleBlue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'));
+  }
 });
 
 test('One Time Operations card, module, blocker, chip, and mobile selectors are available', () => {

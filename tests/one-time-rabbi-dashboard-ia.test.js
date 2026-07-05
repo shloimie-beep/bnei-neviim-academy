@@ -20,10 +20,15 @@ const expectedMainModules = [
   ['overview_package_status', 'Overview / Package Status'],
   ['members_crm', 'Members / CRM'],
   ['classes_content', 'Classes & Content'],
+  ['live_class_schedule', 'Live Class'],
+  ['program_schedule', 'Schedule'],
+  ['community_questions', 'Community'],
   ['communications', 'Communications'],
   ['automations', 'Automations'],
   ['payments_access', 'Payments & Access'],
   ['tasks_decisions', 'Tasks & Decisions'],
+  ['reporting_readiness', 'Reporting'],
+  ['connector_setup', 'Connectors'],
   ['settings_setup', 'Settings / Setup'],
 ];
 
@@ -73,7 +78,7 @@ test('internal support modules are hidden or demoted behind Platform Support', (
   assert.equal(ONE_TIME_RABBI_DASHBOARD_INTERNAL_MODULES.platform_support_label, 'Platform Support');
 
   const demotedIds = ONE_TIME_RABBI_DASHBOARD_INTERNAL_MODULES.demoted.map((module) => module.id);
-  assert.deepEqual(demotedIds, ['agents', 'api_usage', 'watchdog', 'pipelines', 'internal_dialogue']);
+  assert.deepEqual(demotedIds, ['agents', 'watchdog', 'pipelines', 'internal_dialogue']);
   for (const module of ONE_TIME_RABBI_DASHBOARD_INTERNAL_MODULES.demoted) {
     assert.equal(module.visibility, 'platform_support_demoted');
     assert.equal(module.surface, 'platform_support');

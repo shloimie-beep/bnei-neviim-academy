@@ -494,6 +494,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
       }));
       const filterIds = Array.from(document.querySelectorAll('[data-top-filter-id]')).map((item) => item.getAttribute('data-top-filter-id'));
       const sidebarLabels = Array.from(document.querySelectorAll('.ops-sidebar-button')).map((item) => item.textContent.trim().replace(/\s+/g, ' '));
+      const sidebarSectionLabels = Array.from(document.querySelectorAll('.ops-nested-subnav .ops-nested-button')).map((item) => item.textContent.trim().replace(/\s+/g, ' '));
       const footerLabels = Array.from(document.querySelectorAll('.ops-sidebar-footer .ops-sidebar-mini')).map((item) => item.textContent.trim().replace(/\s+/g, ' '));
       const workspaceOptions = Array.from(document.querySelectorAll('[data-workspace-option]')).map((button) => ({
         label: button.textContent.trim().replace(/\s+/g, ' '),
@@ -509,6 +510,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
         navSections: navItems.map((item) => item.section),
         filterIds,
         sidebarLabels,
+        sidebarSectionLabels,
         footerLabels,
         workspaceOptions,
         hasStudentsText: navItems.some((item) => item.id === 'students'),
@@ -521,12 +523,12 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
 
     assert.equal(initialContract.currentWorkspace, 'rabbi_sheller_provider');
     assert.equal(initialContract.roleLabel, 'Workspace Owner');
-    assert.deepEqual(initialContract.navLabels, ['Overview', 'Members', 'Classes', 'Comms', 'Auto', 'Payments', 'Tasks', 'Setup']);
-    assert.deepEqual(initialContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'settings_setup']);
-    for (const expected of ['service_providers', 'contacts', 'content', 'communications', 'automations', 'tasks', 'settings']) {
+    assert.deepEqual(initialContract.navLabels, ['Overview', 'Members', 'Classes', 'Live Class', 'Schedule', 'Community', 'Comms', 'Auto', 'Payments', 'Tasks', 'Reporting', 'Connectors', 'Setup']);
+    assert.deepEqual(initialContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'live_class_schedule', 'program_schedule', 'community_questions', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'reporting_readiness', 'connector_setup', 'settings_setup']);
+    for (const expected of ['service_providers', 'contacts', 'content', 'live_classes', 'calendar', 'community', 'communications', 'automations', 'tasks', 'api_usage', 'integrations', 'settings']) {
       assert.ok(initialContract.navIds.includes(expected), `missing Rabbi-facing nav item ${expected}`);
     }
-    for (const hidden of ['dashboard', 'watchdog', 'agents', 'integrations', 'api_usage', 'studio', 'live_classes', 'calendar']) {
+    for (const hidden of ['dashboard', 'watchdog', 'agents', 'studio', 'platform_suite', 'admin', 'accounting', 'students']) {
       assert.equal(initialContract.navIds.includes(hidden), false, `raw support nav item should be demoted: ${hidden}`);
     }
     assert.equal(initialContract.hasStudentsText, false);
@@ -539,7 +541,14 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     assert.ok(initialContract.sidebarLabels.some((label) => /Payments/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Tasks/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Classes/.test(label)));
-    assert.equal(initialContract.sidebarLabels.some((label) => /Agents|Reporting|Integrations|Watchdog/.test(label)), false);
+    assert.ok(initialContract.sidebarLabels.some((label) => /Live Class/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Schedule/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Community/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Reporting/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Connectors/.test(label)));
+    assert.ok(initialContract.sidebarSectionLabels.some((label) => /One Time Library/.test(label)));
+    assert.ok(initialContract.sidebarSectionLabels.some((label) => /Meeting Drops/.test(label)));
+    assert.equal(initialContract.sidebarLabels.some((label) => /Agents|Watchdog|Team|Accounting|Students/.test(label)), false);
     assert.ok(initialContract.workspaceOptions.some((option) => /Bnei Neviim Academy/.test(option.label) && option.disabled));
     assert.ok(initialContract.workspaceOptions.some((option) => /One Time Mishnah Class/.test(option.label) && option.current));
     assert.equal(initialContract.driveButton, true);

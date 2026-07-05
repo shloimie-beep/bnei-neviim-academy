@@ -331,7 +331,8 @@ function writeReport(findings, files) {
     }
   }
   lines.push("");
-  fs.writeFileSync(REPORT_MD, `${lines.join("\n")}\n`);
+  while (lines[lines.length - 1] === "") lines.pop();
+  fs.writeFileSync(REPORT_MD, `${lines.join("\n").trimEnd()}\n`);
 }
 
 function main() {

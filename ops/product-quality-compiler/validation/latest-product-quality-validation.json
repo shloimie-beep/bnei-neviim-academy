@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-05T12:41:01.394Z",
+  "generated_at": "2026-07-05T13:53:22.510Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-05-onetime-landing-signup-funnel/01-public-landing-signup-funnel.product-quality.json"
+    "ops/prompt-packets/2026-07-05-release-captain-onetime-ui-recovery/01-operations-sidebar-release-captain.product-quality.json"
   ],
   "total": 1,
   "passed": 1,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-05-onetime-landing-signup-funnel/01-public-landing-signup-funnel.product-quality.json",
+      "file": "ops/prompt-packets/2026-07-05-release-captain-onetime-ui-recovery/01-operations-sidebar-release-captain.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []

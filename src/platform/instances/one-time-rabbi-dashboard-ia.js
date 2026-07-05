@@ -24,6 +24,27 @@ const MAIN_MODULES = [
     operations_view: 'content',
   },
   {
+    id: 'live_class_schedule',
+    label: 'Live Class',
+    short_label: 'Live',
+    default_section: 'overview',
+    operations_view: 'live_classes',
+  },
+  {
+    id: 'program_schedule',
+    label: 'Schedule',
+    short_label: 'Schedule',
+    default_section: 'provider',
+    operations_view: 'calendar',
+  },
+  {
+    id: 'community_questions',
+    label: 'Community',
+    short_label: 'Community',
+    default_section: 'overview',
+    operations_view: 'community',
+  },
+  {
     id: 'communications',
     label: 'Communications',
     short_label: 'Comms',
@@ -50,6 +71,20 @@ const MAIN_MODULES = [
     short_label: 'Tasks',
     default_section: 'decisions',
     operations_view: 'tasks',
+  },
+  {
+    id: 'reporting_readiness',
+    label: 'Reporting',
+    short_label: 'Reports',
+    default_section: 'provider',
+    operations_view: 'api_usage',
+  },
+  {
+    id: 'connector_setup',
+    label: 'Connectors',
+    short_label: 'Connectors',
+    default_section: 'readiness',
+    operations_view: 'integrations',
   },
   {
     id: 'settings_setup',
@@ -88,6 +123,33 @@ const SECTION_SUBSECTION_MAP = {
       { id: 'assets', label: 'Review Assets', source_view: 'content', source_section: 'assets' },
     ],
   },
+  live_class_schedule: {
+    label: 'Live Class',
+    subsections: [
+      { id: 'overview', label: 'Overview', source_view: 'live_classes', source_section: 'overview' },
+      { id: 'schedule', label: 'Class Schedule', source_view: 'service_providers', source_section: 'schedule' },
+      { id: 'worksheets', label: 'Worksheets', source_view: 'service_providers', source_section: 'worksheets' },
+      { id: 'questions', label: 'Questions', source_view: 'service_providers', source_section: 'questions' },
+    ],
+  },
+  program_schedule: {
+    label: 'Schedule',
+    subsections: [
+      { id: 'provider', label: 'Program Schedule', source_view: 'calendar', source_section: 'provider' },
+      { id: 'today', label: 'Today', source_view: 'calendar', source_section: 'today' },
+      { id: 'week', label: 'Week', source_view: 'calendar', source_section: 'week' },
+      { id: 'classes', label: 'Class Sessions', source_view: 'calendar', source_section: 'classes' },
+    ],
+  },
+  community_questions: {
+    label: 'Community',
+    subsections: [
+      { id: 'overview', label: 'Overview', source_view: 'community', source_section: 'overview' },
+      { id: 'courses', label: 'Courses', source_view: 'community', source_section: 'courses' },
+      { id: 'questions', label: 'Questions', source_view: 'community', source_section: 'questions' },
+      { id: 'approvals', label: 'Approvals', source_view: 'community', source_section: 'approvals' },
+    ],
+  },
   communications: {
     label: 'Communications',
     subsections: [
@@ -122,6 +184,24 @@ const SECTION_SUBSECTION_MAP = {
       { id: 'tasks', label: 'Tasks', source_view: 'tasks', source_section: 'tasks' },
       { id: 'pending_external', label: 'Pending External', source_view: 'tasks', source_section: 'pending' },
       { id: 'activity', label: 'Activity', source_view: 'tasks', source_section: 'activity' },
+    ],
+  },
+  reporting_readiness: {
+    label: 'Reporting',
+    subsections: [
+      { id: 'provider', label: 'Provider Reporting', source_view: 'api_usage', source_section: 'provider' },
+      { id: 'overview', label: 'Overview', source_view: 'api_usage', source_section: 'overview' },
+      { id: 'errors', label: 'Errors', source_view: 'api_usage', source_section: 'errors' },
+      { id: 'budgets', label: 'Budgets / Limits', source_view: 'api_usage', source_section: 'budgets' },
+    ],
+  },
+  connector_setup: {
+    label: 'Connectors',
+    subsections: [
+      { id: 'readiness', label: 'Readiness', source_view: 'integrations', source_section: 'readiness' },
+      { id: 'owner_setup', label: 'Owner Setup', source_view: 'integrations', source_section: 'owner_setup' },
+      { id: 'google', label: 'Google', source_view: 'integrations', source_section: 'google' },
+      { id: 'communications', label: 'Communications', source_view: 'integrations', source_section: 'communications' },
     ],
   },
   settings_setup: {
@@ -185,7 +265,6 @@ const INTERNAL_MODULES = {
   platform_support_label: 'Platform Support',
   demoted: [
     { id: 'agents', label: 'Agents', visibility: 'platform_support_demoted', surface: 'platform_support' },
-    { id: 'api_usage', label: 'API Usage', visibility: 'platform_support_demoted', surface: 'platform_support' },
     { id: 'watchdog', label: 'Watchdog', visibility: 'platform_support_demoted', surface: 'platform_support' },
     { id: 'pipelines', label: 'Pipelines', visibility: 'platform_support_demoted', surface: 'platform_support' },
     { id: 'internal_dialogue', label: 'Internal Dialogue', visibility: 'platform_support_demoted', surface: 'platform_support' },

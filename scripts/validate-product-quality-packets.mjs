@@ -904,7 +904,8 @@ function writeReports(results, mode, files) {
     }
     lines.push("");
   }
-  fs.writeFileSync(mdPath, `${lines.join("\n")}\n`);
+  while (lines[lines.length - 1] === "") lines.pop();
+  fs.writeFileSync(mdPath, `${lines.join("\n").trimEnd()}\n`);
   return { jsonPath, mdPath, failedCount: failed.length };
 }
 

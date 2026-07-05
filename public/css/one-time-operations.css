@@ -2,19 +2,19 @@ body.one-time-operations-active,
 [data-one-time-rabbi-dashboard],
 [data-one-time-rabbi-module] {
   --ot-ops-background: #080910;
-  --ot-ops-panel: #10131a;
-  --ot-ops-card: #081323;
-  --ot-ops-card-strong: #102634;
+  --ot-ops-panel: #101010;
+  --ot-ops-card: #101010;
+  --ot-ops-card-strong: #1d1a12;
   --ot-ops-border: rgba(174, 185, 198, 0.24);
   --ot-ops-border-strong: rgba(237, 229, 24, 0.36);
   --ot-ops-text: #ffffff;
   --ot-ops-muted-text: #aeb9c6;
-  --ot-ops-accent: #0b9fc9;
-  --ot-ops-accent-deep: #08779c;
+  --ot-ops-accent: #ede518;
+  --ot-ops-accent-deep: #c9a227;
   --ot-ops-warning-gated: #ede518;
   --ot-ops-warning-soft: rgba(237, 229, 24, 0.14);
-  --ot-ops-success-ready: #08779c;
-  --ot-ops-success-soft: rgba(8, 119, 156, 0.18);
+  --ot-ops-success-ready: #c9a227;
+  --ot-ops-success-soft: rgba(237, 229, 24, 0.18);
   --ot-ops-preview-no-write: #faf9f4;
   --ot-ops-preview-soft: rgba(250, 249, 244, 0.12);
   --ot-ops-logo: url("/images/one-time/brand/onetimelogo.webp");
@@ -97,7 +97,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-sectio
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .page-heading p {
-  color: #dbeafe;
+  color: #faf9f4;
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-content-section="one_time_library"] > .filter-details {
@@ -210,7 +210,7 @@ body.one-time-operations-active .one-time-output-state.approved,
 body.one-time-operations-active .one-time-ops-chip[data-state="ready"],
 [data-one-time-rabbi-module] .one-time-output-state.approved,
 [data-one-time-rabbi-module] .one-time-ops-chip[data-state="ready"] {
-  border-color: rgba(8, 119, 156, 0.62);
+  border-color: rgba(237, 229, 24, 0.46);
   background: var(--ot-ops-success-soft);
   color: #ffffff;
 }
@@ -258,7 +258,7 @@ body.one-time-operations-active .one-time-ops-chip,
   min-height: 30px;
   border: 1px solid var(--ot-ops-border);
   border-radius: 999px;
-  background: rgba(11, 159, 201, 0.12);
+  background: rgba(237, 229, 24, 0.12);
   color: var(--ot-ops-text);
   font-size: 11px;
   font-weight: 850;
@@ -406,7 +406,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-rou
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-filter-row input {
   border-color: rgba(174, 185, 198, 0.32);
   background: rgba(250, 249, 244, 0.96);
-  color: #081323;
+  color: #101010;
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-filter-actions {
@@ -421,7 +421,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-rou
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-row-head {
-  color: #b8dff0;
+  color: #f6e8a8;
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .automation-row {
@@ -555,14 +555,14 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route=
   min-height: 54px;
   border-color: rgba(174, 185, 198, 0.26) !important;
   border-radius: var(--ot-ops-radius);
-  background: #081323 !important;
+  background: #101010 !important;
   color: var(--ot-ops-text) !important;
   box-shadow: none;
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .metric-button:hover {
   border-color: rgba(237, 229, 24, 0.42) !important;
-  background: #102634 !important;
+  background: #1d1a12 !important;
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .metric-label {
@@ -589,12 +589,12 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route=
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .contact-detail-item {
   border-color: rgba(174, 185, 198, 0.24) !important;
   border-radius: var(--ot-ops-radius);
-  background: #081323 !important;
+  background: #101010 !important;
   color: var(--ot-ops-text) !important;
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .contact-detail-label {
-  color: #b8dff0 !important;
+  color: #f6e8a8 !important;
   letter-spacing: 0;
 }
 
@@ -614,7 +614,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route=
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .action-registry-card {
   border-color: rgba(174, 185, 198, 0.24) !important;
-  background: #081323 !important;
+  background: #101010 !important;
   color: var(--ot-ops-text) !important;
 }
 
@@ -630,7 +630,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route=
   min-height: 108px !important;
   border: 1px solid rgba(237, 229, 24, 0.28) !important;
   border-radius: var(--ot-ops-radius);
-  background: #102634 !important;
+  background: #1d1a12 !important;
   color: var(--ot-ops-text) !important;
   display: grid;
   place-items: center;
@@ -646,7 +646,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route=
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"] .timeline-item.compact {
   border-color: rgba(174, 185, 198, 0.24) !important;
-  background: #081323 !important;
+  background: #101010 !important;
   color: var(--ot-ops-text) !important;
 }
 
@@ -708,8 +708,8 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route
   border-radius: var(--ot-ops-radius);
   background:
     linear-gradient(180deg, rgba(16, 38, 52, 0.95), rgba(8, 19, 35, 0.95)),
-    #102634 !important;
-  background-color: #102634 !important;
+    #1d1a12 !important;
+  background-color: #1d1a12 !important;
   color: var(--ot-ops-text) !important;
   box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18) !important;
 }
@@ -732,7 +732,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route
   min-height: 34px;
   border: 1px solid rgba(174, 185, 198, 0.3) !important;
   border-radius: var(--ot-ops-radius);
-  background: #081323 !important;
+  background: #101010 !important;
   color: var(--ot-ops-text) !important;
   box-shadow: none;
   font-weight: 850;
@@ -744,14 +744,14 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip:hover,
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip:focus-visible {
   border-color: rgba(237, 229, 24, 0.48) !important;
-  background: #102634 !important;
+  background: #1d1a12 !important;
   color: var(--ot-ops-warning-gated) !important;
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip.active {
   border-color: rgba(237, 229, 24, 0.72) !important;
   background: var(--ot-ops-warning-gated) !important;
-  color: #081323 !important;
+  color: #101010 !important;
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip-count,
@@ -762,9 +762,9 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-chip.active .status-chip-count {
-  border-color: rgba(8, 19, 35, 0.32) !important;
-  background: rgba(8, 19, 35, 0.12) !important;
-  color: #081323 !important;
+  border-color: rgba(16, 16, 16, 0.32) !important;
+  background: rgba(16, 16, 16, 0.12) !important;
+  color: #101010 !important;
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .settings-control-grid {
@@ -780,7 +780,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route
   min-width: 0;
   border-color: rgba(174, 185, 198, 0.24) !important;
   border-radius: var(--ot-ops-radius);
-  background: #081323 !important;
+  background: #101010 !important;
   color: var(--ot-ops-text) !important;
 }
 
@@ -808,9 +808,9 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-settings-route="workspace"] .status-pill {
-  border-color: rgba(184, 223, 240, 0.32) !important;
-  background: rgba(8, 19, 35, 0.78) !important;
-  color: #b8dff0 !important;
+  border-color: rgba(237, 229, 24, 0.32) !important;
+  background: rgba(16, 16, 16, 0.78) !important;
+  color: #f6e8a8 !important;
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route][data-one-time-rabbi-dashboard] {
@@ -880,7 +880,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-r
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table th {
-  color: #b8dff0 !important;
+  color: #f6e8a8 !important;
   font-size: 11px;
   letter-spacing: 0;
 }
@@ -977,7 +977,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route=
 }
 
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table th {
-  color: #b8dff0 !important;
+  color: #f6e8a8 !important;
   font-size: 11px;
   letter-spacing: 0;
 }
@@ -1063,7 +1063,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications
   min-height: 108px !important;
   border: 1px solid rgba(237, 229, 24, 0.28) !important;
   border-radius: var(--ot-ops-radius);
-  background: #102634 !important;
+  background: #1d1a12 !important;
   color: var(--ot-ops-text) !important;
   display: grid;
   place-items: center;
@@ -1205,7 +1205,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications
   }
 
   body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table td::before {
-    color: #b8dff0;
+    color: #f6e8a8;
     font-size: 10px;
     font-weight: 900;
     text-transform: uppercase;
@@ -1269,7 +1269,7 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications
   }
 
   body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table td::before {
-    color: #b8dff0;
+    color: #f6e8a8;
     font-size: 10px;
     font-weight: 900;
     text-transform: uppercase;
