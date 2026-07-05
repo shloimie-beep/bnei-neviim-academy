@@ -29148,3 +29148,22 @@ Actions: 1. Active machine tasks: 0.
   verification, and database/Railway/Drive external readback readiness.
 - No production deploy, live smoke, external send/payment/access/DNS/credential
   change, provider account write, or DB review mutation was performed.
+
+## 2026-07-05 - PR 87 Keyholder Deploy Follow-Up
+
+- Registered `RAW-20260705-001` after Shloimie clarified that OpenAI
+  `openaiv2.txt` is the correct key, asked to use the available keyholder
+  credentials, skip Rabbi Telegram for now, and push PR #87 live even with
+  missing optional provider keys.
+- Confirmed by redacted readback that OpenAI v2 exists locally and matches
+  Railway production; Vimeo access token is still absent; Stripe key exists in
+  keyholder; Railway production already has database, Resend, and Rabbi
+  Telegram token variables.
+- Set Railway production `STRIPE_SECRET_KEY`, `RABBI_STRIPE_SECRET_KEY`, and
+  `RABBI_STRIPE_MODE` from the approved keyholder Stripe secret using
+  `--skip-deploys`; no secret value was printed or committed.
+- Hardened the release gate to recognize the OpenAI v2 alias and to allow an
+  explicitly approved UI deploy while deferring optional provider integrations
+  and external readback proof.
+- Verification passed: `node --test tests/system-truth-scripts.test.js
+  tests/bna-production-closeout-gate.test.js` with 21/21 tests passing.

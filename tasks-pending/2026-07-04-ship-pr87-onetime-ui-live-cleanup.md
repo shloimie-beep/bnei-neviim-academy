@@ -140,6 +140,34 @@ mutation was performed.
 - No production deploy, live smoke, external send/payment/access/DNS/credential
   mutation, provider account write, or DB review mutation was performed.
 
+## 2026-07-05 keyholder and live-deploy follow-up
+
+Raw follow-up: `raw-input/RAW-20260705-001-keyholder-live-deploy-followup.md`.
+
+- Redacted keyholder readback found the correct OpenAI v2 key at
+  `openaiv2.txt`; fingerprint matches Railway production `OPENAI_API_KEY`.
+- Redacted keyholder/Railway readback found no `VIMEO_ACCESS_TOKEN`; Vimeo
+  client ID and client secret are present, so Vimeo upload/member-library
+  completion remains deferred.
+- Redacted keyholder readback found `stripe-secret-key.txt`; with operator
+  approval, Railway production was updated using `--skip-deploys` for
+  `STRIPE_SECRET_KEY`, `RABBI_STRIPE_SECRET_KEY`, and `RABBI_STRIPE_MODE`.
+  No checkout session, charge, payment link, webhook replay, or deploy was
+  triggered by the variable write.
+- Railway production already had `DATABASE_URL`, Resend variables, and
+  `TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER` by redacted variable readback.
+- Updated the release gate so deploy can proceed only with explicit approved
+  deferral flags for optional provider integrations and external readback;
+  live/final closeout still records the deferred state.
+- PASS `node --test tests/system-truth-scripts.test.js tests/bna-production-closeout-gate.test.js`
+  with 21/21 tests passing.
+
+Remaining deferred items for this UI deploy:
+
+- Vimeo access token and Vimeo upload/member-library readback.
+- Rabbi Telegram worker deployment verification.
+- External database/Railway/Drive readback closeout for full done-state proof.
+
 ## Final audit
 
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |

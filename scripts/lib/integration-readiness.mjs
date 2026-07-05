@@ -5,7 +5,7 @@ const require = createRequire(import.meta.url);
 const { loadSecret, safeSecretSourceLabel, usableSecretValue } = require('../../src/lib/integrations/secret-loader');
 
 export const INTEGRATION_READINESS_FIELDS = [
-  ['OPENAI_API_KEY', ['openai-api-key.txt', 'OPENAI_API_KEY.txt']],
+  ['OPENAI_API_KEY', ['openaiv2.txt', 'openai-api-key.txt', 'OPENAI_API_KEY.txt']],
   ['VIMEO_CLIENT_ID', ['vimeo-client-id.txt', 'VIMEO_CLIENT_ID.txt', 'vimeo.txt']],
   ['VIMEO_CLIENT_SECRET', ['vimeo-client-secret.txt', 'VIMEO_CLIENT_SECRET.txt', 'vimeo.txt']],
   ['VIMEO_ACCESS_TOKEN', ['vimeo-access-token.txt', 'VIMEO_ACCESS_TOKEN.txt', 'vimeo.txt']],
@@ -29,7 +29,8 @@ const INTEGRATION_GROUPS = [
   {
     integration: 'vimeo',
     label: 'Vimeo video/member library',
-    fields: ['VIMEO_CLIENT_ID', 'VIMEO_CLIENT_SECRET', 'VIMEO_ACCESS_TOKEN']
+    fields: ['VIMEO_CLIENT_ID', 'VIMEO_CLIENT_SECRET', 'VIMEO_ACCESS_TOKEN'],
+    deployRequired: false
   },
   {
     integration: 'resend',
@@ -52,6 +53,7 @@ const INTEGRATION_GROUPS = [
     integration: 'rabbi_telegram',
     label: 'Rabbi Telegram worker',
     fields: ['TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER'],
+    deployRequired: false,
     blockers: ['Worker deployment state is not verified by local readiness scanning.']
   }
 ];
@@ -108,6 +110,7 @@ function summarizeIntegrationGroup(fields, spec) {
   return {
     integration: spec.integration,
     label: spec.label,
+    deploy_required: spec.deployRequired !== false,
     ready: blockers.length === 0,
     fields: groupFields,
     blockers
@@ -125,9 +128,10 @@ export function buildIntegrationReadinessSummary(context = {}) {
   };
 }
 
-export function integrationReadinessBlockers(readiness = {}) {
+export function integrationReadinessBlockers(readiness = {}, options = {}) {
   const groups = Array.isArray(readiness.groups) ? readiness.groups : [];
   return groups
     .filter((group) => !group.ready)
+    .filter((group) => !(options.deferOptionalDeployIntegrations && group.deploy_required === false))
     .map((group) => `${group.label} readiness is blocked: ${group.blockers.join(' ')}`);
 }

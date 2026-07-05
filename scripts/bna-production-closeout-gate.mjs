@@ -17,6 +17,8 @@ export const DEPLOY_CONFIRM_PHRASE = 'DEPLOY_BNA_PRODUCTION_CLOSEOUT';
 export const LIVE_VERIFY_CONFIRM_PHRASE = 'VERIFY_BNA_LIVE_CLOSEOUT';
 export const DEPLOY_APPROVAL_ENV = 'BNA_PRODUCTION_DEPLOY_APPROVED';
 export const LIVE_VERIFY_APPROVAL_ENV = 'BNA_LIVE_VERIFY_APPROVED';
+export const DEFER_OPTIONAL_INTEGRATIONS_ENV = 'BNA_DEFER_OPTIONAL_INTEGRATIONS_APPROVED';
+export const DEFER_EXTERNAL_READBACK_ENV = 'BNA_DEFER_EXTERNAL_READBACK_APPROVED';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,6 +59,8 @@ export function parseArgs(argv = process.argv.slice(2)) {
     repoRoot: DEFAULT_REPO_ROOT,
     allowDetached: false,
     remoteBranch: '',
+    deferOptionalIntegrations: false,
+    deferExternalReadback: false,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -66,6 +70,8 @@ export function parseArgs(argv = process.argv.slice(2)) {
     else if (arg === '--live-verify') options.liveVerify = true;
     else if (arg === '--final-closeout') options.finalCloseout = true;
     else if (arg === '--allow-detached') options.allowDetached = true;
+    else if (arg === '--defer-optional-integrations') options.deferOptionalIntegrations = true;
+    else if (arg === '--defer-external-readback') options.deferExternalReadback = true;
     else if (arg === '--help' || arg === '-h') options.help = true;
     else if (arg === '--confirm-deploy') {
       options.confirmDeploy = readNext(argv, index, '--confirm-deploy');
@@ -101,6 +107,7 @@ export function usage() {
   node scripts/bna-production-closeout-gate.mjs --json
   node scripts/bna-production-closeout-gate.mjs --json --allow-detached --remote-branch codex/issue-8-complete-system-reconciliation
   node scripts/bna-production-closeout-gate.mjs --deploy --confirm-deploy ${DEPLOY_CONFIRM_PHRASE}
+  node scripts/bna-production-closeout-gate.mjs --deploy --confirm-deploy ${DEPLOY_CONFIRM_PHRASE} --defer-optional-integrations --defer-external-readback
   node scripts/bna-production-closeout-gate.mjs --live-verify --confirm-live ${LIVE_VERIFY_CONFIRM_PHRASE}
 
 Dry-run by default. This command does not deploy, smoke the live app, mutate the
@@ -264,7 +271,19 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
   const scripts = loadPackageScripts(repoRoot);
   const missingScripts = REQUIRED_PACKAGE_SCRIPTS.filter((name) => !scripts[name]);
   const integrationReadiness = context.integrationReadiness || buildIntegrationReadinessSummary({ repoRoot });
-  const integrationBlockers = integrationReadinessBlockers(integrationReadiness);
+  const optionalIntegrationsDeferred = Boolean(
+    options.deferOptionalIntegrations &&
+    options.deploy &&
+    approved(env[DEFER_OPTIONAL_INTEGRATIONS_ENV])
+  );
+  const externalReadbackDeferred = Boolean(
+    options.deferExternalReadback &&
+    options.deploy &&
+    approved(env[DEFER_EXTERNAL_READBACK_ENV])
+  );
+  const integrationBlockers = integrationReadinessBlockers(integrationReadiness, {
+    deferOptionalDeployIntegrations: optionalIntegrationsDeferred,
+  });
   const externalReadbackGate = summarizeExternalReadbackGateReport(
     context.externalReadbackGate || buildExternalReadbackGateReport({}, {
       repoRoot,
@@ -303,8 +322,14 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     if (!approved(env[DEPLOY_APPROVAL_ENV])) {
       blockers.push(`${DEPLOY_APPROVAL_ENV}=approved is required before deploy closeout.`);
     }
+    if (options.deferOptionalIntegrations && !approved(env[DEFER_OPTIONAL_INTEGRATIONS_ENV])) {
+      blockers.push(`${DEFER_OPTIONAL_INTEGRATIONS_ENV}=approved is required before deferring optional provider integrations for deploy.`);
+    }
+    if (options.deferExternalReadback && !approved(env[DEFER_EXTERNAL_READBACK_ENV])) {
+      blockers.push(`${DEFER_EXTERNAL_READBACK_ENV}=approved is required before deferring external readback for deploy.`);
+    }
     blockers.push(...integrationBlockers);
-    blockers.push(...externalReadbackBlockers);
+    if (!externalReadbackDeferred) blockers.push(...externalReadbackBlockers);
   }
   if (options.liveVerify) {
     if (options.confirmLive !== LIVE_VERIFY_CONFIRM_PHRASE) {
@@ -353,6 +378,18 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
         confirmation_phrase: LIVE_VERIFY_CONFIRM_PHRASE,
         approval_env: LIVE_VERIFY_APPROVAL_ENV,
         approved: approved(env[LIVE_VERIFY_APPROVAL_ENV]),
+      },
+      defer_optional_integrations: {
+        requested: Boolean(options.deferOptionalIntegrations),
+        approval_env: DEFER_OPTIONAL_INTEGRATIONS_ENV,
+        approved: approved(env[DEFER_OPTIONAL_INTEGRATIONS_ENV]),
+        performed: optionalIntegrationsDeferred,
+      },
+      defer_external_readback: {
+        requested: Boolean(options.deferExternalReadback),
+        approval_env: DEFER_EXTERNAL_READBACK_ENV,
+        approved: approved(env[DEFER_EXTERNAL_READBACK_ENV]),
+        performed: externalReadbackDeferred,
       },
     },
     next_command_plan: commandPlan(),
