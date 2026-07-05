@@ -12,10 +12,10 @@ not authorize active GHL runtime paths.
   Current status: One Time public canonical work is pushed, merged, deployed,
   and live-smoked; the Drive drop-off scheduled task was repaired locally and
   now runs with result `0` to `sdratler@gmail.com` without sending old-file
-  emails. Pending before the broader workflow is clean: commit/push this
-  scheduler hardening, stale draft PR cleanup for #51/#62/#63, agent-fleet
-  readiness/blocker repair, and valid Operations credentials for logged-in One
-  Time visual proof.
+  emails. Scheduler hardening is pushed in draft PR #100. Pending before the
+  broader workflow is clean: merge/close PR #100, stale draft PR cleanup for
+  #51/#62/#63, agent-fleet readiness/blocker repair, and valid Operations
+  credentials for logged-in One Time visual proof.
 - [x] `RAW-20260705-009` / `REQ-20260705-501` through `REQ-20260705-510`:
   Correct the One Time canonical target-routing mistake. The BNA-hosted
   `/one-time` page is not sufficient proof; the canonical production target is

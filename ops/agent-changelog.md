@@ -29417,3 +29417,5 @@ Actions: 1. Active machine tasks: 0.
   checks, dry-run Drive readback, scheduler action readback, and forced
   scheduled-task run. No email, Drive write, payment/access/DNS/provider/CRM
   write, credential change, or production data mutation was performed.
+- Pushed branch `codex/drive-dropoff-scheduler-repair-canonical-20260705` and
+  opened draft PR #100 for normal review/merge.
