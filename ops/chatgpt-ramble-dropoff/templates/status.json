@@ -1,0 +1,14 @@
+{
+  "packet_id": "CHATGPT-DROPOFF-YYYYMMDD-001",
+  "status": "ready_for_codex_audit",
+  "created_at": "YYYY-MM-DDTHH:mm:ssZ",
+  "updated_at": "YYYY-MM-DDTHH:mm:ssZ",
+  "picked_up_by": null,
+  "picked_up_at": null,
+  "raw_ids_created": [],
+  "requirement_ids_created": [],
+  "decision_ids_created": [],
+  "implementation_status": "not_started",
+  "verification": [],
+  "remaining_blockers": []
+}
