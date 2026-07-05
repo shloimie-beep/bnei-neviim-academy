@@ -43,6 +43,10 @@ test('OneTime focused offer route and registries are declared', () => {
   const actionRegistry = JSON.parse(fs.readFileSync('ops/action-registry.json', 'utf8'));
 
   assert.match(server, /'\/one-time\/mishnayos'/);
+  assert.match(server, /function isOneTimeSingleTenantRuntime\(\)/);
+  assert.match(server, /app\.get\(\['\/', '\/index\.html'\]/);
+  assert.match(server, /INSTANCE_RUNTIME_FLAGS\.single_tenant/);
+  assert.match(server, /'\/one-time\/'/);
   assert.match(operations, /function updateDocumentTitleForWorkspace\(\)/);
   assert.match(operations, /currentWorkspaceIsOneTime\(\)[\s\S]*document\.title = `\$\{workspaceName\} - Operations`/);
 

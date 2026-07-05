@@ -21,6 +21,12 @@ function assertText(path, text, pattern, message) {
   }
 }
 
+function assertNoText(path, text, pattern, message) {
+  if (pattern.test(text)) {
+    throw new Error(`${path}: ${message}`);
+  }
+}
+
 try {
   let healthPath = '/api/health';
   let health = await fetchText('/api/health');
@@ -35,7 +41,16 @@ try {
   assertText('/api/one-time/instance-config', config.text, /"workspace_key"\s*:\s*"rabbi_sheller_provider"/, 'workspace key is not scoped to Rabbi provider');
   assertText('/api/one-time/instance-config', config.text, /"student_bot_enabled"\s*:\s*false/, 'student bot is not disabled');
 
-  for (const route of ['/one-time', '/operations-login.html', '/parent.html', '/student.html', '/provider.html', '/one-time-classroom.html']) {
+  for (const route of ['/', '/one-time', '/one-time/']) {
+    const result = await fetchText(route);
+    assertText(route, result.text, /Your Child Can Love Learning Mishnayos/i, 'canonical launch funnel headline missing');
+    assertText(route, result.text, /OneTimeOneTime Mishnah/i, 'One Time focused brand missing');
+    assertText(route, result.text, /Start 30 Days Free/i, 'launch offer CTA missing');
+    assertNoText(route, result.text, /Learn Mishnayos Live with Rabbi Eli Scheller/i, 'stale Rabbi preview page is still being served');
+    assertNoText(route, result.text, /Bnei Nevi'?im Academy|Torah Learning for Boys/i, 'BNA public homepage leaked into One Time target');
+  }
+
+  for (const route of ['/operations-login.html', '/parent.html', '/student.html', '/provider.html', '/one-time-classroom.html']) {
     const result = await fetchText(route);
     assertText(route, result.text, /One Time|Mishnah|portal|workspace|operations/i, 'expected One Time/portal marker missing');
     if (/student\.html|parent\.html/.test(route)) {

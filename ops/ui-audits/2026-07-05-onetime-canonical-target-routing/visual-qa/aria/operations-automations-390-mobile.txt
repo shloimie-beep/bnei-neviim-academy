@@ -1,0 +1,11 @@
+- text: BNA
+- heading "Welcome back" [level=1]
+- paragraph: Sign in to BNA Operations
+- text: Operations email or username
+- textbox "Operations email or username":
+  - /placeholder: Enter your Operations email or username
+- text: Password
+- textbox "Password":
+  - /placeholder: Enter your password
+- paragraph: Use the same identity password from any legitimate portal. Access still follows your actual role and workspace permissions.
+- button "Sign In"

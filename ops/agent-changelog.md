@@ -29365,3 +29365,31 @@ Actions: 1. Active machine tasks: 0.
   grant, live email/WhatsApp/SMS/Telegram send, DNS write, Drive upload/share,
   external CRM write, provider account mutation, credential change, or
   production data cleanup mutation was performed.
+
+## 2026-07-05 - One Time Canonical Public Target Routing Fixed
+
+- Registered `RAW-20260705-009` for the operator correction that One Time
+  production proof must come from `join.onetimeonetime.com`, not the BNA-hosted
+  `/one-time` preview.
+- Fixed the One Time single-tenant runtime so `/`, `/index.html`, `/one-time`,
+  and `/one-time/` serve the focused `Your Child Can Love Learning Mishnayos`
+  OneTimeOneTime funnel on the One Time Railway service.
+- Added target-aware guardrails: `npm run release:captain:one-time-public`,
+  `npm run one-time:target:guard`, and stricter separate-instance smoke checks
+  that fail on stale `Learn Mishnayos Live with Rabbi Eli Scheller` content.
+- Deployed only Railway `one-time-production / production / one-time-web` to
+  deployment `e95bb2e7-a675-46b2-a58a-e38413646702`; status readback is
+  `SUCCESS`.
+- Live verification passed on `https://join.onetimeonetime.com`: target guard
+  passed for `/`, `/one-time/`, and instance config; separate-instance smoke
+  passed health, instance config, public funnel, login, parent, student,
+  provider, and classroom routes.
+- Visual QA captured 80 screenshots under
+  `ops/ui-audits/2026-07-05-onetime-canonical-target-routing/visual-qa`, but
+  logged-in Operations UI proof remains blocked because the stored Operations
+  credentials returned 401. The public funnel is live-verified; the logged-in
+  dashboard/sidebar/right-rail cleanup needs a separate auth-backed packet.
+- No Postgres service deletion, production data mutation, send, charge,
+  payment link, access grant, DNS change, Drive write, credential change,
+  provider-account mutation, external CRM write, or broad stale PR merge was
+  performed.

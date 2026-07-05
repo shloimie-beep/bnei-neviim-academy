@@ -10192,6 +10192,23 @@ app.use(express.json({
   },
 }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+
+function isOneTimeSingleTenantRuntime() {
+  return INSTANCE_RUNTIME_FLAGS.single_tenant === true
+    || INSTANCE_RUNTIME_FLAGS.app_instance === 'onetime'
+    || INSTANCE_RUNTIME_FLAGS.brand_key === 'onetime';
+}
+
+function sendOneTimePublicLanding(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
+}
+
+app.get(['/', '/index.html'], (req, res, next) => {
+  if (!isOneTimeSingleTenantRuntime()) return next();
+  return sendOneTimePublicLanding(req, res);
+});
+
 app.use(express.static('public', {
   setHeaders(res, filePath) {
     if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
@@ -82867,10 +82884,7 @@ app.get(['/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });
 
-app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest'], (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
-  res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
-});
+app.get(['/one-time', '/one-time/', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest'], sendOneTimePublicLanding);
 
 function redirectOneTimeMemberHome(req, res) {
   const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';

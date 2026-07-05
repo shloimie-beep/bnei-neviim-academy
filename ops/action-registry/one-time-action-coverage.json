@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-05T13:48:16.604Z",
+  "generated_at": "2026-07-05T15:00:14.842Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "requirement_id": "REQ-20260621-502",
   "coverage_status": "verified_local_pending_deploy",
   "policy": "Visible One Time actions are classified as working, setup_path, disabled_blocker, or informational. External writes stay gated unless an explicit confirmation field is listed.",
   "ok": true,
-  "content_hash": "7053d19b7020c7a2f1988ed7eca531763ac8e64141e2ff9f86fbc17c5302cf2c",
+  "content_hash": "7a088289e58dfab04688170e365672b0a5c24d2e5bfe80ef140f74edca8bd183",
   "source_hashes": {
     "public/operations.html": "d91c1a96fd24abdeae487c73c6c72eaf3cb7bfffe4c163ff383b71e78977a749",
-    "server.js": "13ce82bfe879933ab606e81217cddd8c78f768e311c5089c1ada102c7a4065df",
+    "server.js": "460924236de3c93b0b102c672aedd018446dd9c8ef2a3b381c28a84fc9e4de7d",
     "ops/action-registry.json": "2bc19dbdeb96aeda26d3d4f006f52a74e5391ea10cd4069a7103ec1b9ceb22be",
     "ops/action-registry/actions.json": "d14449dbfad1fc46dce7f89ed3899f25fea6e98159c428f054c3229b060423cf"
   },

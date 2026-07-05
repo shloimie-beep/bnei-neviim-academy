@@ -22,6 +22,7 @@
       "expected_logged_out_behavior": "load_anonymous_public_homepage",
       "expected_logged_in_behavior": "load_anonymous_public_homepage",
       "privacy_risk": "normal",
+      "target_variant_note": "On the One Time single-tenant runtime for join.onetimeonetime.com, this route serves the One Time focused public funnel instead of the BNA homepage.",
       "related_goal_ids": [
         "GOAL-CORE-003"
       ]
