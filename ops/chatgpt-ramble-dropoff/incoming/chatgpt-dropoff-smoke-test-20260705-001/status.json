@@ -1,0 +1,44 @@
+{
+  "packet_id": "chatgpt-dropoff-smoke-test-20260705-001",
+  "status": "done_verified",
+  "implementation_status": "done_verified",
+  "created_by": "ChatGPT",
+  "created_at": "2026-07-05",
+  "packet_type": "memory_candidate",
+  "external_writes_performed": false,
+  "secrets_included": false,
+  "private_data_included": false,
+  "app_source_edits_performed": false,
+  "production_code_generated": false,
+  "requires_codex_audit_before_apply": true,
+  "updated_at": "2026-07-05T11:55:53.646Z",
+  "picked_up_by": "chatgpt-dropoff-ingestor",
+  "picked_up_at": "2026-07-05T11:32:35.382Z",
+  "raw_ids_created": [],
+  "task_ids_created": [
+    "1869"
+  ],
+  "requirement_ids_created": [
+    "REQ-20260705-008"
+  ],
+  "verification": [
+    "Queued for Codex by scripts/chatgpt-dropoff-ingestor.mjs as task #1869.",
+    "Collector read PR #90 comment 4885699190 and materialized the packet folder.",
+    "Agent fleet claim path repaired linked-task hydration; job #385 became first claimable.",
+    "Fleet claimed job #385; task #1869 moved to in_progress.",
+    "Telegram notification failure was patched so send errors no longer abort job execution.",
+    "Live closeout marked job #385 completed and task #1869 done."
+  ],
+  "completed_by": "Codex",
+  "completed_at": "2026-07-05T11:55:53.646Z",
+  "evidence": [
+    "ops/chatgpt-ramble-dropoff/pickups/2026-07-05-fleet-claim-completion-fix.md",
+    "tasks-pending/2026-07-05-chatgpt-dropoff-fleet-claim-completion-fix.md"
+  ],
+  "live_readback": {
+    "agent_job_id": 385,
+    "agent_job_status": "completed",
+    "task_id": 1869,
+    "task_stage": "done"
+  }
+}

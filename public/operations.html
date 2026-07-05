@@ -9714,6 +9714,7 @@
         const CONTACT_SUBTABS = [
             { id: 'overview', label: 'Overview' },
             { id: 'interested_parents', label: 'Leads / Interested Parents' },
+            { id: 'crm_contacts', label: 'CRM Contacts' },
             { id: 'parents', label: 'Parents' },
             { id: 'people', label: 'People' },
             { id: 'contacts', label: 'Contacts' },
@@ -10993,19 +10994,20 @@
         function contactSubnavCounts() {
             const providerEmailContacts = oneTimeEmailContactLeads();
             const providerCrmContacts = isProviderWorkspace() ? oneTimeCrmContactRows() : [];
+            const firstPartyCrmCount = Number(firstPartyCrmContactsPayload?.filtered_total || firstPartyCrmContactsPayload?.cards?.length || contactGraphRows().length || 0);
             return {
-                overview: isProviderWorkspace() ? providerCrmContacts.length : signups.length + parentLeads.length,
+                overview: isProviderWorkspace() ? providerCrmContacts.length : contactGraphRows().length,
                 people: people.length,
                 parents: signups.filter(signup => contactMatchesSection(signup, 'parents')).length,
-                interested_parents: parentLeads.length,
+                interested_parents: parentLeads.filter(lead => leadMatchesSection(lead, 'interested_parents')).length,
                 participants: isProviderWorkspace() ? providerParticipantRows().length : 0,
-                crm_contacts: providerCrmContacts.length,
+                crm_contacts: isProviderWorkspace() ? providerCrmContacts.length : firstPartyCrmCount,
                 email_contacts: providerEmailContacts.length,
                 contacts: signups.length,
                 students: students.length,
                 intake: signups.filter(signup => contactMatchesSection(signup, 'intake')).length,
                 follow_up: signups.filter(signup => contactMatchesSection(signup, 'follow_up')).length,
-                tags: signups.length,
+                tags: allContactTags().length,
                 notes: contactCommunications.length,
                 forms: signups.length
             };
@@ -15160,6 +15162,9 @@
 
         function renderFirstPartyCrmFilterControls(payload = {}) {
             const filters = payload.filters || {};
+            const sharedTagOptions = Array.from(new Set([...(filters.tags || []), ...allContactTags()]))
+                .filter(Boolean)
+                .sort((a, b) => String(a).localeCompare(String(b)));
             return `
                 <section class="focus-panel compact-panel" data-action-id="ACTION-CRM-CONTACTS-FILTER">
                     <div class="task-section-header">
@@ -15174,7 +15179,7 @@
                         <label>Type<select onchange="setFirstPartyCrmFilter('contact_type', this.value)">${firstPartyCrmOptionList(filters.contact_types, firstPartyCrmFilters.contact_type)}</select></label>
                         <label>Status<select onchange="setFirstPartyCrmFilter('status', this.value)">${firstPartyCrmOptionList(filters.statuses, firstPartyCrmFilters.status)}</select></label>
                         <label>Source<select onchange="setFirstPartyCrmFilter('source', this.value)">${firstPartyCrmOptionList(filters.sources, firstPartyCrmFilters.source)}</select></label>
-                        <label>Tag<select onchange="setFirstPartyCrmFilter('tag', this.value)">${firstPartyCrmOptionList(filters.tags, firstPartyCrmFilters.tag)}</select></label>
+                        <label>Tag<select onchange="setFirstPartyCrmFilter('tag', this.value)">${firstPartyCrmOptionList(sharedTagOptions, firstPartyCrmFilters.tag)}</select></label>
                         <label>Sort<select onchange="setFirstPartyCrmFilter('sort_key', this.value)">
                             <option value="last_contact_desc" ${firstPartyCrmFilters.sort_key === 'last_contact_desc' ? 'selected' : ''}>Last contact</option>
                             <option value="next_follow_up_asc" ${firstPartyCrmFilters.sort_key === 'next_follow_up_asc' ? 'selected' : ''}>Next follow-up</option>
@@ -15295,6 +15300,31 @@
             loadFirstPartyCrmContacts();
         }
 
+        function renderUnifiedContactSystemPanel() {
+            const graphRows = contactGraphRows();
+            const contactCount = graphRows.filter(row => row.kind === 'signup').length;
+            const leadCount = graphRows.filter(row => row.kind === 'lead').length;
+            const communicationCount = contactCommunications.filter(communicationMatchesContactFilters).length;
+            const tagCount = allContactTags().length;
+            return `
+                <section class="focus-panel compact-panel" data-job101-contact-unified-filters="TASK-20260702-012-B">
+                    <div class="task-section-header">
+                        <div>
+                            <h3>Unified Contact Graph</h3>
+                            <p class="notification-lock-note">Contacts, Interested Parents, tags, CRM readbacks, and communication filters share local BNA records only. No external CRM, WhatsApp, email send, or tag write runs from this panel.</p>
+                        </div>
+                        <span>${graphRows.length} records</span>
+                    </div>
+                    <div class="communication-status-strip">
+                        <span class="status-chip">${contactCount} signup contacts</span>
+                        <span class="status-chip">${leadCount} interested parents</span>
+                        <span class="status-chip">${tagCount} shared tags</span>
+                        <span class="status-chip">${communicationCount} filtered communications</span>
+                    </div>
+                </section>
+            `;
+        }
+
         function renderContacts() {
             if (isProviderWorkspace()) return renderProviderParticipantsPage();
             const contactMeta = contactSectionMeta(contactSection);
@@ -15305,10 +15335,12 @@
                     counts[tab.id] = parentLeads.filter(lead => leadMatchesSection(lead, tab.id)).length;
                 } else if (tab.id === 'providers') {
                     counts[tab.id] = serviceProviders.reduce((sum, provider) => sum + (Array.isArray(provider.services) ? provider.services.length : 0), 0);
-                } else if (tab.id === 'communications') {
+                } else if (tab.id === 'notes' || tab.id === 'communications') {
                     counts[tab.id] = contactCommunications.length;
                 } else if (tab.id === 'crm_contacts') {
-                    counts[tab.id] = Number(firstPartyCrmContactsPayload?.filtered_total || firstPartyCrmContactsPayload?.cards?.length || 0);
+                    counts[tab.id] = Number(firstPartyCrmContactsPayload?.filtered_total || firstPartyCrmContactsPayload?.cards?.length || contactGraphRows().length || 0);
+                } else if (tab.id === 'tags') {
+                    counts[tab.id] = allContactTags().length;
                 } else {
                     counts[tab.id] = signups.filter(signup => contactMatchesSection(signup, tab.id)).length;
                 }
@@ -15321,7 +15353,7 @@
                 sectionHtml = renderInterestedParentLeads();
             } else if (contactSection === 'providers') {
                 sectionHtml = renderServiceProviderDirectory();
-            } else if (contactSection === 'communications') {
+            } else if (contactSection === 'notes' || contactSection === 'communications') {
                 sectionHtml = renderCommunicationsSection();
             } else if (contactSection === 'crm_contacts') {
                 sectionHtml = renderFirstPartyCrmContactsPanel();
@@ -15333,6 +15365,7 @@
                     contactDetailSection = 'overview';
                 }
                 sectionHtml = `
+                    ${contactSection === 'overview' ? renderUnifiedContactSystemPanel() : ''}
                     ${renderContactFilterPanel(sectionSignups, visibleSignups)}
                     ${signups.length === 0 ? `
                         <div class="contact-empty-card">
@@ -15578,6 +15611,10 @@
                     title: 'Parents',
                     description: 'Compact parent roster cards. Open a card for full contact, signup, payment, notes, and tags.',
                 },
+                crm_contacts: {
+                    title: 'CRM Contacts',
+                    description: 'First-party contact graph across local contacts, interested parents, tags, and read-only communication timelines.',
+                },
                 interested_parents: {
                     title: 'Interested Parents',
                     description: 'School-interest leads with interest level, notes, next follow-up, and related touchpoints.',
@@ -15589,6 +15626,10 @@
                 communications: {
                     title: 'Communications',
                     description: 'Internal contact log for school leads and existing parent communication.',
+                },
+                notes: {
+                    title: 'Notes / Activity',
+                    description: 'Read-only local communication activity filtered by the same contact date and tag controls.',
                 },
                 students: {
                     title: 'Students',
@@ -16263,9 +16304,52 @@
             return Array.isArray(signup.tags) ? signup.tags.filter(Boolean).map(tag => String(tag).trim()).filter(Boolean) : [];
         }
 
+        function uniqueSortedTags(tags = []) {
+            const byKey = new Map();
+            (tags || []).forEach(tag => {
+                const value = String(tag || '').trim();
+                if (!value) return;
+                const key = value.toLowerCase();
+                if (!byKey.has(key)) byKey.set(key, value);
+            });
+            return Array.from(byKey.values()).sort((a, b) => a.localeCompare(b));
+        }
+
+        function contactTagMatches(tags = [], wantedTag = contactTagFilter) {
+            if (!wantedTag || wantedTag === 'all') return true;
+            const wanted = String(wantedTag || '').trim().toLowerCase();
+            return Boolean(wanted) && (tags || []).some(tag => String(tag || '').trim().toLowerCase() === wanted);
+        }
+
         function allContactTags() {
-            return Array.from(new Set(signups.flatMap(contactTags)))
-                .sort((a, b) => a.localeCompare(b));
+            return uniqueSortedTags([
+                ...signups.flatMap(contactTags),
+                ...parentLeads.flatMap(leadTags),
+            ]);
+        }
+
+        function contactGraphRows() {
+            const signupRows = (signups || []).map(signup => ({
+                kind: 'signup',
+                id: contactKey(signup),
+                name: signup.parent_name || signup.student_name || 'Signup contact',
+                status: contactStatusKey(signup),
+                tags: contactTags(signup),
+                date: signup.updated_at || signup.created_at,
+                communications: signupCommunications(signup).length,
+            }));
+            const leadRows = (parentLeads || [])
+                .filter(lead => leadStatusKey(lead) !== 'archived')
+                .map(lead => ({
+                    kind: 'lead',
+                    id: `lead:${Number(lead.id) || lead.parent_name || lead.email || lead.phone || ''}`,
+                    name: lead.parent_name || lead.student_name || 'Interested parent',
+                    status: leadStatusKey(lead),
+                    tags: leadTags(lead),
+                    date: leadDateValue(lead),
+                    communications: leadCommunications(lead).length,
+                }));
+            return [...signupRows, ...leadRows];
         }
 
         function availableContactTags(signup) {
@@ -16295,7 +16379,7 @@
             const tags = contactTags(signup);
             return (contactStatusFilter === 'all' || contactStatusKey(signup) === contactStatusFilter)
                 && (contactPaymentFilter === 'all' || normalizePaymentStatusKey(signup.payment_status) === contactPaymentFilter)
-                && (contactTagFilter === 'all' || tags.includes(contactTagFilter))
+                && contactTagMatches(tags)
                 && matchesRecentDate(signup.created_at || signup.updated_at, contactDateFilter);
         }
 
@@ -16310,7 +16394,7 @@
             });
             const statusOptions = Object.keys(statusCounts).sort();
             const paymentOptions = ['paid', 'pending', 'partial', 'needs_signup', 'needs_matching'].filter(key => paymentCounts[key]);
-            const tagOptions = Object.keys(tagCounts).sort((a, b) => a.localeCompare(b));
+            const tagOptions = uniqueSortedTags([...allContactTags(), ...Object.keys(tagCounts)]);
             const statusSelectOptions = [
                 { value: 'all', label: `All (${sectionSignups.length})` },
                 ...statusOptions.map(status => ({ value: status, label: `${contactStatusLabel(status)} (${statusCounts[status]})` }))
@@ -16321,7 +16405,7 @@
             ];
             const tagSelectOptions = [
                 { value: 'all', label: `All tags (${sectionSignups.length})` },
-                ...tagOptions.map(tag => ({ value: tag, label: `${tag} (${tagCounts[tag]})` }))
+                ...tagOptions.map(tag => ({ value: tag, label: `${tag} (${tagCounts[tag] || 0})` }))
             ];
 
             return `
@@ -16723,7 +16807,7 @@
             return (contactLeadTypeFilter === 'all' || leadTypeKey(lead) === contactLeadTypeFilter)
                 && (contactLeadStatusFilter === 'all' || leadStatusKey(lead) === contactLeadStatusFilter)
                 && (contactInterestFilter === 'all' || leadInterestKey(lead) === contactInterestFilter)
-                && (contactTagFilter === 'all' || tags.includes(contactTagFilter))
+                && contactTagMatches(tags)
                 && matchesRecentDate(leadDateValue(lead), contactDateFilter);
         }
 
@@ -17021,10 +17105,10 @@
                 { value: 'all', label: `All (${sectionLeads.length})` },
                 ...interestOptions.map(level => ({ value: level, label: `${leadInterestLabel(level)} (${interestCounts[level] || 0})` }))
             ];
-            const tagOptions = Object.keys(tagCounts).sort((a, b) => a.localeCompare(b));
+            const tagOptions = uniqueSortedTags([...allContactTags(), ...Object.keys(tagCounts)]);
             const tagSelectOptions = [
                 { value: 'all', label: `All tags (${sectionLeads.length})` },
-                ...tagOptions.map(tag => ({ value: tag, label: `${tag} (${tagCounts[tag]})` }))
+                ...tagOptions.map(tag => ({ value: tag, label: `${tag} (${tagCounts[tag] || 0})` }))
             ];
 
             return `
@@ -17540,7 +17624,7 @@
             const sectionCommunications = [...contactCommunications].sort((a, b) => {
                 return Date.parse(b.occurred_at || b.created_at || 0) - Date.parse(a.occurred_at || a.created_at || 0);
             });
-            const visibleCommunications = sectionCommunications.filter(item => matchesRecentDate(item.occurred_at || item.created_at, contactDateFilter));
+            const visibleCommunications = sectionCommunications.filter(communicationMatchesContactFilters);
 
             return `
                 ${renderCommunicationFilterPanel(sectionCommunications, visibleCommunications)}
@@ -17563,6 +17647,17 @@
         }
 
         function renderCommunicationFilterPanel(sectionCommunications, visibleCommunications) {
+            const tagCounts = {};
+            sectionCommunications.forEach(item => {
+                communicationTags(item).forEach(tag => {
+                    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                });
+            });
+            const tagOptions = uniqueSortedTags([...allContactTags(), ...Object.keys(tagCounts)]);
+            const tagSelectOptions = [
+                { value: 'all', label: `All tags (${sectionCommunications.length})` },
+                ...tagOptions.map(tag => ({ value: tag, label: `${tag} (${tagCounts[tag] || 0})` }))
+            ];
             return `
                 <details class="filter-details collapsible-details" open>
                     <summary>Filters</summary>
@@ -17570,6 +17665,10 @@
                         <div class="filter-row">
                             <span class="filter-label">Date</span>
                             ${COMMON_DATE_FILTERS.map(filter => renderFilterChip('setContactFilter', 'date', filter.id, filter.label, contactDateFilter)).join('')}
+                        </div>
+                        <div class="filter-row">
+                            <span class="filter-label">Tags</span>
+                            ${renderFilterSelect('setContactFilter', 'tag', contactTagFilter, tagSelectOptions, 'Communication tag filter')}
                         </div>
                         ${renderFilterCountNote(visibleCommunications.length, sectionCommunications.length, 'note')}
                     </div>
@@ -19793,7 +19892,7 @@
             return 'normal';
         }
 
-        function communicationTags(item = {}) {
+        function baseCommunicationTags(item = {}) {
             const metadata = communicationMetadata(item);
             const sourceContext = communicationSourceContext(item);
             return [
@@ -19802,7 +19901,29 @@
                 ...(Array.isArray(metadata.communication_tags) ? metadata.communication_tags : []),
                 ...(Array.isArray(metadata.internal_tags) ? metadata.internal_tags : []),
                 sourceContext.raw_intake_id ? `raw ${sourceContext.raw_intake_id}` : '',
-            ].filter(Boolean).map(tag => String(tag).replace(/_/g, ' ')).filter((tag, index, list) => list.indexOf(tag) === index).slice(0, 10);
+            ].filter(Boolean).map(tag => String(tag).replace(/_/g, ' '));
+        }
+
+        function contactTagsForCommunication(item = {}) {
+            const linkedSignupTags = (signups || [])
+                .filter(signup => communicationMatchesSignup(item, signup))
+                .flatMap(contactTags);
+            const linkedLeadTags = (parentLeads || [])
+                .filter(lead => communicationMatchesLead(item, lead))
+                .flatMap(leadTags);
+            return uniqueSortedTags([...linkedSignupTags, ...linkedLeadTags]);
+        }
+
+        function communicationTags(item = {}) {
+            return uniqueSortedTags([
+                ...baseCommunicationTags(item),
+                ...contactTagsForCommunication(item),
+            ]).slice(0, 10);
+        }
+
+        function communicationMatchesContactFilters(item = {}) {
+            return matchesRecentDate(item.occurred_at || item.created_at, contactDateFilter)
+                && contactTagMatches(communicationTags(item));
         }
 
         function communicationAddressLine(item = {}) {
@@ -19976,7 +20097,8 @@
         function renderCommunications() {
             const section = communicationsSection;
             const allItems = [...contactCommunications].sort((a, b) => Date.parse(b.occurred_at || b.created_at || 0) - Date.parse(a.occurred_at || a.created_at || 0));
-            const filtered = communicationsForSection(allItems, section);
+            const sectionItems = communicationsForSection(allItems, section);
+            const filtered = sectionItems.filter(communicationMatchesContactFilters);
             return `
                 <div class="container" data-one-time-rabbi-dashboard="operations" data-one-time-communications-route="${escapeHtml(section)}">
                     <div class="page-heading saas-page-heading">
@@ -20004,6 +20126,7 @@
                     ${['overview', 'parents', 'students', 'providers'].includes(section) ? `
                         <section class="focus-panel">
                             <div class="task-section-header"><h3>${escapeHtml(COMMUNICATIONS_SUBTABS.find(tab => tab.id === section)?.label || 'Messages')}</h3><span>${filtered.length} records</span></div>
+                            ${renderCommunicationFilterPanel(sectionItems, filtered)}
                             ${filtered.length ? `<div class="contact-list">${filtered.map(renderCommunicationCard).join('')}</div>` : '<div class="empty-state">No messages match this lane.</div>'}
                         </section>
                     ` : ''}
@@ -20024,7 +20147,9 @@
         }
 
         function communicationsForSection(items = [], section = 'overview') {
-            if (section === 'parents') return items.filter(item => ['lead', 'signup'].includes(item.contact_type));
+            if (section === 'parents') return items.filter(item => ['lead', 'signup'].includes(item.contact_type)
+                || signups.some(signup => communicationMatchesSignup(item, signup))
+                || parentLeads.some(lead => communicationMatchesLead(item, lead)));
             if (section === 'students') return items.filter(item => item.contact_type === 'student');
             if (section === 'providers') return items.filter(item => /provider|rabbi/i.test(`${item.summary || ''} ${item.body || ''}`));
             if (section === 'internal') return items.filter(item => item.direction === 'internal_note');

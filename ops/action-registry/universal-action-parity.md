@@ -1,27 +1,27 @@
 # Universal Action Parity
 
-Generated at 2026-06-26T10:37:17.451Z.
+Generated at 2026-07-05T12:49:09.171Z.
 
 Requirement: REQ-20260623-013
 
 ## Release Gate
 
 - Status: passed
-- all_visible_controls_classified: pass (39/39)
+- all_visible_controls_classified: pass (40/40)
 - zero_visible_missing_contracts: pass (0)
 - zero_missing_handlers: pass (0)
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (171)
+- website_assistant_request_parity_present: pass (175)
 - agent_work_handoff_parity_present: pass (98)
 
 ## Summary
 
-- Root registry actions: 91
+- Root registry actions: 95
 - Detailed typed actions: 80
-- Visible UI hooks: 39
-- Visible UI hooks classified: 39
+- Visible UI hooks: 40
+- Visible UI hooks classified: 40
 - Missing contracts: 0
 - Missing handlers: 0
 - Missing tests: 0
@@ -31,10 +31,10 @@ Requirement: REQ-20260623-013
 
 | Source | Count |
 | --- | ---: |
-| ui_button | 39 |
+| ui_button | 40 |
 | telegram_request | 80 |
-| website_assistant_request | 171 |
-| operations_helper_request | 158 |
+| website_assistant_request | 175 |
+| operations_helper_request | 161 |
 | automation_action | 76 |
 | agent_work_handoff | 98 |
 
@@ -44,7 +44,7 @@ Requirement: REQ-20260623-013
 | --- | ---: |
 | read_only | 6 |
 | secure_deep_link_only | 5 |
-| preview_then_approve | 20 |
+| preview_then_approve | 21 |
 | blocked_connector | 4 |
 | not_applicable | 2 |
 | executable | 2 |

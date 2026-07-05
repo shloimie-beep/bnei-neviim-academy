@@ -48,26 +48,6 @@
       ]
     },
     {
-      "action_id": "ACTION-PROVIDER-WAPI-SETUP-SAVE",
-      "label": "Save WhatsApp Setup",
-      "surface": "provider_portal",
-      "route": "/provider?section=whatsapp_setup",
-      "selector_hint": "[data-provider-wapi-setup-form] button[data-action-id=\"ACTION-PROVIDER-WAPI-SETUP-SAVE\"]",
-      "expected_behavior": "Saves Rabbi/One Time provider-scoped Whapi/WAPI setup details to BNA integration and secret-reference records for verification; the raw token is not rendered back, and no WhatsApp send, broadcast, payment, access grant, or external provider mutation runs from this action.",
-      "permission": "authenticated One Time provider workspace member",
-      "status": "active",
-      "test": {
-        "type": "static_and_api_contract",
-        "expected_result": "Provider portal exposes the WhatsApp setup form and posts to /api/provider-portal/integrations/whatsapp-wapi/setup; server route requires provider session, stores only secret-reference/fingerprint metadata, returns no raw token, and never uses SEND_WHATSAPP."
-      },
-      "related_goal_ids": [
-        "GOAL-CORE-002",
-        "GOAL-CORE-010",
-        "GOAL-CORE-014",
-        "GOAL-CORE-015"
-      ]
-    },
-    {
       "action_id": "ACTION-HELPER-CREATE-AUTOMATION",
       "label": "Create automation with helper",
       "surface": "operations",
@@ -266,13 +246,13 @@
       "label": "Start 30 Days Free",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "a[href=\"#signup\"].button.primary",
+      "selector_hint": "a[href=\"#start-free\"].button.primary",
       "expected_behavior": "Scrolls to the first-party interest form for a 30-day-free trial request; does not create checkout, send messages, create a Zoom meeting, or grant access.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "static_and_browser",
-        "expected_result": "Primary CTA points to #signup and no payment, send, Zoom creation, or access grant fires."
+        "expected_result": "Primary CTA points to #start-free and no payment, send, Zoom creation, or access grant fires."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -282,16 +262,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-WATCH-RABBI-CTA",
-      "label": "Watch Rabbi Scheller",
+      "label": "See How It Works",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "a[href=\"#watch-rabbi\"].button.ghost",
-      "expected_behavior": "Scrolls to the embedded public Vimeo promo without exposing private member-library videos or TEST review links.",
+      "selector_hint": "a[href=\"#how-it-works\"].button.secondary",
+      "expected_behavior": "Scrolls to the public explanation section without exposing private member-library videos or TEST review links.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "static_and_browser",
-        "expected_result": "Secondary CTA targets #watch-rabbi and public page embeds Vimeo 1158542993 only for the public promo."
+        "expected_result": "Secondary CTA targets #how-it-works and public page uses placeholder hero media until the final promo asset is approved."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -344,7 +324,7 @@
       "label": "Member Login",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "a[href=\"/one-time/member-login\"]",
+      "selector_hint": "a[href=\"/rabbi-member\"]",
       "expected_behavior": "Opens the member login entry shell without exposing private library data to logged-out visitors.",
       "permission": "public_entry",
       "status": "active",

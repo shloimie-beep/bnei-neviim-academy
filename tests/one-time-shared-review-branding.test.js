@@ -84,10 +84,10 @@ test('shared One Time review pages include review branding assets', () => {
   }
 
   const oneTimeHtml = fs.readFileSync('public/one-time/index.html', 'utf8');
-  assert.match(oneTimeHtml, /Learn Mishnayos Live with Rabbi Eli Scheller/);
-  assert.match(oneTimeHtml, /\/images\/one-time\/brand\/onetime-hero-vertical\.webp/);
+  assert.match(oneTimeHtml, /Your Child Can Love Learning Mishnayos/);
+  assert.match(oneTimeHtml, /TODO: replace with final hero video\/image/);
   assert.match(oneTimeHtml, /\/images\/one-time\/press\/torahanytime-logo\.png/);
-  assert.match(oneTimeHtml, /player\.vimeo\.com\/video\/1158542993\?h=daa31d3417/);
+  assert.doesNotMatch(oneTimeHtml, /player\.vimeo\.com\/video\/1158542993\?h=daa31d3417/);
   assert.match(oneTimeHtml, /\/api\/one-time\/campaign/);
   assert.doesNotMatch(oneTimeHtml, /TEST-ONETIME-REVIEW-ACCESS/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /\/css\/one-time-shared-review\.css/);
@@ -161,9 +161,9 @@ test('One Time brand kit and service-provider site config are present', () => {
   assert.equal(site.key, 'one_time');
   assert.equal(site.status, 'shared_review');
   assert.equal(site.external_write_performed, false);
-  assert.equal(site.copy.headline, 'Learn Mishnayos Live with Rabbi Eli Scheller');
-  assert.equal(site.copy.primary_cta, 'START 30 DAYS FREE');
-  assert.equal(site.copy.secondary_cta, 'WATCH RABBI SCHELLER');
+  assert.equal(site.copy.headline, 'Your Child Can Love Learning Mishnayos');
+  assert.equal(site.copy.primary_cta, 'Start 30 Days Free');
+  assert.equal(site.copy.secondary_cta, 'See How It Works');
   assert.equal(site.assets.social_og, '/images/one-time/social/one-time-og-20260622.jpg');
   assert.ok(site.blocked_live_actions.includes('live_email_send'));
 

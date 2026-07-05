@@ -1,6 +1,8 @@
 const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const test = require('node:test');
 
 function runProvisioner(args = []) {
@@ -28,7 +30,8 @@ test('One Time Railway provisioner defaults to dry-run without Railway mutation'
 });
 
 test('One Time Railway provisioner refuses apply without exact confirmation before CLI mutation', () => {
-  const result = runProvisioner(['--apply', '--json']);
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bna-onetime-provisioner-'));
+  const result = runProvisioner(['--apply', '--json', '--report', path.join(dir, 'blocked-apply-report.json')]);
   assert.equal(result.status, 2);
   const report = JSON.parse(result.stdout);
   assert.equal(report.mode, 'apply');
@@ -48,7 +51,7 @@ test('One Time Railway provisioner exposes auth check mode separately from apply
   assert.match(script, /railway list --json/);
   assert.match(script, /current_link_mentions_forbidden_project/);
   assert.match(script, /variable', 'set'.*'--stdin'/s);
-  assert.match(script, /app\.onetimeonetime\.com/);
+  assert.match(script, /join\.onetimeonetime\.com/);
   assert.match(preflight, /raw_stdout: result\.stdout/);
   assert.match(preflight, /listCheck\.raw_stdout \|\| listCheck\.stdout/);
   assert.match(packageJson.scripts['one-time:railway-provision:apply'], /provision-onetime-railway-instance\.mjs/);

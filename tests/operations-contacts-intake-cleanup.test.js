@@ -84,3 +84,23 @@ test('One Time Contacts fetch parent leads with the selected workspace project s
   assert.match(route, /LEFT JOIN bna_projects p ON p\.id = l\.project_id/);
   assert.doesNotMatch(route, /appendScopeCondition\(req, conditions, params, 'project_id'\)/);
 });
+
+test('Job 101 canonical contact work unifies Contacts, leads, CRM tags, and communication filters', () => {
+  const contactTabs = sliceBetween(operations, 'const CONTACT_SUBTABS = [', '];');
+  assert.match(contactTabs, /\{ id: 'crm_contacts', label: 'CRM Contacts' \}/);
+  assert.match(contactTabs, /\{ id: 'notes', label: 'Notes \/ Activity' \}/);
+
+  assert.match(operations, /data-job101-contact-unified-filters="TASK-20260702-012-B"/);
+  assert.match(operations, /function contactGraphRows\(\)/);
+  assert.match(operations, /\.\.\.parentLeads\.flatMap\(leadTags\)/);
+  assert.match(operations, /firstPartyCrmOptionList\(sharedTagOptions, firstPartyCrmFilters\.tag\)/);
+  assert.match(operations, /contactSection === 'notes' \|\| contactSection === 'communications'/);
+
+  assert.match(operations, /function contactTagsForCommunication\(item = \{\}\)/);
+  assert.match(operations, /\.filter\(signup => communicationMatchesSignup\(item, signup\)\)/);
+  assert.match(operations, /\.filter\(lead => communicationMatchesLead\(item, lead\)\)/);
+  assert.match(operations, /function communicationMatchesContactFilters\(item = \{\}\)/);
+  assert.match(operations, /const filtered = sectionItems\.filter\(communicationMatchesContactFilters\)/);
+  assert.match(operations, /renderCommunicationFilterPanel\(sectionItems, filtered\)/);
+  assert.match(operations, /communicationMatchesLead\(item, lead\)/);
+});

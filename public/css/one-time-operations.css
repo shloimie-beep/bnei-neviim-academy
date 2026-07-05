@@ -1169,7 +1169,8 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications
   }
 
   body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table thead {
-    display: none;
+    display: block;
+    margin-bottom: 8px;
   }
 
   body.bna-ops-shell-page.one-time-operations-active [data-one-time-participants-route] .data-table tbody,
@@ -1232,7 +1233,8 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications
   }
 
   body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table thead {
-    display: none;
+    display: block;
+    margin-bottom: 8px;
   }
 
   body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="access"] .data-table tbody,

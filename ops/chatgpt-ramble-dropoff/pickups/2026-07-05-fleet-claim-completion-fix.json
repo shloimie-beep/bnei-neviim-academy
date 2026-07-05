@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-07-05T14:58:00+03:00",
+  "raw_id": "RAW-20260705-004",
+  "requirement_id": "REQ-20260705-008",
+  "packet_id": "chatgpt-dropoff-smoke-test-20260705-001",
+  "task_id": 1869,
+  "agent_job_id": 385,
+  "status": "done_verified",
+  "files_changed": [
+    "scripts/agent-fleet-supervisor.mjs",
+    "tests/agent-fleet-hardening.test.js",
+    "raw-input/RAW-20260705-004-chatgpt-dropoff-fleet-claim-completion-fix.md",
+    "tasks-pending/2026-07-05-chatgpt-dropoff-fleet-claim-completion-fix.md",
+    "memory/2026-07-05.md",
+    "ops/chatgpt-ramble-dropoff/incoming/chatgpt-dropoff-smoke-test-20260705-001/status.json",
+    "ops/chatgpt-ramble-dropoff/pickups/2026-07-05-fleet-claim-completion-fix.md",
+    "ops/chatgpt-ramble-dropoff/pickups/2026-07-05-fleet-claim-completion-fix.json",
+    "ops/agent-changelog.md",
+    "ops/agent-task-ledger.jsonl"
+  ],
+  "verification": [
+    "PASS node --check scripts/agent-fleet-supervisor.mjs",
+    "PASS node --test tests/agent-fleet-hardening.test.js tests/chatgpt-dropoff-ingestor.test.js tests/chatgpt-dropoff-comment-collector.test.js 15/15",
+    "PASS npm run agent:fleet:status showed job #385 first claimable after linked-task hydration",
+    "LIVE READBACK job #385 claimed and task #1869 moved to in_progress",
+    "LIVE READBACK job #385 completed and task #1869 done"
+  ],
+  "guardrails": [
+    "No sends/payments/access/DNS/credential changes/provider mutations/Drive writes were performed by Codex",
+    "No unrelated dirty UI/app/server work was reverted",
+    "Agent fleet watcher stopped after smoke completion to avoid unrelated broad queued jobs"
+  ],
+  "remaining_non_blocking": [
+    "Task #1869 display title was rewritten incorrectly by the live task parser; metadata/raw packet content remained correct."
+  ]
+}

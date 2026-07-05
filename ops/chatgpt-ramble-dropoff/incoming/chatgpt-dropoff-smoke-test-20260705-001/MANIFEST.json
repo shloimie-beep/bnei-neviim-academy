@@ -1,0 +1,70 @@
+{
+  "packet_id": "chatgpt-dropoff-smoke-test-20260705-001",
+  "schema_version": "bna.chatgpt_dropoff_manifest.v1",
+  "packet_type": "memory_candidate",
+  "status": "ready_for_codex_audit",
+  "target_folder": "ops/chatgpt-ramble-dropoff/incoming/chatgpt-dropoff-smoke-test-20260705-001/",
+  "required_files": [
+    "packet.json",
+    "RAW.md",
+    "CODEX_PROMPT.md",
+    "MANIFEST.json",
+    "status.json",
+    "PATCHES.md"
+  ],
+  "proposed_repo_changes": [],
+  "tests_expected": [
+    "npm run chatgpt:dropoff:comments:apply",
+    "npm run chatgpt:dropoff:apply"
+  ],
+  "source_statement_coverage": [
+    {
+      "statement_id": "CHATGPT-DROPOFF-SMOKE-20260705-001-S001",
+      "statement": "Create one safe memory_candidate dropoff packet with exact ID chatgpt-dropoff-smoke-test-20260705-001.",
+      "covered_by": [
+        "packet.json",
+        "status.json"
+      ]
+    },
+    {
+      "statement_id": "CHATGPT-DROPOFF-SMOKE-20260705-001-S002",
+      "statement": "Prefer repo-file packet mode under ops/chatgpt-ramble-dropoff/incoming; if blocked by read-only/403, post one marked GitHub PR comment on PR #90.",
+      "covered_by": [
+        "RAW.md",
+        "CODEX_PROMPT.md",
+        "MANIFEST.json"
+      ]
+    },
+    {
+      "statement_id": "CHATGPT-DROPOFF-SMOKE-20260705-001-S003",
+      "statement": "Do not edit app/source files or include secrets, private data, credentials, contact exports, or raw private messages.",
+      "covered_by": [
+        "packet.json",
+        "RAW.md",
+        "CODEX_PROMPT.md",
+        "PATCHES.md"
+      ]
+    }
+  ],
+  "expected_evidence": [
+    "GitHub comment URL on PR #90 or materialized packet folder path.",
+    "Collector/ingestor command output or exact blocker.",
+    "Confirmation that app/source files were not changed.",
+    "Confirmation that no secrets/private data were included."
+  ],
+  "handback_fields": [
+    "collection_mode",
+    "materialized_packet_path_or_blocker",
+    "commands_run",
+    "evidence_paths",
+    "app_source_files_changed",
+    "secrets_or_private_data_included"
+  ],
+  "safety": {
+    "secrets_included": false,
+    "private_data_included": false,
+    "external_writes_performed": false,
+    "app_source_edits_performed": false,
+    "production_code_generated": false
+  }
+}

@@ -339,9 +339,9 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
 test('public OneTime draft page is noindex, interest-only, and has no checkout call', () => {
   assert.match(oneTimeHtml, /<meta name="robots" content="noindex, nofollow">/);
   assert.match(oneTimeHtml, /OneTimeOneTime Mishnah/);
-  assert.match(oneTimeHtml, /Learn Mishnayos Live with Rabbi Eli Scheller/);
-  assert.match(oneTimeHtml, /\$67 USD per month after a 30-day free trial/);
-  assert.match(oneTimeHtml, /START 30 DAYS FREE/);
+  assert.match(oneTimeHtml, /Your Child Can Love Learning Mishnayos/);
+  assert.match(oneTimeHtml, /Start 30 Days Free/);
+  assert.match(oneTimeHtml, /#start-free/);
   assert.match(oneTimeHtml, /\/api\/one-time\/campaign/);
   assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
   assert.match(oneTimeHtml, /Consent is required before submitting/);

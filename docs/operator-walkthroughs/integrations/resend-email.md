@@ -2,6 +2,8 @@
 
 Updated: 2026-06-29
 
+Setup Center anchor: `/integration-setup.html#resend-email`
+
 Use this for OneTimeOneTime Mishnah email setup. Do not paste secrets into
 chat, docs, screenshots, or tracked files.
 

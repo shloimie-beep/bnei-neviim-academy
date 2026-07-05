@@ -22,8 +22,9 @@ const { runAction } = actionRunner;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
-const runPath = path.join(repoRoot, 'ops', 'execution-runs', '2026-06-24-issue-20-parent-run');
 const evidenceDir = path.join(repoRoot, 'ops', 'agent-fleet-hardening');
+const defaultRunRelativePath = 'ops/execution-runs/2026-06-24-issue-20-parent-run';
+const defaultAgentFleetRequirementId = 'REQ-20260624-045';
 
 function nowIso() {
   return new Date().toISOString();
@@ -45,10 +46,121 @@ function readJson(relativePath, fallback = {}) {
 
 function gitValue(args = []) {
   try {
-    return execFileSync('git', args, { cwd: repoRoot, encoding: 'utf8' }).trim();
+    return execFileSync('git', args, {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
   } catch {
     return '';
   }
+}
+
+function gitOptionalValue(args = []) {
+  try {
+    return {
+      value: execFileSync('git', args, {
+        cwd: repoRoot,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      }).trim(),
+      missing: false,
+      error: '',
+    };
+  } catch (error) {
+    const message = String(error?.stderr || error?.message || '');
+    return {
+      value: '',
+      missing: /@\{u\}|upstream|unknown revision/i.test(message),
+      error: message,
+    };
+  }
+}
+
+function normalizeRelativePath(value = '') {
+  return String(value || '').replace(/\\/g, '/').replace(/^\.?\//, '').replace(/\/+$/, '');
+}
+
+function relativePathExists(relativePath = '') {
+  return Boolean(relativePath) && fs.existsSync(path.join(repoRoot, relativePath));
+}
+
+function resolveActiveRunRelativePath(latest = {}) {
+  const activeRunPath = normalizeRelativePath(latest.path);
+  if (
+    activeRunPath
+    && relativePathExists(path.join(activeRunPath, 'run.json'))
+    && relativePathExists(path.join(activeRunPath, 'requirements.json'))
+  ) {
+    return activeRunPath;
+  }
+  return defaultRunRelativePath;
+}
+
+function findAgentFleetRequirementIds(requirements = {}) {
+  const reqs = Array.isArray(requirements.requirements) ? requirements.requirements : [];
+  return reqs
+    .filter((item) => {
+      const haystack = [
+        item.id,
+        item.title,
+        item.category,
+        item.expected_result,
+        item.implementation_status,
+      ].map((part) => String(part || '')).join(' ');
+      return /agent[_ -]?fleet|background agent|fleet status/i.test(haystack);
+    })
+    .map((item) => item.id)
+    .filter(Boolean);
+}
+
+function laneStatusFromRequirements(requirements = {}, requirementIds = []) {
+  const reqs = Array.isArray(requirements.requirements) ? requirements.requirements : [];
+  const statuses = reqs
+    .filter((item) => requirementIds.includes(item.id))
+    .map((item) => String(item.status || '').toLowerCase())
+    .filter(Boolean);
+  if (!statuses.length) return 'queued';
+  if (statuses.every((status) => status === 'done' || status === 'already_satisfied')) return 'done';
+  if (statuses.some((status) => status === 'blocked' || status === 'needs_operator_decision')) return 'blocked';
+  if (statuses.some((status) => status === 'in_progress' || status === 'running')) return 'running';
+  if (statuses.some((status) => status === 'failed')) return 'failed';
+  return 'queued';
+}
+
+function synthesizeLaneManifest({ runRelativePath, run = {}, requirements = {} }) {
+  const agentFleetRequirementIds = findAgentFleetRequirementIds(requirements);
+  return {
+    run_id: run.run_id || path.basename(runRelativePath),
+    updated_at: nowIso(),
+    parent_run_path: runRelativePath,
+    active_pointer_owner: 'parent',
+    generated_from: 'active_run_requirements_without_lane_manifest',
+    lanes: agentFleetRequirementIds.length
+      ? [{
+          lane_id: 'agent-fleet',
+          requirement_ids: agentFleetRequirementIds,
+          status: laneStatusFromRequirements(requirements, agentFleetRequirementIds),
+        }]
+      : [],
+  };
+}
+
+function readRunBundle(runRelativePath) {
+  const run = readJson(path.join(runRelativePath, 'run.json'));
+  const requirements = readJson(path.join(runRelativePath, 'requirements.json'));
+  const laneManifest = readJson(path.join(runRelativePath, 'LANE-MANIFEST.json'), null)
+    || synthesizeLaneManifest({ runRelativePath, run, requirements });
+  const agentFleetRequirementIds = findAgentFleetRequirementIds(requirements);
+  return {
+    run,
+    requirements,
+    laneManifest,
+    agentFleetRequirementId: agentFleetRequirementIds[0] || defaultAgentFleetRequirementId,
+    finalRequirementId: agentFleetRequirementIds[0]?.startsWith('REQ-20260702')
+      ? null
+      : 'REQ-20260624-048',
+  };
 }
 
 function parseArgs(argv = process.argv.slice(2)) {
@@ -62,9 +174,12 @@ function parseArgs(argv = process.argv.slice(2)) {
   return args;
 }
 
-async function buildSyntheticProof(reportPath = '') {
+async function buildSyntheticProof(reportPath = '', context = {}) {
   const repo = 'shloimie-beep/bnei-neviim-academy';
   const commentId = '999045';
+  const agentRunId = context.runId || '2026-06-24-issue-20-parent-run';
+  const requirementId = context.requirementId || defaultAgentFleetRequirementId;
+  const rawId = context.rawId || 'RAW-20260624-009';
   const issue = {
     number: 20,
     title: 'Synthetic Issue #20 Batch E agent-fleet proof',
@@ -86,13 +201,13 @@ async function buildSyntheticProof(reportPath = '') {
     },
   ];
   const intakePreview = buildGitHubIntakePreview({ repo, issue, comments, commentId });
-  const syntheticId = stableSyntheticId([repo, issue.number, commentId, 'REQ-20260624-045']);
+  const syntheticId = stableSyntheticId([repo, issue.number, commentId, requirementId]);
   const packet = buildAgentResultPacket({
-    source_raw_id: 'RAW-20260624-009',
+    source_raw_id: rawId,
     task_id: 45045,
     agent_job_id: 77045,
-    requirement_id: 'REQ-20260624-045',
-    agent_run_id: '2026-06-24-issue-20-parent-run',
+    requirement_id: requirementId,
+    agent_run_id: agentRunId,
     branch: gitValue(['branch', '--show-current']) || 'codex/issue-20-parent-run-20260624',
     worktree: repoRoot,
     commit: gitValue(['rev-parse', '--short=12', 'HEAD']),
@@ -130,9 +245,9 @@ async function buildSyntheticProof(reportPath = '') {
     status: {
       status: 'blocked_live_pending',
       summary: 'Synthetic local proof: background claim, result API preview, Operations activity preview, and same-thread GitHub status preview completed without external writes.',
-      raw_id: 'RAW-20260624-009',
-      requirement_id: 'REQ-20260624-045',
-      run_id: '2026-06-24-issue-20-parent-run',
+      raw_id: rawId,
+      requirement_id: requirementId,
+      run_id: agentRunId,
       branch: packet.branch,
       commit: packet.commit,
       pull_request: 'pending',
@@ -178,7 +293,7 @@ async function buildSyntheticProof(reportPath = '') {
         external_write_performed: githubStatus.external_write_performed,
       },
       parent_closeout_preview: {
-        requirement_id: 'REQ-20260624-045',
+        requirement_id: requirementId,
         terminal_status_if_real: 'done_or_blocked_after_validation',
         parent_run_not_marked_complete: true,
       },
@@ -188,15 +303,24 @@ async function buildSyntheticProof(reportPath = '') {
 
 async function buildReport() {
   const latest = readJson('ops/execution-runs/latest.json');
-  const run = readJson('ops/execution-runs/2026-06-24-issue-20-parent-run/run.json');
-  const laneManifest = readJson('ops/execution-runs/2026-06-24-issue-20-parent-run/LANE-MANIFEST.json');
-  const requirements = readJson('ops/execution-runs/2026-06-24-issue-20-parent-run/requirements.json');
+  const activeRunPath = resolveActiveRunRelativePath(latest);
+  const { run, laneManifest, requirements, agentFleetRequirementId, finalRequirementId } = readRunBundle(activeRunPath);
+  const upstream = gitOptionalValue(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']);
   const git = {
     branch: gitValue(['branch', '--show-current']),
     head: gitValue(['rev-parse', '--short=12', 'HEAD']),
-    upstream: gitValue(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']),
+    upstream: upstream.value,
+    upstream_missing: upstream.missing,
   };
-  const parentAudit = buildParentCoordinationAudit({ latest, run, laneManifest, requirements, git });
+  const parentAudit = buildParentCoordinationAudit({
+    latest,
+    run,
+    laneManifest,
+    requirements,
+    git,
+    expectedAgentFleetRequirementId: agentFleetRequirementId,
+    finalRequirementId,
+  });
   const shortcutMatrix = buildStartupShortcutMatrix({ repoRoot, script: 'scripts/start-agent-fleet.ps1', watchdogScript: 'scripts/start-watchdog.ps1' });
   const permissionChecks = [
     'npm test',
@@ -205,10 +329,15 @@ async function buildReport() {
     'APPLY_GUARDED_CLASS_BACKFILL=true npm run class:backfill',
     'node scripts/send-parent-update.mjs --send',
   ].map((command) => ({ command, ...classifyAgentFleetCommand(command) }));
-  const syntheticProof = await buildSyntheticProof('ops/agent-fleet-hardening/latest-agent-fleet-readiness.md');
+  const syntheticProof = await buildSyntheticProof('ops/agent-fleet-hardening/latest-agent-fleet-readiness.md', {
+    runId: run.run_id,
+    requirementId: agentFleetRequirementId,
+    rawId: run.raw_id,
+  });
   return {
     generated_at: nowIso(),
-    requirement_id: 'REQ-20260624-045',
+    active_run_path: activeRunPath,
+    requirement_id: agentFleetRequirementId,
     report_version: 'bna-agent-fleet-readiness-v1',
     ok: parentAudit.ok && syntheticProof.external_write_performed === false,
     permission_tiers: AGENT_FLEET_PERMISSION_TIERS,
