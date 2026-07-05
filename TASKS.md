@@ -10,11 +10,12 @@ not authorize active GHL runtime paths.
   `REQ-20260705-806`: Telegram Drive sync OAuth error and cleanup
   continuation. Register:
   `tasks-pending/2026-07-05-telegram-drive-sync-oauth-error-and-cleanup-continuation.md`.
-  Current status: local code fix is verified for the deployed content-library
-  sync auth regression, and the local Telegram bridge now reports
-  `blocked_conflict` instead of pretending to run when another bot poller owns
-  `@bneineviimacademy_bot`. Pending: commit/push/PR, deploy or restart the
-  correct BNA `skillful-motivation` runtime, and resume broader repo cleanup.
+  Current status: PR #101 merged at `22b774cd`, the BNA web service deployed
+  that commit, and `skillful-motivation / academy-telegram-worker` deployment
+  `f4acc3d5-7468-4584-9b08-c17e96bc80a2` reached `SUCCESS`. Post-deploy
+  worker logs show clean startup and no new Google OAuth JSON error or Telegram
+  duplicate-poller conflict in the checked window. Pending: resume broader
+  repo cleanup/hardening under `REQ-20260705-806`.
 - [ ] `RAW-20260705-010` / `REQ-20260705-601` through `REQ-20260705-608`:
   Repo release workflow and Rabbi Drive email reminder cleanup. Register:
   `tasks-pending/2026-07-05-repo-release-workflow-and-drive-email.md`.
@@ -24,7 +25,7 @@ not authorize active GHL runtime paths.
   emails. Scheduler hardening was merged through PR #100; stale draft PRs
   #51/#62/#63 were closed as conflict-stale rather than broad-merged. Pending
   before the broader workflow is clean: active-run blocker reconciliation,
-  agent-fleet policy/readiness cleanup, BNA Telegram worker deploy/readback,
+  agent-fleet policy/readiness cleanup, remaining stale dirty artifact triage,
   and valid Operations credentials for logged-in One Time visual proof.
 - [x] `RAW-20260705-009` / `REQ-20260705-501` through `REQ-20260705-510`:
   Correct the One Time canonical target-routing mistake. The BNA-hosted
