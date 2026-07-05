@@ -6,6 +6,21 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-05T07:08:27+03:00 - Studio content engine PR opened
+
+Opened PR #89 for `codex/studio-content-engine-release-20260704`, stacked on
+PR #87 (`codex/rabbi-onetime-ui-cleanup-release-20260703`):
+https://github.com/shloimie-beep/bnei-neviim-academy/pull/89
+
+GitHub readback:
+- PR #89 is open, ready for review, mergeable, and `mergeStateStatus=CLEAN`.
+- Branch was pushed to origin.
+
+Remaining:
+- PR #89 depends on PR #87.
+- Production deploy/live smoke remains blocked by the BNA release gate and
+  missing external/integration readbacks.
+
 ## 2026-07-04T21:56:41+03:00 - Studio content engine release branch validated
 
 Prepared clean branch `codex/studio-content-engine-release-20260704` stacked on

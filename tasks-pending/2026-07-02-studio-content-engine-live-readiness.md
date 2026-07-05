@@ -92,7 +92,8 @@ Verification run:
 |---|---|
 | Release branch | `codex/studio-content-engine-release-20260704` |
 | Base branch | `codex/rabbi-onetime-ui-cleanup-release-20260703` |
-| PR URL | pending after push |
+| PR URL | https://github.com/shloimie-beep/bnei-neviim-academy/pull/89 |
+| PR readback | open, ready for review, mergeable, `mergeStateStatus=CLEAN` as of 2026-07-05T07:08:27+03:00 |
 | Scope | Studio content engine prompt-layer/library/review-pack evidence and tests stacked on PR #87 |
 | Production deploy | not performed |
 | Live smoke | blocked until PR #87 and this stacked Studio branch are released through the production gate |
