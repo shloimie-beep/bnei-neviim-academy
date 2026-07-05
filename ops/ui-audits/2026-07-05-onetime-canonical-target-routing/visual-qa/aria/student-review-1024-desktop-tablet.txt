@@ -1,0 +1,118 @@
+- banner:
+  - strong: OneTimeOneTime
+  - text: Student review portal
+  - link "One Time":
+    - /url: /one-time
+  - link "Parent":
+    - /url: /parent.html?review=one-time
+  - link "Classroom":
+    - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+  - text: No bot / no BNA goals
+- main:
+  - paragraph: OneTimeOneTime Mishnah
+  - heading "TEST Student One Time" [level=1]
+  - paragraph: Student dashboard for live Mishnayos, video review, worksheets, badges, and progress. This review uses TEST-only class data and excludes BNA school accountability goals.
+  - button "Review"
+  - complementary "Student navigation":
+    - text: One Time Classroom
+    - strong: TEST Student One Time
+    - text: TEST Weekly Mishnah Live Class
+    - article:
+      - strong: 39/45 min
+      - text: Attendance
+    - article:
+      - strong: 42%
+      - text: Progress
+    - article:
+      - strong: active for review
+      - text: Trial/access
+    - text: This Week
+    - article:
+      - strong: TEST Weekly Mishnah Live Class
+      - text: Pesachim Perek 10 Mishnah 1-2
+    - navigation "Student portal sections":
+      - link "Overview":
+        - /url: "#reviewOverview"
+      - link "Class":
+        - /url: "#reviewClass"
+      - link "Library":
+        - /url: "#reviewLibrary"
+      - link "Progress":
+        - /url: "#reviewProgress"
+      - link "Questions/support":
+        - /url: "#reviewQuestions"
+  - paragraph: One Time student review
+  - heading "TEST Student One Time" [level=2]
+  - paragraph: This view focuses the student on live class, review video, worksheet, badges, attendance, and reward progress using only this TEST student's One Time records.
+  - article:
+    - strong: 42%
+    - text: Course progress
+  - article:
+    - strong: 87%
+    - text: Attendance
+  - article:
+    - strong: First Class
+    - text: Achievement
+  - article:
+    - strong: ready for rabbi review
+    - text: Reward
+  - text: Portal boundary
+  - heading "One Time only" [level=2]
+  - paragraph: This student portal shows Mishnayos class records, classroom/library progress, worksheets, private Rabbi questions, badges, achievements, and rewards for One Time.
+  - text: No bot / no BNA goals BNA school accountability goals, checkoffs, consequences, device controls, and other household/student records stay out of the One Time Rabbi Scheller workspace. Live class
+  - heading "TEST Weekly Mishnah Live Class" [level=2]
+  - paragraph: Pesachim / Perek 10 / Mishnah 1-2
+  - text: Protected join class ready for review The portal shows readiness and access rules. No real Zoom meeting was created for this review fixture.
+  - article:
+    - heading "Lesson" [level=2]
+    - paragraph:
+      - strong: Pesachim Perek 10 - Seder Night Review
+    - paragraph: Pesachim Foundations
+  - article:
+    - heading "Video/library" [level=2]
+    - paragraph:
+      - strong: Pesachim Perek 10 Review Class
+    - paragraph: Vimeo manual/sample reference
+    - paragraph:
+      - link "Open classroom/library":
+        - /url: https://join.onetimeonetime.com/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+  - article:
+    - heading "Worksheet/resource" [level=2]
+    - paragraph:
+      - strong: TEST Pesachim Perek 10 Worksheet
+    - paragraph:
+      - link "Open resource":
+        - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS#worksheets
+  - article:
+    - heading "Attendance" [level=2]
+    - paragraph:
+      - strong: 39 exact minutes
+    - paragraph: partial_present / late_approved
+  - article:
+    - heading "Announcement" [level=2]
+    - paragraph:
+      - strong: Welcome to the TEST One Time cohort
+    - paragraph: This announcement is safe test content for the review walkthrough.
+  - article:
+    - heading "Achievement and reward" [level=2]
+    - paragraph:
+      - strong: First Class
+    - paragraph: Individual Review Reward / ready_for_rabbi_review
+  - article:
+    - heading "Private question" [level=2]
+    - paragraph:
+      - strong: Private question about the Mishnah
+    - paragraph: Can Rabbi explain why this time is used for Shema?
+    - text: Ask Rabbi / support
+    - textbox "Ask Rabbi / support":
+      - /placeholder: Type a review-only question
+    - button "Submit preview"
+  - article:
+    - heading "Support ticket" [level=2]
+    - paragraph:
+      - strong: Worksheet link question
+    - paragraph: TEST parent asked where the worksheet is located.
+    - text: open_for_review
+  - article:
+    - heading "Not shown" [level=2]
+    - paragraph: General study assistants, accountability-goal tooling, and unrelated student records are not included in this review mode.

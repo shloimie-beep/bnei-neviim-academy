@@ -1,0 +1,84 @@
+- banner:
+  - strong: OneTimeOneTime
+  - text: Eli Scheller program workspace
+  - link "One Time":
+    - /url: /one-time
+  - link "Parent":
+    - /url: /parent.html?review=one-time
+  - link "Student":
+    - /url: /student.html?review=one-time
+  - link "Classroom":
+    - /url: /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+  - link "Email Review":
+    - /url: /one-time-email-review.html
+  - text: TEST review mode
+- main:
+  - heading "Eli Scheller Workspace" [level=1]
+  - paragraph: Scoped OneTimeOneTime CRM, content, automations, users, settings, payments, and portals. No cross-account super-admin access.
+  - button "Close Preview"
+  - navigation "Provider workspace sections":
+    - strong: OneTimeOneTime Mishnah
+    - text: rabbi_sheller_provider one_time_mishnah_class Scoped provider workspace
+    - strong: Rabbi Eli Scheller
+    - text: "Login: ELISHELLER whatsapp_handoff_pending"
+    - link "Landing Open":
+      - /url: https://join.onetimeonetime.com/one-time
+    - link "Parent View Open":
+      - /url: https://join.onetimeonetime.com/parent.html?review=one-time
+    - link "Student View Open":
+      - /url: https://join.onetimeonetime.com/student.html?review=one-time
+    - link "Classroom Open":
+      - /url: https://join.onetimeonetime.com/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+    - text: Workspace
+    - button "Dashboard"
+    - button "Users"
+    - text: Growth
+    - button "CRM"
+    - button "Content"
+    - text: Operations
+    - button "Automations"
+    - button "Badges"
+    - button "Communications"
+    - text: Program
+    - button "Live Class"
+    - button "Library"
+    - text: Business
+    - button "Payments"
+    - button "Integrations"
+    - text: Configuration
+    - button "Settings"
+    - button "Support"
+  - heading "Overview" [level=2]
+  - paragraph: Your provider workspace summary. Public profile and service changes stay pending review until BNA approves them.
+  - strong: One Time
+  - text: Branded review workspace
+  - strong: ELISHELLER
+  - text: Owner login username
+  - strong: "4"
+  - text: Workspace users
+  - strong: "2"
+  - text: CRM/support items
+  - strong: 39/45
+  - text: Attendance minutes
+  - strong: "21"
+  - text: Email previews
+  - article:
+    - heading "Rabbi/provider owner" [level=3]
+    - paragraph: Rabbi Eli Scheller
+    - text: workspace_owner
+  - article:
+    - heading "Login identity" [level=3]
+    - paragraph: Username ELISHELLER is mapped. Password handoff is WhatsApp-only and was not sent from this review.
+    - text: whatsapp_handoff_pending
+  - article:
+    - heading "Shloimie admin/manager" [level=3]
+    - paragraph: Shloimie
+    - text: workspace_admin
+  - article:
+    - heading "TEST parent" [level=3]
+    - paragraph: TEST Parent One Time sees only TEST Student One Time
+    - text: parent
+  - article:
+    - heading "TEST student" [level=3]
+    - paragraph: TEST Student One Time has no bot or BNA accountability goals in review mode
+    - text: student

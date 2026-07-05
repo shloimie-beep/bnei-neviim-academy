@@ -1,0 +1,105 @@
+- text: 30 DAYS TO JOIN - START WITH 30 DAYS FREE Enrollment deadline will be posted before launch
+- banner:
+  - link "OneTimeOneTime Mishnah home":
+    - /url: /one-time
+    - strong: OneTimeOneTime Mishnah
+    - text: Worldwide Live Mishnayos
+  - navigation "One Time navigation":
+    - link "Watch":
+      - /url: "#watch"
+    - link "Program":
+      - /url: "#program"
+    - link "How It Works":
+      - /url: "#how-it-works"
+    - link "FAQ":
+      - /url: "#faq"
+    - link "Start Free":
+      - /url: "#start-free"
+    - link "Member Login":
+      - /url: /rabbi-member
+- main:
+  - paragraph: WORLDWIDE LIVE MISHNAYOS
+  - heading "Your Child Can Love Learning Mishnayos" [level=1]
+  - paragraph: Join the daily live Mishnayos class built for kids - exciting, clear, accountable, and connected to Rabbi Eli Scheller.
+  - paragraph: Starting from the beginning on Rosh Chodesh Elul. Students learn every day, review clearly, track their progress, and become part of one of the most engaging Mishnayos classes in the world.
+  - link "Start 30 Days Free":
+    - /url: "#start-free"
+  - link "See How It Works":
+    - /url: "#how-it-works"
+  - paragraph: No pressure. Try the class, worksheets, portal, and parent tracking for 30 days.
+  - text: Live class Clear review Worksheets Parent tracking THE ONETIMEONETIME MISHNAH CLASS - LIVE LEARNING - CLEAR REVIEW - DAILY ACCOUNTABILITY - FINISH MISHNAYOS THE ONETIMEONETIME MISHNAH CLASS - LIVE LEARNING - CLEAR REVIEW - DAILY ACCOUNTABILITY - FINISH MISHNAYOS THE ONETIMEONETIME MISHNAH CLASS - LIVE LEARNING - CLEAR REVIEW - DAILY ACCOUNTABILITY - FINISH MISHNAYOS
+  - region "AS SEEN ACROSS THE JEWISH WORLD:":
+    - heading "AS SEEN ACROSS THE JEWISH WORLD:" [level=2]
+    - img "TorahAnytime"
+    - img "24Six"
+    - img "The Loop"
+    - img "Mishpacha"
+    - text: Naki
+  - paragraph: INSIDE THE PROGRAM
+  - heading "Live learning, review, and follow-through in one simple rhythm." [level=2]
+  - paragraph: "The class is designed to keep kids excited while giving parents a clear structure: live shiur, practical review, worksheets, attendance tracking, and steady progress toward finishing Mishnayos."
+  - article:
+    - heading "Live Class" [level=3]
+    - paragraph: Students join the shiur live and learn with the energy of a real class.
+  - article:
+    - heading "Clear Review" [level=3]
+    - paragraph: Each lesson is reinforced with review and practical worksheets so the learning sticks.
+  - article:
+    - heading "Steady Progress" [level=3]
+    - paragraph: Kids see their progress, parents can track attendance, and the class keeps moving toward a real goal.
+  - paragraph: WHO IT'S FOR
+  - heading "Built for kids who need Mishnayos to feel alive." [level=2]
+  - paragraph: This is for families who want more than another recording. The class gives kids a live rebbi, a real schedule, a portal, accountability, and a worldwide group of students learning together.
+  - list:
+    - listitem: Kids who learn better with energy and interaction
+    - listitem: Parents who want clear attendance and progress tracking
+    - listitem: Families who want a serious daily Mishnayos structure
+    - listitem: Students who want to ask questions and communicate with the rabbi
+  - paragraph: WHAT STUDENTS RECEIVE
+  - heading "Everything your child needs to stay connected." [level=2]
+  - text: Daily live Mishnayos shiur Access link through the student portal Worksheets and review materials Attendance tracking for parents Progress path toward finishing Mishnayos Student communication with the rabbi Worldwide class energy Clear structure between shiurim
+  - paragraph: HOW IT WORKS
+  - heading "They don't just join a class. They join a mission." [level=2]
+  - paragraph: Over two and a half years, students move through Mishnayos with consistency, clarity, and excitement. The goal is not only to cover material. The goal is for kids to enjoy learning, stay accountable, and feel proud of their progress.
+  - link "Start 30 Days Free":
+    - /url: "#start-free"
+  - paragraph: FAQ
+  - heading "Quick answers before you start." [level=2]
+  - group: When does the program start?
+  - group: Is it live or recorded?
+  - group: Can parents track attendance?
+  - group: Can students contact the rabbi?
+  - group: How long does it take to finish Mishnayos?
+  - group: Is there a free trial?
+  - paragraph: START FREE
+  - heading "Start with 30 days free." [level=2]
+  - paragraph: Let your child experience the class, the energy, the worksheets, the portal, and the accountability before committing.
+  - link "Member Login":
+    - /url: /rabbi-member
+  - text: Parent name
+  - textbox "Parent name"
+  - text: Email
+  - textbox "Email"
+  - text: Phone / WhatsApp
+  - textbox "Phone / WhatsApp"
+  - text: Region
+  - button "Region": US
+  - text: Notes
+  - textbox "Notes":
+    - /placeholder: Best time zone, child's age range, or class questions
+  - checkbox "I agree to be contacted about OneTimeOneTime Mishnayos and the 30-day free trial."
+  - text: I agree to be contacted about OneTimeOneTime Mishnayos and the 30-day free trial.
+  - button "Start Free"
+  - paragraph
+- contentinfo:
+  - strong: OneTimeOneTime Mishnayos
+  - paragraph: Copyright 2026 OneTimeOneTime Mishnayos. Review-only launch funnel.
+  - navigation "One Time footer navigation":
+    - link "One Time":
+      - /url: /one-time
+    - link "Privacy":
+      - /url: /one-time/privacy.html
+    - link "Terms":
+      - /url: /one-time/terms.html
+    - link "Member Login":
+      - /url: /rabbi-member
