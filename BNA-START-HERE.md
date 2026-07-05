@@ -26,6 +26,9 @@ Verified baseline:
   `ops/execution-runs/2026-06-24-issue-20-parent-run/NEXT-SESSION.md`.
 
 1. Read `AGENTS.md`, then `docs/BNA-RAMBLE-TO-DONE.md`.
+   For GitHub-connected ChatGPT sessions that are preparing work for Codex,
+   also read `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md` and
+   `ops/chatgpt-ramble-dropoff/README.md`.
 2. Inspect the active execution run:
    - `ops/execution-runs/latest.json`
    - the run folder it points to
@@ -51,5 +54,25 @@ Verified baseline:
     duplicate parser fan-out into default visible user Tasks. They belong in
     Codex/Agent work, evidence, or archived provenance unless distilled into a
     canonical human action.
+11. For no-paste ChatGPT-to-Codex work, use repo-file packet mode first:
+    `ops/chatgpt-ramble-dropoff/incoming/<packet-id>/` with `status.json` set
+    to `ready_for_codex_audit` or `ready_for_codex_pickup`. The agent fleet
+    auto-scans repo-visible ready packets. If ChatGPT can only comment, it must
+    post a marked `BNA_CHATGPT_DROPOFF_PACKET` GitHub issue/PR comment with the
+    complete packet file contents; the comment collector can convert trusted
+    marked comments into packet folders. Drive files still need a separate
+    watcher/connector.
+12. GitHub-connected ChatGPT sees committed/pushed GitHub state, not Codex's
+    local dirty worktree. If a directive, prompt packet, memory rule, or
+    workflow change is meant for ChatGPT to read through GitHub, Codex must
+    commit and push the scoped change or say it is still local-only.
+13. Codex closeout defaults to clean, verify, commit, push, and, for
+    app-visible or server-visible work, deploy/live-smoke through the approved
+    release gate. Do not ship unrelated dirty files or another active Codex
+    window's unfinished changes.
+14. ChatGPT sidekick preference/memory updates should be handed off as marked
+    repo-file or GitHub-comment packets with `packet_type` such as
+    `memory_candidate` or `preference_update`. Codex audits and promotes them;
+    ChatGPT output is not durable memory by itself.
 
 The durable protocol is `docs/BNA-RAMBLE-TO-DONE.md`.

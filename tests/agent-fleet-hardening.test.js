@@ -48,6 +48,7 @@ test('parent coordination audit catches pointer drift and duplicate canonical ta
       parent_branch: 'codex/issue-20-parent-run-20260624',
       lanes: [
         { lane_id: 'agent-fleet', status: 'queued', requirement_ids: ['REQ-20260624-045'] },
+        { lane_id: 'final-integration', status: 'done', requirement_ids: ['REQ-20260624-048'] },
       ],
     },
     requirements: {
@@ -93,14 +94,76 @@ test('startup shortcut matrix exposes start stop restart status and open-log con
 test('supervisor and Windows launchers wire the hardening controls', async () => {
   const supervisor = fs.readFileSync('scripts/agent-fleet-supervisor.mjs', 'utf8');
   const fleetPs1 = fs.readFileSync('scripts/start-agent-fleet.ps1', 'utf8');
+  const fleetStartupPs1 = fs.readFileSync('scripts/register-agent-fleet-startup.ps1', 'utf8');
+  const fleetStartupVbs = fs.readFileSync('scripts/run-agent-fleet-startup.vbs', 'utf8');
   const watchdogPs1 = fs.readFileSync('scripts/start-watchdog.ps1', 'utf8');
   const supervisorModule = await import(pathToFileURL(path.join(process.cwd(), 'scripts', 'agent-fleet-supervisor.mjs')).href);
+  const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
   assert.equal(supervisorModule.AGENT_FLEET_PERMISSION_TIERS.tier_3.blocked_by_default, true);
   assert.equal(supervisorModule.classifyAgentFleetCommand('node scripts/send.mjs --send').tier, 3);
+  assert.equal(
+    supervisorModule.buildTaskQueueReconcilerCommand({ dryRun: true }),
+    'node scripts/task-queue-reconciler.mjs --no-telegram',
+  );
+  assert.equal(
+    supervisorModule.buildTaskQueueReconcilerCommand({ dryRun: false }),
+    'node scripts/task-queue-reconciler.mjs --apply --no-telegram',
+  );
+  assert.equal(
+    supervisorModule.buildChatGptDropoffIngestCommand({ dryRun: false }, { chatGptDropoffLimit: 3 }),
+    'node scripts/chatgpt-dropoff-ingestor.mjs --apply --json --limit 3',
+  );
+  assert.equal(
+    supervisorModule.buildChatGptDropoffIngestCommand({ dryRun: true }, { chatGptDropoffLimit: 3 }),
+    'node scripts/chatgpt-dropoff-ingestor.mjs --json --limit 3',
+  );
+  assert.equal(
+    supervisorModule.buildChatGptDropoffCommentCollectCommand({ dryRun: false }, { chatGptDropoffCommentLimit: 5 }),
+    'node scripts/chatgpt-dropoff-comment-collector.mjs --apply --json --limit 5',
+  );
+  assert.equal(
+    supervisorModule.buildChatGptDropoffCommentCollectCommand({ dryRun: true }, { chatGptDropoffCommentLimit: 5 }),
+    'node scripts/chatgpt-dropoff-comment-collector.mjs --json --limit 5',
+  );
+  assert.deepEqual(
+    supervisorModule.filterObservableJobsForClaim(
+      [
+        { id: 10, task_id: 501, status: 'queued' },
+        { id: 11, task_id: 502, status: 'queued' },
+        { id: 12, status: 'queued' },
+      ],
+      [
+        { id: 501, stage: 'assigned', assigned_to: 'Codex' },
+        { id: 502, stage: 'done', assigned_to: 'Codex' },
+      ],
+      { tasks: {} },
+      { taskTimeoutMs: 1000, maxRetries: 2 },
+    ).map((job) => job.id),
+    [10],
+  );
   assert.match(supervisor, /permission_tier_3_blocked/);
   assert.match(supervisor, /Permission tiers: Tier 0/);
   assert.match(supervisor, /redactAgentFleetText/);
+  assert.match(supervisor, /runChatGptDropoffCommentCollectBeforeClaim/);
+  assert.match(supervisor, /AGENT_FLEET_CHATGPT_COMMENT_COLLECT/);
+  assert.match(fleetStartupPs1, /\$createArgs = @\("\/Create"/);
+  assert.match(fleetStartupPs1, /schtasks\.exe @createArgs/);
+  assert.match(fleetStartupPs1, /"\/SC", "ONLOGON"/);
+  assert.match(fleetStartupPs1, /run-agent-fleet-startup\.vbs/);
+  assert.match(fleetStartupPs1, /\[Environment\]::GetFolderPath\("Startup"\)/);
+  assert.match(fleetStartupPs1, /BNA-Agent-Fleet\.vbs/);
+  assert.match(fleetStartupPs1, /installed user Startup fallback instead/);
+  assert.match(fleetStartupVbs, /start-agent-fleet\.ps1/);
+  assert.match(fleetStartupVbs, /shell\.Run command, 0, False/);
+  assert.equal(
+    packageJson.scripts['agent:fleet:register-startup'],
+    'powershell -ExecutionPolicy Bypass -File scripts/register-agent-fleet-startup.ps1',
+  );
+  assert.equal(
+    packageJson.scripts['chatgpt:dropoff:comments:apply'],
+    'node scripts/chatgpt-dropoff-comment-collector.mjs --apply --json',
+  );
 
   for (const script of [fleetPs1, watchdogPs1]) {
     assert.match(script, /\[switch\]\$Stop/);

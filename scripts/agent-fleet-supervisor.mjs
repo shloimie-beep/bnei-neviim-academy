@@ -174,6 +174,7 @@ function parseArgs(argv) {
     noDeploy: false,
     noTelegram: false,
     noReconcile: false,
+    noChatGptDropoff: false,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -186,6 +187,7 @@ function parseArgs(argv) {
     else if (arg === '--no-deploy') args.noDeploy = true;
     else if (arg === '--no-telegram') args.noTelegram = true;
     else if (arg === '--no-reconcile') args.noReconcile = true;
+    else if (arg === '--no-chatgpt-dropoff') args.noChatGptDropoff = true;
     else if (arg === '--max-tasks') args.maxTasks = Number(argv[++index] || 0);
     else if (arg.startsWith('--max-tasks=')) args.maxTasks = Number(arg.split('=').slice(1).join('=') || 0);
   }
@@ -223,6 +225,10 @@ function loadConfig() {
     watchdogImprovementMaxDecisions: Number(env.WATCHDOG_IMPROVEMENT_MAX_DECISIONS || 5),
     watchdogImprovementDedupeMs: Number(env.WATCHDOG_IMPROVEMENT_DEDUPE_MS || 14 * 24 * 60 * 60 * 1000),
     taskQueueReconcile: String(env.AGENT_FLEET_TASK_RECONCILE || '1') !== '0',
+    chatGptDropoffIngest: String(env.AGENT_FLEET_CHATGPT_DROPOFF_INGEST || '1') !== '0',
+    chatGptDropoffLimit: Number(env.AGENT_FLEET_CHATGPT_DROPOFF_LIMIT || 12),
+    chatGptDropoffCommentCollect: String(env.AGENT_FLEET_CHATGPT_COMMENT_COLLECT || '1') !== '0',
+    chatGptDropoffCommentLimit: Number(env.CHATGPT_DROPOFF_COMMENT_LIMIT || 40),
   };
 }
 
@@ -521,19 +527,34 @@ function releaseTaskLock(taskId) {
 }
 
 function selectNextTasks(tasks, state, config, maxTasks = 1) {
-  const freshMs = Math.max(config.taskTimeoutMs * 2, 45 * 60 * 1000);
   return tasks
-    .filter((task) => isActiveStage(task.stage))
-    .filter(isAgentOwnedTask)
-    .filter((task) => normalizeStage(task.stage) !== 'needs_decision')
-    .filter((task) => !task.decision_required)
-    .filter((task) => !taskLockIsFresh(task.id, freshMs))
-    .filter((task) => {
-      const record = state.tasks?.[task.id];
-      return !(record?.blocked && Number(record?.attempts || 0) >= config.maxRetries);
-    })
+    .filter((task) => isClaimableAgentTask(task, state, config))
     .sort(sortQueue)
     .slice(0, maxTasks);
+}
+
+function isClaimableAgentTask(task, state, config) {
+  const freshMs = Math.max(config.taskTimeoutMs * 2, 45 * 60 * 1000);
+  if (!isActiveStage(task.stage)) return false;
+  if (!isAgentOwnedTask(task)) return false;
+  if (normalizeStage(task.stage) === 'needs_decision') return false;
+  if (task.decision_required) return false;
+  if (taskLockIsFresh(task.id, freshMs)) return false;
+  const record = state.tasks?.[task.id];
+  return !(record?.blocked && Number(record?.attempts || 0) >= config.maxRetries);
+}
+
+function filterObservableJobsForClaim(jobs = [], tasks = [], state = { tasks: {} }, config = {}) {
+  const claimableTaskIds = new Set(
+    tasks
+      .filter((task) => isClaimableAgentTask(task, state, config))
+      .map((task) => Number(task.id))
+      .filter(Number.isFinite)
+  );
+  return jobs.filter((job) => {
+    const taskId = Number(job.task_id || job.taskId || 0);
+    return Number.isFinite(taskId) && taskId > 0 && claimableTaskIds.has(taskId);
+  });
 }
 
 async function addTaskComment(config, taskId, body) {
@@ -2932,7 +2953,7 @@ async function watchdogLoop(config, args) {
 
 async function runTaskQueueReconcilerBeforeClaim(config, args) {
   if (!config.taskQueueReconcile || args.noReconcile || args.watch) return null;
-  const command = `node scripts/task-queue-reconciler.mjs --apply --no-telegram`;
+  const command = buildTaskQueueReconcilerCommand(args);
   const result = await runShellCommand(command, Math.min(config.verifyTimeoutMs, 3 * 60 * 1000));
   if (!result.ok) {
     console.error(`Task queue reconciler failed before claim: ${result.stderr || result.stdout}`);
@@ -2940,6 +2961,61 @@ async function runTaskQueueReconcilerBeforeClaim(config, args) {
     console.log(result.stdout.trim());
   }
   return result;
+}
+
+function buildTaskQueueReconcilerCommand(args = {}) {
+  return [
+    'node scripts/task-queue-reconciler.mjs',
+    args.dryRun ? '' : '--apply',
+    '--no-telegram',
+  ].filter(Boolean).join(' ');
+}
+
+async function runChatGptDropoffIngestBeforeClaim(config, args) {
+  if (!config.chatGptDropoffIngest || args.noChatGptDropoff) return null;
+  await runChatGptDropoffCommentCollectBeforeClaim(config, args);
+  const command = buildChatGptDropoffIngestCommand(args, config);
+  const result = await runShellCommand(command, Math.min(config.verifyTimeoutMs, 3 * 60 * 1000));
+  if (!result.ok) {
+    console.error(`ChatGPT dropoff ingestor failed before claim: ${result.stderr || result.stdout}`);
+  } else if (result.stdout) {
+    const text = result.stdout.trim();
+    if (text && !/"queued_count": 0/.test(text)) console.log(text);
+  }
+  return result;
+}
+
+async function runChatGptDropoffCommentCollectBeforeClaim(config, args) {
+  if (!config.chatGptDropoffCommentCollect || args.noChatGptDropoff) return null;
+  const command = buildChatGptDropoffCommentCollectCommand(args, config);
+  const result = await runShellCommand(command, Math.min(config.verifyTimeoutMs, 3 * 60 * 1000));
+  if (!result.ok) {
+    console.error(`ChatGPT dropoff GitHub comment collector failed before claim: ${result.stderr || result.stdout}`);
+  } else if (result.stdout) {
+    const text = result.stdout.trim();
+    if (text && !/"collected_count": 0/.test(text)) console.log(text);
+  }
+  return result;
+}
+
+function buildChatGptDropoffCommentCollectCommand(args = {}, config = {}) {
+  return [
+    'node scripts/chatgpt-dropoff-comment-collector.mjs',
+    args.dryRun ? '' : '--apply',
+    '--json',
+    '--limit',
+    String(Math.max(Number(config.chatGptDropoffCommentLimit || 40), 1)),
+  ].filter(Boolean).join(' ');
+}
+
+function buildChatGptDropoffIngestCommand(args = {}, config = {}) {
+  return [
+    'node scripts/chatgpt-dropoff-ingestor.mjs',
+    args.dryRun ? '' : '--apply',
+    '--json',
+    '--limit',
+    String(Math.max(Number(config.chatGptDropoffLimit || 12), 1)),
+  ].filter(Boolean).join(' ');
 }
 
 async function processAgentJob(config, job, state, args) {
@@ -3011,24 +3087,33 @@ async function status(config) {
     observableQueue = { error: error instanceof Error ? error.message : String(error), queue: { jobs: [] } };
   }
   const observableJobs = Array.isArray(observableQueue?.queue?.jobs) ? observableQueue.queue.jobs : [];
+  const claimableObservableJobs = filterObservableJobsForClaim(observableJobs, tasks, state, config);
   const lock = readJson(supervisorLockPath, null);
   const lines = [
     'Agent fleet status:',
     `- Supervisor: ${lock?.pid && processIsAlive(lock.pid) ? `running PID ${lock.pid}` : 'not running'}`,
     `- Observable Codex jobs: ${observableJobs.length}`,
+    `- Claimable observable jobs: ${claimableObservableJobs.length}`,
     `- Active Codex task fallback: ${codex.length}`,
-    `- Ready to claim: ${observableJobs.length || queue.length}`,
+    `- Ready to claim: ${claimableObservableJobs.length || queue.length}`,
     `- Queue health: fresh ${normalizedCounts.active_fresh}, stale ${normalizedCounts.active_stale}, blocked ${normalizedCounts.blocked}, unknown ${normalizedCounts.abandoned_unknown}, do-not-redo ${normalizedCounts.do_not_redo}`,
     `- Max retries: ${config.maxRetries}`,
     `- Baseline smoke: ${config.openAiSmoke ? 'enabled' : 'disabled'}`,
     `- Auto deploy gate: ${config.autoDeploy ? 'enabled' : 'disabled'}`,
+    `- ChatGPT dropoff ingest: ${config.chatGptDropoffIngest ? 'enabled' : 'disabled'}`,
+    `- ChatGPT comment collect: ${config.chatGptDropoffCommentCollect ? 'enabled' : 'disabled'}`,
     `- Permission tiers: ${permissionTierLines().join(' | ')}`,
     `- Startup shortcuts: ${buildStartupShortcutMatrix().map((item) => item.action).join(', ')}`,
   ];
   if (observableQueue?.error) lines.push(`- Observable queue read: ${observableQueue.error}`);
   if (queueAudit?.warnings?.length) lines.push(`- Queue audit warnings: ${queueAudit.warnings.slice(0, 2).join('; ')}`);
-  if (observableJobs.length) {
-    lines.push('', 'Next observable jobs:');
+  if (claimableObservableJobs.length) {
+    lines.push('', 'Next claimable observable jobs:');
+    for (const job of claimableObservableJobs.slice(0, 8)) {
+      lines.push(`- job #${job.id || job.job_id}${job.ticket_id ? ` / ticket #${job.ticket_id}` : ''}${job.task_id ? ` / task #${job.task_id}` : ''} [${job.status}] ${String(job.title || job.task_title || '').slice(0, 110)}`);
+    }
+  } else if (observableJobs.length) {
+    lines.push('', 'Observable jobs not claimable by active-task policy:');
     for (const job of observableJobs.slice(0, 8)) {
       lines.push(`- job #${job.id || job.job_id}${job.ticket_id ? ` / ticket #${job.ticket_id}` : ''}${job.task_id ? ` / task #${job.task_id}` : ''} [${job.status}] ${String(job.title || job.task_title || '').slice(0, 110)}`);
     }
@@ -3040,13 +3125,19 @@ async function status(config) {
 }
 
 async function runOnce(config, args) {
+  await runChatGptDropoffIngestBeforeClaim(config, args);
   await runTaskQueueReconcilerBeforeClaim(config, args);
   const state = loadState();
   const tasks = await loadTasks(config);
   const maxTasks = args.maxTasks && args.maxTasks > 0 ? args.maxTasks : 1;
   let selectedJobs = [];
   try {
-    selectedJobs = (await loadAgentJobs(config, { status: 'queued', limit: maxTasks })).slice(0, maxTasks);
+    selectedJobs = filterObservableJobsForClaim(
+      await loadAgentJobs(config, { status: 'queued', limit: Math.max(maxTasks * 4, 12) }),
+      tasks,
+      state,
+      config
+    ).slice(0, maxTasks);
   } catch (error) {
     console.error(`Observable agent job queue unavailable; falling back to task queue: ${error instanceof Error ? error.message : String(error)}`);
   }
@@ -3232,13 +3323,17 @@ async function main() {
 
 export {
   AGENT_FLEET_PERMISSION_TIERS,
+  buildChatGptDropoffCommentCollectCommand,
+  buildChatGptDropoffIngestCommand,
   buildTaskTitleRepair,
+  buildTaskQueueReconcilerCommand,
   buildWatchdogRoutingRepair,
   buildWatchdogImprovementDecisionPayload,
   classifyAgentFleetCommand,
   classifyRailwayDoctorResult,
   collectSecretEvidenceFromText,
   collectWatchdogImprovementFindings,
+  filterObservableJobsForClaim,
   inspectTelegramBridgeLock,
   isAllowlistedSecretScanLine,
   isNonSensitiveSecretScanPlaceholder,

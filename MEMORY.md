@@ -366,6 +366,21 @@
   railway:redeploy`, `npm run railway:doctor`, and the relevant `npm run
   app:smoke*` command(s). If Railway target/auth/config blocks deployment,
   record the exact blocker and next safe command instead of claiming done.
+- As of 2026-07-04, Codex should not leave completed scoped repo work only in
+  the local worktree. Default closeout is clean, verify, stage only owned
+  changes, commit, push to GitHub, and deploy/live-smoke app-visible or
+  server-visible changes when the release gate allows. If another Codex window,
+  branch drift, failing tests, auth, credentials, or production-risk gates block
+  publish/deploy, record the exact blocker and next action instead of claiming
+  done.
+- GitHub-connected ChatGPT reads committed/pushed GitHub state, not Codex local
+  changes. For no-paste sidekick work, ChatGPT should read
+  `BNA-START-HERE.md`, `AGENTS.md`, and
+  `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md`, then create repo-visible
+  packet files or a marked `BNA_CHATGPT_DROPOFF_PACKET` GitHub comment. Memory
+  and preference updates should be packetized as `memory_candidate` or
+  `preference_update`; Codex audits and promotes them before they become
+  durable memory.
 - As of 2026-06-30, BNA daily Torah participation grading defaults to
   present/100% for active BNA school students when no explicit operator,
   recording, or Telegram override exists. Explicit latest corrections win:
@@ -1712,6 +1727,13 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   library, send email/WhatsApp, grant access, create checkout, write Drive or a
   video host, trigger Buffer, or write external CRM systems without a future
   explicit approval path.
+- One Time Studio should become the scoped content-to-slideshow/prompt workbench
+  for Rabbi / One Time. It should store reusable prompt versions, Jewish
+  guardrails, character profiles, scenario tags, and prompt/correction patches
+  so recurring Mishnah slideshow characters and styles can remain consistent.
+  Current Studio behavior is first-party/no-send and mock/internal until a
+  later approved AI-video vendor adapter packet defines API, cost, rights,
+  storage, and approval gates.
 - This readiness surface is read-only and no-write. It must not reset One Time
   admin credentials, grant member access, publish to the member library, write
   Drive/video hosts, send Resend/email/WhatsApp/SMS, create checkout/billing
