@@ -29167,3 +29167,25 @@ Actions: 1. Active machine tasks: 0.
   and external readback proof.
 - Verification passed: `node --test tests/system-truth-scripts.test.js
   tests/bna-production-closeout-gate.test.js` with 21/21 tests passing.
+
+## 2026-07-05 - PR 87 Live Deployment
+
+- Merged PR #87 into `master` at
+  `3230cf8251b1e416068829eab73d8bdd72ff8f06`.
+- Railway production deployment
+  `a6799b08-c6c7-4ba7-b61d-de6e9c81aa25` reached `SUCCESS` for that merge
+  commit.
+- Live verification passed:
+  - `npm run app:smoke`
+    (`ops/live-smokes/2026-07-05T10-40-43-335Z-live-app-smoke.md`)
+  - `npm run app:smoke:rabbi-onetime-landing`
+    (`ops/live-smokes/2026-07-05T10-40-39-486Z-rabbi-onetime-landing-smoke.md`)
+  - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
+- Updated the One Time separate-instance smoke harness to follow the canonical
+  `/one-time/` redirect before checking page markers.
+- Deferred, not complete: Vimeo access token/upload/member-library readback,
+  Rabbi Telegram worker deployment verification, and full external
+  database/Railway/Drive readback closeout.
+- No checkout session, charge, payment link creation, member creation, access
+  grant, real send, DNS write, Drive upload/share, or DB review cleanup
+  mutation was performed.

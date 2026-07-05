@@ -9,7 +9,7 @@ if (!baseUrl) {
 const checks = [];
 
 async function fetchText(path) {
-  const response = await fetch(`${baseUrl}${path}`, { redirect: 'manual' });
+  const response = await fetch(`${baseUrl}${path}`, { redirect: 'follow' });
   const text = await response.text().catch(() => '');
   checks.push({ path, status: response.status, ok: response.status >= 200 && response.status < 400 });
   return { response, text };
