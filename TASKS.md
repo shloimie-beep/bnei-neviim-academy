@@ -6,6 +6,16 @@ not authorize active GHL runtime paths.
 
 ## Current Goal-Mode Cleanup
 
+- [ ] `RAW-20260705-010` / `REQ-20260705-601` through `REQ-20260705-608`:
+  Repo release workflow and Rabbi Drive email reminder cleanup. Register:
+  `tasks-pending/2026-07-05-repo-release-workflow-and-drive-email.md`.
+  Current status: One Time public canonical work is pushed, merged, deployed,
+  and live-smoked; the Drive drop-off scheduled task was repaired locally and
+  now runs with result `0` to `sdratler@gmail.com` without sending old-file
+  emails. Pending before the broader workflow is clean: commit/push this
+  scheduler hardening, stale draft PR cleanup for #51/#62/#63, agent-fleet
+  readiness/blocker repair, and valid Operations credentials for logged-in One
+  Time visual proof.
 - [x] `RAW-20260705-009` / `REQ-20260705-501` through `REQ-20260705-510`:
   Correct the One Time canonical target-routing mistake. The BNA-hosted
   `/one-time` page is not sufficient proof; the canonical production target is

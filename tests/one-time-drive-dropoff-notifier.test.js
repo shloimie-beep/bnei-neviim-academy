@@ -113,4 +113,6 @@ test('dropoff notifier CLI and scheduler wrapper keep send mode explicit', () =>
   assert.match(runner, /\$MarkExisting/);
   assert.match(scheduledRunner, /-Send/);
   assert.match(registerScript, /run-one-time-drive-dropoff-notifier\.vbs/);
+  assert.match(registerScript, /New-ScheduledTaskAction/);
+  assert.match(registerScript, /-WorkingDirectory \$RepoRoot/);
 });
