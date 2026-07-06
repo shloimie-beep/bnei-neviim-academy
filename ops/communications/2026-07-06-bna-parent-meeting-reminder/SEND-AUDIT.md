@@ -10,6 +10,11 @@
 
 ## Approved Copy
 
+Correction note: the initial copy below was followed by an addendum because
+Shloimie clarified that the Webers are just away/on vacation and are not hosting
+today. Do not treat the initial wording as a durable statement that they
+permanently left or stopped hosting.
+
 ### English
 
 Subject:
@@ -52,8 +57,8 @@ Body:
 
 - Include parents linked to current BNA student records.
 - Exclude inactive/archived duplicate source records.
-- Exclude Webers from this reminder unless Shloimie explicitly re-includes
-  them.
+- Treat the July 6 Weber note as a same-day location clarification only: the
+  Webers are away/on vacation and not hosting today, not permanently gone.
 - Exclude external/accountability-only students that are not current BNA school
   students.
 - Do not commit raw phone numbers or email addresses.
@@ -82,8 +87,10 @@ Body:
 - Current active canonical BNA project student IDs considered:
   `#643`, `#2436`, `#2800`, `#21983`, `#53986`.
 - Excluded from sends:
-  - Weber/Huda records, because Shloimie said the Webers left / are not
-    hosting.
+  - Weber/Huda records, because they were not in the rebuilt current-student
+    parent reminder recipient set after duplicate repair. The later addendum
+    corrected the wording about the Webers: they are just away/on vacation and
+    not hosting today.
   - Inactive duplicate source records.
   - Current student `#53986`, which had no parent email/phone recipient in the
     rebuilt list.
@@ -103,7 +110,7 @@ addresses.
 
 ### WhatsApp Send
 
-Blocked by the configured WAPI/Whapi provider channel.
+Initial attempt was blocked by the configured WAPI/Whapi provider channel.
 
 - Production WAPI diagnostics before send: outbound configured = `true`.
 - First send attempt:
@@ -116,3 +123,71 @@ Blocked by the configured WAPI/Whapi provider channel.
 - Because the first provider send failed with channel authorization, the
   remaining WhatsApp sends were not attempted. Retrying requires WAPI/Whapi
   channel re-authorization or another explicitly approved WhatsApp sender path.
+
+### WhatsApp Retry
+
+Shloimie then approved retrying: "Okay, try again."
+
+Retry result: sent 8 WhatsApps total, 4 Hebrew and 4 English.
+
+| Communication IDs | Count | Language | Provider readback |
+|---|---:|---|---|
+| `#2397`, `#2399`, `#2401`, `#2404` | 4 | Hebrew | sent/delivered/read; no follow-up required |
+| `#2398`, `#2400`, `#2402`, `#2403` | 4 | English | sent/delivered; no follow-up required |
+
+Masked phone endings in retry readback:
+
+- Hebrew: `***2874`, `***2140`, `***2873`, `***2631`
+- English: `***8912`, `***1232`, `***8938`, `***7660`
+
+### Correction Addendum
+
+Shloimie corrected the Weber wording after the first send. Codex sent a
+separate addendum by WhatsApp and email to the same audited parent recipient
+set.
+
+English addendum:
+
+```text
+Hi,
+
+Sorry, that wording did not come out clearly. The Webers are just away/on vacation, so they are not hosting us today.
+
+We are meeting today at 8 Havakuk Hanavi, Ramat Beit Shemesh Gimel.
+
+Thank you,
+Bnei Neviim Academy
+```
+
+Hebrew addendum:
+
+```text
+שלום,
+
+סליחה, הניסוח הקודם לא היה ברור. משפחת ובר רק בחופשה, ולכן הם לא מארחים אותנו היום.
+
+נפגשים היום ברחוב חבקוק הנביא 8, רמת בית שמש גימל.
+
+תודה,
+בני נביאים
+```
+
+WhatsApp addendum result: sent 8 WhatsApps total, 4 Hebrew and 4 English.
+
+| Communication IDs | Count | Language | Provider readback |
+|---|---:|---|---|
+| `#2406`, `#2408`, `#2411`, `#2414` | 4 | Hebrew | sent/read outcomes; no follow-up required |
+| `#2407`, `#2410`, `#2412`, `#2413` | 4 | English | sent; no follow-up required |
+
+Provider log note: record `#2409` appeared as a WAPI status/log artifact and is
+not counted as one of the eight explicit addendum sends.
+
+Email addendum result: sent 5 individual Gmail messages total, 3 Hebrew and 2
+English.
+
+| Language | Count | Gmail sent message IDs |
+|---|---:|---|
+| Hebrew | 3 | `19f35d4d35db6610`, `19f35d4fc5d7afe7`, `19f35d52d2b458e1` |
+| English | 2 | `19f35d4e42d14eb7`, `19f35d519ea047aa` |
+
+No raw phone numbers or email addresses are stored in this audit.

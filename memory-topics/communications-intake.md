@@ -17,7 +17,7 @@
 - For BNA school-wide parent reminders, prefer parents tied to current
   canonical BNA student records and exclude stale duplicates/signup-only
   records unless Shloimie explicitly broadens the audience.
-- The Webers left / are no longer hosting BNA meetings; do not include Weber
-  parents in BNA parent meeting reminder sends unless Shloimie explicitly
-  re-includes them.
+- 2026-07-06 correction: the Webers are just away/on vacation and are not
+  hosting today's BNA meeting. Do not describe them as having permanently left
+  or stopped hosting unless Shloimie explicitly says that later.
 - Relevant standing goal: `GOAL-CORE-013`.

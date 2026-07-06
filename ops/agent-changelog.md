@@ -29566,3 +29566,26 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   logged communication `#2396` and failed with provider `401` / `need channel
   authorization for send message`; the remaining WhatsApp sends were not
   attempted.
+
+## 2026-07-06 - BNA Parent Meeting Reminder WhatsApp Retry Sent
+
+- After Shloimie said "Okay, try again," retried only the WhatsApp side of
+  `RAW-20260706-001`; emails were not resent.
+- Sent 8 WhatsApp reminders through WAPI: 4 Hebrew and 4 English.
+- WAPI readback records `#2397` through `#2404` show sent/delivered/read
+  outcomes and no follow-up required.
+- No raw phone numbers or contact exports were committed.
+
+## 2026-07-06 - BNA Parent Meeting Reminder Addendum Sent
+
+- After Shloimie clarified that the Webers are just away/on vacation and not
+  hosting today's meeting, sent a correction addendum to the same audited
+  parent recipient set.
+- Sent 8 WhatsApp addendums through WAPI: 4 Hebrew and 4 English. Explicit
+  send records are `#2406`, `#2407`, `#2408`, `#2410`, `#2411`, `#2412`,
+  `#2413`, and `#2414`; provider record `#2409` was a WAPI status/log
+  artifact and is not counted as a send.
+- Sent 5 individual Gmail addendums: 3 Hebrew and 2 English. Sent message IDs
+  are recorded in the redacted communications audit.
+- Updated durable communication memory so the Weber correction is not treated
+  as a permanent hosting or recipient-exclusion rule.

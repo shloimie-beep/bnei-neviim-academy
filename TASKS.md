@@ -6,17 +6,20 @@ not authorize active GHL runtime paths.
 
 ## Current Goal-Mode Cleanup
 
-- [ ] `RAW-20260706-001` / `REQ-20260706-001` through
+- [x] `RAW-20260706-001` / `REQ-20260706-001` through
   `REQ-20260706-005`: BNA parent meeting-location reminder send and duplicate
   student merge. Register:
   `tasks-pending/2026-07-06-bna-parent-meeting-reminder-send-and-merge.md`.
   Current status: natural-language approval rule recorded; duplicate
   Huda/Hooda Weber and duplicate Menachem records merged/repaired with DB
   readback; current-student parent recipient list rebuilt; 5 individual Gmail
-  reminders sent (3 Hebrew, 2 English). WhatsApp remains blocked because WAPI
-  returned provider `401 need channel authorization for send message` on the
-  first attempted recipient; re-authorize WAPI/Whapi before retrying the 8
-  WhatsApp candidates.
+  reminders sent (3 Hebrew, 2 English). Initial WhatsApp attempt was blocked
+  by WAPI channel authorization, then Shloimie approved retrying; 8 WhatsApps
+  were sent on retry (4 Hebrew, 4 English) with WAPI readback records `#2397`
+  through `#2404`. After Shloimie clarified the Weber wording, a correction
+  addendum was sent by WhatsApp to 8 recipients (4 Hebrew, 4 English) and by
+  Gmail to 5 recipients (3 Hebrew, 2 English), saying the Webers are just
+  away/on vacation and not hosting today's meeting.
 - [ ] `RAW-20260705-012` / `REQ-20260705-801` through
   `REQ-20260705-806`: Telegram Drive sync OAuth error and cleanup
   continuation. Register:

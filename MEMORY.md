@@ -313,9 +313,9 @@
 - For BNA school-wide parent reminders, use parents tied to current canonical
   BNA student records by default. Avoid stale duplicate records and signup-only
   contacts unless Shloimie explicitly broadens the audience.
-- The Webers left / are no longer hosting BNA meetings; exclude Weber parents
-  from BNA parent meeting reminder sends unless Shloimie explicitly re-includes
-  them.
+- 2026-07-06 correction: the Webers are just away/on vacation and are not
+  hosting today's BNA meeting. Do not describe them as having permanently left
+  or stopped hosting unless Shloimie explicitly says that later.
 - Amitai's family WhatsApp reminders should be Hebrew when the family,
   student, or contacts are tagged/configured for Hebrew; messages for Amitai,
   his mother, and father should use Hebrew by default.
