@@ -8,6 +8,10 @@
   LeadConnector, GHL env vars, GHL APIs, or external CRM writes.
 - Classroom/content/community pipeline is provider-specific and separate from
   BNA Academy classroom/content/video records.
+- One Time Vimeo, Stripe, CRM/mailbox, class/content, and member-library
+  work must stay scoped to `rabbi_sheller_provider` /
+  `one_time_mishnah_class`. Do not treat BNA Academy Vimeo/media/payment
+  records as One Time records unless an explicit cross-workspace link exists.
 - The One Time AI Studio operator role is `one_time_ai_studio_operator`: only
   Studio + Tasks, Studio prompt/image-observation patching, OpenArt prompt
   export/readiness, and mediated Studio-only repair plans. No raw shell/Codex

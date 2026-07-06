@@ -393,6 +393,12 @@
   missing keys still block integration-specific work, live verification/final
   closeout for that integration, and any send, charge, DNS/access,
   credential, provider-account, or production-data mutation.
+- As of 2026-07-06, when a safe command is necessary to finish the current
+  approved BNA/Codex task and the tool permissions already allow it, Codex
+  should run it instead of narrating that it would run the command. This does
+  not override approval gates for sends, payments, access grants, DNS,
+  credential writes, provider-account changes, Drive writes, or production data
+  mutations.
 - GitHub-connected ChatGPT reads committed/pushed GitHub state, not Codex local
   changes. For no-paste sidekick work, ChatGPT should read
   `BNA-START-HERE.md`, `AGENTS.md`, and

@@ -566,9 +566,11 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
         driveDropFolder.configured ? '' : 'ONE_TIME_DRIVE_DROP_FOLDER_ALIAS',
       ],
       warnings: [
-        vimeoClientId.configured && vimeoClientSecret.configured
-          ? 'Vimeo client credentials are present by safe keyholder alias; upload/readback still needs an access token alias.'
-          : 'Vimeo client credential aliases were not all found.',
+        vimeoClientId.configured && vimeoClientSecret.configured && vimeoAccess.configured
+          ? 'Vimeo client credentials and access token are present by safe keyholder alias; remaining media setup needs the One Time Drive/drop folder and any private test-folder/OBS decisions.'
+          : vimeoClientId.configured && vimeoClientSecret.configured
+            ? 'Vimeo client credentials are present by safe keyholder alias; upload/readback still needs an access token alias.'
+            : 'Vimeo client credential aliases were not all found.',
       ],
       verification: ['fingerprint-only Vimeo readback', 'Drive intake/drop-folder readback'],
     }),
