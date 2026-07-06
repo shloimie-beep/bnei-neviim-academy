@@ -1,0 +1,641 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260706-956",
+  "parent_raw_id": "RAW-20260706-956",
+  "source_statement_ids": [
+    "SRC-20260706-956-001",
+    "SRC-20260706-956-002",
+    "SRC-20260706-956-003",
+    "SRC-20260706-956-004"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260702-821",
+      "PKT-20260706-950"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260706-956-onetime-operations-content-ia-filter-rail.md",
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+      "public/operations.html",
+      "tests/one-time-rabbi-dashboard-ia.test.js",
+      "tests/one-time-operations-ui-smoke.test.js",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js"
+    ],
+    "produces": [
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+      "public/operations.html",
+      "tests/one-time-rabbi-dashboard-ia.test.js",
+      "tests/one-time-operations-ui-smoke.test.js",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "tasks-pending/2026-07-06-onetime-operations-content-ia-filter-rail.md",
+      "ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/report.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-06-onetime-operations-content-ia-filter-rail/00-content-ia-filter-rail.product-quality.json",
+    "terminal_condition": "One Time Operations shows Classes & Content as the sidebar category, renders a compact One Time section rail, keeps mobile rail scrolling without page overflow, and records verification evidence before deploy closeout.",
+    "handoff_target": "tasks-pending/2026-07-06-onetime-operations-content-ia-filter-rail.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "verified",
+  "title": "One Time Operations Content IA And Section Rail",
+  "created_at": "2026-07-06T18:05:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260706-956",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.92,
+    "reasons": [
+      "Operator reported the Rabbi / One Time section was missing a clear content area.",
+      "Operator called out repetitive top categories, subcategories, and filters.",
+      "The correction is presentation and IA scoped to the Operations shell and existing content routes.",
+      "The change is app-visible and therefore requires deploy/live-smoke closeout."
+    ],
+    "affected_product_surfaces": [
+      "One Time Operations sidebar",
+      "One Time Operations content section rail",
+      "Provider Program section rail",
+      "Mobile Operations top rail"
+    ],
+    "likely_external_provider_blockers": [
+      "Production live smoke requires Operations auth in the target environment.",
+      "Railway deployment or GitHub publication can be blocked by branch or auth state."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-content-ia-filter-rail",
+      "01-cross-app-toolbar-consistency-audit"
+    ],
+    "next_exact_packet": "After this scoped fix is deployed, use the Agent Mode audit results to create a separate cross-app toolbar/filter consistency packet if concrete defects remain."
+  },
+  "operator_intent_summary": "Make the Rabbi / One Time Operations information architecture clearer by exposing Classes & Content as a main category, using compact content subsections at the top, and preserving mobile horizontal section navigation without repetitive tabs.",
+  "raw_quotes": [
+    "there's no content section",
+    "the categories and subcategories and filters don't really logically make sense",
+    "the side panels good",
+    "the filters and the subcategories and top they're very repetitive",
+    "on mobile they should like slide",
+    "it should be consistent across like our entire app"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260706-956",
+      "decision": "Use existing route ids for content sections; label `research` as Source Prep in One Time instead of migrating data or URLs.",
+      "status": "decided"
+    }
+  ],
+  "out_of_scope": [
+    "No backend authorization, database schema, route access policy, action registry policy, payment/access, DNS, email, WhatsApp, Telegram, Drive, Vimeo, Zoom, provider-account, or production-data mutation.",
+    "No external send, publish, upload, access grant, or payment action.",
+    "No GHL runtime, LeadConnector runtime, external CRM write, or external provider setup.",
+    "No broad redesign of student, parent, public, provider portal, or non-One-Time content surfaces in this packet."
+  ],
+  "affected_surfaces": [
+    "One Time Operations content navigation",
+    "One Time durable dashboard IA",
+    "Provider Program section rail",
+    "Mobile top section rail"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=one_time_library",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=content",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=meetings"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+    "tests/one-time-rabbi-dashboard-ia.test.js",
+    "tests/one-time-operations-ui-smoke.test.js",
+    "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+    "raw-input/RAW-20260706-956-onetime-operations-content-ia-filter-rail.md",
+    "tasks-pending/2026-07-06-onetime-operations-content-ia-filter-rail.md",
+    "ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/report.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/operations.html CONTENT_SUBTABS, PROVIDER_PROGRAM_SUBTABS, currentSubnavConfig, renderTopFilterRail, workspaceNavItems, normalizeCurrentRouteForWorkspace, setCurrentSection, renderContent, renderProviderProgramWorkspace",
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js MAIN_MODULES and SECTION_SUBSECTION_MAP.classes_content",
+      "tests/one-time-operations-ui-smoke.test.js current One Time nav and mobile checks",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js final route QA expectations"
+    ],
+    "known_blockers": [
+      "Live deploy and authenticated live smoke still need to run after publication.",
+      "Full cross-app toolbar consistency remains broader than this scoped One Time fix."
+    ],
+    "observed_visual_defects": [
+      "Sidebar label `Classes` did not make the content workspace obvious.",
+      "Classes & Content durable IA defaulted to a stale schedule subsection.",
+      "One Time content rail included generic production tabs that are not primary Rabbi-facing subsections.",
+      "Provider Program rail used long repetitive labels.",
+      "Mobile rail had avoidable vertical height from the meta row."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "consistent",
+      "professional",
+      "logic",
+      "repetitive",
+      "mobile",
+      "filters"
+    ],
+    "expanded_phrases": {
+      "consistent": "Use the same side-category plus top-section rail pattern already established in Operations: main work areas in the sidebar and compact subsections in the top rail.",
+      "professional": "Use concise section labels, avoid implementation terms in primary navigation, keep readable controls, and prove desktop/mobile no-overflow behavior.",
+      "logic": "Group content work by user task: Library, Meeting Drops, Source Prep, Bundles.",
+      "repetitive": "Do not expose workflow/status/output tabs as top-level One Time sections when they duplicate deeper filters or Studio workflows.",
+      "mobile": "Keep the top rail horizontally scrollable, non-wrapping, and compact enough for a 390px viewport.",
+      "filters": "Treat the global top rail as section navigation; leave detailed filters inside the view's filter panel."
+    },
+    "first_party_pattern_interpretation": "This packet uses first-party BNA Operations IA only. No external CRM/provider runtime or data mutation is part of the correction."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "src/platform/instances/one-time-rabbi-dashboard-ia.js"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260706-956",
+      "statement": "Expose Classes & Content as the One Time sidebar category for content work.",
+      "expected_result": "The One Time sidebar item opens the existing content view at `one_time_library` and the durable IA default is `library`.",
+      "acceptance_criteria": [
+        "Sidebar labels include `Classes & Content`.",
+        "The `classes_content` IA module default is `library`.",
+        "The content route remains scoped to `rabbi_sheller_provider` / `one_time_mishnah_class`."
+      ]
+    },
+    {
+      "id": "REQ-20260706-957",
+      "statement": "Use a compact One Time content section rail.",
+      "expected_result": "The One Time content rail shows exactly Library, Meeting Drops, Source Prep, and Bundles.",
+      "acceptance_criteria": [
+        "Rail ids are `one_time_library`, `meetings`, `research`, and `bundles`.",
+        "The rail does not show `selected`, `repurpose`, `newsletter`, or `prompts` in One Time scope.",
+        "Generic content tabs remain available outside One Time where applicable."
+      ]
+    },
+    {
+      "id": "REQ-20260706-958",
+      "statement": "Keep the One Time mobile top rail horizontally scrollable without page overflow.",
+      "expected_result": "At 390px width, the content rail is `overflow-x:auto`, `flex-wrap:nowrap`, hides the meta row, and does not widen the page.",
+      "acceptance_criteria": [
+        "Focused browser smoke verifies mobile rail ids and computed styles.",
+        "Document scroll width stays within viewport width plus one pixel.",
+        "No console errors are emitted during the route smoke."
+      ]
+    },
+    {
+      "id": "REQ-20260706-959",
+      "statement": "Shorten provider Program sections and provide a Content bridge.",
+      "expected_result": "Provider Program uses compact section labels and a Content panel that links to the real Classes & Content workspace sections.",
+      "acceptance_criteria": [
+        "Program rail includes `Content` as a top section.",
+        "Content bridge exposes Library, Meeting Drops, Source Prep, and Bundles.",
+        "No backend, auth, data, or external-provider behavior changes."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw operator wording is captured in `RAW-20260706-956`.",
+      "Affected workspace/project and exact Operations routes are named.",
+      "Current-state code paths for nav items, section rail, content tabs, and provider Program tabs were inspected.",
+      "The correction is scoped to presentation/IA and tests.",
+      "External writes and backend/data behavior are explicitly out of scope."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the content route before all async data has resolved.",
+      "expected_visible_title": "Library",
+      "expected_visible_message": "One Time",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": ["Ask / Search", "Workspace Setup"],
+      "forbidden_content": ["Super Admin workspace directory", "school-only Students sidebar", "Accounting sidebar"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Top rail is announced as sections, not as an unrelated filter list.",
+      "accessibility_expectation": "Rail buttons keep readable labels and selected state.",
+      "test_smoke_assertion": "Browser smoke waits for content rail and asserts ids.",
+      "requirement_id": "REQ-20260706-957"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1024,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open with fixture data that has minimal content rows.",
+      "expected_visible_title": "Library",
+      "expected_visible_message": "No class packages yet",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": ["Meeting Drops", "Source Prep", "Bundles"],
+      "forbidden_content": ["selected as One Time top section", "repurpose as One Time top section"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is text and section controls stay reachable.",
+      "accessibility_expectation": "Touch/click targets remain at least practical mobile size.",
+      "test_smoke_assertion": "No console errors or route mismatch.",
+      "requirement_id": "REQ-20260706-957"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=meetings",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Meeting Drops with seeded project-meeting/content fixtures.",
+      "expected_visible_title": "Meeting Drops",
+      "expected_visible_message": "Rabbi Meeting Intake",
+      "expected_primary_action": "Preview Drive Brief",
+      "expected_secondary_actions": ["Library", "Source Prep", "Bundles"],
+      "forbidden_content": ["BNA school private data", "Dratler Family"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Meeting Drops is the active tab in the section rail.",
+      "accessibility_expectation": "Active state is perceivable without color alone.",
+      "test_smoke_assertion": "One Time Operations smoke clicks Preview Drive Brief and reads no-write preview.",
+      "requirement_id": "REQ-20260706-957"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=research",
+      "viewport": 768,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Source Prep with filters that have no matching rows.",
+      "expected_visible_title": "Source Prep",
+      "expected_visible_message": "No content matches these filters",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": ["Library", "Meeting Drops"],
+      "forbidden_content": ["newsletter as One Time top section", "prompts as One Time top section"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Detailed filters stay inside the filter panel.",
+      "accessibility_expectation": "Filter controls keep labels and do not replace section nav.",
+      "test_smoke_assertion": "Content rail still contains only the four One Time ids.",
+      "requirement_id": "REQ-20260706-958"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1024,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Simulate a local API failure during focused probe if needed.",
+      "expected_visible_title": "Operations",
+      "expected_visible_message": "Some dashboard data could not load",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": ["Ask / Search"],
+      "forbidden_content": ["stack trace", "secret value"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Error banner is visible near the main content.",
+      "accessibility_expectation": "Error message is not color-only.",
+      "test_smoke_assertion": "Existing smoke captures console/page errors and expects none.",
+      "requirement_id": "REQ-20260706-958"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=service_providers&section=content",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Program > Content bridge while publishing/hosting remains guarded.",
+      "expected_visible_title": "Content",
+      "expected_visible_message": "Class media, meeting drops, source preparation, and review bundles",
+      "expected_primary_action": "Open Content",
+      "expected_secondary_actions": ["Library", "Meeting Drops", "Source Prep", "Bundles"],
+      "forbidden_content": ["external write performed", "payment mutation"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Bridge buttons are real buttons with text labels.",
+      "accessibility_expectation": "Bridge panel reads as a section with clear next actions.",
+      "test_smoke_assertion": "Browser smoke verifies the content bridge text.",
+      "requirement_id": "REQ-20260706-959"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=meetings",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Click Preview Drive Brief in Meeting Drops.",
+      "expected_visible_title": "No-write Drive Brief Preview",
+      "expected_visible_message": "production writes: no",
+      "expected_primary_action": "Preview Drive Brief",
+      "expected_secondary_actions": ["Library", "Source Prep"],
+      "forbidden_content": ["Drive write", "external send"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview-only state is text-visible.",
+      "accessibility_expectation": "No-write state is readable near the action result.",
+      "test_smoke_assertion": "Existing smoke asserts one POST preview request and no BNA project override.",
+      "requirement_id": "REQ-20260706-957"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 1440,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open content after local implementation and smoke verification.",
+      "expected_visible_title": "Library",
+      "expected_visible_message": "One Time Library",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": ["Meeting Drops", "Source Prep", "Bundles"],
+      "forbidden_content": ["generic production tabs in One Time rail"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The active Library button has selected/current state.",
+      "accessibility_expectation": "Rail and page title agree on the selected section.",
+      "test_smoke_assertion": "Focused browser smoke passes after implementation.",
+      "requirement_id": "REQ-20260706-956"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=students",
+      "viewport": 1024,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Attempt to open a school-only view from One Time provider scope.",
+      "expected_visible_title": "Operations",
+      "expected_visible_message": "One Time",
+      "expected_primary_action": "Open Members",
+      "expected_secondary_actions": ["Classes & Content", "Workspace Setup"],
+      "forbidden_content": ["Students primary sidebar label", "Accounting primary sidebar label"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Route normalization keeps navigation readable.",
+      "accessibility_expectation": "No wrong-scope module is exposed as a primary button.",
+      "test_smoke_assertion": "Existing One Time smoke asserts school-only modules are hidden/demoted.",
+      "requirement_id": "REQ-20260706-956"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+      "viewport": 390,
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Set viewport to 390px and open Classes & Content / Library.",
+      "expected_visible_title": "Library",
+      "expected_visible_message": "One Time",
+      "expected_primary_action": "New Content",
+      "expected_secondary_actions": ["Meeting Drops", "Source Prep", "Bundles"],
+      "forbidden_content": ["document horizontal overflow", "rail meta row taking vertical space"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Horizontal rail remains keyboard/focus reachable.",
+      "accessibility_expectation": "Tabs remain legible and not clipped by the viewport.",
+      "test_smoke_assertion": "Browser smoke asserts overflowX auto, flexWrap nowrap, meta hidden, and page width bounded.",
+      "requirement_id": "REQ-20260706-958"
+    }
+  },
+  "visual_quality": {
+    "layout": "Main sections are in the left sidebar; top rail is compact section navigation; detailed filters stay inside the view.",
+    "responsive": "Mobile top rail scrolls horizontally without increasing document width.",
+    "screenshot_requirements": [
+      {
+        "viewport": 1440,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "required": true
+      },
+      {
+        "viewport": 1024,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=service_providers&section=content",
+        "required": true
+      },
+      {
+        "viewport": 768,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=research",
+        "required": true
+      },
+      {
+        "viewport": 430,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=meetings",
+        "required": true
+      },
+      {
+        "viewport": 390,
+        "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "required": true
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260706-956",
+        "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/report.md",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/local-smoke/mobile-agents.png",
+        "defect_codes": [
+          "VQ-IA-002",
+          "VQ-RESP-001"
+        ],
+        "severity": "P2",
+        "user_impact": "Rabbi and operator users could miss the content workspace or see generic production tabs as primary navigation.",
+        "expected_fix": "Use a clear Classes & Content sidebar item and a compact mobile-sliding section rail.",
+        "requirement_id": "REQ-20260706-956"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Top rail buttons keep text labels, selected state, and aria-current/aria-selected values.",
+      "Mobile rail remains horizontally scrollable without trapping focus.",
+      "Sidebar button text remains explicit enough for screen readers and visual scanning.",
+      "Bridge metric buttons have readable titles and text labels."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Classes & Content",
+      "selector_or_action_key": "sidebar nav item classes_content -> content/one_time_library",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations shell",
+      "external_write": false,
+      "handler_or_blocker": "Client-side route navigation only.",
+      "registry_required": false
+    },
+    {
+      "label": "Content bridge",
+      "selector_or_action_key": "provider Program section content -> renderProviderContentBridgePanel",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations shell",
+      "external_write": false,
+      "handler_or_blocker": "Client-side route navigation only.",
+      "registry_required": false
+    },
+    {
+      "label": "Mobile section rail",
+      "selector_or_action_key": "ops-filter-track for content top rail",
+      "action_state": "WORKS_NOW",
+      "owner": "One Time Operations shell",
+      "external_write": false,
+      "handler_or_blocker": "CSS-only horizontal section navigation.",
+      "registry_required": false
+    },
+    {
+      "label": "External writes",
+      "selector_or_action_key": "send/publish/upload/payment/access/DNS/provider-account mutation",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "Shloimie decision if ever requested",
+      "external_write": false,
+      "handler_or_blocker": "Explicitly out of scope for this IA packet.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "allowed_to_change": [
+      "Client-side navigation labels and section arrays",
+      "One Time durable IA metadata",
+      "Focused browser/static test expectations",
+      "Raw/register/PQC/evidence records"
+    ],
+    "must_not_change": [
+      "Server authorization",
+      "Database schema",
+      "Workspace data filters",
+      "External provider configuration",
+      "Payment/access/email/WhatsApp behavior",
+      "Route access policy"
+    ]
+  },
+  "security_privacy": {
+    "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class only",
+    "private_data_policy": "Do not commit raw private contact, student, member, transcript, message, credential, token, or secret evidence.",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "external_writes": "forbidden"
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260706-956-A",
+      "title": "One Time content IA and section rail",
+      "requirements": [
+        "REQ-20260706-956",
+        "REQ-20260706-957",
+        "REQ-20260706-958",
+        "REQ-20260706-959"
+      ],
+      "scope": "Patch One Time Operations sidebar labels, content top rail, provider Program bridge, mobile rail compaction, durable IA metadata, and focused tests.",
+      "instructions": [
+        "Inspect existing One Time nav and content tab code first.",
+        "Patch presentation metadata only.",
+        "Run focused static/browser tests.",
+        "Record proof and leave deploy/live-smoke status explicit."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+      "tests/one-time-rabbi-dashboard-ia.test.js",
+      "tests/one-time-operations-ui-smoke.test.js",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+      "tests/one-time-rabbi-dashboard-ia.test.js",
+      "tests/one-time-operations-ui-smoke.test.js"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Broader cross-app toolbar/filter consistency across student/parent/provider portals belongs in a separate packet after audit evidence.",
+    "split_if_exceeds": "Any backend/data/auth/external-provider change or any non-One-Time route redesign.",
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-06-onetime-operations-content-ia-filter-rail/00-content-ia-filter-rail.product-quality.json",
+      "node --test tests/agent-control-center.test.js tests/one-time-rabbi-dashboard-ia.test.js",
+      "NODE_PATH=C:\\Users\\User\\BNA v2.0\\node_modules node --test tests/one-time-operations-ui-smoke.test.js",
+      "NODE_PATH=C:\\Users\\User\\BNA v2.0\\node_modules node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ]
+  },
+  "evidence": {
+    "required_artifacts": [
+      "tasks-pending/2026-07-06-onetime-operations-content-ia-filter-rail.md",
+      "ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/report.md",
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/watchdog-audits/2026-07-06-product-quality-drift.md"
+    ],
+    "manual_review_required": true
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "status": "locally_verified_pending_deploy_live_smoke",
+    "criteria": [
+      "Raw intake, requirement register, and PQC packet exist.",
+      "PQC packet validates.",
+      "Focused static and browser tests pass.",
+      "Action and protocol watchdogs run or record exact blocker.",
+      "Scoped branch is committed and pushed.",
+      "App-visible changes are deployed and live-smoked, or the task remains pending with exact deploy blocker."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260706-956-onetime-operations-content-ia-filter-rail.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-06-onetime-operations-content-ia-filter-rail/00-content-ia-filter-rail.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "Inspect current nav and IA code.",
+      "Patch presentation-only section model and tests.",
+      "Run focused browser/static tests.",
+      "Record evidence and deploy/live-smoke status."
+    ],
+    "skipped_actions_policy": "Skip all external writes, sends, payments, DNS, provider-account mutation, and backend data changes.",
+    "blocker_decisions": [
+      "DEC-20260706-956"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/report.md",
+      "tasks-pending/2026-07-06-onetime-operations-content-ia-filter-rail.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-06-onetime-operations-content-ia-filter-rail.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-06-onetime-full-ui-agent-audit/05-cross-system-consistency-agent-mode.md",
+    "requirement_ids": [
+      "REQ-20260706-956",
+      "REQ-20260706-957",
+      "REQ-20260706-958",
+      "REQ-20260706-959"
+    ],
+    "decision_ids": [
+      "DEC-20260706-956"
+    ],
+    "register": "tasks-pending/2026-07-06-onetime-operations-content-ia-filter-rail.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No new protocol drift findings from this packet."
+  },
+  "next_packet": {
+    "recommended": "Cross-app toolbar/filter consistency audit after Agent Mode reports land.",
+    "blockers": [
+      "Requires concrete audit findings across portals and provider surfaces before implementation."
+    ]
+  }
+}

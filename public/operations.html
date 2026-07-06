@@ -8209,12 +8209,18 @@
 
             .ops-filter-rail {
                 top: 58px;
-                padding: 7px 10px;
+                padding: 6px 10px;
+            }
+
+            .ops-filter-rail-meta {
+                display: none;
             }
 
             .ops-filter-tab {
                 flex: 0 0 auto;
                 min-width: 96px;
+                min-height: 32px;
+                padding: 6px 9px;
                 scroll-snap-align: start;
             }
 
@@ -9387,7 +9393,7 @@
             : 'overview';
         let contentSection = currentView === 'content' && ['library', 'one_time_library', 'meetings', 'research', 'selected', 'repurpose', 'newsletter', 'prompts', 'bundles'].includes(initialSection)
             ? initialSection
-            : 'library';
+            : defaultContentSection();
         let studioSection = currentView === 'studio' && ['overview', 'source', 'storyboard', 'prompts', 'jobs', 'usage', 'handoff'].includes(initialSection)
             ? initialSection
             : 'overview';
@@ -9710,6 +9716,12 @@
             { id: 'prompts', label: 'Prompts' },
             { id: 'bundles', label: 'Bundles' }
         ];
+        const ONE_TIME_CONTENT_SUBTABS = [
+            { id: 'one_time_library', label: 'Library' },
+            { id: 'meetings', label: 'Meeting Drops' },
+            { id: 'research', label: 'Source Prep' },
+            { id: 'bundles', label: 'Bundles' }
+        ];
         const STUDIO_SUBTABS = [
             { id: 'overview', label: 'Overview' },
             { id: 'source', label: 'Source' },
@@ -9798,15 +9810,15 @@
         ];
 
         const PROVIDER_PROGRAM_SUBTABS = [
-            { id: 'overview', label: 'Program Overview' },
-            { id: 'launch', label: 'Launch / Checkout' },
-            { id: 'program', label: 'Mishnayos Membership' },
-            { id: 'tiers', label: 'Membership Tiers' },
-            { id: 'schedule', label: '7:00 Class' },
-            { id: 'worksheets', label: 'Worksheets / Source Sheets' },
-            { id: 'questions', label: 'Questions / Posts' },
-            { id: 'access', label: 'Payment / Access' },
-            { id: 'settings', label: 'Provider Settings' }
+            { id: 'overview', label: 'Overview' },
+            { id: 'launch', label: 'Launch' },
+            { id: 'program', label: 'Program' },
+            { id: 'tiers', label: 'Membership' },
+            { id: 'content', label: 'Content' },
+            { id: 'schedule', label: 'Schedule' },
+            { id: 'questions', label: 'Questions' },
+            { id: 'access', label: 'Access' },
+            { id: 'settings', label: 'Settings' }
         ];
 
         const PROVIDER_PLAN_DEFINITIONS = {
@@ -10560,10 +10572,10 @@
                 intake: { tabs: INTAKE_SUBTABS, active: intakeSection, countSource: intakeSubnavCounts(), label: 'Intake Review' },
                 community: { tabs: COMMUNITY_SUBTABS, active: communitySection, countSource: communitySubnavCounts(), label: 'Community' },
                 studio: { tabs: STUDIO_SUBTABS, active: studioSection, countSource: studioSubnavCounts(), label: 'Studio' },
-                content: { tabs: visibleContentSubtabs(), active: visibleContentSubtabs().some(tab => tab.id === contentSection) ? contentSection : 'library', countSource: contentSubnavCounts(), label: 'Content' },
+                content: { tabs: visibleContentSubtabs(), active: visibleContentSubtabs().some(tab => tab.id === contentSection) ? contentSection : defaultContentSection(), countSource: contentSubnavCounts(), label: currentWorkspaceIsOneTime() ? 'Classes & Content' : 'Content' },
                 live_classes: { tabs: LIVE_CLASS_SUBTABS, active: liveClassSection, countSource: {}, label: 'Live Classes' },
                 calendar: { tabs: providerWorkspace ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS, active: calendarSection, countSource: calendarSubnavCounts(), label: providerWorkspace ? 'Calendar / Schedule' : 'Calendar' },
-                service_providers: { tabs: providerWorkspace ? PROVIDER_PROGRAM_SUBTABS : SERVICE_PROVIDER_SUBTABS, active: serviceProviderSection, countSource: serviceProviderSubnavCounts(), label: providerWorkspace ? 'Program / Membership' : 'Service Providers' },
+                service_providers: { tabs: providerWorkspace ? PROVIDER_PROGRAM_SUBTABS : SERVICE_PROVIDER_SUBTABS, active: serviceProviderSection, countSource: serviceProviderSubnavCounts(), label: providerWorkspace ? 'Program' : 'Service Providers' },
                 communications: { tabs: COMMUNICATIONS_SUBTABS, active: communicationsSection, countSource: communicationsSubnavCounts(), label: 'Communications' },
                 internal_dialogue: { tabs: INTERNAL_DIALOGUE_SUBTABS, active: dialogueSection, countSource: dialogueSubnavCounts(), label: 'Internal Dialogue' },
                 accounting: { tabs: ACCOUNTING_SUBTABS, active: accountingSection, countSource: accountingSubnavCounts(), label: 'Accounting' },
@@ -10689,13 +10701,13 @@
             const moduleLabel = currentNavItem().label || config.label || 'Operations';
             const activeTab = tabs.find(tab => String(tab.id) === active) || tabs[0];
             return `
-                <nav class="ops-filter-rail" aria-label="${escapeHtml(moduleLabel)} filters" data-top-filter-rail="true" data-current-module="${escapeHtml(currentView)}">
+                <nav class="ops-filter-rail" aria-label="${escapeHtml(moduleLabel)} sections" data-top-filter-rail="true" data-current-module="${escapeHtml(currentView)}" data-top-rail-kind="sections">
                     <div class="ops-filter-rail-inner">
                         <div class="ops-filter-rail-meta">
                             <span>${escapeHtml(moduleLabel)}</span>
                             <strong>${escapeHtml(activeTab?.label || currentSectionLabel())}</strong>
                         </div>
-                        <div class="ops-filter-track" role="tablist" aria-label="${escapeHtml(moduleLabel)} views">
+                        <div class="ops-filter-track" role="tablist" aria-label="${escapeHtml(moduleLabel)} sections">
                             ${tabs.map(tab => {
                                 const selected = String(tab.id) === active;
                                 return `
@@ -10803,6 +10815,7 @@
             if (currentView === 'studio') return '<button class="primary-button" onclick="setStudioSection(\'source\')">Open Source</button>';
             if (currentView === 'content') return '<button class="primary-button" onclick="createManualContentJob()">New Content</button>';
             if (currentView === 'calendar') return '<button class="primary-button" onclick="createCalendarEventPrompt()">New Event</button>';
+            if (currentView === 'service_providers' && isProviderWorkspace() && currentWorkspaceIsOneTime() && serviceProviderSection === 'content') return '<button class="primary-button" onclick="switchView(\'content\'); setCurrentSection(\'one_time_library\')">Open Content</button>';
             if (currentView === 'service_providers' && isProviderWorkspace()) return '<button class="primary-button" onclick="setCurrentSection(\'schedule\')">Open Schedule</button>';
             if (currentView === 'service_providers') return '<button class="primary-button" onclick="createServiceProviderPrompt()">Add Provider</button>';
             if (currentView === 'communications') return '<button class="primary-button" onclick="createCommunicationNotePrompt()">New Message</button>';
@@ -10829,7 +10842,7 @@
             if (currentView === 'students') return STUDENT_SUBTABS.find(tab => tab.id === studentSection)?.label || 'Overview';
             if (currentView === 'community') return COMMUNITY_SUBTABS.find(tab => tab.id === communitySection)?.label || 'Overview';
             if (currentView === 'studio') return STUDIO_SUBTABS.find(tab => tab.id === studioSection)?.label || 'Overview';
-            if (currentView === 'content') return CONTENT_SUBTABS.find(tab => tab.id === contentSection)?.label || 'Library';
+            if (currentView === 'content') return visibleContentSubtabs().find(tab => tab.id === contentSection)?.label || visibleContentSubtabs().find(tab => tab.id === defaultContentSection())?.label || 'Library';
             if (currentView === 'contacts') return (isProviderWorkspace() ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS).find(tab => tab.id === contactSection)?.label || 'Parents';
             if (currentView === 'intake') return INTAKE_SUBTABS.find(tab => tab.id === intakeSection)?.label || 'Parse Runs';
             if (currentView === 'calendar') return (isProviderWorkspace() ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS).find(tab => tab.id === calendarSection)?.label || 'Overview';
@@ -18556,6 +18569,24 @@
             `;
         }
 
+        function renderProviderContentBridgePanel() {
+            const counts = contentSubnavCounts();
+            const meetingCount = Math.max(Number(counts.meetings || 0), projectMeetings.length || 0);
+            const libraryCount = Number(counts.one_time_library || 0) + (oneTimeClasses || []).length;
+            return `
+                <section class="focus-panel" data-one-time-rabbi-module="content-bridge">
+                    <div class="task-section-header"><h3>Content</h3><span>library / meetings / source prep</span></div>
+                    <p class="settings-disabled-note">Class media, meeting drops, source preparation, and review bundles live in the dedicated Classes & Content workspace so the Program rail stays compact.</p>
+                    <div class="task-overview-grid">
+                        ${renderMetricButton('Library', libraryCount, 'One Time class packages, video review, transcript checks, and classroom handoff.', "switchView('content'); setCurrentSection('one_time_library')")}
+                        ${renderMetricButton('Meeting Drops', meetingCount, 'Structured Rabbi meeting intake, decisions, and follow-up tasks.', "switchView('content'); setCurrentSection('meetings')")}
+                        ${renderMetricButton('Source Prep', Number(counts.research || 0), 'Sources, class questions, and source-sheet preparation.', "switchView('content'); setCurrentSection('research')")}
+                        ${renderMetricButton('Bundles', Number(counts.bundles || 0), 'Review bundles and internal publishing packages.', "switchView('content'); setCurrentSection('bundles')")}
+                    </div>
+                </section>
+            `;
+        }
+
         function renderProviderProgramWorkspace(providers = []) {
             const provider = shellerProviderRecord(providers);
             const section = serviceProviderSection;
@@ -18578,6 +18609,7 @@
                                 ${renderMetricButton('Launch', rabbiLaunch.checkouts.length + rabbiLaunch.members.length, 'Checkout, access grants, member login, and preview page.', "setCurrentSection('launch')")}
                                 ${renderMetricButton('Program', 1, 'Mishnayos Membership and Rabbi Scheller 7:00 PM Israel class.', "setCurrentSection('program')")}
                                 ${renderMetricButton('Tiers', tiers.length, 'Decision-pending OneTime product tiers.', "setCurrentSection('tiers')")}
+                                ${renderMetricButton('Content', serviceProviderSubnavCounts().content, 'Library, meeting drops, source prep, and bundles.', "setCurrentSection('content')")}
                                 ${renderMetricButton('Participants', providerParticipantRows().length, 'Provider participants/members, not BNA students.', "switchView('contacts'); setCurrentSection('participants')")}
                                 ${renderMetricButton('Access', providerAccessRows().length, 'Payment/access status and follow-up.', "setCurrentSection('access')")}
                             </div>
@@ -18600,6 +18632,7 @@
                     ` : ''}
                     ${section === 'launch' ? renderRabbiLaunchPanel() : ''}
                     ${section === 'tiers' ? `${renderOneTimeTrialReferralPanel()}${renderOneTimePaymentAccessPanel()}${renderOneTimeTestIdentitiesPanel()}${renderOneTimeAgentModeAcceptancePanel()}${renderOneTimeProductOffersPanel()}${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimePortalFoundationsPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}${renderOneTimeCrmImportPreviewPanel()}` : ''}
+                    ${section === 'content' ? renderProviderContentBridgePanel() : ''}
                     ${section === 'schedule' ? renderProviderSchedulePanel() : ''}
                     ${section === 'worksheets' ? renderProviderWorksheetPanel() : ''}
                     ${section === 'questions' ? renderProviderQuestionPanel() : ''}
@@ -27758,13 +27791,18 @@
             }
         }
 
-        function visibleContentSubtabs() {
-            return CONTENT_SUBTABS.filter(tab => tab.id !== 'one_time_library' || currentWorkspaceIsGlobal() || currentWorkspaceIsOneTime());
+        function defaultContentSection(workspaceKey = currentWorkspaceKey()) {
+            return currentWorkspaceIsOneTime(workspaceKey) ? 'one_time_library' : 'library';
+        }
+
+        function visibleContentSubtabs(workspaceKey = currentWorkspaceKey()) {
+            if (currentWorkspaceIsOneTime(workspaceKey)) return ONE_TIME_CONTENT_SUBTABS;
+            return CONTENT_SUBTABS.filter(tab => tab.id !== 'one_time_library' || currentWorkspaceIsGlobal(workspaceKey));
         }
 
         function renderContent() {
             const contentTabs = visibleContentSubtabs();
-            const activeContentSection = contentTabs.some(tab => tab.id === contentSection) ? contentSection : 'library';
+            const activeContentSection = contentTabs.some(tab => tab.id === contentSection) ? contentSection : defaultContentSection();
             const scopedJobs = contentJobs.filter(job => !['archived'].includes(job.status) && !contentIsParserIntake(job));
             const visibleJobs = scopedJobs.filter(contentIsReusableContent);
             const selectedJobsAll = visibleJobs.filter(job => selectedContentJobIds.has(Number(job.id)));
@@ -27949,8 +27987,8 @@
                     description: 'Rabbi and One Time meeting recordings become structured summaries, decision cards, and linked follow-up tasks.',
                 },
                 research: {
-                    title: 'Research',
-                    description: 'Class topics, questions, and mentioned sources from uploaded recordings. Create student source-sheet tasks for class learning, or public bibliography tasks for parent-facing videos and content claims.',
+                    title: currentWorkspaceIsOneTime() ? 'Source Prep' : 'Research',
+                    description: 'Class topics, questions, and mentioned sources from uploaded recordings. Create source-sheet tasks for class learning, or public bibliography tasks for parent-facing videos and content claims.',
                 },
                 selected: {
                     title: 'Selected',
@@ -35195,7 +35233,7 @@
         const ONE_TIME_PROVIDER_PRIMARY_NAV_ITEMS = [
             { id: 'service_providers', navKey: 'overview_package_status', section: 'overview', label: 'Overview', marker: 'OV' },
             { id: 'contacts', navKey: 'members_crm', section: 'participants', label: 'Members', marker: 'MB' },
-            { id: 'content', navKey: 'classes_content', section: 'one_time_library', label: 'Classes', marker: 'CL' },
+            { id: 'content', navKey: 'classes_content', section: 'one_time_library', label: 'Classes & Content', marker: 'CC' },
             { id: 'studio', navKey: 'studio', section: 'overview', label: 'Studio', marker: 'ST' },
             { id: 'live_classes', navKey: 'live_class_schedule', section: 'overview', label: 'Live Class', marker: 'LC' },
             { id: 'calendar', navKey: 'program_schedule', section: 'provider', label: 'Schedule', marker: 'SC' },
@@ -35355,6 +35393,7 @@
                     selectedStudentId = null;
                 }
                 if (currentView === 'contacts' && !PROVIDER_PARTICIPANT_SUBTABS.some(tab => tab.id === contactSection)) contactSection = 'participants';
+                if (currentView === 'content' && !visibleContentSubtabs(key).some(tab => tab.id === contentSection)) contentSection = defaultContentSection(key);
                 if (currentView === 'calendar' && calendarSection === 'students') calendarSection = 'provider';
                 if (currentView === 'communications' && communicationsSection === 'students') communicationsSection = 'providers';
                 if (currentView === 'api_usage' && apiUsageSection === 'student') apiUsageSection = 'provider';
@@ -37359,7 +37398,7 @@
             if (currentView === 'students') studentSection = STUDENT_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
             if (currentView === 'community') communitySection = COMMUNITY_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
             if (currentView === 'studio') studioSection = STUDIO_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
-            if (currentView === 'content') contentSection = CONTENT_SUBTABS.some(tab => tab.id === section) ? section : 'library';
+            if (currentView === 'content') contentSection = visibleContentSubtabs().some(tab => tab.id === section) ? section : defaultContentSection();
             if (currentView === 'contacts') {
                 const tabs = isProviderWorkspace() ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS;
                 contactSection = tabs.some(tab => tab.id === section) ? section : 'overview';
@@ -38055,7 +38094,7 @@
         }
 
         function setContentTypeTab(tab) {
-            contentSection = CONTENT_SUBTABS.some(item => item.id === tab) ? tab : 'library';
+            contentSection = visibleContentSubtabs().some(item => item.id === tab) ? tab : defaultContentSection();
             currentView = 'content';
             syncOperationsUrl();
             render();

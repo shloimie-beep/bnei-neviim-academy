@@ -529,7 +529,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
 
     assert.equal(initialContract.currentWorkspace, 'rabbi_sheller_provider');
     assert.equal(initialContract.roleLabel, 'Workspace Owner');
-    assert.deepEqual(initialContract.navLabels, ['Overview', 'Members', 'Classes', 'Studio', 'Live Class', 'Schedule', 'Community', 'Communications', 'Automations', 'Payments', 'Tasks', 'Reporting', 'Integrations', 'Workspace Setup']);
+    assert.deepEqual(initialContract.navLabels, ['Overview', 'Members', 'Classes & Content', 'Studio', 'Live Class', 'Schedule', 'Community', 'Communications', 'Automations', 'Payments', 'Tasks', 'Reporting', 'Integrations', 'Workspace Setup']);
     assert.deepEqual(initialContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'studio', 'live_class_schedule', 'program_schedule', 'community_questions', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'reporting_readiness', 'connector_setup', 'settings_setup']);
     for (const expected of ['service_providers', 'contacts', 'content', 'studio', 'live_classes', 'calendar', 'community', 'communications', 'automations', 'tasks', 'api_usage', 'integrations', 'settings']) {
       assert.ok(initialContract.navIds.includes(expected), `missing Rabbi-facing nav item ${expected}`);
@@ -541,20 +541,21 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     assert.equal(initialContract.hasAccountingText, false);
     assert.equal(initialContract.topRailModule, 'content');
     assert.equal(initialContract.hasModuleToolbar, false);
-    assert.ok(initialContract.filterIds.includes('meetings'));
-    assert.ok(initialContract.filterIds.includes('one_time_library'));
+    assert.deepEqual(initialContract.filterIds, ['one_time_library', 'meetings', 'research', 'bundles']);
     assert.ok(initialContract.footerLabels.some((label) => /Platform Support/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Payments/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Tasks/.test(label)));
-    assert.ok(initialContract.sidebarLabels.some((label) => /Classes/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Classes & Content/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Studio/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Live Class/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Schedule/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Community/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Reporting/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Integrations/.test(label)));
-    assert.ok(initialContract.sidebarSectionLabels.some((label) => /One Time Library/.test(label)));
+    assert.ok(initialContract.sidebarSectionLabels.some((label) => /^Library/.test(label)));
     assert.ok(initialContract.sidebarSectionLabels.some((label) => /Meeting Drops/.test(label)));
+    assert.ok(initialContract.sidebarSectionLabels.some((label) => /Source Prep/.test(label)));
+    assert.equal(initialContract.sidebarSectionLabels.some((label) => /Selected|Repurpose|Newsletter|Prompts/.test(label)), false);
     assert.equal(initialContract.sidebarLabels.some((label) => /Agents|Watchdog|Team|Accounting|Students/.test(label)), false);
     assert.equal(initialContract.workspaceOptions.length, 0);
     assert.match(initialContract.workspaceSummary, /One Time Mishnah Class/);
@@ -589,6 +590,20 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     assert.equal(paymentNavContract.currentView, 'service_providers');
     assert.equal(paymentNavContract.section, 'access');
     assert.match(paymentNavContract.railText, /Payments|Payment \/ Access/);
+
+    await page.evaluate(() => {
+      window.switchView('service_providers');
+      window.setCurrentSection('content');
+    });
+    await page.waitForSelector('[data-one-time-rabbi-module="content-bridge"]', { timeout: 10000 });
+    const contentBridgeContract = await page.evaluate(() => ({
+      currentView: document.querySelector('[data-top-filter-rail]')?.getAttribute('data-current-module') || '',
+      section: window.currentSectionId(),
+      text: document.querySelector('[data-one-time-rabbi-module="content-bridge"]')?.textContent.replace(/\s+/g, ' ').trim() || '',
+    }));
+    assert.equal(contentBridgeContract.currentView, 'service_providers');
+    assert.equal(contentBridgeContract.section, 'content');
+    assert.match(contentBridgeContract.text, /Library|Meeting Drops|Source Prep|Bundles/);
 
     await page.evaluate(() => {
       window.switchView('content');
@@ -658,15 +673,55 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     assert.ok(mobileMetrics.scrollWidth <= mobileMetrics.width + 1, `mobile overflow ${mobileMetrics.scrollWidth} > ${mobileMetrics.width}`);
     await page.screenshot({ path: path.join(outDir, 'mobile-agents.png'), fullPage: true });
 
+    await page.evaluate(() => {
+      window.switchView('content');
+      window.setCurrentSection('one_time_library');
+    });
+    await page.waitForSelector('[data-top-filter-rail][data-current-module="content"] [data-top-filter-id="one_time_library"].active', { timeout: 10000 });
+    const mobileContentRail = await page.evaluate(() => {
+      const rail = document.querySelector('[data-top-filter-rail][data-current-module="content"]');
+      const track = rail?.querySelector('.ops-filter-track');
+      return {
+        ids: Array.from(rail?.querySelectorAll('[data-top-filter-id]') || []).map((item) => item.getAttribute('data-top-filter-id')),
+        overflowX: track ? getComputedStyle(track).overflowX : '',
+        flexWrap: track ? getComputedStyle(track).flexWrap : '',
+        hasMeta: Boolean(rail?.querySelector('.ops-filter-rail-meta') && getComputedStyle(rail.querySelector('.ops-filter-rail-meta')).display !== 'none'),
+        pageWidth: document.documentElement.clientWidth,
+        pageScrollWidth: document.documentElement.scrollWidth,
+      };
+    });
+    assert.deepEqual(mobileContentRail.ids, ['one_time_library', 'meetings', 'research', 'bundles']);
+    assert.equal(mobileContentRail.overflowX, 'auto');
+    assert.equal(mobileContentRail.flexWrap, 'nowrap');
+    assert.equal(mobileContentRail.hasMeta, false);
+    assert.ok(mobileContentRail.pageScrollWidth <= mobileContentRail.pageWidth + 1, `mobile content overflow ${mobileContentRail.pageScrollWidth} > ${mobileContentRail.pageWidth}`);
+
     assert.deepEqual(consoleErrors, []);
+
+    const redactedPreviewRequests = previewRequests.map((request) => ({
+      method: request.method,
+      redacted: true,
+      body: {
+        ...request.body,
+        source: request.body?.source
+          ? {
+              ...request.body.source,
+              drive_file_id: request.body.source.drive_file_id ? 'redacted' : request.body.source.drive_file_id,
+              url: request.body.source.url ? 'redacted' : request.body.source.url,
+            }
+          : request.body?.source,
+      },
+    }));
 
     const report = {
       ok: true,
       target: '/operations?workspace=rabbi_sheller_provider&view=content&section=meetings&nav=modules',
       initialContract,
       paymentNavContract,
-      previewRequests,
+      contentBridgeContract,
+      previewRequests: redactedPreviewRequests,
       mobileMetrics,
+      mobileContentRail,
       screenshots: [
         path.relative(root, path.join(outDir, 'desktop.png')).replace(/\\/g, '/'),
         path.relative(root, path.join(outDir, 'mobile-agents.png')).replace(/\\/g, '/'),
@@ -680,7 +735,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2));
     fs.writeFileSync(
       path.join(outDir, 'report.md'),
-      `# One Time Operations UI Local Smoke\n\nPASS. Scoped One Time owner UI rendered Rabbi-facing modules, demoted Platform Support, hidden school-only Students/Accounting modules, kept Agents as read-only scoped support status, opened Payments directly to Payment / Access, clicked the no-write Drive Brief preview, and passed mobile overflow checks.\n\n- Desktop: ${report.screenshots[0]}\n- Mobile Agents: ${report.screenshots[1]}\n- Production writes: no\n- Preview requests: ${previewRequests.length}\n`,
+      `# One Time Operations UI Local Smoke\n\nPASS. Scoped One Time owner UI rendered Rabbi-facing modules, demoted Platform Support, hidden school-only Students/Accounting modules, kept Agents as read-only scoped support status, opened the Payments side item directly to Access, clicked the no-write Drive Brief preview, and passed mobile/content rail overflow checks.\n\n- Desktop: ${report.screenshots[0]}\n- Mobile Agents: ${report.screenshots[1]}\n- Production writes: no\n- Preview requests: ${previewRequests.length}\n`,
     );
   } finally {
     await browser.close();

@@ -30114,3 +30114,36 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrails: no external email sent, no bulk campaign endpoint added, no fake
   inbound email inserted, no message bodies recorded, no password printed or
   committed, and no physical mailing address value committed.
+
+## 2026-07-06 - One Time Operations Content IA And Section Rail Verified Locally
+
+- Registered `RAW-20260706-956`, `REQ-20260706-956` through
+  `REQ-20260706-959`, and `PKT-20260706-956` for the Rabbi / One Time
+  Operations content IA correction.
+- Updated the One Time sidebar label from `Classes` to `Classes & Content`.
+- Updated the durable One Time IA model so `classes_content` defaults to
+  `library` and uses compact sections: Library, Meeting Drops, Source Prep,
+  and Bundles.
+- Added a One Time-specific content top rail so the Rabbi workspace no longer
+  shows generic production tabs such as Selected, Repurpose, Newsletter, and
+  Prompts as primary content sections.
+- Shortened provider Program top sections and added a Content bridge panel that
+  jumps to Library, Meeting Drops, Source Prep, and Bundles.
+- Tightened mobile rail behavior by hiding the rail meta row at mobile widths
+  while preserving horizontal scroll.
+- Verification passed locally: PQC validation, One Time IA/static tests, the
+  focused One Time Operations browser smoke, the broader final One Time/Rabbi
+  UI smoke, `npm run watchdog:actions` with `finding_count=0`, and
+  `npm run watchdog:protocol-drift` with `Findings: 0`.
+- Evidence:
+  `ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/report.md`,
+  `ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/local-smoke/report.json`,
+  `ops/ui-audits/2026-07-06-onetime-operations-content-ia-filter-rail/final-local-smoke/qa-harness-local-report.json`,
+  `ops/product-quality-compiler/validation/latest-product-quality-validation.md`,
+  `ops/watchdog-audits/2026-07-06T15-04-watchdog-action-audit.md`, and
+  `ops/watchdog-audits/2026-07-06-product-quality-drift.md`.
+- Guardrails: no backend auth/data/schema change, no WhatsApp/email/payment
+  send, no access grant, no DNS/provider-account mutation, no production data
+  mutation, no raw private evidence committed; Drive file ids/URLs are redacted
+  in durable smoke output.
+- Remaining before app-visible Done: commit, push, deploy, and live smoke.

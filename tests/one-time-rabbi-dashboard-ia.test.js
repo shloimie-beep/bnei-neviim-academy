@@ -143,6 +143,21 @@ test('section labels, top rails, status chips, and mobile labels are client-read
   }
 });
 
+test('Classes & Content IA uses compact Rabbi-facing content sections', () => {
+  const classesContent = ONE_TIME_RABBI_DASHBOARD_SECTION_SUBSECTION_MAP.classes_content.subsections;
+  assert.deepEqual(
+    classesContent.map((section) => [section.id, section.label, section.source_view, section.source_section]),
+    [
+      ['library', 'Library', 'content', 'one_time_library'],
+      ['meeting_drops', 'Meeting Drops', 'content', 'meetings'],
+      ['source_prep', 'Source Prep', 'content', 'research'],
+      ['bundles', 'Bundles', 'content', 'bundles'],
+    ],
+  );
+  assert.equal(ONE_TIME_RABBI_DASHBOARD_TOP_RAIL_MODEL.classes_content.default_item, 'library');
+  assert.deepEqual(ONE_TIME_RABBI_DASHBOARD_TOP_RAIL_MODEL.classes_content.items.map((item) => item.id), ['library', 'meeting_drops', 'source_prep', 'bundles']);
+});
+
 test('workspace and project keys stay scoped to Rabbi Scheller One Time', () => {
   const brand = JSON.parse(fs.readFileSync('config/brands/one-time.json', 'utf8'));
   const site = JSON.parse(fs.readFileSync('config/service-provider-sites/one-time.json', 'utf8'));
