@@ -21,6 +21,7 @@ const ownerAllowedViews = [
   'contacts',
   'intake',
   'community',
+  'studio',
   'content',
   'live_classes',
   'calendar',
@@ -504,6 +505,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
         disabled: button.getAttribute('aria-disabled') === 'true',
         current: button.getAttribute('aria-current') === 'true',
       }));
+      const workspaceSummary = document.querySelector('[data-one-time-workspace-summary]')?.textContent.trim().replace(/\s+/g, ' ') || '';
       return {
         currentWorkspace: window.currentWorkspaceKey(),
         roleLabel: window.currentWorkspaceRoleLabel(),
@@ -516,6 +518,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
         sidebarSectionLabels,
         footerLabels,
         workspaceOptions,
+        workspaceSummary,
         hasStudentsText: navItems.some((item) => item.id === 'students'),
         hasAccountingText: navItems.some((item) => item.id === 'accounting'),
         driveButton: Boolean(document.querySelector('[data-preview-one-time-drive-brief]')),
@@ -526,12 +529,12 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
 
     assert.equal(initialContract.currentWorkspace, 'rabbi_sheller_provider');
     assert.equal(initialContract.roleLabel, 'Workspace Owner');
-    assert.deepEqual(initialContract.navLabels, ['Overview', 'Members', 'Classes', 'Live Class', 'Schedule', 'Community', 'Comms', 'Auto', 'Payments', 'Tasks', 'Reporting', 'Connectors', 'Setup']);
-    assert.deepEqual(initialContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'live_class_schedule', 'program_schedule', 'community_questions', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'reporting_readiness', 'connector_setup', 'settings_setup']);
-    for (const expected of ['service_providers', 'contacts', 'content', 'live_classes', 'calendar', 'community', 'communications', 'automations', 'tasks', 'api_usage', 'integrations', 'settings']) {
+    assert.deepEqual(initialContract.navLabels, ['Overview', 'Members', 'Classes', 'Studio', 'Live Class', 'Schedule', 'Community', 'Communications', 'Automations', 'Payments', 'Tasks', 'Reporting', 'Integrations', 'Workspace Setup']);
+    assert.deepEqual(initialContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'studio', 'live_class_schedule', 'program_schedule', 'community_questions', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'reporting_readiness', 'connector_setup', 'settings_setup']);
+    for (const expected of ['service_providers', 'contacts', 'content', 'studio', 'live_classes', 'calendar', 'community', 'communications', 'automations', 'tasks', 'api_usage', 'integrations', 'settings']) {
       assert.ok(initialContract.navIds.includes(expected), `missing Rabbi-facing nav item ${expected}`);
     }
-    for (const hidden of ['dashboard', 'watchdog', 'agents', 'studio', 'platform_suite', 'admin', 'accounting', 'students']) {
+    for (const hidden of ['dashboard', 'watchdog', 'agents', 'platform_suite', 'admin', 'accounting', 'students']) {
       assert.equal(initialContract.navIds.includes(hidden), false, `raw support nav item should be demoted: ${hidden}`);
     }
     assert.equal(initialContract.hasStudentsText, false);
@@ -544,17 +547,37 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     assert.ok(initialContract.sidebarLabels.some((label) => /Payments/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Tasks/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Classes/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Studio/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Live Class/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Schedule/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Community/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Reporting/.test(label)));
-    assert.ok(initialContract.sidebarLabels.some((label) => /Connectors/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Integrations/.test(label)));
     assert.ok(initialContract.sidebarSectionLabels.some((label) => /One Time Library/.test(label)));
     assert.ok(initialContract.sidebarSectionLabels.some((label) => /Meeting Drops/.test(label)));
     assert.equal(initialContract.sidebarLabels.some((label) => /Agents|Watchdog|Team|Accounting|Students/.test(label)), false);
-    assert.ok(initialContract.workspaceOptions.some((option) => /Bnei Neviim Academy/.test(option.label) && option.disabled));
-    assert.ok(initialContract.workspaceOptions.some((option) => /One Time Mishnah Class/.test(option.label) && option.current));
+    assert.equal(initialContract.workspaceOptions.length, 0);
+    assert.match(initialContract.workspaceSummary, /One Time Mishnah Class/);
+    assert.doesNotMatch(initialContract.workspaceSummary, /Bnei Neviim|Dratler|Super Admin|School|Family/);
     assert.equal(initialContract.driveButton, true);
+
+    await page.goto(`http://127.0.0.1:${activePort}/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('[data-one-time-rabbi-dashboard][data-one-time-program-route="overview"]', { timeout: 15000 });
+    const dashboardContract = await page.evaluate(() => ({
+      currentView: document.querySelector('[data-top-filter-rail]')?.getAttribute('data-current-module') || '',
+      currentSection: window.currentSectionId(),
+      visibleText: document.body.innerText.replace(/\s+/g, ' ').trim(),
+      activeSidebar: Array.from(document.querySelectorAll('.ops-sidebar-button.active')).map((item) => item.textContent.trim().replace(/\s+/g, ' ')),
+      topbarChips: Array.from(document.querySelectorAll('.ops-topbar-status .ops-brand-chip')).map((item) => item.textContent.trim().replace(/\s+/g, ' ')),
+      hasWorkspaceDirectoryOptions: Boolean(document.querySelector('[data-workspace-option]')),
+    }));
+    assert.equal(dashboardContract.currentView, 'service_providers');
+    assert.equal(dashboardContract.currentSection, 'overview');
+    assert.ok(dashboardContract.activeSidebar.some((label) => /Overview/.test(label)), 'dashboard route should highlight One Time Overview');
+    assert.deepEqual(dashboardContract.topbarChips.map((label) => label.replace(/\d+/g, '').trim()), ['Members', 'Classes', 'Studio', 'Setup']);
+    assert.equal(dashboardContract.hasWorkspaceDirectoryOptions, false);
+    assert.doesNotMatch(dashboardContract.visibleText, /Codex Queue|Student accountability|Daily Command Center|Tablet Access|Workspace Directory|Super Admin|Bnei Neviim Academy|Dratler Family/);
+    assert.match(dashboardContract.visibleText, /Studio|Communications|Workspace Setup|One Time Mishnah Class/);
 
     await page.locator('[data-sidebar-nav-key="payments_access"]').click();
     await page.waitForSelector('[data-top-filter-rail][data-current-module="service_providers"] [data-top-filter-id="access"].active', { timeout: 10000 });

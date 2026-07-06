@@ -10214,9 +10214,12 @@
 
         function renderSidebar() {
             const navItems = workspaceNavItems();
+            const oneTimeWorkspace = isProviderWorkspace() && currentWorkspaceIsOneTime();
             const brandedTitle = workspaceBranding?.workspace_name_override || currentWorkspaceRecord().display_name || 'BNA Operations';
-            const brandedSubtitle = workspaceBranding?.workspace_name_override ? 'Workspace dashboard' : 'CRM, school operations, providers, portals, usage, and automation in one workspace.';
-            const showCurrentSections = isProviderWorkspace() && currentWorkspaceIsOneTime();
+            const brandedSubtitle = oneTimeWorkspace
+                ? 'Provider workspace for members, classes, Studio, communications, payments, tasks, and setup.'
+                : workspaceBranding?.workspace_name_override ? 'Workspace dashboard' : 'CRM, school operations, providers, portals, usage, and automation in one workspace.';
+            const showCurrentSections = oneTimeWorkspace && currentView !== 'dashboard';
             return `
                 <aside class="ops-sidebar" aria-label="BNA Operations navigation">
                     <button type="button" class="ops-sidebar-back" onclick="closeNavDrawer()">Back</button>
@@ -10224,7 +10227,7 @@
                         <div class="ops-sidebar-title">${escapeHtml(brandedTitle)}</div>
                         <div class="ops-sidebar-copy">${escapeHtml(brandedSubtitle)}</div>
                     </div>
-                    ${renderWorkspaceSwitcher()}
+                    ${oneTimeWorkspace ? renderOneTimeWorkspaceSummary() : renderWorkspaceSwitcher()}
                     <nav class="ops-sidebar-nav">
                         ${renderSidebarModuleList(navItems)}
                     </nav>
@@ -10237,6 +10240,28 @@
                         <a class="ops-sidebar-mini" href="/operations-login.html">Logout</a>
                     </div>
                 </aside>
+            `;
+        }
+
+        function renderOneTimeWorkspaceSummary() {
+            const workspace = currentWorkspaceRecord();
+            const project = projectByKey('one_time_mishnah_class');
+            const roleLabel = currentWorkspaceRoleLabel();
+            return `
+                <div class="workspace-switcher one-time-workspace-summary" data-one-time-workspace-summary="true" aria-label="Current One Time workspace">
+                    <div class="workspace-current-card">
+                        <span>
+                            <span class="workspace-switcher-label">Current Workspace</span>
+                            <strong>${escapeHtml(workspace.display_name || project.short_name || 'One Time Mishnah Class')}</strong>
+                            <span>Provider / ${escapeHtml(roleLabel)}</span>
+                        </span>
+                        <span class="workspace-status">Scoped</span>
+                    </div>
+                    <div class="workspace-menu-actions">
+                        <button type="button" class="ops-sidebar-mini" onclick="switchView('service_providers'); setCurrentSection('overview')">Overview</button>
+                        <button type="button" class="ops-sidebar-mini" onclick="switchView('settings'); setCurrentSection('workspace')">Workspace Setup</button>
+                    </div>
+                </div>
             `;
         }
 
@@ -10687,6 +10712,7 @@
         }
 
         function operationsTopbarStatusChips() {
+            if (isProviderWorkspace() && currentWorkspaceIsOneTime()) return oneTimeOperationsTopbarStatusChips();
             const decisions = safeCount(() => taskDecisionItems().length);
             const codexQueue = safeCount(() => tasks.filter(taskMatchesCodexQueue).length);
             const accountability = safeCount(() => students
@@ -10701,6 +10727,29 @@
             ];
         }
 
+        function oneTimeOperationsTopbarStatusChips() {
+            const counts = oneTimeProviderDashboardCounts();
+            return [
+                { label: 'Members', value: counts.members, tone: counts.members ? 'active' : 'ok', action: "switchView('contacts'); setCurrentSection('participants')", title: 'One Time participants and member records scoped to this provider.' },
+                { label: 'Classes', value: counts.classes, tone: counts.classes ? 'active' : 'ok', action: "switchView('content'); setCurrentSection('one_time_library')", title: 'One Time classes, source material, and library items.' },
+                { label: 'Studio', value: counts.studio, tone: counts.studio ? 'active' : 'ok', action: "switchView('studio'); setCurrentSection('overview')", title: 'Studio projects and content workflow for this workspace.' },
+                { label: 'Setup', value: counts.setup, tone: counts.setup ? 'attention' : 'ok', action: "switchView('settings'); setCurrentSection('workspace')", title: 'Provider setup, connectors, and access items.' },
+            ];
+        }
+
+        function oneTimeProviderDashboardCounts() {
+            return {
+                members: safeCount(() => providerParticipantRows().length),
+                classes: safeCount(() => oneTimeClasses.length || contentSubnavCounts().one_time_library || 0),
+                studio: safeCount(() => studioProjects.length || (studioDashboard.projects || []).length),
+                setup: safeCount(() => tasks.filter(task => {
+                    const haystack = `${task.title || ''} ${task.display_title || ''} ${task.notes || ''} ${task.waiting_on || ''} ${task.project_key || ''} ${task.workspace_key || ''}`;
+                    return /one[_ -]?time|mishnah|rabbi|sheller|scheller/i.test(haystack)
+                        && /(blocked|pending|credential|setup|access|connector|payment|vimeo|zoom|resend|whatsapp|stripe|dns)/i.test(haystack);
+                }).length)
+            };
+        }
+
         function safeCount(getter) {
             try {
                 const value = Number(getter());
@@ -10713,6 +10762,7 @@
         function currentWorkspaceViewingLabel() {
             const workspaceKey = currentWorkspaceKey();
             const type = workspaceTypeForKey(workspaceKey);
+            if (type === 'service_provider' && currentWorkspaceIsOneTime(workspaceKey)) return 'One Time members, classes, Studio, communications, payments, tasks, and setup scoped to Rabbi Sheller.';
             if (type === 'service_provider') return 'Provider tasks, participants, content, support, and launch work scoped to this provider.';
             if (workspaceKey === 'bna' || type === 'school') return 'BNA parents, students, class content, school tasks, and approved school records.';
             if (type === 'family') return 'Family accountability items, parent tasks, child plans, and private household notes.';
@@ -10740,6 +10790,7 @@
         }
 
         function currentPrimaryAction() {
+            if (currentWorkspaceIsOneTime() && currentView === 'dashboard') return '<button class="primary-button" onclick="switchView(\'contacts\'); setCurrentSection(\'participants\')">Open Members</button>';
             if (currentView === 'pipelines') return '<button class="primary-button" onclick="createPipelineCardPrompt()">New Pipeline Card</button>';
             if (currentView === 'watchdog') return '<button class="primary-button" onclick="openCommandTarget(\'tasks\', \'tasks\')">Codex Work</button>';
             if (currentView === 'tasks') return '<button class="primary-button" onclick="openCommandTarget(\'tasks\', \'decisions\')">Decisions</button>';
@@ -35145,16 +35196,17 @@
             { id: 'service_providers', navKey: 'overview_package_status', section: 'overview', label: 'Overview', marker: 'OV' },
             { id: 'contacts', navKey: 'members_crm', section: 'participants', label: 'Members', marker: 'MB' },
             { id: 'content', navKey: 'classes_content', section: 'one_time_library', label: 'Classes', marker: 'CL' },
+            { id: 'studio', navKey: 'studio', section: 'overview', label: 'Studio', marker: 'ST' },
             { id: 'live_classes', navKey: 'live_class_schedule', section: 'overview', label: 'Live Class', marker: 'LC' },
             { id: 'calendar', navKey: 'program_schedule', section: 'provider', label: 'Schedule', marker: 'SC' },
             { id: 'community', navKey: 'community_questions', section: 'overview', label: 'Community', marker: 'CO' },
-            { id: 'communications', navKey: 'communications', section: 'providers', label: 'Comms', marker: 'CM' },
-            { id: 'automations', navKey: 'automations', section: 'center', label: 'Auto', marker: 'AU' },
+            { id: 'communications', navKey: 'communications', section: 'providers', label: 'Communications', marker: 'CM' },
+            { id: 'automations', navKey: 'automations', section: 'center', label: 'Automations', marker: 'AU' },
             { id: 'service_providers', navKey: 'payments_access', section: 'access', label: 'Payments', marker: 'PA' },
             { id: 'tasks', navKey: 'tasks_decisions', section: 'one_time', label: 'Tasks', marker: 'TS' },
             { id: 'api_usage', navKey: 'reporting_readiness', section: 'provider', label: 'Reporting', marker: 'RP' },
-            { id: 'integrations', navKey: 'connector_setup', section: 'readiness', label: 'Connectors', marker: 'CN' },
-            { id: 'settings', navKey: 'settings_setup', section: 'workspace', label: 'Setup', marker: 'SU' }
+            { id: 'integrations', navKey: 'connector_setup', section: 'readiness', label: 'Integrations', marker: 'IN' },
+            { id: 'settings', navKey: 'settings_setup', section: 'workspace', label: 'Workspace Setup', marker: 'SU' }
         ];
 
         function workspaceNavViewIds(workspaceKey = currentWorkspaceKey()) {
@@ -35283,8 +35335,18 @@
                 communicationsSection = 'internal';
             }
             if (providerWorkspace) {
+                if (currentWorkspaceIsOneTime(key) && currentView === 'dashboard') {
+                    currentView = 'service_providers';
+                    serviceProviderSection = 'overview';
+                    dashboardSection = 'overview';
+                }
                 if (currentView === 'platform_suite' || currentView === 'admin' || currentView === 'accounting') {
-                    currentView = 'dashboard';
+                    if (currentWorkspaceIsOneTime(key)) {
+                        currentView = 'service_providers';
+                        serviceProviderSection = 'overview';
+                    } else {
+                        currentView = 'dashboard';
+                    }
                     dashboardSection = 'overview';
                 }
                 if (currentView === 'students') {
