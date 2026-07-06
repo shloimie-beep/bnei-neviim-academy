@@ -31,3 +31,17 @@ older Codex sessions. The requested result is:
   superseded raw IDs.
 - Do not perform external sends, payments, access changes, DNS changes, Drive
   writes, provider-account mutations, or secret writes.
+
+## Execution closeout
+
+- Dirty checkout archive:
+  `C:\Users\User\BNA-local-archives\2026-07-06-bna-v2-dirty-checkout-before-reset`.
+- Stale worktree archive:
+  `C:\Users\User\BNA-local-archives\2026-07-06-bna-stale-worktrees-before-remove`.
+- Published closeout PR:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/124`.
+- Final local state: one registered worktree, one local branch, clean
+  `master...origin/master`.
+- Live deployment readback: Railway production deployment
+  `51f37ce6-6a23-4622-abc2-c474184f1f4f` succeeded on commit
+  `9beee40ae2c6f82cd6f6fea15661b4ac082f1543`.
