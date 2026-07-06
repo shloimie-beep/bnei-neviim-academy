@@ -29981,4 +29981,21 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   `ops/prompt-packets/2026-07-06-onetime-full-ui-agent-audit/` prompt packet
   lane, not on this dashboard hotfix. Report:
   `ops/watchdog-audits/2026-07-06-product-quality-drift.md`.
-- Commit/push, deploy, and live smoke are pending.
+- Merged PR #118 to `master` at
+  `f0b7cc0a80f35a79cbcd843844fe90960152938b`.
+- Railway GitHub auto-deploy
+  `96961b6f-1ae6-467d-89ae-2a9a5c088753` reached `SUCCESS` on BNA service
+  `skillful-motivation`.
+- Live verification passed: `npm run railway:doctor`, `npm run app:smoke`,
+  `npm run app:smoke:rabbi-onetime-landing`, and an authenticated
+  browser-rendered smoke of the exact reported URL.
+- Exact live URL smoke confirmed the dashboard route normalizes to the One Time
+  provider overview, the scoped sidebar has no workspace-directory options,
+  Studio is visible, topbar chips are Members / Classes / Studio / Setup, and
+  the visible page does not contain Codex Queue, Student accountability, Daily
+  Command Center, Tablet Access, Workspace Directory, Super Admin, Bnei Neviim
+  Academy, or Dratler Family text.
+- Evidence:
+  `ops/live-smokes/2026-07-06T14-10-22-946Z-one-time-operations-dashboard-ui-live-smoke.md`,
+  `ops/live-smokes/2026-07-06T14-08-01-128Z-live-app-smoke.md`, and
+  `ops/live-smokes/2026-07-06T14-07-25-867Z-rabbi-onetime-landing-smoke.md`.
