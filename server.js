@@ -59524,8 +59524,8 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
       return res.status(400).json({ error: 'Content job does not have a transcript yet' });
     }
     const previousParse = typeof job.parse_json === 'string' ? safeJsonParse(job.parse_json) : (job.parse_json || {});
-    if (!dry_run && !force && previousParse?.mixed_recording_parse?.parsed_at) {
-      if (archive_source_after_parse && job.status !== 'archived') {
+    if (!force && previousParse?.mixed_recording_parse?.parsed_at) {
+      if (!dry_run && archive_source_after_parse && job.status !== 'archived') {
         await pool.query(
           `UPDATE bna_content_jobs
            SET status = 'archived',
@@ -59538,8 +59538,10 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
       return res.json({
         success: true,
         skipped: true,
-        dry_run: false,
-        message: 'This recording was already parsed. Use force if you intentionally want to reparse and create new records.',
+        dry_run: Boolean(dry_run),
+        message: dry_run
+          ? 'This recording was already parsed; dry-run reused the stored parse. Use force if you intentionally want to reparse.'
+          : 'This recording was already parsed. Use force if you intentionally want to reparse and create new records.',
         report: previousParse.mixed_recording_parse.report || {},
         counts: previousParse.mixed_recording_parse.counts || {},
       });
