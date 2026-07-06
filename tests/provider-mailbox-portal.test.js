@@ -73,6 +73,22 @@ test('mailbox draft is local-only and send is explicitly guarded', () => {
   assert.match(server, /bulk_send_allowed:\s*false/);
 });
 
+test('manual Resend draft sends preserve One Time mailbox scope metadata', () => {
+  const sendBlock = sourceBlock(
+    server,
+    /async function sendResendEmailDraft/,
+    /app\.post\('\/api\/bna\/communications\/email\/send'/
+  );
+  assert.match(sendBlock, /const payloadMetadata = sanitizeIntegrationMetadata/);
+  assert.match(sendBlock, /const logProjectKey = normalizeProjectKey\(payloadMetadata\.project_key/);
+  assert.match(sendBlock, /const logWorkspaceKey = normalizeWorkspaceKey\(payloadMetadata\.workspace_key/);
+  assert.match(sendBlock, /projectId: logProject\?\.id \|\| null/);
+  assert.match(sendBlock, /workspaceId: logWorkspaceId \|\| null/);
+  assert.match(sendBlock, /\.\.\.payloadMetadata/);
+  assert.match(sendBlock, /workspace_key: logWorkspaceKey \|\| payloadMetadata\.workspace_key \|\| null/);
+  assert.match(sendBlock, /project_key: logProjectKey \|\| payloadMetadata\.project_key \|\| null/);
+});
+
 test('route and action registries cover One Time provider mailbox', () => {
   const routes = routeRegistry.routes || [];
   const actions = actionRegistry.actions || [];

@@ -44482,6 +44482,12 @@ async function sendResendEmailDraft(req, res) {
         [sent.id, req.opsUser || 'operations', payload.id]
       );
     }
+    const logProjectKey = normalizeProjectKey(payloadMetadata.project_key || payloadMetadata.project || '');
+    const logWorkspaceKey = normalizeWorkspaceKey(payloadMetadata.workspace_key || payloadMetadata.workspace || workspaceKeyForProject(logProjectKey));
+    const logProject = logProjectKey ? await getProjectByKey(logProjectKey).catch(() => null) : null;
+    const logWorkspaceId = logProjectKey
+      ? await getWorkspaceIdForProjectKey(logProjectKey).catch(() => null)
+      : null;
     await logEmail({
       emailType: 'resend_email_draft_send',
       to: payload.to_emails.join(', '),
@@ -44489,7 +44495,10 @@ async function sendResendEmailDraft(req, res) {
       provider: 'resend',
       providerMessageId: sent.id,
       status: 'sent',
+      projectId: logProject?.id || null,
+      workspaceId: logWorkspaceId || null,
       metadata: {
+        ...payloadMetadata,
         draft_id: payload.id || null,
         recipient_count: payload.to_emails.length,
         cc_count: payload.cc_emails.length,
@@ -44497,6 +44506,8 @@ async function sendResendEmailDraft(req, res) {
         account_owner: RESEND_ACCOUNT_OWNER,
         provider_account: RESEND_PROVIDER_ACCOUNT || null,
         domain: RESEND_DOMAIN || null,
+        workspace_key: logWorkspaceKey || payloadMetadata.workspace_key || null,
+        project_key: logProjectKey || payloadMetadata.project_key || null,
       },
     });
     res.json({ success: true, sent: true, provider: 'resend', provider_message_id: sent.id, readiness: sent.readiness });
