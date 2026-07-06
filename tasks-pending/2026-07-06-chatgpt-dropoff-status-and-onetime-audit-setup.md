@@ -25,6 +25,7 @@ space and Codex/agents can pick them up automatically.
 | REQ-20260706-903 | Audit the current ChatGPT-to-Codex dropoff workflow and report what is actually wired versus blocked. | RAW-20260706-903 | bna_platform / agent_ops | Codex | workflow audit | high | Done |
 | REQ-20260706-904 | Identify the safest handoff mode for ChatGPT Agent Mode outputs before creating the One Time audit prompt series. | RAW-20260706-903 | bna_platform / agent_ops | Codex | workflow recommendation | high | Done |
 | REQ-20260706-905 | Prepare the next prompt series around the canonical One Time Mishnah target and correct scope invariants. | RAW-20260706-903 | rabbi_sheller_provider / one_time_mishnah_class | Codex then ChatGPT Agent Mode | prompt planning | high | Pending |
+| REQ-20260706-906 | Provide a tiny ChatGPT Agent Mode smoke prompt to prove whether that exact session can create a repo-visible packet or marked GitHub comment. | RAW-20260706-903 | bna_platform / agent_ops | Codex | workflow smoke | high | Done |
 
 ## Current findings
 
@@ -37,6 +38,7 @@ space and Codex/agents can pick them up automatically.
 | Focused regression tests pass. | `node --test tests/chatgpt-dropoff-ingestor.test.js tests/chatgpt-dropoff-comment-collector.test.js tests/agent-fleet-hardening.test.js` | PASS 15/15 |
 | Broad GitHub comment scanning is not fully reliable as a live poll in this run. | `npm run chatgpt:dropoff:comments:scan` | Failed once with GitHub TLS handshake timeout while walking recent issue comments |
 | Targeted GitHub comment scan works. | `npm run chatgpt:dropoff:comments:scan -- --url https://github.com/shloimie-beep/bnei-neviim-academy/pull/90#issuecomment-4885699190` | Found the marked packet and reported `already_collected` |
+| A local no-op packet shape validates without queueing. | Temporary packet `chatgpt-dropoff-smoke-test-20260706-903`; `npm run chatgpt:dropoff:scan -- --packet chatgpt-dropoff-smoke-test-20260706-903` | Returned `ready_dry_run`, findings `[]`; temporary packet was removed so it cannot be accidentally queued |
 | Standard ChatGPT GitHub app should be treated as read-only for normal consumer/workspace use. | OpenAI Help Center says the GitHub app lets ChatGPT read/analyze/search; direct code edits/pushes are a Codex product path. | Do not assume ordinary ChatGPT can create packet files |
 | Real passwords should not be baked into prompts. | `docs/agent-browser-harness.md`; dropoff safety docs; repo privacy rules | Use test identities, review links, keyholder/secret aliases, or owner takeover/login flow instead |
 
@@ -74,6 +76,23 @@ Do not send one giant implementation prompt. Start with audit packets:
 7. `06-production-readiness-final-regression`: click everything safe, classify
    remaining blockers, and produce Codex-ready repair packets.
 
+## Agent Mode smoke prompt
+
+Use:
+
+- `ops/prompt-packets/2026-07-06-chatgpt-dropoff-smoke-agent-mode/00-smoke-prompt.md`
+
+Expected result:
+
+- If ChatGPT Agent Mode has repo-file/PR write access, it creates only the
+  smoke packet folder.
+- If it cannot write repo files but can comment, it posts a marked
+  `BNA_CHATGPT_DROPOFF_PACKET` comment on PR #90.
+- If it cannot write either way, it returns `CANNOT_WRITE_GITHUB` with the
+  permission error.
+- After a comment URL exists, Codex should run targeted comment scan/apply
+  against that exact URL before broad polling.
+
 ## Status answer
 
 The no-paste workflow is mostly built, but it is not magic by itself:
@@ -97,6 +116,7 @@ The no-paste workflow is mostly built, but it is not magic by itself:
 | `npm run chatgpt:dropoff:comments:scan -- --url https://github.com/shloimie-beep/bnei-neviim-academy/pull/90#issuecomment-4885699190` | PASS; marked packet already collected |
 | `npm run agent:fleet:status` | PASS; supervisor not running; dropoff ingest/comment collect enabled |
 | `node --test tests/chatgpt-dropoff-ingestor.test.js tests/chatgpt-dropoff-comment-collector.test.js tests/agent-fleet-hardening.test.js` | PASS 15/15 |
+| `npm run chatgpt:dropoff:scan -- --packet chatgpt-dropoff-smoke-test-20260706-903` | PASS dry-run; returned `ready_dry_run`, no findings |
 | `gh auth status` | PASS logged in as `shloimie-beep`; token scopes include `repo` |
 | Live link readback for One Time root/funnel/review routes | PASS 200 responses for checked routes |
 
