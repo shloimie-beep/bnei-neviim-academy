@@ -30257,3 +30257,24 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrails: no external email/WhatsApp send, payment/access change, DNS
   mutation, Drive write, provider-account mutation, secret value print, or
   unrelated dirty work staged.
+
+## 2026-07-06 - Local Checkout Archived And Reset Clean
+
+- Registered `RAW-20260706-980` and
+  `tasks-pending/2026-07-06-local-checkout-archive-clean-reset.md` for the
+  final local repo hygiene cleanup.
+- Archived the dirty `C:\Users\User\BNA v2.0` checkout to local-only path
+  `C:\Users\User\BNA-local-archives\2026-07-06-bna-v2-dirty-checkout-before-reset`
+  before destructive cleanup.
+- Archive contents include Git status snapshots, branch/head metadata, binary
+  diff patches, current copies of 34 tracked modified files, and 38 untracked
+  files. The archive remains local-only and is not committed.
+- Reset the checkout to `origin/master`, removed untracked stale files with
+  `git clean -fd`, switched to clean closeout branch
+  `codex/archive-clean-checkout-closeout-20260706`, and deleted the stale local
+  `codex/onetime-studio-worker-handoff-20260706` branch after confirming it was
+  already represented on `master`.
+- Guardrails: did not commit local keyholder diagnostics, archive contents,
+  superseded stale raw IDs, generated pickup/watchdog junk, external sends,
+  payment/access changes, DNS/provider mutations, Drive writes, or secret
+  values.
