@@ -4,6 +4,56 @@ const studio = require('./service-provider-studio');
 const openArt = require('./studio-openart-mcp-adapter');
 const studioPolicy = require('./one-time-studio-sidekick-policy');
 
+function envNumber(env = {}, key = '', fallback = 0) {
+  const value = Number(env[key]);
+  return Number.isFinite(value) && value >= 0 ? value : fallback;
+}
+
+function envInteger(env = {}, key = '', fallback = 0) {
+  return Math.floor(envNumber(env, key, fallback));
+}
+
+function provisionalAiVideoPolicy(env = process.env) {
+  return {
+    requirement_id: 'REQ-20260706-941',
+    policy_version: studio.safeText(env.ONE_TIME_AI_VIDEO_POLICY_VERSION, '2026-07-06-provisional-no-live'),
+    status: 'provisional_no_live',
+    model_provider: studio.safeText(env.ONE_TIME_AI_VIDEO_MODEL_PROVIDER, 'openart_mcp_pending_oauth'),
+    model: studio.safeText(env.ONE_TIME_AI_VIDEO_MODEL, 'openart-video-provisional-manual-export-v1'),
+    budget: {
+      currency: 'USD',
+      monthly_cap_usd: envNumber(env, 'ONE_TIME_AI_VIDEO_MONTHLY_BUDGET_USD', 25),
+      per_render_cap_usd: envNumber(env, 'ONE_TIME_AI_VIDEO_PER_RENDER_CAP_USD', 2),
+      max_render_attempts_per_month: envInteger(env, 'ONE_TIME_AI_VIDEO_MAX_RENDERS_PER_MONTH', 10),
+      live_spend_enabled: false,
+    },
+    privacy_retention: {
+      source_material: 'Use only One Time Studio source records scoped to rabbi_sheller_provider / one_time_mishnah_class.',
+      private_media: 'Do not upload students, private family material, raw messages, or staff-only notes to an external model.',
+      reference_uploads: 'Blocked until approved vendor credentials, reference ownership, retention terms, and rollback path are recorded.',
+      generated_assets: 'Treat generated images/video as review drafts until rights, source fidelity, Jewish guardrails, and Rabbi/admin approval are recorded.',
+    },
+    worker_can: [
+      'Review source, storyboard, prompt pack, character continuity, and Jewish guardrails.',
+      'Prepare no-live OpenArt-ready prompt text and MCP request plans.',
+      'Record Studio sidekick prompt-patch requests for render defects or source-fidelity issues.',
+    ],
+    worker_cannot: [
+      'Run live generation, upload references, spend credits, publish, send, grant access, or mutate vendor workspaces.',
+      'Use private student/family/contact/payment data as model input.',
+      'Raise the provisional budget or switch model/provider without a new recorded approval.',
+    ],
+    approval_gates: [
+      'OpenArt or replacement vendor credentials are configured and read back without exposing secrets.',
+      'Actual model, pricing, monthly cap, per-render cap, and kill/stop rules replace the provisional placeholders.',
+      'Reference upload policy, privacy/retention terms, and rollback/delete path are approved.',
+      'One supervised no-live readiness smoke passes before any credit-consuming render.',
+    ],
+    no_live_call: true,
+    external_write_performed: false,
+  };
+}
+
 function compactLines(lines = []) {
   return lines.map((line) => studio.safeText(line)).filter(Boolean);
 }
@@ -199,6 +249,7 @@ function sourceSummary(source = {}) {
 }
 
 function buildAiVideoWorkerPromptPack({ project = {}, source = {}, scenes = [], compiled_prompts = [], character_bible = [], guardrails = [], sidekick_patch = null, references = [], env = process.env } = {}) {
+  const aiVideoPolicy = provisionalAiVideoPolicy(env);
   const normalizedScenes = (Array.isArray(scenes) ? scenes : []).map(studio.normalizeStudioScene);
   const compiledList = Array.isArray(compiled_prompts) ? compiled_prompts : [compiled_prompts].filter(Boolean);
   const scenePrompts = normalizedScenes.map((scene, index) => {
@@ -248,13 +299,15 @@ function buildAiVideoWorkerPromptPack({ project = {}, source = {}, scenes = [], 
     pack_id: studio.stableId('ai_video_prompt_pack', [project.project_key, sourceInfo.source_hash, packHash]),
     pack_hash: packHash,
     worker_role: 'one_time_ai_video_worker',
+    ai_video_policy: aiVideoPolicy,
     source: sourceInfo,
     scene_count: scenePrompts.length,
     scene_prompts: scenePrompts,
     review_contract: [
       'Review each scene prompt against the source, character continuity, Jewish guardrails, and visual realism notes.',
       'Record requested changes as Studio prompt patches before any external generation.',
-      'Use OpenArt only after OAuth, model/privacy, budget, and reference-upload approvals are in place.',
+      `Use provisional model ${aiVideoPolicy.model} only as no-live planning metadata; live render, upload, and spend remain disabled.`,
+      `Keep the provisional monthly cap at ${aiVideoPolicy.budget.currency} ${aiVideoPolicy.budget.monthly_cap_usd} and per-render cap at ${aiVideoPolicy.budget.currency} ${aiVideoPolicy.budget.per_render_cap_usd} until real vendor pricing is approved.`,
     ],
     no_live_call: true,
     external_write_performed: false,
@@ -262,6 +315,7 @@ function buildAiVideoWorkerPromptPack({ project = {}, source = {}, scenes = [], 
 }
 
 function buildAiVideoWorkerReviewHandoff({ project = {}, source = {}, scenes = [], prompt_pack = {}, assets = [], usage = {}, approved_by = '', env = process.env } = {}) {
+  const aiVideoPolicy = provisionalAiVideoPolicy(env);
   const normalizedScenes = (Array.isArray(scenes) ? scenes : []).map(studio.normalizeStudioScene);
   const sourceInfo = sourceSummary(source);
   const openArtStatus = openArt.openArtMcpStatus(env);
@@ -299,6 +353,7 @@ function buildAiVideoWorkerReviewHandoff({ project = {}, source = {}, scenes = [
       })),
     },
     prompt_pack,
+    ai_video_policy: aiVideoPolicy,
     assets: (Array.isArray(assets) ? assets : []).map((asset) => ({
       asset_key: asset.asset_key || null,
       scene_key: asset.scene_key || null,
@@ -317,8 +372,9 @@ function buildAiVideoWorkerReviewHandoff({ project = {}, source = {}, scenes = [
     ],
     vendor_blockers: [
       openArtStatus.connected ? 'OpenArt OAuth is connected but live generation still needs supervised no-live readiness smoke.' : openArtStatus.next_action,
-      'Hosted multimodal image-analysis model, budget, retention/privacy, and upload policy must be approved before true pixel analysis.',
-      'Reference upload, generation, credit spend, and result pull remain blocked until explicit vendor approval.',
+      'Provisional model and budget are placeholders only; real vendor model, pricing, and stop/kill rules must replace them before spend.',
+      'Hosted multimodal image-analysis and pixel review remain blocked until real model credentials, retention/privacy terms, and upload policy are approved.',
+      'Reference upload, generation, credit spend, and result pull remain blocked until explicit vendor approval and smoke evidence.',
     ],
     openart_status: openArtStatus,
     no_publish: true,
@@ -338,6 +394,7 @@ function planStudioRepairRequest(scope = {}, request = {}) {
 }
 
 module.exports = {
+  provisionalAiVideoPolicy,
   compactLines,
   normalizedCorrectionText,
   visualGuidanceFromText,

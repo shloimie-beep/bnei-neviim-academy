@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T13:08:04.018Z",
+  "generated_at": "2026-07-06T13:21:09.462Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -21,6 +21,7 @@
     "docs/BROWSER-AGENT-SECURITY.md",
     "docs/CONTEXT-BUDGET-AND-PACKET-SPLITTING.md",
     "docs/DESIGN-REFERENCE-CAPTURE.md",
+    "docs/ONE-TIME-AI-VIDEO-PROVISIONAL-POLICY.md",
     "docs/ONE-TIME-AI-VIDEO-WORKER-ACCESS-MATRIX.md",
     "docs/OPERATIONS-UI-AUDIT.md",
     "docs/PACKET-DAG.md",
@@ -470,6 +471,7 @@
     "tasks-pending/2026-07-06-finish-pending-work-inventory.md",
     "tasks-pending/2026-07-06-onetime-ai-video-worker-access-role.md",
     "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md",
+    "tasks-pending/2026-07-06-worker-credentials-policy-and-dirty-closeout.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
   ],

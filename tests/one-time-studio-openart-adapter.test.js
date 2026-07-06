@@ -118,6 +118,29 @@ test('OpenArt prompt export includes character continuity and no-live MCP plan',
   assert.equal(exportPlan.mcp_request_plan.requires_oauth, true);
 });
 
+test('AI video provisional policy exposes model and budget placeholders without spend', () => {
+  const policy = sidekick.provisionalAiVideoPolicy({
+    ONE_TIME_AI_VIDEO_POLICY_VERSION: 'test-policy',
+    ONE_TIME_AI_VIDEO_MODEL_PROVIDER: 'test-provider',
+    ONE_TIME_AI_VIDEO_MODEL: 'test-model',
+    ONE_TIME_AI_VIDEO_MONTHLY_BUDGET_USD: '40',
+    ONE_TIME_AI_VIDEO_PER_RENDER_CAP_USD: '3',
+    ONE_TIME_AI_VIDEO_MAX_RENDERS_PER_MONTH: '12',
+  });
+
+  assert.equal(policy.requirement_id, 'REQ-20260706-941');
+  assert.equal(policy.policy_version, 'test-policy');
+  assert.equal(policy.model_provider, 'test-provider');
+  assert.equal(policy.model, 'test-model');
+  assert.equal(policy.budget.monthly_cap_usd, 40);
+  assert.equal(policy.budget.per_render_cap_usd, 3);
+  assert.equal(policy.budget.max_render_attempts_per_month, 12);
+  assert.equal(policy.budget.live_spend_enabled, false);
+  assert.equal(policy.no_live_call, true);
+  assert.equal(policy.external_write_performed, false);
+  assert.ok(policy.worker_cannot.some((item) => /spend credits/.test(item)));
+});
+
 test('AI video worker handoff packages source, storyboard, prompts, and exact blockers without live calls', () => {
   const source = studio.normalizeStudioSourceInput({
     title: 'Mishnah review source',
@@ -178,12 +201,18 @@ test('AI video worker handoff packages source, storyboard, prompts, and exact bl
   assert.equal(promptPack.pack_type, 'ai_video_worker_prompt_pack');
   assert.equal(promptPack.worker_role, 'one_time_ai_video_worker');
   assert.equal(promptPack.scene_prompts.length, 2);
+  assert.equal(promptPack.ai_video_policy.status, 'provisional_no_live');
+  assert.equal(promptPack.ai_video_policy.model, 'openart-video-provisional-manual-export-v1');
+  assert.equal(promptPack.ai_video_policy.budget.monthly_cap_usd, 25);
+  assert.match(promptPack.review_contract.join(' '), /provisional model/);
   assert.equal(promptPack.external_write_performed, false);
   assert.equal(handoff.handoff_type, 'ai_video_worker_review');
   assert.equal(handoff.worker_role, 'one_time_ai_video_worker');
   assert.equal(handoff.status, 'ready_for_worker_review');
+  assert.equal(handoff.ai_video_policy.budget.live_spend_enabled, false);
   assert.equal(handoff.no_live_call, true);
   assert.equal(handoff.external_write_performed, false);
   assert.match(handoff.vendor_blockers.join(' '), /OpenArt/);
+  assert.match(handoff.vendor_blockers.join(' '), /Provisional model and budget/);
   assert.match(handoff.idempotency_key, /^ai_video_worker_handoff_/);
 });
