@@ -121,7 +121,11 @@ test('Server admin, communications, and draft routes enforce requested workspace
   const contactCommunicationsRoute = sliceBetween(server, "app.get('/api/bna/contact-communications'", "app.post('/api/bna/contact-communications/screening-preview'");
   assert.match(contactCommunicationsRoute, /const requestedProjectKey = requestedProjectKeyForScopedList\(req\);/);
   assert.match(contactCommunicationsRoute, /COALESCE\(c\.project_id, l\.project_id, s\.project_id, st\.project_id/);
+  assert.match(contactCommunicationsRoute, /p_scope\.project_key/);
+  assert.match(contactCommunicationsRoute, /p_scope\.name AS project_name/);
+  assert.match(contactCommunicationsRoute, /LEFT JOIN bna_projects p_scope ON p_scope\.id = COALESCE\(c\.project_id, l\.project_id, s\.project_id, st\.project_id/);
   assert.match(contactCommunicationsRoute, /COALESCE\(u\.project_id, \(SELECT id FROM bna_projects WHERE project_key = '\$\{DEFAULT_PROJECT_KEY\}' LIMIT 1\)\)/);
+  assert.match(contactCommunicationsRoute, /LEFT JOIN bna_projects p_scope ON p_scope\.id = COALESCE\(u\.project_id/);
 
   const parentLeadsRoute = sliceBetween(server, "app.get('/api/bna/parent-leads'", "async function updateExistingParentLeadFromBody");
   assert.match(parentLeadsRoute, /appendRequestedProjectScopeCondition\(req, conditions, params, 'l\.project_id'\)/);

@@ -29781,3 +29781,44 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   signup/OAuth/MCP account, live generation/reference upload/credit actions,
   and the hosted multimodal model/provider/budget/privacy/image-upload policy
   for true pixel analysis.
+
+## 2026-07-06 - Agent Fleet Queued 25 Implementation Audit
+
+- Registered `RAW-20260706-905` and created
+  `ops/queue-audits/2026-07-06-agent-fleet-queued-25-implementation-audit.md`.
+- Audited all 25 live queued/claimable observable Codex agent jobs without
+  starting the fleet or mutating any live job/task status.
+- Verdicts: 13 implemented/superseded with proof, 3 partially
+  implemented/blocked, 6 not implemented/needs triage, and 3 parser/test
+  artifacts or non-tasks.
+- Main finding: the 25 queued rows are stale mixed debris, not 25 clean tasks.
+  Several rows are duplicates or stable-ID collisions; the fleet should not run
+  against them as-is.
+
+## 2026-07-06 - One Time WhatsApp Scope, Job 101 Cleanup, And Dropoff Smoke
+
+- Registered and closed out `RAW-20260706-906`.
+- Preserved Shloimie's decision to keep task/job `#355` placeholders for now.
+- Patched `server.js` so `/api/bna/contact-communications` returns effective
+  `project_key`/`project_name` for local contact rows and unified
+  communications.
+- Patched `public/operations.html` so contact history and WAPI timeline
+  matching refuses wrong-project or unscoped communication rows in the One Time
+  workspace, even when phone/email tokens match.
+- Added regression coverage proving scoped WAPI phonebook reports skip
+  account-wide WAPI rows and Operations contact cards enforce workspace
+  communication scoping.
+- Added `scripts/cleanup-job101-review-queue.mjs`, a guarded redacted cleanup
+  script for Job 101 parser review rows.
+- Ran dry-run and apply against the active Railway app DB selected from
+  `.secrets/railway-database-url.txt`; no usable One Time DB alias was found
+  locally.
+- DB cleanup resolved exactly 12 known Job 101 triage rows into canonical
+  clusters and left 824 rows open. Score/progress/grading, student/private,
+  and not-safe-to-auto-close rows were not changed.
+- Updated the ChatGPT Agent Mode no-op dropoff smoke prompt with sentinel
+  `BNA_DROPOFF_SMOKE_20260706_906`.
+- Verification passed: `node --check server.js`, `node --check
+  scripts/cleanup-job101-review-queue.mjs`, focused tests 13/13, DB apply
+  readback, and post-apply dry-run showing 0 remaining safe auto-close
+  candidates.
