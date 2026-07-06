@@ -30007,6 +30007,8 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Created clean branch `codex/onetime-crm-mailbox-20260706` from current
   `origin/master` so the mailbox work can publish without unrelated dirty
   worktree changes.
+- Pushed implementation commit `7f5246c9` and opened draft PR #117:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/117`.
 - Added provider-session gated One Time mailbox APIs:
   `/api/provider-portal/mailbox`, `/api/provider-portal/mailbox/:threadKey`,
   `/api/provider-portal/mailbox/:threadKey/draft`, and
