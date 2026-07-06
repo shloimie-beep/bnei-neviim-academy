@@ -5,7 +5,7 @@ Requirements: `REQ-20260706-956` through `REQ-20260706-959`
 Packet: `ops/prompt-packets/2026-07-06-onetime-operations-content-ia-filter-rail/00-content-ia-filter-rail.product-quality.json`  
 Workspace: `rabbi_sheller_provider`  
 Project: `one_time_mishnah_class`  
-Status: Local implementation verified; pending commit/push/deploy/live smoke
+Status: Done - merged, deployed, and live verified
 
 ## Current-State Audit
 
@@ -77,7 +77,30 @@ Acceptance:
   - Report: `ops/watchdog-audits/2026-07-06-product-quality-drift.md`
 - PASS `git diff --check` with line-ending warnings only.
 
-## Remaining Closeout
+## Deploy / Live Closeout
 
-- Commit and push the scoped branch.
-- Deploy/live smoke if publishing succeeds.
+- PASS PR #121 merged to `master` at
+  `d572ca55ecb85ff415b0755efc8fb8f19e1b47b8`.
+- PASS BNA Railway deployment `be251afc-471c-414b-93b6-757de8db82db`
+  reached `SUCCESS` on production service `skillful-motivation`.
+- PASS `npm run railway:doctor` with explicit BNA production target.
+- PASS `npm run app:smoke`
+  - Report: `ops/live-smokes/2026-07-06T15-11-13-507Z-live-app-smoke.md`
+- PASS `npm run app:smoke:rabbi-onetime-landing`
+  - Report: `ops/live-smokes/2026-07-06T15-10-28-684Z-rabbi-onetime-landing-smoke.md`
+- PASS exact authenticated One Time Operations content IA live smoke.
+  - Report:
+    `ops/live-smokes/2026-07-06T15-16-53-470Z-one-time-operations-content-ia-filter-rail-live-smoke.md`
+  - JSON:
+    `ops/live-smokes/2026-07-06T15-16-53-470Z-one-time-operations-content-ia-filter-rail-live-smoke.json`
+
+Live smoke confirmed the production content route stays scoped to
+`rabbi_sheller_provider`, opens `meetings`, shows only `Library`,
+`Meeting Drops`, `Source Prep`, and `Bundles`, hides repetitive generic content
+tabs, exposes `Classes & Content` and `Studio` in the Rabbi sidebar, renders the
+Program `Content` bridge, and keeps the mobile rail horizontally sliding with no
+body-level horizontal overflow.
+
+Guardrails: no backend auth/data/schema change, no WhatsApp/email/payment send,
+no access grant, no DNS/provider-account mutation, no production data mutation,
+and no screenshots or private page data committed.

@@ -1,0 +1,160 @@
+{
+  "generated_at": "2026-07-06T15:17:03.239Z",
+  "app_url": "https://bneineviimacademy.org",
+  "route": "/operations?workspace=rabbi_sheller_provider&view=content&section=meetings&nav=modules",
+  "deployment_id": "be251afc-471c-414b-93b6-757de8db82db",
+  "result": "passed",
+  "auth_source": "railway",
+  "checks": [
+    {
+      "status": "PASS",
+      "name": "operations login session",
+      "detail": "source=railway"
+    },
+    {
+      "status": "PASS",
+      "name": "content route stays in Rabbi workspace",
+      "detail": "rabbi_sheller_provider"
+    },
+    {
+      "status": "PASS",
+      "name": "content route opens requested section",
+      "detail": "meetings"
+    },
+    {
+      "status": "PASS",
+      "name": "top rail is labeled as sections, not filters/views",
+      "detail": "sections"
+    },
+    {
+      "status": "PASS",
+      "name": "top rail aria label uses section language",
+      "detail": "Classes & Content sections"
+    },
+    {
+      "status": "PASS",
+      "name": "content top rail has only compact One Time sections",
+      "detail": "one_time_library, meetings, research, bundles"
+    },
+    {
+      "status": "PASS",
+      "name": "Library appears as the first content section",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "Meeting Drops content section appears",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "Source Prep content section appears",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "Bundles content section appears",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "generic production tabs are absent from One Time content rail",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "sidebar exposes Classes & Content",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "sidebar still exposes Studio",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "sidebar content subnav includes Library",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "sidebar content subnav includes Meeting Drops",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "sidebar content subnav includes Source Prep",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "sidebar subnav omits repetitive generic content categories",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "Rabbi sidebar hides unrelated support/admin categories",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "extra module toolbar is not rendered above content rail",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "meeting drop workflow content still renders",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "provider Program Content section opens",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "provider Program top rail includes compact Content section",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "Program Content bridge links to all four content sections",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mobile content rail track scrolls horizontally",
+      "detail": "auto"
+    },
+    {
+      "status": "PASS",
+      "name": "mobile content rail keeps buttons on one sliding row",
+      "detail": "nowrap"
+    },
+    {
+      "status": "PASS",
+      "name": "mobile hides rail meta row to save vertical space",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "name": "mobile page has no body-level horizontal overflow",
+      "detail": "390/390"
+    },
+    {
+      "status": "PASS",
+      "name": "mobile rail keeps same four compact content sections",
+      "detail": "one_time_library, meetings, research, bundles"
+    },
+    {
+      "status": "PASS",
+      "name": "no browser console/page errors during exact live smoke",
+      "detail": ""
+    }
+  ],
+  "guardrails": [
+    "Authenticated browser readback only.",
+    "No external sends, payment/access/DNS/provider-account mutation, Drive write, or production data mutation was performed.",
+    "No screenshots or private page data were committed."
+  ]
+}
