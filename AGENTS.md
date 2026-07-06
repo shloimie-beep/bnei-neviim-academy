@@ -546,6 +546,19 @@ Public routes must not expose parent/student/provider/private Operations data.
   student-sensitive details, and screenshots with private data must not be
   committed to tracked files; use redacted summaries and stable IDs.
 
+## Natural-Language Approval For External Sends
+
+When Shloimie clearly approves an exact prepared external send in natural
+language, that is explicit approval. Do not require a typed magic phrase as an
+extra blocker when the current conversation already makes the recipient segment,
+message copy, channel, and sender action obvious.
+
+Still block or ask for clarification when the send scope, copy, recipient
+source, money/access/legal/privacy impact, or external account mutation is
+ambiguous, changed from the prepared packet, or not safely auditable. Preserve
+raw approval wording, run the relevant recipient/copy/privacy checks, and record
+redacted send evidence.
+
 ## Publish And Deployment Closeout Default
 
 Codex should not leave completed scoped work as invisible local-only changes.

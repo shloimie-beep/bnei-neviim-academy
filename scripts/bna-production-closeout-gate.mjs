@@ -113,7 +113,13 @@ export function usage() {
 Dry-run by default. This command does not deploy, smoke the live app, mutate the
 database, or print secrets. It verifies that the local branch/run state is safe
 enough to request the separately approved production deploy/live-verification
-steps.`;
+steps.
+
+For scoped deploys, --defer-optional-integrations and --defer-external-readback
+record unrelated provider/readback readiness as deferred findings after the
+normal deploy approval is present. They do not approve sends, charges, DNS,
+credential changes, provider account writes, production mutations, or live
+verification closeout.`;
 }
 
 export function defaultRunCommand(command, args = [], options = {}) {
@@ -257,6 +263,7 @@ function commandPlan() {
     `npm run bna:external-readback-gate -- --readback --all --confirm-readback ${READBACK_CONFIRM_PHRASE}`,
     `npm run bna:external-readback-gate -- --backfill-apply --database --job-range 64-74 --confirm-readback ${READBACK_CONFIRM_PHRASE} --confirm-backfill ${BACKFILL_CONFIRM_PHRASE}`,
     `npm run bna:release-gate -- --deploy --confirm-deploy ${DEPLOY_CONFIRM_PHRASE}`,
+    `npm run bna:release-gate -- --deploy --confirm-deploy ${DEPLOY_CONFIRM_PHRASE} --defer-optional-integrations --defer-external-readback`,
     `npm run bna:release-gate -- --live-verify --confirm-live ${LIVE_VERIFY_CONFIRM_PHRASE}`,
   ];
 }
@@ -271,19 +278,10 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
   const scripts = loadPackageScripts(repoRoot);
   const missingScripts = REQUIRED_PACKAGE_SCRIPTS.filter((name) => !scripts[name]);
   const integrationReadiness = context.integrationReadiness || buildIntegrationReadinessSummary({ repoRoot });
-  const optionalIntegrationsDeferred = Boolean(
-    options.deferOptionalIntegrations &&
-    options.deploy &&
-    approved(env[DEFER_OPTIONAL_INTEGRATIONS_ENV])
-  );
-  const externalReadbackDeferred = Boolean(
-    options.deferExternalReadback &&
-    options.deploy &&
-    approved(env[DEFER_EXTERNAL_READBACK_ENV])
-  );
-  const integrationBlockers = integrationReadinessBlockers(integrationReadiness, {
-    deferOptionalDeployIntegrations: optionalIntegrationsDeferred,
-  });
+  const deployApproved = approved(env[DEPLOY_APPROVAL_ENV]);
+  const optionalIntegrationsDeferred = Boolean(options.deferOptionalIntegrations && options.deploy && deployApproved);
+  const externalReadbackDeferred = Boolean(options.deferExternalReadback && options.deploy && deployApproved);
+  const integrationBlockers = integrationReadinessBlockers(integrationReadiness);
   const externalReadbackGate = summarizeExternalReadbackGateReport(
     context.externalReadbackGate || buildExternalReadbackGateReport({}, {
       repoRoot,
@@ -322,13 +320,7 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     if (!approved(env[DEPLOY_APPROVAL_ENV])) {
       blockers.push(`${DEPLOY_APPROVAL_ENV}=approved is required before deploy closeout.`);
     }
-    if (options.deferOptionalIntegrations && !approved(env[DEFER_OPTIONAL_INTEGRATIONS_ENV])) {
-      blockers.push(`${DEFER_OPTIONAL_INTEGRATIONS_ENV}=approved is required before deferring optional provider integrations for deploy.`);
-    }
-    if (options.deferExternalReadback && !approved(env[DEFER_EXTERNAL_READBACK_ENV])) {
-      blockers.push(`${DEFER_EXTERNAL_READBACK_ENV}=approved is required before deferring external readback for deploy.`);
-    }
-    blockers.push(...integrationBlockers);
+    if (!optionalIntegrationsDeferred) blockers.push(...integrationBlockers);
     if (!externalReadbackDeferred) blockers.push(...externalReadbackBlockers);
   }
   if (options.liveVerify) {
@@ -362,6 +354,10 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     run,
     external_readback_gate: externalReadbackGate,
     integration_readiness: integrationReadiness,
+    deferred_readiness: {
+      integration: optionalIntegrationsDeferred ? integrationBlockers : [],
+      external_readback: externalReadbackDeferred ? externalReadbackBlockers : [],
+    },
     package_scripts: {
       required: REQUIRED_PACKAGE_SCRIPTS,
       missing: missingScripts,
@@ -381,14 +377,16 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
       },
       defer_optional_integrations: {
         requested: Boolean(options.deferOptionalIntegrations),
-        approval_env: DEFER_OPTIONAL_INTEGRATIONS_ENV,
-        approved: approved(env[DEFER_OPTIONAL_INTEGRATIONS_ENV]),
+        approval_env: DEPLOY_APPROVAL_ENV,
+        legacy_approval_env: DEFER_OPTIONAL_INTEGRATIONS_ENV,
+        approved: deployApproved,
         performed: optionalIntegrationsDeferred,
       },
       defer_external_readback: {
         requested: Boolean(options.deferExternalReadback),
-        approval_env: DEFER_EXTERNAL_READBACK_ENV,
-        approved: approved(env[DEFER_EXTERNAL_READBACK_ENV]),
+        approval_env: DEPLOY_APPROVAL_ENV,
+        legacy_approval_env: DEFER_EXTERNAL_READBACK_ENV,
+        approved: deployApproved,
         performed: externalReadbackDeferred,
       },
     },
@@ -408,6 +406,8 @@ function printReport(report, options = {}) {
   console.log(`Dirty files: ${report.git.dirty.total}`);
   console.log(`Production mutation performed: ${report.production_mutation_performed ? 'yes' : 'no'}`);
   for (const blocker of report.blockers) console.log(`Blocked: ${blocker}`);
+  for (const finding of report.deferred_readiness?.integration || []) console.log(`Deferred integration readiness: ${finding}`);
+  for (const finding of report.deferred_readiness?.external_readback || []) console.log(`Deferred external readback: ${finding}`);
 }
 
 async function main() {

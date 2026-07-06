@@ -118,3 +118,38 @@ reference upload, credit spend, external send, payment/access change, DNS,
 secret, CRM, or production data mutation was performed.
 | REQ-20260706-209 | Done | PQC packet validated | ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json | `npm run pqc:validate -- ...` passed | none |
 | REQ-20260706-210 | Done locally; live OAuth blocked | OpenArt no-live adapter and UI blocker complete | OpenArt adapter, UI, server, register | OpenArt adapter tests and browser status card | Shloimie signs up/connects OpenArt OAuth/workspace |
+
+## 2026-07-06 Master-Merge Verification
+
+PR #105 was merged locally with current `origin/master` after PR #108 landed.
+Append-only conflicts in `memory/2026-07-06.md`, `ops/agent-changelog.md`,
+and `ops/agent-task-ledger.jsonl` were resolved by preserving both the Studio
+sidekick records and the parent-reminder/deploy-gate/dropoff cleanup records.
+
+Verification after the master merge:
+
+- PASS `node --check server.js`
+- PASS `node --check scripts/bna-production-closeout-gate.mjs`
+- PASS `node --test tests/assistant-scope-policy.test.js tests/one-time-studio-sidekick-policy.test.js tests/one-time-studio-openart-adapter.test.js tests/one-time-studio-operator-role.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js tests/bna-production-closeout-gate.test.js` 40/40
+- PASS `BNA_SERVICE_PROVIDER_STUDIO_SMOKE_DIR=ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-master-merge node --test tests/service-provider-studio-browser-smoke.test.js` 1/1
+- PASS `npm run pqc:validate -- ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json`
+- PASS `npm run watchdog:actions` with findings `0`
+- PASS `npm run watchdog:protocol-drift` with findings `0`
+- PASS `npm run bna:run:status`
+- PASS `npm run bna:run:next` with no unblocked executable batch
+- PASS `git diff --check`
+
+Fresh evidence:
+
+- `ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-master-merge/`
+- `ops/watchdog-audits/2026-07-06T10-51-watchdog-action-audit.md`
+- `ops/watchdog-audits/2026-07-06-product-quality-drift.md`
+- `ops/product-quality-compiler/validation/latest-product-quality-validation.md`
+
+Remaining status:
+
+- PR #105 can be pushed after the merge commit.
+- Production deploy/live smoke remains gated by the approved release path.
+- Live OpenArt OAuth/MCP, live generation/reference upload/credit actions, and
+  true uploaded-image pixel analysis remain blocked on the OpenArt account and
+  hosted multimodal model/privacy decisions.

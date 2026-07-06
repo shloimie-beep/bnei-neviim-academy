@@ -304,6 +304,18 @@
   if the body or subject has repeated `????` runs that indicate encoding
   corruption, the system should refuse to send and log/block the message for
   repair instead of delivering gibberish.
+- Shloimie's clear natural-language approval is sufficient for an exact
+  prepared external send when the recipient segment and message copy are
+  obvious from the current conversation. Do not require a typed magic phrase
+  as an extra blocker in those obvious cases. Still block and clarify if the
+  send scope, copy, recipient source, money/access/legal/privacy impact, or
+  external account mutation is ambiguous or has changed.
+- For BNA school-wide parent reminders, use parents tied to current canonical
+  BNA student records by default. Avoid stale duplicate records and signup-only
+  contacts unless Shloimie explicitly broadens the audience.
+- 2026-07-06 correction: the Webers are just away/on vacation and are not
+  hosting today's BNA meeting. Do not describe them as having permanently left
+  or stopped hosting unless Shloimie explicitly says that later.
 - Amitai's family WhatsApp reminders should be Hebrew when the family,
   student, or contacts are tagged/configured for Hebrew; messages for Amitai,
   his mother, and father should use Hebrew by default.
@@ -373,6 +385,14 @@
   branch drift, failing tests, auth, credentials, or production-risk gates block
   publish/deploy, record the exact blocker and next action instead of claiming
   done.
+- As of 2026-07-06, missing unrelated provider credentials or broad readback
+  checks must not block a scoped app/UI deploy after the explicit production
+  deploy approval is present. Use the release-gate deploy deferral flags to
+  record Vimeo, Stripe, Rabbi Telegram, or external readback readiness as
+  deferred findings when the scoped release does not depend on them. Those
+  missing keys still block integration-specific work, live verification/final
+  closeout for that integration, and any send, charge, DNS/access,
+  credential, provider-account, or production-data mutation.
 - GitHub-connected ChatGPT reads committed/pushed GitHub state, not Codex local
   changes. For no-paste sidekick work, ChatGPT should read
   `BNA-START-HERE.md`, `AGENTS.md`, and
@@ -1734,6 +1754,12 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   Current Studio behavior is first-party/no-send and mock/internal until a
   later approved AI-video vendor adapter packet defines API, cost, rights,
   storage, and approval gates.
+- OpenArt MCP endpoint for the future One Time AI Studio adapter:
+  `https://mcp.openart.ai/mcp`. Direct readback returns auth-required
+  `401 Unauthorized`, so this is an integration target, not verified live
+  account access. Studio should use it through an authorized backend/MCP
+  connection after OpenArt signup/auth, not require the scoped Studio operator
+  to manually work inside OpenArt for normal prompt/character workflows.
 - This readiness surface is read-only and no-write. It must not reset One Time
   admin credentials, grant member access, publish to the member library, write
   Drive/video hosts, send Resend/email/WhatsApp/SMS, create checkout/billing
