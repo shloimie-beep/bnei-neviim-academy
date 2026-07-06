@@ -4,7 +4,7 @@
 
 - Source channel: codex_chat
 - Created at: 2026-07-06T14:20:00+03:00
-- Parse status: registered
+- Parse status: implemented
 - Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 
 ## Raw operator request
@@ -16,7 +16,7 @@
 | ID | Type | Item | Status |
 |---|---|---|---|
 | DEC-20260706-906 | decision | Keep task/job `#355` placeholders for One Time website assets; do not block on final hero/logo/signup route right now. | Accepted |
-| REQ-20260706-906 | requirement | Fix One Time/Rabbi WhatsApp cross-contamination so unrelated BNA/operator WhatsApp/contact rows do not appear in Rabbi-scoped contact sections. | Done locally / pending deploy |
+| REQ-20260706-906 | requirement | Fix One Time/Rabbi WhatsApp cross-contamination so unrelated BNA/operator WhatsApp/contact rows do not appear in Rabbi-scoped contact sections. | Done / merged / deployed |
 | REQ-20260706-907 | requirement | Fix/verify the important parser path for Job 101 and the noisy review queue. | Done |
 | REQ-20260706-908 | requirement | Investigate and clean database confusion for One Time, especially the apparent two-SQL-database state, before running any cleanup write. | Done |
 | REQ-20260706-909 | requirement | Create a ChatGPT Agent Mode dropoff smoke prompt to test the no-paste workflow before starting the agent fleet. | Done |
@@ -64,3 +64,17 @@
   - The prompt uses sentinel `BNA_DROPOFF_SMOKE_20260706_906` and forbids
     secrets, app/source edits, external sends, payments, DNS, credential,
     provider, Drive, production-data, and deploy actions.
+- Merge, deploy, and live smoke:
+  - PR #110 merged to `master` at
+    `e31ee7ddf3ce133d2e75e2f326f3fea19b4aa47e`.
+  - Railway production service `skillful-motivation` redeployed as deployment
+    `a03deaa9-955c-4528-a191-adcf9de0c5a9`; `npm run railway:doctor`
+    readback showed `SUCCESS`.
+  - Live smokes passed after deploy:
+    `npm run app:smoke`, `npm run app:smoke:rabbi-onetime-landing`,
+    `npm run app:smoke:communications-screening`,
+    `npm run app:smoke:one-time-crm-contacts-ux`, and
+    `npm run app:smoke:whatsapp-ux`.
+  - Local smoke reports were written under ignored `ops/live-smokes/`,
+    including final WhatsApp UX pass
+    `ops/live-smokes/2026-07-06T12-20-05-247Z-whatsapp-ux-live-smoke.md`.
