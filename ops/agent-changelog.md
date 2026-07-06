@@ -29546,6 +29546,50 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   DNS/access/provider-account mutation, credential change, or external CRM
   write was performed by this cleanup batch.
 
+## 2026-07-06 - BNA Parent Meeting Reminder Email Sent, WhatsApp Blocked
+
+- Registered `RAW-20260706-001` and
+  `tasks-pending/2026-07-06-bna-parent-meeting-reminder-send-and-merge.md`
+  for Shloimie's BNA parent meeting reminder, natural-language approval
+  correction, and duplicate student merge request.
+- Recorded the durable correction that Shloimie's clear natural-language
+  approval is sufficient for an exact prepared external send; typed magic
+  phrases must not be an extra blocker in obvious cases.
+- Merged/repaired duplicate student identity state:
+  - Huda/Hooda Weber source `#21982` is inactive/merged under target `#82261`,
+    and signup `#9` points to `#82261`.
+  - Menachem source `#79458` is inactive/merged under target `#2800`, and
+    signup `#12` points to `#2800`; merge event `#2`.
+- Rebuilt the current-student parent recipient list with Weber/stale duplicate
+  exclusions and sent 5 individual Gmail reminders: 3 Hebrew and 2 English.
+- WhatsApp is blocked by WAPI/Whapi provider authorization. First WAPI attempt
+  logged communication `#2396` and failed with provider `401` / `need channel
+  authorization for send message`; the remaining WhatsApp sends were not
+  attempted.
+
+## 2026-07-06 - BNA Parent Meeting Reminder WhatsApp Retry Sent
+
+- After Shloimie said "Okay, try again," retried only the WhatsApp side of
+  `RAW-20260706-001`; emails were not resent.
+- Sent 8 WhatsApp reminders through WAPI: 4 Hebrew and 4 English.
+- WAPI readback records `#2397` through `#2404` show sent/delivered/read
+  outcomes and no follow-up required.
+- No raw phone numbers or contact exports were committed.
+
+## 2026-07-06 - BNA Parent Meeting Reminder Addendum Sent
+
+- After Shloimie clarified that the Webers are just away/on vacation and not
+  hosting today's meeting, sent a correction addendum to the same audited
+  parent recipient set.
+- Sent 8 WhatsApp addendums through WAPI: 4 Hebrew and 4 English. Explicit
+  send records are `#2406`, `#2407`, `#2408`, `#2410`, `#2411`, `#2412`,
+  `#2413`, and `#2414`; provider record `#2409` was a WAPI status/log
+  artifact and is not counted as a send.
+- Sent 5 individual Gmail addendums: 3 Hebrew and 2 English. Sent message IDs
+  are recorded in the redacted communications audit.
+- Updated durable communication memory so the Weber correction is not treated
+  as a permanent hosting or recipient-exclusion rule.
+
 ## 2026-07-06 - Deploy Gate Scoped Credential Deferral
 
 - Registered `RAW-20260706-901`, `REQ-20260706-901`, and
@@ -29578,3 +29622,30 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   auth-required `401 Unauthorized`, so it is now recorded as the canonical
   future Studio integration endpoint while OpenArt signup/auth remains required
   before live MCP/API calls can be verified.
+
+## 2026-07-06 - ChatGPT Dropoff Status And One Time Audit Setup
+
+- Registered `RAW-20260706-903` and
+  `tasks-pending/2026-07-06-chatgpt-dropoff-status-and-onetime-audit-setup.md`
+  for Shloimie's request to verify the no-paste ChatGPT-to-Codex dropoff path
+  before creating broad One Time Agent Mode audit prompts.
+- Confirmed repo-file packet mode is documented under
+  `ops/chatgpt-ramble-dropoff/` and works when ChatGPT has a repo/PR write
+  surface.
+- Confirmed marked GitHub-comment fallback exists; targeted PR #90 comment
+  scan reported the test packet as already collected.
+- Confirmed the ingestor exists and skips the current terminal smoke packet as
+  already `done_verified`.
+- Confirmed agent fleet dropoff ingest/comment collect hooks are enabled, but
+  the local supervisor was not running during readback.
+- Verification passed: `npm run chatgpt:dropoff:scan`, targeted
+  `npm run chatgpt:dropoff:comments:scan -- --url ...`, `npm run
+  agent:fleet:status`, `gh auth status`, live One Time route readbacks, and
+  focused tests 15/15 for dropoff ingestor, comment collector, and fleet
+  hardening.
+- Broad GitHub comment polling failed once with a TLS handshake timeout, so the
+  next prompt packet should include targeted comment URLs when comment fallback
+  is used.
+- Guardrail recorded: do not put real passwords, API keys, cookies, tokens, raw
+  private contact exports, private screenshots, or raw private message bodies
+  in prompts, GitHub comments, or packet files.
