@@ -52977,9 +52977,9 @@ app.get('/api/parent/me', async (req, res) => {
 
 app.get('/api/bna/auth/me', async (req, res) => {
   try {
-    const admin = await identifyAdminRequest(req).catch(() => null);
-    if (admin) {
-      return res.json(await buildBnaIdentityPayload({ identity: admin, req, actor: 'admin' }));
+    const opsIdentity = await identifyOpsAssistantRequest(req).catch(() => null);
+    if (opsIdentity) {
+      return res.json(await buildBnaIdentityPayload({ identity: opsIdentity, req, actor: 'admin' }));
     }
     const cookies = parseCookies(req);
     const parentSession = await getValidParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => null);

@@ -177,3 +177,12 @@ test('Operations auth redirect sends browser users back to the requested Operati
   assert.match(serverJs, /return `\/operations-login\.html\?returnTo=\$\{encodeURIComponent\(returnTo\)\}`;/);
   assert.match(serverJs, /return res\.redirect\(operationsLoginUrlForRequest\(req\)\);/);
 });
+
+test('Operations auth/me preserves scoped Studio worker sessions', () => {
+  const routeStart = serverJs.indexOf("app.get('/api/bna/auth/me', async (req, res) => {");
+  assert.ok(routeStart > -1, 'public auth/me route should exist');
+  const routeBlock = serverJs.slice(routeStart, routeStart + 700);
+  assert.match(routeBlock, /identifyOpsAssistantRequest\(req\)/);
+  assert.match(routeBlock, /buildBnaIdentityPayload\(\{ identity: opsIdentity, req, actor: 'admin' \}\)/);
+  assert.doesNotMatch(routeBlock, /identifyAdminRequest\(req\)/);
+});
