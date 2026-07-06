@@ -29613,6 +29613,8 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Branch `codex/onetime-studio-sidekick-20260706` contains commit `52ba8b2b`
   with the role, sidekick, OpenArt no-live adapter, Studio repair lane, tests,
   registries, PQC packet, screenshots, and trace records.
+- Release gate dry-run passed for pushed head `1e90b663` with no branch/dirty
+  blockers; no deploy or live verification was requested or performed.
 - The PR remains blocked for production Done until review/merge, release gate,
   deploy, and live smoke are completed.
 - Live OpenArt OAuth/MCP, live generation/reference upload/credit actions, and
