@@ -1,6 +1,6 @@
 # Watchdog Action Audit
 
-Generated at 2026-07-06T14:02:18.033Z.
+Generated at 2026-07-06T14:02:31.479Z.
 
 This watchdog is local-safe and read-only except for writing this report.
 
@@ -8,7 +8,7 @@ This watchdog is local-safe and read-only except for writing this report.
 
 - Severity: ok
 - Findings: 0
-- Root actions: 104
+- Root actions: 108
 - Detailed registry rows: 80
 - HTML files scanned: 5
 

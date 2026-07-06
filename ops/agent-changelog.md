@@ -30026,13 +30026,17 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   provider script parse; `node --test tests/provider-mailbox-portal.test.js`;
   combined mailbox/WAPI provider tests 7/7; PQC validation; and `npm run
   watchdog:actions` finding count 0.
-- `npm run watchdog:protocol-drift` was run and failed on unrelated current
-  `origin/master` prompt-series artifacts under
-  `ops/prompt-packets/2026-07-06-onetime-full-ui-agent-audit/*`; the mailbox
-  PQC packet itself validated and action watchdog reported zero findings.
-- Remaining blockers before live Done: target Resend/runtime env readback and
-  deploy/live smoke, including `RESEND_WEBHOOK_SECRET`, API/domain readiness,
-  and runtime `ONE_TIME_MAILING_ADDRESS`.
+- Follow-up release-gate work fixed the protocol-drift false positive against
+  the One Time full-UI audit manifest, added required audit protocol markers,
+  and `npm run watchdog:protocol-drift` now passes.
+- Redacted One Time Railway readback confirms `RESEND_WEBHOOK_SECRET`,
+  `RESEND_FROM_NAME`, `RESEND_REPLY_TO`, and `ONE_TIME_MAILING_ADDRESS` are
+  configured on `one-time-web` production. The exact physical address remains
+  runtime-only and is not tracked.
+- No-send integration smoke passed for Resend with API/domain/sender readiness
+  and `send_allowed=true`; no email send was performed.
+- Remaining blockers before live Done: merge/deploy/live smoke and live mailbox
+  readback after deployment.
 - Guardrails: no physical mailing address text committed, no external email
   sent, no bulk campaign endpoint added, no DNS/payment/access/provider-account
   mutation, and no production data mutation.
