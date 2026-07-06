@@ -27,7 +27,7 @@ writes are in scope for this local repair batch.
 | REQ-20260705-803 | Harden local Telegram bridge launcher/status. | BNA academy / Telegram ops | Codex | P0 | Launcher supports status/stop/restart, archives stale locks, refuses a second local copy, deduplicates allowed chat IDs, and exposes duplicate poller conflicts as `blocked_conflict`. | yes, if hosted worker uses launcher changes | Done, deployed |
 | REQ-20260705-804 | Verify duplicate-poller state safely. | BNA academy / Telegram ops | Codex | P0 | Local guarded restart performs no sends, exits after three Telegram `409 Conflict` responses, and status reports `blocked_conflict` with the Telegram duplicate-poller message. | no | Done; external owner remains active |
 | REQ-20260705-805 | Publish and deploy/restart the correct BNA runtime. | BNA academy / release ops | Codex | P0 | Commit/push/PR contains only scoped files; after merge, deploy or restart the correct `skillful-motivation` BNA web/worker service and smoke/read back the Drive sync error path. | yes | Done, deployed and read back |
-| REQ-20260705-806 | Resume whole repo cleanup/hardening after this repair. | app-wide / agent ops | Codex | P1 | Continue stale release/worktree cleanup, active blockers, fleet policy/readiness, and release guardrails after the Telegram/Drive repair branch is published. | maybe | In progress; local cleanup verified |
+| REQ-20260705-806 | Resume whole repo cleanup/hardening after this repair. | app-wide / agent ops | Codex | P1 | Continue stale release/worktree cleanup, active blockers, fleet policy/readiness, and release guardrails after the Telegram/Drive repair branch is published. | maybe | Done; PR #103 merged and July 6 repo cleanup completed |
 
 ## Evidence Log
 
@@ -69,10 +69,12 @@ After this repair is published, continue `REQ-20260705-806`: whole repo cleanup,
 release guardrails, stale worktree/artifact triage, and active blocker
 hardening.
 
-`REQ-20260705-806` continuation has started on
-`codex/repo-cleanup-followup-20260705`. The local cleanup branch now keeps the
-Task #1851 verification package as durable evidence, resets unrelated generated
-report/screenshot churn, removes untracked smoke pickup clutter, and hardens
-the tests that caused normal verification to rewrite tracked evidence files.
-This branch still needs scoped commit, push, PR, and merge closeout before the
-repo is clean on GitHub.
+`REQ-20260705-806` continuation was published and merged through PR #103 at
+`1a35b78a`. The cleanup preserved the Task #1851 verification package as
+durable evidence, reset unrelated generated report/screenshot churn, removed
+untracked smoke pickup clutter, and hardened the tests that caused normal
+verification to rewrite tracked evidence files.
+
+The later July 6 cleanup archived the stale dirty checkout and stale worktrees,
+removed local branch clutter, and left the final checkout as clean
+`master...origin/master` with only one registered worktree.

@@ -1,7 +1,7 @@
 # Apply Private Drive Transcript Docs And Job 101 Parser Closeout
 
-- Packet ID: `RAW-20260702-APPLY-PRIVATE-DRIVE-TRANSCRIPT-DOCS-AND-JOB101-PARSER-CLOSEOUT`
-- Source raw input: `raw-input/RAW-20260702-APPLY-PRIVATE-DRIVE-TRANSCRIPT-DOCS-AND-JOB101-PARSER-CLOSEOUT.md`
+- Packet ID: `RAW-20260702-014`
+- Source raw input: `raw-input/RAW-20260702-014.md`
 - Prior audit register: `tasks-pending/2026-07-02-drive-transcript-visibility-openai2-kimi-fallback-parser-routing.md`
 - Evidence folder: `ops/drive-transcript-visibility/2026-07-02/`
 - Approval phrase received: `APPROVE_20260702_PRIVATE_DRIVE_TRANSCRIPT_DOC_SYNC_FOR_BACKLOG_AND_FUTURE_UPLOADS`
@@ -19,7 +19,7 @@
 
 | Requirement ID | Requirement | Status | Evidence |
 |---|---|---|---|
-| REQ-20260702-APPLY-001 | Preserve raw intake and closeout register for this apply packet. | Done | This file and `raw-input/RAW-20260702-APPLY-PRIVATE-DRIVE-TRANSCRIPT-DOCS-AND-JOB101-PARSER-CLOSEOUT.md` |
+| REQ-20260702-APPLY-001 | Preserve raw intake and closeout register for this apply packet. | Done | This file and `raw-input/RAW-20260702-014.md` |
 | REQ-20260702-APPLY-002 | Run targeted private Drive transcript doc dry-run for jobs `101`, `100`, `85`, `84`, `83`, `82`. | Done | Dry-run selected exactly 6 jobs and planned 5 creates + 1 update; force dry-run later planned exactly 6 updates. |
 | REQ-20260702-APPLY-003 | Apply private Drive transcript doc create/update only for jobs `101`, `100`, `85`, `84`, `83`, `82`. | Done | Initial apply created 5 docs and skipped 1 unchanged; force apply updated exactly 6 docs; Job `101` was refreshed once more after parser stage changed. |
 | REQ-20260702-APPLY-004 | Leave Job `91` blocked with no transcription retry. | Done | No Job `91` transcription/retry command was run. |

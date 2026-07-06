@@ -1,6 +1,6 @@
 # Apply Closeout - Private Drive Transcript Docs And Job 101 Parser
 
-- Packet ID: `RAW-20260702-APPLY-PRIVATE-DRIVE-TRANSCRIPT-DOCS-AND-JOB101-PARSER-CLOSEOUT`
+- Packet ID: `RAW-20260702-014`
 - Approval phrase received: `APPROVE_20260702_PRIVATE_DRIVE_TRANSCRIPT_DOC_SYNC_FOR_BACKLOG_AND_FUTURE_UPLOADS`
 - Scope: private Drive transcript docs for jobs `101`, `100`, `85`, `84`, `83`, `82`; Job `101` parser repair; Drive connector visibility verification.
 - Guardrail: no raw transcript bodies are stored in GitHub evidence.
@@ -8,7 +8,7 @@
 | Requirement | Status | Evidence | Verification | Remaining blocker |
 |---|---|---|---|---|
 | Source-of-truth files read before apply | Done | Read `AGENTS.md`, `BNA-START-HERE.md`, `README.md`, `TASKS.md`, `MEMORY.md`, `SYSTEM-STATE.md`, `ops/execution-runs/latest.json`, prior register, Job 101 trace, backlog, Drive plan, Drive connector readiness, parser audit, verification, and digest policy files. | `npm run bna:run:status` passed. | None |
-| Raw intake and apply register created | Done | `raw-input/RAW-20260702-APPLY-PRIVATE-DRIVE-TRANSCRIPT-DOCS-AND-JOB101-PARSER-CLOSEOUT.md`; `tasks-pending/2026-07-02-apply-private-drive-transcript-docs-and-job101-parser-closeout.md` | Files added with approval scope and forbidden side effects. | None |
+| Raw intake and apply register created | Done | `raw-input/RAW-20260702-014.md`; `tasks-pending/2026-07-02-apply-private-drive-transcript-docs-and-job101-parser-closeout.md` | Files added with approval scope and forbidden side effects. | None |
 | CLI parser dry-run guard | Done | `scripts/telegram-kimi-bridge.mjs` now passes `dry_run` and `force` to `/api/bna/content-jobs/:id/parse-mixed-recording`. | `git diff -- scripts/telegram-kimi-bridge.mjs` reviewed. | None |
 | Targeted private Drive doc dry-run for jobs 101/100/85/84/83/82 | Done | `npm run content:sync-drive-library -- --dry-run --no-ai --job-id 101 --job-id 100 --job-id 85 --job-id 84 --job-id 83 --job-id 82` selected exactly 6 real transcript jobs and planned: create `101`, `100`, `85`, `84`, `82`; update `83`. | Command exited 0; Job `91` was not selected. | None |
 | Approved private Drive doc apply for jobs 101/100/85/84/83/82 | Done | Initial apply created 5 docs, skipped 1 unchanged, and read back jobs `101`/`100`; force dry-run then planned exactly 6 updates; force apply updated exactly 6 docs; Job `101` refreshed once after parser stage changed. | `npm run content:sync-drive-library -- --force --no-ai --verify --job-id 101 --job-id 100 --job-id 85 --job-id 84 --job-id 83 --job-id 82` exited 0 with readback ok. Final Job `101` refresh exited 0 with readback ok. | None |

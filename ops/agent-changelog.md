@@ -28220,7 +28220,7 @@ Actions: 1. Active machine tasks: 22.
 
 ## 2026-07-02 - Drive Transcript Visibility and Parser Routing Audit
 
-- Registered `RAW-20260702-DRIVE-TRANSCRIPT-VISIBILITY-OPENAI2-KIMI-FALLBACK-PARSER-ROUTING` and created the evidence bundle under `ops/drive-transcript-visibility/2026-07-02/`.
+- Registered `RAW-20260702-013` and created the evidence bundle under `ops/drive-transcript-visibility/2026-07-02/`.
 - Added a reusable OpenAI credential resolver and wired transcription/media-ingest paths to try runtime env, `keyholder:openaiv2.txt`, `keyholder:openai-api-key.txt`, and `.secrets/openai-api-key.txt` without logging secrets.
 - Confirmed `openaiv2.txt` is selected and valid against OpenAI model/response smokes; Railway `OPENAI_API_KEY` readback matches the selected fingerprint.
 - Recorded Kimi as post-transcription AI fallback only. No configured/verified Kimi audio transcription endpoint exists in this repo.
@@ -28232,7 +28232,7 @@ Actions: 1. Active machine tasks: 22.
 
 ## 2026-07-02 - Private Drive Transcript Docs and Job 101 Parser Closeout
 
-- Registered `RAW-20260702-APPLY-PRIVATE-DRIVE-TRANSCRIPT-DOCS-AND-JOB101-PARSER-CLOSEOUT` and closeout evidence at `ops/drive-transcript-visibility/2026-07-02/APPLY-CLOSEOUT.md`.
+- Registered `RAW-20260702-014` and closeout evidence at `ops/drive-transcript-visibility/2026-07-02/APPLY-CLOSEOUT.md`.
 - Applied the approved private Drive transcript-library sync for jobs `101`, `100`, `85`, `84`, `83`, and `82`. Initial apply created 5 docs and found 1 unchanged; forced scoped refresh updated exactly the 6 approved docs.
 - Tightened the private Drive transcript doc renderer to include Job ID/source metadata, private warning, ChatGPT visibility marker, review-only score/progress marker, and raw transcript only inside private Drive docs.
 - Confirmed Job `101` parser output exists, moved its content job stage to `04 Parsed`, and refreshed its Drive doc after the stage update.
@@ -30293,3 +30293,25 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   superseded stale raw IDs, generated pickup/watchdog junk, external sends,
   payment/access changes, DNS/provider mutations, Drive writes, or secret
   values.
+
+## 2026-07-06 - Continue Cleanup Status Reconciliation
+
+- Registered `RAW-20260706-981` and
+  `tasks-pending/2026-07-06-continue-cleanup-status-reconciliation.md` after
+  the operator asked to continue from the clean repo state.
+- Reconciled stale July 5 status truth:
+  - PR #100 is merged at `e80bbc9f7be873036b17c5b3855b8cdba12163b9`.
+  - PR #103 is merged at `1a35b78a`.
+  - Stale PRs #51, #62, and #63 are closed unmerged.
+  - `TASKS.md` no longer shows those July 5 cleanup items as pending.
+- Repaired raw-intake provenance drift by renaming descriptive July 2 raw files
+  to `RAW-20260702-013` and `RAW-20260702-014`, adding redacted fallback
+  pointers for `RAW-20260618-002` and `RAW-20260617-020`, and removing an
+  accidental stale raw-pattern reference from the local cleanup register.
+- Verification: PASS `npm run agent:fleet:readiness` with overall OK true;
+  PASS `npm run watchdog:raw` with finding_count 0; PASS ledger JSONL parse.
+  Runtime note: `agent:fleet:status` reports the supervisor not running, and
+  `watchdog:status` reports stale local/API watchdog state.
+- Guardrails: no app code changes, deploy, external sends, Drive writes,
+  production database writes, payment/access/DNS/provider mutations, credential
+  changes, raw transcript bodies, cookies, tokens, or private message bodies.

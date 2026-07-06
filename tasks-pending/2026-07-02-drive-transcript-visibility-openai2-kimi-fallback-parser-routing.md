@@ -1,7 +1,7 @@
 # Drive Transcript Visibility, OpenAI v2 Fallback, Parser Routing
 
-Raw ID: `RAW-20260702-DRIVE-TRANSCRIPT-VISIBILITY-OPENAI2-KIMI-FALLBACK-PARSER-ROUTING`
-Packet ID: `RAW-20260702-DRIVE-TRANSCRIPT-VISIBILITY-OPENAI2-KIMI-FALLBACK-PARSER-ROUTING`
+Raw ID: `RAW-20260702-013`
+Packet ID: `RAW-20260702-013`
 Active goal: Drive media/transcript pipeline fix and audit
 Related active run requirement: `REQ-20260702-103`
 Evidence folder: `ops/drive-transcript-visibility/2026-07-02/`
@@ -48,7 +48,7 @@ Evidence folder: `ops/drive-transcript-visibility/2026-07-02/`
 
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |
 |---|---|---|---|---|---|
-| REQ-20260702-201 | Done | `raw-input/RAW-20260702-DRIVE-TRANSCRIPT-VISIBILITY-OPENAI2-KIMI-FALLBACK-PARSER-ROUTING.md`; `ops/drive-transcript-visibility/2026-07-02/SOURCE.md` | Raw record, register, evidence folder | File inspection | None |
+| REQ-20260702-201 | Done | `raw-input/RAW-20260702-013-drive-transcript-visibility-openai2-kimi-fallback-parser-routing.md`; `ops/drive-transcript-visibility/2026-07-02/SOURCE.md` | Raw record, register, evidence folder | File inspection | None |
 | REQ-20260702-202 | Done | `ops/drive-transcript-visibility/2026-07-02/OPENAI-KIMI-CREDENTIAL-AUDIT.md` | Credential resolver audit | `npm run keyholder:diagnose`; `npm run openai:diagnose` | Kimi key not configured locally. |
 | REQ-20260702-203 | Done | `src/lib/integrations/ai-credential-resolver.js`; `scripts/telegram-kimi-bridge.mjs` | OpenAI candidate resolver and transcription candidate fallback | Targeted tests passed | Production deploy not performed. |
 | REQ-20260702-204 | Done | `ops/drive-transcript-visibility/2026-07-02/TRANSCRIPTION-PROVIDER-FALLBACK-DESIGN.md` | Structured fallback/blocker status model | Targeted tests and syntax checks passed | Kimi audio transcription unsupported/unverified. |
