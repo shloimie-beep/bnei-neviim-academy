@@ -10,6 +10,10 @@
   communications, payments/access, and provider workflow stay in a separate
   provider-specific pipeline scoped to `rabbi_sheller_provider` /
   `one_time_mishnah_class`.
+- One Time Vimeo uploads, Stripe setup, CRM/mailbox data, class content, and
+  member-library publishing must remain scoped to `rabbi_sheller_provider` /
+  `one_time_mishnah_class`. BNA Academy media/payment records are separate
+  unless an explicit cross-workspace link is created.
 - Rabbi / One Time brand is black + yellow. Do not apply the BNA cream/navy/
   teal/cyan palette to One Time unless a later explicit design Decision says so.
 - The One Time AI Studio operator role is `one_time_ai_studio_operator`. It is

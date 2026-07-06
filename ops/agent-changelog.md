@@ -30218,3 +30218,42 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   raw email body committed; no shared-recipient/bulk campaign send, WhatsApp,
   payment/access, DNS, member/library entitlement, provider-account mutation, or
   external CRM write.
+
+## 2026-07-06 - One Time Vimeo Folder Library Workflow Built Locally
+
+- Registered non-colliding raw records `RAW-20260706-965` through
+  `RAW-20260706-969` after older local ids conflicted with records already
+  present on `master`.
+- Added a no-write-by-default One Time Vimeo folder-to-library workflow:
+  `src/lib/bna/one-time-vimeo-folder-library.js`,
+  `scripts/one-time-vimeo-folder-library.mjs`, the package script
+  `one-time:vimeo-library`, and focused tests.
+- Default scan folder is `media-inbox/one-time-vimeo-drop`; the workflow writes
+  redacted review reports under
+  `ops/one-time-mishnah/vimeo-folder-library/`.
+- External gates remain explicit: no real Vimeo upload without
+  `UPLOAD_ONE_TIME_VIMEO_LIBRARY`, no review-package DB write without
+  `CREATE_ONE_TIME_LIBRARY_REVIEW`, no member-library publish without
+  `APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING`, and real files also require
+  `--allow-real-media`.
+- Verification: workflow report
+  `ops/one-time-mishnah/vimeo-folder-library/2026-07-06T17-25-02-751Z-report.md`;
+  focused and adjacent tests; no token printed or committed.
+- Remaining blocker: real upload/member-library publish needs exact file/folder,
+  visibility, review destination, rollback path, and explicit approval.
+
+## 2026-07-06 - Cleanup Inventory And Live Readback
+
+- Registered `RAW-20260706-970` and
+  `tasks-pending/2026-07-06-clean-deploy-all-pending.md` for the broad request
+  to clean, debug, publish, deploy, and summarize pending work.
+- Confirmed the original checkout was dirty and not a safe release source;
+  created clean branch `codex/clean-deploy-all-pending-20260706` from
+  `origin/master` and staged only scoped Vimeo/Stripe/cleanup work.
+- Readback before publication: no open GitHub PRs; active execution run showed
+  8 done / 2 blocked with no unblocked executable batch; current `master`
+  commit `4466737a` was deployed successfully on BNA Railway production;
+  BNA and One Time live health/smokes passed.
+- Guardrails: no external email/WhatsApp send, payment/access change, DNS
+  mutation, Drive write, provider-account mutation, secret value print, or
+  unrelated dirty work staged.

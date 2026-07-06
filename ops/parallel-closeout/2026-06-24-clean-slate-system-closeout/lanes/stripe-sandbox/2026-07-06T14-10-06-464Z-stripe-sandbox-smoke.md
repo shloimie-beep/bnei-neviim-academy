@@ -43,4 +43,3 @@
 ## Notes
 
 - A live Stripe key is configured. Sandbox smoke blocked all Stripe API calls to avoid live-mode effects.
-
