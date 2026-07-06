@@ -175,6 +175,22 @@ test('ChatGPT dropoff ingestor hardens status, ids, helper lanes, and write decl
   assert.ok(statusSecret.findings.some((finding) => finding.code === 'declared_secrets_included'));
 });
 
+test('ChatGPT dropoff ingestor force retry can reprocess a terminal packet status', async () => {
+  const ingestor = await loadIngestor();
+  const dir = makePacketDir();
+  writePacket(dir, { status: 'blocked_needs_operator_decision' });
+  const loaded = ingestor.loadPacket(dir);
+
+  const normalValidation = ingestor.validatePacket(loaded);
+  assert.equal(normalValidation.ready, false);
+  assert.ok(normalValidation.findings.some((finding) => finding.code === 'terminal_status'));
+
+  const forcedValidation = ingestor.validatePacket(loaded, { force: true });
+  assert.equal(forcedValidation.ok, true);
+  assert.equal(forcedValidation.ready, true);
+  assert.deepEqual(forcedValidation.findings, []);
+});
+
 test('ChatGPT dropoff package scripts and agent fleet hook are wired', async () => {
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   const supervisor = fs.readFileSync('scripts/agent-fleet-supervisor.mjs', 'utf8');

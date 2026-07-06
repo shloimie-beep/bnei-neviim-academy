@@ -1,0 +1,29 @@
+{
+  "packet_id": "onetime-agent-prompt-series-20260706-911",
+  "schema_version": "bna.chatgpt_dropoff_manifest.v1",
+  "generated_by": "chatgpt",
+  "target_repo": "shloimie-beep/bnei-neviim-academy",
+  "target_branch": "master",
+  "files": [
+    {
+      "path": "RAW.md",
+      "purpose": "Preserves the ChatGPT meta prompt and context that generated this prompt series."
+    },
+    {
+      "path": "CODEX_PROMPT.md",
+      "purpose": "Instructs Codex on how to handle the agent-mode audit prompts and what to expect."
+    },
+    {
+      "path": "PROMPTS.md",
+      "purpose": "Contains the five runnable Agent Mode audit prompts for One Time UI audits."
+    }
+  ],
+  "proposed_repo_changes": [],
+  "tests_expected": [],
+  "known_blockers": [],
+  "risk_notes": [
+    "This packet only creates prompts; no code or data modifications.",
+    "Ensure that any login required by agents is handled via browser takeover by Shloimie."
+  ],
+  "handback_required": true
+}

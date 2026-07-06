@@ -396,6 +396,14 @@ function taskStatusLine(task) {
   return `#${task.id} [${normalizeStage(task.stage)}] ${taskTitle(task).slice(0, 110)}`;
 }
 
+function observableJobStatusTitle(job = {}, tasks = []) {
+  const linkedTaskId = Number(job.task_id || 0);
+  const linkedTask = linkedTaskId
+    ? tasks.find((task) => Number(task.id || task.task_id || 0) === linkedTaskId)
+    : null;
+  return String(linkedTask ? taskTitle(linkedTask) : job.title || job.task_title || '').slice(0, 110);
+}
+
 function urgencyRank(value) {
   return ({ urgent: 0, today: 1, this_week: 2, low: 3 })[String(value || '')] ?? 2;
 }
@@ -3260,12 +3268,12 @@ async function status(config) {
   if (claimableObservableJobs.length) {
     lines.push('', 'Next claimable observable jobs:');
     for (const job of claimableObservableJobs.slice(0, 8)) {
-      lines.push(`- job #${job.id || job.job_id}${job.ticket_id ? ` / ticket #${job.ticket_id}` : ''}${job.task_id ? ` / task #${job.task_id}` : ''} [${job.status}] ${String(job.title || job.task_title || '').slice(0, 110)}`);
+      lines.push(`- job #${job.id || job.job_id}${job.ticket_id ? ` / ticket #${job.ticket_id}` : ''}${job.task_id ? ` / task #${job.task_id}` : ''} [${job.status}] ${observableJobStatusTitle(job, tasks)}`);
     }
   } else if (observableJobs.length) {
     lines.push('', 'Observable jobs not claimable by active-task policy:');
     for (const job of observableJobs.slice(0, 8)) {
-      lines.push(`- job #${job.id || job.job_id}${job.ticket_id ? ` / ticket #${job.ticket_id}` : ''}${job.task_id ? ` / task #${job.task_id}` : ''} [${job.status}] ${String(job.title || job.task_title || '').slice(0, 110)}`);
+      lines.push(`- job #${job.id || job.job_id}${job.ticket_id ? ` / ticket #${job.ticket_id}` : ''}${job.task_id ? ` / task #${job.task_id}` : ''} [${job.status}] ${observableJobStatusTitle(job, tasks)}`);
     }
   } else if (queue.length) {
     lines.push('', 'Next tasks:');
