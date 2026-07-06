@@ -19,8 +19,8 @@ const MAIN_MODULES = [
   {
     id: 'classes_content',
     label: 'Classes & Content',
-    short_label: 'Classes',
-    default_section: 'schedule',
+    short_label: 'Content',
+    default_section: 'library',
     operations_view: 'content',
   },
   {
@@ -117,10 +117,10 @@ const SECTION_SUBSECTION_MAP = {
   classes_content: {
     label: 'Classes & Content',
     subsections: [
-      { id: 'schedule', label: 'Class Schedule', source_view: 'live_classes', source_section: 'schedule' },
-      { id: 'library', label: 'Video Library', source_view: 'content', source_section: 'one_time_library' },
-      { id: 'worksheets', label: 'Worksheets', source_view: 'content', source_section: 'worksheets' },
-      { id: 'assets', label: 'Review Assets', source_view: 'content', source_section: 'assets' },
+      { id: 'library', label: 'Library', source_view: 'content', source_section: 'one_time_library' },
+      { id: 'meeting_drops', label: 'Meeting Drops', source_view: 'content', source_section: 'meetings' },
+      { id: 'source_prep', label: 'Source Prep', source_view: 'content', source_section: 'research' },
+      { id: 'bundles', label: 'Bundles', source_view: 'content', source_section: 'bundles' },
     ],
   },
   live_class_schedule: {

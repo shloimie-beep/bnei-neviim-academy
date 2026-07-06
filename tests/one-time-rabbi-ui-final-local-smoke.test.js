@@ -879,7 +879,7 @@ test('final local One Time/Rabbi UI QA harness covers scoped routes without exte
     });
     assert.equal(operationsContract.workspace, 'rabbi_sheller_provider');
     assert.equal(operationsContract.role, 'Workspace Owner');
-    assert.deepEqual(operationsContract.navLabels, ['Overview', 'Members', 'Classes', 'Studio', 'Live Class', 'Schedule', 'Community', 'Communications', 'Automations', 'Payments', 'Tasks', 'Reporting', 'Integrations', 'Workspace Setup']);
+    assert.deepEqual(operationsContract.navLabels, ['Overview', 'Members', 'Classes & Content', 'Studio', 'Live Class', 'Schedule', 'Community', 'Communications', 'Automations', 'Payments', 'Tasks', 'Reporting', 'Integrations', 'Workspace Setup']);
     assert.deepEqual(operationsContract.navKeys, ['overview_package_status', 'members_crm', 'classes_content', 'studio', 'live_class_schedule', 'program_schedule', 'community_questions', 'communications', 'automations', 'payments_access', 'tasks_decisions', 'reporting_readiness', 'connector_setup', 'settings_setup']);
     for (const expected of ['service_providers', 'contacts', 'content', 'studio', 'live_classes', 'calendar', 'community', 'communications', 'automations', 'tasks', 'api_usage', 'integrations', 'settings']) {
       assert.ok(operationsContract.navIds.includes(expected), `operations missing Rabbi-facing module ${expected}`);
