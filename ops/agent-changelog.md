@@ -29926,3 +29926,34 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   credential/provider/Drive/production-data mutations, passwords, cookies, raw
   private contact exports, raw WhatsApp bodies, raw transcript bodies, payment
   data, or unredacted private screenshots.
+
+## 2026-07-06 - Worker Credential Policy And Dirty Closeout
+
+- Configured the temporary One Time AI video worker login for `BenLevy` in
+  Railway production without committing or printing the password. The password
+  is stored only in the local untracked `.secrets` handoff file.
+- Merged PR #113 (`311d9661`) adding the provisional no-live AI-video policy,
+  model, and budget defaults to the worker prompt pack/review handoff.
+- Merged PR #114 (`eba81417`) fixing scoped Operations `/api/bna/auth/me`
+  readback for Studio/task-only worker sessions.
+- Deployed and live-smoked the worker login on Railway deployment
+  `4f2b2b6e-c1ef-48e1-8d89-953274e7ec59`: login succeeded as
+  `one_time_ai_video_worker`, `/api/bna/auth/me` returned scope
+  `rabbi_sheller_provider` / `one_time_mishnah_class`, allowed views were only
+  `studio` and `tasks`, Studio/Tasks/OpenArt no-live status reads passed, and
+  CRM/agent-fleet reads were denied.
+- Merged PR #115 (`53bca5d9`) restoring Job 101 dry-run parser reuse and
+  no-write flag forwarding from the Telegram/Kimi bridge.
+- Deployed PR #115 on Railway deployment
+  `798cb1e5-f460-4776-969d-1184cfe1bd07`; `npm run app:smoke` and
+  `npm run app:smoke:rabbi-onetime-landing` passed.
+- Exact Job 101 live data smoke was attempted with dry-run/no-AI/no-progress
+  flags and blocked because production returned `Content job #101 was not
+  found`.
+- Dirty workspace audit recorded incomplete/unpushable local work:
+  One Time CRM mailbox MVP, stale execution-run status files, and a Job 101
+  cleanup-report overwrite were not pushed.
+- Remaining exact blockers: rotate/replace the temporary worker password after
+  handoff; OpenArt/vendor credentials/model/budget/privacy/upload policy;
+  hosted pixel-analysis provider/policy; complete mailbox MVP tests,
+  registries, visual/browser evidence, and live proof before deploying it.
