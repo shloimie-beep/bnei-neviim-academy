@@ -30007,7 +30007,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Created clean branch `codex/onetime-crm-mailbox-20260706` from current
   `origin/master` so the mailbox work can publish without unrelated dirty
   worktree changes.
-- Pushed implementation commit `7f5246c9` and opened draft PR #117:
+- Pushed the rebased implementation commit `52d8b980` and opened PR #117:
   `https://github.com/shloimie-beep/bnei-neviim-academy/pull/117`.
 - Added provider-session gated One Time mailbox APIs:
   `/api/provider-portal/mailbox`, `/api/provider-portal/mailbox/:threadKey`,
@@ -30035,6 +30035,10 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   runtime-only and is not tracked.
 - No-send integration smoke passed for Resend with API/domain/sender readiness
   and `send_allowed=true`; no email send was performed.
+- Post-rebase verification refreshed the zero-finding action report at
+  `ops/watchdog-audits/2026-07-06T14-20-watchdog-action-audit.md` and the
+  no-send integration smoke at
+  `ops/one-time-mishnah/integration-smokes/2026-07-06T14-22-03-886Z-resend-vimeo-stripe-safe-smoke.md`.
 - Remaining blockers before live Done: merge/deploy/live smoke and live mailbox
   readback after deployment.
 - Guardrails: no physical mailing address text committed, no external email
