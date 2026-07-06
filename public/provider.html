@@ -310,6 +310,83 @@
             padding: 14px;
         }
 
+        .mailbox-toolbar {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .mailbox-readiness {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 10px;
+        }
+
+        .mailbox-layout {
+            display: grid;
+            grid-template-columns: minmax(240px, 0.38fr) minmax(0, 0.62fr);
+            gap: 12px;
+            align-items: start;
+        }
+
+        .mailbox-thread-list {
+            display: grid;
+            gap: 8px;
+            max-height: 640px;
+            overflow: auto;
+        }
+
+        .mailbox-thread-button {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--ink);
+            cursor: pointer;
+            padding: 11px;
+            text-align: left;
+        }
+
+        .mailbox-thread-button.active,
+        .mailbox-thread-button:hover {
+            border-color: rgba(214, 169, 45, 0.64);
+            background: rgba(214, 169, 45, 0.12);
+        }
+
+        .mailbox-thread-button strong,
+        .mailbox-message strong {
+            display: block;
+            line-height: 1.2;
+        }
+
+        .mailbox-message {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            padding: 12px;
+        }
+
+        .mailbox-message.outbound {
+            background: rgba(17, 17, 17, 0.04);
+        }
+
+        .mailbox-message-body {
+            color: var(--ink);
+            font-size: 14px;
+            line-height: 1.48;
+            margin: 10px 0 0;
+            white-space: pre-wrap;
+        }
+
+        .mailbox-composer {
+            border: 1px solid rgba(214, 169, 45, 0.34);
+            border-radius: 8px;
+            background: rgba(255, 250, 240, 0.86);
+            margin-top: 12px;
+            padding: 12px;
+        }
+
         .wapi-setup-section {
             padding-bottom: 96px;
         }
@@ -389,6 +466,10 @@
             .hero,
             .grid {
                 display: grid;
+                grid-template-columns: 1fr;
+            }
+            .mailbox-toolbar,
+            .mailbox-layout {
                 grid-template-columns: 1fr;
             }
             .wapi-setup-grid {
@@ -486,6 +567,23 @@
             <section class="panel provider-section" data-provider-section="crm">
                 <h2>CRM</h2>
                 <div id="oneTimeCrm" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="mailbox">
+                <div class="service-head">
+                    <div>
+                        <h2>Mailbox</h2>
+                        <p class="small">info@onetimeonetime.com messages captured into the One Time CRM.</p>
+                    </div>
+                    <span class="status-pill">Resend inbound</span>
+                </div>
+                <div id="providerMailboxReadiness" class="mailbox-readiness"></div>
+                <form id="providerMailboxSearchForm" class="mailbox-toolbar">
+                    <label class="hidden" for="providerMailboxSearch">Search mailbox</label>
+                    <input id="providerMailboxSearch" name="q" placeholder="Search sender, subject, or message">
+                    <button class="btn" type="submit" data-action-id="ACTION-PROVIDER-MAILBOX-SEARCH">Search</button>
+                </form>
+                <div id="providerMailbox" class="service-list"></div>
             </section>
 
             <section class="panel provider-section" data-provider-section="content">
@@ -897,6 +995,14 @@
         const oneTimeViewAsRabbiToken = queryParams.get('view_as_rabbi') || '';
         const providerApiUsagePreviewFlag = ['1', 'true', 'yes'].includes(String(queryParams.get('api_usage_preview') || '').toLowerCase());
         let oneTimeViewAsRabbiSession = null;
+        const providerMailboxState = {
+            threads: [],
+            selectedThreadKey: '',
+            thread: null,
+            readiness: null,
+            search: '',
+            loaded: false,
+        };
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -1133,12 +1239,17 @@
                 || workspaceKey === 'rabbi_sheller_provider';
         }
 
+        function providerMailboxEnabled() {
+            return providerWapiSetupEnabled();
+        }
+
         function providerSections() {
             if (oneTimeReviewMode) {
                 return [
                     { id: 'overview', label: 'Dashboard', group: 'Workspace' },
                     { id: 'users', label: 'Users', group: 'Workspace' },
                     { id: 'crm', label: 'CRM', group: 'Growth' },
+                    { id: 'mailbox', label: 'Mailbox', group: 'Growth' },
                     { id: 'content', label: 'Content', group: 'Growth' },
                     { id: 'automations', label: 'Automations', group: 'Operations' },
                     { id: 'badges', label: 'Badges', group: 'Operations' },
@@ -1155,6 +1266,7 @@
                 ? [
                     { id: 'overview', label: 'Overview' },
                     { id: 'crm', label: 'CRM' },
+                    { id: 'mailbox', label: 'Mailbox' },
                     { id: 'calendar', label: 'Calendar' },
                     { id: 'parent_portal', label: 'Parent Portal' },
                     { id: 'student_portal', label: 'Student Portal' },
@@ -1171,6 +1283,7 @@
                     { id: 'profile', label: 'Profile / Listing' },
                     { id: 'services', label: 'Services' },
                     { id: 'inquiries', label: 'Inquiries' },
+                    { id: 'mailbox', label: 'Mailbox' },
                     { id: 'calendar', label: 'Calendar' },
                     { id: 'comments', label: 'Comments' },
                     { id: 'media', label: 'Media' },
@@ -1179,6 +1292,10 @@
                 ];
             if (portalState?.one_time_class_media_enabled) {
                 sections.splice(Math.min(6, sections.length), 0, { id: 'class_media', label: 'Class Media' });
+            }
+            if (!providerMailboxEnabled()) {
+                const mailboxIndex = sections.findIndex(section => section.id === 'mailbox');
+                if (mailboxIndex >= 0) sections.splice(mailboxIndex, 1);
             }
             if (portalEntitlementEnabled('landing_page_funnel') || portalEntitlementEnabled('content_video_workflow')) {
                 sections.push({ id: 'website_import', label: 'Website Import' });
@@ -1303,6 +1420,156 @@
             `).join('');
         }
 
+        function mailboxReadinessPills(readiness = {}) {
+            const provider = readiness.readiness || {};
+            return [
+                { label: `Inbox: ${readiness.inbox_address || 'info@onetimeonetime.com'}`, ok: true },
+                { label: readiness.inbound_webhook_configured ? 'Inbound webhook configured' : 'Inbound webhook needs secret', ok: readiness.inbound_webhook_configured },
+                { label: provider.send_allowed ? 'Replies can send' : 'Replies blocked', ok: provider.send_allowed },
+                { label: readiness.mailing_address_configured ? 'Mailing address configured' : 'Mailing address runtime config needed', ok: readiness.mailing_address_configured },
+                { label: 'Bulk email locked', ok: false },
+            ].map(item => `<span class="status-pill" title="${escapeHtml(item.ok ? 'Ready' : 'Needs setup or intentionally gated')}">${escapeHtml(item.label)}</span>`).join('');
+        }
+
+        function renderProviderMailboxThreadList(threads = []) {
+            if (!threads.length) return '<p class="small">No captured emails yet. New messages to info@onetimeonetime.com will appear here after the Resend inbound webhook receives them.</p>';
+            return threads.map(thread => `
+                <button type="button" class="mailbox-thread-button ${thread.thread_key === providerMailboxState.selectedThreadKey ? 'active' : ''}" data-action-id="ACTION-PROVIDER-MAILBOX-THREAD-OPEN" data-provider-mailbox-thread="${escapeHtml(thread.thread_key)}">
+                    <strong>${escapeHtml(thread.contact_name || thread.contact_email || 'Email thread')}</strong>
+                    <span class="small">${escapeHtml(shortText(thread.subject || 'No subject', 72))}</span>
+                    <span class="small">${escapeHtml(shortText(thread.preview || '', 110))}</span>
+                    <div class="service-meta">
+                        <span class="status-pill">${escapeHtml(thread.needs_reply ? 'Needs reply' : 'Updated')}</span>
+                        <span class="status-pill">${escapeHtml(String(thread.message_count || 1))} message${Number(thread.message_count || 1) === 1 ? '' : 's'}</span>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function renderMailboxMessage(message = {}) {
+            const direction = String(message.direction || '').toLowerCase();
+            const party = direction === 'outbound'
+                ? `To ${message.to_address || 'recipient'}`
+                : `From ${message.from_name || message.from_address || 'sender'}`;
+            const date = message.occurred_at ? new Date(message.occurred_at).toLocaleString('en-GB') : '';
+            return `
+                <article class="mailbox-message ${escapeHtml(direction)}">
+                    <div class="service-head">
+                        <div>
+                            <strong>${escapeHtml(party)}</strong>
+                            <span class="small">${escapeHtml(message.subject || 'No subject')}</span>
+                        </div>
+                        <span class="status-pill">${escapeHtml(message.status || direction || 'logged')}</span>
+                    </div>
+                    <div class="service-meta">
+                        ${date ? `<span class="status-pill">${escapeHtml(date)}</span>` : ''}
+                        ${message.provider ? `<span class="status-pill">${escapeHtml(message.provider)}</span>` : ''}
+                    </div>
+                    <p class="mailbox-message-body">${escapeHtml(message.body_text || message.preview || '')}</p>
+                </article>
+            `;
+        }
+
+        function renderProviderMailboxThread(thread = null) {
+            if (!thread) return '<p class="small">Select a thread to read the email timeline.</p>';
+            const messages = Array.isArray(thread.messages) ? thread.messages : [];
+            const readiness = providerMailboxState.readiness || {};
+            const providerReadiness = readiness.readiness || {};
+            const canDraft = Boolean(thread.reply_to_address);
+            const canSend = Boolean(thread.reply_to_address && providerReadiness.send_allowed);
+            const sendBlocker = !thread.reply_to_address
+                ? 'No inbound sender address is available for this thread.'
+                : (providerReadiness.blocker || 'Resend reply sending is not ready.');
+            return `
+                <section class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(thread.subject || 'Email thread')}</h3>
+                            <p class="small">${escapeHtml(thread.reply_to_address ? `Reply target: ${thread.reply_to_address}` : 'No reply target found')}</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(messages.length)} message${messages.length === 1 ? '' : 's'}</span>
+                    </div>
+                    <div class="service-list">
+                        ${messages.map(renderMailboxMessage).join('')}
+                    </div>
+                    <form class="mailbox-composer" data-provider-mailbox-reply="${escapeHtml(thread.thread_key)}">
+                        <label>Reply
+                            <textarea name="body_text" required maxlength="5000" placeholder="Write the reply here. Save Draft keeps it local; Send Reply uses Resend after confirmation."></textarea>
+                        </label>
+                        <p class="small">${canSend ? 'Send Reply will ask for SEND_RESEND_EMAIL before any external email is sent.' : escapeHtml(sendBlocker)}</p>
+                        <div class="button-row">
+                            <button class="btn" type="submit" name="mailbox_action" value="draft" data-action-id="ACTION-PROVIDER-MAILBOX-DRAFT" ${canDraft ? '' : 'disabled'}>Save Draft</button>
+                            <button class="btn primary" type="submit" name="mailbox_action" value="send" data-action-id="ACTION-PROVIDER-MAILBOX-SEND" ${canSend ? '' : 'disabled'} title="${escapeHtml(canSend ? 'Send reply with explicit confirmation' : sendBlocker)}">Send Reply</button>
+                        </div>
+                    </form>
+                </section>
+            `;
+        }
+
+        function renderProviderMailbox() {
+            const target = document.getElementById('providerMailbox');
+            const readinessTarget = document.getElementById('providerMailboxReadiness');
+            if (!target) return;
+            if (readinessTarget) readinessTarget.innerHTML = mailboxReadinessPills(providerMailboxState.readiness || {});
+            target.innerHTML = `
+                <div class="mailbox-layout">
+                    <aside class="mailbox-thread-list" aria-label="Mailbox threads">
+                        ${renderProviderMailboxThreadList(providerMailboxState.threads || [])}
+                    </aside>
+                    <div id="providerMailboxThread">
+                        ${renderProviderMailboxThread(providerMailboxState.thread)}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadProviderMailbox(options = {}) {
+            const target = document.getElementById('providerMailbox');
+            const searchInput = document.getElementById('providerMailboxSearch');
+            if (!target || !providerMailboxEnabled()) return;
+            const search = options.search !== undefined ? options.search : (searchInput?.value || providerMailboxState.search || '');
+            target.innerHTML = '<p class="small">Loading mailbox...</p>';
+            try {
+                const query = search ? `?q=${encodeURIComponent(search)}` : '';
+                const data = await api(`/api/provider-portal/mailbox${query}`);
+                providerMailboxState.threads = data.mailbox?.threads || [];
+                providerMailboxState.readiness = data.mailbox?.readiness || null;
+                providerMailboxState.search = search || '';
+                providerMailboxState.loaded = true;
+                if (searchInput && searchInput.value !== providerMailboxState.search) searchInput.value = providerMailboxState.search;
+                if (!providerMailboxState.threads.some(thread => thread.thread_key === providerMailboxState.selectedThreadKey)) {
+                    providerMailboxState.selectedThreadKey = providerMailboxState.threads[0]?.thread_key || '';
+                    providerMailboxState.thread = null;
+                }
+                renderProviderMailbox();
+                if (providerMailboxState.selectedThreadKey) {
+                    await loadProviderMailboxThread(providerMailboxState.selectedThreadKey);
+                }
+            } catch (error) {
+                target.innerHTML = `<p class="small">${escapeHtml(error.message || 'Could not load mailbox.')}</p>`;
+            }
+        }
+
+        async function loadProviderMailboxThread(threadKey) {
+            const target = document.getElementById('providerMailboxThread');
+            if (!threadKey || !target) return;
+            providerMailboxState.selectedThreadKey = threadKey;
+            document.querySelectorAll('[data-provider-mailbox-thread]').forEach(button => {
+                button.classList.toggle('active', button.dataset.providerMailboxThread === threadKey);
+            });
+            target.innerHTML = '<p class="small">Loading thread...</p>';
+            try {
+                const data = await api(`/api/provider-portal/mailbox/${encodeURIComponent(threadKey)}`);
+                providerMailboxState.thread = data.thread || null;
+                providerMailboxState.readiness = data.mailbox?.readiness || providerMailboxState.readiness;
+                target.innerHTML = renderProviderMailboxThread(providerMailboxState.thread);
+                const readinessTarget = document.getElementById('providerMailboxReadiness');
+                if (readinessTarget) readinessTarget.innerHTML = mailboxReadinessPills(providerMailboxState.readiness || {});
+            } catch (error) {
+                target.innerHTML = `<p class="small">${escapeHtml(error.message || 'Could not load mailbox thread.')}</p>`;
+            }
+        }
+
         function renderProviderCalendarEvents(items = []) {
             if (!items.length) return '<p class="small">No provider calendar events yet.</p>';
             return items.map(item => `
@@ -1339,6 +1606,7 @@
                     : reviewCard('Limited analytics', 'Free provider accounts receive basic listing/support signals only. Full reporting requires Provider Plus.', 'Limited');
             }
             loadProviderInquiries();
+            loadProviderMailbox();
             loadProviderCalendarEvents();
         }
 
@@ -1848,6 +2116,7 @@
             const overviewPanel = document.querySelector('[data-provider-section="overview"]');
             const usersPanel = document.querySelector('[data-provider-section="users"]');
             const crmPanel = document.querySelector('[data-provider-section="crm"]');
+            const mailboxPanel = document.querySelector('[data-provider-section="mailbox"]');
             const contentPanel = document.querySelector('[data-provider-section="content"]');
             const automationPanel = document.querySelector('[data-provider-section="automations"]');
             const badgesPanel = document.querySelector('[data-provider-section="badges"]');
@@ -1909,6 +2178,21 @@
                     reviewCard('CRM record types', (data.crm_workspace?.contact_types || []).join(', '), 'workspace scoped'),
                     reviewCard('Portal navigation', `Rabbi can open Parent View, Student View, Classroom, Email Review, and Landing from the left toolbar, then return to this provider workspace.`, 'mapped'),
                 ].join('');
+            }
+            if (mailboxPanel) {
+                mailboxPanel.classList.remove('provider-section-hidden');
+                const readinessTarget = document.getElementById('providerMailboxReadiness');
+                const mailboxTarget = document.getElementById('providerMailbox');
+                if (readinessTarget) readinessTarget.innerHTML = [
+                    '<span class="status-pill">info@onetimeonetime.com</span>',
+                    '<span class="status-pill">Provider login required for live inbox</span>',
+                    '<span class="status-pill">Bulk email locked</span>',
+                ].join('');
+                if (mailboxTarget) mailboxTarget.innerHTML = reviewCard(
+                    'Live CRM mailbox',
+                    'The logged-in provider portal reads Resend inbound email from bna_communications and can save reply drafts. Sending uses Resend only after exact confirmation.',
+                    'ready route'
+                );
             }
             if (contentPanel) {
                 contentPanel.classList.remove('provider-section-hidden');
@@ -2281,6 +2565,42 @@
                 return;
             }
 
+            const mailboxSearchForm = event.target.closest('#providerMailboxSearchForm');
+            if (mailboxSearchForm) {
+                event.preventDefault();
+                await loadProviderMailbox({ search: mailboxSearchForm.elements.q?.value || '' });
+                return;
+            }
+
+            const mailboxForm = event.target.closest('[data-provider-mailbox-reply]');
+            if (mailboxForm) {
+                event.preventDefault();
+                const button = event.submitter;
+                const action = button?.value === 'send' ? 'send' : 'draft';
+                const payload = formObject(mailboxForm);
+                if (action === 'send') {
+                    const phrase = window.prompt('Type SEND_RESEND_EMAIL to send this reply now.');
+                    if (!phrase) return;
+                    payload.confirm = phrase;
+                }
+                if (button) button.disabled = true;
+                try {
+                    const endpoint = `/api/provider-portal/mailbox/${encodeURIComponent(mailboxForm.dataset.providerMailboxReply)}/${action}`;
+                    const result = await api(endpoint, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    mailboxForm.reset();
+                    await loadProviderMailboxThread(mailboxForm.dataset.providerMailboxReply);
+                    alert(result.message || (action === 'send' ? 'Reply sent.' : 'Draft saved. No email was sent.'));
+                } catch (error) {
+                    alert(error.message || (action === 'send' ? 'Send blocked.' : 'Could not save draft.'));
+                } finally {
+                    if (button) button.disabled = false;
+                }
+                return;
+            }
+
             const form = event.target.closest('[data-provider-reply-form]');
             if (!form) return;
             event.preventDefault();
@@ -2308,6 +2628,12 @@
             }
             if (event.target.closest('[data-provider-nav]') && portalPanel.classList.contains('one-time-sidebar-open')) {
                 portalPanel.classList.remove('one-time-sidebar-open');
+            }
+
+            const mailboxThreadButton = event.target.closest('[data-provider-mailbox-thread]');
+            if (mailboxThreadButton) {
+                await loadProviderMailboxThread(mailboxThreadButton.dataset.providerMailboxThread);
+                return;
             }
 
             const hideButton = event.target.closest('[data-hide-comment]');

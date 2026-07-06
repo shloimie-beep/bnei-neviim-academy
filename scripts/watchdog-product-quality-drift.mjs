@@ -253,7 +253,15 @@ function scanJson(file, text, findings) {
     add(findings, file, RULES.TRACE, "P1", `Invalid JSON: ${error.message}`, "Fix JSON syntax.");
     return;
   }
-  if (!(json && (json.schema_version === "pqc.v1" || typeof json.packet_id === "string" || rel(file).endsWith(".product-quality.json")))) {
+  const relative = rel(file);
+  const looksLikeProductQualityPacket =
+    json &&
+    (
+      json.schema_version === "pqc.v1" ||
+      json.schema_version === "pqc.v2" ||
+      relative.endsWith(".product-quality.json")
+    );
+  if (!looksLikeProductQualityPacket) {
     return;
   }
   const errors = validatePacket(json);

@@ -29957,7 +29957,6 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   handoff; OpenArt/vendor credentials/model/budget/privacy/upload policy;
   hosted pixel-analysis provider/policy; complete mailbox MVP tests,
   registries, visual/browser evidence, and live proof before deploying it.
-
 ## 2026-07-06 - One Time Operations Dashboard UI Hotfix
 
 - Registered `RAW-20260706-950` / `REQ-20260706-950` for the live Rabbi / One
@@ -29999,3 +29998,49 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   `ops/live-smokes/2026-07-06T14-10-22-946Z-one-time-operations-dashboard-ui-live-smoke.md`,
   `ops/live-smokes/2026-07-06T14-08-01-128Z-live-app-smoke.md`, and
   `ops/live-smokes/2026-07-06T14-07-25-867Z-rabbi-onetime-landing-smoke.md`.
+
+## 2026-07-06 - One Time CRM Mailbox Publication Branch Verified
+
+- Registered `RAW-20260706-909`, `REQ-20260706-940` through
+  `REQ-20260706-946`, and `TASK-20260706-940` for the Rabbi / One Time CRM
+  mailbox goal.
+- Created clean branch `codex/onetime-crm-mailbox-20260706` from current
+  `origin/master` so the mailbox work can publish without unrelated dirty
+  worktree changes.
+- Pushed the rebased implementation commit `52d8b980` and opened PR #117:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/117`.
+- Added provider-session gated One Time mailbox APIs:
+  `/api/provider-portal/mailbox`, `/api/provider-portal/mailbox/:threadKey`,
+  `/api/provider-portal/mailbox/:threadKey/draft`, and
+  `/api/provider-portal/mailbox/:threadKey/send`.
+- The mailbox reads scoped Resend inbound/outbound email rows from
+  `bna_communications` for `rabbi_sheller_provider` /
+  `one_time_mishnah_class`; draft save is local/no-send, and send requires
+  Resend readiness plus exact `SEND_RESEND_EMAIL` confirmation.
+- Added the provider portal Mailbox section with search, thread list, message
+  timeline, readiness chips, local draft save, guarded send, mobile layout, and
+  One Time review-shell placeholder.
+- Added route/action registry rows, raw/register/PQC artifacts, and
+  `tests/provider-mailbox-portal.test.js`.
+- Verification passed on the clean branch: `node --check server.js`; inline
+  provider script parse; `node --test tests/provider-mailbox-portal.test.js`;
+  combined mailbox/WAPI provider tests 7/7; PQC validation; and `npm run
+  watchdog:actions` finding count 0.
+- Follow-up release-gate work fixed the protocol-drift false positive against
+  the One Time full-UI audit manifest, added required audit protocol markers,
+  and `npm run watchdog:protocol-drift` now passes.
+- Redacted One Time Railway readback confirms `RESEND_WEBHOOK_SECRET`,
+  `RESEND_FROM_NAME`, `RESEND_REPLY_TO`, and `ONE_TIME_MAILING_ADDRESS` are
+  configured on `one-time-web` production. The exact physical address remains
+  runtime-only and is not tracked.
+- No-send integration smoke passed for Resend with API/domain/sender readiness
+  and `send_allowed=true`; no email send was performed.
+- Post-rebase verification refreshed the zero-finding action report at
+  `ops/watchdog-audits/2026-07-06T14-20-watchdog-action-audit.md` and the
+  no-send integration smoke at
+  `ops/one-time-mishnah/integration-smokes/2026-07-06T14-22-03-886Z-resend-vimeo-stripe-safe-smoke.md`.
+- Remaining blockers before live Done: merge/deploy/live smoke and live mailbox
+  readback after deployment.
+- Guardrails: no physical mailing address text committed, no external email
+  sent, no bulk campaign endpoint added, no DNS/payment/access/provider-account
+  mutation, and no production data mutation.

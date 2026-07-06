@@ -1989,6 +1989,82 @@
       ]
     },
     {
+      "action_id": "ACTION-PROVIDER-MAILBOX-SEARCH",
+      "label": "Search mailbox",
+      "surface": "provider_portal",
+      "route": "/provider?section=mailbox",
+      "selector_hint": "#providerMailboxSearchForm [data-action-id=\"ACTION-PROVIDER-MAILBOX-SEARCH\"]",
+      "expected_behavior": "Searches the Rabbi/One Time provider mailbox thread list using the private provider mailbox API; reads only scoped bna_communications email rows and performs no external send.",
+      "permission": "authenticated One Time provider workspace member",
+      "status": "active_readonly",
+      "test": {
+        "type": "static_and_api_contract",
+        "expected_result": "GET /api/provider-portal/mailbox is provider-session gated, One Time scoped, and returns readiness without secrets or physical address text."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-MAILBOX-THREAD-OPEN",
+      "label": "Open mailbox thread",
+      "surface": "provider_portal",
+      "route": "/provider?section=mailbox",
+      "selector_hint": "[data-provider-mailbox-thread][data-action-id=\"ACTION-PROVIDER-MAILBOX-THREAD-OPEN\"]",
+      "expected_behavior": "Loads a scoped One Time email thread timeline from bna_communications using the private provider mailbox thread API.",
+      "permission": "authenticated One Time provider workspace member",
+      "status": "active_readonly",
+      "test": {
+        "type": "static_and_api_contract",
+        "expected_result": "GET /api/provider-portal/mailbox/:threadKey requires provider session and Rabbi/One Time workspace scope."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-MAILBOX-DRAFT",
+      "label": "Save mailbox draft",
+      "surface": "provider_portal",
+      "route": "/provider?section=mailbox",
+      "selector_hint": "[data-provider-mailbox-reply] [data-action-id=\"ACTION-PROVIDER-MAILBOX-DRAFT\"]",
+      "expected_behavior": "Saves a local One Time mailbox reply draft in bna_communications with no_send/external_write_performed=false metadata.",
+      "permission": "authenticated One Time provider workspace member",
+      "status": "active_local_write",
+      "test": {
+        "type": "static_and_api_contract",
+        "expected_result": "POST /api/provider-portal/mailbox/:threadKey/draft logs a local draft only and does not call Resend send."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-MAILBOX-SEND",
+      "label": "Send mailbox reply",
+      "surface": "provider_portal",
+      "route": "/provider?section=mailbox",
+      "selector_hint": "[data-provider-mailbox-reply] [data-action-id=\"ACTION-PROVIDER-MAILBOX-SEND\"]",
+      "expected_behavior": "Sends a one-to-one One Time mailbox reply through Resend only after provider session, workspace scope, Resend readiness, and exact SEND_RESEND_EMAIL confirmation; bulk email remains unavailable.",
+      "permission": "authenticated One Time provider workspace member with explicit send confirmation",
+      "status": "active_external_write_guarded",
+      "test": {
+        "type": "static_and_api_contract",
+        "expected_result": "POST /api/provider-portal/mailbox/:threadKey/send uses resendIntegration.sendResendEmail with confirmation and records external action audit; no bulk campaign endpoint is created."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-PROVIDER-CALENDAR-MANAGE",
       "label": "Provider calendar",
       "surface": "provider_portal",
