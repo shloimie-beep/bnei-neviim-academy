@@ -29875,3 +29875,35 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Remaining blockers: publish/deploy/live smoke before app-visible Done; live
   OpenArt OAuth/MCP/API, reference upload, generation/credit spend, and true
   hosted image analysis remain blocked on account/model/cost/privacy decisions.
+
+## 2026-07-06 - PR #112 One Time Studio AI Video Worker Handoff Live Deploy
+
+- Merged PR #112 to `master` at
+  `925c54fde1fd98cd662e4bd8aa222a0997e08fb5`.
+- Deployed merged `master` to Railway production service
+  `skillful-motivation`; deployment
+  `dfb8487b-7c27-483b-95f5-afffc4a4d26e` reached `SUCCESS`.
+- Repaired the live first-party Studio prompt-layer constraint
+  `bna_studio_prompt_layers_type_check` to include `jewish_guardrails`,
+  matching the repo migration allowlist. The first live prompt compile exposed
+  this stale schema issue; the rerun passed.
+- Live verification passed: `npm run app:smoke`,
+  `npm run app:smoke:rabbi-onetime-landing`, authenticated Studio dashboard
+  readback, OpenArt no-live status readback, and a full TEST Studio workflow:
+  source saved, 2 storyboard scenes, 9 prompt layers, 2 worker prompt-pack
+  scene prompts, and AI video worker handoff export `1` on Studio project `3`.
+- Evidence:
+  `ops/live-smokes/2026-07-06T13-02-19-489Z-studio-ai-video-worker-handoff-live-smoke.md`,
+  `ops/live-smokes/2026-07-06T12-55-52-681Z-live-app-smoke.md`, and
+  `ops/live-smokes/2026-07-06T12-55-19-048Z-rabbi-onetime-landing-smoke.md`.
+- Remaining exact blockers: production AI video worker login needs
+  `ONE_TIME_AI_VIDEO_WORKER_USERNAME` and
+  `ONE_TIME_AI_VIDEO_WORKER_PASSWORD`; live OpenArt generation/upload/credit
+  spend needs OpenArt account/OAuth/API credentials and approved
+  model/cost/privacy policy; true uploaded-image pixel analysis needs an
+  approved hosted multimodal provider/model, budget, retention/privacy, and
+  image-upload policy.
+- Guardrails: no OpenArt call, no reference upload, no generation or credit
+  spend, no external send, no payment/access/DNS/provider-account mutation, no
+  credential value printed or changed, no Drive write, and no external CRM
+  write.

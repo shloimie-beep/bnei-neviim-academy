@@ -22,32 +22,32 @@ Implement a new scoped One Time role for the AI video worker that can access onl
 | Goal tool used | no |
 | Execution directive | Implement the scoped access role in the current turn, preserving existing Studio handoff work. |
 | Terminal statuses required | Done / Blocked |
-| Deploy/live-smoke required for app-visible work | yes, if released |
-| Next requirement IDs to work | REQ-20260706-930 |
+| Deploy/live-smoke required for app-visible work | completed for code/route; live worker login still requires production credentials |
+| Next requirement IDs to work | none until worker credentials are supplied |
 
 ## Parsed requirements
 
 | ID | Requirement | Source IDs | Workspace/project | Owner | Category | Priority | Batch | Dependencies | Acceptance criteria | Implementation files | Deploy/live required | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| REQ-20260706-930 | Add a scoped `one_time_ai_video_worker` role limited to One Time Studio and One Time task manager. | RAW-20260706-908 | rabbi_sheller_provider / one_time_mishnah_class | Codex | access_control | P0 | B1 | Existing One Time role model, task manager scoping, Studio packets inspected. | Role has its own canonical identity, env-backed login, allowed views `studio` and `tasks`, route guard allows only scoped Studio/task APIs, UI does not fetch broader Operations data, registries and access matrix are updated, tests prove allowed/denied access. | server.js, src/lib/bna/one-time-role-model.js, src/lib/bna/one-time-studio-sidekick-policy.js, public/operations.html, public/operations-login.html, ops/route-registry.json, ops/action-registry.json, docs/ONE-TIME-AI-VIDEO-WORKER-ACCESS-MATRIX.md, tests | yes | Local verified / publish-deploy pending |
+| REQ-20260706-930 | Add a scoped `one_time_ai_video_worker` role limited to One Time Studio and One Time task manager. | RAW-20260706-908 | rabbi_sheller_provider / one_time_mishnah_class | Codex | access_control | P0 | B1 | Existing One Time role model, task manager scoping, Studio packets inspected. | Role has its own canonical identity, env-backed login, allowed views `studio` and `tasks`, route guard allows only scoped Studio/task APIs, UI does not fetch broader Operations data, registries and access matrix are updated, tests prove allowed/denied access. | server.js, src/lib/bna/one-time-role-model.js, src/lib/bna/one-time-studio-sidekick-policy.js, public/operations.html, public/operations-login.html, ops/route-registry.json, ops/action-registry.json, docs/ONE-TIME-AI-VIDEO-WORKER-ACCESS-MATRIX.md, tests | yes | Done - deployed; live worker login credential blocked |
 
 ## Parsed tasks
 
 | ID | Canonical key | Task | Owner | Workspace/project | Source | Requirement | Next action | Visible lane | Status |
 |---|---|---|---|---|---|---|---|---|
-| TASK-20260706-930 | onetime-ai-video-worker-access-role | Implement and verify scoped One Time AI video worker access. | Codex | rabbi_sheller_provider / one_time_mishnah_class | RAW-20260706-908 | REQ-20260706-930 | Commit/push this scoped change, then deploy/live-smoke after approved release and env configuration. | Access control / Studio | Local verified / publish-deploy pending |
+| TASK-20260706-930 | onetime-ai-video-worker-access-role | Implement and verify scoped One Time AI video worker access. | Codex | rabbi_sheller_provider / one_time_mishnah_class | RAW-20260706-908 | REQ-20260706-930 | Configure `ONE_TIME_AI_VIDEO_WORKER_USERNAME` and `ONE_TIME_AI_VIDEO_WORKER_PASSWORD` in production when Shloimie chooses the worker credentials. | Access control / Studio | code deployed/live-smoked; credential blocked |
 
 ## Decisions
 
 | ID | Decision | Missing information | Owner | Recommended option | Alternatives | Consequences | Exact action required | Blocks requirements | Status |
 |---|---|---|---|---|---|---|---|---|
-| DEC-20260706-930 | Whether to deploy this role change to production immediately. | Approved release window and production credentials. | Shloimie / release owner | Commit/push after local verification, then deploy through the normal approved release path when safe. | Keep local only; open a PR first. | Local-only changes are not visible to GitHub-connected ChatGPT or production. | Approve or run the release path after tests pass. | REQ-20260706-930 live proof | Needs operator decision if release is not performed |
+| DEC-20260706-930 | Whether to deploy this role change to production immediately. | Approved release window and production credentials. | Shloimie / release owner | Commit/push after local verification, then deploy through the normal approved release path when safe. | Keep local only; open a PR first. | Local-only changes are not visible to GitHub-connected ChatGPT or production. | Approve or run the release path after tests pass. | REQ-20260706-930 live proof | Done - PR #112 merged and deployed |
 
 ## Open questions
 
 | ID | Question | Why it matters | Blocking? | Status |
 |---|---|---|---|---|
-| Q-20260706-930 | What username/password should be configured for `ONE_TIME_AI_VIDEO_WORKER_USERNAME` / `ONE_TIME_AI_VIDEO_WORKER_PASSWORD` in the target environment? | The role is wired, but live login requires environment configuration. | Blocks live login only | Open |
+| Q-20260706-930 | What username/password should be configured for `ONE_TIME_AI_VIDEO_WORKER_USERNAME` / `ONE_TIME_AI_VIDEO_WORKER_PASSWORD` in the target environment? | The role is wired and deployed, but live worker login requires environment configuration. | Blocks live worker login only | Open - exact credential blocker |
 
 ## Durable memory candidates
 
@@ -59,10 +59,10 @@ Implement a new scoped One Time role for the AI video worker that can access onl
 
 | ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
 |---|---|---|---|---|---|---|
-| REQ-20260706-930 | Role model, server auth/guard, Operations shell, Studio policy, registries, tests, access matrix doc. | Add role, deny broad APIs, keep Content handoff unavailable, prove route/action registry alignment. | PASS `node --check server.js`; PASS focused Studio/role/API/UI suite 41/41; PASS registry JSON parse; PASS `npm run watchdog:actions`; PASS `npm run watchdog:protocol-drift`; PASS `npm run bna:run:status`; PASS `npm run bna:run:next` | Pending | Pending | Deploy/live smoke pending env config and approved release |
+| REQ-20260706-930 | Role model, server auth/guard, Operations shell, Studio policy, registries, tests, access matrix doc. | Add role, deny broad APIs, keep Content handoff unavailable, prove route/action registry alignment. | PASS `node --check server.js`; PASS focused Studio/role/API/UI suite 41/41; PASS registry JSON parse; PASS `npm run watchdog:actions`; PASS `npm run watchdog:protocol-drift`; PASS `npm run bna:run:status`; PASS `npm run bna:run:next`; PASS live route/auth readback and full Studio worker-handoff smoke as admin | PR #112 | `925c54fde1fd98cd662e4bd8aa222a0997e08fb5` | Deployed `dfb8487b-7c27-483b-95f5-afffc4a4d26e`; live worker login blocked only by missing `ONE_TIME_AI_VIDEO_WORKER_USERNAME` / `ONE_TIME_AI_VIDEO_WORKER_PASSWORD` |
 
 ## Final audit
 
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |
 |---|---|---|---|---|---|
-| REQ-20260706-930 | Local verified / publish-deploy pending | `docs/ONE-TIME-AI-VIDEO-WORKER-ACCESS-MATRIX.md`; `tests/one-time-studio-operator-role.test.js`; `tests/one-time-role-auth-model.test.js`; `tests/operations-pwa-login.test.js`; `ops/action-registry.json`; `ops/route-registry.json`; `ops/watchdog-audits/2026-07-06T12-34-watchdog-action-audit.md`; `ops/watchdog-audits/2026-07-06-product-quality-drift.md` | `server.js`, `src/lib/bna/one-time-role-model.js`, `src/lib/bna/one-time-studio-sidekick-policy.js`, `src/lib/bna/assistant-scope-policy.js`, `src/lib/bna/service-provider-studio-sidekick.js`, `public/operations.html`, `public/operations-login.html`, registries, tests, access matrix doc | `node --check server.js` PASS; focused Studio/role/API/UI suite PASS 41/41; registry JSON parse PASS; `npm run watchdog:actions` PASS finding_count=0; `npm run watchdog:protocol-drift` PASS findings=0; `npm run bna:run:status` PASS; `npm run bna:run:next` PASS no executable batch | Live login requires target env `ONE_TIME_AI_VIDEO_WORKER_USERNAME` / `ONE_TIME_AI_VIDEO_WORKER_PASSWORD`; deploy/live authenticated smoke not run yet |
+| REQ-20260706-930 | Done - deployed; live worker login credential blocked | `docs/ONE-TIME-AI-VIDEO-WORKER-ACCESS-MATRIX.md`; `tests/one-time-studio-operator-role.test.js`; `tests/one-time-role-auth-model.test.js`; `tests/operations-pwa-login.test.js`; `ops/action-registry.json`; `ops/route-registry.json`; `ops/live-smokes/2026-07-06T13-02-19-489Z-studio-ai-video-worker-handoff-live-smoke.md` | `server.js`, `src/lib/bna/one-time-role-model.js`, `src/lib/bna/one-time-studio-sidekick-policy.js`, `src/lib/bna/assistant-scope-policy.js`, `src/lib/bna/service-provider-studio-sidekick.js`, `public/operations.html`, `public/operations-login.html`, registries, tests, access matrix doc | `node --check server.js` PASS; focused Studio/role/API/UI suite PASS 41/41; registry JSON parse PASS; watchdogs PASS; PR #112 merged; Railway deployment `dfb8487b-7c27-483b-95f5-afffc4a4d26e` SUCCESS; live Studio handoff smoke PASS | Live worker login requires target env `ONE_TIME_AI_VIDEO_WORKER_USERNAME` / `ONE_TIME_AI_VIDEO_WORKER_PASSWORD` |
