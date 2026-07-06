@@ -17456,6 +17456,7 @@
         }
 
         function communicationMatchesSignup(item = {}, signupOrId) {
+            if (!communicationAllowedForCurrentWorkspace(item)) return false;
             const tokens = signupCommunicationMatchTokens(signupOrId);
             if (tokens.signupId && Number(item.signup_id) === tokens.signupId) return true;
             if (tokens.studentId && Number(item.student_id) === tokens.studentId) return true;
@@ -17485,6 +17486,7 @@
         }
 
         function communicationMatchesLead(item = {}, leadOrId) {
+            if (!communicationAllowedForCurrentWorkspace(item)) return false;
             const tokens = leadCommunicationMatchTokens(leadOrId);
             if (tokens.leadId && Number(item.lead_id) === tokens.leadId) return true;
             if (communicationIntersectsTokens(tokens.phoneTokens, communicationPhoneTokens(item))) return true;
@@ -17500,7 +17502,7 @@
         function renderCommunicationHistoryGuardrail() {
             return `
                 <div class="contact-detail-note" data-contact-communication-history-readonly>
-                    Read-only local history matched by BNA record ID, normalized phone, email, or WAPI source context. No Whapi sync, WhatsApp send, broadcast, CRM tag update, or external CRM write runs from this card.
+                    Read-only workspace-scoped local history matched by record ID, normalized phone, email, or WAPI source context. No Whapi sync, WhatsApp send, broadcast, CRM tag update, or external CRM write runs from this card.
                 </div>
             `;
         }
@@ -20242,6 +20244,45 @@
             }
         }
 
+        function firstNonEmptyValue(values = []) {
+            return (values || []).find(value => String(value || '').trim()) || '';
+        }
+
+        function communicationProjectKey(item = {}) {
+            const sourceContext = parseObjectMaybe(item.source_context);
+            const metadata = parseObjectMaybe(item.metadata);
+            const rawProjectKey = firstNonEmptyValue([
+                item.project_key,
+                item.project,
+                item.workspace_project_key,
+                sourceContext.project_key,
+                sourceContext.project,
+                sourceContext.workspace_project_key,
+                metadata.project_key,
+                metadata.project,
+                metadata.workspace_project_key,
+            ]);
+            if (rawProjectKey) return normalizeProjectKey(rawProjectKey);
+            const rawWorkspaceKey = firstNonEmptyValue([
+                item.workspace_key,
+                item.workspace,
+                sourceContext.workspace_key,
+                sourceContext.workspace,
+                metadata.workspace_key,
+                metadata.workspace,
+            ]);
+            return rawWorkspaceKey ? projectKeyForWorkspaceKey(rawWorkspaceKey) : '';
+        }
+
+        function communicationAllowedForCurrentWorkspace(item = {}) {
+            const currentProjectKey = projectKeyForWorkspaceKey(currentWorkspaceKey());
+            if (!currentProjectKey || currentProjectKey === 'all') return true;
+            const itemProjectKey = communicationProjectKey(item);
+            if (itemProjectKey) return itemProjectKey === currentProjectKey;
+            if (currentProjectKey === 'one_time_mishnah_class') return false;
+            return currentProjectKey === 'bna';
+        }
+
         function wapiPhonebookGroupsSorted() {
             return [...(wapiPhonebookReport?.phonebook || [])].sort((a, b) => {
                 const dateDiff = Date.parse(b.latest_at || 0) - Date.parse(a.latest_at || 0);
@@ -20283,6 +20324,7 @@
 
         function communicationMatchesWapiGroup(item = {}, group = {}) {
             if (!item || !group) return false;
+            if (!communicationAllowedForCurrentWorkspace(item)) return false;
             const itemId = String(item.id || '').replace(/^u-/, '');
             if (group.key === `communication:${itemId}`) return true;
             const sourceContext = parseObjectMaybe(item.source_context);

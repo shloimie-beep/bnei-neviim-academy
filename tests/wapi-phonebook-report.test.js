@@ -17,6 +17,7 @@ const reportScript = fs.readFileSync('scripts/wapi-phonebook-report.mjs', 'utf8'
 const wapiPhonebookLib = fs.readFileSync('src/lib/bna/wapi-phonebook-report.js', 'utf8');
 
 function fakeDb({ corrections = [] } = {}) {
+  const queries = [];
   const tables = new Set([
     'bna_wapi_contacts',
     'bna_wapi_chats',
@@ -29,10 +30,19 @@ function fakeDb({ corrections = [] } = {}) {
     'bna_contacts',
     'bna_wapi_phonebook_corrections',
   ]);
-  return {
+  const db = {
+    queries,
     async query(sql, params = []) {
+      queries.push({ sql, params });
       if (/information_schema\.tables/.test(sql)) {
         return { rows: [{ exists: tables.has(params[0]) }] };
+      }
+      if (/FROM bna_projects/.test(sql)) {
+        return {
+          rows: String(params[0] || '') === 'one_time_mishnah_class'
+            ? [{ id: 99 }]
+            : [],
+        };
       }
       if (/FROM bna_wapi_contacts/.test(sql)) {
         return {
@@ -73,6 +83,25 @@ function fakeDb({ corrections = [] } = {}) {
         };
       }
       if (/FROM bna_contact_communications/.test(sql)) {
+        if (params.includes(99)) {
+          return {
+            rows: [
+              {
+                id: 11,
+                contact_type: 'signup',
+                signup_id: 91,
+                channel: 'whatsapp',
+                direction: 'inbound',
+                summary: 'One Time parent WhatsApp: class question',
+                body: 'class question',
+                source: 'wapi',
+                source_context: { chat_id: '972509999999@s.whatsapp.net', from_number: '+972509999999' },
+                metadata: { project_key: 'one_time_mishnah_class' },
+                occurred_at: '2026-06-14T13:05:00Z',
+              },
+            ],
+          };
+        }
         return {
           rows: [
             {
@@ -91,6 +120,22 @@ function fakeDb({ corrections = [] } = {}) {
         };
       }
       if (/FROM bna_parent_leads/.test(sql)) {
+        if (params.includes(99)) {
+          return {
+            rows: [
+              {
+                id: 91,
+                parent_name: 'One Time Parent',
+                student_name: 'One Time Student',
+                parent_phone: '+972509999999',
+                other_phones: [],
+                lead_type: 'one_time_mishnah_class',
+                status: 'interested',
+                source: 'one_time',
+              },
+            ],
+          };
+        }
         return {
           rows: [
             {
@@ -112,6 +157,7 @@ function fakeDb({ corrections = [] } = {}) {
       return { rows: [] };
     },
   };
+  return db;
 }
 
 test('WAPI phonebook grouping keeps Nati Freeze or Fries friend/non-lead by default', () => {
@@ -159,6 +205,22 @@ test('WAPI phonebook report is dry-run and groups local rows by phone/chat', asy
 
   const groupChat = report.phonebook.find((group) => group.recommended_type === 'group_member');
   assert.ok(groupChat);
+});
+
+test('Scoped WAPI phonebook report excludes account-wide WhatsApp rows for One Time', async () => {
+  const db = fakeDb();
+  const report = await buildWapiPhonebookReport({
+    db,
+    limit: 20,
+    projectKey: 'one_time_mishnah_class',
+    workspaceId: 501,
+  });
+  assert.equal(report.success, true);
+  assert.equal(report.summary.wapi_contacts_considered, 0);
+  assert.equal(report.summary.wapi_chats_considered, 0);
+  assert.equal(report.phonebook.some((group) => /Nati|BNA updates group/i.test(group.display_name)), false);
+  assert.equal(db.queries.some((query) => /FROM bna_wapi_contacts/.test(query.sql)), false);
+  assert.equal(db.queries.some((query) => /FROM bna_wapi_chats/.test(query.sql)), false);
 });
 
 test('WAPI phonebook correction overlay keeps corrections local and visible', async () => {
@@ -299,11 +361,15 @@ test('WAPI phonebook report is exposed as guarded Operations tooling', () => {
 
 test('Operations contact cards render matched local WAPI communication history without sending', () => {
   assert.match(operations, /function phoneTokenVariantsClient/);
+  assert.match(operations, /function communicationAllowedForCurrentWorkspace/);
+  assert.match(operations, /function communicationProjectKey/);
+  assert.match(operations, /currentProjectKey === 'one_time_mishnah_class'/);
   assert.match(operations, /function communicationEmailTokens/);
   assert.match(operations, /function communicationMatchesSignup/);
   assert.match(operations, /function communicationMatchesLead/);
+  assert.match(operations, /if \(!communicationAllowedForCurrentWorkspace\(item\)\) return false;/);
   assert.match(operations, /function renderCommunicationHistoryGuardrail/);
-  assert.match(operations, /Read-only local history matched by BNA record ID, normalized phone, email, or WAPI source context/);
+  assert.match(operations, /Read-only workspace-scoped local history matched by record ID, normalized phone, email, or WAPI source context/);
   assert.match(operations, /data-contact-communication-history="signup"/);
   assert.match(operations, /data-contact-communication-history="lead"/);
   assert.match(operations, /No Whapi sync, WhatsApp send, broadcast, CRM tag update, or external CRM write/);

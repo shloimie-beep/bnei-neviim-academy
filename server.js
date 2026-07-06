@@ -48389,6 +48389,8 @@ app.get('/api/bna/contact-communications', requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT c.*,
+              p_scope.project_key,
+              p_scope.name AS project_name,
               l.parent_name AS lead_parent_name,
               l.lead_type AS lead_type,
               l.status AS lead_status,
@@ -48400,6 +48402,7 @@ app.get('/api/bna/contact-communications', requireAdmin, async (req, res) => {
        LEFT JOIN bna_parent_leads l ON l.id = c.lead_id
        LEFT JOIN signups s ON s.id = c.signup_id
        LEFT JOIN bna_students st ON st.id = c.student_id
+       LEFT JOIN bna_projects p_scope ON p_scope.id = COALESCE(c.project_id, l.project_id, s.project_id, st.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1))
        ${whereClause}
        ORDER BY c.occurred_at DESC, c.id DESC
        LIMIT 300`,
@@ -48427,11 +48430,14 @@ app.get('/api/bna/contact-communications', requireAdmin, async (req, res) => {
            CASE
              WHEN u.student_id IS NOT NULL THEN 'student'
              WHEN u.signup_id IS NOT NULL THEN 'signup'
-             ELSE 'general'
+           ELSE 'general'
            END AS contact_type,
            NULL::integer AS lead_id,
            u.signup_id,
            u.student_id,
+           u.project_id,
+           p_scope.project_key,
+           p_scope.name AS project_name,
            u.channel,
            CASE WHEN u.direction = 'internal' THEN 'internal_note' ELSE u.direction END AS direction,
            COALESCE(u.subject, u.communication_type, 'Communication') AS summary,
@@ -48460,6 +48466,7 @@ app.get('/api/bna/contact-communications', requireAdmin, async (req, res) => {
          FROM bna_communications u
          LEFT JOIN signups s ON s.id = u.signup_id
          LEFT JOIN bna_students st ON st.id = u.student_id
+         LEFT JOIN bna_projects p_scope ON p_scope.id = COALESCE(u.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1))
          ${unifiedWhere}
          ORDER BY u.occurred_at DESC, u.id DESC
          LIMIT 300`,
