@@ -954,6 +954,94 @@
       ]
     },
     {
+      "action_id": "ACTION-STUDIO-SIDEKICK-PATCH-PREVIEW",
+      "label": "Draft Prompt Patch",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "selector_hint": "form[data-studio-sidekick-form] button[type=\"submit\"]",
+      "expected_behavior": "Turns Studio image/render observations and prompt corrections into a reversible local patch preview without vendor calls or external writes.",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator",
+      "status": "active_no_external_write",
+      "handler": "previewStudioSidekickPatch",
+      "api_route": "/api/bna/studio/projects/:id/sidekick/patch-preview",
+      "test": {
+        "type": "domain_and_ui_static",
+        "expected_result": "tests/one-time-studio-openart-adapter.test.js verifies image/render feedback creates no-live patch guidance; UI test verifies the handler and panel."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-OPENART-PROMPT-EXPORT",
+      "label": "Export OpenArt Prompt",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "selector_hint": "button[onclick^=\"exportStudioOpenArtPrompt\"]",
+      "expected_behavior": "Builds and optionally copies an OpenArt-ready prompt export with character continuity and guardrail checklists; it does not call OpenArt or spend credits.",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator",
+      "status": "active_no_external_write",
+      "handler": "exportStudioOpenArtPrompt",
+      "api_route": "/api/bna/studio/projects/:id/openart/export",
+      "test": {
+        "type": "domain_and_ui_static",
+        "expected_result": "tests/one-time-studio-openart-adapter.test.js verifies no-live OpenArt export and MCP request planning."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-OPENART-PROMPT-COPY",
+      "label": "Copy OpenArt Prompt",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "selector_hint": "button[onclick^=\"copyStudioOpenArtPrompt\"]",
+      "expected_behavior": "Copies the already prepared OpenArt prompt export to the browser clipboard without additional backend or vendor calls.",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator",
+      "status": "active_no_external_write",
+      "handler": "copyStudioOpenArtPrompt",
+      "api_route": "browser_clipboard_only",
+      "test": {
+        "type": "ui_static",
+        "expected_result": "tests/service-provider-studio-operations-ui.test.js verifies the copy handler is exported."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-REPAIR-PLAN",
+      "label": "Plan Studio Repair",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "selector_hint": "button[onclick^=\"planStudioRepairRequest\"]",
+      "expected_behavior": "Creates a Studio-only repair plan with file/route/test allowlists and explicit no-shell/no-deploy/no-external-write constraints.",
+      "permission": "one_time_ai_studio_operator_or_super_admin",
+      "status": "active_no_external_write",
+      "handler": "planStudioRepairRequest",
+      "api_route": "/api/bna/studio/repair/plan",
+      "test": {
+        "type": "policy_and_ui_static",
+        "expected_result": "tests/one-time-studio-sidekick-policy.test.js verifies allowed and denied repair requests; UI test verifies the handler."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-STUDIO-PREVIEW-CORRECTION",
       "label": "Preview Correction",
       "surface": "operations_service_provider_studio",

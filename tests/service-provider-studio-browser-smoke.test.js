@@ -121,6 +121,17 @@ test('Operations Studio browser smoke renders and exercises the local no-send wo
         jobs: detail.jobs,
         usage_rollup: { totals: { input_tokens: 100, output_tokens: 60, media_seconds: 12, estimated_cost_usd: 0 }, event_count: 1 },
         price_catalog: [{ provider: 'mock', model: 'deterministic-v1', input_per_1m: 0, output_per_1m: 0, media_second: 0, status: 'active' }],
+        openart_status: {
+          provider: 'openart',
+          connected: false,
+          status: 'blocked_no_oauth',
+          no_live_call: true,
+          external_write_performed: false,
+          allowed_from_bna: ['prepare OpenArt-ready prompts'],
+          blocked_until_connected: ['live image generation', 'reference upload'],
+          source_url: 'https://openart.ai/mcp/',
+          app_url: 'https://openart.ai/',
+        },
         pilot_fixture: null,
         no_external_writes: true,
       }));
@@ -192,6 +203,73 @@ test('Operations Studio browser smoke renders and exercises the local no-send wo
       };
       detail.prompt_layers = compiled.layers.map((layer, index) => ({ ...layer, id: index + 1, status: 'active', layer_hash: layer.hash }));
       return route.fulfill(json({ success: true, compiled_prompt: compiled }));
+    }
+    if (pathname === '/api/bna/studio/projects/101/sidekick/patch-preview' && request.method() === 'POST') {
+      const patch = {
+        patch_id: 'patch_sidekick_smoke',
+        correction: 'Image/render observation: the hat should be better and the face should stay consistent.',
+        scope: 'project',
+        affected_layers: ['character_bible', 'visual_style'],
+        operations: [
+          { op: 'add_instruction', target: 'character_bible', instruction: 'Keep the same Rabbi Elie character reference.' },
+          { op: 'add_instruction', target: 'visual_style', instruction: 'Use realistic beis midrash lighting and a consistent black hat.' },
+        ],
+        requires_confirmation: true,
+        reversible: true,
+        status: 'preview',
+      };
+      return route.fulfill(json({
+        success: true,
+        sidekick: {
+          mode: 'prompt_patch_preview',
+          no_live_model: true,
+          no_external_writes: true,
+          patch,
+          visual_critique: {
+            guidance: [
+              { target_layer: 'character_bible', instruction: 'Update continuity notes.' },
+              { target_layer: 'visual_style', instruction: 'Adjust realism constraints.' },
+            ],
+          },
+        },
+        patch,
+        no_external_writes: true,
+      }));
+    }
+    if (pathname === '/api/bna/studio/projects/101/openart/export' && request.method() === 'POST') {
+      return route.fulfill(json({
+        success: true,
+        openart_export: {
+          provider: 'openart',
+          mode: 'copy_ready_prompt_export',
+          prompt_hash: 'openart-export-smoke',
+          copy_text: 'OpenArt target: Project prompt\n\nCharacter continuity: Rabbi Elie keeps the same face, black hat, and warm Mishnah teacher presence.\n\nUse realistic beis midrash lighting.',
+          character_reference_checklist: [{ name: 'Rabbi Elie', continuity_notes: 'Same face, same black hat.' }],
+          guardrail_checklist: ['No anachronisms'],
+          openart_status: { status: 'blocked_no_oauth', connected: false, no_live_call: true, external_write_performed: false },
+          mcp_request_plan: { requires_oauth: true, no_live_call: true, external_write_performed: false, prepared_actions: [{ intent: 'generate_image_or_video_from_prompt' }] },
+          no_live_call: true,
+          external_write_performed: false,
+        },
+        no_external_writes: true,
+      }));
+    }
+    if (pathname === '/api/bna/studio/repair/plan' && request.method() === 'POST') {
+      return route.fulfill(json({
+        success: true,
+        plan: {
+          allowed: true,
+          mode: 'studio_repair_lane',
+          lane: 'one_time_ai_studio_only',
+          no_shell: true,
+          no_codex_cli_route: true,
+          no_deploy: true,
+          no_external_writes: true,
+          allowed_files: ['public/operations.html', 'server.js'],
+        },
+        no_codex_cli_routing: true,
+        no_external_writes: true,
+      }));
     }
     if (pathname === '/api/bna/studio/projects/101/render' && request.method() === 'POST') {
       const job = {
@@ -274,7 +352,32 @@ test('Operations Studio browser smoke renders and exercises the local no-send wo
     assert.match(body, /No anachronisms/);
     assert.match(body, /Source isolated/);
     assert.match(body, /No publish\/send/);
+
+    await page.locator('[data-studio-sidekick-form] textarea[name="image_observation"]').fill('The hat should be better and the face changed between renders.');
+    await page.locator('[data-studio-sidekick-form] input[name="image_reference"]').fill('saved Rabbi reference image');
+    await page.locator('[data-studio-sidekick-form] textarea[name="correction_text"]').fill('Make Rabbi Elie more realistic and keep the same black hat across scenes.');
+    await page.getByRole('button', { name: 'Draft Prompt Patch' }).click();
+    await page.waitForFunction(() => document.body.innerText.includes('Sidekick patch preview ready.') && document.body.innerText.includes('Correction Review'));
+    await page.getByRole('button', { name: 'Export OpenArt Prompt' }).click();
+    await page.waitForFunction(() => document.body.innerText.includes('OpenArt Prompt Export'));
+    await page.getByRole('button', { name: 'Plan Studio Repair' }).click();
+    await page.waitForFunction(() => document.body.innerText.includes('Studio Repair Plan') && document.body.innerText.includes('Studio repair plan ready.'));
+    body = await page.locator('body').innerText();
+    assert.match(body, /Studio Sidekick/);
+    assert.match(body, /Correction Review/);
+    assert.match(body, /OpenArt Prompt Export/);
+    assert.match(body, /Studio Repair Plan/);
+    assert.match(body, /No shell/);
+    await page.screenshot({ path: path.join(screenshotDir, 'desktop-sidekick-openart.png'), fullPage: true });
     await page.screenshot({ path: path.join(screenshotDir, 'desktop-prompt-review.png'), fullPage: true });
+
+    await page.getByRole('button', { name: /Usage/ }).first().click();
+    await page.waitForSelector('[data-testid="studio-openart-status"]');
+    body = await page.locator('body').innerText();
+    assert.match(body, /OpenArt MCP/);
+    assert.match(body, /OAuth needed/);
+    assert.match(body, /No credit spend/);
+    await page.screenshot({ path: path.join(screenshotDir, 'desktop-openart-status.png'), fullPage: true });
 
     await page.getByRole('button', { name: /Jobs/ }).first().click();
     await page.getByRole('button', { name: 'Run Mock Render' }).click();

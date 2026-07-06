@@ -29564,3 +29564,59 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   copy.
 - No WhatsApp or email was sent. Live send remains blocked pending exact
   approval of `APPROVE_BNA_PARENT_REMINDER_SEND` and sender confirmation.
+
+## 2026-07-06 - One Time Studio Sidekick Scope Registered
+
+- Registered `RAW-20260706-002` and
+  `tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md` for the
+  One Time AI Studio operator sidekick and OpenArt MCP scope.
+- Parsed the request into a narrow Studio/task operator role, prompt/image
+  sidekick workflow, OpenArt MCP integration planning, and explicit safety
+  gates for bug reports and Codex/CLI access.
+- No Studio implementation, assistant permission change, OpenArt OAuth/MCP
+  connection, CLI access grant, external generation, or production mutation was
+  performed. This is planning/register evidence only.
+
+## 2026-07-06 - One Time Studio Sidekick Goal Mode Started
+
+- Registered `RAW-20260706-003` as goal-mode approval for the One Time Studio
+  sidekick build.
+- Updated
+  `tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md` so the
+  scope now includes a mediated Studio-only CLI/Codex repair lane for Studio
+  layout/functionality, while still denying unrelated website/workspace/admin,
+  secret, deployment, external-send, payment, and access changes.
+- Live OpenArt MCP/OAuth remains blocked until Shloimie signs up/connects the
+  account; Codex can build the mock/no-live adapter and BNA-side workflows now.
+- No OpenArt signup/OAuth, CLI access grant, production mutation, deploy,
+  external generation, send, payment, or access change was performed by this
+  registration step.
+
+## 2026-07-06 - One Time Studio Sidekick Local Build Verified
+
+- Implemented the BNA-side One Time AI Studio operator system for
+  `rabbi_sheller_provider / one_time_mishnah_class`.
+- Added `one_time_ai_studio_operator` as an env-backed scoped login with only
+  `studio` and `tasks` views, plus a route guard that denies broad CRM,
+  payments, admin/settings, helper execute, connector, contact, secret,
+  deployment, external-send, access-grant, and cross-workspace surfaces.
+- Added a no-live Studio sidekick domain/API/UI flow for image/render
+  observations, prompt corrections, reversible patch preview, OpenArt prompt
+  export/copy, OpenArt MCP readiness, and Studio-only repair planning.
+- Added a mediated Studio repair lane for Studio layout/functionality with
+  allowlisted files/routes/tests and explicit no-shell/no-raw-CLI/no-deploy/
+  no-secrets/no-external-writes constraints.
+- Added Product Quality Compiler packet, surface map, route/action registry
+  rows, durable One Time memory topic updates, policy/domain tests, API/UI
+  contract tests, and browser smoke coverage.
+- Verification passed: `node --check server.js`; targeted `node --test` group
+  27/27; Studio browser smoke 1/1 with evidence under
+  `ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-local/`;
+  `npm run pqc:validate -- ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json`;
+  `npm run watchdog:actions` with 0 findings; `npm run watchdog:protocol-drift`
+  with 0 findings.
+- No OpenArt OAuth/sign-up, live OpenArt generation, reference upload, credit
+  check/spend, production deploy, external send, payment/access change, DNS,
+  secret, or production data mutation was performed. Live OAuth/model/image
+  upload and deploy/live-smoke remain blocked as recorded in the requirement
+  register.
