@@ -29907,3 +29907,22 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   spend, no external send, no payment/access/DNS/provider-account mutation, no
   credential value printed or changed, no Drive write, and no external CRM
   write.
+
+## 2026-07-06 - One Time Full UI Agent Audit Prompt Series
+
+- Registered `RAW-20260706-911` for the requested One Time full front-end
+  audit prompt series.
+- Added
+  `ops/prompt-packets/2026-07-06-onetime-full-ui-agent-audit/` with one
+  ChatGPT meta-prompt and five runnable Agent Mode audit prompts.
+- The prompts target the canonical One Time production URL
+  `https://join.onetimeonetime.com/`, include BNA preview/fallback links only
+  as comparison evidence, and cover public funnel, Rabbi Operations/backend,
+  portals/classroom, and cross-system consistency synthesis.
+- Each prompt requires repo-visible dropoff under
+  `ops/chatgpt-ramble-dropoff/incoming/<packet-id>/` or the marked
+  `BNA_CHATGPT_DROPOFF_PACKET` GitHub comment fallback.
+- Guardrails: no source edits, deploys, external sends, payments/access/DNS,
+  credential/provider/Drive/production-data mutations, passwords, cookies, raw
+  private contact exports, raw WhatsApp bodies, raw transcript bodies, payment
+  data, or unredacted private screenshots.
