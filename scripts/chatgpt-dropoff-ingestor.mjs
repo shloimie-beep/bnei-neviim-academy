@@ -252,7 +252,7 @@ function isHelperBotPacket(loaded) {
   return text.includes('helper-bot-workspace-agent');
 }
 
-function validatePacket(loaded) {
+function validatePacket(loaded, options = {}) {
   const findings = [];
   if (!loaded.packetId) findings.push({ severity: 'blocker', code: 'missing_packet_id', message: 'Packet ID is missing.' });
   for (const error of loaded.jsonErrors || []) {
@@ -265,7 +265,9 @@ function validatePacket(loaded) {
   if (!statusValue) {
     findings.push({ severity: 'blocker', code: 'missing_ready_status', message: 'status.json must declare status ready_for_codex_audit or ready_for_codex_pickup.' });
   } else if (terminalStatuses.has(statusValue)) {
-    findings.push({ severity: 'skip', code: 'terminal_status', message: `Packet is already terminal: ${statusValue}` });
+    if (!options.force) {
+      findings.push({ severity: 'skip', code: 'terminal_status', message: `Packet is already terminal: ${statusValue}` });
+    }
   } else if (!readyStatuses.has(statusValue)) {
     findings.push({ severity: 'skip', code: 'not_ready_status', message: `Packet status is not ready: ${statusValue}` });
   }
@@ -458,7 +460,7 @@ function writePickupReport(result) {
 
 async function processPacket(packetDir, { config = loadConfig(), args = parseArgs(), state = loadState() } = {}) {
   const loaded = loadPacket(packetDir);
-  const validation = validatePacket(loaded);
+  const validation = validatePacket(loaded, { force: args.force });
   const stateKey = `${loaded.packetId}:${loaded.fingerprint}`;
   const prior = state.packets?.[stateKey] || null;
   const result = {
@@ -520,6 +522,7 @@ async function processPacket(packetDir, { config = loadConfig(), args = parseArg
           ...(loaded.status.verification || []),
           `Queued for Codex by scripts/chatgpt-dropoff-ingestor.mjs as task #${result.task_id || 'unknown'}.`,
         ],
+        remaining_blockers: [],
       });
     } catch (error) {
       result.status = 'queue_failed';

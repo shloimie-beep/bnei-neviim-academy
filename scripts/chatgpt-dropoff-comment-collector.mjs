@@ -17,7 +17,14 @@ const envLocalPath = path.join(repoRoot, '.env.local');
 const defaultRepo = 'shloimie-beep/bnei-neviim-academy';
 const marker = 'BNA_CHATGPT_DROPOFF_PACKET';
 const requiredPacketFiles = ['packet.json', 'RAW.md', 'CODEX_PROMPT.md', 'MANIFEST.json', 'status.json'];
-const allowedPacketFiles = new Set([...requiredPacketFiles, 'PATCHES.md']);
+const optionalPacketFiles = [
+  'PATCHES.md',
+  'PROMPTS.md',
+  'FINDINGS.md',
+  'IMPLEMENTATION_PACKETS.md',
+  'SCREENSHOT_INDEX.md',
+];
+const allowedPacketFiles = new Set([...requiredPacketFiles, ...optionalPacketFiles]);
 const defaultTrustedAuthors = [
   'shloimie-beep',
   'sdratler',
@@ -220,16 +227,32 @@ function parseFileBlocks(body = '') {
   return files;
 }
 
+function parseJsonBlock(files = {}, fileName = '') {
+  if (!files[fileName]) return {};
+  try {
+    return JSON.parse(files[fileName]);
+  } catch {
+    return {};
+  }
+}
+
 function parseDropoffComment(comment = {}) {
   const body = String(comment.body || '');
   const findings = [];
   if (!body.includes(marker)) {
     return { is_dropoff: false, findings: [{ severity: 'skip', code: 'missing_marker', message: `Comment does not contain ${marker}.` }] };
   }
-  const packetId = safePacketId(extractLine(body, 'Packet ID') || extractLine(body, 'packet_id'));
-  const status = extractLine(body, 'Status') || extractLine(body, 'status');
   const targetFolder = extractLine(body, 'Target folder') || extractLine(body, 'Packet path') || '';
   const files = parseFileBlocks(body);
+  const packetJson = parseJsonBlock(files, 'packet.json');
+  const statusJson = parseJsonBlock(files, 'status.json');
+  const packetId = safePacketId(
+    extractLine(body, 'Packet ID')
+      || extractLine(body, 'packet_id')
+      || packetJson.packet_id
+      || statusJson.packet_id
+  );
+  const status = extractLine(body, 'Status') || extractLine(body, 'status') || statusJson.status || packetJson.status || '';
   if (!packetId) findings.push({ severity: 'blocker', code: 'missing_packet_id', message: 'Comment is missing Packet ID.' });
   if (!status) findings.push({ severity: 'blocker', code: 'missing_status', message: 'Comment is missing Status.' });
   for (const file of requiredPacketFiles) {
@@ -408,6 +431,7 @@ export {
   fetchCandidateComments,
   materializeDropoffComment,
   marker,
+  optionalPacketFiles,
   parseArgs,
   parseDropoffComment,
   parseFileBlocks,

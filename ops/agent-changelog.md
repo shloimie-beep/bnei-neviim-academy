@@ -6,6 +6,50 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-06T17:32:00+03:00 - ChatGPT Agent dropoff collector repaired and fleet status verified
+
+Completed `RAW-20260706-951` for the failed Rabbi Operations Agent Mode dropoff
+and the current agent-fleet status check.
+
+What changed:
+- Repaired the GitHub comment collector so marked comments can derive readiness
+  from `status.json`/`packet.json` and preserve prompt/audit files such as
+  `PROMPTS.md`.
+- Repaired the ChatGPT dropoff ingestor so `--force` can retry a packet that was
+  marked terminal by a failed local queue attempt, and successful queueing clears
+  stale blockers.
+- Adjusted agent fleet status output to prefer the linked live task title for
+  observable jobs, avoiding stale job-title display.
+- Materialized `onetime-agent-prompt-series-20260706-911` from GitHub issue
+  comment `4893592311` and queued it live as task `#1945` / agent job `#397`.
+- Corrected the live task title for `#1945` to
+  `Pick up ChatGPT prompt packet: One Time Agent Mode audit prompt series`.
+
+Verification:
+- PASS `node --check scripts/chatgpt-dropoff-comment-collector.mjs`.
+- PASS `node --check scripts/chatgpt-dropoff-ingestor.mjs`.
+- PASS `node --check scripts/agent-fleet-supervisor.mjs`.
+- PASS `node --test tests/chatgpt-dropoff-comment-collector.test.js` 4/4.
+- PASS `node --test tests/chatgpt-dropoff-ingestor.test.js` 6/6.
+- PASS targeted comment collect for issue comment `4893592311`.
+- PASS live dropoff apply queued packet as task `#1945` / job `#397`.
+- PASS live task readback for task `#1945`.
+- PASS fleet status readback: supervisor not running; one claimable job ready.
+
+Current operator-facing status:
+- The attached Agent Mode session failed because no GitHub connector was enabled
+  in that ChatGPT session.
+- The dropoff and queue path now works for the related prompt-series packet.
+- The agent fleet is not actively working the queued job until the supervisor is
+  started.
+
+Guardrails:
+- No secrets were printed or committed.
+- Local credentials were supplied only as process environment variables for
+  authenticated live queue/status commands.
+- No external sends, payment/access/DNS/provider-account mutation, Drive write,
+  deploy, or product implementation work was performed.
+
 ## 2026-07-05T14:55:00+03:00 - Operations login blink loop deployed and live-smoked
 
 Completed `RAW-20260705-003` / `REQ-20260705-007` for the BNA Operations login

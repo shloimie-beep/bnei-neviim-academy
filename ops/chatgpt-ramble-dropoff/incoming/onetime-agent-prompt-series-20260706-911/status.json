@@ -1,0 +1,19 @@
+{
+  "packet_id": "onetime-agent-prompt-series-20260706-911",
+  "status": "codex_queued",
+  "created_at": "2026-07-06T00:00:00Z",
+  "updated_at": "2026-07-06T14:25:46.790Z",
+  "picked_up_by": "chatgpt-dropoff-ingestor",
+  "picked_up_at": "2026-07-06T14:25:46.789Z",
+  "raw_ids_created": [],
+  "requirement_ids_created": [],
+  "decision_ids_created": [],
+  "implementation_status": "queued",
+  "verification": [
+    "Queued for Codex by scripts/chatgpt-dropoff-ingestor.mjs as task #1945."
+  ],
+  "remaining_blockers": [],
+  "task_ids_created": [
+    "1945"
+  ]
+}

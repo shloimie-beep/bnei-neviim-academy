@@ -99,6 +99,34 @@ test('ChatGPT GitHub comment collector parses and materializes full packet comme
   assert.equal(fs.existsSync(path.join(packetDir, 'COMMENT_SOURCE.json')), true);
 });
 
+test('ChatGPT GitHub comment collector accepts status from status.json and preserves prompt files', async () => {
+  const collector = await loadCollector();
+  const packetId = 'onetime-agent-prompt-series-20260706-911';
+  const parsed = collector.parseDropoffComment({
+    ...sampleComment(packetId),
+    body: sampleComment(packetId).body
+      .replace(/^Status: ready_for_codex_audit\n/m, '')
+      + `
+### File: PROMPTS.md
+
+\`\`\`markdown
+# Prompt Series
+
+Run the One Time UI audit prompts.
+\`\`\`
+`,
+  });
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'bna-comment-dropoff-prompts-'));
+  const packetDir = collector.materializeDropoffComment(parsed, { targetIncomingDir: root });
+
+  assert.equal(parsed.is_dropoff, true);
+  assert.equal(parsed.packet_id, packetId);
+  assert.equal(parsed.status, 'ready_for_codex_audit');
+  assert.deepEqual(parsed.findings, []);
+  assert.equal(fs.existsSync(path.join(packetDir, 'PROMPTS.md')), true);
+  assert.match(fs.readFileSync(path.join(packetDir, 'PROMPTS.md'), 'utf8'), /Prompt Series/);
+});
+
 test('ChatGPT GitHub comment collector blocks marker comments without full file blocks', async () => {
   const collector = await loadCollector();
   const parsed = collector.parseDropoffComment({
