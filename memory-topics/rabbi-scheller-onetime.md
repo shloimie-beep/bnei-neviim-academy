@@ -12,5 +12,14 @@
   `one_time_mishnah_class`.
 - Rabbi / One Time brand is black + yellow. Do not apply the BNA cream/navy/
   teal/cyan palette to One Time unless a later explicit design Decision says so.
+- The One Time AI Studio operator role is `one_time_ai_studio_operator`. It is
+  scoped to `studio` and `tasks`, prompt/image-observation patching, OpenArt
+  prompt export/readiness, and a mediated Studio-only repair lane. It must not
+  get raw shell/Codex CLI, deploy, secrets, payments, contacts/CRM, settings,
+  sends, access grants, or cross-workspace access.
+- OpenArt integration is no-live until Shloimie signs up and connects
+  OpenArt OAuth/MCP. BNA may prepare prompts, character/reference checklists,
+  and request plans, but must not upload references, generate media, check
+  credits live, or spend credits before account connection and approval.
 - No live charge, payment link, access grant, send, or external sync without
   explicit approval.

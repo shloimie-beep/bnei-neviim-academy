@@ -49,6 +49,10 @@ test('Service Provider Studio API routes are registered and workspace scoped', (
     "app.post('/api/bna/studio/projects/:id/outline'",
     "app.post('/api/bna/studio/projects/:id/storyboard'",
     "app.post('/api/bna/studio/projects/:id/prompt-compile'",
+    "app.get('/api/bna/studio/openart/status'",
+    "app.post('/api/bna/studio/projects/:id/sidekick/patch-preview'",
+    "app.post('/api/bna/studio/projects/:id/openart/export'",
+    "app.post('/api/bna/studio/repair/plan'",
     "app.post('/api/bna/studio/projects/:id/corrections/preview'",
     "app.post('/api/bna/studio/projects/:id/corrections/apply'",
     "app.patch('/api/bna/studio/scenes/:id'",
@@ -60,7 +64,10 @@ test('Service Provider Studio API routes are registered and workspace scoped', (
     "app.post('/api/bna/studio/projects/:id/handoff'",
   ].forEach((route) => assert.match(block, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
   assert.match(server, /if \(routePath === '\/api\/bna\/studio\/dashboard' && method === 'GET'\) return true/);
+  assert.match(server, /if \(routePath === '\/api\/bna\/studio\/openart\/status' && method === 'GET'\) return true/);
+  assert.match(server, /if \(routePath === '\/api\/bna\/studio\/repair\/plan' && method === 'POST'\) return true/);
   assert.ok(server.includes("if (/^\\/api\\/bna\\/studio\\/projects\\/\\d+\\/(?:source|outline|storyboard|prompt-compile|render|handoff)$/.test(routePath) && method === 'POST') return true;"));
+  assert.ok(server.includes("if (/^\\/api\\/bna\\/studio\\/projects\\/\\d+\\/(?:sidekick\\/patch-preview|openart\\/export)$/.test(routePath) && method === 'POST') return true;"));
   assert.ok(server.includes("if (/^\\/api\\/bna\\/studio\\/jobs\\/\\d+\\/(?:retry|cancel)$/.test(routePath) && method === 'POST') return true;"));
   assert.match(server, /bna_studio_projects/);
   assert.match(server, /assertWorkspaceAccess\(req, row\.workspace_key, 'read Studio project'\)/);
@@ -73,6 +80,9 @@ test('Service Provider Studio API reuses Content handoff and avoids external wri
   assert.match(block, /INSERT INTO bna_content_jobs/);
   assert.match(block, /INSERT INTO bna_content_outputs/);
   assert.match(block, /external_write_performed: false/);
+  assert.match(block, /openArtMcpAdapter\.openArtMcpStatus\(\)/);
+  assert.match(block, /studioSidekick\.draftStudioSidekickPatch/);
+  assert.match(block, /studioSidekick\.buildOpenArtPromptExport/);
   assert.match(block, /no_publish BOOLEAN NOT NULL DEFAULT TRUE|no_publish/);
   assert.doesNotMatch(block, /GoHighLevel|LeadConnector|GHL|Buffer|fetch\(/i);
 });
