@@ -1,0 +1,65 @@
+{
+  "checked_at": "2026-07-06T15:03:36.636Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "workspace": "rabbi_sheller_provider",
+  "project": "one_time_mishnah_class",
+  "source_raw_id": "RAW-20260706-951",
+  "before": {
+    "mailbox_thread_count": 4,
+    "inbound_messages": 0,
+    "outbound_messages": 4,
+    "crm_threads_were_all_outbound": true
+  },
+  "resend_receiving_readback": {
+    "object": "list",
+    "has_more": false,
+    "total_returned": 9,
+    "info_returned": 9,
+    "info_recent_10d": 9,
+    "date_range": {
+      "first_received_at": "2026-06-29T14:44:46.683Z",
+      "last_received_at": "2026-06-30T11:43:35.688Z"
+    }
+  },
+  "backfill": {
+    "method": "signed POST /api/resend/inbound replay of actual Resend email.received ids",
+    "attempted": 9,
+    "succeeded": 9,
+    "ignored": 0,
+    "duplicates": 0,
+    "communication_ids": [17, 18, 19, 20, 21, 22, 23, 24, 25],
+    "sent_email": false,
+    "fake_inbound_insert": false
+  },
+  "after": {
+    "mailbox_status": 200,
+    "thread_count": 12,
+    "inbound_messages": 9,
+    "outbound_messages": 4,
+    "oldest_inbound_at": "2026-06-29T14:44:46.683Z",
+    "newest_inbound_at": "2026-06-30T11:43:35.688Z",
+    "threads_with_resend_received_id": 8,
+    "threads_with_attachment_metadata": 1,
+    "thread_summary": [
+      { "thread_key_hash": "fbd64b00db", "message_count": 1, "inbound": 0, "outbound": 1, "first_time": "2026-07-02T17:50:37.710Z", "last_time": "2026-07-02T17:50:37.710Z" },
+      { "thread_key_hash": "36087a8f98", "message_count": 1, "inbound": 0, "outbound": 1, "first_time": "2026-07-02T17:50:37.710Z", "last_time": "2026-07-02T17:50:37.710Z" },
+      { "thread_key_hash": "444a864903", "message_count": 1, "inbound": 0, "outbound": 1, "first_time": "2026-07-02T17:50:37.710Z", "last_time": "2026-07-02T17:50:37.710Z" },
+      { "thread_key_hash": "0d8743ec0c", "message_count": 1, "inbound": 0, "outbound": 1, "first_time": "2026-07-02T17:50:37.710Z", "last_time": "2026-07-02T17:50:37.710Z" },
+      { "thread_key_hash": "7a35e9a77a", "message_count": 1, "inbound": 1, "outbound": 0, "first_time": "2026-06-30T11:43:35.688Z", "last_time": "2026-06-30T11:43:35.688Z" },
+      { "thread_key_hash": "bc59455e3f", "message_count": 1, "inbound": 1, "outbound": 0, "first_time": "2026-06-30T09:21:43.748Z", "last_time": "2026-06-30T09:21:43.748Z" },
+      { "thread_key_hash": "a079051b2d", "message_count": 1, "inbound": 1, "outbound": 0, "first_time": "2026-06-30T07:53:10.430Z", "last_time": "2026-06-30T07:53:10.430Z" },
+      { "thread_key_hash": "49b9dbc4a3", "message_count": 1, "inbound": 1, "outbound": 0, "first_time": "2026-06-30T06:36:58.875Z", "last_time": "2026-06-30T06:36:58.875Z" },
+      { "thread_key_hash": "8e5331bb3f", "message_count": 1, "inbound": 1, "outbound": 0, "first_time": "2026-06-30T06:02:08.330Z", "last_time": "2026-06-30T06:02:08.330Z" },
+      { "thread_key_hash": "2ddadd31b1", "message_count": 1, "inbound": 1, "outbound": 0, "first_time": "2026-06-29T17:19:33.935Z", "last_time": "2026-06-29T17:19:33.935Z" },
+      { "thread_key_hash": "08ea2eb653", "message_count": 2, "inbound": 2, "outbound": 0, "first_time": "2026-06-29T16:09:13.756Z", "last_time": "2026-06-29T16:39:05.154Z" },
+      { "thread_key_hash": "0393ac907f", "message_count": 1, "inbound": 1, "outbound": 0, "first_time": "2026-06-29T14:44:46.683Z", "last_time": "2026-06-29T14:44:46.683Z" }
+    ]
+  },
+  "guardrails": [
+    "No external email was sent.",
+    "No fake inbound message was inserted.",
+    "Backfill used actual Resend received-email ids and the deployed signed inbound handler.",
+    "No raw email bodies, sender addresses, received-email ids, or subjects are recorded.",
+    "Evidence stores counts, hashes, timestamps, and communication ids only."
+  ]
+}

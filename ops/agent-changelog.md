@@ -30147,3 +30147,25 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   mutation, no raw private evidence committed; Drive file ids/URLs are redacted
   in durable smoke output.
 - Remaining before app-visible Done: commit, push, deploy, and live smoke.
+
+## 2026-07-06 - One Time Mailbox Old Email Backfill
+
+- Investigated the operator concern that old received emails were missing from
+  the new Rabbi provider mailbox.
+- Live provider mailbox initially had 4 threads, all outbound rows from
+  2026-07-02, with 0 inbound Resend-received CRM rows.
+- Resend Receiving API showed 9 received emails for
+  `info@onetimeonetime.com`, dated 2026-06-29 through 2026-06-30.
+- Root cause: earlier live release notes showed Resend receiving was deployed
+  but `resend_webhook_configured=false`, so those emails stayed in Resend and
+  were not yet stored in first-party `bna_communications`.
+- Backfilled the 9 actual Resend received-email ids through signed
+  `POST /api/resend/inbound` replay. The deployed handler fetched the messages
+  from Resend and created communication ids 17-25.
+- Live mailbox readback after backfill: 12 threads, 9 inbound messages, 4
+  outbound messages, and 1 thread with attachment metadata.
+- Evidence:
+  `ops/live-smokes/2026-07-06T15-03-36-636Z-one-time-mailbox-resend-backfill.md`.
+- Guardrails: no email sent, no fake inbound inserted, no raw message bodies,
+  sender addresses, subjects, received-email ids, password, or physical address
+  printed/committed.
