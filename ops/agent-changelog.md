@@ -29740,3 +29740,44 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrail recorded: do not put real passwords, API keys, cookies, tokens, raw
   private contact exports, private screenshots, or raw private message bodies
   in prompts, GitHub comments, or packet files.
+
+## 2026-07-06 - ChatGPT Agent Mode Dropoff Smoke Prompt
+
+- Added
+  `ops/prompt-packets/2026-07-06-chatgpt-dropoff-smoke-agent-mode/00-smoke-prompt.md`
+  for a no-op Agent Mode test of repo-file packet creation or marked GitHub
+  comment fallback.
+- Updated
+  `tasks-pending/2026-07-06-chatgpt-dropoff-status-and-onetime-audit-setup.md`
+  with `REQ-20260706-906` and the exact Codex readback commands to run after
+  ChatGPT returns a PR or comment URL.
+- The smoke prompt explicitly forbids secrets, app/source edits, production
+  deploys, external sends, payments, access grants, DNS changes, credential
+  changes, provider mutations, Drive writes, and production data changes.
+
+## 2026-07-06 - Pending Work Closeout, PR #105 Deploy, And Live Smoke
+
+- Registered and closed out `RAW-20260706-904` in
+  `tasks-pending/2026-07-06-finish-pending-work-inventory.md`.
+- Published the parent reminder closeout branch through PR #108; merged to
+  `master` at `70001fcc0beb595c18e75098c501289500d8289c`.
+- Updated PR #105 against current `master`, resolved append-only conflicts by
+  preserving both histories, reran focused verification, pushed, and merged PR
+  #105 to `master` at `8f2c95958084e05f379c23fe9b68d4e09c4994e0`.
+- Deployed merged master from a clean detached worktree to Railway BNA
+  production service `skillful-motivation`; deployment
+  `42d7cfa8-7a39-4371-b799-46a62d88aadc` reached `SUCCESS`.
+- Verification passed: PR #105 master-merge targeted tests 40/40, Studio
+  browser smoke 1/1, PQC validation, `npm run watchdog:actions`, `npm run
+  watchdog:protocol-drift`, post-deploy `npm run railway:doctor`, `npm run
+  app:smoke`, and `npm run app:smoke:rabbi-onetime-landing`.
+- Active run
+  `ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation`
+  still validates with no next unblocked executable batch; remaining work is
+  explicitly blocked on fleet/readiness drift, content parser/private
+  transcript-library docs, provider aliases/credentials, and DB/bootstrap
+  items.
+- Remaining One Time Studio blockers are external/account decisions: OpenArt
+  signup/OAuth/MCP account, live generation/reference upload/credit actions,
+  and the hosted multimodal model/provider/budget/privacy/image-upload policy
+  for true pixel analysis.

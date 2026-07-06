@@ -48,7 +48,7 @@ Do not create a visible human Task yet. This is a product/system scope register 
 
 | ID | Canonical key | Task | Owner | Workspace/project | Source | Requirement | Next action | Visible lane | Status |
 |---|---|---|---|---|---|---|---|---|
-| TASK-20260706-201 | onetime-studio-sidekick-openart-mcp | Build the scoped One Time Studio sidekick, OpenArt MCP boundary, and Studio-only Codex lane. | Codex | rabbi_sheller_provider / one_time_mishnah_class | RAW-20260706-002, RAW-20260706-003 | REQ-20260706-202..210 | Merge/deploy only after deploy approval/readiness clears; connect OpenArt OAuth/model when Shloimie signs up. | Agent lifecycle | PR #105 ready and mergeable; release gate dry-run passed; deploy gate blocked; live OpenArt/model/upload blocked |
+| TASK-20260706-201 | onetime-studio-sidekick-openart-mcp | Build the scoped One Time Studio sidekick, OpenArt MCP boundary, and Studio-only Codex lane. | Codex | rabbi_sheller_provider / one_time_mishnah_class | RAW-20260706-002, RAW-20260706-003 | REQ-20260706-202..210 | Connect OpenArt OAuth/model when Shloimie signs up and approves model/privacy policy. | Agent lifecycle | BNA-side no-live build merged, deployed, and live-smoked; live OpenArt/model/upload blocked |
 
 ## Decisions
 
@@ -79,45 +79,62 @@ Do not create a visible human Task yet. This is a product/system scope register 
 | ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
 |---|---|---|---|---|---|---|
 | REQ-20260706-209 | Product Quality Compiler packet | Created and validated app-visible product-quality packet before product/UI edits. | `npm run pqc:validate -- ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json` | `52ba8b2b` | pushed to `origin/codex/onetime-studio-sidekick-20260706`; clean draft PR #105 | n/a |
-| REQ-20260706-202 | server.js, src/lib/bna/one-time-role-model.js, assistant policy, route registry | Added env-backed `one_time_ai_studio_operator` with `studio` + `tasks` allowed views and a narrow route guard. | `node --test tests/one-time-studio-operator-role.test.js tests/assistant-scope-policy.test.js`; release gate dry-run passed; PR #105 marked ready | `52ba8b2b` | pushed to `origin/codex/onetime-studio-sidekick-20260706`; PR #105 ready/mergeable | deploy gate blocked; production mutation not performed |
-| REQ-20260706-203, REQ-20260706-205 | src/lib/bna/service-provider-studio-sidekick.js, public/operations.html, Studio sidekick API routes | Added no-live prompt/image-observation sidekick panel and patch preview. True uploaded-image pixel analysis remains blocked on model/account/privacy. | `node --test tests/one-time-studio-openart-adapter.test.js`; browser smoke screenshot `ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-local/desktop-sidekick-openart.png` | `52ba8b2b` | pushed to `origin/codex/onetime-studio-sidekick-20260706`; clean draft PR #105 | true pixel analysis blocked by DEC-20260706-203; app-visible release pending |
+| REQ-20260706-202 | server.js, src/lib/bna/one-time-role-model.js, assistant policy, route registry | Added env-backed `one_time_ai_studio_operator` with `studio` + `tasks` allowed views and a narrow route guard. | `node --test tests/one-time-studio-operator-role.test.js tests/assistant-scope-policy.test.js`; master-merge verification; live smoke | `52ba8b2b`; branch merge commit `1124cf8d`; PR #105 merge `8f2c9595` | pushed and merged to `master` | Railway deployment `42d7cfa8-7a39-4371-b799-46a62d88aadc` SUCCESS; live smoke passed |
+| REQ-20260706-203, REQ-20260706-205 | src/lib/bna/service-provider-studio-sidekick.js, public/operations.html, Studio sidekick API routes | Added no-live prompt/image-observation sidekick panel and patch preview. True uploaded-image pixel analysis remains blocked on model/account/privacy. | `node --test tests/one-time-studio-openart-adapter.test.js`; browser smoke screenshot `ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-local/desktop-sidekick-openart.png`; live app smoke | `52ba8b2b`; branch merge commit `1124cf8d`; PR #105 merge `8f2c9595` | pushed and merged to `master` | no-live flow deployed; true pixel analysis blocked by DEC-20260706-203 |
 | REQ-20260706-204, REQ-20260706-210 | src/lib/bna/studio-openart-mcp-adapter.js, `/api/bna/studio/openart/status`, `/openart/export` | Added no-live OpenArt MCP readiness, request plan, prompt export/copy, and OAuth blocker. | `node --test tests/one-time-studio-openart-adapter.test.js`; screenshot `ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-local/desktop-openart-status.png` | `52ba8b2b` | pushed to `origin/codex/onetime-studio-sidekick-20260706`; clean draft PR #105 | live OAuth blocked by DEC-20260706-201 |
-| REQ-20260706-206 | public/operations.html, route/action registries, Studio browser smoke | Added Studio Sidekick panel, OpenArt prompt export review, Studio repair plan review, and OpenArt status card. | `node --test tests/service-provider-studio-browser-smoke.test.js`; screenshots under `ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-local/`; release gate dry-run passed; deploy gate blocker recorded | `52ba8b2b` | pushed to `origin/codex/onetime-studio-sidekick-20260706`; PR #105 ready/mergeable | deploy gate blocked; production mutation not performed |
-| REQ-20260706-207 | src/lib/bna/one-time-studio-sidekick-policy.js, assistant policy, `/api/bna/studio/repair/plan` | Added mediated Studio repair lane with file/route/test allowlists and no raw shell/CLI/deploy/secrets/external writes. | `node --test tests/one-time-studio-sidekick-policy.test.js`; PR #105 marked ready | `52ba8b2b` | pushed to `origin/codex/onetime-studio-sidekick-20260706`; PR #105 ready/mergeable | deploy gate blocked; production mutation not performed |
-| REQ-20260706-208 | tests, watchdog reports, action/route registries | Added negative policy tests, static route/UI tests, browser smoke evidence, action registry coverage, and protocol drift report. | `npm run watchdog:actions`; `npm run watchdog:protocol-drift`; `node --check server.js`; release gate dry-run passed; deploy gate blocked before mutation on approval/readiness list | `52ba8b2b` | pushed to `origin/codex/onetime-studio-sidekick-20260706`; PR #105 ready/mergeable | deploy gate blocked; production mutation not performed |
+| REQ-20260706-206 | public/operations.html, route/action registries, Studio browser smoke | Added Studio Sidekick panel, OpenArt prompt export review, Studio repair plan review, and OpenArt status card. | `node --test tests/service-provider-studio-browser-smoke.test.js`; screenshots under `ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-local/`; master-merge browser smoke; live smoke | `52ba8b2b`; branch merge commit `1124cf8d`; PR #105 merge `8f2c9595` | pushed and merged to `master` | Railway deployment `42d7cfa8-7a39-4371-b799-46a62d88aadc` SUCCESS; live smoke passed |
+| REQ-20260706-207 | src/lib/bna/one-time-studio-sidekick-policy.js, assistant policy, `/api/bna/studio/repair/plan` | Added mediated Studio repair lane with file/route/test allowlists and no raw shell/CLI/deploy/secrets/external writes. | `node --test tests/one-time-studio-sidekick-policy.test.js`; master-merge verification; live smoke | `52ba8b2b`; branch merge commit `1124cf8d`; PR #105 merge `8f2c9595` | pushed and merged to `master` | deployed; live smoke passed |
+| REQ-20260706-208 | tests, watchdog reports, action/route registries | Added negative policy tests, static route/UI tests, browser smoke evidence, action registry coverage, and protocol drift report. | `npm run watchdog:actions`; `npm run watchdog:protocol-drift`; `node --check server.js`; 40/40 master-merge tests; live smoke | `52ba8b2b`; branch merge commit `1124cf8d`; PR #105 merge `8f2c9595` | pushed and merged to `master` | Railway deployment `42d7cfa8-7a39-4371-b799-46a62d88aadc` SUCCESS; live smoke passed |
 
 ## Final audit
 
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |
 |---|---|---|---|---|---|
 | REQ-20260706-201 | Done | raw-input/RAW-20260706-002-onetime-studio-sidekick-openart-mcp.md; raw-input/RAW-20260706-003-onetime-studio-sidekick-goal-mode-build.md; this register | raw-input, tasks-pending, memory, ledger/changelog | File capture and goal-mode register | none |
-| REQ-20260706-202 | Done locally; PR ready | `one_time_ai_studio_operator` env-backed role; static role test; route guard blocks CRM/payments/helper execute/admin routes; commit `52ba8b2b`; PR #105 ready/mergeable | server.js; src/lib/bna/one-time-role-model.js; tests/one-time-studio-operator-role.test.js | Passed targeted tests and `node --check server.js` | Deploy/live blocked by approval/readiness gate |
+| REQ-20260706-202 | Done; deployed/live-smoked | `one_time_ai_studio_operator` env-backed role; static role test; route guard blocks CRM/payments/helper execute/admin routes; PR #105 merged at `8f2c9595`; Railway deployment `42d7cfa8-7a39-4371-b799-46a62d88aadc` | server.js; src/lib/bna/one-time-role-model.js; tests/one-time-studio-operator-role.test.js | Passed targeted tests, `node --check server.js`, post-deploy doctor, and live smoke | none for no-live BNA-side role |
 | REQ-20260706-203 | Blocked for live multimodal image model; local no-live sidekick done | Sidekick policy/domain/API/UI implemented; no-live patch preview verified | src/lib/bna/service-provider-studio-sidekick.js; public/operations.html; server.js; tests | Passed unit/static/browser smoke | Exact hosted vision model, credentials, privacy/retention, and true pixel analysis not decided |
 | REQ-20260706-204 | Done locally; live OAuth blocked | OpenArt MCP adapter status/export/request plan implemented; live calls remain disabled | src/lib/bna/studio-openart-mcp-adapter.js; server.js; public/operations.html; registries | Passed OpenArt adapter test and browser status screenshot | Shloimie must sign up/connect OpenArt OAuth/workspace |
 | REQ-20260706-205 | Blocked for true image upload; reference-note flow done | UI accepts image/render observation plus reference URL/note and drafts a reversible patch | public/operations.html; server.js; sidekick tests | Browser smoke exercised Draft Prompt Patch | Need upload storage and live multimodal image analysis policy/model |
-| REQ-20260706-206 | Done locally; PR ready | Studio Sidekick, OpenArt Prompt Export, Studio Repair Plan, OpenArt status card, screenshots; commit `52ba8b2b`; PR #105 ready/mergeable | public/operations.html; registries; tests | Browser smoke screenshots in `ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-local/` | Deploy/live blocked by approval/readiness gate |
-| REQ-20260706-207 | Done locally; PR ready | Studio-only repair lane allows Studio layout/functionality and denies website/admin/shell/deploy/secrets/contacts/payments/cross-workspace; commit `52ba8b2b`; PR #105 ready/mergeable | assistant policy; sidekick policy; server route | `node --test tests/one-time-studio-sidekick-policy.test.js tests/assistant-scope-policy.test.js` | Deploy/live blocked by approval/readiness gate |
-| REQ-20260706-208 | Done locally; PR ready | Unit/static tests, browser smoke, PQC validation, action watchdog, protocol drift report; commit `52ba8b2b`; PR #105 ready/mergeable | tests; ops/watchdog-audits; ops/product-quality-compiler; screenshots | 27 targeted tests passed; browser smoke passed; watchdog action findings 0; drift findings 0 | Deploy/live blocked by approval/readiness gate |
-
-## Current deploy/live blockers
-
-Clean deploy-gate mode on PR #105 head `11b97353` was run from a detached
-worktree with no production mutation. It blocked on:
-
-- `BNA_PRODUCTION_DEPLOY_APPROVED=approved` is not set.
-- `BNA_DEFER_OPTIONAL_INTEGRATIONS_APPROVED=approved` is not set.
-- `BNA_DEFER_EXTERNAL_READBACK_APPROVED=approved` is not set.
-- `VIMEO_ACCESS_TOKEN` is not configured.
-- `RABBI_STRIPE_SECRET_KEY` and `RABBI_STRIPE_MODE` are not configured.
-- `TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER` is not configured, and Rabbi worker
-  deployment state is not verified.
-- Database, Railway, and Drive external readback readiness are blocked.
-
-No merge, production deploy, live smoke, live OpenArt OAuth, OpenArt generation,
-reference upload, credit spend, external send, payment/access change, DNS,
-secret, CRM, or production data mutation was performed.
+| REQ-20260706-206 | Done; deployed/live-smoked | Studio Sidekick, OpenArt Prompt Export, Studio Repair Plan, OpenArt status card, screenshots; PR #105 merged at `8f2c9595`; Railway deployment `42d7cfa8-7a39-4371-b799-46a62d88aadc` | public/operations.html; registries; tests | Browser smoke screenshots in `ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-local/` and `ops/playwright-smokes/2026-07-06-one-time-studio-sidekick-master-merge/`; live smoke passed | none for no-live BNA-side UI; OpenArt live account/model blockers remain |
+| REQ-20260706-207 | Done; deployed/live-smoked | Studio-only repair lane allows Studio layout/functionality and denies website/admin/shell/deploy/secrets/contacts/payments/cross-workspace; PR #105 merged at `8f2c9595`; Railway deployment `42d7cfa8-7a39-4371-b799-46a62d88aadc` | assistant policy; sidekick policy; server route | `node --test tests/one-time-studio-sidekick-policy.test.js tests/assistant-scope-policy.test.js`; live smoke passed | none for no-live BNA-side repair-lane policy |
+| REQ-20260706-208 | Done for no-live BNA-side scope; deployed/live-smoked | Unit/static tests, browser smoke, PQC validation, action watchdog, protocol drift report, PR #105 merge, Railway deployment, live smoke reports | tests; ops/watchdog-audits; ops/product-quality-compiler; screenshots; live smoke reports | 40 targeted tests passed after master merge; browser smoke passed; watchdog action findings 0; drift findings 0; `npm run app:smoke`; `npm run app:smoke:rabbi-onetime-landing` | Live OpenArt/model/upload blockers remain below |
 | REQ-20260706-209 | Done | PQC packet validated | ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json | `npm run pqc:validate -- ...` passed | none |
-| REQ-20260706-210 | Done locally; live OAuth blocked | OpenArt no-live adapter and UI blocker complete | OpenArt adapter, UI, server, register | OpenArt adapter tests and browser status card | Shloimie signs up/connects OpenArt OAuth/workspace |
+| REQ-20260706-210 | Done for no-live adapter; deployed/live-smoked; live OAuth blocked | OpenArt no-live adapter and UI blocker complete, merged, deployed, and live-smoked | OpenArt adapter, UI, server, register | OpenArt adapter tests, browser status card, live app smoke | Shloimie signs up/connects OpenArt OAuth/workspace before live MCP/API/generation/reference upload/credit actions |
+
+## 2026-07-06 Production Merge, Deploy, And Live Smoke Closeout
+
+PR #105 was merged to `master` at
+`8f2c95958084e05f379c23fe9b68d4e09c4994e0` after the branch was updated with
+current `origin/master` and reverified. The scoped deploy gate passed from a
+clean detached `origin/master` worktree with optional unrelated provider
+readiness and external readback deferred through the approved release path.
+
+Railway deploy was performed from the clean detached merged-master worktree,
+not from a dirty local checkout:
+
+- Service: `skillful-motivation` / production.
+- Deployment: `42d7cfa8-7a39-4371-b799-46a62d88aadc`.
+- Status: `SUCCESS`.
+- Post-deploy doctor: PASS for project `skillful-motivation`, environment
+  `production`, service `skillful-motivation`.
+- Live smoke: PASS `npm run app:smoke`; report
+  `ops/live-smokes/2026-07-06T11-01-41-071Z-live-app-smoke.md`.
+- Live One Time landing smoke: PASS `npm run app:smoke:rabbi-onetime-landing`;
+  report
+  `ops/live-smokes/2026-07-06T11-01-40-419Z-rabbi-onetime-landing-smoke.md`.
+
+Remaining blockers are not deploy blockers for the no-live BNA-side build:
+
+- Live OpenArt OAuth/MCP/API calls remain blocked until Shloimie signs up and
+  connects the OpenArt account/workspace.
+- Live OpenArt generation, reference upload, credit spend/checks, or result
+  pulls remain blocked until the OpenArt account/auth path is explicit.
+- True uploaded-image pixel analysis remains blocked until hosted multimodal
+  model/provider, budget, retention/privacy, and image-upload policy are
+  approved.
+- No external send, payment/access change, DNS change, secret change, CRM
+  mutation, OpenArt generation/reference upload/credit action, or unrelated
+  production data mutation was performed.
 
 ## 2026-07-06 Master-Merge Verification
 
@@ -148,8 +165,10 @@ Fresh evidence:
 
 Remaining status:
 
-- PR #105 can be pushed after the merge commit.
-- Production deploy/live smoke remains gated by the approved release path.
+- PR #105 was pushed and merged to master at
+  `8f2c95958084e05f379c23fe9b68d4e09c4994e0`.
+- Production deploy/live smoke passed on Railway deployment
+  `42d7cfa8-7a39-4371-b799-46a62d88aadc`.
 - Live OpenArt OAuth/MCP, live generation/reference upload/credit actions, and
   true uploaded-image pixel analysis remain blocked on the OpenArt account and
   hosted multimodal model/privacy decisions.
