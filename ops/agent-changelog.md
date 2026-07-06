@@ -30169,3 +30169,28 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrails: no email sent, no fake inbound inserted, no raw message bodies,
   sender addresses, subjects, received-email ids, password, or physical address
   printed/committed.
+
+## 2026-07-06 - One Time Operations Content IA And Section Rail Deployed And Live Verified
+
+- Merged PR #121 to `master` at
+  `d572ca55ecb85ff415b0755efc8fb8f19e1b47b8`.
+- Deployed BNA production service `skillful-motivation` on Railway deployment
+  `be251afc-471c-414b-93b6-757de8db82db`, which reached `SUCCESS`.
+- Live app smoke passed, and the One Time landing smoke passed after deployment.
+- Exact authenticated live smoke passed for
+  `/operations?workspace=rabbi_sheller_provider&view=content&section=meetings&nav=modules`.
+- Live proof confirmed the Rabbi / One Time content route stays scoped to
+  `rabbi_sheller_provider`, opens `meetings`, shows only Library, Meeting Drops,
+  Source Prep, and Bundles, omits generic Selected/Repurpose/Newsletter/Prompts
+  tabs, keeps `Classes & Content` and Studio in the sidebar, renders the
+  Provider Program Content bridge, and keeps the mobile content rail sliding
+  horizontally with no body-level overflow.
+- Evidence:
+  `ops/live-smokes/2026-07-06T15-11-13-507Z-live-app-smoke.md`,
+  `ops/live-smokes/2026-07-06T15-10-28-684Z-rabbi-onetime-landing-smoke.md`,
+  `ops/live-smokes/2026-07-06T15-16-53-470Z-one-time-operations-content-ia-filter-rail-live-smoke.md`,
+  `ops/live-smokes/2026-07-06T15-16-53-470Z-one-time-operations-content-ia-filter-rail-live-smoke.json`,
+  and `tasks-pending/2026-07-06-onetime-operations-content-ia-filter-rail.md`.
+- Guardrails: no backend auth/data/schema change, no WhatsApp/email/payment
+  send, no access grant, no DNS/provider-account mutation, no production data
+  mutation, and no screenshots or private page data committed.
