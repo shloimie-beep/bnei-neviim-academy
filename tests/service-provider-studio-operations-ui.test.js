@@ -36,6 +36,7 @@ test('Studio client methods cover intake, storyboard, prompt, correction, render
     'getStudioOpenArtStatus',
     'previewStudioSidekickPatch',
     'exportStudioOpenArtPrompt',
+    'handoffStudioAiVideoWorker',
     'planStudioRepair',
     'previewStudioCorrection',
     'applyStudioCorrection',
@@ -71,6 +72,7 @@ test('Studio renderer exposes complete workflow panels without external publish 
     'Preview Correction',
     'Apply Preview',
     'Run Mock Render',
+    'Create Worker Handoff',
     'Create Content Handoff',
     'No Content handoffs have been created',
   ].forEach((needle) => assert.match(block, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
@@ -80,6 +82,7 @@ test('Studio renderer exposes complete workflow panels without external publish 
     'renderStudioCorrectionReview',
     'renderStudioJobReview',
     'renderStudioHandoffReview',
+    'renderStudioAiVideoWorkerHandoffReview',
     'Reusable Studio Library',
     'Save Studio Library',
     'Studio Sidekick',
@@ -88,6 +91,8 @@ test('Studio renderer exposes complete workflow panels without external publish 
     'Plan Studio Repair',
     'OpenArt MCP',
     'OpenArt Prompt Export',
+    'AI Video Worker Handoff',
+    'Worker handoff ready',
     'Character Profiles',
     'Jewish Guardrails',
     'Scenario Tags',
@@ -102,7 +107,7 @@ test('Studio renderer exposes complete workflow panels without external publish 
     'No vendor call',
     'External write: no',
   ].forEach((needle) => assert.match(operations, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
-  assert.match(block, /It does not publish, send, schedule, upload, or call an external social provider/);
+  assert.match(block, /Neither publishes, sends, schedules, uploads, or calls an external provider/);
   assert.match(operations, /details class="studio-diagnostics"/);
   assert.match(operations, /studio-section-tabs/);
   assert.doesNotMatch(block, /renderPersonSectionMenu\(\{ id: 'studio'/);
@@ -127,5 +132,6 @@ test('Studio handlers are exported for inline Operations controls', () => {
     'planStudioRepairRequest',
     'applyStudioCorrection',
     'handoffStudioProject',
+    'handoffStudioAiVideoWorker',
   ].forEach((handler) => assert.match(exportBlock, new RegExp(`\\b${handler}\\b`)));
 });

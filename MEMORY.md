@@ -1754,6 +1754,16 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   Current Studio behavior is first-party/no-send and mock/internal until a
   later approved AI-video vendor adapter packet defines API, cost, rights,
   storage, and approval gates.
+- One Time Studio's AI video worker handoff should package scoped source,
+  storyboard scenes, scene prompt pack, OpenArt request-plan metadata, review
+  steps, and exact vendor blockers as a first-party local Studio export before
+  any OpenArt upload, generation, credit spend, publish, send, or access grant.
+- One Time AI video worker role key is `one_time_ai_video_worker`. It is scoped
+  to One Time Studio and One Time task manager only for `rabbi_sheller_provider`
+  / `one_time_mishnah_class`; it must not receive broader Rabbi/provider admin,
+  BNA, contacts/CRM, payments, settings/integrations, agent fleet, queue health,
+  task artifact, Content handoff, raw shell/Codex, deploy, secrets, external
+  send/publish/upload, or cross-workspace access.
 - OpenArt MCP endpoint for the future One Time AI Studio adapter:
   `https://mcp.openart.ai/mcp`. Direct readback returns auth-required
   `401 Unauthorized`, so this is an integration target, not verified live

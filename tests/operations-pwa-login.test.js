@@ -55,7 +55,7 @@ test('Operations login preserves only safe Operations return paths', () => {
   assert.match(loginHtml, /window\.location\.href = operationsReturnTo\(\)/);
   assert.match(loginHtml, /window\.location\.replace\(operationsReturnTo\(\)\)/);
   assert.match(loginHtml, /function isOperationsSession\(data\)/);
-  assert.match(loginHtml, /\['super_admin', 'project_owner', 'project_manager'\]\.includes\(role\)/);
+  assert.match(loginHtml, /\['super_admin', 'project_owner', 'project_manager', 'one_time_ai_studio_operator', 'one_time_ai_video_worker'\]\.includes\(role\)/);
   assert.match(loginHtml, /response\.ok && isOperationsSession\(data\)/);
   assert.match(loginHtml, /redirectIfAlreadySignedIn\(\)/);
 });
@@ -89,6 +89,18 @@ test('Operations dashboard skips background refresh while text entry is active',
   assert.match(operationsHtml, /function backgroundRefreshCanRun\(\)/);
   assert.match(operationsHtml, /return !renderShouldWaitForTextEntry\(\)/);
   assert.match(operationsHtml, /if \(!backgroundRefreshCanRun\(\)\) return;\s*loadData\(\{ background: true \}\);/);
+});
+
+test('Operations shell falls back scoped Studio/task-only sessions to allowed views', () => {
+  assert.match(operationsHtml, /function firstAllowedViewForWorkspace/);
+  assert.match(operationsHtml, /function ensureCurrentViewAllowedForWorkspace/);
+  assert.match(operationsHtml, /function isStudioTaskOnlySession/);
+  assert.match(operationsHtml, /\['studio', 'tasks', 'dashboard'\]/);
+  assert.match(operationsHtml, /one_time_ai_video_worker/);
+  assert.match(operationsHtml, /const needsPipelineData = !studioTaskOnlySession/);
+  assert.match(operationsHtml, /const needsAgentFleetData = !studioTaskOnlySession/);
+  assert.match(operationsHtml, /const needsQueueHealthData = !studioTaskOnlySession/);
+  assert.doesNotMatch(operationsHtml, /if \(!viewAllowed\(currentView\)\) currentView = 'dashboard'/);
 });
 
 test('Operations Admin Roles exposes read-only role and access policy matrix', () => {

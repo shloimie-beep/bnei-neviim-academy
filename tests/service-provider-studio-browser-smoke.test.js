@@ -129,7 +129,7 @@ test('Operations Studio browser smoke renders and exercises the local no-send wo
           external_write_performed: false,
           allowed_from_bna: ['prepare OpenArt-ready prompts'],
           blocked_until_connected: ['live image generation', 'reference upload'],
-          source_url: 'https://openart.ai/mcp/',
+          source_url: 'https://mcp.openart.ai/mcp',
           app_url: 'https://openart.ai/',
         },
         pilot_fixture: null,
@@ -254,6 +254,35 @@ test('Operations Studio browser smoke renders and exercises the local no-send wo
         no_external_writes: true,
       }));
     }
+    if (pathname === '/api/bna/studio/projects/101/ai-video-worker/handoff' && request.method() === 'POST') {
+      const promptPack = {
+        pack_type: 'ai_video_worker_prompt_pack',
+        pack_id: 'ai_video_prompt_pack_smoke',
+        scene_prompts: detail.scenes.map((scene) => ({
+          scene_key: scene.scene_key,
+          position: scene.position,
+          title: scene.title,
+          openart_prompt_hash: `prompt-${scene.scene_key}`,
+          copy_text: 'OpenArt target: smoke scene',
+        })),
+        no_live_call: true,
+        external_write_performed: false,
+      };
+      const handoff = {
+        handoff_type: 'ai_video_worker_review',
+        status: 'ready_for_worker_review',
+        idempotency_key: 'ai_video_worker_handoff_smoke',
+        prompt_pack: promptPack,
+        vendor_blockers: ['Shloimie must sign up for OpenArt and connect OAuth/MCP before live generation is enabled.'],
+        no_publish: true,
+        no_send: true,
+        no_upload: true,
+        no_live_call: true,
+        external_write_performed: false,
+      };
+      detail.exports.unshift({ id: 29, export_type: 'ai_video_worker_handoff', status: 'ready_for_review', idempotency_key: handoff.idempotency_key, created_at: new Date('2026-07-06T10:00:00Z').toISOString() });
+      return route.fulfill(json({ success: true, handoff, prompt_pack: promptPack, export: detail.exports[0], no_external_writes: true }));
+    }
     if (pathname === '/api/bna/studio/repair/plan' && request.method() === 'POST') {
       return route.fulfill(json({
         success: true,
@@ -316,13 +345,15 @@ test('Operations Studio browser smoke renders and exercises the local no-send wo
     await page.getByRole('button', { name: /Source/ }).first().click();
     await page.locator('textarea[name="raw_text"]').fill('Fresh source text from the smoke test.');
     await page.getByRole('button', { name: 'Prepare Review Pack' }).click();
-    await page.waitForFunction(() => document.body.innerText.includes('Review pack prepared') && document.body.innerText.includes('Mock render ready'));
+    await page.waitForFunction(() => document.body.innerText.includes('Review pack prepared') && document.body.innerText.includes('Worker handoff ready'));
     let body = await page.locator('body').innerText();
     assert.match(body, /Review Pack/);
     assert.match(body, /Source saved/);
     assert.match(body, /Storyboard generated/);
     assert.match(body, /Prompt compiled/);
+    assert.match(body, /Prompt pack built/);
     assert.match(body, /Mock render ready/);
+    assert.match(body, /Worker handoff ready/);
     assert.match(body, /No vendor call/);
     assert.match(body, /No publish\/send/);
     const reviewPackBox = await page.locator('[data-testid="studio-review-pack"]').first().boundingBox();
@@ -388,6 +419,8 @@ test('Operations Studio browser smoke renders and exercises the local no-send wo
     assert.match(body, /External write: no/);
 
     await page.getByRole('button', { name: /Handoff/ }).first().click();
+    await page.getByRole('button', { name: 'Create Worker Handoff' }).click();
+    await page.waitForSelector('[data-testid="studio-ai-video-worker-handoff"]');
     await page.getByRole('button', { name: 'Create Content Handoff' }).click();
     await page.waitForSelector('[data-testid="studio-handoff-review"]');
 
@@ -403,7 +436,9 @@ test('Operations Studio browser smoke renders and exercises the local no-send wo
     await page.waitForTimeout(100);
     await page.screenshot({ path: path.join(screenshotDir, 'mobile-handoff.png'), fullPage: true });
     body = await page.locator('body').innerText();
-    assert.match(body, /It does not publish, send, schedule, upload, or call an external social provider/);
+    assert.match(body, /Neither publishes, sends, schedules, uploads, or calls an external provider/);
+    assert.match(body, /AI Video Worker Handoff/);
+    assert.match(body, /Prompt pack ready/);
     assert.match(body, /Handoff Review/);
     assert.match(body, /No publish/);
     assert.match(body, /External write: no/);

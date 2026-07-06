@@ -13,6 +13,7 @@ test('OpenArt MCP status is blocked and no-live until OAuth is connected', () =>
   assert.equal(status.provider, 'openart');
   assert.equal(status.connected, false);
   assert.equal(status.status, 'blocked_no_oauth');
+  assert.equal(status.source_url, 'https://mcp.openart.ai/mcp');
   assert.equal(status.no_live_call, true);
   assert.equal(status.external_write_performed, false);
   assert.match(status.next_action, /Shloimie must sign up/);
@@ -115,4 +116,74 @@ test('OpenArt prompt export includes character continuity and no-live MCP plan',
   assert.match(exportPlan.copy_text, /Character continuity/);
   assert.match(exportPlan.copy_text, /Rabbi Elie/);
   assert.equal(exportPlan.mcp_request_plan.requires_oauth, true);
+});
+
+test('AI video worker handoff packages source, storyboard, prompts, and exact blockers without live calls', () => {
+  const source = studio.normalizeStudioSourceInput({
+    title: 'Mishnah review source',
+    raw_text: 'A Mishnah review scene should keep the source clear and the Rabbi character consistent.',
+  });
+  const storyboard = studio.buildStoryboard({ source, scene_count: 2 });
+  const compiledPrompts = storyboard.scenes.map((scene) => studio.compileStudioPrompt({
+    project: {
+      title: 'One Time AI video handoff',
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+    },
+    source,
+    character_bible: [{
+      key: 'rabbi_elie',
+      name: 'Rabbi Elie',
+      description: 'Warm Mishnah teacher.',
+      visual_prompt: 'Same face, same black hat.',
+    }],
+    guardrails: ['Rabbi review before release'],
+    scene,
+  }));
+  const promptPack = sidekick.buildAiVideoWorkerPromptPack({
+    env: {},
+    project: {
+      id: 91,
+      title: 'One Time AI video handoff',
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+    },
+    source,
+    scenes: storyboard.scenes,
+    compiled_prompts: compiledPrompts,
+    character_bible: [{
+      key: 'rabbi_elie',
+      name: 'Rabbi Elie',
+      description: 'Warm Mishnah teacher.',
+      visual_prompt: 'Same face, same black hat.',
+    }],
+    guardrails: ['Rabbi review before release'],
+  });
+  const handoff = sidekick.buildAiVideoWorkerReviewHandoff({
+    env: {},
+    project: {
+      id: 91,
+      title: 'One Time AI video handoff',
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+    },
+    source,
+    scenes: storyboard.scenes,
+    prompt_pack: promptPack,
+    assets: [{ asset_key: 'mock_asset_1', rights_status: 'internal_mock_only' }],
+    usage: { totals: { estimated_cost_usd: 0 } },
+    approved_by: 'test',
+  });
+
+  assert.equal(promptPack.pack_type, 'ai_video_worker_prompt_pack');
+  assert.equal(promptPack.worker_role, 'one_time_ai_video_worker');
+  assert.equal(promptPack.scene_prompts.length, 2);
+  assert.equal(promptPack.external_write_performed, false);
+  assert.equal(handoff.handoff_type, 'ai_video_worker_review');
+  assert.equal(handoff.worker_role, 'one_time_ai_video_worker');
+  assert.equal(handoff.status, 'ready_for_worker_review');
+  assert.equal(handoff.no_live_call, true);
+  assert.equal(handoff.external_write_performed, false);
+  assert.match(handoff.vendor_blockers.join(' '), /OpenArt/);
+  assert.match(handoff.idempotency_key, /^ai_video_worker_handoff_/);
 });

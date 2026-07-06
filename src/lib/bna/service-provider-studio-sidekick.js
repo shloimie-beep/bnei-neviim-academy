@@ -187,6 +187,149 @@ function buildOpenArtPromptExport({ project = {}, compiled_prompt = {}, sidekick
   };
 }
 
+function sourceSummary(source = {}) {
+  const text = studio.safeText(source.normalized_text || source.normalized_text_preview || source.raw_text || source.raw_text_preview || source.title);
+  return {
+    title: studio.safeText(source.title, 'Studio source'),
+    source_type: studio.safeText(source.source_type, 'manual'),
+    source_hash: source.source_hash || (text ? studio.sha256(text) : null),
+    word_count: source.word_count || (text ? text.split(/\s+/).filter(Boolean).length : 0),
+    excerpt: text.slice(0, 700),
+  };
+}
+
+function buildAiVideoWorkerPromptPack({ project = {}, source = {}, scenes = [], compiled_prompts = [], character_bible = [], guardrails = [], sidekick_patch = null, references = [], env = process.env } = {}) {
+  const normalizedScenes = (Array.isArray(scenes) ? scenes : []).map(studio.normalizeStudioScene);
+  const compiledList = Array.isArray(compiled_prompts) ? compiled_prompts : [compiled_prompts].filter(Boolean);
+  const scenePrompts = normalizedScenes.map((scene, index) => {
+    const compiled = compiledList[index] || compiledList[0] || studio.compileStudioPrompt({
+      project,
+      source,
+      character_bible,
+      guardrails,
+      scene,
+      correction_patches: sidekick_patch ? [sidekick_patch] : [],
+    });
+    const openArtExport = buildOpenArtPromptExport({
+      project,
+      compiled_prompt: compiled,
+      sidekick_patch,
+      character_bible,
+      guardrails,
+      scene,
+      references,
+      env,
+    });
+    return {
+      scene_key: scene.scene_key,
+      position: scene.position,
+      title: scene.title,
+      duration_seconds: scene.duration_seconds,
+      narration: scene.narration,
+      visual_prompt: scene.visual_prompt,
+      compiled_hash: compiled.compiled_hash || null,
+      openart_prompt_hash: openArtExport.prompt_hash,
+      copy_text: openArtExport.copy_text,
+      character_reference_checklist: openArtExport.character_reference_checklist,
+      guardrail_checklist: openArtExport.guardrail_checklist,
+      mcp_request_plan: openArtExport.mcp_request_plan,
+    };
+  });
+  const sourceInfo = sourceSummary(source);
+  const packHash = studio.sha256(JSON.stringify({
+    project_key: project.project_key,
+    source_hash: sourceInfo.source_hash,
+    scenes: scenePrompts.map((scene) => [scene.scene_key, scene.compiled_hash, scene.openart_prompt_hash]),
+  }));
+
+  return {
+    requirement_id: 'REQ-20260702-967',
+    pack_type: 'ai_video_worker_prompt_pack',
+    pack_id: studio.stableId('ai_video_prompt_pack', [project.project_key, sourceInfo.source_hash, packHash]),
+    pack_hash: packHash,
+    worker_role: 'one_time_ai_video_worker',
+    source: sourceInfo,
+    scene_count: scenePrompts.length,
+    scene_prompts: scenePrompts,
+    review_contract: [
+      'Review each scene prompt against the source, character continuity, Jewish guardrails, and visual realism notes.',
+      'Record requested changes as Studio prompt patches before any external generation.',
+      'Use OpenArt only after OAuth, model/privacy, budget, and reference-upload approvals are in place.',
+    ],
+    no_live_call: true,
+    external_write_performed: false,
+  };
+}
+
+function buildAiVideoWorkerReviewHandoff({ project = {}, source = {}, scenes = [], prompt_pack = {}, assets = [], usage = {}, approved_by = '', env = process.env } = {}) {
+  const normalizedScenes = (Array.isArray(scenes) ? scenes : []).map(studio.normalizeStudioScene);
+  const sourceInfo = sourceSummary(source);
+  const openArtStatus = openArt.openArtMcpStatus(env);
+  const idempotencyKey = studio.stableId('ai_video_worker_handoff', [
+    project.workspace_key,
+    project.project_key,
+    project.id,
+    sourceInfo.source_hash,
+    prompt_pack.pack_hash,
+    normalizedScenes.map((scene) => `${scene.scene_key}:${scene.version}`).join(','),
+  ]);
+
+  return {
+    requirement_id: 'REQ-20260702-967',
+    handoff_type: 'ai_video_worker_review',
+    status: 'ready_for_worker_review',
+    idempotency_key: idempotencyKey,
+    worker_role: 'one_time_ai_video_worker',
+    scope: {
+      workspace_key: project.workspace_key || 'rabbi_sheller_provider',
+      project_key: project.project_key || 'one_time_mishnah_class',
+      studio_project_id: project.id || null,
+      title: project.title || null,
+    },
+    source: sourceInfo,
+    storyboard: {
+      scene_count: normalizedScenes.length,
+      scenes: normalizedScenes.map((scene) => ({
+        scene_key: scene.scene_key,
+        position: scene.position,
+        title: scene.title,
+        duration_seconds: scene.duration_seconds,
+        version: scene.version,
+        status: scene.status,
+      })),
+    },
+    prompt_pack,
+    assets: (Array.isArray(assets) ? assets : []).map((asset) => ({
+      asset_key: asset.asset_key || null,
+      scene_key: asset.scene_key || null,
+      asset_type: asset.asset_type || null,
+      rights_status: asset.rights_status || 'review_required',
+      privacy_status: asset.privacy_status || 'review_required',
+      url: asset.url || null,
+    })),
+    usage,
+    review_steps: [
+      'Open the prompt pack and review scene order, narration, and visual prompt intent.',
+      'Check character continuity against the saved character bible and any reference notes.',
+      'Check Jewish guardrails and source fidelity before external generation.',
+      'Draft Studio sidekick patch requests for every render defect or prompt issue.',
+      'Do not publish, send, upload references, spend credits, or grant member access from this handoff.',
+    ],
+    vendor_blockers: [
+      openArtStatus.connected ? 'OpenArt OAuth is connected but live generation still needs supervised no-live readiness smoke.' : openArtStatus.next_action,
+      'Hosted multimodal image-analysis model, budget, retention/privacy, and upload policy must be approved before true pixel analysis.',
+      'Reference upload, generation, credit spend, and result pull remain blocked until explicit vendor approval.',
+    ],
+    openart_status: openArtStatus,
+    no_publish: true,
+    no_send: true,
+    no_upload: true,
+    no_live_call: true,
+    external_write_performed: false,
+    approved_by: approved_by || null,
+  };
+}
+
 function planStudioRepairRequest(scope = {}, request = {}) {
   return studioPolicy.planOneTimeStudioRepairRequest(scope, {
     action: studioPolicy.STUDIO_REPAIR_ACTION,
@@ -201,5 +344,7 @@ module.exports = {
   draftStudioSidekickPatch,
   characterReferenceChecklist,
   buildOpenArtPromptExport,
+  buildAiVideoWorkerPromptPack,
+  buildAiVideoWorkerReviewHandoff,
   planStudioRepairRequest,
 };

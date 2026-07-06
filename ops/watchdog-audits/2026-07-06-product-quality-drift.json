@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T10:51:39.760Z",
+  "generated_at": "2026-07-06T12:39:28.275Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -21,6 +21,7 @@
     "docs/BROWSER-AGENT-SECURITY.md",
     "docs/CONTEXT-BUDGET-AND-PACKET-SPLITTING.md",
     "docs/DESIGN-REFERENCE-CAPTURE.md",
+    "docs/ONE-TIME-AI-VIDEO-WORKER-ACCESS-MATRIX.md",
     "docs/OPERATIONS-UI-AUDIT.md",
     "docs/PACKET-DAG.md",
     "docs/PRODUCT-QUALITY-COMPILER.md",
@@ -276,6 +277,7 @@
     "ops/prompt-packets/2026-07-05-onetime-landing-signup-funnel/01-public-landing-signup-funnel.product-quality.json",
     "ops/prompt-packets/2026-07-05-release-captain-onetime-ui-recovery/01-operations-sidebar-release-captain.product-quality.json",
     "ops/prompt-packets/2026-07-05-task-1851-bna-brand-shell-verification/01-bna-brand-shell-verifier.product-quality.json",
+    "ops/prompt-packets/2026-07-06-chatgpt-dropoff-smoke-agent-mode/00-smoke-prompt.md",
     "ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
@@ -466,6 +468,7 @@
     "tasks-pending/2026-07-06-chatgpt-dropoff-status-and-onetime-audit-setup.md",
     "tasks-pending/2026-07-06-deploy-gate-scoped-credential-deferral.md",
     "tasks-pending/2026-07-06-finish-pending-work-inventory.md",
+    "tasks-pending/2026-07-06-onetime-ai-video-worker-access-role.md",
     "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"

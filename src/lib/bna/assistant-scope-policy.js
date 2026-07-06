@@ -149,7 +149,7 @@ function buildAssistantScopeSystemNote(scope = {}) {
   }
 
   if (caps.studio_sidekick) {
-    lines.push('One Time Studio operator may draft prompt/image patches, OpenArt prompt exports, and Studio-only repair requests. This is not raw CLI or shell access.');
+    lines.push('One Time Studio operator or AI video worker may draft prompt/image patches, OpenArt prompt exports, and Studio-only repair requests. This is not raw CLI or shell access.');
   }
 
   return lines.join('\\n');

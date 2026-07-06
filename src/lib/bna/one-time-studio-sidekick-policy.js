@@ -1,8 +1,13 @@
 'use strict';
 
 const ONE_TIME_STUDIO_OPERATOR_ROLE = 'one_time_ai_studio_operator';
+const ONE_TIME_AI_VIDEO_WORKER_ROLE = 'one_time_ai_video_worker';
 const ONE_TIME_STUDIO_WORKSPACE_KEY = 'rabbi_sheller_provider';
 const ONE_TIME_STUDIO_PROJECT_KEY = 'one_time_mishnah_class';
+const ONE_TIME_STUDIO_REPAIR_ROLES = new Set([
+  ONE_TIME_STUDIO_OPERATOR_ROLE,
+  ONE_TIME_AI_VIDEO_WORKER_ROLE,
+]);
 
 const STUDIO_REPAIR_ACTION = 'studio_repair_request';
 
@@ -85,7 +90,7 @@ function isOneTimeStudioOperatorScope(scope = {}) {
   const role = normalizeKey(scope.role);
   const workspaceKey = normalizeKey(scope.workspace_key || scope.workspaceKey);
   const projectKey = normalizeKey(scope.project_key || scope.projectKey);
-  return role === ONE_TIME_STUDIO_OPERATOR_ROLE
+  return ONE_TIME_STUDIO_REPAIR_ROLES.has(role)
     && workspaceKey === ONE_TIME_STUDIO_WORKSPACE_KEY
     && projectKey === ONE_TIME_STUDIO_PROJECT_KEY;
 }
@@ -122,7 +127,7 @@ function planOneTimeStudioRepairRequest(scope = {}, request = {}) {
       allowed: false,
       mode: 'deny',
       action: STUDIO_REPAIR_ACTION,
-      reason: 'one_time_studio_operator_scope_required',
+      reason: 'one_time_studio_worker_scope_required',
     };
   }
 
@@ -142,7 +147,7 @@ function planOneTimeStudioRepairRequest(scope = {}, request = {}) {
       mode: 'deny',
       action: STUDIO_REPAIR_ACTION,
       reason: forbidden.reason,
-      message: 'Studio operator repair requests are limited to AI Studio layout, prompt/image workflow, OpenArt prompt export, and Studio task flow.',
+      message: 'Studio worker repair requests are limited to AI Studio layout, prompt/image workflow, OpenArt prompt export, and Studio task flow.',
       no_shell: true,
       no_codex_cli_route: true,
       no_external_writes: true,
@@ -173,7 +178,7 @@ function planOneTimeStudioRepairRequest(scope = {}, request = {}) {
       '/operations?view=studio',
       '/operations?view=tasks',
       '/api/bna/studio/*',
-      '/api/bna/assistant/scope-plan',
+      '/api/bna/tasks',
     ],
     verification_commands: STUDIO_VERIFICATION_COMMANDS.slice(),
     no_shell: true,
@@ -188,6 +193,7 @@ function planOneTimeStudioRepairRequest(scope = {}, request = {}) {
 
 module.exports = {
   ONE_TIME_STUDIO_OPERATOR_ROLE,
+  ONE_TIME_AI_VIDEO_WORKER_ROLE,
   ONE_TIME_STUDIO_WORKSPACE_KEY,
   ONE_TIME_STUDIO_PROJECT_KEY,
   STUDIO_REPAIR_ACTION,

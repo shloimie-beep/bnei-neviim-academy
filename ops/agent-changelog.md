@@ -29841,3 +29841,37 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Deployment guardrails: no secret value printed or changed, no WhatsApp send,
   no external CRM write, no payment/access/DNS/provider-account mutation, and
   no unrelated local dirty files staged.
+
+## 2026-07-06 - One Time Studio AI Video Worker Handoff Local Verification
+
+- Registered `RAW-20260706-907` as a continuation of `RAW-20260702-010` /
+  `TASK-20260702-010`.
+- Registered `RAW-20260706-908` / `REQ-20260706-930` for the scoped
+  `one_time_ai_video_worker` access role that can use only One Time Studio and
+  the One Time task manager.
+- Added a local no-live AI video worker handoff path for One Time Studio:
+  source, storyboard scenes, scene prompt pack, OpenArt request-plan metadata,
+  review steps, and vendor blockers are packaged into an idempotent
+  `ai_video_worker_handoff` Studio export.
+- Updated the no-live OpenArt adapter source endpoint to
+  `https://mcp.openart.ai/mcp`.
+- Updated Operations Studio so `Prepare Review Pack` now carries through to
+  prompt-pack and worker-handoff readiness, and the Handoff tab exposes
+  `Create Worker Handoff`.
+- Registered the new private route and visible action in the route/action
+  registries.
+- Added `docs/ONE-TIME-AI-VIDEO-WORKER-ACCESS-MATRIX.md` and role/login tests
+  for the worker access boundary.
+- Verification passed: `node --check server.js`, `node --check
+  src/lib/bna/service-provider-studio-sidekick.js`, focused Studio/role/API/UI
+  tests 41/41, `npm run studio:smoke`, PQC validation, `npm run
+  watchdog:actions` with finding count 0, `npm run watchdog:protocol-drift`
+  with finding count 0, `npm run bna:run:status`, and `npm run bna:run:next`.
+- Evidence:
+  `ops/playwright-smokes/2026-07-06-one-time-studio-worker-handoff-local/`,
+  `ops/watchdog-audits/2026-07-06T12-34-watchdog-action-audit.md`,
+  `ops/watchdog-audits/2026-07-06-product-quality-drift.md`, and
+  `ops/product-quality-compiler/validation/latest-product-quality-validation.md`.
+- Remaining blockers: publish/deploy/live smoke before app-visible Done; live
+  OpenArt OAuth/MCP/API, reference upload, generation/credit spend, and true
+  hosted image analysis remain blocked on account/model/cost/privacy decisions.

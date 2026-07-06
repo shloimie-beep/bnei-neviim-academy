@@ -10,6 +10,7 @@ const ONE_TIME_CANONICAL_ROLES = Object.freeze({
   WORKSPACE_ADMIN: 'workspace_admin',
   WORKSPACE_MANAGER: 'workspace_manager',
   AI_STUDIO_OPERATOR: 'ai_studio_operator',
+  AI_VIDEO_WORKER: 'ai_video_worker',
   PROVIDER_STAFF: 'provider_staff',
   MODERATOR: 'moderator',
   PARENT: 'parent',
@@ -25,6 +26,7 @@ const ONE_TIME_ROLE_LABELS = Object.freeze({
   [ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN]: 'Workspace Admin',
   [ONE_TIME_CANONICAL_ROLES.WORKSPACE_MANAGER]: 'Workspace Manager',
   [ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR]: 'AI Studio Operator',
+  [ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER]: 'AI Video Worker',
   [ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF]: 'Provider Staff',
   [ONE_TIME_CANONICAL_ROLES.MODERATOR]: 'Moderator',
   [ONE_TIME_CANONICAL_ROLES.PARENT]: 'Parent',
@@ -48,6 +50,10 @@ const ONE_TIME_ROLE_COMPATIBILITY = Object.freeze({
   one_time_ai_studio_operator: ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR,
   ai_studio_operator: ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR,
   studio_operator: ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR,
+  one_time_ai_video_worker: ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER,
+  ai_video_worker: ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER,
+  one_time_video_worker: ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER,
+  video_worker: ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER,
   service_provider: ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF,
   provider_staff: ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF,
   teacher: ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF,
@@ -72,6 +78,11 @@ const ONE_TIME_IDENTITY_COMPATIBILITY = Object.freeze({
     canonicalRole: ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR,
     label: ONE_TIME_ROLE_LABELS[ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR],
     roleContract: 'one-time-ai-studio-operator-v1',
+  },
+  one_time_ai_video_worker: {
+    canonicalRole: ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER,
+    label: ONE_TIME_ROLE_LABELS[ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER],
+    roleContract: 'one-time-ai-video-worker-v1',
   },
   one_time_admin: {
     canonicalRole: ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN,
@@ -150,6 +161,7 @@ const ONE_TIME_ROLE_CAPABILITIES = Object.freeze({
     'read_provider_class',
   ]),
   [ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR]: new Set([]),
+  [ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER]: new Set([]),
   [ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF]: new Set([
     'read_workspace_users',
     'read_student_enrollment',
@@ -170,6 +182,80 @@ const ONE_TIME_PLATFORM_ROLES = new Set([
   ONE_TIME_CANONICAL_ROLES.SUPPORT_ADMIN,
   ONE_TIME_CANONICAL_ROLES.TECHNICAL_AGENT,
 ]);
+
+const ONE_TIME_ROLE_ACCESS_MATRIX = Object.freeze({
+  [ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR]: Object.freeze({
+    role_key: 'one_time_ai_studio_operator',
+    canonical_role: ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR,
+    label: ONE_TIME_ROLE_LABELS[ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR],
+    workspace_key: ONE_TIME_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    allowed_views: Object.freeze(['studio', 'tasks']),
+    allowed_route_groups: Object.freeze([
+      'one_time_studio',
+      'one_time_task_manager',
+      'studio_repair_lane',
+    ]),
+    denied_route_groups: Object.freeze([
+      'bna_school',
+      'cross_workspace',
+      'contacts_crm',
+      'payments_accounting',
+      'settings_integrations',
+      'member_access_grants',
+      'raw_shell_codex_deploy',
+    ]),
+    data_boundary: 'rabbi_sheller_provider / one_time_mishnah_class only',
+  }),
+  [ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER]: Object.freeze({
+    role_key: 'one_time_ai_video_worker',
+    canonical_role: ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER,
+    label: ONE_TIME_ROLE_LABELS[ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER],
+    workspace_key: ONE_TIME_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    allowed_views: Object.freeze(['studio', 'tasks']),
+    allowed_route_groups: Object.freeze([
+      'one_time_studio',
+      'one_time_task_manager',
+      'studio_repair_lane',
+    ]),
+    allowed_actions: Object.freeze([
+      'view_studio_dashboard',
+      'view_studio_projects',
+      'create_or_update_studio_project',
+      'save_studio_source',
+      'prepare_studio_review_pack',
+      'generate_studio_outline',
+      'generate_studio_storyboard',
+      'compile_studio_prompt',
+      'preview_studio_prompt_patch',
+      'export_openart_prompt_no_live',
+      'create_ai_video_worker_handoff',
+      'run_mock_studio_render',
+      'plan_studio_repair_no_shell',
+      'view_one_time_tasks',
+      'create_one_time_task',
+      'update_one_time_task',
+      'comment_on_one_time_task',
+    ]),
+    denied_route_groups: Object.freeze([
+      'bna_school',
+      'rabbi_provider_admin',
+      'cross_workspace',
+      'contacts_crm',
+      'payments_accounting',
+      'content_handoff',
+      'agent_fleet',
+      'queue_health',
+      'task_artifacts',
+      'settings_integrations',
+      'member_access_grants',
+      'external_sends_publishes_uploads',
+      'raw_shell_codex_deploy',
+    ]),
+    data_boundary: 'Only One Time Studio records and One Time task-manager records for rabbi_sheller_provider / one_time_mishnah_class.',
+  }),
+});
 
 function normalizeKey(value = '') {
   return String(value || '')
@@ -282,6 +368,16 @@ function oneTimeCanonicalOwnerAssignments() {
 function roleCapabilities(role = '') {
   const canonical = normalizeOneTimeRole(role);
   return ONE_TIME_ROLE_CAPABILITIES[canonical] || new Set();
+}
+
+function oneTimeRoleAccessMatrix(role = '') {
+  const canonical = normalizeOneTimeRole(role);
+  return ONE_TIME_ROLE_ACCESS_MATRIX[canonical] || null;
+}
+
+function oneTimeAllowedViewsForRole(role = '') {
+  const matrix = oneTimeRoleAccessMatrix(role);
+  return Array.isArray(matrix?.allowed_views) ? matrix.allowed_views.slice() : [];
 }
 
 function canonicalRolesForIdentity(identity = {}) {
@@ -494,6 +590,7 @@ function buildOneTimeRoleChangeAuditEvent({
 module.exports = {
   ONE_TIME_CANONICAL_ROLES,
   ONE_TIME_PROJECT_KEY,
+  ONE_TIME_ROLE_ACCESS_MATRIX,
   ONE_TIME_ROLE_LABELS,
   ONE_TIME_WORKSPACE_KEY,
   buildOneTimeRoleChangeAuditEvent,
@@ -509,7 +606,9 @@ module.exports = {
   normalizeOneTimeRole,
   normalizeOneTimeWorkspaceKey,
   oneTimeCanonicalOwnerAssignments,
+  oneTimeAllowedViewsForRole,
   oneTimeDisplayName,
+  oneTimeRoleAccessMatrix,
   oneTimeRoleLabel,
   oneTimeUserView,
 };
