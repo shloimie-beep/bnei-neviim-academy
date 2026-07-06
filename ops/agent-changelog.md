@@ -30274,6 +30274,21 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   `codex/archive-clean-checkout-closeout-20260706`, and deleted the stale local
   `codex/onetime-studio-worker-handoff-20260706` branch after confirming it was
   already represented on `master`.
+- Published and merged cleanup PR #124:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/124`.
+- Railway production deployment
+  `51f37ce6-6a23-4622-abc2-c474184f1f4f` succeeded on merge commit
+  `9beee40ae2c6f82cd6f6fea15661b4ac082f1543`.
+- Archived and removed 93 stale registered Git worktrees under local archive
+  `C:\Users\User\BNA-local-archives\2026-07-06-bna-stale-worktrees-before-remove`;
+  deleted 139 old local branches after creating an all-local-refs recovery
+  bundle; normalized the main checkout to clean `master...origin/master`.
+- Verification: PASS `npm run secrets:audit`; PASS `npm run app:smoke`; PASS
+  `npm run app:smoke:rabbi-onetime-landing`; PASS
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`;
+  PASS live BNA and One Time health readbacks; GitHub open PR list returned
+  empty; final `git worktree list` and `git branch --list` contain only the
+  main checkout and `master`.
 - Guardrails: did not commit local keyholder diagnostics, archive contents,
   superseded stale raw IDs, generated pickup/watchdog junk, external sends,
   payment/access changes, DNS/provider mutations, Drive writes, or secret
