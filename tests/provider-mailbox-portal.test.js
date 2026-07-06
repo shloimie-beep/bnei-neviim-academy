@@ -89,6 +89,18 @@ test('manual Resend draft sends preserve One Time mailbox scope metadata', () =>
   assert.match(sendBlock, /project_key: logProjectKey \|\| payloadMetadata\.project_key \|\| null/);
 });
 
+test('Resend draft recipient conflict check maps contact workspace to project scope', () => {
+  const conflictBlock = sourceBlock(
+    server,
+    /async function findCrossWorkspaceEmailRecipientConflicts/,
+    /app\.get\('\/api\/bna\/communications\/social\/drafts'/
+  );
+  assert.match(conflictBlock, /ws\.workspace_key/);
+  assert.match(conflictBlock, /WHEN 'rabbi_sheller_provider' THEN 'one_time_mishnah_class'/);
+  assert.match(conflictBlock, /WHEN 'bna' THEN/);
+  assert.doesNotMatch(conflictBlock, /ws\.project_key/);
+});
+
 test('route and action registries cover One Time provider mailbox', () => {
   const routes = routeRegistry.routes || [];
   const actions = actionRegistry.actions || [];

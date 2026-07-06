@@ -44101,7 +44101,13 @@ async function findCrossWorkspaceEmailRecipientConflicts(req, emails = [], draft
   if (!projectKey || !normalizedEmails.length) return [];
   const result = await db.query(
     `WITH known_emails AS (
-       SELECT LOWER(c.primary_email) AS email, COALESCE(ws.project_key, '') AS project_key, 'contact' AS source
+       SELECT LOWER(c.primary_email) AS email,
+              CASE COALESCE(ws.workspace_key, '')
+                WHEN 'rabbi_sheller_provider' THEN 'one_time_mishnah_class'
+                WHEN 'bna' THEN '${DEFAULT_PROJECT_KEY}'
+                ELSE COALESCE(ws.workspace_key, '')
+              END AS project_key,
+              'contact' AS source
        FROM bna_contacts c
        LEFT JOIN bna_workspace_settings ws ON ws.id = c.workspace_id
        WHERE c.primary_email IS NOT NULL
