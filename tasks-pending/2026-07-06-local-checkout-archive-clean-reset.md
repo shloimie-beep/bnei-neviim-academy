@@ -51,7 +51,7 @@ Raw source preserved at:
 
 ## What was intentionally not published
 
-- Old local raw IDs `RAW-20260706-910` through `RAW-20260706-915`; these were
+- Old local superseded raw-number records 910 through 915; these were
   superseded by the published non-colliding records from PR #123.
 - Local keyholder diagnostics under `ops/qa-runs/`; these are not appropriate
   for GitHub because they contain local keyholder paths and fingerprints.

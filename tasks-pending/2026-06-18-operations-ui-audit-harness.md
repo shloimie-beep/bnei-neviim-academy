@@ -15,6 +15,7 @@ record mutation, or deployment.
 | Source | codex_chat |
 | Parse status | implemented |
 | Requirement register | tasks-pending/2026-06-18-operations-ui-audit-harness.md |
+| Repo fallback pointer | `raw-input/RAW-20260618-002-operations-ui-audit-harness-redacted-pointer.md` |
 
 ## Parsed requirements
 

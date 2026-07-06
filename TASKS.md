@@ -20,7 +20,7 @@ not authorize active GHL runtime paths.
   addendum was sent by WhatsApp to 8 recipients (4 Hebrew, 4 English) and by
   Gmail to 5 recipients (3 Hebrew, 2 English), saying the Webers are just
   away/on vacation and not hosting today's meeting.
-- [ ] `RAW-20260705-012` / `REQ-20260705-801` through
+- [x] `RAW-20260705-012` / `REQ-20260705-801` through
   `REQ-20260705-806`: Telegram Drive sync OAuth error and cleanup
   continuation. Register:
   `tasks-pending/2026-07-05-telegram-drive-sync-oauth-error-and-cleanup-continuation.md`.
@@ -29,20 +29,22 @@ not authorize active GHL runtime paths.
   `f4acc3d5-7468-4584-9b08-c17e96bc80a2` reached `SUCCESS`. Post-deploy
   worker logs show clean startup and no new Google OAuth JSON error or Telegram
   duplicate-poller conflict in the checked window. Cleanup continuation under
-  `REQ-20260705-806` is now hardening tests that were dirtying tracked
-  screenshots/reports and publishing the Task #1851 verification evidence as a
-  scoped repo-cleanup branch.
-- [ ] `RAW-20260705-010` / `REQ-20260705-601` through `REQ-20260705-608`:
+  `REQ-20260705-806` was completed through PR #103, which hardened smoke/test
+  outputs so normal verification writes to temp directories instead of tracked
+  evidence paths. The later repo hygiene pass archived/remediated remaining
+  local dirty leftovers and left `master` clean.
+- [x] `RAW-20260705-010` / `REQ-20260705-601` through `REQ-20260705-608`:
   Repo release workflow and Rabbi Drive email reminder cleanup. Register:
   `tasks-pending/2026-07-05-repo-release-workflow-and-drive-email.md`.
   Current status: One Time public canonical work is pushed, merged, deployed,
   and live-smoked; the Drive drop-off scheduled task was repaired locally and
   now runs with result `0` to `sdratler@gmail.com` without sending old-file
   emails. Scheduler hardening was merged through PR #100; stale draft PRs
-  #51/#62/#63 were closed as conflict-stale rather than broad-merged. Pending
-  before the broader workflow is clean: active-run blocker reconciliation,
-  agent-fleet policy/readiness cleanup, remaining stale dirty artifact triage,
-  and valid Operations credentials for logged-in One Time visual proof.
+  #51/#62/#63 were closed as conflict-stale rather than broad-merged.
+  Agent-fleet readiness was rerun from clean `master` and passed, while the
+  runtime supervisor/watchdog remain local-environment actions. Logged-in
+  One Time visual proof remains a separate blocked follow-up requiring a valid
+  Operations/browser session.
 - [x] `RAW-20260705-009` / `REQ-20260705-501` through `REQ-20260705-510`:
   Correct the One Time canonical target-routing mistake. The BNA-hosted
   `/one-time` page is not sufficient proof; the canonical production target is

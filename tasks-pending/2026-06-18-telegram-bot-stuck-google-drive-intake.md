@@ -30,6 +30,15 @@ Additional raw record:
 | Parse status | implemented |
 | Requirement register | tasks-pending/2026-06-18-telegram-bot-stuck-google-drive-intake.md |
 
+Repo fallback pointer for referenced live Telegram row:
+
+| Field | Value |
+|---|---|
+| Raw ID | RAW-20260617-020 |
+| Source | telegram |
+| Parse status | referenced |
+| Repo fallback pointer | `raw-input/RAW-20260617-020-telegram-row-redacted-pointer.md` |
+
 ## Goal-mode execution
 
 | Field | Value |
