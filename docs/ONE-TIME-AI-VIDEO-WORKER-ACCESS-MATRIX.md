@@ -25,5 +25,10 @@ Workspace/project scope: `rabbi_sheller_provider` / `one_time_mishnah_class`
 
 ## Live Blockers
 
-- Target environment must configure `ONE_TIME_AI_VIDEO_WORKER_USERNAME` and `ONE_TIME_AI_VIDEO_WORKER_PASSWORD`.
-- App-visible proof still needs deploy and authenticated live smoke after release.
+- Production worker login values must stay in environment variables/local secret
+  handoff only; never commit the password.
+- Permanent owner-managed worker identity and password-rotation path remain open
+  after the temporary Ben Levy handoff.
+- OpenArt live generation, reference upload, and credit spend remain blocked
+  until vendor credentials, model, cost, privacy, and rollback policy are
+  approved and smoke-tested.
