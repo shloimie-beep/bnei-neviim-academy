@@ -304,6 +304,18 @@
   if the body or subject has repeated `????` runs that indicate encoding
   corruption, the system should refuse to send and log/block the message for
   repair instead of delivering gibberish.
+- Shloimie's clear natural-language approval is sufficient for an exact
+  prepared external send when the recipient segment and message copy are
+  obvious from the current conversation. Do not require a typed magic phrase
+  as an extra blocker in those obvious cases. Still block and clarify if the
+  send scope, copy, recipient source, money/access/legal/privacy impact, or
+  external account mutation is ambiguous or has changed.
+- For BNA school-wide parent reminders, use parents tied to current canonical
+  BNA student records by default. Avoid stale duplicate records and signup-only
+  contacts unless Shloimie explicitly broadens the audience.
+- The Webers left / are no longer hosting BNA meetings; exclude Weber parents
+  from BNA parent meeting reminder sends unless Shloimie explicitly re-includes
+  them.
 - Amitai's family WhatsApp reminders should be Hebrew when the family,
   student, or contacts are tagged/configured for Hebrew; messages for Amitai,
   his mother, and father should use Hebrew by default.

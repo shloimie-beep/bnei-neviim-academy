@@ -29545,3 +29545,24 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - No production data mutation, deploy, external send, Drive write, charge,
   DNS/access/provider-account mutation, credential change, or external CRM
   write was performed by this cleanup batch.
+
+## 2026-07-06 - BNA Parent Meeting Reminder Email Sent, WhatsApp Blocked
+
+- Registered `RAW-20260706-001` and
+  `tasks-pending/2026-07-06-bna-parent-meeting-reminder-send-and-merge.md`
+  for Shloimie's BNA parent meeting reminder, natural-language approval
+  correction, and duplicate student merge request.
+- Recorded the durable correction that Shloimie's clear natural-language
+  approval is sufficient for an exact prepared external send; typed magic
+  phrases must not be an extra blocker in obvious cases.
+- Merged/repaired duplicate student identity state:
+  - Huda/Hooda Weber source `#21982` is inactive/merged under target `#82261`,
+    and signup `#9` points to `#82261`.
+  - Menachem source `#79458` is inactive/merged under target `#2800`, and
+    signup `#12` points to `#2800`; merge event `#2`.
+- Rebuilt the current-student parent recipient list with Weber/stale duplicate
+  exclusions and sent 5 individual Gmail reminders: 3 Hebrew and 2 English.
+- WhatsApp is blocked by WAPI/Whapi provider authorization. First WAPI attempt
+  logged communication `#2396` and failed with provider `401` / `need channel
+  authorization for send message`; the remaining WhatsApp sends were not
+  attempted.
