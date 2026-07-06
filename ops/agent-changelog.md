@@ -29621,3 +29621,18 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   true uploaded-image pixel analysis remain blocked until Shloimie connects the
   OpenArt account/workspace and approves the hosted multimodal model plus image
   retention/privacy policy.
+
+## 2026-07-06 - One Time Studio Sidekick PR Ready, Deploy Gate Blocked
+
+- Marked PR #105 ready for review:
+  https://github.com/shloimie-beep/bnei-neviim-academy/pull/105
+- Clean deploy-gate mode was run from a detached worktree at pushed head
+  `11b97353` with no production mutation, deploy, or live verification.
+- Deploy remains blocked because `BNA_PRODUCTION_DEPLOY_APPROVED=approved`,
+  `BNA_DEFER_OPTIONAL_INTEGRATIONS_APPROVED=approved`, and
+  `BNA_DEFER_EXTERNAL_READBACK_APPROVED=approved` are not set, and optional
+  integration/readback readiness still reports Vimeo, Rabbi Stripe, Rabbi
+  Telegram worker, database, Railway, and Drive blockers.
+- No merge, deploy, live smoke, OpenArt OAuth/generation/upload/credit action,
+  external send, payment/access change, DNS, secret, CRM, or production data
+  mutation was performed.
