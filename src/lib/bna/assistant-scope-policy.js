@@ -7,6 +7,7 @@ const {
   assertActionAllowed,
   summarizeScope,
 } = require('./account-scope-entitlements');
+const studioSidekickPolicy = require('./one-time-studio-sidekick-policy');
 
 const BLOCKED_DANGEROUS_ASSISTANT_ACTIONS = new Set([
   'codex_cli_route',
@@ -39,6 +40,8 @@ function assistantCapabilitiesForScope(scope = {}) {
     social_drafts: hasEntitlement(scope, ENTITLEMENTS.SOCIAL_DRAFTS),
     school_youtube_assignments: hasEntitlement(scope, ENTITLEMENTS.SCHOOL_YOUTUBE_ASSIGNMENTS),
     support_tickets: hasEntitlement(scope, ENTITLEMENTS.SUPPORT_TICKETS),
+    studio_sidekick: studioSidekickPolicy.isOneTimeStudioOperatorScope(scope),
+    studio_repair_requests: studioSidekickPolicy.isOneTimeStudioOperatorScope(scope),
 
     // Globally removed from user-facing assistants.
     codex_cli_routing: false,
@@ -71,6 +74,10 @@ function planAssistantResponseMode(scope = {}, request = {}) {
   const action = String(request.action || '').trim();
   const text = String(request.text || '').toLowerCase();
   const capabilities = assistantCapabilitiesForScope(scope).assistant_capabilities;
+
+  if (action === studioSidekickPolicy.STUDIO_REPAIR_ACTION) {
+    return studioSidekickPolicy.planOneTimeStudioRepairRequest(scope, request);
+  }
 
   if (
     action === 'codex_cli_route' ||
@@ -139,6 +146,10 @@ function buildAssistantScopeSystemNote(scope = {}) {
 
   if (caps.full_crm) {
     lines.push('CRM help is allowed only inside the selected workspace/project and must not send messages.');
+  }
+
+  if (caps.studio_sidekick) {
+    lines.push('One Time Studio operator may draft prompt/image patches, OpenArt prompt exports, and Studio-only repair requests. This is not raw CLI or shell access.');
   }
 
   return lines.join('\\n');

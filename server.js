@@ -84,6 +84,8 @@ const {
   parseJsonMaybe: parseAgentJsonMaybe,
 } = require('./src/lib/bna/agent-control');
 const studio = require('./src/lib/bna/service-provider-studio');
+const studioSidekick = require('./src/lib/bna/service-provider-studio-sidekick');
+const openArtMcpAdapter = require('./src/lib/bna/studio-openart-mcp-adapter');
 const accountScope = require('./src/lib/bna/account-scope-entitlements');
 const crmContactModel = require('./src/lib/bna/crm-contact-model');
 const assistantScopePolicy = require('./src/lib/bna/assistant-scope-policy');
@@ -2575,6 +2577,16 @@ const ONE_TIME_MANAGER_USERNAME =
 const ONE_TIME_MANAGER_PASSWORD =
   process.env.ONE_TIME_MANAGER_PASSWORD ||
   process.env.SHLOIMIE_ONE_TIME_PASSWORD ||
+  '';
+const ONE_TIME_STUDIO_OPERATOR_USERNAME =
+  process.env.ONE_TIME_STUDIO_OPERATOR_USERNAME ||
+  process.env.ONE_TIME_AI_STUDIO_USERNAME ||
+  process.env.OPENART_STUDIO_OPERATOR_USERNAME ||
+  '';
+const ONE_TIME_STUDIO_OPERATOR_PASSWORD =
+  process.env.ONE_TIME_STUDIO_OPERATOR_PASSWORD ||
+  process.env.ONE_TIME_AI_STUDIO_PASSWORD ||
+  process.env.OPENART_STUDIO_OPERATOR_PASSWORD ||
   '';
 const TELEGRAM_CHAT_ID_BNA =
   process.env.TELEGRAM_CHAT_ID_BNA ||
@@ -8486,6 +8498,7 @@ function identifyOpsUser(username, password = null) {
   // Owner gets full provider view + settings; manager gets provider view without sensitive admin
   const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
   const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
+  const studioOperatorAllowedViews = ['studio', 'tasks'];
 
   if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
@@ -8528,6 +8541,21 @@ function identifyOpsUser(username, password = null) {
     });
   }
 
+  if (
+    ONE_TIME_STUDIO_OPERATOR_USERNAME &&
+    ONE_TIME_STUDIO_OPERATOR_PASSWORD &&
+    normalizedUser === ONE_TIME_STUDIO_OPERATOR_USERNAME.toLowerCase()
+  ) {
+    if (pass !== null && pass !== ONE_TIME_STUDIO_OPERATOR_PASSWORD) return null;
+    return decorateOneTimeIdentity({
+      username: user,
+      role: 'one_time_ai_studio_operator',
+      scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+      allowedViews: studioOperatorAllowedViews,
+      displayName: 'AI Studio Operator',
+    });
+  }
+
   // Backward compatibility: old ONE_TIME_OPS_USERNAME maps to manager role
   if (
     ONE_TIME_OPS_USERNAME &&
@@ -8547,11 +8575,48 @@ function identifyOpsUser(username, password = null) {
   return null;
 }
 
+function isOneTimeStudioOperatorPathAllowed(routePath = '', method = 'GET') {
+  if (routePath === '/operations' && method === 'GET') return true;
+  if (routePath === '/api/bna/auth/me' && method === 'GET') return true;
+  if (routePath === '/api/bna/me' && method === 'GET') return true;
+  if (routePath === '/api/bna/workspace-directory' && method === 'GET') return true;
+  if (routePath === '/api/bna/workspaces' && method === 'GET') return true;
+  if (/^\/api\/bna\/workspaces\/[^/]+$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/session/workspace' && method === 'POST') return true;
+  if (/^\/api\/bna\/workspace-settings\/[^/]+\/branding$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/projects' && method === 'GET') return true;
+  if (routePath === '/api/bna/assistant/scope-plan' && method === 'POST') return true;
+  if (routePath === '/api/bna/agent-fleet/status' && method === 'GET') return true;
+  if (routePath === '/api/bna/ops/queue-health' && method === 'GET') return true;
+  if (routePath === '/api/bna/tasks' && ['GET', 'POST'].includes(method)) return true;
+  if (/^\/api\/bna\/tasks\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
+  if (/^\/api\/bna\/tasks\/\d+\/comments$/.test(routePath) && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/task-artifact' && method === 'GET') return true;
+
+  if (routePath === '/api/bna/studio/dashboard' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/openart/status' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/usage' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/projects' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/studio/repair/plan' && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/(?:source|outline|storyboard|prompt-compile|render|handoff)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/(?:sidekick\/patch-preview|openart\/export)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/corrections\/(?:preview|apply)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/scenes\/\d+$/.test(routePath) && method === 'PATCH') return true;
+  if (/^\/api\/bna\/studio\/scenes\/\d+\/regenerate$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/jobs\/\d+\/(?:retry|cancel)$/.test(routePath) && method === 'POST') return true;
+
+  return false;
+}
+
 function isScopedOpsPathAllowed(req, identity = null) {
   const routePath = String(req.path || '');
   const method = String(req.method || '').toUpperCase();
   const isManager = identity?.role === 'project_manager';
   const isOwner = identity?.role === 'project_owner';
+  if (identity?.role === 'one_time_ai_studio_operator') {
+    return isOneTimeStudioOperatorPathAllowed(routePath, method);
+  }
   if (routePath === '/operations' && method === 'GET') return true;
   if (routePath === '/api/bna/auth/me' && method === 'GET') return true;
   if (routePath === '/api/bna/me' && method === 'GET') return true;
@@ -8704,10 +8769,13 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (/^\/api\/bna\/content-jobs\/\d+\/parse-mixed-recording$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/content-jobs\/\d+\/outputs$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/studio/dashboard' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/openart/status' && method === 'GET') return true;
   if (routePath === '/api/bna/studio/usage' && method === 'GET') return true;
   if (routePath === '/api/bna/studio/projects' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/studio/repair/plan' && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/projects\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
   if (/^\/api\/bna\/studio\/projects\/\d+\/(?:source|outline|storyboard|prompt-compile|render|handoff)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/(?:sidekick\/patch-preview|openart\/export)$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/projects\/\d+\/corrections\/(?:preview|apply)$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/scenes\/\d+$/.test(routePath) && method === 'PATCH') return true;
   if (/^\/api\/bna\/studio\/scenes\/\d+\/regenerate$/.test(routePath) && method === 'POST') return true;
@@ -56685,7 +56753,20 @@ app.get('/api/bna/studio/dashboard', requireAdmin, async (req, res) => {
       jobs,
       usage_rollup: studio.buildUsageRollup(usageRows),
       price_catalog: priceCatalog,
+      openart_status: openArtMcpAdapter.openArtMcpStatus(),
       pilot_fixture: workspaceKey === 'rabbi_sheller_provider' ? studio.buildOneTimeStudioPilotFixture() : null,
+      no_external_writes: true,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/studio/openart/status', requireAdmin, async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      openart: openArtMcpAdapter.openArtMcpStatus(),
       no_external_writes: true,
     });
   } catch (err) {
@@ -57008,6 +57089,96 @@ app.post('/api/bna/studio/projects/:id/prompt-compile', requireAdmin, async (req
     res.status(err.statusCode || 500).json({ error: err.message });
   } finally {
     client.release();
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/sidekick/patch-preview', requireAdmin, async (req, res) => {
+  try {
+    const detail = await loadStudioProjectDetail(req, req.params.id);
+    const scene = req.body?.scene_id
+      ? detail.scenes.find((item) => Number(item.id) === Number(req.body.scene_id))
+      : null;
+    const sidekickPatch = studioSidekick.draftStudioSidekickPatch({
+      project: detail.project,
+      scene,
+      correction_text: req.body?.correction_text || req.body?.correction || req.body?.feedback || '',
+      image_observation: req.body?.image_observation || req.body?.imageObservation || '',
+      image_reference: req.body?.image_reference || req.body?.imageReference || req.body?.reference_note || '',
+      target: req.body?.target || req.body?.patch_target || '',
+      scope: req.body?.scope || (scene ? 'scene' : 'project'),
+    });
+    res.json({
+      success: true,
+      sidekick: sidekickPatch,
+      patch: sidekickPatch.patch,
+      no_external_writes: true,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/openart/export', requireAdmin, async (req, res) => {
+  try {
+    const detail = await loadStudioProjectDetail(req, req.params.id);
+    const scene = req.body?.scene_id
+      ? detail.scenes.find((item) => Number(item.id) === Number(req.body.scene_id))
+      : detail.scenes[0] || null;
+    const source = await loadStudioPrimarySource(detail.project.id)
+      || detail.sources[0]
+      || studio.normalizeStudioSourceInput({
+        title: detail.project.title,
+        raw_text: detail.project.brief_json?.goal || detail.project.title,
+      });
+    const compiled = req.body?.compiled_prompt?.compiled_prompt
+      ? req.body.compiled_prompt
+      : studio.compileStudioPrompt({
+          project: detail.project,
+          source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+          brief: detail.project.brief_json,
+          character_bible: detail.project.character_bible,
+          guardrails: detail.project.guardrails,
+          scene,
+          correction_patches: [
+            ...(detail.correction_patches || []),
+            ...(req.body?.sidekick_patch ? [req.body.sidekick_patch] : []),
+          ],
+        });
+    const promptExport = studioSidekick.buildOpenArtPromptExport({
+      project: detail.project,
+      compiled_prompt: compiled,
+      sidekick_patch: req.body?.sidekick_patch || null,
+      character_bible: detail.project.character_bible,
+      guardrails: detail.project.guardrails,
+      scene,
+      references: req.body?.references || [],
+    });
+    res.json({
+      success: true,
+      openart_export: promptExport,
+      compiled_prompt: compiled,
+      no_external_writes: true,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/repair/plan', requireAdmin, async (req, res) => {
+  try {
+    const scope = scopeFromOpsRequest(req, req.body || {});
+    if (scope.workspace_key) assertWorkspaceAccess(req, scope.workspace_key);
+    scope.feature_overrides = await featureOverridesForScope(scope);
+    const plan = studioSidekick.planStudioRepairRequest(scope, req.body || {});
+    res.json({
+      success: true,
+      plan,
+      scope: accountScope.summarizeScope(scope),
+      no_codex_cli_routing: true,
+      no_external_writes: true,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
   }
 });
 

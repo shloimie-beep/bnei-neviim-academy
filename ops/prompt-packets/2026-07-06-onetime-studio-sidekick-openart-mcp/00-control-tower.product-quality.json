@@ -1,0 +1,776 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260706-201",
+  "parent_raw_id": "RAW-20260706-003",
+  "source_statement_ids": [
+    "SRC-20260706-002-001",
+    "SRC-20260706-002-002",
+    "SRC-20260706-002-003",
+    "SRC-20260706-003-001",
+    "SRC-20260706-003-002",
+    "SRC-20260706-003-003"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [
+      "PKT-20260706-202",
+      "PKT-20260706-203",
+      "PKT-20260706-204"
+    ],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [
+      "PKT-20260706-202",
+      "PKT-20260706-203",
+      "PKT-20260706-204"
+    ],
+    "consumes": [
+      "raw-input/RAW-20260706-002-onetime-studio-sidekick-openart-mcp.md",
+      "raw-input/RAW-20260706-003-onetime-studio-sidekick-goal-mode-build.md",
+      "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md",
+      "src/lib/bna/service-provider-studio.js",
+      "src/platform/assistant/control-plane.js",
+      "server.js",
+      "public/operations.html",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "produces": [
+      "ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json",
+      "ops/surface-maps/2026-07-06-onetime-studio-sidekick-surface-map.md",
+      "src/lib/bna/service-provider-studio-sidekick.js",
+      "src/lib/bna/studio-openart-mcp-adapter.js",
+      "tests/one-time-studio-sidekick-policy.test.js",
+      "tests/one-time-studio-openart-adapter.test.js"
+    ],
+    "validation_command": "npm run pqc:validate ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json",
+    "terminal_condition": "The One Time AI Studio operator can use a scoped sidekick for prompt/image correction, mock OpenArt handoff, and Studio-only repair requests while unrelated website/admin/CLI/external actions are blocked; live OpenArt OAuth remains a precise blocker.",
+    "handoff_target": "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md"
+  },
+  "stage": "STAGE_1_SPEC_COMPILER",
+  "packet_role": "CONTROL_TOWER",
+  "status": "ready_for_codex",
+  "title": "One Time AI Studio Sidekick, OpenArt MCP Boundary, And Studio-Only Repair Lane",
+  "created_at": "2026-07-06T06:50:04+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "INTERNAL_AGENT_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260706-003",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "SUPER_RAMBLE",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "PROVIDER_SETUP",
+      "SECURITY_PRIVACY",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.96,
+    "reasons": [
+      "The operator approved a goal-mode build for a scoped One Time AI Studio sidekick.",
+      "The request spans role/RBAC, assistant workflow, prompt/image analysis, OpenArt MCP integration, Studio UI/functionality repair, and a constrained CLI/Codex lane.",
+      "Live OpenArt signup/OAuth is explicitly deferred, so implementation must separate mock/no-live BNA work from external provider setup."
+    ],
+    "affected_workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+    "affected_view_classes": [
+      "RABBI_PROVIDER_ADMIN",
+      "SHLOIMIE_PLATFORM_SUPPORT",
+      "INTERNAL_AGENT_SUPPORT"
+    ],
+    "affected_product_surfaces": [
+      "Operations Studio",
+      "Studio side assistant",
+      "Studio prompt patching",
+      "Studio image critique/upload workflow",
+      "OpenArt MCP adapter boundary",
+      "Studio-only Codex/CLI repair lane",
+      "Assigned Studio task manager"
+    ],
+    "likely_external_provider_blockers": [
+      "OpenArt account, workspace, OAuth and MCP runtime are not yet connected.",
+      "Exact hosted multimodal prompt/vision model is not selected.",
+      "No live render, OpenArt generation, upload, send, payment, access grant, deploy, DNS, or external account mutation is approved by this packet."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-control-tower",
+      "01-current-state-sidekick-surface-map",
+      "02-role-and-policy",
+      "03-prompt-image-sidekick",
+      "04-openart-mcp-mock-adapter",
+      "05-studio-only-codex-repair-lane",
+      "06-verification-deploy-live-smoke"
+    ],
+    "next_exact_packet": "Generate the Studio sidekick surface map/current-state audit, then implement the role/policy and no-live adapter batches."
+  },
+  "operator_intent_summary": "Create a narrowly scoped One Time AI Studio operator experience where the assigned user can use natural language and image uploads to improve OpenArt-ready prompts, store patches, manage characters, run or request Studio-only repairs, and eventually connect through OpenArt MCP after Shloimie signs up.",
+  "raw_quotes": [
+    "only scope for Corrections regarding this prompt",
+    "focus and generating The Prompt storing The Prompt but also analyzing the images",
+    "he should have the ability to automatically just speak to the CLI only in regards to his specific scopes",
+    "anything that has to do with the layout or functionality of the studio",
+    "build everything, everything, everything, and then I'll sign up when you're done building"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260706-201",
+      "decision": "Build mock/no-live OpenArt adapter and BNA workflow now; live OpenArt OAuth/MCP remains blocked until Shloimie signs up/connects the account.",
+      "status": "open"
+    },
+    {
+      "id": "DEC-20260706-202",
+      "decision": "Studio operator may use only a mediated Studio-scoped CLI/Codex repair lane for Studio layout/functionality, with raw shell, deploy, secrets, and non-Studio website changes denied.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-20260706-203",
+      "decision": "Exact hosted multimodal model is not selected; use an adapter boundary and tests rather than hard-coding an unavailable model.",
+      "status": "open"
+    }
+  ],
+  "out_of_scope": [
+    "No live OpenArt OAuth or MCP call until Shloimie signs up/connects the account.",
+    "No broad website, landing-page, CRM, payments, contacts, settings, integrations, admin, secret, DNS, deployment, external send, external upload, payment, access-grant, GHL runtime, LeadConnector runtime, or cross-workspace mutation.",
+    "No raw arbitrary shell from the Studio operator.",
+    "No promotion of this operator's Studio changes to other workspaces until Shloimie explicitly approves a later packet.",
+    "No final claim of app-visible Done without deploy/live smoke, or a precise deployment blocker."
+  ],
+  "affected_surfaces": [
+    "Operations Studio sidekick panel",
+    "Studio prompt correction preview/apply workflow",
+    "Studio character and image critique records",
+    "Studio usage/OpenArt readiness panel",
+    "Operations task view filtered to assigned Studio tasks",
+    "Assistant action planner and policy",
+    "Route/action registries"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=jobs",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks",
+    "/api/bna/studio/projects/:id/corrections/preview",
+    "/api/bna/studio/projects/:id/corrections/apply",
+    "/api/bna/assistant/scope-plan"
+  ],
+  "affected_files": [
+    "src/lib/bna/service-provider-studio.js",
+    "src/lib/bna/service-provider-studio-sidekick.js",
+    "src/lib/bna/studio-openart-mcp-adapter.js",
+    "src/platform/assistant/control-plane.js",
+    "server.js",
+    "public/operations.html",
+    "ops/action-registry.json",
+    "ops/route-registry.json",
+    "tests/service-provider-studio-domain.test.js",
+    "tests/service-provider-studio-operations-ui.test.js",
+    "tests/service-provider-studio-api-contract.test.js",
+    "tests/assistant-scope-policy.test.js",
+    "tests/one-time-studio-sidekick-policy.test.js",
+    "tests/one-time-studio-openart-adapter.test.js"
+  ],
+  "current_state": {
+    "summary": "Studio already has scoped projects, prompt compile, correction preview/apply, mock render, usage, handoff, character library, action registry rows, and route registry rows. The new gap is a role-scoped Studio sidekick that can reason over image uploads, create official prompt patches, track OpenArt-ready assets, expose a mock/live MCP boundary, and safely route only Studio layout/functionality repair requests to Codex.",
+    "inspection_targets": [
+      "Studio domain prompt/correction functions",
+      "Studio API route allowlist and workspace scope",
+      "Operations Studio render functions",
+      "assistant control-plane action policy",
+      "assistant scope-plan denial rules",
+      "route/action registry entries for Studio and assistants",
+      "existing focused Studio tests"
+    ],
+    "known_blockers": [
+      "Live OpenArt account/OAuth/MCP is unavailable until Shloimie signs up.",
+      "Exact hosted multimodal GPT-style model is not selected.",
+      "Current web/provider assistant policy blocks broad Codex/CLI; a new mediated Studio-only repair lane must be implemented before any user-facing CLI-like action is exposed."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "super professional",
+      "perfect",
+      "work until it's done",
+      "build everything",
+      "not built out yet",
+      "functionality of the studio"
+    ],
+    "expanded_phrases": {
+      "super professional": "The Studio operator sees a compact production-grade workspace for assigned projects, prompt/image sidekick, characters, patches, OpenArt readiness, jobs, and tasks without admin clutter.",
+      "perfect": "Every sidekick action has a scoped behavior, preview/diff, reversible write or named blocker, tests, registry coverage, and evidence.",
+      "work until it's done": "Requirements stay open until implemented, verified, deployed/live-smoked if app-visible, or precisely blocked.",
+      "build everything": "Build all BNA-side local-safe components now; live OpenArt OAuth/MCP remains a separated blocker.",
+      "functionality of the studio": "Studio-only repair lane may target prompt patching, Studio UI layout, Studio routes, Studio tests, and Studio adapter/config files only.",
+      "configured": "OpenArt and hosted vision model setup must show an explicit blocked/configured status: mock/no-live BNA adapter works locally; live OAuth/model credentials remain blocked until approved account setup."
+    },
+    "compiled_requirement": "Add a One Time AI Studio operator role and sidekick that supports prompt/image critique, prompt patch storage, mock OpenArt MCP workflow, assigned Studio tasks, and a strictly allowlisted Studio-only repair lane."
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "docs/AGENT-TRACE-OBSERVABILITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "docs/REPO-SURFACE-MAP.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260706-202",
+      "statement": "Define and enforce the one_time_ai_studio_operator role.",
+      "expected_result": "The user can reach only One Time Studio, assigned Studio tasks, and allowed Studio sidekick actions.",
+      "acceptance_criteria": [
+        "Role policy allows Studio and tasks views only for rabbi_sheller_provider / one_time_mishnah_class.",
+        "Role policy denies contacts, payments, settings, integrations, admin, cross-workspace data, sends, secrets, deploys, and broad website changes.",
+        "Negative tests cover denied views/actions."
+      ]
+    },
+    {
+      "id": "REQ-20260706-203",
+      "statement": "Implement the Studio sidekick prompt/image workflow.",
+      "expected_result": "The operator can upload or reference a render image, describe the problem, receive a visual critique and OpenArt-ready prompt patch, preview the diff, and save/apply the patch to the scoped Studio project.",
+      "acceptance_criteria": [
+        "Image analysis has a mock/adapter path for tests and a no-secret model boundary.",
+        "Prompt patch suggestions target scene, character, style, or project scope.",
+        "Patch preview and apply remain reversible and scoped to the selected Studio project."
+      ]
+    },
+    {
+      "id": "REQ-20260706-204",
+      "statement": "Create an OpenArt MCP adapter boundary with mock/no-live mode.",
+      "expected_result": "BNA can build and test OpenArt-ready prompt/project/reference/result flows before live OAuth.",
+      "acceptance_criteria": [
+        "Adapter exposes capability/status, prompt export, reference upload planning, result import planning, and credit/account blockers.",
+        "Live calls are disabled until account/OAuth is configured.",
+        "No OpenArt credentials or account data are required for local tests."
+      ]
+    },
+    {
+      "id": "REQ-20260706-207",
+      "statement": "Implement a mediated Studio-only Codex/CLI repair lane.",
+      "expected_result": "The operator can report Studio bugs and request Studio layout/functionality repairs, but only an allowlisted Studio repair job can be created or run.",
+      "acceptance_criteria": [
+        "Allowed target categories include Studio layout, Studio prompt patching, Studio sidekick, Studio adapter mock/config, and focused Studio tests.",
+        "Denied categories include arbitrary shell, deploy, secrets, payments, sends, contacts, settings, integrations, non-Studio website changes, and cross-workspace promotion.",
+        "Tests prove malicious or off-scope requests are blocked."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "status": "met_for_local_safe_batches",
+    "criteria": [
+      "Raw intake and goal-mode register exist.",
+      "Workspace/project and view classes are exact.",
+      "Live OpenArt OAuth/MCP is separated as an external blocker.",
+      "Implementation scope is limited to Studio/operator role, sidekick, mock adapter, task filtering, and Studio-only repair policy.",
+      "Route/action registries and focused tests are named.",
+      "Deployment/live smoke remains required before app-visible terminal Done."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio",
+      "viewport": 1440,
+      "auth_role": "one_time_ai_studio_operator",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Studio while project, task, and sidekick context loads.",
+      "expected_visible_title": "AI Studio",
+      "expected_visible_message": "Studio workspace is loading without raw stack traces.",
+      "expected_primary_action": "None until loaded",
+      "expected_secondary_actions": ["Tasks"],
+      "forbidden_content": ["Admin", "Contacts", "Payments", "Settings", "secrets"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Loading state is visible text under the Studio heading.",
+      "accessibility_expectation": "No focus trap or horizontal overflow.",
+      "test_smoke_assertion": "Studio route renders for scoped operator in mock auth.",
+      "requirement_id": "REQ-20260706-202"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+      "viewport": 1024,
+      "auth_role": "one_time_ai_studio_operator",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open sidekick before a project/image is selected.",
+      "expected_visible_title": "Studio Sidekick",
+      "expected_visible_message": "Choose a Studio project or paste a render note to draft a prompt patch.",
+      "expected_primary_action": "Draft Prompt Patch",
+      "expected_secondary_actions": ["Open Tasks"],
+      "forbidden_content": ["cross-workspace tasks", "admin diagnostics by default"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Form controls have labels.",
+      "accessibility_expectation": "Upload/help text wraps.",
+      "test_smoke_assertion": "Sidekick empty state is visible.",
+      "requirement_id": "REQ-20260706-203"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+      "viewport": 1440,
+      "auth_role": "one_time_ai_studio_operator",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open a Studio project with saved characters and a recent render critique.",
+      "expected_visible_title": "Studio Sidekick",
+      "expected_visible_message": "Suggested patch, target layer, character notes, and OpenArt-ready prompt are visible.",
+      "expected_primary_action": "Apply Patch",
+      "expected_secondary_actions": ["Copy for OpenArt", "Save Character Note"],
+      "forbidden_content": ["raw private source bodies", "unrelated workspace records"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Patch diff has headings.",
+      "accessibility_expectation": "Before/after patch text remains readable.",
+      "test_smoke_assertion": "Patch suggestion can be previewed and applied in mock data.",
+      "requirement_id": "REQ-20260706-203"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks",
+      "viewport": 768,
+      "auth_role": "one_time_ai_studio_operator",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open assigned Studio tasks when none are assigned.",
+      "expected_visible_title": "Studio Tasks",
+      "expected_visible_message": "No assigned Studio tasks right now.",
+      "expected_primary_action": "Return to Studio",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["all Operations tasks", "Decisions unrelated to Studio"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty task state is visible.",
+      "accessibility_expectation": "Task filter state is not color-only.",
+      "test_smoke_assertion": "Operator sees only Studio-scoped assigned tasks.",
+      "requirement_id": "REQ-20260706-202"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+      "viewport": 430,
+      "auth_role": "one_time_ai_studio_operator",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit an invalid or unsupported image/prompt request.",
+      "expected_visible_title": "Studio Sidekick",
+      "expected_visible_message": "The sidekick could not draft a patch. Try a clearer correction or attach a supported image.",
+      "expected_primary_action": "Retry",
+      "expected_secondary_actions": ["Create Studio bug report"],
+      "forbidden_content": ["stack trace", "model secret", "raw prompt body stored as usage metadata"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error is visible text.",
+      "accessibility_expectation": "Error is not color-only.",
+      "test_smoke_assertion": "Invalid request returns safe error.",
+      "requirement_id": "REQ-20260706-203"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=usage",
+      "viewport": 390,
+      "auth_role": "one_time_ai_studio_operator",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open OpenArt status before OAuth is connected.",
+      "expected_visible_title": "OpenArt Connection",
+      "expected_visible_message": "OpenArt MCP is not connected yet. Shloimie needs to sign up and connect the account.",
+      "expected_primary_action": "Copy OpenArt-ready prompt",
+      "expected_secondary_actions": ["Open OpenArt"],
+      "forbidden_content": ["credential form", "secret value", "live call attempted"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup names owner and next action.",
+      "accessibility_expectation": "Blocked state fits mobile.",
+      "test_smoke_assertion": "Adapter status is blocked_no_oauth and no live call is attempted.",
+      "requirement_id": "REQ-20260706-204"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+      "viewport": 1024,
+      "auth_role": "one_time_ai_studio_operator",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Ask the sidekick to improve an image prompt without applying it.",
+      "expected_visible_title": "Prompt Patch Preview",
+      "expected_visible_message": "Preview only. No Studio prompt was changed yet.",
+      "expected_primary_action": "Apply Patch",
+      "expected_secondary_actions": ["Copy for OpenArt", "Discard"],
+      "forbidden_content": ["silent write", "external generation"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview state is announced in text.",
+      "accessibility_expectation": "Diff text is readable.",
+      "test_smoke_assertion": "Preview endpoint returns reversible patch without mutating project.",
+      "requirement_id": "REQ-20260706-203"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+      "viewport": 768,
+      "auth_role": "one_time_ai_studio_operator",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Apply a suggested prompt patch.",
+      "expected_visible_title": "Prompt Patch Applied",
+      "expected_visible_message": "Patch saved to this Studio project with version history.",
+      "expected_primary_action": "Copy OpenArt Prompt",
+      "expected_secondary_actions": ["Undo", "Open Tasks"],
+      "forbidden_content": ["cross-project write"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Success readback names version and target layer.",
+      "accessibility_expectation": "Buttons remain tappable.",
+      "test_smoke_assertion": "Apply writes only scoped patch metadata.",
+      "requirement_id": "REQ-20260706-203"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=bna&view=admin",
+      "viewport": 768,
+      "auth_role": "one_time_ai_studio_operator",
+      "workspace_project": "bna / platform",
+      "how_to_enter_state": "Attempt to open admin or non-Studio website task.",
+      "expected_visible_title": "AI Studio",
+      "expected_visible_message": "This role is limited to One Time Studio and assigned Studio tasks.",
+      "expected_primary_action": "Return to Studio",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["admin user list", "settings", "payment records", "contacts"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Denial is visible text.",
+      "accessibility_expectation": "Redirect/denial does not expose private data.",
+      "test_smoke_assertion": "Policy denies admin/contacts/payment/settings and wrong workspace.",
+      "requirement_id": "REQ-20260706-202"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+      "viewport": 390,
+      "auth_role": "one_time_ai_studio_operator",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open sidekick and patch preview on mobile.",
+      "expected_visible_title": "Studio Sidekick",
+      "expected_visible_message": "Prompt critique, patch diff, and OpenArt actions stack without overlap.",
+      "expected_primary_action": "Apply Patch",
+      "expected_secondary_actions": ["Copy", "Tasks"],
+      "forbidden_content": ["horizontal overflow", "occluded upload controls"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Sidekick panel keeps headings on mobile.",
+      "accessibility_expectation": "390px controls are usable.",
+      "test_smoke_assertion": "Mobile screenshot has no overlap.",
+      "requirement_id": "REQ-20260706-203"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio",
+        "viewport": 1440,
+        "auth_role": "one_time_ai_studio_operator",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260706-202"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+        "viewport": 1024,
+        "auth_role": "one_time_ai_studio_operator",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260706-203"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=tasks",
+        "viewport": 768,
+        "auth_role": "one_time_ai_studio_operator",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260706-202"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=usage",
+        "viewport": 430,
+        "auth_role": "one_time_ai_studio_operator",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260706-204"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+        "viewport": 390,
+        "auth_role": "one_time_ai_studio_operator",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260706-203"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260706-201",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=studio&section=prompts",
+        "viewport": "1440",
+        "screenshot_before": "Existing Studio screenshots from prior Studio smoke; fresh before screenshots required in implementation batch.",
+        "screenshot_after_or_blocker": "Blocked until local implementation smoke captures after screenshots.",
+        "defect_codes": [
+          "VQ-ACTION-003",
+          "VQ-DATA-008",
+          "VQ-IA-002"
+        ],
+        "severity": "P1",
+        "user_impact": "The future operator lacks a focused natural-language/image sidekick and OpenArt-ready workflow inside the Studio.",
+        "expected_fix": "Add scoped sidekick actions, prompt patch preview/apply, OpenArt-ready export/readiness, and task-only role.",
+        "requirement_id": "REQ-20260706-203"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus BNA mobile/touch requirements.",
+    "required_checks": [
+      "sidekick text input, image reference field, and prompt patch controls have labels",
+      "preview/applied/error/blocked states are visible text, not color-only",
+      "390px mobile prompt diff and upload/reference fields do not overflow",
+      "keyboard users can open/close sidekick, copy prompt, apply patch, undo, and return to tasks"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Draft Studio Prompt Patch",
+      "selector_or_action_key": "studio_sidekick_draft_patch",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Local sidekick adapter drafts a reversible patch from text/image critique.",
+      "registry_required": true
+    },
+    {
+      "label": "Apply Studio Prompt Patch",
+      "selector_or_action_key": "applyStudioCorrection",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing scoped Studio correction apply API with sidekick metadata.",
+      "registry_required": true
+    },
+    {
+      "label": "Copy OpenArt Prompt",
+      "selector_or_action_key": "studio_openart_copy_prompt",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Copy/export OpenArt-ready prompt from mock adapter output.",
+      "registry_required": true
+    },
+    {
+      "label": "Run OpenArt MCP Generation",
+      "selector_or_action_key": "studio_openart_mcp_generate",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Shloimie",
+      "external_write": true,
+      "handler_or_blocker": "Requires OpenArt signup/OAuth/workspace connection.",
+      "registry_required": true
+    },
+    {
+      "label": "Create Studio Repair Request",
+      "selector_or_action_key": "studio_sidekick_repair_request",
+      "action_state": "INTERNAL_SUPPORT_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Creates or runs only a Studio allowlisted repair job; denies arbitrary shell/deploy/secrets/non-Studio edits.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": [
+    "one_time_ai_studio_operator role/access policy",
+    "Studio project ID and workspace/project scope",
+    "assistant sidekick request text",
+    "image reference metadata without raw private file leakage in repo",
+    "visual critique summary",
+    "target prompt layer",
+    "target scene/character",
+    "suggested patch operations",
+    "before/after prompt diff",
+    "OpenArt-ready prompt export",
+    "OpenArt account status and blocker",
+    "Studio-only repair category and allowlist result",
+    "assigned Studio task links"
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "one_time_ai_studio_operator is limited to rabbi_sheller_provider / one_time_mishnah_class.",
+      "Sidekick writes only scoped Studio prompt/correction metadata.",
+      "Studio repair lane may touch only allowlisted Studio layout/functionality files and focused tests.",
+      "Image uploads/reference metadata must not commit raw private files or secrets.",
+      "Live OpenArt MCP is blocked until OAuth/account is connected."
+    ],
+    "forbidden_content": [
+      "secrets",
+      "raw private student/contact/source records",
+      "external provider credentials",
+      "arbitrary shell",
+      "deployment action",
+      "payments",
+      "sends",
+      "access grants",
+      "non-Studio website changes",
+      "cross-workspace promotion"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260706-201-PQC-AUDIT",
+      "scope": "Control tower, surface map, and current-state source audit.",
+      "instructions": [
+        "Validate this PQC packet.",
+        "Create a Studio sidekick surface map.",
+        "Inspect existing Studio and assistant policy surfaces before edits."
+      ],
+      "verification": [
+        "npm run pqc:validate ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json"
+      ]
+    },
+    {
+      "batch_id": "BATCH-20260706-202-ROLE-POLICY",
+      "scope": "one_time_ai_studio_operator role and assistant policy guardrails.",
+      "instructions": [
+        "Add a role/policy helper for Studio-only access.",
+        "Deny broad assistant actions and non-Studio views.",
+        "Add negative tests."
+      ]
+    },
+    {
+      "batch_id": "BATCH-20260706-203-SIDEKICK-MOCK",
+      "scope": "Prompt/image sidekick domain and mock UI hooks.",
+      "instructions": [
+        "Add deterministic sidekick patch drafting logic.",
+        "Support image critique metadata and OpenArt-ready prompt export.",
+        "Keep model/live vision behind an adapter."
+      ]
+    },
+    {
+      "batch_id": "BATCH-20260706-204-OPENART-REPAIR",
+      "scope": "OpenArt mock adapter and Studio-only repair lane.",
+      "instructions": [
+        "Add no-live OpenArt MCP capability/status adapter.",
+        "Add allowlisted Studio repair policy.",
+        "Register actions and routes."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "large",
+    "source_files_to_read": [
+      "src/lib/bna/service-provider-studio.js",
+      "src/platform/assistant/control-plane.js",
+      "server.js",
+      "public/operations.html",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tests/service-provider-studio-domain.test.js",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/assistant-scope-policy.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "src/lib/bna/service-provider-studio.js",
+      "src/lib/bna/service-provider-studio-sidekick.js",
+      "src/lib/bna/studio-openart-mcp-adapter.js",
+      "src/platform/assistant/control-plane.js",
+      "server.js",
+      "public/operations.html",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tests/service-provider-studio-domain.test.js",
+      "tests/service-provider-studio-operations-ui.test.js",
+      "tests/service-provider-studio-api-contract.test.js",
+      "tests/assistant-scope-policy.test.js",
+      "tests/one-time-studio-sidekick-policy.test.js",
+      "tests/one-time-studio-openart-adapter.test.js"
+    ],
+    "max_files_to_edit": 14,
+    "max_routes_to_touch": 6,
+    "max_major_surfaces": 2,
+    "split_threshold_reason": "Split if work expands into live OpenArt OAuth, real generation, broad Operations layout, task-manager rewrite, or cross-workspace promotion.",
+    "split_if_exceeds": true,
+    "context_risk_level": "HIGH"
+  },
+  "tests": [
+    {
+      "command_or_check": "npm run pqc:validate ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json",
+      "expected_result": "Passes."
+    },
+    {
+      "command_or_check": "node --test tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js tests/assistant-scope-policy.test.js tests/one-time-studio-sidekick-policy.test.js tests/one-time-studio-openart-adapter.test.js",
+      "expected_result": "Focused Studio/assistant tests pass."
+    },
+    {
+      "command_or_check": "npm run studio:smoke",
+      "expected_result": "Studio browser smoke passes or records exact auth/screenshot blocker."
+    },
+    {
+      "command_or_check": "npm run watchdog:actions",
+      "expected_result": "New visible actions are covered or exact unrelated findings are recorded."
+    },
+    {
+      "command_or_check": "npm run watchdog:protocol-drift",
+      "expected_result": "No protocol drift introduced, or unrelated existing findings are recorded."
+    }
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/surface-maps/2026-07-06-onetime-studio-sidekick-surface-map.md",
+      "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md",
+      "ops/playwright-smokes/2026-07-06-onetime-studio-sidekick-local/report.md"
+    ],
+    "status": "PQC packet created; implementation and screenshots pending."
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "Raw intake and goal-mode register are linked.",
+      "PQC validates before product/UI implementation.",
+      "Surface map/current-state audit exists.",
+      "Role and policy tests pass for allowed and denied Studio operator actions.",
+      "Prompt/image sidekick supports preview/apply/readback with scoped Studio records.",
+      "OpenArt mock/no-live adapter works and live MCP/OAuth blocker is explicit.",
+      "Studio-only repair lane denies arbitrary shell, deploy, secrets, non-Studio website changes, and external writes.",
+      "Action and route registries cover new visible actions/routes.",
+      "Focused tests, Studio smoke, action watchdog, and protocol drift watchdog run or record exact blockers.",
+      "App-visible changes are committed, pushed, deployed, and live-smoked before terminal Done, unless deployment is explicitly blocked."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260706-003-onetime-studio-sidekick-goal-mode-build.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "apply_patch",
+      "node --test",
+      "npm run pqc:validate",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift",
+      "Playwright Studio smoke where auth/mocks allow"
+    ],
+    "skipped_actions_policy": "Skip live OpenArt OAuth/MCP, real OpenArt generation, deploy, live external writes, sends, payments, access grants, DNS/account changes, secret changes, and non-Studio website edits unless a later explicit packet approves them.",
+    "blocker_decisions": [
+      "DEC-20260706-201",
+      "DEC-20260706-203"
+    ],
+    "evidence_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/surface-maps/2026-07-06-onetime-studio-sidekick-surface-map.md",
+      "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md",
+    "next_packet_path": "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No new product-quality protocol drift from this goal's implementation."
+  },
+  "next_packet": {
+    "type": "IMPLEMENTATION_PACKET",
+    "path": "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md",
+    "reason": "Proceed to local-safe implementation batches after PQC validation and surface-map/current-state inspection."
+  },
+  "app_visible": true
+}

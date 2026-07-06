@@ -8768,6 +8768,10 @@
             generateStudioOutline(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/outline', payload); },
             generateStudioStoryboard(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/storyboard', payload); },
             compileStudioPrompt(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/prompt-compile', payload); },
+            getStudioOpenArtStatus() { return this.request('GET', '/studio/openart/status'); },
+            previewStudioSidekickPatch(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/sidekick/patch-preview', payload); },
+            exportStudioOpenArtPrompt(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/openart/export', payload); },
+            planStudioRepair(payload = {}) { return this.request('POST', '/studio/repair/plan', payload); },
             previewStudioCorrection(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/corrections/preview', payload); },
             applyStudioCorrection(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/corrections/apply', payload); },
             updateStudioScene(id, payload = {}) { return this.request('PATCH', '/studio/scenes/' + encodeURIComponent(id), payload); },
@@ -9125,6 +9129,9 @@
         let studioNotice = '';
         let studioCorrectionPreview = null;
         let studioCorrectionPayload = null;
+        let studioSidekickPreview = null;
+        let studioOpenArtExport = null;
+        let studioRepairPlan = null;
         let studioCompiledPrompt = null;
         let studioHandoffResult = null;
         let studioReviewPackResult = null;
@@ -21684,6 +21691,160 @@
             `;
         }
 
+        function renderStudioOpenArtStatusCard() {
+            const status = studioDashboard.openart_status || studioDashboard.openart || studioUsage.openart_status || {};
+            const connected = Boolean(status.connected);
+            const allowed = Array.isArray(status.allowed_from_bna) ? status.allowed_from_bna : [];
+            const blocked = Array.isArray(status.blocked_until_connected) ? status.blocked_until_connected : [];
+            return `
+                <article class="content-card studio-review-card" data-testid="studio-openart-status">
+                    <div class="studio-review-head">
+                        <div>
+                            <div class="content-card-title">OpenArt MCP</div>
+                            <div class="content-card-meta">${escapeHtml(status.status || 'blocked_no_oauth')}</div>
+                        </div>
+                        <span class="status-chip">${connected ? 'connected' : 'OAuth needed'}</span>
+                    </div>
+                    <div class="studio-review-metrics">
+                        ${renderStudioMetric('Live call', status.no_live_call === false ? 'enabled' : 'no')}
+                        ${renderStudioMetric('External write', status.external_write_performed ? 'yes' : 'no')}
+                        ${renderStudioMetric('References', connected ? 'ready' : 'blocked')}
+                        ${renderStudioMetric('Generation', connected ? 'gated' : 'blocked')}
+                    </div>
+                    ${renderStudioFlags([
+                        'Prompt export ready',
+                        'No credit spend',
+                        connected ? 'OAuth connected' : 'OAuth not connected',
+                        'No upload from BNA yet'
+                    ])}
+                    ${allowed.length ? `<p class="studio-review-excerpt">${escapeHtml(allowed.join(' / '))}</p>` : ''}
+                    ${blocked.length ? `<ul class="studio-review-list">${blocked.slice(0, 5).map(item => `<li>${escapeHtml(String(item).replace(/_/g, ' '))}</li>`).join('')}</ul>` : ''}
+                    ${status.source_url ? `<div class="task-actions"><a class="task-action" href="${escapeHtml(status.source_url)}" target="_blank" rel="noopener">Open MCP Docs</a><a class="task-action" href="${escapeHtml(status.app_url || 'https://openart.ai/')}" target="_blank" rel="noopener">Open OpenArt</a></div>` : ''}
+                    ${renderStudioDiagnostics(status, 'OpenArt Diagnostics', 900)}
+                </article>
+            `;
+        }
+
+        function renderStudioOpenArtExportReview(exportPlan = null) {
+            if (!exportPlan) return '';
+            const text = String(exportPlan.copy_text || '');
+            const requestPlan = exportPlan.mcp_request_plan || {};
+            return `
+                <article class="content-card studio-review-card" data-testid="studio-openart-export">
+                    <div class="studio-review-head">
+                        <div>
+                            <div class="content-card-title">OpenArt Prompt Export</div>
+                            <div class="content-card-meta">${escapeHtml(exportPlan.prompt_hash || 'copy-ready')}</div>
+                        </div>
+                        <span class="status-chip">${requestPlan.requires_oauth ? 'OAuth needed' : 'ready'}</span>
+                    </div>
+                    <div class="studio-review-metrics">
+                        ${renderStudioMetric('Characters', (exportPlan.character_reference_checklist || []).length || 'review')}
+                        ${renderStudioMetric('Guardrails', (exportPlan.guardrail_checklist || []).length || 'review')}
+                        ${renderStudioMetric('Live call', exportPlan.no_live_call === false ? 'enabled' : 'no')}
+                        ${renderStudioMetric('External write', exportPlan.external_write_performed ? 'yes' : 'no')}
+                    </div>
+                    <p class="studio-review-excerpt">${escapeHtml(studioReadablePromptText(text, 520) || 'OpenArt prompt export is ready.')}</p>
+                    <div class="task-actions">
+                        <button class="task-action primary" type="button" onclick="copyStudioOpenArtPrompt(event)">Copy OpenArt Prompt</button>
+                    </div>
+                    ${renderStudioDiagnostics(exportPlan, 'OpenArt Export Diagnostics', 1400)}
+                </article>
+            `;
+        }
+
+        function renderStudioRepairPlanReview(plan = null) {
+            if (!plan) return '';
+            return `
+                <article class="content-card studio-review-card" data-testid="studio-repair-plan">
+                    <div class="studio-review-head">
+                        <div>
+                            <div class="content-card-title">Studio Repair Plan</div>
+                            <div class="content-card-meta">${escapeHtml(plan.reason || plan.lane || plan.mode || 'studio repair lane')}</div>
+                        </div>
+                        <span class="status-chip">${plan.allowed ? 'allowed' : 'blocked'}</span>
+                    </div>
+                    <div class="studio-review-metrics">
+                        ${renderStudioMetric('Shell', plan.no_shell === false ? 'allowed' : 'blocked')}
+                        ${renderStudioMetric('Raw CLI', plan.no_codex_cli_route === false ? 'allowed' : 'blocked')}
+                        ${renderStudioMetric('Deploy', plan.no_deploy === false ? 'allowed' : 'blocked')}
+                        ${renderStudioMetric('External writes', plan.no_external_writes === false ? 'allowed' : 'blocked')}
+                    </div>
+                    ${renderStudioFlags([
+                        plan.allowed ? 'Studio-only' : 'Out of scope',
+                        'No shell',
+                        'No deploy',
+                        'Owner merge decision for cross-workspace reuse'
+                    ])}
+                    ${renderStudioDiagnostics(plan, 'Repair Plan Diagnostics', 1300)}
+                </article>
+            `;
+        }
+
+        function renderStudioSidekickPanel(detail = {}) {
+            const scenes = detail.scenes || [];
+            const projectId = Number(detail.project?.id || 0);
+            return `
+                <section class="studio-library-panel" data-testid="studio-sidekick-panel">
+                    <div class="task-section-header">
+                        <div>
+                            <h3>Studio Sidekick</h3>
+                            <p class="event-meta">Prompt patching, character continuity, image/render critique, and OpenArt prompt export for this scoped project.</p>
+                        </div>
+                        <span>no-live</span>
+                    </div>
+                    <form class="task-inline-comment-form" data-studio-sidekick-form onsubmit="previewStudioSidekickPatch(event, ${projectId})">
+                        <div class="content-section-grid">
+                            <div class="form-group">
+                                <label>Scene</label>
+                                <select name="scene_id">
+                                    <option value="">Whole project</option>
+                                    ${scenes.map(scene => `<option value="${Number(scene.id)}">${escapeHtml(`Scene ${scene.position}: ${scene.title || scene.scene_key}`)}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Patch Target</label>
+                                <select name="target">
+                                    <option value="auto">Auto</option>
+                                    <option value="character_bible">Character</option>
+                                    <option value="visual_style">Visual style</option>
+                                    <option value="jewish_guardrails">Jewish guardrails</option>
+                                    <option value="scene_instruction">Scene prompt</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Image URL / Reference Note</label>
+                                <input name="image_reference" placeholder="OpenArt image URL, saved reference, or render note">
+                            </div>
+                            <div class="form-group">
+                                <label>Scope</label>
+                                <select name="scope">
+                                    <option value="project">Project</option>
+                                    <option value="scene">Scene</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Image / Render Observation</label>
+                            <textarea name="image_observation" placeholder="This guy needs a better hat; the face changed; it should be more realistic."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Prompt Correction</label>
+                            <textarea name="correction_text" required placeholder="Describe the prompt or Studio change to draft."></textarea>
+                        </div>
+                        <div class="task-actions">
+                            <button class="task-action primary" type="submit">Draft Prompt Patch</button>
+                            <button class="task-action" type="button" onclick="exportStudioOpenArtPrompt(event, ${projectId})">Export OpenArt Prompt</button>
+                            <button class="task-action" type="button" onclick="planStudioRepairRequest(event, ${projectId})">Plan Studio Repair</button>
+                        </div>
+                    </form>
+                    ${studioSidekickPreview ? renderStudioCorrectionReview(studioSidekickPreview.patch || studioSidekickPreview) : ''}
+                    ${renderStudioOpenArtExportReview(studioOpenArtExport)}
+                    ${renderStudioRepairPlanReview(studioRepairPlan)}
+                </section>
+            `;
+        }
+
         function renderStudioSectionTabs() {
             const sections = tabsWithCounts(STUDIO_SUBTABS, studioSubnavCounts());
             return `
@@ -21966,6 +22127,7 @@
             const layers = detail.prompt_layers || [];
             return `
                 ${renderStudioLibraryPanel(detail)}
+                ${renderStudioSidekickPanel(detail)}
                 <form class="task-inline-comment-form" onsubmit="compileStudioPrompt(event, ${Number(detail.project.id)})">
                     <div class="content-section-grid">
                         <div class="form-group">
@@ -22054,6 +22216,7 @@
                     ${renderUsageMetricCard('Estimated Cost', studioMoney(studioRollupNumber(rollup, 'estimated_cost_usd')), 'Usage event cost estimate.')}
                 </div>
                 <div class="content-section-grid">
+                    ${renderStudioOpenArtStatusCard()}
                     ${catalog.length ? catalog.map(row => `
                         <article class="content-card">
                             <div class="content-card-title">${escapeHtml(row.provider || 'provider')} / ${escapeHtml(row.model || 'model')}</div>
@@ -22107,6 +22270,9 @@
             selectedStudioProjectId = Number(id || 0) || null;
             studioCorrectionPreview = null;
             studioCorrectionPayload = null;
+            studioSidekickPreview = null;
+            studioOpenArtExport = null;
+            studioRepairPlan = null;
             studioCompiledPrompt = null;
             studioHandoffResult = null;
             studioReviewPackResult = null;
@@ -22296,6 +22462,105 @@
                 await loadStudioData({ includeDetail: true });
             } catch (error) {
                 studioNotice = error.message || 'Prompt could not be compiled.';
+            }
+            render();
+        }
+
+        function studioSidekickFormFromEvent(event) {
+            return event?.currentTarget?.closest?.('[data-studio-sidekick-form]')
+                || event?.target?.closest?.('[data-studio-sidekick-form]')
+                || event?.currentTarget
+                || null;
+        }
+
+        async function previewStudioSidekickPatch(event, projectId) {
+            event?.preventDefault?.();
+            const form = studioSidekickFormFromEvent(event);
+            const payload = studioFormPayload(form);
+            if (payload.scene_id) payload.scene_id = Number(payload.scene_id);
+            try {
+                const result = await api.previewStudioSidekickPatch(projectId, payload);
+                studioSidekickPreview = result?.sidekick || null;
+                studioCorrectionPreview = result?.patch || studioSidekickPreview?.patch || null;
+                studioCorrectionPayload = {
+                    correction: studioCorrectionPreview?.correction || payload.correction_text || '',
+                    scope: studioCorrectionPreview?.scope || payload.scope || 'project',
+                    scene_id: payload.scene_id || null,
+                };
+                studioNotice = 'Sidekick patch preview ready.';
+            } catch (error) {
+                studioNotice = error.message || 'Sidekick patch preview failed.';
+            }
+            render();
+        }
+
+        async function exportStudioOpenArtPrompt(event, projectId) {
+            event?.preventDefault?.();
+            const form = studioSidekickFormFromEvent(event);
+            const payload = studioFormPayload(form);
+            if (payload.scene_id) payload.scene_id = Number(payload.scene_id);
+            const references = [payload.image_reference].filter(Boolean);
+            try {
+                const result = await api.exportStudioOpenArtPrompt(projectId, {
+                    ...payload,
+                    sidekick_patch: studioSidekickPreview?.patch || studioCorrectionPreview || null,
+                    references,
+                });
+                studioOpenArtExport = result?.openart_export || null;
+                const promptText = studioOpenArtExport?.copy_text || '';
+                if (promptText && navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(promptText);
+                    studioNotice = 'OpenArt prompt exported and copied.';
+                } else {
+                    studioNotice = 'OpenArt prompt exported.';
+                }
+            } catch (error) {
+                studioNotice = error.message || 'OpenArt prompt export failed.';
+            }
+            render();
+        }
+
+        async function copyStudioOpenArtPrompt(event) {
+            event?.preventDefault?.();
+            const promptText = studioOpenArtExport?.copy_text || '';
+            if (!promptText) {
+                studioNotice = 'Export an OpenArt prompt before copying.';
+                render();
+                return;
+            }
+            try {
+                await navigator.clipboard?.writeText(promptText);
+                studioNotice = 'OpenArt prompt copied.';
+            } catch {
+                studioNotice = 'OpenArt prompt is available in diagnostics.';
+            }
+            render();
+        }
+
+        async function planStudioRepairRequest(event, projectId) {
+            event?.preventDefault?.();
+            const form = studioSidekickFormFromEvent(event);
+            const payload = studioFormPayload(form);
+            const project = studioProjectDetail?.project || studioCurrentProject() || {};
+            const text = [
+                'Studio repair request',
+                payload.correction_text,
+                payload.image_observation,
+                payload.image_reference,
+                payload.target ? `target ${payload.target}` : '',
+            ].filter(Boolean).join(': ');
+            try {
+                const result = await api.planStudioRepair({
+                    action: 'studio_repair_request',
+                    text,
+                    project_key: project.project_key || studioDefaultProjectKey(),
+                    workspace_key: project.workspace_key || studioDefaultWorkspaceKey(project.project_key),
+                    studio_project_id: projectId,
+                });
+                studioRepairPlan = result?.plan || null;
+                studioNotice = studioRepairPlan?.allowed ? 'Studio repair plan ready.' : 'Studio repair request is outside scope.';
+            } catch (error) {
+                studioNotice = error.message || 'Studio repair plan failed.';
             }
             render();
         }
@@ -40352,6 +40617,10 @@
             generateStudioOutline,
             generateStudioStoryboard,
             compileStudioPrompt,
+            previewStudioSidekickPatch,
+            exportStudioOpenArtPrompt,
+            copyStudioOpenArtPrompt,
+            planStudioRepairRequest,
             previewStudioCorrection,
             applyStudioCorrection,
             updateStudioSceneFromForm,

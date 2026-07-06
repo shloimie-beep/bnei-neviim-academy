@@ -1167,6 +1167,23 @@
       ]
     },
     {
+      "route": "/api/bna/studio/openart/status",
+      "surface": "operations_api_service_provider_studio_openart_status",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_openart_mcp_readiness_and_oauth_blocker_without_live_vendor_call",
+      "privacy_risk": "critical",
+      "security_expectation": "Returns local readiness metadata only; no OAuth token, reference upload, generation, credit check, or external write is performed.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/bna/studio/projects",
       "surface": "operations_api_service_provider_studio_projects",
       "access": "private",
@@ -1262,6 +1279,57 @@
       "expected_logged_in_behavior": "compile_prompt_layers_with_delimited_untrusted_source",
       "privacy_risk": "critical",
       "security_expectation": "Compiled prompts include policy layers, delimited untrusted source context, no-send output contract, and local usage only.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id/sidekick/patch-preview",
+      "surface": "operations_api_service_provider_studio_sidekick_patch_preview",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_no_live_sidekick_prompt_patch_preview_for_scoped_studio_project",
+      "privacy_risk": "critical",
+      "security_expectation": "Loads the scoped Studio project first; converts image/render observations into reversible local prompt patch guidance without model calls or external writes.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id/openart/export",
+      "surface": "operations_api_service_provider_studio_openart_export",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_openart_ready_prompt_export_and_mcp_request_plan_without_live_call",
+      "privacy_risk": "critical",
+      "security_expectation": "Compiles scoped Studio prompt context into copy-ready OpenArt text and request-plan metadata only; no reference upload, generation, credit spend, or external write occurs.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/repair/plan",
+      "surface": "operations_api_service_provider_studio_repair_plan",
+      "access": "private",
+      "required_role": "one_time_ai_studio_operator_or_super_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_studio_only_repair_lane_plan_or_denial_with_no_raw_cli",
+      "privacy_risk": "critical",
+      "security_expectation": "The repair policy allows only One Time Studio layout/functionality/prompt/OpenArt work; shell, raw CLI, deploy, migrations, secrets, sends, contacts, payments, settings, and cross-workspace requests are denied.",
       "related_goal_ids": [
         "GOAL-CORE-006",
         "GOAL-CORE-010",
