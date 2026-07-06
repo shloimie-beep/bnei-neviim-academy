@@ -4,7 +4,7 @@ Raw source: `RAW-20260706-950`
 Requirement: `REQ-20260706-950`  
 Workspace: `rabbi_sheller_provider`  
 Project: `one_time_mishnah_class`  
-Status: Local verified; pending commit, push, deploy, and live smoke
+Status: Done; merged, deployed, and live verified
 
 ## Requirement
 
@@ -43,4 +43,16 @@ Access, or the full Super Admin / School / Family workspace directory.
   `ops/prompt-packets/2026-07-06-onetime-full-ui-agent-audit/`, not against
   this dashboard hotfix. Report:
   `ops/watchdog-audits/2026-07-06-product-quality-drift.md`.
-- Pending commit/push/deploy/live smoke before terminal Done.
+- PR #118 merged to `master` at
+  `f0b7cc0a80f35a79cbcd843844fe90960152938b`.
+- Railway production auto-deploy
+  `96961b6f-1ae6-467d-89ae-2a9a5c088753` reached `SUCCESS` on service
+  `skillful-motivation`.
+- PASS `npm run railway:doctor` against BNA project/service
+  `skillful-motivation`.
+- PASS `npm run app:smoke`.
+- PASS `npm run app:smoke:rabbi-onetime-landing`.
+- PASS exact authenticated browser smoke for
+  `/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider`.
+  Report:
+  `ops/live-smokes/2026-07-06T14-10-22-946Z-one-time-operations-dashboard-ui-live-smoke.md`.
