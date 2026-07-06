@@ -65,6 +65,14 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260706-001` / `REQ-20260706-004`: BNA parent meeting-location
+  reminder send. Send packet:
+  `ops/communications/2026-07-06-bna-parent-meeting-reminder/SEND-PACKET.md`.
+  Current status: recipient audit and English/Hebrew copy are prepared; Webers
+  are excluded; Hebrew-tagged recipients are split for Hebrew copy. Live
+  WhatsApp/email send is blocked pending exact approval
+  `APPROVE_BNA_PARENT_REMINDER_SEND` and sender confirmation because this is a
+  real external parent send.
 - [x] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
   `RAW-20260626-008` / `RAW-20260628-002` / `REQ-20260626-116` through
   `REQ-20260626-133` plus `REQ-20260628-134` through `REQ-20260628-140`:

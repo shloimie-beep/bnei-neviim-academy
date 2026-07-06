@@ -307,6 +307,12 @@
 - Amitai's family WhatsApp reminders should be Hebrew when the family,
   student, or contacts are tagged/configured for Hebrew; messages for Amitai,
   his mother, and father should use Hebrew by default.
+- As of 2026-07-06, BNA parent communications should exclude Weber / Huda
+  Weber records because Shloimie said the Webers left, unless he explicitly
+  asks to include them again for a specific message.
+- For BNA parent reminders, Hebrew-tagged families should receive Hebrew copy
+  and Hebrew copy must be checked for normal rendering before any live
+  WhatsApp/email send.
 - Zoom Server-to-Server OAuth and GoDaddy Delegate/DNS access are Thursday
   owner-access blockers for One Time. Do not substitute a Zoom Webhook Only app
   or guess DNS record values from screenshots.

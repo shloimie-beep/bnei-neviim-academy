@@ -29545,3 +29545,22 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - No production data mutation, deploy, external send, Drive write, charge,
   DNS/access/provider-account mutation, credential change, or external CRM
   write was performed by this cleanup batch.
+
+## 2026-07-06 - BNA Parent Meeting Reminder Prepared
+
+- Registered `RAW-20260706-001` and
+  `tasks-pending/2026-07-06-bna-parent-meeting-location-reminder.md` for the
+  same-day BNA parent meeting-location reminder.
+- Created the redacted send packet at
+  `ops/communications/2026-07-06-bna-parent-meeting-reminder/SEND-PACKET.md`.
+- Read-only recipient audit found 5 distinct email recipients and 8 distinct
+  WhatsApp phone recipients after excluding Weber / Huda Weber records; Hebrew
+  routing covers 3 email recipients and 4 WhatsApp recipients.
+- Prepared clean English and Hebrew copy for 8 Havakuk Hanavi, Ramat Beit
+  Shemesh Gimel, with a Hebrew readability check and no repeated question-mark
+  corruption.
+- Updated durable memory so future BNA parent sends exclude Webers unless
+  explicitly included, and Hebrew-tagged parent contacts receive checked Hebrew
+  copy.
+- No WhatsApp or email was sent. Live send remains blocked pending exact
+  approval of `APPROVE_BNA_PARENT_REMINDER_SEND` and sender confirmation.
