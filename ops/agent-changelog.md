@@ -29957,3 +29957,28 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   handoff; OpenArt/vendor credentials/model/budget/privacy/upload policy;
   hosted pixel-analysis provider/policy; complete mailbox MVP tests,
   registries, visual/browser evidence, and live proof before deploying it.
+
+## 2026-07-06 - One Time Operations Dashboard UI Hotfix
+
+- Registered `RAW-20260706-950` / `REQ-20260706-950` for the live Rabbi / One
+  Time Operations dashboard UI complaint.
+- Started a focused hotfix so
+  `/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider`
+  resolves to the scoped One Time provider overview instead of the generic BNA
+  Daily Command Center.
+- Local code now replaces the full workspace directory with a scoped One Time
+  current-workspace summary, exposes Studio in the One Time nav, expands short
+  nav labels, and replaces generic topbar chips with Members / Classes / Studio
+  / Setup chips for the Rabbi workspace.
+- Local verification passed:
+  `node --test tests/operations-shell-navigation-contract.test.js tests/service-provider-studio-operations-ui.test.js`,
+  `NODE_PATH=C:\Users\User\BNA v2.0\node_modules node --test tests/one-time-operations-ui-smoke.test.js`,
+  `NODE_PATH=C:\Users\User\BNA v2.0\node_modules node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`,
+  `npm run watchdog:actions` with `finding_count=0`, and `git diff --check`
+  with line-ending warnings only.
+- `npm run watchdog:protocol-drift` was run and failed on 77 pre-existing
+  findings in the earlier
+  `ops/prompt-packets/2026-07-06-onetime-full-ui-agent-audit/` prompt packet
+  lane, not on this dashboard hotfix. Report:
+  `ops/watchdog-audits/2026-07-06-product-quality-drift.md`.
+- Commit/push, deploy, and live smoke are pending.
