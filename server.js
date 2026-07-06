@@ -47935,6 +47935,424 @@ app.post('/api/provider-portal/inquiries/:id/response-draft', requireProviderSes
   }
 });
 
+function oneTimeMailingAddressConfigured() {
+  const value = integrationConfigValue(
+    'ONE_TIME_MAILING_ADDRESS',
+    ['one-time-mailing-address'],
+    ['one-time-mailing-address.txt', 'ONE_TIME_MAILING_ADDRESS.txt']
+  ) || process.env.ONE_TIME_MAILING_ADDRESS || '';
+  return Boolean(String(value || '').trim());
+}
+
+function oneTimeMailboxHtmlToText(value = '') {
+  return String(value || '')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function oneTimeMailboxBody(row = {}, maxLength = 8000) {
+  const body = String(row.body_text || '').trim() || oneTimeMailboxHtmlToText(row.body_html || '');
+  return limitText(body, maxLength) || '';
+}
+
+function oneTimeMailboxSubject(subject = '') {
+  const value = String(subject || '').trim();
+  if (!value) return 'OneTimeOneTime email';
+  return /^re:/i.test(value) ? value : `Re: ${value}`;
+}
+
+function oneTimeMailboxThreadKey(row = {}) {
+  return row.mailbox_thread_key || row.thread_key || (row.id ? `message:${row.id}` : '');
+}
+
+function oneTimeMailboxMessageView(row = {}) {
+  const metadata = sanitizeIntegrationMetadata(parseJsonMaybe(row.metadata) || {});
+  const bodyText = oneTimeMailboxBody(row);
+  return {
+    id: Number(row.id),
+    thread_key: oneTimeMailboxThreadKey(row),
+    direction: row.direction,
+    communication_type: row.communication_type || '',
+    from_name: row.from_name || row.contact_full_name || '',
+    from_address: row.from_address || '',
+    to_name: row.to_name || '',
+    to_address: row.to_address || '',
+    subject: row.subject || '',
+    body_text: bodyText,
+    preview: limitText(bodyText.replace(/\s+/g, ' ').trim(), 260) || '',
+    status: row.status || 'logged',
+    provider: row.provider || '',
+    occurred_at: row.occurred_at || row.created_at || null,
+    created_at: row.created_at || null,
+    has_html: Boolean(row.body_html),
+    metadata,
+  };
+}
+
+function oneTimeMailboxThreadView(row = {}) {
+  const message = oneTimeMailboxMessageView(row);
+  const latestInbound = row.latest_direction === 'inbound' || row.direction === 'inbound';
+  return {
+    thread_key: oneTimeMailboxThreadKey(row),
+    subject: row.subject || 'OneTimeOneTime email',
+    contact_id: row.contact_id || null,
+    contact_name: row.contact_full_name || row.from_name || row.to_name || 'Unknown sender',
+    contact_email: normalizeEmail(row.contact_primary_email || row.from_address || row.to_address || '') || '',
+    latest_direction: row.direction || '',
+    latest_status: row.status || '',
+    latest_at: row.occurred_at || row.created_at || null,
+    preview: message.preview,
+    message_count: Number(row.message_count || 1),
+    needs_reply: latestInbound,
+  };
+}
+
+async function oneTimeMailboxContext(req, db = pool) {
+  const provider = await serviceProviderWithProject(req.providerSession.providerId, db);
+  if (!provider) {
+    const error = new Error('Provider was not found');
+    error.statusCode = 404;
+    throw error;
+  }
+  if (!isOneTimeClassMediaProvider(provider)) {
+    const error = new Error('Mailbox is available only inside the One Time provider workspace.');
+    error.statusCode = 403;
+    throw error;
+  }
+  const scoped = await scopedProviderSummaryForProvider(provider);
+  const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, db);
+  const workspaceId = await getWorkspaceIdForProjectKey(ONE_TIME_PROJECT_KEY, db);
+  return {
+    provider,
+    scoped,
+    projectId: project?.id || null,
+    workspaceId: workspaceId || null,
+    workspaceKey: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    projectKey: ONE_TIME_PROJECT_KEY,
+  };
+}
+
+async function oneTimeMailboxReadiness() {
+  const identity = academySenderIdentity(ONE_TIME_PROVIDER_WORKSPACE_KEY);
+  const config = resendServerRuntimeConfig(identity);
+  let readiness = null;
+  try {
+    readiness = await resendIntegration.getResendReadiness({ config, fetchImpl: fetch });
+  } catch (error) {
+    readiness = {
+      provider: 'resend',
+      configured: Boolean(config.apiKey),
+      connected: false,
+      send_allowed: false,
+      blocker: safeIntegrationError(error, 'Resend readiness failed').blocker,
+    };
+  }
+  return {
+    provider: 'resend',
+    inbox_address: ONE_TIME_EMAIL_FROM,
+    from_name: ONE_TIME_EMAIL_FROM_NAME,
+    from_email: ONE_TIME_EMAIL_FROM,
+    reply_to: ONE_TIME_EMAIL_REPLY_TO,
+    domain: ONE_TIME_EMAIL_DOMAIN,
+    inbound_endpoint: '/api/resend/inbound',
+    inbound_webhook_configured: Boolean(RESEND_WEBHOOK_SECRET),
+    mailing_address_configured: oneTimeMailingAddressConfigured(),
+    reply_send_allowed: Boolean(readiness?.send_allowed),
+    bulk_send_allowed: false,
+    bulk_send_blocker: 'Bulk email requires a separate campaign packet with approved recipients, unsubscribe/suppression handling, footer compliance, seed proof, exact copy, and operator approval.',
+    readiness,
+  };
+}
+
+async function oneTimeMailboxThreads(req) {
+  const context = await oneTimeMailboxContext(req);
+  const search = limitText(String(req.query.q || req.query.search || '').trim(), 160);
+  const searchPattern = search ? `%${search}%` : null;
+  const { rows } = await pool.query(
+    `WITH scoped AS (
+       SELECT c.*,
+              COALESCE(NULLIF(c.thread_key, ''), CONCAT('message:', c.id)) AS mailbox_thread_key,
+              ct.full_name AS contact_full_name,
+              ct.primary_email AS contact_primary_email
+       FROM bna_communications c
+       LEFT JOIN bna_contacts ct ON ct.id = c.contact_id
+       WHERE c.channel = 'email'
+         AND COALESCE(c.status, '') <> 'archived'
+         AND (c.project_id = $1 OR c.metadata->>'project_key' = $3)
+         AND (c.workspace_id = $2 OR c.metadata->>'workspace_key' = $4)
+         AND ($5::text IS NULL
+           OR c.subject ILIKE $5
+           OR c.from_name ILIKE $5
+           OR c.from_address ILIKE $5
+           OR c.to_address ILIKE $5
+           OR c.body_text ILIKE $5
+           OR ct.full_name ILIKE $5
+           OR ct.primary_email ILIKE $5)
+     ),
+     ranked AS (
+       SELECT scoped.*,
+              COUNT(*) OVER (PARTITION BY mailbox_thread_key) AS message_count,
+              ROW_NUMBER() OVER (
+                PARTITION BY mailbox_thread_key
+                ORDER BY occurred_at DESC NULLS LAST, id DESC
+              ) AS row_rank
+       FROM scoped
+     )
+     SELECT *
+     FROM ranked
+     WHERE row_rank = 1
+     ORDER BY occurred_at DESC NULLS LAST, id DESC
+     LIMIT 120`,
+    [context.projectId, context.workspaceId, context.projectKey, context.workspaceKey, searchPattern]
+  );
+  const readiness = await oneTimeMailboxReadiness();
+  return {
+    success: true,
+    mailbox: {
+      scope: context.scoped.summary,
+      inbox_address: ONE_TIME_EMAIL_FROM,
+      search,
+      readiness,
+      threads: rows.map(oneTimeMailboxThreadView),
+    },
+  };
+}
+
+async function oneTimeMailboxMessages(req, threadKeyInput = '') {
+  const context = await oneTimeMailboxContext(req);
+  const threadKey = limitText(String(threadKeyInput || ''), 500);
+  if (!threadKey) {
+    const error = new Error('Mailbox thread key is required');
+    error.statusCode = 400;
+    throw error;
+  }
+  const { rows } = await pool.query(
+    `SELECT c.*,
+            COALESCE(NULLIF(c.thread_key, ''), CONCAT('message:', c.id)) AS mailbox_thread_key,
+            ct.full_name AS contact_full_name,
+            ct.primary_email AS contact_primary_email
+     FROM bna_communications c
+     LEFT JOIN bna_contacts ct ON ct.id = c.contact_id
+     WHERE c.channel = 'email'
+       AND COALESCE(c.status, '') <> 'archived'
+       AND (c.project_id = $1 OR c.metadata->>'project_key' = $3)
+       AND (c.workspace_id = $2 OR c.metadata->>'workspace_key' = $4)
+       AND COALESCE(NULLIF(c.thread_key, ''), CONCAT('message:', c.id)) = $5
+     ORDER BY c.occurred_at ASC NULLS LAST, c.id ASC
+     LIMIT 300`,
+    [context.projectId, context.workspaceId, context.projectKey, context.workspaceKey, threadKey]
+  );
+  if (!rows.length) {
+    const error = new Error('Mailbox thread was not found in this provider workspace');
+    error.statusCode = 404;
+    throw error;
+  }
+  const messages = rows.map(oneTimeMailboxMessageView);
+  const latestInbound = [...rows].reverse().find(row => row.direction === 'inbound' && normalizeEmail(row.from_address || '')) || null;
+  const latest = rows[rows.length - 1] || rows[0];
+  return {
+    context,
+    rows,
+    latest,
+    latestInbound,
+    thread: {
+      thread_key: threadKey,
+      subject: latest?.subject || rows[0]?.subject || 'OneTimeOneTime email',
+      reply_to_address: normalizeEmail(latestInbound?.from_address || ''),
+      reply_to_name: latestInbound?.from_name || latestInbound?.contact_full_name || '',
+      messages,
+    },
+  };
+}
+
+app.get('/api/provider-portal/mailbox', requireProviderSession, async (req, res) => {
+  try {
+    res.json(await oneTimeMailboxThreads(req));
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, reason: err.reason });
+  }
+});
+
+app.get('/api/provider-portal/mailbox/:threadKey', requireProviderSession, async (req, res) => {
+  try {
+    const payload = await oneTimeMailboxMessages(req, req.params.threadKey);
+    res.json({
+      success: true,
+      mailbox: {
+        scope: payload.context.scoped.summary,
+        inbox_address: ONE_TIME_EMAIL_FROM,
+        readiness: await oneTimeMailboxReadiness(),
+      },
+      thread: payload.thread,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, reason: err.reason });
+  }
+});
+
+app.post('/api/provider-portal/mailbox/:threadKey/draft', requireProviderSession, async (req, res) => {
+  try {
+    const bodyText = limitText(String(req.body?.body_text || req.body?.body || req.body?.message || '').trim(), 5000);
+    if (!bodyText) return res.status(400).json({ success: false, error: 'Reply body is required' });
+    const payload = await oneTimeMailboxMessages(req, req.params.threadKey);
+    const recipient = normalizeEmail(payload.latestInbound?.from_address || '');
+    if (!recipient) return res.status(409).json({ success: false, error: 'This thread does not have an inbound sender address to reply to.' });
+    const identity = academySenderIdentity(ONE_TIME_PROVIDER_WORKSPACE_KEY);
+    const subject = oneTimeMailboxSubject(payload.latest?.subject || payload.thread.subject);
+    const saved = await logCommunication({
+      workspaceId: payload.context.workspaceId,
+      projectId: payload.context.projectId,
+      contactId: payload.latestInbound?.contact_id || payload.latest?.contact_id || null,
+      providerId: payload.context.provider?.id || req.providerSession.providerId,
+      channel: 'email',
+      direction: 'outbound',
+      communicationType: 'one_time_mailbox_reply_draft',
+      fromName: identity.fromName,
+      fromAddress: identity.fromEmail,
+      toName: payload.latestInbound?.from_name || payload.latestInbound?.contact_full_name || null,
+      toAddress: recipient,
+      subject,
+      bodyText,
+      threadKey: payload.thread.thread_key,
+      provider: 'resend',
+      status: 'draft',
+      metadata: sanitizeIntegrationMetadata({
+        source: 'provider_portal_mailbox',
+        workspace_key: payload.context.workspaceKey,
+        project_key: payload.context.projectKey,
+        draft_only: true,
+        no_send: true,
+        external_write_performed: false,
+        reply_to_communication_id: payload.latestInbound?.id || null,
+      }),
+    });
+    res.json({
+      success: true,
+      draft: saved ? oneTimeMailboxMessageView(saved) : null,
+      no_send: true,
+      external_write_performed: false,
+      message: 'Draft saved in the CRM mailbox. No email was sent.',
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, reason: err.reason });
+  }
+});
+
+app.post('/api/provider-portal/mailbox/:threadKey/send', requireProviderSession, async (req, res) => {
+  const bodyText = limitText(String(req.body?.body_text || req.body?.body || req.body?.message || '').trim(), 5000);
+  const confirm = String(req.body?.confirm || req.body?.confirmation_phrase || req.body?.confirmationPhrase || '').trim();
+  if (!bodyText) return res.status(400).json({ success: false, error: 'Reply body is required' });
+  let payload = null;
+  const identity = academySenderIdentity(ONE_TIME_PROVIDER_WORKSPACE_KEY);
+  const runtimeConfig = resendServerRuntimeConfig(identity);
+  try {
+    payload = await oneTimeMailboxMessages(req, req.params.threadKey);
+    const recipient = normalizeEmail(payload.latestInbound?.from_address || '');
+    if (!recipient) return res.status(409).json({ success: false, send_blocked: true, blocker: 'This thread does not have an inbound sender address to reply to.' });
+    const subject = oneTimeMailboxSubject(payload.latest?.subject || payload.thread.subject);
+    const sent = await resendIntegration.sendResendEmail({
+      from: runtimeConfig.from || `${identity.fromName} <${identity.fromEmail}>`,
+      to: [recipient],
+      replyTo: runtimeConfig.replyTo || identity.replyTo,
+      subject,
+      text: bodyText,
+      metadata: {
+        source: 'provider_portal_mailbox',
+        thread_key: payload.thread.thread_key,
+      },
+    }, {
+      config: runtimeConfig,
+      fetchImpl: fetch,
+      confirm,
+    });
+    await externalActions.recordExternalActionAudit(pool, {
+      provider: 'resend',
+      action: 'send',
+      riskLevel: 'high',
+      previewOnly: false,
+      approvalPhrase: confirm,
+      accountOwner: runtimeConfig.accountOwner,
+      mode: runtimeConfig.domain || 'unknown_domain',
+      resultSummary: {
+        source: 'provider_portal_mailbox',
+        thread_key: payload.thread.thread_key,
+        provider_message_id: sent.id || null,
+        recipient_count: 1,
+      },
+      secrets: [runtimeConfig.apiKey],
+    }).catch(() => null);
+    const logged = await logCommunication({
+      workspaceId: payload.context.workspaceId,
+      projectId: payload.context.projectId,
+      contactId: payload.latestInbound?.contact_id || payload.latest?.contact_id || null,
+      providerId: payload.context.provider?.id || req.providerSession.providerId,
+      channel: 'email',
+      direction: 'outbound',
+      communicationType: 'one_time_mailbox_reply_sent',
+      fromName: identity.fromName,
+      fromAddress: identity.fromEmail,
+      toName: payload.latestInbound?.from_name || payload.latestInbound?.contact_full_name || null,
+      toAddress: recipient,
+      subject,
+      bodyText,
+      externalMessageId: sent.id || null,
+      threadKey: payload.thread.thread_key,
+      provider: 'resend',
+      status: 'sent',
+      metadata: sanitizeIntegrationMetadata({
+        source: 'provider_portal_mailbox',
+        workspace_key: payload.context.workspaceKey,
+        project_key: payload.context.projectKey,
+        external_write_performed: true,
+        reply_to_communication_id: payload.latestInbound?.id || null,
+        resend_provider_message_id: sent.id || null,
+      }),
+    });
+    res.json({
+      success: true,
+      sent: true,
+      provider: 'resend',
+      provider_message_id: sent.id || null,
+      communication: logged ? oneTimeMailboxMessageView(logged) : null,
+      readiness: sent.readiness,
+      external_write_performed: true,
+    });
+  } catch (err) {
+    await externalActions.recordExternalActionAudit(pool, {
+      provider: 'resend',
+      action: 'send',
+      riskLevel: 'high',
+      previewOnly: true,
+      approvalPhrase: confirm,
+      accountOwner: runtimeConfig.accountOwner,
+      mode: runtimeConfig.domain || 'unknown_domain',
+      errorSummary: externalActions.redactedExternalError(err, [runtimeConfig.apiKey]),
+      secrets: [runtimeConfig.apiKey],
+    }).catch(() => null);
+    const readiness = err.readiness || await oneTimeMailboxReadiness();
+    const blocker = err.approval?.blocker || readiness.blocker || readiness.readiness?.blocker || safeIntegrationError(err, 'Resend mailbox reply failed').blocker;
+    res.status(err.status || err.statusCode || 409).json({
+      success: false,
+      send_blocked: true,
+      blocker,
+      readiness,
+      external_write_performed: false,
+    });
+  }
+});
+
 app.get('/api/provider-portal/calendar-events', requireProviderSession, async (req, res) => {
   try {
     const provider = await serviceProviderWithProject(req.providerSession.providerId);
@@ -52977,9 +53395,9 @@ app.get('/api/parent/me', async (req, res) => {
 
 app.get('/api/bna/auth/me', async (req, res) => {
   try {
-    const opsIdentity = await identifyOpsAssistantRequest(req).catch(() => null);
-    if (opsIdentity) {
-      return res.json(await buildBnaIdentityPayload({ identity: opsIdentity, req, actor: 'admin' }));
+    const admin = await identifyAdminRequest(req).catch(() => null);
+    if (admin) {
+      return res.json(await buildBnaIdentityPayload({ identity: admin, req, actor: 'admin' }));
     }
     const cookies = parseCookies(req);
     const parentSession = await getValidParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => null);

@@ -29957,7 +29957,6 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   handoff; OpenArt/vendor credentials/model/budget/privacy/upload policy;
   hosted pixel-analysis provider/policy; complete mailbox MVP tests,
   registries, visual/browser evidence, and live proof before deploying it.
-
 ## 2026-07-06 - One Time Operations Dashboard UI Hotfix
 
 - Registered `RAW-20260706-950` / `REQ-20260706-950` for the live Rabbi / One
@@ -29999,3 +29998,39 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   `ops/live-smokes/2026-07-06T14-10-22-946Z-one-time-operations-dashboard-ui-live-smoke.md`,
   `ops/live-smokes/2026-07-06T14-08-01-128Z-live-app-smoke.md`, and
   `ops/live-smokes/2026-07-06T14-07-25-867Z-rabbi-onetime-landing-smoke.md`.
+
+## 2026-07-06 - One Time CRM Mailbox Publication Branch Verified
+
+- Registered `RAW-20260706-909`, `REQ-20260706-940` through
+  `REQ-20260706-946`, and `TASK-20260706-940` for the Rabbi / One Time CRM
+  mailbox goal.
+- Created clean branch `codex/onetime-crm-mailbox-20260706` from current
+  `origin/master` so the mailbox work can publish without unrelated dirty
+  worktree changes.
+- Added provider-session gated One Time mailbox APIs:
+  `/api/provider-portal/mailbox`, `/api/provider-portal/mailbox/:threadKey`,
+  `/api/provider-portal/mailbox/:threadKey/draft`, and
+  `/api/provider-portal/mailbox/:threadKey/send`.
+- The mailbox reads scoped Resend inbound/outbound email rows from
+  `bna_communications` for `rabbi_sheller_provider` /
+  `one_time_mishnah_class`; draft save is local/no-send, and send requires
+  Resend readiness plus exact `SEND_RESEND_EMAIL` confirmation.
+- Added the provider portal Mailbox section with search, thread list, message
+  timeline, readiness chips, local draft save, guarded send, mobile layout, and
+  One Time review-shell placeholder.
+- Added route/action registry rows, raw/register/PQC artifacts, and
+  `tests/provider-mailbox-portal.test.js`.
+- Verification passed on the clean branch: `node --check server.js`; inline
+  provider script parse; `node --test tests/provider-mailbox-portal.test.js`;
+  combined mailbox/WAPI provider tests 7/7; PQC validation; and `npm run
+  watchdog:actions` finding count 0.
+- `npm run watchdog:protocol-drift` was run and failed on unrelated current
+  `origin/master` prompt-series artifacts under
+  `ops/prompt-packets/2026-07-06-onetime-full-ui-agent-audit/*`; the mailbox
+  PQC packet itself validated and action watchdog reported zero findings.
+- Remaining blockers before live Done: target Resend/runtime env readback and
+  deploy/live smoke, including `RESEND_WEBHOOK_SECRET`, API/domain readiness,
+  and runtime `ONE_TIME_MAILING_ADDRESS`.
+- Guardrails: no physical mailing address text committed, no external email
+  sent, no bulk campaign endpoint added, no DNS/payment/access/provider-account
+  mutation, and no production data mutation.

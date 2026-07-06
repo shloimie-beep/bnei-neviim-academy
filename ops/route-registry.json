@@ -2039,6 +2039,82 @@
       ]
     },
     {
+      "route": "/api/provider-portal/mailbox",
+      "surface": "provider_portal_api_onetime_mailbox_threads",
+      "access": "private_provider",
+      "required_role": "provider",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_provider_session_required",
+      "expected_logged_in_behavior": "return_one_time_resend_email_threads_for_own_provider_workspace_only",
+      "privacy_risk": "provider_email_private",
+      "canonical_target": "/provider?section=mailbox",
+      "security_expectation": "Requires provider session and Rabbi/One Time workspace scope; reads only bna_communications email rows scoped to rabbi_sheller_provider / one_time_mishnah_class; returns readiness without secrets or physical address text.",
+      "smoke_expectation": "tests/provider-mailbox-portal.test.js verifies route registration, scope checks, inbox storage source, and no bulk send.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/provider-portal/mailbox/:threadKey",
+      "surface": "provider_portal_api_onetime_mailbox_thread",
+      "access": "private_provider",
+      "required_role": "provider",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_provider_session_required",
+      "expected_logged_in_behavior": "return_one_time_resend_email_thread_timeline_for_own_provider_workspace_only",
+      "privacy_risk": "provider_email_private",
+      "canonical_target": "/provider?section=mailbox",
+      "security_expectation": "Requires provider session and Rabbi/One Time workspace scope; renders text-safe thread bodies from first-party communications records and does not expose raw secrets or cross-workspace messages.",
+      "smoke_expectation": "tests/provider-mailbox-portal.test.js verifies thread route and provider-scoped query contract.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/provider-portal/mailbox/:threadKey/draft",
+      "surface": "provider_portal_api_onetime_mailbox_reply_draft",
+      "access": "private_provider",
+      "required_role": "provider",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_provider_session_required",
+      "expected_logged_in_behavior": "save_one_time_mailbox_reply_draft_without_external_send",
+      "privacy_risk": "provider_email_private",
+      "canonical_target": "/provider?section=mailbox",
+      "security_expectation": "Requires provider session and Rabbi/One Time workspace scope; logs local bna_communications draft with no_send/external_write_performed=false metadata.",
+      "smoke_expectation": "tests/provider-mailbox-portal.test.js verifies draft route is local-only.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/provider-portal/mailbox/:threadKey/send",
+      "surface": "provider_portal_api_onetime_mailbox_reply_send",
+      "access": "private_provider",
+      "required_role": "provider",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_provider_session_required",
+      "expected_logged_in_behavior": "send_one_time_mailbox_reply_only_after_resend_readiness_and_exact_confirmation",
+      "privacy_risk": "provider_email_external_send",
+      "canonical_target": "/provider?section=mailbox",
+      "security_expectation": "Requires provider session, Rabbi/One Time workspace scope, Resend readiness, and exact SEND_RESEND_EMAIL confirmation; records external action audit and does not enable bulk email.",
+      "smoke_expectation": "tests/provider-mailbox-portal.test.js verifies guarded send route, confirmation phrase, and no bulk send.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/provider-portal/calendar-events",
       "surface": "provider_portal_api_calendar_events",
       "access": "private_provider",
