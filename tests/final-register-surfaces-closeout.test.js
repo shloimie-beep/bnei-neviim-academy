@@ -16,6 +16,8 @@ test('uploaded recordings and freeform rambles share canonical raw-first intake'
   assert.match(server, /app\.post\('\/api\/bna\/intake\/parse'/);
   assert.match(server, /app\.post\('\/api\/bna\/recording-intake\/parse-mixed-recording'/);
   assert.match(server, /app\.post\('\/api\/bna\/content-jobs\/:id\/parse-mixed-recording'/);
+  assert.match(server, /if \(!force && previousParse\?\.mixed_recording_parse\?\.parsed_at\)/);
+  assert.match(server, /dry-run reused the stored parse/);
   assert.match(server, /const intake = await createCanonicalIntakeParseRun/);
   assert.match(server, /source_type: sourceType/);
   assert.match(server, /source_table: contentBacked && job\.id \? 'bna_content_jobs' : null/);

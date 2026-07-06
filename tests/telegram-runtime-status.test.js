@@ -146,6 +146,12 @@ test('academy bridge has a targeted Drive content job reprocess command', () => 
   assert.match(bridge, /status: 'blocked'/);
   assert.match(bridge, /Drive file moved to stage: 03 Transcribed/);
   assert.match(bridge, /Content job stage marked 04 Parsed after successful parse/);
+  assert.match(bridge, /dry_run: Boolean\(options\.dryRun\)/);
+  assert.match(bridge, /force: Boolean\(options\.force\)/);
+  assert.match(bridge, /no_ai: Boolean\(options\.noAi\)/);
+  assert.match(bridge, /no_progress_writes: Boolean\(options\.noProgressWrites\)/);
+  assert.match(bridge, /noAi: args\.includes\('--no-ai'\)/);
+  assert.match(bridge, /noProgressWrites: args\.includes\('--no-progress-writes'\)/);
 });
 
 test('academy bridge recognizes Erev Shabbos Parsha WhatsApp requests as weekly reports', () => {

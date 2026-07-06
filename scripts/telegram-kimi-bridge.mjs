@@ -8347,6 +8347,10 @@ async function parseMixedContentJob(config, jobId, options = {}) {
       : '',
   ].filter(Boolean).join('\n\n');
   return appRequest(config, 'POST', `/api/bna/content-jobs/${jobId}/parse-mixed-recording`, {
+    dry_run: Boolean(options.dryRun),
+    force: Boolean(options.force),
+    no_ai: Boolean(options.noAi),
+    no_progress_writes: Boolean(options.noProgressWrites),
     instruction: [
       'This recording may include both operator tasks and student accountability.',
       'Split operator personal tasks into Tasks assigned to Shloimie.',
@@ -9897,6 +9901,10 @@ async function reprocessDriveContentJob(config, jobId, options = {}) {
     if (options.parse || (options.autoParse && routing.shouldParse)) {
       parseResult = await parseMixedContentJob(config, jobId, {
         instruction: 'Repair follow-up after Drive transcription reprocess. Parse only actual operator tasks, student accountability, Torah learning updates, class topics, and source questions heard in the transcript.',
+        dryRun: options.dryRun,
+        force: options.force,
+        noAi: options.noAi,
+        noProgressWrites: options.noProgressWrites,
       });
       if (parseResult?.success && !parseResult?.dry_run) {
         const stagePatch = await appRequest(config, 'PATCH', `/api/bna/content-jobs/${jobId}`, {
@@ -9920,6 +9928,7 @@ async function reprocessDriveContentJob(config, jobId, options = {}) {
       parse: parseResult
         ? {
             success: Boolean(parseResult.success),
+            dry_run: Boolean(parseResult.dry_run),
             skipped: Boolean(parseResult.skipped),
             counts: parseResult.counts || {},
           }
@@ -10004,6 +10013,10 @@ async function reprocessDriveContentJob(config, jobId, options = {}) {
     if (options.parse || (options.autoParse && routing.shouldParse)) {
       parseResult = await parseMixedContentJob(config, jobId, {
         instruction: 'Repair follow-up after Drive transcription reprocess. Parse only actual operator tasks, student accountability, Torah learning updates, class topics, and source questions heard in the transcript.',
+        dryRun: options.dryRun,
+        force: options.force,
+        noAi: options.noAi,
+        noProgressWrites: options.noProgressWrites,
       });
       if (parseResult?.success && !parseResult?.dry_run) {
         const stagePatch = await appRequest(config, 'PATCH', `/api/bna/content-jobs/${jobId}`, {
@@ -10028,6 +10041,7 @@ async function reprocessDriveContentJob(config, jobId, options = {}) {
       parse: parseResult
         ? {
             success: Boolean(parseResult.success),
+            dry_run: Boolean(parseResult.dry_run),
             skipped: Boolean(parseResult.skipped),
             counts: parseResult.counts || {},
           }
@@ -10066,6 +10080,8 @@ async function repairDriveContentJobsFromArgs(config, args = []) {
     force: args.includes('--force'),
     parse: args.includes('--parse'),
     autoParse: args.includes('--auto-parse'),
+    noAi: args.includes('--no-ai'),
+    noProgressWrites: args.includes('--no-progress-writes'),
   };
   const results = [];
   for (const jobId of jobIds) {
