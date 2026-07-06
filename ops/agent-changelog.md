@@ -30194,3 +30194,27 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrails: no backend auth/data/schema change, no WhatsApp/email/payment
   send, no access grant, no DNS/provider-account mutation, no production data
   mutation, and no screenshots or private page data committed.
+
+## 2026-07-06 - One Time Local Class Welcome Send
+
+- Registered `RAW-20260706-960` and requirements `REQ-20260706-960` through
+  `REQ-20260706-963` for the operator-provided local class attendee welcome
+  send.
+- Fixed the One Time manual Resend draft send logger so sent email rows carry
+  project/workspace metadata into `bna_communications`, making outbound manual
+  sends visible in Rabbi's provider mailbox.
+- Fixed the Resend draft recipient-conflict query to map
+  `bna_workspace_settings.workspace_key` to project scope instead of querying a
+  nonexistent `project_key` column.
+- Deployed one-time-web hotfixes:
+  `05f259e2-19fd-4efd-a385-955c3e3f4a72` and
+  `edea316e-1831-4679-af1e-c861714839d4`, both `SUCCESS`.
+- Added/upserted three One Time local-class attendee CRM leads, sent three
+  individual welcome emails through `SEND_RESEND_EMAIL`, logged CRM notes, and
+  verified three matching threads in Rabbi's provider mailbox.
+- Evidence:
+  `ops/live-smokes/2026-07-06T15-23-44-976Z-one-time-local-class-welcome-send.md`.
+- Guardrails: no raw recipient emails, full Zoom URL, credentials, cookies, or
+  raw email body committed; no shared-recipient/bulk campaign send, WhatsApp,
+  payment/access, DNS, member/library entitlement, provider-account mutation, or
+  external CRM write.

@@ -1,0 +1,137 @@
+{
+  "ok": true,
+  "started_at": "2026-07-06T15:23:44.976Z",
+  "app_url": "https://join.onetimeonetime.com",
+  "raw_id": "RAW-20260706-960",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "zoom_url_redacted": "[redacted zoom url]",
+  "external_send_performed": true,
+  "contact_mutation_performed": true,
+  "recipients": [
+    {
+      "email_mask": "s***@g***.com",
+      "fingerprint": "sha256:568337a3e3098ac0"
+    },
+    {
+      "email_mask": "b***@g***.com",
+      "fingerprint": "sha256:7e497ffd61328c3c"
+    },
+    {
+      "email_mask": "e***@g***.com",
+      "fingerprint": "sha256:f91ab3e2862f48aa"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "session established"
+    },
+    {
+      "name": "Upsert local class CRM record s***@g***.com",
+      "ok": true,
+      "detail": "lead #4 merged"
+    },
+    {
+      "name": "Create email draft s***@g***.com",
+      "ok": true,
+      "detail": "draft #1"
+    },
+    {
+      "name": "Send email s***@g***.com",
+      "ok": true,
+      "detail": "provider message sha256:09b7762e106c7921"
+    },
+    {
+      "name": "Log CRM note s***@g***.com",
+      "ok": true,
+      "detail": "note #3"
+    },
+    {
+      "name": "Upsert local class CRM record b***@g***.com",
+      "ok": true,
+      "detail": "lead #5 created"
+    },
+    {
+      "name": "Create email draft b***@g***.com",
+      "ok": true,
+      "detail": "draft #2"
+    },
+    {
+      "name": "Send email b***@g***.com",
+      "ok": true,
+      "detail": "provider message sha256:f88e69cbfd2737d6"
+    },
+    {
+      "name": "Log CRM note b***@g***.com",
+      "ok": true,
+      "detail": "note #4"
+    },
+    {
+      "name": "Upsert local class CRM record e***@g***.com",
+      "ok": true,
+      "detail": "lead #6 created"
+    },
+    {
+      "name": "Create email draft e***@g***.com",
+      "ok": true,
+      "detail": "draft #3"
+    },
+    {
+      "name": "Send email e***@g***.com",
+      "ok": true,
+      "detail": "provider message sha256:682654e8e5d1eef0"
+    },
+    {
+      "name": "Log CRM note e***@g***.com",
+      "ok": true,
+      "detail": "note #5"
+    },
+    {
+      "name": "Scoped parent-lead readback",
+      "ok": true,
+      "detail": "3 recipients present in scoped parent leads"
+    },
+    {
+      "name": "Provider mailbox readback",
+      "ok": true,
+      "detail": "3 welcome threads visible"
+    }
+  ],
+  "sends": [
+    {
+      "email_mask": "s***@g***.com",
+      "fingerprint": "sha256:568337a3e3098ac0",
+      "lead_id": 4,
+      "lead_merged_existing": true,
+      "draft_id": 1,
+      "note_id": 3,
+      "provider_message_id_fingerprint": "sha256:09b7762e106c7921"
+    },
+    {
+      "email_mask": "b***@g***.com",
+      "fingerprint": "sha256:7e497ffd61328c3c",
+      "lead_id": 5,
+      "lead_merged_existing": false,
+      "draft_id": 2,
+      "note_id": 4,
+      "provider_message_id_fingerprint": "sha256:f88e69cbfd2737d6"
+    },
+    {
+      "email_mask": "e***@g***.com",
+      "fingerprint": "sha256:f91ab3e2862f48aa",
+      "lead_id": 6,
+      "lead_merged_existing": false,
+      "draft_id": 3,
+      "note_id": 5,
+      "provider_message_id_fingerprint": "sha256:682654e8e5d1eef0"
+    }
+  ],
+  "provider_mailbox_readback": {
+    "search_subject": "Welcome to the Zoom Mishnayos class",
+    "matching_thread_count": 3,
+    "total_search_thread_count": 3,
+    "mailbox_inbox_address": "i***@o***.com"
+  }
+}

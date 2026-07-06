@@ -405,6 +405,7 @@ async function run() {
     ...report,
     sends: report.sends.map((item) => {
       const { provider_message_id: providerMessageId, ...rest } = item;
+      delete rest.display_name;
       return {
         ...rest,
         provider_message_id_fingerprint: providerMessageId ? fingerprint(providerMessageId) : null,
@@ -446,7 +447,7 @@ async function run() {
     report: path.relative(root, mdPath).replace(/\\/g, '/'),
     sent_count: safeReport.sends.length,
     mailbox_matching_threads: safeReport.provider_mailbox_readback?.matching_thread_count ?? null,
-    deployment_expected: 'one-time-web deployment 05f259e2-19fd-4efd-a385-955c3e3f4a72 or later',
+    deployment_expected: 'latest one-time-web production deployment',
   }, null, 2));
 }
 
