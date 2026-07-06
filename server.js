@@ -100,6 +100,8 @@ const {
   canOneTimeIdentity,
   normalizeOneTimeRole,
   oneTimeCanonicalOwnerAssignments,
+  oneTimeAllowedViewsForRole,
+  oneTimeRoleAccessMatrix,
   oneTimeDisplayName,
   oneTimeRoleLabel,
 } = require('./src/lib/bna/one-time-role-model');
@@ -2587,6 +2589,16 @@ const ONE_TIME_STUDIO_OPERATOR_PASSWORD =
   process.env.ONE_TIME_STUDIO_OPERATOR_PASSWORD ||
   process.env.ONE_TIME_AI_STUDIO_PASSWORD ||
   process.env.OPENART_STUDIO_OPERATOR_PASSWORD ||
+  '';
+const ONE_TIME_AI_VIDEO_WORKER_USERNAME =
+  process.env.ONE_TIME_AI_VIDEO_WORKER_USERNAME ||
+  process.env.ONE_TIME_VIDEO_WORKER_USERNAME ||
+  process.env.ONE_TIME_STUDIO_VIDEO_WORKER_USERNAME ||
+  '';
+const ONE_TIME_AI_VIDEO_WORKER_PASSWORD =
+  process.env.ONE_TIME_AI_VIDEO_WORKER_PASSWORD ||
+  process.env.ONE_TIME_VIDEO_WORKER_PASSWORD ||
+  process.env.ONE_TIME_STUDIO_VIDEO_WORKER_PASSWORD ||
   '';
 const TELEGRAM_CHAT_ID_BNA =
   process.env.TELEGRAM_CHAT_ID_BNA ||
@@ -8498,7 +8510,8 @@ function identifyOpsUser(username, password = null) {
   // Owner gets full provider view + settings; manager gets provider view without sensitive admin
   const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
   const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
-  const studioOperatorAllowedViews = ['studio', 'tasks'];
+  const studioOperatorAllowedViews = oneTimeAllowedViewsForRole('one_time_ai_studio_operator');
+  const aiVideoWorkerAllowedViews = oneTimeAllowedViewsForRole('one_time_ai_video_worker');
 
   if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
@@ -8542,6 +8555,22 @@ function identifyOpsUser(username, password = null) {
   }
 
   if (
+    ONE_TIME_AI_VIDEO_WORKER_USERNAME &&
+    ONE_TIME_AI_VIDEO_WORKER_PASSWORD &&
+    normalizedUser === ONE_TIME_AI_VIDEO_WORKER_USERNAME.toLowerCase()
+  ) {
+    if (pass !== null && pass !== ONE_TIME_AI_VIDEO_WORKER_PASSWORD) return null;
+    return decorateOneTimeIdentity({
+      username: user,
+      role: 'one_time_ai_video_worker',
+      scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+      allowedViews: aiVideoWorkerAllowedViews,
+      displayName: 'AI Video Worker',
+      access_matrix: oneTimeRoleAccessMatrix('one_time_ai_video_worker'),
+    });
+  }
+
+  if (
     ONE_TIME_STUDIO_OPERATOR_USERNAME &&
     ONE_TIME_STUDIO_OPERATOR_PASSWORD &&
     normalizedUser === ONE_TIME_STUDIO_OPERATOR_USERNAME.toLowerCase()
@@ -8553,6 +8582,7 @@ function identifyOpsUser(username, password = null) {
       scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
       allowedViews: studioOperatorAllowedViews,
       displayName: 'AI Studio Operator',
+      access_matrix: oneTimeRoleAccessMatrix('one_time_ai_studio_operator'),
     });
   }
 
@@ -8599,7 +8629,39 @@ function isOneTimeStudioOperatorPathAllowed(routePath = '', method = 'GET') {
   if (routePath === '/api/bna/studio/projects' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/studio/repair/plan' && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/projects\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/ai-video-worker\/handoff$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/projects\/\d+\/(?:source|outline|storyboard|prompt-compile|render|handoff)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/(?:sidekick\/patch-preview|openart\/export)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/corrections\/(?:preview|apply)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/scenes\/\d+$/.test(routePath) && method === 'PATCH') return true;
+  if (/^\/api\/bna\/studio\/scenes\/\d+\/regenerate$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/jobs\/\d+\/(?:retry|cancel)$/.test(routePath) && method === 'POST') return true;
+
+  return false;
+}
+
+function isOneTimeAiVideoWorkerPathAllowed(routePath = '', method = 'GET') {
+  if (routePath === '/operations' && method === 'GET') return true;
+  if (routePath === '/api/bna/auth/me' && method === 'GET') return true;
+  if (routePath === '/api/bna/me' && method === 'GET') return true;
+  if (routePath === '/api/bna/workspace-directory' && method === 'GET') return true;
+  if (routePath === '/api/bna/workspaces' && method === 'GET') return true;
+  if (routePath === '/api/bna/session/workspace' && method === 'POST') return true;
+  if (/^\/api\/bna\/workspace-settings\/[^/]+\/branding$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/projects' && method === 'GET') return true;
+
+  if (routePath === '/api/bna/tasks' && ['GET', 'POST'].includes(method)) return true;
+  if (/^\/api\/bna\/tasks\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
+  if (/^\/api\/bna\/tasks\/\d+\/comments$/.test(routePath) && ['GET', 'POST'].includes(method)) return true;
+
+  if (routePath === '/api/bna/studio/dashboard' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/openart/status' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/usage' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/projects' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/studio/repair/plan' && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/ai-video-worker\/handoff$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/(?:source|outline|storyboard|prompt-compile|render)$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/projects\/\d+\/(?:sidekick\/patch-preview|openart\/export)$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/projects\/\d+\/corrections\/(?:preview|apply)$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/scenes\/\d+$/.test(routePath) && method === 'PATCH') return true;
@@ -8614,6 +8676,9 @@ function isScopedOpsPathAllowed(req, identity = null) {
   const method = String(req.method || '').toUpperCase();
   const isManager = identity?.role === 'project_manager';
   const isOwner = identity?.role === 'project_owner';
+  if (identity?.role === 'one_time_ai_video_worker') {
+    return isOneTimeAiVideoWorkerPathAllowed(routePath, method);
+  }
   if (identity?.role === 'one_time_ai_studio_operator') {
     return isOneTimeStudioOperatorPathAllowed(routePath, method);
   }
@@ -8774,6 +8839,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/studio/projects' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/studio/repair/plan' && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/projects\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/ai-video-worker\/handoff$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/projects\/\d+\/(?:source|outline|storyboard|prompt-compile|render|handoff)$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/projects\/\d+\/(?:sidekick\/patch-preview|openart\/export)$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/studio\/projects\/\d+\/corrections\/(?:preview|apply)$/.test(routePath) && method === 'POST') return true;
@@ -57168,6 +57234,127 @@ app.post('/api/bna/studio/projects/:id/openart/export', requireAdmin, async (req
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/ai-video-worker/handoff', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const detail = await loadStudioProjectDetail(req, req.params.id, client);
+    const source = await loadStudioPrimarySource(detail.project.id, client)
+      || detail.sources[0]
+      || studio.normalizeStudioSourceInput({
+        title: detail.project.title,
+        raw_text: detail.project.brief_json?.goal || detail.project.title,
+      });
+    const sourceRecord = {
+      ...source,
+      normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '',
+    };
+    const scenes = (detail.scenes || []).length
+      ? detail.scenes
+      : studio.buildStoryboard({
+          source: sourceRecord,
+          brief: detail.project.brief_json,
+          scene_count: req.body?.scene_count || 3,
+        }).scenes;
+    const compiledPrompts = scenes.map((scene) => studio.compileStudioPrompt({
+      project: detail.project,
+      source: sourceRecord,
+      brief: detail.project.brief_json,
+      character_bible: detail.project.character_bible,
+      guardrails: detail.project.guardrails,
+      scene,
+      correction_patches: [
+        ...(detail.correction_patches || []),
+        ...(req.body?.sidekick_patch ? [req.body.sidekick_patch] : []),
+      ],
+    }));
+    const promptPack = studioSidekick.buildAiVideoWorkerPromptPack({
+      project: detail.project,
+      source: sourceRecord,
+      scenes,
+      compiled_prompts: compiledPrompts,
+      character_bible: detail.project.character_bible,
+      guardrails: detail.project.guardrails,
+      sidekick_patch: req.body?.sidekick_patch || null,
+      references: req.body?.references || [],
+    });
+    const handoff = studioSidekick.buildAiVideoWorkerReviewHandoff({
+      project: detail.project,
+      source: sourceRecord,
+      scenes,
+      prompt_pack: promptPack,
+      assets: detail.assets,
+      usage: detail.usage_rollup,
+      approved_by: req.body?.approved_by || req.opsUser || 'dashboard',
+    });
+    const existing = (await client.query(
+      `SELECT *
+       FROM bna_studio_exports
+       WHERE studio_project_id = $1
+         AND idempotency_key = $2
+       LIMIT 1`,
+      [detail.project.id, handoff.idempotency_key]
+    )).rows[0];
+    if (existing) {
+      await client.query('COMMIT');
+      return res.json({
+        success: true,
+        handoff,
+        prompt_pack: promptPack,
+        export: existing,
+        idempotent: true,
+        no_external_writes: true,
+      });
+    }
+    const exportRow = (await client.query(
+      `INSERT INTO bna_studio_exports (
+         studio_project_id, project_id, export_type, idempotency_key,
+         manifest_json, status, no_publish, external_write_performed, created_by
+       ) VALUES ($1, $2, 'ai_video_worker_handoff', $3, $4, 'ready_for_review', TRUE, FALSE, $5)
+       ON CONFLICT (idempotency_key) DO UPDATE SET
+         manifest_json = EXCLUDED.manifest_json,
+         status = 'ready_for_review',
+         updated_at = NOW()
+       RETURNING *`,
+      [detail.project.id, detail.project.project_id, handoff.idempotency_key, JSON.stringify(handoff), req.opsUser || 'dashboard']
+    )).rows[0];
+    await client.query(`UPDATE bna_studio_projects SET status = 'review', updated_at = NOW(), updated_by = $2 WHERE id = $1`, [detail.project.id, req.opsUser || 'dashboard']);
+    await insertStudioUsageEvent({
+      db: client,
+      project: { id: detail.project.project_id },
+      studioProjectId: detail.project.id,
+      workspaceKey: detail.project.workspace_key,
+      actor: req.opsUser,
+      usage: studio.estimateStudioUsage({
+        provider: 'mock',
+        operation: 'ai_video_worker_handoff',
+        input_chars: JSON.stringify(promptPack).length,
+        output_chars: JSON.stringify(handoff).length,
+      }),
+      metadata: {
+        export_id: exportRow.id,
+        export_type: 'ai_video_worker_handoff',
+        no_publish: true,
+        no_external_writes: true,
+      },
+    });
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      handoff,
+      prompt_pack: promptPack,
+      export: exportRow,
+      no_external_writes: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 });
 

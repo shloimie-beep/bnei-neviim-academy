@@ -14,6 +14,7 @@ const {
   decorateOneTimeIdentity,
   filterOneTimeUsersForIdentity,
   oneTimeCanonicalOwnerAssignments,
+  oneTimeRoleAccessMatrix,
 } = require('../src/lib/bna/one-time-role-model');
 
 const root = path.resolve(__dirname, '..');
@@ -126,10 +127,35 @@ test('One Time role vocabulary includes platform, workspace, and member roles', 
   assert.equal(ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER, 'workspace_owner');
   assert.equal(ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN, 'workspace_admin');
   assert.equal(ONE_TIME_CANONICAL_ROLES.WORKSPACE_MANAGER, 'workspace_manager');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.AI_STUDIO_OPERATOR, 'ai_studio_operator');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER, 'ai_video_worker');
   assert.equal(ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF, 'provider_staff');
   assert.equal(ONE_TIME_CANONICAL_ROLES.MODERATOR, 'moderator');
   assert.equal(ONE_TIME_CANONICAL_ROLES.PARENT, 'parent');
   assert.equal(ONE_TIME_CANONICAL_ROLES.STUDENT, 'student');
+});
+
+test('One Time AI video worker has a scoped Studio and task-manager access matrix only', () => {
+  const worker = decorateOneTimeIdentity({
+    username: 'video-worker@example.test',
+    role: 'one_time_ai_video_worker',
+    scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+    displayName: 'AI Video Worker',
+  });
+  const matrix = oneTimeRoleAccessMatrix(worker.role);
+
+  assert.equal(worker.role, 'one_time_ai_video_worker');
+  assert.equal(worker.workspace_role, ONE_TIME_CANONICAL_ROLES.AI_VIDEO_WORKER);
+  assert.equal(worker.workspace_role_label, 'AI Video Worker');
+  assert.equal(worker.role_contract, 'one-time-ai-video-worker-v1');
+  assert.equal(worker.scope.workspaceKey, ONE_TIME_WORKSPACE_KEY);
+  assert.deepEqual(matrix.allowed_views, ['studio', 'tasks']);
+  assert.ok(matrix.allowed_route_groups.includes('one_time_studio'));
+  assert.ok(matrix.allowed_route_groups.includes('one_time_task_manager'));
+  assert.ok(matrix.denied_route_groups.includes('contacts_crm'));
+  assert.ok(matrix.denied_route_groups.includes('raw_shell_codex_deploy'));
+  assert.equal(canOneTimeIdentity('read_workspace_users', worker, { workspace_key: ONE_TIME_WORKSPACE_KEY }).allowed, false);
+  assert.equal(canOneTimeIdentity('read_workspace_users', worker, { workspace_key: 'bna', project_key: 'bna' }).allowed, false);
 });
 
 test('One Time role permissions deny cross-workspace writes and protect workspace owner changes', () => {

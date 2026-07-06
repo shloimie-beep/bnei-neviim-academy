@@ -8771,6 +8771,7 @@
             getStudioOpenArtStatus() { return this.request('GET', '/studio/openart/status'); },
             previewStudioSidekickPatch(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/sidekick/patch-preview', payload); },
             exportStudioOpenArtPrompt(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/openart/export', payload); },
+            handoffStudioAiVideoWorker(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/ai-video-worker/handoff', payload); },
             planStudioRepair(payload = {}) { return this.request('POST', '/studio/repair/plan', payload); },
             previewStudioCorrection(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/corrections/preview', payload); },
             applyStudioCorrection(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/corrections/apply', payload); },
@@ -9134,6 +9135,7 @@
         let studioRepairPlan = null;
         let studioCompiledPrompt = null;
         let studioHandoffResult = null;
+        let studioAiVideoWorkerHandoff = null;
         let studioReviewPackResult = null;
         let oneTimeQuestionQueue = [];
         let oneTimeQuestionQueueSummary = null;
@@ -10264,7 +10266,7 @@
         function openSidebarNavItem(view, section = '') {
             currentView = VIEW_ALIASES[view] || view;
             normalizeCurrentRouteForWorkspace();
-            if (!viewAllowed(currentView)) currentView = 'dashboard';
+            ensureCurrentViewAllowedForWorkspace();
             sidebarMode = 'modules';
             navDrawerOpen = false;
             if (section) {
@@ -10511,7 +10513,7 @@
             const nextProjectFilter = projectKeyForWorkspaceKey(currentWorkspaceId);
             taskProjectFilter = nextProjectFilter === 'all' ? 'all' : nextProjectFilter;
             normalizeCurrentRouteForWorkspace();
-            if (!workspaceNavViewIds(currentWorkspaceId).includes(currentView) || !allowedViews().has(currentView)) currentView = 'dashboard';
+            ensureCurrentViewAllowedForWorkspace(currentWorkspaceId);
             if (isProviderWorkspace(currentWorkspaceId) && currentView === 'dashboard') dashboardSection = 'overview';
             sidebarMode = 'modules';
             navDrawerOpen = false;
@@ -21565,13 +21567,17 @@
             const scenes = Array.isArray(pack.scenes) ? pack.scenes : (Array.isArray(storyboard.scenes) ? storyboard.scenes : []);
             const compiled = pack.compiled_prompt || {};
             const promptLayers = Array.isArray(compiled.layers) ? compiled.layers : (Array.isArray(pack.prompt_layers) ? pack.prompt_layers : []);
+            const promptPack = studioParsedPayload(pack.prompt_pack || pack.worker_handoff?.prompt_pack || {});
+            const scenePrompts = Array.isArray(promptPack.scene_prompts) ? promptPack.scene_prompts : [];
             const manifest = studioParsedPayload(pack.manifest || pack.job?.result_payload || {});
             const assets = Array.isArray(manifest.assets) ? manifest.assets : (Array.isArray(pack.assets) ? pack.assets : []);
             const steps = Array.isArray(pack.steps) ? pack.steps : [
                 source?.id || source?.source_hash ? { label: 'Source saved', status: 'done', detail: source.source_hash || source.title } : null,
                 scenes.length ? { label: 'Storyboard generated', status: 'done', detail: `${scenes.length} scene${scenes.length === 1 ? '' : 's'}` } : null,
                 promptLayers.length ? { label: 'Prompt compiled', status: 'done', detail: `${promptLayers.length} layer${promptLayers.length === 1 ? '' : 's'}` } : null,
+                scenePrompts.length ? { label: 'Prompt pack built', status: 'done', detail: `${scenePrompts.length} scene prompt${scenePrompts.length === 1 ? '' : 's'}` } : null,
                 pack.job || assets.length ? { label: 'Mock render ready', status: 'done', detail: `${assets.length || 'mock'} asset${assets.length === 1 ? '' : 's'}` } : null,
+                pack.worker_handoff ? { label: 'Worker handoff ready', status: 'done', detail: pack.worker_handoff.idempotency_key || 'AI video worker review' } : null,
             ].filter(Boolean);
             const externalWrite = studioYesNo(pack.external_write_performed ?? pack.job?.external_write_performed ?? manifest.external_write_performed, false);
             return `
@@ -21586,13 +21592,15 @@
                     <div class="studio-review-metrics">
                         ${renderStudioMetric('Source', source?.source_hash || pack.normalized?.source_hash ? 'saved' : 'review')}
                         ${renderStudioMetric('Scenes', scenes.length || 'n/a')}
-                        ${renderStudioMetric('Prompt layers', promptLayers.length || 'n/a')}
-                        ${renderStudioMetric('Mock assets', assets.length || 'n/a')}
+                        ${renderStudioMetric('Prompt pack', scenePrompts.length || promptLayers.length || 'n/a')}
+                        ${renderStudioMetric('Worker handoff', pack.worker_handoff ? 'ready' : 'review')}
                     </div>
                     ${renderStudioFlags([
                         'Source saved',
                         scenes.length ? 'Storyboard generated' : 'Storyboard review',
                         promptLayers.length ? 'Prompt compiled' : 'Prompt review',
+                        scenePrompts.length ? 'Prompt pack ready' : '',
+                        pack.worker_handoff ? 'Worker handoff ready' : '',
                         pack.job || assets.length ? 'Mock render ready' : 'Mock render review',
                         'No vendor call',
                         'No publish/send',
@@ -21605,7 +21613,7 @@
                         </ul>
                     ` : ''}
                     <p class="studio-review-excerpt">${escapeHtml(studioCompactText(source.raw_text_preview || source.normalized_text_preview || source.title || storyboard.title || manifest.preview_url || 'Review pack is ready for storyboard, prompt, and mock artifact review.', 300))}</p>
-                    ${renderStudioDiagnostics({ source, storyboard, compiled_prompt: compiled, job: pack.job, manifest }, 'Review Pack Diagnostics', 1400)}
+                    ${renderStudioDiagnostics({ source, storyboard, compiled_prompt: compiled, prompt_pack: promptPack, worker_handoff: pack.worker_handoff, job: pack.job, manifest }, 'Review Pack Diagnostics', 1400)}
                 </article>
             `;
         }
@@ -21791,6 +21799,49 @@
                         <button class="task-action primary" type="button" onclick="copyStudioOpenArtPrompt(event)">Copy OpenArt Prompt</button>
                     </div>
                     ${renderStudioDiagnostics(exportPlan, 'OpenArt Export Diagnostics', 1400)}
+                </article>
+            `;
+        }
+
+        function renderStudioAiVideoWorkerHandoffReview(result = null) {
+            if (!result) return '';
+            const payload = studioParsedPayload(result);
+            const handoff = studioParsedPayload(payload.handoff || payload);
+            const promptPack = studioParsedPayload(payload.prompt_pack || handoff.prompt_pack || {});
+            const exportRow = studioParsedPayload(payload.export || {});
+            const scenePrompts = Array.isArray(promptPack.scene_prompts) ? promptPack.scene_prompts : [];
+            const blockers = Array.isArray(handoff.vendor_blockers) ? handoff.vendor_blockers : [];
+            const externalWrite = studioYesNo(handoff.external_write_performed ?? payload.external_write_performed, false);
+            return `
+                <article class="content-card studio-review-card" data-testid="studio-ai-video-worker-handoff">
+                    <div class="studio-review-head">
+                        <div>
+                            <div class="content-card-title">AI Video Worker Handoff</div>
+                            <div class="content-card-meta">${escapeHtml(handoff.idempotency_key || exportRow.idempotency_key || 'Worker review packet')}</div>
+                        </div>
+                        <span class="status-chip">${escapeHtml(exportRow.status || handoff.status || 'ready for review')}</span>
+                    </div>
+                    <div class="studio-review-metrics">
+                        ${renderStudioMetric('Prompt pack', promptPack.pack_id ? 'ready' : 'review')}
+                        ${renderStudioMetric('Scene prompts', scenePrompts.length || 'n/a')}
+                        ${renderStudioMetric('Live call', handoff.no_live_call === false ? 'enabled' : 'no')}
+                        ${renderStudioMetric('External write', externalWrite ? 'yes' : 'no')}
+                    </div>
+                    ${renderStudioFlags([
+                        'Worker review packet',
+                        'Prompt pack ready',
+                        'No vendor call',
+                        'No upload',
+                        'No publish/send',
+                        externalWrite ? 'External write: yes' : 'External write: no'
+                    ])}
+                    ${scenePrompts.length ? `
+                        <ul class="studio-review-list">
+                            ${scenePrompts.slice(0, 5).map(scene => `<li>${escapeHtml([`Scene ${scene.position || ''}`, scene.title, scene.openart_prompt_hash].filter(Boolean).join(' / '))}</li>`).join('')}
+                        </ul>
+                    ` : `<p class="studio-review-excerpt">Create the source, storyboard, and prompt pack before handing off to the AI video worker.</p>`}
+                    ${blockers.length ? `<p class="studio-review-excerpt">${escapeHtml(blockers[0])}</p>` : ''}
+                    ${renderStudioDiagnostics({ handoff, prompt_pack: promptPack, export: exportRow }, 'Worker Handoff Diagnostics', 1600)}
                 </article>
             `;
         }
@@ -22279,9 +22330,11 @@
             const exports = detail.exports || [];
             return `
                 <div class="task-actions">
+                    <button class="task-action primary" type="button" onclick="handoffStudioAiVideoWorker(event, ${Number(detail.project.id)})">Create Worker Handoff</button>
                     <button class="task-action primary" type="button" onclick="handoffStudioProject(event, ${Number(detail.project.id)})">Create Content Handoff</button>
                 </div>
-                <p class="settings-disabled-note">Studio handoff creates local Content job records only. It does not publish, send, schedule, upload, or call an external social provider.</p>
+                <p class="settings-disabled-note">Studio handoffs create local review records only. Worker handoff packages source, storyboard, prompt pack, and review gates for the AI video worker. Content handoff creates local Content job records. Neither publishes, sends, schedules, uploads, or calls an external provider.</p>
+                ${studioAiVideoWorkerHandoff ? renderStudioAiVideoWorkerHandoffReview(studioAiVideoWorkerHandoff) : ''}
                 ${studioHandoffResult ? renderStudioHandoffReview(studioHandoffResult) : ''}
                 <div class="task-list">
                     ${exports.length ? exports.map(item => `
@@ -22317,6 +22370,7 @@
             studioRepairPlan = null;
             studioCompiledPrompt = null;
             studioHandoffResult = null;
+            studioAiVideoWorkerHandoff = null;
             studioReviewPackResult = null;
             syncOperationsUrl();
             render();
@@ -22442,6 +22496,24 @@
                     detail: `${assets.length || 'mock'} asset${assets.length === 1 ? '' : 's'}`,
                 });
 
+                const workerResult = await api.handoffStudioAiVideoWorker(projectId, {
+                    approved_by: opsMe?.username || 'operations',
+                    sidekick_patch: studioSidekickPreview?.patch || studioCorrectionPreview || null,
+                });
+                studioAiVideoWorkerHandoff = workerResult;
+                const promptPack = workerResult?.prompt_pack || workerResult?.handoff?.prompt_pack || null;
+                const scenePrompts = promptPack?.scene_prompts || [];
+                steps.push({
+                    label: 'Prompt pack built',
+                    status: 'done',
+                    detail: `${scenePrompts.length || scenes.length || 'review'} scene prompt${(scenePrompts.length || scenes.length) === 1 ? '' : 's'}`,
+                });
+                steps.push({
+                    label: 'Worker handoff ready',
+                    status: 'done',
+                    detail: workerResult?.handoff?.idempotency_key || 'AI video worker review',
+                });
+
                 studioReviewPackResult = {
                     prepared_at: new Date().toISOString(),
                     source: sourceResult?.source || (studioProjectDetail?.sources || [])[0] || null,
@@ -22449,12 +22521,14 @@
                     storyboard: storyboardResult?.storyboard || { scenes },
                     scenes,
                     compiled_prompt: studioCompiledPrompt,
+                    prompt_pack: promptPack,
+                    worker_handoff: workerResult?.handoff || null,
                     job: renderResult?.job || null,
                     manifest,
                     external_write_performed: false,
                     steps,
                 };
-                studioNotice = 'Review pack prepared: source, storyboard, prompt, and mock assets are ready.';
+                studioNotice = 'Review pack prepared: source, storyboard, prompt pack, mock assets, and worker handoff are ready.';
                 studioSection = 'source';
                 form?.reset?.();
                 await loadStudioData({ includeDetail: true });
@@ -22706,6 +22780,28 @@
                 await loadStudioData({ includeDetail: true });
             } catch (error) {
                 studioNotice = error.message || 'Studio job cancellation failed.';
+            }
+            render();
+        }
+
+        async function handoffStudioAiVideoWorker(event, projectId) {
+            event?.preventDefault?.();
+            try {
+                const result = await api.handoffStudioAiVideoWorker(projectId, {
+                    approved_by: opsMe?.username || 'operations',
+                    sidekick_patch: studioSidekickPreview?.patch || studioCorrectionPreview || null,
+                });
+                studioAiVideoWorkerHandoff = result || null;
+                studioReviewPackResult = {
+                    ...(studioReviewPackResult || {}),
+                    prompt_pack: result?.prompt_pack || result?.handoff?.prompt_pack || null,
+                    worker_handoff: result?.handoff || null,
+                    external_write_performed: false,
+                };
+                studioNotice = 'AI video worker handoff ready.';
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'AI video worker handoff failed.';
             }
             render();
         }
@@ -34822,6 +34918,37 @@
             return allowedViews().has(view) && workspaceNavViewIds().includes(view);
         }
 
+        function firstAllowedViewForWorkspace(workspaceKey = currentWorkspaceKey()) {
+            const views = allowedViews();
+            const navIds = workspaceNavViewIds(workspaceKey);
+            const preferred = currentWorkspaceIsOneTime(workspaceKey)
+                ? ['studio', 'tasks', 'dashboard']
+                : ['dashboard', 'tasks', 'studio'];
+            return preferred.find(view => views.has(view) && navIds.includes(view))
+                || navIds.find(view => views.has(view))
+                || 'dashboard';
+        }
+
+        function ensureCurrentViewAllowedForWorkspace(workspaceKey = currentWorkspaceKey()) {
+            const views = allowedViews();
+            if (!views.has(currentView) || !workspaceNavViewIds(workspaceKey).includes(currentView)) {
+                currentView = firstAllowedViewForWorkspace(workspaceKey);
+            }
+            return currentView;
+        }
+
+        function isStudioTaskOnlySession() {
+            const views = allowedViews();
+            const role = String(opsMe?.role || opsMe?.legacy_role || '').toLowerCase();
+            const projectKey = normalizeProjectKey(opsMe?.scope?.projectKey || opsMe?.scope?.project_key || opsMe?.project_key || '');
+            return opsMe?.scope?.type === 'project'
+                && projectKey === 'one_time_mishnah_class'
+                && ['one_time_ai_studio_operator', 'one_time_ai_video_worker'].includes(role)
+                && views.has('studio')
+                && views.has('tasks')
+                && views.size <= 2;
+        }
+
         function normalizeProjectKey(value) {
             const key = String(value || '')
                 .trim()
@@ -35183,7 +35310,7 @@
                 if (currentView === 'service_providers' && !SERVICE_PROVIDER_SUBTABS.some(tab => tab.id === serviceProviderSection)) serviceProviderSection = 'overview';
             }
             if (currentView === 'integrations' && !visibleIntegrationsSubtabs().some(tab => tab.id === integrationsSection)) integrationsSection = 'google';
-            if (!viewAllowed(currentView)) currentView = 'dashboard';
+            ensureCurrentViewAllowedForWorkspace(key);
         }
 
         function availableProjects() {
@@ -36628,7 +36755,7 @@
                 const authRes = await api.getAuthMe();
                 if (authRes) opsMe = authRes;
                 if (!currentWorkspaceId) currentWorkspaceId = currentWorkspaceKey();
-                if (!viewAllowed(currentView)) currentView = 'dashboard';
+                ensureCurrentViewAllowedForWorkspace();
                 if (!options.background) render([], { force: true });
 
                 const activeView = currentView;
@@ -36644,17 +36771,18 @@
                 const activeSettingsSection = activeView === 'settings' ? settingsSection : '';
                 const activeIntegrationsSection = activeView === 'integrations' ? integrationsSection : '';
                 const activeContentSection = activeView === 'content' ? contentSection : '';
+                const studioTaskOnlySession = isStudioTaskOnlySession();
                 const needsLocalClassroomData = activeView === 'students' || (activeView === 'content' && activeContentSection === 'one_time_library');
                 const needsDashboardData = activeView === 'dashboard';
                 const needsPlatformData = needsDashboardData || ['watchdog', 'pipelines', 'calendar', 'communications', 'internal_dialogue', 'service_providers', 'api_usage', 'admin', 'integrations', 'settings'].includes(activeView);
                 const needsCalendarData = needsDashboardData || activeView === 'calendar' || (activeView === 'integrations' && ['google', 'connectors'].includes(activeIntegrationsSection)) || (activeView === 'settings' && ['calendar', 'calendar_classroom', 'google_classroom', 'integrations', 'google_workspace'].includes(activeSettingsSection));
                 const needsGoogleIntegrationData = (activeView === 'integrations' && activeIntegrationsSection === 'google') || (activeView === 'settings' && ['google_workspace', 'google_calendar', 'google_classroom', 'integrations', 'integrations_core', 'calendar_classroom'].includes(activeSettingsSection));
-                const needsPipelineData = needsDashboardData || ['watchdog', 'pipelines', 'tasks', 'service_providers'].includes(activeView);
+                const needsPipelineData = !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'pipelines', 'tasks', 'service_providers'].includes(activeView));
                 const needsDialogueData = needsDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection));
                 const needsProjectData = needsDashboardData || ['pipelines', 'service_providers', 'studio', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection));
                 const needsTaskData = needsDashboardData || ['watchdog', 'tasks', 'agents', 'pipelines', 'internal_dialogue'].includes(activeView);
-                const needsAgentFleetData = needsDashboardData || ['watchdog', 'tasks', 'agents', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView);
-                const needsQueueHealthData = needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView);
+                const needsAgentFleetData = !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView));
+                const needsQueueHealthData = !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView));
                 const canUseAgentControl = opsMe?.scope?.type === 'all';
                 const needsAgentRunData = canUseAgentControl && ['agents', 'tasks'].includes(activeView);
                 const needsPeopleData = needsDashboardData || ['contacts', 'admin'].includes(activeView) || (activeView === 'settings' && ['users_roles', 'users_access'].includes(activeSettingsSection));
@@ -37074,7 +37202,7 @@
         function switchView(view) {
             currentView = VIEW_ALIASES[view] || view;
             normalizeCurrentRouteForWorkspace();
-            if (!viewAllowed(currentView)) currentView = 'dashboard';
+            ensureCurrentViewAllowedForWorkspace();
             sidebarMode = 'modules';
             navDrawerOpen = false;
             syncOperationsUrl();
@@ -37214,7 +37342,7 @@
         function openCommandTarget(view, focus = '') {
             currentView = VIEW_ALIASES[view] || view;
             normalizeCurrentRouteForWorkspace();
-            if (!viewAllowed(currentView)) currentView = 'dashboard';
+            ensureCurrentViewAllowedForWorkspace();
             sidebarMode = 'modules';
             if (currentView === 'dashboard' && focus) {
                 dashboardSection = DASHBOARD_SUBTABS.some(tab => tab.id === focus) ? focus : 'overview';
@@ -37689,8 +37817,8 @@
                 communicationsSection = 'support_threads';
                 return;
             }
-            currentView = 'dashboard';
-            dashboardSection = 'overview';
+            currentView = firstAllowedViewForWorkspace();
+            if (currentView === 'dashboard') dashboardSection = 'overview';
         }
 
         async function submitSupportTicketForm(event) {
@@ -40670,6 +40798,7 @@
             renderStudioMock,
             retryStudioJob,
             cancelStudioJob,
+            handoffStudioAiVideoWorker,
             handoffStudioProject,
         });
 

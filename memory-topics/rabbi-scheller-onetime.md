@@ -17,6 +17,12 @@
   prompt export/readiness, and a mediated Studio-only repair lane. It must not
   get raw shell/Codex CLI, deploy, secrets, payments, contacts/CRM, settings,
   sends, access grants, or cross-workspace access.
+- The One Time AI video worker role is `one_time_ai_video_worker`. It is scoped
+  to One Time Studio and the One Time task manager only for
+  `rabbi_sheller_provider` / `one_time_mishnah_class`. It must not get broader
+  Rabbi/provider admin, BNA, contacts/CRM, payments, settings, integrations,
+  agent fleet, queue health, task artifact, Content handoff, raw shell/Codex,
+  deploy, secrets, external send/publish/upload, or cross-workspace access.
 - OpenArt integration is no-live until Shloimie signs up and connects
   OpenArt OAuth/MCP. BNA may prepare prompts, character/reference checklists,
   and request plans, but must not upload references, generate media, check

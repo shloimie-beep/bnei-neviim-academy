@@ -787,7 +787,7 @@
       "route": "/operations?view=studio",
       "selector_hint": "button[onclick=\"setStudioSection('source')\"]",
       "expected_behavior": "Switches the scoped Studio view to the source intake panel without writing data.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "setStudioSection",
       "test": {
@@ -807,7 +807,7 @@
       "route": "/operations?view=studio",
       "selector_hint": "form[onsubmit=\"createStudioProjectFromForm(event)\"] button[type=\"submit\"]",
       "expected_behavior": "Creates a first-party, workspace-scoped Studio project in draft/source state.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "createStudioProjectFromForm",
       "api_route": "/api/bna/studio/projects",
@@ -829,7 +829,7 @@
       "route": "/operations?view=studio&section=source",
       "selector_hint": "form[onsubmit^=\"saveStudioSourceFromForm\"] button[type=\"submit\"]",
       "expected_behavior": "Saves raw source privately, returns normalized/hash metadata, and shows only a preview in the UI.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "saveStudioSourceFromForm",
       "api_route": "/api/bna/studio/projects/:id/source",
@@ -851,7 +851,7 @@
       "route": "/operations?view=studio&section=source",
       "selector_hint": "button[onclick^=\"prepareStudioReviewPackFromForm\"]",
       "expected_behavior": "Chains existing scoped Studio source, storyboard, prompt-compile, and mock-render APIs to prepare a local no-send review pack without vendor calls or external writes.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active_no_external_write",
       "handler": "prepareStudioReviewPackFromForm",
       "api_route": "/api/bna/studio/projects/:id/source, /api/bna/studio/projects/:id/storyboard, /api/bna/studio/projects/:id/prompt-compile, /api/bna/studio/projects/:id/render",
@@ -873,7 +873,7 @@
       "route": "/operations?view=studio&section=storyboard",
       "selector_hint": "button[onclick^=\"generateStudioStoryboard\"], form[onsubmit^=\"generateStudioStoryboard\"]",
       "expected_behavior": "Generates deterministic local storyboard scenes and scene-version rows for the scoped project.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "generateStudioStoryboard",
       "api_route": "/api/bna/studio/projects/:id/storyboard",
@@ -895,7 +895,7 @@
       "route": "/operations?view=studio&section=prompts",
       "selector_hint": "form[onsubmit^=\"compileStudioPrompt\"] button[type=\"submit\"]",
       "expected_behavior": "Compiles prompt layers with policy, workspace, brief, delimited untrusted source, correction, and no-send output contracts.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "compileStudioPrompt",
       "api_route": "/api/bna/studio/projects/:id/prompt-compile",
@@ -917,7 +917,7 @@
       "route": "/operations?view=studio",
       "selector_hint": "details.studio-diagnostics summary",
       "expected_behavior": "Expands private local prompt, job, correction, or handoff diagnostics without making network calls or external writes.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "native_details_summary",
       "test": {
@@ -938,7 +938,7 @@
       "route": "/operations?view=studio&section=prompts",
       "selector_hint": "form[onsubmit^=\"saveStudioLibraryFromForm\"] button[type=\"submit\"]",
       "expected_behavior": "Saves reusable character profiles, Jewish guardrails, and scenario tags to the scoped Studio project without external writes.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "saveStudioLibraryFromForm",
       "api_route": "/api/bna/studio/projects/:id",
@@ -960,7 +960,7 @@
       "route": "/operations?view=studio&section=prompts",
       "selector_hint": "form[data-studio-sidekick-form] button[type=\"submit\"]",
       "expected_behavior": "Turns Studio image/render observations and prompt corrections into a reversible local patch preview without vendor calls or external writes.",
-      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active_no_external_write",
       "handler": "previewStudioSidekickPatch",
       "api_route": "/api/bna/studio/projects/:id/sidekick/patch-preview",
@@ -982,7 +982,7 @@
       "route": "/operations?view=studio&section=prompts",
       "selector_hint": "button[onclick^=\"exportStudioOpenArtPrompt\"]",
       "expected_behavior": "Builds and optionally copies an OpenArt-ready prompt export with character continuity and guardrail checklists; it does not call OpenArt or spend credits.",
-      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active_no_external_write",
       "handler": "exportStudioOpenArtPrompt",
       "api_route": "/api/bna/studio/projects/:id/openart/export",
@@ -1004,7 +1004,7 @@
       "route": "/operations?view=studio&section=prompts",
       "selector_hint": "button[onclick^=\"copyStudioOpenArtPrompt\"]",
       "expected_behavior": "Copies the already prepared OpenArt prompt export to the browser clipboard without additional backend or vendor calls.",
-      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active_no_external_write",
       "handler": "copyStudioOpenArtPrompt",
       "api_route": "browser_clipboard_only",
@@ -1020,13 +1020,35 @@
       ]
     },
     {
+      "action_id": "ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF",
+      "label": "Create Worker Handoff",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=handoff",
+      "selector_hint": "button[onclick^=\"handoffStudioAiVideoWorker\"]",
+      "expected_behavior": "Creates an idempotent local AI video worker review packet containing scoped source, storyboard, scene prompt pack, OpenArt request plan, review steps, and exact vendor blockers; it performs no OpenArt call, upload, publish, send, credit spend, or external write.",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
+      "status": "active_no_external_write",
+      "handler": "handoffStudioAiVideoWorker",
+      "api_route": "/api/bna/studio/projects/:id/ai-video-worker/handoff",
+      "test": {
+        "type": "domain_api_browser_smoke",
+        "expected_result": "OpenArt adapter tests verify no-live worker packets and Studio browser smoke creates the AI Video Worker Handoff card."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-STUDIO-REPAIR-PLAN",
       "label": "Plan Studio Repair",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio&section=prompts",
       "selector_hint": "button[onclick^=\"planStudioRepairRequest\"]",
       "expected_behavior": "Creates a Studio-only repair plan with file/route/test allowlists and explicit no-shell/no-deploy/no-external-write constraints.",
-      "permission": "one_time_ai_studio_operator_or_super_admin",
+      "permission": "one_time_ai_studio_operator_or_one_time_ai_video_worker_or_super_admin",
       "status": "active_no_external_write",
       "handler": "planStudioRepairRequest",
       "api_route": "/api/bna/studio/repair/plan",
@@ -1048,7 +1070,7 @@
       "route": "/operations?view=studio&section=prompts",
       "selector_hint": "form[onsubmit^=\"previewStudioCorrection\"] button[type=\"submit\"]",
       "expected_behavior": "Previews a reversible correction patch without mutating data or making external calls.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "previewStudioCorrection",
       "api_route": "/api/bna/studio/projects/:id/corrections/preview",
@@ -1070,7 +1092,7 @@
       "route": "/operations?view=studio&section=prompts",
       "selector_hint": "button[onclick^=\"applyStudioCorrection\"]",
       "expected_behavior": "Applies the currently previewed reversible correction patch to the scoped project after confirmation.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "applyStudioCorrection",
       "api_route": "/api/bna/studio/projects/:id/corrections/apply",
@@ -1092,7 +1114,7 @@
       "route": "/operations?view=studio&section=storyboard",
       "selector_hint": "form[onsubmit^=\"updateStudioSceneFromForm\"] button[type=\"submit\"]",
       "expected_behavior": "Updates a scoped storyboard scene and appends a scene-version snapshot.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "updateStudioSceneFromForm",
       "api_route": "/api/bna/studio/scenes/:id",
@@ -1114,7 +1136,7 @@
       "route": "/operations?view=studio&section=jobs",
       "selector_hint": "button[onclick^=\"renderStudioMock\"]",
       "expected_behavior": "Runs a deterministic local mock render, creates local assets/usage, and performs no external write.",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "status": "active",
       "handler": "renderStudioMock",
       "api_route": "/api/bna/studio/projects/:id/render",
@@ -1709,6 +1731,87 @@
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TASK-MANAGER-LIST",
+      "label": "Open One Time tasks",
+      "surface": "operations_task_manager",
+      "route": "/operations?view=tasks",
+      "selector_hint": "button[onclick=\"switchView('tasks')\"], .ops-sidebar-button[data-sidebar-nav-key*=\"tasks\"]",
+      "expected_behavior": "Opens the task manager filtered to the identity's One Time project scope for scoped Studio/video worker sessions.",
+      "permission": "super_admin_or_scoped_one_time_task_role",
+      "status": "active",
+      "handler": "switchView",
+      "api_route": "/api/bna/tasks",
+      "test": {
+        "type": "static_and_auth_contract",
+        "expected_result": "One Time AI video worker allowedViews includes tasks and server guard permits only scoped task routes."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TASK-MANAGER-OPEN-DETAIL",
+      "label": "Open One Time task",
+      "surface": "operations_task_manager",
+      "route": "/operations?view=tasks",
+      "selector_hint": "task detail/open controls that call selectTask or set selectedTaskId",
+      "expected_behavior": "Opens a task detail record only after the task API confirms it belongs to the scoped One Time project.",
+      "permission": "super_admin_or_scoped_one_time_task_role",
+      "status": "active",
+      "api_route": "/api/bna/tasks/:id",
+      "test": {
+        "type": "auth_contract",
+        "expected_result": "assertTaskAccess rejects non-One-Time task ids for scoped worker sessions."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TASK-MANAGER-SAVE",
+      "label": "Save One Time task",
+      "surface": "operations_task_manager",
+      "route": "/operations?view=tasks",
+      "selector_hint": "task editor controls that call updateTask",
+      "expected_behavior": "Creates or updates only task-manager fields for records inside the scoped One Time project.",
+      "permission": "super_admin_or_scoped_one_time_task_role",
+      "status": "active",
+      "api_route": "/api/bna/tasks, /api/bna/tasks/:id",
+      "test": {
+        "type": "auth_contract",
+        "expected_result": "opsScopeProjectKey forces created and updated task records into one_time_mishnah_class for scoped worker sessions."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TASK-MANAGER-COMMENT",
+      "label": "Comment on One Time task",
+      "surface": "operations_task_manager",
+      "route": "/operations?view=tasks",
+      "selector_hint": "task comment controls that post to /api/bna/tasks/:id/comments",
+      "expected_behavior": "Adds comments only to One Time project tasks and defaults One Time task comments to project visibility.",
+      "permission": "super_admin_or_scoped_one_time_task_role",
+      "status": "active",
+      "api_route": "/api/bna/tasks/:id/comments",
+      "test": {
+        "type": "auth_contract",
+        "expected_result": "assertTaskAccess runs before comments are read or inserted for scoped worker sessions."
+      },
+      "related_goal_ids": [
         "GOAL-CORE-006",
         "GOAL-CORE-010",
         "GOAL-CORE-015"

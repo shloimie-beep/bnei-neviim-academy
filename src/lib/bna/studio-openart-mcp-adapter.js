@@ -2,7 +2,7 @@
 
 const studio = require('./service-provider-studio');
 
-const OPENART_MCP_SOURCE_URL = 'https://openart.ai/mcp/';
+const OPENART_MCP_SOURCE_URL = 'https://mcp.openart.ai/mcp';
 const OPENART_APP_URL = 'https://openart.ai/';
 
 function envFlag(env = {}, key = '') {

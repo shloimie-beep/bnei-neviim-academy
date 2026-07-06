@@ -18,11 +18,19 @@ const studioOperatorScope = {
   project_key: 'one_time_mishnah_class',
 };
 
+const aiVideoWorkerScope = {
+  ...studioOperatorScope,
+  role: 'one_time_ai_video_worker',
+};
+
 test('One Time Studio operator gets sidekick capabilities but no raw CLI or shell', () => {
   const caps = assistantCapabilitiesForScope(studioOperatorScope).assistant_capabilities;
+  const workerCaps = assistantCapabilitiesForScope(aiVideoWorkerScope).assistant_capabilities;
 
   assert.equal(caps.studio_sidekick, true);
   assert.equal(caps.studio_repair_requests, true);
+  assert.equal(workerCaps.studio_sidekick, true);
+  assert.equal(workerCaps.studio_repair_requests, true);
   assert.equal(caps.codex_cli_routing, false);
   assert.equal(caps.shell, false);
   assert.equal(caps.deploy, false);
@@ -31,7 +39,7 @@ test('One Time Studio operator gets sidekick capabilities but no raw CLI or shel
   assert.throws(() => assertAssistantActionAllowed(studioOperatorScope, 'shell_execute'), /Assistant action blocked/);
 });
 
-test('Studio repair lane accepts layout and prompt workflow fixes inside One Time Studio scope', () => {
+test('Studio repair lane accepts layout and prompt workflow fixes inside One Time Studio worker scope', () => {
   const plan = planAssistantResponseMode(studioOperatorScope, {
     action: 'studio_repair_request',
     text: 'The Studio prompt patch layout is confusing and the OpenArt copy export button is not working.',
@@ -44,6 +52,14 @@ test('Studio repair lane accepts layout and prompt workflow fixes inside One Tim
   assert.equal(plan.no_external_writes, true);
   assert.ok(plan.allowed_files.includes('public/operations.html'));
   assert.ok(plan.allowed_routes.includes('/api/bna/studio/*'));
+
+  const workerPlan = planAssistantResponseMode(aiVideoWorkerScope, {
+    action: 'studio_repair_request',
+    text: 'The storyboard prompt pack needs a safer OpenArt export note.',
+  });
+  assert.equal(workerPlan.allowed, true);
+  assert.equal(workerPlan.mode, 'studio_repair_lane');
+  assert.equal(workerPlan.no_external_writes, true);
 });
 
 test('Studio repair lane blocks off-scope, dangerous, or cross-workspace requests', () => {
@@ -68,7 +84,7 @@ test('Studio repair lane blocks off-scope, dangerous, or cross-workspace request
   });
 });
 
-test('Studio repair lane requires the exact One Time Studio operator scope', () => {
+test('Studio repair lane requires the exact One Time Studio worker scope', () => {
   const plan = planAssistantResponseMode({
     role: 'project_manager',
     tenant_type: 'service_provider',
@@ -80,15 +96,16 @@ test('Studio repair lane requires the exact One Time Studio operator scope', () 
   });
 
   assert.equal(plan.allowed, false);
-  assert.equal(plan.reason, 'one_time_studio_operator_scope_required');
+  assert.equal(plan.reason, 'one_time_studio_worker_scope_required');
 });
 
 test('Studio policy helper detects Studio repair signals and operator scope', () => {
   assert.equal(studioPolicy.isOneTimeStudioOperatorScope(studioOperatorScope), true);
+  assert.equal(studioPolicy.isOneTimeStudioOperatorScope(aiVideoWorkerScope), true);
   assert.equal(studioPolicy.hasStudioRepairSignal('Fix the prompt patch sidekick for OpenArt images'), true);
   assert.equal(studioPolicy.hasStudioRepairSignal('General random task'), false);
 
   const note = buildAssistantScopeSystemNote(studioOperatorScope);
-  assert.match(note, /One Time Studio operator/);
+  assert.match(note, /One Time Studio operator or AI video worker/);
   assert.match(note, /not raw CLI or shell access/);
 });

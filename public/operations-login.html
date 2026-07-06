@@ -240,7 +240,7 @@
         function isOperationsSession(data) {
             if (!data || (data.authenticated !== true && data.success !== true)) return false;
             const role = String(data.role || data.legacy_role || '').toLowerCase();
-            return ['super_admin', 'project_owner', 'project_manager'].includes(role);
+            return ['super_admin', 'project_owner', 'project_manager', 'one_time_ai_studio_operator', 'one_time_ai_video_worker'].includes(role);
         }
 
         function syncLoginViewport() {
