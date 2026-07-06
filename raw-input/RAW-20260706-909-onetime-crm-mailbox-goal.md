@@ -64,3 +64,14 @@ mailbox Product Quality packet validates.
 - Do not expose unrelated BNA school, parent, student, provider, or platform
   data in the Rabbi mailbox.
 - Do not add GHL, LeadConnector, or any external CRM runtime.
+
+## Closeout
+
+Status: implemented/deployed/live verified for the inbox MVP.
+
+Evidence:
+`ops/live-smokes/2026-07-06T14-49-16-448Z-one-time-provider-mailbox-live-readback.md`.
+
+The provider mailbox login was created for Rabbi Elie Scheller with username
+`one_time_admin`. The generated password is stored only in the local keyholder
+file and was not printed or committed.

@@ -30088,3 +30088,29 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrails: no physical mailing address text committed, no external email
   sent, no bulk campaign endpoint added, no DNS/payment/access/provider-account
   mutation, and no production data mutation.
+
+## 2026-07-06 - One Time CRM Mailbox Deployed And Live Verified
+
+- Merged PR #117 to `master` at
+  `61d1da3e3ea683358685350dd2f9af79ba39f478`.
+- Deployed `one-time-web` production on Railway deployment
+  `733aee09-bd85-4b97-9256-0d7ba5837a08`, which reached `SUCCESS`.
+- Live One Time instance smoke passed for `https://join.onetimeonetime.com`
+  across health, instance config, public One Time routes, Operations login, and
+  parent/student/provider/classroom static shells.
+- Created the Rabbi provider mailbox login by patching provider id `1` with
+  login username `one_time_admin`; the generated password is stored only in
+  `C:/Users/User/BNA v2.0/.secrets/one-time-provider-mailbox-login-20260706.txt`.
+- Authenticated provider login passed for Rabbi Elie Scheller and
+  `/api/provider-portal/mailbox` returned 4 live inbox threads for
+  `info@onetimeonetime.com`; first thread detail opened with one message.
+- Live readiness confirmed scoped workspace/project
+  `rabbi_sheller_provider` / `one_time_mishnah_class`, sender/reply-to present,
+  and mailing-address readiness configured without committing the address.
+- Safe public probes confirmed anonymous mailbox access is rejected with 401 and
+  invalid Resend webhook signatures are rejected with 401 before processing.
+- Evidence:
+  `ops/live-smokes/2026-07-06T14-49-16-448Z-one-time-provider-mailbox-live-readback.md`.
+- Guardrails: no external email sent, no bulk campaign endpoint added, no fake
+  inbound email inserted, no message bodies recorded, no password printed or
+  committed, and no physical mailing address value committed.
