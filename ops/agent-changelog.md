@@ -29601,3 +29601,21 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   secret, or production data mutation was performed. Live OAuth/model/image
   upload and deploy/live-smoke remain blocked as recorded in the requirement
   register.
+
+## 2026-07-06 - One Time Studio Sidekick Clean Draft PR Opened
+
+- Rebuilt the publication branch from `origin/master` so the Studio sidekick
+  release contains only the scoped Studio work.
+- Opened clean draft PR #105:
+  https://github.com/shloimie-beep/bnei-neviim-academy/pull/105
+- Closed superseded PR #104 because it was opened from a mixed branch that also
+  contained an unrelated parent-reminder commit.
+- Branch `codex/onetime-studio-sidekick-20260706` contains commit `52ba8b2b`
+  with the role, sidekick, OpenArt no-live adapter, Studio repair lane, tests,
+  registries, PQC packet, screenshots, and trace records.
+- The PR remains blocked for production Done until review/merge, release gate,
+  deploy, and live smoke are completed.
+- Live OpenArt OAuth/MCP, live generation/reference upload/credit actions, and
+  true uploaded-image pixel analysis remain blocked until Shloimie connects the
+  OpenArt account/workspace and approves the hosted multimodal model plus image
+  retention/privacy policy.
