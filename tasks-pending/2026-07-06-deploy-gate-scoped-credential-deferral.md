@@ -4,7 +4,7 @@
 - Requirement: `REQ-20260706-901`
 - Task: `TASK-20260706-901`
 - Workspace/project: `bna_platform` / `release_workflow`
-- Status: Local verified, pending publish/merge
+- Status: Done - merged to `master`
 
 ## Requirement
 
@@ -28,3 +28,8 @@ The production closeout gate must allow an explicitly approved scoped deploy to 
 - PASS `node --check scripts/bna-production-closeout-gate.mjs`
 - PASS `node --test tests/bna-production-closeout-gate.test.js` - 13/13
 - PASS `git diff --check`
+- PASS PR #106 merged to `master` at `4d4a02eb4c55499f9336a8ba9db70f9279fa7797`
+- PASS merged `origin/master` release gate:
+  `BNA_PRODUCTION_DEPLOY_APPROVED=approved npm run bna:release-gate -- --json --deploy --confirm-deploy DEPLOY_BNA_PRODUCTION_CLOSEOUT --allow-detached --remote-branch master --expected-branch master --defer-optional-integrations --defer-external-readback`
+  returned `ok: true` with no blockers and deferred Vimeo, Stripe, Rabbi
+  Telegram, database, Railway, and Drive readiness findings.

@@ -29566,3 +29566,15 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Verification passed: `node --check scripts/bna-production-closeout-gate.mjs`,
   `node --test tests/bna-production-closeout-gate.test.js` 13/13, and
   `git diff --check`.
+- PR #106 merged to `master` at
+  `4d4a02eb4c55499f9336a8ba9db70f9279fa7797`. A detached `origin/master`
+  deploy-gate readback with `BNA_PRODUCTION_DEPLOY_APPROVED=approved`,
+  `--allow-detached --remote-branch master --expected-branch master`,
+  `--defer-optional-integrations`, and `--defer-external-readback` returned
+  `ok: true` with no blockers while preserving deferred Vimeo, Stripe, Rabbi
+  Telegram, database, Railway, and Drive readiness findings.
+- Registered `RAW-20260706-902` after the operator provided the OpenArt MCP
+  endpoint `https://mcp.openart.ai/mcp`. Direct endpoint readback returned
+  auth-required `401 Unauthorized`, so it is now recorded as the canonical
+  future Studio integration endpoint while OpenArt signup/auth remains required
+  before live MCP/API calls can be verified.
