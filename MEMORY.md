@@ -1742,6 +1742,12 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   Current Studio behavior is first-party/no-send and mock/internal until a
   later approved AI-video vendor adapter packet defines API, cost, rights,
   storage, and approval gates.
+- OpenArt MCP endpoint for the future One Time AI Studio adapter:
+  `https://mcp.openart.ai/mcp`. Direct readback returns auth-required
+  `401 Unauthorized`, so this is an integration target, not verified live
+  account access. Studio should use it through an authorized backend/MCP
+  connection after OpenArt signup/auth, not require the scoped Studio operator
+  to manually work inside OpenArt for normal prompt/character workflows.
 - This readiness surface is read-only and no-write. It must not reset One Time
   admin credentials, grant member access, publish to the member library, write
   Drive/video hosts, send Resend/email/WhatsApp/SMS, create checkout/billing
