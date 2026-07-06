@@ -29823,6 +29823,25 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   readback, and post-apply dry-run showing 0 remaining safe auto-close
   candidates.
 
+## 2026-07-06 - PR #110 One Time WhatsApp Scope Live Deploy
+
+- Merged PR #110 to `master` at
+  `e31ee7ddf3ce133d2e75e2f326f3fea19b4aa47e`.
+- Deployed merged `master` to Railway production service
+  `skillful-motivation`; deployment
+  `a03deaa9-955c-4528-a191-adcf9de0c5a9` reached `SUCCESS`.
+- Live verification passed: `npm run railway:doctor`, `npm run app:smoke`,
+  `npm run app:smoke:rabbi-onetime-landing`,
+  `npm run app:smoke:communications-screening`,
+  `npm run app:smoke:one-time-crm-contacts-ux`, and
+  `npm run app:smoke:whatsapp-ux`.
+- The first WhatsApp UX smoke immediately after deployment hit a transient
+  render timing failure; the rerun passed at desktop and mobile widths, with
+  workspace-scoped phonebook/readback checks and no external WhatsApp send.
+- Deployment guardrails: no secret value printed or changed, no WhatsApp send,
+  no external CRM write, no payment/access/DNS/provider-account mutation, and
+  no unrelated local dirty files staged.
+
 ## 2026-07-06 - One Time Studio AI Video Worker Handoff Local Verification
 
 - Registered `RAW-20260706-907` as a continuation of `RAW-20260702-010` /
