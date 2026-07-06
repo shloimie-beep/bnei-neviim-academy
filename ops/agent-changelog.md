@@ -29545,3 +29545,24 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - No production data mutation, deploy, external send, Drive write, charge,
   DNS/access/provider-account mutation, credential change, or external CRM
   write was performed by this cleanup batch.
+
+## 2026-07-06 - Deploy Gate Scoped Credential Deferral
+
+- Registered `RAW-20260706-901`, `REQ-20260706-901`, and
+  `TASK-20260706-901` from the operator correction that missing unrelated
+  Vimeo, Stripe, or Telegram keys should not block scoped deploys.
+- Patched `scripts/bna-production-closeout-gate.mjs` so approved deploy mode
+  can defer unrelated provider integration readiness and external readback
+  findings with `--defer-optional-integrations --defer-external-readback`
+  without requiring separate hidden deferral env approvals.
+- Kept deploy confirmation and `BNA_PRODUCTION_DEPLOY_APPROVED=approved`
+  mandatory; live verification/final closeout and integration-specific sends,
+  charges, DNS/access changes, credential changes, provider writes, production
+  mutations, and external writes remain blocked until their exact readiness and
+  approvals are present.
+- Added regression coverage proving missing Vimeo, Rabbi Telegram, Stripe, and
+  external readback readiness are deferred for approved scoped deploys but
+  still block normal deploy/live verification paths.
+- Verification passed: `node --check scripts/bna-production-closeout-gate.mjs`,
+  `node --test tests/bna-production-closeout-gate.test.js` 13/13, and
+  `git diff --check`.
