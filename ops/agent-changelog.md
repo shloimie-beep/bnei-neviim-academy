@@ -30312,6 +30312,8 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   PASS `npm run watchdog:raw` with finding_count 0; PASS ledger JSONL parse.
   Runtime note: `agent:fleet:status` reports the supervisor not running, and
   `watchdog:status` reports stale local/API watchdog state.
+- Publication PR:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/126`.
 - Guardrails: no app code changes, deploy, external sends, Drive writes,
   production database writes, payment/access/DNS/provider mutations, credential
   changes, raw transcript bodies, cookies, tokens, or private message bodies.

@@ -13,7 +13,7 @@ Raw source preserved at:
 | REQ-20260706-981 | Continue from clean `master` by selecting the next safe batch. | RAW-20260706-981 | bna_platform / repo_hygiene | Codex | audit | P0 | Current run and visible pending registers are inspected before edits. | Done |
 | REQ-20260706-982 | Reconcile stale July 5 cleanup/task statuses with current GitHub and local truth. | RAW-20260706-981 | bna_platform / release_workflow | Codex | status_reconciliation | P0 | `TASKS.md` and related registers no longer claim merged/closed/clean work is pending. | Done |
 | REQ-20260706-983 | Repair raw-intake provenance drift found by `npm run watchdog:raw`. | RAW-20260706-981 | bna_platform / intake_provenance | Codex | watchdog_repair | P0 | Descriptive raw IDs are replaced or annotated with stable numeric IDs; missing redacted fallback pointers are present; rerun watchdog passes or leaves exact residual blockers. | Done |
-| REQ-20260706-984 | Publish reconciliation evidence without app-code or external mutations. | RAW-20260706-981 | bna_platform / release_workflow | Codex | closeout | P0 | JSONL/diff/secrets checks pass, changes are committed/pushed/merged, and final repo status is clean. | In progress |
+| REQ-20260706-984 | Publish reconciliation evidence without app-code or external mutations. | RAW-20260706-981 | bna_platform / release_workflow | Codex | closeout | P0 | JSONL/diff/secrets checks pass, changes are committed/pushed/merged, and final repo status is clean. | PR #126 ready for merge |
 
 ## Current Findings
 
@@ -31,4 +31,4 @@ Raw source preserved at:
 | REQ-20260706-981 | Done | Clean `master`; no open PRs before this batch; official run inspected. | `git status --short --branch`; `gh pr list --state open`; `npm run bna:run:status`; `npm run bna:run:next`. | none |
 | REQ-20260706-982 | Done | July 5 registers and `TASKS.md` reconciled to current PR/worktree/fleet-readiness state. | GitHub PR readback for #51/#62/#63/#100/#103; agent fleet readiness readback. | none |
 | REQ-20260706-983 | Done | Raw files renamed to `RAW-20260702-013` and `RAW-20260702-014`; redacted fallback pointers added for `RAW-20260618-002` and `RAW-20260617-020`; accidental stale raw pattern removed from cleanup register. | PASS `npm run watchdog:raw`, latest report `ops/watchdog-audits/2026-07-06T19-31-raw-intake-drift.md`, finding_count `0`. | none |
-| REQ-20260706-984 | In progress | This register plus ledger/changelog update. | PASS ledger JSONL parse; PASS `git diff --check`; PASS `npm run secrets:audit`; PASS `npm run watchdog:raw`; PASS `npm run bna:run:status`. | pending publish |
+| REQ-20260706-984 | PR #126 ready for merge | Publication PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/126`. | PASS ledger JSONL parse; PASS `git diff --check`; PASS `npm run secrets:audit`; PASS `npm run watchdog:raw`; PASS `npm run bna:run:status`. | merge/readback pending |
