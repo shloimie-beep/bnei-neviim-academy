@@ -29589,3 +29589,63 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   are recorded in the redacted communications audit.
 - Updated durable communication memory so the Weber correction is not treated
   as a permanent hosting or recipient-exclusion rule.
+
+## 2026-07-06 - Deploy Gate Scoped Credential Deferral
+
+- Registered `RAW-20260706-901`, `REQ-20260706-901`, and
+  `TASK-20260706-901` from the operator correction that missing unrelated
+  Vimeo, Stripe, or Telegram keys should not block scoped deploys.
+- Patched `scripts/bna-production-closeout-gate.mjs` so approved deploy mode
+  can defer unrelated provider integration readiness and external readback
+  findings with `--defer-optional-integrations --defer-external-readback`
+  without requiring separate hidden deferral env approvals.
+- Kept deploy confirmation and `BNA_PRODUCTION_DEPLOY_APPROVED=approved`
+  mandatory; live verification/final closeout and integration-specific sends,
+  charges, DNS/access changes, credential changes, provider writes, production
+  mutations, and external writes remain blocked until their exact readiness and
+  approvals are present.
+- Added regression coverage proving missing Vimeo, Rabbi Telegram, Stripe, and
+  external readback readiness are deferred for approved scoped deploys but
+  still block normal deploy/live verification paths.
+- Verification passed: `node --check scripts/bna-production-closeout-gate.mjs`,
+  `node --test tests/bna-production-closeout-gate.test.js` 13/13, and
+  `git diff --check`.
+- PR #106 merged to `master` at
+  `4d4a02eb4c55499f9336a8ba9db70f9279fa7797`. A detached `origin/master`
+  deploy-gate readback with `BNA_PRODUCTION_DEPLOY_APPROVED=approved`,
+  `--allow-detached --remote-branch master --expected-branch master`,
+  `--defer-optional-integrations`, and `--defer-external-readback` returned
+  `ok: true` with no blockers while preserving deferred Vimeo, Stripe, Rabbi
+  Telegram, database, Railway, and Drive readiness findings.
+- Registered `RAW-20260706-902` after the operator provided the OpenArt MCP
+  endpoint `https://mcp.openart.ai/mcp`. Direct endpoint readback returned
+  auth-required `401 Unauthorized`, so it is now recorded as the canonical
+  future Studio integration endpoint while OpenArt signup/auth remains required
+  before live MCP/API calls can be verified.
+
+## 2026-07-06 - ChatGPT Dropoff Status And One Time Audit Setup
+
+- Registered `RAW-20260706-903` and
+  `tasks-pending/2026-07-06-chatgpt-dropoff-status-and-onetime-audit-setup.md`
+  for Shloimie's request to verify the no-paste ChatGPT-to-Codex dropoff path
+  before creating broad One Time Agent Mode audit prompts.
+- Confirmed repo-file packet mode is documented under
+  `ops/chatgpt-ramble-dropoff/` and works when ChatGPT has a repo/PR write
+  surface.
+- Confirmed marked GitHub-comment fallback exists; targeted PR #90 comment
+  scan reported the test packet as already collected.
+- Confirmed the ingestor exists and skips the current terminal smoke packet as
+  already `done_verified`.
+- Confirmed agent fleet dropoff ingest/comment collect hooks are enabled, but
+  the local supervisor was not running during readback.
+- Verification passed: `npm run chatgpt:dropoff:scan`, targeted
+  `npm run chatgpt:dropoff:comments:scan -- --url ...`, `npm run
+  agent:fleet:status`, `gh auth status`, live One Time route readbacks, and
+  focused tests 15/15 for dropoff ingestor, comment collector, and fleet
+  hardening.
+- Broad GitHub comment polling failed once with a TLS handshake timeout, so the
+  next prompt packet should include targeted comment URLs when comment fallback
+  is used.
+- Guardrail recorded: do not put real passwords, API keys, cookies, tokens, raw
+  private contact exports, private screenshots, or raw private message bodies
+  in prompts, GitHub comments, or packet files.

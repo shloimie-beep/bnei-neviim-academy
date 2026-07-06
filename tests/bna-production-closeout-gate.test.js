@@ -288,7 +288,7 @@ test('production closeout gate blocks deploy on missing integration readiness', 
   assert.doesNotMatch(JSON.stringify(report.integration_readiness), /secret-value|sk_live_|sk_test_|postgres:\/\//);
 });
 
-test('production closeout gate can defer optional integrations and external readback for approved deploy', async () => {
+test('production closeout gate can defer unrelated integrations and external readback for approved deploy', async () => {
   const mod = await loadGate();
   const report = await mod.buildProductionCloseoutGateReport({
     deploy: true,
@@ -301,8 +301,6 @@ test('production closeout gate can defer optional integrations and external read
     runCommand: fakeGitRunner(),
     env: {
       [mod.DEPLOY_APPROVAL_ENV]: 'approved',
-      [mod.DEFER_OPTIONAL_INTEGRATIONS_ENV]: 'approved',
-      [mod.DEFER_EXTERNAL_READBACK_ENV]: 'approved',
     },
     integrationReadiness: integrationReadiness([
       {
@@ -312,6 +310,16 @@ test('production closeout gate can defer optional integrations and external read
         ready: true,
         fields: [],
         blockers: [],
+      },
+      {
+        integration: 'stripe',
+        label: 'Stripe payment mode',
+        deploy_required: true,
+        ready: false,
+        fields: [
+          { name: 'RABBI_STRIPE_SECRET_KEY', configured: false, source: 'not configured' },
+        ],
+        blockers: ['RABBI_STRIPE_SECRET_KEY is not configured.'],
       },
       {
         integration: 'vimeo',
@@ -356,10 +364,14 @@ test('production closeout gate can defer optional integrations and external read
   assert.equal(report.production_mutation_performed, false);
   assert.equal(report.approval_gates.defer_optional_integrations.performed, true);
   assert.equal(report.approval_gates.defer_external_readback.performed, true);
-  assert.doesNotMatch(report.blockers.join(' '), /Vimeo|Telegram|readback/);
+  assert.doesNotMatch(report.blockers.join(' '), /Vimeo|Telegram|Stripe|readback/);
+  assert.match(report.deferred_readiness.integration.join(' '), /Vimeo video\/member library/);
+  assert.match(report.deferred_readiness.integration.join(' '), /Rabbi Telegram worker/);
+  assert.match(report.deferred_readiness.integration.join(' '), /Stripe payment mode/);
+  assert.match(report.deferred_readiness.external_readback.join(' '), /database external readback readiness is blocked/);
 });
 
-test('production closeout gate requires approval before deferring deploy blockers', async () => {
+test('production closeout gate requires deploy approval before performing deploy deferrals', async () => {
   const mod = await loadGate();
   const report = await mod.buildProductionCloseoutGateReport({
     deploy: true,
@@ -370,9 +382,7 @@ test('production closeout gate requires approval before deferring deploy blocker
   }, {
     repoRoot,
     runCommand: fakeGitRunner(),
-    env: {
-      [mod.DEPLOY_APPROVAL_ENV]: 'approved',
-    },
+    env: {},
     integrationReadiness: integrationReadiness([
       {
         integration: 'vimeo',
@@ -396,10 +406,12 @@ test('production closeout gate requires approval before deferring deploy blocker
   });
 
   assert.equal(report.ok, false);
-  assert.ok(report.blockers.some((blocker) => /BNA_DEFER_OPTIONAL_INTEGRATIONS_APPROVED=approved/.test(blocker)));
-  assert.ok(report.blockers.some((blocker) => /BNA_DEFER_EXTERNAL_READBACK_APPROVED=approved/.test(blocker)));
+  assert.ok(report.blockers.some((blocker) => /BNA_PRODUCTION_DEPLOY_APPROVED=approved/.test(blocker)));
+  assert.ok(report.blockers.every((blocker) => !/BNA_DEFER_OPTIONAL_INTEGRATIONS_APPROVED|BNA_DEFER_EXTERNAL_READBACK_APPROVED/.test(blocker)));
   assert.ok(report.blockers.some((blocker) => /Vimeo video\/member library readiness is blocked/.test(blocker)));
   assert.ok(report.blockers.some((blocker) => /database external readback readiness is blocked/.test(blocker)));
+  assert.equal(report.approval_gates.defer_optional_integrations.performed, false);
+  assert.equal(report.approval_gates.defer_external_readback.performed, false);
 });
 
 test('production closeout gate blocks live verification on missing external readback readiness', async () => {
