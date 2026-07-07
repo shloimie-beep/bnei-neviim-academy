@@ -24266,6 +24266,21 @@ Verification:
   scripts\agent-fleet-supervisor.mjs`, 57 focused tests, action watchdog,
   protocol-drift watchdog, tracked secrets audit, active-run validation, and
   security watchdog.
+
+## 2026-07-07T20:31:31+03:00 - Clean launch batch deployed and live-smoked
+
+- Pushed commit `af220573` to `origin/master`.
+- Railway deployment
+  `795f3f77-e4f1-4ff1-aaf9-0c54d3ae2e01` reached `SUCCESS`.
+- Live readback checked `https://bneineviimacademy.org/operations` and
+  `https://bneineviimacademy.org/operations.html`.
+- Result: `/operations` returned `401`, `/operations.html` returned `200`,
+  the Operations shell loaded, and the deployed HTML no longer contains
+  `Archive test duplicate` or `archiveCodexTestParent`.
+- Generated ChatGPT pickup/watchdog/queue artifacts, One Time provider aliases,
+  the separate `join.onetimeonetime.com` target, Drive/private transcript sync,
+  and external sends/payments/DNS/access/provider writes remain blocked or
+  parked with explicit next actions.
 - Status: local verified, pending scoped commit, push, Railway deployment, and
   live readback for the app-visible Operations HTML change.
 - Parent/student private helper scope, toolbar/filter density, and Agent Mode

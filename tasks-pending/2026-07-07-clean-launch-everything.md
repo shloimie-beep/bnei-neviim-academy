@@ -12,8 +12,8 @@
 |---|---|---|---|---|---|---|---|---|
 | REQ-20260707-140 | Capture the clean/push/deploy-everything request as raw intake, register, and Product Quality packet. | platform | Codex | P0 | 0 | Raw file, register, and PQC packet exist and validate. | no | Done |
 | REQ-20260707-141 | Inventory the dirty worktree and classify each changed/untracked category before staging. | platform | Codex | P0 | 1 | Tracked dirty files, untracked artifact groups, current branch, pushed state, and active execution-run blockers are recorded. | no | Done |
-| REQ-20260707-142 | Commit and push only safe, verified, scoped work. | platform | Codex | P0 | 2 | No secrets, raw private data, unrelated dirty changes, external sends, payments, DNS writes, or unverified generated junk are staged. | maybe | In progress |
-| REQ-20260707-143 | Deploy and live-smoke app-visible committed work. | platform + one_time_mishnah_class | Codex | P0 | 3 | Railway deployment reaches terminal success and affected live routes pass smoke/readback. | yes | Pending |
+| REQ-20260707-142 | Commit and push only safe, verified, scoped work. | platform | Codex | P0 | 2 | No secrets, raw private data, unrelated dirty changes, external sends, payments, DNS writes, or unverified generated junk are staged. | maybe | Done |
+| REQ-20260707-143 | Deploy and live-smoke app-visible committed work. | platform + one_time_mishnah_class | Codex | P0 | 3 | Railway deployment reaches terminal success and affected live routes pass smoke/readback. | yes | Done |
 | REQ-20260707-144 | Clean up or explicitly park generated artifacts that are not safe to push wholesale. | platform | Codex | P1 | 4 | Repetitive pickup/watchdog/queue artifacts are summarized, ignored, staged, or blocked with rationale; no destructive deletion of user work. | no | Blocked |
 | REQ-20260707-145 | Preserve exact blockers for anything that cannot be launched safely now. | platform + one_time_mishnah_class | Codex | P0 | 5 | External/account-owner/provider/credential/private-data blockers name owner, missing info, recommended next action, and consequence. | no | Done |
 
@@ -83,7 +83,7 @@
 |---|---|---|---|---|
 | REQ-20260707-140 | Done | `raw-input/RAW-20260707-014-clean-launch-everything.md`; this register; `ops/prompt-packets/2026-07-07-clean-launch-everything/00-clean-launch-everything.product-quality.json` | `npm run pqc:validate -- ops\prompt-packets\2026-07-07-clean-launch-everything\00-clean-launch-everything.product-quality.json` passed. | None. |
 | REQ-20260707-141 | Done | `ops/release-captain/2026-07-07-clean-launch-inventory.md`; `ops/release-captain/2026-07-07-clean-launch-inventory.json` | Dirty categories classified; active run blockers recorded. | None. |
-| REQ-20260707-142 | In progress | Scoped files identified; no wholesale ledger/dropoff/release-captain latest staging. | Focused tests/watchdogs/secrets audit passed; commit/push pending. | Needs scoped staging, commit, push. |
-| REQ-20260707-143 | Pending | Pending. | Pending. | Needs deploy/live smoke if code changes are committed. |
+| REQ-20260707-142 | Done | Commit `af220573`; pushed to `origin/master`. | `git diff --cached --check` passed before commit; `npm run secrets:audit` passed after staging. | None. |
+| REQ-20260707-143 | Done | Railway deployment `795f3f77-e4f1-4ff1-aaf9-0c54d3ae2e01`; `ops/release-captain/2026-07-07-clean-launch-live-smoke.md`. | Deployment reached `SUCCESS`; live readback passed for `/operations` protection and `/operations.html` stale action removal. | None. |
 | REQ-20260707-144 | Blocked | Artifact categories recorded in inventory. | Manual classification performed. | Needs separate retention/dedupe/ignore cleanup packet; not safe for this broad push. |
 | REQ-20260707-145 | Done | Blocker table in this register and inventory. | Active execution-run validation passed with known blockers. | Blockers remain until account-owner/provider/private-data decisions happen. |

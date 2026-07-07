@@ -79,3 +79,14 @@ work instead of sweeping them into Git.
 
 This batch changes `public/operations.html`, so deployment and live readback are
 required after the commit is pushed before calling the app-visible part Done.
+
+Result:
+
+- Commit `af220573` was pushed to `origin/master`.
+- Railway deployment `795f3f77-e4f1-4ff1-aaf9-0c54d3ae2e01` reached
+  `SUCCESS`.
+- Live readback proof:
+  `ops/release-captain/2026-07-07-clean-launch-live-smoke.md`.
+- `/operations` returned `401`, preserving the protected route.
+- `/operations.html` returned `200` and did not contain `Archive test
+  duplicate` or `archiveCodexTestParent`.

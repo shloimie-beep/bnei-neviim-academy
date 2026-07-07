@@ -83,6 +83,9 @@
   "deploy_gate": {
     "required": true,
     "reason": "public/operations.html changed",
-    "status": "pending_commit_push_deploy_live_smoke"
+    "status": "passed",
+    "commit": "af220573",
+    "deployment_id": "795f3f77-e4f1-4ff1-aaf9-0c54d3ae2e01",
+    "live_smoke": "ops/release-captain/2026-07-07-clean-launch-live-smoke.json"
   }
 }
