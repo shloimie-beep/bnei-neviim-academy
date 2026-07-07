@@ -578,6 +578,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     assert.deepEqual(dashboardContract.topbarChips.map((label) => label.replace(/\d+/g, '').trim()), ['Members', 'Classes', 'Studio', 'Setup']);
     assert.equal(dashboardContract.hasWorkspaceDirectoryOptions, false);
     assert.doesNotMatch(dashboardContract.visibleText, /Codex Queue|Student accountability|Daily Command Center|Tablet Access|Workspace Directory|Super Admin|Bnei Neviim Academy|Dratler Family/);
+    assert.match(dashboardContract.visibleText, /Program Overview/);
     assert.match(dashboardContract.visibleText, /Studio|Communications|Workspace Setup|One Time Mishnah Class/);
 
     await page.locator('[data-sidebar-nav-key="payments_access"]').click();
