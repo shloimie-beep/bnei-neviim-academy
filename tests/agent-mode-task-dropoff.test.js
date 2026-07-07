@@ -5,8 +5,10 @@ const test = require('node:test');
 const vm = require('node:vm');
 
 const {
+  AGENT_MODE_PROMPTS,
   TASK_AGENT_MODE_RESULT_TIMEOUT_MS,
   buildTaskAgentModeReview,
+  renderAgentModePrompt,
   renderTaskAgentModePrompt,
   taskNeedsAgentModeWorkflow,
 } = require('../src/lib/bna/agent-review-hub');
@@ -73,8 +75,21 @@ test('sample owner task receives Agent Mode prompt and stable idempotency key', 
   assert.equal(first.idempotency_key, second.idempotency_key);
   assert.equal(first.copy_metadata.idempotency_key, first.idempotency_key);
   assert.match(first.prompt_text, /Exact return\/drop-off URL:/);
+  assert.match(first.prompt_text, /OPERATIONS_DROPOFF_SAVED: AGR-\.\.\./);
+  assert.match(first.prompt_text, /OPERATIONS_DROPOFF_FAILED: <exact UI\/API error>/);
   assert.ok(first.allowed_actions.some((item) => /verify/i.test(item)));
   assert.ok(first.prohibited_actions.some((item) => /duplicate visible Tasks/i.test(item)));
+});
+
+test('generated Agent Review hub prompts use Operations drop-off as final handoff', () => {
+  const promptText = renderAgentModePrompt(AGENT_MODE_PROMPTS.find((item) => item.key === 'navigation-ia-duplicate-control-audit'), {
+    baseUrl: 'https://bneineviimacademy.org',
+    generatedAt: '2026-07-07T13:19:58+03:00',
+  });
+  assert.match(promptText, /Preferred drop-off: https:\/\/bneineviimacademy\.org\/operations\/agent-review\/dropoff/);
+  assert.match(promptText, /OPERATIONS_DROPOFF_SAVED: AGR-\.\.\./);
+  assert.match(promptText, /OPERATIONS_DROPOFF_FAILED: <exact UI\/API error>/);
+  assert.doesNotMatch(promptText, /CANNOT_WRITE_GITHUB/);
 });
 
 test('copy timeout changes task Agent Mode status to overdue', () => {

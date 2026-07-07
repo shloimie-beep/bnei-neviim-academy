@@ -12,5 +12,9 @@
 - Broad UI audit prompt packets should be parallel-friendly when possible:
   independent Agent Mode sessions can audit separate surfaces at the same time,
   with a later synthesis/join packet after at least two reports exist.
+- Parallel Agent Mode UI audits should save their findings into the BNA
+  Operations Agent Review task/drop-off flow first. GitHub packets or marked
+  comments are fallback handoffs, not the primary path, because Agent Mode
+  sessions may not have GitHub write access.
 - Relevant standing goals: `GOAL-CORE-001` through `GOAL-CORE-005` and
   `GOAL-CORE-015`.

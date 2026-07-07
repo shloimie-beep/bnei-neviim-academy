@@ -3,8 +3,21 @@
   "raw_id": "RAW-20260707-004",
   "workspace": "rabbi_sheller_provider",
   "project": "one_time_mishnah_class",
-  "status": "ready_for_parallel_agent_mode",
+  "status": "ready_for_parallel_agent_mode_operations_dropoff",
   "created_at": "2026-07-07T09:08:55+03:00",
+  "updated_at": "2026-07-07T13:19:58+03:00",
+  "dropoff_contract": {
+    "primary": "operations_task_agent_review_dropoff",
+    "contract_file": "OPERATIONS-DROPOFF.md",
+    "success_marker": "OPERATIONS_DROPOFF_SAVED: AGR-...",
+    "failure_marker": "OPERATIONS_DROPOFF_FAILED: <exact UI/API/connector error>",
+    "fallbacks": [
+      "retry exact operations dropoff URL",
+      "use operations API or emergency paste fallback when visible",
+      "post marked BNA_CHATGPT_DROPOFF_PACKET GitHub comment if connector is available",
+      "return full redacted report in chat only when every save path fails"
+    ]
+  },
   "parallel_execution": {
     "parallel_safe_prompts": [
       1,
@@ -55,6 +68,7 @@
     "no_dns_or_provider_mutations",
     "no_drive_writes",
     "no_credentials_or_shared_passwords",
-    "repo_visible_dropoff_required"
+    "operations_agent_review_dropoff_required",
+    "github_packet_or_marked_comment_fallback_only"
   ]
 }

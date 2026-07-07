@@ -30545,3 +30545,25 @@ Report: ops/agent-fleet-runs/2026-07-07T06-21-46-153Z-task-1945.md
 - Guardrails: no live task status mutation, Drive write, production DB write,
   parser rerun, external send, deploy, credential/account mutation, or raw
   transcript/private data commit.
+
+## 2026-07-07T13:19:58+03:00 - Agent Mode Operations Drop-Off Contract
+
+- Registered `RAW-20260707-006` from Shloimie's Agent Mode result and preserved
+  the failed GitHub handoff plus the UI findings about provider diagnostic
+  leakage, Payments/Access IA, task filters, Studio duplicate tabs, shared
+  filter rows, and button consistency.
+- Updated the One Time UI Agent Mode prompt series so Operations Agent Review
+  drop-off is the primary handoff. Successful runs now end with
+  `OPERATIONS_DROPOFF_SAVED: AGR-... <readback URL>`; only failed save paths end
+  with `OPERATIONS_DROPOFF_FAILED`.
+- Updated the generated Agent Review hub prompt text in
+  `src/lib/bna/agent-review-hub.js` to match the same Operations drop-off
+  contract.
+- Verification: PASS `node --test tests/agent-mode-task-dropoff.test.js`; PASS
+  `node --test tests/agent-mode-operations-dropoff-prompts.test.js`; PASS
+  `node --check src/lib/bna/agent-review-hub.js`; PASS prompt manifest JSON
+  parse; PASS `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`;
+  PASS `git diff --check`.
+
+Deployment gate:
+- Pending commit/push/deploy closeout at the time this entry was written.

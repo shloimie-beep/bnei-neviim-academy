@@ -66,26 +66,37 @@ Known live operator observations to preserve in the parallel audits:
 
 ## Dropoff Rule
 
-Each Agent Mode run must create a repo-visible packet under:
-`ops/chatgpt-ramble-dropoff/incoming/<packet-id>/`
+Primary handoff is BNA Operations Agent Review drop-off. This is the preferred
+path because Agent Mode sessions can run in parallel and save results through
+the app even when they do not have GitHub write access.
 
-Required files:
+For each Agent Mode run:
 
-- `packet.json`
-- `RAW.md`
-- `CODEX_PROMPT.md`
-- `MANIFEST.json`
-- `status.json`
-- `FINDINGS.md`
-- optional redacted `SCREENSHOT_INDEX.md`
-- optional redacted `attachments/`
+1. Open the Operations task or Agent Review prompt card for that prompt.
+2. Click `Copy prompt`.
+3. Click `Open drop-off`, or use the exact drop-off URL shown in the prompt.
+4. Paste the full redacted report into `Report`.
+5. Choose `PASS`, `FAIL`, or `BLOCKED`.
+6. Click `Save Agent Review Result`.
+7. Verify the saved `AGR-*` result/readback.
 
-Set `status.json` to `ready_for_codex_audit`.
+Successful final answer:
 
-Fallback: post a marked GitHub issue/PR comment using
-`BNA_CHATGPT_DROPOFF_PACKET`.
+`OPERATIONS_DROPOFF_SAVED: AGR-... <readback URL>`
 
-Last resort: return `CANNOT_WRITE_GITHUB: <exact error>`.
+Fallback order:
+
+1. Retry the exact drop-off URL.
+2. Use the drop-off page API/emergency paste fallback if offered.
+3. If a GitHub connector is available, post a marked
+   `BNA_CHATGPT_DROPOFF_PACKET` comment or repo-visible packet as backup.
+4. If every save path fails, return:
+
+   `OPERATIONS_DROPOFF_FAILED: <exact UI/API/connector error>`
+
+   Then include the full redacted report in chat so Codex can recover it.
+
+See `OPERATIONS-DROPOFF.md` for the full contract.
 
 Do not use `/mnt/data`, a ZIP, local downloads, or screenshot-only answers as
 the only handoff.

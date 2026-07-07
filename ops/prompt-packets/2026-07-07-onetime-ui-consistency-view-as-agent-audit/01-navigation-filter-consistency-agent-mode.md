@@ -104,20 +104,31 @@ Evidence to collect:
   or no more than three routes.
 
 Report dropoff:
-Preferred repo-file packet:
-ops/chatgpt-ramble-dropoff/incoming/onetime-ui-audit-20260707-040-nav-filter-consistency/
+Primary handoff is BNA Operations Agent Review drop-off, not GitHub.
 
-Create packet.json, RAW.md, CODEX_PROMPT.md, MANIFEST.json, status.json,
-FINDINGS.md, and optional SCREENSHOT_INDEX.md.
+Use the Operations task or Agent Review card for this prompt, click
+`Open drop-off`, paste the full redacted report into `Report`, choose:
+- PASS only if the audit completed and found no actionable P0/P1/P2 defect;
+- FAIL if the audit completed and found actionable defects Codex should repair;
+- BLOCKED if login, permission, route access, browser, or missing context
+  prevented the audit.
 
-Set status.json to ready_for_codex_audit.
+Fill `Suggested correction` with the highest-priority Codex repair packet and
+click `Save Agent Review Result`. Confirm the saved `AGR-*` readback.
 
-If repo-file or PR creation fails, post a GitHub issue/PR comment with marker:
-BNA_CHATGPT_DROPOFF_PACKET
+If the normal form fails, retry the exact Operations drop-off URL. If the page
+offers API/emergency paste fallback, use it with the same prompt key and
+idempotency key. If a GitHub connector is available, you may also post a marked
+`BNA_CHATGPT_DROPOFF_PACKET` comment or repo-visible packet as backup.
 
 Final answer must be only:
-DROP_OFF_CREATED: <GitHub PR URL or GitHub comment URL>
+OPERATIONS_DROPOFF_SAVED: AGR-... <readback URL>
 
-or:
-CANNOT_WRITE_GITHUB: <exact error>
+or, only if every save path fails:
+OPERATIONS_DROPOFF_FAILED: <exact UI/API/connector error>
+
+If every save path fails, include the complete redacted report in chat after
+the failure marker so Codex can recover it. Do not use `/mnt/data`, local
+downloads, ZIP files, screenshot-only summaries, or "I prepared a file" as the
+only handoff.
 ```
