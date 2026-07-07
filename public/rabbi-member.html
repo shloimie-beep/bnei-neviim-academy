@@ -304,6 +304,8 @@
       <span>One Time Mishnayos<small>Member area</small></span>
     </div>
     <a href="/one-time">One Time home</a>
+    <a href="/provider.html?review=one-time">Provider preview</a>
+    <a href="/student.html?review=one-time">Student preview</a>
     <a href="/rabbi-member" aria-current="page">Member home</a>
     <a href="/member-library">Library</a>
     <a href="/one-time-classroom">Classroom</a>
@@ -350,7 +352,7 @@
         <form id="questionForm" class="form-grid">
           <label>Topic <input id="questionTopic" type="text" maxlength="160" autocomplete="off"></label>
           <label>Question <textarea id="questionBody" maxlength="2500" required></textarea></label>
-          <button type="submit">Submit Question</button>
+          <button type="submit" data-action-id="ACTION-ONETIME-MEMBER-PRIVATE-QUESTION">Submit Question</button>
         </form>
         <div id="questionList" class="member-list"></div>
       </div>
@@ -381,7 +383,7 @@
               </select>
             </label>
           </div>
-          <button type="submit">Open Ticket</button>
+          <button type="submit" data-action-id="ACTION-ONETIME-MEMBER-SUPPORT-TICKET">Open Ticket</button>
         </form>
         <div id="supportList" class="member-list"></div>
       </div>

@@ -208,7 +208,7 @@ test('server exposes scoped Rabbi admin, public, member, and webhook routes', ()
 test('public preview pages and Operations launch panel keep Rabbi launch separate from the BNA homepage', () => {
   assert.match(server, /app\.get\(\['\/rabbi', '\/rabbi-preview', '\/one-time-mishnayos'\]/);
   assert.match(server, /res\.sendFile\(path\.join\(__dirname, 'public', 'rabbi\.html'\)\)/);
-  const rootHandler = server.match(/app\.get\(\['\/', '\/index\.html'\][\s\S]*?\n\}\);/);
+  const rootHandler = server.match(/app\.get\(\['\/', '\/index\.html', '\/public', '\/public\/'\][\s\S]*?\n\}\);/);
   assert.ok(rootHandler, 'missing explicit One Time single-tenant root handler');
   assert.match(rootHandler[0], /sendOneTimePublicLanding/);
   assert.doesNotMatch(rootHandler[0], /rabbi\.html/);
@@ -240,7 +240,8 @@ test('public preview pages and Operations launch panel keep Rabbi launch separat
   assert.match(publicRabbiMemberJs, /host\/start URLs are never exposed/);
   assert.doesNotMatch(publicRabbiMemberJs, /session\.zoom_url/);
 
-  assert.match(operationsHtml, /Launch \/ Checkout/);
+  assert.match(operationsHtml, /Billing & Payments/);
+  assert.match(operationsHtml, /Checkout disabled/i);
   assert.match(operationsHtml, /function renderRabbiLaunchPanel/);
   assert.match(operationsHtml, /one_time_mishnah_class/);
   assert.match(operationsHtml, /loadRabbiLaunchData/);

@@ -44,7 +44,7 @@ test('OneTime focused offer route and registries are declared', () => {
 
   assert.match(server, /'\/one-time\/mishnayos'/);
   assert.match(server, /function isOneTimeSingleTenantRuntime\(\)/);
-  assert.match(server, /app\.get\(\['\/', '\/index\.html'\]/);
+  assert.match(server, /app\.get\(\['\/', '\/index\.html', '\/public', '\/public\/'\]/);
   assert.match(server, /INSTANCE_RUNTIME_FLAGS\.single_tenant/);
   assert.match(server, /'\/one-time\/'/);
   assert.match(operations, /function updateDocumentTitleForWorkspace\(\)/);
@@ -52,6 +52,7 @@ test('OneTime focused offer route and registries are declared', () => {
 
   const routes = new Set(routeRegistry.routes.map((route) => route.route));
   assert.ok(routes.has('/one-time'));
+  assert.ok(routes.has('/public'));
   assert.ok(routes.has('/one-time/mishnayos'));
   assert.ok(routes.has('/api/one-time/campaign'));
   assert.ok(routes.has('/one-time/privacy.html'));

@@ -10338,7 +10338,7 @@ function sendOneTimePublicLanding(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
 }
 
-app.get(['/', '/index.html'], (req, res, next) => {
+app.get(['/', '/index.html', '/public', '/public/'], (req, res, next) => {
   if (!isOneTimeSingleTenantRuntime()) return next();
   return sendOneTimePublicLanding(req, res);
 });
@@ -11088,7 +11088,7 @@ function oneTimeViewAsSessionView(payload, req) {
   const review = oneTimeSharedReviewDataForRequest(req);
   return {
     mode: 'view_as_rabbi',
-    banner: 'You are viewing One Time as Rabbi Eli Scheller',
+    banner: 'Viewing One Time as Rabbi Eli Scheller - read-only preview',
     read_only: true,
     writes_disabled: true,
     external_sends_disabled: true,
@@ -11102,6 +11102,8 @@ function oneTimeViewAsSessionView(payload, req) {
     started_at: payload.iat_iso,
     expires_at: new Date(Number(payload.exp)).toISOString(),
     exit_url: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview',
+    return_label: 'Return to Super Admin',
+    disabled_action_labels: ['No-send', 'No-charge', 'No access grant', 'No provider write', 'No upload'],
     allowed_modules: [
       'Overview',
       'Classes',
@@ -11628,6 +11630,17 @@ app.get('/api/one-time-review/student', (req, res) => {
   res.json({
     success: true,
     ...review.student_portal,
+    links: review.links,
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/member', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    ...review.member_portal,
     links: review.links,
     test_only: true,
     external_write_performed: false,

@@ -6,6 +6,25 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+
+## 2026-07-07T15:48:49+03:00 - One Time helper role previews locally verified
+
+Completed supervisor verification for REQ-20260707-082, REQ-20260707-083, REQ-20260707-084, and REQ-20260707-086 after the Agent Mode/fleet repair outputs.
+
+What changed:
+- Integrated the One Time provider review navigation repair, safe role-preview panel, member/student TEST previews, provider admin session-required shell, and single-tenant /public route mapping.
+- Aligned the Operations Safe Role Preview action buttons and status pills across desktop, tablet, and mobile breakpoints.
+- Added action/route registry coverage plus focused tests and visual smoke evidence.
+
+Verification:
+- PASS Product Quality Compiler validation for PKT-20260707-090.
+- PASS focused helper visual smoke at 1440, 1024, 768, 430, and 390 widths with action-height spread 0, pill-height spread 0, and no horizontal overflow.
+- PASS 60 focused One Time helper/provider/member/student/route tests.
+- PASS npm run watchdog:actions, npm run watchdog:security, and npm run watchdog:protocol-drift with 0 findings.
+
+Release gate:
+- Local verification is complete; commit/push, production deploy, and deployed live smoke are still required before terminal app-visible Done.
+
 ## 2026-07-06T17:32:00+03:00 - ChatGPT Agent dropoff collector repaired and fleet status verified
 
 Completed `RAW-20260706-951` for the failed Rabbi Operations Agent Mode dropoff

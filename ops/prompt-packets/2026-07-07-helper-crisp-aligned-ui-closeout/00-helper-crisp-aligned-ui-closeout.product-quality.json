@@ -1,0 +1,698 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260707-090",
+  "parent_raw_id": "RAW-20260707-009",
+  "source_statement_ids": [
+    "SRC-20260707-009-001",
+    "SRC-20260707-009-002"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260707-030"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260707-009-helper-crisp-aligned-ui-closeout.md",
+      "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md",
+      "docs/PRODUCT-QUALITY-COMPILER.md",
+      "docs/UI-STATE-MATRIX.md",
+      "docs/VISUAL-QUALITY-HARNESS.md",
+      "docs/BROWSER-AGENT-SECURITY.md"
+    ],
+    "produces": [
+      "ops/prompt-packets/2026-07-07-helper-crisp-aligned-ui-closeout/00-helper-crisp-aligned-ui-closeout.product-quality.json",
+      "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-helper-crisp-aligned-ui-closeout/00-helper-crisp-aligned-ui-closeout.product-quality.json",
+    "terminal_condition": "Helper and One Time role-preview UI work is not considered complete until the current worker patches are independently verified, deployed, live-smoked, and supported by desktop/mobile visual evidence.",
+    "handoff_target": "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md"
+  },
+  "stage": "STAGE_1_SPEC_COMPILER",
+  "packet_role": "SPEC_COMPILER",
+  "status": "generated",
+  "title": "Helper Crisp Aligned Responsive UI Closeout",
+  "created_at": "2026-07-07T15:29:38+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN",
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260707-009",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY",
+      "VERIFIER_CLOSEOUT",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "Operator asked whether Agent Mode work is actually getting fixed and repaired.",
+      "Operator set a broad product-quality requirement for the helper to work perfectly.",
+      "Operator explicitly named button alignment, crisp organization, mobile, and desktop.",
+      "Current agent-fleet worker outputs exist locally for One Time provider review and safe role-preview navigation but still need supervisor verification, release, and live proof."
+    ],
+    "affected_product_surfaces": [
+      "BNA Operations helper and Safe Role Preview panel",
+      "One Time read-only Rabbi/provider view-as route",
+      "One Time member/student preview surfaces"
+    ],
+    "likely_external_provider_blockers": [
+      "No external send, charge, refund, DNS, credential, account permission, or production data mutation is approved by this packet.",
+      "App-visible completion requires deploy and live smoke after commit/push.",
+      "Visual proof requires browser screenshots for desktop and mobile."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-helper-crisp-aligned-ui-closeout",
+      "01-supervisor-verification-of-worker-changes",
+      "02-desktop-mobile-visual-smoke",
+      "03-release-closeout",
+      "04-next-agent-mode-audit-only-after-stable"
+    ],
+    "next_exact_packet": "Run supervisor verification on the local worker changes for tasks #2025 and #2026 before launching new Agent Mode audits."
+  },
+  "operator_intent_summary": "Shloimie wants the helper and One Time role-preview surfaces to reach production-quality: buttons aligned, controls organized, no awkward clutter, and reliable responsive behavior on desktop and mobile. The immediate next step is to verify and release the local worker fixes already produced by the agent fleet.",
+  "raw_quotes": [
+    "Can we do some more agent modes?",
+    "Are these agent mode things getting fixed?",
+    "I want the helper to be working perfectly.",
+    "All the buttons need to be aligned.",
+    "Everything needs to be crisp and clean and organized, mobile, desktop.",
+    "What is the next thing that you're gonna do now?"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260707-090",
+      "decision": "Do not launch more Agent Mode UI audits until the existing local worker fixes for tasks #2025 and #2026 are independently verified or explicitly blocked.",
+      "status": "accepted_for_current_batch"
+    }
+  ],
+  "out_of_scope": [
+    "No broad redesign of the full BNA app in this packet.",
+    "No unrelated queue cleanup of stale historical agent jobs.",
+    "No external sends, charges, refunds, DNS changes, credential changes, account permission changes, or production data mutation.",
+    "No password sharing or real login as Rabbi/student/member.",
+    "No closing live tasks merely because local worker tests passed."
+  ],
+  "affected_surfaces": [
+    "Operations helper and Safe Role Preview panel",
+    "One Time read-only provider review route",
+    "One Time member preview route",
+    "One Time student preview entry point"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+    "/provider.html?review=one-time",
+    "/rabbi-member?review=one-time"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/provider.html",
+    "public/rabbi-member.html",
+    "public/js/rabbi-member.js",
+    "server.js",
+    "src/platform/instances/one-time-shared-review-data.js",
+    "ops/action-registry.json",
+    "ops/route-registry.json",
+    "tests/one-time-provider-review-navigation.test.js",
+    "tests/one-time-safe-view-as-navigation.test.js"
+  ],
+  "current_state": {
+    "source_of_truth_readback": [
+      "REQ-20260707-080 and REQ-20260707-085 are already deployed/live-smoked for Agent Mode dropoff and read-only View-as Rabbi start action.",
+      "Task #2025 worker evidence says provider review navigation was fixed locally and needs supervisor verification, commit/push/release, and deployed smoke.",
+      "Task #2026 worker evidence says safe role-preview navigation was fixed locally and needs supervisor verification, commit/push/release, and deployed smoke.",
+      "Task #2027 remains queued for route-role mapping."
+    ],
+    "inspection_targets": [
+      "Operations Safe Role Preview panel button alignment and action states",
+      "Provider read-only view-as labels, return action, blocked write controls, and section navigation",
+      "Member preview test-data banner, local-only support/question simulation, and button alignment",
+      "Desktop widths 1440/1024/768 and mobile widths 430/390"
+    ],
+    "known_blockers": [
+      "The current worker changes are local and not yet committed/pushed/deployed by the supervisor.",
+      "Final UI quality proof still needs screenshot/live-smoke evidence."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "perfect",
+      "working",
+      "crisp",
+      "clean",
+      "organized",
+      "mobile",
+      "desktop"
+    ],
+    "expanded_phrases": {
+      "perfect": "No visible dead ends in the scoped helper/role-preview workflow: every visible action works, is preview-only, or is disabled with a clear reason.",
+      "working": "Role-preview and helper actions must execute their intended safe behavior, preserve read-only boundaries, and give visible feedback without external writes.",
+      "crisp": "Controls align on a consistent grid, spacing is deliberate, copy is short, and the first viewport avoids wasted empty bands.",
+      "clean": "No duplicate controls, debug-only clutter, role-inappropriate diagnostics, or unlabelled action clusters in normal user views.",
+      "organized": "Primary, secondary, and diagnostic actions are visually grouped by user intent and preserve the selected workspace/project.",
+      "mobile": "At 430px and 390px, controls wrap predictably, buttons remain tappable, no horizontal overflow appears, and helper/preview panels do not occlude route content.",
+      "desktop": "At 1440px, 1024px, and 768px, toolbar/subcategory/filter/action rows align, avoid wasted space, and preserve readable density."
+    },
+    "first_party_pattern_interpretation": "Helper and preview UX must use first-party BNA/One Time role-scoped patterns only; external provider writes remain out of scope."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/workspace-scope-isolation.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260707-086",
+      "statement": "Verify and release the helper and One Time role-preview UI so scoped actions are aligned, organized, role-safe, and responsive on desktop and mobile.",
+      "expected_result": "The current local worker fixes for tasks #2025 and #2026 are independently audited, any failures are fixed, and the deployed app proves the helper/role-preview workflow through desktop/mobile visual smoke and no-write role-safety checks.",
+      "acceptance_criteria": [
+        "Operations Safe Role Preview controls have consistent button height, alignment, wrapping, and clear active/preview/read-only state.",
+        "Provider view-as route clearly shows read-only context, a return-to-Operations path, and blocked write controls.",
+        "Member/student preview routes use test or preview data and do not post live member/student actions.",
+        "No super-admin diagnostics or developer clutter appears in normal Rabbi/member/student preview surfaces.",
+        "Desktop and mobile screenshots prove no horizontal overflow, overlapping buttons, duplicated toolbar rows, or helper panel occlusion.",
+        "Action and route registries match every visible role-preview/helper action.",
+        "The deployed live smoke passes before task closeout."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready_for_supervisor_verification",
+    "criteria": [
+      "Raw source is preserved at raw-input/RAW-20260707-009-helper-crisp-aligned-ui-closeout.md.",
+      "Existing worker diffs for tasks #2025 and #2026 are present in the worktree.",
+      "Affected routes are limited to Operations, provider review/view-as, and member preview route for this packet.",
+      "No external provider write or account mutation is required.",
+      "Current-state screenshot evidence is still required before final product/UI Done."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 1440,
+      "auth_role": "super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load Operations One Time workspace after authentication.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Operations shell and Safe Role Preview actions render without layout jump.",
+      "expected_primary_action": "View One Time as Rabbi",
+      "expected_secondary_actions": [
+        "Student Preview",
+        "Member Preview"
+      ],
+      "forbidden_content": [
+        "Overlapping preview buttons",
+        "Live send or charge controls"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview actions have stable labels and focus order.",
+      "accessibility_expectation": "Buttons remain keyboard reachable and do not move during load.",
+      "test_smoke_assertion": "Operations preview panel appears with aligned actions.",
+      "requirement_id": "REQ-20260707-086"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 1024,
+      "auth_role": "super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the preview panel when no role-preview session is active.",
+      "expected_visible_title": "Safe Role Preview",
+      "expected_visible_message": "Choose a read-only or preview perspective.",
+      "expected_primary_action": "View One Time as Rabbi",
+      "expected_secondary_actions": [
+        "Student Preview",
+        "Member Preview"
+      ],
+      "forbidden_content": [
+        "Unexplained blank cards",
+        "Misaligned action rows"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview action group is announced as related controls.",
+      "accessibility_expectation": "No hidden helper controls are exposed as visible actions.",
+      "test_smoke_assertion": "Preview action group has exactly the expected safe choices.",
+      "requirement_id": "REQ-20260707-086"
+    },
+    "populated": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "view_as_rabbi_read_only",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Start View One Time as Rabbi from Operations and load provider review route.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Read-only Rabbi/provider preview is visible with a return action.",
+      "expected_primary_action": "Return to Super Admin",
+      "expected_secondary_actions": [
+        "Overview",
+        "Communications",
+        "Participants"
+      ],
+      "forbidden_content": [
+        "Editable live send controls",
+        "Super Admin diagnostics in Rabbi view"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Read-only status is announced near the page heading.",
+      "accessibility_expectation": "Navigation and return action remain reachable by keyboard.",
+      "test_smoke_assertion": "Provider review route preserves selected section and read-only state.",
+      "requirement_id": "REQ-20260707-086"
+    },
+    "filtered_empty": {
+      "route": "/provider.html?review=one-time&section=communications",
+      "viewport": 1024,
+      "auth_role": "view_as_rabbi_read_only",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Communications in provider review route with a filter that has no matches.",
+      "expected_visible_title": "Communications",
+      "expected_visible_message": "No matching preview messages.",
+      "expected_primary_action": "Clear filter",
+      "expected_secondary_actions": [
+        "Return to Super Admin"
+      ],
+      "forbidden_content": [
+        "Duplicate message-type tab rows",
+        "Looping display reset"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filtered-empty state is announced without moving focus.",
+      "accessibility_expectation": "Clear filter is tappable and keyboard reachable.",
+      "test_smoke_assertion": "Communications no-match state does not reset to the wrong display.",
+      "requirement_id": "REQ-20260707-086"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 768,
+      "auth_role": "super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Simulate a preview session start failure.",
+      "expected_visible_title": "Safe Role Preview",
+      "expected_visible_message": "Preview could not start. Try again or use the report link.",
+      "expected_primary_action": "Try Again",
+      "expected_secondary_actions": [
+        "Copy report context"
+      ],
+      "forbidden_content": [
+        "Raw token",
+        "Stack trace",
+        "Password instructions"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error message is announced near the failed action.",
+      "accessibility_expectation": "Focus returns to the failed preview action or retry button.",
+      "test_smoke_assertion": "Failure state is visible and does not expose secrets.",
+      "requirement_id": "REQ-20260707-086"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 430,
+      "auth_role": "super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open preview actions when a required safe preview endpoint is unavailable.",
+      "expected_visible_title": "Safe Role Preview",
+      "expected_visible_message": "Preview setup is not available yet.",
+      "expected_primary_action": "Report blocker",
+      "expected_secondary_actions": [
+        "Return to Operations"
+      ],
+      "forbidden_content": [
+        "Request for Rabbi password",
+        "Request for student password"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup reason is tied to the disabled action.",
+      "accessibility_expectation": "Disabled controls explain their reason.",
+      "test_smoke_assertion": "Blocked setup path does not ask for credentials.",
+      "requirement_id": "REQ-20260707-086"
+    },
+    "preview_only": {
+      "route": "/rabbi-member?review=one-time",
+      "viewport": 430,
+      "auth_role": "member_preview",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Member Preview from Operations.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Preview mode uses test-only data.",
+      "expected_primary_action": "Ask a question",
+      "expected_secondary_actions": [
+        "Return to Super Admin"
+      ],
+      "forbidden_content": [
+        "Live member post",
+        "Unscoped family or student private data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview-only banner is visible and announced.",
+      "accessibility_expectation": "Preview actions explain local-only behavior.",
+      "test_smoke_assertion": "Question/support actions are simulated locally without API posts.",
+      "requirement_id": "REQ-20260707-086"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Return from a role-preview route to Operations on mobile.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Returned from preview.",
+      "expected_primary_action": "View One Time as Rabbi",
+      "expected_secondary_actions": [
+        "Student Preview",
+        "Member Preview"
+      ],
+      "forbidden_content": [
+        "Lost workspace context",
+        "Horizontal overflow",
+        "Stacked uneven buttons"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Return status is visible without trapping focus.",
+      "accessibility_expectation": "Mobile action buttons remain at least 44px tall.",
+      "test_smoke_assertion": "Return path preserves Operations workspace and responsive action layout.",
+      "requirement_id": "REQ-20260707-086"
+    },
+    "permission_denied": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "anonymous_or_wrong_scope",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open provider review route without a valid signed view-as or review context.",
+      "expected_visible_title": "Sign in",
+      "expected_visible_message": "This preview requires an authorized Operations session.",
+      "expected_primary_action": "Return to sign in",
+      "expected_secondary_actions": [
+        "Back"
+      ],
+      "forbidden_content": [
+        "Provider data",
+        "Member private data",
+        "Student private data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Access denial is clear and not hidden behind blank UI.",
+      "accessibility_expectation": "Denied state gives a reachable recovery action.",
+      "test_smoke_assertion": "Wrong-scope route does not expose One Time data.",
+      "requirement_id": "REQ-20260707-086"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open helper or preview detail state on mobile.",
+      "expected_visible_title": "Safe Role Preview",
+      "expected_visible_message": "Preview details fit within the viewport.",
+      "expected_primary_action": "View One Time as Rabbi",
+      "expected_secondary_actions": [
+        "Close",
+        "Member Preview"
+      ],
+      "forbidden_content": [
+        "Button overlap",
+        "Text clipped inside buttons",
+        "Horizontal scroll"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile detail/drawer has an accessible close or return path.",
+      "accessibility_expectation": "Controls remain tappable and labels fit without clipping.",
+      "test_smoke_assertion": "Mobile helper/preview state renders without overlap or overflow.",
+      "requirement_id": "REQ-20260707-086"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 1440,
+        "state": "populated"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 1024,
+        "state": "empty"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 768,
+        "state": "error"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 430,
+        "state": "blocked_setup"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 390,
+        "state": "mobile_drawer_or_detail_state"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "FIND-20260707-090",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 390,
+        "screenshot_before": "blocked: current worker changes need supervisor verification screenshot pass",
+        "screenshot_after_or_blocker": "required after local verification and before deployed done",
+        "defect_codes": [
+          "VQ-ALIGN-001",
+          "VQ-RESPONSIVE-001"
+        ],
+        "severity": "P1",
+        "user_impact": "If preview/helper controls are uneven or crowded, Shloimie cannot confidently inspect Rabbi/student/member views on phone.",
+        "expected_fix": "Controls align, wrap, and stay tappable across desktop and mobile; role context remains clear.",
+        "requirement_id": "REQ-20260707-086"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Button labels must fit without clipping at 390px.",
+      "Preview/read-only status must be visible and screen-reader discoverable.",
+      "Disabled or preview-only controls must expose a reason.",
+      "Keyboard focus must not be trapped in helper or preview panels."
+    ],
+    "verification": [
+      "Focused DOM/ARIA smoke for preview controls.",
+      "Browser screenshot review at required desktop and mobile widths."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "View One Time as Rabbi",
+      "selector_or_action_key": "ACTION-ONETIME-PROVIDER-SESSION-START",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "POST /api/bna/one-time/view-as-rabbi/start then read-only provider route",
+      "registry_required": true
+    },
+    {
+      "label": "Student Preview",
+      "selector_or_action_key": "ACTION-ONETIME-STUDENT-PREVIEW",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Safe preview route or explicit blocked setup state",
+      "registry_required": true
+    },
+    {
+      "label": "Member Preview",
+      "selector_or_action_key": "ACTION-ONETIME-MEMBER-PREVIEW",
+      "action_state": "TEST_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "/api/one-time-review/member test-only data and local simulated actions",
+      "registry_required": true
+    },
+    {
+      "label": "Return to Super Admin",
+      "selector_or_action_key": "ACTION-ONETIME-RETURN-SUPER-ADMIN",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Client navigation back to Operations One Time workspace",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "visible_fields": [
+      "workspace/project context",
+      "role preview mode",
+      "read-only or test-only status",
+      "safe return path",
+      "preview data source label"
+    ],
+    "forbidden_fields": [
+      "raw session tokens",
+      "passwords",
+      "provider secrets",
+      "unscoped student private data",
+      "live payment/access controls"
+    ],
+    "api_contracts": [
+      "POST /api/bna/one-time/view-as-rabbi/start returns a read-only/no-send/no-charge view URL.",
+      "GET /api/one-time-review/member returns test-only review data for preview mode."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "role_scope_invariants": [
+      "Super Admin can enter preview modes without shared passwords.",
+      "Rabbi/provider preview cannot send live messages, charge, grant access, or mutate production data.",
+      "Member/student preview uses preview or test data and must not expose unrelated family/student/private data."
+    ],
+    "secret_handling": "No tokens, cookies, passwords, API keys, or raw private message bodies may be committed to evidence."
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260707-090-A",
+      "scope": "Supervisor verification of existing helper and role-preview worker changes.",
+      "instructions": [
+        "Inspect the current worker diffs for tasks #2025 and #2026.",
+        "Run focused route/action/security tests and watchdogs.",
+        "Fix only failures inside the affected helper/role-preview scope.",
+        "Do not launch more Agent Mode prompts until the local fixes are committed, pushed, deployed, or explicitly blocked."
+      ]
+    },
+    {
+      "batch_id": "BATCH-20260707-090-B",
+      "scope": "Desktop and mobile visual proof for helper/role-preview alignment.",
+      "instructions": [
+        "Capture screenshots at 1440, 1024, 768, 430, and 390 widths.",
+        "Check button height, wrapping, spacing, overflow, and role-status visibility.",
+        "Record evidence paths in the requirement register."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/provider.html",
+      "public/rabbi-member.html",
+      "public/js/rabbi-member.js",
+      "server.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "public/provider.html",
+      "public/rabbi-member.html",
+      "public/js/rabbi-member.js",
+      "server.js",
+      "src/platform/instances/one-time-shared-review-data.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tests/one-time-provider-review-navigation.test.js",
+      "tests/one-time-safe-view-as-navigation.test.js",
+      "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md"
+    ],
+    "max_files_to_edit": 10,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "If verification expands beyond Operations/helper/provider/member preview, create a new child packet instead of widening this one.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "commands": [
+      "node --check server.js",
+      "node --check public/js/rabbi-member.js",
+      "node --test tests/one-time-provider-review-navigation.test.js tests/one-time-safe-view-as-navigation.test.js",
+      "node --test tests/one-time-admin-mailbox-access.test.js tests/one-time-shared-review-branding.test.js tests/one-time-rabbi-dashboard-ia.test.js",
+      "npm run watchdog:actions",
+      "npm run watchdog:security",
+      "npm run watchdog:protocol-drift"
+    ],
+    "live_smoke_required": true,
+    "visual_smoke_required": true
+  },
+  "evidence": {
+    "required_paths": [
+      "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/",
+      "ops/live-smokes/",
+      "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "redaction_rules": [
+      "Redact cookies, session IDs, view-as tokens, API keys, raw private bodies, and screenshots with private student data."
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Product Quality packet validates.",
+      "Worker changes for tasks #2025 and #2026 are independently inspected.",
+      "Focused tests and watchdogs pass or blockers are recorded with owner and next action.",
+      "Desktop and mobile screenshot evidence exists or a screenshot blocker is explicit.",
+      "Action and route registries match visible helper/preview actions.",
+      "Scoped changes are committed and pushed.",
+      "App-visible changes deploy successfully.",
+      "Live smoke proves read-only/no-send/no-charge view-as and preview-only member/student behavior.",
+      "Ledger/changelog/register closeout records evidence and remaining #2027 route-role mapping if still open."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260707-009-helper-crisp-aligned-ui-closeout.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-07-helper-crisp-aligned-ui-closeout/00-helper-crisp-aligned-ui-closeout.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "local file inspection",
+      "local tests",
+      "watchdogs",
+      "desktop/mobile screenshot capture",
+      "commit/push/deploy/live smoke"
+    ],
+    "skipped_actions_policy": "External sends, payments, credential/account mutations, and production data writes are skipped unless separately approved.",
+    "blocker_decisions": [
+      "DEC-20260707-090"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/",
+      "ops/live-smokes/",
+      "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md",
+    "next_packet_path": "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md#task-2027"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 findings or a precise blocker linked to REQ-20260707-086."
+  },
+  "next_packet": {
+    "id": "PKT-20260707-091",
+    "condition": "Only create this after tasks #2025 and #2026 are verified/released or explicitly blocked.",
+    "purpose": "Run the next Agent Mode audit against the deployed helper/role-preview UI and remaining route-role mapping task #2027."
+  },
+  "app_visible": true
+}

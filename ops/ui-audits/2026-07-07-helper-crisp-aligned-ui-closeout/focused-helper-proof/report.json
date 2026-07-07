@@ -1,0 +1,394 @@
+{
+  "generated_at": "2026-07-07T12:43:36.897Z",
+  "base_url": "http://localhost:8080",
+  "external_write_performed": false,
+  "browser_content_untrusted": true,
+  "results": [
+    {
+      "viewport": "1440-desktop",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "screenshot": "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/operations-safe-role-preview-1440-desktop.png",
+      "title": "One Time Mishnah Class - Operations",
+      "horizontal_overflow": false,
+      "panel_found": true,
+      "actions": [
+        {
+          "text": "View One Time as Rabbi",
+          "width": 371,
+          "height": 40,
+          "x": 272,
+          "y": 569
+        },
+        {
+          "text": "Student Preview",
+          "width": 371,
+          "height": 40,
+          "x": 653,
+          "y": 569
+        },
+        {
+          "text": "Member Preview",
+          "width": 371,
+          "height": 40,
+          "x": 1033,
+          "y": 569
+        }
+      ],
+      "pills": [
+        {
+          "text": "Read-only",
+          "width": 277,
+          "height": 30,
+          "x": 272,
+          "y": 619
+        },
+        {
+          "text": "No-send",
+          "width": 277,
+          "height": 30,
+          "x": 557,
+          "y": 619
+        },
+        {
+          "text": "No-charge",
+          "width": 277,
+          "height": 30,
+          "x": 842,
+          "y": 619
+        },
+        {
+          "text": "No access grant",
+          "width": 277,
+          "height": 30,
+          "x": 1127,
+          "y": 619
+        }
+      ],
+      "action_height_spread": 0,
+      "pill_height_spread": 0,
+      "passed": true
+    },
+    {
+      "viewport": "1024-desktop-tablet",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "screenshot": "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/operations-safe-role-preview-1024-desktop-tablet.png",
+      "title": "One Time Mishnah Class - Operations",
+      "horizontal_overflow": false,
+      "panel_found": true,
+      "actions": [
+        {
+          "text": "View One Time as Rabbi",
+          "width": 234,
+          "height": 40,
+          "x": 268,
+          "y": 734
+        },
+        {
+          "text": "Student Preview",
+          "width": 234,
+          "height": 40,
+          "x": 513,
+          "y": 734
+        },
+        {
+          "text": "Member Preview",
+          "width": 234,
+          "height": 40,
+          "x": 757,
+          "y": 734
+        }
+      ],
+      "pills": [
+        {
+          "text": "Read-only",
+          "width": 175,
+          "height": 30,
+          "x": 268,
+          "y": 784
+        },
+        {
+          "text": "No-send",
+          "width": 175,
+          "height": 30,
+          "x": 451,
+          "y": 784
+        },
+        {
+          "text": "No-charge",
+          "width": 175,
+          "height": 30,
+          "x": 634,
+          "y": 784
+        },
+        {
+          "text": "No access grant",
+          "width": 175,
+          "height": 30,
+          "x": 817,
+          "y": 784
+        }
+      ],
+      "action_height_spread": 0,
+      "pill_height_spread": 0,
+      "passed": true
+    },
+    {
+      "viewport": "768-tablet",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "screenshot": "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/operations-safe-role-preview-768-tablet.png",
+      "title": "One Time Mishnah Class - Operations",
+      "horizontal_overflow": false,
+      "panel_found": true,
+      "actions": [
+        {
+          "text": "View One Time as Rabbi",
+          "width": 232,
+          "height": 40,
+          "x": 26,
+          "y": 605
+        },
+        {
+          "text": "Student Preview",
+          "width": 232,
+          "height": 40,
+          "x": 268,
+          "y": 605
+        },
+        {
+          "text": "Member Preview",
+          "width": 232,
+          "height": 40,
+          "x": 510,
+          "y": 605
+        }
+      ],
+      "pills": [
+        {
+          "text": "Read-only",
+          "width": 173,
+          "height": 30,
+          "x": 26,
+          "y": 655
+        },
+        {
+          "text": "No-send",
+          "width": 173,
+          "height": 30,
+          "x": 207,
+          "y": 655
+        },
+        {
+          "text": "No-charge",
+          "width": 173,
+          "height": 30,
+          "x": 388,
+          "y": 655
+        },
+        {
+          "text": "No access grant",
+          "width": 173,
+          "height": 30,
+          "x": 569,
+          "y": 655
+        }
+      ],
+      "action_height_spread": 0,
+      "pill_height_spread": 0,
+      "passed": true
+    },
+    {
+      "viewport": "430-mobile",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "screenshot": "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/operations-safe-role-preview-430-mobile.png",
+      "title": "One Time Mishnah Class - Operations",
+      "horizontal_overflow": false,
+      "panel_found": true,
+      "actions": [
+        {
+          "text": "View One Time as Rabbi",
+          "width": 378,
+          "height": 40,
+          "x": 26,
+          "y": 799
+        },
+        {
+          "text": "Student Preview",
+          "width": 378,
+          "height": 40,
+          "x": 26,
+          "y": 849
+        },
+        {
+          "text": "Member Preview",
+          "width": 378,
+          "height": 40,
+          "x": 26,
+          "y": 899
+        }
+      ],
+      "pills": [
+        {
+          "text": "Read-only",
+          "width": 185,
+          "height": 30,
+          "x": 26,
+          "y": 949
+        },
+        {
+          "text": "No-send",
+          "width": 185,
+          "height": 30,
+          "x": 219,
+          "y": 949
+        },
+        {
+          "text": "No-charge",
+          "width": 185,
+          "height": 30,
+          "x": 26,
+          "y": 987
+        },
+        {
+          "text": "No access grant",
+          "width": 185,
+          "height": 30,
+          "x": 219,
+          "y": 987
+        }
+      ],
+      "action_height_spread": 0,
+      "pill_height_spread": 0,
+      "passed": true
+    },
+    {
+      "viewport": "390-mobile",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "screenshot": "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/operations-safe-role-preview-390-mobile.png",
+      "title": "One Time Mishnah Class - Operations",
+      "horizontal_overflow": false,
+      "panel_found": true,
+      "actions": [
+        {
+          "text": "View One Time as Rabbi",
+          "width": 338,
+          "height": 40,
+          "x": 26,
+          "y": 818
+        },
+        {
+          "text": "Student Preview",
+          "width": 338,
+          "height": 40,
+          "x": 26,
+          "y": 868
+        },
+        {
+          "text": "Member Preview",
+          "width": 338,
+          "height": 40,
+          "x": 26,
+          "y": 918
+        }
+      ],
+      "pills": [
+        {
+          "text": "Read-only",
+          "width": 165,
+          "height": 30,
+          "x": 26,
+          "y": 968
+        },
+        {
+          "text": "No-send",
+          "width": 165,
+          "height": 30,
+          "x": 199,
+          "y": 968
+        },
+        {
+          "text": "No-charge",
+          "width": 165,
+          "height": 30,
+          "x": 26,
+          "y": 1006
+        },
+        {
+          "text": "No access grant",
+          "width": 165,
+          "height": 30,
+          "x": 199,
+          "y": 1006
+        }
+      ],
+      "action_height_spread": 0,
+      "pill_height_spread": 0,
+      "passed": true
+    },
+    {
+      "viewport": "1440-desktop",
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "screenshot": "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/provider-admin-session-required-1440-desktop.png",
+      "title": "One Time Provider Session Required",
+      "horizontal_overflow": false,
+      "has_session_required_copy": true,
+      "has_return_action": true,
+      "has_readonly_preview_action": true,
+      "has_password_prompt": false,
+      "login_form_visible": false,
+      "passed": true
+    },
+    {
+      "viewport": "1024-desktop-tablet",
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "screenshot": "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/provider-admin-session-required-1024-desktop-tablet.png",
+      "title": "One Time Provider Session Required",
+      "horizontal_overflow": false,
+      "has_session_required_copy": true,
+      "has_return_action": true,
+      "has_readonly_preview_action": true,
+      "has_password_prompt": false,
+      "login_form_visible": false,
+      "passed": true
+    },
+    {
+      "viewport": "768-tablet",
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "screenshot": "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/provider-admin-session-required-768-tablet.png",
+      "title": "One Time Provider Session Required",
+      "horizontal_overflow": false,
+      "has_session_required_copy": true,
+      "has_return_action": true,
+      "has_readonly_preview_action": true,
+      "has_password_prompt": false,
+      "login_form_visible": false,
+      "passed": true
+    },
+    {
+      "viewport": "430-mobile",
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "screenshot": "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/provider-admin-session-required-430-mobile.png",
+      "title": "One Time Provider Session Required",
+      "horizontal_overflow": false,
+      "has_session_required_copy": true,
+      "has_return_action": true,
+      "has_readonly_preview_action": true,
+      "has_password_prompt": false,
+      "login_form_visible": false,
+      "passed": true
+    },
+    {
+      "viewport": "390-mobile",
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "screenshot": "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/provider-admin-session-required-390-mobile.png",
+      "title": "One Time Provider Session Required",
+      "horizontal_overflow": false,
+      "has_session_required_copy": true,
+      "has_return_action": true,
+      "has_readonly_preview_action": true,
+      "has_password_prompt": false,
+      "login_form_visible": false,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

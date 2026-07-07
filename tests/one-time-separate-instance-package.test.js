@@ -104,7 +104,7 @@ test('separate-instance live smoke checks the deployed API health route first', 
   assert.match(smoke, /health\.response\.status === 404/);
   assert.match(smoke, /Your Child Can Love Learning Mishnayos/);
   assert.match(smoke, /Learn Mishnayos Live with Rabbi Eli Scheller/);
-  assert.match(smoke, /\['\/', '\/one-time', '\/one-time\/'\]/);
+  assert.match(smoke, /\['\/', '\/public', '\/one-time', '\/one-time\/'\]/);
 });
 
 test('Railway provisioning checklist is redacted and guarded against the shared project', () => {

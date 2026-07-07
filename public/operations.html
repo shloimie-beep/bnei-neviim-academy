@@ -1429,6 +1429,50 @@
             filter: brightness(1.1);
         }
 
+        .one-time-perspective-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .one-time-perspective-actions .task-action {
+            align-items: center;
+            border-radius: 8px;
+            display: inline-flex;
+            justify-content: center;
+            min-height: 42px;
+            padding: 8px 10px;
+            text-align: center;
+            white-space: normal;
+            width: 100%;
+        }
+
+        .one-time-perspective-meta {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .one-time-perspective-meta .status-pill {
+            align-items: center;
+            display: inline-flex;
+            justify-content: center;
+            line-height: 1.2;
+            min-height: 30px;
+            text-align: center;
+            white-space: normal;
+        }
+
+        @media (max-width: 640px) {
+            .one-time-perspective-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .one-time-perspective-meta {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
         .task-source {
             display: flex;
             align-items: center;
@@ -18575,6 +18619,29 @@
             `;
         }
 
+        function renderOneTimePerspectivePreviewPanel() {
+            return `
+                <section class="focus-panel" data-one-time-perspective-preview>
+                    <div class="task-section-header">
+                        <h3>Safe Role Preview</h3>
+                        <span>Rabbi / student / member</span>
+                    </div>
+                    <p class="settings-disabled-note">Open the One Time app perspectives from here. View-as Rabbi is a signed read-only session; student and member previews use TEST review data only.</p>
+                    <div class="task-actions one-time-perspective-actions">
+                        <button type="button" class="task-action primary" data-action-id="ACTION-ONETIME-PROVIDER-SESSION-START" onclick="openOneTimeProviderSession(event)">View One Time as Rabbi</button>
+                        <a class="task-action" data-action-id="ACTION-ONETIME-STUDENT-PREVIEW" href="/student.html?review=one-time" target="_blank" rel="noopener">Student Preview</a>
+                        <a class="task-action" data-action-id="ACTION-ONETIME-MEMBER-PREVIEW" href="/rabbi-member?review=one-time" target="_blank" rel="noopener">Member Preview</a>
+                    </div>
+                    <div class="service-meta one-time-perspective-meta" style="margin-top:10px;">
+                        <span class="status-pill">Read-only</span>
+                        <span class="status-pill">No-send</span>
+                        <span class="status-pill">No-charge</span>
+                        <span class="status-pill">No access grant</span>
+                    </div>
+                </section>
+            `;
+        }
+
         function renderProviderContentBridgePanel() {
             const counts = contentSubnavCounts();
             const meetingCount = Math.max(Number(counts.meetings || 0), projectMeetings.length || 0);
@@ -18620,6 +18687,7 @@
                                 ${renderMetricButton('Access', providerAccessRows().length, 'Payment/access status and follow-up.', "setCurrentSection('access')")}
                             </div>
                         </section>
+                        ${renderOneTimePerspectivePreviewPanel()}
                     ` : ''}
                     ${['overview', 'program'].includes(section) ? `
                         <section class="focus-panel" data-one-time-rabbi-module="program">

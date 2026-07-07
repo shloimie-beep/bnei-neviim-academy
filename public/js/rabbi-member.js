@@ -1,12 +1,15 @@
 (function () {
+  const queryParams = new URLSearchParams(window.location.search);
+  const ONE_TIME_MEMBER_REVIEW_MODE = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
   const state = {
-    token: localStorage.getItem('rabbi_member_session') || '',
+    token: ONE_TIME_MEMBER_REVIEW_MODE ? '' : (localStorage.getItem('rabbi_member_session') || ''),
     member: null,
     library: [],
     sessions: [],
     questions: [],
     supportTickets: [],
     notice: '',
+    previewMode: ONE_TIME_MEMBER_REVIEW_MODE,
   };
 
   const $ = (id) => document.getElementById(id);
@@ -49,6 +52,7 @@
         <span class="eyebrow">Member Access</span>
         <h2>${escapeHtml(state.member.display_name || 'Member')}</h2>
         <p>${scopes.length ? `Active scopes: ${escapeHtml(scopes.join(', '))}` : 'No active access grant yet.'}</p>
+        ${state.previewMode ? '<p>Preview mode uses TEST One Time member data. No login link, support ticket, private question, payment, or access-grant write runs here.</p>' : ''}
       </div>
     `;
   }
@@ -166,8 +170,48 @@
     renderAll();
   }
 
+  function applyMemberReviewChrome() {
+    if (!ONE_TIME_MEMBER_REVIEW_MODE) return;
+    document.body.classList.add('one-time-member-review-active');
+    document.title = 'One Time Member Preview';
+    const brandSmall = document.querySelector('.member-brand-lockup small');
+    if (brandSmall) brandSmall.textContent = 'Member preview';
+    const loginTitle = document.querySelector('#member-access h2');
+    if (loginTitle) loginTitle.textContent = 'Member preview';
+    const loginForm = $('loginForm');
+    if (loginForm) {
+      loginForm.querySelectorAll('input, button').forEach((control) => {
+        control.disabled = true;
+        control.dataset.buttonState = 'blocked';
+        control.title = 'Member preview mode uses TEST data and does not request or send login links.';
+      });
+    }
+  }
+
+  async function loadMemberReview() {
+    applyMemberReviewChrome();
+    try {
+      const data = await api('/api/one-time-review/member');
+      state.previewMode = true;
+      state.member = data.member || null;
+      state.library = data.library || [];
+      state.sessions = data.live_sessions || [];
+      state.questions = data.questions || [];
+      state.supportTickets = data.support_tickets || [];
+      state.notice = 'Member preview mode is read-only. Question and support submits are simulated locally; no external send or database write runs.';
+    } catch (error) {
+      state.notice = error.message || 'Could not load member preview.';
+    }
+    renderAll();
+  }
+
   async function requestLogin(event) {
     event?.preventDefault?.();
+    if (state.previewMode) {
+      state.notice = 'Member preview mode does not request or send login links.';
+      renderAll();
+      return;
+    }
     const email = $('loginEmail')?.value || '';
     if (!email) return;
     try {
@@ -228,6 +272,11 @@
 
   async function submitQuestion(event) {
     event?.preventDefault?.();
+    if (state.previewMode) {
+      state.notice = 'Preview question simulated locally. No private question record, forum post, member feed, or external send was created.';
+      renderAll();
+      return;
+    }
     if (!state.token) {
       state.notice = 'Open a member session before submitting a question.';
       renderAll();
@@ -261,6 +310,11 @@
 
   async function submitSupportTicket(event) {
     event?.preventDefault?.();
+    if (state.previewMode) {
+      state.notice = 'Preview support ticket simulated locally. No support ticket, notification, payment/access change, or external send was created.';
+      renderAll();
+      return;
+    }
     if (!state.token) {
       state.notice = 'Open a member session before creating a support ticket.';
       renderAll();
@@ -298,7 +352,12 @@
     $('loginForm')?.addEventListener('submit', requestLogin);
     $('questionForm')?.addEventListener('submit', submitQuestion);
     $('supportForm')?.addEventListener('submit', submitSupportTicket);
-    const params = new URLSearchParams(window.location.search);
+    const params = queryParams;
+    if (ONE_TIME_MEMBER_REVIEW_MODE) {
+      localStorage.removeItem('rabbi_member_session');
+      await loadMemberReview();
+      return;
+    }
     if (params.get('logout') === '1') {
       clearMemberSession();
       window.history.replaceState({}, '', '/rabbi-member');

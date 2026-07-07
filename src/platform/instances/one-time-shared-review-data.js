@@ -42,6 +42,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     provider: joinUrl(baseUrl, '/provider.html?review=one-time'),
     parent: joinUrl(baseUrl, '/parent.html?review=one-time'),
     student: joinUrl(baseUrl, '/student.html?review=one-time'),
+    member: joinUrl(baseUrl, '/rabbi-member?review=one-time'),
     classroom: joinUrl(baseUrl, `/one-time-classroom.html?review=one-time&code=${REVIEW_ACCESS_CODE}`),
     email_preview: joinUrl(baseUrl, '/one-time-email-review.html'),
     one_time_home: joinUrl(baseUrl, '/one-time'),
@@ -274,6 +275,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
       { label: 'Scoped Operations login', url: reviewLinks.admin_login, scope: 'One Time Operations workspace after admin approval' },
       { label: 'Parent view', url: reviewLinks.parent, scope: 'View the TEST parent experience' },
       { label: 'Student view', url: reviewLinks.student, scope: 'View the TEST student experience' },
+      { label: 'Member view', url: reviewLinks.member, scope: 'View the TEST member experience' },
       { label: 'Classroom/member library', url: reviewLinks.classroom, scope: 'View member classroom and video library' },
     ],
   };
@@ -685,6 +687,69 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     hidden_scope_note: 'This student review payload contains only TEST-ONETIME-STUDENT-001 records.',
   };
 
+  const memberPortal = {
+    review_mode: true,
+    preview_mode: true,
+    member: {
+      id: 'TEST-ONETIME-MEMBER-001',
+      display_name: 'TEST One Time Member',
+      email: 'test.member+onetime@example.test',
+      has_library_access: true,
+      access_scopes: ['library', 'live'],
+      workspace_key: WORKSPACE_KEY,
+      project_key: PROJECT_KEY,
+    },
+    library: [{
+      id: 'TEST-OT-LIB-001',
+      title: video.title,
+      description: video.description,
+      item_type: 'video',
+      media_url: video.media_url,
+      required_scope: 'library',
+      visibility: 'review_only',
+      external_write_performed: false,
+    }],
+    live_sessions: [{
+      id: classSession.id,
+      title: classSession.title,
+      start_at: classSession.starts_at,
+      class_link: {
+        available: false,
+        status: 'review_mode_disabled',
+        blocker: 'Protected Join Class is disabled in member preview mode. No Zoom meeting or host URL is exposed.',
+      },
+      external_write_performed: false,
+    }],
+    questions: [{
+      question_number: 'OT-Q-000001',
+      title: privateQuestion.title,
+      topic: privateQuestion.title,
+      question_preview: privateQuestion.body,
+      review_status: 'submitted_for_review',
+      staff_reply_available: false,
+      source_context_returned: false,
+      internal_notes_returned: false,
+    }],
+    support_tickets: [{
+      ticket_number: 'OT-SUP-000001',
+      title: supportTicket.title,
+      description: supportTicket.latest_activity,
+      status: supportTicket.status,
+      category: 'link',
+      staff_replies: [],
+      source_context_returned: false,
+      internal_notes_returned: false,
+    }],
+    write_policy: {
+      no_send: true,
+      no_question_write: true,
+      no_support_ticket_write: true,
+      no_payment_or_access_grant: true,
+      external_write_performed: false,
+    },
+    hidden_scope_note: 'This member review payload contains only TEST-ONETIME-MEMBER-001 records and does not open a real member session.',
+  };
+
   const adminReview = {
     rabbi,
     admin,
@@ -743,6 +808,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     identities: { rabbi, admin, parent, student },
     parent_portal: parentPortal,
     student_portal: studentPortal,
+    member_portal: memberPortal,
     provider_portal: {
       review_mode: true,
       provider: rabbi,

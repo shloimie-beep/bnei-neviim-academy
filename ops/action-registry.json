@@ -361,11 +361,11 @@
     },
     {
       "action_id": "ACTION-ONETIME-VIEW-AS-RABBI-EXIT",
-      "label": "Exit View as Rabbi",
+      "label": "Return to Super Admin",
       "surface": "one_time_provider_view_as_rabbi",
       "route": "/provider.html?review=one-time&view_as_rabbi=<signed>",
       "selector_hint": "#oneTimeExitViewAs",
-      "expected_behavior": "Ends the local read-only view-as preview session and returns the operator to the normal One Time provider review view.",
+      "expected_behavior": "Ends the local read-only view-as preview session and returns the operator to the One Time Operations workspace.",
       "permission": "platform_super_admin",
       "status": "active",
       "test": {
@@ -429,6 +429,46 @@
       "test": {
         "type": "static_and_api_contract",
         "expected_result": "Endpoint requires all-scope admin identity, returns a signed read-only View-as Rabbi URL, returns no password/secrets, and performs no external email send."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-STUDENT-PREVIEW",
+      "label": "Student Preview",
+      "surface": "operations_one_time_safe_role_preview",
+      "route": "/student.html?review=one-time",
+      "selector_hint": "[data-one-time-perspective-preview] [data-action-id=\"ACTION-ONETIME-STUDENT-PREVIEW\"]",
+      "expected_behavior": "Opens the One Time student review route with TEST-only student data, no BNA accountability records, and no live student message/payment/access writes.",
+      "permission": "platform_super_admin",
+      "status": "active_readonly",
+      "test": {
+        "type": "static_and_browser_contract",
+        "expected_result": "Student preview route loads /api/one-time-review/student and review-only forms simulate locally without database or external writes."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-PREVIEW",
+      "label": "Member Preview",
+      "surface": "operations_one_time_safe_role_preview",
+      "route": "/rabbi-member?review=one-time",
+      "selector_hint": "[data-one-time-perspective-preview] [data-action-id=\"ACTION-ONETIME-MEMBER-PREVIEW\"]",
+      "expected_behavior": "Opens the One Time member review route with TEST-only member/library/session/question/support data and blocks real login-link, support-ticket, question, payment, notification, or access-grant writes.",
+      "permission": "platform_super_admin",
+      "status": "active_readonly",
+      "test": {
+        "type": "static_and_browser_contract",
+        "expected_result": "Member preview route loads /api/one-time-review/member and form submits are simulated locally without POSTing to member APIs."
       },
       "related_goal_ids": [
         "GOAL-CORE-003",

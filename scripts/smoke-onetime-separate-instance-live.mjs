@@ -41,7 +41,7 @@ try {
   assertText('/api/one-time/instance-config', config.text, /"workspace_key"\s*:\s*"rabbi_sheller_provider"/, 'workspace key is not scoped to Rabbi provider');
   assertText('/api/one-time/instance-config', config.text, /"student_bot_enabled"\s*:\s*false/, 'student bot is not disabled');
 
-  for (const route of ['/', '/one-time', '/one-time/']) {
+  for (const route of ['/', '/public', '/one-time', '/one-time/']) {
     const result = await fetchText(route);
     assertText(route, result.text, /Your Child Can Love Learning Mishnayos/i, 'canonical launch funnel headline missing');
     assertText(route, result.text, /OneTimeOneTime Mishnah/i, 'One Time focused brand missing');

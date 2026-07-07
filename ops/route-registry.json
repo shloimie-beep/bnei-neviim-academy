@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-26T18:00:00+03:00",
+  "updated_at": "2026-07-07T15:35:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -25,6 +25,25 @@
       "target_variant_note": "On the One Time single-tenant runtime for join.onetimeonetime.com, this route serves the One Time focused public funnel instead of the BNA homepage.",
       "related_goal_ids": [
         "GOAL-CORE-003"
+      ]
+    },
+    {
+      "route": "/public",
+      "surface": "one_time_join_domain_public_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "on_join_onetimeonetime_single_tenant_load_one_time_public_landing_without_private_student_provider_or_member_data",
+      "expected_logged_in_behavior": "on_join_onetimeonetime_single_tenant_load_one_time_public_landing_unless_the_user_intentionally_opens_an_authenticated_portal_route",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time",
+      "target_variant_note": "Only the One Time single-tenant runtime serves this alias. The shared BNA runtime should not use it to redirect anonymous visitors into private student, member, provider, or Operations boards.",
+      "security_expectation": "Public funnel only: no student board, provider portal, member library, Operations data, access grant, checkout, email send, or private record is opened from /public.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
       ]
     },
     {
@@ -174,6 +193,25 @@
       ]
     },
     {
+      "route": "/student.html?review=one-time",
+      "surface": "one_time_student_review_preview",
+      "access": "public_review_fixture",
+      "required_role": null,
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "canonical_target": "/student.html?review=one-time",
+      "expected_logged_out_behavior": "load_TEST_only_one_time_student_preview_with_clear_readonly_no_bna_accountability_boundary",
+      "expected_logged_in_behavior": "load_TEST_only_one_time_student_preview_with_clear_readonly_no_bna_accountability_boundary",
+      "privacy_risk": "medium",
+      "security_expectation": "Review fixture only: loads TEST One Time student/classroom data, labels the preview as One Time only, excludes BNA school accountability goals/device controls/household records, and performs no database write or external send.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/provider",
       "surface": "provider_portal",
       "access": "public_entry",
@@ -187,6 +225,26 @@
         "GOAL-CORE-003",
         "GOAL-CORE-006",
         "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "surface": "one_time_provider_admin_session_entry",
+      "access": "private",
+      "required_role": "scoped_one_time_provider_session",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "canonical_target": "/provider.html?admin_provider=one-time&section=mailbox",
+      "expected_logged_out_behavior": "show_scoped_one_time_provider_session_required_shell_without_private_data",
+      "expected_logged_in_behavior": "load_rabbi_sheller_provider_mailbox_scope_or_show_truthful_session_error",
+      "privacy_risk": "critical",
+      "security_expectation": "Requires a valid scoped provider session created from Operations. Logged-out users see only a session-required shell with Operations return and read-only preview fallback; no Super Admin diagnostics, unrelated BNA data, provider secrets, sends, payments, access grants, uploads, or account mutation are exposed.",
+      "smoke_expectation": "tests/one-time-route-role-mapping.test.js verifies the route-specific logged-out guidance and the read-only preview fallback.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
       ]
     },
     {
@@ -450,6 +508,24 @@
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/one-time-review/member",
+      "surface": "one_time_member_review_api",
+      "access": "public_review_fixture",
+      "required_role": null,
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "return_TEST_only_member_preview_payload_without_real_member_session_or_private_member_data",
+      "expected_logged_in_behavior": "return_TEST_only_member_preview_payload_without_real_member_session_or_private_member_data",
+      "privacy_risk": "medium",
+      "security_expectation": "Review fixture only: returns TEST One Time member/library/session/question/support examples, disables login-link/support/question/payment/access writes, and performs no external send or database mutation.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
         "GOAL-CORE-014",
         "GOAL-CORE-015"
       ]

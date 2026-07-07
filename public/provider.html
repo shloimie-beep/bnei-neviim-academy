@@ -431,6 +431,86 @@
             white-space: nowrap;
         }
 
+        .one-time-view-as-banner {
+            position: sticky;
+            top: 0;
+            z-index: 95;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 1px solid rgba(214, 169, 45, 0.42);
+            background: #111111;
+            color: #fff8df;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+            padding: 10px max(14px, calc((100vw - 1120px) / 2));
+        }
+
+        .one-time-view-as-banner strong {
+            color: #f5d37c;
+            font-size: 13px;
+            letter-spacing: 0;
+        }
+
+        .one-time-view-as-banner span {
+            color: #fff8df;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .one-time-view-as-banner button,
+        .one-time-view-as-banner a {
+            border: 1px solid rgba(245, 211, 124, 0.42);
+            border-radius: 999px;
+            color: #111111;
+            background: #f5d37c;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 900;
+            padding: 7px 10px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .one-time-view-as-readonly [data-readonly-blocked="true"] {
+            opacity: 0.62;
+        }
+
+        .one-time-admin-provider-login .brand-lockup strong {
+            color: #111111;
+        }
+
+        .one-time-admin-provider-login #loginPanel {
+            border-color: rgba(214, 169, 45, 0.42);
+        }
+
+        .one-time-admin-provider-login #loginPanel h1 {
+            color: #111111;
+        }
+
+        .one-time-admin-provider-login #loginChooser .button-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .one-time-admin-provider-login #loginChooser .btn {
+            align-items: center;
+            display: inline-flex;
+            justify-content: center;
+            min-height: 42px;
+            text-align: center;
+            white-space: normal;
+        }
+
+        @media (max-width: 520px) {
+            .one-time-admin-provider-login #loginChooser .button-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .wapi-setup-section {
             padding-bottom: 96px;
         }
@@ -1038,6 +1118,9 @@
         const oneTimeReviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
         const oneTimeAdminProviderMode = ['one-time', 'onetime', 'rabbi', '1', 'true'].includes(String(queryParams.get('admin_provider') || '').toLowerCase());
         const oneTimeViewAsRabbiToken = queryParams.get('view_as_rabbi') || '';
+        const oneTimeAdminProviderReturnUrl = '/operations?workspace=platform&view=communications&section=email&inbox=rabbi';
+        const oneTimeAdminProviderReviewUrl = `/provider.html?review=one-time${queryParams.get('section') ? `&section=${encodeURIComponent(queryParams.get('section'))}` : ''}`;
+        const oneTimeAdminProviderLoginMessage = 'No scoped One Time provider session is active in this browser. Start from Operations, open the Rabbi / One Time inbox, and launch the Rabbi provider portal from there. This page will not show Super Admin diagnostics or unrelated BNA data.';
         const providerApiUsagePreviewFlag = ['1', 'true', 'yes'].includes(String(queryParams.get('api_usage_preview') || '').toLowerCase());
         let oneTimeViewAsRabbiSession = null;
         const providerMailboxState = {
@@ -1070,6 +1153,72 @@
             return text.length > limit ? `${text.slice(0, limit - 3)}...` : text;
         }
 
+        function isOneTimeReadOnlyViewAs() {
+            return Boolean(oneTimeViewAsRabbiToken && (oneTimeViewAsRabbiSession?.read_only !== false));
+        }
+
+        function oneTimeViewAsExitUrl(session = oneTimeViewAsRabbiSession) {
+            return session?.exit_url || '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview';
+        }
+
+        async function exitOneTimeViewAsRabbi(session = oneTimeViewAsRabbiSession) {
+            try {
+                await fetch('/api/bna/one-time/view-as-rabbi/end', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: oneTimeViewAsRabbiToken }),
+                });
+            } catch {}
+            window.location.href = oneTimeViewAsExitUrl(session);
+        }
+
+        function showOneTimeReadOnlyBlocked(message = 'Read-only View-as Rabbi mode blocks writes, sends, charges, uploads, access grants, and provider-account changes.') {
+            const status = document.getElementById('oneTimeViewAsStatus');
+            if (status) status.textContent = message;
+        }
+
+        function readOnlyControlIsAllowed(control) {
+            return Boolean(
+                control?.closest?.('[data-provider-nav]')
+                || control?.closest?.('[data-one-time-provider-menu]')
+                || control?.closest?.('[data-one-time-provider-menu-close]')
+                || control?.closest?.('#oneTimeViewAsBanner')
+            );
+        }
+
+        function blockOneTimeReadOnlyEvent(event, message) {
+            if (!isOneTimeReadOnlyViewAs()) return false;
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation?.();
+            showOneTimeReadOnlyBlocked(message);
+            return true;
+        }
+
+        function applyOneTimeReadOnlyControls() {
+            if (!isOneTimeReadOnlyViewAs()) return;
+            const reason = 'Read-only View-as Rabbi mode blocks live actions. Navigation and exit remain available.';
+            document.querySelectorAll('#portalPanel form input, #portalPanel form textarea, #portalPanel form select, #portalPanel form button').forEach((control) => {
+                if (readOnlyControlIsAllowed(control)) return;
+                control.disabled = true;
+                control.dataset.readonlyBlocked = 'true';
+                if (!control.title) control.title = reason;
+                if (!control.dataset.oneTimeActionState) control.dataset.oneTimeActionState = 'blocked';
+                if (!control.dataset.buttonState && control.tagName === 'BUTTON') control.dataset.buttonState = 'blocked';
+            });
+            document.querySelectorAll('#portalPanel button').forEach((button) => {
+                if (readOnlyControlIsAllowed(button)) return;
+                if (button.closest('form') || /send|submit|save|create|open ticket|upgrade|connect|hide|reply|publish|charge|access/i.test(button.textContent || '')) {
+                    button.disabled = true;
+                    button.dataset.readonlyBlocked = 'true';
+                    if (!button.title) button.title = reason;
+                    if (!button.dataset.oneTimeActionState) button.dataset.oneTimeActionState = 'blocked';
+                    if (!button.dataset.buttonState) button.dataset.buttonState = 'blocked';
+                }
+            });
+        }
+
         function ensureViewAsBanner(session) {
             let banner = document.getElementById('oneTimeViewAsBanner');
             if (!banner) {
@@ -1081,19 +1230,10 @@
             banner.innerHTML = `
                 <strong>VIEWING AS RABBI - READ ONLY</strong>
                 <span>${escapeHtml(session?.banner || 'You are viewing One Time as Rabbi Eli Scheller')}</span>
-                <button type="button" id="oneTimeExitViewAs">Exit view</button>
+                <span id="oneTimeViewAsStatus">No email, WhatsApp, payment, access, upload, or provider write can run here.</span>
+                <button type="button" id="oneTimeExitViewAs" data-action-id="ACTION-ONETIME-VIEW-AS-RABBI-EXIT">Return to Super Admin</button>
             `;
-            document.getElementById('oneTimeExitViewAs')?.addEventListener('click', async () => {
-                try {
-                    await fetch('/api/bna/one-time/view-as-rabbi/end', {
-                        method: 'POST',
-                        credentials: 'same-origin',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ token: oneTimeViewAsRabbiToken }),
-                    });
-                } catch {}
-                window.location.href = session?.exit_url || '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview';
-            });
+            document.getElementById('oneTimeExitViewAs')?.addEventListener('click', () => exitOneTimeViewAsRabbi(session));
         }
 
         function portalDataIsOneTimeProvider(data = portalState) {
@@ -1264,13 +1404,45 @@
 
         function showLogin(error = '') {
             clearAdminProviderBanner();
+            document.body.classList.toggle('one-time-admin-provider-login', oneTimeAdminProviderMode);
             document.getElementById('loginPanel').classList.remove('hidden');
             document.getElementById('setupPanel').classList.add('hidden');
             document.getElementById('portalPanel').classList.add('hidden');
+            const brandTitle = document.querySelector('.brand-lockup > div > strong');
+            const brandSubtitle = document.querySelector('.brand-lockup > div > span');
+            const brandChip = document.querySelector('.brand-chip');
+            const loginHeading = document.querySelector('#loginPanel h1');
+            const loginIntro = document.querySelector('#loginPanel .small');
+            const loginForm = document.getElementById('loginForm');
+            if (oneTimeAdminProviderMode) {
+                document.title = 'One Time Provider Session Required';
+                if (brandTitle) brandTitle.textContent = 'OneTimeOneTime';
+                if (brandSubtitle) brandSubtitle.textContent = 'Rabbi provider account';
+                if (brandChip) brandChip.textContent = 'SESSION REQUIRED';
+                if (loginHeading) loginHeading.textContent = 'One Time provider session required';
+                if (loginIntro) loginIntro.textContent = 'Start from Operations to open the Rabbi account safely. This page never asks for Rabbi, student, or member passwords.';
+                loginForm?.classList.add('hidden');
+            } else {
+                if (brandTitle) brandTitle.textContent = 'Bnei Neviim Academy';
+                if (brandSubtitle) brandSubtitle.textContent = 'Provider portal';
+                if (brandChip) brandChip.textContent = 'Scoped Provider Workspace';
+                if (loginHeading) loginHeading.textContent = 'Provider portal';
+                if (loginIntro) loginIntro.textContent = 'Approved BNA network providers can manage their own profile and services.';
+                loginForm?.classList.remove('hidden');
+            }
             const errorEl = document.getElementById('loginError');
-            errorEl.textContent = error;
-            errorEl.classList.toggle('show', Boolean(error));
-            document.getElementById('loginChooser').innerHTML = '';
+            const message = oneTimeAdminProviderMode ? (error || oneTimeAdminProviderLoginMessage) : error;
+            errorEl.textContent = message;
+            errorEl.classList.toggle('show', Boolean(message));
+            document.getElementById('loginChooser').innerHTML = oneTimeAdminProviderMode
+                ? `
+                    <p>This URL is the scoped Rabbi / One Time provider-session landing page. It only opens private provider data after Operations creates a valid provider session cookie.</p>
+                    <div class="button-row">
+                        <a class="btn primary" href="${escapeHtml(oneTimeAdminProviderReturnUrl)}">Return to Super Admin Inbox</a>
+                        <a class="btn" href="${escapeHtml(oneTimeAdminProviderReviewUrl)}">Open Read-only Review Preview</a>
+                    </div>
+                `
+                : '';
         }
 
         function showPortalChooser(data) {
@@ -1339,7 +1511,7 @@
         }
 
         function providerSections() {
-            if (oneTimeReviewMode) {
+            if (oneTimeReviewMode || oneTimeViewAsRabbiToken) {
                 return [
                     { id: 'overview', label: 'Dashboard', group: 'Workspace' },
                     { id: 'users', label: 'Users', group: 'Workspace' },
@@ -1413,6 +1585,11 @@
 
         function providerSectionFromLocation() {
             return new URLSearchParams(window.location.search).get('section') || 'overview';
+        }
+
+        function oneTimeReviewInitialSection() {
+            const section = providerSectionFromLocation();
+            return providerSections().some(item => item.id === section) ? section : 'overview';
         }
 
         function updateProviderSectionUrl(section) {
@@ -2080,6 +2257,7 @@
                     <a class="one-time-sidebar-action" href="${escapeHtml(links.one_time_home || '/one-time')}">Landing <span>Open</span></a>
                     <a class="one-time-sidebar-action" href="${escapeHtml(links.parent || '/parent.html?review=one-time')}">Parent View <span>Open</span></a>
                     <a class="one-time-sidebar-action" href="${escapeHtml(links.student || '/student.html?review=one-time')}">Student View <span>Open</span></a>
+                    <a class="one-time-sidebar-action" href="${escapeHtml(links.member || '/rabbi-member?review=one-time')}">Member View <span>Open</span></a>
                     <a class="one-time-sidebar-action" href="${escapeHtml(links.classroom || '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS')}">Classroom <span>Open</span></a>
                 </div>
                 ${groups.map(group => `
@@ -2173,6 +2351,7 @@
                         <a class="portal-topbar-link" href="/one-time">One Time</a>
                         <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
                         <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
+                        <a class="portal-topbar-link secondary-link" href="/rabbi-member?review=one-time">Member</a>
                         <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
                         <a class="portal-topbar-link secondary-link" href="/one-time-email-review.html">Email Review</a>
                         <span class="brand-chip">VIEWING AS RABBI - READ ONLY</span>
@@ -2181,6 +2360,7 @@
                         <a class="portal-topbar-link" href="/one-time">One Time</a>
                         <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
                         <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
+                        <a class="portal-topbar-link secondary-link" href="/rabbi-member?review=one-time">Member</a>
                         <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
                         <a class="portal-topbar-link secondary-link" href="/one-time-email-review.html">Email Review</a>
                         <span class="brand-chip">TEST review mode</span>
@@ -2206,7 +2386,7 @@
             document.getElementById('providerSubtitle').textContent = viewAsSession
                 ? 'Workspace owner experience, read-only, same One Time scope'
                 : 'Scoped OneTimeOneTime CRM, content, automations, users, settings, payments, and portals. No cross-account super-admin access.';
-            activeProviderSection = 'overview';
+            activeProviderSection = oneTimeReviewInitialSection();
             renderOneTimeProviderNav(data, viewAsSession);
             document.querySelectorAll('[data-provider-section]').forEach(panel => panel.classList.add('provider-section-hidden'));
             const overviewPanel = document.querySelector('[data-provider-section="overview"]');
@@ -2223,7 +2403,6 @@
             const integrationPanel = document.querySelector('[data-provider-section="integrations"]');
             const accessPanel = document.querySelector('[data-provider-section="access"]');
             const activityPanel = document.querySelector('[data-provider-section="activity"]');
-            if (overviewPanel) overviewPanel.classList.remove('provider-section-hidden');
             document.getElementById('providerOverview').innerHTML = `
                 <div class="overview-metric"><strong>One Time</strong><span class="small">${viewAsSession ? 'Rabbi workspace' : 'Branded review workspace'}</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(login.owner_login_username || data.provider?.login_username || 'ELISHELLER')}</strong><span class="small">Owner login username</span></div>
@@ -2232,9 +2411,14 @@
                 <div class="overview-metric"><strong>${escapeHtml(`${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0}`)}</strong><span class="small">Attendance minutes</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(String(data.email_templates?.length || 0))}</strong><span class="small">Email previews</span></div>
             `;
-            const overviewList = document.createElement('div');
-            overviewList.className = 'service-list';
-            overviewList.innerHTML = (viewAsSession ? [
+            let overviewList = overviewPanel?.querySelector('[data-one-time-overview-cards]');
+            if (!overviewList && overviewPanel) {
+                overviewList = document.createElement('div');
+                overviewList.className = 'service-list';
+                overviewList.dataset.oneTimeOverviewCards = 'true';
+                overviewPanel.appendChild(overviewList);
+            }
+            if (overviewList) overviewList.innerHTML = (viewAsSession ? [
                 reviewCard('Workspace owner', data.provider?.display_name || data.provider?.name || 'Rabbi Eli Scheller', 'workspace_owner'),
                 reviewCard('Read-only view-as session', viewAsSession.banner || 'Viewing as Rabbi Eli Scheller', 'writes disabled'),
                 reviewCard('Allowed modules', (viewAsSession.allowed_modules || data.admin_review?.modules || []).join(', '), 'Rabbi scope'),
@@ -2245,9 +2429,7 @@
                 reviewCard('TEST parent', `${parent.name || ''} sees only ${student.display_name || student.name || 'one linked TEST student'}`, parent.role || 'parent'),
                 reviewCard('TEST student', `${student.display_name || student.name || ''} has no bot or BNA accountability goals in review mode`, student.role || 'student'),
             ]).join('');
-            overviewPanel?.appendChild(overviewList);
             if (usersPanel) {
-                usersPanel.classList.remove('provider-section-hidden');
                 document.getElementById('oneTimeUsers').innerHTML = [
                     miniCardGrid((data.workspace_users || []).map(user => ({
                         title: user.name,
@@ -2264,7 +2446,6 @@
                 ].join('');
             }
             if (crmPanel) {
-                crmPanel.classList.remove('provider-section-hidden');
                 document.getElementById('oneTimeCrm').innerHTML = [
                     miniCardGrid((data.crm_workspace?.pipelines || []).map(item => ({
                         title: item.title,
@@ -2276,7 +2457,6 @@
                 ].join('');
             }
             if (mailboxPanel) {
-                mailboxPanel.classList.remove('provider-section-hidden');
                 const readinessTarget = document.getElementById('providerMailboxReadiness');
                 const mailboxTarget = document.getElementById('providerMailbox');
                 if (readinessTarget) readinessTarget.innerHTML = [
@@ -2291,7 +2471,6 @@
                 );
             }
             if (contentPanel) {
-                contentPanel.classList.remove('provider-section-hidden');
                 document.getElementById('oneTimeContent').innerHTML = miniCardGrid((data.content_workspace?.sections || []).map(item => ({
                     title: item.title,
                     body: item.body,
@@ -2299,7 +2478,6 @@
                 })));
             }
             if (automationPanel) {
-                automationPanel.classList.remove('provider-section-hidden');
                 document.getElementById('oneTimeAutomations').innerHTML = [
                     miniCardGrid((data.automation_center?.groups || []).map(group => ({
                         title: group.title,
@@ -2311,7 +2489,6 @@
                 ].join('');
             }
             if (badgesPanel) {
-                badgesPanel.classList.remove('provider-section-hidden');
                 document.getElementById('oneTimeBadges').innerHTML = [
                     miniCardGrid((data.badge_system?.badges || []).map(badge => ({
                         title: badge.title,
@@ -2323,7 +2500,6 @@
                 ].join('');
             }
             if (classPanel) {
-                classPanel.classList.remove('provider-section-hidden');
                 classPanel.innerHTML = `
                     <h2>Live Class and Attendance</h2>
                     <div class="service-list">
@@ -2334,7 +2510,6 @@
                 `;
             }
             if (mediaPanel) {
-                mediaPanel.classList.remove('provider-section-hidden');
                 mediaPanel.innerHTML = `
                     <h2>Content Library, Videos, Worksheets</h2>
                     <div class="notice">Upload folders are limited to approved Rabbi-facing drop-off links. Internal ingestion queues, draft review folders, private transcript libraries, and backend IDs are not exposed here.</div>
@@ -2347,7 +2522,6 @@
                 `;
             }
             if (commsPanel) {
-                commsPanel.classList.remove('provider-section-hidden');
                 document.getElementById('providerMessages').innerHTML = [
                     reviewCard('Announcement', data.announcement?.body || '', data.announcement?.visibility || 'review'),
                     reviewCard('Private question', data.private_question?.body || '', data.private_question?.status || 'review'),
@@ -2357,11 +2531,9 @@
                 ].join('');
             }
             if (commercialPanel) {
-                commercialPanel.classList.remove('provider-section-hidden');
                 document.getElementById('commercialSummary').innerHTML = reviewCard(data.payment?.offer || 'Offer', `${data.payment?.trial || ''} / ${data.payment?.status || ''}. No real charge in review mode.`, data.payment?.access_state || 'test');
             }
             if (integrationPanel) {
-                integrationPanel.classList.remove('provider-section-hidden');
                 document.getElementById('integrationList').innerHTML = [
                     reviewCard('Stripe', 'Test checkout/readiness can be verified. Live billing still needs account, tax/refund, and launch approval.', 'Needs live policy'),
                     reviewCard('Resend', 'Templates render in preview. Sender/domain and approved test recipient are required before any send.', 'Needs sender decision'),
@@ -2372,7 +2544,6 @@
                 ].join('');
             }
             if (accessPanel) {
-                accessPanel.classList.remove('provider-section-hidden');
                 document.getElementById('accessChecklist').innerHTML = [
                     miniCardGrid((data.settings_center?.settings || []).map(item => ({
                         title: item.title,
@@ -2384,7 +2555,6 @@
                 ].join('');
             }
             if (activityPanel) {
-                activityPanel.classList.remove('provider-section-hidden');
                 document.getElementById('providerActivity').innerHTML = [
                     reviewCard('Milestone', data.milestone?.title || '', data.milestone?.status || 'review'),
                     reviewCard('Achievement', data.achievement?.title || '', data.achievement?.status || 'review'),
@@ -2393,8 +2563,9 @@
                     reviewCard('Open support', data.support_ticket?.title || '', data.support_ticket?.status || 'open'),
                 ].join('');
             }
-            setProviderSection('overview');
+            setProviderSection(activeProviderSection);
             instrumentOneTimeProviderButtons();
+            applyOneTimeReadOnlyControls();
         }
 
         async function loadSession() {
@@ -2422,8 +2593,8 @@
             }
             try {
                 renderPortal(await api('/api/provider-portal/session'));
-            } catch {
-                showLogin();
+            } catch (error) {
+                showLogin(oneTimeAdminProviderMode ? (error.message || oneTimeAdminProviderLoginMessage) : '');
             }
         }
 
@@ -2439,6 +2610,20 @@
                 document.getElementById('setupButton').disabled = true;
             }
         }
+
+        document.addEventListener('submit', (event) => {
+            if (!isOneTimeReadOnlyViewAs()) return;
+            blockOneTimeReadOnlyEvent(event, 'Read-only View-as Rabbi mode blocks form submissions. No database write, message, payment, access grant, upload, or provider-account change ran.');
+        }, true);
+
+        document.addEventListener('click', (event) => {
+            if (!isOneTimeReadOnlyViewAs()) return;
+            const control = event.target.closest('button, input[type="submit"], input[type="button"]');
+            if (!control || readOnlyControlIsAllowed(control)) return;
+            if (control.closest('form') || control.dataset.readonlyBlocked === 'true') {
+                blockOneTimeReadOnlyEvent(event, 'Read-only View-as Rabbi mode blocks this action. Navigation and Return to Super Admin remain available.');
+            }
+        }, true);
 
         document.getElementById('loginForm').addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -2494,6 +2679,10 @@
         });
 
         document.getElementById('logoutButton').addEventListener('click', async () => {
+            if (isOneTimeReadOnlyViewAs()) {
+                await exitOneTimeViewAsRabbi();
+                return;
+            }
             await api('/api/provider-portal/logout', { method: 'POST' }).catch(() => {});
             showLogin();
         });
