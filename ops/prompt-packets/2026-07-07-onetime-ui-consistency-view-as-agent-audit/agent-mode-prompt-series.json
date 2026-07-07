@@ -3,8 +3,23 @@
   "raw_id": "RAW-20260707-004",
   "workspace": "rabbi_sheller_provider",
   "project": "one_time_mishnah_class",
-  "status": "ready_for_agent_mode",
+  "status": "ready_for_parallel_agent_mode",
   "created_at": "2026-07-07T09:08:55+03:00",
+  "parallel_execution": {
+    "parallel_safe_prompts": [
+      1,
+      2,
+      3
+    ],
+    "join_prompt": 4,
+    "rule": "Run prompts 1, 2, and 3 in separate Agent Mode sessions when available. Run prompt 4 only after at least two reports exist.",
+    "shared_findings_to_watch": [
+      "top toolbar/top-section wasted space",
+      "desktop and mobile layout parity",
+      "communications section loop or bad-display state",
+      "Rabbi dashboard non-actionable Super Admin/configuration cards"
+    ]
+  },
   "prompts": [
     {
       "order": 1,

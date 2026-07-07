@@ -1,0 +1,20 @@
+# One Time CRM Contacts UX Live Smoke - 2026-07-07T06:54:02.816Z
+
+App: https://bneineviimacademy.org
+Result: passed
+
+## Checks
+- PASS Operations login: cookie bna_ops_session
+- PASS Scoped One Time parent leads API responds: 2608 scoped leads
+- PASS Scoped One Time contact communications API responds: 152 scoped communications
+- PASS Operations ships CRM Contacts UX markers: CRM Contacts panel and scope markers shipped
+
+## Scoped Counts
+- Parent leads returned: 2608
+- Leads with returned project_key: 2608
+- Contact communications returned: 152
+
+## Guardrails
+- Smoke records scoped counts and UI markers only; it does not write contacts, send email, send WhatsApp, trigger payment, or call an external CRM.
+- Parent lead rows are requested with project_key=one_time_mishnah_class and workspace=rabbi_sheller_provider.
+- The report intentionally avoids raw contact bodies and raw private notes.

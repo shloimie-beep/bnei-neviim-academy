@@ -30502,3 +30502,31 @@ Report: ops/agent-fleet-runs/2026-07-07T06-21-46-153Z-task-1945.md
   action-registry/hash freshness assertions and a Launch / Checkout expectation
   mismatch. Full fleet restart remains blocked by stale queue policy and
   Telegram poller ownership.
+
+## 2026-07-07T09:54:31+03:00 - Parallel Agent Mode Prompts And Email/CRM Status Readback
+
+- Registered `RAW-20260707-005` for Shloimie's request to run Agent Mode audits
+  in parallel, preserve the top-toolbar/mobile spacing issue, capture the
+  Communications loop/bad-display bug, clarify email/CRM status, and keep
+  non-actionable Super Admin/configuration cards out of Rabbi-facing dashboard
+  views.
+- Updated
+  `ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/`
+  so Prompts `01`, `02`, and `03` are parallel-safe independent audits with
+  unique packet IDs, while Prompt `04` is the synthesis/join prompt after at
+  least two reports exist.
+- Added explicit audit requirements for desktop/mobile parity, 430/390 mobile
+  evidence, wasted top-section space, Communications loop reproduction, and
+  Rabbi dashboard actionable-versus-diagnostic card inventory.
+- Promoted the durable preferences into `memory-topics/ui-quality-goals.md`
+  and `memory-topics/one-time-rabbi-sheller.md`.
+- Email/CRM status: Super Admin inbox switching and scoped admin-on-provider
+  portal access remain done/deployed/live-verified; One Time CRM contact UX and
+  import/dedupe preview smokes pass; bulk email, real campaign sends, external
+  CRM writes, access grants, payments, and provider mutations remain guarded.
+- Verification: PASS prompt manifest JSON parse; PASS
+  `node --check scripts/audit-onetime-role-ui-current-state.mjs`; PASS
+  `npm run app:smoke:email-resend-ux`; PASS
+  `npm run app:smoke:one-time-crm-contacts-ux`; PASS
+  `npm run app:smoke:one-time-crm-import-dedupe`; PASS
+  `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`.

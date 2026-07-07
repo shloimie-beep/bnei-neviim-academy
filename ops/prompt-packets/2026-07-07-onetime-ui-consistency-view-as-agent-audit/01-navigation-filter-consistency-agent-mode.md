@@ -12,6 +12,12 @@ system where every category has predictable top subcategories, every filter row
 is placed and styled consistently, and buttons have consistent heights, active
 states, density, and labels.
 
+Parallel execution:
+This prompt is independent and may be run at the same time as Prompts 02 and
+03. Do not wait for other Agent Mode sessions. Use only this packet ID:
+`onetime-ui-audit-20260707-040-nav-filter-consistency`. If another prompt's
+finding would help, record it as "pending another audit" instead of blocking.
+
 Do not edit code. Do not deploy. Do not send emails, WhatsApps, Telegram
 messages, payments, access grants, DNS changes, credential changes, Drive
 writes, provider mutations, or production-data writes.
@@ -62,20 +68,35 @@ Audit checklist:
    inconsistent radii, label wrapping, icon/text mismatches, random oversized
    buttons, disabled states that look active, and primary actions that are not
    visually obvious.
-5. Check desktop 1440, tablet 1024/768, and mobile 430/390. Flag overflow,
+5. Specifically inspect the top toolbar/top section for wasted empty space,
+   oversized headers, weak spacing, poor first-viewport density, or controls
+   floating far away from the content they affect.
+6. Check desktop 1440, tablet 1024/768, and mobile 430/390. Flag overflow,
    overlapping controls, hidden tabs, horizontal scroll, clipped filters, and
-   drawer/back-path confusion.
-6. Check whether Super Admin/support diagnostics are leaking into normal Rabbi
+   drawer/back-path confusion. Mobile is not secondary; record mobile-only
+   layout failures as first-class findings.
+7. Check the Communications section for state loops, repeated view switching,
+   broken/terrible display modes, tab/filter transitions that circle back, and
+   any console/network errors tied to those clicks.
+8. Check whether Super Admin/support diagnostics are leaking into normal Rabbi
    provider workflows. They may exist in Super Admin/support drawers; they
    should not dominate Rabbi/provider/student surfaces.
-7. Compare BNA backend and One Time backend: identify the shared component
+9. Check Rabbi-facing dashboard cards. Non-actionable setup/configuration
+   cards like "not configured" / "configured" should be absent from normal
+   Rabbi view unless the Rabbi can click them and perform a role-appropriate
+   action.
+10. Compare BNA backend and One Time backend: identify the shared component
    contract that should remain consistent, and the brand tokens that may
    differ.
 
 Evidence to collect:
 - Screenshots or concise visual notes for 1440 and 390 on every audited route.
+- Explicit mobile evidence for 430 and 390 on every major route class.
 - One route-by-route table.
 - One consistency matrix for categories/subcategories/filters/buttons.
+- A Communications loop/bad-display reproduction table if the bug appears.
+- A Rabbi dashboard card inventory separating actionable Rabbi cards from
+  Super Admin/support diagnostics.
 - List of P0/P1/P2 findings with defect codes:
   P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE,
   P2-TYPOGRAPHY, P3-POLISH.

@@ -16,6 +16,12 @@ navigate clearly into the One Time app as:
 Do not implement code. Do not ask for or store passwords. Do not use shared
 Rabbi/student passwords. Do not bypass auth. Do not mutate production data.
 
+Parallel execution:
+This prompt is independent and may be run at the same time as Prompts 01 and
+03. Do not wait for other Agent Mode sessions. Use only this packet ID:
+`onetime-ui-audit-20260707-041-view-as-navigation`. If another prompt's
+finding would help, record it as "pending another audit" instead of blocking.
+
 Login:
 If login is required, ask for browser takeover and let Shloimie type
 credentials directly into the browser. Do not ask for credentials in chat and
@@ -59,6 +65,12 @@ Audit checklist:
    - whether actions are live, preview-only, blocked setup, or read-only;
    - privacy risk;
    - whether the view leaks Super Admin diagnostics into normal user view.
+   - whether the top toolbar/top section wastes vertical space or breaks on
+     mobile.
+   - whether Communications view-as navigation enters a loop or bad-display
+     state.
+   - whether Rabbi dashboard cards are actionable for Rabbi or are merely
+     Super Admin/configuration diagnostics.
 7. Compare three possible models and recommend one:
    - real scoped impersonation session with banner and audit log;
    - signed read-only preview session;
@@ -69,6 +81,7 @@ Evidence to collect:
 - Navigation flow diagram from Shloimie login to Rabbi/provider/student/member
   views.
 - Screenshot or visual notes at 1440 and 390 for every reachable state.
+- Mobile notes at 430 and 390 for every reachable view-as path.
 - Exact blockers where a view cannot be reached.
 - Privacy/security table for each model.
 - Proposed Codex implementation packets with route/action registry and smoke

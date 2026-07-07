@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T06:33:38.210Z",
+  "generated_at": "2026-07-07T06:56:39.482Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -505,6 +505,7 @@
     "tasks-pending/2026-07-06-worker-credentials-policy-and-dirty-closeout.md",
     "tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md",
     "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
+    "tasks-pending/2026-07-07-parallel-agent-mode-mobile-communications-dashboard-email-status.md",
     "tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"

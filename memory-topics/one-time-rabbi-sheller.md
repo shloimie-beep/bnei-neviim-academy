@@ -27,7 +27,10 @@
 - OpenArt is no-live until Shloimie connects OAuth/MCP. BNA can prepare
   prompts/reference checklists/request plans, but cannot upload/generate/spend
   credits/check credits live before account connection and approval.
+- Rabbi-facing dashboards should show only role-scoped, useful, actionable
+  cards. Non-actionable Super Admin/configuration/readiness cards such as
+  "configured" or "not configured" belong in Super Admin/support surfaces or a
+  role-gated support drawer, not the normal Rabbi provider view.
 - The next UI cleanup work must start with `00-control-tower` and
   `01-current-state-visual-audit`, then split into focused implementation
   packets after audit and Definition of Ready.
-

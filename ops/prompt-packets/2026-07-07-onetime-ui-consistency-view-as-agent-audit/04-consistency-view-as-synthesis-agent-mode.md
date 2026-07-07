@@ -53,6 +53,11 @@ small Codex-ready implementation packets. Do not solve the whole UI. Do not
 write app code. Produce a deduplicated repair plan with exact routes, states,
 tests, screenshots, and Definition of Ready.
 
+Parallel execution:
+This is the join/synthesis prompt. Do not run it as one of the first parallel
+sessions unless at least two input reports already exist. If only one report
+exists, produce a light synthesis and mark missing inputs as blockers.
+
 Inputs to look for:
 - onetime-ui-audit-20260707-040-nav-filter-consistency
 - onetime-ui-audit-20260707-041-view-as-navigation
@@ -98,6 +103,9 @@ Required output:
    - Operations subcategory/filter/button consistency;
    - Super Admin view-as student/member navigation;
    - provider/student support-diagnostics separation.
+   - Communications loop/bad-display repair.
+   - Rabbi dashboard non-actionable Super Admin card cleanup.
+   - Top toolbar/top-section spacing and mobile first-viewport cleanup.
 7. For every packet include:
    - exact routes/screens;
    - role/view class;

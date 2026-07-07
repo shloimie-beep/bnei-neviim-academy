@@ -8,14 +8,20 @@ Create a role perspective screen matrix for One Time and BNA portal surfaces.
 The question is: "If I am looking as Shloimie, Rabbi/provider, member/parent,
 or student, what exactly do I see, and is it the correct role-specific app?"
 
+Parallel execution:
+This prompt is independent and may be run at the same time as Prompts 01 and
+02. Do not wait for the view-as audit. Use only this packet ID:
+`onetime-ui-audit-20260707-042-role-perspective-matrix`. If a role cannot be
+reached because Prompt 02 has not yet identified a safe path, add an exact
+blocker row and continue with the reachable routes.
+
 Do not edit code. Do not deploy. Do not send messages. Do not charge cards or
 grant access. Do not change DNS, credentials, provider accounts, Drive files,
 or production data.
 
 Prerequisite:
-Run this after Prompt 02 or after you know which view-as routes are reachable.
-If a role cannot be reached safely, record an exact blocker instead of trying
-to bypass auth.
+No prerequisite when running in parallel mode. If a role cannot be reached
+safely, record an exact blocker instead of trying to bypass auth.
 
 Routes and surfaces to inspect:
 - Super Admin Operations One Time workspace:
@@ -46,6 +52,7 @@ Matrix columns:
 - side nav or public nav;
 - top subcategories;
 - filters;
+- top toolbar/top-section spacing;
 - primary action;
 - secondary actions;
 - first useful content;
@@ -67,12 +74,20 @@ Audit checklist:
    unrelated student or provider-private data.
 5. Check every role on 1440, 1024, 768, 430, and 390. Flag mobile nav,
    filter, toolbar, and action inconsistencies.
-6. Record exact blockers for unreachable roles. Do not use or ask for shared
+6. Flag wasted empty space in the top toolbar/top section, especially when it
+   pushes useful content down on desktop or mobile.
+7. Check Communications routes for repeated loop/state-switching behavior,
+   broken displays, and console/network errors.
+8. Inventory Rabbi/provider dashboard cards. Mark cards as actionable,
+   read-only useful, or non-actionable Super Admin/support/configuration
+   clutter.
+9. Record exact blockers for unreachable roles. Do not use or ask for shared
    passwords.
 
 Evidence to collect:
 - Full role matrix.
 - 1440 and 390 screenshots or visual notes for each reachable role.
+- 430 and 390 mobile notes for each reachable role.
 - Exact blocker rows for unreachable role states.
 - Top 10 priority findings.
 - Suggested small Codex implementation packets.

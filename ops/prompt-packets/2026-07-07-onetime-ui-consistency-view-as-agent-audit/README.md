@@ -35,8 +35,34 @@ provider accounts, or change production data.
 
 ## Recommended Run Order
 
-Run `01` and `02` first. Run `03` after `02` identifies the available
-view-as/access paths. Run `04` after at least two reports exist.
+Parallel mode is allowed and preferred when multiple Agent Mode sessions are
+available:
+
+- Run `01`, `02`, and `03` at the same time in separate Agent Mode sessions.
+- Each session must use its own packet ID and must not wait for the others.
+- If one session needs evidence from another session, it should record a
+  blocker/unknown row instead of stalling or inventing results.
+- Run `04` only after at least two of `01`, `02`, and `03` have produced
+  repo-visible dropoff packets or marked GitHub comments.
+
+Sequential fallback: run `01` and `02` first, run `03` after `02` identifies
+the available view-as/access paths, then run `04`.
+
+Parallel session names:
+
+- Session A: Navigation / filter / toolbar consistency.
+- Session B: Login once / view-as navigation.
+- Session C: Role perspective screen matrix.
+- Session D: Synthesis after at least two reports exist.
+
+Known live operator observations to preserve in the parallel audits:
+
+- The top toolbar/top section has too much empty/wasted space.
+- Mobile behavior must be audited as seriously as desktop behavior.
+- The Communications section appears to have a loop or bad-display state while
+  clicking through views.
+- Rabbi-facing dashboard views should not show non-actionable Super Admin
+  setup/configuration cards.
 
 ## Dropoff Rule
 
