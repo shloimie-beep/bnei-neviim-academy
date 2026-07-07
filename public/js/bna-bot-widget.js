@@ -12,6 +12,8 @@
   } catch {}
   if (isParent && query.get('onboard') === 'accountability') return;
   window.BNABotWidgetLoaded = true;
+  const isOneTimePublic = /^(?:\/one-time|\/rabbi)(?:\/|$|\.html$)/.test(path)
+    && !/^(?:\/rabbi-member)(?:\/|$|\.html$)/.test(path);
   const isOneTimeMember = /^(?:\/rabbi-member|\/member-library|\/one-time-classroom|\/provider-participant)(?:\/|$|\.html$)/.test(path)
     || ['/member', '/member.html', '/member-portal', '/one-time/member-login'].includes(path);
   const isProvider = [
@@ -25,7 +27,9 @@
   const isSignup = /^\/signup(?:\/|$|-|\.html$)/.test(path);
   const surface = isOperations
     ? 'operations'
-    : isParent
+    : isOneTimePublic
+      ? 'one_time_public'
+      : isParent
       ? 'parent_portal'
       : isStudent
         ? 'student_portal'
@@ -48,7 +52,7 @@
   const language = () => isHebrewPath() ? 'he' : (document.documentElement.lang || (direction() === 'rtl' ? 'he' : 'en'));
   const isHebrew = () => /^he\b/i.test(language()) || direction() === 'rtl';
   const studentAccessCode = () => isStudent ? (new URLSearchParams(window.location.search).get('code') || '') : '';
-  const isPublicLeadSurface = () => ['public', 'signup'].includes(surface);
+  const isPublicLeadSurface = () => ['public', 'signup', 'one_time_public'].includes(surface);
 
   function getOrCreateAnonymousId() {
     const existing = localStorage.getItem('bnaAssistantAnonymousId');
@@ -174,6 +178,24 @@
         prompts: he
           ? ['מה אני צריך לעשות היום?', 'עזור לי להבין את היעד שלי.', 'אני רוצה לשלוח שאלה לרב.']
           : ['What do I need to do today?', 'Help me understand my goal.', 'I want to send a question to my rebbi.'],
+      };
+    }
+    if (surface === 'one_time_public') {
+      return {
+        ...base,
+        helperTitle: 'One Time Helper',
+        surfaceLabel: 'One Time public help',
+        intro: "Hi, I'm the One Time helper. I can help with the Mishnayos class, the 30-day trial, schedule questions, worksheets, member access, or how to ask Rabbi Scheller a question. This public helper does not show school goals, private parent billing, attendance, student transcripts, access codes, or admin data.",
+        cards: [
+          ['Class fit', 'Ask about the daily live Mishnayos class, who it is for, schedule expectations, and the 30-day trial.'],
+          ['Member access', 'Find the public member login path or ask what happens after a family joins.'],
+          ['Question for Rabbi Scheller', 'Draft a public-safe question without exposing private student, billing, attendance, or account details.'],
+        ],
+        prompts: [
+          'How does the 30-day trial work?',
+          'Where do I log in after joining?',
+          'Help me ask Rabbi Scheller a class question.',
+        ],
       };
     }
     if (isOneTimeMember) {
@@ -470,49 +492,70 @@
     }
     [dir="rtl"] .bna-bot-panel.is-open { transform: translateX(0); }
     [dir="rtl"] .bna-bot-launcher { right: auto; left: 18px; }
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher,
     body.bna-assistant-surface-one-time-member .bna-bot-launcher {
       border: 1px solid rgba(237, 229, 24, 0.48);
       background: #080910;
       color: #ffffff;
       box-shadow: 0 16px 34px rgba(8, 9, 16, 0.34);
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-member .bna-bot-launcher-dot {
       background: #ede518;
       box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.22);
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-head,
     body.bna-assistant-surface-one-time-member .bna-bot-head {
       border-bottom: 1px solid rgba(237, 229, 24, 0.36);
       background: #080910;
       color: #ffffff;
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-head span,
     body.bna-assistant-surface-one-time-member .bna-bot-head span {
       color: rgba(255, 255, 255, 0.74);
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-panel,
     body.bna-assistant-surface-one-time-member .bna-bot-panel {
       border-color: rgba(237, 229, 24, 0.28);
       background: #15171d;
       color: #ffffff;
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-form,
     body.bna-assistant-surface-one-time-member .bna-bot-form,
+    body.bna-assistant-surface-one-time-public .bna-bot-history,
     body.bna-assistant-surface-one-time-member .bna-bot-history {
       background: #0f1117;
       border-color: rgba(237, 229, 24, 0.18);
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-message.assistant,
     body.bna-assistant-surface-one-time-member .bna-bot-message.assistant,
+    body.bna-assistant-surface-one-time-public .bna-bot-history-state,
     body.bna-assistant-surface-one-time-member .bna-bot-history-state {
       border-color: rgba(237, 229, 24, 0.18);
       background: #080910;
       color: #ffffff;
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-message.user,
     body.bna-assistant-surface-one-time-member .bna-bot-message.user,
+    body.bna-assistant-surface-one-time-public .bna-helper-action,
     body.bna-assistant-surface-one-time-member .bna-helper-action {
       border-color: rgba(237, 229, 24, 0.6);
       background: #ede518;
       color: #080910;
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-send,
     body.bna-assistant-surface-one-time-member .bna-bot-send {
       background: #ede518;
       color: #080910;
+    }
+    body.bna-assistant-surface-one-time-public .bna-bot-nudge,
+    body.bna-assistant-surface-one-time-public .bna-bot-nudge-close {
+      border-color: rgba(237, 229, 24, 0.28);
+      background: #080910;
+      color: #ffffff;
+    }
+    body.bna-assistant-surface-one-time-public .bna-bot-nudge-body {
+      color: #ffffff;
     }
     .bna-bot-head {
       display: grid;
@@ -953,6 +996,9 @@
   }
 
   function publicFollowupCopy() {
+    if (surface === 'one_time_public') {
+      return 'Want help with the One Time class, 30-day trial, member access, or a question for Rabbi Scheller?';
+    }
     return isHebrew()
       ? 'אפשר לשאול על תוכנית 10-1, על שלטון עצמי, או לשלוח לשלוימי הודעה קצרה.'
       : 'Want to ask about the 10-1 program, self-governance, or send Shloimie a quick note?';
@@ -980,7 +1026,24 @@
 
   function showPublicNudge(stage) {
     if (!isPublicLeadSurface() || dismissedPublicPrompt || panel.classList.contains('is-open')) return;
-    const data = publicHelperData();
+    const data = surface === 'one_time_public'
+      ? {
+          nudges: {
+            first: {
+              body: 'Need help with the One Time Mishnayos class?',
+              actions: [{ type: 'open', label: 'Open One Time Helper' }],
+            },
+            second: {
+              body: 'I can help with the 30-day trial, class schedule, member login, or a question for Rabbi Scheller.',
+              actions: [
+                { type: 'scroll', target: '#start-free', label: 'Start free' },
+                { type: 'link', href: '/rabbi-member', label: 'Member login' },
+                { type: 'open', label: 'Ask a question' },
+              ],
+            },
+          },
+        }
+      : publicHelperData();
     const config = stage === 'second' ? data.nudges?.second : data.nudges?.first;
     if (!config?.body) return;
     nudge.innerHTML = `
@@ -1079,6 +1142,13 @@
   }
 
   function publicInitialHelperActions() {
+    if (surface === 'one_time_public') {
+      return [
+        { type: 'scroll', target: '#start-free', label: 'Start 30 days free' },
+        { type: 'link', href: '/rabbi-member', label: 'Member login' },
+        { type: 'prefill', label: 'Ask Rabbi Scheller', prompt: 'I have a question about the One Time Mishnayos class: ' },
+      ];
+    }
     if (surface !== 'public') return [];
     return (publicHelperData().choices || []).map((choice) => ({
       type: 'path',

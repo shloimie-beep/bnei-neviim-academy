@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T15:31:39.034Z",
+  "generated_at": "2026-07-07T16:02:25.104Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -292,6 +292,7 @@
     "ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json",
     "ops/prompt-packets/2026-07-07-helper-crisp-aligned-ui-closeout/00-helper-crisp-aligned-ui-closeout.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json",
+    "ops/prompt-packets/2026-07-07-onetime-brand-helper-toolbar-isolation/00-onetime-brand-helper-toolbar-isolation.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/01-navigation-filter-consistency-agent-mode.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/02-view-as-navigation-agent-mode.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/03-role-perspective-screen-matrix-agent-mode.md",
@@ -515,6 +516,7 @@
     "tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md",
     "tasks-pending/2026-07-07-agent-mode-operations-dropoff-loop-and-ui-audit-results.md",
     "tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md",
+    "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
     "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
     "tasks-pending/2026-07-07-parallel-agent-mode-mobile-communications-dashboard-email-status.md",
     "tasks-pending/2026-07-07-parent-student-login-ui-polish.md",

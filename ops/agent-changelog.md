@@ -24209,6 +24209,33 @@ Moved `REQ-20260618-102` to local `needs_verification`.
 
 Verification:
 
+
+## 2026-07-07T19:02:38+03:00 - One Time public brand and helper isolation local verification
+
+- Captured raw intake `RAW-20260707-013`, created
+  `tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md`, and
+  validated the Product Quality packet for the One Time brand/helper/top-toolbar
+  ramble.
+- Mounted the shared helper on `/one-time` as `One Time Helper`, with One
+  Time-specific public copy, black/yellow helper skin, and public actions for
+  trial start, member login, and asking Rabbi Scheller.
+- Added an explicit One Time app-select surface so the shared Region dropdown
+  renders in the One Time black/yellow treatment instead of the default BNA
+  blue treatment.
+- Scoped One Time assistant surfaces in `server.js` so One Time public,
+  parent, and student surface labels normalize cleanly and One Time public
+  helper threads use the One Time project/provider workspace.
+- Local Playwright evidence:
+  `ops/ui-audits/2026-07-07-onetime-brand-helper-toolbar-isolation-local/`
+  captured desktop/mobile landing and helper-open screenshots plus the open
+  Region dropdown. Result: 0 failures, no visible BNA brand text, no language
+  chrome, and no mobile horizontal overflow.
+- Verification: 31 focused tests passed; `npm run pqc:validate --
+  ops\prompt-packets\2026-07-07-onetime-brand-helper-toolbar-isolation\00-onetime-brand-helper-toolbar-isolation.product-quality.json`;
+  `npm run watchdog:actions`; `npm run watchdog:protocol-drift`.
+- Status: local verified, pending commit/push/deploy/live smoke. Parent/student
+  private helper scope, toolbar/filter density, and Agent Mode autonomous
+  prompt/drop-off updates remain open as next packets.
 - PASS `node --check tests/pwa-separation-contract.test.js`.
 - PASS `node --test tests/pwa-separation-contract.test.js` 3/3.
 - PASS adjacent local PWA suite 17/17.

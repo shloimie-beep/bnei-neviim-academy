@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-07-07T16:01:07.676Z",
+  "base": "http://127.0.0.1:8080",
+  "status": "PASS",
+  "failures": [],
+  "screenshots": [
+    "one-time-desktop-landing.png",
+    "one-time-desktop-helper-open.png",
+    "one-time-mobile-landing.png",
+    "one-time-mobile-helper-open.png",
+    "one-time-select-open.png"
+  ],
+  "results": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000,
+        "name": "desktop"
+      },
+      "surface": "one_time_public",
+      "htmlSurface": "one-time",
+      "languageChromeCount": 0,
+      "overflow": 0,
+      "launcherText": "One Time Helper",
+      "pageHasBnaBrandText": false,
+      "panelHasOneTimeTitle": true,
+      "panelHasBnaBrandText": false,
+      "panelHasLanguageToggleText": false
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "name": "mobile"
+      },
+      "surface": "one_time_public",
+      "htmlSurface": "one-time",
+      "languageChromeCount": 0,
+      "overflow": 0,
+      "launcherText": "One Time Helper",
+      "pageHasBnaBrandText": false,
+      "panelHasOneTimeTitle": true,
+      "panelHasBnaBrandText": false,
+      "panelHasLanguageToggleText": false
+    },
+    {
+      "selectMenuBg": "rgb(8, 9, 16)",
+      "selectButtonBg": "rgba(0, 0, 0, 0.38)",
+      "selectButtonColor": "rgb(255, 255, 255)"
+    }
+  ]
+}

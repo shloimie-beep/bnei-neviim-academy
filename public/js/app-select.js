@@ -182,6 +182,48 @@
         color: #172033;
         background: linear-gradient(135deg, #fff2bd, #fff1df);
       }
+
+      html[data-app-select-surface="one-time"] .app-select__button {
+        min-height: 46px;
+        border-color: rgba(237, 229, 24, 0.34);
+        color: #ffffff;
+        background: rgba(0, 0, 0, 0.38);
+        font: inherit;
+        font-size: 14px;
+        font-weight: 800;
+        padding: 11px 12px;
+      }
+
+      html[data-app-select-surface="one-time"] .app-select__button:hover,
+      html[data-app-select-surface="one-time"] .${wrapperClass}.is-open .app-select__button,
+      html[data-app-select-surface="one-time"] .app-select__button:focus-visible {
+        border-color: rgba(237, 229, 24, 0.72);
+        box-shadow: 0 0 0 3px rgba(237, 229, 24, 0.16);
+      }
+
+      html[data-app-select-surface="one-time"] .app-select__menu {
+        border-color: rgba(237, 229, 24, 0.38);
+        background: #080910;
+        box-shadow: 0 18px 44px rgba(8, 9, 16, 0.34);
+      }
+
+      html[data-app-select-surface="one-time"] .app-select__option {
+        color: rgba(255, 255, 255, 0.84);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      html[data-app-select-surface="one-time"] .app-select__option:hover,
+      html[data-app-select-surface="one-time"] .app-select__option:focus-visible {
+        color: #080910;
+        background: #ede518;
+      }
+
+      html[data-app-select-surface="one-time"] .app-select__option.is-active {
+        color: #080910;
+        background: #ede518;
+      }
     `;
     document.head.appendChild(style);
   }

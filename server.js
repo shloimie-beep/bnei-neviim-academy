@@ -68368,12 +68368,35 @@ app.post('/api/portal-bot/actions/preview', async (req, res) => {
 
 function normalizeAssistantSurface(value) {
   const normalized = String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+  if (['one_time_public', 'onetime_public', 'one_time_landing', 'onetime_landing', 'one_time_interest', 'onetime_interest'].includes(normalized)) return 'one_time_public';
+  if (['one_time_parent', 'onetime_parent', 'one_time_parent_portal', 'onetime_parent_portal'].includes(normalized)) return 'one_time_parent';
+  if (['one_time_student', 'onetime_student', 'one_time_student_portal', 'onetime_student_portal'].includes(normalized)) return 'one_time_student';
   if (['parent', 'parent_portal'].includes(normalized)) return 'parent_portal';
   if (['student', 'student_portal'].includes(normalized)) return 'student_portal';
   if (['provider', 'provider_portal', 'provider_workspace'].includes(normalized)) return 'provider_workspace';
   if (['one_time', 'one_time_member', 'onetime_member', 'rabbi_member', 'member_library', 'one_time_classroom', 'provider_participant'].includes(normalized)) return 'one_time_member';
   if (['operations', 'admin', 'settings'].includes(normalized)) return 'operations';
   return 'public';
+}
+
+function assistantProjectForSurface(surface) {
+  const normalized = normalizeAssistantSurface(surface);
+  if (normalized.startsWith('one_time_')) {
+    return {
+      projectKey: ONE_TIME_PROJECT_KEY,
+      name: 'One Time Mishnah Class',
+      shortName: 'One Time',
+      description: 'Rabbi Sheller provider workspace for the OneTimeOneTime Mishnayos class.',
+      workspaceKey: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    };
+  }
+  return {
+    projectKey: DEFAULT_PROJECT_KEY,
+    name: 'BNA',
+    shortName: 'BNA',
+    description: 'Bnei Neviim Academy operations, students, content, contacts, and accounting.',
+    workspaceKey: 'bna',
+  };
 }
 
 function safeAssistantActorType(value) {
@@ -68635,11 +68658,13 @@ async function createAssistantThread({ actor, body, project, db = pool }) {
 }
 
 async function ensureAssistantThread({ actor, body, db = pool }) {
+  const surfaceSpec = assistantProjectForSurface(body.surface || body.page || body.context?.surface);
   const project = await upsertProject({
-    projectKey: DEFAULT_PROJECT_KEY,
-    name: 'BNA',
-    shortName: 'BNA',
-    description: 'Bnei Neviim Academy operations, students, content, contacts, and accounting.',
+    projectKey: surfaceSpec.projectKey,
+    name: surfaceSpec.name,
+    shortName: surfaceSpec.shortName,
+    description: surfaceSpec.description,
+    metadata: { source: 'assistant_surface_scope', workspace_key: surfaceSpec.workspaceKey },
   }, db);
   const requestedThread = await getAssistantThreadForActor(body.thread_id || body.threadId, actor, db);
   if (requestedThread) return { thread: requestedThread, project };
@@ -68981,6 +69006,7 @@ function assistantActionWorkspaceForActor(actor = {}, body = {}) {
   const requested = String(body.workspace_id || body.workspace || body.workspace_key || body.workspaceKey || '').trim();
   if (actor.canUseCodex && requested) return requested;
   const surface = normalizeAssistantSurface(body.surface || body.page || body.context?.surface);
+  if (surface.startsWith('one_time_')) return WORKSPACES.RABBI_SHELLER_PROVIDER;
   if (surface === 'provider_workspace' || actor.type === 'service_provider') return WORKSPACES.RABBI_SHELLER_PROVIDER;
   if (actor.type === 'super_admin' && /super_admin|platform|operations/i.test(requested || surface)) return WORKSPACES.PLATFORM;
   return WORKSPACES.BNA;
@@ -69295,7 +69321,11 @@ async function buildSafeAssistantContextSummary({ actor = {}, message = '', thre
   const publicKnowledge = await buildPublicAssistantKnowledgeBase({ db, message });
   const roleLines = [];
   let sourceBoundary = 'public BNA website/content only; no private portal, provider, student, family, or Operations records.';
-  if (actor.type === 'parent') {
+  if (surface === 'one_time_public') {
+    roleLines.push('Role mode: One Time public Mishnayos class guide. Stay in English and answer only public class, trial, schedule, worksheet, member-login, and Rabbi Scheller question-routing topics.');
+    roleLines.push('One Time scope rule: do not show BNA school goals, private parent billing, attendance, student transcripts, access codes, other students, admin diagnostics, or Operations records.');
+    sourceBoundary = 'One Time public landing/class/signup context only; no authenticated parent, student, billing, attendance, transcript, member, provider, or Operations data.';
+  } else if (actor.type === 'parent') {
     roleLines.push('Role mode: parent accountability coach. Remember parent goals/interests only inside this parent-scoped actor memory and do not expose other households.');
     roleLines.push('Parent onboarding mode: guide child goals, home expectations, recordings, parser instructions, motivators, chores, meals, tablet/setup context, and self-governance language conversationally before any reviewed record is created.');
     sourceBoundary = 'parent-scoped portal data for this authenticated parent plus public BNA content only; no other households, students, provider data, or Operations notes.';
@@ -70977,6 +71007,10 @@ async function insertUniversalAssistantMessage({
 
 async function ensureUniversalAssistantThread({ actor, body, context, db = pool }) {
   const ensured = await ensureAssistantThread({ actor, body, db });
+  const surfaceSpec = assistantProjectForSurface(body.surface || body.page || body.context?.surface);
+  const surfaceProject = surfaceSpec.projectKey === ONE_TIME_PROJECT_KEY
+    ? await getProjectByKey(ONE_TIME_PROJECT_KEY, db).catch(() => null)
+    : null;
   const mode = universalAssistantModeForActor(actor, body);
   const thread = (await db.query(
     `UPDATE bna_assistant_threads
@@ -70994,7 +71028,7 @@ async function ensureUniversalAssistantThread({ actor, body, context, db = pool 
      RETURNING *`,
     [
       ensured.thread.id,
-      context.project?.id || null,
+      surfaceProject?.id || context.project?.id || null,
       context.household?.id || null,
       body.person_id || body.personId || null,
       context.provider_profile?.id || null,
@@ -83833,7 +83867,8 @@ app.get(['/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });
 
-app.get(['/one-time', '/one-time/', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest'], sendOneTimePublicLanding);
+app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest'], sendOneTimePublicLanding);
+app.get('/one-time/', sendOneTimePublicLanding);
 
 function redirectOneTimeMemberHome(req, res) {
   const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
