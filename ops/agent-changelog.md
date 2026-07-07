@@ -30530,3 +30530,18 @@ Report: ops/agent-fleet-runs/2026-07-07T06-21-46-153Z-task-1945.md
   `npm run app:smoke:one-time-crm-contacts-ux`; PASS
   `npm run app:smoke:one-time-crm-import-dedupe`; PASS
   `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`.
+
+## 2026-07-07T13:11:35+03:00 - Agent task #1130 Drive reprocess closeout
+
+- Reviewed stale live task `#1130` / agent job `236` for
+  `content_job:72`.
+- Confirmed the underlying Drive transcription reprocess repair was already
+  completed under `REQ-20260618-204`: jobs `#72`, `#73`, and `#74` were
+  repaired, transcribed, parsed, and read back as `drive_stage='04 Parsed'`.
+- Added closeout evidence under
+  `ops/queue-audits/2026-07-07-task-1130-drive-reprocess-closeout.*`.
+- Supervisor next action: close task `#1130` as superseded after baseline
+  verification.
+- Guardrails: no live task status mutation, Drive write, production DB write,
+  parser rerun, external send, deploy, credential/account mutation, or raw
+  transcript/private data commit.

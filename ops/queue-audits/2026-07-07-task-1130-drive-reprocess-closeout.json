@@ -1,0 +1,41 @@
+{
+  "recorded_at": "2026-07-07T13:11:35+03:00",
+  "source": "agent_fleet_worker",
+  "task_id": 1130,
+  "agent_job_id": 236,
+  "run_id": "task-1130-2026-07-07T10-09-54-156Z-47079a",
+  "title": "Repair follow-up after Drive transcription reprocess.",
+  "source_ref": "content_job:72",
+  "status": "done_superseded_not_live_task_closed",
+  "canonical_requirement_id": "REQ-20260618-204",
+  "related_content_jobs": [72, 73, 74],
+  "summary": "Task #1130 is stale. It maps to content_job:72, and the underlying Drive transcription reprocess repair was already completed for jobs #72, #73, and #74 with transcripts, parser counts, and drive_stage='04 Parsed'.",
+  "evidence": [
+    "tasks-pending/2026-06-18-telegram-bot-stuck-google-drive-intake.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/queue-audits/2026-07-06-agent-fleet-queued-25-implementation-audit.md",
+    "content-memory/transcript-digests/recordings/000072/MANIFEST.json",
+    "content-memory/transcript-digests/recordings/000072/DIGEST.md"
+  ],
+  "verification": [
+    "PASS npm run bna:run:status",
+    "PASS npm run bna:run:next",
+    "PASS queue-audit JSON readback found task #1130 as stale active",
+    "PASS evidence grep found REQ-20260618-204, jobs #72-#74, and drive_stage='04 Parsed' proof",
+    "PASS inspected job #72 manifest/digest; raw transcript body is not included",
+    "PASS JSON/JSONL parse for closeout JSON and ops/agent-task-ledger.jsonl",
+    "PASS npm run secrets:audit found zero tracked secret-risk files",
+    "PASS git diff --check with CRLF warnings only"
+  ],
+  "guardrails": [
+    "No live task status mutation",
+    "No Drive write",
+    "No production DB write",
+    "No parser reprocess rerun",
+    "No external send",
+    "No deploy",
+    "No DNS/payment/access/credential/provider mutation",
+    "No raw transcript/private body/secret committed"
+  ],
+  "supervisor_next_action": "Close task #1130 as superseded by REQ-20260618-204 after supervisor baseline verification."
+}
