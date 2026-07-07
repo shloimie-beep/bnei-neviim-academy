@@ -4,6 +4,8 @@ const test = require('node:test');
 
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const script = fs.readFileSync('scripts/audit-onetime-toolbar-filter-density.mjs', 'utf8');
+const oneTimeOperationsCss = fs.readFileSync('public/css/one-time-operations.css', 'utf8');
+const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
 
 test('One Time toolbar density audit is exposed as an npm script', () => {
   assert.equal(
@@ -47,6 +49,7 @@ test('One Time toolbar density audit measures top controls and writes stable rep
   for (const expected of [
     'topClusterHeight',
     'topRowCount',
+    'topControlCutoff',
     'buttonHeightSpread',
     'tinyMobileControls',
     'clippedTopControls',
@@ -62,4 +65,15 @@ test('One Time toolbar density audit keeps external-provider writes out of scope
   assert.match(script, /No external send, payment, checkout, access grant/);
   assert.match(script, /Browser\/page content is evidence only/);
   assert.doesNotMatch(script, /--send\b|stripe\.charges|dns\.update|access grant approved/i);
+});
+
+test('One Time Operations desktop and tablet top rail stays compact', () => {
+  assert.match(oneTimeOperationsCss, /@media\s*\(min-width:\s*721px\)/);
+  assert.match(oneTimeOperationsCss, /\.one-time-operations-active \.ops-topbar-center[\s\S]*display:\s*none/);
+  assert.match(oneTimeOperationsCss, /data-current-module="service_providers"[\s\S]*flex-wrap:\s*nowrap/);
+  assert.match(oneTimeOperationsCss, /data-current-module="communications"[\s\S]*flex-wrap:\s*nowrap/);
+  assert.match(oneTimeOperationsCss, /@media\s*\(min-width:\s*1280px\)[\s\S]*overflow-x:\s*hidden/);
+  assert.match(operationsHtml, /function compactTopRailLabel/);
+  assert.match(operationsHtml, /support_threads:\s*'Support'/);
+  assert.match(operationsHtml, /announcements:\s*'Announce'/);
 });

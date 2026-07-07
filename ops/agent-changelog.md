@@ -33426,3 +33426,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Result: scoped One Time mobile/provider/member/email workspace UI fixes are
   deployed and live-smoked. Agent Mode prompt refresh remains
   `REQ-20260707-136`.
+
+
+## 2026-07-08T00:39:30+03:00 - One Time Operations top rail density locally verified
+
+- Registered `REQ-20260707-138` for the remaining Operations desktop/tablet
+  top-rail density follow-up from `PKT-20260707-135`.
+- Scoped the One Time Operations desktop/tablet topbar: hid the redundant
+  status-chip row, removed the duplicate long workspace pill from the action
+  cluster, and changed service-provider/communications subcategories into a
+  compact single-line rail above the mobile breakpoint.
+- Added compact One Time-only labels for long communications/program tabs
+  (`Parent Messages` -> `Parents`, `Support Threads` -> `Support`,
+  `Membership` -> `Members`) while keeping full labels in titles and ARIA.
+- Tightened the audit harness so top-control height spread measures controls
+  inside the actual toolbar bounds instead of content metric buttons that move
+  upward after density fixes.
+- Local verification passed: audit script syntax, focused toolbar-density
+  contract test, toolbar-density audit
+  `ops/ui-audits/2026-07-07-onetime-operations-toprail-density-local-final3/report.md`
+  with 30 screenshots and 0 findings, and local shared-review smoke
+  `ops/live-smokes/2026-07-07T21-38-57-542Z-one-time-shared-review-live-smoke.md`.
+- Status: local verified, pending commit, push, Railway deployment, production
+  toolbar audit/smoke, and final register update.

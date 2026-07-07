@@ -195,19 +195,19 @@ async function collectMetrics(page, viewport) {
         return rect.bottom >= 0 && rect.top <= maxTopY;
       })
       .map((el) => rectSummary(el, containerSelectors));
-    const topControls = controlEls
-      .filter((el) => {
-        const rect = el.getBoundingClientRect();
-        return rect.bottom >= 0 && rect.top <= maxTopY;
-      })
-      .map((el) => rectSummary(el, controlSelectors));
-
     const topBounds = topContainers.length
       ? {
         top: Math.min(...topContainers.map((item) => item.y)),
         bottom: Math.max(...topContainers.map((item) => item.bottom)),
       }
       : { top: 0, bottom: 0 };
+    const topControlCutoff = topContainers.length ? topBounds.bottom + 6 : maxTopY;
+    const topControls = controlEls
+      .filter((el) => {
+        const rect = el.getBoundingClientRect();
+        return rect.bottom >= 0 && rect.top <= topControlCutoff;
+      })
+      .map((el) => rectSummary(el, controlSelectors));
 
     const rowYs = [...new Set(topContainers.map((item) => Math.round(item.y / 14) * 14))].sort((a, b) => a - b);
     const controlHeights = topControls.map((item) => item.height).filter((height) => height > 0);
@@ -219,7 +219,7 @@ async function collectMetrics(page, viewport) {
     const overlapPairs = [];
     const topControlRefs = controlEls.filter((el) => {
       const rect = el.getBoundingClientRect();
-      return visible(el) && rect.bottom >= 0 && rect.top <= maxTopY;
+      return visible(el) && rect.bottom >= 0 && rect.top <= topControlCutoff;
     });
     for (let a = 0; a < topControlRefs.length; a += 1) {
       for (let b = a + 1; b < topControlRefs.length; b += 1) {
@@ -259,6 +259,7 @@ async function collectMetrics(page, viewport) {
       pageOverflowX: scrollWidth - window.innerWidth,
       toolbarContainerCount: topContainers.length,
       toolbarControlCount: topControls.length,
+      topControlCutoff,
       topClusterHeight: Math.max(0, topBounds.bottom - topBounds.top),
       topRowCount: rowYs.length,
       topRowY: rowYs,

@@ -484,6 +484,112 @@ body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-c
   white-space: normal;
 }
 
+@media (min-width: 721px) {
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-topbar {
+    min-height: 56px;
+    gap: 10px;
+    padding: 8px clamp(12px, 1.4vw, 18px);
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-lockup {
+    flex: 1 1 auto;
+    gap: 10px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-lockup span {
+    font-size: 10.5px;
+    line-height: 1.15;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-route-title {
+    font-size: 14px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-topbar-center,
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-actions > .ops-brand-chip:first-child {
+    display: none;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-actions {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-brand-chip,
+  body.bna-ops-shell-page.one-time-operations-active button.ops-brand-chip {
+    min-height: 38px;
+    padding: 6px 10px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-filter-rail {
+    top: 56px;
+    padding: 6px clamp(12px, 1.4vw, 18px);
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-filter-rail-inner {
+    gap: 0;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active .ops-filter-rail-meta {
+    display: none;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-track,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-track {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    padding-bottom: 3px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-tab,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-tab {
+    flex: 0 0 clamp(92px, 9.8vw, 124px);
+    min-width: 92px;
+    min-height: 38px;
+    padding: 6px 8px;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-tab span:first-child,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-tab span:first-child {
+    min-width: 0;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-count,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-count {
+    min-width: 20px;
+    padding: 2px 5px;
+  }
+}
+
+@media (min-width: 1280px) {
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-track,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-track {
+    overflow-x: hidden;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-tab,
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+  }
+}
+
 body.bna-ops-shell-page.one-time-operations-active [data-one-time-program-route="overview"][data-one-time-rabbi-dashboard] {
   display: grid;
   grid-template-columns: 1fr;

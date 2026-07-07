@@ -10780,6 +10780,25 @@
             };
         }
 
+        function compactTopRailLabel(tab = {}) {
+            if (!(isProviderWorkspace() && currentWorkspaceIsOneTime())) return tab.label || tab.id;
+            const compactLabels = {
+                service_providers: {
+                    tiers: 'Members'
+                },
+                communications: {
+                    parents: 'Parents',
+                    students: 'Students',
+                    providers: 'Providers',
+                    internal: 'Internal',
+                    bots: 'Bot',
+                    announcements: 'Announce',
+                    support_threads: 'Support'
+                }
+            };
+            return compactLabels[currentView]?.[tab.id] || tab.label || tab.id;
+        }
+
         function renderTopFilterRail() {
             const { config, active, tabs } = topFilterRailItems();
             if (!tabs.length) return '';
@@ -10795,9 +10814,10 @@
                         <div class="ops-filter-track" role="tablist" aria-label="${escapeHtml(moduleLabel)} sections">
                             ${tabs.map(tab => {
                                 const selected = String(tab.id) === active;
+                                const displayLabel = compactTopRailLabel(tab);
                                 return `
-                            <button type="button" class="ops-filter-tab ${selected ? 'active' : ''}" role="tab" aria-selected="${selected ? 'true' : 'false'}" aria-current="${selected ? 'page' : 'false'}" data-top-filter-id="${escapeHtml(tab.id)}" onclick="setCurrentSection(${attrJson(tab.id)})">
-                                <span>${escapeHtml(tab.label || tab.id)}</span>
+                            <button type="button" class="ops-filter-tab ${selected ? 'active' : ''}" role="tab" aria-selected="${selected ? 'true' : 'false'}" aria-current="${selected ? 'page' : 'false'}" aria-label="${escapeHtml(tab.label || tab.id)}" title="${escapeHtml(tab.label || tab.id)}" data-top-filter-id="${escapeHtml(tab.id)}" onclick="setCurrentSection(${attrJson(tab.id)})">
+                                <span>${escapeHtml(displayLabel)}</span>
                                 ${tab.count !== undefined && tab.count !== null ? `<span class="ops-filter-count">${escapeHtml(String(tab.count))}</span>` : ''}
                             </button>
                                 `;
