@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T05:56:29.851Z",
+  "generated_at": "2026-07-07T06:33:38.210Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -291,6 +291,12 @@
     "ops/prompt-packets/2026-07-06-onetime-operations-content-ia-filter-rail/00-content-ia-filter-rail.product-quality.json",
     "ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json",
+    "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/01-navigation-filter-consistency-agent-mode.md",
+    "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/02-view-as-navigation-agent-mode.md",
+    "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/03-role-perspective-screen-matrix-agent-mode.md",
+    "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/04-consistency-view-as-synthesis-agent-mode.md",
+    "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/README.md",
+    "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/agent-mode-prompt-series.json",
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/00-control-tower.product-quality.json",
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/01-current-state-visual-audit.md",
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/02-telegram-codex-progress-notifications.md",
@@ -497,6 +503,7 @@
     "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md",
     "tasks-pending/2026-07-06-onetime-vimeo-folder-library-workflow.md",
     "tasks-pending/2026-07-06-worker-credentials-policy-and-dirty-closeout.md",
+    "tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md",
     "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
     "tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md",
     "tasks-pending/_template-goal-mode-correction-output.md",

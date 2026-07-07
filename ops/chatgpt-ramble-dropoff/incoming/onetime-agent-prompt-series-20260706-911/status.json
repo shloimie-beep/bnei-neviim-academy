@@ -1,18 +1,34 @@
 {
   "packet_id": "onetime-agent-prompt-series-20260706-911",
-  "status": "codex_queued",
+  "status": "done_verified",
+  "implementation_status": "done_verified",
   "created_at": "2026-07-06T00:00:00Z",
-  "updated_at": "2026-07-06T14:25:46.790Z",
+  "updated_at": "2026-07-07T06:18:45.000Z",
   "picked_up_by": "chatgpt-dropoff-ingestor",
   "picked_up_at": "2026-07-06T14:25:46.789Z",
   "raw_ids_created": [],
   "requirement_ids_created": [],
   "decision_ids_created": [],
-  "implementation_status": "queued",
   "verification": [
-    "Queued for Codex by scripts/chatgpt-dropoff-ingestor.mjs as task #1945."
+    "Queued for Codex by scripts/chatgpt-dropoff-ingestor.mjs as task #1945.",
+    "Codex audited packet files against ops/prompt-packets/2026-07-06-onetime-full-ui-agent-audit/.",
+    "Rebuilt PROMPTS.md from the five canonical source prompt files so Prompt 05 includes Protocol Coverage, Product Quality Compiler expansion, current-state visual audit, Definition of Ready, Definition of Done, and watchdog marker requirements.",
+    "Verified PROMPTS.md contains all five source prompts after normalized comparison.",
+    "PASS npm run chatgpt:dropoff:scan skipped packet as terminal done_verified with queued_count 0.",
+    "PASS npm run watchdog:protocol-drift produced finding_count 0.",
+    "PASS npm run secrets:audit checked tracked files and found 0 tracked secret-risk files.",
+    "PASS PowerShell JSON parse for packet/status/report/watchdog JSON and ops/agent-task-ledger.jsonl.",
+    "No source app code, deploy, external send, payment/access/DNS, credential, provider-account, Drive, or production-data mutation was performed."
   ],
   "remaining_blockers": [],
+  "completed_by": "Codex",
+  "completed_at": "2026-07-07T09:15:13+03:00",
+  "evidence": [
+    "ops/chatgpt-ramble-dropoff/incoming/onetime-agent-prompt-series-20260706-911/PROMPTS.md",
+    "ops/chatgpt-ramble-dropoff/pickups/2026-07-07T09-15-13-onetime-agent-prompt-series-audit.md",
+    "tasks-pending/2026-07-06-onetime-full-ui-agent-audit-prompts.md"
+  ],
+  "next_action": "Run Prompt 01 first, run Prompts 02-04 after the control-tower map exists, then run Prompt 05 after at least two surface audit reports have dropped repo-visible packets.",
   "task_ids_created": [
     "1945"
   ]

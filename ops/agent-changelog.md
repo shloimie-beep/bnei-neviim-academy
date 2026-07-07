@@ -30408,3 +30408,97 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   `getUpdates`, did not start the agent fleet, did not claim stale jobs, did
   not send email/WhatsApp/bulk messages, and did not expose secrets, chat
   targets, raw private email bodies, or student/private account data.
+
+## 2026-07-07T06:12:19+03:00 - Task queue reconciler apply run
+
+Report: ops/system-audits/2026-07-07T06-12-19-750Z-task-queue-reconciler.md
+
+Actions: 0. Active machine tasks: 1.
+- No changes applied.
+
+## 2026-07-07T09:18:45+03:00 - One Time Agent Mode Prompt Packet Audited
+
+Completed packet pickup for live task `#1945` /
+`onetime-agent-prompt-series-20260706-911`.
+
+What changed:
+- Audited the incoming ChatGPT packet against the canonical One Time prompt
+  files under `ops/prompt-packets/2026-07-06-onetime-full-ui-agent-audit/`.
+- Rebuilt packet `PROMPTS.md` from the five canonical source prompt files
+  because the incoming Prompt `05` had dropped the source `Protocol Coverage`
+  section.
+- Updated packet `status.json` to `done_verified`.
+- Added `REQ-20260706-915` to the prompt-series requirement register and saved
+  packet-pickup evidence under `ops/chatgpt-ramble-dropoff/pickups/`.
+
+Verification:
+- PASS normalized prompt comparison: packet `PROMPTS.md` contains all five
+  canonical source prompts.
+- PASS Prompt `05` readback includes Product Quality Compiler/current-state
+  visual audit/Definition of Ready/Definition of Done/watchdog markers.
+- PASS `npm run chatgpt:dropoff:scan` skipped the packet as terminal
+  `done_verified` with `queued_count` `0`.
+- PASS `npm run watchdog:protocol-drift` with `finding_count` `0`.
+- PASS `npm run secrets:audit` with `0` tracked secret-risk files.
+- PASS JSON parse for packet/status/report/watchdog JSON and
+  `ops/agent-task-ledger.jsonl`.
+
+Guardrails:
+- No app source implementation, deploy, external send, payment/access/DNS,
+  credential, provider-account, Drive, or production-data mutation was
+  performed.
+- Next action remains running Prompt `01` first, Prompts `02`/`03`/`04` after
+  the control-tower map, and Prompt `05` after at least two audit reports exist.
+
+## 2026-07-07T06:21:46+03:00 - Agent task #1945 blocked: Add watchdog soft repair for obvious task warnings
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Audited packet `onetime-agent-prompt-series-20260706-911`, repaired its `PROMPTS.md` to match the five canonical One Time Agent Mode prompt files, restored Prompt 05 protocol coverage, and set packet `status.json` to `done_verified`. I did not mark the live task done or perform deploy/external mutations.
+
+VERIFICATION: PASS prompt comparison; PASS `npm run chatgpt:dropoff:scan` skipped terminal packet with `queued_count 0`; PASS `npm run watchdog:protocol-drift` finding_count `0`; PASS `npm run secrets:audit` found `0` tracked secret-risk files; PASS JSON parse; PASS `git diff --check` with CRLF warnings only.
+
+FILES: Changed `ops/chatgpt-ramble-dropoff/incoming/onetime-agent-prompt-series-20260706-911/PROMPTS.md`, `status.json`, `tasks-pending/2026-07-06-onetime-full-ui-agent-audit-prompts.md`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`, and added pickup evidence under `ops/chatgpt-ramble-dropoff/pickups/2026-07-07T09-15-13-onetime-agent-prompt-series-audit.*`. Unrelated dirty files already in the workspace were left alone.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T06-21-46-153Z-task-1945.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-07-07T09:32:19+03:00 - Agent Mode Prompt Reconciliation And View-As Audit Prompts
+
+- Registered `RAW-20260707-004` and created
+  `tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md`
+  for Shloimie's request to reconcile yesterday's Agent Mode prompt runs and
+  create stricter UI consistency/view-as audit prompts.
+- Reconciled `onetime-agent-prompt-series-20260706-911`: the fleet consumed job
+  `#397` / task `#1945`, repaired packet `PROMPTS.md`, and marked the packet
+  `done_verified`; the expected child audit reports have not yet landed.
+- Added the new Agent Mode prompt packet series under
+  `ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/`
+  covering navigation/filter/button consistency, login-once view-as navigation,
+  role perspective matrices, and synthesis into small Codex-ready repair
+  packets.
+- Captured current-state One Time role UI audit evidence under
+  `ops/ui-audits/2026-07-07-telegram-updates-onetime-ui-access/`, including 35
+  screenshots across 7 routes and 5 viewports.
+- Verification: PASS `node --check scripts/audit-onetime-role-ui-current-state.mjs`;
+  PASS JSON parse for prompt/audit/status/pickup JSON; PASS
+  `ops/agent-task-ledger.jsonl` parse; PASS `npm run agent:fleet:status`;
+  PASS `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`.
+- Known blocker: the fleet wrapper's broad `npm test` run still fails on
+  action-registry/hash freshness assertions and a Launch / Checkout expectation
+  mismatch. Full fleet restart remains blocked by stale queue policy and
+  Telegram poller ownership.

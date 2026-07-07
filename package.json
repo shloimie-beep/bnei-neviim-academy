@@ -47,6 +47,7 @@
     "telegram:kimi:stop": "powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1 -Stop",
     "telegram:kimi:status": "powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1 -Status",
     "telegram:codex-progress": "node scripts/send-codex-progress-telegram.mjs",
+    "audit:onetime-role-ui": "node scripts/audit-onetime-role-ui-current-state.mjs",
     "telegram:rabbi:start": "powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1 rabbi-elie-scheller",
     "telegram:rabbi:restart": "powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1 rabbi-elie-scheller -Restart",
     "telegram:rabbi:stop": "powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1 rabbi-elie-scheller -Stop",

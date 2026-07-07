@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-07-07T09:15:13+03:00",
+  "packet_id": "onetime-agent-prompt-series-20260706-911",
+  "packet_path": "ops/chatgpt-ramble-dropoff/incoming/onetime-agent-prompt-series-20260706-911",
+  "task_id": 1945,
+  "raw_ids": [
+    "RAW-20260706-911"
+  ],
+  "requirement_ids": [
+    "REQ-20260706-915"
+  ],
+  "workspace": "rabbi_sheller_provider",
+  "project": "one_time_mishnah_class",
+  "status": "done_verified",
+  "findings": [
+    {
+      "severity": "medium",
+      "code": "prompt_05_protocol_coverage_missing_from_dropoff",
+      "message": "The incoming packet PROMPTS.md omitted the canonical source Prompt 05 Protocol Coverage section before repair."
+    }
+  ],
+  "repair": [
+    "Rebuilt PROMPTS.md from the five canonical prompt source files.",
+    "Updated packet status.json to done_verified.",
+    "Updated requirement register with REQ-20260706-915."
+  ],
+  "verification": [
+    "PASS normalized comparison confirmed packet PROMPTS.md contains all five canonical prompt files.",
+    "PASS readback confirmed Prompt 05 protocol coverage markers are present.",
+    "PASS packet PROMPTS.md SHA256 F4EE0A7EF01DCD496C136230265C28504EA916278AFB0A840891DFBC5247748B.",
+    "PASS npm run chatgpt:dropoff:scan skipped packet as terminal done_verified with queued_count 0.",
+    "PASS npm run watchdog:protocol-drift finding_count 0.",
+    "PASS npm run secrets:audit checked 6530 tracked paths and found 0 tracked secret-risk files.",
+    "PASS PowerShell JSON parse for packet/status/report/watchdog JSON and ops/agent-task-ledger.jsonl."
+  ],
+  "notes": [
+    "Two JavaScript node -e JSON-parse attempts failed because PowerShell stripped quoted strings from the inline payload; replaced by passing native PowerShell JSON parsing."
+  ],
+  "guardrails": [
+    "No source app code edited.",
+    "No deploy.",
+    "No external send.",
+    "No payment, access grant, DNS, credential, provider-account, Drive, or production-data mutation.",
+    "No passwords, cookies, API keys, raw contact exports, raw private message bodies, or private screenshots added."
+  ],
+  "next_action": "Run Prompt 01 first, Prompts 02-04 after the control-tower map, and Prompt 05 after at least two audit reports exist."
+}

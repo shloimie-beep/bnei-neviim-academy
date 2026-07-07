@@ -13,7 +13,7 @@ record the next packet or blocker.
 | Parent packet | `PKT-20260707-030` |
 | Packet role | `VISUAL_AUDITOR` |
 | Stage | `STAGE_2_CODEX_PROMPT_GENERATION` |
-| Status | `ready_for_generation` |
+| Status | `done_current_state_audit_captured` |
 | Owner | Codex |
 | Scope | Audit current One Time role-specific UI and access paths before any product UI implementation. |
 | Out-of-scope | No UI code edits, no Telegram send, no email send, no payment/access/DNS/provider/Drive/external CRM write. |
@@ -192,3 +192,31 @@ privacy/scope note, and proposed implementation packet.
 This packet is complete only when audit evidence exists or exact blockers are
 recorded. UI implementation remains forbidden until the proposed implementation
 packet passes Product Quality Compiler validation and Definition of Ready.
+
+## Closeout - 2026-07-07
+
+Terminal status: `done_current_state_audit_captured`.
+
+Evidence created:
+
+- `scripts/audit-onetime-role-ui-current-state.mjs`
+- `ops/ui-audits/2026-07-07-telegram-updates-onetime-ui-access/report.md`
+- `ops/ui-audits/2026-07-07-telegram-updates-onetime-ui-access/report.json`
+- `ops/ui-audits/2026-07-07-telegram-updates-onetime-ui-access/screenshots/`
+
+Verification:
+
+- PASS `node --check scripts/audit-onetime-role-ui-current-state.mjs`
+- PASS `npm run audit:onetime-role-ui`
+
+Summary:
+
+- 35 redacted screenshots captured across 7 required routes and 5 viewports.
+- Operations login and Super Admin provider-session start were available.
+- Automated audit found 21 findings.
+- Manual screenshot review confirmed the Rabbi inbox filter is visible, but
+  the email draft/editor area is visually inconsistent.
+- Admin-on-provider desktop can show the Rabbi scoped view, but tablet/mobile
+  captures can fall back to the generic BNA provider login.
+- Student/member routes currently show login/public states; a clear Super
+  Admin/admin view-as-student path remains a follow-up implementation packet.

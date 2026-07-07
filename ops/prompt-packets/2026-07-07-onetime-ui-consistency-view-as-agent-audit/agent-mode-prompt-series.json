@@ -1,0 +1,45 @@
+{
+  "packet_series_id": "onetime-ui-consistency-view-as-agent-audit-20260707",
+  "raw_id": "RAW-20260707-004",
+  "workspace": "rabbi_sheller_provider",
+  "project": "one_time_mishnah_class",
+  "status": "ready_for_agent_mode",
+  "created_at": "2026-07-07T09:08:55+03:00",
+  "prompts": [
+    {
+      "order": 1,
+      "file": "01-navigation-filter-consistency-agent-mode.md",
+      "packet_id": "onetime-ui-audit-20260707-040-nav-filter-consistency",
+      "purpose": "Audit category, subcategory, filter, toolbar, and button consistency."
+    },
+    {
+      "order": 2,
+      "file": "02-view-as-navigation-agent-mode.md",
+      "packet_id": "onetime-ui-audit-20260707-041-view-as-navigation",
+      "purpose": "Audit login-once view-as navigation from Shloimie's login into Rabbi/provider/student/member perspectives."
+    },
+    {
+      "order": 3,
+      "file": "03-role-perspective-screen-matrix-agent-mode.md",
+      "packet_id": "onetime-ui-audit-20260707-042-role-perspective-matrix",
+      "purpose": "Build a role perspective matrix for Super Admin, Rabbi/provider, member/parent, and student views."
+    },
+    {
+      "order": 4,
+      "file": "04-consistency-view-as-synthesis-agent-mode.md",
+      "packet_id": "onetime-ui-audit-20260707-043-consistency-view-as-synthesis",
+      "purpose": "Synthesize audit reports into small Codex-ready Product Quality Compiler packets."
+    }
+  ],
+  "guardrails": [
+    "audit_only",
+    "no_code_edits",
+    "no_deploy",
+    "no_external_sends",
+    "no_payment_or_access_grants",
+    "no_dns_or_provider_mutations",
+    "no_drive_writes",
+    "no_credentials_or_shared_passwords",
+    "repo_visible_dropoff_required"
+  ]
+}
