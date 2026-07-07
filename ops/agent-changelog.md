@@ -6,6 +6,21 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-07T23:29:00+03:00 - BNA post-push deploy readback verified
+
+- Verified BNA Railway deployment
+  `d070322e-4c9b-485e-bd9a-249493f776bc` reached `SUCCESS` for pushed commit
+  `2fcce56f58b776860aadc178fab7ea4d332bc9ec`.
+- `npm run app:smoke` passed against `https://bneineviimacademy.org`.
+- `npm run app:smoke:rabbi-onetime-landing` passed OneTime branding, blocked
+  payment-link copy, and public pricing checks.
+- `npm run railway:doctor` remains blocked at the `railway link` step because
+  the project-scoped token can read status but cannot link; direct status plus
+  live smokes were used as deployment proof.
+- Current Railway auth still cannot see `one-time-web`, so separate One Time
+  deploy/bootstrap/live smoke remains blocked until that auth/target context is
+  fixed.
+
 ## 2026-07-07T23:28:00+03:00 - One Time readiness blocker sharpened
 
 - Ran read-only One Time readiness checks after repo closeout.
