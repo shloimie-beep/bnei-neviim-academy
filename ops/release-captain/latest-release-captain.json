@@ -1,91 +1,87 @@
 {
-  "ok": true,
-  "generated_at": "2026-07-05T15:09:41.654Z",
+  "ok": false,
+  "generated_at": "2026-07-07T19:41:26.770Z",
   "mode": "release_captain_read_only",
   "production_mutation_performed": false,
   "external_write_performed": false,
   "secrets_redacted": true,
-  "state": "ready_for_pr_merge_deploy_gate",
-  "summary": "ready for pr merge deploy gate",
+  "state": "local_changes_need_verify_commit_push",
+  "summary": "local changes need verify commit push",
   "next_actions": [
-    "Open or update the PR, wait for checks, merge when green, deploy through the approved release path, and run live smoke."
+    "Finish the scoped edit batch, then run the focused tests and smokes.",
+    "Stage only the scoped files, commit, push, and open or update the PR.",
+    "After merge, run the approved deployment path and live smoke before marking app-visible work Done."
   ],
   "git": {
-    "branch": "codex/onetime-canonical-target-routing-20260705",
+    "branch": "master",
     "expected_branch": null,
     "allow_detached": false,
     "detached_allowed": false,
     "branch_matches_expected": true,
-    "head": "cbe693a18ab7b990df729379bb684730d69db85b",
-    "upstream": "origin/codex/onetime-canonical-target-routing-20260705",
-    "remote_branch": "origin/codex/onetime-canonical-target-routing-20260705",
-    "remote_head": "cbe693a18ab7b990df729379bb684730d69db85b",
+    "head": "86469317ab736ddfc9e404f91eb5986a3f6c00b1",
+    "upstream": "origin/master",
+    "remote_branch": "origin/master",
+    "remote_head": "86469317ab736ddfc9e404f91eb5986a3f6c00b1",
     "head_pushed": true,
     "dirty": {
-      "total": 0,
+      "total": 10,
       "staged": 0,
-      "modified": 0,
-      "untracked": 0,
-      "sample": []
+      "modified": 7,
+      "untracked": 3,
+      "sample": [
+        {
+          "status": " M",
+          "path": ".gitignore"
+        },
+        {
+          "status": " M",
+          "path": "memory/2026-07-07.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/agent-changelog.md"
+        },
+        {
+          "status": " M",
+          "path": "ops/agent-task-ledger.jsonl"
+        },
+        {
+          "status": " M",
+          "path": "ops/release-captain/latest-release-captain.json"
+        },
+        {
+          "status": " M",
+          "path": "ops/release-captain/latest-release-captain.md"
+        },
+        {
+          "status": " M",
+          "path": "tasks-pending/2026-07-07-clean-launch-everything.md"
+        },
+        {
+          "status": "??",
+          "path": "ops/worktree-reconciliation/2026-07-07-generated-artifact-retention.md"
+        },
+        {
+          "status": "??",
+          "path": "raw-input/RAW-20260707-016-generated-artifact-cleanup-continuation.md"
+        },
+        {
+          "status": "??",
+          "path": "tasks-pending/2026-07-07-generated-artifact-retention-cleanup.md"
+        }
+      ]
     }
   },
   "target_gate": {
-    "target": "one-time-public",
-    "target_label": "One Time canonical public funnel",
-    "base_url": "https://join.onetimeonetime.com",
-    "canonical_domain": "join.onetimeonetime.com",
-    "expected_project": "one-time-production",
-    "expected_service": "one-time-web",
-    "expected_headline": "Your Child Can Love Learning Mishnayos",
-    "canonical_routes": [
-      "/",
-      "/one-time/"
-    ],
-    "checks": [
-      {
-        "route": "/",
-        "url": "https://join.onetimeonetime.com/",
-        "final_url": "https://join.onetimeonetime.com/",
-        "status": 200,
-        "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
-        "ok": true,
-        "missing_text": [],
-        "forbidden_hits": []
-      },
-      {
-        "route": "/one-time/",
-        "url": "https://join.onetimeonetime.com/one-time/",
-        "final_url": "https://join.onetimeonetime.com/one-time/",
-        "status": 200,
-        "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
-        "ok": true,
-        "missing_text": [],
-        "forbidden_hits": []
-      },
-      {
-        "route": "/api/one-time/instance-config",
-        "url": "https://join.onetimeonetime.com/api/one-time/instance-config",
-        "status": 200,
-        "ok": true,
-        "app_instance": "onetime",
-        "workspace_key": "rabbi_sheller_provider",
-        "project_key": "one_time_mishnah_class"
-      }
-    ],
+    "ok": true,
+    "target": "not_requested",
+    "status": "not_requested",
     "blockers": [],
     "warnings": [],
+    "checks": [],
     "secrets_redacted": true,
     "production_mutation_performed": false,
-    "external_write_performed": false,
-    "railway_status": {
-      "ok": true,
-      "project_name": "one-time-production",
-      "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
-      "project_name_present": true,
-      "service_name_present": true,
-      "domain_present": true
-    },
-    "ok": true
+    "external_write_performed": false
   },
   "active_run": {
     "run_dir": "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation",
@@ -129,117 +125,82 @@
       }
     ]
   },
-  "release_gate_blockers": [],
-  "open_prs": [
-    {
-      "number": 99,
-      "title": "[codex] Fix One Time canonical target routing",
-      "branch": "codex/onetime-canonical-target-routing-20260705",
-      "base": "master",
-      "draft": true,
-      "merge_state": "CLEAN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/99"
-    },
-    {
-      "number": 63,
-      "title": "[codex] Clean One Time launch setup integration",
-      "branch": "codex/one-time-clean-integration-20260702",
-      "base": "master",
-      "draft": true,
-      "merge_state": "DIRTY",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/63"
-    },
-    {
-      "number": 62,
-      "title": "[codex] Reconcile One Time launch cleanup",
-      "branch": "codex/one-time-launch-cleanup-20260702-no-workflow",
-      "base": "master",
-      "draft": true,
-      "merge_state": "DIRTY",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/62"
-    },
-    {
-      "number": 51,
-      "title": "[codex] Repair One Time Operations UI shell",
-      "branch": "codex/rabbi-onetime-comms-scope-release-20260629",
-      "base": "master",
-      "draft": true,
-      "merge_state": "DIRTY",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
-    }
+  "release_gate_blockers": [
+    "Working tree has dirty or untracked files; do not deploy from a mixed dirty worktree."
   ],
+  "open_prs": [],
   "merged_prs": [
     {
-      "number": 98,
-      "title": "[codex] Record One Time sidebar live closeout",
-      "branch": "codex/release-captain-onetime-ui-closeout-20260705",
+      "number": 126,
+      "title": "Reconcile cleanup status and raw provenance",
+      "branch": "codex/continue-cleanup-status-reconciliation-20260706",
       "base": "master",
       "draft": false,
       "merge_state": "UNKNOWN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/98"
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/126"
     },
     {
-      "number": 97,
-      "title": "[codex] Install Release Captain and recover One Time sidebar",
-      "branch": "codex/release-captain-onetime-ui-20260705",
+      "number": 125,
+      "title": "Record final repo cleanup evidence",
+      "branch": "codex/final-cleanup-evidence-20260706",
       "base": "master",
       "draft": false,
       "merge_state": "UNKNOWN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/97"
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/125"
     },
     {
-      "number": 96,
-      "title": "Record dirty worktree deploy closeout",
-      "branch": "codex/deploy-closeout-records-20260705",
+      "number": 124,
+      "title": "[codex] Record local checkout cleanup",
+      "branch": "codex/archive-clean-checkout-closeout-20260706",
       "base": "master",
       "draft": false,
       "merge_state": "UNKNOWN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/96"
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/124"
     },
     {
-      "number": 95,
-      "title": "Clarify One Time email review coverage",
-      "branch": "codex/deploy-closeout-evidence-20260705",
+      "number": 123,
+      "title": "[codex] Record One Time Vimeo cleanup status",
+      "branch": "codex/clean-deploy-all-pending-20260706",
       "base": "master",
       "draft": false,
       "merge_state": "UNKNOWN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/95"
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/123"
     },
     {
-      "number": 94,
-      "title": "Ship dirty worktree release cleanup batch",
-      "branch": "codex/dirty-worktree-release-cleanup-20260705",
+      "number": 122,
+      "title": "[codex] Record One Time content IA live verification",
+      "branch": "codex/onetime-ia-filter-live-closeout-20260706",
       "base": "master",
       "draft": false,
       "merge_state": "UNKNOWN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/94"
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/122"
     },
     {
-      "number": 93,
-      "title": "Record Operations login live evidence",
-      "branch": "codex/operations-login-live-evidence-20260705",
+      "number": 121,
+      "title": "[codex] Fix One Time content IA rail",
+      "branch": "codex/onetime-ia-filters-content-20260706",
       "base": "master",
       "draft": false,
       "merge_state": "UNKNOWN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/93"
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/121"
     },
     {
-      "number": 92,
-      "title": "Fix Operations login redirect loop",
-      "branch": "codex/operations-login-glitch-20260705",
+      "number": 120,
+      "title": "Fix ChatGPT dropoff collector retry path",
+      "branch": "codex/chatgpt-dropoff-collector-fix-20260706",
       "base": "master",
       "draft": false,
       "merge_state": "UNKNOWN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/92"
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/120"
     },
     {
-      "number": 91,
-      "title": "Record PR87 live deployment evidence",
-      "branch": "codex/pr87-live-evidence-20260705",
+      "number": 119,
+      "title": "[codex] Record One Time dashboard live proof",
+      "branch": "codex/onetime-dashboard-ui-fix-20260706",
       "base": "master",
       "draft": false,
       "merge_state": "UNKNOWN",
-      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/91"
+      "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/119"
     }
   ],
   "command_health": {

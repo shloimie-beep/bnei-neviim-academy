@@ -1,45 +1,43 @@
 # Release Captain
 
-Generated: 2026-07-05T15:09:41.654Z
+Generated: 2026-07-07T19:41:26.770Z
 
-State: **ready for pr merge deploy gate**
+State: **local changes need verify commit push**
 
 | Check | Value |
 | --- | --- |
-| Branch | codex/onetime-canonical-target-routing-20260705 |
-| Head | cbe693a18ab7 |
-| Upstream | origin/codex/onetime-canonical-target-routing-20260705 |
+| Branch | master |
+| Head | 86469317ab73 |
+| Upstream | origin/master |
 | Head pushed | yes |
-| Dirty files | 0 |
+| Dirty files | 10 |
 | Active run | 2026-07-02-background-drive-ui-launch-continuation |
 
 ## Blockers
 
-- None from the read-only release gate.
+- Working tree has dirty or untracked files; do not deploy from a mixed dirty worktree.
 
 ## Next Actions
 
-- Open or update the PR, wait for checks, merge when green, deploy through the approved release path, and run live smoke.
+- Finish the scoped edit batch, then run the focused tests and smokes.
+- Stage only the scoped files, commit, push, and open or update the PR.
+- After merge, run the approved deployment path and live smoke before marking app-visible work Done.
 
 ## Target Gate
 
 | Field | Value |
 | --- | --- |
-| Target | one-time-public |
-| Base URL | https://join.onetimeonetime.com |
-| Expected project | one-time-production |
-| Expected service | one-time-web |
+| Target | not_requested |
+| Base URL | not requested |
+| Expected project | not requested |
+| Expected service | not requested |
 | Result | passed |
 
 - No target gate blockers.
 
 ## Open PRs
 
-| PR |Branch |Title |State |
-| #99 |codex/onetime-canonical-target-routing-20260705 |[codex] Fix One Time canonical target routing |draft |
-| #63 |codex/one-time-clean-integration-20260702 |[codex] Clean One Time launch setup integration |draft |
-| #62 |codex/one-time-launch-cleanup-20260702-no-workflow |[codex] Reconcile One Time launch cleanup |draft |
-| #51 |codex/rabbi-onetime-comms-scope-release-20260629 |[codex] Repair One Time Operations UI shell |draft |
+No open PRs reported by GitHub CLI.
 
 ## Guardrails
 

@@ -6,6 +6,44 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-07T22:39:08+03:00 - Generated artifact retention cleanup installed
+
+- Captured `RAW-20260707-016` and registered the continuation under
+  `tasks-pending/2026-07-07-generated-artifact-retention-cleanup.md`.
+- Installed a non-destructive `.gitignore` policy for recurring generated
+  ChatGPT pickup, queue-audit, watchdog, local UI-audit, helper/navigation
+  test-audit, integration-smoke, and timestamped release-captain receipts.
+- Visible `git status` noise dropped from 3,546 entries to 10 before tracked
+  record reconciliation.
+- Reconciled tracked append-only records by preserving dirty worktree entries,
+  restoring 4 missing committed changelog sections, and restoring 6 missing
+  committed ledger records.
+- Verification: ledger JSONL parse passed with 1,708 records; release-captain
+  latest JSON parsed; `git diff --check` passed; `npm run secrets:audit`
+  passed; `npm run bna:run:validate` passed.
+- No app/runtime code changed in this cleanup batch, so no app deployment is
+  required for this specific commit.
+- Guardrails: no files were deleted for cosmetic cleanliness; no external
+  send/payment/DNS/access/credential/provider/Drive/Vimeo mutation was
+  performed; curated evidence remains force-addable when a requirement cites
+  it.
+
+
+## 2026-07-07T21:38:00+03:00 - Audit fix implementation batch deployed and live-smoked
+
+- Pushed commits 9789c13e and 6ad5804c to origin/master.
+- Railway deployments bcb85309-93ff-4482-9bfa-39c9749d33a9 and c0ad9905-4837-4987-9c58-f916f928875f reached SUCCESS for the BNA production service.
+- Final live visual audit at https://bneineviimacademy.org captured 35 screenshots across 7 routes and 5 viewports with 0 automated findings.
+- Evidence: ops/ui-audits/2026-07-07-audit-fix-pass-live-final-after-deploy/report.md and ops/release-captain/2026-07-07-audit-fix-live-smoke.md.
+- Railway doctor remains blocked by project-token railway link permission, but explicit target guard and Railway status readback verified the deployment.
+- Blockers preserved for WAPI/Whapi setup, Drive/private-data sync, payments, DNS, external sends, provider writes, credentials, and generated artifact cleanup.
+
+## 2026-07-07T21:25:00+03:00 - Audit fix provider tab-grid follow-up locally verified
+
+- First production audit after deployment bcb85309-93ff-4482-9bfa-39c9749d33a9 found one remaining P2 provider admin mailbox 1440 tab-grid/action-height issue.
+- Normalized provider workspace nav rows in public/provider.html so section buttons share stable height and long labels wrap inside the same control system.
+- Local visual evidence: ops/ui-audits/2026-07-07-audit-fix-pass-local-final5/ captured 35 screenshots across 7 routes and 5 viewports with 0 automated findings.
+- Status: follow-up CSS fix locally verified, pending commit/push/second deployment/live smoke.
 
 
 ## 2026-07-07T16:05:00+03:00 - One Time helper role previews deployed and live-smoked
@@ -25,6 +63,7 @@ Remaining blockers/follow-ups:
 Guardrails:
 - No production DB write, external send, charge, access grant, DNS change, credential change, provider account mutation, Drive/Vimeo upload, or live task status mutation was performed.
 
+
 ## 2026-07-07T15:48:49+03:00 - One Time helper role previews locally verified
 
 Completed supervisor verification for REQ-20260707-082, REQ-20260707-083, REQ-20260707-084, and REQ-20260707-086 after the Agent Mode/fleet repair outputs.
@@ -42,6 +81,218 @@ Verification:
 
 Release gate:
 - Local verification is complete; commit/push, production deploy, and deployed live smoke are still required before terminal app-visible Done.
+
+
+## 2026-07-07T17:06:48+03:00 - Agent task #1839 Wappy/WAPI phonebook report blocked
+
+- Reviewed task `#1839` / agent job `#375` from `content_job:100`.
+- Confirmed repo policy still blocks selecting Wappy; the active path remains
+  Whapi/WAPI local readback, phonebook grouping, and correction preview only.
+- Ran a redacted read-only phonebook report: account-wide report returned 100
+  groups, 25 manual-correction candidates, no sends/writes; One Time scoped
+  report returned 100 project groups while excluding account-wide WAPI
+  contacts/chats.
+- Recorded last-sync timestamps: WAPI contact/chat sync is from June 12, while
+  local WhatsApp communications have July 7 activity.
+- Evidence:
+  `ops/queue-audits/2026-07-07-task-1839-wappy-wapi-phonebook-report-blocked.*`.
+- Verification: `npm run bna:run:status`; `npm run bna:run:next`;
+  `npm run agent:fleet:status`; sanitized task/job readback; `node --check
+  server.js`; `node --check scripts/wapi-phonebook-report.mjs`; `node --check
+  scripts/sync-whapi-history.mjs`; focused Wappy/WAPI/Whapi/provider setup
+  tests passed 17/17.
+- Blocker: a new last-history sync and One Time/Rabbi WhatsApp setup require
+  exact Whapi/WAPI provider account/phone/token/instance/webhook details and an
+  approved sync/import packet, because the existing sync path writes production
+  audit/import rows even in dry-run mode.
+- Guardrails: no live task/job status mutation, Whapi provider API call,
+  sync-run row, production DB mutation, send, broadcast, external CRM write,
+  deploy, credential/account/payment/access/DNS/provider mutation, or raw
+  contact/private data commit.
+
+
+## 2026-07-07T16:57:16+03:00 - Agent task #1838 local closeout: Codex-test cleanup button
+
+- Reviewed task `#1838` / agent job `#374` from `content_job:100`.
+- Confirmed the confusing `Codex test` surface was the stale Contacts header
+  `Archive test duplicate` action for the old Solomon/Codex duplicate cleanup;
+  the `Logged` text is an inert communication status label, not a button.
+- Removed the stale visible Operations button and unused frontend wrapper while
+  leaving the guarded backend archival route untouched.
+- Evidence:
+  `ops/queue-audits/2026-07-07-task-1838-codex-test-logged-button-closeout.*`.
+- Verification: `npm run bna:run:status`; `npm run bna:run:next`; sanitized
+  live task/comment/job readback; `node --check server.js`; `node --test
+  tests/parent-student-portal-contract.test.js` passed 24/24; public
+  Operations grep confirmed the stale button/function are absent.
+- Guardrails: no live task/job status mutation, production DB write, archive
+  endpoint call, Drive write, external send, deploy/live release,
+  credential/account/payment/access/DNS/provider mutation, or raw transcript/
+  private data commit.
+
+
+## 2026-07-07T16:48:55+03:00 - Agent task #1837 Drive reprocess closeout
+
+- Reviewed stale live task `#1837` / agent job `#373` for `content_job:100`.
+- Confirmed this generic Drive transcription reprocess row is superseded and
+  non-executable: live task metadata is `agent_executable=false` and
+  `needs_human_review=true`; content job `#100` has transcript/canonical parser
+  evidence; concrete remaining follow-ups are tasks `#1838` and `#1839`.
+- Added closeout evidence under
+  `ops/queue-audits/2026-07-07-task-1837-drive-reprocess-closeout.*`.
+- Supervisor next action: close/archive task `#1837` as superseded after
+  baseline verification; keep the concrete follow-ups under `#1838`/`#1839`.
+- Guardrails: no live task/job status mutation, Drive write, production DB
+  write, parser rerun, external send, deploy, credential/account mutation, or
+  raw transcript/private data commit.
+
+
+## 2026-07-07T16:32:21+03:00 - Agent task #1769 local closeout: human-review claim guard
+
+- Reviewed agent-fleet task `#1769` / job `#364`, sourced from private content
+  recording `#85`, parse run `#56`, parse item `#34369`.
+- Read-only task and parse readback showed the row was explicitly
+  `agent_executable: false`, `needs_human_review: true`, and
+  `recording_review_task: true`; the source fragment did not name a concrete
+  route, record, workflow, expected state, or safe mutation.
+- Fixed the fleet claim predicate so explicit human-review/non-executable
+  parser tasks are skipped before observable jobs or fallback Codex tasks are
+  selected.
+- Added regression coverage in `tests/agent-fleet-hardening.test.js`.
+- Evidence:
+  `ops/queue-audits/2026-07-07-task-1769-human-review-claim-guard.*`.
+- Verification: `npm run bna:run:status`; `npm run bna:run:next`; read-only
+  task/comment/content-job/parse-run API readback; `node --check
+  scripts/agent-fleet-supervisor.mjs`; `node --test
+  tests/agent-fleet-hardening.test.js` passed 7/7; `node --test
+  tests/watchdog-soft-repair.test.js tests/task-title-cleanup-dry-run.test.js`
+  passed 26/26; patched live-shape filter returned no claimable job for task
+  `#1769`; `npm run agent:fleet:status` reported one claimable observable job
+  after the guard.
+- Guardrails: no live task/job status mutation, no private raw transcript
+  commit, no production DB write, no external send, no Drive write, no deploy,
+  no credential/account/payment/access/DNS/provider mutation, and no background
+  supervisor restart was performed by this worker.
+
+
+## 2026-07-07T16:42:00+03:00 - Agent task #1792 local closeout: human-review claim guard covered
+
+- Reviewed agent-fleet task `#1792` / job `#365`, sourced from private content
+  recording `#85`, parse run `#56`, parse item `#34395`.
+- Read-only task readback showed the row is explicitly
+  `agent_executable: false`, `needs_human_review: true`, and
+  `recording_review_task: true`; the source fragment does not name a concrete
+  route, record, workflow, expected state, or safe mutation.
+- Confirmed the task is covered by the local human-review claim guard added for
+  task `#1769`; focused patched-filter readback returned no claimable queued
+  job for task `#1792`.
+- Evidence:
+  `ops/queue-audits/2026-07-07-task-1792-human-review-claim-guard-covered.*`.
+- Verification: `npm run bna:run:status`; `npm run bna:run:next`; read-only
+  task/comment/agent-job API readback; patched live-shape filter returned no
+  claimable job for task `#1792`.
+- Guardrails: no live task/job status mutation, no private raw transcript
+  commit, no production DB write, no external send, no Drive write, no deploy,
+  no credential/account/payment/access/DNS/provider mutation, and no background
+  supervisor restart was performed by this worker.
+
+
+## 2026-07-07T16:22:20+03:00 - Agent task #1751 local closeout: watchdog title false-positive guard
+
+- Reviewed agent-fleet task `#1751`, whose runner prompt showed stale title
+  `Add watchdog soft repair for obvious task warnings` while read-only live API
+  readback showed the current task title is `Collect One Time website content
+  assets`.
+- Found the cause: watchdog-warning soft repair searched the full task notes
+  body, so broad intake notes with warning/fix/task wording could trigger the
+  generic watchdog repair title even when the visible task title was clean.
+- Narrowed watchdog-warning soft-repair matching to task title, parsed original
+  text, and parsed display title; generic task search text remains available
+  for other supervisor checks.
+- Added regression coverage so clean content/UI tasks with broad notes do not
+  get retitled as watchdog repair work, while the original watchdog-repair
+  positive cases still pass.
+- Evidence:
+  `ops/queue-audits/2026-07-07-task-1751-watchdog-soft-repair-title-guard.*`.
+- Verification: `node --check scripts/agent-fleet-supervisor.mjs`; `node --test
+  tests/watchdog-soft-repair.test.js tests/task-title-cleanup-dry-run.test.js`
+  passed 26/26; patched live-readback helper returned
+  `looks_watchdog_warning_repair_request: false` and `title_repair: null` for
+  task `#1751`.
+- Guardrails: no live task status mutation, live task title patch, production
+  DB write, external send, Drive write, deploy, credential/account/payment/
+  access/DNS/provider mutation, or public publishing mutation was performed.
+
+
+## 2026-07-07T16:13:22+03:00 - Agent task #1730 blocked: missing bad-button source context
+
+- Reviewed live task `#1730` / agent job `#342` titled `Fix bad UI button`.
+- Direct read-only API readback confirmed the task has no notes, no source context, no route, no button label/selector, no screenshot, and only the agent-fleet claim comment.
+- Existing queue audit from 2026-07-06 already classified this row as `Not implemented / needs triage` because no matching implementation evidence or source detail exists.
+- Product Quality Compiler rules block UI implementation from this vague title alone.
+- Added blocked closeout evidence under `ops/queue-audits/2026-07-07-task-1730-bad-ui-button-blocked.*`.
+- Supervisor next action: mark task `#1730` / job `#342` blocked or needs-decision for missing route/button/source context, or fold it into a focused UI audit finding before implementation.
+- Guardrails: no UI code change, live task mutation, agent job mutation, production DB write, external send, Drive write, deploy, credential/account/payment/access/DNS/provider mutation, or public publishing mutation was performed by this worker.
+
+
+## 2026-07-07T15:51:55+03:00 - Agent task #1576 local closeout: duplicate oversized request splitting
+
+- Reviewed live task `#1576` titled `Because I tell it to do too many things at once, so it doesn't fix everything.`
+- Confirmed production census groups tasks `#1576` and `#1575` as duplicate-like Codex queue items with `archive_or_link_duplicates_after_operator_review`, which requires supervisor/operator-gated live cleanup.
+- Confirmed adjacent task `#1575` already implemented the local repair: overloaded broad-fix titles are retitled for future worker prompts and dry-run cleanup previews as `Split oversized operator requests into focused execution packets`.
+- Verified the focused supervisor/title-cleanup regression tests still pass.
+- Added closeout evidence under `ops/queue-audits/2026-07-07-task-1576-oversized-request-closeout.*`.
+- Supervisor next action: after baseline verification, close/archive or link task `#1576` with duplicate `#1575` as protocol-covered queue cleanup.
+- Guardrails: no live task status mutation, duplicate archive/link mutation, production DB write, external send, Drive write, deploy, credential/account mutation, or product implementation was performed by this worker.
+
+
+## 2026-07-07T15:40:11+03:00 - Agent task #1494 local closeout: parser artifact from content job 80
+
+- Reviewed stale live task `#1494` / agent job `#302` titled `He didn't fix it yesterday.`
+- Confirmed the task maps to `content_job:80`, a class recording that is already transcribed and parsed through the content-job private review flow.
+- Existing repo-safe digest evidence shows raw transcript body is not committed, the only repo-safe task candidate is digest maintenance, and no standalone Codex implementation requirement exists from the visible title.
+- Added closeout evidence under `ops/queue-audits/2026-07-07-task-1494-parser-artifact-closeout.*`.
+- Supervisor next action: close/archive task `#1494` and agent job `#302` as a parser artifact after baseline verification.
+- Guardrails: no live task status mutation, agent job mutation, Drive write, production DB write, parser rerun, class backfill, external send, deploy, credential/account mutation, or raw transcript/private data commit.
+
+
+## 2026-07-07T15:33:30+03:00 - Agent task #2027 local closeout: One Time route-role mapping
+
+Implemented task `#2027` / `REQ-20260707-084` locally for One Time provider, member, student, and public join-route mapping.
+
+What changed:
+- `/provider.html?admin_provider=one-time&section=mailbox` now gives logged-out users a truthful scoped One Time provider-session-required state with Operations return and read-only review fallback.
+- The One Time single-tenant runtime serves `/public` as a public funnel alias and keeps anonymous join-domain traffic away from private student/provider/member boards.
+- Route registry coverage now records the One Time provider admin-session entry, `/student.html?review=one-time`, and `/public` privacy/security expectations.
+- Targeted tests cover `/rabbi-member`, `/student/login`, `/student.html`, `/public`, provider session boundaries, and the updated One Time public smoke route list.
+
+Verification:
+- PASS `node --check server.js`.
+- PASS `node --check public/js/rabbi-member.js`.
+- PASS registry JSON parse.
+- PASS targeted One Time route/role, provider/view-as, public privacy, and local UI smoke test suites.
+- PASS `npm run watchdog:security`, `npm run watchdog:actions`, and `npm run watchdog:protocol-drift` with 0 findings.
+- PASS scoped `git diff --check`.
+
+No live task status mutation, production DB write, external send, payment/access/DNS/credential mutation, deploy, or live release smoke was performed by this worker.
+
+
+## 2026-07-07T14:43:16+03:00 - Agent task #1464 parser artifact closeout
+
+- Reviewed stale live task `#1464` / agent job `#300` for `content_job:79`.
+- Confirmed the title `They build this huge mizbeach.` is a class transcript
+  fragment, not an actionable Codex operations task.
+- Existing class-drive intake evidence shows job `#79` is transcribed, parsed,
+  digest ready, routed, and classified; the only repo-safe task candidate is
+  digest maintenance.
+- Added closeout evidence under
+  `ops/queue-audits/2026-07-07-task-1464-mizbeach-parser-artifact-closeout.*`.
+- Supervisor next action: close/archive task `#1464` and agent job `#300` as a
+  parser artifact after baseline verification.
+- Guardrails: no live task status mutation, agent job mutation, Drive write,
+  production DB write, parser rerun, class backfill, external send, deploy,
+  credential/account mutation, or raw transcript/private data commit.
+
 
 ## 2026-07-06T17:32:00+03:00 - ChatGPT Agent dropoff collector repaired and fleet status verified
 
@@ -87,6 +338,7 @@ Guardrails:
 - No external sends, payment/access/DNS/provider-account mutation, Drive write,
   deploy, or product implementation work was performed.
 
+
 ## 2026-07-05T14:55:00+03:00 - Operations login blink loop deployed and live-smoked
 
 Completed `RAW-20260705-003` / `REQ-20260705-007` for the BNA Operations login
@@ -124,6 +376,7 @@ Guardrails:
 - Optional provider/readback gates unrelated to the login page remain deferred
   and are not claimed complete.
 
+
 ## 2026-07-05T07:23:11+03:00 - PR 87 master conflict resolved
 
 Merged current `origin/master` into PR #87 and resolved append-only conflicts in
@@ -143,6 +396,7 @@ Blocked:
   blocked before mutation on missing OpenAI, Vimeo access token, Resend sender,
   Rabbi Stripe settings, Rabbi Telegram worker readiness, and database/
   Railway/Drive external readbacks.
+
 
 ## 2026-07-05T07:16:34+03:00 - PR 87 combined release validated
 
@@ -170,6 +424,7 @@ Guardrails:
   external send, payment/access/DNS/credential change, Drive publish/share, or
   DB review mutation was performed.
 
+
 ## 2026-07-05T07:08:27+03:00 - Studio content engine PR opened
 
 Opened PR #89 for `codex/studio-content-engine-release-20260704`, stacked on
@@ -184,6 +439,7 @@ Remaining:
 - PR #89 depends on PR #87.
 - Production deploy/live smoke remains blocked by the BNA release gate and
   missing external/integration readbacks.
+
 
 ## 2026-07-04T21:56:41+03:00 - Studio content engine release branch validated
 
@@ -214,6 +470,7 @@ Remaining:
 - App-visible terminal Done remains blocked until PR #87 and the Studio branch
   are released through the production gate and live-smoked.
 
+
 ## 2026-07-04 - PR 87 One Time UI Release Validation
 
 - Registered `RAW-20260704-001` after Shloimie asked to ship PR #87, fix the
@@ -239,6 +496,7 @@ Remaining:
   `APPLY-CLOSEOUT.md` proves parser output and private transcript-doc readback.
   Remaining Job 101 blockers are DB review-queue cleanup and score/progress/
   grading writes, which still need safe DB readback or exact approval.
+
 
 ## 2026-06-28T15:49:00+03:00 - One Time launch workflow safe-mode deployed closeout
 
@@ -273,6 +531,7 @@ Guardrails:
   live billing, Green Invoice path, GHL runtime, raw contact data commit, or
   secret exposure was performed.
 - Future external actions remain gated by `DEC-20260628-001`.
+
 
 ## 2026-06-28T15:31:00+03:00 - One Time launch workflow safe-mode local proof
 
@@ -311,6 +570,7 @@ Remaining:
 - `DEC-20260628-001` still blocks live email, DNS mutation, Replit/domain
   cutover, live Stripe billing/checkout/charge, Green Invoice, GHL runtime,
   raw contact-data commits, and secrets exposure.
+
 
 ## 2026-06-19T11:30:00+03:00 - Approved Release Closeout Checkpoint
 
@@ -353,6 +613,7 @@ Remaining blockers:
   approved manual upload/library policy.
 - No DNS write, email send, Zoom meeting creation, Vimeo upload, production DB
   mutation, broad crawl, watch loop, or agent-fleet loop was performed.
+
 
 ## 2026-06-17T14:25:00+03:00 - Final Website Correction Register Closeout
 
@@ -409,6 +670,7 @@ Remaining blocker:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-17T10:51:00+03:00 - Rabbi Scheller / OneTime Landing Closeout
 
 Completed `REQ-20260616-028` and `REQ-20260616-029`; marked
@@ -454,6 +716,7 @@ Remaining blocker:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-17T10:25:00+03:00 - Public/Portal Navigation and Positioning Closeout
 
 Completed `REQ-20260616-020`, `REQ-20260616-021`, `REQ-20260616-025`,
@@ -491,6 +754,7 @@ Verification:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-17T09:42:25+03:00 - Workspace Taxonomy, Selector, and Role Scope Closeout
 
 Completed `REQ-20260616-005` through `REQ-20260616-008` and `REQ-20260616-063`.
@@ -527,6 +791,7 @@ Verification:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-17T09:13:37+03:00 - BNA Helper Duplicate, Branding, and Natural-Language Actions Closeout
 
 Completed `REQ-20260616-017` through `REQ-20260616-019`.
@@ -561,6 +826,7 @@ Verification:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T18:06:29+03:00 - WS08 Workspace Directory Model Local Complete
 
@@ -603,6 +869,7 @@ Blocked live verification:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T17:24:00+03:00 - Operations Login Email Alias Deployed
 
 - Fixed the Operations login mismatch that made the operator's email fail when
@@ -629,6 +896,7 @@ Verification:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T17:41:11+03:00 - WS10 One Time Product/Payment Decision State Reconciled
 
@@ -676,6 +944,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T16:49:30+03:00 - Owner Approval Pack Numbering Fixed
 
 - Corrected the owner approval unblocker pack section order after adding the
@@ -690,6 +959,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-15T16:31:15+03:00 - One Time Question Public Surface Approval Gate Deployed
 
@@ -717,6 +987,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-15T16:22:30+03:00 - Private One Time Question Digest Preview Deployed
 
 - Added a read-only private digest preview to the One Time question moderation
@@ -739,6 +1010,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-12T17:18:40+03:00 - Task 511 Whapi WhatsApp Log Sync Implemented Locally
 
@@ -763,6 +1035,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-12T17:43:54+03:00 - Deployed four-page signup document flow
 
@@ -806,6 +1079,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-12T17:18:00+03:00 - Rabbi Scheller WhatsApp Contact Found
 
 - Confirmed Whapi contact access is available through the local provider token;
@@ -819,6 +1093,7 @@ Verification:
   callback was present at verification time.
 - Did not send a raw password over WhatsApp. Email and provider login username
   remain missing before a secure login/reset link can be sent.
+
 
 ## 2026-06-12T17:00:48+03:00 - WhatsApp Delivery Visibility Deployed
 
@@ -839,6 +1114,7 @@ Verification:
 - Deployed from `C:\Users\User\bna-release-clean` to Railway deployment
   `685c8903-1706-4d7e-b73a-658ce24f1041`; Railway doctor and live app smoke
   passed with report `ops/live-smokes/2026-06-12T13-59-15-277Z-live-app-smoke.md`.
+
 
 ## 2026-06-11T21:57:53+03:00 - Task 491 Attempt 2 Support Ticket UI Report Form
 
@@ -866,6 +1142,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-12T13:45:08+03:00 - Registration / Provider / Student Security Local Pass
 
 Implemented and locally verified the registration/provider/student-security/Rabbi-video pass. Public signup now shows four visible required documents (Handbook, Tuition, Waiver, Student Handbook) while duplicate package sections stay archived/filtered. Public signup pages gained language tabs, shared footer treatment, and rectangular BNA controls. Added `brand-kit/09-visual-design-tokens.md`. Expanded provider onboarding and `/providers/join` with AI Max application-only guardrails plus provider audience/pricing/discount/ads fields. Hardened student portal credential handling so codes are validated before storage, invalid/stale codes clear local storage, missing/invalid credentials return login/API errors, and repeated failures get rate-limited. Captured the Rabbi/One Time video next-version brief around the existing Remotion scripts.
@@ -882,6 +1159,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-12T16:19:39+03:00 - Parent links and Green Invoice contact audit completed
 
@@ -912,6 +1190,7 @@ Open:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-12T13:21:32+03:00 - Parent login, weekly update, Operations decision, and Rabbi audit pass
 
 Implemented the Pro-Codex parent login/navigation/weekly-update/Rabbi Sheller audit prompt locally without deploying.
@@ -941,6 +1220,7 @@ Reports:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-12T12:58:35+03:00 - Preserved OneTimeOneTime mobile app export
 
 Saved the pasted Kids' Hotline / OneTimeOneTime Expo app export inside the repository as a durable reference import.
@@ -955,6 +1235,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T21:00:27+03:00 - Task 489 WhatsApp Positive Intent Enrollment Leads
 
@@ -985,6 +1266,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T20:35:18+03:00 - Task 488 BNA Enrollment Smoke Parent Cleanup
 
 - Removed the live archived parent-lead smoke artifact
@@ -1010,6 +1292,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T18:57:35+03:00 - Task 483 Telegram Direct Reply Routing
 
@@ -1043,6 +1326,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T18:46:39+03:00 - Task 482 Weekly WhatsApp Copy
 
 - Generated the requested copy/paste WhatsApp weekly update for the latest
@@ -1062,6 +1346,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T14:07:04+03:00 - Task 468 Student Bot Filtering And Prompt Configuration
 
 - Added persisted, project-scoped `bna_student_bot_settings` records for per-student bot routing, channel/status filtering, active chat-id uniqueness, transcript permissions, allowed/blocked topics, and prompt patches.
@@ -1080,6 +1365,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T13:50:49+03:00 - Task 467 Mobile Calendar And Student Name Language
 
 - Fixed student portal calendar loading on mobile by making date parsing tolerate date-only values, ISO values, and `YYYY-MM-DD HH:mm` values consistently.
@@ -1097,6 +1383,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T13:34:22+03:00 - Task 469 Verifier Retry Follow-up
 
@@ -1121,6 +1408,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T13:28:34+03:00 - Task 469 Goal Achievement Scoring
 
@@ -1149,6 +1437,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T12:28:18+03:00 - Capture Content Library v2 Build Brief
 
 - Captured the operator's repo audit and Content Library v2 implementation
@@ -1161,6 +1450,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T12:24:57+03:00 - Task 362 Workflow R Organic Winner To Paid Ad
 
@@ -1195,6 +1485,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T12:12:01+03:00 - Task 361 Workflow Q Organic Content Upload
 
@@ -1232,6 +1523,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T11:56:26+03:00 - Task 360 Workflow P Testimonial/Reputation
 
 - Documented One Time Workflow P as the guarded testimonial and reputation
@@ -1266,6 +1558,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T11:43:29+03:00 - Task 359 Workflow O Referral
 
 - Documented One Time Workflow O as the guarded happy-member referral workflow
@@ -1299,6 +1592,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T11:30:58+03:00 - Task 357 Workflow M Parent Update
 
 - Documented One Time Workflow M as the guarded parent/member update workflow
@@ -1330,6 +1624,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T11:16:23+03:00 - Task 355 Workflow K Worksheet Source Sheet Posted
 
@@ -1363,6 +1658,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T11:08:48+03:00 - Fix Torah/Public Content Contamination
 
@@ -1398,6 +1694,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T11:05:01+03:00 - Task 354 Workflow J Recording Posted
 
 - Documented One Time Workflow J as the guarded member recording-posting
@@ -1430,6 +1727,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T10:55:55+03:00 - Full UX click-map audit package
 
 - Created a complete screenshot/click-flow audit package for the live BNA app
@@ -1456,6 +1754,7 @@ Artifacts:
 - Raw crawl: `ops/ui-audits/2026-06-11-full-app-ui-audit/`
 - Drive upload report:
   `ops/ux-audit-runs/2026-06-11-click-map/drive-upload.json`
+
 
 ## 2026-06-11T10:51:19+03:00 - Task 353 Workflow I Class Reminders
 
@@ -1487,6 +1786,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T10:37:17+03:00 - Content Library Card Research Links and Student Questions
 
@@ -1520,6 +1820,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T10:33:37+03:00 - Task 351 Workflow G Cancellation
 
 - Documented One Time Workflow G as the cancellation/refund-access roadmap card.
@@ -1547,6 +1848,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T10:24:20+03:00 - Task 226 Google Workspace Sender Display Name
 
 - Diagnosed the `Office P` outgoing sender-name issue without sending test
@@ -1562,6 +1864,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T10:20:41+03:00 - Content Library Topic/Source Filters and Backlog Status
 
@@ -1592,6 +1895,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T10:15:00+03:00 - Task 168 Fasting On Shabbos And Yom Tov Research
 
 - Produced `content-memory/source-sheets/2026-06-11-fasting-on-shabbos-yom-tov.md`.
@@ -1607,6 +1911,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T10:02:18+03:00 - Task 346 Workflow B Email List Reactivation
 
@@ -1638,6 +1943,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T16:30:55+03:00 - Task 414 Student Visa Bank Account Research
 
 - Produced `content-memory/source-sheets/2026-06-10-student-visa-bank-account-options.md`.
@@ -1652,6 +1958,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T08:20:00+03:00 - Complete Provider Commercial Model, Entitlements, and Pre-Integration Setup
 
@@ -1690,6 +1997,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T09:53:06+03:00 - Active task audit and queue reconciliation
 
 - Audited all 43 active live Operations tasks.
@@ -1715,6 +2023,7 @@ Report: `ops/system-audits/2026-06-11-active-task-audit.md`
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T23:19:33+03:00 - Complete Operations full QA/product-polish pass
 
@@ -1751,6 +2060,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T15:41:57+03:00 - One Time Schedule And Team Workspace Correction
 
 - Removed the separate Roadmap view from the live Operations sidebar and scoped
@@ -1781,6 +2091,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T14:15:42+03:00 - Task 213 Watchdog Secret Scan Reverification
 
 - Reverified the watchdog secret-scan cleanup path without rotating keys.
@@ -1803,6 +2114,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T13:00:42+03:00 - Task 379 Internal Classroom Board And Calendar
 
@@ -1832,6 +2144,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T12:45:48+03:00 - Task 377 Interested Parent Contacts Pipeline
 
 - Added a visible `Add interested parent` action to the Operations Contacts >
@@ -1852,6 +2165,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T10:46:53+03:00 - Task 376 App-Wide In-App Dropdowns
 
@@ -1876,6 +2190,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T11:05:10+03:00 - Task 344 Rabbi Telegram Worker Prep
 
 - Added a Railway process dispatcher so the same Docker image runs the web app
@@ -1891,6 +2206,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T08:12:07+03:00 - Task 328 Recording Intake Routing
 
@@ -1910,6 +2226,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T08:53:20+03:00 - Prioritized source-sheet production lane
 
 Codex followed up on the operator's earlier Telegram instruction that the
@@ -1925,6 +2242,7 @@ bibliography workflow is the second stage.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T07:35:36+03:00 - Task 210 Watchdog Repair Guard Addendum
 
@@ -1944,6 +2262,7 @@ bibliography workflow is the second stage.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T09:54:59+03:00 - Task 345 One Time Workflow A Lead Capture
 
 - Documented One Time Workflow A as a live roadmap workflow card for lead
@@ -1962,6 +2281,7 @@ bibliography workflow is the second stage.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T07:28:59+03:00 - Task 210 Dormant Next/Supabase Archive
 
@@ -1984,6 +2304,7 @@ bibliography workflow is the second stage.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T07:07:24+03:00 - Task 310 Research Audience Split
 
 - Updated the class Research source-sheet workflow so Operations creates a
@@ -2002,6 +2323,7 @@ bibliography workflow is the second stage.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T06:52:42+03:00 - Task 294 Parent/Student Portal Side Navigation
 
@@ -2024,6 +2346,7 @@ Deployment: Railway `e3f1d013-cb44-44b8-9e39-cb12aff93c22`
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T07:58:00+03:00 - Parent/student Hebrew portal labels verified
 
@@ -2053,6 +2376,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T23:40:43+03:00 - Task 268 Optional Assignment Video Processing Toggle
 
 - Added a persistent `video_processing_requested` flag for Operations
@@ -2067,6 +2391,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   full `npm test` `126/126`, Railway deployment
   `eff51804-683e-4cb9-999d-442d2ba5e56e` `SUCCESS`, live app smoke, and live
   Operations bundle text check.
+
 
 ## 2026-06-09T23:11:21+03:00 - Correct Task 276 One Time Drive Workspace
 
@@ -2083,6 +2408,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
 - Verification passed: Drive API listed the canonical folder tree and Start
   Here contents, Docs API fetched the seeded Task Map content, and
   `node --check scripts/setup-one-time-partnership-drive.mjs` passed.
+
 
 ## 2026-06-09T22:52:04+03:00 - Complete Task 260 Parent/Student Portal Follow-Up
 
@@ -2104,6 +2430,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   `ops/agent-fleet-runs/2026-06-09T22-52-04-task-260-complete.md`; live task
   status was not changed.
 
+
 ## 2026-06-09T22:24:33+03:00 - Add Task 235 Baba Sali Sefer Research
 
 - Repaired `content-memory/source-sheets/2026-06-09-baba-sali-sefer.md` so the
@@ -2119,6 +2446,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   `ops/agent-fleet-runs/2026-06-09T22-24-33-task-235-complete.md`; live task
   status was not changed.
 
+
 ## 2026-06-09T22:16:59+03:00 - Add Task 229 Clean Admissions Video First Frame
 
 - Created `renders/bna-26-27-admissions-no-black-intro.mp4` from
@@ -2132,6 +2460,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   `ops/agent-fleet-runs/2026-06-09T22-16-59-task-229-complete.md`.
 - Live task status and social platform posts were not changed; supervisor can
   verify the artifact and close/update the live task.
+
 
 ## 2026-06-09T22:08:54+03:00 - Add Task 228 Kid-To-Parent Checkoff Notifications
 
@@ -2149,6 +2478,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   119/119.
 - Live task status was not changed; supervisor can deploy, run live smoke, and
   close after baseline verification.
+
 
 ## 2026-06-09T22:01:16+03:00 - Add Task 224 Internal And External People Filtering
 
@@ -2171,6 +2501,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
 - Live task status was not changed; supervisor can deploy, run live smoke, and
   close after baseline verification.
 
+
 ## 2026-06-09T21:46:28+03:00 - Add Task 262 Classroom Assignment Sync Controls
 
 - Added an explicit Operations live Google sync action for assignment cards,
@@ -2191,6 +2522,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
 - Live task status was not changed; supervisor can deploy, run live smoke, and
   close after baseline verification.
 
+
 ## 2026-06-09T21:32:47+03:00 - Tighten Task 261 Recording And Research Routing
 
 - Updated task-category routing so parser/dashboard/system routing requests,
@@ -2209,6 +2541,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
 - Live task status was not changed; supervisor can close after deployment and
   live verification.
 
+
 ## 2026-06-09T21:18:43+03:00 - Add Task 228 Kid-To-Parent Checkoff Notifications
 
 - Added internal parent-portal notifications when a student completes a goal
@@ -2226,6 +2559,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   `node --test tests/goal-board.test.js` 8/8, and `npm test` 102/102.
 - Live task status was not changed; supervisor can close after baseline and
   deployment verification.
+
 
 ## 2026-06-09T21:06:04+03:00 - Update Public Website Positioning Copy
 
@@ -2248,6 +2582,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   Hebrew copy with no old phrasing.
 - Deployed Railway `af620276-69c4-47e4-b614-fee15171381a`.
 
+
 ## 2026-06-09T20:51:24+03:00 - Re-verify Task 223 Parent Accountability Chat Window
 
 - Confirmed the parent accountability chat implementation is present in the
@@ -2260,6 +2595,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   `npm test` 101/101.
 - Live task status was not changed; supervisor can close after baseline and
   deployment verification.
+
 
 ## 2026-06-09T20:45:19+03:00 - Add Task 223 Parent Accountability Chat Window
 
@@ -2275,6 +2611,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
 - Live task status was not changed; supervisor can close after baseline and
   deployment verification.
 
+
 ## 2026-06-09T20:35:33+03:00 - Verify Task 222 Parent Meeting Uploads
 
 - Re-verified task #222 after the earlier fleet attempt stopped before the
@@ -2289,6 +2626,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   `npm test` 95/95, and `npm run openai:smoke`.
 - Live task status was not changed; supervisor can close after baseline and
   deployment verification.
+
 
 ## 2026-06-09T19:24:20+03:00 - Parse And Upload Student Question Source References
 
@@ -2309,6 +2647,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   passed, `node --check server.js`, `node --check scripts/telegram-kimi-bridge.mjs`,
   `node --test tests/parent-student-portal-contract.test.js` passed 8/8, and
   `npm test` passed 92/92.
+
 
 ## 2026-06-09T19:07:08+03:00 - Ship Parent Question Sharing And Sefaria Sources
 
@@ -2338,6 +2677,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   active deployment is Railway `0dfa1e49-d8b1-4cbc-8ab9-aa6ac061d244` and live
   health/smoke passed after recovery.
 
+
 ## 2026-06-09T18:56:57+03:00 - Verify Watchdog Secret Scan Findings
 
 - Audited watchdog task #213 and confirmed the flagged token-shaped material was
@@ -2363,6 +2703,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
 - The live task table was not marked done here; the supervisor can close task
   #213 after baseline verification.
 
+
 ## 2026-06-09T18:46:38+03:00 - Upload Captured Student Question Sources
 
 - Created
@@ -2385,6 +2726,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
 - The live task table was not marked done here; the supervisor can close task
   #232 after baseline verification.
 
+
 ## 2026-06-09T18:26:31+03:00 - Upload Onkelos The Ger Source Sheet
 
 - Created `content-memory/source-sheets/2026-06-09-onkelos-the-ger.md` for
@@ -2401,6 +2743,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   intact.
 - The live task table was not marked done here; the supervisor can close task
   #231 after its baseline verification.
+
 
 ## 2026-06-09T18:18:00+03:00 - Deploy Operations Filters, Goal Board Checkoffs, Parent Access, And Messaging
 
@@ -2428,6 +2771,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   `ops/playwright-smokes/2026-06-09T15-15-13-691Z-live/summary.json`.
 - Railway deployment `6a4bbd52-5c36-467e-b46c-23d31bfeff74` reached SUCCESS.
 
+
 ## 2026-06-09T17:56:11+03:00 - Add Content Prompt Feedback Regeneration
 
 - Added a prompt-feedback loop for Content outputs: when a correction is entered
@@ -2447,6 +2791,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   `ops/live-smokes/2026-06-09T14-54-55-867Z-live-app-smoke.md`, and authenticated
   live HTML string check confirmed the new labels are present and old prompt-save
   labels are absent.
+
 
 ## 2026-06-09T17:22:20+03:00 - Connect WAPI To Parent CRM And Telegram Commands
 
@@ -2474,6 +2819,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   diagnostics, and a live fake inbound WAPI event that matched signup #7 and
   was deleted afterward.
 
+
 ## 2026-06-09T17:20:18+03:00 - Switch Social Posting To Buffer
 
 - Saved the Buffer social API configuration outside git and in Railway
@@ -2497,6 +2843,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
 - Railway deployment `ce745559-7b8a-402c-822f-a2709c1246d1` reached SUCCESS.
 - No live Buffer draft/post was created as a write test.
 
+
 ## 2026-06-09T16:59:18+03:00 - Route WAPI Into Communications
 
 - Audited the existing contact system and confirmed Operations already has a
@@ -2517,6 +2864,7 @@ Files: [student.html](<C:/Users/User/BNA v2.0/public/student.html>),
   `npm run openai:smoke`, Railway deployment
   `fdef8ffa-2907-477b-a6ac-2dd8aa5fcc68` SUCCESS, and live app smoke
   `ops/live-smokes/2026-06-09T13-58-45-944Z-live-app-smoke.md`.
+
 
 ## 2026-06-09T16:41:00+03:00 - Re-fix public homepage PWA manifest regression
 
@@ -2550,6 +2898,7 @@ Deployment note:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T18:03:50+03:00 - Drive content library transcript sync implemented
 
@@ -2596,6 +2945,7 @@ Known follow-up:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09 - Added WAPI Webhook Intake
 
 - Added `POST /api/webhooks/wapi` as the live WAPI webhook receiver and
@@ -2610,6 +2960,7 @@ Known follow-up:
   `npm run openai:smoke`, Railway deployment
   `d2ba5ca7-3b75-40de-87df-76a6ec4f5ca2` SUCCESS, and live app smoke
   `ops/live-smokes/2026-06-09T13-37-04-488Z-live-app-smoke.md`.
+
 
 ## 2026-06-08T21:00:03+03:00 - Add watchdog soft repair for obvious task warnings
 
@@ -2656,6 +3007,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-08T20:41:10+03:00 - Verify public domain routing and file DNS task
 
 Codex verified task #192: the bare dot-org domain now opens the public BNA
@@ -2677,6 +3029,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-08T20:34:21+03:00 - Retire Telegram task quick-action callbacks
 
 Codex removed the remaining active mutation path for old Telegram per-task quick
@@ -2691,6 +3044,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-08T19:30:00+03:00 - Fix public homepage PWA redirect to Operations
 
@@ -2727,6 +3081,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-08T19:03:41+03:00 - Set up autonomy questions Facebook approval post
 
 Codex created the Facebook approval item requested in task #175 and deployed the
@@ -2757,6 +3112,7 @@ Verification:
 - task_id: 175
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-08T16:00:00+03:00 - Correct Torah audio parse and add Student Analysis
 
@@ -2791,6 +3147,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-08T11:10:00+03:00 - Smoke test Rabbi Elie One Time bot token
 
 Codex configured the Rabbi Elie Scheller local Telegram token file and smoke
@@ -2818,6 +3175,7 @@ Verification:
 - task_id: 169
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-07T16:09:29+03:00 - Add signup Tuition Agreement signature flow
 
@@ -2861,6 +3219,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-07T15:39:21+03:00 - Merge duplicate Accounting roster rows
 
 Codex fixed the duplicate rows that appeared in the Operations Accounting
@@ -2895,6 +3254,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-07T15:28:17+03:00 - Fix homepage Blog carousel and reconcile paid intake records
 
@@ -2932,6 +3292,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-07T15:01:15+03:00 - Reconcile Braka partial Green Invoice payment
 
 Codex reconciled the operator-provided Green Invoice details for the Braka /
@@ -2961,6 +3322,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-07T12:58:23+03:00 - Fix Telegram OpenAI Operations visibility
 
@@ -2992,6 +3354,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-07T11:45:22+03:00 - Deploy Operations app shell
 
 Built the Operations app shell for Telegram task #130. The old top horizontal
@@ -3017,6 +3380,7 @@ desktop sidebar, mobile hamburger drawer, and no 390px horizontal overflow,
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-07T11:56:10+03:00 - Patch task #130 acceptance misses
 
 Audited the completed task #130 app-shell work against the original Telegram
@@ -3039,6 +3403,7 @@ read-only notice is present, and there is no 390px horizontal overflow.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-06T23:05:28+03:00 - Deploy automatic accountability tablet-access MVP
 
@@ -3069,6 +3434,7 @@ compile, `npm test` 30/30, `npm run openai:smoke`, Railway doctor, and
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-07T06:00:44+03:00 - Deploy BNA Command Center UI cleanup
 
 Implemented the first-pass UI redesign across the Operations app and student
@@ -3090,6 +3456,7 @@ passed 30/30, `npm run openai:smoke` passed, Railway deployment
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-05T20:27:48+03:00 - Make pending briefs visible in Operations task manager
 
 Added a protected Operations pending-briefs API that reads `tasks-pending/*.md`,
@@ -3109,6 +3476,7 @@ tasks-pending classifier smoke, a mocked Playwright Operations UI smoke, and
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-06T22:06:21+03:00 - Fix Operations dashboard load and task lane readability
 
@@ -3132,6 +3500,7 @@ report: `ops/live-smokes/2026-06-06T19-08-26-630Z-live-app-smoke.md`.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-06T21:44:00+03:00 - Complete first plain-English Remotion render smoke
 
 Sub-agent Bohr ran the first operator-directed plain-English Remotion edit using
@@ -3148,6 +3517,7 @@ Verified result: MP4 rendered successfully at `1920x1080`, `30 fps`, `2.56s`,
 
 - source: subagent
 - worker: Bohr
+
 
 ## 2026-06-06T21:52:29+03:00 - Deploy newsletter review bundles and sub-agent closeout
 
@@ -3182,6 +3552,7 @@ Verification passed: `node --check server.js`, Operations inline script compile,
 - source: codex
 - worker: Codex + subagents
 
+
 ## 2026-06-06T21:38:20+03:00 - Add safe Facebook account selection for GHL drafts
 
 Hardened server-side Facebook draft creation so Content approval no longer
@@ -3201,6 +3572,7 @@ social accounts, and posts read OK.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-06T21:33:33+03:00 - Add live app smoke and close verified image-lane tasks
 
@@ -3228,6 +3600,7 @@ updated.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-05T15:51:28+03:00 - Build One Time Mishnah Class project workspace model
 
@@ -3262,6 +3635,7 @@ a temporary updated server, and API create/comment/delete smoke proving
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-05T08:55:00.000Z - Refresh blog visuals with downloaded media
 
 Created dedicated blog-section images from the operator's newest downloaded
@@ -3284,6 +3658,7 @@ seen during the homepage smoke was an unrelated local Torah goal fetch failure.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-05T08:49:00.000Z - Expand OpenAI sidekick system visibility and sync contract
 
@@ -3320,6 +3695,7 @@ as optional until the app is deployed with that route.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-05T08:41:00.000Z - Auto-start Codex task batches from Telegram
 
 Updated the Telegram bridge so Codex-owned tasks captured from Telegram do not
@@ -3347,6 +3723,7 @@ Verification passed: `node --check scripts/telegram-kimi-bridge.mjs` and
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-05T08:34:00.000Z - Add Drive-aware OpenAI replies and Drive audit report
 
 Fixed the Telegram OpenAI/Kimi API prompt path so Drive-related messages attach
@@ -3373,6 +3750,7 @@ with 16 passing tests.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-05T08:25:00.000Z - Add OpenAI API key to Railway production
 
 Pushed `OPENAI_API_KEY` to the Railway `skillful-motivation` production service
@@ -3390,6 +3768,7 @@ and the public homepage returned HTTP 200.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-05T08:16:00.000Z - Configure OpenAI API key and labeled Kimi fallback for Telegram
 
@@ -3413,6 +3792,7 @@ log was empty.
 - task_id: 71
 - source: telegram
 - worker: Codex
+
 
 ## 2026-06-05T14:27:00+03:00 - Fix Telegram OpenAI transcript topic answers
 
@@ -3442,6 +3822,7 @@ and bridge restart/startup log.
 
 - source: telegram
 - worker: Codex
+
 
 ## 2026-06-05T08:09:00.000Z - Restart Telegram bridge into OpenAI-default mode and clean prompt fragments
 
@@ -3474,6 +3855,7 @@ OpenAI API / Codex keyboard.
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-04T19:41:00.000Z - Restore Telegram bridge responsiveness and clean stuck task records
 
 Fixed the local Telegram bridge after it failed to restart from a corrupted
@@ -3504,6 +3886,7 @@ Telegram status response was sent successfully as message #227.
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-05T07:49:26Z - Telegram OpenAI/Codex mode selector and One Time scaffold
 
 Implemented the local Telegram bridge changes for persistent `OpenAI API` and
@@ -3527,6 +3910,7 @@ current Telegram queue drains.
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-05T04:21:17.000Z - Make Telegram replies natural by default
 
 Recorded the operator preference that Telegram should feel like normal
@@ -3547,6 +3931,7 @@ before the running process reloads the new behavior.
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-04T19:58:30.000Z - Clean Annie parser fragment and student-system roadmap
 
 Explained that task #37 came from content job #19 fallback parser text,
@@ -3560,6 +3945,7 @@ natural-consequence/filter rules in the same roadmap. No build was started.
 
 - source: telegram
 - worker: Codex
+
 
 ## 2026-06-04T17:11:20.843+03:00 - WhatsApp update corrected around sleep message
 
@@ -3579,12 +3965,14 @@ sleep lead and other-topics section, and task #63 is done/verified.
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-04T18:23:07.3352485+03:00 - Add Telegram completion reporting rule
 
 Recorded the operator preference that Telegram-requested tests, fixes, deploys,
 and verifications must be followed by a concise Telegram reply saying the work
 was accomplished and listing the verification result. Updated `AGENTS.md`,
 `MEMORY.md`, and `SYSTEM-STATE.md`.
+
 
 ## 2026-06-03T18:05:18.1144320+03:00 - Accounting payment section simplified
 
@@ -3610,6 +3998,7 @@ paid, and zero first-party page errors. Screenshot saved at
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T19:08:11.227Z - Our Philosophy subtitle copy deployed
 
 The homepage Our Philosophy subtitle was changed from generic section copy to:
@@ -3622,6 +4011,7 @@ marked done, and verified.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-03T18:39:54.000Z - Compact public mobile hamburger menu deployed
 
@@ -3642,6 +4032,7 @@ browser errors.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T21:24:58.1089087+03:00 - Telegram task refinement and Codex ownership cleanup
 
 Telegram task capture now treats Codex as the active machine-work owner.
@@ -3657,6 +4048,7 @@ Old `task:kimi` callbacks still work, but they assign the task to Codex.
 - task_id: 39
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-03T19:34:54.0000000+03:00 - Switch Telegram bridge to Codex primary
 
@@ -3677,6 +4069,7 @@ test` 16/16, and direct Codex CLI smokes returned `codex primary ok` and
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-03T19:29:15.0000000+03:00 - Add Telegram-driven Remotion source-video editing
 
@@ -3706,6 +4099,7 @@ boosted, and a timed subtitle. A rendered smoke MP4 was created under `renders/`
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T19:12:12.0000000+03:00 - Harden Operations Content parser routing and compact cards
 
 Operations Content collapsed cards now show only short English topic chips, not
@@ -3730,6 +4124,7 @@ entries, and duplicate parse calls return `skipped: true`.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-03T17:55:41.4152174+03:00 - Public Blog, FAQ, SEO/AEO pages launched
 
@@ -3762,6 +4157,7 @@ screenshots saved at `screenshots/live-blog-mobile-20260603.png`,
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T17:28:50.9866926+03:00 - Footer social icons added
 
 Added public homepage footer social icons for YouTube, LinkedIn, and Facebook
@@ -3777,6 +4173,7 @@ were reported. Screenshot saved at
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-03T17:20:47.4570502+03:00 - Accounting payment records cleaned
 
@@ -3807,6 +4204,7 @@ zero browser errors. Screenshot saved at
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T17:10:22.4486386+03:00 - Content cards changed to English bullet overviews
 
 Operations Content now shows English-first source cards instead of raw
@@ -3832,6 +4230,7 @@ and
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T16:53:16.8161309+03:00 - Torah progress cards visually aligned
 
 Polished the public homepage Torah progress cards so the five student tiles are
@@ -3846,6 +4245,7 @@ Screenshot saved at `screenshots/live-home-torah-cards-equal-20260603.png`.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-03T16:46:27.2757171+03:00 - Student checkoff portal deployed
 
@@ -3876,6 +4276,7 @@ Railway deployment `b17d1f6f-ad27-4499-b4ef-9538e86fd24e` succeeded.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T05:40:00.000Z - Clean task language and shared agent ledger
 
 Raw Telegram wording was removed from visible task records #30 and #31.
@@ -3885,6 +4286,7 @@ Learning Moments carousel image update.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-03T16:27:59.1930568+03:00 - Content job 19 student goals cleaned up
 
@@ -3916,6 +4318,7 @@ the public Torah summary still returns five students at `15 percent`.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T16:07:01.6954819+03:00 - Torah trip-progress calculation corrected
 
 Corrected the Torah trip-progress model so June 3 daily 100 percent completion
@@ -3936,6 +4339,7 @@ returns five students at `15 percent` with `tripUnlocked: false`.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-03T12:45:00.000Z - Mixed recording parser, Torah goal cleanup, and webhook audit hardening
 
@@ -3968,6 +4372,7 @@ succeeded after the packaging fix.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T15:49:41.000Z - Natural-language Remotion editing command added
 
 Added `scripts/video-edit.mjs` and package scripts `video:edit` and
@@ -3989,6 +4394,7 @@ loaded, and `npm test` passed 16/16.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-03T15:39:50.000Z - Remotion video studio setup installed
 
@@ -4014,6 +4420,7 @@ loaded, and `npm test` passed 16/16.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T15:28:19.000Z - Homepage one-page Blog FAQ and sitemap deployed
 
 The public homepage now includes full Blog and FAQ sections fed from the shared
@@ -4035,6 +4442,7 @@ nav `#faq`, 18 blog cards, 16 FAQ cards, and 3 JSON-LD blocks.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T07:10:00.000Z - Homepage progress and image-only moments deployed
 
 The public homepage 30-page learning goal now shows 3.5/30 pages and 12 percent
@@ -4052,6 +4460,7 @@ errors.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T06:25:00.000Z - Decisions and selected-content library deployed
 
 Operations Tasks now uses Decisions instead of Active Work, keeping undecided
@@ -4068,6 +4477,7 @@ two temporary content jobs using prompt v1.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-03T08:40:00.000Z - Torah group-goal system and Green Invoice audit deployed
 
@@ -4097,6 +4507,7 @@ Railway deployment `410aac19-f28c-499b-9880-076d61465e80` succeeded.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-03T17:10:00.000Z - Website blog, image feed, parser, and Remotion assets deployed
 
 GHL is no longer a blocker for BNA website blogs. Operations Content now has a
@@ -4122,6 +4533,7 @@ locked for all five active students.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-04T06:58:35.671Z - Backfill visible parser cleanup task
 
 Audited Telegram task processing after operator reported lag and a missing
@@ -4136,6 +4548,7 @@ the regular task system.
 - source: codex_audit
 - worker: Codex
 
+
 ## 2026-06-04T07:01:52.143Z - Normalize goal-setting Content cards
 
 Audited Content jobs #18 and #19 after the operator reported that the natural
@@ -4149,6 +4562,7 @@ operator/system tasks remain in Tasks.
 
 - source: codex_audit
 - worker: Codex
+
 
 ## 2026-06-04T06:53:41.000Z - Public favicon and WhatsApp preview deployed
 
@@ -4178,6 +4592,7 @@ www custom domain in Railway and the matching DNS record at the domain host.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-04T10:18:07.452Z - Catch up Torah accountability from uploaded recording
 
 Updated the live Students accountability/Torah progress records for Telegram
@@ -4199,6 +4614,7 @@ Hillel 66.67%, Eitan 100%, and Amitai 100%; group trip progress reports 16%.
 - source: telegram_accountability_catchup
 - worker: Codex
 
+
 ## 2026-06-04T10:45:49.210Z - Public website links open homepage instead of Operations
 
 Fixed the public PWA/start-page behavior so clicking or launching the website
@@ -4218,6 +4634,7 @@ website links open the homepage, not Operations`. Playwright confirmed
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-04T15:52:54.454+03:00 - End-of-week BNA parent update drafted
 
 Drafted a parent-ready WhatsApp end-of-week update from the cleaned BNA content
@@ -4228,6 +4645,7 @@ percentages. Live task #58 was marked done and verified.
 
 - source: telegram
 - worker: Codex
+
 
 ## 2026-06-04T17:05:00.000Z - End-of-week BNA update revised with latest video
 
@@ -4242,6 +4660,7 @@ table.
 
 - source: telegram
 - worker: Codex
+
 
 ## 2026-06-04T15:42:01.870Z - Accounting summary labels made clearer
 
@@ -4263,6 +4682,7 @@ only: `screenshots/live-operations-accounting-labels-mobile-20260604-followup.pn
 
 - source: telegram
 - worker: Codex
+
 
 ## 2026-06-04T15:39:00.000Z - Mobile hamburger menu and Operations app launch
 
@@ -4291,6 +4711,7 @@ done/verified in the live task API.
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-04T15:17:00.963Z - Compact Operations mobile summary cards
 
 Reduced the top summary cards on mobile across Operations Tasks, Content,
@@ -4307,6 +4728,7 @@ and live Playwright mobile smoke for `/operations?view=tasks`,
 
 - source: telegram
 - worker: Codex
+
 
 ## 2026-06-05T04:14:31.000Z - Store build everything operating rule
 
@@ -4326,6 +4748,7 @@ practical order`; the temporary smoke task was deleted.
 
 - source: telegram
 - worker: Codex
+
 
 ## 2026-06-05T08:59:52.080Z - Revise end-of-week WhatsApp post with detailed weekly Q&A
 
@@ -4347,6 +4770,7 @@ name match.
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-05T12:16:13+03:00 - Split pending Codex work from Changelog
 
 Updated the Operations Tasks UI so active agent work is no longer hidden inside
@@ -4367,6 +4791,7 @@ browser console errors.
 
 - source: codex_cli
 - worker: Codex
+
 
 ## 2026-06-05T15:20:00+03:00 - Finish website image intake and non-redundant blog workflow
 
@@ -4394,6 +4819,7 @@ catalog parse smoke (`24` posts found), and `npm run website:add-moment --
 - task_id: 43
 - source: codex_cli
 - worker: Codex
+
 
 ## 2026-06-05T12:25:00+03:00 - Route Telegram content edits through OpenAI
 
@@ -4423,6 +4849,7 @@ no active misrouted newsletter/Facebook edit task.
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-05T12:36:04+03:00 - Expand Telegram content workbench
 
 Updated the local Telegram bridge so OpenAI content mode can work more like the
@@ -4442,6 +4869,7 @@ Verification passed: `node --check scripts/telegram-kimi-bridge.mjs`.
 
 - source: telegram
 - worker: Codex
+
 
 ## 2026-06-05T13:05:08+03:00 - Fix natural Telegram content follow-up edits
 
@@ -4470,6 +4898,7 @@ archive readback, JSONL validation, bridge restart, startup log check, and
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-05T13:15:06+03:00 - Add live Telegram task update watcher
 
 Audited why the operator was not receiving updates about the broader task
@@ -4494,6 +4923,7 @@ task watcher initialization.
 
 - source: telegram
 - worker: Codex
+
 
 ## 2026-06-05T13:27:00+03:00 - Simplify Google Drive pipeline and export transcripts
 
@@ -4531,6 +4961,7 @@ and failed Railway push attempts with timeout captured.
 - source: telegram
 - worker: Codex
 
+
 ## 2026-06-05T14:35:17+03:00 - Add OpenAI sidekick system smoke
 
 Added `scripts/smoke-openai-sidekick.mjs`, package command
@@ -4561,6 +4992,7 @@ Restarted the Telegram bridge after wiring the command; current lock showed PID
 - source: codex_cli
 - worker: Codex
 
+
 ## 2026-06-05T14:33:49+03:00 - Complete QStudio device-control checklist brief
 
 Spawned sub-agent Pauli to work in parallel on live task #81. The agent created
@@ -4573,6 +5005,7 @@ verification is physical device/login testing, not repo-side planning.
 
 - source: codex_subagent
 - worker: Pauli
+
 
 ## 2026-06-05T14:51:05+03:00 - Build autonomous Codex agent fleet
 
@@ -4608,6 +5041,7 @@ agent-fleet dry run, `npm test`, and `npm run openai:smoke`.
 - source: codex_cli
 - worker: Codex
 
+
 ## 2026-06-05T17:12:39+03:00 - Clean agent output and add OpenAI research mode
 
 Audited the operator report that Telegram produced a crazy-long output. Root
@@ -4642,6 +5076,7 @@ is restarted.
 - source: codex_cli
 - worker: Codex
 
+
 ## 2026-06-05T12:02:29+03:00 - Complete agent task #43: Finish website image intake and non-redundant blog publishing workflow
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.
@@ -4667,6 +5102,7 @@ Report: ops/agent-fleet-runs/2026-06-05T12-02-29-545Z-task-43.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-12T09:22:48+03:00 - Complete release OpenAI sidekick smoke verification
 
 Finished the remaining verification gap for the
@@ -4682,6 +5118,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T21:32:06+03:00 - Add one-click Rabbi task manager access link
 
@@ -4713,6 +5150,7 @@ WhatsApp delivery attempt:
 - No WhatsApp message was delivered; the attempted access links expire unused.
   Reauthorize the Whapi/WhatsApp channel, then generate and send a fresh link.
 
+
 ## 2026-06-08T10:23:30+03:00 - Complete full system audit
 
 Codex audited the production app, Telegram bridge, OpenAI sidekick, Drive
@@ -4740,6 +5178,7 @@ Results:
 
 Report: `ops/system-audits/2026-06-08-full-system-audit.md`
 
+
 ## 2026-06-07T12:46:50+03:00 - Final acceptance for split Telegram UI redesign
 
 Codex completed the final acceptance pass for the broken-up Telegram UI
@@ -4765,6 +5204,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-07T12:40:01+03:00 - Remove generic pending task lane wording
 
@@ -4792,6 +5232,7 @@ only in provenance fields.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-07T12:38:59+03:00 - Remove generic Tasks pending state for task #140
 
@@ -4824,6 +5265,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-05T19:13:10+03:00 - Completed UI visibility fix after app appeared unchanged
 
 Stopped the stuck child Codex worker for task #103, completed the visible UI/status work manually, deployed it to Railway, and marked live task #103 done/verified.
@@ -4845,6 +5287,7 @@ Verification:
 
 - source: codex_cli
 - worker: Codex
+
 
 ## 2026-06-05T15:16:20+03:00 - Complete task #98: Fix Telegram replies that appear cut off after capture summaries
 
@@ -4868,6 +5311,7 @@ scripts/telegram-kimi-bridge.mjs`, and `npm test` (20/20).
 - source: codex_cli
 - worker: Codex
 
+
 ## 2026-06-05T15:12:21+03:00 - Improve spoken Torah engagement parser mapping
 
 Improved mixed-recording parsing so spoken Torah timer updates can capture
@@ -4885,6 +5329,7 @@ scripts/telegram-kimi-bridge.mjs`, and `npm test`.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-05T12:13:12+03:00 - Complete agent task #49: Improve spoken Torah engagement parsing and timer mapping
 
@@ -4911,6 +5356,7 @@ Report: ops/agent-fleet-runs/2026-06-05T12-13-12-980Z-task-49.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-05T15:21:23+03:00 - Harden Telegram reply delivery diagnostics for task #98
 
 Follow-up hardening for the Telegram cut-off investigation. The bridge now uses
@@ -4928,6 +5374,7 @@ runner, not Jest.
 - task_id: 98
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-05T12:24:33+03:00 - Complete agent task #98: Check what happened in the telegram but he was in the middle of a sentence responding to something and the message got cut off with multiple speakers and if it's each speaker and then it says C fix that
 
@@ -4954,6 +5401,7 @@ Report: ops/agent-fleet-runs/2026-06-05T12-24-33-913Z-task-98.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-05T15:27:11+03:00 - Complete student Goal Board and Classroom/consequence design brief
 
 Created the planning-only handoff for task #65 at
@@ -4969,6 +5417,7 @@ No app code, database schema, or live task state was changed.
 - task_id: 65
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-05T12:30:56+03:00 - Complete agent task #65: Design student Goal Board, Classroom assignments, and consequence rules
 
@@ -4995,6 +5444,7 @@ Report: ops/agent-fleet-runs/2026-06-05T12-30-56-424Z-task-65.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-05T12:54:04+03:00 - Complete agent task #72: Build One Time Mishnah Class project/workspace model
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.
@@ -5019,6 +5469,7 @@ Report: ops/agent-fleet-runs/2026-06-05T12-54-04-242Z-task-72.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-05T12:55:26+03:00 - Agent task #100 blocked: Why aren't you able to investigate it what other things will you be able to do you need some sort of YouTube API or research apis or why can't you answer my questions be as helpful as regular chat GPT and be able to u...
 
@@ -5062,6 +5513,7 @@ Report: ops/agent-fleet-runs/2026-06-05T12-55-26-838Z-task-100.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-05T12:56:48+03:00 - Agent task #100 blocked: Why aren't you able to investigate it what other things will you be able to do you need some sort of YouTube API or research apis or why can't you answer my questions be as helpful as regular chat GPT and be able to u...
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because the Codex run or verifier phase failed.
@@ -5104,6 +5556,7 @@ Report: ops/agent-fleet-runs/2026-06-05T12-56-48-445Z-task-100.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-05T16:01:41+03:00 - Agent task #103 blocked: Handle UI updates after killing a process
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because the Codex run or verifier phase failed.
@@ -5118,6 +5571,7 @@ Report: ops/agent-fleet-runs/2026-06-05T16-01-41-916Z-task-103.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-05T19:34:45+03:00 - Implement Student Goal Board MVP in app UI
 
@@ -5149,6 +5603,7 @@ short-lived mocked Playwright UI smoke with screenshots under `screenshots/`.
 - source: codex_cli
 - worker: Codex
 
+
 ## 2026-06-05T16:37:10+03:00 - Complete agent task #108: Implement Student Goal Board MVP in app UI
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.
@@ -5173,6 +5628,7 @@ Report: ops/agent-fleet-runs/2026-06-05T16-37-10-804Z-task-108.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-05T19:56:19+03:00 - Build tablet access accountability mock provider and approval UI
 
@@ -5204,6 +5660,7 @@ Operations desktop/mobile and student mobile with screenshots under
 - source: codex_cli
 - worker: Codex
 
+
 ## 2026-06-05T16:59:08+03:00 - Complete agent task #109: Build tablet access accountability mock provider and approval UI
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.
@@ -5228,6 +5685,7 @@ Report: ops/agent-fleet-runs/2026-06-05T16-59-08-906Z-task-109.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-05T20:14:12+03:00 - Finish Rabbi Elie One Time scoped task access
 
@@ -5254,6 +5712,7 @@ login restrictions.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-05T17:16:16+03:00 - Complete agent task #110: Finish Rabbi Elie One Time task manager and scoped bot access
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.
@@ -5278,6 +5737,7 @@ Report: ops/agent-fleet-runs/2026-06-05T17-16-16-528Z-task-110.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-05T17:28:45+03:00 - Complete agent task #111: Make pending briefs visible in Operations task manager
 
@@ -5304,6 +5764,7 @@ Report: ops/agent-fleet-runs/2026-06-05T17-28-45-988Z-task-111.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-06T20:44:49+03:00 - Fix agent fleet completion gate and clean stuck raw task
 
 Audited why completed dashboard/UI work did not appear live: the agent fleet
@@ -5320,6 +5781,7 @@ the live task done with a clear implementation handoff.
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-06T20:59:00+03:00 - Clean historical raw task titles
 
 Cleaned old done/archive task titles #6, #7, #8, #9, #19, #23, #24, #25,
@@ -5329,6 +5791,7 @@ spoken fragments. Preserved their closed stages. Live audit afterward returned
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-06T21:16:16+03:00 - Complete full task-system closeout audit
 
@@ -5350,6 +5813,7 @@ Railway doctor, and live API smoke. Final Railway deployment:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-07T06:25:30+03:00 - Deploy page-top polish for task #126
 
 Compacted the mobile Operations Daily Command Center into a horizontal summary
@@ -5370,6 +5834,7 @@ Verification passed: `node --check server.js`, inline
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-07T06:27:01+03:00 - Fix mobile top-of-page layout across BNA pages
 
 Completed agent task #126 follow-up verification. The Operations Daily Command
@@ -5387,6 +5852,7 @@ mobile visual metrics.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-07T03:31:02+03:00 - Complete agent task #126: Fix the up of all the pages
 
@@ -5418,6 +5884,7 @@ Report: ops/agent-fleet-runs/2026-06-07T03-31-02-579Z-task-126.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-07T08:47:21+03:00 - Complete agent task #130: Build an app shell:
 
@@ -5463,6 +5930,7 @@ Report: ops/agent-fleet-runs/2026-06-07T08-47-21-783Z-task-130.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-07T12:09:01+03:00 - Patch task #130 Contacts acceptance miss
 
 Codex finished the remaining UI redesign acceptance gap from Telegram task #130: Contacts now renders as compact clickable roster cards with a selected detail panel instead of the legacy dense contacts table.
@@ -5477,6 +5945,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-07T12:22:49+03:00 - Reconcile split Telegram UI redesign spec
 
@@ -5500,6 +5969,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-07T12:31:26+03:00 - Correct Torah trip progress fractions for task #134
 
@@ -5526,6 +5996,7 @@ test returning HTTP 400.
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-07T09:36:10+03:00 - Complete agent task #134: One more thing to send to I know he changed everything back the 15% for each student but that's not what the actual numbers were so before he changed it back to 15 for everyone there were two students that on Friday t...
 
@@ -5558,6 +6029,7 @@ Report: ops/agent-fleet-runs/2026-06-07T09-36-10-385Z-task-134.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-07T09:46:49+03:00 - Complete agent task #140: Yes absolutely if there's nothing that needs my decision or approval they should be moved along the pipeline I don't want that section to exist either there should be no pending is something that there's some sort of...
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -5588,6 +6060,7 @@ Report: ops/agent-fleet-runs/2026-06-07T09-46-49-191Z-task-140.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-07T13:37:01+03:00 - Remove planned briefs from operator-facing Tasks
 
@@ -5621,6 +6094,7 @@ Verification:
 Reports:
 - `ops/openai-smokes/2026-06-07T10-33-12-340Z-openai-sidekick-smoke.md`
 - `ops/live-smokes/2026-06-07T10-33-48-070Z-live-app-smoke.md`
+
 
 ## 2026-06-07T16:53:00+03:00 - Signup package, payment options, and Changelog queue cleanup
 
@@ -5669,6 +6143,7 @@ Deployment:
 - PASS targeted live signup readback confirmed Registration Documents Package,
   bank transfer, and no old parent-facing wording.
 
+
 ## 2026-06-07T21:39:00+03:00 - Signup six-document full-screen signature flow
 
 Completed the follow-up signup redesign so parents sign six separate documents
@@ -5706,6 +6181,7 @@ Verification:
   (`ops/live-smokes/2026-06-07T18-38-49-806Z-live-app-smoke.md`)
 - PASS live mobile Playwright signup readback for English and Hebrew
 
+
 ## 2026-06-08 - Parent Handbook dedicated webpage viewer
 
 Implemented the Parent Handbook as a normal website page instead of the signup
@@ -5742,6 +6218,7 @@ Verification:
   modal, 58px header, normal page scroll, 5,414 rendered handbook characters,
   and signing section after content
 
+
 ## 2026-06-08 - Telegram planning mode and ramble task cleanup
 
 Implemented the first pass of Codex planning-mode behavior and cleaned the raw
@@ -5771,6 +6248,7 @@ Verification:
 Deployment:
 - Not deployed in this pass. Task #155 remains in progress until the changed
   bridge/server bundle is deployed and live-smoked.
+
 
 ## 2026-06-08T09:58:00+03:00 - Harden Codex planning-mode prompt refinement flow
 
@@ -5804,6 +6282,7 @@ Deployment:
 - Not deployed in this pass. The supervisor should deploy/restart the bridge
   and run live smoke verification before closing the live task.
 
+
 ## 2026-06-08T07:01:44+03:00 - Complete agent task #155: Add Codex planning-mode prompt refinement flow
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -5834,6 +6313,7 @@ Report: ops/agent-fleet-runs/2026-06-08T07-01-44-656Z-task-155.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-08T07:25:37+03:00 - Complete agent task #165: Smoke test task 1780903403685
 
@@ -5866,6 +6346,7 @@ Report: ops/agent-fleet-runs/2026-06-08T07-25-37-633Z-task-165.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-08T11:12:18+03:00 - Complete agent task #169: Smoke test Rabbi Elie One Time bot setup
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -5896,6 +6377,7 @@ Report: ops/agent-fleet-runs/2026-06-08T11-12-18-769Z-task-169.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-08T16:07:17+03:00 - Complete agent task #175: Set up automated Facebook post for autonomy questions
 
@@ -5940,6 +6422,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
 
 - source: agent_fleet
 - worker: Codex
+
 ## 2026-06-08 - Prepared Facebook Ad Numbers And GHL Landing Bot Prompt
 
 - Summarized the archived Facebook campaigns export for 2026-05-09 through
@@ -5952,6 +6435,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
 - Drafted `ops/marketing/ghl-bot/landing-page-bot-prompt-2026-06-08.md` as a
   copy-paste GHL landing-page bot prompt focused on BNA philosophy,
   parent-fit qualification, and current "only 7 spots left" availability.
+
 
 ## 2026-06-08 - Expanded GHL Bot Prompt And Hero Availability Badge
 
@@ -5970,6 +6454,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
   Railway doctor, and passed live app smoke
   `ops/live-smokes/2026-06-08T16-24-31-965Z-live-app-smoke.md`.
 
+
 ## 2026-06-08 - Clarified Current-Rate Admissions Copy
 
 - Changed the homepage hero badge to clarify the offer as `7 Spots Left` /
@@ -5987,6 +6472,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
   `5dfce5c9-39da-473f-8ee5-fa22d2409f4a`, Railway doctor, and live app smoke
   `ops/live-smokes/2026-06-08T16-34-38-980Z-live-app-smoke.md`.
 
+
 ## 2026-06-08 - Simplified Homepage Hero CTA
 
 - Removed the second large hero registration button so the hero has one primary
@@ -6000,6 +6486,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
   deployment `84c9e8b3-00ac-4031-b6e6-12629a6725c9`, and live app smoke
   `ops/live-smokes/2026-06-08T16-59-07-792Z-live-app-smoke.md`.
 
+
 ## 2026-06-08 - Removed FAQ Warning Banner
 
 - Removed the yellow clinical/special-education warning callout from the public
@@ -6008,6 +6495,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
   empty placeholder or missing-element error.
 - Verified inline FAQ script parsing, `npm test`, Railway deploy/doctor, and
   live app smoke.
+
 
 ## 2026-06-08 - Make Telegram post refinement chat-first
 
@@ -6023,6 +6511,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
 - Verified syntax checks, Operations inline script parse, targeted content
   routing tests, `npm test`, OpenAI smoke, Railway deploy/doctor, live app
   smoke, and academy Telegram bridge restart.
+
 
 ## 2026-06-08 - Published Facebook Reel And Fixed GHL Readback
 
@@ -6043,6 +6532,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
   `npm run openai:smoke`, Railway deployment
   `9b2bc30e-dc99-45f3-8cf6-52f98484235c`, Railway doctor, and live app smoke
   `ops/live-smokes/2026-06-08T16-24-46-030Z-live-app-smoke.md`.
+
 
 ## 2026-06-08 - Corrected Published Facebook Reel Copy And Media
 
@@ -6072,6 +6562,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
   `78ab9e17-f3ec-4df3-912c-5ef93528066c` as `INITIALIZING` while production
   continued to pass live smoke.
 
+
 ## 2026-06-08 - Published Enrollment YouTube Short
 
 - Published the same high-res admissions video through GHL Social Planner to the
@@ -6090,6 +6581,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
 - Verified live Content readback, live app smoke
   `ops/live-smokes/2026-06-08T16-58-56-733Z-live-app-smoke.md`, and Railway
   latest deployment `84c9e8b3-00ac-4031-b6e6-12629a6725c9` as `SUCCESS`.
+
 
 ## 2026-06-09 - Configured Whapi WhatsApp Channel
 
@@ -6114,6 +6606,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-07-17-704Z-task-175.md
   `ops/live-smokes/2026-06-09T14-18-08-733Z-live-app-smoke.md`.
 - Railway deployment `ce745559-7b8a-402c-822f-a2709c1246d1` reached SUCCESS
   with the current local bundle.
+
 
 ## 2026-06-08T16:28:01+03:00 - Complete agent task #181: Smoke test task 1780935902500
 
@@ -6157,6 +6650,7 @@ Report: ops/agent-fleet-runs/2026-06-08T16-28-01-813Z-task-181.md
 - Ignored generated `ops/system-audits/*-watchdog.md` reports in Git so the always-running watchdog does not flood the working tree; durable summaries remain in this changelog and the ledger.
 - Verified `node --check scripts/agent-fleet-supervisor.mjs`, `node --check server.js`, `node --check scripts/telegram-kimi-bridge.mjs`, `npm test` 48/48, dry-run watchdog report `ops/system-audits/2026-06-08T16-55-17-051Z-watchdog.md`, live watchdog report `ops/system-audits/2026-06-08T16-58-09-743Z-watchdog.md`, and Railway deployment `84c9e8b3-00ac-4031-b6e6-12629a6725c9` SUCCESS.
 
+
 ## 2026-06-08T17:36:38+03:00 - Complete agent task #191: Remove Telegram task quick-action buttons
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -6188,6 +6682,7 @@ Report: ops/agent-fleet-runs/2026-06-08T17-36-38-627Z-task-191.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-08T17:43:59+03:00 - Complete agent task #192: The dot org website you're getting confused between the dot org website and our own operations app the dot org website should go straight to the website my operations app is on my tablet how you're arranging it on the...
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -6218,6 +6713,7 @@ Report: ops/agent-fleet-runs/2026-06-08T17-43-59-118Z-task-192.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-08T18:15:05+03:00 - Agent task #195 blocked: Yes definitely fix up that thing but your student is super professional really legit way so nothing gets messed up cuz there's other critical warnings and we need to put this in the change log Yes definitely fix up th...
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -6235,6 +6731,7 @@ Report: ops/agent-fleet-runs/2026-06-08T18-15-05-258Z-task-195.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-08T18:19:45+03:00 - Complete agent task #195: Add watchdog soft repair for obvious task warnings
 
@@ -6267,6 +6764,7 @@ Report: ops/agent-fleet-runs/2026-06-08T18-19-45-740Z-task-195.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-08T18:19:57+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -6281,6 +6779,7 @@ Report: ops/system-audits/2026-06-08T18-19-57-630Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T15:08:01+03:00 - Registration/provider/student-security pass deployed and verified
 
@@ -6307,6 +6806,7 @@ Open decisions:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T19:42:50+03:00 - Verify Onkelos Source Sheet Upload
 
 - Re-audited task #231 after it was requeued from a fleet gate failure.
@@ -6319,6 +6819,7 @@ Open decisions:
   linked from the live event.
 - No live task status was changed; supervisor should close the task after its
   normal baseline verification.
+
 
 ## 2026-06-09T18:56:40+03:00 - Operations task comments and dictation guard
 
@@ -6342,6 +6843,7 @@ Files: `public/operations.html`, `tests/operations-task-comments-and-dictation.t
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T15:28:30+03:00 - Cleaned Decisions lane and fixed task routing
 
@@ -6367,6 +6869,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T06:34:06+03:00 - Add Torah Research task category and Sefaria workflow
 
@@ -6416,6 +6919,7 @@ Files:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T05:56:15+03:00 - Expand watchdog with daily improvement Decisions
 
 Implemented the watchdog improvement-audit lane.
@@ -6463,6 +6967,7 @@ Files:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T06:54:26+03:00 - Android PWA Launch Restored To Operations
 
 Changed the installed Android/PWA entry behavior so the app opens `/operations` while normal browser visits to `https://bneineviimacademy.org/` remain on the public website.
@@ -6475,6 +6980,7 @@ Changed the installed Android/PWA entry behavior so the app opens `/operations` 
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-08T22:56:10+03:00 - Use newest Drive images for Learning Moments carousel
 
@@ -6512,6 +7018,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-08T18:21:05+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -6529,6 +7036,7 @@ Report: ops/system-audits/2026-06-08T18-21-05-167Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-08T21:24:19+03:00 - Audit and refine watchdog warning lifecycle
 
@@ -6564,6 +7072,7 @@ Audit report:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-08T19:50:11+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -6578,6 +7087,7 @@ Report: ops/system-audits/2026-06-08T19-50-11-326Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-08T19:51:17+03:00 - Watchdog incident resolved
 
@@ -6597,6 +7107,7 @@ Report: ops/system-audits/2026-06-08T19-51-17-539Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-08T19:53:31+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -6611,6 +7122,7 @@ Report: ops/system-audits/2026-06-08T19-53-31-937Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-08T19:54:38+03:00 - Watchdog incident changed to WARN
 
@@ -6630,6 +7142,7 @@ Report: ops/system-audits/2026-06-08T19-54-38-661Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-08T19:55:47+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -6648,6 +7161,7 @@ Report: ops/system-audits/2026-06-08T19-55-47-415Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-08T19:58:02+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -6662,6 +7176,7 @@ Report: ops/system-audits/2026-06-08T19-58-02-709Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-08T19:58:21+03:00 - Complete agent task #201: Use the newest Drive intake images for the homepage Learning Moments carousel
 
@@ -6705,6 +7220,7 @@ Report: ops/agent-fleet-runs/2026-06-08T19-58-21-162Z-task-201.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-08T19:59:09+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -6723,6 +7239,7 @@ Report: ops/system-audits/2026-06-08T19-59-09-240Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-08T20:00:16+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -6740,6 +7257,7 @@ Report: ops/system-audits/2026-06-08T20-00-16-051Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-08T20:18:46+03:00 - Patch watchdog Telegram resolution pings
 
@@ -6770,6 +7288,7 @@ Latest OK report:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T03:51:46+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -6784,6 +7303,7 @@ Report: ops/system-audits/2026-06-09T03-51-46-262Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T03:52:52+03:00 - Watchdog incident changed to WARN
 
@@ -6803,6 +7323,7 @@ Report: ops/system-audits/2026-06-09T03-52-52-264Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T03:53:57+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -6821,6 +7342,7 @@ Report: ops/system-audits/2026-06-09T03-53-57-796Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T05:06:29+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -6835,6 +7357,7 @@ Report: ops/system-audits/2026-06-09T05-06-29-653Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T05:07:40+03:00 - Watchdog incident resolved
 
@@ -6854,6 +7377,7 @@ Report: ops/system-audits/2026-06-09T05-07-40-389Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T05:09:52+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -6868,6 +7392,7 @@ Report: ops/system-audits/2026-06-09T05-09-52-941Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T05:11:01+03:00 - Watchdog incident resolved
 
@@ -6886,6 +7411,7 @@ Report: ops/system-audits/2026-06-09T05-11-01-026Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T08:15:27+03:00 - Complete GHL API/widget replacement options research
 
@@ -6921,6 +7447,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T05:22:05+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -6935,6 +7462,7 @@ Report: ops/system-audits/2026-06-09T05-22-05-735Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T05:22:16+03:00 - Complete agent task #205: Why that didn't happen but there is a task that we have to do some research regarding options for ghl the things that I need are the YouTube API Facebook page API and Google business profile API access for our system...
 
@@ -6967,6 +7495,7 @@ Report: ops/agent-fleet-runs/2026-06-09T05-22-16-998Z-task-205.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T05:23:11+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -6985,6 +7514,7 @@ Report: ops/system-audits/2026-06-09T05-23-11-734Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T05:24:17+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -7002,6 +7532,7 @@ Report: ops/system-audits/2026-06-09T05-24-17-115Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T08:26:00+03:00 - Map GHL WhatsApp interested-parent lead tracking
 
@@ -7025,6 +7556,7 @@ Files:
 - `tasks-pending/2026-06-09-warm-leads-and-task-filters.md`
 - `ops/agent-task-ledger.jsonl`
 
+
 ## 2026-06-09T08:40:00+03:00 - Record Wappy versus GHL WhatsApp decision branch
 
 Captured the operator's question about whether to keep GHL only because the
@@ -7047,6 +7579,7 @@ Files:
 - `ops/marketing/ghl-api-widget-options-2026-06-09.md`
 - `ops/agent-task-ledger.jsonl`
 
+
 ## 2026-06-09T08:52:00+03:00 - Clarify Contacts lead CRM status and GHL access
 
 Answered the operator's status question about interested-parent lead tracking.
@@ -7067,6 +7600,7 @@ Files:
 - `tasks-pending/2026-06-09-warm-leads-and-task-filters.md`
 - `ops/agent-task-ledger.jsonl`
 
+
 ## 2026-06-09T05:34:17+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -7081,6 +7615,7 @@ Report: ops/system-audits/2026-06-09T05-34-17-847Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T05:35:27+03:00 - Watchdog incident resolved
 
@@ -7099,6 +7634,7 @@ Report: ops/system-audits/2026-06-09T05-35-27-117Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T08:38:04+03:00 - Deploy Operations compact subcategory filters
 
@@ -7131,6 +7667,7 @@ Files:
 - `MEMORY.md`
 - `TASKS.md`
 - `ops/agent-task-ledger.jsonl`
+
 
 ## 2026-06-09T09:08:49+03:00 - Deploy inline Contacts cards and tag dropdowns
 
@@ -7169,6 +7706,7 @@ Files:
 - `tasks-pending/2026-06-09-warm-leads-and-task-filters.md`
 - `ops/agent-task-ledger.jsonl`
 
+
 ## 2026-06-09T09:22:58+03:00 - Deploy Operations dropdown filter cleanup
 
 Implemented the operator's request that the compact dropdown pattern apply
@@ -7206,6 +7744,7 @@ Files:
 - `MEMORY.md`
 - `ops/agent-task-ledger.jsonl`
 
+
 ## 2026-06-09T05:54:16+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -7220,6 +7759,7 @@ Report: ops/system-audits/2026-06-09T05-54-16-696Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T05:55:23+03:00 - Watchdog incident resolved
 
@@ -7239,6 +7779,7 @@ Report: ops/system-audits/2026-06-09T05-55-23-021Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T05:58:46+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -7253,6 +7794,7 @@ Report: ops/system-audits/2026-06-09T05-58-46-283Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T05:59:52+03:00 - Watchdog incident changed to WARN
 
@@ -7272,6 +7814,7 @@ Report: ops/system-audits/2026-06-09T05-59-52-254Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T06:00:58+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -7290,6 +7833,7 @@ Report: ops/system-audits/2026-06-09T06-00-58-246Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T06:06:47+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -7304,6 +7848,7 @@ Report: ops/system-audits/2026-06-09T06-06-47-524Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T06:07:55+03:00 - Watchdog incident resolved
 
@@ -7323,6 +7868,7 @@ Report: ops/system-audits/2026-06-09T06-07-55-252Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T06:14:40+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -7337,6 +7883,7 @@ Report: ops/system-audits/2026-06-09T06-14-40-209Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T06:15:46+03:00 - Watchdog incident resolved
 
@@ -7355,6 +7902,7 @@ Report: ops/system-audits/2026-06-09T06-15-46-430Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T09:17:56+03:00 - Deployed Contacts Interested Parents CRM first pass
 
@@ -7387,6 +7935,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T06:20:12+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -7401,6 +7950,7 @@ Report: ops/system-audits/2026-06-09T06-20-12-648Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T06:21:19+03:00 - Watchdog incident resolved
 
@@ -7420,6 +7970,7 @@ Report: ops/system-audits/2026-06-09T06-21-19-557Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T06:32:24+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -7434,6 +7985,7 @@ Report: ops/system-audits/2026-06-09T06-32-24-959Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T06:33:35+03:00 - Watchdog incident resolved
 
@@ -7453,6 +8005,7 @@ Report: ops/system-audits/2026-06-09T06-33-35-159Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T08:06:45+03:00 - Agent task #220 blocked: Audit missed Telegram ingestion for messages 645-646
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7470,6 +8023,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-06-45-388Z-task-220.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T08:07:50+03:00 - Agent task #220 blocked: Audit missed Telegram ingestion for messages 645-646
 
@@ -7489,6 +8043,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-07-50-531Z-task-220.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T11:12:33+03:00 - Requeue missed Telegram ingestion audit for agent fleet
 
 Created live Codex task #220 for the missed Telegram ingestion audit, added the internal handoff brief, repaired the Windows Codex CLI path used by the agent fleet, reset the runtime-only failed attempts, and restarted the supervisor. The fleet claimed #220 after restart.
@@ -7500,6 +8055,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T11:25:00+03:00 - Complete missed Telegram ingestion audit for messages 645-646
 
@@ -7535,6 +8091,7 @@ Report: `ops/agent-fleet-runs/2026-06-09T11-25-00-task-220-complete.md`
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T08:35:15+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -7549,6 +8106,7 @@ Report: ops/system-audits/2026-06-09T08-35-15-695Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T08:36:25+03:00 - Watchdog incident changed to WARN
 
@@ -7568,6 +8126,7 @@ Report: ops/system-audits/2026-06-09T08-36-25-044Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T08:37:31+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -7585,6 +8144,7 @@ Report: ops/system-audits/2026-06-09T08-37-31-706Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T11:38:41+03:00 - Operations mobile filters use in-page dropdowns
 
@@ -7608,6 +8168,7 @@ Verified:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T08:42:33+03:00 - Agent task #220 blocked: Audit missed Telegram ingestion for messages 645-646
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7625,6 +8186,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-42-33-390Z-task-220.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T08:43:59+03:00 - Agent task #220 blocked: Audit missed Telegram ingestion for messages 645-646
 
@@ -7644,6 +8206,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-43-59-982Z-task-220.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T08:45:26+03:00 - Agent task #225 blocked: Remove Codex test parent from active records
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7661,6 +8224,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-45-26-494Z-task-225.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T08:46:52+03:00 - Agent task #225 blocked: Remove Codex test parent from active records
 
@@ -7680,6 +8244,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-46-52-225Z-task-225.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T08:48:16+03:00 - Agent task #232 blocked: Parse and upload all source references with student question links
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7697,6 +8262,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-48-16-569Z-task-232.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T08:49:43+03:00 - Agent task #232 blocked: Parse and upload all source references with student question links
 
@@ -7716,6 +8282,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-49-43-603Z-task-232.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T08:51:12+03:00 - Agent task #231 blocked: Upload source sheet for Onkelos the Gere
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7733,6 +8300,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-51-12-123Z-task-231.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T08:52:37+03:00 - Agent task #231 blocked: Upload source sheet for Onkelos the Gere
 
@@ -7752,6 +8320,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-52-37-604Z-task-231.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T08:54:06+03:00 - Agent task #221 blocked: Build parent and student accountability portals
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7769,6 +8338,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-54-06-059Z-task-221.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T08:55:31+03:00 - Agent task #221 blocked: Build parent and student accountability portals
 
@@ -7788,6 +8358,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-55-31-334Z-task-221.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T08:56:56+03:00 - Agent task #222 blocked: Add parent meeting uploads that parse into accountability
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7805,6 +8376,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-56-56-973Z-task-222.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T08:58:23+03:00 - Agent task #222 blocked: Add parent meeting uploads that parse into accountability
 
@@ -7824,6 +8396,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-58-23-590Z-task-222.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T08:59:49+03:00 - Agent task #223 blocked: Add parent accountability chat window
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7841,6 +8414,7 @@ Report: ops/agent-fleet-runs/2026-06-09T08-59-49-939Z-task-223.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T09:01:17+03:00 - Agent task #223 blocked: Add parent accountability chat window
 
@@ -7860,6 +8434,7 @@ Report: ops/agent-fleet-runs/2026-06-09T09-01-17-303Z-task-223.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T09:02:45+03:00 - Agent task #224 blocked: Add internal and external People filtering
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7877,6 +8452,7 @@ Report: ops/agent-fleet-runs/2026-06-09T09-02-45-016Z-task-224.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T09:04:20+03:00 - Agent task #224 blocked: Add internal and external People filtering
 
@@ -7896,6 +8472,7 @@ Report: ops/agent-fleet-runs/2026-06-09T09-04-20-654Z-task-224.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T09:05:46+03:00 - Agent task #228 blocked: Add kid-to-parent checkoff notifications
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7913,6 +8490,7 @@ Report: ops/agent-fleet-runs/2026-06-09T09-05-46-234Z-task-228.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T09:07:12+03:00 - Agent task #228 blocked: Add kid-to-parent checkoff notifications
 
@@ -7932,6 +8510,7 @@ Report: ops/agent-fleet-runs/2026-06-09T09-07-12-230Z-task-228.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T09:08:51+03:00 - Agent task #229 blocked: Trim black opening frame from admissions video
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7949,6 +8528,7 @@ Report: ops/agent-fleet-runs/2026-06-09T09-08-51-992Z-task-229.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T09:10:28+03:00 - Agent task #229 blocked: Trim black opening frame from admissions video
 
@@ -7968,6 +8548,7 @@ Report: ops/agent-fleet-runs/2026-06-09T09-10-28-347Z-task-229.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T10:13:11+03:00 - Agent task #235 blocked: Look up Baba Sali Sefer name and sources
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -7985,6 +8566,7 @@ Report: ops/agent-fleet-runs/2026-06-09T10-13-11-180Z-task-235.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T10:14:48+03:00 - Agent task #235 blocked: Look up Baba Sali Sefer name and sources
 
@@ -8004,6 +8586,7 @@ Report: ops/agent-fleet-runs/2026-06-09T10-14-48-249Z-task-235.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T13:34:20+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8018,6 +8601,7 @@ Report: ops/system-audits/2026-06-09T13-34-20-193Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T13:35:30+03:00 - Watchdog incident changed to CRITICAL
 
@@ -8048,6 +8632,7 @@ Report: ops/system-audits/2026-06-09T13-35-30-034Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T13:36:38+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8077,6 +8662,7 @@ Report: ops/system-audits/2026-06-09T13-36-38-246Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T13:46:56+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8094,6 +8680,7 @@ Report: ops/system-audits/2026-06-09T13-46-56-738Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T13:48:03+03:00 - Watchdog incident changed to WARN
 
@@ -8113,6 +8700,7 @@ Report: ops/system-audits/2026-06-09T13-48-03-201Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T13:49:15+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -8131,6 +8719,7 @@ Report: ops/system-audits/2026-06-09T13-49-15-437Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T13:57:12+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8145,6 +8734,7 @@ Report: ops/system-audits/2026-06-09T13-57-12-622Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T13:58:21+03:00 - Watchdog incident resolved
 
@@ -8164,6 +8754,7 @@ Report: ops/system-audits/2026-06-09T13-58-21-612Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T14:08:30+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8178,6 +8769,7 @@ Report: ops/system-audits/2026-06-09T14-08-30-939Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T14:09:39+03:00 - Watchdog incident resolved
 
@@ -8196,6 +8788,7 @@ Report: ops/system-audits/2026-06-09T14-09-39-131Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T14:10:48+03:00 - Watchdog incident opened as CRITICAL
 
@@ -8222,6 +8815,7 @@ Report: ops/system-audits/2026-06-09T14-10-48-937Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T14:11:58+03:00 - Watchdog incident changed to CRITICAL
 
@@ -8262,6 +8856,7 @@ Report: ops/system-audits/2026-06-09T14-11-58-740Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T14:13:08+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8300,6 +8895,7 @@ Report: ops/system-audits/2026-06-09T14-13-08-659Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T14:14:17+03:00 - Watchdog incident changed to CRITICAL
 
@@ -8340,6 +8936,7 @@ Report: ops/system-audits/2026-06-09T14-14-17-285Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T14:15:25+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8379,6 +8976,7 @@ Report: ops/system-audits/2026-06-09T14-15-25-168Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T14:16:32+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8408,6 +9006,7 @@ Report: ops/system-audits/2026-06-09T14-16-32-151Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T14:18:46+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -8426,6 +9025,7 @@ Report: ops/system-audits/2026-06-09T14-18-46-778Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T14:25:29+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8440,6 +9040,7 @@ Report: ops/system-audits/2026-06-09T14-25-29-976Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T14:26:37+03:00 - Watchdog incident resolved
 
@@ -8459,6 +9060,7 @@ Report: ops/system-audits/2026-06-09T14-26-37-301Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T14:53:45+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8473,6 +9075,7 @@ Report: ops/system-audits/2026-06-09T14-53-45-847Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T14:54:54+03:00 - Watchdog incident resolved
 
@@ -8491,6 +9094,7 @@ Report: ops/system-audits/2026-06-09T14-54-54-447Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T18:00:25+03:00 - Watchdog Railway deploy-state noise fixed
 
@@ -8512,6 +9116,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T15:19:19+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8526,6 +9131,7 @@ Report: ops/system-audits/2026-06-09T15-19-19-734Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T15:27:16+03:00 - Watchdog incident resolved
 
@@ -8544,6 +9150,7 @@ Report: ops/system-audits/2026-06-09T15-27-16-607Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T15:30:19+03:00 - Agent task #231 blocked: Upload source sheet for Onkelos the Gere
 
@@ -8574,6 +9181,7 @@ Report: ops/agent-fleet-runs/2026-06-09T15-30-19-830Z-task-231.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T18:31:00+03:00 - Organic Clip Factory first pass verified
 
@@ -8609,6 +9217,7 @@ Open follow-up:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T15:38:50+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8623,6 +9232,7 @@ Report: ops/system-audits/2026-06-09T15-38-50-586Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T15:40:03+03:00 - Watchdog incident resolved
 
@@ -8641,6 +9251,7 @@ Report: ops/system-audits/2026-06-09T15-40-03-469Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T15:49:47+03:00 - Agent task #232 blocked: Parse and upload all source references with student question links
 
@@ -8672,6 +9283,7 @@ Report: ops/agent-fleet-runs/2026-06-09T15-49-47-695Z-task-232.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T16:00:14+03:00 - Agent task #213 blocked: Verify watchdog secret-scan findings without rotating keys
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -8701,6 +9313,7 @@ Report: ops/agent-fleet-runs/2026-06-09T16-00-14-371Z-task-213.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T16:10:06+03:00 - Agent task #213 blocked: Verify watchdog secret-scan findings without rotating keys
 
@@ -8732,6 +9345,7 @@ Report: ops/agent-fleet-runs/2026-06-09T16-10-06-180Z-task-213.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T16:18:59+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8747,6 +9361,7 @@ Report: ops/system-audits/2026-06-09T16-18-59-260Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T16:27:03+03:00 - Agent task #232 blocked: Parse and upload all source references with student question links
 
@@ -8776,6 +9391,7 @@ Report: ops/agent-fleet-runs/2026-06-09T16-27-03-407Z-task-232.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T16:38:55+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -8795,6 +9411,7 @@ Report: ops/system-audits/2026-06-09T16-38-55-689Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T16:40:04+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -8812,6 +9429,7 @@ Report: ops/system-audits/2026-06-09T16-40-04-559Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T20:34:00+03:00 - Imported YouTube playlist transcripts into Content
 
@@ -8851,6 +9469,7 @@ Note:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T16:46:52+03:00 - Complete agent task #231: Upload source sheet for Onkelos the Gere
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -8882,6 +9501,7 @@ Report: ops/agent-fleet-runs/2026-06-09T16-46-52-743Z-task-231.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T19:50:31+03:00 - Label dormant React TaskApp as legacy
 
 - Marked `src/app/operations/components/TaskApp.tsx` with a prominent
@@ -8898,6 +9518,7 @@ Report: ops/agent-fleet-runs/2026-06-09T16-46-52-743Z-task-231.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T16:55:52+03:00 - Complete agent task #212: Label dormant React TaskApp as legacy
 
@@ -8929,6 +9550,7 @@ Report: ops/agent-fleet-runs/2026-06-09T16-55-52-196Z-task-212.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T15:47:29+03:00 - Complete parent/student/provider UI recheck and Operations Action Registry pass
 
@@ -8968,6 +9590,7 @@ Deployment:
 - Not deployed. Workspace contains many unrelated dirty changes; see
   `ops/qa-runs/2026-06-11-master-execution-git-status.txt`.
 
+
 ## 2026-06-11 - Parent/student portal and calendar P0 polish
 
 Focused user-facing pass for the BNA Parent Portal, BNA Student Workspace, provider participant portal, and calendar.
@@ -8995,6 +9618,7 @@ Deployment:
 - Not deployed by instruction.
 - Deployment remains blocked by unrelated dirty workspace state; exact status snapshot is in ops/qa-runs/2026-06-11-parent-student-calendar-polish-git-status.txt.
 
+
 ## 2026-06-11 - Captured Operations Action Registry product direction
 
 Captured operator direction that Telegram, in-app bots, and UI buttons should all
@@ -9010,6 +9634,7 @@ Updated:
 - `ops/agent-task-ledger.jsonl`
 
 No implementation or deploy was performed in this capture pass.
+
 
 ## 2026-06-11T12:41:11+03:00 - Task 452 Student Source Sheet: YouTube Looming Crisis
 
@@ -9036,6 +9661,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T12:34:19+03:00 - Refresh BNA content-generation prompts to Shloimie's professional voice
 
@@ -9089,6 +9715,7 @@ Verification:
 - PASS `npm run railway:doctor`
 - PASS `npm run app:smoke`: `ops/live-smokes/2026-06-11T09-33-31-541Z-live-app-smoke.md`
 
+
 ## 2026-06-10T19:03:36+03:00 - Complete BNA Operations SaaS/CRM redesign
 
 - Rebuilt the live Operations surface around a global SaaS shell with workspace
@@ -9120,6 +9747,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T17:18:00+03:00 - Implement One Time meeting drops and student navigation cleanup
 
 Implemented the approved One Time/Rabbi meeting-drop plan and the student navigation cleanup.
@@ -9147,6 +9775,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T16:40:01+03:00 - Task 415 Rabbi Video Prompt Patch Library
 
 - Created `content-memory/prompt-patches/rabbi-video-content/` as the reusable
@@ -9169,6 +9798,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T13:27:24+03:00 - Task 399 Next-Year Login Readiness
 
@@ -9193,6 +9823,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T14:11:00+03:00 - Built and emailed BNA laptop installer
 
@@ -9223,6 +9854,7 @@ Note:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T12:31:51+03:00 - Task 363 Workflow S Monthly Financial Report
 
 - Documented One Time Workflow S as a live roadmap/task card for monthly
@@ -9244,6 +9876,7 @@ Note:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T11:55:29+03:00 - Task 352 Workflow H Upgrade/Downgrade
 
 - Documented One Time Workflow H as a live roadmap/task card for moving
@@ -9262,6 +9895,7 @@ Note:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T08:10:00+03:00 - Corrected latest Telegram UI task capture
 
@@ -9297,6 +9931,7 @@ Files: [server.js](<C:/Users/User/BNA v2.0/server.js>),
 [telegram-ramble-routing-regression.test.js](<C:/Users/User/BNA v2.0/tests/telegram-ramble-routing-regression.test.js>),
 [TASKS.md](<C:/Users/User/BNA v2.0/TASKS.md>).
 
+
 ## 2026-06-10T08:02:30+03:00 - Fixed BNA source-sheet project routing
 
 Codex fixed the project-routing bug exposed while auditing the Telegram
@@ -9328,6 +9963,7 @@ Files: [server.js](<C:/Users/User/BNA v2.0/server.js>),
 [TASKS.md](<C:/Users/User/BNA v2.0/TASKS.md>),
 [source-sheet handoff](<C:/Users/User/BNA v2.0/tasks-pending/2026-06-10-transcript-wide-source-sheet-production.md>).
 
+
 ## 2026-06-10T08:00:12+03:00 - Parent portal calendar, help, login, and Hebrew cleanup deployed
 
 Implemented the parent portal upgrade requested by the operator: parent email/password login with reset flow, calendar-first progress view, parent help ticket intake with internal tags, parent-controlled student access links, source-free parent question display, stricter filtering for vague internal recording prompts, billing/status display cleanup, and full Hebrew/RTL labels for the parent first screen and portal controls.
@@ -9346,6 +9982,7 @@ Live smoke report: `ops/live-smokes/2026-06-10T04-59-16-676Z-live-app-smoke.md`
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T23:31:42+03:00 - Correct Operations phone/PWA launch for task #278
 
@@ -9379,6 +10016,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T06:42:30+03:00 - Telegram conversation audit and parser fixes
 
 Audited the recent Telegram conversation and corrected the missed natural-language work.
@@ -9408,6 +10046,7 @@ Files: [server.js](<C:/Users/User/BNA v2.0/server.js>), [telegram-agent-intent.j
 - source: codex_audit
 - worker: Codex
 
+
 ## 2026-06-10T07:07:16+03:00 - Telegram message 948 task record corrected
 
 Corrected live task #310 after the audit found it was visibly mis-titled as `Expand Research section to source all class topics`.
@@ -9422,6 +10061,7 @@ Live correction:
 
 - source: codex_audit
 - worker: Codex
+
 
 ## 2026-06-10T07:07:16+03:00 - Telegram compound parser task split fixed
 
@@ -9439,6 +10079,7 @@ Deployment: Railway `82e8fbee-a30c-4c60-aab2-ebb6fd104fd0`
 
 - source: codex_audit
 - worker: Codex
+
 
 ## 2026-06-10T07:00:55+03:00 - Telegram WhatsApp parser cleanup miss fixed
 
@@ -9472,6 +10113,7 @@ Files: [server.js](<C:/Users/User/BNA v2.0/server.js>), [telegram-kimi-bridge.mj
 - source: codex_audit
 - worker: Codex
 
+
 ## 2026-06-10T06:27:40+03:00 - Task 286 Requeue Task Comments For Codex Follow-Up
 
 - Human task comments from Operations, Telegram, or API now reactivate the task:
@@ -9498,6 +10140,7 @@ Files: [server.js](<C:/Users/User/BNA v2.0/server.js>), [telegram-kimi-bridge.mj
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T23:07:54+03:00 - Complete task #276: Create One Time partnership Drive workspace and project task map
 
@@ -9532,6 +10175,7 @@ https://drive.google.com/drive/folders/1Mt8pe6kfddMYTYwoINfQiPszH41IZ2fm
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T23:25:28+03:00 - Complete Task 278 Operations Phone App Launch Fix
 
 - Fixed the Operations phone/PWA install path so the Operations login page
@@ -9562,6 +10206,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T21:02:37+03:00 - Verify Content prompt feedback regenerate flow
 
@@ -9597,6 +10242,7 @@ Verification:
 
 Live smoke: `ops/live-smokes/2026-06-09T18-01-36-963Z-live-app-smoke.md`
 
+
 ## 2026-06-09T20:04:18+03:00 - Build Parent And Student Accountability Portals
 
 - Verified the existing student access-code portal and passwordless parent
@@ -9620,6 +10266,7 @@ Live smoke: `ops/live-smokes/2026-06-09T18-01-36-963Z-live-app-smoke.md`
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T21:46:00+03:00 - Added Dratler parent and external accountability records
 
@@ -9645,6 +10292,7 @@ Follow-up filed:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T21:32:33+03:00 - Clarified parent portal open versus send buttons
 
 Codex split the Operations parent portal actions into explicit buttons:
@@ -9666,6 +10314,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T21:05:46+03:00 - Fix Operations decision-card completion flow
 
@@ -9691,6 +10340,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T17:07:48+03:00 - Complete agent task #221: Build parent and student accountability portals
 
@@ -9723,6 +10373,7 @@ Report: ops/agent-fleet-runs/2026-06-09T17-07-48-121Z-task-221.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T17:23:36+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -9737,6 +10388,7 @@ Report: ops/system-audits/2026-06-09T17-23-36-262Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T11:18:18+03:00 - Task 348 Workflow D Abandoned Checkout Card
 
@@ -9764,6 +10416,7 @@ Report: ops/system-audits/2026-06-09T17-23-36-262Z-watchdog.md
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T10:29:38+03:00 - Task 364 Workflow T Internal App Operating Workflow
 
 - Documented One Time Workflow T as the internal app operating workflow card for keeping task, support-ticket, bot/runtime, watchdog, deployment-smoke, and roadmap status current.
@@ -9775,6 +10428,7 @@ Report: ops/system-audits/2026-06-09T17-23-36-262Z-watchdog.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T10:17:50+03:00 - Task 358 Workflow N Support Ticket Card
 
@@ -9795,6 +10449,7 @@ Report: ops/system-audits/2026-06-09T17-23-36-262Z-watchdog.md
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T10:06:34+03:00 - Task 347 Workflow C Landing Page Routing
 
 - Documented One Time Workflow C as a live roadmap/task card for US/UK landing
@@ -9813,6 +10468,7 @@ Report: ops/system-audits/2026-06-09T17-23-36-262Z-watchdog.md
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T09:12:55+03:00 - Task 322 Transcript-Wide Source Sheets
 
 - Produced the transcript-wide BNA class source-sheet workbook at
@@ -9830,6 +10486,7 @@ Report: ops/system-audits/2026-06-09T17-23-36-262Z-watchdog.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T08:43:32+03:00 - Completed corrected Telegram UI task #328
 
@@ -9860,6 +10517,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T07:41:46+03:00 - Transcript-wide source-sheet backlog created
 
 Audited the Telegram/task state for the worksheet/source-sheet request.
@@ -9884,6 +10542,7 @@ duplicate #324 was archived and #325 tracks the project-routing fix.
 - source: codex_audit
 - worker: Codex
 
+
 ## 2026-06-10T06:18:30+03:00 - Corrected task 209 after watchdog title repair
 
 Task #209 was corrected after a watchdog soft repair changed its title to a
@@ -9899,6 +10558,7 @@ Final state:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T22:55:00+03:00 - Complete task #273: Smoke test Rabbi Elie One Time bot setup
 
@@ -9935,6 +10595,7 @@ Report: ops/agent-fleet-runs/2026-06-09T22-52-38-task-273.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T22:44:40+03:00 - Google Classroom worksheet assignment lane deployed
 
@@ -9980,6 +10641,7 @@ Remaining external setup:
 - message_id: 826
 - worker: Codex
 
+
 ## 2026-06-09T21:27:55+03:00 - Fixed mixed parent-pipeline/source-sheet task routing
 
 Completed task #261 from Telegram message 809.
@@ -9999,6 +10661,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T21:24:46+03:00 - Fixed parent portal access-link handoff and student source display
 
@@ -10025,6 +10688,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T20:26:30+03:00 - Add Parent Meeting Uploads Into Accountability
 
 - Added `bna_parent_meeting_uploads` for parent-submitted meeting recordings,
@@ -10050,6 +10714,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T17:27:52+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a CRITICAL incident.
@@ -10067,6 +10732,7 @@ Report: ops/system-audits/2026-06-09T17-27-52-833Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T17:29:56+03:00 - Agent task #222 blocked: Add parent meeting uploads that parse into accountability
 
@@ -10095,6 +10761,7 @@ Report: ops/agent-fleet-runs/2026-06-09T17-29-56-110Z-task-222.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T17:37:57+03:00 - Complete agent task #222: Add parent meeting uploads that parse into accountability
 
@@ -10127,6 +10794,7 @@ Report: ops/agent-fleet-runs/2026-06-09T17-37-57-053Z-task-222.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T17:46:53+03:00 - Agent task #223 blocked: Add parent accountability chat window
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -10154,6 +10822,7 @@ Report: ops/agent-fleet-runs/2026-06-09T17-46-53-847Z-task-223.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T17:52:26+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10168,6 +10837,7 @@ Report: ops/system-audits/2026-06-09T17-52-26-431Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T17:54:07+03:00 - Complete agent task #223: Add parent accountability chat window
 
@@ -10200,6 +10870,7 @@ Report: ops/agent-fleet-runs/2026-06-09T17-54-07-755Z-task-223.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T17:54:06+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a CRITICAL incident.
@@ -10218,6 +10889,7 @@ Report: ops/system-audits/2026-06-09T17-54-06-774Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T17:59:07+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10232,6 +10904,7 @@ Report: ops/system-audits/2026-06-09T17-59-07-912Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T21:06:12+03:00 - Fixed Railway pg client warning
 
@@ -10251,6 +10924,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T18:07:36+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10268,6 +10942,7 @@ Report: ops/system-audits/2026-06-09T18-07-36-361Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T18:09:31+03:00 - Watchdog incident resolved
 
@@ -10287,6 +10962,7 @@ Report: ops/system-audits/2026-06-09T18-09-31-511Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T18:14:19+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10301,6 +10977,7 @@ Report: ops/system-audits/2026-06-09T18-14-19-015Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T18:15:26+03:00 - Watchdog incident changed to CRITICAL
 
@@ -10321,6 +10998,7 @@ Report: ops/system-audits/2026-06-09T18-15-26-347Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T18:16:56+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10340,6 +11018,7 @@ Report: ops/system-audits/2026-06-09T18-16-56-000Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T21:24:46+03:00 - Parent portal access link deployed and verified
 
@@ -10365,6 +11044,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-09T18:18:11+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10383,6 +11063,7 @@ Report: ops/system-audits/2026-06-09T18-18-11-726Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T18:23:19+03:00 - Agent task #228 blocked: Add kid-to-parent checkoff notifications
 
@@ -10414,6 +11095,7 @@ Report: ops/agent-fleet-runs/2026-06-09T18-23-19-502Z-task-228.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T18:23:52+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10432,6 +11114,7 @@ Report: ops/system-audits/2026-06-09T18-23-52-669Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T18:28:28+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a CRITICAL incident.
@@ -10449,6 +11132,7 @@ Report: ops/system-audits/2026-06-09T18-28-28-472Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T18:35:22+03:00 - Complete agent task #261: Route task and student recordings outside Content
 
@@ -10481,6 +11165,7 @@ Report: ops/agent-fleet-runs/2026-06-09T18-35-22-228Z-task-261.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T18:50:57+03:00 - Complete agent task #262: Here’s a clean Codex prompt you can paste in One technical correction: Google Classroom can create and schedule coursewo
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -10511,6 +11196,7 @@ Report: ops/agent-fleet-runs/2026-06-09T18-50-57-403Z-task-262.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T19:03:13+03:00 - Complete agent task #224: Add internal and external People filtering
 
@@ -10543,6 +11229,7 @@ Report: ops/agent-fleet-runs/2026-06-09T19-03-13-780Z-task-224.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T19:11:30+03:00 - Agent task #228 blocked: Add kid-to-parent checkoff notifications
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -10566,6 +11253,7 @@ Report: ops/agent-fleet-runs/2026-06-09T19-11-30-115Z-task-228.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-09T19:19:59+03:00 - Complete agent task #229: Trim black opening frame from admissions video
 
@@ -10598,6 +11286,7 @@ Report: ops/agent-fleet-runs/2026-06-09T19-19-59-840Z-task-229.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T19:31:05+03:00 - Complete agent task #235: Look up Baba Sali Sefer name and sources
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -10629,6 +11318,7 @@ Report: ops/agent-fleet-runs/2026-06-09T19-31-05-491Z-task-235.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T19:36:40+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10643,6 +11333,7 @@ Report: ops/system-audits/2026-06-09T19-36-40-684Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T19:48:06+03:00 - Watchdog incident changed to CRITICAL
 
@@ -10663,6 +11354,7 @@ Report: ops/system-audits/2026-06-09T19-48-06-370Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T19:49:17+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10682,6 +11374,7 @@ Report: ops/system-audits/2026-06-09T19-49-17-237Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T19:50:27+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10700,6 +11393,7 @@ Report: ops/system-audits/2026-06-09T19-50-27-038Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T19:56:14+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10717,6 +11411,7 @@ Report: ops/system-audits/2026-06-09T19-56-14-186Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T20:00:23+03:00 - Complete agent task #260: Fix parent access link and polish parent/student dashboards
 
@@ -10766,6 +11461,7 @@ Report: ops/agent-fleet-runs/2026-06-09T20-00-23-763Z-task-260.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T20:00:51+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10784,6 +11480,7 @@ Report: ops/system-audits/2026-06-09T20-00-51-669Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-09T20:08:46+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a CRITICAL incident.
@@ -10801,6 +11498,7 @@ Report: ops/system-audits/2026-06-09T20-08-46-892Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T23:11:05+03:00 - Correct One Time partnership Drive verification path
 
@@ -10826,6 +11524,7 @@ Report: `ops/one-time-mishnah-class/partnership-drive-map.md`
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T20:15:18+03:00 - Complete agent task #276: Okay I uploaded the partnership proposal make a different dry folder and suggest a whole can of tonicles structure for a
 
@@ -10858,6 +11557,7 @@ Report: ops/agent-fleet-runs/2026-06-09T20-15-18-563Z-task-276.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T23:15:31+03:00 - Verify separate Rabbi Elie Drive workspace for task #277
 
 Confirmed the separate top-level Google Drive workspace for Rabbi Elie / One
@@ -10874,6 +11574,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-09T20:30:00+03:00 - Complete agent task #278: And what the deal is man make that app on my phone go to the operations tab why is that not working
 
@@ -10906,6 +11607,7 @@ Report: ops/agent-fleet-runs/2026-06-09T20-30-00-875Z-task-278.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T20:43:00+03:00 - Complete agent task #268: Optional download/process video toggle
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -10937,6 +11639,7 @@ Report: ops/agent-fleet-runs/2026-06-09T20-43-00-345Z-task-268.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-09T23:11:25+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10952,6 +11655,7 @@ Report: ops/system-audits/2026-06-09T23-11-25-325Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-09T23:17:41+03:00 - Watchdog incident resolved
 
@@ -10972,6 +11676,7 @@ Report: ops/system-audits/2026-06-09T23-17-41-888Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T02:38:55+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -10987,6 +11692,7 @@ Report: ops/system-audits/2026-06-10T02-38-55-421Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T02:40:03+03:00 - Watchdog incident resolved
 
@@ -11007,6 +11713,7 @@ Report: ops/system-audits/2026-06-10T02-40-03-618Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T03:08:16+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11023,6 +11730,7 @@ Report: ops/system-audits/2026-06-10T03-08-16-395Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T03:09:31+03:00 - Watchdog incident changed to WARN
 
@@ -11043,6 +11751,7 @@ Report: ops/system-audits/2026-06-10T03-09-31-057Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T03:15:07+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11060,6 +11769,7 @@ Report: ops/system-audits/2026-06-10T03-15-07-274Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T06:12:30+03:00 - Completed source-sheet verification and task-lane audit
 
@@ -11082,6 +11792,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T03:16:16+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -11099,6 +11810,7 @@ Report: ops/system-audits/2026-06-10T03-16-16-104Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T03:17:41+03:00 - Complete agent task #156: Provide Rabbi bot live credentials
 
@@ -11131,6 +11843,7 @@ Report: ops/agent-fleet-runs/2026-06-10T03-17-41-120Z-task-156.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T06:27:08+03:00 - Task 209 Archive Stale Docs And Preserve BNA Philosophy
 
 - Replaced the root README with a current BNA workspace guide pointing future
@@ -11150,6 +11863,7 @@ Report: ops/agent-fleet-runs/2026-06-10T03-17-41-120Z-task-156.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T03:28:41+03:00 - Agent task #209 blocked: Archive stale docs while preserving BNA philosophy notes
 
@@ -11177,6 +11891,7 @@ Report: ops/agent-fleet-runs/2026-06-10T03-28-41-612Z-task-209.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-10T03:35:23+03:00 - Complete agent task #286: Requeue commented tasks for Codex review
 
@@ -11209,6 +11924,7 @@ Report: ops/agent-fleet-runs/2026-06-10T03-35-23-706Z-task-286.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T03:36:28+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11223,6 +11939,7 @@ Report: ops/system-audits/2026-06-10T03-36-28-623Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T03:37:37+03:00 - Watchdog incident resolved
 
@@ -11241,6 +11958,7 @@ Report: ops/system-audits/2026-06-10T03-37-37-122Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T06:39:53+03:00 - Content Research section shipped
 
@@ -11267,6 +11985,7 @@ Files: [server.js](<C:/Users/User/BNA v2.0/server.js>), [operations.html](<C:/Us
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T07:04:00+03:00 - Parent accountability portal shipped
 
@@ -11309,6 +12028,7 @@ Files: [server.js](<C:/Users/User/BNA v2.0/server.js>), [goal-board.js](<C:/User
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T03:46:31+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11323,6 +12043,7 @@ Report: ops/system-audits/2026-06-10T03-46-31-641Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T03:54:24+03:00 - Watchdog incident resolved
 
@@ -11341,6 +12062,7 @@ Report: ops/system-audits/2026-06-10T03-54-24-988Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T03:54:45+03:00 - Complete agent task #294: So in the student app what we need is a a hamburger menu on the side the display will be the percentage the overall perc
 
@@ -11373,6 +12095,7 @@ Report: ops/agent-fleet-runs/2026-06-10T03-54-45-321Z-task-294.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T04:09:29+03:00 - Complete agent task #310: Expand Research section to source all class topics
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -11404,6 +12127,7 @@ Report: ops/agent-fleet-runs/2026-06-10T04-09-29-217Z-task-310.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T07:16:58+03:00 - Task 209 Archive Cleanup Addendum
 
 - Replaced the active root `SUPABASE_SETUP.md` body with a short archived
@@ -11426,6 +12150,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T04:20:39+03:00 - Complete agent task #209: Archive stale docs while preserving BNA philosophy notes
 
@@ -11457,6 +12182,7 @@ Report: ops/agent-fleet-runs/2026-06-10T04-20-39-877Z-task-209.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T04:30:22+03:00 - Agent task #210 blocked: Add watchdog soft repair for obvious task warnings
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -11483,6 +12209,7 @@ Report: ops/agent-fleet-runs/2026-06-10T04-30-22-315Z-task-210.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-10T07:36:08+03:00 - Capture One Time external-user and ticketing requirements
 
@@ -11511,6 +12238,7 @@ Captured requirements:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T04:39:46+03:00 - Agent task #210 blocked: Add watchdog soft repair for obvious task warnings
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -11538,6 +12266,7 @@ Report: ops/agent-fleet-runs/2026-06-10T04-39-46-319Z-task-210.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T04:40:08+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11552,6 +12281,7 @@ Report: ops/system-audits/2026-06-10T04-40-08-042Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T04:41:16+03:00 - Watchdog incident resolved
 
@@ -11570,6 +12300,7 @@ Report: ops/system-audits/2026-06-10T04-41-16-460Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T04:54:59+03:00 - Complete agent task #311: Audit Telegram Goal Board API coverage
 
@@ -11602,6 +12333,7 @@ Report: ops/agent-fleet-runs/2026-06-10T04-54-59-285Z-task-311.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T05:10:26+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11616,6 +12348,7 @@ Report: ops/system-audits/2026-06-10T05-10-26-007Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T05:14:27+03:00 - Complete agent task #328: Route task and student recordings outside Content
 
@@ -11648,6 +12381,7 @@ Report: ops/agent-fleet-runs/2026-06-10T05-14-27-619Z-task-328.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T05:19:39+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11666,6 +12400,7 @@ Report: ops/system-audits/2026-06-10T05-19-39-163Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T05:40:11+03:00 - Watchdog incident changed to CRITICAL
 
@@ -11687,6 +12422,7 @@ Report: ops/system-audits/2026-06-10T05-40-11-874Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T05:41:20+03:00 - Watchdog incident changed to CRITICAL
 
@@ -11711,6 +12447,7 @@ Report: ops/system-audits/2026-06-10T05-41-20-311Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T05:42:44+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11733,6 +12470,7 @@ Report: ops/system-audits/2026-06-10T05-42-44-812Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T05:44:10+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11751,6 +12489,7 @@ Report: ops/system-audits/2026-06-10T05-44-10-753Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T08:51:30+03:00 - One Time external portal and ticketing deployed
 
@@ -11794,6 +12533,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-10T05:53:55+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11812,6 +12552,7 @@ Report: ops/system-audits/2026-06-10T05-53-55-796Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T06:16:06+03:00 - Complete agent task #322: Generate Sefaria source sheets from every class transcript
 
@@ -11844,6 +12585,7 @@ Report: ops/agent-fleet-runs/2026-06-10T06-16-06-392Z-task-322.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T06:16:29+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11865,6 +12607,7 @@ Report: ops/system-audits/2026-06-10T06-16-29-125Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T06:17:38+03:00 - Watchdog incident changed to CRITICAL
 
@@ -11888,6 +12631,7 @@ Report: ops/system-audits/2026-06-10T06-17-38-010Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T09:25:41+03:00 - Task 323 Public Content Bibliography Workflow
 
 - Added a separate public-content bibliography action to Operations Content
@@ -11909,6 +12653,7 @@ Report: ops/system-audits/2026-06-10T06-17-38-010Z-watchdog.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T06:29:01+03:00 - Complete agent task #323: Add sourced bibliography workflow for public content videos
 
@@ -11940,6 +12685,7 @@ Report: ops/agent-fleet-runs/2026-06-10T06-29-01-984Z-task-323.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T06:29:18+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11958,6 +12704,7 @@ Report: ops/system-audits/2026-06-10T06-29-18-893Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T06:30:28+03:00 - Watchdog incident changed to CRITICAL
 
@@ -11978,6 +12725,7 @@ Report: ops/system-audits/2026-06-10T06-30-28-308Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T06:53:25+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -11997,6 +12745,7 @@ Report: ops/system-audits/2026-06-10T06-53-25-033Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T06:56:41+03:00 - Complete agent task #345: Workflow A: Lead capture
 
@@ -12043,6 +12792,7 @@ Report: ops/agent-fleet-runs/2026-06-10T06-56-41-205Z-task-345.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T06:56:50+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12063,6 +12813,7 @@ Report: ops/system-audits/2026-06-10T06-56-50-541Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T06:58:02+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12082,6 +12833,7 @@ Report: ops/system-audits/2026-06-10T06-58-02-327Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T07:01:27+03:00 - Watchdog incident changed to CRITICAL
 
@@ -12104,6 +12856,7 @@ Report: ops/system-audits/2026-06-10T07-01-27-969Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T07:02:37+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12124,6 +12877,7 @@ Report: ops/system-audits/2026-06-10T07-02-37-214Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T07:08:58+03:00 - Complete agent task #347: Workflow C: Landing page routing US/UK
 
@@ -12155,6 +12909,7 @@ Report: ops/agent-fleet-runs/2026-06-10T07-08-58-467Z-task-347.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T07:09:30+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12175,6 +12930,7 @@ Report: ops/system-audits/2026-06-10T07-09-30-297Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T07:10:38+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12194,6 +12950,7 @@ Report: ops/system-audits/2026-06-10T07-10-38-984Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T07:20:39+03:00 - Complete agent task #358: Workflow N: Support ticket
 
@@ -12225,6 +12982,7 @@ Report: ops/agent-fleet-runs/2026-06-10T07-20-39-145Z-task-358.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T07:20:59+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12245,6 +13003,7 @@ Report: ops/system-audits/2026-06-10T07-20-59-465Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T07:22:08+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12264,6 +13023,7 @@ Report: ops/system-audits/2026-06-10T07-22-08-710Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T07:31:40+03:00 - Complete agent task #364: Workflow T: Internal app operating workflow
 
@@ -12295,6 +13055,7 @@ Report: ops/agent-fleet-runs/2026-06-10T07-31-40-151Z-task-364.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T07:32:29+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12314,6 +13075,7 @@ Report: ops/system-audits/2026-06-10T07-32-29-198Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T07:38:13+03:00 - Watchdog incident changed to CRITICAL
 
@@ -12336,6 +13098,7 @@ Report: ops/system-audits/2026-06-10T07-38-13-497Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T07:39:22+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12356,6 +13119,7 @@ Report: ops/system-audits/2026-06-10T07-39-22-820Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T07:41:40+03:00 - Watchdog incident changed to CRITICAL
 
@@ -12379,6 +13143,7 @@ Report: ops/system-audits/2026-06-10T07-41-40-341Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T07:42:50+03:00 - Watchdog incident changed to WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12398,6 +13163,7 @@ Report: ops/system-audits/2026-06-10T07-42-50-283Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T07:49:16+03:00 - Complete agent task #376: Make sure all the dropdowns are cross our whole system do not open up that thing in the phone they actually drop down in the app so
 
@@ -12430,6 +13196,7 @@ Report: ops/agent-fleet-runs/2026-06-10T07-49-16-166Z-task-376.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T08:07:41+03:00 - Complete agent task #344: One Time access/materials: Telegram bot credentials
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -12461,6 +13228,7 @@ Report: ops/agent-fleet-runs/2026-06-10T08-07-41-262Z-task-344.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T08:08:21+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a WARN incident.
@@ -12478,6 +13246,7 @@ Report: ops/system-audits/2026-06-10T08-08-21-722Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T08:20:04+03:00 - Complete agent task #348: Workflow D: Abandoned checkout
 
@@ -12509,6 +13278,7 @@ Report: ops/agent-fleet-runs/2026-06-10T08-20-04-536Z-task-348.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T11:28:37+03:00 - Task 349 Workflow E Payment Success
 
 - Documented One Time Workflow E as a live roadmap/task card for trusted
@@ -12524,6 +13294,7 @@ Report: ops/agent-fleet-runs/2026-06-10T08-20-04-536Z-task-348.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T08:32:19+03:00 - Complete agent task #349: Workflow E: Payment success
 
@@ -12555,6 +13326,7 @@ Report: ops/agent-fleet-runs/2026-06-10T08-32-19-194Z-task-349.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T11:41:20+03:00 - Task 350 Workflow F Failed Payment
 
 - Documented One Time Workflow F as a live roadmap/task card for failed
@@ -12571,6 +13343,7 @@ Report: ops/agent-fleet-runs/2026-06-10T08-32-19-194Z-task-349.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T08:45:10+03:00 - Complete agent task #350: Workflow F: Failed payment
 
@@ -12602,6 +13375,7 @@ Report: ops/agent-fleet-runs/2026-06-10T08-45-10-870Z-task-350.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T08:57:24+03:00 - Complete agent task #352: Workflow H: Upgrade/downgrade
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -12632,6 +13406,7 @@ Report: ops/agent-fleet-runs/2026-06-10T08-57-24-089Z-task-352.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T12:17:36+03:00 - Task 356 Workflow L Question Submission
 
 - Documented One Time Workflow L as a live roadmap/task card for private
@@ -12648,6 +13423,7 @@ Report: ops/agent-fleet-runs/2026-06-10T08-57-24-089Z-task-352.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T09:21:08+03:00 - Complete agent task #356: Workflow L: Question submission
 
@@ -12679,6 +13455,7 @@ Report: ops/agent-fleet-runs/2026-06-10T09-21-08-133Z-task-356.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T09:33:56+03:00 - Complete agent task #363: Workflow S: Monthly financial report
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -12708,6 +13485,7 @@ Report: ops/agent-fleet-runs/2026-06-10T09-33-56-389Z-task-363.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-10T09:37:39+03:00 - Complete agent task #372: Build person-detail side menus for students, parents, contacts, and users
 
@@ -12739,6 +13517,7 @@ Report: ops/agent-fleet-runs/2026-06-10T09-37-39-060Z-task-372.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T09:44:35+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -12753,6 +13532,7 @@ Report: ops/system-audits/2026-06-10T09-44-35-901Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T09:45:43+03:00 - Watchdog incident resolved
 
@@ -12771,6 +13551,7 @@ Report: ops/system-audits/2026-06-10T09-45-43-792Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T09:47:05+03:00 - Complete agent task #377: Build interested-parent pipeline in Contacts
 
@@ -12802,6 +13583,7 @@ Report: ops/agent-fleet-runs/2026-06-10T09-47-05-905Z-task-377.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T10:02:14+03:00 - Complete agent task #379: How hard is it to actually build a classroom module that looks Google isn't that easy and the same thing in terms of the
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -12832,6 +13614,7 @@ Report: ops/agent-fleet-runs/2026-06-10T10-02-14-968Z-task-379.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T13:09:22+03:00 - Task 380 Telegram Decision Capture Correction
 
 - Archived live task #380 as an empty Telegram parser artifact; it only contained
@@ -12850,6 +13633,7 @@ Report: ops/agent-fleet-runs/2026-06-10T10-02-14-968Z-task-379.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T10:11:04+03:00 - Complete agent task #380: Another thing that put into I guess a a decision
 
@@ -12881,6 +13665,7 @@ Report: ops/agent-fleet-runs/2026-06-10T10-11-04-439Z-task-380.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T10:32:54+03:00 - Complete agent task #399: Prepare login system for next year's group
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -12911,6 +13696,7 @@ Report: ops/agent-fleet-runs/2026-06-10T10-32-54-839Z-task-399.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T11:07:07+03:00 - Task queue reconciler apply run
 
 Report: ops/system-audits/2026-06-10T11-07-07-814Z-task-queue-reconciler.md
@@ -12925,6 +13711,7 @@ Actions: 9. Active machine tasks: 3.
 - mark_tasks_md_done #260: Updated TASKS.md queue summary.
 - mark_tasks_md_done #311: Updated TASKS.md queue summary.
 - add_tasks_md_now_item #ui-brand-shell: Updated TASKS.md queue summary.
+
 
 ## 2026-06-10T11:17:22+03:00 - Complete agent task #213: Verify watchdog secret-scan findings without rotating keys
 
@@ -12957,12 +13744,14 @@ Report: ops/agent-fleet-runs/2026-06-10T11-17-22-340Z-task-213.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T11:30:40+03:00 - Task queue reconciler apply run
 
 Report: ops/system-audits/2026-06-10T11-30-40-645Z-task-queue-reconciler.md
 
 Actions: 1. Active machine tasks: 3.
 - close_known_verified_task #228: Parent/student portal notification work is implemented; current tests pass and deployment verification should close it.
+
 
 ## 2026-06-10T11:32:04+03:00 - Task queue reconciler apply run
 
@@ -12971,6 +13760,7 @@ Report: ops/system-audits/2026-06-10T11-32-04-623Z-task-queue-reconciler.md
 Actions: 0. Active machine tasks: 2.
 - No changes applied.
 
+
 ## 2026-06-10T11:33:42+03:00 - Task queue reconciler apply run
 
 Report: ops/system-audits/2026-06-10T11-33-42-377Z-task-queue-reconciler.md
@@ -12978,11 +13768,13 @@ Report: ops/system-audits/2026-06-10T11-33-42-377Z-task-queue-reconciler.md
 Actions: 1. Active machine tasks: 2.
 - close_known_verified_task #210: Current tree verification now passes; previous blocked state was stale after later fixes.
 
+
 ## 2026-06-10T14:35:24+03:00 - UI brand rescue and queue automation verified
 
 Live task #402 is done/verified. Implemented the app-wide BNA light SaaS brand shell/topbars for Operations, parent portal, and student portal; added the approved-provider directory MVP in Operations and the parent portal; hardened Telegram content intent routing so UI/system/accountability requests do not become content draft edits; added the task queue reconciler and fleet pre-claim hook.
 
 Verification: focused reconciler/content-intent/provider-directory/brand-shell tests, `npm test` 203/203, `npm run openai:smoke`, Railway deployment `7c4fcc07-38fb-4041-ab3e-00bf36a883d7`, `npm run railway:doctor`, `npm run app:smoke`, live provider API readback, and live desktop/mobile Playwright brand smokes passed. Reports: `ops/live-smokes/2026-06-10T11-40-09-975Z-live-app-smoke.md`, `ops/playwright-smokes/task-402-brand-shell-live-2026-06-10T11-41-50-488Z/report.md`.
+
 
 ## 2026-06-10T11:47:50+03:00 - Complete agent task #402: Apply app-wide BNA brand shell and million-dollar SaaS UI polish
 
@@ -13015,11 +13807,13 @@ Report: ops/agent-fleet-runs/2026-06-10T11-47-50-909Z-task-402.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T15:06:09+03:00 - Final queue rescue verification and provider portal completion
 
 Final deployment `56747aa2-6dd8-41ad-96a8-2846097e46d8` supersedes the earlier UI-brand rescue deployments. The app-wide BNA brand shell remains verified, and the provider backlog item is now completed: scoped `/provider` login, provider sessions, provider-owned profile/service/class edits held in `pending_review`, Operations provider API, parent approved-provider filters, Rabbi discount display, no-live-billing guardrails, explicit near-me geocoder/PostGIS blocker, and the seeded 7:00 Rabbi Scheller Mishnah class.
 
 Verification: `npm test` passed 204/204, `npm run openai:smoke` passed with Active Codex tasks 0, Railway doctor passed, live app smoke passed (`ops/live-smokes/2026-06-10T12-04-01-321Z-live-app-smoke.md`), provider portal smoke passed (`ops/live-smokes/2026-06-10T12-05-01-939Z-provider-portal-smoke.md`), and final Playwright visual smoke passed (`ops/playwright-smokes/queue-rescue-final-live-2026-06-10T12-05-40-057Z/report.md`).
+
 
 ## 2026-06-10T12:49:34+03:00 - Watchdog incident opened as CRITICAL
 
@@ -13035,6 +13829,7 @@ Report: ops/system-audits/2026-06-10T12-49-34-388Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T12:51:09+03:00 - Watchdog incident changed to CRITICAL
 
@@ -13053,6 +13848,7 @@ Report: ops/system-audits/2026-06-10T12-51-09-784Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T12:54:00+03:00 - Watchdog incident changed to CRITICAL
 
@@ -13073,6 +13869,7 @@ Report: ops/system-audits/2026-06-10T12-54-00-306Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T13:04:25+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a CRITICAL incident.
@@ -13091,6 +13888,7 @@ Report: ops/system-audits/2026-06-10T13-04-25-846Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T13:33:15+03:00 - Complete agent task #414: Research student visa bank account options
 
@@ -13123,6 +13921,7 @@ Report: ops/agent-fleet-runs/2026-06-10T13-33-15-532Z-task-414.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T13:41:55+03:00 - Complete agent task #415: Set up prompt patching library for rabbi video content
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -13154,6 +13953,7 @@ Report: ops/agent-fleet-runs/2026-06-10T13-41-55-866Z-task-415.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T17:21:54+03:00 - Task 417 One Time Rabbi Meeting Build Brief
 
 - Turned Meeting artifact #1 / Content job #57 into the internal Codex handoff
@@ -13167,6 +13967,7 @@ Report: ops/agent-fleet-runs/2026-06-10T13-41-55-866Z-task-415.md
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-10T14:25:50+03:00 - Complete agent task #417: Turn Rabbi meeting drop into One Time build brief
 
@@ -13199,6 +14000,7 @@ Report: ops/agent-fleet-runs/2026-06-10T14-25-50-860Z-task-417.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-10T18:28:13+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -13213,6 +14015,7 @@ Report: ops/system-audits/2026-06-10T18-28-13-004Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T18:29:55+03:00 - Watchdog incident resolved
 
@@ -13232,6 +14035,7 @@ Report: ops/system-audits/2026-06-10T18-29-55-531Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-10T19:29:37+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -13246,6 +14050,7 @@ Report: ops/system-audits/2026-06-10T19-29-37-012Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T19:30:44+03:00 - Watchdog incident resolved
 
@@ -13264,6 +14069,7 @@ Report: ops/system-audits/2026-06-10T19-30-44-846Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-10T22:33:00+03:00 - Complete BNA internal-first CRM/workspace connector pass
 
@@ -13303,6 +14109,7 @@ Verification:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-11T07:04:43+03:00 - Complete agent task #346: Workflow B: Email list and past customer reactivation
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -13334,6 +14141,7 @@ Report: ops/agent-fleet-runs/2026-06-11T07-04-43-683Z-task-346.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T07:18:07+03:00 - Complete agent task #168: Research halachic sources on fasting on Shabbos
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -13363,6 +14171,7 @@ Report: ops/agent-fleet-runs/2026-06-11T07-18-07-465Z-task-168.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T07:26:39+03:00 - Complete agent task #226: Fix Google Workspace sender display name
 
@@ -13403,6 +14212,7 @@ Report: ops/agent-fleet-runs/2026-06-11T07-26-39-980Z-task-226.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T07:41:04+03:00 - Complete agent task #351: Workflow G: Cancellation
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -13432,6 +14242,7 @@ Report: ops/agent-fleet-runs/2026-06-11T07-41-04-670Z-task-351.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T07:53:19+03:00 - Complete agent task #353: Workflow I: Class reminders
 
@@ -13463,6 +14274,7 @@ Report: ops/agent-fleet-runs/2026-06-11T07-53-19-720Z-task-353.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T08:06:43+03:00 - Complete agent task #354: Workflow J: Recording posted
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -13492,6 +14304,7 @@ Report: ops/agent-fleet-runs/2026-06-11T08-06-43-371Z-task-354.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T08:18:48+03:00 - Complete agent task #355: Workflow K: Worksheet/source sheet posted
 
@@ -13523,6 +14336,7 @@ Report: ops/agent-fleet-runs/2026-06-11T08-18-48-454Z-task-355.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T08:32:47+03:00 - Complete agent task #357: Workflow M: Parent update
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -13552,6 +14366,7 @@ Report: ops/agent-fleet-runs/2026-06-11T08-32-47-839Z-task-357.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T08:45:26+03:00 - Complete agent task #359: Workflow O: Referral
 
@@ -13583,6 +14398,7 @@ Report: ops/agent-fleet-runs/2026-06-11T08-45-26-566Z-task-359.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T08:58:24+03:00 - Complete agent task #360: Workflow P: Testimonial/reputation
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -13612,6 +14428,7 @@ Report: ops/agent-fleet-runs/2026-06-11T08-58-24-809Z-task-360.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T09:15:23+03:00 - Complete agent task #361: Workflow Q: Organic content upload
 
@@ -13644,6 +14461,7 @@ Report: ops/agent-fleet-runs/2026-06-11T09-15-23-610Z-task-361.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T09:26:48+03:00 - Complete agent task #362: Workflow R: Organic winner to paid ad
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -13674,6 +14492,7 @@ Report: ops/agent-fleet-runs/2026-06-11T09-26-48-808Z-task-362.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T09:44:23+03:00 - Agent task #452 blocked: Student source sheet: YouTube: The Looming Crisis in Our Educational System
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -13700,6 +14519,7 @@ Report: ops/agent-fleet-runs/2026-06-11T09-44-23-374Z-task-452.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T12:50:58+03:00 - Task 452 Student Source Sheet Verified On Retry
 
@@ -13728,6 +14548,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T09:54:08+03:00 - Complete agent task #452: Student source sheet: YouTube: The Looming Crisis in Our Educational System
 
@@ -13765,6 +14586,7 @@ Report: ops/agent-fleet-runs/2026-06-11T09-54-08-247Z-task-452.md
 - Added parent/student assistant entry points and a student-visible calendar/agenda section; added a separate provider participant portal route at `/provider-participant` and `/provider/member`.
 - Verified with `npm test`, `npm run screenshot`, `npm run app:smoke`, `npm run openai:smoke`, `npm run railway:doctor`, and focused browser QA. Lighthouse generated `lighthouse-report.html` but exited nonzero due Chrome temp cleanup `EPERM`; deployment was not run because the deploy script uploads the full dirty workspace with unrelated pre-existing changes.
 
+
 ## 2026-06-11T10:09:19+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -13779,6 +14601,7 @@ Report: ops/system-audits/2026-06-11T10-09-19-495Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-11T10:10:29+03:00 - Watchdog incident resolved
 
@@ -13798,6 +14621,7 @@ Report: ops/system-audits/2026-06-11T10-10-29-997Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-11T10:20:32+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -13812,6 +14636,7 @@ Report: ops/system-audits/2026-06-11T10-20-32-985Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-11T10:21:42+03:00 - Watchdog incident resolved
 
@@ -13830,6 +14655,7 @@ Report: ops/system-audits/2026-06-11T10-21-42-779Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-11T10:29:34+03:00 - Agent task #469 blocked: Update calculation and scoring system for goal achievement
 
@@ -13857,6 +14683,7 @@ Report: ops/agent-fleet-runs/2026-06-11T10-29-34-146Z-task-469.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T10:35:44+03:00 - Complete agent task #469: Update calculation and scoring system for goal achievement
 
@@ -13888,6 +14715,7 @@ Report: ops/agent-fleet-runs/2026-06-11T10-35-44-361Z-task-469.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T10:52:49+03:00 - Complete agent task #467: Fix calendar loading and language switching on mobile
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
@@ -13917,6 +14745,7 @@ Report: ops/agent-fleet-runs/2026-06-11T10-52-49-060Z-task-467.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T11:08:40+03:00 - Complete agent task #468: Improve student bot filtering and prompt configuration
 
@@ -13948,6 +14777,7 @@ Report: ops/agent-fleet-runs/2026-06-11T11-08-40-802Z-task-468.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T15:39:24+03:00 - Watchdog incident opened as WARN
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -13962,6 +14792,7 @@ Report: ops/system-audits/2026-06-11T15-39-24-755Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-11T15:40:47+03:00 - Watchdog incident resolved
 
@@ -13981,6 +14812,7 @@ Report: ops/system-audits/2026-06-11T15-40-47-920Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-11T15:45:31+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -13996,6 +14828,7 @@ Report: ops/system-audits/2026-06-11T15-45-31-342Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-11T15:46:41+03:00 - Watchdog incident changed to CRITICAL
 
@@ -14016,6 +14849,7 @@ Report: ops/system-audits/2026-06-11T15-46-41-293Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-11T15:49:26+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a CRITICAL incident.
@@ -14033,6 +14867,7 @@ Report: ops/system-audits/2026-06-11T15-49-26-015Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-11T15:50:18+03:00 - Complete agent task #482: No you didn't understand what I meant give me the copy and paste text not not saying in the last video I uploaded I spok
 
@@ -14064,6 +14899,7 @@ Report: ops/agent-fleet-runs/2026-06-11T15-50-18-544Z-task-482.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T16:04:34+03:00 - Agent task #483 blocked: No dude I don't want to speak to codex I want to speak to you I didn't want you to file that for codex no be aren't you
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -14092,6 +14928,7 @@ Report: ops/agent-fleet-runs/2026-06-11T16-04-34-665Z-task-483.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T16:13:19+03:00 - Agent task #483 blocked: No dude I don't want to speak to codex I want to speak to you I didn't want you to file that for codex no be aren't you
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -14118,6 +14955,7 @@ Report: ops/agent-fleet-runs/2026-06-11T16-13-19-723Z-task-483.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T17:37:05+03:00 - Agent task #488 blocked: Support ticket #3: UI issue: Pipelines / BNA Enrollment
 
@@ -14147,6 +14985,7 @@ Report: ops/agent-fleet-runs/2026-06-11T17-37-05-554Z-task-488.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T17:44:05+03:00 - Agent task #488 blocked: Support ticket #3: UI issue: Pipelines / BNA Enrollment
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -14174,6 +15013,7 @@ Report: ops/agent-fleet-runs/2026-06-11T17-44-05-934Z-task-488.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T18:03:11+03:00 - Agent task #489 blocked: Support ticket #4: UI issue: Pipelines / BNA Enrollment
 
@@ -14203,6 +15043,7 @@ Report: ops/agent-fleet-runs/2026-06-11T18-03-11-204Z-task-489.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T18:10:34+03:00 - Agent task #489 blocked: Support ticket #4: UI issue: Pipelines / BNA Enrollment
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -14230,6 +15071,7 @@ Report: ops/agent-fleet-runs/2026-06-11T18-10-34-475Z-task-489.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T18:20:04+03:00 - Agent task #490 blocked: Support ticket #5: UI issue: Tasks / Overview
 
@@ -14259,6 +15101,7 @@ Report: ops/agent-fleet-runs/2026-06-11T18-20-04-463Z-task-490.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T18:32:27+03:00 - Agent task #490 blocked: Support ticket #5: UI issue: Tasks / Overview
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -14287,6 +15130,7 @@ Report: ops/agent-fleet-runs/2026-06-11T18-32-27-541Z-task-490.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-11T21:45:00+03:00 - Task 491 Support Ticket UI Report Form
 
 - Replaced the Operations support-ticket native prompt flow with an in-app modal form for title, issue details, severity, and area.
@@ -14302,6 +15146,7 @@ Verification:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-11T18:47:21+03:00 - Agent task #491 blocked: Support ticket #6: UI issue: Tasks / Overview
 
@@ -14330,6 +15175,7 @@ Report: ops/agent-fleet-runs/2026-06-11T18-47-21-517Z-task-491.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-11T19:00:08+03:00 - Agent task #491 blocked: Support ticket #6: UI issue: Tasks / Overview
 
@@ -14369,6 +15215,7 @@ Report: ops/agent-fleet-runs/2026-06-11T19-00-08-496Z-task-491.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-12T10:58:00+03:00 - Navigation and portal polish pass
 
 Implemented the requested Operations navigation and portal QA pass without deploying or configuring WAPI/Resend.
@@ -14405,6 +15252,7 @@ Reports:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-12T10:41:55+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -14419,6 +15267,7 @@ Report: ops/system-audits/2026-06-12T10-41-55-672Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T10:43:10+03:00 - Watchdog incident resolved
 
@@ -14438,6 +15287,7 @@ Report: ops/system-audits/2026-06-12T10-43-10-050Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T10:53:06+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -14452,6 +15302,7 @@ Report: ops/system-audits/2026-06-12T10-53-06-393Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T10:54:15+03:00 - Watchdog incident resolved
 
@@ -14470,6 +15321,7 @@ Report: ops/system-audits/2026-06-12T10-54-15-252Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T15:56:24+03:00 - Deep system debug audit completed
 
@@ -14502,6 +15354,7 @@ Reports:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-12T16:08:30+03:00 - Inner dialogue/community/bot master brief tracked
 
 Codex imported the master prompt from Downloads, audited the current repo/runtime
@@ -14524,6 +15377,7 @@ Findings:
 
 - source: codex
 - worker: Codex
+
 
 ## 2026-06-12T16:16:19+03:00 - Task 506 Rabbi Scheller Drive/Social Ingestion Setup
 
@@ -14560,6 +15414,7 @@ Remaining blocker:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-12T13:20:24+03:00 - Agent task #506 blocked: Set up Rabbi Scheller scoped Drive/social ingestion and send login last
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -14587,6 +15442,7 @@ Report: ops/agent-fleet-runs/2026-06-12T13-20-24-580Z-task-506.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-12T13:25:18+03:00 - Agent task #506 blocked: Set up Rabbi Scheller scoped Drive/social ingestion and send login last
 
@@ -14616,6 +15472,7 @@ Report: ops/agent-fleet-runs/2026-06-12T13-25-18-321Z-task-506.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-12T14:20:52+03:00 - Agent task #511 blocked: I want to sync my whats app log via whapi in our system
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -14643,6 +15500,7 @@ Report: ops/agent-fleet-runs/2026-06-12T14-20-52-373Z-task-511.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-06-12T17:21:41+03:00 - Deployed inner dialogue/community/bot core from master brief
 
@@ -14700,6 +15558,7 @@ Remaining follow-ups:
 - source: codex
 - worker: Codex
 
+
 ## 2026-06-12T14:26:51+03:00 - Agent task #511 blocked: I want to sync my whats app log via whapi in our system
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -14728,6 +15587,7 @@ Report: ops/agent-fleet-runs/2026-06-12T14-26-51-655Z-task-511.md
 - source: agent_fleet
 - worker: Codex
 
+
 ## 2026-06-12T14:44:16+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -14742,6 +15602,7 @@ Report: ops/system-audits/2026-06-12T14-44-16-219Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T14:45:24+03:00 - Watchdog incident resolved
 
@@ -14761,6 +15622,7 @@ Report: ops/system-audits/2026-06-12T14-45-24-556Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T14:51:39+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -14777,6 +15639,7 @@ Report: ops/system-audits/2026-06-12T14-51-39-846Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T14:57:14+03:00 - Watchdog incident changed to CRITICAL
 
@@ -14799,6 +15662,7 @@ Report: ops/system-audits/2026-06-12T14-57-14-192Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T14:59:42+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -14820,6 +15684,7 @@ Report: ops/system-audits/2026-06-12T14-59-42-465Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T16:32:11+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -14840,6 +15705,7 @@ Report: ops/system-audits/2026-06-12T16-32-11-958Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T16:35:53+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -14858,6 +15724,7 @@ Report: ops/system-audits/2026-06-12T16-35-53-751Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T16:38:14+03:00 - Watchdog incident changed to CRITICAL
 
@@ -14880,6 +15747,7 @@ Report: ops/system-audits/2026-06-12T16-38-14-854Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T16:42:49+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -14901,6 +15769,7 @@ Report: ops/system-audits/2026-06-12T16-42-49-932Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T16:44:41+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -14919,6 +15788,7 @@ Report: ops/system-audits/2026-06-12T16-44-41-804Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T16:47:46+03:00 - Watchdog incident changed to CRITICAL
 
@@ -14939,6 +15809,7 @@ Report: ops/system-audits/2026-06-12T16-47-46-599Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T17:09:43+03:00 - Watchdog incident changed to CRITICAL
 
@@ -14961,6 +15832,7 @@ Report: ops/system-audits/2026-06-12T17-09-43-123Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T17:15:40+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -14981,6 +15853,7 @@ Report: ops/system-audits/2026-06-12T17-15-40-092Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T17:39:10+03:00 - Watchdog incident changed to CRITICAL
 
@@ -15003,6 +15876,7 @@ Report: ops/system-audits/2026-06-12T17-39-10-817Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T17:44:31+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15022,6 +15896,7 @@ Report: ops/system-audits/2026-06-12T17-44-31-967Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T17:47:35+03:00 - Watchdog incident changed to CRITICAL
 
@@ -15044,6 +15919,7 @@ Report: ops/system-audits/2026-06-12T17-47-35-540Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T17:50:14+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15064,6 +15940,7 @@ Report: ops/system-audits/2026-06-12T17-50-14-496Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T17:54:25+03:00 - Watchdog incident changed to CRITICAL
 
@@ -15086,6 +15963,7 @@ Report: ops/system-audits/2026-06-12T17-54-25-980Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T18:00:31+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15106,6 +15984,7 @@ Report: ops/system-audits/2026-06-12T18-00-31-013Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T18:06:06+03:00 - Watchdog incident changed to CRITICAL
 
@@ -15128,6 +16007,7 @@ Report: ops/system-audits/2026-06-12T18-06-06-051Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T18:10:21+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15147,6 +16027,7 @@ Report: ops/system-audits/2026-06-12T18-10-21-901Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T18:18:06+03:00 - Watchdog incident changed to CRITICAL
 
@@ -15168,6 +16049,7 @@ Report: ops/system-audits/2026-06-12T18-18-06-498Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T18:22:27+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15188,6 +16070,7 @@ Report: ops/system-audits/2026-06-12T18-22-27-796Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T18:27:49+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15207,6 +16090,7 @@ Report: ops/system-audits/2026-06-12T18-27-49-883Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T18:30:12+03:00 - Watchdog incident changed to CRITICAL
 
@@ -15229,6 +16113,7 @@ Report: ops/system-audits/2026-06-12T18-30-12-410Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T18:35:06+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a CRITICAL incident.
@@ -15248,6 +16133,7 @@ Report: ops/system-audits/2026-06-12T18-35-06-396Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T18:41:33+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15263,6 +16149,7 @@ Report: ops/system-audits/2026-06-12T18-41-33-787Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T18:47:58+03:00 - Watchdog incident changed to CRITICAL
 
@@ -15285,6 +16172,7 @@ Report: ops/system-audits/2026-06-12T18-47-58-659Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T18:50:26+03:00 - Watchdog incident changed to CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15306,6 +16194,7 @@ Report: ops/system-audits/2026-06-12T18-50-26-491Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T18:55:33+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a CRITICAL incident.
@@ -15325,6 +16214,7 @@ Report: ops/system-audits/2026-06-12T18-55-33-902Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T18:58:55+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15341,6 +16231,7 @@ Report: ops/system-audits/2026-06-12T18-58-55-561Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T19:16:16+03:00 - Watchdog incident changed to CRITICAL
 
@@ -15362,6 +16253,7 @@ Report: ops/system-audits/2026-06-12T19-16-16-867Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T19:24:15+03:00 - Watchdog incident resolved
 
 The watchdog returned to OK after a CRITICAL incident.
@@ -15380,6 +16272,7 @@ Report: ops/system-audits/2026-06-12T19-24-15-979Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T19:26:20+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15396,6 +16289,7 @@ Report: ops/system-audits/2026-06-12T19-26-20-870Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T19:55:56+03:00 - Watchdog incident resolved
 
@@ -15417,6 +16311,7 @@ Report: ops/system-audits/2026-06-12T19-55-56-009Z-watchdog.md
 - source: watchdog
 - worker: Codex
 
+
 ## 2026-06-12T20:29:06+03:00 - Watchdog incident opened as CRITICAL
 
 The watchdog recorded a non-OK audit and added this changelog trail so the warning is visible outside the raw audit files.
@@ -15431,6 +16326,7 @@ Report: ops/system-audits/2026-06-12T20-29-06-149Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-12T20:30:28+03:00 - Watchdog incident resolved
 
@@ -15449,6 +16345,7 @@ Report: ops/system-audits/2026-06-12T20-30-28-426Z-watchdog.md
 
 - source: watchdog
 - worker: Codex
+
 
 ## 2026-06-13T23:04:50+03:00 - Universal helper/contact/settings/Hebrew pass locally verified
 
@@ -15470,6 +16367,7 @@ Remaining:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-13-universal-helper-tagging-settings-hebrew.md`
 
+
 ## 2026-06-13T23:45:00+03:00 - Registration toolbar and parent-permission notice locally verified
 
 Implemented the registration toolbar and parent-permission wording fix locally. Added a shared public-site navigation shell with hamburger/dropdown behavior and mounted it on the English signup page, Hebrew signup page, signup thank-you page, and required registration document page. Replaced the final required parent-responsibility checkbox with a visible notice plus hidden backend acknowledgment. Updated Hebrew copy to clarify that BNA is not taking responsibility to enforce pickup/drop-off, purchases, food/treats, money, swimming, or staying late; the answers are for awareness, values-based coaching, and reporting back to parents. The waiver document was not changed because it already states parent responsibility.
@@ -15487,6 +16385,7 @@ Remaining:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T16:14:03+03:00 - Owner Approval Gateboard Deployed
 
@@ -15523,6 +16422,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T16:03:12+03:00 - External Access Dry-Run Preview Deployed
 
 Deployed the Admin Users / External Access create-edit preview as a no-write
@@ -15557,6 +16457,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T15:50:35+03:00 - Public Helper File Retrieval Deployed
 
@@ -15594,6 +16495,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T15:40:07+03:00 - Public Helper Knowledge Context Deployed
 
 Injected the curated public helper knowledge module into the hosted public
@@ -15627,6 +16529,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T15:29:27+03:00 - Public Helper Bot / Ecosystem Landing / Self-Governance / SODAS Deployed
 
@@ -15679,6 +16582,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T14:52:21+03:00 - Assistant Onboarding Intake Capture Deployment
 
 - Added durable `bna_assistant_onboarding_intakes` review drafts for explicit
@@ -15717,6 +16621,7 @@ Guardrail:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T14:29:24+03:00 - Canonical Intake Parser Pipeline Deployed
 
@@ -15772,6 +16677,7 @@ Guardrails:
 
 - handoff: `tasks-pending/2026-06-13-registration-toolbar-permission-live-deploy.md`
 
+
 ## 2026-06-14T15:05:15+03:00 - Conversational website onboarding deployed
 
 - Deployed Railway `052a8c57-a58f-4b01-a7db-a2f742352748`.
@@ -15805,6 +16711,7 @@ Remaining:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
 
 ## 2026-06-14T16:04:13+03:00 - Public assistant lead magnet and newsletter trace
 
@@ -15850,6 +16757,7 @@ Notes:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
 
+
 ## 2026-06-14T00:08:27+03:00 - Operations parent-to-student links locally verified
 
 Updated Operations Contacts so parent records can reliably resolve and open the
@@ -15893,6 +16801,7 @@ Remaining:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-operations-parent-student-links-live-deploy.md`
 
+
 ## 2026-06-13T23:55:00+03:00 - Signup credit payment-link email fix locally verified and manual resend completed
 
 Fixed the signup confirmation email path locally so credit/Green Invoice signups include the configured `PAYMENT_LINK` in the email body and send confirmation to every parent email supplied on the form. The sender now collects Parent 1, submitted Parent 2, and the saved `Parent 2 Email:` notes fallback, sends/logs each recipient separately, and records whether the payment link was included.
@@ -15917,6 +16826,7 @@ Remaining:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-13-signup-credit-link-email-live-deploy.md`
 
+
 ## 2026-06-14T00:00:00+03:00 - Signup parent-name readability locally verified
 
 Updated the English and Hebrew signup forms so Parent 1/Parent 2 section headings, parent-name labels, and typed parent-name text render explicitly in black.
@@ -15931,6 +16841,7 @@ Remaining:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-13-registration-toolbar-permission-live-deploy.md`
+
 
 ## 2026-06-14T00:33:00+03:00 - BNA production cleanup locally verified, release blocked by OpenAI key
 
@@ -15962,6 +16873,7 @@ Remaining:
 - worker: Codex
 - audit: `ops/audits/2026-06-14T00-33-00-bna-production-cleanup-audit.md`
 - handoff: `tasks-pending/2026-06-14-bna-production-community-no-ghl.md`
+
 
 ## 2026-06-14T08:44:18+03:00 - Workspace/community/provider/bot no-GHL release locally verified, deploy held on proven OpenAI key rejection
 
@@ -16003,6 +16915,7 @@ OpenAI/deploy blocker:
 - qa: `ops/qa-runs/2026-06-14T08-44-18-workspace-provider-bot-release-gate.md`
 - handoff: `tasks-pending/2026-06-14-workspace-community-provider-bot-no-ghl.md`
 
+
 ## 2026-06-14T09:43:04+03:00 - Workspace task dialogue cleanup locally verified, deploy gated
 
 Implemented the Rabbi Scheller / workspace task cleanup on
@@ -16027,6 +16940,7 @@ Remaining:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-task-dialogue-rabbi-scheller.md`
+
 
 ## 2026-06-14T13:49:03+03:00 - Telegram bot Assistant wording and Kimi fallback cleanup deployed
 
@@ -16058,6 +16972,7 @@ Notes:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
 
+
 ## 2026-06-14T14:45:06+03:00 - Rabbi Scheller task-manager access handoff sent
 
 Stored Rabbi Scheller's confirmed email and WhatsApp/contact phone on the live
@@ -16084,6 +16999,7 @@ Notes:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-12-scheller-drive-social-login-brief.md`
+
 
 ## 2026-06-14T14:07:53+03:00 - Single bot widget deployed and Playwright-smoked
 
@@ -16113,6 +17029,7 @@ Notes:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
 
 ## 2026-06-14T12:55:00+03:00 - Workspace/person/household/provider architecture deployed and live-smoked
 
@@ -16152,6 +17069,7 @@ Remaining:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
 
+
 ## 2026-06-14T13:38:00+03:00 - Hosted AI fallback and Super Agent Box deployed
 
 Fixed the assistant provider fallback path. The web assistant no longer uses an
@@ -16190,6 +17108,7 @@ Remaining:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
 
 ## 2026-06-14T12:33:21+03:00 - Assistant portal communications foundation deployed and live-smoked
 
@@ -16234,6 +17153,7 @@ Remaining:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-assistant-portal-communications.md`
 
+
 ## 2026-06-14T10:00:28+03:00 - Respecting-each-other source-sheet packet produced
 
 Created a class-ready Torah source packet for the current BNA rules/respect
@@ -16252,6 +17172,7 @@ Verification:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-respecting-each-other-source-sheet.md`
+
 
 ## 2026-06-14T10:25:49+03:00 - Temporary Kimi-primary AI provider mode wired
 
@@ -16282,6 +17203,7 @@ Remaining:
 - source: codex_chat
 - worker: Codex
 - qa: `ops/qa-runs/2026-06-14T10-35-00-kimi-primary-provider-mode.md`
+
 
 ## 2026-06-14T10:59:00+03:00 - Workspace task dialogue cleanup deployed and live-smoked
 
@@ -16322,6 +17244,7 @@ Remaining:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-task-dialogue-rabbi-scheller.md`
 
+
 ## 2026-06-14T14:28:42+03:00 - Adaptive web bot tools deployed and live-smoked
 
 Kept the web assistant as a single chat interface while making the backend
@@ -16355,6 +17278,7 @@ Remaining:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
 
+
 ## 2026-06-14T14:41:04+03:00 - Assistant history clock deployed and live-smoked
 
 Restored assistant history as an icon-only clock control. It opens a compact
@@ -16381,6 +17305,7 @@ Notes:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
 
 ## 2026-06-14T15:00:50+03:00 - OneTime Replit projects exported to separate GitHub repos
 
@@ -16414,6 +17339,7 @@ Notes:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-14T15:31:00+03:00 - Operations workspace directory deployed and live-smoked
 
 Reworked the Operations side-panel workspace selector into an official
@@ -16446,6 +17372,7 @@ Notes:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
 
 ## 2026-06-14T16:50:36+03:00 - Rabbi task UI/helper audit preview deployed and live-smoked
 
@@ -16484,6 +17411,7 @@ Notes:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-14T20:11:46+03:00 - Public signup now sets up all parent portal emails
 
 Patched and deployed the public BNA signup path so Parent 2 is structured data,
@@ -16507,6 +17435,7 @@ Verification:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-rabbi-task-ui-helper-workspace-handoff.md`
+
 
 ## 2026-06-14T17:20:21+03:00 - Public/portal privacy hardening locally verified
 
@@ -16536,6 +17465,7 @@ Notes:
 - worker: Codex
 - report: `ops/goal-mode/2026-06-14-onboarding-helper-crm-workspace-report.md`
 
+
 ## 2026-06-14T19:37:53+03:00 - Task-title cleanup dry-run added
 
 Added `scripts/task-title-cleanup-dry-run.mjs`, the
@@ -16561,6 +17491,7 @@ Notes:
 - source: codex_goal
 - worker: Codex
 - report: `ops/goalmode/2026-06-14-google-onboarding-crm-workspace-ui-report.md`
+
 
 ## 2026-06-14T19:29:23+03:00 - WAPI correction apply upgraded to local CRM tag writes
 
@@ -16598,6 +17529,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-rabbi-sheller-whitelabel-onboarding-google-content.md`
 
+
 ## 2026-06-14T19:04:56+03:00 - Rabbi white-label route privacy re-audit deployed
 
 Closed the first security re-audit slice from the Rabbi white-label superprompt.
@@ -16626,6 +17558,7 @@ Files:
 - `tests/universal-assistant-contract.test.js`
 - `ops/qa-runs/2026-06-14T19-00-38-rabbi-whitelabel-onboarding-qa.md`
 - `ops/playwright-smokes/2026-06-14-rabbi-whitelabel-provider-privacy-live/report.md`
+
 
 ## 2026-06-14T19:16:21+03:00 - WAPI manual phonebook correction UI deployed
 
@@ -16673,6 +17606,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-15T03:02:00+03:00 - Operations Automation Library deployed
 
 Added and deployed a read-only Automation Library / Prompt Browser under
@@ -16718,6 +17652,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-15T02:43:00+03:00 - One Time private question moderation queue deployed
 
 Added and deployed the private One Time question moderation queue. Question
@@ -16759,6 +17694,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-15T02:18:44+03:00 - Rabbi / One Time task-flow audit local tool
 
 Added a read-only local review script/report for Rabbi/One Time task-flow
@@ -16784,6 +17720,7 @@ cleanup.
 - source: codex_goal
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
+
 
 ## 2026-06-15T02:09:04+03:00 - One Time app access readiness deployed
 
@@ -16832,6 +17769,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-15T01:44:00+03:00 - One Time publish-package preview deployed
 
 Added and deployed `preview_one_time_member_library_publish_package` for the
@@ -16877,6 +17815,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-15T01:24:07+03:00 - Google Business preview helpers deployed
 
 Added and deployed Google Business/Profile preview helpers. Operations Settings
@@ -16918,6 +17857,7 @@ Remaining:
 - source: codex_goal
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
+
 
 ## 2026-06-15T01:11:18+03:00 - Classroom topic/material preview action deployed
 
@@ -16962,6 +17902,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-15T00:54:22+03:00 - Calendar launch preview action deployed
 
 Added and deployed the Rabbi/One Time 8-week launch-calendar preview action.
@@ -17003,6 +17944,7 @@ Remaining:
 - source: codex_goal
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
+
 
 ## 2026-06-14T23:42:38+03:00 - Support ticket processed-notification drafts deployed
 
@@ -17062,6 +18004,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-14T23:26:36+03:00 - Public helper source-boundary guard deployed
 
 Added and deployed the BNA Helper source/knowledge guard from the goal-mode
@@ -17101,6 +18044,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-14T23:14:34+03:00 - Public helper mobile sheet deployed
 
 Deployed the public BNA Helper mobile UX follow-up from the goal-mode brief.
@@ -17136,6 +18080,7 @@ Remaining:
 - source: codex_goal
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
+
 
 ## 2026-06-14T22:57:21+03:00 - Google Action Audit view deployed
 
@@ -17175,6 +18120,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-14T22:29:06+03:00 - One Time content library review surface deployed
 
 Added and deployed Operations Content > One Time Library as the internal review
@@ -17212,6 +18158,7 @@ Remaining:
 - source: codex_goal
 - worker: Codex
 - report: `tasks-pending/2026-06-14-one-time-content-library-build.md`
+
 
 ## 2026-06-14T22:18:03+03:00 - Login/input stability deployed
 
@@ -17251,6 +18198,7 @@ Remaining:
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-14-login-stability-local/report.md`
 
+
 ## 2026-06-14T22:23:40+03:00 - Ahuva Dratler parent portal link resent
 
 Checked the live Dratler records for the Ahuva/Esti parent portal issue and
@@ -17274,6 +18222,7 @@ Action:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-14T21:58:17+03:00 - Provider setup email and shorter join flow deployed
 
@@ -17321,6 +18270,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-service-provider-open-join-followup.md`
 
+
 ## 2026-06-14T20:56:28+03:00 - Task/decision helper action bundle deployed
 
 Added and deployed three approval-gated task organization helper actions:
@@ -17362,6 +18312,7 @@ Remaining:
 - source: codex_goal
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
+
 
 ## 2026-06-14T20:28:27+03:00 - Service provider open join deployed
 
@@ -17407,6 +18358,7 @@ Remaining:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-14T19:28:40+03:00 - Parent announcement persistence deployed
 
 Added and deployed guarded parent announcement approved-draft persistence and
@@ -17450,6 +18402,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-14T18:57:04+03:00 - Telegram note-to-CRM matcher deployed/live-smoked
 
 Added a first-party Telegram note matcher for local WhatsApp/WAPI CRM context.
@@ -17492,6 +18445,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-14T18:50:41+03:00 - Rabbi Scheller white-label superprompt imported and worktree preserved
 
 Imported the operator-provided Codex superprompt from the Downloads folder,
@@ -17511,6 +18465,7 @@ Notes:
 - Stable white-label/product rules were promoted to `MEMORY.md`.
 - The visible queue now points to the handoff instead of using the raw
   superprompt as a task title.
+
 
 ## 2026-06-14T18:48:18+03:00 - Registration toolbar and parent-permission notice deployed
 
@@ -17543,6 +18498,7 @@ Notes:
 - worker: Codex
 - report: `ops/goal-mode/2026-06-14-onboarding-helper-crm-workspace-report.md`
 
+
 ## 2026-06-14T18:19:19+03:00 - Provider Google Business link capture helper deployed/live-smoked
 
 Added and deployed `capture_provider_google_business_link`, an approval-gated
@@ -17572,6 +18528,7 @@ Notes:
 - source: codex_goal
 - worker: Codex
 - report: `ops/goalmode/2026-06-14-google-onboarding-crm-workspace-ui-report.md`
+
 
 ## 2026-06-14T18:41:57+03:00 - WAPI phonebook grouping dry-run report deployed/live-smoked
 
@@ -17610,6 +18567,7 @@ Notes:
 - worker: Codex
 - report: `ops/communications/wapi-crm-audit-and-plan.md`
 
+
 ## 2026-06-14T18:09:02+03:00 - Google Drive preview actions deployed and live-smoked
 
 Added and deployed preview-only Google Drive actions through the shared action
@@ -17639,6 +18597,7 @@ Notes:
 - source: codex_chat
 - worker: Codex
 - report: `ops/goalmode/2026-06-14-google-onboarding-crm-workspace-ui-report.md`
+
 
 ## 2026-06-14T17:53:58+03:00 - Google Workspace readiness panel deployed and live-smoked
 
@@ -17671,6 +18630,7 @@ Notes:
 - worker: Codex
 - report: `ops/goalmode/2026-06-14-google-onboarding-crm-workspace-ui-report.md`
 
+
 ## 2026-06-14T18:04:05+03:00 - Google connection readiness and disconnect follow-up deployed
 
 Merged real Google OAuth rows from `bna_google_connections` into the Operations
@@ -17701,6 +18661,7 @@ Notes:
 - worker: Codex
 - report: `ops/goalmode/2026-06-14-google-onboarding-crm-workspace-ui-report.md`
 
+
 ## 2026-06-14T17:46:45+03:00 - Official Rabbi Scheller audit deliverables added
 
 Created the exact Rabbi/One Time report paths requested by the goal-mode brief:
@@ -17724,6 +18685,7 @@ Notes:
 - source: codex_chat
 - worker: Codex
 - report: `ops/goal-mode/2026-06-14-onboarding-helper-crm-workspace-report.md`
+
 
 ## 2026-06-14T17:44:26+03:00 - Google Workspace readiness panel locally verified
 
@@ -17752,6 +18714,7 @@ Notes:
 - worker: Codex
 - report: `ops/goalmode/2026-06-14-google-onboarding-crm-workspace-ui-report.md`
 
+
 ## 2026-06-14T17:41:50+03:00 - Local BNA keyholder workflow created
 
 Created the local outside-repo BNA keyholder workflow for safer API key
@@ -17775,6 +18738,7 @@ Notes:
 - source: codex_chat
 - worker: Codex
 - report: `ops/goal-mode/2026-06-14-onboarding-helper-crm-workspace-report.md`
+
 
 ## 2026-06-14T17:29:58+03:00 - Public/portal privacy hardening deployed and live-smoked
 
@@ -17802,6 +18766,7 @@ Notes:
 - worker: Codex
 - report: `ops/goal-mode/2026-06-14-onboarding-helper-crm-workspace-report.md`
 
+
 ## 2026-06-14T19:57:59+03:00 - Ahuva Dratler parent onboarding email corrected and sent
 
 Checked the live Railway app data for the Dratler parent portal issue. Ahuva
@@ -17819,6 +18784,7 @@ Verification:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-14T20:08:00+03:00 - Rabbi Mishnayos onboarding lead capture deployed
 
@@ -17861,6 +18827,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-rabbi-sheller-whitelabel-onboarding-google-content.md`
 
+
 ## 2026-06-14T20:19:00+03:00 - Retitle task helper action deployed
 
 Added and deployed the `retitle_task_naturally` typed helper action. The action
@@ -17897,6 +18864,7 @@ Remaining:
 - source: codex_goal
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
+
 
 ## 2026-06-14T20:40:00+03:00 - One Time video-library item helper deployed
 
@@ -17948,6 +18916,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-14T21:09:30+03:00 - Rabbi shiur/source-sheet helper actions deployed
 
 Added and deployed `create_rabbi_shiur_idea` and
@@ -17993,6 +18962,7 @@ Remaining:
 - source: codex_goal
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
+
 
 ## 2026-06-14T21:26:57+03:00 - Referral/moderation helper actions deployed
 
@@ -18042,6 +19012,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-14T21:55:00+03:00 - WAPI phonebook workspace deployed
 
 Added and deployed the WAPI phonebook-first conversation workspace for
@@ -18086,6 +19057,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-14T23:59:28+03:00 - Approval-readiness packets deployed
 
 Added and deployed approval-readiness packets for the two remaining gated
@@ -18127,6 +19099,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
 
+
 ## 2026-06-15T00:28:12+03:00 - Approval decision preview controls deployed
 
 Added and deployed local decision-preview buttons to the two remaining
@@ -18166,6 +19139,7 @@ Remaining:
 - source: codex_goal
 - worker: Codex
 - report: `tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md`
+
 
 ## 2026-06-15T03:30:00+03:00 - Private in-app notification center deployed
 
@@ -18215,6 +19189,7 @@ Remaining:
 - worker: Codex
 - report: `tasks-pending/2026-06-14-rabbi-task-ui-helper-workspace-handoff.md`
 
+
 ## 2026-06-15T03:38:00+03:00 - Current goal-mode commit groups classified
 
 Created a current dirty-worktree classification snapshot before any staging:
@@ -18246,6 +19221,7 @@ Guardrails:
 - worker: Codex
 - report: `ops/worktree-snapshots/2026-06-15T03-38-00-goalmode-current-commit-groups.md`
 
+
 ## 2026-06-15T03:40:13+03:00 - One Time app access/backend audit refreshed
 
 Refreshed the exact Rabbi/One Time access/backend audit requested by the
@@ -18275,6 +19251,7 @@ Verification:
 - source: codex_goal
 - worker: Codex
 - report: `ops/one-time-mishnah/rabbi-app-access-and-backend-audit.md`
+
 
 ## 2026-06-15T03:46:17+03:00 - One Time forum/gamification moderation plan added
 
@@ -18307,6 +19284,7 @@ Verification:
 - worker: Codex
 - report: `ops/one-time-mishnah/forum-gamification-moderation-plan.md`
 
+
 ## 2026-06-15T03:51:57+03:00 - Provider login / Grabify audit added
 
 Added the local Phase 12 provider-login / Grabify bug current-state audit:
@@ -18334,6 +19312,7 @@ Verification:
 - source: codex_goal
 - worker: Codex
 - report: `ops/provider-intake/provider-login-phase12-audit.md`
+
 
 ## 2026-06-15T04:03:38+03:00 - Social schedule preview action deployed
 
@@ -18378,6 +19357,7 @@ Verification:
 - worker: Codex
 - report: `ops/live-smokes/2026-06-15T01-03-38-576Z-social-schedule-preview-live-smoke.md`
 
+
 ## 2026-06-15T04:24:36+03:00 - One Time thumbnail preview UI deployed
 
 Completed and deployed the Phase 13 One Time thumbnail preview UI:
@@ -18413,6 +19393,7 @@ Verification:
 - source: codex_goal
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-15-one-time-thumbnail-preview-live/report.md`
+
 
 ## 2026-06-15T04:41:29+03:00 - Parent accountability lead capture deployed
 
@@ -18452,6 +19433,7 @@ Verification:
 - worker: Codex
 - report: `ops/live-smokes/2026-06-15T01-39-30-000Z-parent-accountability-onboarding-live-smoke.md`
 
+
 ## 2026-06-15T05:02:49+03:00 - Google Integrations module deployed
 
 Completed and deployed the canonical Operations > Integrations > Google module:
@@ -18486,6 +19468,7 @@ Verification:
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-15-google-integrations-module-live/report.md`
 
+
 ## 2026-06-15T05:14:46+03:00 - Provider onboarding foundation live-smoked
 
 Closed the older provider onboarding/integrations foundation deployment gate on
@@ -18518,6 +19501,7 @@ Verification:
 - source: codex_goal
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-15-provider-onboarding-foundation-live/report.md`
+
 
 ## 2026-06-15T05:25:50+03:00 - Mobile public/login/document matrix deployed
 
@@ -18555,6 +19539,7 @@ Verification:
 - source: codex_goal
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-15-mobile-public-login-document-matrix-live/report.md`
+
 
 ## 2026-06-15T05:41:35+03:00 - Student Hebrew/RTL audit deployed
 
@@ -18594,6 +19579,7 @@ Verification:
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-15-student-hebrew-rtl-audit-live/report.md`
 
+
 ## 2026-06-15T06:02:35+03:00 - Parent weekly update approval workspace deployed
 
 Deployed the Operations parent weekly update approval workspace:
@@ -18632,6 +19618,7 @@ Verification:
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-15-parent-weekly-update-approval-live/report.md`
 
+
 ## 2026-06-15T06:07:47+03:00 - Ahuva Dratler email corrected and link sent
 
 Corrected Ahuva Dratler's live parent portal email to
@@ -18654,6 +19641,7 @@ Action and verification:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T12:11:12+03:00 - Provider Index MVP Deployed
 
@@ -18702,6 +19690,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T11:36:00+03:00 - Rabbi Checkout, Access, And Preview Launch Deployed
 
@@ -18754,6 +19743,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T11:19:29+03:00 - Student Portal Auth Policy Deployed
 
 Closed and deployed the student portal auth-model decision.
@@ -18803,6 +19793,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T11:15:00+03:00 - Railway Latest Deployment Record Verified
 
 Closed the stale Railway deployment-record follow-up.
@@ -18823,6 +19814,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T11:14:00+03:00 - Wappy Connector Decision Packet Added
 
@@ -18859,6 +19851,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T10:48:36+03:00 - Live Classes Tiered Access Deployed
 
@@ -18901,6 +19894,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T10:11:48+03:00 - Deployed One Time Member Library Publishing Slice
 
@@ -18950,6 +19944,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T09:41:37+03:00 - Rabbi One Time Task Dialogue Board Deployed
 
@@ -19002,6 +19997,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T06:17:55+03:00 - Parent password setup preview deployed
 
 Deployed the Operations Students > Next Year Login parent password setup/reset
@@ -19046,6 +20042,7 @@ Verification:
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-15-next-year-password-setup-preview-live/report.md`
 
+
 ## 2026-06-15T06:17:51+03:00 - Ahuva Dratler parent target corrected to Menachem
 
 Corrected the parent-access association after the operator clarified that
@@ -19068,6 +20065,7 @@ Action and verification:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T06:32:09+03:00 - Parent weekly recipient preview deployed
 
@@ -19113,6 +20111,7 @@ Verification:
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-15-parent-announcement-recipient-preview-live/report.md`
 
+
 ## 2026-06-15T06:41:39+03:00 - Admin role policy matrix deployed
 
 Deployed Admin > Roles as a read-only role/access policy matrix:
@@ -19156,6 +20155,7 @@ Verification:
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-15-admin-role-policy-live/report.md`
 
+
 ## 2026-06-15T06:55:29+03:00 - Contacts WAPI history deployed
 
 Deployed the Contacts-side WAPI/local communication history readback:
@@ -19195,6 +20195,7 @@ Verification:
 - source: codex_goal
 - worker: Codex
 - report: `ops/playwright-smokes/2026-06-15-contact-wapi-history-live/report.md`
+
 
 ## 2026-06-15T07:09:09+03:00 - Contact history helper action deployed
 
@@ -19241,6 +20242,7 @@ Verification:
 - worker: Codex
 - report: `ops/live-smokes/2026-06-15T04-08-37-882Z-contact-history-helper-live-smoke.md`
 
+
 ## 2026-06-15T07:15:52+03:00 - One Time first-party capability map documented
 
 Completed the local no-write map for what BNA Operations can own before
@@ -19274,6 +20276,7 @@ Verification:
 - worker: Codex
 - report: `ops/one-time-mishnah/first-party-capability-map.md`
 
+
 ## 2026-06-15T07:21:47+03:00 - One Time content/media intake workflow documented
 
 Completed the local no-write map for routing Rabbi/One Time content/media from
@@ -19305,6 +20308,7 @@ Verification:
 - worker: Codex
 - report: `ops/one-time-mishnah/content-media-intake-workflow.md`
 
+
 ## 2026-06-15T07:26:24+03:00 - One Time partnership drafting pack documented
 
 Completed the local draft-only handoff for Claude or another writing assistant:
@@ -19334,6 +20338,7 @@ Verification:
 - source: codex_goal
 - worker: Codex
 - report: `ops/one-time-mishnah/partnership-drafting-pack.md`
+
 
 ## 2026-06-15T07:40:38+03:00 - Admin Users external access deployed
 
@@ -19377,6 +20382,7 @@ Verification:
 - deployment: `8d87ea87-8034-4533-85f7-71b70e99ccb5`
 - report: `ops/playwright-smokes/2026-06-15-admin-users-live/report.md`
 
+
 ## 2026-06-15T07:59:02+03:00 - Student assistant onboarding coach deployed
 
 Completed and deployed the no-write student assistant onboarding coach:
@@ -19411,6 +20417,7 @@ Verification:
 - worker: Codex
 - deployment: `6b77f88f-7508-43ac-b107-c713d29c34a3`
 - report: `ops/playwright-smokes/2026-06-15-assistant-onboarding-coach-live/report.md`
+
 
 ## 2026-06-15T08:15:30+03:00 - Task calendar selected-day polish deployed
 
@@ -19452,6 +20459,7 @@ Verification:
 - deployment: `84bd450e-d5e9-409c-8126-29a147ab51cd`
 - report: `ops/playwright-smokes/2026-06-15-task-calendar-selected-day-live/report.md`
 
+
 ## 2026-06-15T08:30:38+03:00 - Decision card context polish deployed
 
 Completed and deployed the Phase 8.3 decision-card follow-up:
@@ -19491,6 +20499,7 @@ Verification:
 - worker: Codex
 - deployment: `03ad6a70-0f58-40c1-abb4-f2a6bfe4e3a5`
 - report: `ops/live-smokes/2026-06-15T05-30-30-413Z-operations-decision-card-ui-live-smoke.md`
+
 
 ## 2026-06-15T08:31:30+03:00 - Local install and Rabbi demo readiness package
 
@@ -19536,6 +20545,7 @@ Verification:
   `npm run smoke:local -- --no-env-file --skip-tests`; it exited 1 with the
   clear setup error `DATABASE_URL, OPS_USERNAME, OPS_PASSWORD` missing and
   wrote a redacted `.runtime/smoke-local-latest.json` report.
+
 
 ## 2026-06-15T08:34:00+03:00 - Rabbi / One Time Class Media Intake V1 deployed
 
@@ -19589,6 +20599,7 @@ Remaining blockers:
 - Before Rabbi access is live, Shloimie still must provide the portal URL, One
   Time username/password, and Rabbi Telegram chat ID if bot intake is used.
 
+
 ## 2026-06-15T08:48:04+03:00 - Public homepage Torah progress privacy hotfix deployed
 
 Completed and deployed the public/private leak fix for the public Torah trip
@@ -19629,6 +20640,7 @@ Guardrails:
   external CRM write, task/comment write, access grant, or portal credential
   action was performed.
 
+
 ## 2026-06-15T08:56:15+03:00 - Phase 1 public route privacy smoke coverage added
 
 Added repeatable unauthenticated route privacy audit coverage for the Phase 1
@@ -19659,6 +20671,7 @@ Guardrails:
 - Parent/student portal APIs rejected missing session/token/code.
 - No deployment was required because this was test/smoke tooling and live audit
   evidence only.
+
 
 ## 2026-06-15T09:02:16+03:00 - Observable Codex Queue Deployed
 
@@ -19697,6 +20710,7 @@ Guardrails:
   performed.
 - Existing human-facing task lifecycle remains compatible; canonical lifecycle
   state is stored on `bna_agent_jobs`.
+
 
 ## 2026-06-15T09:09:24+03:00 - Observable Codex Queue Canonical Lifecycle Corrected
 
@@ -19740,6 +20754,7 @@ Guardrails:
 - worker: Codex
 - deployment: `bee86ce8-747b-4287-90e3-bfa86f7077ab`
 
+
 ## 2026-06-15T09:16:36+03:00 - One Time Billing Policy Packet Completed
 
 Converted the remaining Green Invoice vs Stripe/refund blocker into an
@@ -19769,6 +20784,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T09:21:52+03:00 - Goal-Mode Completion Matrix Added
 
 Added a phase-by-phase completion/blocker matrix for the original 2026-06-14
@@ -19797,6 +20813,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T10:17:13+03:00 - Goal Matrix Aligned With Member-Library Deployment
 
@@ -19831,6 +20848,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T10:27:03+03:00 - Signup Credit Email Preview Deployed
 
@@ -19870,6 +20888,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T09:35:22+03:00 - External Access Persistence Workflow Packet Added
 
 Added a local readiness packet for the Admin Users / External Access create-edit
@@ -19899,6 +20918,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T10:09:51+03:00 - Railway Google Scope Env Narrowed
 
@@ -19930,6 +20950,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T09:58:44+03:00 - Google Test-User OAuth Scope Guard Deployed
 
@@ -19976,6 +20997,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T09:42:48+03:00 - Google Public OAuth Verification Packet Added
 
 Added a local Phase 2 Mode C packet for Google public production OAuth
@@ -20007,6 +21029,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T09:30:38+03:00 - Scoped Task Comment Visibility Tests Aligned
 
 Aligned the task-comment tests with the current scoped visibility helper.
@@ -20031,6 +21054,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T09:26:35+03:00 - Owner Approval Unblocker Pack Added
 
@@ -20057,6 +21081,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T10:41:24+03:00 - Buffer Hosted Media Assets Deployed
 
@@ -20098,6 +21123,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T10:49:22+03:00 - WAPI Lead-Candidate Importer Deployed
 
 Added the final first-party WAPI lead-candidate review importer.
@@ -20130,6 +21156,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T12:49:48+03:00 - Parent Identity Linking Deployed
 
@@ -20179,6 +21206,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T13:19:23+03:00 - Universal Assistant MVP Deployed
 
 Implemented and deployed the Universal Assistant MVP in the existing
@@ -20222,6 +21250,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T13:50:00+03:00 - Universal Assistant Expanded MVP Deployed
 
@@ -20271,6 +21300,7 @@ Guardrails:
 
 - source: codex_chat
 - worker: Codex
+
 
 ## 2026-06-15T17:45:00+03:00 - WS03 Pending/access Dedupe and Done Proof Links Local Implementation
 
@@ -20327,6 +21357,7 @@ Guardrails:
 - source: codex_chat
 - worker: Codex
 
+
 ## 2026-06-15T17:44:00+03:00 - Decision Lifecycle Reprocessing Local Implementation
 
 - Implemented the WS02 decision lifecycle model locally: decision-specific task
@@ -20348,6 +21379,7 @@ Guardrails:
 - Guardrail: no destructive migration, real task deletion, external CRM/GHL,
   WhatsApp, email, Buffer/social, Google, checkout/billing, or connector write
   was performed.
+
 
 ## 2026-06-15T17:48:00+03:00 - WS06 Buffer and Resend Communications Integrations Local Implementation
 
@@ -20400,6 +21432,7 @@ Guardrails:
 - No real Buffer post, Resend email send, DNS provider write, external CRM/GHL,
   WhatsApp, Google, checkout/billing, or access write was performed.
 
+
 ## 2026-06-15T17:52:10+03:00 - Local Classroom, Rabbi Content Flow, and Buffer Draft-Only Deployment
 
 Implemented and deployed the local Classroom-first plan:
@@ -20442,6 +21475,7 @@ Guardrails:
   reward, leaderboard, billing/access, external CRM/GHL, WAPI/WhatsApp, or
   connector write was performed.
 
+
 ## 2026-06-15T17:56:17+03:00 - WS07 Automation Center Compact Layout Local Implementation
 
 Implemented the WS07 Automation Center locally:
@@ -20474,6 +21508,7 @@ Blocked:
   `getaddrinfo ENOTFOUND db.amipeuneopdbzuhlnimt.supabase.co`.
 - Railway deploy, Railway doctor, and live registry smoke still need reachable
   database/deployment access.
+
 
 ## 2026-06-15T18:00:06+03:00 - WS09 People Identity Dedupe Local Implementation
 
@@ -20511,6 +21546,7 @@ Blocked:
   `DATABASE_URL` host did not resolve locally.
 - Deployment, live Railway doctor/smoke, and final production Menachem duplicate
   outcome still need reachable production database/deployment access.
+
 
 ## 2026-06-15T17:59:38+03:00 - WS05 BNA Helper Tool-Using Admin Assistant Local Implementation
 
@@ -20563,6 +21599,7 @@ Guardrails:
 - Project-scoped One Time users are limited to task/decision/Codex/report
   helper tools for `one_time_mishnah_class`.
 
+
 ## 2026-06-15T18:02:40+03:00 - WS11 gamification/community/parent-progress local implementation
 
 Implemented the WS11 foundation locally:
@@ -20612,6 +21649,7 @@ Guardrails:
   connector write was added or executed.
 - Parent progress remains explicit-link based and approval-gated.
 
+
 ## 2026-06-15T18:02:57+03:00 - Secure Operator Bootstrap Local Implementation
 
 Implemented the secure Operator Setup workflow locally:
@@ -20658,6 +21696,7 @@ Guardrails:
 - Safe packages remain the default; secret-bearing packages require explicit
   approval and encryption.
 
+
 ## 2026-06-15T18:04:05+03:00 - WS04 Operations Queue / Agent Work Visibility Reconciler
 
 Implemented and deployed WS04:
@@ -20700,6 +21739,7 @@ Notes:
 - Full `npm test` is not clean in the dirty workspace because an unrelated
   existing Operations vocabulary contract rejects the legacy `Parent Households`
   marker still present in `public/operations.html`.
+
 
 ## 2026-06-15T18:08:06+03:00 - One Time Classroom / Calendar / Community / Source Bot
 
@@ -20752,6 +21792,7 @@ Guardrails:
 - The One Time bot refuses unsupported Torah/content answers instead of
   inventing sources.
 
+
 ## 2026-06-15T15:55:00+03:00 — One Time Two-Login + White-Label + Scoped Parsing (Kimi Handoff)
 
 **What changed:**
@@ -20798,6 +21839,7 @@ Guardrails:
 **Source:** `kimi-one-time-rabbi-whatsapp-workspace-handoff.md` sections 3.2–3.6
 **Worker:** Kimi
 
+
 ## 2026-06-16T08:06:22+03:00 - Downloads Prompt Audit + WS01 Operations Readability Closeout
 
 **What changed:**
@@ -20837,6 +21879,7 @@ Guardrails:
   work remains pending until a safe release window or isolated deploy path is
   approved; the current worktree contains many unrelated in-flight workstreams.
 
+
 ## 2026-06-16T09:10:00+03:00 - Actual WS01-WS11 Prompt Attachment + Public Helper Consistency
 
 **What changed:**
@@ -20873,6 +21916,7 @@ Guardrails:
 - Full production closeout remains the same tracked set: safe deploy or
   isolated release path, live DB readback, credentials/DNS/account access, live
   smokes, and human product/legal/billing/asset decisions.
+
 
 ## 2026-06-16T09:01:00+03:00 - Fullclean, Debug, Deploy, And Audit Closeout
 
@@ -20955,6 +21999,7 @@ Guardrails:
   WhatsApp, billing, Google, Buffer, external CRM, or account-grant write was
   performed by this cycle.
 
+
 ## 2026-06-16T14:05:11+03:00 - WS11 + Operator Setup Targeted Live Closeout
 
 **What changed:**
@@ -21003,6 +22048,7 @@ Guardrails:
 - Rabbi/One Time launch/legal/billing/account/asset decisions remain human or
   external blockers; the latest audit found 0 Codex-ready tasks.
 
+
 ## 2026-06-16T15:45:30+03:00 - UI-01: UI/header/footer/mobile standardization
 
 Status: `requeued_for_followup`
@@ -21029,6 +22075,7 @@ Intentionally not changed:
 - No public/PWA routing changes, no private-data exposure, and no UI runtime
   edits were made by MASTER-07.
 
+
 ## 2026-06-16T15:45:31+03:00 - OPS-02: Operations workflows, lanes, calendar, and task routing
 
 Status: `requeued_for_followup`
@@ -21054,6 +22101,7 @@ Blockers:
 
 Intentionally not changed:
 - No Operations runtime logic, task data, or live database state was mutated.
+
 
 ## 2026-06-16T15:45:32+03:00 - HELPER-03: BNA Helper scoped tool registry and duplicate helper cleanup
 
@@ -21083,6 +22131,7 @@ Blockers:
 Intentionally not changed:
 - No helper actions were enabled for live external sends, publishes, billing,
   Google writes, or account grants.
+
 
 ## 2026-06-16T15:45:33+03:00 - RABBI-04: Rabbi / One Time product and 7pm class model
 
@@ -21114,6 +22163,7 @@ Intentionally not changed:
 - No public Rabbi pricing, checkout, access grant, email send, payment write,
   or public launch was performed.
 
+
 ## 2026-06-16T15:45:34+03:00 - INT-05: Safe integration readiness for Buffer, Resend, Stripe, Zoom, Vimeo, Telegram
 
 Status: `blocked_needs_credentials`
@@ -21142,6 +22192,7 @@ Blockers:
 Intentionally not changed:
 - No sends, publishes, billing, Google writes, Zoom/Vimeo writes, DNS writes,
   or credential copying were performed.
+
 
 ## 2026-06-16T15:45:35+03:00 - COMMUNITY-06: Course, community, gamification, and parent progress architecture
 
@@ -21172,6 +22223,7 @@ Blockers:
 Intentionally not changed:
 - No public leaderboard, public shoutout exposure, external Classroom sync, or
   real device-control behavior was added.
+
 
 ## 2026-06-16T15:45:36+03:00 - MASTER-07: Parallel workstream orchestrator closeout
 
@@ -21205,6 +22257,7 @@ Blockers:
 Intentionally not changed:
 - No runtime feature code, external sends/publishes, credential copying,
   billing, account grants, student merges, or device-control actions.
+
 
 ## 2026-06-16T16:02:26+03:00 - OPS-02: Operations workflow correctness local closeout
 
@@ -21263,6 +22316,7 @@ Intentionally not changed:
   grants, live deploy, queue mutations, or ambiguous identity merges were
   performed.
 
+
 ## 2026-06-16T16:11:44+03:00 - COMMUNITY-06: Mishnayos community additive local extension
 
 Status: `completed_local_verification_live_followup_required`
@@ -21310,6 +22364,7 @@ Intentionally not changed:
 - No external sends, Google writes, Buffer publishes/schedules, WhatsApp/email
   sends, billing/payment actions, account grants, member publishing, live
   deploy, parent credential reset, or public leaderboard launch.
+
 
 ## 2026-06-16T16:11:07+03:00 - INT-05: Safe integrations closeout local proof
 
@@ -21387,6 +22442,7 @@ Intentionally not changed:
   DNS write, provider configuration write, credential copying, or active GHL
   runtime was performed.
 
+
 ## 2026-06-16T16:45:13+03:00 - INT-05: exact endpoint and approval-gate hardening
 
 Status: `completed_local_verification_live_followup_required`
@@ -21422,6 +22478,7 @@ Intentionally not changed:
 - No provider send, schedule, publish, upload, billing, checkout, Google write,
   DNS write, account grant, credential copy, live deploy, or active GHL runtime
   was performed.
+
 
 ## 2026-06-16T16:20:40+03:00 - RABBI-04: OneTime Mishnayos product system local proof
 
@@ -21481,6 +22538,7 @@ Intentionally not changed:
   checkout enablement, public final pricing, member access grants, credential
   copying, active GHL runtime, or live deploy was performed.
 
+
 ## 2026-06-16T16:24:15+03:00 - HELPER-03 scoped helper API and Operations drawer local verification
 
 Completed the local HELPER-03 pass on top of the existing WS05 helper:
@@ -21512,6 +22570,7 @@ Remaining blocker:
 - Live/deploy closeout is still pending an approved safe release path or
   isolated worktree because this repo has many unrelated in-flight changes and
   AGENTS.md requires deploy/live smoke before the task is marked done.
+
 
 ## 2026-06-16T16:29:35+03:00 - UI-01 public shell and Operations layout local verification
 
@@ -21550,6 +22609,7 @@ Remaining blocker:
   worktree contains many unrelated local workstreams. UI-01 live rollout needs
   a clean/approved release path or deliberate accumulated-bundle deploy.
 
+
 ## 2026-06-16T17:01:52+03:00 - Stripe key imported into local BNA keyholder
 
 Safely imported the loose Stripe secret from Downloads into the local keyholder:
@@ -21575,6 +22635,7 @@ Intentionally not changed:
 - The key was not copied to `.secrets` or Railway.
 - No checkout, live billing, webhook, send, account grant, product/price write,
   or external provider write was performed.
+
 
 ## 2026-06-16T17:18:00+03:00 - Prompt ingestion and execution gap audit
 
@@ -21604,6 +22665,7 @@ Recommended next implementation:
 - Build `npm run prompts:audit` and an `ops/prompt-intake/` register to map
   Downloads, Codex attachments, GPT prompt zips, statuses, blockers, and proof
   paths into one visible pipeline.
+
 
 ## 2026-06-16T17:41:58+03:00 - One Time integrations/access stabilization deployed
 
@@ -21684,6 +22746,7 @@ Still gated:
   were performed. Those remain explicit approval/account-owner tasks for the
   Thursday access session.
 
+
 ## 2026-06-16T18:11:01+03:00 - Ramble watchdog local audit layer
 
 Added the first repo-level ramble watchdog layer:
@@ -21729,6 +22792,7 @@ Blocked/not performed:
   DNS writes, account grants, credential copying, public/member publishing, or
   external writes were performed.
 
+
 ## 2026-06-16T18:24:00+03:00 - Ramble watchdog deployed and live-smoked
 
 Deployed the Watchdog/control-center foundation from commit `3b34755` to
@@ -21770,6 +22834,7 @@ Still gated:
   credential copying, public/member publishing, or other external writes were
   performed.
 
+
 ## 2026-06-16T19:46:00+03:00 - BNA Ramble Protocol hardening
 
 Implemented the ramble intake hardening pass across source-of-truth docs,
@@ -21805,6 +22870,7 @@ Verification:
 
 No deployment or external writes were performed.
 
+
 ## 2026-06-16T20:11:34+03:00 - One Time Rabbi email contacts import
 
 Imported the downloaded subscriber/contact CSV into the One Time/Rabbi side
@@ -21838,6 +22904,7 @@ Verification:
 No campaign, email, SMS, WhatsApp, Telegram, Buffer, payment, or external CRM
 send/write was performed. UI deployment remains blocked on a clean deploy
 window because unrelated edits were already present in the worktree.
+
 
 ## 2026-06-16T20:28:49+03:00 - Final Ramble Protocol and Raw Input Queue
 
@@ -21885,6 +22952,7 @@ Remaining:
 - The migration was created but not applied to Railway in this turn.
 - Direct live Telegram/website ramble proof requires a deploy/live-smoke
   follow-up from a clean deploy window.
+
 
 ## 2026-06-16T22:34:38+03:00 - On-page scoped helper tool parity
 
@@ -21942,6 +23010,7 @@ No browser-workbench, external-site automation, live sends, posts, uploads,
 charges, DNS writes, account grants, credential copying, public/member
 publishing, or external CRM writes were performed.
 
+
 ## 2026-06-16T22:47:16+03:00 - Parent portal child login reset clarity
 
 Made parent-managed student login reset visibly child-specific.
@@ -21972,6 +23041,7 @@ Remaining:
 
 No password, access code, private parent/student content, email, WhatsApp,
 account grant, or external write was exposed or performed.
+
 
 ## 2026-06-17T06:49:35+03:00 - Parent login public entry safety
 
@@ -22013,6 +23083,7 @@ Remaining:
 - Local only until the next deploy and live parent-login/parent-portal smoke.
 - `REQ-20260616-027` remains pending for the full parent/student/provider
   portal security audit.
+
 
 ## 2026-06-17T07:37:17+03:00 - Goal-mode ramble protocol hardening
 
@@ -22059,6 +23130,7 @@ Remaining:
 - The active goal remains open until the full `RAW-20260616-001` correction
   register reaches terminal statuses with proof or blockers.
 
+
 ## 2026-06-17T07:54:00+03:00 - Goal-mode protocol deployment and live smoke
 
 Deployed the goal-mode ramble protocol hardening and parent child-login reset
@@ -22103,6 +23175,7 @@ Remaining:
 - The active goal remains open: most `REQ-20260616-*` correction-register
   items still need implementation, live proof, or explicit blockers.
 
+
 ## 2026-06-17T08:10:00+03:00 - Portal security audit closeout
 
 Completed `REQ-20260616-027` for parent/student/provider portal safety.
@@ -22142,6 +23215,7 @@ Remaining:
 
 - The full correction register remains active; after this batch, 7 of 70
   requirements are closed and 63 remain pending.
+
 
 ## 2026-06-17T08:51:37+03:00 - Operations Activity and Queue Health UI closeout
 
@@ -22184,6 +23258,7 @@ Remaining:
 
 - The full correction register remains active; after this batch, 15 of 70
   requirements are closed and 55 remain pending.
+
 
 ## 2026-06-17T11:18:00+03:00 - Safe OpenAI keyholder setup with Kimi fallback
 
@@ -22237,6 +23312,7 @@ Remaining:
 - The full correction register remains active; after this batch, 31 of 70
   requirements are done, 1 is blocked, and 38 remain pending.
 
+
 ## 2026-06-17T11:59:00+03:00 - Operations settings/dashboard/integrations/automations closeout
 
 Completed `REQ-20260616-032` through `REQ-20260616-042`.
@@ -22281,6 +23357,7 @@ Remaining:
 
 - The full correction register remains active; after this batch, 42 of 70
   requirements are done, 1 is blocked, and 27 remain pending.
+
 
 ## 2026-06-17T12:33:00+03:00 - Provider classroom/settings closeout
 
@@ -22339,6 +23416,7 @@ Remaining:
 - The full correction register remains active; after this batch, 46 of 70
   requirements are done, 1 is blocked, and 23 remain pending.
 
+
 ## 2026-06-17T13:15:03+03:00 - Content/research scope closeout
 
 Completed `REQ-20260616-047` through `REQ-20260616-052`.
@@ -22391,6 +23469,7 @@ Remaining:
 
 - The full correction register remains active; after this batch, 52
   requirements are done, 1 is blocked, and 17 remain pending.
+
 
 ## 2026-06-17T13:46:34+03:00 - Communications screening/imports closeout
 
@@ -22447,6 +23526,7 @@ Remaining:
 - The full correction register remains active; after this batch, 60
   requirements are done, 1 is blocked, and 9 remain pending.
 
+
 ## 2026-06-17T15:05:00+03:00 - Universal agentic goal memory/watchdog hardening closeout
 
 Completed `RAW-20260617-005` / `GOAL-20260617-005`.
@@ -22496,6 +23576,7 @@ Guardrails:
 - Commit was explicitly blocked because the worktree contains extensive
   pre-existing mixed-scope dirty changes; no files were staged.
 
+
 ## 2026-06-17T16:25:00+03:00 - Watchdog backlog cleanup and prompt register mapping
 
 Completed `RAW-20260617-006`.
@@ -22532,12 +23613,14 @@ Guardrails:
   write, account grant, credential copy, DB migration apply, or external
   connector write was performed.
 
+
 ## 2026-06-17T13:30:12+03:00 - Task queue reconciler apply run
 
 Report: ops/system-audits/2026-06-17T13-30-12-939Z-task-queue-reconciler.md
 
 Actions: 1. Active machine tasks: 15.
 - clear_stale_blocked_state #511: Cleared stale fleet blocked state for active Codex task #511.
+
 
 ## 2026-06-17T16:34:00+03:00 - Live Operations queue state cleanup
 
@@ -22594,6 +23677,7 @@ Guardrails:
 - No live email, WhatsApp, Telegram send, social publish, payment charge, DNS
   write, account grant, credential copy, or direct DB write was performed.
 
+
 ## 2026-06-17T17:10:00+03:00 - Contacts signup review cleanup
 
 Completed `RAW-20260617-008` and live Operations task #640.
@@ -22634,6 +23718,7 @@ Guardrails:
   write, account grant, credential copy, upload, or external connector write was
   performed.
 
+
 ## 2026-06-17T17:23:00+03:00 - Helper deep-link navigation
 
 Completed `RAW-20260617-009` and live Operations task #581.
@@ -22673,6 +23758,7 @@ Guardrails:
 - No live email, WhatsApp, Telegram send, social publish, payment charge, DNS
   write, account grant, credential copy, upload, or external connector write was
   performed.
+
 
 ## 2026-06-17T17:38:00+03:00 - Rabbi Scheller / OneTime Mishnayos goal packet
 
@@ -22751,6 +23837,7 @@ Guardrails:
 - Email drafts are approval-only and no-send.
 - Telegram audit did not expose tokens, chat IDs, or private message bodies.
 
+
 ## 2026-06-17T17:43:00+03:00 - Hebrew RTL UI label audit
 
 Completed live Operations task #569.
@@ -22791,6 +23878,7 @@ Guardrails:
   write, account grant, credential copy, upload, or external connector write was
   performed.
 
+
 ## 2026-06-17T17:58:00+03:00 - Parent PWA tablet filter setup
 
 Completed live Operations task #567.
@@ -22829,6 +23917,7 @@ Guardrails:
 - No live email, WhatsApp, Telegram send, social publish, payment charge, DNS
   write, account grant, credential copy, upload, or external connector write was
   performed.
+
 
 ## 2026-06-17T18:12:00+03:00 - Mobile assistant keyboard layout
 
@@ -22876,6 +23965,7 @@ Guardrails:
   write, account grant, credential copy, upload, or external connector write was
   performed.
 
+
 ## 2026-06-17T18:26:10+03:00 - Academy Telegram worker recovery deployed
 
 Recovered the academy Telegram bot by moving its poller onto the hosted Railway
@@ -22921,6 +24011,7 @@ Guardrails:
 - No manual bot token exposure, direct database writes, email send, WhatsApp
   send, payment action, DNS write, or external connector write was performed.
 
+
 ## 2026-06-17T18:38:00+03:00 - Queue terminal-task guard deployed and #560 reclosed
 
 Fixed the queue bug exposed by task #560: the mobile assistant keyboard task had
@@ -22959,6 +24050,7 @@ Guardrails:
   write, account grant, credential copy, upload, or external connector write
   was performed.
 
+
 ## 2026-06-17T20:50:29+03:00 - Menachem student WhatsApp and portal link sent
 
 Processed `RAW-20260617-017` from Codex chat.
@@ -22985,6 +24077,7 @@ Guardrails:
 - The full phone and portal access link/code were not written to tracked files.
 - A live WhatsApp send was performed because the operator explicitly requested
   this individual student portal/login message.
+
 
 ## 2026-06-17T20:56:00+03:00 - Backlog, Drive queue, and ramble-readiness sweep completed
 
@@ -23039,6 +24132,7 @@ Guardrails:
 - The contact-summary request remains blocked until Shloimie supplies the
   email addresses, spreadsheet file, or exact spreadsheet range.
 
+
 ## 2026-06-17T21:31:00+03:00 - Dratler family and One Time workspace scope closeout
 
 Closed the two fresh Telegram tasks that appeared after the backlog sweep:
@@ -23077,6 +24171,7 @@ Guardrails:
 - No live email, WhatsApp, social publish, payment charge, DNS write, credential
   copy, account grant, or external CRM write was performed.
 
+
 ## 2026-06-18T09:21:45+03:00 - Mobile public/PWA guardrail batch local-verified
 
 Implemented the first batch from `RAW-20260618-001`:
@@ -23111,6 +24206,7 @@ Blocked release proof:
   untracked changes. A scope-safe deploy decision or clean deploy bundle is
   required before marking app-visible requirements done.
 
+
 ## 2026-06-18T09:45:00+03:00 - Workspace model foundation local-verified
 
 Implemented a compatibility-safe foundation slice for `REQ-20260618-007`, with
@@ -23144,6 +24240,7 @@ Remaining blocker:
   constraints where safe, deploy, and live smoke are still required before the
   workspace-model requirement can be marked done.
 
+
 ## 2026-06-18T09:37:07+03:00 - Workspace/student isolation guard slice local-verified
 
 Implemented the first server-side isolation guard slice for
@@ -23174,6 +24271,7 @@ Remaining blocker:
   deploy/live proof remain open because Railway deployment from the mixed dirty
   worktree is not scope-safe without an explicit release decision or clean
   bundle.
+
 
 ## 2026-06-18T09:56:34+03:00 - Operations shell/design slice local-verified
 
@@ -23207,6 +24305,7 @@ Remaining blocker:
   deploy/live smoke remain open because Railway deployment from the mixed dirty
   worktree is not scope-safe without an explicit release decision or clean
   bundle.
+
 
 ## 2026-06-18T10:32:00+03:00 - Task/intake/calendar slice local-verified
 
@@ -23248,6 +24347,7 @@ Remaining blocker:
   deployment from the mixed dirty worktree is not scope-safe without an explicit
   release decision or clean bundle.
 
+
 ## 2026-06-18T10:47:42+03:00 - Community/content/live-class scoping slice local-verified
 
 Implemented the first module-scoping slice for `REQ-20260618-014`,
@@ -23284,6 +24384,7 @@ Remaining blocker:
   deployment from the mixed dirty worktree is not scope-safe without an explicit
   release decision or clean bundle.
 
+
 ## 2026-06-18T11:08:35+03:00 - Admin/communications/integrations/automations scoping slice local-verified
 
 Implemented and locally verified `REQ-20260618-017`.
@@ -23316,6 +24417,7 @@ Remaining blocker:
   explicit release decision or clean bundle. Local smoke startup also logged the
   existing `bna_workspaces_type_check` warning for a `family` row, which remains
   tied to the workspace-model backfill/constraint cleanup blocker.
+
 ## 2026-06-18T11:27:11+03:00 - Student detail and Goal Board scope slice local-verified
 
 Implemented and locally verified `REQ-20260618-018`.
@@ -23347,6 +24449,7 @@ Remaining blocker:
   available. The local smoke used a synthetic selected student ID because the
   local BNA roster was empty, and startup logged the existing
   `bna_workspaces_type_check` warning tied to `REQ-20260618-007`.
+
 
 ## 2026-06-18T11:38:42+03:00 - Student Hebrew RTL accountability slice local-verified
 
@@ -23380,6 +24483,7 @@ Remaining blocker:
 - This is local proof only. Deploy/live Hebrew smoke remains blocked until a
   scope-safe deploy path or clean bundle is available.
 
+
 ## 2026-06-18T11:46:30+03:00 - Scoped helper action audit slice local-verified
 
 Implemented and locally verified `REQ-20260618-020`.
@@ -23409,6 +24513,7 @@ Remaining blocker:
 
 - This is local proof only. Deploy/live helper smoke remains blocked until a
   scope-safe deploy path or clean bundle is available.
+
 
 ## 2026-06-18T11:55:00+03:00 - Safe repeatable seed and cleanup path local-verified
 
@@ -23445,6 +24550,7 @@ Remaining blocker:
 
 - Real DB seed apply/readback/cleanup and deploy/live proof remain blocked
   pending explicit safe target/release approval.
+
 
 ## 2026-06-18T12:00:00+03:00 - Mobile workspace audit local closeout blocked on deploy target
 
@@ -23493,6 +24599,7 @@ Remaining blocker:
   requires operator-run `npm run ops:audit:auth` followed by
   `npm run ops:audit`.
 
+
 ## 2026-06-18T16:41:03+03:00 - Durable Ramble-To-Done Execution Protocol
 
 Added the durable execution-run protocol and resume framework for giant BNA
@@ -23521,6 +24628,7 @@ Verification:
 
 No audit crawl, watch loop, agent fleet loop, deployment, production data
 mutation, or audit-harness replacement was performed.
+
 
 ## 2026-06-18T16:54:09+03:00 - Telegram Drive Intake / Google Auth Diagnostic
 
@@ -23561,6 +24669,7 @@ Remaining blocker:
   the Google Drive reference variables are added to `academy-telegram-worker`,
   and the worker is restarted/live-smoked. No deploy, Railway variable write,
   Google write, Telegram send, or production data mutation was performed.
+
 
 ## 2026-06-18T17:49:30+03:00 - Telegram Drive Intake Fixed and Stalled Jobs Repaired
 
@@ -23614,6 +24723,7 @@ Guardrails:
 - No Telegram message send, social publish, payment, DNS, account grant, or
   Drive permission change was performed.
 
+
 ## 2026-06-18 - Erev Shabbos WhatsApp Draft Prepared
 
 Prepared a parent-facing Erev Shabbos WhatsApp draft from
@@ -23627,6 +24737,7 @@ question/source-sheet memory.
   Israel; draft assumes Diaspora/Korach.
 - No WhatsApp send, Telegram send, social publish, Drive write, or production
   mutation was performed.
+
 
 ## 2026-06-18T18:29:00+03:00 - Telegram Weekly Erev Shabbos Request Fixed
 
@@ -23665,6 +24776,7 @@ Guardrails:
 - No WhatsApp send, Telegram send, social publish, payment, DNS/account change,
   Drive permission change, or raw secret write was performed.
 
+
 ## 2026-06-18T18:42:00+03:00 - Telegram OpenAI Primary / Kimi Fallback Fixed
 
 Closed `RAW-20260618-006` and deployed the academy Telegram worker with OpenAI
@@ -23702,6 +24814,7 @@ Guardrails:
 - No Telegram send, WhatsApp send, social publish, payment, DNS/account change,
   Drive permission change, or raw secret write was performed.
 
+
 ## 2026-06-19T05:12:27+03:00 - Agent Control Center Local Batch Started
 
 Registered `RAW-20260619-001` and implemented the first local Agent Control
@@ -23736,6 +24849,7 @@ Remaining:
 - Local DB/API smoke, negative RBAC tests, browser smoke evidence, safe demo
   data/E2E, notification hooks, and manual Agent Mode smoke remain open before
   any release approval.
+
 
 ## 2026-06-19T06:20:00+03:00 - One Time Drive Brief Ingestion Preview Local Batch
 
@@ -23791,6 +24905,7 @@ Remaining:
 - `REQ-20260619-207` remains genuinely blocked on external owner
   credentials/actions and explicit approval for any live provider setup.
 
+
 ## 2026-06-19T06:35:00+03:00 - Canonical Intake Scope Hardening Continuation
 
 Preserved the completed canonical intake parser hardening from the recovery
@@ -23838,6 +24953,7 @@ Remaining:
 - `REQ-20260619-204` still needs negative One Time scope/RBAC tests and DB/API
   readback before live closeout.
 
+
 ## 2026-06-19T06:45:00+03:00 - Ambiguous Intake and One Time RBAC Negative Tests
 
 Finished the next credential-free continuation for `REQ-20260619-203` and
@@ -23879,6 +24995,7 @@ Remaining:
 - `REQ-20260619-204` needs DB-backed owner/admin and scoped-access API readback.
 - `REQ-20260619-205` still needs One Time browser/button audit.
 
+
 ## 2026-06-19T07:05:00+03:00 - One Time Raw Intake API Readback
 
 Closed the next local verification gap for `REQ-20260619-203` and
@@ -23918,6 +25035,7 @@ Remaining:
   smoke.
 - `REQ-20260619-206` needs Agent Control Center DB/API/browser/manual Agent
   Mode smoke continuation.
+
 
 ## 2026-06-19T07:25:00+03:00 - One Time Operations UI Browser Smoke
 
@@ -23963,6 +25081,7 @@ Remaining:
 - `REQ-20260619-207` remains blocked on secure external provider credentials,
   owner-only account actions, and explicit release approval.
 
+
 ## 2026-06-19T07:55:00+03:00 - Agent Control DB/API Readback
 
 Closed the local DB/API route-smoke portion of `REQ-20260619-206`.
@@ -23999,6 +25118,7 @@ Remaining:
   Agent Mode/browser-judgment smoke.
 - `REQ-20260619-207` remains blocked on secure external provider credentials,
   owner-only account actions, and explicit release approval.
+
 
 ## 2026-06-19T08:20:00+03:00 - Agent Control Browser Smoke
 
@@ -24047,6 +25167,7 @@ Remaining:
 - `REQ-20260619-207` remains blocked on secure external provider credentials,
   owner-only account actions, and explicit release approval.
 
+
 ## 2026-06-19T07:29:00+03:00 - Shared Design System Local Proof
 
 Moved `REQ-20260618-105` to local `done`.
@@ -24081,6 +25202,7 @@ Remaining:
 - `REQ-20260618-106` task manager, intake, and calendar is the next broad
   unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
+
 
 ## 2026-06-19T07:32:20+03:00 - Task Manager Intake Calendar Local Proof
 
@@ -24117,6 +25239,7 @@ Remaining:
   unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
 
+
 ## 2026-06-19T07:35:29+03:00 - Students Goal Board Hebrew Local Proof
 
 Moved `REQ-20260618-108` to local `done`.
@@ -24152,6 +25275,7 @@ Remaining:
 - `REQ-20260618-109` unified OpenAI/helper is the next broad unblocked
   requirement.
 - Release/live verification remains withheld until explicit approval.
+
 
 ## 2026-06-19T07:39:07+03:00 - Unified Helper OpenAI Local Proof
 
@@ -24192,6 +25316,7 @@ Remaining:
   the next broad unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
 
+
 ## 2026-06-19T09:05:00+03:00 - PWA Separation Local Proof
 
 Moved `REQ-20260618-102` to local `needs_verification`.
@@ -24209,84 +25334,6 @@ Moved `REQ-20260618-102` to local `needs_verification`.
 
 Verification:
 
-
-## 2026-07-07T19:02:38+03:00 - One Time public brand and helper isolation local verification
-
-- Captured raw intake `RAW-20260707-013`, created
-  `tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md`, and
-  validated the Product Quality packet for the One Time brand/helper/top-toolbar
-  ramble.
-- Mounted the shared helper on `/one-time` as `One Time Helper`, with One
-  Time-specific public copy, black/yellow helper skin, and public actions for
-  trial start, member login, and asking Rabbi Scheller.
-- Added an explicit One Time app-select surface so the shared Region dropdown
-  renders in the One Time black/yellow treatment instead of the default BNA
-  blue treatment.
-- Scoped One Time assistant surfaces in `server.js` so One Time public,
-  parent, and student surface labels normalize cleanly and One Time public
-  helper threads use the One Time project/provider workspace.
-- Local Playwright evidence:
-  `ops/ui-audits/2026-07-07-onetime-brand-helper-toolbar-isolation-local/`
-  captured desktop/mobile landing and helper-open screenshots plus the open
-  Region dropdown. Result: 0 failures, no visible BNA brand text, no language
-  chrome, and no mobile horizontal overflow.
-- Verification: 31 focused tests passed; `npm run pqc:validate --
-  ops\prompt-packets\2026-07-07-onetime-brand-helper-toolbar-isolation\00-onetime-brand-helper-toolbar-isolation.product-quality.json`;
-  `npm run watchdog:actions`; `npm run watchdog:protocol-drift`.
-- Status: local verified, pending commit/push/deploy/live smoke. Parent/student
-
-## 2026-07-07T19:10:18+03:00 - One Time public brand and helper isolation deployed
-
-- Pushed commit `7ef3aebf` to `origin/master`.
-- Railway production deployment
-  `7f3bbe54-e9ef-4ff2-8d20-3895a113a5e5` reached `SUCCESS` for
-  `bneineviimacademy.org`.
-- Production visual smoke:
-  `ops/ui-audits/2026-07-07-onetime-brand-helper-toolbar-isolation-live-after-deploy/`
-  captured desktop/mobile landing and helper-open screenshots plus the open
-  Region dropdown.
-- Result: 0 failures. The deployed `/one-time` page returned 200, mounted
-  `one_time_public`, showed `One Time Helper`, had no visible BNA brand text,
-  had no language/site-nav chrome, had 0px mobile horizontal overflow, and used
-  the One Time black/yellow dropdown skin.
-- Separate `join.onetimeonetime.com` release captain target remains blocked in
-  this local Railway context because the local target does not show
-  `one-time-production`, `one-time-web`, or `join.onetimeonetime.com`.
-
-## 2026-07-07T20:27:03+03:00 - Clean launch batch locally verified
-
-- Captured the broad clean/push/deploy request as `RAW-20260707-014`, created
-  a requirement register, and validated the clean-launch Product Quality
-  packet.
-- Classified the dirty worktree before staging: the launchable batch is scoped
-  to Operations UI cleanup, agent-fleet claim/title hardening, tests, current
-  proof, and blocker records. The large ChatGPT pickup/watchdog/queue artifact
-  flood is parked for a separate retention/dedupe cleanup packet.
-- Local verification passed: PQC validation, `node --check
-  scripts\agent-fleet-supervisor.mjs`, 57 focused tests, action watchdog,
-  protocol-drift watchdog, tracked secrets audit, active-run validation, and
-  security watchdog.
-
-## 2026-07-07T20:31:31+03:00 - Clean launch batch deployed and live-smoked
-
-- Pushed commit `af220573` to `origin/master`.
-- Railway deployment
-  `795f3f77-e4f1-4ff1-aaf9-0c54d3ae2e01` reached `SUCCESS`.
-- Live readback checked `https://bneineviimacademy.org/operations` and
-  `https://bneineviimacademy.org/operations.html`.
-- Result: `/operations` returned `401`, `/operations.html` returned `200`,
-  the Operations shell loaded, and the deployed HTML no longer contains
-  `Archive test duplicate` or `archiveCodexTestParent`.
-- Generated ChatGPT pickup/watchdog/queue artifacts, One Time provider aliases,
-  the separate `join.onetimeonetime.com` target, Drive/private transcript sync,
-  and external sends/payments/DNS/access/provider writes remain blocked or
-  parked with explicit next actions.
-- Status: local verified, pending scoped commit, push, Railway deployment, and
-  live readback for the app-visible Operations HTML change.
-- Parent/student private helper scope, toolbar/filter density, and Agent Mode
-  autonomous prompt/drop-off updates remain open as next packets.
-  private helper scope, toolbar/filter density, and Agent Mode autonomous
-  prompt/drop-off updates remain open as next packets.
 - PASS `node --check tests/pwa-separation-contract.test.js`.
 - PASS `node --test tests/pwa-separation-contract.test.js` 3/3.
 - PASS adjacent local PWA suite 17/17.
@@ -24306,6 +25353,7 @@ Remaining:
 - `REQ-20260618-102` still needs release/live verification after explicit
   approval.
 - `REQ-20260619-206` still needs manual Agent Mode/browser-judgment smoke.
+
 
 ## 2026-06-19T07:12:00+03:00 - Module Scoping Local Proof
 
@@ -24342,6 +25390,7 @@ Remaining:
   unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
 
+
 ## 2026-06-19T07:20:00+03:00 - Workspace/RBAC Local Proof
 
 Moved `REQ-20260618-103` to local `done`.
@@ -24377,6 +25426,7 @@ Remaining:
   unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
 
+
 ## 2026-06-19T07:32:00+03:00 - Operations Shell Navigation Local Proof
 
 Moved `REQ-20260618-104` to local `done`.
@@ -24408,6 +25458,7 @@ Remaining:
 - `REQ-20260618-105` shared responsive design system is the next broad
   unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
+
 
 ## 2026-06-19T08:45:00+03:00 - Agent Control Notification Hooks
 
@@ -24445,6 +25496,7 @@ Remaining:
 - `REQ-20260619-207` remains blocked on secure external provider credentials,
   owner-only account actions, and explicit release approval.
 
+
 ## 2026-06-19T07:45:29+03:00 - Public Copy Portal CTA Local Proof
 
 Moved `REQ-20260618-110` to local `done`.
@@ -24478,6 +25530,7 @@ Remaining:
 - `REQ-20260618-111` safe test data and complete acceptance-test coverage is
   the next broad unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
+
 
 ## 2026-06-19T07:53:04+03:00 - Safe Test Data Acceptance Local Proof
 
@@ -24520,6 +25573,7 @@ Remaining:
   unblocked requirement.
 - Manual Agent Mode/browser-judgment smoke remains the main local closeout gap.
 
+
 ## 2026-06-19T07:59:45+03:00 - Agent Control Manual Smoke Prompt Ready
 
 Moved `REQ-20260618-112`, `REQ-20260618-122`, `REQ-20260618-123`, and
@@ -24558,6 +25612,7 @@ Remaining:
   `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md` when browser
   takeover is available.
 - Release/live verification still requires explicit operator approval.
+
 
 ## 2026-06-19T11:41:00+03:00 - Resend Handoff And Meeting Intake Checkpoint
 
@@ -24614,6 +25669,7 @@ Remaining:
   Stripe live billing, and Green Invoice credentials.
 - `REQ-20260618-101` remains blocked on audit package/output.
 
+
 ## 2026-06-19 - Zoom/Vimeo credentials secured and smoke-tested
 
 Secured the temporary Zoom/Vimeo credential handoff without committing secret
@@ -24651,6 +25707,7 @@ Guardrails:
 - No returned provider access token was stored.
 - No Zoom meeting, Vimeo upload, Resend send, Railway/production env mutation,
   deployment, live smoke, or production DB mutation was performed.
+
 
 ## 2026-06-19T08:25:38+03:00 - Agent Control Manual Browser Judgment Closed Locally
 
@@ -24693,6 +25750,7 @@ Remaining:
 - `REQ-20260618-101` still needs the audit package/output.
 - `REQ-20260619-207` still needs owner/credential actions.
 
+
 ## 2026-06-19T08:31:28+03:00 - Release Gates Normalized
 
 Normalized the active run so all remaining non-closed rows are genuine external
@@ -24731,6 +25789,7 @@ Remaining:
 - Explicit operator release approval is needed before deploy/live smoke.
 - `REQ-20260618-101` still needs the audit package/output.
 - `REQ-20260619-207` still needs owner/credential actions.
+
 
 ## 2026-06-19T08:11:57+03:00 - Agent Control Interactive Browser Proof
 
@@ -24774,6 +25833,7 @@ Remaining:
   takeover is available.
 - Release/live verification still requires explicit operator approval.
 
+
 ## 2026-06-19T12:05:00+03:00 - One Time Master Recovery Batch 0 Registered
 
 Registered the One Time master recovery/backlog/UI/launch packet under `RAW-20260619-005` and extended the active execution run with `REQ-20260619-300` through `REQ-20260619-314`.
@@ -24781,6 +25841,7 @@ Registered the One Time master recovery/backlog/UI/launch packet under `RAW-2026
 Created `tasks-pending/2026-06-19-one-time-master-recovery-register.md`, `ops/one-time-mishnah/master-backlog-reconciliation.md`, and `ops/one-time-mishnah/master-backlog-reconciliation.json`. Preflight passed: branch/remote/PR checks, `npm run bna:run:status`, `npm run bna:run:validate`, secret audit, diff check, Railway doctor, and production `npm run app:smoke`.
 
 Guardrails: no application runtime code change, deploy, production DB mutation, email/WhatsApp send, DNS, billing, Zoom, Vimeo, Railway resource, or external-account write was performed.
+
 
 ## 2026-06-19T12:45:00+03:00 - One Time Master Recovery Batch 1 Validator Hardening
 
@@ -24798,6 +25859,7 @@ Time recovery register. Focused validator tests passed 17/17 and
 Guardrails: no app runtime change, deploy, live smoke, production DB mutation,
 external send, billing, DNS, Zoom, Vimeo, Railway resource, or external-account
 write was performed.
+
 
 ## 2026-06-19T12:58:00+03:00 - One Time Master Recovery Batch 2 Task Decision Census
 
@@ -24824,6 +25886,7 @@ Guardrails: no task cleanup apply, production task mutation, deploy, live
 smoke, external send, billing, DNS, Zoom, Vimeo, Railway resource, or
 external-account write was performed.
 
+
 ## 2026-06-19T13:08:00+03:00 - One Time Master Recovery Batch 3 Roles Auth
 
 Completed the local implementation slice for `REQ-20260619-303` and set the
@@ -24846,6 +25909,7 @@ Guardrails: no deploy, live smoke, production DB mutation, live invite/remove/
 deactivate/role-change persistence, external send, billing, DNS, Zoom, Vimeo,
 Railway variable/resource, or external-account write was performed.
 
+
 ## 2026-06-19T13:18:00+03:00 - One Time Master Recovery Batch 4 UI Design Delta Audit
 
 Completed the no-write local audit slice for `REQ-20260619-304` and set the
@@ -24867,6 +25931,7 @@ and one warning.
 Guardrails: no deploy, live smoke, production DB mutation, external write,
 broad crawl, authenticated crawl, external send, billing, DNS, Zoom, Vimeo,
 Railway variable/resource, or external-account write was performed.
+
 
 ## 2026-06-19T13:32:00+03:00 - One Time Master Recovery Batch 5 Communications Workspace
 
@@ -24892,6 +25957,7 @@ Guardrails: no deploy, live smoke, production DB mutation, email send, WhatsApp
 send, DNS/Railway propagation, WAPI outbound use, Buffer publish/schedule,
 billing, Zoom, Vimeo, GHL, external connector, or external-account write was
 performed.
+
 
 ## 2026-06-19T13:45:00+03:00 - One Time Master Recovery Batch 6 Product Readiness
 
@@ -24924,6 +25990,7 @@ write, portal publish, email/WhatsApp/Telegram send, billing provider write,
 DNS/Railway propagation, GHL, external connector, or external-account write was
 performed.
 
+
 ## 2026-06-19T13:55:00+03:00 - One Time Master Recovery Batch 7 Zoom Attendance Automation
 
 Completed the local implementation slice for `REQ-20260619-307` and set the
@@ -24951,6 +26018,7 @@ creation, Zoom registrant write, live webhook acceptance, join redirect
 exposure, attendance mutation, external send, portal publish, billing,
 DNS/Railway propagation, Vimeo, GHL, external connector, or external-account
 write was performed.
+
 
 ## 2026-06-19T14:10:00+03:00 - One Time Master Recovery Batch 8 Recording Vimeo Pipeline
 
@@ -24980,6 +26048,7 @@ visibility, watch-progress write, notification send, portal publish, billing,
 DNS/Railway propagation, GHL, external connector, or external-account write was
 performed.
 
+
 ## 2026-06-19T14:25:00+03:00 - One Time Master Recovery Batch 9 Transcript Privacy
 
 Completed the local implementation slice for `REQ-20260619-309` and set the
@@ -25008,6 +26077,7 @@ import, transcript publication, vector/public-helper corpus mutation,
 cross-student retrieval enablement, portal publish, billing,
 DNS/Railway propagation, GHL, external connector, or external-account write was
 performed.
+
 
 ## 2026-06-19T14:40:00+03:00 - One Time Master Recovery Batch 10 Gamification Badge Audit
 
@@ -25040,6 +26110,7 @@ automatic access grant, prize/coupon/credit, public individual leaderboard,
 billing, DNS/Railway propagation, GHL, external connector, or external-account
 write was performed.
 
+
 ## 2026-06-19T14:55:00+03:00 - One Time Master Recovery Batch 11 Community Moderation Workflow
 
 Completed the local implementation slice for `REQ-20260619-311` and set the
@@ -25068,6 +26139,7 @@ Guardrails: no deploy, live smoke, production DB mutation, public/member
 community publication, external notification, deletion purge, unrestricted
 student messaging enablement, billing, DNS/Railway propagation, GHL, external
 connector, or external-account write was performed.
+
 
 ## 2026-06-19T15:10:00+03:00 - One Time Master Recovery Batch 12 Study Assistant Readiness
 
@@ -25100,6 +26172,7 @@ answer generation, portal publication, raw transcript retrieval,
 cross-student retrieval enablement, billing, DNS/Railway propagation, GHL,
 external connector, or external-account write was performed.
 
+
 ## 2026-06-19T15:25:00+03:00 - One Time Master Recovery Batch 13 Deployment Readiness
 
 Completed the local implementation slice for `REQ-20260619-313` and kept the
@@ -25125,6 +26198,7 @@ Guardrails: no deploy, live smoke, Railway resource creation, production
 database create/attach, Railway variable write, DNS/domain change, production
 data mutation, external send, billing, GHL, external connector, or
 external-account write was performed.
+
 
 ## 2026-06-19T15:45:00+03:00 - One Time Master Recovery Batch 14 Final Verification
 
@@ -25156,6 +26230,7 @@ corpus mutation, portal publication, external send, or external-account write
 was performed. Local smoke with env-file loading disabled was blocked before
 server start by missing `DATABASE_URL`, `OPS_USERNAME`, and `OPS_PASSWORD`.
 
+
 ## 2026-06-19T16:55:00+03:00 - Parallel Platform Prompt 05 Local Integration
 
 Completed `REQ-20260619-401` through `REQ-20260619-405` for
@@ -25179,6 +26254,7 @@ send/domain mutation, secret propagation, or external-account write was
 performed. Authenticated live/local Operations smoke remains gated by operator
 credentials and release approval.
 
+
 ## 2026-06-20T20:48:00+03:00 - One Time Local Beta Hardening Run Registered
 
 Registered the new local-only hardening run
@@ -25200,6 +26276,7 @@ Guardrails: no deploy, DNS, Railway mutation, production database mutation,
 live task mutation, live email, live payment, provider mutation, push, PR, or
 external-account write was performed. Full local test, browser acceptance, and
 synthetic One Time pilot remain open.
+
 
 ## 2026-06-20T20:52:35+03:00 - One Time Local Beta Role And Product Contracts
 
@@ -25229,6 +26306,7 @@ database mutation, DNS/domain action, live Stripe action, live email, live Zoom
 or Vimeo mutation, provider mutation, push, PR, or external-account write was
 performed.
 
+
 ## 2026-06-20T20:56:39+03:00 - One Time Local Beta Stripe Mock Flow
 
 Completed `REQ-20260619-416` for the local-only One Time beta hardening run.
@@ -25253,6 +26331,7 @@ subscription, charge, refund, payout, webhook endpoint mutation, deploy,
 Railway mutation, production database mutation, DNS/domain action, live email,
 provider mutation, push, PR, or external-account write was performed.
 
+
 ## 2026-06-20T21:01:02+03:00 - One Time Class Course Ingestion Preview
 
 Completed `REQ-20260619-412` for the local-only One Time beta hardening run.
@@ -25274,6 +26353,7 @@ Guardrails: no database write, Google Classroom write, video upload, external
 publish, parent/student send, live integration mutation, deploy, Railway
 mutation, production database mutation, DNS/domain action, push, PR, or
 external-account write was performed.
+
 
 ## 2026-06-20T21:04:16+03:00 - One Time Provider Consent Controls
 
@@ -25298,6 +26378,7 @@ referral send, advertising activation, analytics export, billing action,
 deploy, Railway mutation, production database mutation, DNS/domain action,
 push, PR, or external-account write was performed.
 
+
 ## 2026-06-20T21:07:07+03:00 - One Time Resend Local Outbox
 
 Completed `REQ-20260619-417` for the local-only One Time beta hardening run.
@@ -25318,6 +26399,7 @@ Guardrails: no live Resend API call, email send, fallback send, DNS/domain
 mutation, unsubscribe mutation, database write, deploy, Railway mutation,
 production database mutation, push, PR, or external-account write was
 performed.
+
 
 ## 2026-06-20T21:13:50+03:00 - One Time Media Pipeline Preview
 
@@ -25347,6 +26429,7 @@ copy, member-library publish, parent/student notification send, deploy,
 Railway mutation, production database mutation, DNS/domain action, push, PR,
 or external-account write was performed.
 
+
 ## 2026-06-20T21:21:33+03:00 - One Time Queue And Operations IA Visibility
 
 Completed `REQ-20260619-407` for the local-only One Time beta hardening run.
@@ -25375,6 +26458,7 @@ DNS/domain action, external send, provider mutation, push, PR, external-account
 write, visible `tasks-pending` operator lane, or browser-smoke session-write
 login path was used.
 
+
 ## 2026-06-20T21:34:47+03:00 - One Time UI Responsive Acceptance
 
 Completed `REQ-20260619-410` for the local-only One Time beta hardening run.
@@ -25399,6 +26483,7 @@ Guardrails: no deploy, Railway mutation, production database mutation,
 DNS/domain action, live email, live payment, provider mutation, push, PR,
 external-account write, or Operations session-write login path was used. The
 temporary local browser-proof server was stopped after verification.
+
 
 ## 2026-06-20T21:38:49+03:00 - One Time Announcements-First Community
 
@@ -25425,6 +26510,7 @@ notification, email, Telegram, WhatsApp, Buffer/social post, database publish
 write, deploy, Railway mutation, production database mutation, push, PR, or
 external-account write was performed.
 
+
 ## 2026-06-20T21:43:47+03:00 - One Time Progress Rewards Snapshot
 
 Completed `REQ-20260619-414` for the local-only One Time beta hardening run.
@@ -25450,6 +26536,7 @@ individual leaderboard, private admin note readback, guardian contact readback,
 deploy, Railway mutation, production database mutation, push, PR, or
 external-account write was performed.
 
+
 ## 2026-06-20T21:47:45+03:00 - One Time Startup Seed Reset
 
 Completed `REQ-20260619-418` for the local-only One Time beta hardening run.
@@ -25474,6 +26561,7 @@ live email, live payment, Zoom/Vimeo mutation, Telegram send, WhatsApp send,
 Buffer/social post, push, PR, external-account write, or hidden credential
 dependency was introduced.
 
+
 ## 2026-06-20T21:53:05+03:00 - One Time Reliability Security Registry Audit
 
 Completed `REQ-20260619-419` for the local-only One Time beta hardening run.
@@ -25497,6 +26585,7 @@ Guardrails: no deploy, Railway mutation, DNS change, production database write,
 live email send, live payment, provider mutation, push, PR, external-account
 write, active GHL runtime, secret commit, checkout creation, or access grant was
 performed.
+
 
 ## 2026-06-20T21:59:19+03:00 - One Time Full Local Test Watchdog Gates
 
@@ -25525,6 +26614,7 @@ live email send, live payment, provider mutation, push, PR, external-account
 write, or private raw body copy was performed. A temporary local server was
 started on port 8080 for local watchdog/browser proof only.
 
+
 ## 2026-06-20T22:06:01+03:00 - One Time Browser Acceptance
 
 Completed `REQ-20260619-421` for the local-only One Time beta hardening run.
@@ -25550,6 +26640,7 @@ write was performed. The interest form created only local first-party review
 lead data and returned no checkout, no send, no access grant, and no external
 write.
 
+
 ## 2026-06-20T22:10:33+03:00 - One Time Synthetic Pilot
 
 Completed `REQ-20260619-422` for the local-only One Time beta hardening run.
@@ -25573,6 +26664,7 @@ live email send, live payment, Zoom/Vimeo mutation, Drive permission write,
 member-library publish, access grant write, push, PR, or external-account write
 was performed. The temporary local server used for browser proof was stopped.
 
+
 ## 2026-06-20T22:13:09+03:00 - One Time Release Gate Documentation
 
 Completed `REQ-20260619-423` for the local-only One Time beta hardening run.
@@ -25588,6 +26680,7 @@ smoke, production database mutation, DNS change, live email, live payment,
 provider mutation, member-library publish, access grant, or external-account
 write was performed. Post-closeout validation passed with `done: 18`,
 `not_started: 1`, and work still remaining.
+
 
 ## 2026-06-20T22:21:00+03:00 - One Time Final Local Closeout
 
@@ -25608,6 +26701,7 @@ live email send, live payment, Zoom/Vimeo/Drive provider mutation,
 member-library publish, access grant write, git stage, commit, push, PR, or
 external-account write was performed. Future release actions require explicit
 operator approval.
+
 ## 2026-06-22T15:05:02+03:00 - GitHub Issue 7 Queued Canonical Source
 
 Registered GitHub issue #7 as `RAW-20260622-001` with canonical parent
@@ -25632,6 +26726,7 @@ Verification passed: `npm run bna:run:validate`,
 
 GitHub acknowledgement posted to issue #7 as comment `4768106423`.
 
+
 ## 2026-06-23T09:36:51+03:00 - Drive Class Intake Parser Investigation
 
 Registered `RAW-20260623-001` and diagnosed the Drive class intake failure.
@@ -25650,6 +26745,7 @@ Verification passed: `node --check server.js`, focused intake/media tests
 16/16, `npm run watchdog:content`, and parent/final-register contract tests
 30/30. Production deploy, Railway key rotation, live smoke, and reprocessing
 jobs 75-79 were not performed because they require explicit operator approval.
+
 
 ## 2026-06-23T12:31:10+03:00 - Drive Class Intake Production Recovery
 
@@ -25678,6 +26774,7 @@ duplicate already-filed class notes/tasks/accountability rows. Remaining work:
 add a guarded progress-only backfill path, retry large older jobs safely, then
 apply only high-confidence progress rows.
 
+
 ## 2026-06-23T13:05:00+03:00 - Operator Laptop Bootstrap Package Prompt Registered
 
 Registered `RAW-20260623-002` for Shloimie's requested one-click laptop setup
@@ -25696,6 +26793,7 @@ were printed/copied, no active execution-run pointer changed, and secret-bearing
 delivery remains gated by encrypted one-time Operator Setup plus explicit
 approval. Email delivery is blocked until the exact recipient and final sender,
 recipient, subject, body, and attachment/link are approved.
+
 
 ## 2026-06-23T15:20:00+03:00 - Operator Laptop Bootstrap Safe Package Sent
 
@@ -25739,6 +26837,7 @@ Follow-up instructions email sent to `SDRATLER@gmail.com` as Gmail message
 flow and included no secrets, passphrase, `.env.local`, `.secrets`, API keys,
 database URLs, Railway tokens, or raw credential values.
 
+
 ## 2026-06-23T17:25:00+03:00 - Operations Login Fallback Wired Locally For Portal Screens
 
 Registered `RAW-20260623-004` / `REQ-20260623-009` after Shloimie asked to
@@ -25758,6 +26857,7 @@ student auth policy, and public route privacy.
 Blocked before done/live: `npm run smoke:local -- --skip-tests` cannot run
 because `.env.local` is missing `DATABASE_URL`; no deploy, live smoke, git
 stage, commit, push, package rebuild, or external send was performed.
+
 
 ## 2026-06-23T17:43:00+03:00 - Operations Login Fallback Deployed And Live-Smoked
 
@@ -25780,6 +26880,7 @@ and provider cookie not set. Proof:
 Guardrails: no raw password or secret was printed, no provider/student/parent
 session was issued for Operations fallback, no GitHub push/PR was made, and no
 database migration or external message send was performed.
+
 
 ## 2026-06-23T18:31:46+03:00 - Issue 7 Telegram + Website Assistant Addendum Registered
 
@@ -25810,6 +26911,7 @@ Verification passed: `npm run bna:run:validate`,
 `npm run bna:run:source-coverage`, `npm run bna:run:next`, requirements JSON
 parse, and ledger JSONL parse. `REQ-20260623-010` is Done; `REQ-20260623-011`
 through `REQ-20260623-026` remain pending implementation.
+
 
 ## 2026-06-23T18:55:00+03:00 - Rabbi Scheller Workspace Parity Audit Local Foundation
 
@@ -25866,6 +26968,7 @@ Rabbi Scheller's workspace. The current branch still has no upstream and is
 behind `origin/master`, where service-provider-studio and workspace-user work
 are already merged.
 
+
 ## 2026-06-23T18:47:00+03:00 - Super Admin One Time Rabbi View Deployed
 
 Registered Shloimie's Super Admin request as `RAW-20260623-007` with
@@ -25898,6 +27001,7 @@ performed, no external message was sent, and the deploy used a temporary copy
 of the running Railway bundle with only `public/operations.html` and the
 focused test added.
 
+
 ## 2026-06-23T18:46:06+03:00 - Active Run Batch 4 Control-Plane Scope Local Verification
 
 Implemented the safe overlapping foundation for `REQ-20260619-303` and issue
@@ -25925,6 +27029,7 @@ This local-only state was later superseded by the deploy/live-smoke closeout
 below. At the time of this entry, no live send, publish, charge, DNS/account
 change, production data mutation, external connector write, deploy, push,
 commit, PR, or live smoke had been performed.
+
 
 ## 2026-06-23T19:02:22+03:00 - Active Run Batch 4 Deployed And Live-Smoked
 
@@ -25966,6 +27071,7 @@ Next active run batch: `REQ-20260621-502` visible action registry and
 dead-button coverage. Broader issue #7 control-plane requirements remain
 pending beyond this deployed scope-policy foundation.
 
+
 ## 2026-06-23T19:28:22+03:00 - Rabbi Scheller Portal-Agnostic Auth Foundation Local Repair
 
 Continued `RAW-20260623-006` / `REQ-20260623-028` and related Rabbi Scheller
@@ -25997,6 +27103,7 @@ Git/deploy state remains unchanged for this pass: local-only, uncommitted,
 unpushed, not deployed, and not live-verified. `DEC-20260623-006` still blocks
 push/deploy/live-smoke closure.
 
+
 ## 2026-06-23T19:37:07+03:00 - Rabbi Scheller Portal Login Chooser Local Browser Proof
 
 Extended the Rabbi Scheller portal-agnostic login work with local browser
@@ -26018,6 +27125,7 @@ no horizontal overflow. Evidence:
 
 Verification also passed: auth contract suite 13/13 and focused Rabbi/provider
 suite 65/65. This remains local-only and not deployed/live-verified.
+
 
 ## 2026-06-23T19:45:00+03:00 - One Time Action Coverage Gate Deployed
 
@@ -26065,6 +27173,7 @@ Verification passed:
 The next active run batch is `REQ-20260619-304` Operations UI/design-system
 correction.
 
+
 ## 2026-06-23T19:46:00+03:00 - Rabbi Scheller Portal Chooser Action Registry Coverage
 
 Registered the server-resolved portal login chooser destination links as
@@ -26081,6 +27190,7 @@ chooser local browser smoke, and Provider Portal API Usage local browser smoke.
 Git/deploy state is unchanged for this Rabbi pass: local-only, uncommitted,
 unpushed, not deployed, and not live-verified. `DEC-20260623-006` still blocks
 push/deploy/live-smoke closure.
+
 
 ## 2026-06-23T19:55:00+03:00 - Rabbi Scheller Provider Navigation Local Browser Proof
 
@@ -26106,6 +27216,7 @@ Git/deploy state remains unchanged for this Rabbi pass: local-only,
 uncommitted, unpushed, not deployed, and not live-verified.
 `DEC-20260623-006` still blocks push/deploy/live-smoke closure.
 
+
 ## 2026-06-24T07:32:35+03:00 - Integration Navigation REQ-20260624-007 Assistant Visibility
 
 Closed `REQ-20260624-007` on draft PR #14 commit
@@ -26124,6 +27235,7 @@ and One Time action coverage, `node --check server.js`,
 findings. No production readback, database mutation, deploy, live smoke,
 external send, publish, upload, charge, DNS, OAuth/account-owner action, or
 secret request was performed.
+
 
 ## 2026-06-24T07:10:46+03:00 - Owner-Review REQ-005 One Time Journey
 
@@ -26146,6 +27258,7 @@ watchdogs with 0 findings. No production readback, database mutation, deploy,
 live smoke, external send, publish, upload, charge, DNS, OAuth/account-owner
 action, or secret request was performed.
 
+
 ## 2026-06-24T07:19:42+03:00 - Owner-Review REQ-006 Information Architecture
 
 Closed `RAW-20260624-001` / `REQ-20260624-006` on draft PR #14. Commit
@@ -26165,6 +27278,7 @@ orphan-review rows, `npm run secrets:audit`, and link/action/security
 watchdogs with 0 findings. No production readback, database mutation, deploy,
 live smoke, external send, publish, upload, charge, DNS, OAuth/account-owner
 action, or secret request was performed.
+
 
 ## 2026-06-24T06:56:00+03:00 - Integration Navigation Repair
 
@@ -26186,6 +27300,7 @@ full `npm test` passed 1203/1203; `npm run secrets:audit`,
 `npm run watchdog:links`, `npm run watchdog:actions`, and
 `npm run watchdog:security` all passed with 0 findings. Deployment and live
 production smoke remain intentionally blocked for this credential-free pass.
+
 
 ## 2026-06-24T03:40:00+03:00 - Owner-Review Route Inventory Baseline
 
@@ -26209,6 +27324,7 @@ No production readback, deployment, external credentials, production mutation,
 backfill, send, publish, upload, charge, DNS, OAuth/account-owner action, or
 secret request was performed. Navigation repair/classification continues under
 `REQ-20260624-004`.
+
 
 ## 2026-06-24T00:19:08+03:00 - Addendum REQ-20260623-026 Final QA Closed
 
@@ -26237,6 +27353,7 @@ created. The only remaining active-run terminal blocker is
 `REQ-20260619-313` for separate One Time paid infrastructure, ownership, and
 DNS approval.
 
+
 ## 2026-06-24T00:34:00+03:00 - Integration Navigation Owner-Review Closeout Registered
 
 Registered `RAW-20260624-001` from Shloimie's credential-free Integration,
@@ -26254,6 +27371,7 @@ reconciliation, permanent release gates, and the owner-review packet.
 No production readback, production mutation, backfill, deploy, external send,
 publish, upload, charge, DNS, OAuth/account-owner action, or secret request is
 authorized for this pass.
+
 
 ## 2026-06-24T03:27:00+03:00 - Integration PR #14 Opened And Locally Validated
 
@@ -26278,6 +27396,7 @@ fixed by regenerating the parity artifacts.
 Independent GitHub CI/status-check creation is blocked: GitHub rejected pushing
 `.github/workflows/credential-free-ci.yml` because the current OAuth app lacks
 `workflow` scope. No deployment or production/live action was performed.
+
 
 ## 2026-06-23T23:20:20+03:00 - Addendum REQ-20260623-021 Automation Builder Deployed
 
@@ -26306,6 +27425,7 @@ contact-list write, official data mutation, publish, charge, DNS mutation,
 OAuth action, browser-click substitution, hard delete, or secret exposure was
 performed.
 
+
 ## 2026-06-23T23:32:58+03:00 - Addendum REQ-20260623-022 Ticketing Contract Deployed
 
 Implemented the universal assistant natural-language ticketing and
@@ -26331,6 +27451,7 @@ No duplicate ticketing system, personal Pending card, Codex task execution,
 external send, connector call, official data mutation, publish, charge, DNS
 mutation, OAuth action, browser-click substitution, hard delete, or secret
 exposure was performed.
+
 
 ## 2026-06-23T23:45:25+03:00 - Addendum REQ-20260623-023 Reminders Contract Deployed
 
@@ -26359,6 +27480,7 @@ live schedule activation, official data mutation, publish, charge, DNS
 mutation, OAuth action, browser-click substitution, hard delete, or secret
 exposure was performed.
 
+
 ## 2026-06-23T23:53:13+03:00 - Addendum REQ-20260623-024 Scope Policy Deployed
 
 Hardened the shared assistant role/workspace policy on draft PR #13, branch
@@ -26382,6 +27504,7 @@ findings. Railway deployment `6620b95b-0771-4e38-9fb9-1e6c4921e2bd` reached
 No data exposure, permission bypass, external send, connector call, official
 data mutation, publish, charge, DNS mutation, OAuth action, browser-click
 substitution, hard delete, or secret exposure was performed.
+
 
 ## 2026-06-24T00:09:26+03:00 - Addendum REQ-20260623-025 Control Center Deployed
 
@@ -26408,6 +27531,7 @@ No action execution, queue mutation, raw body/payload exposure, external send,
 connector call, official data mutation, publish, charge, DNS mutation, OAuth
 action, browser-click substitution, hard delete, or secret exposure was
 performed.
+
 
 ## 2026-06-23T22:43:00+03:00 - Issue #7 REQ-018 Parent Assistant Self-Service Deployed
 
@@ -26440,6 +27564,7 @@ No external send, official record mutation, billing action, DNS mutation,
 connector write, browser-click substitution, hard delete, or secret exposure
 was performed.
 
+
 ## 2026-06-23T22:55:00+03:00 - Issue #7 REQ-019 Chart Dashboard Contract Deployed
 
 Closed `RAW-20260623-005` / `REQ-20260623-019` on the existing issue #7
@@ -26467,6 +27592,7 @@ Verification:
 No duplicate chart builder, external send, official attendance/score write,
 publish, charge, DNS mutation, connector write, browser-click substitution,
 hard delete, or secret exposure was performed.
+
 
 ## 2026-06-23T23:06:00+03:00 - Issue #7 REQ-020 Campaign Control Contracts Deployed
 
@@ -26499,6 +27625,7 @@ No external send, campaign execution, live schedule enablement, contact-list
 write, suppression write, connector call, DNS mutation, billing action,
 browser-click substitution, hard delete, or secret exposure was performed.
 
+
 ## 2026-06-23T21:54:00+03:00 - Universal Assistant Planner Deployed
 
 Closed `REQ-20260623-014` for the Telegram plus website-assistant addendum on
@@ -26526,6 +27653,7 @@ registry, intake pipeline, agent queue, provider onboarding system,
 browser-click substitution, external send, publish, charge, DNS mutation,
 OAuth action, connector call, hard delete, or secret exposure was introduced.
 
+
 ## 2026-06-23T22:08:00+03:00 - Universal Assistant Draft Versioning Deployed
 
 Closed `REQ-20260623-015` for the Telegram plus website-assistant addendum on
@@ -26552,6 +27680,7 @@ No duplicate versioning system, external send, publish, charge, DNS mutation,
 OAuth action, connector call, browser-click substitution, hard delete, or
 secret exposure was introduced.
 
+
 ## 2026-06-23T22:17:00+03:00 - Universal Assistant File/Media Intake Deployed
 
 Closed `REQ-20260623-016` for the Telegram plus website-assistant addendum on
@@ -26577,6 +27706,7 @@ smoke passed:
 No duplicate intake pipeline, external send, publish, charge, DNS mutation,
 OAuth action, connector call, browser-click substitution, hard delete, or
 secret exposure was introduced.
+
 
 ## 2026-06-23T22:27:00+03:00 - Provider Studio Onboarding Contract Deployed
 
@@ -26606,6 +27736,7 @@ No duplicate provider onboarding system, page builder, intake pipeline,
 external send, publish, charge, DNS mutation, OAuth action, connector call,
 browser-click substitution, hard delete, or secret exposure was introduced.
 
+
 ## 2026-06-23T21:27:00+03:00 - Shared Assistant Data Model Deployed
 
 Closed `RAW-20260623-005` / `REQ-20260623-012` for the issue #7 Telegram plus
@@ -26630,6 +27761,7 @@ with 18/18 tables and 17/17 indexes present.
 Guardrail: the readiness smoke was authenticated and read-only; it returned no
 assistant rows, secret values, external-send/publish/charge/DNS/OAuth/connector
 action, or row payloads.
+
 
 ## 2026-06-23T21:42:00+03:00 - Universal Action Parity Gate Deployed
 
@@ -26658,6 +27790,7 @@ Guardrail: no duplicate action registry, browser-click substitution, external
 send, publish, charge, DNS mutation, OAuth action, connector call, hard delete,
 or secret exposure was performed.
 
+
 ## 2026-06-23T20:50:00+03:00 - Active Run Batch 17 Study Assistant Readiness Deployed
 
 Closed active run Batch 17 / `REQ-20260619-312`. No new code change was needed
@@ -26684,6 +27817,7 @@ The next active run requirement selected by `npm run bna:run:next` should be
 `REQ-20260619-314` final verification and release. `REQ-20260619-313` remains
 needs-operator-decision for separate One Time paid infrastructure, ownership,
 and DNS.
+
 
 ## 2026-06-23T20:58:00+03:00 - Active Run Batch 19 Final Verification Closed
 
@@ -26721,6 +27855,7 @@ ownership, and DNS. Next agent work should continue `RAW-20260623-005` /
 `REQ-20260623-010` Telegram plus website-assistant control-plane addendum on
 the shared systems without duplicate registries or pipelines.
 
+
 ## 2026-06-23T21:05:00+03:00 - Issue #7 Addendum Requirements Appended
 
 Appended `REQ-20260623-010` through `REQ-20260623-026` from the Telegram plus
@@ -26733,6 +27868,7 @@ avoid duplicate Telegram, website-bot, action-registry, intake, agent-queue, or
 provider-onboarding systems. `REQ-20260623-010` is closed as registration done.
 The next unblocked executable batch is `REQ-20260623-011`, the shared assistant
 control-plane contract.
+
 
 ## 2026-06-23T21:12:00+03:00 - Issue #7 Shared Assistant Contract
 
@@ -26749,6 +27885,7 @@ Verification passed:
 - `node --test tests/universal-control-plane-scope-policy.test.js` 8/8
 
 No deploy/live smoke was required for this architecture/local-contract batch.
+
 
 ## 2026-06-23T20:25:00+03:00 - Active Run Batch 12 Zoom Attendance Deployed
 
@@ -26774,6 +27911,7 @@ join URL exposure was performed.
 The next active run requirement selected by the execution pointer is
 `REQ-20260619-308` Vimeo, member-library, recording, transcript, and
 publication pipeline.
+
 
 ## 2026-06-23T20:30:00+03:00 - Active Run Batch 11/13 Vimeo Member Library Deployed
 
@@ -26802,6 +27940,7 @@ write, DNS change, or duplicate connector/action system was created.
 The next active run requirement selected by the execution pointer is
 `REQ-20260619-309` transcript privacy and knowledge scoping.
 
+
 ## 2026-06-23T20:35:00+03:00 - Active Run Batch 14 Transcript Privacy Deployed
 
 Closed active run Batch 14 / `REQ-20260619-309`. No new code change was
@@ -26828,6 +27967,7 @@ write, or secret exposure was performed.
 
 The next active run requirement selected by the execution pointer is
 `REQ-20260619-310` server-side gamification and badge auditing.
+
 
 ## 2026-06-23T20:40:00+03:00 - Active Run Batch 15 Gamification Deployed
 
@@ -26856,6 +27996,7 @@ Zoom/Vimeo/Google/DNS mutation, or secret exposure was performed.
 The next active run requirement selected by the execution pointer is
 `REQ-20260619-311` community and moderation workflow.
 
+
 ## 2026-06-23T20:45:00+03:00 - Active Run Batch 16 Community Deployed
 
 Closed active run Batch 16 / `REQ-20260619-311`. No new code change was
@@ -26883,6 +28024,7 @@ CRM/GHL write, or secret exposure was performed.
 
 The next active run requirement selected by the execution pointer is
 `REQ-20260619-312` Sefaria and scoped study assistant readiness.
+
 
 ## 2026-06-23T20:30:00+03:00 - Rabbi Scheller Operations Navigation Local Proof
 
@@ -26914,6 +28056,7 @@ Git/deploy state remains unchanged for this Rabbi pass: local-only,
 uncommitted, unpushed, not deployed, and not live-verified.
 `DEC-20260623-006` still blocks push/deploy/live-smoke closure.
 
+
 ## 2026-06-23T20:20:00+03:00 - Active Run Batch 7 Communications Deployed
 
 Closed active run Batch 7 / `REQ-20260619-305` plus child requirements
@@ -26942,6 +28085,7 @@ The next active run requirement selected by `npm run bna:run:next` is
 `REQ-20260619-306` Product, scheduling, booking, portals, and billing
 foundations.
 
+
 ## 2026-06-23T20:28:00+03:00 - Active Run Batch 9 Product Foundations Deployed
 
 Closed active run Batch 9 / `REQ-20260619-306`. No new code change was needed
@@ -26968,6 +28112,7 @@ calendar write was performed.
 The next active run requirement selected by `npm run bna:run:next` is
 `REQ-20260619-307` Zoom meeting and attendance foundation.
 
+
 ## 2026-06-23T20:05:00+03:00 - Active Run Batch 6 Operations UI Deployed
 
 Completed active run Batch 6 / `REQ-20260619-304` on clean branch
@@ -26991,6 +28136,7 @@ The next active run requirement selected by `npm run bna:run:next` is
 `REQ-20260619-305` first-party communications parent requirement, covering
 WhatsApp UX and Email/Resend UX child requirements.
 
+
 ## 2026-06-23T20:12:00+03:00 - Rabbi Scheller Task Isolation Contract Repair
 
 Tightened the Operations task detail response for provider-scoped logins. The
@@ -27010,6 +28156,7 @@ regenerated action coverage.
 Git/deploy state remains unchanged for this Rabbi pass: local-only,
 uncommitted, unpushed, not deployed, and not live-verified.
 `DEC-20260623-006` still blocks push/deploy/live-smoke closure.
+
 ## 2026-06-24T07:41:00+03:00 - Clean-Slate Control Tower Registered
 
 Registered `RAW-20260624-002` and `REQ-20260624-012` through
@@ -27040,6 +28187,7 @@ No env file, secret package, plaintext key, passphrase, email, Drive upload, or
 download link was created. The task is blocked until the passphrase is supplied
 through the approved flow or another separate secure channel.
 
+
 ## 2026-06-24T17:08:00+03:00 - Parent Trip Reminder Contact Roster Registered
 
 Registered `RAW-20260624-007` / `REQ-20260624-033` through
@@ -27053,6 +28201,7 @@ No email, WhatsApp, broadcast, WAPI send, contact correction, external CRM
 write, deployment, or production schema/code change was performed during
 registration. Sending remains blocked by `DEC-20260624-004` until Shloimie
 reviews the roster and explicitly approves final recipients/copy.
+
 
 ## 2026-06-24T17:15:00+03:00 - Parent Trip Reminder Roster Read Back
 
@@ -27068,6 +28217,7 @@ write, deployment, production DB mutation, or tracked contact export was
 performed. `REQ-20260624-035` remains `Needs operator decision` for corrected
 contacts and final send approval.
 
+
 ## 2026-06-24T21:45:00+03:00 - Parent Trip Reminder Sent
 
 Completed `REQ-20260624-035` and `REQ-20260624-036` after Shloimie supplied
@@ -27080,6 +28230,7 @@ The Thursday, 2026-06-25 trip reminder was sent and logged through BNA
 communication records: 10 WhatsApp messages sent, 0 failed; 6 emails sent, 0
 failed. Hebrew copy was used for Hebrew-tagged families. No tracked contact
 export with full phone numbers was created.
+
 
 ## 2026-06-24T22:20:00+03:00 - Parent Trip Hebrew Resend Repair
 
@@ -27098,6 +28249,7 @@ plus a focused test. The guard is not deployed yet because the current worktree
 contains unrelated active changes and should go out through a clean release
 path.
 
+
 ## 2026-06-25T13:12:00+03:00 - Parent Return Delay Update Sent
 
 Completed `RAW-20260625-001` / `REQ-20260625-001`. Sent the moshav return-delay
@@ -27108,6 +28260,7 @@ using Hebrew for Hebrew-tagged families. Live communication verification:
 Hebrew rows were read back from live logs and confirmed to contain real Hebrew
 with no repeated-question-mark corruption. No tracked contact export with full
 phone numbers was created.
+
 
 ## 2026-06-25T13:47:00+03:00 - Intake Files And Audio Task Parsing Verified
 
@@ -27129,6 +28282,7 @@ Telegram API metadata check resolved the academy token to
 `bneineviimacademy_bot`, found two allowed chat ID aliases, no webhook, zero
 pending updates, and no last API error. No credentials were changed, no bridge
 process was started, no external send or production mutation was performed.
+
 
 ## 2026-06-25T15:38:00+03:00 - Drive Transcript Sync OAuth Loader Hardened
 
@@ -27154,6 +28308,7 @@ Drive writes were attempted, and no deploy was performed. Production content
 job #83 remains blocked until this patch is deployed cleanly and Railway has
 valid Google OAuth refresh-token and Drive pipeline configuration.
 
+
 ## 2026-06-26T11:26:05+03:00 - ChatGPT Ramble Drop-off And Helper Control Plane Applied
 
 Processed `RAW-20260626-901` / `REQ-20260626-901` after Shloimie confirmed the
@@ -27174,6 +28329,7 @@ helper control-plane tests, supervisor dry-run pickup, real packet pickup,
 two-week class intake audit test, watchdog action registry test, and full
 `npm test` 1156/1156. No deploy, external writes, sends, credential changes,
 DNS changes, charges, or live access grants were performed.
+
 
 ## 2026-06-26T11:32:22+03:00 - Two-Week Class Intake Audit Package Applied
 
@@ -27208,6 +28364,7 @@ local-only private export, or a redacted exporter before
 `npm run content:export-transcripts` runs, because the existing exporter writes
 full transcript bodies into tracked `content-memory/transcripts` and deletes
 stale transcript files.
+
 
 ## 2026-06-26T13:20:00+03:00 - Transcript Drive Digest Rebuild Ready For Owner Approval
 
@@ -27244,6 +28401,7 @@ transcript-body export, Drive doc writes, production reparse/canonical writes,
 worker retry, paid retranscription, class backfill, or any production mutation
 until Shloimie approves an exact next action.
 
+
 ## 2026-06-26T13:27:48+03:00 - Duplicate Transcript Drive Digest Packet Verified
 
 Processed `RAW-20260626-005` as a duplicate of `RAW-20260626-004`. The latest
@@ -27265,6 +28423,7 @@ raw bodies off and 0 findings, focused digest/two-week audit tests passed
 secret scan found 0 tracked secret-risk files, JSON/JSONL parsed, and
 `git diff --check` reported line-ending warnings only.
 
+
 ## 2026-06-26T13:21:00+03:00 - Issue 41 Drive Transcript Library Addendum Verified
 
 Processed `RAW-20260626-006` from GitHub issue #41 comment `4808518537` and
@@ -27282,6 +28441,7 @@ No raw transcript-body export, Drive write/move/delete, production mutation,
 stale deletion, worker retry, paid retranscription, class backfill, send,
 deployment, credential, DNS, or charge action was performed. `DEC-20260626-101`
 still gates any non-dry-run Drive sync or other unsafe/raw/external write path.
+
 
 ## 2026-06-26T13:40:00+03:00 - Approved Job 83 Drive Transcript Sync Completed
 
@@ -27309,6 +28469,7 @@ write beyond #83, production repair/reparse/canonical writes, worker retry,
 paid retranscription, class backfill, stale deletion, sends, charges/access
 grants, credential/account/DNS changes, or broad Drive sync.
 
+
 ## 2026-06-28T00:00:00+03:00 - Rabbi Scheller Account UI Audit
 
 Captured `RAW-20260628-001` and completed `REQ-20260628-001` as a local,
@@ -27332,6 +28493,7 @@ Verdict: local navigation and action coverage are sound, but the live Rabbi
 owner handoff is not complete. Remaining blockers are split Rabbi owner
 credentials, final Shloimie role, mobile helper overlay polish, clean
 push/deploy/live-smoke authorization, and live account data/setup proof.
+
 
 ## 2026-06-28T09:54:00+03:00 - Rabbi Workspace Login And UI Fix Local Verification
 
@@ -27359,6 +28521,7 @@ secure secret placement: the supplied password was not committed or written
 into tracked files, Railway secrets were not changed, and no deploy/live smoke
 had been run. The later launch-readiness entry below records the deployment and
 remaining scoped-secret blocker.
+
 
 ## 2026-06-28T12:33:00+03:00 - Rabbi / One Time Launch Readiness Deployed
 
@@ -27393,6 +28556,7 @@ until `ONE_TIME_ADMIN_*` or `SHLOIMIE_ONE_TIME_*` and separate
 `ONE_TIME_OWNER_*` secrets are installed through the secure keyholder/Railway
 path. The supplied password was not committed or written into tracked files.
 
+
 ## 2026-06-28T14:08:38+03:00 - Shloimie One Time Scoped Login Live Verified
 
 Configured Shloimie's One Time workspace-admin variables in Railway production
@@ -27419,6 +28583,7 @@ scoped Operations dashboard, settings access, workspace directory read, and task
 API read. The supplied password remains redacted from tracked files and
 evidence. Separate Rabbi owner credentials are still not configured because no
 separate owner password was supplied.
+
 
 ## 2026-06-28T15:02:00+03:00 - Shloimie Same Login Agency / One Time Admin Live Verified
 
@@ -27452,6 +28617,7 @@ The live proof shows default login as `super_admin`, Rabbi workspace return
 path login as `one_time_admin`, final scoped URL
 `/operations?workspace=rabbi_sheller_provider&view=dashboard`, stable browser
 landing with no login bounce, and project scope `one_time_mishnah_class`.
+
 ## 2026-06-28 - Issue #41 Parser/Question/Score/Task Backlog Safe Closeout
 
 - Registered `RAW-20260628-006` and reactivated the existing transcript run
@@ -27480,6 +28646,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   retry, paid retranscription, backfill, broad Drive sync, and `--apply`
   remain blocked by `DEC-20260626-101`.
 
+
 ## 2026-06-29 - Issue #41 General Class Question Decision Packet
 
 - Captured `RAW-20260629-001`, where Shloimie decided the six ambiguous
@@ -27501,6 +28668,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Posted Issue #41 owner-decision update:
   `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4828729816`.
 
+
 ## 2026-06-29 - Issue #41 Owner Decision Flow Hardening
 
 - Hardened `scripts/class-drive-intake-owner-decision-packet.cjs` so it fails
@@ -27512,6 +28680,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   `npm run content:card-topic-audit`, run validate/source/stale/blocker
   checks, targeted privacy scan, secrets audit, and `git diff --check` with
   LF/CRLF warnings only.
+
 
 ## 2026-06-29 - Issue #41 Drive Attendance / Progress Visibility
 
@@ -27547,6 +28716,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Remaining blocker: production score/attendance/progress apply still has 0
   safe rows and no exact apply command.
 
+
 ## 2026-06-29 - Issue #41 PR #50 live readback verified
 
 - Marked PR #50 ready, merged it, and verified Railway auto-deployed merge
@@ -27567,6 +28737,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   performed.
 - Posted Issue #41 live-readback comment:
   `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4830196521`.
+
 
 ## 2026-06-29 - Rabbi OneTime Communications / CRM / Email / WAPI import packet
 
@@ -27595,6 +28766,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   `REQ-20260629-107`, and `REQ-20260629-108` are locally verified but not Done
   until an isolated release branch is deployed and live-smoked.
 
+
 ## 2026-06-29 - OneTimeOneTime Resend outbound identity no-send proof
 
 - Registered the `RAW-20260629-005` Resend inbound CRM continuation in the
@@ -27614,6 +28786,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   `REQ-20260629-111`/`REQ-20260629-112` for verified inbound webhook and
   received-email fetch/dedupe.
 
+
 ## 2026-06-29 - OneTimeOneTime Resend inbound CRM and Operations visibility local proof
 
 - Completed local implementation for `REQ-20260629-111` through
@@ -27632,6 +28805,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   isolated release branch/deploy, Railway/Resend env verification without
   exposing values, signed live inbound replay or approved test message, and
   redacted live Operations CRM readback before final Done.
+
 
 ## 2026-06-29 - OneTimeOneTime Resend inbound CRM local implementation
 
@@ -27658,6 +28832,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   replay/test prove scoped Operations CRM visibility. No email send, DNS,
   Zoho, public routing, account mutation, or secret exposure occurred.
 
+
 ## 2026-06-29 - One Time Drive intake email notification diagnosis
 
 - Completed `REQ-20260629-117` / `TASK-20260629-006` for `RAW-20260629-006`.
@@ -27675,6 +28850,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   passed after the audit row was added.
 - No email or test email was sent; no Drive, DNS, account, payment, access,
   credential, external CRM/GHL, or raw private file-content mutation occurred.
+
 
 ## 2026-06-29 - OneTimeOneTime Resend inbound clean release PR
 
@@ -27694,6 +28870,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   worktree because no explicit service is selected and the BNA guard rejects
   the linked `one-time-production` target for this command. No live email,
   DNS, Zoho, public routing, account, or external CRM mutation occurred.
+
 
 ## 2026-06-29 - OneTimeOneTime Resend PR #52 Operations visibility update
 
@@ -27716,6 +28893,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   grant, external CRM/GHL write, secret exposure, or raw private received-email
   body commit was performed.
 
+
 ## 2026-06-29 - OneTimeOneTime Resend PR #52 live deployment partial
 
 - Verified Railway web service `skillful-motivation` / production deployment
@@ -27735,6 +28913,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   `RESEND_WEBHOOK_SECRET is not configured`. Signed webhook verification,
   received-email fetch, and CRM row readback remain blocked. No outbound send
   or external mutation was performed.
+
 
 ## 2026-06-29 - Combined One Time Communications + Resend release deployed
 
@@ -27763,6 +28942,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   grant, external CRM/GHL write, secret exposure, or raw private contact/email
   body commit was performed.
 
+
 ## 2026-06-29 - OneTimeOneTime Resend blocker validation cleanup
 
 - Fixed the active execution-run validation issue on `REQ-20260629-108` by
@@ -27778,6 +28958,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - `npm run bna:run:status`, `npm run bna:run:next`, and
   `npm run bna:run:blockers` validate with `10 done`, `7 blocked`, and no
   unblocked executable batch. No secrets were printed or copied.
+
 
 ## 2026-06-30 - Deploy closeout and Torah participation update
 
@@ -27799,6 +28980,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   DB readback showed no June 29 Telegram raw-intake rows and one June 28
   Telegram learning note did not expand into row-level progress. The next safe
   repair is the Telegram multi-student participation parser/persistence path.
+
 
 ## 2026-06-30 - One Time Contacts and Communications email-readiness cleanup
 
@@ -27829,6 +29011,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   performed. App-visible requirements remain local-verified but blocked on a
   clean deploy target and live authenticated smokes.
 
+
 ## 2026-06-30 - One Time PowerPoint intake preservation and email fix
 
 - Added scoped One Time presentation intake for PowerPoint and Google Slides:
@@ -27855,6 +29038,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   `presentation_email_notification.sent=true`, open URLs, download URLs, and
   Gmail provider readback.
 
+
 ## 2026-06-30 - One Time Drive dropoff email-only notifier
 
 - Registered owner decision `DEC-20260630-001`: the One Time/Rabbi Drive
@@ -27880,6 +29064,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   `ops/live-smokes/2026-06-30T07-00-17-647Z-one-time-drive-dropoff-email-live-smoke.md`
   with anonymous rejection, scoped invalid-folder rejection before write/email,
   and Operations Open/Download presentation controls present.
+
 
 ## 2026-06-30 - Current systems closeout before UI correction
 
@@ -27919,6 +29104,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   repair the live Operations helper Decisions-lane smoke, and add/map the
   missing `app:smoke:class-upload-trace` script.
 
+
 ## 2026-06-30 - Operations IA UI cleanup local verification
 
 - Registered `RAW-20260630-006` and requirements `REQ-20260630-301` through
@@ -27946,6 +29132,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   because no clean release branch/worktree, commit, push, Railway deploy,
   Railway doctor, or live smoke was performed for this UI batch.
 
+
 ## 2026-06-30 - Operations IA UI cleanup full-suite reconciliation
 
 - Reconciled stale UI/action-registry tests after the IA shell changes and
@@ -27965,6 +29152,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Release status is unchanged: blocked on `DEC-20260630-301` until a clean
   release target is committed, pushed, deployed, Railway doctor passes, and
   live Operations smoke proof is recorded.
+
 
 ## 2026-06-30 - One Time PowerPoint current-folder email and phone link fix
 
@@ -27990,6 +29178,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   6/6, `node --test tests/one-time-drive-dropoff-email-watch.test.js` 9/9,
   `node --check server.js`, and
   `node --check scripts/one-time-drive-dropoff-email-watch.mjs`.
+
 
 ## 2026-06-30 - Product Quality Compiler protocol hardening
 
@@ -28019,6 +29208,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Deployment was not required because this task changed documentation/protocol
   templates only and did not change runtime tooling or app-visible behavior.
 
+
 ## 2026-06-30 - Telegram One Time phonebook CRM import
 
 - Registered `RAW-20260630-010` for the three Telegram-uploaded contact
@@ -28045,6 +29235,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Guardrails held: no email, WhatsApp, SMS, Telegram campaign, Buffer, payment,
   access, DNS, GHL/LeadConnector, or external CRM write; no raw private contact
   values were committed.
+
 
 ## 2026-06-30 - Telegram spreadsheet upload routing repair
 
@@ -28075,6 +29266,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Remaining provider note: real audio/video transcription still needs the
   OpenAI provider key repaired.
 
+
 ## 2026-06-30 - Telegram One Time extra phonebook import
 
 - Registered and completed `RAW-20260630-012` / `TASK-20260630-012` after the
@@ -28102,6 +29294,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Sent a redacted Telegram operator status reply as message `1525`.
 - Guardrails held: no raw contact values committed, no campaign/contact send,
   no GHL/LeadConnector/external CRM write, and no provider key value printed.
+
 
 ## 2026-06-30 - Product Quality Compiler validator and drift watchdog
 
@@ -28134,6 +29327,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   email/Stripe/DNS/payment/access/provider write, no Drive/Zoom/Vimeo/WhatsApp/
   Telegram external write, and no GHL/LeadConnector runtime.
 
+
 ## 2026-07-01 - Ramble Protocol v3 Product Quality Operating System
 
 - Registered `RAW-20260701-001` and
@@ -28165,6 +29359,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   external write, no access grant, no external CRM write, and no
   GHL/LeadConnector runtime.
 
+
 ## 2026-07-01 - Huda Torah Progress Correction
 
 - Registered `RAW-20260701-002` for the operator correction to set only Huda
@@ -28177,6 +29372,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   private transcript/message body or secrets were recorded, and no sends,
   payments, access grants, DNS, credentials, or external provider writes were
   performed.
+
 
 ## 2026-07-01 - Product Quality Protocol Closeout, Brand Kits, Rabbi Control Tower
 
@@ -28204,6 +29400,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Guardrails held: no GHL/LeadConnector runtime, no external CRM write, no
   DNS/provider mutation, no email send, no live Stripe payment, no bulk
   campaign, no hard delete, and no secret exposure.
+
 
 ## 2026-07-01 - Rabbi / One Time Visual Audit + Resend Smoke
 
@@ -28237,6 +29434,7 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   GHL/LeadConnector runtime, no bulk campaign, no hard delete, no production
   CRM/contact mutation, and no secret exposure.
 
+
 ## 2026-07-02 - One Time Clean Integration From PR #62
 
 - Registered `RAW-20260702-005` and
@@ -28265,12 +29463,14 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
   WhatsApp send, live Stripe payment, paid-user cancellation, hard delete,
   secret exposure, GHL/LeadConnector runtime, or Rabbi UI implementation.
 
+
 ## 2026-07-02T12:36:30+03:00 - Task queue reconciler apply run
 
 Report: ops/system-audits/2026-07-02T12-36-30-523Z-task-queue-reconciler.md
 
 Actions: 1. Active machine tasks: 22.
 - create_missing_ui_brand_task #1851: Backfill missed app-wide UI/brand shell task from Telegram messages 1003, 1011, and 1111.
+
 
 ## 2026-07-02 - One Time Background / Drive / Railway Continuation
 
@@ -28301,6 +29501,7 @@ Actions: 1. Active machine tasks: 22.
   apex/root DNS mutation, hard delete, paid-user cancellation, GHL runtime,
   secret exposure, raw private-data evidence leak, email send, Vimeo upload, or
   Zoom mutation.
+
 
 ## 2026-07-02 - PR #64 Join DNS, Keyholder Discovery, Railway Env Readback
 
@@ -28333,6 +29534,7 @@ Actions: 1. Active machine tasks: 22.
   --check`, and tracked secret audit. `one-time:setup:check` intentionally
   exits blocked because five provider/campaign setup areas remain incomplete.
 
+
 ## 2026-07-02 - Drive Transcript Visibility and Parser Routing Audit
 
 - Registered `RAW-20260702-013` and created the evidence bundle under `ops/drive-transcript-visibility/2026-07-02/`.
@@ -28345,6 +29547,7 @@ Actions: 1. Active machine tasks: 22.
 - Preserved guardrails: no raw transcripts in GitHub, no Drive mutation, no paid transcription retry, no public publishing, no sends, no score/progress/grading writes, and no secret exposure.
 - Verification passed: targeted tests 28/28, keyholder/OpenAI diagnostics, Drive intake audit, Drive library dry-run, privacy-safe digest export, tracked secret audit, JSON parse checks, and BNA run validation.
 
+
 ## 2026-07-02 - Private Drive Transcript Docs and Job 101 Parser Closeout
 
 - Registered `RAW-20260702-014` and closeout evidence at `ops/drive-transcript-visibility/2026-07-02/APPLY-CLOSEOUT.md`.
@@ -28354,6 +29557,7 @@ Actions: 1. Active machine tasks: 22.
 - Added guarded parser CLI/API flags for true dry-run, no-AI repair, and no-progress-write repair so long parser jobs do not require provider timeouts or score/progress writes.
 - Verified Drive/API search and connector first-paragraph readback for Job `101` without dumping raw transcript text into GitHub evidence.
 - Preserved guardrails: no raw transcript bodies in GitHub, no Job `91` paid transcription retry, no score/progress/grading apply, no public sharing/publishing, no send/social/Buffer action, no payment/account/DNS mutation, and no secret exposure.
+
 
 ## 2026-07-02 - Rabbi WAPI Setup Page Check
 
@@ -28373,6 +29577,7 @@ Actions: 1. Active machine tasks: 22.
   A broader walkthrough-link test has unrelated existing Resend anchor drift.
   No WhatsApp send, external connector write, payment, DNS mutation, account
   grant, or secret exposure occurred.
+
 
 ## 2026-07-02 - Rabbi WAPI Setup Page Local Build
 
@@ -28399,6 +29604,7 @@ Actions: 1. Active machine tasks: 22.
   recipient phone lookup is blocked because the DB host did not resolve and
   current setup evidence still lists `rabbi_safe_recipient_phone` as missing.
 
+
 ## 2026-07-02 - Studio Content Engine Readiness Audit
 
 - Registered `RAW-20260702-010` and requirement register
@@ -28417,6 +29623,7 @@ Actions: 1. Active machine tasks: 22.
   returned expected 401. No product code, DB write, vendor call, send, upload,
   publish, payment, access grant, DNS/account mutation, or secret exposure
   occurred.
+
 
 ## 2026-07-02 - Studio Review Readback UX Local Implementation
 
@@ -28445,6 +29652,7 @@ Actions: 1. Active machine tasks: 22.
   evidence is captured. The wider Studio shell/right-rail layout is also a
   separate next UX packet, not part of this readback slice.
 
+
 ## 2026-07-02 - Rabbi / One Time Operations Shell UI Cleanup
 
 - Registered `RAW-20260702-008` and created the scoped Product Quality packet
@@ -28465,6 +29673,7 @@ Actions: 1. Active machine tasks: 22.
   full local after-audit, and `npm run watchdog:protocol-drift`.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
+
 
 ## 2026-07-02 - Rabbi / One Time Library UI Language And Layout Cleanup
 
@@ -28491,6 +29700,7 @@ Actions: 1. Active machine tasks: 22.
   `git diff --check`.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
+
 
 ## 2026-07-02 - Rabbi / One Time Provider Workspace Contrast Cleanup
 
@@ -28519,6 +29729,7 @@ Actions: 1. Active machine tasks: 22.
   `git diff --check`.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
+
 
 ## 2026-07-02 - Rabbi / One Time Mobile Helper Closed-State Cleanup
 
@@ -28549,6 +29760,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
 
+
 ## 2026-07-02 - Rabbi / One Time Task Dialogue Lane Contrast Cleanup
 
 - Created and validated the fifth scoped Product Quality packet:
@@ -28573,6 +29785,7 @@ Actions: 1. Active machine tasks: 22.
   `npm run watchdog:protocol-drift`.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
+
 
 ## 2026-07-02 - Rabbi / One Time Tasks Route Layout Density Cleanup
 
@@ -28609,6 +29822,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
 
+
 ## 2026-07-02 - Rabbi / One Time Provider Review Load Error Cleanup
 
 - Created and validated the seventh scoped Product Quality packet:
@@ -28634,6 +29848,7 @@ Actions: 1. Active machine tasks: 22.
   and scoped `git diff --check` with CRLF warnings only.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
+
 
 ## 2026-07-02 - Rabbi / One Time Student Review Readability Cleanup
 
@@ -28665,6 +29880,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
 
+
 ## 2026-07-02 - Rabbi / One Time Automation Center Readability Cleanup
 
 - Created and validated the ninth scoped Product Quality packet:
@@ -28694,6 +29910,7 @@ Actions: 1. Active machine tasks: 22.
   `npm run watchdog:protocol-drift`.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
+
 
 ## 2026-07-02 - Rabbi / One Time Participants Readability Cleanup
 
@@ -28728,6 +29945,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
 
+
 ## 2026-07-03 - Rabbi / One Time Payment Access Readability Cleanup
 
 - Created and validated the eleventh scoped Product Quality packet:
@@ -28760,6 +29978,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
 
+
 ## 2026-07-03 - Rabbi / One Time Communications Readability Cleanup
 
 - Created and validated the twelfth scoped Product Quality packet:
@@ -28791,6 +30010,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
 
+
 ## 2026-07-03 - Rabbi / One Time Program Overview Readability Cleanup
 
 - Created and validated the thirteenth scoped Product Quality packet:
@@ -28820,6 +30040,7 @@ Actions: 1. Active machine tasks: 22.
   `npm run watchdog:protocol-drift`.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
+
 
 ## 2026-07-03 - Rabbi / One Time Workspace Settings Readability Cleanup
 
@@ -28852,6 +30073,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
 
+
 ## 2026-07-03 - Rabbi / One Time Member Login Brand Helper Cleanup
 
 - Created and validated the fifteenth scoped Product Quality packet:
@@ -28883,6 +30105,7 @@ Actions: 1. Active machine tasks: 22.
   `npm run watchdog:actions`, and `npm run watchdog:protocol-drift`.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
+
 
 ## 2026-07-03 - Rabbi / One Time Classroom Review Brand Layout Cleanup
 
@@ -28921,6 +30144,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked on `DEC-20260702-801` until an explicit live target is available.
 
+
 ## 2026-07-02 - Job 101 Review Queue Triage
 
 - Reinterpreted Job `101` review output with Shloimie's clarification that the
@@ -28937,6 +30161,7 @@ Actions: 1. Active machine tasks: 22.
   input issues are not completed from that parser run.
 - No DB review statuses were changed because fresh Supabase DNS readback failed;
   student/private/score/progress rows were not closed or applied.
+
 
 ## 2026-07-02 - Studio Prompt Character Guardrail Library Local Implementation
 
@@ -28956,6 +30181,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked until an authenticated live Studio smoke verifies the private
   workflow after release.
+
 
 ## 2026-07-02 - Studio Source To Review Pack Local Workflow
 
@@ -28981,6 +30207,7 @@ Actions: 1. Active machine tasks: 22.
   Studio layout cleanup packet before the workflow should be considered
   polished/live-ready.
 
+
 ## 2026-07-02 - Studio Desktop Layout Cleanup Local Implementation
 
 - Created and validated the fifth Studio implementation packet:
@@ -29001,6 +30228,7 @@ Actions: 1. Active machine tasks: 22.
   blocked until an authenticated live Studio smoke verifies the private
   workflow after release.
 
+
 ## 2026-07-02 - Rabbi WAPI Setup Portal Released, Send Blocked By Channel Auth
 
 - Merged PR #86 and deployed the Rabbi / One Time provider WAPI setup flow to
@@ -29015,6 +30243,7 @@ Actions: 1. Active machine tasks: 22.
   `need channel authorization for send message`.
 - Remaining blocker: authorize/connect the configured Whapi/WAPI channel, then
   rerun one setup-link send.
+
 
 ## 2026-07-03 - Rabbi / One Time Email Review Brand Layout Verified Locally
 
@@ -29033,6 +30262,7 @@ Actions: 1. Active machine tasks: 22.
   and `npm run watchdog:protocol-drift`.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked by `DEC-20260702-801`.
+
 
 ## 2026-07-03 - Rabbi / One Time Operations IA Nav Alignment Verified Locally
 
@@ -29055,6 +30285,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked by `DEC-20260702-801`.
 
+
 ## 2026-07-03 - Rabbi / One Time CRM Contact Detail Polish Verified Locally
 
 - Created and validated the nineteenth Rabbi / One Time UI cleanup packet:
@@ -29074,6 +30305,7 @@ Actions: 1. Active machine tasks: 22.
   `npm run watchdog:actions`, and `npm run watchdog:protocol-drift`.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked by `DEC-20260702-801`.
+
 
 ## 2026-07-03 - Rabbi / One Time Library First Viewport Readability Verified Locally
 
@@ -29100,6 +30332,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke was not run; terminal app-visible Done remains
   blocked by `DEC-20260702-801` pending a clean release branch/PR/deploy path.
 
+
 ## 2026-07-03 - Rabbi / One Time UI Cleanup Release PR Opened
 
 - Created clean release branch
@@ -29119,6 +30352,7 @@ Actions: 1. Active machine tasks: 22.
 - Production deploy/live-smoke remains blocked until the PR is merged/released
   and `bneineviimacademy.org` is checked again for the Library first-viewport
   contract.
+
 
 ## 2026-07-03 - Rabbi / One Time UI Release Deploy Gate Readback
 
@@ -29141,6 +30375,7 @@ Actions: 1. Active machine tasks: 22.
   write, send, payment/access/DNS/upload, GHL/LeadConnector runtime, or secret
   exposure occurred.
 
+
 ## 2026-07-03 - Rabbi / One Time UI Goal Terminal Audit
 
 - Re-ran the release-branch evidence audit for `RAW-20260702-008`.
@@ -29157,6 +30392,7 @@ Actions: 1. Active machine tasks: 22.
 - Follow-up consistency note: the terminal audit is anchored to commit
   `6fadb922`; later bookkeeping commits on PR #87 may advance the branch
   without changing the verdict.
+
 ## 2026-07-03 - Rabbi / One Time Unblocked Readiness Cleanup Verified
 
 - Registered `RAW-20260703-001` and the cleanup register
@@ -29183,6 +30419,7 @@ Actions: 1. Active machine tasks: 22.
   later setup details/approval: Zoom session alias, Vimeo access token/drop
   folder, Stripe sandbox key and $67 price, Whapi/WAPI instance and phone, and
   campaign copy/list/suppression/seed approval.
+
 
 ## 2026-07-03 - Keep-Fixing Queue And Watchdog Closeout
 
@@ -29218,12 +30455,14 @@ Actions: 1. Active machine tasks: 22.
   copy/list/suppression/seed approval. Release/deploy readiness still needs a
   separate release coordination packet for active pointer and branch drift.
 
+
 ## 2026-07-03T08:43:19+03:00 - Task queue reconciler apply run
 
 Report: ops/system-audits/2026-07-03T08-43-19-624Z-task-queue-reconciler.md
 
 Actions: 1. Active machine tasks: 0.
 - create_missing_ui_brand_task #1859: Backfill missed app-wide UI/brand shell task from Telegram messages 1003, 1011, and 1111.
+
 
 ## 2026-07-03 - ChatGPT To Codex Dropoff Workflow Registered
 
@@ -29260,6 +30499,7 @@ Actions: 1. Active machine tasks: 0.
   startup fallback readback, and clean fleet startup logs.
 - Full test suite passed after the automation change: `npm test` 1498/1498.
 
+
 ## 2026-07-03 - Helper Bot Dropoff Prompt Hardening
 
 - Registered `RAW-20260703-009` after the operator sent the helper-bot
@@ -29277,6 +30517,7 @@ Actions: 1. Active machine tasks: 0.
   readback for the fixed tests lane, dry dropoff scan with zero incoming
   packets, and agent fleet status showing PID 21636 running with ChatGPT
   dropoff ingest enabled. Full suite also passed: `npm test` 1499/1499.
+
 
 ## 2026-07-03 - ChatGPT GitHub Comment Dropoff Collector
 
@@ -29299,6 +30540,7 @@ Actions: 1. Active machine tasks: 0.
   packets yet, dry packet scan found 0 incoming packets, agent fleet status
   shows ChatGPT comment collection enabled, full `npm test` passed 1502/1502,
   and the agent fleet was restarted onto PID 3556 with clean startup logs.
+
 
 ## 2026-07-04 - Publish Closeout And ChatGPT Sidekick Defaults
 
@@ -29327,6 +30569,7 @@ Actions: 1. Active machine tasks: 0.
   No production deploy was run because the package is protocol/tooling/docs
   plus local agent automation, not an app-visible or server-visible release.
 
+
 ## 2026-07-05 - PR 87 Resend Release Gate Correction
 
 - Corrected a PR #87 deploy-gate false positive: Resend readiness now matches
@@ -29344,6 +30587,7 @@ Actions: 1. Active machine tasks: 0.
   verification, and database/Railway/Drive external readback readiness.
 - No production deploy, live smoke, external send/payment/access/DNS/credential
   change, provider account write, or DB review mutation was performed.
+
 
 ## 2026-07-05 - PR 87 Keyholder Deploy Follow-Up
 
@@ -29363,6 +30607,7 @@ Actions: 1. Active machine tasks: 0.
   and external readback proof.
 - Verification passed: `node --test tests/system-truth-scripts.test.js
   tests/bna-production-closeout-gate.test.js` with 21/21 tests passing.
+
 
 ## 2026-07-05 - PR 87 Live Deployment
 
@@ -29386,6 +30631,7 @@ Actions: 1. Active machine tasks: 0.
   grant, real send, DNS write, Drive upload/share, or DB review cleanup
   mutation was performed.
 
+
 ## 2026-07-05 - Operations Login Blink Loop Local Repair
 
 - Registered `RAW-20260705-003` after Shloimie reported that the BNA Operations
@@ -29406,6 +30652,7 @@ Actions: 1. Active machine tasks: 0.
   `ops/playwright-smokes/2026-07-05-operations-login-glitch/local-parent-session-login-stable.png`.
 - No passwords, production data mutations, external sends, payments, access
   grants, DNS changes, credential changes, or deploys were performed.
+
 
 ## 2026-07-05 - Dirty Worktree Release Cleanup Branch
 
@@ -29437,6 +30684,7 @@ Actions: 1. Active machine tasks: 0.
   14 older findings in
   `ops/prompt-packets/2026-07-03-helper-bot-workspace-agent-chatgpt/README.md`.
   The new landing PQC packet validates.
+
 
 ## 2026-07-05 - Dirty Worktree Release Cleanup Deployed
 
@@ -29476,6 +30724,7 @@ Actions: 1. Active machine tasks: 0.
   `DEC-20260705-201`; it requires exact owner approval/credentials before any
   future live write.
 
+
 ## 2026-07-05 - Release Captain And One Time UI Recovery Local Verification
 
 - Registered `RAW-20260705-008` for the operator request to make corrections
@@ -29499,6 +30748,7 @@ Actions: 1. Active machine tasks: 0.
   full `npm test` 1515/1515.
 - Pending before Done: commit, push, PR/merge, Railway deploy, and live smoke
   on the deployed One Time Operations UI.
+
 
 ## 2026-07-05 - Release Captain And One Time UI Recovery Deployed
 
@@ -29524,6 +30774,7 @@ Actions: 1. Active machine tasks: 0.
   grant, live email/WhatsApp/SMS/Telegram send, DNS write, Drive upload/share,
   external CRM write, provider account mutation, credential change, or
   production data cleanup mutation was performed.
+
 
 ## 2026-07-05 - One Time Canonical Public Target Routing Fixed
 
@@ -29553,6 +30804,7 @@ Actions: 1. Active machine tasks: 0.
   provider-account mutation, external CRM write, or broad stale PR merge was
   performed.
 
+
 ## 2026-07-05 - Drive Dropoff Scheduler Repair Local Verification
 
 - Registered `RAW-20260705-010` for the repo release workflow status request
@@ -29578,6 +30830,7 @@ Actions: 1. Active machine tasks: 0.
   write, credential change, or production data mutation was performed.
 - Pushed branch `codex/drive-dropoff-scheduler-repair-canonical-20260705` and
   opened draft PR #100 for normal review/merge.
+
 
 ## 2026-07-05 - Task 1851 BNA Brand Shell Verification
 
@@ -29605,6 +30858,7 @@ Actions: 1. Active machine tasks: 0.
   mutation, or external CRM write was performed. The supervisor remains
   responsible for marking the live task done.
 
+
 ## 2026-07-05T18:17:34+03:00 - Agent task #1851 blocked: Apply app-wide BNA brand shell and million-dollar SaaS UI polish
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -29631,6 +30885,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 
 - source: agent_fleet
 - worker: Codex
+
 
 ## 2026-07-05 - Telegram Drive Sync OAuth Error Local Repair
 
@@ -29661,6 +30916,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   to Railway `one-time-production / one-time-web`, while the affected BNA worker
   belongs to `skillful-motivation / academy-telegram-worker`.
 
+
 ## 2026-07-05 - Telegram Drive Sync OAuth Error Live Closeout
 
 - PR #101 merged to `master` at
@@ -29680,6 +30936,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   Telegram `getUpdates` conflict lines.
 - Telegram `getWebhookInfo` returned no webhook URL, zero pending updates, and
   no last error.
+
 
 ## 2026-07-05 - Repo Cleanup Follow-Up And Test Output Hardening
 
@@ -29705,6 +30962,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   DNS/access/provider-account mutation, credential change, or external CRM
   write was performed by this cleanup batch.
 
+
 ## 2026-07-06 - One Time Studio Sidekick Scope Registered
 
 - Registered `RAW-20260706-002` and
@@ -29716,6 +30974,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - No Studio implementation, assistant permission change, OpenArt OAuth/MCP
   connection, CLI access grant, external generation, or production mutation was
   performed. This is planning/register evidence only.
+
 
 ## 2026-07-06 - One Time Studio Sidekick Goal Mode Started
 
@@ -29731,6 +30990,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - No OpenArt signup/OAuth, CLI access grant, production mutation, deploy,
   external generation, send, payment, or access change was performed by this
   registration step.
+
 
 ## 2026-07-06 - One Time Studio Sidekick Local Build Verified
 
@@ -29761,6 +31021,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   upload and deploy/live-smoke remain blocked as recorded in the requirement
   register.
 
+
 ## 2026-07-06 - One Time Studio Sidekick Clean Draft PR Opened
 
 - Rebuilt the publication branch from `origin/master` so the Studio sidekick
@@ -29781,6 +31042,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   OpenArt account/workspace and approves the hosted multimodal model plus image
   retention/privacy policy.
 
+
 ## 2026-07-06 - One Time Studio Sidekick PR Ready, Deploy Gate Blocked
 
 - Marked PR #105 ready for review:
@@ -29795,6 +31057,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - No merge, deploy, live smoke, OpenArt OAuth/generation/upload/credit action,
   external send, payment/access change, DNS, secret, CRM, or production data
   mutation was performed.
+
 
 ## 2026-07-06 - BNA Parent Meeting Reminder Email Sent, WhatsApp Blocked
 
@@ -29817,6 +31080,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   authorization for send message`; the remaining WhatsApp sends were not
   attempted.
 
+
 ## 2026-07-06 - BNA Parent Meeting Reminder WhatsApp Retry Sent
 
 - After Shloimie said "Okay, try again," retried only the WhatsApp side of
@@ -29825,6 +31089,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - WAPI readback records `#2397` through `#2404` show sent/delivered/read
   outcomes and no follow-up required.
 - No raw phone numbers or contact exports were committed.
+
 
 ## 2026-07-06 - BNA Parent Meeting Reminder Addendum Sent
 
@@ -29839,6 +31104,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   are recorded in the redacted communications audit.
 - Updated durable communication memory so the Weber correction is not treated
   as a permanent hosting or recipient-exclusion rule.
+
 
 ## 2026-07-06 - Deploy Gate Scoped Credential Deferral
 
@@ -29873,6 +31139,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   future Studio integration endpoint while OpenArt signup/auth remains required
   before live MCP/API calls can be verified.
 
+
 ## 2026-07-06 - ChatGPT Dropoff Status And One Time Audit Setup
 
 - Registered `RAW-20260706-903` and
@@ -29900,6 +31167,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   private contact exports, private screenshots, or raw private message bodies
   in prompts, GitHub comments, or packet files.
 
+
 ## 2026-07-06 - ChatGPT Agent Mode Dropoff Smoke Prompt
 
 - Added
@@ -29913,6 +31181,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - The smoke prompt explicitly forbids secrets, app/source edits, production
   deploys, external sends, payments, access grants, DNS changes, credential
   changes, provider mutations, Drive writes, and production data changes.
+
 
 ## 2026-07-06 - Pending Work Closeout, PR #105 Deploy, And Live Smoke
 
@@ -29941,6 +31210,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   and the hosted multimodal model/provider/budget/privacy/image-upload policy
   for true pixel analysis.
 
+
 ## 2026-07-06 - Agent Fleet Queued 25 Implementation Audit
 
 - Registered `RAW-20260706-905` and created
@@ -29953,6 +31223,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Main finding: the 25 queued rows are stale mixed debris, not 25 clean tasks.
   Several rows are duplicates or stable-ID collisions; the fleet should not run
   against them as-is.
+
 
 ## 2026-07-06 - One Time WhatsApp Scope, Job 101 Cleanup, And Dropoff Smoke
 
@@ -29982,6 +31253,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   readback, and post-apply dry-run showing 0 remaining safe auto-close
   candidates.
 
+
 ## 2026-07-06 - PR #110 One Time WhatsApp Scope Live Deploy
 
 - Merged PR #110 to `master` at
@@ -30000,6 +31272,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Deployment guardrails: no secret value printed or changed, no WhatsApp send,
   no external CRM write, no payment/access/DNS/provider-account mutation, and
   no unrelated local dirty files staged.
+
 
 ## 2026-07-06 - One Time Studio AI Video Worker Handoff Local Verification
 
@@ -30035,6 +31308,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   OpenArt OAuth/MCP/API, reference upload, generation/credit spend, and true
   hosted image analysis remain blocked on account/model/cost/privacy decisions.
 
+
 ## 2026-07-06 - PR #112 One Time Studio AI Video Worker Handoff Live Deploy
 
 - Merged PR #112 to `master` at
@@ -30067,6 +31341,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   credential value printed or changed, no Drive write, and no external CRM
   write.
 
+
 ## 2026-07-06 - One Time Full UI Agent Audit Prompt Series
 
 - Registered `RAW-20260706-911` for the requested One Time full front-end
@@ -30085,6 +31360,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   credential/provider/Drive/production-data mutations, passwords, cookies, raw
   private contact exports, raw WhatsApp bodies, raw transcript bodies, payment
   data, or unredacted private screenshots.
+
 
 ## 2026-07-06 - Worker Credential Policy And Dirty Closeout
 
@@ -30116,6 +31392,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   handoff; OpenArt/vendor credentials/model/budget/privacy/upload policy;
   hosted pixel-analysis provider/policy; complete mailbox MVP tests,
   registries, visual/browser evidence, and live proof before deploying it.
+
 ## 2026-07-06 - One Time Operations Dashboard UI Hotfix
 
 - Registered `RAW-20260706-950` / `REQ-20260706-950` for the live Rabbi / One
@@ -30157,6 +31434,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   `ops/live-smokes/2026-07-06T14-10-22-946Z-one-time-operations-dashboard-ui-live-smoke.md`,
   `ops/live-smokes/2026-07-06T14-08-01-128Z-live-app-smoke.md`, and
   `ops/live-smokes/2026-07-06T14-07-25-867Z-rabbi-onetime-landing-smoke.md`.
+
 
 ## 2026-07-06 - One Time CRM Mailbox Publication Branch Verified
 
@@ -30204,6 +31482,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   sent, no bulk campaign endpoint added, no DNS/payment/access/provider-account
   mutation, and no production data mutation.
 
+
 ## 2026-07-06 - One Time CRM Mailbox Deployed And Live Verified
 
 - Merged PR #117 to `master` at
@@ -30229,6 +31508,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrails: no external email sent, no bulk campaign endpoint added, no fake
   inbound email inserted, no message bodies recorded, no password printed or
   committed, and no physical mailing address value committed.
+
 
 ## 2026-07-06 - One Time Operations Content IA And Section Rail Verified Locally
 
@@ -30263,6 +31543,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   in durable smoke output.
 - Remaining before app-visible Done: commit, push, deploy, and live smoke.
 
+
 ## 2026-07-06 - One Time Mailbox Old Email Backfill
 
 - Investigated the operator concern that old received emails were missing from
@@ -30284,6 +31565,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrails: no email sent, no fake inbound inserted, no raw message bodies,
   sender addresses, subjects, received-email ids, password, or physical address
   printed/committed.
+
 
 ## 2026-07-06 - One Time Operations Content IA And Section Rail Deployed And Live Verified
 
@@ -30310,6 +31592,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   send, no access grant, no DNS/provider-account mutation, no production data
   mutation, and no screenshots or private page data committed.
 
+
 ## 2026-07-06 - One Time Local Class Welcome Send
 
 - Registered `RAW-20260706-960` and requirements `REQ-20260706-960` through
@@ -30334,6 +31617,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   payment/access, DNS, member/library entitlement, provider-account mutation, or
   external CRM write.
 
+
 ## 2026-07-06 - One Time Vimeo Folder Library Workflow Built Locally
 
 - Registered non-colliding raw records `RAW-20260706-965` through
@@ -30357,6 +31641,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Remaining blocker: real upload/member-library publish needs exact file/folder,
   visibility, review destination, rollback path, and explicit approval.
 
+
 ## 2026-07-06 - Cleanup Inventory And Live Readback
 
 - Registered `RAW-20260706-970` and
@@ -30372,6 +31657,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrails: no external email/WhatsApp send, payment/access change, DNS
   mutation, Drive write, provider-account mutation, secret value print, or
   unrelated dirty work staged.
+
 
 ## 2026-07-06 - Local Checkout Archived And Reset Clean
 
@@ -30409,6 +31695,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   payment/access changes, DNS/provider mutations, Drive writes, or secret
   values.
 
+
 ## 2026-07-06 - Continue Cleanup Status Reconciliation
 
 - Registered `RAW-20260706-981` and
@@ -30432,6 +31719,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrails: no app code changes, deploy, external sends, Drive writes,
   production database writes, payment/access/DNS/provider mutations, credential
   changes, raw transcript bodies, cookies, tokens, or private message bodies.
+
 
 ## 2026-07-07 - One Time Admin Mailbox Access Local Verification
 
@@ -30457,6 +31745,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   write, no password/session token/secret printed or committed, and no raw
   private email bodies committed.
 
+
 ## 2026-07-07 - One Time Admin Mailbox Access Published And Live Verified
 
 - Published commit `bc02662f` to `origin/master` and deployed Railway
@@ -30478,6 +31767,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrail note: `npm run railway:doctor` still reports the Railway target
   guard lacks an explicit service ID/name. The linked Railway CLI deployment
   and live smokes succeeded, but the guard config needs a separate repair.
+
 
 ## 2026-07-07 - Telegram Codex Updates And One Time Role UI Intake
 
@@ -30507,6 +31797,7 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   provider/student account access, and did not edit One Time UI code before the
   required visual audit.
 
+
 ## 2026-07-07 - Codex Telegram Progress Sender Verified
 
 - Added `npm run telegram:codex-progress`, backed by
@@ -30524,12 +31815,14 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   not send email/WhatsApp/bulk messages, and did not expose secrets, chat
   targets, raw private email bodies, or student/private account data.
 
+
 ## 2026-07-07T06:12:19+03:00 - Task queue reconciler apply run
 
 Report: ops/system-audits/2026-07-07T06-12-19-750Z-task-queue-reconciler.md
 
 Actions: 0. Active machine tasks: 1.
 - No changes applied.
+
 
 ## 2026-07-07T09:18:45+03:00 - One Time Agent Mode Prompt Packet Audited
 
@@ -30565,6 +31858,7 @@ Guardrails:
 - Next action remains running Prompt `01` first, Prompts `02`/`03`/`04` after
   the control-tower map, and Prompt `05` after at least two audit reports exist.
 
+
 ## 2026-07-07T06:21:46+03:00 - Agent task #1945 blocked: Add watchdog soft repair for obvious task warnings
 
 The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
@@ -30592,6 +31886,282 @@ Report: ops/agent-fleet-runs/2026-07-07T06-21-46-153Z-task-1945.md
 - source: agent_fleet
 - worker: Codex
 
+
+## 2026-07-07T16:03:11+03:00 - Agent task #1578 local closeout: oversized request duplicate
+
+- Reviewed live task `#1578` titled `Because I tell it to do too many things at once, so it doesn't fix everything.`
+- Confirmed production census groups tasks `#1578` and `#1577` as duplicate-like Codex queue items with `archive_or_link_duplicates_after_operator_review`, which requires supervisor/operator-gated live cleanup.
+- Confirmed adjacent task `#1575` already implemented the local repair: overloaded broad-fix titles are retitled for future worker prompts and dry-run cleanup previews as `Split oversized operator requests into focused execution packets`.
+- Verified the focused supervisor/title-cleanup regression tests still pass.
+- Added closeout evidence under `ops/queue-audits/2026-07-07-task-1578-oversized-request-closeout.*`.
+- Supervisor next action: after baseline verification, close/archive or link task `#1578` with duplicate `#1577` as protocol-covered queue cleanup.
+- Guardrails: no live task status mutation, duplicate archive/link mutation, production DB write, external send, Drive write, deploy, credential/account mutation, or product implementation was performed by this worker.
+
+
+## 2026-07-07T15:57:32+03:00 - Agent task #1577 local closeout: duplicate oversized request splitting
+
+- Reviewed live task `#1577` titled `Because I tell it to do too many things at once, so it doesn't fix everything.`
+- Confirmed production census groups task `#1577` with `#1578` as duplicate-like Codex queue items under group `b50872bb02afa9f1`, requiring supervisor/operator-gated live cleanup.
+- Confirmed adjacent task `#1575` already implemented the local repair: overloaded broad-fix titles are retitled for future worker prompts and dry-run cleanup previews as `Split oversized operator requests into focused execution packets`.
+- Verified the focused supervisor/title-cleanup regression tests still pass.
+- Added closeout evidence under `ops/queue-audits/2026-07-07-task-1577-oversized-request-closeout.*`.
+- Supervisor next action: after baseline verification, close/archive or link task `#1577` with duplicate `#1578` as protocol-covered queue cleanup.
+- Guardrails: no live task status mutation, duplicate archive/link mutation, production DB write, external send, Drive write, deploy, credential/account mutation, or product implementation was performed by this worker.
+
+
+## 2026-07-07T15:46:26+03:00 - Agent task #1575 local closeout: oversized request splitting
+
+- Reviewed live task `#1575` titled `Because I tell it to do too many things at once, so it doesn't fix everything.`
+- Confirmed it is an operations/protocol complaint about overloaded prompts, not a product implementation packet.
+- Confirmed existing protocol coverage in `docs/BNA-RAMBLE-TO-DONE.md`, `docs/SUPER-RAMBLE-PACKET-SPLITTING.md`, and `docs/CONTEXT-BUDGET-AND-PACKET-SPLITTING.md`.
+- Confirmed production census already groups tasks `1576, 1575` as duplicate-like Codex queue items with `archive_or_link_duplicates_after_operator_review`, which requires supervisor/operator-gated live cleanup.
+- Hardened agent-fleet title repair so this shorter pattern is retitled for future worker prompts and dry-run cleanup previews as `Split oversized operator requests into focused execution packets`.
+- Added closeout evidence under `ops/queue-audits/2026-07-07-task-1575-oversized-request-closeout.*`.
+- Supervisor next action: after baseline verification, close/archive or link task `#1575` with duplicate `#1576` as protocol-covered queue cleanup.
+- Guardrails: no live task status mutation, duplicate archive/link mutation, production DB write, external send, Drive write, deploy, credential/account mutation, or product implementation was performed by this worker.
+
+
+## 2026-07-07T15:01:24+03:00 - Agent task #2025 One Time provider review navigation repair
+
+- Implemented the scoped repair for `REQ-20260707-082` / recovered Agent Review `AGR-cc397d5a121c3c5b`.
+- Updated `public/provider.html` so One Time review and View-as Rabbi sessions use the same Rabbi-facing section model, preserve the requested `section` instead of resetting to Overview, keep inactive panels hidden until selection, and update Overview cards in place without duplicate appended card groups.
+- Added `tests/one-time-provider-review-navigation.test.js` to lock the section-preservation and duplicate-card regressions.
+- Verification: PASS `node --test tests/one-time-provider-review-navigation.test.js`; PASS `node --test tests/one-time-shared-review-branding.test.js tests/provider-mailbox-portal.test.js tests/one-time-rabbi-dashboard-ia.test.js`; PASS `node --test tests/one-time-operations-ui-smoke.test.js`; PASS `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`; PASS `npm run watchdog:protocol-drift` with 0 findings.
+- Guardrails: no live task status mutation, production DB write, external send, credential/account/payment/DNS mutation, deploy, or live release. Supervisor owns baseline verification and release/live-smoke closeout.
+
+
+## 2026-07-07T15:03:00+03:00 - Agent Mode failed drop-off recovery deployed
+
+- Pushed commit `cf4567f7` to `origin/master`.
+- Railway production deployment `7f9c8cab-1858-4af0-bd94-238dc59ebe7e`
+  reached `SUCCESS`.
+- Live smoke passed:
+  `ops/live-smokes/2026-07-07T11-58-05-874Z-one-time-agent-mode-acceptance-live-smoke.md`.
+- Targeted deployed smoke passed:
+  `ops/live-smokes/2026-07-07T11-59-42-698Z-agent-dropoff-view-as-rabbi-live-smoke.md`.
+- The targeted smoke verified the deployed Operations button, deployed Agent
+  Review drop-off autosave/Ctrl+Enter support, and the read-only/no-send/no-
+  charge View-as Rabbi endpoint. The smoke report redacts the Operations
+  session cookie and signed view-as token.
+
+
+## 2026-07-07T14:52:07+03:00 - Failed Agent Mode drop-off recovery and One Time repair queue
+
+- Captured `RAW-20260707-008` and registered the failed Agent Mode report outputs
+  under `tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md`.
+- Recovered the three failed reports into live Agent Review results:
+  `AGR-cc397d5a121c3c5b`, `AGR-e47ff4bc5894732e`, and
+  `AGR-b9ee5a9f7eac9600`.
+- Queued the resulting One Time repair work for the Codex agent fleet:
+  task `#2025` / job `#408`, task `#2026` / job `#410`, and task `#2027` /
+  job `#409`.
+- Hardened the Agent Mode prompt/drop-off loop locally: prompt packet files now
+  carry exact registered drop-off coordinates with `autosave=1`; the drop-off
+  page supports autosave and Ctrl/Cmd+Enter save; task PATCH job-spawn patches
+  avoid duplicate `agent_status` SQL assignments.
+- Switched the visible Super Admin action from live provider-session launch to
+  read-only `View One Time as Rabbi` using `/api/bna/one-time/view-as-rabbi/start`.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --test tests/agent-mode-task-dropoff.test.js tests/agent-mode-operations-dropoff-prompts.test.js tests/agent-review-hub.test.js tests/one-time-admin-mailbox-access.test.js`
+- PASS prompt manifest JSON parse
+- PASS `npm run agent:fleet:status` listed jobs `#408`, `#410`, and `#409` as
+  the first claimable observable jobs.
+
+Deployment gate:
+- PENDING commit, push, deploy, and live smoke for app-visible changes.
+
+
+## 2026-07-07T14:49:54+03:00 - Agent task #1470 Drive reprocess closeout
+
+- Reviewed stale live task `#1470` / agent job `#301` for `content_job:77`.
+- Confirmed the underlying Drive transcription follow-up is already covered by
+  the class-drive intake audit/rebuild evidence: job `#77` is transcribed,
+  parsed, digest ready, routing ready, and classified.
+- Older queue audits also classify task `#1470` as duplicate/do-not-redo.
+- Added closeout evidence under
+  `ops/queue-audits/2026-07-07-task-1470-drive-reprocess-closeout.*`.
+- Supervisor next action: close/archive task `#1470` and agent job `#301` as
+  superseded parser-instruction leakage after baseline verification.
+- Guardrails: no live task status mutation, agent job mutation, Drive write,
+  production DB write, parser rerun, class backfill, external send, deploy,
+  credential/account mutation, or raw transcript/private data commit.
+
+
+## 2026-07-07T14:29:01+03:00 - Task #1450 Drive reprocess follow-up triaged
+
+Reviewed task `#1450` / agent job `#298` and confirmed it maps to
+`content_job:76`. The task title/source quote is parser-instruction leakage
+from the Drive reprocess command, not a separate operator task.
+
+Evidence:
+- `ops/queue-audits/2026-07-07-task-1450-drive-reprocess-closeout.md`.
+- Prior queue audit classified `#1450` as implemented/superseded.
+- Job trace and digest evidence show content job `#76` was already
+  transcribed, parsed, digested, routed, and classified without raw transcript
+  body in GitHub.
+
+Guardrails:
+- No live task status mutation, agent job status mutation, Drive write,
+  production DB write, parser rerun, external send, deploy, DNS/payment/access/
+  credential/provider mutation, raw transcript body, or secret exposure.
+
+Next action:
+- Supervisor can close/archive live task `#1450` and agent job `#298` as
+  superseded parser-instruction leakage after baseline verification.
+
+
+## 2026-07-07T14:16:44+03:00 - Agent Mode navigation-first prompt template
+
+Codex created a reusable Agent Mode navigation template for One Time audits and updated prompts 02/03 so agents must start in Operations, select the Rabbi / One Time context, click `View Rabbi / One Time Inbox`, open `Open Rabbi Provider Portal`, and then verify `Student View` and `Classroom` from the provider surface. The prompts now require agents to save `PASS`, `FAIL`, or `BLOCKED` reports in the Operations drop-off section even when login, links, routing, mobile layout, or permissions break; chat output is only the final emergency fallback.
+
+Verification:
+- PASS `node --test tests/agent-mode-operations-dropoff-prompts.test.js`
+- PASS `agent-mode-prompt-series.json` parse
+- PASS `git diff --check` on scoped files with CRLF warnings only
+- PASS `npm run watchdog:protocol-drift` with 0 findings
+
+Report: tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md
+
+
+## 2026-07-07T14:11:26+03:00 - Agent task #1436 Drive reprocess closeout
+
+- Reviewed stale live task `#1436` / agent job `296` for
+  `content_job:75`.
+- Confirmed the underlying Drive transcription follow-up was already covered by
+  the 2026-06-26 and 2026-06-30 class-drive intake audit/rebuild evidence: job
+  `#75` is transcribed, parsed, digest ready, routing ready, classified, and
+  has a privacy-safe digest review candidate.
+- Added closeout evidence under
+  `ops/queue-audits/2026-07-07-task-1436-drive-reprocess-closeout.*`.
+- Supervisor next action: close task `#1436` as superseded after baseline
+  verification.
+- Guardrails: no live task status mutation, Drive write, production DB write,
+  parser rerun, external send, deploy, credential/account mutation, or raw
+  transcript/private data commit.
+
+
+## 2026-07-07T14:05:00+03:00 - Agent task #1393 Drive recovery parser guard repaired
+
+Completed local Tier 1 repair for task `#1393`,
+`Auto BNA Drive recovery after parser persistence deploy`.
+
+What changed:
+- Confirmed live task `#1393` came from `recording_intake:1782116206`,
+  parse run `22`, parse item `9572`.
+- Confirmed the source had no stored transcript body and had filed parser
+  instructions, Drive caption/title text, and caption artifacts into tasks and
+  class-session/content lanes.
+- Repaired recording-intake routing so caption-only parser recordings wait for
+  an actual transcript.
+- Repaired mixed-recording parsing so canonical intake receives only the
+  extracted `Transcript:` body, while recording title/caption/source data stay
+  metadata.
+- Added scoped evidence under
+  `ops/queue-audits/2026-07-07-task-1393-drive-recovery-parser-guard-closeout.*`.
+
+Verification:
+- PASS `node --check server.js`.
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`.
+- PASS focused parser/intake tests: `49/49`.
+- PASS `npm run bna:run:status`.
+- PASS `npm run bna:run:next`.
+- PASS `npm run agent:fleet:status`.
+
+Guardrails:
+- No live task status mutation.
+- No Drive write.
+- No production DB write beyond read-only API readbacks.
+- No parser reprocess rerun, send, deploy, DNS/payment/access/credential, or
+  provider mutation.
+
+
+## 2026-07-07T13:45:14+03:00 - Agent task #1392 Drive recovery caption closeout
+
+- Reviewed stale live task `#1392` / agent job `#289`:
+  `Caption: Auto BNA Drive recovery after parser persistence deploy`.
+- Confirmed it is the parser-generated caption row paired with task `#1393` /
+  agent job `#290` from the same `recording_intake:1782116206` source.
+- Added closeout evidence under
+  `ops/queue-audits/2026-07-07-task-1392-drive-recovery-caption-closeout.*`.
+- Supervisor next action: close/archive task `#1392` as a parser artifact merged
+  into task `#1393` after baseline verification. Keep task `#1393` open unless
+  it is separately closed with auto-recovery evidence.
+- Guardrails: no live task status mutation, Drive write, production DB write,
+  parser rerun, external send, deploy, credential/account mutation, or raw
+  transcript/private data commit.
+
+
+## 2026-07-07T13:19:58+03:00 - Agent Mode Operations Drop-Off Contract
+
+- Registered `RAW-20260707-006` from Shloimie's Agent Mode result and preserved
+  the failed GitHub handoff plus the UI findings about provider diagnostic
+  leakage, Payments/Access IA, task filters, Studio duplicate tabs, shared
+  filter rows, and button consistency.
+- Updated the One Time UI Agent Mode prompt series so Operations Agent Review
+  drop-off is the primary handoff. Successful runs now end with
+  `OPERATIONS_DROPOFF_SAVED: AGR-... <readback URL>`; only failed save paths end
+  with `OPERATIONS_DROPOFF_FAILED`.
+- Updated the generated Agent Review hub prompt text in
+  `src/lib/bna/agent-review-hub.js` to match the same Operations drop-off
+  contract.
+- Verification: PASS `node --test tests/agent-mode-task-dropoff.test.js`; PASS
+  `node --test tests/agent-mode-operations-dropoff-prompts.test.js`; PASS
+  `node --check src/lib/bna/agent-review-hub.js`; PASS prompt manifest JSON
+  parse; PASS `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`;
+  PASS `git diff --check`.
+
+Deployment gate:
+- Pending commit/push/deploy closeout at the time this entry was written.
+
+
+## 2026-07-07T13:36:50+03:00 - Agent Mode Operations Drop-Off Deployed
+
+- Runtime commit `18948a7b` was pushed to `master`.
+- Railway production service `skillful-motivation` deployed
+  `8a8551cd-c859-47cd-a7bb-06dbd18e716a` and reached `SUCCESS`.
+- Live smoke passed: `npm run app:smoke:one-time-agent-mode-acceptance`.
+- Evidence report:
+  `ops/live-smokes/2026-07-07T10-36-50-000Z-one-time-agent-mode-acceptance-live-smoke.md`.
+- Railway doctor remains blocked by target guard because the local Railway
+  target lacks an explicit service name/ID; explicit service status was used
+  instead.
+
+
+## 2026-07-07T13:28:55+03:00 - Agent task #1141 Drive reprocess closeout
+
+- Reviewed stale live task `#1141` / agent job `238` for
+  `content_job:74`.
+- Confirmed the underlying Drive transcription reprocess repair was already
+  completed under `REQ-20260618-204`: jobs `#72`, `#73`, and `#74` were
+  repaired, transcribed, parsed, and read back as `drive_stage='04 Parsed'`.
+- Added closeout evidence under
+  `ops/queue-audits/2026-07-07-task-1141-drive-reprocess-closeout.*`.
+- Supervisor next action: close task `#1141` as superseded after baseline
+  verification.
+- Guardrails: no live task status mutation, Drive write, production DB write,
+  parser rerun, external send, deploy, credential/account mutation, or raw
+  transcript/private data commit.
+
+
+## 2026-07-07T13:19:58+03:00 - Agent task #1136 Drive reprocess closeout
+
+- Reviewed stale live task `#1136` / agent job `237` for
+  `content_job:73`.
+- Confirmed the underlying Drive transcription reprocess repair was already
+  completed under `REQ-20260618-204`: jobs `#72`, `#73`, and `#74` were
+  repaired, transcribed, parsed, and read back as `drive_stage='04 Parsed'`.
+- Added closeout evidence under
+  `ops/queue-audits/2026-07-07-task-1136-drive-reprocess-closeout.*` and
+  `ops/agent-fleet-runs/2026-07-07T13-19-58-task-1136-drive-transcription-reprocess-closeout.*`.
+- Supervisor next action: close task `#1136` as superseded after baseline
+  verification.
+- Guardrails: no live task status mutation, Drive write, production DB write,
+  parser rerun, external send, deploy, credential/account mutation, or raw
+  transcript/private data commit.
+
+
 ## 2026-07-07T09:32:19+03:00 - Agent Mode Prompt Reconciliation And View-As Audit Prompts
 
 - Registered `RAW-20260707-004` and created
@@ -30617,6 +32187,7 @@ Report: ops/agent-fleet-runs/2026-07-07T06-21-46-153Z-task-1945.md
   action-registry/hash freshness assertions and a Launch / Checkout expectation
   mismatch. Full fleet restart remains blocked by stale queue policy and
   Telegram poller ownership.
+
 
 ## 2026-07-07T09:54:31+03:00 - Parallel Agent Mode Prompts And Email/CRM Status Readback
 
@@ -30646,6 +32217,7 @@ Report: ops/agent-fleet-runs/2026-07-07T06-21-46-153Z-task-1945.md
   `npm run app:smoke:one-time-crm-import-dedupe`; PASS
   `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`.
 
+
 ## 2026-07-07T13:11:35+03:00 - Agent task #1130 Drive reprocess closeout
 
 - Reviewed stale live task `#1130` / agent job `236` for
@@ -30661,76 +32233,855 @@ Report: ops/agent-fleet-runs/2026-07-07T06-21-46-153Z-task-1945.md
   parser rerun, external send, deploy, credential/account mutation, or raw
   transcript/private data commit.
 
-## 2026-07-07T13:19:58+03:00 - Agent Mode Operations Drop-Off Contract
 
-- Registered `RAW-20260707-006` from Shloimie's Agent Mode result and preserved
-  the failed GitHub handoff plus the UI findings about provider diagnostic
-  leakage, Payments/Access IA, task filters, Studio duplicate tabs, shared
-  filter rows, and button consistency.
-- Updated the One Time UI Agent Mode prompt series so Operations Agent Review
-  drop-off is the primary handoff. Successful runs now end with
-  `OPERATIONS_DROPOFF_SAVED: AGR-... <readback URL>`; only failed save paths end
-  with `OPERATIONS_DROPOFF_FAILED`.
-- Updated the generated Agent Review hub prompt text in
-  `src/lib/bna/agent-review-hub.js` to match the same Operations drop-off
-  contract.
-- Verification: PASS `node --test tests/agent-mode-task-dropoff.test.js`; PASS
-  `node --test tests/agent-mode-operations-dropoff-prompts.test.js`; PASS
-  `node --check src/lib/bna/agent-review-hub.js`; PASS prompt manifest JSON
-  parse; PASS `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`;
-  PASS `git diff --check`.
+## 2026-07-07T10:15:49+03:00 - Agent task #1130 blocked: Repair follow-up after Drive transcription reprocess.
 
-Deployment gate:
-- Pending commit/push/deploy closeout at the time this entry was written.
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
 
-## 2026-07-07T13:36:50+03:00 - Agent Mode Operations Drop-Off Deployed
+Codex result:
+STATUS: done
 
-- Runtime commit `18948a7b` was pushed to `master`.
-- Railway production service `skillful-motivation` deployed
-  `8a8551cd-c859-47cd-a7bb-06dbd18e716a` and reached `SUCCESS`.
-- Live smoke passed: `npm run app:smoke:one-time-agent-mode-acceptance`.
-- Evidence report:
-  `ops/live-smokes/2026-07-07T10-36-50-000Z-one-time-agent-mode-acceptance-live-smoke.md`.
-- Railway doctor remains blocked by target guard because the local Railway
-  target lacks an explicit service name/ID; explicit service status was used
-  instead.
+SUMMARY: Closed task `#1130` as a stale/superseded Drive reprocess row for `content_job:72`; prior proof shows jobs `#72`-`#74` were already repaired, transcribed, parsed, and read back as `04 Parsed`. I did not mutate the live task, Drive, DB, sends, deploys, or credentials. Committed and pushed evidence as `44823ecf`.
 
-## 2026-07-07T14:16:44+03:00 - Agent Mode navigation-first prompt template
+VERIFICATION: `npm run bna:run:status` passed; `npm run bna:run:next` passed with no unblocked batch; JSON/JSONL parse passed; `npm run secrets:audit` passed with 0 tracked secret-risk files; staged diff check passed.
 
-Codex created a reusable Agent Mode navigation template for One Time audits and updated prompts 02/03 so agents must start in Operations, select the Rabbi / One Time context, click `View Rabbi / One Time Inbox`, open `Open Rabbi Provider Portal`, and then verify `Student View` and `Classroom` from the provider surface. The prompts now require agents to save `PASS`, `FAIL`, or `BLOCKED` reports in the Operations drop-off section even when login, links, routing, mobile layout, or permissions break; chat output is only the final emergency fallback.
+FILES: Changed `ops/queue-audits/2026-07-07-task-1130-drive-reprocess-closeout.*`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`. Inspected prior proof in `tasks-pending/2026-06-18-telegram-bot-stuck-google-drive-intake.md`, `ops/queue-audits/2026-07-06-agent-fleet-queued-25-implementation-audit.md`, and job `72` digest files. Unrelated untracked dropoff pickup artifacts were left untouched.
 
 Verification:
-- PASS `node --test tests/agent-mode-operations-dropoff-prompts.test.js`
-- PASS `agent-mode-prompt-series.json` parse
-- PASS `git diff --check` on scoped files with CRLF warnings only
-- PASS `npm run watchdog:protocol-drift` with 0 findings
-
-Report: tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md
-
-## 2026-07-07T14:52:07+03:00 - Failed Agent Mode drop-off recovery and One Time repair queue
-
-- Captured `RAW-20260707-008` and registered the failed Agent Mode report outputs under `tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md`.
-- Recovered the three failed reports into live Agent Review results: `AGR-cc397d5a121c3c5b`, `AGR-e47ff4bc5894732e`, and `AGR-b9ee5a9f7eac9600`.
-- Queued the resulting One Time repair work for the Codex agent fleet: task `#2025` / job `#408`, task `#2026` / job `#410`, and task `#2027` / job `#409`.
-- Hardened the Agent Mode prompt/drop-off loop locally: prompt packet files now carry exact registered drop-off coordinates with `autosave=1`; the drop-off page supports autosave and Ctrl/Cmd+Enter save; task PATCH job-spawn patches avoid duplicate `agent_status` SQL assignments.
-- Switched the visible Super Admin action from live provider-session launch to read-only `View One Time as Rabbi` using `/api/bna/one-time/view-as-rabbi/start`.
-
-Verification:
-- PASS `node --check server.js`
-- PASS `node --test tests/agent-mode-task-dropoff.test.js tests/agent-mode-operations-dropoff-prompts.test.js tests/agent-review-hub.test.js tests/one-time-admin-mailbox-access.test.js`
-- PASS prompt manifest JSON parse
-- PASS `npm run agent:fleet:status` listed jobs `#408`, `#410`, and `#409` as the first claimable observable jobs.
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
 
 Deployment gate:
-- PENDING commit, push, deploy, and live smoke for app-visible changes.
+- NOT RUN Deployment gate was not reached.
 
-## 2026-07-07T15:03:00+03:00 - Agent Mode failed drop-off recovery deployed
+Report: ops/agent-fleet-runs/2026-07-07T10-15-49-913Z-task-1130.md
 
-- Pushed commit `cf4567f7` to `origin/master`.
-- Railway production deployment `7f9c8cab-1858-4af0-bd94-238dc59ebe7e` reached `SUCCESS`.
-- Live smoke passed: `ops/live-smokes/2026-07-07T11-58-05-874Z-one-time-agent-mode-acceptance-live-smoke.md`.
-- Targeted deployed smoke passed: `ops/live-smokes/2026-07-07T11-59-42-698Z-agent-dropoff-view-as-rabbi-live-smoke.md`.
-- The targeted smoke verified the deployed Operations button, deployed Agent Review drop-off autosave/Ctrl+Enter support, and the read-only/no-send/no-charge View-as Rabbi endpoint. The smoke report redacts the Operations session cookie and signed view-as token.
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T10:25:01+03:00 - Agent task #1136 blocked: Repair follow-up after Drive transcription reprocess.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: blocked
+
+SUMMARY: Recorded task `#1136` as a stale/superseded Drive reprocess row for `content_job:73`; prior `REQ-20260618-204` proof shows jobs `#72`-`#74` already repaired, transcribed, parsed, and read back as `04 Parsed`. I did not mutate the live task, Drive, DB, sends, deploys, or credentials. Blocked only because repo-wide `npm test` currently fails on unrelated One Time Launch/Checkout and action-registry freshness assertions.
+
+VERIFICATION: `npm run bna:run:status` PASS; `npm run bna:run:next` PASS with no unblocked batch; `npm run bna:run:validate` PASS; JSON/JSONL parse PASS; `npm run secrets:audit` PASS; `git diff --check` PASS with CRLF warnings only; `npm test` FAIL on existing baseline drift.
+
+FILES: Changed `ops/queue-audits/2026-07-07-task-1136-drive-reprocess-closeout.*`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`; created ignored local run evidence under `ops/agent-fleet-runs/2026-07-07T13-19-58-task-1136-drive-transcription-reprocess-closeout.*`; inspected job `73` digest files and June 18 Drive repair proof.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T10-25-01-595Z-task-1136.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T10:38:28+03:00 - Agent task #1141 blocked: Repair follow-up after Drive transcription reprocess.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Recorded task `#1141` as a stale/superseded Drive reprocess row for `content_job:74`; prior `REQ-20260618-204` proof shows jobs `#72`-`#74` were already repaired, transcribed, parsed, and read back as `04 Parsed`. No live task, Drive, DB, parser, send, deploy, DNS, payment, access, or credential mutation was performed. Scoped evidence was committed and pushed as `a97df66f`.
+
+VERIFICATION: `npm run bna:run:status` PASS; `npm run bna:run:next` PASS with no unblocked batch; `npm run bna:run:validate` PASS; closeout JSON/ledger JSONL parse PASS; evidence readback PASS; `npm run secrets:audit` PASS; `git diff --cached --check` PASS; pushed `origin/master` readback at `a97df66f`.
+
+FILES: Added/pushed `ops/queue-audits/2026-07-07-task-1141-drive-reprocess-closeout.*` and adjacent `#1136` closeout files. Inspected June 18 repair proof and `content-memory/transcript-digests/recordings/000074/*`. Local `ops/agent-changelog.md` and `ops/agent-task-ledger.jsonl` remain dirty with shared July 7 records, so they were not staged into this scoped commit.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T10-38-28-970Z-task-1141.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T10:48:39+03:00 - Agent task #1392 blocked: Caption: Auto BNA Drive recovery after parser persistence deploy
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Closed task `#1392` as a parser-generated caption artifact paired with task `#1393` from `recording_intake:1782116206`; no separate implementation was needed, and no live task/Drive/DB/parser/deploy/external mutation was performed. Pushed scoped evidence to `origin/master` at `3f4b5144`.
+
+VERIFICATION: `npm run bna:run:status` PASS; `npm run bna:run:next` PASS; `npm run agent:fleet:status` PASS, with `#1392` absent from next claimable jobs and paired `#1393` still claimable; closeout JSON + ledger JSONL parse PASS; `node --check scripts/agent-fleet-supervisor.mjs` PASS; `node --check scripts/bna-execution-run.mjs` PASS; `npm run secrets:audit` PASS; `git diff --check` PASS with CRLF warnings only on already-dirty ledger/changelog files.
+
+FILES: Added/pushed `ops/queue-audits/2026-07-07-task-1392-drive-recovery-caption-closeout.md` and `.json`. Inspected prior queue evidence in `ops/queue-audits/2026-07-06-agent-fleet-queued-25-implementation-audit.md`, `ops/queue-audits/2026-06-24T17-35-00-836Z-queue-audit.md`, `ops/queue-audits/latest.json`, and `ops/system-audits/2026-07-02T12-36-30-523Z-task-queue-reconciler.md`. Local `ops/agent-task-ledger.jsonl` and `ops/agent-changelog.md` remain dirty with shared supervisor records, so I left them unstaged.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T10-48-39-569Z-task-1392.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T11:07:03+03:00 - Agent task #1393 blocked: Auto BNA Drive recovery after parser persistence deploy
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Repaired task #1393 by preventing caption-only Drive recording intake from being filed as real tasks/class notes. Live readback showed #1393 came from parse run 22 / item 9572 with no stored transcript body, so I added guards and pushed commit `f88f18f7` to `origin/master`. I did not mark the live task done or deploy; deploy/live smoke stays behind the Tier 2 release gate.
+
+VERIFICATION: `node --check server.js`; `node --check scripts/telegram-kimi-bridge.mjs`; focused parser/intake tests passed `49/49`; `npm run bna:run:status` PASS; `npm run bna:run:next` PASS; `npm run agent:fleet:status` PASS; `npm run secrets:audit` PASS; JSON/JSONL parse PASS; `git diff --cached --check` PASS.
+
+FILES: Changed `server.js`, `scripts/telegram-kimi-bridge.mjs`, `tests/final-register-surfaces-closeout.test.js`, `tests/telegram-media-routing.test.js`, and added `ops/queue-audits/2026-07-07-task-1393-drive-recovery-parser-guard-closeout.*`. Appended local ledger/changelog records, but left those files unstaged because they already contained unrelated dirty fleet records.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T11-07-03-664Z-task-1393.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T11:14:19+03:00 - Agent task #1436 blocked: Repair follow-up after Drive transcription reprocess.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Task `#1436` maps to `content_job:75` and is a stale/superseded Drive reprocess row. Prior class-drive evidence already shows job `#75` was transcribed, parsed, digested, routed, classified, and represented by a privacy-safe digest review candidate. I did not mutate the live task, Drive, DB, parser, sends, deploys, or credentials. Evidence was committed and pushed as `5b1af71f`.
+
+VERIFICATION: `npm run bna:run:status` PASS; `npm run bna:run:next` PASS; `npm run agent:fleet:status` PASS; `npm run bna:run:validate` PASS; `npm run secrets:audit` PASS; closeout JSON and ledger JSONL parse PASS; `git diff --check` had only existing CRLF warnings; `HEAD` and `origin/master` both read back at `5b1af71f`.
+
+FILES: Added/pushed `ops/queue-audits/2026-07-07-task-1436-drive-reprocess-closeout.md` and `.json`. Inspected June 26/30 class-drive audit evidence and `content-memory/transcript-digests/recordings/000075/*`. Appended local ledger/changelog records, but left those files unstaged because they already contain unrelated dirty fleet entries.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T11-14-19-050Z-task-1436.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T11:22:55+03:00 - Agent task #1441 blocked: Why don't you verify the domain with GoDaddy and do it again and replace it with...
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: needs_decision
+
+SUMMARY: The recovered source shows this was a Resend/GoDaddy/domain setup fragment from a private recording, not a fully specified executable DNS task. Read-only checks show `onetimeonetime.com` is already verified in Resend and GoDaddy authoritative DNS has the Resend TXT record. I did not call Resend `POST /verify`, change GoDaddy/DNS, or replace sender/account settings because that needs an explicit owner decision and external-account approval.
+
+VERIFICATION: `npm run bna:run:status` passed. Authenticated readbacks for task `#1441` and intake parse run `#34` recovered the source. Authenticated Resend domain readback returned one domain: `onetimeonetime.com` with status `verified`; `bneineviimacademy.org` is not in that Resend account. Authoritative DNS checks against `ns37.domaincontrol.com` and `ns38.domaincontrol.com` confirmed the `resend-domain-verification=...` TXT and `join.onetimeonetime.com` Railway records. Direct Postgres readback failed with `getaddrinfo ENOTFOUND db.amipeuneopdbzuhlnimt.supabase.co`.
+
+FILES: Changed none. Inspected `AGENTS.md`, `MEMORY.md`, `TASKS.md`, `ops/thursday-access-checklist.md`, `server.js`, `src/lib/integrations/resend-client.js`, `scripts/agent-fleet-supervisor.mjs`, and `scripts/smoke-one-time-resend-vimeo-stripe-safe.mjs`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T11-22-55-765Z-task-1441.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T11:32:32+03:00 - Agent task #1450 blocked: Repair follow-up after Drive transcription reprocess.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Task `#1450` was triaged as parser-instruction leakage from `content_job:76`, not a real actionable Drive/UI repair. I added and pushed repo-visible evidence in commit `f45efd16`; I did not mutate the live task or agent job, so the supervisor can close/archive it after baseline verification.
+
+VERIFICATION: PASS `npm run bna:run:status`; PASS `npm run bna:run:next`; PASS `npm run agent:fleet:status`; PASS `npm run bna:run:validate`; PASS JSON/JSONL parse; PASS `npm run secrets:audit`; PASS `git diff --cached --check`; pushed `HEAD == origin/master == f45efd16`.
+
+FILES: Added/pushed `ops/queue-audits/2026-07-07-task-1450-drive-reprocess-closeout.md` and `.json`. Inspected `content-memory/transcript-digests/recordings/000076/*`, the July 6 queue audit, and the June 26 class-drive job trace. Appended local ledger/changelog records, left unstaged because those files already contain unrelated dirty fleet entries.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T11-32-32-537Z-task-1450.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T14:36:04+03:00 - Agent task #1459 Drive reprocess closeout
+
+- Reviewed stale live task `#1459` / agent job `#299` for `content_job:79`.
+- Confirmed the underlying Drive transcription follow-up is already covered by
+  the class-drive intake audit/rebuild evidence: job `#79` is transcribed,
+  parsed, digest ready, routing ready, and classified.
+- Older queue audits also classify task `#1459` as duplicate/do-not-redo.
+- Added closeout evidence under
+  `ops/queue-audits/2026-07-07-task-1459-drive-reprocess-closeout.*`.
+- Supervisor next action: close/archive task `#1459` and agent job `#299` as
+  superseded parser-instruction leakage after baseline verification.
+- Guardrails: no live task status mutation, agent job mutation, Drive write,
+  production DB write, parser rerun, class backfill, external send, deploy,
+  credential/account mutation, or raw transcript/private data commit.
+
+
+## 2026-07-07T11:39:14+03:00 - Agent task #1459 blocked: Repair follow-up after Drive transcription reprocess.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Task `#1459` was triaged as a stale/superseded Drive reprocess row. It maps to `agent_job #299 / content_job:79`; existing class-drive evidence shows job `#79` is already transcribed, parsed, digest-ready, routed, and classified. I did not mutate the live task/job, Drive, DB, parser, sends, deploys, credentials, or access. Scoped evidence was committed and pushed as `b171420b`.
+
+VERIFICATION: PASS `npm run bna:run:status`; PASS `npm run bna:run:next`; PASS `npm run agent:fleet:status`; PASS `npm run bna:run:validate`; PASS `npm run secrets:audit`; PASS `node --check scripts/telegram-kimi-bridge.mjs`; PASS `node --check scripts/agent-fleet-supervisor.mjs`; PASS closeout JSON + ledger JSONL parse; PASS `git diff --cached --check`; remote `origin/master` read back at `b171420b`.
+
+FILES: Added/pushed `ops/queue-audits/2026-07-07-task-1459-drive-reprocess-closeout.md` and `.json`. Inspected queue audits, `content-memory/transcript-digests/recordings/000079/*`, and June 26/30 class-drive audit evidence. Appended local ledger/changelog records, left unstaged because those files already contain unrelated shared fleet edits.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T11-39-14-102Z-task-1459.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T11:45:59+03:00 - Agent task #1464 blocked: They build this huge mizbeach.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Task `#1464` was triaged as a parser artifact from `content_job:79`, not an actionable operations task. I added and pushed scoped closeout evidence in commit `8e2e20b4`; no live task/job status, Drive, DB, parser, send, deploy, credential, or access mutation was performed.
+
+VERIFICATION: PASS `npm run bna:run:status`; PASS `npm run bna:run:next`; PASS `npm run bna:run:validate`; PASS `npm run agent:fleet:status`; PASS `npm run secrets:audit`; PASS closeout JSON + ledger JSONL parse; PASS `git diff --cached --check`; remote `origin/master` read back at `8e2e20b4`.
+
+FILES: Added/pushed `ops/queue-audits/2026-07-07-task-1464-mizbeach-parser-artifact-closeout.md` and `.json`. Inspected queue audit mapping and `content-memory/transcript-digests/recordings/000079/*`. Appended local ledger/changelog records, left unstaged because those shared files already contain unrelated dirty fleet edits.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T11-45-59-534Z-task-1464.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T11:53:01+03:00 - Agent task #1470 blocked: Repair follow-up after Drive transcription reprocess.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Task `#1470` was triaged as a stale/superseded Drive reprocess follow-up mapped to agent job `#301` / `content_job:77`; existing class-drive evidence already shows job `#77` parsed, digested, routed, and classified. I added and pushed scoped closeout evidence in commit `4bdd7325`; no live task/job status, Drive, DB, parser, send, deploy, credential, or access mutation was performed.
+
+VERIFICATION: PASS `npm run bna:run:status`; PASS `npm run bna:run:next`; PASS `npm run agent:fleet:status`; PASS `npm run bna:run:validate`; PASS `npm run secrets:audit`; PASS `node --check scripts/telegram-kimi-bridge.mjs`; PASS `node --check scripts/agent-fleet-supervisor.mjs`; PASS closeout JSON + ledger JSONL parse; PASS scoped `git diff --check`; remote `origin/master` read back at `4bdd7325`.
+
+FILES: Added/pushed `ops/queue-audits/2026-07-07-task-1470-drive-reprocess-closeout.md` and `.json`. Inspected queue audits, `content-memory/transcript-digests/recordings/000077/*`, and June 26/30 class-drive audit evidence. Appended local ledger/changelog records; left those shared files unstaged because they already contain unrelated dirty fleet edits.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T11-53-01-435Z-task-1470.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T12:05:46+03:00 - Agent task #2025 blocked: Add watchdog soft repair for obvious task warnings
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Implemented the scoped One Time/Rabbi provider review repair. The provider review/view-as shell now preserves the selected section, fixes the Communications tab reset/degraded display path, keeps inactive panels hidden, and prevents duplicate Overview card groups on re-render. I did not mutate the live task, deploy, or run release-gate live smoke.
+
+VERIFICATION: PASS `node --test tests/one-time-provider-review-navigation.test.js`; PASS related One Time/provider tests; PASS `node --test tests/one-time-operations-ui-smoke.test.js`; PASS `node --test tests/one-time-rabbi-ui-final-local-smoke.test.js`; PASS `npm run watchdog:protocol-drift` with 0 findings; PASS ledger JSONL parse; PASS scoped `git diff --check`.
+
+FILES: Changed `public/provider.html`, added `tests/one-time-provider-review-navigation.test.js`, updated task evidence in `tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md`, appended ledger/changelog records, and refreshed `ops/watchdog-audits/2026-07-07-product-quality-drift.*`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T12-05-46-645Z-task-2025.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T15:18:26+03:00 - Agent task #2026 local closeout: safe One Time View-as navigation
+
+Implemented task `#2026` / `REQ-20260707-083` locally for safe Rabbi/provider/student/member perspective navigation.
+
+What changed:
+- Added an Operations Safe Role Preview panel with signed read-only View One Time as Rabbi, Student Preview, and Member Preview actions.
+- Hardened provider View-as Rabbi mode with sticky read-only labels, Return to Super Admin behavior, and blocked write/form controls for sends, charges, uploads, access grants, and provider-account mutations.
+- Added TEST-only member preview data and `/api/one-time-review/member`; `/rabbi-member?review=one-time` now loads without a live member credential and simulates question/support submits locally.
+- Registered the new student/member preview actions and member review API route.
+
+Verification:
+- PASS `node --check server.js`.
+- PASS `node --check public/js/rabbi-member.js`.
+- PASS registry JSON parse.
+- PASS `node --test tests/one-time-safe-view-as-navigation.test.js`.
+- PASS related One Time/provider tests and Operations/Rabbi UI smoke tests.
+- PASS `npm run watchdog:protocol-drift` with 0 findings.
+- PASS `npm run watchdog:actions` with 0 findings.
+- PASS `npm run watchdog:security` with 0 findings.
+- Broader member/server suite has 46 passing tests and 1 existing `tests/one-time-canonical-journey.test.js` regex failure for the existing `/one-time/` alias; this task did not change that public route alias.
+
+No live task status mutation, production DB write, external send, payment/access/DNS/credential mutation, deploy, or live release smoke was performed by this worker.
+
+
+## 2026-07-07T12:22:35+03:00 - Agent task #2026 blocked: Fix safe View-as navigation for Rabbi/provider/student/member perspectives
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Implemented local task #2026. Operations now has a Safe Role Preview panel for View One Time as Rabbi, Student Preview, and Member Preview. Provider View-as Rabbi is labeled/sticky/read-only with Return to Super Admin, and write/send/payment/access/upload controls are blocked. Member preview now works at `/rabbi-member?review=one-time` with TEST-only data via `/api/one-time-review/member`. No live task status mutation, deploy, production write, or live smoke was run.
+
+VERIFICATION: PASS `node --check server.js`; PASS `node --check public/js/rabbi-member.js`; PASS registry JSON parse; PASS `node --test tests/one-time-safe-view-as-navigation.test.js`; PASS related One Time/provider and Operations/Rabbi UI smoke tests; PASS `npm run watchdog:protocol-drift`, `npm run watchdog:actions`, and `npm run watchdog:security` with 0 findings; PASS ledger JSONL parse and scoped `git diff --check`. Broader member/server suite: 46 pass / 1 existing canonical-route regex failure for the pre-existing `/one-time/` alias.
+
+FILES: Changed `public/operations.html`, `public/provider.html`, `public/rabbi-member.html`, `public/js/rabbi-member.js`, `server.js`, `src/platform/instances/one-time-shared-review-data.js`, `ops/action-registry.json`, `ops/route-registry.json`, and added `tests/one-time-safe-view-as-navigation.test.js`. Evidence updated in `tasks-pending/2026-07-07-agen
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T12-22-35-045Z-task-2026.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T12:35:32+03:00 - Agent task #2027 blocked: Fix One Time route-role mapping for provider, member, student, and public join routes
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Implemented the local One Time route-role mapping repair for task #2027. Provider admin-session URLs now show a truthful scoped-session-required state when logged out, `/public` is wired as a One Time single-tenant public funnel alias, route registry expectations were updated, and tests now cover provider, member, student login/preview, and public join-route behavior. No live task mutation, deploy, production write, or live smoke was run.
+
+VERIFICATION: PASS `node --check server.js`; PASS `node --check public/js/rabbi-member.js`; PASS registry JSON parse; PASS targeted One Time route/role suites, provider/view-as suites, public privacy suites, and local UI smoke tests; PASS `npm run watchdog:security`, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`; PASS ledger JSONL parse and scoped `git diff --check`.
+
+FILES: Changed `public/provider.html`, `server.js`, `scripts/smoke-onetime-separate-instance-live.mjs`, `ops/route-registry.json`, `tests/one-time-route-role-mapping.test.js`, `tests/one-time-focused-landing.test.js`, `tests/one-time-separate-instance-package.test.js`, `tests/rabbi-checkout-access.test.js`; updated evidence in `tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md`, `ops/agent-changelog.md`, and `ops/agent-task-ledger.jsonl`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T12-35-32-638Z-task-2027.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T12:42:32+03:00 - Agent task #1494 blocked: He didn't fix it yesterday.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Completed local closeout for task `#1494`. It traces to `content_job:80` and is a vague class-recording/parser fragment, not a standalone Codex implementation task. I added evidence recommending supervisor close/archive it as a parser artifact; no live task status, DB, Drive, parser, or external system was mutated.
+
+VERIFICATION: PASS `npm run bna:run:status`; PASS `npm run bna:run:next` with no unblocked executable batch; PASS closeout JSON parse; PASS full `ops/agent-task-ledger.jsonl` JSONL parse; PASS scoped `git diff --check` with only CRLF warnings.
+
+FILES: changed `ops/queue-audits/2026-07-07-task-1494-parser-artifact-closeout.md`, `ops/queue-audits/2026-07-07-task-1494-parser-artifact-closeout.json`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`; inspected content-job `000080` digest/routing/parse-gap files and the June 26 pipeline trace.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T12-42-32-028Z-task-1494.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T12:49:12+03:00 - Agent task #1575 blocked: Because I tell it to do too many things at once, so it doesn't fix everything.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Completed local closeout for task `#1575`. I hardened the agent-fleet title repair so this overloaded-request pattern is retitled as `Split oversized operator requests into focused execution packets`, added regression coverage, and recorded closeout evidence. I did not mutate the live task; supervisor should close/archive or link `#1575` with duplicate `#1576` after baseline verification.
+
+VERIFICATION: PASS `node --check scripts/agent-fleet-supervisor.mjs`; PASS `node --test tests/watchdog-soft-repair.test.js tests/task-title-cleanup-dry-run.test.js` with 24/24 passing; PASS closeout JSON and full ledger JSONL parse; PASS `npm run bna:run:status`; PASS `npm run bna:run:next` with no unblocked batch; PASS scoped `git diff --check` with CRLF warnings only.
+
+FILES: changed `scripts/agent-fleet-supervisor.mjs`, `tests/watchdog-soft-repair.test.js`, `tests/task-title-cleanup-dry-run.test.js`, `ops/queue-audits/2026-07-07-task-1575-oversized-request-closeout.*`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`; inspected ramble/splitting docs and the production census.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T12-49-12-305Z-task-1575.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T12:53:59+03:00 - Agent task #1576 blocked: Because I tell it to do too many things at once, so it doesn't fix everything.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Task #1576 was a duplicate of #1575’s oversized-prompt complaint. I added #1576-specific closeout evidence, linked it to the existing #1575 repair, and left live archive/link cleanup for the supervisor/operator-gated flow.
+
+VERIFICATION: PASS `npm run bna:run:status`; PASS `npm run bna:run:next`; PASS `node --check scripts/agent-fleet-supervisor.mjs`; PASS `node --test tests/watchdog-soft-repair.test.js tests/task-title-cleanup-dry-run.test.js` with 24/24 passing; PASS JSON/JSONL parse; PASS scoped `git diff --check` with only existing CRLF warnings.
+
+FILES: changed `ops/queue-audits/2026-07-07-task-1576-oversized-request-closeout.md`, `ops/queue-audits/2026-07-07-task-1576-oversized-request-closeout.json`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`; inspected #1575 closeout, duplicate census, super-ramble/context-budget protocol docs, and the existing title-repair tests.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T12-53-59-082Z-task-1576.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T12:59:44+03:00 - Agent task #1577 blocked: Because I tell it to do too many things at once, so it doesn't fix everything.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Completed local closeout for task `#1577`. It is a duplicate-like oversized-prompt operations item paired with queued task `#1578`, already covered by the `#1575` title-repair/protocol fix. I added `#1577` evidence and ledger/changelog records; no live task status, duplicate archive/link, DB write, deploy, Drive write, external send, or product code change was performed.
+
+VERIFICATION: PASS `npm run bna:run:status`; PASS `npm run bna:run:next`; PASS `npm run agent:fleet:status`; PASS duplicate census readback for group `b50872bb02afa9f1`; PASS `node --check scripts/agent-fleet-supervisor.mjs`; PASS `node --test tests/watchdog-soft-repair.test.js tests/task-title-cleanup-dry-run.test.js` with 24/24 passing; PASS closeout JSON + full ledger JSONL parse; PASS scoped `git diff --check` with CRLF warnings only.
+
+FILES: changed `ops/queue-audits/2026-07-07-task-1577-oversized-request-closeout.md`, `ops/queue-audits/2026-07-07-task-1577-oversized-request-closeout.json`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`; inspected `ops/one-time-mishnah/task-decision-production-census.*`, `.runtime/agent-fleet/task-1577.lock.json`, and the existing `#1575/#1576` closeout evidence.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T12-59-44-136Z-task-1577.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T13:09:45+03:00 - Agent task #1578 blocked: Because I tell it to do too many things at once, so it doesn't fix everything.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Completed local closeout for task `#1578`. It is the duplicate pair for `#1577`, already covered by the `#1575` oversized-request title repair and protocol split rules. I added #1578-specific evidence and left live close/archive/link cleanup to the supervisor gate.
+
+VERIFICATION: PASS `npm run bna:run:status`; PASS `npm run bna:run:next`; PASS `npm run agent:fleet:status`; PASS `node --check scripts/agent-fleet-supervisor.mjs`; PASS `node --test tests/watchdog-soft-repair.test.js tests/task-title-cleanup-dry-run.test.js` with 24/24 passing; PASS closeout JSON and full ledger JSONL parse; PASS scoped `git diff --check` with CRLF warnings only.
+
+FILES: changed `ops/queue-audits/2026-07-07-task-1578-oversized-request-closeout.md`, `ops/queue-audits/2026-07-07-task-1578-oversized-request-closeout.json`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`; inspected `ops/one-time-mishnah/task-decision-production-census.*`, `.runtime/agent-fleet/task-1578.lock.json`, and adjacent #1575/#1576/#1577 closeouts.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T13-09-45-453Z-task-1578.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T13:15:32+03:00 - Agent task #1730 blocked: Fix bad UI button
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: blocked
+
+SUMMARY: Task `#1730` cannot be safely implemented from the available source. Live readback shows only the title `Fix bad UI button`, with no notes, source context, route, button label/selector, screenshot, or expected behavior. I recorded a blocked closeout and did not change UI code or mutate the live task/job.
+
+VERIFICATION: `npm run bna:run:status` passed; `npm run bna:run:next` passed with no unblocked batch; `npm run agent:fleet:status` passed; read-only task/comment API readback confirmed missing context; audit JSON and ledger JSONL parse passed; scoped `git diff --check` passed with CRLF warnings only.
+
+FILES: changed `ops/queue-audits/2026-07-07-task-1730-bad-ui-button-blocked.md`, `ops/queue-audits/2026-07-07-task-1730-bad-ui-button-blocked.json`, `ops/agent-changelog.md`, `ops/agent-task-ledger.jsonl`. Inspected `BNA-START-HERE.md`, `docs/BNA-RAMBLE-TO-DONE.md`, `ops/queue-audits/2026-07-06-agent-fleet-queued-25-implementation-audit.md`, and live task `#1730` readback.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T13-15-32-160Z-task-1730.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T13:25:09+03:00 - Agent task #1751 blocked: Add watchdog soft repair for obvious task warnings
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Added a guard so watchdog soft-repair matching no longer searches full task notes and falsely retitles clean content/UI tasks. Redacted live readback for task #1751 now returns `looks_watchdog_warning_repair_request: false` and `title_repair: null`. No live task status/title mutation was performed.
+
+VERIFICATION: `npm run bna:run:status` passed; `npm run bna:run:next` passed with no unblocked active-run batch; `npm run agent:fleet:status` readback passed; `node --check scripts/agent-fleet-supervisor.mjs` passed; `node --test tests/watchdog-soft-repair.test.js tests/task-title-cleanup-dry-run.test.js` passed 26/26; ledger/audit JSON parse passed; scoped `git diff --check` passed with CRLF warnings only.
+
+FILES: `scripts/agent-fleet-supervisor.mjs`; `tests/watchdog-soft-repair.test.js`; `tests/task-title-cleanup-dry-run.test.js`; `ops/queue-audits/2026-07-07-task-1751-watchdog-soft-repair-title-guard.*`; `ops/agent-task-ledger.jsonl`; `ops/agent-changelog.md`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T13-25-09-676Z-task-1751.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T13:34:37+03:00 - Agent task #1769 blocked: Oh, so you have to mistake, we need to fix that.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Fixed the actual fleet-routing mistake behind task `#1769`: it was a private recording parser artifact marked `agent_executable: false` and `needs_human_review: true`, but the fleet still claimed it. I added a claim guard so those tasks are no longer claimable, recorded audit evidence, and did not mutate live task/job status or restart the running supervisor.
+
+VERIFICATION: `npm run bna:run:status` passed; `npm run bna:run:next` passed with no unblocked batch; read-only task/comment/content-job/parse-run readbacks passed; `node --check scripts/agent-fleet-supervisor.mjs` passed; `node --test tests/agent-fleet-hardening.test.js` passed 7/7; `node --test tests/watchdog-soft-repair.test.js tests/task-title-cleanup-dry-run.test.js` passed 26/26; patched live-shape filter returned no claimable job for `#1769`; `npm run agent:fleet:status` now shows 1 claimable job.
+
+FILES: changed `scripts/agent-fleet-supervisor.mjs`, `tests/agent-fleet-hardening.test.js`, `ops/queue-audits/2026-07-07-task-1769-human-review-claim-guard.*`, `ops/agent-changelog.md`, `ops/agent-task-ledger.jsonl`. Inspected source-of-truth docs and live readback APIs. Existing unrelated dirty work remains; I did not commit/push or restart background loops.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T13-34-37-577Z-task-1769.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T13:43:31+03:00 - Agent task #1792 blocked: Because people want to know what they're bad at to fix their mistakes.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Task `#1792` was a private content-recording parser artifact, not executable Codex work. Live readback showed `agent_executable: false`, `needs_human_review: true`, and `recording_review_task: true`; the existing task `#1769` human-review claim guard already covers this class. I recorded local closeout evidence and did not mutate the live task/job or restart the supervisor.
+
+VERIFICATION: `npm run bna:run:status` passed; `npm run bna:run:next` passed with no unblocked batch; `node --check scripts/agent-fleet-supervisor.mjs` passed; `node --test tests/agent-fleet-hardening.test.js` passed 7/7; audit JSON and full ledger JSONL parsed; `npm run agent:fleet:status` passed and still shows 1 real claimable job.
+
+FILES: changed `ops/queue-audits/2026-07-07-task-1792-human-review-claim-guard-covered.md`, `ops/queue-audits/2026-07-07-task-1792-human-review-claim-guard-covered.json`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`. Inspected source-of-truth docs, live task `#1792`, comments, and agent job `#365`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T13-43-31-796Z-task-1792.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T13:51:21+03:00 - Agent task #1837 blocked: Repair follow-up after Drive transcription reprocess.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Reviewed task `#1837` / agent job `#373` and recorded it as a superseded, non-executable generic Drive reprocess row for `content_job:100`; concrete follow-ups remain under `#1838` and `#1839`. No live task/job status, Drive, DB, parser, deploy, send, or credential mutation was performed.
+
+VERIFICATION: `npm run bna:run:status` PASS; `npm run bna:run:next` PASS with no unblocked batch; `npm run agent:fleet:status` PASS; sanitized live readback for task `#1837` and job `#373` PASS; `npm run bna:run:validate` PASS; `npm run secrets:audit` PASS; closeout JSON + ledger JSONL parse PASS; scoped `git diff --check` PASS.
+
+FILES: Changed `ops/queue-audits/2026-07-07-task-1837-drive-reprocess-closeout.md`, `.json`, `ops/agent-task-ledger.jsonl`, `ops/agent-changelog.md`. Inspected Drive/job evidence under `ops/drive-transcript-visibility/2026-07-02/` and the queued-work audit.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T13-51-21-229Z-task-1837.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T13:59:57+03:00 - Agent task #1838 blocked: I see there is a codex test, and I see as log, like what does that logged button do?
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Removed the stale visible `Archive test duplicate` Contacts button tied to the old Solomon/Codex cleanup. The `Logged` text is not a button; it is an inert communication status label meaning the item is recorded with no more specific follow-up/delivery state. No live task/job status, DB write, endpoint call, deploy, or external mutation was performed.
+
+VERIFICATION: `npm run bna:run:status` PASS; `npm run bna:run:next` PASS; sanitized live readback for task `#1838`/job `#374` PASS; `node --check server.js` PASS; `node --test tests/parent-student-portal-contract.test.js` PASS 24/24; JSON/JSONL parse PASS; scoped `git diff --check` PASS; public Operations grep confirmed stale action absent.
+
+FILES: changed `public/operations.html`, `tests/parent-student-portal-contract.test.js`, `ops/queue-audits/2026-07-07-task-1838-codex-test-logged-button-closeout.*`, `ops/agent-changelog.md`, `ops/agent-task-ledger.jsonl`; inspected `server.js` and `ops/queue-audits/2026-07-06-agent-fleet-queued-25-implementation-audit.md`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T13-59-57-439Z-task-1838.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T14:15:44+03:00 - Agent task #1839 blocked: If wappy is not set up, like phone book grouping, dry run, build this report, sync last...
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: blocked
+
+SUMMARY: Completed the local `#1839` audit/report closeout. Wappy remains unselected; existing Whapi/WAPI phonebook report works and was run in redacted read-only mode. Last-history sync is blocked because the available sync path writes production audit/import rows even in dry-run mode and needs explicit One Time/Rabbi Whapi/WAPI setup details plus sync approval.
+
+VERIFICATION: `npm run bna:run:status` pass; `npm run bna:run:next` no unblocked batch; `npm run agent:fleet:status` pass; `node --check server.js`, `scripts/wapi-phonebook-report.mjs`, `scripts/sync-whapi-history.mjs` pass; focused tests passed 17/17; JSON/ledger parse passed; `git diff --check` passed with LF/CRLF warnings only.
+
+FILES: changed `ops/queue-audits/2026-07-07-task-1839-wappy-wapi-phonebook-report-blocked.md`, `.json`, `ops/agent-changelog.md`, `ops/agent-task-ledger.jsonl`; inspected WAPI/Wappy docs, scripts, tests, Operations/provider routes.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T14-15-44-067Z-task-1839.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T17:20:57+03:00 - Agent task #1853 blocked: Job 101 Drive reprocess follow-up
+
+- Reviewed task `#1853` / agent job `#378` from the queued-work audit mapping
+  to `content_job:101`.
+- Confirmed Job 101 transcription, parser repair, private Drive transcript
+  docs, and known safe DB review cleanup rows already have evidence.
+- Ran a fresh guarded dry-run/readback across all `1165` currently open Job
+  101 review rows; it found `0` remaining safe auto-close candidates and did
+  not mutate the DB.
+- Remaining work is blocked because the open rows are protected/not-safe review
+  items and score/progress/grading writes require the exact approval packet.
+- Evidence:
+  `ops/queue-audits/2026-07-07-task-1853-job101-drive-reprocess-followup.*`
+  and
+  `ops/queue-audits/2026-07-07-task-1853-job101-review-cleanup-readback.json`.
+- Verification: `npm run bna:run:status`; `npm run bna:run:next`;
+  `npm run agent:fleet:status`; sanitized task/job readback;
+  `node --check scripts/cleanup-job101-review-queue.mjs`; JSON parse checks.
+- Guardrails: no live task/job mutation, Drive write, parser rerun, paid
+  transcription retry, production cleanup apply, score/progress/grading write,
+  send, deploy, provider/account/DNS/payment/access/credential mutation, or raw
+  transcript/private/secret commit.
+
+
+## 2026-07-07T14:26:14+03:00 - Agent task #1853 blocked: Repair follow-up after Drive transcription reprocess.
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: blocked
+
+SUMMARY: Task `#1853` maps to `content_job:101`. The safe repair work is already covered: transcription, parser repair, private Drive transcript docs, and 12 known safe review cleanup rows have evidence. I ran a fresh dry-run/readback across all 1165 currently open Job 101 review rows and found 0 remaining safe auto-close candidates. Remaining rows require human/domain review, and score/progress/grading writes still need the exact approval packet, so I did not rerun transcription/parser or mutate live task/job state.
+
+VERIFICATION: `npm run bna:run:status` passed; `npm run bna:run:next` passed with no unblocked batch; `npm run agent:fleet:status` passed; sanitized live readback for task `#1853`/job `#378` passed; `node scripts/cleanup-job101-review-queue.mjs --json --write-report --limit 2000 ...` passed with no mutation; `node --check scripts/cleanup-job101-review-queue.mjs` passed; JSON/ledger parse passed; `npm run secrets:audit` passed; scoped secret scan passed; `git diff --check` passed with LF/CRLF warnings only.
+
+FILES: Changed `ops/queue-audits/2026-07-07-task-1853-job101-drive-reprocess-followup.md`, `.json`, `ops/queue-audits/2026-07-07-task-1853-job101-review-cleanup-readback.json`, `tasks-pending/2026-07-02-job101-review-triage-and-ui-system-corrections.md`, `tasks-pending/2026-07-04-ship-pr87-onetime-ui-live-cleanup.md`, `ops/agent-task-ledger.jso
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T14-26-14-442Z-task-1853.md
+
+- source: agent_fleet
+- worker: Codex
+
+
+## 2026-07-07T14:31:54+03:00 - Agent task #1518 blocked: Smoke test task 1782232796113
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Read-only closeout confirmed task `#1518` / job `#306` is a stale synthetic `npm run app:smoke` artifact, already classified in queue audits as a test artifact/non-task. I did not edit files, rerun live `app:smoke`, delete/archive the live task row, or mutate production state.
+
+VERIFICATION: `npm run bna:run:status` passed; `npm run bna:run:next` passed with no unblocked batch; `npm run agent:fleet:status` showed job `#306` / task `#1518` running; live API readback for task/comments/job returned 200; `node --check scripts/smoke-live-app.mjs` passed; `node --check scripts/agent-fleet-supervisor.mjs` passed; `node --test tests/one-time-deployment-readiness.test.js` passed 7/7. A broad recursive ops search timed out after returning matching historical evidence.
+
+FILES: inspected `scripts/smoke-live-app.mjs`, `scripts/agent-fleet-supervisor.mjs`, `package.json`, `ops/queue-audits/2026-07-06-agent-fleet-queued-25-implementation-audit.md`, `ops/queue-audits/2026-06-24T17-27-38-081Z-queue-audit.md`; no files changed.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- FAIL npm test exit 1
+
+Deployment gate:
+- NOT RUN Deployment gate was not reached.
+
+Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
+
+- source: agent_fleet
+- worker: Codex
+
+
 ## 2026-07-07T17:34:47+03:00 - Parent and student login UI polish local verification
 
 - Captured raw intake `RAW-20260707-010`, created the parent/student login
@@ -30754,6 +33105,8 @@ Deployment gate:
   `npm run watchdog:protocol-drift` with 0 findings.
 - Status: local verified, pending commit/push/deploy/live smoke. External
   Agent Mode drop-off reports are still pending.
+
+
 ## 2026-07-07T17:45:20+03:00 - Parent and student login UI polish deployed
 
 - Pushed commit `eb9e2ee6` to `origin/master`.
@@ -30770,28 +33123,139 @@ Deployment gate:
 - External Agent Mode audit reports for `REQ-20260707-101` remain pending as
   follow-up inputs.
 
+
+## 2026-07-07T18:09:44+03:00 - Parent trial login and Agent Mode prompt pack local verification
+
+- Captured raw intake `RAW-20260707-011`, created
+  `tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md`, and
+  validated the Product Quality packet for the parent trial login, student
+  login/reset, and IA consistency work.
+- Added One Time parent/student review contexts and three registered Agent
+  Mode prompt keys: `one-time-parent-trial-journey`,
+  `one-time-student-login-reset-journey`, and
+  `one-time-role-ia-consistency`.
+- Updated generated public prompt pages so the new prompts include exact
+  navigation, viewport coverage, required audit outputs, Operations drop-off
+  URLs, API fallback, and `OPERATIONS_DROPOFF_FAILED` recovery rules.
+- Confirmed existing no-password TEST review links for parent, student,
+  classroom, and email review. No live account, access grant, email, payment,
+  or billing mutation was performed.
+- Production smoke found `/one-time-email-review.html` had 179px horizontal
+  overflow on 390px mobile. Patched the email review page so nav/template
+  content wraps and local Playwright readback reports 0px overflow at 390px.
+- Verification: 62 focused tests passed; `npm run pqc:validate -- ...00-parent-trial-login-ia-consistency.product-quality.json`;
+  `npm run watchdog:actions`; `npm run watchdog:protocol-drift`; local
+  Playwright 390px overflow readback.
+- Status: local verified, pending commit/push/deploy/live smoke. Real parent
+  trial login email remains blocked until exact recipient, class link, sender,
+  copy, and test-vs-production scope are confirmed.
+
+
+## 2026-07-07T19:02:38+03:00 - One Time public brand and helper isolation local verification
+
+- Captured raw intake `RAW-20260707-013`, created
+  `tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md`, and
+  validated the Product Quality packet for the One Time brand/helper/top-toolbar
+  ramble.
+- Mounted the shared helper on `/one-time` as `One Time Helper`, with One
+  Time-specific public copy, black/yellow helper skin, and public actions for
+  trial start, member login, and asking Rabbi Scheller.
+- Added an explicit One Time app-select surface so the shared Region dropdown
+  renders in the One Time black/yellow treatment instead of the default BNA
+  blue treatment.
+- Scoped One Time assistant surfaces in `server.js` so One Time public,
+  parent, and student surface labels normalize cleanly and One Time public
+  helper threads use the One Time project/provider workspace.
+- Local Playwright evidence:
+  `ops/ui-audits/2026-07-07-onetime-brand-helper-toolbar-isolation-local/`
+  captured desktop/mobile landing and helper-open screenshots plus the open
+  Region dropdown. Result: 0 failures, no visible BNA brand text, no language
+  chrome, and no mobile horizontal overflow.
+- Verification: 31 focused tests passed; `npm run pqc:validate --
+  ops\prompt-packets\2026-07-07-onetime-brand-helper-toolbar-isolation\00-onetime-brand-helper-toolbar-isolation.product-quality.json`;
+  `npm run watchdog:actions`; `npm run watchdog:protocol-drift`.
+- Status: local verified, pending commit/push/deploy/live smoke. Parent/student
+  private helper scope, toolbar/filter density, and Agent Mode autonomous
+  prompt/drop-off updates remain open as next packets.
+
+
+## 2026-07-07T19:10:18+03:00 - One Time public brand and helper isolation deployed
+
+- Pushed commit `7ef3aebf` to `origin/master`.
+- Railway production deployment
+  `7f3bbe54-e9ef-4ff2-8d20-3895a113a5e5` reached `SUCCESS` for
+  `bneineviimacademy.org`.
+- Production visual smoke:
+  `ops/ui-audits/2026-07-07-onetime-brand-helper-toolbar-isolation-live-after-deploy/`
+  captured desktop/mobile landing and helper-open screenshots plus the open
+  Region dropdown.
+- Result: 0 failures. The deployed `/one-time` page returned 200, mounted
+  `one_time_public`, showed `One Time Helper`, had no visible BNA brand text,
+  had no language/site-nav chrome, had 0px mobile horizontal overflow, and used
+  the One Time black/yellow dropdown skin.
+- Separate `join.onetimeonetime.com` release captain target remains blocked in
+  this local Railway context because the local target does not show
+  `one-time-production`, `one-time-web`, or `join.onetimeonetime.com`.
+- Parent/student private helper scope, toolbar/filter density, and Agent Mode
+  autonomous prompt/drop-off updates remain open as next packets.
+
+
+## 2026-07-07T20:27:03+03:00 - Clean launch batch locally verified
+
+- Captured the broad clean/push/deploy request as `RAW-20260707-014`, created
+  a requirement register, and validated the clean-launch Product Quality
+  packet.
+- Classified the dirty worktree before staging: the launchable batch is scoped
+  to Operations UI cleanup, agent-fleet claim/title hardening, tests, current
+  proof, and blocker records. The large ChatGPT pickup/watchdog/queue artifact
+  flood is parked for a separate retention/dedupe cleanup packet.
+- Local verification passed: PQC validation, `node --check
+  scripts\agent-fleet-supervisor.mjs`, 57 focused tests, action watchdog,
+  protocol-drift watchdog, tracked secrets audit, active-run validation, and
+  security watchdog.
+- Status: local verified, pending scoped commit, push, Railway deployment, and
+  live readback for the app-visible Operations HTML change.
+
+
+## 2026-07-07T20:31:31+03:00 - Clean launch batch deployed and live-smoked
+
+- Pushed commit `af220573` to `origin/master`.
+- Railway deployment
+  `795f3f77-e4f1-4ff1-aaf9-0c54d3ae2e01` reached `SUCCESS`.
+- Live readback checked `https://bneineviimacademy.org/operations` and
+  `https://bneineviimacademy.org/operations.html`.
+- Result: `/operations` returned `401`, `/operations.html` returned `200`,
+  the Operations shell loaded, and the deployed HTML no longer contains
+  `Archive test duplicate` or `archiveCodexTestParent`.
+- Generated ChatGPT pickup/watchdog/queue artifacts, One Time provider aliases,
+  the separate `join.onetimeonetime.com` target, Drive/private transcript sync,
+  and external sends/payments/DNS/access/provider writes remain blocked or
+  parked with explicit next actions.
+
+
 ## 2026-07-07T21:08:05+03:00 - Audit fix implementation batch locally verified
 
-- Captured raw intake and compiled the audit-fix Product Quality packet/register for the current audit outputs.
-- Implemented scoped fixes: Operations/provider control sizing normalized; provider admin-view banner now appears on first paint for One Time; admin-provider session-required state hides the credential form and leaves a read-only preview action.
-- Repaired the One Time role UI audit harness so `--out-dir` and `--out` write to the requested folder.
-- Local visual evidence: `ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/` captured 35 screenshots across 7 routes and 5 viewports with 0 automated findings.
-- Verification: `node --check scripts/audit-onetime-role-ui-current-state.mjs`; `npm run pqc:validate -- ops/prompt-packets/2026-07-07-audit-fix-implementation/00-audit-fix-implementation.product-quality.json`; `npm run watchdog:actions`; `npm run watchdog:protocol-drift`; `npm run secrets:audit`; `npm run bna:run:validate`.
-- Guardrails: no external sends, payments, DNS, access grants, credential changes, provider writes, or raw private-data commits.
-- Status: local verified, pending commit/push/deploy/live smoke.
-
-## 2026-07-07T21:25:00+03:00 - Audit fix provider tab-grid follow-up locally verified
-
-- First production audit after deployment bcb85309-93ff-4482-9bfa-39c9749d33a9 found one remaining P2 provider admin mailbox 1440 tab-grid/action-height issue.
-- Normalized provider workspace nav rows in public/provider.html so section buttons share stable height and long labels wrap inside the same control system.
-- Local visual evidence: ops/ui-audits/2026-07-07-audit-fix-pass-local-final5/ captured 35 screenshots across 7 routes and 5 viewports with 0 automated findings.
-- Status: follow-up CSS fix locally verified, pending commit/push/second deployment/live smoke.
-
-## 2026-07-07T21:38:00+03:00 - Audit fix implementation batch deployed and live-smoked
-
-- Pushed commits 9789c13e and 6ad5804c to origin/master.
-- Railway deployments bcb85309-93ff-4482-9bfa-39c9749d33a9 and c0ad9905-4837-4987-9c58-f916f928875f reached SUCCESS for the BNA production service.
-- Final live visual audit at https://bneineviimacademy.org captured 35 screenshots across 7 routes and 5 viewports with 0 automated findings.
-- Evidence: ops/ui-audits/2026-07-07-audit-fix-pass-live-final-after-deploy/report.md and ops/release-captain/2026-07-07-audit-fix-live-smoke.md.
-- Railway doctor remains blocked by project-token railway link permission, but explicit target guard and Railway status readback verified the deployment.
-- Blockers preserved for WAPI/Whapi setup, Drive/private-data sync, payments, DNS, external sends, provider writes, credentials, and generated artifact cleanup.
+- Captured the audit-fix/deploy request as `RAW-20260707-015`, created
+  `tasks-pending/2026-07-07-audit-fix-implementation.md`, and validated the
+  Product Quality packet for the scoped audit-fix batch.
+- Implemented the current executable audit fixes:
+  - normalized Operations One Time workspace/mobile header/filter/status/action
+    control heights and wrapping;
+  - restored admin-on-Rabbi provider context on first paint for
+    `/provider.html?admin_provider=one-time&section=mailbox`;
+  - hid the provider credential form in admin-provider session-required first
+    paint and left clear return/review actions;
+  - made the role UI audit script respect `--out-dir` as well as `--out`.
+- Final local visual proof:
+  `ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/report.md` captured
+  35 screenshots across 7 routes and 5 viewports with 0 automated findings.
+  Provider admin mailbox is `preview_only` and the admin banner detector
+  passes.
+- Verification passed: PQC validation, `node --check
+  scripts\audit-onetime-role-ui-current-state.mjs`, final local role UI audit,
+  action watchdog, protocol-drift watchdog, tracked secrets audit, and active
+  execution-run validation.
+- Status: local verified, pending scoped commit, push, Railway deployment, and
+  live smoke. WAPI/Whapi, Drive/private-data sync, payments, DNS, external
+  sends, provider writes, credential changes, and generated artifact flood
+  cleanup remain blocked or parked pending exact owner-approved packets.

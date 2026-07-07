@@ -72,3 +72,22 @@ ops/system-audits/*-watchdog-improvements.md
 screenshots/
 ops/ui-audits/runs/
 ops/ui-audits/latest.json
+
+# generated local agent/audit receipts
+# Curated evidence may still be committed with `git add -f <path>` when a
+# requirement register explicitly cites it.
+ops/chatgpt-ramble-dropoff/comment-pickups/
+ops/chatgpt-ramble-dropoff/pickups/
+ops/queue-audits/
+ops/watchdog-audits/2026-*-raw-intake-drift.md
+ops/watchdog-audits/2026-*-watchdog-action-audit.md
+ops/watchdog-audits/2026-*-watchdog-security-routes.md
+ops/ui-audits/*-local*/
+ops/ui-audits/*-closeout/
+ops/ui-audits/*-live-after-deploy/
+ops/helper-audits/test-*/
+ops/navigation-ia/test-*/
+ops/one-time-mishnah/integration-smokes/*T*-*.json
+ops/one-time-mishnah/integration-smokes/*T*-*.md
+ops/release-captain/*T*-release-captain.json
+ops/release-captain/*T*-release-captain.md
