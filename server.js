@@ -14714,7 +14714,24 @@ ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS from_name TEXT;
 ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS from_address TEXT;
 ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS reply_to TEXT;
 ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS provider TEXT DEFAULT 'gmail';
+ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS metadata JSONB;
 ALTER TABLE bna_email_log DROP CONSTRAINT IF EXISTS bna_email_log_status_check;
+UPDATE bna_email_log
+SET metadata = COALESCE(metadata, '{}'::jsonb) || jsonb_build_object(
+      'legacy_status_before_constraint_repair', COALESCE(status, ''),
+      'legacy_status_repaired_at', NOW()
+    ),
+    status = CASE
+      WHEN LOWER(COALESCE(status, '')) IN ('sent', 'failed', 'skipped', 'queued', 'delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'webhook_received')
+        THEN LOWER(status)
+      WHEN LOWER(COALESCE(status, '')) IN ('pending', 'processing', 'scheduled')
+        THEN 'queued'
+      WHEN LOWER(COALESCE(status, '')) LIKE '%fail%'
+        THEN 'failed'
+      ELSE 'skipped'
+    END
+WHERE status IS NULL
+   OR LOWER(status) NOT IN ('sent', 'failed', 'skipped', 'queued', 'delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'webhook_received');
 ALTER TABLE bna_email_log
   ADD CONSTRAINT bna_email_log_status_check
   CHECK (status IN ('sent', 'failed', 'skipped', 'queued', 'delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'webhook_received'));

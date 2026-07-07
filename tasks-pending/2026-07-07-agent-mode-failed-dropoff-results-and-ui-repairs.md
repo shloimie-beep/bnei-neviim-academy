@@ -103,6 +103,13 @@ The UI/product findings are queued for product-quality packet work. Broad UI imp
 - Blocker: direct clean-source `railway up --service one-time-web` from commit `0781977f` failed during Railway CLI indexing with `Access is denied. (os error 5)`, so `/public` alias deployment remains open for the One Time service source/deploy configuration.
 - Additional follow-up: `ops/live-smokes/2026-07-07T13-04-33-226Z-one-time-shared-review-live-smoke.md` passed landing/provider/parent/student/classroom/email mobile390 checks and failed Operations mobile390 on missing `Program Overview` text.
 
+## Email Log Startup Repair Evidence - 2026-07-07T16:18+03:00
+
+- Trigger: stopping the local helper server surfaced a startup migration failure on `bna_email_log_status_check`, indicating existing email-log rows can contain legacy operational statuses outside the provider-delivery status constraint.
+- Repair: `server.js` now adds missing `metadata`, preserves the original status as `legacy_status_before_constraint_repair`, normalizes unknown legacy statuses into allowed email-log statuses before re-adding the constraint, and keeps the constraint strict after repair.
+- Verification: PASS `node --check server.js`; PASS `node --test tests/assistant-portal-communications-contract.test.js tests/rabbi-checkout-access.test.js` with 14/14 passing.
+- Guardrail: no email was sent, no external provider was called, and no Stripe/access/DNS/credential mutation was performed.
+
 ## Task #2025 Worker Evidence
 
 - 2026-07-07T15:01:24+03:00: Implemented the scoped provider-review navigation repair for `REQ-20260707-082` / `FIND-20260707-082`. `public/provider.html` now uses the One Time Rabbi-facing section model for review and view-as sessions, preserves the requested `section` instead of resetting every render to Overview, hides inactive panels until the active section is selected, and updates the Overview card list in place instead of appending duplicates.

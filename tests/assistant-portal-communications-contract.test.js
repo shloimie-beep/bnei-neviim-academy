@@ -44,6 +44,8 @@ test('communications store full message bodies and are exposed through scoped AP
   assert.match(server, /ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS body_html TEXT/);
   assert.match(server, /ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS from_name TEXT/);
   assert.match(server, /ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS provider TEXT/);
+  assert.match(server, /legacy_status_before_constraint_repair/);
+  assert.match(server, /LOWER\(COALESCE\(status, ''\)\) IN \('pending', 'processing', 'scheduled'\)/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_communications/);
   assert.match(server, /async function logCommunication/);
   assert.match(server, /await logCommunication\(/);
