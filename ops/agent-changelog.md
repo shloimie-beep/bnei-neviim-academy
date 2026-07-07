@@ -33361,3 +33361,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   production live smoke. Real billing, attendance, transcript/Rabbi-reference,
   password/access, external send, payment, DNS, provider, credential, Drive,
   Vimeo, Zoom, WhatsApp, and Telegram actions remain out of scope or blocked.
+
+
+## 2026-07-07T23:32:30+03:00 - One Time parent/student helper scope deployed
+
+- Pushed commit `f345eedb` to `origin/master`.
+- Railway production deployment
+  `c4d748b3-a7d3-4ceb-866a-4965179526a9` reached `SUCCESS`.
+- Production shared-review smoke
+  `ops/live-smokes/2026-07-07T20-32-23-393Z-one-time-shared-review-live-smoke.md`
+  passed landing, provider, parent, student, classroom, email, and Operations
+  routes at mobile390, tablet768, and desktop1440. The parent/student checks
+  now require `One Time Parent Helper` and `One Time Student Helper`.
+- Production app smoke
+  `ops/live-smokes/2026-07-07T20-32-24-012Z-live-app-smoke.md` passed.
+- Result: One Time parent/student review helpers are deployed, scoped, and
+  live-smoked. Real billing, attendance, transcript/Rabbi-reference,
+  password/access, and external-provider features remain separate blocked
+  packets.
