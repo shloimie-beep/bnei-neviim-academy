@@ -16,5 +16,9 @@
   Operations Agent Review task/drop-off flow first. GitHub packets or marked
   comments are fallback handoffs, not the primary path, because Agent Mode
   sessions may not have GitHub write access.
+- Agent Mode UI audit prompts must be navigation-first templates: start from
+  Super Admin, name exact click paths and visible labels, require the agent to
+  navigate to Rabbi/provider/student/classroom views itself, and require
+  `FAIL`/`BLOCKED` Operations drop-off even when navigation breaks.
 - Relevant standing goals: `GOAL-CORE-001` through `GOAL-CORE-005` and
   `GOAL-CORE-015`.

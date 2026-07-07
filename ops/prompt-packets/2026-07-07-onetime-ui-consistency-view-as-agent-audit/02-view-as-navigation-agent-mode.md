@@ -44,6 +44,55 @@ Known implemented Super Admin action:
   triggers it safely:
   POST /api/bna/one-time/provider-session/start
 
+Navigation-first rule:
+You must navigate through the visible app from Super Admin. Do not only paste
+the final route into the address bar. Route fallbacks are allowed only after
+you record that the visible click path was missing, broken, hidden, confusing,
+or mobile-unusable.
+
+Exact Super Admin to One Time path:
+1. Open https://bneineviimacademy.org/operations.
+2. If login is required, ask for browser takeover. Let Shloimie type the login.
+   Do not ask for or store credentials.
+3. Confirm you are in BNA Operations / Super Admin.
+4. Find the workspace switcher in the Operations shell.
+5. Select the One Time / Rabbi workspace. Expected labels may include
+   "One Time", "Rabbi / One Time", "One Time Mishnah Class",
+   "rabbi_sheller_provider", or "one_time_mishnah_class".
+6. If the workspace switcher cannot be found or used, record that as a finding,
+   then use the fallback URL:
+   https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class
+7. Open Communications, then Email.
+8. Click "Rabbi / One Time" or "View Rabbi / One Time Inbox" if visible.
+9. Confirm the email section says "Now Viewing: Rabbi / One Time Inbox" or
+   shows info@onetimeonetime.com.
+10. Click "Open Rabbi Provider Portal".
+11. Confirm the browser opens /provider.html?admin_provider=one-time&section=mailbox
+    or an equivalent One Time provider route.
+12. Confirm the provider view shows OneTimeOneTime/Rabbi branding,
+    rabbi_sheller_provider, one_time_mishnah_class, and a clear Rabbi/provider
+    context.
+
+Exact Rabbi provider to student/classroom path:
+1. In the Rabbi provider portal, find the provider sidebar or topbar.
+2. Click "Student View".
+3. Confirm it opens /student.html?review=one-time or an equivalent One Time
+   student review route.
+4. Record whether the student view is actually student-safe and One Time
+   scoped. It must not show Super Admin tools, raw emails, provider diagnostics,
+   or unrelated BNA student/private data.
+5. Return to the provider portal using browser back or visible navigation.
+6. Click "Classroom".
+7. Confirm it opens /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+   or an equivalent One Time classroom route.
+8. Record whether the classroom view is member/student-safe and scoped to the
+   One Time Mishnah class.
+
+Failure rule:
+If any step fails, do not give up in chat. Open the Operations drop-off and save
+the result as BLOCKED or FAIL. Include the exact failed step, expected result,
+actual result, screenshot/visual note, and suggested correction.
+
 Audit checklist:
 1. From Shloimie's Super Admin login, find the clearest entry point to the
    Rabbi / One Time inbox.
@@ -99,6 +148,10 @@ Use the Operations task or Agent Review card for this prompt, click
 
 Fill `Suggested correction` with the highest-priority Codex repair packet and
 click `Save Agent Review Result`. Confirm the saved `AGR-*` readback.
+
+If navigation failed, still save the report there as BLOCKED or FAIL. The
+blocked report is the work product. Chat-only output is not acceptable unless
+all Operations save paths fail.
 
 If the normal form fails, retry the exact Operations drop-off URL. If the page
 offers API/emergency paste fallback, use it with the same prompt key and

@@ -9,6 +9,7 @@
   "dropoff_contract": {
     "primary": "operations_task_agent_review_dropoff",
     "contract_file": "OPERATIONS-DROPOFF.md",
+    "navigation_template_file": "AGENT-MODE-NAVIGATION-TEMPLATE.md",
     "success_marker": "OPERATIONS_DROPOFF_SAVED: AGR-...",
     "failure_marker": "OPERATIONS_DROPOFF_FAILED: <exact UI/API/connector error>",
     "fallbacks": [

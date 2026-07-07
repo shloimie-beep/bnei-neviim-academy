@@ -30579,3 +30579,15 @@ Deployment gate:
 - Railway doctor remains blocked by target guard because the local Railway
   target lacks an explicit service name/ID; explicit service status was used
   instead.
+
+## 2026-07-07T14:16:44+03:00 - Agent Mode navigation-first prompt template
+
+Codex created a reusable Agent Mode navigation template for One Time audits and updated prompts 02/03 so agents must start in Operations, select the Rabbi / One Time context, click `View Rabbi / One Time Inbox`, open `Open Rabbi Provider Portal`, and then verify `Student View` and `Classroom` from the provider surface. The prompts now require agents to save `PASS`, `FAIL`, or `BLOCKED` reports in the Operations drop-off section even when login, links, routing, mobile layout, or permissions break; chat output is only the final emergency fallback.
+
+Verification:
+- PASS `node --test tests/agent-mode-operations-dropoff-prompts.test.js`
+- PASS `agent-mode-prompt-series.json` parse
+- PASS `git diff --check` on scoped files with CRLF warnings only
+- PASS `npm run watchdog:protocol-drift` with 0 findings
+
+Report: tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md

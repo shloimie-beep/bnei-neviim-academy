@@ -26,8 +26,15 @@ The prompts are audit-only. They do not ask agents to edit code, deploy, send
 messages, charge cards, grant access, change DNS, write Drive files, mutate
 provider accounts, or change production data.
 
+All role/view-as prompts must follow the navigation-first template:
+`AGENT-MODE-NAVIGATION-TEMPLATE.md`. Agents must start from Super Admin, click
+through visible One Time/Rabbi navigation, and save `FAIL` or `BLOCKED` in
+Operations drop-off when a path breaks instead of stopping with chat-only
+output.
+
 ## Prompt Files
 
+0. `AGENT-MODE-NAVIGATION-TEMPLATE.md`
 1. `01-navigation-filter-consistency-agent-mode.md`
 2. `02-view-as-navigation-agent-mode.md`
 3. `03-role-perspective-screen-matrix-agent-mode.md`

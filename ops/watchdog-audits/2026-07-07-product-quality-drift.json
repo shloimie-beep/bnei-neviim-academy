@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T10:25:29.791Z",
+  "generated_at": "2026-07-07T11:19:13.665Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -295,6 +295,7 @@
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/02-view-as-navigation-agent-mode.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/03-role-perspective-screen-matrix-agent-mode.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/04-consistency-view-as-synthesis-agent-mode.md",
+    "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/AGENT-MODE-NAVIGATION-TEMPLATE.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/OPERATIONS-DROPOFF.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/README.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/agent-mode-prompt-series.json",
@@ -504,6 +505,7 @@
     "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md",
     "tasks-pending/2026-07-06-onetime-vimeo-folder-library-workflow.md",
     "tasks-pending/2026-07-06-worker-credentials-policy-and-dirty-closeout.md",
+    "tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md",
     "tasks-pending/2026-07-07-agent-mode-operations-dropoff-loop-and-ui-audit-results.md",
     "tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md",
     "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",

@@ -23,6 +23,41 @@ Prerequisite:
 No prerequisite when running in parallel mode. If a role cannot be reached
 safely, record an exact blocker instead of trying to bypass auth.
 
+Navigation-first rule:
+You must navigate through the visible app from Super Admin before using direct
+route fallbacks. The matrix must say whether each role view was reached by a
+clear click path or only by URL fallback.
+
+Exact Super Admin to Rabbi provider path:
+1. Open https://bneineviimacademy.org/operations.
+2. If login is required, ask for browser takeover. Let Shloimie type the login.
+   Do not ask for or store credentials.
+3. Confirm you are in BNA Operations / Super Admin.
+4. Find the workspace switcher and choose One Time / Rabbi. Expected labels may
+   include "One Time", "Rabbi / One Time", "One Time Mishnah Class",
+   "rabbi_sheller_provider", or "one_time_mishnah_class".
+5. Open Communications, then Email.
+6. Click "Rabbi / One Time" or "View Rabbi / One Time Inbox" if visible.
+7. Confirm "Now Viewing: Rabbi / One Time Inbox" or info@onetimeonetime.com.
+8. Click "Open Rabbi Provider Portal".
+9. Confirm you land in /provider.html?admin_provider=one-time&section=mailbox
+   or an equivalent One Time provider route.
+10. Confirm OneTimeOneTime/Rabbi branding, rabbi_sheller_provider,
+    one_time_mishnah_class, and clear provider/Rabbi context.
+
+Exact Rabbi provider to student/classroom/member path:
+1. From the provider portal, click "Student View" in the sidebar/topbar.
+2. Confirm /student.html?review=one-time or equivalent.
+3. Return to the provider portal.
+4. Click "Classroom".
+5. Confirm /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+   or equivalent.
+6. From classroom/member navigation, inspect "Member home" or /rabbi-member if
+   reachable without unsafe credentials.
+7. If any step fails because a link is missing, broken, loops, opens the wrong route, or is unusable
+   on mobile, record the exact failure and still save BLOCKED/FAIL in
+   Operations drop-off.
+
 Routes and surfaces to inspect:
 - Super Admin Operations One Time workspace:
   https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider
@@ -104,6 +139,10 @@ Use the Operations task or Agent Review card for this prompt, click
 
 Fill `Suggested correction` with the highest-priority Codex repair packet and
 click `Save Agent Review Result`. Confirm the saved `AGR-*` readback.
+
+If a role cannot be reached, still save the matrix as BLOCKED or FAIL in
+Operations drop-off. The blocked matrix must include the exact click path,
+failed step, expected result, actual result, and suggested correction.
 
 If the normal form fails, retry the exact Operations drop-off URL. If the page
 offers API/emergency paste fallback, use it with the same prompt key and
