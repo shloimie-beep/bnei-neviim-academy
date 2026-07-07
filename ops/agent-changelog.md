@@ -30391,3 +30391,20 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   email, WhatsApp, or bulk messages, did not process stale jobs, did not mutate
   provider/student account access, and did not edit One Time UI code before the
   required visual audit.
+
+## 2026-07-07 - Codex Telegram Progress Sender Verified
+
+- Added `npm run telegram:codex-progress`, backed by
+  `scripts/send-codex-progress-telegram.mjs`, for concise Codex closeout
+  updates with `Fixed`, `Verified`, and `Next` fields.
+- The sender is dry-run by default, uses Telegram `sendMessage` only, refuses
+  secret-looking/private routing text, and does not print token or chat target
+  values.
+- Verification: PASS `node --check scripts/send-codex-progress-telegram.mjs`;
+  PASS `node --test tests/codex-progress-telegram.test.js`; PASS dry-run JSON
+  formatting; PASS one operator-requested live Telegram progress send returned
+  `ok: true`, `sent: true`, and `message_id_present: true`.
+- Guardrails: did not restart the Telegram polling bridge, did not call
+  `getUpdates`, did not start the agent fleet, did not claim stale jobs, did
+  not send email/WhatsApp/bulk messages, and did not expose secrets, chat
+  targets, raw private email bodies, or student/private account data.

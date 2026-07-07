@@ -37,7 +37,7 @@ Super Admin and provider/student views feel production-grade.
 | ID | Requirement | Source IDs | Workspace/project | Owner | Category | Priority | Batch | Dependencies | Acceptance criteria | Implementation files | Deploy/live required | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `REQ-20260707-030` | Preserve raw intake and create validated control-tower/visual-audit packets. | all | `bna_platform`; `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | protocol | P0 | 0 | none | Raw record, register, manifest, control tower, and current-state visual audit packet exist; PQC validation passes. | raw/register/prompt packets | no | Done |
-| `REQ-20260707-031` | Restore concise Telegram progress updates for current Codex work without replaying stale queue noise. | `SRC-20260707-003-001` to `SRC-20260707-003-003` | `bna_platform` / `agent_ops` | Codex | Telegram/agent fleet | P0 | 1 | `REQ-20260707-030` | Diagnose Telegram bridge conflict and stopped agent fleet; define one notification source of truth; ensure task completion updates include completed item, verification, next step, and link/context; do not blindly process old stale jobs. | `scripts/agent-fleet-supervisor.mjs`, `scripts/start-agent-fleet.ps1`, `scripts/telegram-kimi-bridge.mjs`, status/readiness scripts, tests TBD after audit | likely, if worker behavior changes | Blocked pending safe repair packet execution |
+| `REQ-20260707-031` | Restore concise Telegram progress updates for current Codex work without replaying stale queue noise. | `SRC-20260707-003-001` to `SRC-20260707-003-003` | `bna_platform` / `agent_ops` | Codex | Telegram/agent fleet | P0 | 1 | `REQ-20260707-030` | Diagnose Telegram bridge conflict and stopped agent fleet; define one notification source of truth; ensure task completion updates include completed item, verification, next step, and link/context; do not blindly process old stale jobs. | `scripts/send-codex-progress-telegram.mjs`, `package.json`, `tests/codex-progress-telegram.test.js` | no app deployment required for command-only sender; publish required for GitHub-visible workflow | Done for notification-only Codex closeout path; Telegram bridge poller restart remains blocked |
 | `REQ-20260707-032` | Run current-state visual/product audit for One Time role-specific UI before UI edits. | `SRC-20260707-003-004` to `SRC-20260707-003-007` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | UI/product audit | P0 | 1 | `REQ-20260707-030` | Screenshots and findings cover Super Admin Operations, admin-on-provider portal, provider portal, member/student routes, filters/buttons/actions, random diagnostic leakage, mobile/tablet/desktop, and proposed implementation slices. | audit files only before implementation | no for audit | Pending |
 | `REQ-20260707-033` | Convert broad product-quality language into focused One Time UI implementation packets. | `SRC-20260707-003-004`, `SRC-20260707-003-005` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | UI implementation | P1 | 2 | `REQ-20260707-032` | Each packet has exact routes, states, VQ findings, actions, tests, screenshots, and deploy/live-smoke gate; no vague "fix everything" task is used as implementation scope. | TBD after audit | yes | Blocked pending visual audit |
 | `REQ-20260707-034` | Separate Super Admin diagnostics from normal One Time provider admin view. | `SRC-20260707-003-006`, `SRC-20260707-003-007` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | role/scope UI | P0 | 2 | `REQ-20260707-032` | Provider account view hides global setup/debug/readiness clutter by default; Super Admin retains diagnostics in Operations/support drawers; provider view remains scoped and production-facing. | TBD after audit | yes | Blocked pending visual audit |
@@ -48,7 +48,7 @@ Super Admin and provider/student views feel production-grade.
 
 | ID | Decision | Missing information | Owner | Recommended option | Alternatives | Consequences | Exact action required | Blocks requirements | Status |
 |---|---|---|---|---|---|---|---|---|
-| `DEC-20260707-030` | Choose the source of truth for Telegram Codex progress notifications. | Whether the intended live Telegram poller is hosted on Railway, local, or both; how to avoid duplicate getUpdates pollers. | Codex | Use the agent-fleet notification path for Codex work summaries and keep the Telegram bridge as intake/chat, with only one active `getUpdates` poller. | Restart local Telegram bridge blindly; leave hosted poller unknown; send updates only in app. | Blind restart can conflict or spam; no restart leaves Shloimie without updates. | Audit current Telegram bridge/agent-fleet ownership, repair conflict, then start only the safe scoped worker/notification path. | `REQ-20260707-031` | Open |
+| `DEC-20260707-030` | Choose the source of truth for Telegram Codex progress notifications. | Whether the intended live Telegram poller is hosted on Railway, local, or both; how to avoid duplicate getUpdates pollers. | Codex | Use a notification-only `sendMessage` command for current Codex closeouts; keep Telegram bridge/fleet polling separate until ownership is known. | Restart local Telegram bridge blindly; leave hosted poller unknown; send updates only in app. | Blind restart can conflict or spam; command-only closeout notifications restore useful updates without claiming stale jobs or duplicating `getUpdates`. | Keep using `npm run telegram:codex-progress -- --send ...` for approved progress closeouts; separately identify the active poller before restarting the bridge/fleet. | bridge/fleet restart only | Partially resolved |
 | `DEC-20260707-031` | Define provider/student view-as safety model. | Whether provider/student impersonation should be true session switching, signed read-only preview, or admin-visible simulated view. | Codex / Shloimie if privacy tradeoff needed | Prefer audited view-as sessions with visible banner and no password disclosure. | Shared passwords; global Super Admin page with filters only; read-only screenshots only. | Shared passwords are unsafe; filters alone do not prove the user experience. | Audit current student/provider portal auth and propose exact route/session model. | `REQ-20260707-034`, `REQ-20260707-035` | Open |
 
 ## Open questions
@@ -70,7 +70,7 @@ Super Admin and provider/student views feel production-grade.
 | ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
 |---|---|---|---|---|---|---|
 | `REQ-20260707-030` | raw/register/prompt packets | Create control tower and visual-audit packet; validate PQC. | `npm run pqc:validate -- ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/00-control-tower.product-quality.json` | pending | pending | not required |
-| `REQ-20260707-031` | Telegram bridge / agent fleet supervisor | Audit stopped/conflicting workers before restart or code edits. Generated `ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/02-telegram-codex-progress-notifications.md`. | `npm run telegram:kimi:status`; `npm run agent:fleet:status`; `node scripts/agent-fleet-supervisor.mjs --once --dry-run --max-tasks 1`; targeted tests after implementation | pending | pending | likely |
+| `REQ-20260707-031` | command-only Telegram progress sender | Added `npm run telegram:codex-progress`, a dry-run-by-default `sendMessage` sender for concise Codex updates. It requires fixed/verified/next fields, redacts by refusal when secret-shaped text appears, does not print token/chat target, and does not start `getUpdates` or claim queue jobs. | PASS `node --check scripts/send-codex-progress-telegram.mjs`; PASS `node --test tests/codex-progress-telegram.test.js`; PASS dry-run JSON formatting; PASS one operator-requested live send returned `ok: true`, `sent: true`, `message_id_present: true`. | pending | pending | publish only; no app-visible deploy required |
 | `REQ-20260707-032` | Operations/provider/student routes | Run current-state screenshots and defect audit. | Playwright/browser screenshots and report | pending | pending | audit only |
 
 ## Final audit
@@ -78,7 +78,7 @@ Super Admin and provider/student views feel production-grade.
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |
 |---|---|---|---|---|---|
 | `REQ-20260707-030` | Done | This register; raw record; prompt packet manifest/control tower; `ops/product-quality-compiler/validation/latest-product-quality-validation.md`. | raw/register/prompt packets | PASS `npm run pqc:validate -- ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/00-control-tower.product-quality.json` | none |
-| `REQ-20260707-031` | Blocked pending safe repair packet execution | Initial diagnostics: Telegram bridge stopped due 409 conflict; agent fleet supervisor not running; repair packet `ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/02-telegram-codex-progress-notifications.md`; dry-run selected job `#397` / task `#1945` without execution. | none yet | PASS `npm run telegram:kimi:status` readback; PASS `npm run agent:fleet:status` readback; PASS dry-run no execution | Need execute repair packet; do not broadly restart stale queue. |
+| `REQ-20260707-031` | Done for notification-only Codex closeout path | Added `scripts/send-codex-progress-telegram.mjs`, `npm run telegram:codex-progress`, and `tests/codex-progress-telegram.test.js`; live send proof returned `ok: true`, `sent: true`, `message_id_present: true`; initial diagnostics still show Telegram bridge stopped due 409 conflict and agent fleet supervisor not running. | `package.json`; `scripts/send-codex-progress-telegram.mjs`; `tests/codex-progress-telegram.test.js` | PASS `node --check scripts/send-codex-progress-telegram.mjs`; PASS `node --test tests/codex-progress-telegram.test.js`; PASS dry-run JSON formatting; PASS one live operator-requested progress send with no token/chat output | Do not restart local bridge or full fleet until active poller ownership and stale-job policy are clear. |
 | `REQ-20260707-032` | Pending | none yet | none | pending current-state audit | UI implementation blocked until audit. |
 
 ## Verification log
@@ -90,15 +90,20 @@ Super Admin and provider/student views feel production-grade.
 - PASS `node scripts/agent-fleet-supervisor.mjs --once --dry-run --max-tasks 1`
   without claiming/executing a job; it reported it would claim job `#397` for
   task `#1945`.
+- PASS `node --check scripts/send-codex-progress-telegram.mjs`
+- PASS `node --test tests/codex-progress-telegram.test.js`
+- PASS dry-run `npm run telegram:codex-progress -- --dry-run --json ...`
+- PASS operator-requested live `npm run telegram:codex-progress -- --send --json ...`
+  returned `ok: true`, `sent: true`, and `message_id_present: true` without
+  printing a token or chat target.
 
 ## Current blockers / next exact packets
 
 1. Execute
-   `ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/02-telegram-codex-progress-notifications.md`
-   before restarting the full agent fleet. The restart must avoid stale queue
-   replay and duplicate Telegram `getUpdates` pollers.
-2. Execute
    `ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/01-current-state-visual-audit.md`
    before any One Time UI implementation.
-3. After the visual audit, generate focused implementation packets for provider
+2. After the visual audit, generate focused implementation packets for provider
    admin diagnostics cleanup and student view-as access.
+3. Separate follow-up: identify the active Telegram poller owner before
+   restarting the local bridge or full agent-fleet worker. The command-only
+   Codex progress sender is available now for current approved closeouts.

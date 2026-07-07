@@ -13,7 +13,7 @@ record the next packet or blocker.
 | Parent packet | `PKT-20260707-030` |
 | Packet role | `PROVIDER_SETUP_PACKET` |
 | Stage | `STAGE_2_CODEX_PROMPT_GENERATION` / `STAGE_3_CODEX_IMPLEMENTATION` |
-| Status | `ready_for_codex` |
+| Status | `done_notification_path_verified` |
 | Owner | Codex |
 | Scope | Restore concise Telegram progress notifications for current Codex work without replaying stale jobs or running duplicate Telegram pollers. |
 | Out-of-scope | One Time UI implementation, student/provider view-as implementation, email sends, WhatsApp sends, payments, DNS, Drive writes, credential changes, stale queue bulk execution. |
@@ -201,3 +201,33 @@ Done requires one of:
   and exact next action.
 
 Do not mark this packet done merely because the status commands were inspected.
+
+## Closeout - 2026-07-07
+
+Terminal status: `done_notification_path_verified`.
+
+Implemented a command-only Codex progress sender:
+
+- `scripts/send-codex-progress-telegram.mjs`
+- `npm run telegram:codex-progress`
+- `tests/codex-progress-telegram.test.js`
+
+The sender is dry-run by default, uses Telegram `sendMessage` only, requires
+`Fixed`, `Verified`, and `Next` fields, refuses secret-looking/private routing
+text, and does not print the bot token or chat target. It does not start the
+Telegram bridge, call `getUpdates`, claim agent-fleet jobs, or replay stale
+queue work.
+
+Verification:
+
+- PASS `node --check scripts/send-codex-progress-telegram.mjs`
+- PASS `node --test tests/codex-progress-telegram.test.js`
+- PASS dry-run JSON formatting with packet context
+- PASS one operator-requested live send returned `ok: true`, `sent: true`, and
+  `message_id_present: true` without exposing token/chat target
+
+Remaining blocker outside this packet: the local Telegram bridge still must not
+be restarted until the active polling owner is identified, because prior status
+readback showed Telegram `409 Conflict` from another `getUpdates` request. The
+full agent-fleet worker also remains stopped until stale-job replay policy is
+explicit.
