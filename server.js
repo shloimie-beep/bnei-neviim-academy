@@ -11150,6 +11150,38 @@ function oneTimeViewAsSessionView(payload, req) {
   };
 }
 
+async function findOneTimeProviderForAdminSession(db = pool) {
+  const result = await db.query(
+    `SELECT sp.*, p.project_key
+     FROM bna_service_providers sp
+     LEFT JOIN bna_projects p ON p.id = sp.project_id
+     WHERE p.project_key = $1
+        OR lower(COALESCE(sp.login_username, '')) IN ('rabbi_elie_scheller', 'one_time_admin', 'elisheller')
+        OR lower(COALESCE(sp.provider_name, '')) = 'rabbi elie scheller'
+     ORDER BY
+       CASE
+         WHEN p.project_key = $1 THEN 0
+         WHEN lower(COALESCE(sp.login_username, '')) IN ('rabbi_elie_scheller', 'one_time_admin', 'elisheller') THEN 1
+         ELSE 2
+       END,
+       sp.id ASC
+     LIMIT 10`,
+    [ONE_TIME_PROJECT_KEY]
+  );
+  return result.rows.find((row) => isOneTimeClassMediaProvider(row)) || result.rows[0] || null;
+}
+
+function oneTimeProviderAdminSessionView(provider = {}) {
+  return {
+    id: Number(provider.id || 0),
+    provider_name: provider.provider_name || provider.display_name || 'Rabbi Eli Scheller',
+    login_username: provider.login_username || 'one_time_admin',
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    status: provider.status || null,
+  };
+}
+
 app.get('/api/one-time-review', (req, res) => {
   res.json({
     success: true,
@@ -11157,6 +11189,59 @@ app.get('/api/one-time-review', (req, res) => {
     test_only: true,
     external_write_performed: false,
   });
+});
+
+app.post('/api/bna/one-time/provider-session/start', requireAdmin, async (req, res) => {
+  const identity = requireOneTimeViewAsSuperAdmin(req, res);
+  if (!identity) return;
+  try {
+    const provider = await findOneTimeProviderForAdminSession();
+    if (!provider) {
+      return res.status(404).json({
+        success: false,
+        error: 'Rabbi / One Time provider account was not found.',
+        workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+        project_key: ONE_TIME_PROJECT_KEY,
+        external_write_performed: false,
+      });
+    }
+    const allowedProviderStatuses = ['approved', 'pending_review', 'paused'];
+    if (!allowedProviderStatuses.includes(String(provider.status || '').toLowerCase())) {
+      return res.status(409).json({
+        success: false,
+        error: 'Rabbi / One Time provider account is not in a login-capable status.',
+        provider: oneTimeProviderAdminSessionView(provider),
+        external_write_performed: false,
+      });
+    }
+    const sessionId = await issueProviderSession(provider.id);
+    setProviderSessionCookie(res, sessionId);
+    res.json({
+      success: true,
+      mode: 'admin_on_provider_account',
+      view_url: '/provider.html?admin_provider=one-time&section=mailbox',
+      provider: oneTimeProviderAdminSessionView(provider),
+      audit_event: {
+        event_type: 'one_time_provider_session_started_by_super_admin',
+        actor_id: identity.username || req.opsUser || 'platform_super_admin',
+        target_provider_id: Number(provider.id),
+        workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+        project_key: ONE_TIME_PROJECT_KEY,
+        started_at: new Date().toISOString(),
+        request_id: req.headers['x-request-id'] || crypto.randomUUID(),
+      },
+      password_returned: false,
+      secrets_included: false,
+      external_write_performed: false,
+    });
+  } catch (error) {
+    console.error('one_time_provider_session_start_failed', error);
+    res.status(500).json({
+      success: false,
+      error: 'Could not open Rabbi provider account.',
+      external_write_performed: false,
+    });
+  }
 });
 
 app.post('/api/bna/one-time/view-as-rabbi/start', requireAdmin, (req, res) => {

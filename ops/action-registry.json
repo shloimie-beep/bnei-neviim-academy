@@ -380,6 +380,84 @@
       ]
     },
     {
+      "action_id": "ACTION-OPERATIONS-EMAIL-INBOX-BNA",
+      "label": "View BNA Inbox",
+      "surface": "operations_communications_email_workspace",
+      "route": "/operations?view=communications&section=email",
+      "selector_hint": "[data-email-inbox-selector] [data-action-id=\"ACTION-OPERATIONS-EMAIL-INBOX-BNA\"]",
+      "expected_behavior": "Switches the Super Admin email workspace to BNA / Shloimie scoped email rows and drafts using workspace=bna and project_key=bna.",
+      "permission": "platform_super_admin",
+      "status": "active_readonly",
+      "test": {
+        "type": "static_contract",
+        "expected_result": "Operations email workspace exposes a clear inbox selector and applies emailInboxFilters() before reading communications, drafts, DNS readiness, draft creation, or send confirmation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-OPERATIONS-EMAIL-INBOX-RABBI",
+      "label": "View Rabbi / One Time Inbox",
+      "surface": "operations_communications_email_workspace",
+      "route": "/operations?view=communications&section=email&inbox=rabbi",
+      "selector_hint": "[data-email-inbox-selector] [data-action-id=\"ACTION-OPERATIONS-EMAIL-INBOX-RABBI\"]",
+      "expected_behavior": "Switches the Super Admin email workspace to Rabbi / One Time scoped email rows and drafts using workspace=rabbi_sheller_provider and project_key=one_time_mishnah_class.",
+      "permission": "platform_super_admin",
+      "status": "active_readonly",
+      "test": {
+        "type": "static_contract",
+        "expected_result": "Operations email workspace visibly labels the selected inbox and reads Rabbi/One Time bna_communications rows without exposing unrelated BNA inbox records."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PROVIDER-SESSION-START",
+      "label": "Open Rabbi Provider Portal",
+      "surface": "operations_communications_email_workspace",
+      "route": "/api/bna/one-time/provider-session/start",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-PROVIDER-SESSION-START\"]",
+      "expected_behavior": "Platform super-admin opens a real Rabbi / One Time provider session cookie and is redirected to the provider mailbox without receiving or exposing the provider password.",
+      "permission": "platform_super_admin",
+      "status": "active_guarded_session_write",
+      "test": {
+        "type": "static_and_api_contract",
+        "expected_result": "Endpoint requires all-scope admin identity, resolves the One Time provider account, sets a provider session cookie, returns no password/secrets, and performs no external email send."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PROVIDER-SESSION-EXIT",
+      "label": "Return to Super Admin Inbox",
+      "surface": "one_time_provider_admin_session_banner",
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "selector_hint": "#oneTimeAdminProviderBanner [data-action-id=\"ACTION-ONETIME-PROVIDER-SESSION-EXIT\"]",
+      "expected_behavior": "Returns the operator to Operations with the Rabbi / One Time inbox filter visible; provider logout remains available through the provider Sign Out control.",
+      "permission": "platform_super_admin",
+      "status": "active_navigation",
+      "test": {
+        "type": "static_contract",
+        "expected_result": "Provider portal admin banner clearly labels admin-on-Rabbi-account mode and links back to /operations?view=communications&section=email&inbox=rabbi."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-MEMBER-PRIVATE-QUESTION",
       "label": "Submit Question",
       "surface": "one_time_member_entry",

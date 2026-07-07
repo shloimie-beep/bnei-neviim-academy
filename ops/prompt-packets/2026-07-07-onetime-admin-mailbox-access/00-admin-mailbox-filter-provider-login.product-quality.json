@@ -1,0 +1,685 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260707-020",
+  "parent_raw_id": "RAW-20260707-002",
+  "source_statement_ids": [
+    "SRC-20260707-002-001",
+    "SRC-20260707-002-002",
+    "SRC-20260707-002-003",
+    "SRC-20260707-002-004",
+    "SRC-20260707-002-005"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260707-002-onetime-super-admin-mailbox-and-provider-login.md",
+      "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
+      "server.js",
+      "public/operations.html",
+      "public/provider.html",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "produces": [
+      "server.js",
+      "public/operations.html",
+      "public/provider.html",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tests/one-time-admin-mailbox-access.test.js",
+      "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json",
+    "terminal_condition": "Super Admin can clearly filter BNA/Shloimie versus Rabbi/One Time email in Operations and can open an audited provider-session view of the One Time portal without exposing Rabbi's password.",
+    "handoff_target": "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "One Time Admin Mailbox Filter And Provider Login",
+  "created_at": "2026-07-07T07:10:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN",
+    "EMAIL_PROVIDER_SETUP"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260707-002",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION",
+      "COMMUNICATIONS_EMAIL",
+      "PROVIDER_SETUP",
+      "SECURITY_PRIVACY",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.93,
+    "reasons": [
+      "Operator asked for clear mailbox filtering and active-inbox visibility.",
+      "Operator asked for an account/admin login path that mirrors Rabbi's provider view.",
+      "The work touches private email, provider account sessions, and Super Admin scope."
+    ],
+    "affected_product_surfaces": [
+      "Operations Communications email workspace",
+      "One Time provider portal entry state"
+    ],
+    "likely_external_provider_blockers": [
+      "None for viewing/filtering; no email send is authorized in this packet.",
+      "Reply or campaign sends remain governed by existing Resend readiness and explicit SEND_RESEND_EMAIL gates."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-admin-mailbox-filter-provider-login"
+    ],
+    "next_exact_packet": "Implement the scoped Super Admin inbox filter and audited provider-session open path."
+  },
+  "operator_intent_summary": "Shloimie needs to see Rabbi/One Time email from Super Admin with an obvious inbox filter, and also needs a separate admin-on-provider way to see the provider portal exactly as Rabbi sees it.",
+  "raw_quotes": [
+    "I also need to be able to see these emails from the super admin account",
+    "a very clear filter in order for me to filter his emails versus my emails",
+    "which inbox I'm viewing",
+    "log in and see like his account and see what he's seeing",
+    "I'm supposed to be an admin on his account aside from the super admin"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260707-020",
+      "decision": "Use an audited Super Admin-opened scoped provider session instead of duplicating or exposing Rabbi's password.",
+      "status": "decided"
+    }
+  ],
+  "out_of_scope": [
+    "No email send or bulk campaign send.",
+    "No provider password disclosure or password reset.",
+    "No payment/access, DNS/provider, Drive, WhatsApp, Telegram, Stripe, Vimeo, Zoom, or external CRM mutation.",
+    "No unrelated BNA school, parent, student, provider, platform, or private records in Rabbi provider portal."
+  ],
+  "affected_surfaces": [
+    "Operations Communications > Email workspace",
+    "Operations One Time provider admin entry action",
+    "Provider portal admin-on-provider banner/session"
+  ],
+  "affected_routes": [
+    "/operations?view=communications&section=email",
+    "/api/bna/one-time/provider-session/start",
+    "/provider.html?admin_provider=one-time"
+  ],
+  "affected_files": [
+    "server.js",
+    "public/operations.html",
+    "public/provider.html",
+    "ops/action-registry.json",
+    "ops/route-registry.json",
+    "tests/one-time-admin-mailbox-access.test.js",
+    "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "Existing provider mailbox API is provider-session gated and scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+      "Existing View as Rabbi signed token path is read-only and already registered.",
+      "Operations Email Workspace renders drafts/logs but needs a clearer inbox selector and active inbox label.",
+      "Provider portal already supports a read-only view-as banner but needs an admin-on-provider session banner."
+    ],
+    "known_blockers": [
+      "Live deployment and authenticated live smoke are required before Done."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "clear filter",
+      "which inbox I'm viewing",
+      "log in like him",
+      "admin on his account"
+    ],
+    "expanded_phrases": {
+      "clear filter": "An explicit inbox selector, active inbox label, counts, and no ambiguous mixed rows.",
+      "which inbox I'm viewing": "A persistent status card/pill naming BNA/Shloimie or Rabbi/One Time plus workspace/project keys.",
+      "log in like him": "A scoped provider-session view with the same provider portal routes/modules as Rabbi, not a global Super Admin page.",
+      "admin on his account": "A Super Admin-only audited admin-on-provider entry point that does not expose Rabbi's password."
+    }
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/email-resend.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260707-021",
+      "statement": "Add clear Super Admin inbox filtering for BNA/Shloimie versus Rabbi/One Time email.",
+      "expected_result": "Operations Email Workspace shows an inbox selector and filters records/drafts to the active inbox scope.",
+      "acceptance_criteria": [
+        "Active inbox label names workspace/project and email identity.",
+        "Rabbi/One Time option filters to rabbi_sheller_provider / one_time_mishnah_class.",
+        "BNA/Shloimie option filters to the BNA/default workspace and does not mix One Time rows."
+      ]
+    },
+    {
+      "id": "REQ-20260707-022",
+      "statement": "Add Super Admin-opened scoped provider portal session.",
+      "expected_result": "Super Admin can open the One Time provider portal as admin-on-provider without printing Rabbi's password.",
+      "acceptance_criteria": [
+        "Endpoint requires Super Admin.",
+        "Provider portal uses normal provider session APIs and sections.",
+        "Provider portal shows an admin-on-provider banner and no global Super Admin controls."
+      ]
+    },
+    {
+      "id": "REQ-20260707-023",
+      "statement": "Register routes/actions and test privacy.",
+      "expected_result": "Registry and tests cover new controls and block wrong-scope/anonymous access.",
+      "acceptance_criteria": [
+        "No email send is added.",
+        "No provider password appears in code/evidence.",
+        "Focused tests pass."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw intake and requirement register exist.",
+      "Work is scoped to mailbox filtering and provider-session entry.",
+      "External sends and password disclosure are out of scope.",
+      "Existing provider mailbox and view-as routes were inspected."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?view=communications&section=email",
+      "viewport": 1440,
+      "auth_role": "platform_super_admin",
+      "workspace_project": "platform / all",
+      "how_to_enter_state": "Open Communications > Email while communication bundles are loading.",
+      "expected_visible_title": "Email Workspace",
+      "expected_visible_message": "Loading email workspace...",
+      "expected_primary_action": "None until loaded",
+      "expected_secondary_actions": [
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "raw JSON",
+        "passwords",
+        "session tokens"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Loading status is inside the email workspace region.",
+      "accessibility_expectation": "Loading text is readable and does not hide the active inbox label after load.",
+      "test_smoke_assertion": "Operations email workspace renders without a mixed-inbox default ambiguity.",
+      "requirement_id": "REQ-20260707-021"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=communications&section=email",
+      "viewport": 1024,
+      "auth_role": "platform_super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Select Rabbi / One Time inbox when no rows match a view.",
+      "expected_visible_title": "Email Workspace",
+      "expected_visible_message": "No emails match this view.",
+      "expected_primary_action": "Select another inbox",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Open provider portal"
+      ],
+      "forbidden_content": [
+        "fake email rows",
+        "unrelated BNA private rows"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is visible in the email list region.",
+      "accessibility_expectation": "Empty state is text-visible and not color-only.",
+      "test_smoke_assertion": "Filtered-empty state still names the selected inbox.",
+      "requirement_id": "REQ-20260707-021"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=communications&section=email",
+      "viewport": 1440,
+      "auth_role": "platform_super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Select Rabbi / One Time inbox with live email rows available.",
+      "expected_visible_title": "Email Workspace",
+      "expected_visible_message": "Viewing Rabbi / One Time inbox",
+      "expected_primary_action": "Open Rabbi provider portal",
+      "expected_secondary_actions": [
+        "Select BNA / Shloimie inbox",
+        "Search mailbox",
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "mixed BNA and One Time rows without labels",
+        "Rabbi password",
+        "bulk send CTA"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Inbox selector exposes active tab state.",
+      "accessibility_expectation": "Current inbox is visible in text and active state is not color-only.",
+      "test_smoke_assertion": "Rabbi inbox selector and active label exist.",
+      "requirement_id": "REQ-20260707-021"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=bna&view=communications&section=email",
+      "viewport": 768,
+      "auth_role": "platform_super_admin",
+      "workspace_project": "bna / bna",
+      "how_to_enter_state": "Select BNA / Shloimie inbox and a view/search with no matches.",
+      "expected_visible_title": "Email Workspace",
+      "expected_visible_message": "No emails match this view.",
+      "expected_primary_action": "Select Rabbi / One Time inbox",
+      "expected_secondary_actions": [
+        "Clear search",
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "One Time rows in BNA-only selection"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filtered result count remains accessible.",
+      "accessibility_expectation": "Selector buttons remain keyboard reachable.",
+      "test_smoke_assertion": "BNA inbox selector path is represented and scoped.",
+      "requirement_id": "REQ-20260707-021"
+    },
+    "error": {
+      "route": "/operations?view=communications&section=email",
+      "viewport": 430,
+      "auth_role": "platform_super_admin",
+      "workspace_project": "platform / all",
+      "how_to_enter_state": "Communication bundle request fails.",
+      "expected_visible_title": "Email Workspace",
+      "expected_visible_message": "Communications integration check failed",
+      "expected_primary_action": "Retry",
+      "expected_secondary_actions": [
+        "Switch inbox"
+      ],
+      "forbidden_content": [
+        "stack trace",
+        "raw SQL error",
+        "secret values"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error state has a labeled status.",
+      "accessibility_expectation": "Error text is visible and not color-only.",
+      "test_smoke_assertion": "Error copy contains no secrets.",
+      "requirement_id": "REQ-20260707-021"
+    },
+    "blocked_setup": {
+      "route": "/api/bna/one-time/provider-session/start",
+      "viewport": 430,
+      "auth_role": "logged_out_or_wrong_scope",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Call provider-session start without Super Admin session.",
+      "expected_visible_title": "Access denied",
+      "expected_visible_message": "Super Admin session required",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "provider session cookie",
+        "Rabbi password",
+        "mailbox rows"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Denied state is returned as structured status.",
+      "accessibility_expectation": "Denied state contains no private data.",
+      "test_smoke_assertion": "Anonymous start endpoint rejects access.",
+      "requirement_id": "REQ-20260707-023"
+    },
+    "preview_only": {
+      "route": "/provider.html?admin_provider=one-time",
+      "viewport": 390,
+      "auth_role": "platform_super_admin_admin_on_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open provider portal from Super Admin action.",
+      "expected_visible_title": "One Time as Rabbi Admin",
+      "expected_visible_message": "Admin on Rabbi account",
+      "expected_primary_action": "Open Mailbox",
+      "expected_secondary_actions": [
+        "Exit admin view",
+        "Open Operations"
+      ],
+      "forbidden_content": [
+        "global Super Admin controls",
+        "unrelated BNA private data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Admin banner appears before provider content.",
+      "accessibility_expectation": "Banner and exit action are keyboard reachable.",
+      "test_smoke_assertion": "Provider page contains admin-on-provider banner hooks.",
+      "requirement_id": "REQ-20260707-022"
+    },
+    "success_readback": {
+      "route": "/api/bna/one-time/provider-session/start",
+      "viewport": 1440,
+      "auth_role": "platform_super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Super Admin starts a scoped provider session.",
+      "expected_visible_title": "Provider session opened",
+      "expected_visible_message": "Open One Time provider portal",
+      "expected_primary_action": "Open provider portal",
+      "expected_secondary_actions": [
+        "Return to Operations"
+      ],
+      "forbidden_content": [
+        "Rabbi password",
+        "session token in body",
+        "email bodies"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Success status names scope.",
+      "accessibility_expectation": "Success action is labeled and not hidden.",
+      "test_smoke_assertion": "Endpoint returns view_url and no password fields.",
+      "requirement_id": "REQ-20260707-022"
+    },
+    "permission_denied": {
+      "route": "/operations?view=communications&section=email",
+      "viewport": 390,
+      "auth_role": "logged_out_or_wrong_scope",
+      "workspace_project": "platform / all",
+      "how_to_enter_state": "Open Operations email workspace without Super Admin access.",
+      "expected_visible_title": "Access denied",
+      "expected_visible_message": "Operations login required",
+      "expected_primary_action": "Sign in",
+      "expected_secondary_actions": [],
+      "forbidden_content": [
+        "email previews",
+        "provider mailbox counts",
+        "contact names"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Denied state has a heading/status.",
+      "accessibility_expectation": "No private data appears in denied state.",
+      "test_smoke_assertion": "Private APIs reject unauthenticated requests.",
+      "requirement_id": "REQ-20260707-023"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=communications&section=email",
+      "viewport": 390,
+      "auth_role": "platform_super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open email workspace on mobile with Rabbi inbox selected.",
+      "expected_visible_title": "Email Workspace",
+      "expected_visible_message": "Viewing Rabbi / One Time inbox",
+      "expected_primary_action": "Open provider portal",
+      "expected_secondary_actions": [
+        "Switch inbox",
+        "Open email thread"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "overlapping selector controls"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile selector remains a labeled control group.",
+      "accessibility_expectation": "Touch targets are usable and active state is visible.",
+      "test_smoke_assertion": "Mobile view contains inbox selector and active label.",
+      "requirement_id": "REQ-20260707-021"
+    },
+    "super_admin_bna_inbox": {
+      "route": "/operations?view=communications&section=email",
+      "expected_visible_title": "Email Workspace",
+      "expected_visible_message": "Viewing BNA / Shloimie inbox",
+      "requirement_id": "REQ-20260707-021"
+    },
+    "super_admin_rabbi_inbox": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=communications&section=email",
+      "expected_visible_title": "Email Workspace",
+      "expected_visible_message": "Viewing Rabbi / One Time inbox",
+      "requirement_id": "REQ-20260707-021"
+    },
+    "admin_on_provider_portal": {
+      "route": "/provider.html?admin_provider=one-time",
+      "expected_visible_title": "One Time as Rabbi Admin",
+      "expected_visible_message": "Admin on Rabbi account",
+      "requirement_id": "REQ-20260707-022"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&view=communications&section=email",
+        "viewport": 1440,
+        "state": "rabbi_inbox_selected",
+        "required": true
+      },
+      {
+        "route": "/provider.html?admin_provider=one-time",
+        "viewport": 1024,
+        "state": "admin_on_provider_banner",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&view=communications&section=email",
+        "viewport": 768,
+        "state": "tablet_inbox_selector",
+        "required": true
+      },
+      {
+        "route": "/operations?view=communications&section=email",
+        "viewport": 430,
+        "state": "error_or_empty",
+        "required": true
+      },
+      {
+        "route": "/provider.html?admin_provider=one-time",
+        "viewport": 390,
+        "state": "mobile_admin_banner",
+        "required": true
+      }
+    ],
+    "findings": []
+  },
+  "accessibility": {
+    "requirements": [
+      "Inbox selector uses buttons with active state text, not color only.",
+      "Admin-on-provider banner is text-visible and keyboard reachable.",
+      "No hidden active-inbox state; current inbox is visible above the list."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Select BNA Inbox",
+      "selector_or_action_key": "ACTION-OPERATIONS-EMAIL-INBOX-BNA",
+      "action_state": "WORKS_NOW",
+      "owner": "platform_super_admin",
+      "external_write": false,
+      "handler_or_blocker": "Operations email workspace switches active inbox filters to workspace=bna/project_key=bna.",
+      "registry_required": true
+    },
+    {
+      "label": "Select Rabbi Inbox",
+      "selector_or_action_key": "ACTION-OPERATIONS-EMAIL-INBOX-RABBI",
+      "action_state": "WORKS_NOW",
+      "owner": "platform_super_admin",
+      "external_write": false,
+      "handler_or_blocker": "Operations email workspace switches active inbox filters to workspace=rabbi_sheller_provider/project_key=one_time_mishnah_class.",
+      "registry_required": true
+    },
+    {
+      "label": "Open Rabbi Provider Portal",
+      "selector_or_action_key": "ACTION-ONETIME-PROVIDER-SESSION-START",
+      "action_state": "WORKS_NOW",
+      "owner": "platform_super_admin",
+      "external_write": false,
+      "handler_or_blocker": "POST /api/bna/one-time/provider-session/start creates a scoped provider portal session for Super Admin and returns a provider URL.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "read_paths": [
+      "bna_communications scoped by workspace/project metadata or ids",
+      "bna_service_providers for Rabbi Elie Scheller provider id",
+      "bna_provider_sessions for scoped provider session"
+    ],
+    "write_paths": [
+      "bna_provider_sessions only for Super Admin-opened provider portal session",
+      "audit/log metadata only if existing logger is available"
+    ],
+    "privacy_notes": [
+      "No provider password disclosure.",
+      "No raw email body in evidence.",
+      "No mixed inbox rows without active scope label."
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "privacy_scope": "Super Admin may see global communications; provider portal remains scoped to Rabbi/One Time only.",
+    "forbidden_data": [
+      "Rabbi password",
+      "session token",
+      "unrelated provider mailbox records in One Time provider portal",
+      "BNA private school/student/accountability rows in Rabbi provider portal"
+    ],
+    "required_checks": [
+      "Super Admin-only provider-session start endpoint.",
+      "Provider portal APIs still require provider session.",
+      "Operations inbox selector passes explicit workspace/project filters.",
+      "No send route is added by this packet."
+    ],
+    "no_external_crm_writes": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-REQ-20260707-020-A",
+      "scope": "Add Operations inbox filter UI/state and backend scope helper if needed.",
+      "verification": [
+        "node --test tests/one-time-admin-mailbox-access.test.js"
+      ]
+    },
+    {
+      "batch_id": "BATCH-REQ-20260707-020-B",
+      "scope": "Add Super Admin provider-session start path and provider banner.",
+      "verification": [
+        "node --check server.js",
+        "node --test tests/provider-mailbox-portal.test.js tests/one-time-admin-mailbox-access.test.js"
+      ]
+    },
+    {
+      "batch_id": "BATCH-REQ-20260707-020-C",
+      "scope": "Registry, evidence, ledger, changelog, deploy/live smoke.",
+      "verification": [
+        "npm run watchdog:actions",
+        "npm run watchdog:protocol-drift"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "server.js",
+      "public/operations.html",
+      "public/provider.html",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "files_allowed_to_edit": [
+      "server.js",
+      "public/operations.html",
+      "public/provider.html",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tests/one-time-admin-mailbox-access.test.js",
+      "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "max_files_to_edit": 9,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Treat the work as one account-access/mailbox control surface; split if broader CRM, campaign sending, or multiple provider accounts are introduced.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json",
+      "expected_result": "Product Quality packet validates."
+    },
+    {
+      "command": "node --check server.js",
+      "expected_result": "Server syntax passes."
+    },
+    {
+      "command": "node --test tests/one-time-admin-mailbox-access.test.js",
+      "expected_result": "Focused admin mailbox/provider login contract passes."
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "expected_result": "New visible actions have registry coverage."
+    }
+  ],
+  "evidence": {
+    "after_required": [
+      "tests/one-time-admin-mailbox-access.test.js",
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/watchdog-audits/"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Super Admin inbox selector is visible and filters BNA versus Rabbi inbox.",
+      "Provider portal admin-on-provider entry exists and is Super Admin-only.",
+      "Provider portal shows admin banner and still uses scoped provider data.",
+      "No password is exposed.",
+      "No email send is added.",
+      "Tests/watchdogs pass.",
+      "Commit/push/deploy/live smoke completes or precise blocker is recorded."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260707-002-onetime-super-admin-mailbox-and-provider-login.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "requirement_ids": [
+      "REQ-20260707-020",
+      "REQ-20260707-021",
+      "REQ-20260707-022",
+      "REQ-20260707-023",
+      "REQ-20260707-024"
+    ],
+    "tool_actions_expected": [
+      "apply_patch",
+      "npm run pqc:validate",
+      "node --check server.js",
+      "node --test tests/one-time-admin-mailbox-access.test.js",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "skipped_actions_policy": "No email send, bulk campaign, password exposure, payment/access change, DNS/provider mutation, Drive write, or external CRM write is authorized.",
+    "blocker_decisions": [
+      "DEC-20260707-020"
+    ],
+    "evidence_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "tests/one-time-admin-mailbox-access.test.js"
+    ],
+    "final_status_path": "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
+    "next_packet_path": "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "findings=0",
+    "record_report": true
+  },
+  "next_packet": {
+    "recommended": "Implement this packet now, then deploy/live-smoke if tests pass.",
+    "path": "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md"
+  }
+}

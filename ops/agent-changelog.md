@@ -30317,3 +30317,27 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrails: no app code changes, deploy, external sends, Drive writes,
   production database writes, payment/access/DNS/provider mutations, credential
   changes, raw transcript bodies, cookies, tokens, or private message bodies.
+
+## 2026-07-07 - One Time Admin Mailbox Access Local Verification
+
+- Registered `RAW-20260707-002` and
+  `tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md`
+  for the Super Admin request to view/filter Rabbi emails and open the Rabbi
+  provider account as an admin-on-provider session.
+- Added Operations email inbox scope switching for `BNA / Shloimie` vs
+  `Rabbi / One Time`; the selected inbox controls communications reads, Resend
+  draft reads, draft creation, and send-request validation.
+- Added Super Admin-only `/api/bna/one-time/provider-session/start`, which
+  creates a scoped Rabbi / One Time provider-session cookie without returning
+  Rabbi's password or secrets.
+- Added provider-portal `ADMIN ON RABBI ACCOUNT` banner and return link to the
+  Super Admin Rabbi inbox.
+- Verification: PASS `npm run pqc:validate -- ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json`;
+  PASS `node --check server.js`; PASS 26 focused node tests; PASS
+  `npm run watchdog:actions`; PASS `npm run watchdog:security`; PASS
+  `npm run watchdog:protocol-drift`; PASS local Playwright browser smoke with
+  stubbed API responses.
+- Guardrails: no external email/WhatsApp send, no bulk campaign, no payment or
+  access grant, no DNS/provider mutation, no Drive write, no external CRM
+  write, no password/session token/secret printed or committed, and no raw
+  private email bodies committed.

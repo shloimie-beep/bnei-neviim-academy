@@ -387,6 +387,50 @@
             padding: 12px;
         }
 
+        .one-time-admin-provider-banner {
+            position: sticky;
+            top: 63px;
+            z-index: 70;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border: 1px solid rgba(214, 169, 45, 0.42);
+            border-radius: 8px;
+            background: #111111;
+            color: #fff8df;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+            margin: 10px auto 0;
+            padding: 10px 12px;
+            width: min(1120px, calc(100% - 28px));
+        }
+
+        .one-time-admin-provider-banner strong {
+            color: #f5d37c;
+            font-size: 13px;
+            letter-spacing: 0;
+        }
+
+        .one-time-admin-provider-banner span {
+            color: #fff8df;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .one-time-admin-provider-banner a {
+            border: 1px solid rgba(245, 211, 124, 0.42);
+            border-radius: 999px;
+            color: #111111;
+            background: #f5d37c;
+            font-size: 12px;
+            font-weight: 900;
+            padding: 7px 10px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
         .wapi-setup-section {
             padding-bottom: 96px;
         }
@@ -992,6 +1036,7 @@
         let activeProviderSection = queryParams.get('section') || 'overview';
         const setupToken = queryParams.get('setup') || '';
         const oneTimeReviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
+        const oneTimeAdminProviderMode = ['one-time', 'onetime', 'rabbi', '1', 'true'].includes(String(queryParams.get('admin_provider') || '').toLowerCase());
         const oneTimeViewAsRabbiToken = queryParams.get('view_as_rabbi') || '';
         const providerApiUsagePreviewFlag = ['1', 'true', 'yes'].includes(String(queryParams.get('api_usage_preview') || '').toLowerCase());
         let oneTimeViewAsRabbiSession = null;
@@ -1049,6 +1094,54 @@
                 } catch {}
                 window.location.href = session?.exit_url || '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview';
             });
+        }
+
+        function portalDataIsOneTimeProvider(data = portalState) {
+            const provider = data?.provider || {};
+            const scope = data?.scope || {};
+            const projectKey = String(scope.project_key || provider.project_key || '').toLowerCase();
+            const workspaceKey = String(scope.workspace_key || provider.workspace_key || '').toLowerCase();
+            return Boolean(data?.one_time_class_media_enabled)
+                || projectKey === 'one_time_mishnah_class'
+                || workspaceKey === 'rabbi_sheller_provider';
+        }
+
+        function clearAdminProviderBanner() {
+            document.getElementById('oneTimeAdminProviderBanner')?.remove();
+            document.body.classList.remove('one-time-admin-provider-active');
+        }
+
+        function ensureAdminProviderBanner(data = portalState) {
+            if (!oneTimeAdminProviderMode || !portalDataIsOneTimeProvider(data)) {
+                clearAdminProviderBanner();
+                return;
+            }
+            document.body.classList.add('one-time-admin-provider-active');
+            document.title = 'Admin on Rabbi One Time Provider Account';
+            const title = document.querySelector('.brand-lockup > div > strong');
+            const subtitle = document.querySelector('.brand-lockup > div > span');
+            const chip = document.querySelector('.brand-chip');
+            if (title) title.textContent = 'OneTimeOneTime';
+            if (subtitle) subtitle.textContent = 'Admin on Rabbi provider account';
+            if (chip) chip.textContent = 'ADMIN ON RABBI ACCOUNT';
+            let banner = document.getElementById('oneTimeAdminProviderBanner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'oneTimeAdminProviderBanner';
+                banner.className = 'one-time-admin-provider-banner';
+                document.querySelector('.brand-topbar')?.after(banner);
+            }
+            const provider = data?.provider || {};
+            banner.innerHTML = `
+                <strong>ADMIN ON RABBI ACCOUNT</strong>
+                <span>You are seeing the Rabbi / One Time provider portal as a scoped provider session. Super Admin tools are hidden here; actions stay inside rabbi_sheller_provider / one_time_mishnah_class.</span>
+                <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=platform&view=communications&section=email&inbox=rabbi">Return to Super Admin Inbox</a>
+            `;
+            const providerName = provider.provider_name || provider.display_name || 'Rabbi Eli Scheller';
+            const providerTitle = document.getElementById('providerTitle');
+            const providerSubtitle = document.getElementById('providerSubtitle');
+            if (providerTitle) providerTitle.textContent = providerName;
+            if (providerSubtitle) providerSubtitle.textContent = 'Rabbi / One Time provider account, opened by Super Admin.';
         }
 
         function classMediaServiceOptions(services = []) {
@@ -1170,6 +1263,7 @@
         }
 
         function showLogin(error = '') {
+            clearAdminProviderBanner();
             document.getElementById('loginPanel').classList.remove('hidden');
             document.getElementById('setupPanel').classList.add('hidden');
             document.getElementById('portalPanel').classList.add('hidden');
@@ -1198,6 +1292,7 @@
         }
 
         function showSetup(error = '') {
+            clearAdminProviderBanner();
             document.getElementById('loginPanel').classList.add('hidden');
             document.getElementById('setupPanel').classList.remove('hidden');
             document.getElementById('portalPanel').classList.add('hidden');
@@ -1917,6 +2012,7 @@
             renderProviderScopePanels(data);
             renderProviderNav();
             setProviderSection(activeProviderSection);
+            ensureAdminProviderBanner(data);
         }
 
         function reviewCard(title, body, status = '') {

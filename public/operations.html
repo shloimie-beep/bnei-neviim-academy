@@ -8618,6 +8618,7 @@
             getOneTimeProductSystem() { return this.request('GET', '/one-time/product-system'); },
             getOneTimeTrialReferralConfig() { return this.request('GET', '/one-time/trial-referral-config'); },
             getOneTimePaymentAccessClassLinks() { return this.request('GET', '/one-time/payment-access-class-links'); },
+            startOneTimeProviderSession() { return this.request('POST', '/one-time/provider-session/start', {}); },
             getOneTimeCrmImportPreview() { return this.request('GET', '/one-time/crm-import-preview'); },
             getOneTimeTestIdentitiesPreview() { return this.request('GET', '/one-time/test-identities-preview'); },
             getOneTimeAgentModeAcceptance() { return this.request('GET', '/one-time/agent-mode-acceptance'); },
@@ -9192,6 +9193,7 @@
         let selectedWapiPhonebookKey = null;
         let wapiMobilePane = 'list';
         let emailOperationsView = 'drafts';
+        let emailInboxScope = 'bna';
         let workspacePlatform = null;
         let workspaceDirectory = null;
         let workspaceReviewItems = [];
@@ -9328,6 +9330,9 @@
         let navDrawerOpen = false;
         let sidebarMode = 'modules';
         let currentWorkspaceId = initialWorkspaceKey;
+        emailInboxScope = ['bna', 'rabbi'].includes(String(initialParams.get('inbox') || '').toLowerCase())
+            ? String(initialParams.get('inbox') || '').toLowerCase()
+            : (initialWorkspaceKey === 'rabbi_sheller_provider' || normalizeProjectKey(initialProject) === 'one_time_mishnah_class' ? 'rabbi' : 'bna');
         let operationsUrlInitialized = false;
         let suppressOperationsHistoryPush = false;
         let workspaceDirectoryFilter = 'all';
@@ -20888,7 +20893,7 @@
             const metadata = emailDraftMetadata(draft);
             const recipients = emailDraftRecipients(draft);
             const canSend = emailDraftCanRequestSend(draft, resend);
-            const workspace = metadata.workspace_key || currentWorkspaceKey();
+            const workspace = metadata.workspace_key || emailInboxScopeRecord().workspace || currentWorkspaceKey();
             const project = metadata.project_key || projectKeyForWorkspaceKey(workspace) || 'unscoped';
             const preview = draft.text_body || draft.html_body || draft.send_blocker || '';
             return `
@@ -20916,6 +20921,113 @@
                         <span class="settings-disabled-note">Requires reviewed draft, sender, verified domain or approved fallback, validated workspace recipients, and exact confirmation.</span>
                     </div>
                 </article>
+            `;
+        }
+
+        const EMAIL_INBOX_SCOPES = [
+            {
+                id: 'bna',
+                label: 'BNA / Shloimie',
+                workspace: 'bna',
+                project_key: 'bna',
+                address: 'office@bneineviimacademy.org',
+                action_id: 'ACTION-OPERATIONS-EMAIL-INBOX-BNA',
+            },
+            {
+                id: 'rabbi',
+                label: 'Rabbi / One Time',
+                workspace: 'rabbi_sheller_provider',
+                project_key: 'one_time_mishnah_class',
+                address: 'info@onetimeonetime.com',
+                action_id: 'ACTION-OPERATIONS-EMAIL-INBOX-RABBI',
+            },
+        ];
+
+        function emailInboxScopeRecord(scopeId = emailInboxScope) {
+            return EMAIL_INBOX_SCOPES.find(scope => scope.id === scopeId) || EMAIL_INBOX_SCOPES[0];
+        }
+
+        function emailInboxFilters(scopeId = emailInboxScope) {
+            const scope = emailInboxScopeRecord(scopeId);
+            return workspaceDataProjectFilters(scope.workspace);
+        }
+
+        function emailRecordProjectKey(record = {}) {
+            const metadata = parseObjectMaybe(record.metadata);
+            const workspace = normalizeWorkspaceKey(record.workspace_key || record.workspace || metadata.workspace_key || metadata.workspace || '');
+            return normalizeProjectKey(record.project_key || record.project || metadata.project_key || metadata.project || projectKeyForWorkspaceKey(workspace));
+        }
+
+        function emailRecordWorkspaceKey(record = {}) {
+            const metadata = parseObjectMaybe(record.metadata);
+            const project = normalizeProjectKey(record.project_key || record.project || metadata.project_key || metadata.project || '');
+            return normalizeWorkspaceKey(record.workspace_key || record.workspace || metadata.workspace_key || metadata.workspace || workspaceFromProjectKey(project));
+        }
+
+        function emailRecordMatchesInboxScope(record = {}, scope = emailInboxScopeRecord()) {
+            const project = emailRecordProjectKey(record);
+            const workspace = emailRecordWorkspaceKey(record);
+            return project === scope.project_key || workspace === scope.workspace;
+        }
+
+        function filterEmailRecordsForInboxScope(records = [], scope = emailInboxScopeRecord()) {
+            return (records || []).filter(record => emailRecordMatchesInboxScope(record, scope));
+        }
+
+        function rerenderOperationsApp() {
+            if (typeof renderApp === 'function') renderApp();
+            else render();
+        }
+
+        async function setEmailInboxScope(scopeId) {
+            const nextScope = emailInboxScopeRecord(scopeId);
+            if (emailInboxScope === nextScope.id) return;
+            emailInboxScope = nextScope.id;
+            communicationsIntegrationState = {
+                ...communicationsIntegrationState,
+                emailDrafts: [],
+                dnsTasks: [],
+                notice: `Viewing ${nextScope.label} inbox.`,
+            };
+            rerenderOperationsApp();
+            await loadData({ background: true });
+        }
+
+        async function openOneTimeProviderSession(event) {
+            event?.preventDefault?.();
+            const button = event?.currentTarget || event?.target?.closest?.('[data-action-id="ACTION-ONETIME-PROVIDER-SESSION-START"]') || null;
+            if (button) button.disabled = true;
+            try {
+                const result = await api.startOneTimeProviderSession();
+                window.location.href = result.view_url || '/provider.html?admin_provider=one-time&section=mailbox';
+            } catch (error) {
+                alert(error.message || 'Could not open Rabbi provider account.');
+                if (button) button.disabled = false;
+            }
+        }
+
+        function renderEmailInboxSelector(emailRecords = [], drafts = []) {
+            const activeScope = emailInboxScopeRecord();
+            const bnaScope = emailInboxScopeRecord('bna');
+            const rabbiScope = emailInboxScopeRecord('rabbi');
+            const bnaCount = filterEmailRecordsForInboxScope(emailRecords, bnaScope).length + filterEmailRecordsForInboxScope(drafts, bnaScope).length;
+            const rabbiCount = filterEmailRecordsForInboxScope(emailRecords, rabbiScope).length + filterEmailRecordsForInboxScope(drafts, rabbiScope).length;
+            return `
+                <div class="task-section-header compact" data-email-inbox-selector>
+                    <div>
+                        <h3>Now Viewing: ${escapeHtml(activeScope.label)} Inbox</h3>
+                        <p class="settings-disabled-note">${escapeHtml(activeScope.address)} / ${escapeHtml(activeScope.workspace)} / ${escapeHtml(activeScope.project_key)}</p>
+                    </div>
+                    <div class="task-actions">
+                        <button type="button" class="task-action ${activeScope.id === 'bna' ? 'primary' : ''}" data-action-id="ACTION-OPERATIONS-EMAIL-INBOX-BNA" onclick="setEmailInboxScope('bna')">
+                            ${escapeHtml(bnaScope.label)} (${Number(bnaCount)})
+                        </button>
+                        <button type="button" class="task-action ${activeScope.id === 'rabbi' ? 'primary' : ''}" data-action-id="ACTION-OPERATIONS-EMAIL-INBOX-RABBI" onclick="setEmailInboxScope('rabbi')">
+                            ${escapeHtml(rabbiScope.label)} (${Number(rabbiCount)})
+                        </button>
+                        <button type="button" class="task-action" data-action-id="ACTION-ONETIME-PROVIDER-SESSION-START" onclick="openOneTimeProviderSession(event)">Open Rabbi Provider Portal</button>
+                    </div>
+                </div>
             `;
         }
 
@@ -20954,7 +21066,7 @@
 
         function setEmailOperationsView(view) {
             emailOperationsView = EMAIL_WORKSPACE_VIEWS.some(item => item.id === view) ? view : 'drafts';
-            renderApp();
+            rerenderOperationsApp();
         }
 
         function emailViewCounts(emailRecords = [], drafts = [], resendEvents = [], dnsTasks = [], resendDomains = []) {
@@ -21110,11 +21222,14 @@
         function renderEmailOperatorWorkspace(emailRecords = []) {
             const state = communicationsIntegrationState || {};
             const resend = state.resendHealth || {};
-            const drafts = (state.emailDrafts || []).slice(0, 8);
+            const activeInboxScope = emailInboxScopeRecord();
+            const allDrafts = state.emailDrafts || [];
+            const scopedEmailRecords = filterEmailRecordsForInboxScope(emailRecords, activeInboxScope);
+            const drafts = filterEmailRecordsForInboxScope(allDrafts, activeInboxScope).slice(0, 8);
             const resendDomains = state.resendDomains || [];
             const resendEvents = state.resendEvents || [];
             const dnsTasks = state.dnsTasks || [];
-            const workspaceFilters = workspaceDataProjectFilters();
+            const workspaceFilters = emailInboxFilters();
             const sendGate = resend.send_allowed ? 'Ready after review + SEND_RESEND_EMAIL' : 'Locked until sender/domain readiness';
             return `
                 <section class="focus-panel" data-email-operator-workspace>
@@ -21125,6 +21240,7 @@
                         </div>
                         <span>${escapeHtml(sendGate)}</span>
                     </div>
+                    ${renderEmailInboxSelector(emailRecords, allDrafts)}
                     <div class="settings-control-grid compact" data-email-readiness-gates>
                         ${renderSettingsControlRow('Provider account', resend.connected ? 'Connected' : (resend.configured ? 'Configured / blocked' : 'Missing'), 'Resend API readiness is checked separately from sender and domain readiness.', resend.connected ? 'Connected' : 'Blocked')}
                         ${renderSettingsControlRow('Sender identity', resend.from_email || 'Not finalized', 'From identity must be explicitly configured for this workspace before send.', resend.sender_configured || resend.from_email ? 'Configured' : 'Blocked')}
@@ -21132,7 +21248,7 @@
                         ${renderSettingsControlRow('Recipients', workspaceFilters.project_key || 'All workspaces', 'Recipient validation uses workspace/project filters to prevent accidental cross-workspace sends.', 'Scoped')}
                         ${renderSettingsControlRow('Send confirmation', 'SEND_RESEND_EMAIL', 'The send endpoint rejects requests without the exact approval phrase.', 'Required')}
                     </div>
-                    ${renderEmailViewRail(emailRecords, drafts, resendEvents, dnsTasks, resendDomains)}
+                    ${renderEmailViewRail(scopedEmailRecords, drafts, resendEvents, dnsTasks, resendDomains)}
                     <div class="email-operator-grid">
                         <div class="email-draft-card">
                             <div class="task-section-header"><h3>Draft Editor</h3><span>Preview only</span></div>
@@ -21154,7 +21270,7 @@
                             </form>
                             <div class="settings-disabled-note">Draft creation stores a local review item and readiness blocker only. It does not send email.</div>
                         </div>
-                        ${renderEmailWorkspaceView(emailOperationsView, { emailRecords, drafts, resend, resendDomains, resendEvents, dnsTasks })}
+                        ${renderEmailWorkspaceView(emailOperationsView, { emailRecords: scopedEmailRecords, drafts, resend, resendDomains, resendEvents, dnsTasks })}
                     </div>
                 </section>
             `;
@@ -24049,7 +24165,7 @@
         }
 
         async function refreshCommunicationsIntegrations() {
-            communicationsIntegrationState = await fetchCommunicationsIntegrationBundle();
+            communicationsIntegrationState = await fetchCommunicationsIntegrationBundle(emailInboxFilters());
             render();
         }
 
@@ -24128,7 +24244,7 @@
                     if (local) return local.value || fallback;
                     return document.getElementById(fallbackId)?.value || fallback;
                 };
-                const filters = workspaceDataProjectFilters();
+                const filters = emailInboxFilters();
                 const replyTo = formValue('reply_to', 'commEmailReplyTo');
                 const templateKey = formValue('template_key', 'commEmailTemplate', 'manual');
                 const relatedRecord = formValue('source_id', 'commEmailRelatedRecord');
@@ -24160,7 +24276,7 @@
             const phrase = prompt('Type SEND_RESEND_EMAIL to request this Resend send. The server still checks readiness, review state, recipients, and domain gates.');
             if (phrase !== 'SEND_RESEND_EMAIL') return;
             try {
-                const result = await api.sendEmailDraft({ ...workspaceDataProjectFilters(), draft_id: id, confirm: phrase });
+                const result = await api.sendEmailDraft({ ...emailInboxFilters(), draft_id: id, confirm: phrase });
                 communicationsIntegrationState.notice = result.blocker || 'Email send completed.';
                 await refreshCommunicationsIntegrations();
             } catch (error) {
@@ -36915,6 +37031,13 @@
                 const communityFilters = communityDataProjectFilters();
                 const liveClassFilters = liveClassDataProjectFilters();
                 const workspaceDataFilters = workspaceDataProjectFilters();
+                const emailDataFilters = emailInboxFilters();
+                const communicationDataFilters = activeView === 'communications' && communicationsSection === 'email'
+                    ? emailDataFilters
+                    : workspaceDataFilters;
+                const communicationsIntegrationFilters = activeView === 'communications' && communicationsSection === 'email'
+                    ? emailDataFilters
+                    : workspaceDataFilters;
                 const selectedStudentFilters = selectedStudentDetailDataFilters();
                 const shouldLoadOneTimeContentData = needsContentData && (currentWorkspaceIsGlobal() || currentWorkspaceIsOneTime());
                 const [workspaceDirectoryRes, workspacePlatformRes, workspaceBrandingRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, workspaceUsersRes, workspaceRoleAuditRes, tasksRes, agentFleetRes, queueHealthRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, wapiPhonebookReportRes, parentAnnouncementsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, oneTimeClassesRes, oneTimeClassroomRes, oneTimeQuestionQueueRes, membersRes, liveSessionsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes, ws11CoursesRes, ws11WorksheetsRes, ws11CourseQuestionsRes, ws11GamificationRes, ws11ShoutoutsRes, googleIntegrationRes, notificationsRes, notificationPreferencesRes, communicationsIntegrationRes, automationsRes, integrationsReadinessRes] = await Promise.allSettled([
@@ -36967,7 +37090,7 @@
                     needsGoogleIntegrationData ? api.getGoogleIntegrationStatus() : Promise.resolve(null),
                     needsNotificationData ? api.getNotifications({ status: 'all', limit: 100, ...(workspaceFilter ? { workspace: workspaceFilter } : {}) }) : Promise.resolve({ notifications: [], summary: null }),
                     needsNotificationData ? api.getNotificationPreferences(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ preferences: [] }),
-                    needsCommunicationsIntegrationData ? fetchCommunicationsIntegrationBundle(workspaceDataFilters) : Promise.resolve(null),
+                    needsCommunicationsIntegrationData ? fetchCommunicationsIntegrationBundle(communicationsIntegrationFilters) : Promise.resolve(null),
                     needsAutomationData ? api.getAutomations(workspaceDataFilters) : Promise.resolve({ automations: [], filters: automationFiltersMeta }),
                     needsIntegrationsReadinessData ? api.getIntegrationStatus(workspaceDataFilters) : Promise.resolve(null)
                 ]);
@@ -37025,7 +37148,7 @@
                 if (contactCommunicationsRes.status === 'fulfilled' && contactCommunicationsRes.value?.communications) contactCommunications = contactCommunicationsRes.value.communications;
                 if (needsContactData) {
                     try {
-                        const unifiedCommunicationsRes = await api.getCommunications({ ...workspaceDataFilters, limit: 200 });
+                        const unifiedCommunicationsRes = await api.getCommunications({ ...communicationDataFilters, limit: 200 });
                         contactCommunications = mergeContactAndUnifiedCommunications(contactCommunications, unifiedCommunicationsRes?.communications || []);
                     } catch (error) {
                         console.warn('Unified communications could not be loaded', error);
@@ -37370,6 +37493,11 @@
             if (currentView === 'content' && selectedContentDetailJobId) url.searchParams.set('content_job', selectedContentDetailJobId);
             if (currentView !== 'studio') url.searchParams.delete('studio_project');
             if (currentView === 'studio' && selectedStudioProjectId) url.searchParams.set('studio_project', selectedStudioProjectId);
+            if (currentView === 'communications' && communicationsSection === 'email') {
+                url.searchParams.set('inbox', emailInboxScopeRecord().id);
+            } else {
+                url.searchParams.delete('inbox');
+            }
             const nextUrl = `${url.pathname}${url.search}${url.hash}`;
             const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
             const shouldReplace = !operationsUrlInitialized || suppressOperationsHistoryPush;
