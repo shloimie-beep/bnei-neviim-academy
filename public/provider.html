@@ -188,20 +188,25 @@
         .workspace-nav {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-auto-rows: 56px;
             gap: 8px;
             margin-bottom: 16px;
         }
 
         .workspace-nav button {
-            min-height: 42px;
+            align-items: center;
             border: 1px solid rgba(17, 17, 17, 0.14);
             border-radius: 8px;
             background: #fff;
             color: var(--bna-blue-dark);
             cursor: pointer;
+            display: flex;
             font-weight: 900;
+            height: 100%;
+            line-height: 1.15;
             padding: 10px 12px;
             text-align: left;
+            overflow-wrap: anywhere;
         }
 
         .workspace-nav button.active,

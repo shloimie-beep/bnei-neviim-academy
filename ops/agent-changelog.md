@@ -30779,3 +30779,10 @@ Deployment gate:
 - Verification: `node --check scripts/audit-onetime-role-ui-current-state.mjs`; `npm run pqc:validate -- ops/prompt-packets/2026-07-07-audit-fix-implementation/00-audit-fix-implementation.product-quality.json`; `npm run watchdog:actions`; `npm run watchdog:protocol-drift`; `npm run secrets:audit`; `npm run bna:run:validate`.
 - Guardrails: no external sends, payments, DNS, access grants, credential changes, provider writes, or raw private-data commits.
 - Status: local verified, pending commit/push/deploy/live smoke.
+
+## 2026-07-07T21:25:00+03:00 - Audit fix provider tab-grid follow-up locally verified
+
+- First production audit after deployment bcb85309-93ff-4482-9bfa-39c9749d33a9 found one remaining P2 provider admin mailbox 1440 tab-grid/action-height issue.
+- Normalized provider workspace nav rows in public/provider.html so section buttons share stable height and long labels wrap inside the same control system.
+- Local visual evidence: ops/ui-audits/2026-07-07-audit-fix-pass-local-final5/ captured 35 screenshots across 7 routes and 5 viewports with 0 automated findings.
+- Status: follow-up CSS fix locally verified, pending commit/push/second deployment/live smoke.
