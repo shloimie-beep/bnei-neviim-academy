@@ -6,6 +6,21 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-07T22:47:00+03:00 - Agent fleet readiness blocker cleared
+
+- Closed stale active-run blocker `REQ-20260702-102` after fresh readback.
+- `npm run agent:fleet:status` found the supervisor running as PID 13544.
+- `npm run agent:fleet:readiness` returned Overall OK and wrote
+  `ops/agent-fleet-hardening/2026-07-07T19-43-26-840Z-agent-fleet-readiness.md`.
+- `npm run agent:fleet:once` correctly refused to start a duplicate supervisor
+  while PID 13544 held the lock, preserving the no-second-fleet guardrail.
+- Post-wait status still found the supervisor running.
+- Active execution run updated: `REQ-20260702-102` is now Done; remaining
+  blockers are Drive/private transcript parser repair, provider account aliases,
+  and Railway/internal DB bootstrap.
+- Guardrails: no external send, payment, DNS, access, credential, provider,
+  Drive, Vimeo, or production-data mutation was performed.
+
 ## 2026-07-07T22:39:08+03:00 - Generated artifact retention cleanup installed
 
 - Captured `RAW-20260707-016` and registered the continuation under

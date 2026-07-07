@@ -12,6 +12,10 @@ Current state:
 4. Safe provider env values for Resend, Zoom credentials, and Vimeo client
    credentials were pushed to `one-time-web` with deploy skipped and verified
    by fingerprint.
+5. Agent fleet readiness drift was cleared on 2026-07-07: the supervisor is
+   running as PID 13544, `npm run agent:fleet:readiness` returned Overall OK,
+   and `npm run agent:fleet:once` correctly refused to start a duplicate
+   supervisor while that lock is active.
 
 Top Codex task:
 
@@ -34,10 +38,15 @@ Top provider/operator task:
    - Rabbi Stripe sandbox/test key and $67/month product/price aliases;
    - Whapi/WAPI instance and phone aliases.
 
+Recently resolved:
+
+1. `REQ-20260702-102` - agent-fleet readiness/status is verified. Keep the
+   existing supervisor running; do not start a duplicate once-run while the
+   lock is active.
+
 Still blocked:
 
-1. `REQ-20260702-102` - repair agent-fleet readiness drift.
-2. `REQ-20260702-103` - repair or rerun structured parsing for newest Drive
+1. `REQ-20260702-103` - repair or rerun structured parsing for newest Drive
    recording `content_job:101` without committing raw transcript text.
    Updated evidence:
    - `ops/drive-transcript-visibility/2026-07-02/JOB-101-TRACE.md`
@@ -47,5 +56,5 @@ Still blocked:
    Next safe action: restore app/API reachability for the dry-run reprocess
    command, run parser repair for `content_job:101`, and apply private Drive
    transcript-doc sync only after exact approval.
-3. Campaign send remains blocked on final copy, exact segment/list,
+2. Campaign send remains blocked on final copy, exact segment/list,
    suppression/unsubscribe proof, seed pass, and exact real-send packet.

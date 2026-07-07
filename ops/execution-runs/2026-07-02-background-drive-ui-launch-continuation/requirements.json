@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-02-background-drive-ui-launch-continuation",
   "title": "Background Agent, Drive UI Recording, Mock Data, Railway Provisioning",
-  "updated_at": "2026-07-02T15:42:42+03:00",
+  "updated_at": "2026-07-07T22:47:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260702-006",
@@ -188,7 +188,7 @@
       "id": "REQ-20260702-102",
       "title": "Verify background agent/fleet status",
       "expected_result": "Agent fleet running/not-running status, queue status, safe once-batch result, and next command are recorded.",
-      "status": "blocked",
+      "status": "done",
       "source_id": "RAW-20260702-006",
       "source_statement_ids": [
         "RAW-20260702-006-S001"
@@ -203,9 +203,9 @@
       "depends_on": [
         "REQ-20260702-101"
       ],
-      "implementation_status": "Agent fleet status/readiness/browser health were checked. Supervisor is not running; readiness is not OK because of active pointer drift/branch drift. One safe once-batch was attempted and timed out with task #1736 observed running afterward.",
+      "implementation_status": "Agent fleet readiness drift was repaired/cleared by the clean worktree and current supervisor state. On 2026-07-07, status readback found supervisor running as PID 13544, readiness returned Overall OK true, and a bounded once-run correctly refused to start a duplicate supervisor while the watcher lock was active.",
       "can_continue_without_operator": true,
-      "next_action": "After branch/pointer state is clean, run npm run agent:fleet:status, npm run agent:fleet:readiness, then npm run agent:fleet:restart only if readiness is OK.",
+      "next_action": "Keep the existing supervisor running; do not start a second once-run while the lock is active. Continue with remaining Drive/private-data, provider setup, and Railway/internal-DB blockers.",
       "acceptance_criteria": [
         "Status is recorded",
         "No unsupported watcher claim",
@@ -213,23 +213,28 @@
       ],
       "evidence": [
         "ops/agent-fleet-readbacks/2026-07-02-background-agent-readback.md",
-        "ops/agent-fleet-hardening/2026-07-02T12-36-07-266Z-agent-fleet-readiness.md"
+        "ops/agent-fleet-hardening/2026-07-02T12-36-07-266Z-agent-fleet-readiness.md",
+        "ops/agent-fleet-hardening/2026-07-07T19-43-26-840Z-agent-fleet-readiness.md",
+        "ops/agent-fleet-hardening/latest-agent-fleet-readiness.md"
       ],
       "verification": [
         "PASS npm run agent:fleet:status",
         "PASS npm run agent:fleet:readiness (overall OK false)",
         "PASS npm run agent:browser:health",
-        "TIMEOUT npm run agent:fleet:once after safe single-task attempt"
+        "TIMEOUT npm run agent:fleet:once after safe single-task attempt",
+        "PASS 2026-07-07 npm run agent:fleet:status found supervisor running PID 13544",
+        "PASS 2026-07-07 npm run agent:fleet:readiness returned Overall OK true",
+        "PASS 2026-07-07 npm run agent:fleet:once refused duplicate supervisor lock because PID 13544 is already running",
+        "PASS 2026-07-07 post-wait npm run agent:fleet:status still found supervisor running PID 13544"
       ],
       "implementation_files": [
         "ops/agent-fleet-readbacks/2026-07-02-background-agent-readback.md",
-        "ops/agent-fleet-readbacks/2026-07-02-background-agent-readback.json"
+        "ops/agent-fleet-readbacks/2026-07-02-background-agent-readback.json",
+        "ops/agent-fleet-hardening/2026-07-07T19-43-26-840Z-agent-fleet-readiness.md",
+        "ops/agent-fleet-hardening/latest-agent-fleet-readiness.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-02T13:05:00+03:00",
-      "blocker": "Agent fleet supervisor is not running reliably; readiness reports active pointer drift and branch drift.",
-      "blocker_owner": "Codex / local operator environment",
-      "blocker_next_action": "Repair active pointer/branch drift, then run npm run agent:fleet:readiness and npm run agent:fleet:once again."
+      "updated_at": "2026-07-07T22:47:00+03:00"
     },
     {
       "id": "REQ-20260702-103",
