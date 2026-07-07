@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-07-07T14:43:16+03:00",
+  "task_id": 1464,
+  "agent_job_id": 300,
+  "title": "They build this huge mizbeach.",
+  "source": "agent_fleet_worker",
+  "worker_run_id": "task-1464-2026-07-07T11-40-46-908Z-7d4b90",
+  "source_context": {
+    "source_type": "content_recording",
+    "source_id": "79",
+    "content_job_ref": "content_job:79"
+  },
+  "verdict": "done_parser_artifact_not_live_task_closed",
+  "status": "transcript_fragment_non_actionable",
+  "summary": "Reviewed stale task #1464 and confirmed the queued-work mapping is agent job #300 / content_job:79. The title is a class transcript/content fragment, not a real Codex operations task. Existing class-drive intake evidence shows content job #79 was transcribed, parsed, digested, routed, and classified; the only repo-safe task candidate is digest maintenance. No rerun, Drive write, production DB write, external send, deploy, credential/account change, or live task status mutation was performed.",
+  "evidence": [
+    "ops/queue-audits/2026-07-07-task-1464-mizbeach-parser-artifact-closeout.md",
+    "ops/queue-audits/2026-07-06-agent-fleet-queued-25-implementation-audit.md",
+    "ops/queue-audits/latest.json",
+    "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/JOB-PIPELINE-TRACE.md",
+    "ops/class-drive-intake/2026-06-30-content-topic-routing-closeout/CONTENT-TOPIC-ROUTING-AUDIT.md",
+    "content-memory/transcript-digests/recordings/000079/MANIFEST.json",
+    "content-memory/transcript-digests/recordings/000079/DIGEST.md",
+    "content-memory/transcript-digests/recordings/000079/TASK-CANDIDATES.md",
+    "content-memory/transcript-digests/recordings/000079/ROUTING.md"
+  ],
+  "verification": [
+    "PASS npm run bna:run:status",
+    "PASS npm run bna:run:next",
+    "PASS npm run agent:fleet:status",
+    "PASS queue-audit readback found task #1464 as agent job #300 / content_job:79",
+    "PASS inspected job #79 digest manifest/digest/task-candidates/routing without raw transcript body",
+    "PASS inspected June 26 and June 30 class-drive audit rows for parsed/digest/routing/classification proof"
+  ],
+  "guardrails": [
+    "No live task status mutation",
+    "No agent job status mutation",
+    "No Drive write",
+    "No production DB write",
+    "No parser reprocess rerun",
+    "No class backfill",
+    "No external send",
+    "No deploy",
+    "No DNS/payment/access/credential/provider mutation",
+    "No raw transcript/private body/secret committed"
+  ],
+  "next_action": "Supervisor can close or archive live task #1464 / agent job #300 as a parser artifact after baseline verification."
+}
