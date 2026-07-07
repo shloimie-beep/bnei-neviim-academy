@@ -1,27 +1,25 @@
 # Release Captain
 
-Generated: 2026-07-07T19:41:26.770Z
+Generated: 2026-07-07T19:42:20.532Z
 
-State: **local changes need verify commit push**
+State: **ready for pr merge deploy gate**
 
 | Check | Value |
 | --- | --- |
 | Branch | master |
-| Head | 86469317ab73 |
+| Head | c5120f736981 |
 | Upstream | origin/master |
 | Head pushed | yes |
-| Dirty files | 10 |
+| Dirty files | 0 |
 | Active run | 2026-07-02-background-drive-ui-launch-continuation |
 
 ## Blockers
 
-- Working tree has dirty or untracked files; do not deploy from a mixed dirty worktree.
+- None from the read-only release gate.
 
 ## Next Actions
 
-- Finish the scoped edit batch, then run the focused tests and smokes.
-- Stage only the scoped files, commit, push, and open or update the PR.
-- After merge, run the approved deployment path and live smoke before marking app-visible work Done.
+- Open or update the PR, wait for checks, merge when green, deploy through the approved release path, and run live smoke.
 
 ## Target Gate
 
