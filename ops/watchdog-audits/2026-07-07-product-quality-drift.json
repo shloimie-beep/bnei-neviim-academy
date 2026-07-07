@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T18:36:38.112Z",
+  "generated_at": "2026-07-07T20:28:50.421Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -295,6 +295,7 @@
     "ops/prompt-packets/2026-07-07-helper-crisp-aligned-ui-closeout/00-helper-crisp-aligned-ui-closeout.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-brand-helper-toolbar-isolation/00-onetime-brand-helper-toolbar-isolation.product-quality.json",
+    "ops/prompt-packets/2026-07-07-onetime-parent-student-helper-scope/00-onetime-parent-student-helper-scope.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/01-navigation-filter-consistency-agent-mode.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/02-view-as-navigation-agent-mode.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/03-role-perspective-screen-matrix-agent-mode.md",
@@ -520,6 +521,7 @@
     "tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md",
     "tasks-pending/2026-07-07-audit-fix-implementation.md",
     "tasks-pending/2026-07-07-clean-launch-everything.md",
+    "tasks-pending/2026-07-07-generated-artifact-retention-cleanup.md",
     "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
     "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
     "tasks-pending/2026-07-07-parallel-agent-mode-mobile-communications-dashboard-email-status.md",

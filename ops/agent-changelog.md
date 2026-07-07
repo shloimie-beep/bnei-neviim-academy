@@ -33338,3 +33338,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   live smoke. WAPI/Whapi, Drive/private-data sync, payments, DNS, external
   sends, provider writes, credential changes, and generated artifact flood
   cleanup remain blocked or parked pending exact owner-approved packets.
+
+
+## 2026-07-07T23:25:00+03:00 - One Time parent/student helper scope locally verified
+
+- Created child Product Quality packet
+  `PKT-20260707-134` for the scoped One Time parent/student helper pass.
+- Implemented safe visible helper scope for `/parent.html?review=one-time` and
+  `/student.html?review=one-time`: parent review now maps to
+  `one_time_parent`; student review maps to `one_time_student`; both use One
+  Time helper titles, role-specific non-mutating action chips, and the
+  black/yellow One Time helper skin.
+- Added visible action registry rows for
+  `ACTION-ONETIME-PARENT-HELPER-OPEN` and
+  `ACTION-ONETIME-STUDENT-HELPER-OPEN`, plus route-registry coverage for
+  `/parent.html?review=one-time`.
+- Local verification passed: child PQC validation, widget/smoke script syntax,
+  43 focused helper/portal/privacy tests, action watchdog, protocol-drift
+  watchdog, parent/student visual audit with 20 screenshots and 0 findings, and
+  local shared-review smoke at mobile390/tablet768/desktop1440.
+- Status: local verified, pending scoped commit, push, Railway deployment, and
+  production live smoke. Real billing, attendance, transcript/Rabbi-reference,
+  password/access, external send, payment, DNS, provider, credential, Drive,
+  Vimeo, Zoom, WhatsApp, and Telegram actions remain out of scope or blocked.

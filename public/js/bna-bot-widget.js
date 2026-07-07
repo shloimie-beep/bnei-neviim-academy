@@ -3,10 +3,12 @@
 
   const path = window.location.pathname;
   const query = new URLSearchParams(window.location.search);
-  const isOneTimeReview = ['one-time', 'onetime', '1', 'true'].includes(String(query.get('review') || '').toLowerCase());
-  if (isOneTimeReview) return;
   const isParent = /^\/parent/.test(path);
   const isStudent = /^\/student/.test(path);
+  const isOneTimeReview = ['one-time', 'onetime', '1', 'true'].includes(String(query.get('review') || '').toLowerCase());
+  const isOneTimeParentReview = isOneTimeReview && isParent;
+  const isOneTimeStudentReview = isOneTimeReview && isStudent;
+  if (isOneTimeReview && !isOneTimeParentReview && !isOneTimeStudentReview) return;
   try {
     if (!isStudent) localStorage.removeItem('bnaStudentAccessCode');
   } catch {}
@@ -29,6 +31,10 @@
     ? 'operations'
     : isOneTimePublic
       ? 'one_time_public'
+      : isOneTimeParentReview
+        ? 'one_time_parent'
+        : isOneTimeStudentReview
+          ? 'one_time_student'
       : isParent
       ? 'parent_portal'
       : isStudent
@@ -132,6 +138,42 @@
         prompts: he
           ? ['מה חסום עכשיו?', 'הראה לי את מרחבי העבודה שלי.', 'צור כרטיס: צריך לבדוק את המסך בעברית.']
           : ['What is blocked right now?', 'Show my current workspaces.', 'Create a ticket: the Hebrew screen needs review.'],
+      };
+    }
+    if (surface === 'one_time_parent') {
+      return {
+        ...base,
+        helperTitle: 'One Time Parent Helper',
+        surfaceLabel: 'One Time parent help',
+        intro: "Hi, I'm the One Time parent helper. I can help you understand the 30-day trial, the class schedule, your child's access, attendance questions, billing-support next steps, and how to ask Rabbi Scheller a class question. I do not show private billing records, other families, student transcripts, access codes, or admin data.",
+        cards: [
+          ['Trial and schedule', 'Review how the 30-day trial works, where class links appear, and what a parent should expect.'],
+          ['Child access', 'Understand how parent and student login fit together without resetting a password or exposing private codes here.'],
+          ['Billing and attendance help', 'Prepare a support question about billing or attendance without changing payment or access status.'],
+        ],
+        prompts: [
+          'What should I do during the 30-day trial?',
+          'How does my child get into class?',
+          'Help me ask about billing or attendance.',
+        ],
+      };
+    }
+    if (surface === 'one_time_student') {
+      return {
+        ...base,
+        helperTitle: 'One Time Student Helper',
+        surfaceLabel: 'One Time student help',
+        intro: "Hi, I'm the One Time student helper. I can help with today's class, the library, worksheets, class questions, and how to ask Rabbi Scheller for help. I do not show parent billing, private parent messages, other students, full transcripts, access codes, or admin data.",
+        cards: [
+          ['Today and schedule', 'Find what to do next for the Mishnayos class without opening admin or billing information.'],
+          ['Library and worksheets', 'Get oriented around recordings, worksheets, and safe class materials.'],
+          ['Ask Rabbi Scheller', 'Draft a clear class question without exposing private student or family details.'],
+        ],
+        prompts: [
+          'What should I do for class today?',
+          'Where should I look for the latest class material?',
+          'Help me ask Rabbi Scheller a question.',
+        ],
       };
     }
     if (isParent) {
@@ -493,6 +535,8 @@
     [dir="rtl"] .bna-bot-panel.is-open { transform: translateX(0); }
     [dir="rtl"] .bna-bot-launcher { right: auto; left: 18px; }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher,
+    body.bna-assistant-surface-one-time-parent .bna-bot-launcher,
+    body.bna-assistant-surface-one-time-student .bna-bot-launcher,
     body.bna-assistant-surface-one-time-member .bna-bot-launcher {
       border: 1px solid rgba(237, 229, 24, 0.48);
       background: #080910;
@@ -500,50 +544,72 @@
       box-shadow: 0 16px 34px rgba(8, 9, 16, 0.34);
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher-dot,
+    body.bna-assistant-surface-one-time-parent .bna-bot-launcher-dot,
+    body.bna-assistant-surface-one-time-student .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-member .bna-bot-launcher-dot {
       background: #ede518;
       box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.22);
     }
     body.bna-assistant-surface-one-time-public .bna-bot-head,
+    body.bna-assistant-surface-one-time-parent .bna-bot-head,
+    body.bna-assistant-surface-one-time-student .bna-bot-head,
     body.bna-assistant-surface-one-time-member .bna-bot-head {
       border-bottom: 1px solid rgba(237, 229, 24, 0.36);
       background: #080910;
       color: #ffffff;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-head span,
+    body.bna-assistant-surface-one-time-parent .bna-bot-head span,
+    body.bna-assistant-surface-one-time-student .bna-bot-head span,
     body.bna-assistant-surface-one-time-member .bna-bot-head span {
       color: rgba(255, 255, 255, 0.74);
     }
     body.bna-assistant-surface-one-time-public .bna-bot-panel,
+    body.bna-assistant-surface-one-time-parent .bna-bot-panel,
+    body.bna-assistant-surface-one-time-student .bna-bot-panel,
     body.bna-assistant-surface-one-time-member .bna-bot-panel {
       border-color: rgba(237, 229, 24, 0.28);
       background: #15171d;
       color: #ffffff;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-form,
+    body.bna-assistant-surface-one-time-parent .bna-bot-form,
+    body.bna-assistant-surface-one-time-student .bna-bot-form,
     body.bna-assistant-surface-one-time-member .bna-bot-form,
     body.bna-assistant-surface-one-time-public .bna-bot-history,
+    body.bna-assistant-surface-one-time-parent .bna-bot-history,
+    body.bna-assistant-surface-one-time-student .bna-bot-history,
     body.bna-assistant-surface-one-time-member .bna-bot-history {
       background: #0f1117;
       border-color: rgba(237, 229, 24, 0.18);
     }
     body.bna-assistant-surface-one-time-public .bna-bot-message.assistant,
+    body.bna-assistant-surface-one-time-parent .bna-bot-message.assistant,
+    body.bna-assistant-surface-one-time-student .bna-bot-message.assistant,
     body.bna-assistant-surface-one-time-member .bna-bot-message.assistant,
     body.bna-assistant-surface-one-time-public .bna-bot-history-state,
+    body.bna-assistant-surface-one-time-parent .bna-bot-history-state,
+    body.bna-assistant-surface-one-time-student .bna-bot-history-state,
     body.bna-assistant-surface-one-time-member .bna-bot-history-state {
       border-color: rgba(237, 229, 24, 0.18);
       background: #080910;
       color: #ffffff;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-message.user,
+    body.bna-assistant-surface-one-time-parent .bna-bot-message.user,
+    body.bna-assistant-surface-one-time-student .bna-bot-message.user,
     body.bna-assistant-surface-one-time-member .bna-bot-message.user,
     body.bna-assistant-surface-one-time-public .bna-helper-action,
+    body.bna-assistant-surface-one-time-parent .bna-helper-action,
+    body.bna-assistant-surface-one-time-student .bna-helper-action,
     body.bna-assistant-surface-one-time-member .bna-helper-action {
       border-color: rgba(237, 229, 24, 0.6);
       background: #ede518;
       color: #080910;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-send,
+    body.bna-assistant-surface-one-time-parent .bna-bot-send,
+    body.bna-assistant-surface-one-time-student .bna-bot-send,
     body.bna-assistant-surface-one-time-member .bna-bot-send {
       background: #ede518;
       color: #080910;
@@ -1147,6 +1213,20 @@
         { type: 'scroll', target: '#start-free', label: 'Start 30 days free' },
         { type: 'link', href: '/rabbi-member', label: 'Member login' },
         { type: 'prefill', label: 'Ask Rabbi Scheller', prompt: 'I have a question about the One Time Mishnayos class: ' },
+      ];
+    }
+    if (surface === 'one_time_parent') {
+      return [
+        { type: 'link', href: '/one-time-classroom.html', label: 'Classroom link' },
+        { type: 'prefill', label: 'Billing question', prompt: 'I have a parent billing or access question about One Time: ' },
+        { type: 'prefill', label: 'Attendance question', prompt: 'I have a parent attendance question about One Time: ' },
+      ];
+    }
+    if (surface === 'one_time_student') {
+      return [
+        { type: 'link', href: '/one-time-classroom.html', label: 'Classroom' },
+        { type: 'link', href: '/rabbi-member?review=one-time', label: 'Library preview' },
+        { type: 'prefill', label: 'Ask Rabbi Scheller', prompt: 'I have a Mishnah class question for Rabbi Scheller: ' },
       ];
     }
     if (surface !== 'public') return [];

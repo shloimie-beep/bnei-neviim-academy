@@ -163,6 +163,25 @@
       ]
     },
     {
+      "route": "/parent.html?review=one-time",
+      "surface": "one_time_parent_review_preview",
+      "access": "public_review_fixture",
+      "required_role": null,
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "canonical_target": "/parent.html?review=one-time",
+      "expected_logged_out_behavior": "load_TEST_only_one_time_parent_preview_with_clear_readonly_no_billing_or_cross-family_boundary",
+      "expected_logged_in_behavior": "load_TEST_only_one_time_parent_preview_with_clear_readonly_no_billing_or_cross-family_boundary",
+      "privacy_risk": "medium",
+      "security_expectation": "Review fixture only: loads TEST One Time parent/classroom data, labels the preview as One Time only, excludes private billing records, other families, raw access codes, student transcripts, and admin data, and performs no database write or external send.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/student",
       "surface": "student_portal",
       "access": "private",

@@ -49,6 +49,46 @@
       ]
     },
     {
+      "action_id": "ACTION-ONETIME-PARENT-HELPER-OPEN",
+      "label": "One Time Parent Helper",
+      "surface": "one_time_parent_review",
+      "route": "/parent.html?review=one-time",
+      "selector_hint": "body.bna-assistant-surface-one-time-parent .bna-bot-launcher",
+      "expected_behavior": "Opens the One Time-scoped parent helper with trial, schedule, child access, billing-support, attendance-support, and Rabbi question guidance without exposing private billing records, student transcripts, access codes, other families, or admin data.",
+      "permission": "TEST-only parent review fixture or authenticated parent scope",
+      "status": "active",
+      "test": {
+        "type": "contract",
+        "expected_result": "tests/one-time-brand-helper-isolation.test.js verifies One Time parent helper surface, copy, styling, initial actions, and server project scoping."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-STUDENT-HELPER-OPEN",
+      "label": "One Time Student Helper",
+      "surface": "one_time_student_review",
+      "route": "/student.html?review=one-time",
+      "selector_hint": "body.bna-assistant-surface-one-time-student .bna-bot-launcher",
+      "expected_behavior": "Opens the One Time-scoped student helper with class, library, worksheet, and Rabbi question guidance without exposing parent billing, private parent messages, full transcripts, access codes, other students, or admin data.",
+      "permission": "TEST-only student review fixture or authenticated student scope",
+      "status": "active",
+      "test": {
+        "type": "contract",
+        "expected_result": "tests/one-time-brand-helper-isolation.test.js verifies One Time student helper surface, copy, styling, initial actions, and server project scoping."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-PARENT-STUDENT-LOGIN-RESET",
       "label": "Save login for child",
       "surface": "parent_portal",

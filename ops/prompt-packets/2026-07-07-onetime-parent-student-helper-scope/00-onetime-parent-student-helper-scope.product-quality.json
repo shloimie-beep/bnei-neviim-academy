@@ -1,0 +1,623 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260707-134",
+  "parent_raw_id": "RAW-20260707-013",
+  "source_statement_ids": [
+    "SRC-20260707-013-004",
+    "SRC-20260707-013-005",
+    "SRC-20260707-013-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260707-130",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260707-130",
+      "PKT-20260707-100"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260707-013-onetime-brand-helper-toolbar-isolation.md",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "tasks-pending/2026-07-07-parent-student-login-ui-polish.md",
+      "public/js/bna-bot-widget.js",
+      "public/parent.html",
+      "public/student.html",
+      "server.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "produces": [
+      "public/js/bna-bot-widget.js",
+      "tests/one-time-brand-helper-isolation.test.js",
+      "scripts/smoke-one-time-shared-review-live.mjs",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-onetime-parent-student-helper-scope/00-onetime-parent-student-helper-scope.product-quality.json",
+    "terminal_condition": "One Time parent and student review routes mount role-scoped One Time helpers, keep helper threads under one_time_mishnah_class, avoid private billing/transcript/access/admin exposure, and pass focused tests plus deploy/live smoke.",
+    "handoff_target": "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "needs_verification",
+  "title": "One Time Parent Student Helper Scope",
+  "created_at": "2026-07-07T23:05:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260707-013",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY",
+      "VERIFIER_CLOSEOUT",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "The public One Time helper shipped first, but the operator explicitly requested parent and student helper scope.",
+      "Parent and student helpers have different privacy boundaries: parent may ask about billing or attendance support, while student must not see parent billing or private parent messages.",
+      "The widget already supports One Time project scoping on the server, so this packet can stay limited to route detection, copy, visible actions, registry coverage, tests, and live smoke."
+    ],
+    "affected_product_surfaces": [
+      "One Time parent review helper",
+      "One Time student review helper"
+    ],
+    "likely_external_provider_blockers": [
+      "No live email, Stripe, payment, access grant, Zoom, Vimeo, Drive, WhatsApp, Telegram, DNS, credential, or external provider mutation is approved.",
+      "Real billing records, attendance records, transcript retrieval, and account password reset behavior remain outside this packet."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-onetime-parent-student-helper-scope",
+      "01-focused-static-contract",
+      "02-shared-review-live-smoke"
+    ],
+    "next_exact_packet": "After this helper-scope patch, run the top-toolbar/filter density audit packet before any broader layout changes."
+  },
+  "operator_intent_summary": "The One Time helper should be available beyond the landing page and should feel scoped to the actual user: parents get trial, class-link, attendance, billing-support, and child-access guidance; students get class, library, worksheet, and Rabbi-question guidance without parent, admin, or cross-student data.",
+  "raw_quotes": [
+    "the one-time Mission class helper so that also should exist on the actual landing page",
+    "scoped for the student their scope for the parents",
+    "the parents I guess it would just have more of the billing information and attendance",
+    "for the students it would just keep track of the classes and have the transcript of the classes and it would be able to reference to classes and the things that the rabbi said",
+    "there shouldn't be any overlap between The Branding of DNA and one time mishna"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260707-130",
+      "decision": "Implement only safe visible helper scope/copy/actions now; leave real billing, attendance, transcript/Rabbi-reference retrieval, and password/account mutation to authenticated packets.",
+      "status": "accepted_for_current_batch"
+    }
+  ],
+  "out_of_scope": [
+    "No live parent/student login email send.",
+    "No billing record display, payment, Stripe, charge, refund, or access grant.",
+    "No attendance record mutation or private attendance readback.",
+    "No transcript RAG, raw transcript retrieval, or Rabbi-statement retrieval.",
+    "No password reset, credential sharing, provider account write, DNS write, Drive/Vimeo/Zoom/WhatsApp/Telegram mutation, or external send.",
+    "No broad toolbar/filter/sidebar redesign."
+  ],
+  "affected_surfaces": [
+    "One Time parent review helper launcher and panel",
+    "One Time student review helper launcher and panel",
+    "Assistant surface-to-project scoping contract"
+  ],
+  "affected_routes": [
+    "/parent.html?review=one-time",
+    "/student.html?review=one-time",
+    "/api/bna/assistant/chat"
+  ],
+  "affected_files": [
+    "public/js/bna-bot-widget.js",
+    "tests/one-time-brand-helper-isolation.test.js",
+    "scripts/smoke-one-time-shared-review-live.mjs",
+    "ops/action-registry.json",
+    "ops/route-registry.json",
+    "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/js/bna-bot-widget.js returned early for all review=one-time routes, so parent/student review pages could not mount the universal helper.",
+      "server.js already normalizes one_time_parent and one_time_student surfaces to one_time_mishnah_class.",
+      "public/parent.html and public/student.html already include /js/bna-bot-widget.js and have Assistant/help topbar links.",
+      "ops/action-registry.json had a One Time public helper action but no parent/student helper launcher rows.",
+      "ops/route-registry.json had /student.html?review=one-time but not /parent.html?review=one-time."
+    ],
+    "known_blockers": [
+      "Real parent billing and attendance data need authenticated scoped data models and are not part of this visible-helper patch.",
+      "Student transcript/Rabbi-reference retrieval needs a separate privacy and source-corpus packet."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "million-dollar app",
+      "scoped for the student",
+      "scoped for the parents",
+      "billing information",
+      "attendance",
+      "transcript",
+      "things that the rabbi said",
+      "overlap between branding"
+    ],
+    "expanded_phrases": {
+      "million-dollar app": "Role-scoped helper behavior with clear copy, consistent One Time visual skin, registry coverage, tests, deploy proof, and explicit privacy boundaries.",
+      "scoped for the student": "Student helper can guide class, library, worksheet, and Rabbi-question workflows, but cannot show parent billing, private parent messages, other students, raw transcripts, access codes, or admin data.",
+      "scoped for the parents": "Parent helper can guide trial, schedule, child access, attendance-support, and billing-support next steps, but cannot mutate payments/access or expose raw billing records, transcripts, codes, other families, or admin data.",
+      "billing information": "Visible helper copy can route billing-support questions; real billing display or payment mutation is out of scope.",
+      "attendance": "Visible helper copy can route attendance-support questions; real attendance readback or mutation is out of scope.",
+      "transcript": "Visible helper copy does not expose full transcripts; transcript/Rabbi-reference behavior requires a separate authenticated packet.",
+      "things that the rabbi said": "Rabbi-reference search requires a separate source-corpus/privacy packet and is not implemented in this helper-scope pass.",
+      "overlap between branding": "One Time parent/student helper surfaces use One Time helper title and black/yellow skin instead of generic BNA helper chrome."
+    },
+    "first_party_pattern_interpretation": "Use the first-party BNA universal helper widget and existing assistant project scoping, not an external CRM or provider runtime."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/workspace-scope-isolation.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260707-134",
+      "statement": "One Time parent and student review routes must mount role-scoped One Time helpers without inheriting generic BNA helper copy or BNA-blue helper chrome.",
+      "expected_result": "The parent review route shows One Time Parent Helper and the student review route shows One Time Student Helper, both with One Time styling and route-specific safe prompt chips.",
+      "acceptance_criteria": [
+        "Widget does not return early for parent/student review=one-time routes.",
+        "Widget maps parent review to one_time_parent and student review to one_time_student.",
+        "Parent helper copy names trial, schedule, child access, billing-support, attendance-support, and Rabbi-question guidance.",
+        "Student helper copy names class, library, worksheets, and Rabbi-question guidance.",
+        "Both helpers forbid private billing, transcripts, access codes, cross-family/cross-student data, and admin data."
+      ]
+    },
+    {
+      "id": "REQ-20260707-137",
+      "statement": "One Time parent/student helper launchers must be registered and live-smoked.",
+      "expected_result": "Action and route registries cover both helper launchers and parent/student review routes, focused tests pass, and shared-review live smoke proves deployed helper text.",
+      "acceptance_criteria": [
+        "ACTION-ONETIME-PARENT-HELPER-OPEN and ACTION-ONETIME-STUDENT-HELPER-OPEN exist.",
+        "/parent.html?review=one-time and /student.html?review=one-time are route-registry covered.",
+        "Focused static contract tests pass.",
+        "Production shared-review live smoke checks both helper titles."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw source and parent packet exist.",
+      "Affected routes are limited to parent/student One Time review and assistant chat surface context.",
+      "Current widget/server/registry state was inspected.",
+      "Existing server scoping for one_time_parent and one_time_student is present.",
+      "No external sends, payment/access, transcript retrieval, or credential mutation is needed."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent review route before helper panel is opened.",
+      "expected_visible_title": "One Time Parent Helper",
+      "expected_visible_message": "Parent Review Portal",
+      "expected_primary_action": "Assistant/help",
+      "expected_secondary_actions": ["Classroom link", "Billing question", "Attendance question"],
+      "forbidden_content": ["BNA Helper", "private billing records", "admin data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Helper launcher has a clear One Time Parent Helper accessible name.",
+      "accessibility_expectation": "Launcher is reachable without overlapping parent portal controls.",
+      "test_smoke_assertion": "Shared-review smoke requires One Time Parent Helper text.",
+      "requirement_id": "REQ-20260707-134"
+    },
+    "empty": {
+      "route": "/student.html?review=one-time",
+      "viewport": 1024,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open student review route before helper panel is opened.",
+      "expected_visible_title": "One Time Student Helper",
+      "expected_visible_message": "ONE TIME STUDENT REVIEW",
+      "expected_primary_action": "Assistant/help",
+      "expected_secondary_actions": ["Classroom", "Library preview", "Ask Rabbi Scheller"],
+      "forbidden_content": ["BNA Helper", "parent billing", "admin data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Helper launcher has a clear One Time Student Helper accessible name.",
+      "accessibility_expectation": "Launcher is reachable without overlapping student portal controls.",
+      "test_smoke_assertion": "Shared-review smoke requires One Time Student Helper text.",
+      "requirement_id": "REQ-20260707-134"
+    },
+    "populated": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 768,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent helper panel.",
+      "expected_visible_title": "One Time Parent Helper",
+      "expected_visible_message": "I do not show private billing records, other families, student transcripts, access codes, or admin data.",
+      "expected_primary_action": "Send",
+      "expected_secondary_actions": ["Chat history", "Close"],
+      "forbidden_content": ["payment mutation", "access grant", "raw billing record"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Panel header, history, close, textarea, and send controls are named.",
+      "accessibility_expectation": "Action chips wrap without horizontal overflow.",
+      "test_smoke_assertion": "Contract test checks parent helper copy and initial actions.",
+      "requirement_id": "REQ-20260707-134"
+    },
+    "filtered_empty": {
+      "route": "/student.html?review=one-time",
+      "viewport": 430,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open student helper and do not enter a message.",
+      "expected_visible_title": "One Time Student Helper",
+      "expected_visible_message": "Write a message",
+      "expected_primary_action": "Send",
+      "expected_secondary_actions": ["Classroom", "Library preview", "Ask Rabbi Scheller"],
+      "forbidden_content": ["full transcripts", "other students", "admin data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty helper composer is described by the panel title and placeholder.",
+      "accessibility_expectation": "Mobile action chips and composer remain tappable.",
+      "test_smoke_assertion": "Contract test checks student helper copy and initial actions.",
+      "requirement_id": "REQ-20260707-134"
+    },
+    "error": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Assistant API is unavailable after submitting a parent helper message.",
+      "expected_visible_title": "One Time Parent Helper",
+      "expected_visible_message": "Assistant unavailable.",
+      "expected_primary_action": "Try again",
+      "expected_secondary_actions": ["Close"],
+      "forbidden_content": ["stack trace", "secret", "private billing record"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error appears as assistant message text, not hidden console-only state.",
+      "accessibility_expectation": "Composer is re-enabled after the error.",
+      "test_smoke_assertion": "Existing widget error path remains unchanged.",
+      "requirement_id": "REQ-20260707-134"
+    },
+    "blocked_setup": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 430,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Ask helper to change payment, access, password, Zoom, Vimeo, Drive, WhatsApp, Telegram, or DNS setup.",
+      "expected_visible_title": "One Time Parent Helper",
+      "expected_visible_message": "Sensitive setup or account changes require Operations approval.",
+      "expected_primary_action": "Ask a support question",
+      "expected_secondary_actions": ["Close"],
+      "forbidden_content": ["live charge", "access grant", "credential value"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup guidance is visible in the assistant thread.",
+      "accessibility_expectation": "Blocked guidance does not disable the close button.",
+      "test_smoke_assertion": "External provider policy is explicitly out of scope.",
+      "requirement_id": "REQ-20260707-137"
+    },
+    "preview_only": {
+      "route": "/student.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open student review helper from TEST-only route.",
+      "expected_visible_title": "One Time Student Helper",
+      "expected_visible_message": "TEST-only review fixture",
+      "expected_primary_action": "Ask Rabbi Scheller",
+      "expected_secondary_actions": ["Classroom", "Library preview"],
+      "forbidden_content": ["real student private transcript", "raw access code", "parent billing"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Review fixture boundary remains visible elsewhere on the page.",
+      "accessibility_expectation": "Helper does not obscure the visible review boundary when closed.",
+      "test_smoke_assertion": "Route registry marks student review as TEST-only fixture.",
+      "requirement_id": "REQ-20260707-137"
+    },
+    "success_readback": {
+      "route": "/api/bna/assistant/chat",
+      "viewport": 1440,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit helper message with surface one_time_parent or one_time_student.",
+      "expected_visible_title": "Assistant saved",
+      "expected_visible_message": "Thread project resolves to one_time_mishnah_class.",
+      "expected_primary_action": "Return assistant response",
+      "expected_secondary_actions": ["Store thread id"],
+      "forbidden_content": ["default BNA project bucket", "cross-workspace data"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "N/A for API readback.",
+      "accessibility_expectation": "N/A for API readback.",
+      "test_smoke_assertion": "Contract test checks server normalizes one_time_parent and one_time_student under One Time project.",
+      "requirement_id": "REQ-20260707-137"
+    },
+    "permission_denied": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 768,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Ask parent helper for another family's record or admin data.",
+      "expected_visible_title": "One Time Parent Helper",
+      "expected_visible_message": "I cannot show private billing records, other families, student transcripts, access codes, or admin data.",
+      "expected_primary_action": "Ask support question",
+      "expected_secondary_actions": ["Close"],
+      "forbidden_content": ["other family name", "admin dashboard", "raw student transcript"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Denied boundary is visible in helper copy.",
+      "accessibility_expectation": "Denied state does not trap focus.",
+      "test_smoke_assertion": "Contract test checks forbidden parent helper copy.",
+      "requirement_id": "REQ-20260707-134"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/student.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the One Time student helper on a 390px viewport.",
+      "expected_visible_title": "One Time Student Helper",
+      "expected_visible_message": "Write a message",
+      "expected_primary_action": "Send",
+      "expected_secondary_actions": ["Close", "Chat history"],
+      "forbidden_content": ["horizontal overflow", "overlapping composer", "BNA-blue helper header"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile helper panel preserves visible close and history controls.",
+      "accessibility_expectation": "Composer remains reachable above mobile keyboard.",
+      "test_smoke_assertion": "Shared-review visual smoke checks no horizontal overflow on student route.",
+      "requirement_id": "REQ-20260707-134"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/parent.html?review=one-time", "viewport": 1440, "state": "parent launcher" },
+      { "route": "/student.html?review=one-time", "viewport": 1024, "state": "student launcher" },
+      { "route": "/parent.html?review=one-time", "viewport": 768, "state": "parent panel" },
+      { "route": "/student.html?review=one-time", "viewport": 430, "state": "student panel" },
+      { "route": "/student.html?review=one-time", "viewport": 390, "state": "mobile helper" }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260707-134-001",
+        "route": "/parent.html?review=one-time",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-07-parent-student-login-ui-polish-live-after-deploy/report.md",
+        "screenshot_after_or_blocker": "required_after_patch_or_live_smoke",
+        "defect_codes": ["VQ-SCOPE-001", "VQ-BRAND-001"],
+        "severity": "P1",
+        "user_impact": "One Time parent/student review routes had no universal One Time helper because the widget skipped review routes entirely.",
+        "expected_fix": "Mount role-scoped One Time helper launcher/panel on parent/student review routes only.",
+        "requirement_id": "REQ-20260707-134"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Parent helper launcher has aria-label One Time Parent Helper.",
+      "Student helper launcher has aria-label One Time Student Helper.",
+      "Helper panel keeps focusable close, history, textarea, and send controls.",
+      "Mobile helper panel and action chips do not create horizontal overflow."
+    ],
+    "blocked_items": [
+      "Full transcript/Rabbi-reference retrieval accessibility requires a separate authenticated packet."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "One Time Parent Helper",
+      "selector_or_action_key": "ACTION-ONETIME-PARENT-HELPER-OPEN",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "public/js/bna-bot-widget.js opens the local helper panel with one_time_parent surface and safe chat only.",
+      "registry_required": true
+    },
+    {
+      "label": "One Time Student Helper",
+      "selector_or_action_key": "ACTION-ONETIME-STUDENT-HELPER-OPEN",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "public/js/bna-bot-widget.js opens the local helper panel with one_time_student surface and safe chat only.",
+      "registry_required": true
+    },
+    {
+      "label": "Billing question",
+      "selector_or_action_key": "one_time_parent helper prefill",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Prefills support text only; does not display or mutate billing records.",
+      "registry_required": false
+    },
+    {
+      "label": "Ask Rabbi Scheller",
+      "selector_or_action_key": "one_time_student helper prefill",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Prefills a question only; does not retrieve private transcript/Rabbi-source corpus.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "visible_fields": [
+      "One Time Parent Helper title",
+      "One Time Student Helper title",
+      "One Time helper role copy",
+      "Helper surface one_time_parent or one_time_student",
+      "Helper page path"
+    ],
+    "storage": [
+      "bna_assistant_threads surface one_time_parent or one_time_student",
+      "bna_assistant_threads project/workspace id resolved from one_time_mishnah_class"
+    ],
+    "forbidden_data": [
+      "private billing records",
+      "other family records",
+      "private parent messages",
+      "other student records",
+      "raw access codes",
+      "full transcript bodies",
+      "admin configuration diagnostics",
+      "external provider credentials"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "privacy_boundary": "This packet only exposes visible role-specific helper copy and safe chat surface selection. It does not expose billing records, attendance records, transcript bodies, access codes, parent private messages, other families/students, admin data, or external provider controls.",
+    "forbidden_actions": [
+      "external send",
+      "payment or charge",
+      "access grant",
+      "password reset",
+      "DNS or provider mutation",
+      "private data display",
+      "transcript retrieval"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260707-134-1",
+      "scope": "One Time parent/student review helper launcher, copy, styling, registry, and smoke coverage only.",
+      "requirements": ["REQ-20260707-134", "REQ-20260707-137"],
+      "instructions": [
+        "Allow only parent/student review=one-time routes to bypass the widget's previous review-route early return.",
+        "Map parent review to one_time_parent and student review to one_time_student.",
+        "Add role-specific helper title, intro, cards, prompt chips, and One Time helper skin.",
+        "Register parent/student helper launcher actions and parent review route.",
+        "Extend focused tests and shared-review live smoke."
+      ],
+      "out_of_scope": [
+        "Real billing/attendance/transcript data",
+        "Password reset or access mutation",
+        "External sends/payments/DNS/provider writes",
+        "Global toolbar/filter layout repair"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/js/bna-bot-widget.js",
+      "public/parent.html",
+      "public/student.html",
+      "server.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "scripts/smoke-one-time-shared-review-live.mjs"
+    ],
+    "files_allowed_to_edit": [
+      "public/js/bna-bot-widget.js",
+      "tests/one-time-brand-helper-isolation.test.js",
+      "scripts/smoke-one-time-shared-review-live.mjs",
+      "ops/action-registry.json",
+      "ops/route-registry.json",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "max_files_to_edit": 8,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Authenticated billing/attendance/transcript features and toolbar/filter density would exceed this helper-scope packet.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-07-onetime-parent-student-helper-scope/00-onetime-parent-student-helper-scope.product-quality.json",
+      "node --check public/js/bna-bot-widget.js",
+      "node --check scripts/smoke-one-time-shared-review-live.mjs",
+      "node --test tests/one-time-brand-helper-isolation.test.js tests/parent-student-portal-contract.test.js tests/public-route-privacy-contract.test.js tests/one-time-shared-review-branding.test.js",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift",
+      "npm run app:smoke:one-time-shared-review"
+    ],
+    "live_smoke_required": true,
+    "manual_browser_check": [
+      "/parent.html?review=one-time at 390 and 1440",
+      "/student.html?review=one-time at 390 and 1440",
+      "Open helper panel and confirm One Time-specific title/copy and no horizontal overflow"
+    ]
+  },
+  "evidence": {
+    "required_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/live-smokes/*-one-time-shared-review-live-smoke.md",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "screenshot_evidence_required": true,
+    "deploy_evidence_required": true
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "Child PQC packet validates.",
+      "Widget maps One Time parent/student review routes to one_time_parent and one_time_student.",
+      "Parent/student helper titles, copy, action chips, and black/yellow skin are covered by focused tests.",
+      "Action and route registries cover the visible helper launchers and parent/student review routes.",
+      "Focused tests and watchdogs pass.",
+      "Changes are committed, pushed, deployed, and live-smoked before terminal Done.",
+      "Real billing, attendance, transcript, password/access, and external-provider features remain explicitly out of scope or blocked."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260707-013-onetime-brand-helper-toolbar-isolation.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-07-onetime-parent-student-helper-scope/00-onetime-parent-student-helper-scope.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "Read widget/server/registry current state",
+      "Patch scoped helper mapping/copy/actions",
+      "Run PQC validator",
+      "Run focused tests and watchdogs",
+      "Commit/push/deploy/live-smoke"
+    ],
+    "skipped_actions_policy": "No external sends, no payment/access mutation, no private billing/attendance/transcript readback, no password reset, and no toolbar redesign in this packet.",
+    "blocker_decisions": [
+      "DEC-20260707-130"
+    ],
+    "evidence_paths": [
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "ops/live-smokes/"
+    ],
+    "final_status_path": "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md#final-audit",
+    "next_packet_path": "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 findings or exact blocker recorded."
+  },
+  "next_packet": {
+    "id": "PKT-20260707-135",
+    "title": "Top Toolbar Filter Density Audit",
+    "status": "pending_child_packet",
+    "reason": "Toolbar/subcategory/filter density needs current-state visual audit before broad layout implementation."
+  },
+  "app_visible": true
+}

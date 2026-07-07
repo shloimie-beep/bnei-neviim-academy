@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-07T18:36:37.960Z",
+  "generated_at": "2026-07-07T20:27:56.820Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-07-audit-fix-implementation/00-audit-fix-implementation.product-quality.json"
+    "ops/prompt-packets/2026-07-07-onetime-parent-student-helper-scope/00-onetime-parent-student-helper-scope.product-quality.json"
   ],
   "total": 1,
   "passed": 1,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-07-audit-fix-implementation/00-audit-fix-implementation.product-quality.json",
+      "file": "ops/prompt-packets/2026-07-07-onetime-parent-student-helper-scope/00-onetime-parent-student-helper-scope.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []
