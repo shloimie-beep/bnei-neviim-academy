@@ -1,0 +1,92 @@
+[
+  {
+    "route": "/provider.html",
+    "viewport": "1440-desktop",
+    "url": "http://127.0.0.1:8080/api/provider-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/provider.html",
+    "viewport": "1024-desktop-tablet",
+    "url": "http://127.0.0.1:8080/api/provider-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/provider.html",
+    "viewport": "768-tablet",
+    "url": "http://127.0.0.1:8080/api/provider-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/provider.html",
+    "viewport": "430-mobile",
+    "url": "http://127.0.0.1:8080/api/provider-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/provider.html",
+    "viewport": "390-mobile",
+    "url": "http://127.0.0.1:8080/api/provider-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student/login",
+    "viewport": "1440-desktop",
+    "url": "http://127.0.0.1:8080/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student/login",
+    "viewport": "1024-desktop-tablet",
+    "url": "http://127.0.0.1:8080/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student/login",
+    "viewport": "768-tablet",
+    "url": "http://127.0.0.1:8080/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student/login",
+    "viewport": "430-mobile",
+    "url": "http://127.0.0.1:8080/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student/login",
+    "viewport": "390-mobile",
+    "url": "http://127.0.0.1:8080/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student.html",
+    "viewport": "1440-desktop",
+    "url": "http://127.0.0.1:8080/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student.html",
+    "viewport": "1024-desktop-tablet",
+    "url": "http://127.0.0.1:8080/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student.html",
+    "viewport": "768-tablet",
+    "url": "http://127.0.0.1:8080/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student.html",
+    "viewport": "430-mobile",
+    "url": "http://127.0.0.1:8080/api/student-portal/session",
+    "status": 401
+  },
+  {
+    "route": "/student.html",
+    "viewport": "390-mobile",
+    "url": "http://127.0.0.1:8080/api/student-portal/session",
+    "status": 401
+  }
+]

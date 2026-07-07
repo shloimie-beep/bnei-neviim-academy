@@ -109,13 +109,19 @@
         }
 
         .portal-topbar-link {
+            align-items: center;
             border: 1px solid rgba(17, 17, 17, 0.14);
             border-radius: 999px;
             background: #ffffff;
             color: var(--bna-blue-dark);
-            padding: 7px 10px;
+            display: inline-flex;
             font-size: 11px;
             font-weight: 900;
+            justify-content: center;
+            line-height: 1.2;
+            min-height: 40px;
+            padding: 8px 11px;
+            text-align: center;
             text-decoration: none;
             white-space: nowrap;
         }
@@ -266,13 +272,20 @@
         }
 
         .btn {
+            align-items: center;
             border: 1px solid rgba(17, 17, 17, 0.18);
             border-radius: 8px;
             background: #fff;
             color: var(--bna-blue-dark);
             cursor: pointer;
+            display: inline-flex;
             font-weight: 900;
+            justify-content: center;
+            line-height: 1.2;
+            min-height: 42px;
             padding: 10px 13px;
+            text-align: center;
+            text-decoration: none;
         }
 
         .btn.primary {
@@ -420,13 +433,19 @@
         }
 
         .one-time-admin-provider-banner a {
+            align-items: center;
             border: 1px solid rgba(245, 211, 124, 0.42);
             border-radius: 999px;
             color: #111111;
             background: #f5d37c;
+            display: inline-flex;
             font-size: 12px;
             font-weight: 900;
-            padding: 7px 10px;
+            justify-content: center;
+            line-height: 1.2;
+            min-height: 40px;
+            padding: 8px 11px;
+            text-align: center;
             text-decoration: none;
             white-space: nowrap;
         }
@@ -488,6 +507,10 @@
 
         .one-time-admin-provider-login #loginPanel h1 {
             color: #111111;
+        }
+
+        .one-time-admin-provider-active #loginForm {
+            display: none !important;
         }
 
         .one-time-admin-provider-login #loginChooser .button-row {
@@ -1251,8 +1274,25 @@
             document.body.classList.remove('one-time-admin-provider-active');
         }
 
-        function ensureAdminProviderBanner(data = portalState) {
-            if (!oneTimeAdminProviderMode || !portalDataIsOneTimeProvider(data)) {
+        function adminProviderBannerFallbackData() {
+            return {
+                one_time_class_media_enabled: true,
+                provider: {
+                    provider_name: 'Rabbi Eli Scheller',
+                    display_name: 'Rabbi Eli Scheller',
+                    workspace_key: 'rabbi_sheller_provider',
+                    project_key: 'one_time_mishnah_class'
+                },
+                scope: {
+                    workspace_key: 'rabbi_sheller_provider',
+                    project_key: 'one_time_mishnah_class'
+                }
+            };
+        }
+
+        function ensureAdminProviderBanner(data = portalState, options = {}) {
+            const bannerData = options.forceFallback ? adminProviderBannerFallbackData() : data;
+            if (!oneTimeAdminProviderMode || (!options.forceFallback && !portalDataIsOneTimeProvider(bannerData))) {
                 clearAdminProviderBanner();
                 return;
             }
@@ -1271,10 +1311,10 @@
                 banner.className = 'one-time-admin-provider-banner';
                 document.querySelector('.brand-topbar')?.after(banner);
             }
-            const provider = data?.provider || {};
+            const provider = bannerData?.provider || {};
             banner.innerHTML = `
                 <strong>ADMIN ON RABBI ACCOUNT</strong>
-                <span>You are seeing the Rabbi / One Time provider portal as a scoped provider session. Super Admin tools are hidden here; actions stay inside rabbi_sheller_provider / one_time_mishnah_class.</span>
+                <span>You are ${options.sessionRequired ? 'opening' : 'seeing'} the Rabbi / One Time provider portal as a scoped provider session. Super Admin tools are hidden here; actions stay inside rabbi_sheller_provider / one_time_mishnah_class.</span>
                 <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=platform&view=communications&section=email&inbox=rabbi">Return to Super Admin Inbox</a>
             `;
             const providerName = provider.provider_name || provider.display_name || 'Rabbi Eli Scheller';
@@ -1282,6 +1322,23 @@
             const providerSubtitle = document.getElementById('providerSubtitle');
             if (providerTitle) providerTitle.textContent = providerName;
             if (providerSubtitle) providerSubtitle.textContent = 'Rabbi / One Time provider account, opened by Super Admin.';
+            if (options.sessionRequired) {
+                const loginHeading = document.querySelector('#loginPanel h1');
+                const loginIntro = document.querySelector('#loginPanel .small');
+                const loginForm = document.getElementById('loginForm');
+                const loginChooser = document.getElementById('loginChooser');
+                if (loginHeading) loginHeading.textContent = 'One Time provider session required';
+                if (loginIntro) loginIntro.textContent = 'Start from Operations to open the Rabbi account safely. This page never asks for Rabbi, student, or member passwords.';
+                loginForm?.classList.add('hidden');
+                if (loginChooser && !loginChooser.innerHTML.trim()) {
+                    loginChooser.innerHTML = `
+                        <p>This URL is the scoped Rabbi / One Time provider-session landing page. It only opens private provider data after Operations creates a valid provider session cookie.</p>
+                        <div class="button-row">
+                            <a class="btn primary" href="${escapeHtml(oneTimeAdminProviderReviewUrl)}">Open Read-only Review Preview</a>
+                        </div>
+                    `;
+                }
+            }
         }
 
         function classMediaServiceOptions(services = []) {
@@ -1422,6 +1479,7 @@
                 if (loginHeading) loginHeading.textContent = 'One Time provider session required';
                 if (loginIntro) loginIntro.textContent = 'Start from Operations to open the Rabbi account safely. This page never asks for Rabbi, student, or member passwords.';
                 loginForm?.classList.add('hidden');
+                ensureAdminProviderBanner(adminProviderBannerFallbackData(), { forceFallback: true, sessionRequired: true });
             } else {
                 if (brandTitle) brandTitle.textContent = 'Bnei Neviim Academy';
                 if (brandSubtitle) brandSubtitle.textContent = 'Provider portal';
@@ -3098,6 +3156,10 @@
                 }
             }
         });
+
+        if (oneTimeAdminProviderMode) {
+            ensureAdminProviderBanner(adminProviderBannerFallbackData(), { forceFallback: true, sessionRequired: true });
+        }
 
         loadSession();
     </script>

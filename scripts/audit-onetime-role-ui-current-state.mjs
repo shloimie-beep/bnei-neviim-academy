@@ -821,7 +821,7 @@ async function main() {
   }
 
   const baseUrl = argValue('base', process.env.BNA_AUDIT_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, '');
-  const outDir = path.resolve(argValue('out', DEFAULT_OUT_DIR));
+  const outDir = path.resolve(argValue('out-dir', argValue('out', DEFAULT_OUT_DIR)));
   for (const dir of ['screenshots', 'aria', 'accessibility', 'state-matrix']) ensureDir(path.join(outDir, dir));
 
   const operations = await loginOperations(baseUrl);

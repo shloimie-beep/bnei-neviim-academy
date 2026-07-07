@@ -202,7 +202,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            height: 38px;
+            height: 40px;
+            min-height: 40px;
             width: 42px;
             font-size: 20px;
             font-weight: 800;
@@ -296,12 +297,14 @@
             flex: 0 0 auto;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 7px;
             font: inherit;
             font-size: 12px;
             font-weight: 800;
-            min-height: 34px;
-            padding: 7px 10px;
+            line-height: 1.2;
+            min-height: 40px;
+            padding: 8px 11px;
             scroll-snap-align: start;
             white-space: nowrap;
         }
@@ -451,12 +454,14 @@
             cursor: pointer;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             font: inherit;
             font-size: 12px;
             font-weight: 850;
-            min-height: 34px;
-            padding: 7px 10px;
+            line-height: 1.2;
+            min-height: 40px;
+            padding: 8px 11px;
         }
 
         .status-chip:hover,
@@ -1221,14 +1226,18 @@
         .page-status-pill {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 7px;
             border: 1px solid rgba(148, 163, 184, 0.2);
             border-radius: 999px;
             color: #e2e8f0;
             background: rgba(15, 23, 42, 0.62);
+            line-height: 1.2;
+            min-height: 40px;
             padding: 7px 11px;
             font-size: 12px;
             font-weight: 800;
+            text-align: center;
             white-space: nowrap;
         }
 
@@ -1409,14 +1418,20 @@
         }
 
         .task-action {
+            align-items: center;
             border: 1px solid #334155;
             background: #1e293b;
             color: #e2e8f0;
             border-radius: 999px;
-            padding: 5px 9px;
+            display: inline-flex;
             font-size: 11px;
             font-weight: 700;
+            justify-content: center;
+            line-height: 1.2;
+            min-height: 40px;
+            padding: 8px 11px;
             cursor: pointer;
+            text-align: center;
         }
 
         .task-action.primary {
@@ -6005,7 +6020,7 @@
             .ops-sidebar-back {
                 display: inline-flex;
                 align-items: center;
-                min-height: 38px;
+                min-height: 40px;
                 border: 1px solid rgba(148, 163, 184, 0.22);
                 border-radius: 8px;
                 background: rgba(15, 23, 42, 0.48);
@@ -6035,6 +6050,7 @@
 
             .section-tab {
                 min-width: 0;
+                min-height: 40px;
                 padding: 8px 10px;
                 text-align: center;
             }
@@ -6045,7 +6061,7 @@
             }
 
             .metric-button {
-                min-height: 38px;
+                min-height: 40px;
                 padding: 8px 10px;
             }
 
@@ -6885,7 +6901,7 @@
 
         .ops-filter-tab {
             min-width: 0;
-            min-height: 36px;
+            min-height: 40px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -6985,14 +7001,20 @@
         }
 
         .ops-brand-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             border: 1px solid rgba(17, 17, 17, 0.14);
             border-radius: 999px;
             background: #ffffff;
             color: var(--bna-blue-dark);
+            min-height: 40px;
             padding: 7px 10px;
             font-size: 11px;
             font-weight: 850;
             letter-spacing: 0.02em;
+            line-height: 1.2;
+            text-align: center;
             white-space: nowrap;
         }
 
@@ -7077,15 +7099,21 @@
         }
 
         .workspace-kind-filter {
+            align-items: center;
             border: 1px solid rgba(17, 17, 17, 0.12);
             border-radius: 999px;
             background: #ffffff;
             color: var(--bna-muted);
             cursor: pointer;
+            display: inline-flex;
             font: inherit;
             font-size: 10px;
             font-weight: 900;
-            padding: 5px 8px;
+            justify-content: center;
+            line-height: 1.2;
+            min-height: 40px;
+            padding: 8px 10px;
+            text-align: center;
         }
 
         .workspace-kind-filter.active,
@@ -7193,6 +7221,14 @@
             white-space: normal;
         }
 
+        .workspace-option .workspace-option-main strong,
+        .workspace-option .workspace-option-main small {
+            overflow: hidden;
+            overflow-wrap: normal;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .workspace-option-main small {
             color: var(--bna-muted);
             font-size: 10px;
@@ -7281,7 +7317,7 @@
 
         .ops-topbar-status .ops-brand-chip,
         button.ops-brand-chip {
-            min-height: 34px;
+            min-height: 40px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -7289,7 +7325,7 @@
             gap: 6px;
             cursor: pointer;
             font: 850 10.5px 'Inter', sans-serif;
-            padding: 6px 8px;
+            padding: 8px 10px;
             text-transform: none;
             white-space: nowrap;
         }
@@ -7313,7 +7349,7 @@
 
         .ops-topbar-search {
             width: 100%;
-            min-height: 38px;
+            min-height: 40px;
             border: 1px solid rgba(17, 17, 17, 0.12);
             border-radius: 8px;
             background: rgba(17, 17, 17, 0.04);
@@ -7323,7 +7359,7 @@
         }
 
         .primary-button {
-            min-height: 38px;
+            min-height: 40px;
             border: 1px solid rgba(30, 58, 95, 0.18);
             border-radius: 8px;
             background: var(--bna-blue);
@@ -8263,8 +8299,8 @@
             .ops-filter-tab {
                 flex: 0 0 auto;
                 min-width: 96px;
-                min-height: 32px;
-                padding: 6px 9px;
+                min-height: 40px;
+                padding: 8px 10px;
                 scroll-snap-align: start;
             }
 

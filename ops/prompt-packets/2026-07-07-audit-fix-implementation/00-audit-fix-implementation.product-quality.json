@@ -1,0 +1,776 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260707-150",
+  "parent_raw_id": "RAW-20260707-015",
+  "source_statement_ids": [
+    "SRC-20260707-015-001"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [
+      "PKT-20260707-151-audit-classification",
+      "PKT-20260707-152-ui-fix-batch",
+      "PKT-20260707-153-release-closeout"
+    ],
+    "depends_on_packet_ids": [
+      "PKT-20260707-090",
+      "PKT-20260707-100",
+      "PKT-20260707-120",
+      "PKT-20260707-130",
+      "PKT-20260707-140"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260707-015-audit-fix-implementation.md",
+      "tasks-pending/2026-07-07-audit-fix-implementation.md",
+      "ops/ui-audits/2026-07-07-audit-fix-pass-local-after/report.md",
+      "ops/helper-audits/test-issue-24-helper-audit/HELPER-SURFACE-AUDIT.md",
+      "ops/navigation-ia/test-issue-24-navigation-ia/NAVIGATION-IA-AUDIT.md",
+      "ops/queue-audits/2026-07-07-task-1839-wappy-wapi-phonebook-report-blocked.md",
+      "ops/queue-audits/2026-07-07-task-1853-job101-drive-reprocess-followup.md"
+    ],
+    "produces": [
+      "scoped UI/tooling fixes",
+      "after-audit visual proof",
+      "commit and push",
+      "deployment and live-smoke evidence",
+      "blocked external-action table"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-audit-fix-implementation/00-audit-fix-implementation.product-quality.json",
+    "terminal_condition": "Scoped audit findings are fixed, verified, committed, pushed, deployed, and live-smoked; external/account-owner/private-data findings remain explicitly blocked.",
+    "handoff_target": "tasks-pending/2026-07-07-audit-fix-implementation.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "needs_verification",
+  "title": "Audit Fix Implementation Batch",
+  "created_at": "2026-07-07T20:05:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN",
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260707-015",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "VERIFIER_CLOSEOUT",
+      "DEPLOY_RELEASE",
+      "SECURITY_PRIVACY",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.96,
+    "reasons": [
+      "The operator asked Codex to implement fixes from multiple audits.",
+      "The current visual audit reports action-control height spread and missing admin/provider identity on scoped routes.",
+      "The operator explicitly asked for deployment in an organized way.",
+      "Several audit outputs are external-provider or private-data blockers and must stay separate from code fixes."
+    ],
+    "affected_product_surfaces": [
+      "BNA Operations One Time workspace",
+      "One Time provider/admin preview route",
+      "One Time role UI audit harness"
+    ],
+    "likely_external_provider_blockers": [
+      "WAPI/Whapi phonebook/sync requires exact instance and phone aliases.",
+      "Drive/private recording reprocess requires exact private-data approval.",
+      "Payments, DNS, external sends, provider writes, and credential mutations require exact approved packets."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-audit-fix-implementation",
+      "01-current-after-audit",
+      "02-scoped-ui-fixes",
+      "03-release-live-smoke",
+      "04-blocker-closeout"
+    ],
+    "next_exact_packet": "Finish the scoped control-height, admin-provider banner, and audit output folder fixes, then rerun the role UI visual audit."
+  },
+  "operator_intent_summary": "Shloimie wants the current audit findings implemented and shipped in an orderly release: fix safe UI/code defects, verify them with desktop/mobile evidence, deploy, and keep credential/private/external-account findings blocked.",
+  "raw_quotes": [
+    "basically all those audits",
+    "implement all of the fixes",
+    "deploy them in a clean organized way"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260707-150",
+      "decision": "Treat broad audit-fix language as permission to implement safe scoped code fixes, not as permission for external sends, DNS, payments, credentials, provider writes, raw private data commits, or blind artifact staging.",
+      "status": "accepted_by_guardrail"
+    }
+  ],
+  "out_of_scope": [
+    "External email, WhatsApp, Telegram, payment, DNS, provider-account, credential, access-grant, Drive sync, Vimeo upload, or Stripe mutation.",
+    "Committing raw private message bodies, contact exports, student/parent private records, secrets, or raw private screenshots.",
+    "Blindly staging repeated ChatGPT pickup/dropoff generated artifacts.",
+    "Broad redesign outside the scoped Operations/provider visual audit findings."
+  ],
+  "affected_surfaces": [
+    "Operations One Time workspace controls",
+    "Operations Rabbi email inbox controls",
+    "One Time provider/admin preview identity and return affordance",
+    "One Time role UI audit harness"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&panel=email",
+    "/provider.html?admin_provider=one-time&section=mailbox"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/provider.html",
+    "scripts/audit-onetime-role-ui-current-state.mjs",
+    "tasks-pending/2026-07-07-audit-fix-implementation.md",
+    "ops/prompt-packets/2026-07-07-audit-fix-implementation/00-audit-fix-implementation.product-quality.json"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "Current role UI audit report and screenshots",
+      "Operations toolbar/filter/status/task action CSS",
+      "Provider admin-provider banner rendering in normal, permission denied, and session-required states",
+      "Audit CLI output-folder argument parsing",
+      "Known queue-audit blocker reports"
+    ],
+    "known_findings": [
+      "Action-height spread findings remain on scoped Operations/provider captures.",
+      "Provider admin mailbox captures miss the admin-on-provider banner in denied/session-required states.",
+      "The audit runner accepted --out but not --out-dir before this pass."
+    ],
+    "known_blockers": [
+      "WAPI/Whapi setup remains external-account blocked.",
+      "Drive/private transcript reprocess remains private-data/account blocked.",
+      "Payments, DNS, external sends, credential changes, and provider writes remain approval-gated."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "all those audits",
+      "implement all of the fixes",
+      "clean",
+      "organized",
+      "deploy"
+    ],
+    "expanded_phrases": {
+      "all those audits": "Classify each current audit output as fixable now, already satisfied, superseded, generated noise, or externally blocked before coding.",
+      "implement all of the fixes": "Apply only safe scoped code/UI/tooling fixes that have current evidence and do not require account-owner approval.",
+      "clean": "Stage and release a narrow verified batch without clobbered proof folders, unrelated generated artifacts, secrets, or private data.",
+      "organized": "Keep requirements, blockers, proof, commit, deployment, and live smoke tied to stable IDs.",
+      "deploy": "Push the scoped commit, trigger the approved release path, wait for terminal deployment success, and live-smoke affected routes before Done."
+    },
+    "first_party_pattern_interpretation": "Operations and One Time provider surfaces should share first-party BNA role-scoped control patterns; external-provider setup is separated into blocked packets."
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/workspace-scope-isolation.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260707-150",
+      "statement": "Capture and validate the audit-fix request before final release closeout.",
+      "expected_result": "Raw intake, register, and Product Quality packet exist and validate.",
+      "acceptance_criteria": [
+        "RAW-20260707-015 exists.",
+        "tasks-pending/2026-07-07-audit-fix-implementation.md exists.",
+        "This PQC packet validates."
+      ]
+    },
+    {
+      "id": "REQ-20260707-151",
+      "statement": "Classify audit outputs before coding or staging generated artifacts.",
+      "expected_result": "Safe UI/tooling findings are separated from already satisfied, superseded, generated-noise, and external/private blockers.",
+      "acceptance_criteria": [
+        "Audit classification table is recorded.",
+        "Blocked external/provider/private findings name owner and next action.",
+        "No repeated pickup/dropoff artifact flood is staged blindly."
+      ]
+    },
+    {
+      "id": "REQ-20260707-152",
+      "statement": "Normalize scoped Operations/provider visible action sizing and wrapping.",
+      "expected_result": "Desktop, tablet, and mobile captures no longer show action-control height spread on the scoped routes.",
+      "acceptance_criteria": [
+        "Operations workspace controls have stable minimum heights and centered labels.",
+        "Operations Rabbi email inbox controls wrap without uneven pill heights.",
+        "Provider entry controls preserve consistent tap targets."
+      ]
+    },
+    {
+      "id": "REQ-20260707-153",
+      "statement": "Keep admin-as-provider identity visible in provider denied and session-required states.",
+      "expected_result": "The admin/provider banner and return action are visible whenever the provider admin-preview URL is loaded.",
+      "acceptance_criteria": [
+        "Provider admin mailbox desktop and mobile captures include admin-on-Rabbi context.",
+        "The return-to-Operations affordance is visible before and after session checks.",
+        "No Rabbi/student/provider private data is exposed to the wrong scope."
+      ]
+    },
+    {
+      "id": "REQ-20260707-154",
+      "statement": "Support explicit audit output folders without clobbering prior proof.",
+      "expected_result": "The role UI audit supports --out-dir and --out consistently.",
+      "acceptance_criteria": [
+        "A fresh after-audit folder is created by --out-dir.",
+        "Prior default audit folders are not overwritten during final proof generation."
+      ]
+    },
+    {
+      "id": "REQ-20260707-155",
+      "statement": "Release only the verified scoped audit fixes.",
+      "expected_result": "The focused batch is tested, committed, pushed, deployed, and live-smoked.",
+      "acceptance_criteria": [
+        "Syntax/test/watchdog/audit checks pass or exact blockers are documented.",
+        "Staged files are intentional and do not include secrets/private data/unrelated artifact floods.",
+        "Live smoke confirms the deployed commit."
+      ]
+    },
+    {
+      "id": "REQ-20260707-156",
+      "statement": "Keep blocked audit findings explicit.",
+      "expected_result": "Unsafe or external-owner audit findings are recorded as blockers, not Done.",
+      "acceptance_criteria": [
+        "WAPI/Whapi, Drive/private transcript, payment, DNS, external-send, provider-write, and credential items remain approval-gated.",
+        "Each blocker has owner, recommended next action, and consequence."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw audit-fix request is preserved.",
+      "Current-state visual audit evidence exists from the role UI harness.",
+      "Executable findings are limited to two routes and one QA script.",
+      "External/provider/private-data blockers are out of implementation scope.",
+      "Deployment/live smoke is required before app-visible Done."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 1440,
+      "auth_role": "super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load Operations One Time workspace before data panels finish hydrating.",
+      "expected_visible_title": "Operations",
+      "expected_visible_message": "Workspace chrome renders without jumping or uneven controls.",
+      "expected_primary_action": "Open One Time workspace",
+      "expected_secondary_actions": [
+        "Filter",
+        "View as Rabbi"
+      ],
+      "forbidden_content": [
+        "Overlapping action pills",
+        "Raw private data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Top controls remain named buttons/links.",
+      "accessibility_expectation": "Tappable controls stay at least 40px high.",
+      "test_smoke_assertion": "No action height spread above threshold during initial capture.",
+      "requirement_id": "REQ-20260707-152"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&panel=email",
+      "viewport": 1024,
+      "auth_role": "super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Rabbi email inbox with no messages matching the current filter.",
+      "expected_visible_title": "Rabbi Email Inbox",
+      "expected_visible_message": "No matching messages are displayed with aligned controls.",
+      "expected_primary_action": "Clear filter",
+      "expected_secondary_actions": [
+        "Refresh",
+        "Back to Operations"
+      ],
+      "forbidden_content": [
+        "Uneven filter/action pills",
+        "Debug-only setup cards"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is announced near inbox controls.",
+      "accessibility_expectation": "Filter and refresh controls remain keyboard reachable.",
+      "test_smoke_assertion": "Email inbox controls pass height-spread threshold.",
+      "requirement_id": "REQ-20260707-152"
+    },
+    "populated": {
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "viewport": 1440,
+      "auth_role": "super_admin_viewing_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open provider admin-preview mailbox route with valid or preview session context.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Admin is viewing Rabbi/provider context and can return to Operations.",
+      "expected_primary_action": "Return to Super Admin",
+      "expected_secondary_actions": [
+        "Mailbox",
+        "Communications"
+      ],
+      "forbidden_content": [
+        "Missing admin banner",
+        "Live send controls without approval"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Admin/provider context is announced near the page heading.",
+      "accessibility_expectation": "Return action is keyboard reachable.",
+      "test_smoke_assertion": "Admin banner detector passes.",
+      "requirement_id": "REQ-20260707-153"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 768,
+      "auth_role": "super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Apply a workspace filter that has no matching cards.",
+      "expected_visible_title": "Operations",
+      "expected_visible_message": "No matching items without layout collapse.",
+      "expected_primary_action": "Clear filter",
+      "expected_secondary_actions": [
+        "Reset view"
+      ],
+      "forbidden_content": [
+        "Controls changing height by row",
+        "Horizontal overflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filtered-empty message is associated with filters.",
+      "accessibility_expectation": "Clear action remains visible and reachable.",
+      "test_smoke_assertion": "Filter controls remain stable after no-result state.",
+      "requirement_id": "REQ-20260707-152"
+    },
+    "error": {
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "viewport": 1024,
+      "auth_role": "super_admin_viewing_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Simulate provider session lookup error or failed session read.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Admin/provider context remains visible even when session read fails.",
+      "expected_primary_action": "Return to Super Admin",
+      "expected_secondary_actions": [
+        "Retry"
+      ],
+      "forbidden_content": [
+        "Raw stack trace",
+        "Password request",
+        "Missing admin identity"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error message does not hide admin context.",
+      "accessibility_expectation": "Return action remains focusable.",
+      "test_smoke_assertion": "Admin banner persists in error-like state.",
+      "requirement_id": "REQ-20260707-153"
+    },
+    "blocked_setup": {
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "viewport": 430,
+      "auth_role": "super_admin_viewing_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open provider admin-preview mailbox when local setup lacks a provider session.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Admin preview is opening or blocked while context remains visible.",
+      "expected_primary_action": "Return to Super Admin",
+      "expected_secondary_actions": [
+        "Open Operations"
+      ],
+      "forbidden_content": [
+        "Missing admin banner",
+        "Request for Rabbi password"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked setup status is tied to the preview banner.",
+      "accessibility_expectation": "Return action is tappable at mobile width.",
+      "test_smoke_assertion": "Admin banner detector passes in blocked setup.",
+      "requirement_id": "REQ-20260707-153"
+    },
+    "preview_only": {
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "viewport": 390,
+      "auth_role": "super_admin_viewing_provider",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the admin-provider route at narrow mobile width.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Preview/admin context is visible and mobile controls fit.",
+      "expected_primary_action": "Return to Super Admin",
+      "expected_secondary_actions": [
+        "Mailbox"
+      ],
+      "forbidden_content": [
+        "Horizontal overflow",
+        "Unapproved live write controls"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile banner and controls have accessible names.",
+      "accessibility_expectation": "Controls are at least 40px tall and do not overlap.",
+      "test_smoke_assertion": "Mobile capture passes banner and action-height checks.",
+      "requirement_id": "REQ-20260707-153"
+    },
+    "success_readback": {
+      "route": "audit:onetime-role-ui",
+      "viewport": 1440,
+      "auth_role": "Codex",
+      "workspace_project": "platform QA tooling",
+      "how_to_enter_state": "Run npm run audit:onetime-role-ui with --out-dir pointing to a new folder.",
+      "expected_visible_title": "Audit Report",
+      "expected_visible_message": "Report is written to the requested after-audit folder.",
+      "expected_primary_action": "Open report",
+      "expected_secondary_actions": [
+        "Review findings"
+      ],
+      "forbidden_content": [
+        "Default proof folder clobbered by final run"
+      ],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Not applicable to terminal report generation.",
+      "accessibility_expectation": "Generated accessibility snapshots are stored with the report.",
+      "test_smoke_assertion": "Requested output directory exists and contains report.md/report.json.",
+      "requirement_id": "REQ-20260707-154"
+    },
+    "permission_denied": {
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "viewport": 1440,
+      "auth_role": "wrong_or_missing_provider_session",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the admin-provider route without a valid provider session.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Permission/session issue is shown while admin/provider context remains visible.",
+      "expected_primary_action": "Return to Super Admin",
+      "expected_secondary_actions": [
+        "Open Operations"
+      ],
+      "forbidden_content": [
+        "Missing admin banner",
+        "Cross-workspace private data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Permission state and return action are visible to assistive tech.",
+      "accessibility_expectation": "Permission denied state has clear action and no hidden credential fields.",
+      "test_smoke_assertion": "Permission-denied capture passes admin banner detector.",
+      "requirement_id": "REQ-20260707-153"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Operations One Time workspace at mobile width with filters/actions visible.",
+      "expected_visible_title": "Operations",
+      "expected_visible_message": "Mobile filters and action buttons wrap predictably without uneven rows.",
+      "expected_primary_action": "Menu",
+      "expected_secondary_actions": [
+        "Filter",
+        "Refresh"
+      ],
+      "forbidden_content": [
+        "Horizontal overflow",
+        "Overlapping toolbar pills"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile menu/filter controls retain accessible names.",
+      "accessibility_expectation": "Tap targets remain at least 40px high.",
+      "test_smoke_assertion": "Mobile Operations capture passes action-height threshold.",
+      "requirement_id": "REQ-20260707-152"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 1440,
+        "auth_role": "super_admin",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 1024,
+        "auth_role": "super_admin",
+        "required": true
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 768,
+        "auth_role": "super_admin",
+        "required": true
+      },
+      {
+        "route": "/provider.html?admin_provider=one-time&section=mailbox",
+        "viewport": 430,
+        "auth_role": "super_admin_viewing_provider",
+        "required": true
+      },
+      {
+        "route": "/provider.html?admin_provider=one-time&section=mailbox",
+        "viewport": 390,
+        "auth_role": "super_admin_viewing_provider",
+        "required": true
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260707-150",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": "1440/1024/768/430/390",
+        "screenshot_before": "ops/ui-audits/2026-07-07-audit-fix-pass-local-after/screenshots/",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/screenshots/",
+        "defect_codes": [
+          "VQ-ACTION-003",
+          "VQ-LAYOUT-002"
+        ],
+        "severity": "P1",
+        "user_impact": "Controls look uneven and reduce confidence in the role-specific workspace on desktop and mobile.",
+        "expected_fix": "Normalize action-control min heights, wrapping, line-height, and centering across scoped Operations/provider controls.",
+        "requirement_id": "REQ-20260707-152"
+      },
+      {
+        "finding_id": "VQF-20260707-151",
+        "route": "/provider.html?admin_provider=one-time&section=mailbox",
+        "viewport": "1440/430/390",
+        "screenshot_before": "ops/ui-audits/2026-07-07-audit-fix-pass-local-after/screenshots/",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/screenshots/",
+        "defect_codes": [
+          "VQ-IA-001",
+          "VQ-DATA-008"
+        ],
+        "severity": "P1",
+        "user_impact": "Super admin can lose the visual proof that they are viewing the provider/Rabbi account instead of their own account.",
+        "expected_fix": "Render admin-provider banner and return action before and after provider session checks, including permission denied and session-required states.",
+        "requirement_id": "REQ-20260707-153"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "All affected controls remain keyboard reachable.",
+      "Visible buttons and links keep accessible names.",
+      "Mobile tap targets are at least 40px tall.",
+      "Permission/session states do not hide the return action."
+    ],
+    "verification": [
+      "Role UI audit accessibility snapshots",
+      "ARIA text snapshots generated by audit harness"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Return to Super Admin",
+      "selector_or_action_key": "provider-admin-return-to-super-admin",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Navigate to Operations One Time workspace",
+      "registry_required": true
+    },
+    {
+      "label": "Operations filter/status/action pills",
+      "selector_or_action_key": "operations-role-ui-controls",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing Operations handlers with normalized visual treatment",
+      "registry_required": true
+    },
+    {
+      "label": "Audit output directory",
+      "selector_or_action_key": "audit-onetime-role-ui-out-dir",
+      "action_state": "INTERNAL_SUPPORT_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "CLI accepts --out-dir or --out",
+      "registry_required": false
+    },
+    {
+      "label": "External provider writes",
+      "selector_or_action_key": "external-provider-write-actions",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Shloimie/account owner",
+      "external_write": true,
+      "handler_or_blocker": "Requires exact approved packet before any mutation",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "allowed_data": [
+      "Route-level UI state",
+      "Preview/provider identity labels",
+      "Generated local audit metrics"
+    ],
+    "forbidden_data": [
+      "Raw private emails/messages",
+      "Student or parent private records",
+      "Secrets, passwords, API keys, payment credentials"
+    ],
+    "api_requirements": [
+      "No new external provider API writes are part of this packet.",
+      "Provider preview may render fallback identity without exposing private data when session is missing."
+    ]
+  },
+  "security_privacy": {
+    "workspace_scope_invariants": [
+      "BNA, One Time, provider, parent, student, and public data remain separated.",
+      "Provider preview banner can identify the preview context but must not leak unrelated private records.",
+      "Public routes remain anonymous-safe."
+    ],
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "no_raw_private_data_commits": true,
+    "browser_content_untrusted": true
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260707-150",
+      "scope": "Classify audit reports and create validated intake/register/PQC files.",
+      "requirements": [
+        "REQ-20260707-150",
+        "REQ-20260707-151"
+      ],
+      "instructions": [
+        "Preserve raw source and stable requirement IDs.",
+        "Separate executable UI/tooling fixes from external/private blockers."
+      ]
+    },
+    {
+      "id": "BATCH-20260707-151",
+      "scope": "Apply scoped UI and audit-harness fixes.",
+      "requirements": [
+        "REQ-20260707-152",
+        "REQ-20260707-153",
+        "REQ-20260707-154"
+      ],
+      "instructions": [
+        "Normalize control dimensions and wrapping in scoped Operations/provider routes.",
+        "Render admin-provider banner in all admin-provider route states.",
+        "Support --out-dir without clobbering earlier proof."
+      ]
+    },
+    {
+      "id": "BATCH-20260707-152",
+      "scope": "Verify, commit, push, deploy, live-smoke, and close blocked items.",
+      "requirements": [
+        "REQ-20260707-155",
+        "REQ-20260707-156"
+      ],
+      "instructions": [
+        "Run focused checks and after-audit proof.",
+        "Stage only intentional files.",
+        "Deploy app-visible changes and run live smoke before Done.",
+        "Record blockers for WAPI, Drive/private data, payments, DNS, external sends, provider writes, and credential setup."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/operations.html",
+      "public/provider.html",
+      "scripts/audit-onetime-role-ui-current-state.mjs",
+      "ops/ui-audits/2026-07-07-audit-fix-pass-local-after/report.md"
+    ],
+    "files_allowed_to_edit": [
+      "public/operations.html",
+      "public/provider.html",
+      "scripts/audit-onetime-role-ui-current-state.mjs",
+      "tasks-pending/2026-07-07-audit-fix-implementation.md",
+      "ops/prompt-packets/2026-07-07-audit-fix-implementation/00-audit-fix-implementation.product-quality.json",
+      "raw-input/RAW-20260707-015-audit-fix-implementation.md",
+      "memory/2026-07-07.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Split if changes expand beyond scoped Operations/provider UI, audit harness, or proof/ledger files.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate -- ops\\prompt-packets\\2026-07-07-audit-fix-implementation\\00-audit-fix-implementation.product-quality.json",
+      "node --check scripts\\audit-onetime-role-ui-current-state.mjs",
+      "npm run audit:onetime-role-ui -- --base=http://127.0.0.1:8080 --out-dir=ops\\ui-audits\\2026-07-07-audit-fix-pass-local-final4",
+      "npm run watchdog:protocol-drift",
+      "npm run secrets:audit"
+    ],
+    "optional_or_blocked": [
+      "Live role UI audit after deployment if auth/session setup allows it."
+    ]
+  },
+  "evidence": {
+    "before": [
+      "ops/ui-audits/2026-07-07-audit-fix-pass-local-after/report.md"
+    ],
+    "after_required": [
+      "ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/report.md",
+      "ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/report.json",
+      "deployment/live-smoke report path pending"
+    ],
+    "blocked_evidence": [
+      "ops/queue-audits/2026-07-07-task-1839-wappy-wapi-phonebook-report-blocked.md",
+      "ops/queue-audits/2026-07-07-task-1853-job101-drive-reprocess-followup.md"
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Scoped UI/tooling fixes are implemented.",
+      "After-audit report exists in requested output directory.",
+      "Remaining visual findings are zero or explicitly blocked with owner and next action.",
+      "Focused checks and secret audit pass.",
+      "Scoped commit is pushed.",
+      "App-visible changes are deployed and live-smoked.",
+      "Ledger and changelog records are updated."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260707-015-audit-fix-implementation.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-07-audit-fix-implementation/00-audit-fix-implementation.product-quality.json",
+    "validator_result_path": "terminal output from npm run pqc:validate",
+    "tool_actions_expected": [
+      "Inspect audit reports",
+      "Patch scoped files",
+      "Run validation/audit/tests",
+      "Commit/push/deploy/live-smoke"
+    ],
+    "skipped_actions_policy": "Skip or block external writes, credentials, payments, DNS, sends, provider mutations, and private data sync unless separately approved.",
+    "blocker_decisions": [
+      "DEC-20260707-150",
+      "BLK-20260707-150",
+      "BLK-20260707-151",
+      "BLK-20260707-152",
+      "BLK-20260707-153"
+    ],
+    "evidence_paths": [
+      "tasks-pending/2026-07-07-audit-fix-implementation.md",
+      "ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/report.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-07-audit-fix-implementation.md#final-audit",
+    "next_packet_path": "blocked external/provider/private-data packets only if Shloimie supplies exact approvals"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No product-quality protocol drift findings for this packet/register."
+  },
+  "next_packet": {
+    "status": "none_if_verified",
+    "description": "If after-audit still reports visual defects, create a smaller packet for only the remaining route/finding. External/provider/private blockers stay separate."
+  }
+}

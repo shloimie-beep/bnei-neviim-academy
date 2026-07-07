@@ -30769,3 +30769,13 @@ Deployment gate:
   production data mutation.
 - External Agent Mode audit reports for `REQ-20260707-101` remain pending as
   follow-up inputs.
+
+## 2026-07-07T21:08:05+03:00 - Audit fix implementation batch locally verified
+
+- Captured raw intake and compiled the audit-fix Product Quality packet/register for the current audit outputs.
+- Implemented scoped fixes: Operations/provider control sizing normalized; provider admin-view banner now appears on first paint for One Time; admin-provider session-required state hides the credential form and leaves a read-only preview action.
+- Repaired the One Time role UI audit harness so `--out-dir` and `--out` write to the requested folder.
+- Local visual evidence: `ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/` captured 35 screenshots across 7 routes and 5 viewports with 0 automated findings.
+- Verification: `node --check scripts/audit-onetime-role-ui-current-state.mjs`; `npm run pqc:validate -- ops/prompt-packets/2026-07-07-audit-fix-implementation/00-audit-fix-implementation.product-quality.json`; `npm run watchdog:actions`; `npm run watchdog:protocol-drift`; `npm run secrets:audit`; `npm run bna:run:validate`.
+- Guardrails: no external sends, payments, DNS, access grants, credential changes, provider writes, or raw private-data commits.
+- Status: local verified, pending commit/push/deploy/live smoke.
