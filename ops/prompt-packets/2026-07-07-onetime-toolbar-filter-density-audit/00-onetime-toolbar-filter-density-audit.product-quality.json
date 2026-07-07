@@ -46,9 +46,9 @@
     "terminal_condition": "The One Time toolbar/filter density audit packet validates, the repeatable audit harness captures route and viewport proof, scoped mobile/provider/member/email layout defects are repaired, remaining Operations desktop/tablet top-rail density is split to a follow-up packet, and the app-visible changes are deployed and live-smoked.",
     "handoff_target": "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
   },
-  "stage": "STAGE_4_INDEPENDENT_VERIFICATION",
+  "stage": "STAGE_6_CLOSEOUT",
   "packet_role": "VISUAL_AUDITOR",
-  "status": "verified",
+  "status": "deployed",
   "title": "One Time Toolbar Filter Density Audit",
   "created_at": "2026-07-07T23:52:00+03:00",
   "workspace_key": "platform",
@@ -570,6 +570,9 @@
       "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
       "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4/report.md",
       "ops/live-smokes/2026-07-07T21-07-25-682Z-one-time-shared-review-live-smoke.md",
+      "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-live-after-deploy/report.md",
+      "ops/live-smokes/2026-07-07T21-18-07-080Z-one-time-shared-review-live-smoke.md",
+      "ops/live-smokes/2026-07-07T21-18-07-744Z-live-app-smoke.md",
       "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
       "ops/agent-task-ledger.jsonl",
       "ops/agent-changelog.md"
@@ -608,6 +611,9 @@
     ],
     "evidence_paths": [
       "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4/report.md",
+      "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-live-after-deploy/report.md",
+      "ops/live-smokes/2026-07-07T21-18-07-080Z-one-time-shared-review-live-smoke.md",
+      "ops/live-smokes/2026-07-07T21-18-07-744Z-live-app-smoke.md",
       "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
     ],
     "final_status_path": "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md#final-audit",

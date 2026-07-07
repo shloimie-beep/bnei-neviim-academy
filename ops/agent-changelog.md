@@ -33405,3 +33405,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   toolbar audit/smoke, and final register update. Remaining Operations
   desktop/tablet top-rail density is split to `PKT-20260707-138`; Agent Mode
   prompt refresh remains `REQ-20260707-136`.
+
+
+## 2026-07-08T00:21:30+03:00 - One Time toolbar density fixes deployed
+
+- Pushed commit `41b45630` to `origin/master`.
+- Railway production deployment
+  `15e38ba1-80be-486e-be8e-8a46ad1a3d9f` reached `SUCCESS`.
+- Production shared-review smoke
+  `ops/live-smokes/2026-07-07T21-18-07-080Z-one-time-shared-review-live-smoke.md`
+  passed landing, provider, parent, student, classroom, email, and Operations
+  routes at mobile390, tablet768, and desktop1440.
+- Production app smoke
+  `ops/live-smokes/2026-07-07T21-18-07-744Z-live-app-smoke.md` passed.
+- Live toolbar-density audit
+  `ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-live-after-deploy/report.md`
+  captured 30 screenshots. Mobile/provider/parent/student/member checks
+  passed; the remaining 6 P2 findings are isolated to Operations
+  desktop/tablet top-rail density and remain split to `PKT-20260707-138`.
+- Result: scoped One Time mobile/provider/member/email workspace UI fixes are
+  deployed and live-smoked. Agent Mode prompt refresh remains
+  `REQ-20260707-136`.
