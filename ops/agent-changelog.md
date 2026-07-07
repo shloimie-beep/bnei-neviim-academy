@@ -24252,6 +24252,22 @@ Verification:
 - Separate `join.onetimeonetime.com` release captain target remains blocked in
   this local Railway context because the local target does not show
   `one-time-production`, `one-time-web`, or `join.onetimeonetime.com`.
+
+## 2026-07-07T20:27:03+03:00 - Clean launch batch locally verified
+
+- Captured the broad clean/push/deploy request as `RAW-20260707-014`, created
+  a requirement register, and validated the clean-launch Product Quality
+  packet.
+- Classified the dirty worktree before staging: the launchable batch is scoped
+  to Operations UI cleanup, agent-fleet claim/title hardening, tests, current
+  proof, and blocker records. The large ChatGPT pickup/watchdog/queue artifact
+  flood is parked for a separate retention/dedupe cleanup packet.
+- Local verification passed: PQC validation, `node --check
+  scripts\agent-fleet-supervisor.mjs`, 57 focused tests, action watchdog,
+  protocol-drift watchdog, tracked secrets audit, active-run validation, and
+  security watchdog.
+- Status: local verified, pending scoped commit, push, Railway deployment, and
+  live readback for the app-visible Operations HTML change.
 - Parent/student private helper scope, toolbar/filter density, and Agent Mode
   autonomous prompt/drop-off updates remain open as next packets.
   private helper scope, toolbar/filter density, and Agent Mode autonomous

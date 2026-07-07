@@ -109,6 +109,59 @@ test('watchdog reroutes a Shloimie-owned watchdog cleanup request to Codex', asy
   assert.equal(repair.patch.decision_required, false);
 });
 
+test('watchdog does not retitle clean task titles from broad intake notes', async () => {
+  const {
+    buildTaskTitleRepair,
+    buildWatchdogRoutingRepair,
+    looksRawRambleTitle,
+    looksWatchdogWarningRepairRequest,
+  } = await loadSupervisor();
+  const task = {
+    id: 1751,
+    title: 'Collect One Time website content assets',
+    notes: [
+      'Operator instruction: split coding, dashboard, parser, website, bot, Railway, or Codex work into Tasks assigned to Codex.',
+      'Recording title: BNA Mobile App UI and Functionality Updates.',
+      'The transcript mentions a selected toolbar warning color, a button to fix, and task routing rules.',
+    ].join(' '),
+    stage: 'in_progress',
+    category: 'accountability',
+    assigned_to: 'Codex',
+    ai_parsed: {
+      kind: 'task',
+      display_title: 'Collect One Time website content assets',
+    },
+  };
+
+  assert.equal(looksRawRambleTitle(task), false);
+  assert.equal(looksWatchdogWarningRepairRequest(task), false);
+  assert.equal(buildTaskTitleRepair(task), null);
+  assert.equal(buildWatchdogRoutingRepair(task), null);
+});
+
+test('watchdog retitles overloaded broad-fix task notes as packet splitting work', async () => {
+  const {
+    buildTaskTitleRepair,
+    looksRawRambleTitle,
+  } = await loadSupervisor();
+  const task = {
+    id: 1575,
+    title: "Because I tell it to do too many things at once, so it doesn't fix everything.",
+    notes: "Because I tell it to do too many things at once, so it doesn't fix everything.",
+    stage: 'in_progress',
+    category: 'operations',
+    assigned_to: 'Codex',
+  };
+
+  assert.equal(looksRawRambleTitle(task), true);
+
+  const repair = buildTaskTitleRepair(task);
+  assert.equal(repair.next_title, 'Split oversized operator requests into focused execution packets');
+  assert.deepEqual(repair.patch, {
+    title: 'Split oversized operator requests into focused execution packets',
+  });
+});
+
 test('watchdog does not treat unrelated critical findings as task-title repairs', async () => {
   const { buildTaskTitleRepair, looksWatchdogWarningRepairRequest } = await loadSupervisor();
   const task = {

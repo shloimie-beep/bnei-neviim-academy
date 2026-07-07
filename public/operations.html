@@ -8642,7 +8642,6 @@
             rejectStudentIdentityReview(reviewId, payload = {}) { return this.request('POST', '/identity/reviews/' + reviewId + '/reject', payload); },
             blockStudentIdentityReview(reviewId, payload = {}) { return this.request('POST', '/identity/reviews/' + reviewId + '/block', payload); },
             getStudentIdentityDetail(studentId) { return this.request('GET', '/students/' + studentId + '/identity'); },
-            archiveCodexTestParent() { return this.request('POST', '/contacts/archive-codex-test-parent', {}); },
             getNextYearLoginReadiness() { return this.request('GET', '/portal-access/next-year-readiness'); },
             prepareNextYearLogins(payload = {}) { return this.request('POST', '/portal-access/next-year-readiness', payload); },
             getOneTimeAppAccessReadiness() { return this.request('GET', '/one-time/app-access-readiness'); },
@@ -15520,7 +15519,6 @@
                         <div class="contact-action-row">
                             ${contactSection === 'interested_parents' ? '<button class="task-action primary" onclick="addInterestedParentLead(event)">Add interested parent</button>' : ''}
                             <button class="task-action ${contactSection === 'people' ? 'primary' : ''}" onclick="addInternalPerson(event)">Add internal person</button>
-                            <button class="task-action" onclick="archiveCodexTestParent(event)">Archive test duplicate</button>
                         </div>
                     </div>
                     ${renderSectionNav(tabsWithCounts(CONTACT_SUBTABS, sectionCounts), contactSection, 'setContactSection')}
@@ -40937,18 +40935,6 @@
                 await refreshStudentIdentityReviews(null);
             } catch (error) {
                 alert(error.message || 'Could not mark identity review blocked.');
-            }
-        }
-
-        async function archiveCodexTestParent(event) {
-            event?.stopPropagation();
-            if (!confirm('Archive active Codex test parent / Solomon duplicate records only when the same email has a canonical record?')) return;
-            try {
-                const result = await api.archiveCodexTestParent();
-                await loadData();
-                alert(`Archived ${result?.archived?.length || 0} duplicate record(s).`);
-            } catch (error) {
-                alert(error.message || 'Could not archive duplicate parent records.');
             }
         }
 

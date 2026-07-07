@@ -109,6 +109,8 @@ test('duplicate cleanup archives known test parent records only by canonical ema
   assert.match(server, /canonical_kind/);
   assert.match(server, /status = 'archived'/);
   assert.match(server, /status = 'inactive'/);
+  assert.doesNotMatch(operationsHtml, /Archive test duplicate/);
+  assert.doesNotMatch(operationsHtml, /archiveCodexTestParent/);
 });
 
 test('student portal renders history, next meeting, daily rows, and rabbi message box', () => {

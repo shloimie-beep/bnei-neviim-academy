@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T16:02:25.104Z",
+  "generated_at": "2026-07-07T17:22:39.513Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -290,6 +290,7 @@
     "ops/prompt-packets/2026-07-06-onetime-full-ui-agent-audit/agent-mode-prompt-series.json",
     "ops/prompt-packets/2026-07-06-onetime-operations-content-ia-filter-rail/00-content-ia-filter-rail.product-quality.json",
     "ops/prompt-packets/2026-07-06-onetime-studio-sidekick-openart-mcp/00-control-tower.product-quality.json",
+    "ops/prompt-packets/2026-07-07-clean-launch-everything/00-clean-launch-everything.product-quality.json",
     "ops/prompt-packets/2026-07-07-helper-crisp-aligned-ui-closeout/00-helper-crisp-aligned-ui-closeout.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-brand-helper-toolbar-isolation/00-onetime-brand-helper-toolbar-isolation.product-quality.json",
@@ -516,6 +517,7 @@
     "tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md",
     "tasks-pending/2026-07-07-agent-mode-operations-dropoff-loop-and-ui-audit-results.md",
     "tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md",
+    "tasks-pending/2026-07-07-clean-launch-everything.md",
     "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
     "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
     "tasks-pending/2026-07-07-parallel-agent-mode-mobile-communications-dashboard-email-status.md",

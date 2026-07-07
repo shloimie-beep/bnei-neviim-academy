@@ -8,7 +8,7 @@
 | Source | Codex chat |
 | Related job | `content_job:101` |
 | Evidence | `ops/drive-transcript-visibility/2026-07-02/JOB-101-REVIEW-TRIAGE.md` |
-| Status | Done for triage and parser/private transcript-doc repair; DB review cleanup and score/progress writes blocked |
+| Status | Done for triage, parser/private transcript-doc repair, and known safe DB review cleanup; protected review rows and score/progress writes blocked |
 
 ## Parsed Requirements
 
@@ -17,7 +17,7 @@
 | `REQ-20260702-012-001` | Reinterpret Job 101 review candidates with the assumption that UI dictation was interrupted by student/class/random speech. | Codex | Done | `JOB-101-REVIEW-TRIAGE.md` | None |
 | `REQ-20260702-012-002` | Collapse real UI/system intent into a small canonical task set. | Codex | Done | Five canonical tasks in triage | None |
 | `REQ-20260702-012-003` | Identify which items were already handled by background UI packets. | Codex | Done | Rabbi/One Time UI register packets 02-09 inspected | Deploy/live smoke still blocked for app-visible Done |
-| `REQ-20260702-012-004` | Clean up DB review queue by archiving duplicates/instruction leakage and linking real clusters to tasks. | Codex | Blocked | Fresh DB requery failed DNS; parser/private transcript-doc repair later completed in `ops/drive-transcript-visibility/2026-07-02/APPLY-CLOSEOUT.md` | Retry when Supabase host resolves |
+| `REQ-20260702-012-004` | Clean up DB review queue by archiving duplicates/instruction leakage and linking real clusters to tasks. | Codex | Partially done; remaining protected rows blocked | `ops/drive-transcript-visibility/2026-07-06/job101-review-cleanup-report.json`; `ops/queue-audits/2026-07-07-task-1853-job101-review-cleanup-readback.json` | Remaining open rows are protected or not safe to auto-close; human/domain review required |
 | `REQ-20260702-012-005` | Apply score/progress/grading rows from Job 101. | Shloimie/Codex | Blocked | Existing approval rule | Requires `APPROVE_20260702_SCORE_PROGRESS_GRADING_APPLY_EXACT_PACKET_ONLY` and exact row-level packet |
 
 ## Canonical Tasks To Use Instead Of 440 Review Rows
@@ -28,7 +28,7 @@
 | `TASK-20260702-012-B` | Unify Contacts, Interested Parents, tags, and communication filters. | Implemented and locally verified 2026-07-05; publish/deploy live smoke pending clean release lane |
 | `TASK-20260702-012-C` | Repair mobile bot/helper text input behavior on Android/Samsung-style keyboard. | Implemented and locally verified 2026-07-05; publish/deploy live smoke pending clean release lane |
 | `TASK-20260702-012-D` | Verify Rabbi/One Time workspace-scope isolation in Operations dashboard. | Partly covered by Rabbi/One Time UI packets |
-| `TASK-20260702-012-E` | Archive/supersede Job 101 parser-instruction leakage and duplicate review fragments. | Blocked on DB reachability |
+| `TASK-20260702-012-E` | Archive/supersede Job 101 parser-instruction leakage and duplicate review fragments. | Known safe rows resolved; protected/not-safe review rows blocked |
 
 ## Guardrails
 
@@ -76,3 +76,21 @@ Codex used the canonical Job 101 tasks above instead of the noisy review queue.
   worktree/release lane; this local code batch should be published only from a
   clean scoped release branch or by careful partial staging that excludes
   unrelated dirty work.
+
+## 2026-07-07 Task 1853 Follow-Up
+
+- Task `#1853` / agent job `#378` was read back as the generic
+  `content_job:101` Drive transcription reprocess follow-up.
+- The July 6 guarded DB cleanup applied only the known safe Job 101 triage rows:
+  `12` review rows were resolved into canonical clusters, with no raw payloads
+  committed and no score/progress/grading writes.
+- The July 7 dry-run/readback in
+  `ops/queue-audits/2026-07-07-task-1853-job101-review-cleanup-readback.json`
+  checked all `1165` currently open review rows and found `0` remaining safe
+  auto-close candidates.
+- Remaining open Job 101 review rows stay open because they are protected
+  student/parent/private/class/Torah/accountability rows or otherwise not safe
+  to auto-close from a generic agent task.
+- Score/progress/grading writes remain blocked unless Shloimie supplies the
+  exact approval packet:
+  `APPROVE_20260702_SCORE_PROGRESS_GRADING_APPLY_EXACT_PACKET_ONLY`.

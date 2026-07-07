@@ -1,0 +1,88 @@
+{
+  "schema_version": "clean_launch_inventory.v1",
+  "created_at": "2026-07-07T20:29:00+03:00",
+  "branch": "master",
+  "base_commit": "ecf5178e",
+  "active_run": "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation",
+  "active_run_status": {
+    "done": 6,
+    "blocked": 4,
+    "validation": "passed"
+  },
+  "release_decision": "stage_scoped_verified_batch_only",
+  "staged_categories": [
+    "clean_launch_raw_register_pqc",
+    "operations_visible_test_button_removal",
+    "agent_fleet_human_review_claim_guard",
+    "watchdog_title_repair_guard",
+    "focused_tests",
+    "current_watchdog_proof",
+    "current_inventory_proof"
+  ],
+  "parked_categories": [
+    {
+      "path": "ops/chatgpt-ramble-dropoff/**",
+      "approx_status_entries": 1832,
+      "reason": "generated pickup/drop-off artifacts require dedupe and retention policy before commit"
+    },
+    {
+      "path": "ops/watchdog-audits/**",
+      "approx_status_entries": 101,
+      "reason": "stage only scoped current proof reports"
+    },
+    {
+      "path": "ops/queue-audits/**",
+      "approx_status_entries": 27,
+      "reason": "generated queue readbacks from other lanes"
+    },
+    {
+      "path": "ops/release-captain/latest-*",
+      "tracked_files": 2,
+      "reason": "previous blocked release-captain latest pointers, not current scoped proof"
+    }
+  ],
+  "verification": [
+    {
+      "command": "npm run pqc:validate -- ops\\prompt-packets\\2026-07-07-clean-launch-everything\\00-clean-launch-everything.product-quality.json",
+      "status": "passed"
+    },
+    {
+      "command": "node --check scripts\\agent-fleet-supervisor.mjs",
+      "status": "passed"
+    },
+    {
+      "command": "node --test tests\\agent-fleet-hardening.test.js tests\\task-title-cleanup-dry-run.test.js tests\\watchdog-soft-repair.test.js tests\\parent-student-portal-contract.test.js",
+      "status": "passed",
+      "result": "57/57 tests passed"
+    },
+    {
+      "command": "npm run watchdog:actions",
+      "status": "passed",
+      "result": "0 findings"
+    },
+    {
+      "command": "npm run watchdog:protocol-drift",
+      "status": "passed"
+    },
+    {
+      "command": "npm run secrets:audit",
+      "status": "passed",
+      "result": "0 tracked secret-risk files found"
+    },
+    {
+      "command": "npm run bna:run:validate",
+      "status": "passed",
+      "result": "6 done, 4 blocked"
+    },
+    {
+      "command": "npm run watchdog:security",
+      "status": "passed",
+      "result": "0 findings"
+    }
+  ],
+  "deploy_gate": {
+    "required": true,
+    "reason": "public/operations.html changed",
+    "status": "pending_commit_push_deploy_live_smoke"
+  }
+}

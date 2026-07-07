@@ -160,10 +160,29 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
         { id: 11, task_id: 502, status: 'queued' },
         { id: 12, status: 'queued' },
         { id: 13, task_id: 501, status: 'running' },
+        { id: 14, task_id: 503, status: 'queued' },
+        { id: 15, task_id: 504, status: 'queued' },
       ],
       [
         { id: 501, stage: 'assigned', assigned_to: 'Codex' },
         { id: 502, stage: 'done', assigned_to: 'Codex' },
+        {
+          id: 503,
+          stage: 'assigned',
+          assigned_to: 'Codex',
+          ai_parsed: {
+            agent_executable: false,
+            recording_review_task: true,
+          },
+        },
+        {
+          id: 504,
+          stage: 'assigned',
+          assigned_to: 'Codex',
+          ai_parsed: {
+            needs_human_review: true,
+          },
+        },
       ],
       { tasks: {} },
       { taskTimeoutMs: 1000, maxRetries: 2 },

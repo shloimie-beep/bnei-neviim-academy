@@ -25,6 +25,36 @@ function rawTaskFixture() {
   };
 }
 
+function overloadedScopeTaskFixture() {
+  return {
+    id: 1575,
+    title: "Because I tell it to do too many things at once, so it doesn't fix everything.",
+    notes: "Because I tell it to do too many things at once, so it doesn't fix everything.",
+    stage: 'assigned',
+    category: 'operations',
+    assigned_to: 'Codex',
+  };
+}
+
+function cleanTitleWithBroadNotesFixture() {
+  return {
+    id: 1751,
+    title: 'Collect One Time website content assets',
+    notes: [
+      'Operator instruction: split coding, dashboard, parser, website, bot, Railway, or Codex work into Tasks assigned to Codex.',
+      'Recording title: BNA Mobile App UI and Functionality Updates.',
+      'The transcript mentions a selected toolbar warning color, a button to fix, and task routing rules.',
+    ].join(' '),
+    stage: 'assigned',
+    category: 'accountability',
+    assigned_to: 'Codex',
+    ai_parsed: {
+      kind: 'task',
+      display_title: 'Collect One Time website content assets',
+    },
+  };
+}
+
 test('task title cleanup is dry-run by default and finds watchdog title repairs', async () => {
   const { buildTaskTitleCleanupAudit } = await loadCleanup();
   const audit = buildTaskTitleCleanupAudit([
@@ -50,6 +80,27 @@ test('task title cleanup is dry-run by default and finds watchdog title repairs'
     stage: 'assigned',
   });
   assert.equal(audit.actions[0].action, 'would_patch_task_title');
+});
+
+test('task title cleanup catches overloaded broad-fix task titles', async () => {
+  const { buildTaskTitleCleanupAudit } = await loadCleanup();
+  const audit = buildTaskTitleCleanupAudit([overloadedScopeTaskFixture()]);
+
+  assert.equal(audit.candidate_count, 1);
+  assert.equal(audit.candidates[0].task_id, 1575);
+  assert.equal(audit.candidates[0].next_title, 'Split oversized operator requests into focused execution packets');
+  assert.deepEqual(audit.candidates[0].patch, {
+    title: 'Split oversized operator requests into focused execution packets',
+  });
+});
+
+test('task title cleanup does not retitle clean tasks from broad notes', async () => {
+  const { buildTaskTitleCleanupAudit } = await loadCleanup();
+  const audit = buildTaskTitleCleanupAudit([cleanTitleWithBroadNotesFixture()]);
+
+  assert.equal(audit.tasks_scanned, 1);
+  assert.equal(audit.candidate_count, 0);
+  assert.equal(audit.manual_review_count, 0);
 });
 
 test('task title cleanup reports exclude full raw operator wording', async () => {

@@ -384,11 +384,21 @@ function isWatchdogImprovementDecision(task) {
 }
 
 function taskSearchText(task) {
+  const parsed = parseTaskAiParsed(task);
   return [
     taskTitle(task),
     taskOriginalText(task),
     task?.notes || '',
-    parseTaskAiParsed(task).display_title || '',
+    parsed.display_title || '',
+  ].join('\n').replace(/\s+/g, ' ').trim();
+}
+
+function taskWatchdogRepairSearchText(task) {
+  const parsed = parseTaskAiParsed(task);
+  return [
+    taskTitle(task),
+    taskOriginalText(task),
+    parsed.display_title || '',
   ].join('\n').replace(/\s+/g, ' ').trim();
 }
 
@@ -566,11 +576,19 @@ function isClaimableAgentTask(task, state, config) {
   const freshMs = Math.max(config.taskTimeoutMs * 2, 45 * 60 * 1000);
   if (!isActiveStage(task.stage)) return false;
   if (!isAgentOwnedTask(task)) return false;
+  if (isExplicitHumanReviewTask(task)) return false;
   if (normalizeStage(task.stage) === 'needs_decision') return false;
   if (task.decision_required) return false;
   if (taskLockIsFresh(task.id, freshMs)) return false;
   const record = state.tasks?.[task.id];
   return !(record?.blocked && Number(record?.attempts || 0) >= config.maxRetries);
+}
+
+function isExplicitHumanReviewTask(task) {
+  const parsed = parseTaskAiParsed(task);
+  return parsed.agent_executable === false ||
+    parsed.needs_human_review === true ||
+    (parsed.recording_review_task === true && parsed.payload?.needs_review === true);
 }
 
 function filterObservableJobsForClaim(jobs = [], tasks = [], state = { tasks: {} }, config = {}) {
@@ -1830,7 +1848,7 @@ function inspectTelegramBridgeLock() {
 
 function looksRawRambleTitle(task) {
   const title = taskTitle(task);
-  const rawPattern = /\b(umm+|uh+|you know|basically|okay so|ok so|can you just|i need you|i want you|what in the world|i don't know|like i|so i just|telegram bot|definitely fix up that thing|nothing gets messed up|super professional|change log)\b/i;
+  const rawPattern = /\b(umm+|uh+|you know|basically|okay so|ok so|can you just|i need you|i want you|what in the world|i don't know|like i|so i just|telegram bot|definitely fix up that thing|nothing gets messed up|too many things at once|doesn(?:'|\u2019)?t fix everything|fix everything|super professional|change log)\b/i;
   const connectiveCount = (title.match(/\b(and|but|so|because|cuz|then|also)\b/gi) || []).length;
   return rawPattern.test(title) ||
     (title.length > 160 && /\b(i|me|my|you|your|we|our)\b/i.test(title)) ||
@@ -1839,7 +1857,7 @@ function looksRawRambleTitle(task) {
 
 function looksWatchdogWarningRepairRequest(task) {
   if (isWatchdogImprovementDecision(task)) return false;
-  const lower = taskSearchText(task).toLowerCase();
+  const lower = taskWatchdogRepairSearchText(task).toLowerCase();
   const mentionsWatchdog = /\b(watch\s*dogs?|watchdog|warning|warnings|critical warnings|visible ramble|raw[- ]?looking|natural[- ]language|change log|changelog)\b/.test(lower);
   const asksForRepair = /\b(auto[- ]?fix|fix(?:es|ed|ing)?|repair|clean|reroute|route|put this|move|change)\b/.test(lower);
   const taskOrDashboard = /\b(task|tasks|dashboard|title|titles|changelog|change log|codex|agent|queue|lane)\b/.test(lower);
@@ -1871,6 +1889,8 @@ function buildTaskTitleRepair(task) {
   let nextTitle = '';
   if (looksWatchdogWarningRepairRequest(task)) {
     nextTitle = 'Add watchdog soft repair for obvious task warnings';
+  } else if (/\btoo many things at once\b|\bdoesn(?:'|\u2019)?t fix everything\b|\bfix everything\b.*\btoo many things\b|\btoo many things\b.*\bfix everything\b/.test(lower)) {
+    nextTitle = 'Split oversized operator requests into focused execution packets';
   } else if (/\b(dot org|public website|operations app|check mark|website not safe|unsecured|dns|certificate)\b/.test(lower)) {
     nextTitle = 'Verify public website routing and DNS security follow-up';
   } else if (/\b(telegram|bot)\b/.test(lower) && /\b(button|buttons|quick action|mine|urgent|done)\b/.test(lower)) {
