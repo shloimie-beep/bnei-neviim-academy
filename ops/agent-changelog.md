@@ -24234,6 +24234,26 @@ Verification:
   ops\prompt-packets\2026-07-07-onetime-brand-helper-toolbar-isolation\00-onetime-brand-helper-toolbar-isolation.product-quality.json`;
   `npm run watchdog:actions`; `npm run watchdog:protocol-drift`.
 - Status: local verified, pending commit/push/deploy/live smoke. Parent/student
+
+## 2026-07-07T19:10:18+03:00 - One Time public brand and helper isolation deployed
+
+- Pushed commit `7ef3aebf` to `origin/master`.
+- Railway production deployment
+  `7f3bbe54-e9ef-4ff2-8d20-3895a113a5e5` reached `SUCCESS` for
+  `bneineviimacademy.org`.
+- Production visual smoke:
+  `ops/ui-audits/2026-07-07-onetime-brand-helper-toolbar-isolation-live-after-deploy/`
+  captured desktop/mobile landing and helper-open screenshots plus the open
+  Region dropdown.
+- Result: 0 failures. The deployed `/one-time` page returned 200, mounted
+  `one_time_public`, showed `One Time Helper`, had no visible BNA brand text,
+  had no language/site-nav chrome, had 0px mobile horizontal overflow, and used
+  the One Time black/yellow dropdown skin.
+- Separate `join.onetimeonetime.com` release captain target remains blocked in
+  this local Railway context because the local target does not show
+  `one-time-production`, `one-time-web`, or `join.onetimeonetime.com`.
+- Parent/student private helper scope, toolbar/filter density, and Agent Mode
+  autonomous prompt/drop-off updates remain open as next packets.
   private helper scope, toolbar/filter density, and Agent Mode autonomous
   prompt/drop-off updates remain open as next packets.
 - PASS `node --check tests/pwa-separation-contract.test.js`.
