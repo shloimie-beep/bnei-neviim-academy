@@ -30608,3 +30608,11 @@ Verification:
 
 Deployment gate:
 - PENDING commit, push, deploy, and live smoke for app-visible changes.
+
+## 2026-07-07T15:03:00+03:00 - Agent Mode failed drop-off recovery deployed
+
+- Pushed commit `cf4567f7` to `origin/master`.
+- Railway production deployment `7f9c8cab-1858-4af0-bd94-238dc59ebe7e` reached `SUCCESS`.
+- Live smoke passed: `ops/live-smokes/2026-07-07T11-58-05-874Z-one-time-agent-mode-acceptance-live-smoke.md`.
+- Targeted deployed smoke passed: `ops/live-smokes/2026-07-07T11-59-42-698Z-agent-dropoff-view-as-rabbi-live-smoke.md`.
+- The targeted smoke verified the deployed Operations button, deployed Agent Review drop-off autosave/Ctrl+Enter support, and the read-only/no-send/no-charge View-as Rabbi endpoint. The smoke report redacts the Operations session cookie and signed view-as token.

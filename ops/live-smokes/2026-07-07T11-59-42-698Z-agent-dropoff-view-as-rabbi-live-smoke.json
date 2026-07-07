@@ -1,0 +1,50 @@
+{
+  "started_at": "2026-07-07T11:59:39.191Z",
+  "base": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "details": {
+        "cookie": {
+          "name": "bna_ops_session",
+          "value": "[redacted]"
+        },
+        "source": "env",
+        "user": "SHLOIMIE",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "operations has read-only View-as Rabbi action",
+      "ok": true,
+      "details": {
+        "label": true,
+        "wrapper": true
+      }
+    },
+    {
+      "name": "dropoff has autosave and keyboard save",
+      "ok": true,
+      "details": {
+        "autosave": true,
+        "keyboard_submit": true
+      }
+    },
+    {
+      "name": "view-as Rabbi endpoint returns read-only scoped session",
+      "ok": true,
+      "details": {
+        "view_url_sample": "/provider.html?review=one-time&view_as_rabbi=[redacted]",
+        "read_only": true,
+        "writes_disabled": true,
+        "external_sends_disabled": true,
+        "charges_disabled": true,
+        "secrets_included": false,
+        "no_password_included": true
+      }
+    }
+  ],
+  "ok": true,
+  "finished_at": "2026-07-07T11:59:42.698Z"
+}
