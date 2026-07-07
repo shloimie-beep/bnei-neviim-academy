@@ -1,13 +1,13 @@
 # Agent Mode Prompt - One Time Role IA Consistency
 
-Generated: 2026-07-07T15:06:26.071Z
+Generated: 2026-07-07T22:05:55.230Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
 Primary requirement: REQ-20260707-115
 Agent review run ID: 2026-06-26-agent-review-dropoff-repair
 Return URL: https://bneineviimacademy.org/operations/agent-review?prompt=one-time-role-ia-consistency
-Drop-off URL: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-role-ia-consistency&requirement_id=REQ-20260707-115&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-role-ia-consistency&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-role-ia-consistency%3Aall-contexts
+Drop-off URL: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-role-ia-consistency&requirement_id=REQ-20260707-115&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-role-ia-consistency&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-role-ia-consistency%3Aall-contexts&autosave=1
 Prompt key: one-time-role-ia-consistency
 Idempotency key: 2026-06-26-agent-review-dropoff-repair:one-time-role-ia-consistency:all-contexts
 
@@ -19,7 +19,7 @@ Idempotency key: 2026-06-26-agent-review-dropoff-repair:one-time-role-ia-consist
   "prompt_key": "one-time-role-ia-consistency",
   "context_key": null,
   "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=one-time-role-ia-consistency",
-  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-role-ia-consistency&requirement_id=REQ-20260707-115&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-role-ia-consistency&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-role-ia-consistency%3Aall-contexts",
+  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-role-ia-consistency&requirement_id=REQ-20260707-115&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-role-ia-consistency&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-role-ia-consistency%3Aall-contexts&autosave=1",
   "requirement_id": "REQ-20260707-115",
   "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-role-ia-consistency:all-contexts"
 }
@@ -77,7 +77,7 @@ Focus: consistent side panel, category, top subcategory, filter, drawer, role-la
 
 ## Result Shape
 
-Preferred drop-off: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-role-ia-consistency&requirement_id=REQ-20260707-115&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-role-ia-consistency&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-role-ia-consistency%3Aall-contexts
+Preferred drop-off: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-role-ia-consistency&requirement_id=REQ-20260707-115&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-role-ia-consistency&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-role-ia-consistency%3Aall-contexts&autosave=1
 API fallback: https://bneineviimacademy.org/api/bna/agent-review/results
 Emergency fallback: open the drop-off page and use "Emergency paste JSON and save" only after the normal save path and exact drop-off URL fail.
 
@@ -89,7 +89,7 @@ Emergency fallback: open the drop-off page and use "Emergency paste JSON and sav
   "requirement_id": "REQ-20260707-115",
   "prompt_key": "one-time-role-ia-consistency",
   "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=one-time-role-ia-consistency",
-  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-role-ia-consistency&requirement_id=REQ-20260707-115&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-role-ia-consistency&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-role-ia-consistency%3Aall-contexts",
+  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-role-ia-consistency&requirement_id=REQ-20260707-115&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-role-ia-consistency&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-role-ia-consistency%3Aall-contexts&autosave=1",
   "status": "pass|fail|blocked",
   "role_workspace": "role/workspace tested",
   "conversation_summary": "brief summary, no private transcript body",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T21:49:08.538Z",
+  "generated_at": "2026-07-07T22:06:27.431Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -314,6 +314,9 @@
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/01-current-state-visual-audit.md",
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/02-telegram-codex-progress-notifications.md",
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/manifest.json",
+    "ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/AGENT-MODE-PROMPTS.md",
+    "ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/README.md",
+    "ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/agent-mode-prompt-series.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",

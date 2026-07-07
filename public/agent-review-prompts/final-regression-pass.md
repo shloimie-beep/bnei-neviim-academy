@@ -1,13 +1,13 @@
 # Agent Mode Prompt - Final Regression Pass
 
-Generated: 2026-07-07T15:06:26.071Z
+Generated: 2026-07-07T22:05:55.230Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
 Primary requirement: REQ-20260626-007
 Agent review run ID: 2026-06-26-agent-review-dropoff-repair
 Return URL: https://bneineviimacademy.org/operations/agent-review?prompt=final-regression-pass
-Drop-off URL: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Afinal-regression-pass%3Aall-contexts
+Drop-off URL: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Afinal-regression-pass%3Aall-contexts&autosave=1
 Prompt key: final-regression-pass
 Idempotency key: 2026-06-26-agent-review-dropoff-repair:final-regression-pass:all-contexts
 
@@ -19,7 +19,7 @@ Idempotency key: 2026-06-26-agent-review-dropoff-repair:final-regression-pass:al
   "prompt_key": "final-regression-pass",
   "context_key": null,
   "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=final-regression-pass",
-  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Afinal-regression-pass%3Aall-contexts",
+  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Afinal-regression-pass%3Aall-contexts&autosave=1",
   "requirement_id": "REQ-20260626-007",
   "idempotency_key": "2026-06-26-agent-review-dropoff-repair:final-regression-pass:all-contexts"
 }
@@ -34,6 +34,7 @@ Use takeover mode if an Operations login is required. Do not ask for or store pa
 ## Review Contexts
 
 - Public Visitor: role anonymous_public, workspace public, project bna_public, route /, helper public website helper.
+- One Time Public Landing: role anonymous_public, workspace rabbi_sheller_provider, project one_time_mishnah_class, route /one-time, helper One Time public landing helper.
 - BNA Operations: role super_admin, workspace bna_platform, project bna_school_platform, route /operations?view=tasks, helper Operations helper.
 - Owner Task / Decision: role operator_with_agent_mode_assist, workspace bna_platform, project task_decision_queue, route /operations?view=tasks, helper Operations task or Decision card.
 - Rabbi Provider Admin: role workspace_owner, workspace rabbi_sheller_provider, project one_time_mishnah_class, route /provider.html?review=one-time, helper provider/Rabbi workspace helper.
@@ -65,7 +66,7 @@ Focus: complete Issue #24 acceptance gates, prompt pack links, result drop-off, 
 
 ## Result Shape
 
-Preferred drop-off: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Afinal-regression-pass%3Aall-contexts
+Preferred drop-off: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Afinal-regression-pass%3Aall-contexts&autosave=1
 API fallback: https://bneineviimacademy.org/api/bna/agent-review/results
 Emergency fallback: open the drop-off page and use "Emergency paste JSON and save" only after the normal save path and exact drop-off URL fail.
 
@@ -77,7 +78,7 @@ Emergency fallback: open the drop-off page and use "Emergency paste JSON and sav
   "requirement_id": "REQ-20260626-007",
   "prompt_key": "final-regression-pass",
   "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=final-regression-pass",
-  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Afinal-regression-pass%3Aall-contexts",
+  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Afinal-regression-pass%3Aall-contexts&autosave=1",
   "status": "pass|fail|blocked",
   "role_workspace": "role/workspace tested",
   "conversation_summary": "brief summary, no private transcript body",

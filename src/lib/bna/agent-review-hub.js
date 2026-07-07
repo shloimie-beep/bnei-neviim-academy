@@ -48,6 +48,18 @@ const AGENT_REVIEW_CONTEXTS = [
     prohibited_actions: ['view private records', 'create internal tasks', 'use Operations APIs'],
   },
   {
+    key: 'one_time_public_landing',
+    label: 'One Time Public Landing',
+    role: 'anonymous_public',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    target_route: '/one-time',
+    helper_surface: 'One Time public landing helper',
+    context_type: 'synthetic_read_only',
+    permitted_actions: ['review the public One Time landing page', 'test public-safe One Time helper answers', 'verify brand and English-only scope'],
+    prohibited_actions: ['view BNA school records', 'submit real forms', 'send messages', 'create accounts', 'grant class access'],
+  },
+  {
     key: 'operations_super_admin',
     label: 'BNA Operations',
     role: 'super_admin',
@@ -302,6 +314,36 @@ const AGENT_MODE_PROMPTS = [
     ],
   },
   {
+    key: 'one-time-brand-helper-toolbar-audit',
+    title: 'One Time Brand Helper Toolbar Audit',
+    context_keys: ['one_time_public_landing', 'operations_super_admin', 'rabbi_provider_admin', 'one_time_parent', 'one_time_student', 'one_time_member', 'one_time_classroom'],
+    requirement_id: 'REQ-20260707-136',
+    focus: 'One Time black/yellow brand isolation, English-only public scope, helper presence and role scoping, toolbar density, filter placement, equal buttons, mobile fit, and autonomous Operations drop-off reporting',
+    exact_navigation: [
+      'Open /operations/agent-review?prompt=one-time-brand-helper-toolbar-audit first. Confirm this prompt key is visible in the Agent Review Hub and keep the drop-off page available in another tab.',
+      'Open /one-time. Confirm the page is OneTimeOneTime / One Time Mishnah Class, black/yellow scoped, English-only, and does not flash BNA cream/navy/teal, BNA Academy copy, or a Hebrew/English toggle.',
+      'At /one-time, audit 1440px, 1024px, 768px, 430px, and 390px. Check first-viewport density, top section wasted space, button equal heights, text wrapping, helper launcher placement, and horizontal overflow.',
+      'Open the One Time Helper on /one-time. Ask three public-safe questions: class schedule, parent trial link, and library access. Verify answers stay in one_time_mishnah_class scope and do not mention BNA school accountability unless explicitly framed as unrelated.',
+      'Open /operations. If login is required, use browser takeover so the owner types credentials directly. Do not ask for, store, or repeat credentials.',
+      'From Operations, use the workspace switcher to select One Time / Rabbi / One Time Mishnah Class. If the click path is not findable, record the failed click path and then open /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview.',
+      'In the One Time Operations workspace, inspect the side panel, active workspace label, top subcategories, filters/search, primary action buttons, helper/drawer position, and any cards that say configured/not configured. If Rabbi cannot act on a card, mark it as role-contaminating admin noise.',
+      'In Operations, open Communications > Email or /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email. Record whether the screen loops, switches to a broken display, or fails to show a clean Rabbi / One Time inbox distinction.',
+      'Open /provider.html?review=one-time and /provider.html?admin_provider=one-time&section=mailbox if available. Confirm Rabbi/provider sees clear action buttons such as send message/email previews only where safe, and no random Super Admin diagnostics.',
+      'Open /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.',
+      'For every role route, audit 1440px, 1024px, 768px, 430px, and 390px. Compare category/subcategory/filter placement, toolbar density, button height, helper scope, role label, and mobile menu behavior against the Operations pattern.',
+      'If any route, click path, login, helper, or drop-off step fails, do not stop in frustration. Save a BLOCKED or FAIL report through Operations drop-off with the exact route attempted, what failed, screenshots/DOM notes if available, and the smallest Codex-ready repair suggestion.',
+    ],
+    audit_checklist: [
+      'Produce a route matrix for /one-time, One Time Operations, Communications > Email, provider/Rabbi, parent, student, member, and classroom.',
+      'For each route include 1440px, 1024px, 768px, 430px, and 390px verdicts for spacing, topbar density, button alignment, filter placement, helper placement, role label, and overflow.',
+      'Flag brand bleed specifically: BNA colors/copy, Hebrew/English toggle, BNA Academy language, or non-One-Time helper language on One Time surfaces.',
+      'Flag role bleed specifically: Super Admin diagnostics in Rabbi/parent/student/member views, parent billing in student views, raw setup data in user views, or unrelated BNA records anywhere in One Time.',
+      'Report Communications loops or bad-display switches with exact click path and route/query string.',
+      'Rank fixes by P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.',
+      'End only with OPERATIONS_DROPOFF_SAVED after a saved AGR readback, or OPERATIONS_DROPOFF_FAILED with the full redacted payload if every save path fails.',
+    ],
+  },
+  {
     key: 'cross-role-wrong-permission',
     title: 'Cross-Role Wrong-Permission/Error States',
     context_keys: ['wrong_role_error_states'],
@@ -364,6 +406,7 @@ function promptDropoffPath(prompt, { contextKey = '' } = {}) {
   params.set('return_url', promptReturnPath(prompt));
   params.set('idempotency_key', promptIdempotencyKey(prompt, { contextKey }));
   if (contextKey) params.set('context_key', contextKey);
+  params.set('autosave', '1');
   return `${AGENT_REVIEW_RUN.dropoff_path}?${params.toString()}`;
 }
 
@@ -528,6 +571,7 @@ function taskAgentModeDropoffPath(task = {}) {
   params.set('task_id', String(Number(task.id || 0)));
   params.set('return_url', taskAgentModeReturnPath(task));
   params.set('idempotency_key', taskAgentModeIdempotencyKey(task));
+  params.set('autosave', '1');
   return `${AGENT_REVIEW_RUN.dropoff_path}?${params.toString()}`;
 }
 

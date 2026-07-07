@@ -1,0 +1,50 @@
+{
+  "packet_series_id": "onetime-brand-helper-toolbar-agent-audit-20260708",
+  "raw_id": "RAW-20260707-013",
+  "requirement_id": "REQ-20260707-136",
+  "workspace": "rabbi_sheller_provider",
+  "project": "one_time_mishnah_class",
+  "status": "ready_for_parallel_agent_mode_operations_dropoff",
+  "created_at": "2026-07-08T00:00:00+03:00",
+  "registered_prompt_keys_added": [
+    "one-time-brand-helper-toolbar-audit"
+  ],
+  "parallel_execution": {
+    "parallel_safe_prompts": [
+      1
+    ],
+    "rule": "Run this prompt in its own Agent Mode session. It is audit-only, uses TEST/review routes plus read-only Operations inspection, and has no-send/no-write guardrails."
+  },
+  "dropoff_contract": {
+    "primary": "operations_task_agent_review_dropoff",
+    "success_marker": "OPERATIONS_DROPOFF_SAVED: AGR-...",
+    "failure_marker": "OPERATIONS_DROPOFF_FAILED: <exact UI/API/connector error>",
+    "fallbacks": [
+      "retry exact Operations drop-off URL",
+      "use Operations API or emergency paste fallback when visible",
+      "return full redacted report in chat only when every save path fails"
+    ]
+  },
+  "prompts": [
+    {
+      "order": 1,
+      "title": "One Time Brand, Helper, Toolbar, And Communications Audit",
+      "registered_prompt_key": "one-time-brand-helper-toolbar-audit",
+      "context_key": "one_time_public_landing",
+      "requirement_id": "REQ-20260707-136",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-brand-helper-toolbar-audit:one_time_public_landing:20260708-brand-helper-toolbar",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-brand-helper-toolbar-audit&context_key=one_time_public_landing&requirement_id=REQ-20260707-136&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-brand-helper-toolbar-audit&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-brand-helper-toolbar-audit%3Aone_time_public_landing%3A20260708-brand-helper-toolbar&autosave=1"
+    }
+  ],
+  "guardrails": [
+    "audit_only",
+    "no_code_edits",
+    "no_deploy",
+    "no_external_sends",
+    "no_payment_or_access_grants",
+    "no_dns_or_provider_mutations",
+    "no_drive_writes",
+    "no_credentials_or_shared_passwords",
+    "operations_agent_review_dropoff_required"
+  ]
+}

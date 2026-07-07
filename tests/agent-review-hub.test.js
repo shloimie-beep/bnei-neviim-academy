@@ -28,6 +28,7 @@ test('Agent Review context matrix covers Issue #24 role cards', () => {
   const keys = new Set(AGENT_REVIEW_CONTEXTS.map((item) => item.key));
   [
     'public_visitor',
+    'one_time_public_landing',
     'operations_super_admin',
     'rabbi_provider_admin',
     'provider_participant_staff',
@@ -43,11 +44,11 @@ test('Agent Review context matrix covers Issue #24 role cards', () => {
   assert.equal(AGENT_REVIEW_CONTEXTS.some((item) => item.role === 'super_admin' && item.context_type.includes('live')), true);
 });
 
-test('Agent Mode prompt pack has exactly 14 generated mobile-copyable files', () => {
-  assert.equal(AGENT_MODE_PROMPTS.length, 14);
+test('Agent Mode prompt pack has exactly 15 generated mobile-copyable files', () => {
+  assert.equal(AGENT_MODE_PROMPTS.length, 15);
   assert.equal(packageJson.scripts['agent-review:prompts'], 'node scripts/generate-agent-review-prompts.cjs');
   const index = buildPromptIndex({ baseUrl: 'https://bneineviimacademy.org' });
-  assert.equal(index.length, 14);
+  assert.equal(index.length, 15);
 
   for (const prompt of index) {
     const filePath = path.join(root, 'public', 'agent-review-prompts', prompt.file);
@@ -61,6 +62,7 @@ test('Agent Mode prompt pack has exactly 14 generated mobile-copyable files', ()
     assert.match(text, /requirement_id/);
     assert.match(text, /idempotency_key/);
     assert.match(text, /Preferred drop-off: https:\/\/bneineviimacademy\.org\/operations\/agent-review\/dropoff/);
+    assert.match(text, /autosave=1/);
     assert.match(text, /API fallback: https:\/\/bneineviimacademy\.org\/api\/bna\/agent-review\/results/);
     assert.match(text, /You must submit the structured result yourself/);
     assert.match(text, /OPERATIONS_DROPOFF_SAVED: AGR-\.\.\./);
@@ -84,6 +86,7 @@ test('Agent Mode prompt pack has exactly 14 generated mobile-copyable files', ()
     'one-time-parent-trial-journey',
     'one-time-student-login-reset-journey',
     'one-time-role-ia-consistency',
+    'one-time-brand-helper-toolbar-audit',
   ]) {
     const prompt = index.find((item) => item.key === key);
     assert.ok(prompt, key);
@@ -91,6 +94,18 @@ test('Agent Mode prompt pack has exactly 14 generated mobile-copyable files', ()
     assert.match(text, /## Exact Navigation/);
     assert.match(text, /## Required Audit Output/);
   }
+
+  const brandPrompt = index.find((item) => item.key === 'one-time-brand-helper-toolbar-audit');
+  assert.ok(brandPrompt);
+  const brandText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', brandPrompt.file), 'utf8');
+  assert.match(brandText, /REQ-20260707-136/);
+  assert.match(brandText, /\/one-time/);
+  assert.match(brandText, /\/operations\?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview/);
+  assert.match(brandText, /\/operations\?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email/);
+  assert.match(brandText, /1440px, 1024px, 768px, 430px, and 390px/);
+  assert.match(brandText, /black\/yellow scoped/);
+  assert.match(brandText, /Communications loops or bad-display switches/);
+  assert.match(brandText, /OPERATIONS_DROPOFF_FAILED/);
 });
 
 test('server exposes secure review-session and result APIs', () => {

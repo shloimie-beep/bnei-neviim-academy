@@ -62,6 +62,7 @@ test('sample Decision card receives Agent Mode prompt and drop-off metadata', ()
   assert.match(review.exact_starting_url, /\/operations\?view=tasks&task=2401/);
   assert.match(review.exact_dropoff_url, /\/operations\/agent-review\/dropoff\?/);
   assert.match(review.exact_dropoff_url, /task_id=2401/);
+  assert.match(review.exact_dropoff_url, /autosave=1/);
   assert.match(review.prompt_text, /Requirement\/task\/decision ID: DECISION-2401/);
   assert.match(renderTaskAgentModePrompt(sampleDecision(), review), /Allowed Actions/);
 });
@@ -87,6 +88,7 @@ test('generated Agent Review hub prompts use Operations drop-off as final handof
     generatedAt: '2026-07-07T13:19:58+03:00',
   });
   assert.match(promptText, /Preferred drop-off: https:\/\/bneineviimacademy\.org\/operations\/agent-review\/dropoff/);
+  assert.match(promptText, /autosave=1/);
   assert.match(promptText, /OPERATIONS_DROPOFF_SAVED: AGR-\.\.\./);
   assert.match(promptText, /OPERATIONS_DROPOFF_FAILED: <exact UI\/API error>/);
   assert.doesNotMatch(promptText, /CANNOT_WRITE_GITHUB/);

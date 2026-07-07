@@ -33469,3 +33469,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Result: `REQ-20260707-138` is deployed/live-smoked. The remaining open item
   in this One Time UI register is the Agent Mode prompt refresh
   `REQ-20260707-136`.
+
+## 2026-07-08T01:06:39+03:00 - One Time Agent Mode brand/helper/toolbar prompt local verified
+
+- Added registered Agent Review prompt `one-time-brand-helper-toolbar-audit`
+  for `REQ-20260707-136`, with exact navigation across `/one-time`,
+  One Time Operations, Communications > Email, provider/Rabbi, parent, student,
+  member, and classroom review routes.
+- Added the One Time public landing review context and regenerated the
+  app-visible Agent Review prompt pack from 14 to 15 prompts.
+- Changed generated prompt and task/Decision drop-off URLs to include
+  `autosave=1`, so Agent Mode sessions land on the self-save workflow by
+  default.
+- Added reusable packet
+  `ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/`
+  with the paste-ready prompt, exact context-specific drop-off URL, guardrails,
+  viewport matrix, failure-reporting contract, and Communications loop audit
+  instructions.
+- Local verification passed: prompt generation, `node --check
+  src\lib\bna\agent-review-hub.js`, focused Agent Review/drop-off tests
+  26/26, prompt packet/index JSON parse, action watchdog, protocol-drift
+  watchdog with 0 findings, tracked secret audit, and `git diff --check`.
+- Status: local verified, pending commit, push, Railway deployment, production
+  prompt readback, and final register update.
