@@ -30786,3 +30786,12 @@ Deployment gate:
 - Normalized provider workspace nav rows in public/provider.html so section buttons share stable height and long labels wrap inside the same control system.
 - Local visual evidence: ops/ui-audits/2026-07-07-audit-fix-pass-local-final5/ captured 35 screenshots across 7 routes and 5 viewports with 0 automated findings.
 - Status: follow-up CSS fix locally verified, pending commit/push/second deployment/live smoke.
+
+## 2026-07-07T21:38:00+03:00 - Audit fix implementation batch deployed and live-smoked
+
+- Pushed commits 9789c13e and 6ad5804c to origin/master.
+- Railway deployments bcb85309-93ff-4482-9bfa-39c9749d33a9 and c0ad9905-4837-4987-9c58-f916f928875f reached SUCCESS for the BNA production service.
+- Final live visual audit at https://bneineviimacademy.org captured 35 screenshots across 7 routes and 5 viewports with 0 automated findings.
+- Evidence: ops/ui-audits/2026-07-07-audit-fix-pass-live-final-after-deploy/report.md and ops/release-captain/2026-07-07-audit-fix-live-smoke.md.
+- Railway doctor remains blocked by project-token railway link permission, but explicit target guard and Railway status readback verified the deployment.
+- Blockers preserved for WAPI/Whapi setup, Drive/private-data sync, payments, DNS, external sends, provider writes, credentials, and generated artifact cleanup.

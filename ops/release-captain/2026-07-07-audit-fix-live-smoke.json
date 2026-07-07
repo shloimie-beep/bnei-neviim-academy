@@ -1,0 +1,55 @@
+{
+  "recorded_at": "2026-07-07T21:38:00+03:00",
+  "raw_id": "RAW-20260707-015",
+  "requirement_ids": [
+    "REQ-20260707-152",
+    "REQ-20260707-153",
+    "REQ-20260707-155"
+  ],
+  "branch": "master",
+  "commits": [
+    "9789c13e",
+    "6ad5804c"
+  ],
+  "deployments": [
+    {
+      "id": "bcb85309-93ff-4482-9bfa-39c9749d33a9",
+      "commit": "9789c13e",
+      "status": "SUCCESS",
+      "note": "First deployment exposed one remaining P2 provider tab-grid finding in live audit."
+    },
+    {
+      "id": "c0ad9905-4837-4987-9c58-f916f928875f",
+      "commit": "6ad5804c",
+      "status": "SUCCESS",
+      "note": "Final deployment after provider tab-grid CSS follow-up."
+    }
+  ],
+  "live_smoke": {
+    "path": "ops/ui-audits/2026-07-07-audit-fix-pass-live-final-after-deploy/report.md",
+    "base_url": "https://bneineviimacademy.org",
+    "screenshots": 35,
+    "routes": 7,
+    "viewports": [
+      "1440-desktop",
+      "1024-desktop-tablet",
+      "768-tablet",
+      "430-mobile",
+      "390-mobile"
+    ],
+    "automated_findings": 0
+  },
+  "railway_doctor": {
+    "status": "blocked_by_project_token_link_permission",
+    "detail": "Explicit target guard passed, but railway link failed under the project-scoped token. Railway status readback confirmed the final deployment succeeded."
+  },
+  "guardrails": [
+    "no_external_sends",
+    "no_payment_or_dns_writes",
+    "no_access_grants",
+    "no_credential_mutations",
+    "no_provider_account_writes",
+    "no_production_data_writes",
+    "no_raw_private_data_commits"
+  ]
+}

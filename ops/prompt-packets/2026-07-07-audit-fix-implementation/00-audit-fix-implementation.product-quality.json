@@ -42,7 +42,7 @@
   },
   "stage": "STAGE_3_CODEX_IMPLEMENTATION",
   "packet_role": "IMPLEMENTATION_PACKET",
-  "status": "needs_verification",
+  "status": "verified",
   "title": "Audit Fix Implementation Batch",
   "created_at": "2026-07-07T20:05:00+03:00",
   "workspace_key": "rabbi_sheller_provider",
@@ -522,7 +522,7 @@
         "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
         "viewport": "1440/1024/768/430/390",
         "screenshot_before": "ops/ui-audits/2026-07-07-audit-fix-pass-local-after/screenshots/",
-        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/screenshots/",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-07-audit-fix-pass-local-final5/screenshots/",
         "defect_codes": [
           "VQ-ACTION-003",
           "VQ-LAYOUT-002"
@@ -537,7 +537,7 @@
         "route": "/provider.html?admin_provider=one-time&section=mailbox",
         "viewport": "1440/430/390",
         "screenshot_before": "ops/ui-audits/2026-07-07-audit-fix-pass-local-after/screenshots/",
-        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/screenshots/",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-07-audit-fix-pass-local-final5/screenshots/",
         "defect_codes": [
           "VQ-IA-001",
           "VQ-DATA-008"
@@ -704,12 +704,12 @@
     "required": [
       "npm run pqc:validate -- ops\\prompt-packets\\2026-07-07-audit-fix-implementation\\00-audit-fix-implementation.product-quality.json",
       "node --check scripts\\audit-onetime-role-ui-current-state.mjs",
-      "npm run audit:onetime-role-ui -- --base=http://127.0.0.1:8080 --out-dir=ops\\ui-audits\\2026-07-07-audit-fix-pass-local-final4",
+      "npm run audit:onetime-role-ui -- --base=http://127.0.0.1:8080 --out-dir=ops\\ui-audits\\2026-07-07-audit-fix-pass-local-final5",
       "npm run watchdog:protocol-drift",
       "npm run secrets:audit"
     ],
     "optional_or_blocked": [
-      "Live role UI audit after deployment if auth/session setup allows it."
+      "npm run audit:onetime-role-ui -- --base=https://bneineviimacademy.org --out-dir=ops\\ui-audits\\2026-07-07-audit-fix-pass-live-final-after-deploy"
     ]
   },
   "evidence": {
@@ -717,9 +717,10 @@
       "ops/ui-audits/2026-07-07-audit-fix-pass-local-after/report.md"
     ],
     "after_required": [
-      "ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/report.md",
-      "ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/report.json",
-      "deployment/live-smoke report path pending"
+      "ops/ui-audits/2026-07-07-audit-fix-pass-local-final5/report.md",
+      "ops/ui-audits/2026-07-07-audit-fix-pass-local-final5/report.json",
+      "ops/ui-audits/2026-07-07-audit-fix-pass-live-final-after-deploy/report.md",
+      "ops/ui-audits/2026-07-07-audit-fix-pass-live-final-after-deploy/report.json"
     ],
     "blocked_evidence": [
       "ops/queue-audits/2026-07-07-task-1839-wappy-wapi-phonebook-report-blocked.md",
@@ -759,7 +760,8 @@
     ],
     "evidence_paths": [
       "tasks-pending/2026-07-07-audit-fix-implementation.md",
-      "ops/ui-audits/2026-07-07-audit-fix-pass-local-final4/report.md"
+      "ops/ui-audits/2026-07-07-audit-fix-pass-local-final5/report.md",
+      "ops/ui-audits/2026-07-07-audit-fix-pass-live-final-after-deploy/report.md"
     ],
     "final_status_path": "tasks-pending/2026-07-07-audit-fix-implementation.md#final-audit",
     "next_packet_path": "blocked external/provider/private-data packets only if Shloimie supplies exact approvals"
