@@ -76,13 +76,16 @@ function sourceBlock(source, startPattern, endPattern) {
 test('One Time provider review and view-as sessions use the same Rabbi-facing section model', () => {
   const sectionsBlock = sourceBlock(
     providerHtml,
-    /function providerSections\(\)/,
-    /function providerSectionFromLocation\(\)/
+    /if \(oneTimeReviewMode \|\| oneTimeViewAsRabbiToken\) \{/,
+    /const sections = providerIsPlusPlan/
   );
 
   assert.match(sectionsBlock, /oneTimeReviewMode \|\| oneTimeViewAsRabbiToken/);
-  for (const section of ['overview', 'users', 'communications', 'commercial', 'access']) {
+  for (const section of ['overview', 'crm', 'mailbox', 'communications', 'content', 'class_setup', 'class_media', 'users', 'badges', 'activity']) {
     assert.match(sectionsBlock, new RegExp(`id: '${section}'`), `missing ${section} review section`);
+  }
+  for (const hiddenSection of ['commercial', 'integrations', 'access']) {
+    assert.doesNotMatch(sectionsBlock, new RegExp(`id: '${hiddenSection}'`), `review model should not expose ${hiddenSection}`);
   }
 });
 
@@ -133,11 +136,11 @@ test('One Time provider review keeps Communications selected through load, tab s
     assert.equal(await page.locator('[data-provider-section="overview"]').isVisible(), false);
     assert.equal(await page.locator('[data-provider-section="overview"] [data-one-time-overview-cards]').count(), 1);
 
-    await page.locator('[data-provider-nav="commercial"]').click();
-    assert.equal(await page.locator('[data-provider-section="commercial"]').isVisible(), true);
-    assert.match(page.url(), /section=commercial/);
+    await page.locator('#providerNav [data-provider-nav="crm"]').click();
+    assert.equal(await page.locator('[data-provider-section="crm"]').isVisible(), true);
+    assert.match(page.url(), /section=crm/);
 
-    await page.locator('[data-provider-nav="communications"]').click();
+    await page.locator('#providerNav [data-provider-nav="communications"]').click();
     assert.equal(await page.locator('[data-provider-section="communications"]').isVisible(), true);
     assert.match(page.url(), /section=communications/);
 
@@ -152,6 +155,59 @@ test('One Time provider review keeps Communications selected through load, tab s
     await page.setViewportSize({ width: 390, height: 844 });
     const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
     assert.equal(mobileOverflow, false);
+  } finally {
+    await browser.close();
+    await local.close();
+  }
+});
+
+test('One Time Rabbi CRM and mailbox review hide Super Admin setup diagnostics', async () => {
+  const local = createProviderReviewServer();
+  const baseUrl = await local.listen();
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1180, height: 840 } });
+
+    await page.goto(`${baseUrl}/provider.html?review=one-time&section=crm`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('[data-provider-nav="crm"].active');
+    const crmText = await page.locator('[data-provider-section="crm"]').innerText();
+    assert.match(crmText, /One Time CRM Inbox/);
+    assert.match(crmText, /Open Inbox/);
+    assert.match(crmText, /Preview Email/);
+    assert.match(crmText, /Draft Message/);
+    assert.match(crmText, /TEST Parent One Time/);
+    assert.doesNotMatch(crmText, /configured|not configured|webhook|runtime config|Needs live policy|Needs sender decision|Bulk email locked|Access Checklist|Commercial Model|External Apps/i);
+
+    await page.goto(`${baseUrl}/provider.html?review=one-time&section=mailbox`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('[data-provider-nav="mailbox"].active');
+    const mailboxText = await page.locator('[data-provider-section="mailbox"]').innerText();
+    assert.match(mailboxText, /info@onetimeonetime\.com/);
+    assert.match(mailboxText, /Worksheet link question/);
+    assert.match(mailboxText, /Preview Email/);
+    assert.match(mailboxText, /Save Draft/);
+    assert.doesNotMatch(mailboxText, /configured|not configured|Inbound webhook|runtime config|Needs live policy|Needs sender decision|Bulk email locked|Provider login required/i);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+    assert.equal(mobileOverflow, false);
+  } finally {
+    await browser.close();
+    await local.close();
+  }
+});
+
+test('One Time Rabbi review refuses old setup-only sections', async () => {
+  const local = createProviderReviewServer();
+  const baseUrl = await local.listen();
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1180, height: 840 } });
+    for (const section of ['commercial', 'integrations', 'access']) {
+      await page.goto(`${baseUrl}/provider.html?review=one-time&section=${section}`, { waitUntil: 'networkidle' });
+      await page.waitForSelector('[data-provider-nav="overview"].active');
+      assert.equal(await page.locator(`[data-provider-nav="${section}"]`).count(), 0);
+      assert.equal(await page.locator('[data-provider-section="overview"]').isVisible(), true);
+    }
   } finally {
     await browser.close();
     await local.close();

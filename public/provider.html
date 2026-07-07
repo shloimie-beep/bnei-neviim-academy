@@ -699,7 +699,7 @@
                         <h2>Mailbox</h2>
                         <p class="small">info@onetimeonetime.com messages captured into the One Time CRM.</p>
                     </div>
-                    <span class="status-pill">Resend inbound</span>
+                    <span class="status-pill">One Time CRM</span>
                 </div>
                 <div id="providerMailboxReadiness" class="mailbox-readiness"></div>
                 <form id="providerMailboxSearchForm" class="mailbox-toolbar">
@@ -1514,19 +1514,15 @@
             if (oneTimeReviewMode || oneTimeViewAsRabbiToken) {
                 return [
                     { id: 'overview', label: 'Dashboard', group: 'Workspace' },
-                    { id: 'users', label: 'Users', group: 'Workspace' },
-                    { id: 'crm', label: 'CRM', group: 'Growth' },
-                    { id: 'mailbox', label: 'Mailbox', group: 'Growth' },
-                    { id: 'content', label: 'Content', group: 'Growth' },
-                    { id: 'automations', label: 'Automations', group: 'Operations' },
-                    { id: 'badges', label: 'Badges', group: 'Operations' },
-                    { id: 'communications', label: 'Communications', group: 'Operations' },
+                    { id: 'crm', label: 'CRM', group: 'Workspace' },
+                    { id: 'mailbox', label: 'Mailbox', group: 'Workspace' },
+                    { id: 'communications', label: 'Messages', group: 'Workspace' },
+                    { id: 'content', label: 'Content', group: 'Program' },
                     { id: 'class_setup', label: 'Live Class', group: 'Program' },
                     { id: 'class_media', label: 'Library', group: 'Program' },
-                    { id: 'commercial', label: 'Payments', group: 'Business' },
-                    { id: 'integrations', label: 'Integrations', group: 'Business' },
-                    { id: 'access', label: 'Settings', group: 'Configuration' },
-                    { id: 'activity', label: 'Support', group: 'Configuration' },
+                    { id: 'users', label: 'Users', group: 'Admin' },
+                    { id: 'badges', label: 'Badges', group: 'Program' },
+                    { id: 'activity', label: 'Support', group: 'Admin' },
                 ];
             }
             const sections = providerIsPlusPlan()
@@ -1696,15 +1692,13 @@
             const provider = readiness.readiness || {};
             return [
                 { label: `Inbox: ${readiness.inbox_address || 'info@onetimeonetime.com'}`, ok: true },
-                { label: readiness.inbound_webhook_configured ? 'Inbound webhook configured' : 'Inbound webhook needs secret', ok: readiness.inbound_webhook_configured },
-                { label: provider.send_allowed ? 'Replies can send' : 'Replies blocked', ok: provider.send_allowed },
-                { label: readiness.mailing_address_configured ? 'Mailing address configured' : 'Mailing address runtime config needed', ok: readiness.mailing_address_configured },
-                { label: 'Bulk email locked', ok: false },
-            ].map(item => `<span class="status-pill" title="${escapeHtml(item.ok ? 'Ready' : 'Needs setup or intentionally gated')}">${escapeHtml(item.label)}</span>`).join('');
+                { label: provider.send_allowed ? 'Email replies available' : 'Draft replies only', ok: true },
+                { label: 'Parent and student email stored in One Time CRM', ok: true },
+            ].map(item => `<span class="status-pill" title="${escapeHtml(item.ok ? 'Available in this workspace' : 'Role action')}">${escapeHtml(item.label)}</span>`).join('');
         }
 
         function renderProviderMailboxThreadList(threads = []) {
-            if (!threads.length) return '<p class="small">No captured emails yet. New messages to info@onetimeonetime.com will appear here after the Resend inbound webhook receives them.</p>';
+            if (!threads.length) return '<p class="small">No captured emails yet. New messages to info@onetimeonetime.com will appear here when they arrive.</p>';
             return threads.map(thread => `
                 <button type="button" class="mailbox-thread-button ${thread.thread_key === providerMailboxState.selectedThreadKey ? 'active' : ''}" data-action-id="ACTION-PROVIDER-MAILBOX-THREAD-OPEN" data-provider-mailbox-thread="${escapeHtml(thread.thread_key)}">
                     <strong>${escapeHtml(thread.contact_name || thread.contact_email || 'Email thread')}</strong>
@@ -1751,7 +1745,7 @@
             const canSend = Boolean(thread.reply_to_address && providerReadiness.send_allowed);
             const sendBlocker = !thread.reply_to_address
                 ? 'No inbound sender address is available for this thread.'
-                : (providerReadiness.blocker || 'Resend reply sending is not ready.');
+                : 'Draft this reply here, then use the approved email sending flow when sending is available.';
             return `
                 <section class="service-card">
                     <div class="service-head">
@@ -1766,9 +1760,9 @@
                     </div>
                     <form class="mailbox-composer" data-provider-mailbox-reply="${escapeHtml(thread.thread_key)}">
                         <label>Reply
-                            <textarea name="body_text" required maxlength="5000" placeholder="Write the reply here. Save Draft keeps it local; Send Reply uses Resend after confirmation."></textarea>
+                            <textarea name="body_text" required maxlength="5000" placeholder="Write the reply here. Save Draft stores it in the One Time CRM; Send Reply uses the approved email flow after confirmation."></textarea>
                         </label>
-                        <p class="small">${canSend ? 'Send Reply will ask for SEND_RESEND_EMAIL before any external email is sent.' : escapeHtml(sendBlocker)}</p>
+                        <p class="small">${canSend ? 'Send Reply asks for explicit confirmation before any external email is sent.' : escapeHtml(sendBlocker)}</p>
                         <div class="button-row">
                             <button class="btn" type="submit" name="mailbox_action" value="draft" data-action-id="ACTION-PROVIDER-MAILBOX-DRAFT" ${canDraft ? '' : 'disabled'}>Save Draft</button>
                             <button class="btn primary" type="submit" name="mailbox_action" value="send" data-action-id="ACTION-PROVIDER-MAILBOX-SEND" ${canSend ? '' : 'disabled'} title="${escapeHtml(canSend ? 'Send reply with explicit confirmation' : sendBlocker)}">Send Reply</button>
@@ -1781,7 +1775,9 @@
         function renderProviderMailbox() {
             const target = document.getElementById('providerMailbox');
             const readinessTarget = document.getElementById('providerMailboxReadiness');
+            const mailboxSearchForm = document.getElementById('providerMailboxSearchForm');
             if (!target) return;
+            if (mailboxSearchForm) mailboxSearchForm.classList.remove('hidden');
             if (readinessTarget) readinessTarget.innerHTML = mailboxReadinessPills(providerMailboxState.readiness || {});
             target.innerHTML = `
                 <div class="mailbox-layout">
@@ -2368,6 +2364,151 @@
             }
         }
 
+        function oneTimeReviewHref(value, fallback = '#') {
+            return escapeHtml(value || fallback);
+        }
+
+        function renderOneTimeProviderActionBar(data = {}) {
+            const links = data.links || {};
+            return `
+                <div class="button-row">
+                    <button class="btn primary" type="button" data-action-id="ACTION-PROVIDER-SECTION-NAVIGATION" data-provider-nav="mailbox" data-one-time-action-state="navigate">Open Inbox</button>
+                    <a class="btn" href="${oneTimeReviewHref(links.email_preview, '/one-time-email-review.html')}" data-one-time-action-state="navigate">Preview Email</a>
+                    <button class="btn" type="button" data-action-id="ACTION-PROVIDER-SECTION-NAVIGATION" data-provider-nav="communications" data-one-time-action-state="navigate">Draft Message</button>
+                    <a class="btn" href="${oneTimeReviewHref(links.parent, '/parent.html?review=one-time')}" data-one-time-action-state="navigate">Parent View</a>
+                    <a class="btn" href="${oneTimeReviewHref(links.student, '/student.html?review=one-time')}" data-one-time-action-state="navigate">Student View</a>
+                </div>
+            `;
+        }
+
+        function renderOneTimeCrmWorkspace(data = {}) {
+            const parent = data.parent || {};
+            const student = data.student || {};
+            const supportTicket = data.support_ticket || {};
+            const privateQuestion = data.private_question || {};
+            const records = data.crm_workspace?.current_records || {};
+            return [
+                `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>One Time CRM Inbox</h3>
+                                <p class="small">Emails to info@onetimeonetime.com are stored in this One Time CRM mailbox and tied back to parents, students, support tickets, and private Rabbi questions.</p>
+                            </div>
+                            <span class="status-pill">Rabbi workspace</span>
+                        </div>
+                        <div class="service-meta">
+                            <span class="status-pill">${escapeHtml(String(records.parents || 1))} parent</span>
+                            <span class="status-pill">${escapeHtml(String(records.students || 1))} student</span>
+                            <span class="status-pill">${escapeHtml(String(records.support_items || 2))} support items</span>
+                        </div>
+                        ${renderOneTimeProviderActionBar(data)}
+                    </article>
+                `,
+                miniCardGrid([
+                    {
+                        title: parent.name || 'TEST Parent One Time',
+                        body: `Parent account linked to ${student.display_name || student.name || 'TEST Student One Time'}. Email: ${parent.email || 'test.parent+onetime@example.test'}.`,
+                        status: 'Parent'
+                    },
+                    {
+                        title: student.display_name || student.name || 'TEST Student One Time',
+                        body: 'Student record for class access, attendance, library progress, private questions, badges, and rewards.',
+                        status: 'Student'
+                    },
+                    {
+                        title: supportTicket.title || 'Worksheet link question',
+                        body: supportTicket.latest_activity || 'Parent support request stored in the One Time CRM.',
+                        status: 'Support'
+                    },
+                    {
+                        title: privateQuestion.title || 'Private Rabbi question',
+                        body: privateQuestion.body || 'Student private question waiting for Rabbi review.',
+                        status: 'Private question'
+                    }
+                ]),
+                `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>Message Actions</h3>
+                                <p class="small">Use the inbox for email threads, Messages for parent/student portal messages, and Preview Email to review the current email templates before any live send is approved.</p>
+                            </div>
+                            <span class="status-pill">Role actions</span>
+                        </div>
+                        ${renderOneTimeProviderActionBar(data)}
+                    </article>
+                `
+            ].join('');
+        }
+
+        function renderOneTimeReviewMailbox(data = {}) {
+            const parent = data.parent || {};
+            const supportTicket = data.support_ticket || {};
+            const thread = {
+                contact_name: parent.name || 'TEST Parent One Time',
+                contact_email: parent.email || 'test.parent+onetime@example.test',
+                subject: supportTicket.title || 'Worksheet link question',
+                preview: supportTicket.latest_activity || 'Parent asked where the worksheet is located.',
+                message_count: 2,
+                needs_reply: true
+            };
+            return `
+                <div class="mailbox-layout">
+                    <aside class="mailbox-thread-list" aria-label="Mailbox threads">
+                        <article class="mailbox-thread-button active">
+                            <strong>${escapeHtml(thread.contact_name)}</strong>
+                            <span class="small">${escapeHtml(thread.subject)}</span>
+                            <span class="small">${escapeHtml(thread.preview)}</span>
+                            <div class="service-meta">
+                                <span class="status-pill">Needs reply</span>
+                                <span class="status-pill">${escapeHtml(String(thread.message_count))} messages</span>
+                            </div>
+                        </article>
+                    </aside>
+                    <div id="providerMailboxThread">
+                        <section class="service-card">
+                            <div class="service-head">
+                                <div>
+                                    <h3>${escapeHtml(thread.subject)}</h3>
+                                    <p class="small">Thread with ${escapeHtml(thread.contact_email)} inside the One Time CRM mailbox.</p>
+                                </div>
+                                <span class="status-pill">CRM mailbox</span>
+                            </div>
+                            <div class="service-list">
+                                <article class="mailbox-message inbound">
+                                    <div class="service-head">
+                                        <div>
+                                            <strong>From ${escapeHtml(thread.contact_name)}</strong>
+                                            <span class="small">${escapeHtml(thread.subject)}</span>
+                                        </div>
+                                        <span class="status-pill">Received</span>
+                                    </div>
+                                    <p class="mailbox-message-body">${escapeHtml(thread.preview)}</p>
+                                </article>
+                                <article class="mailbox-message outbound">
+                                    <div class="service-head">
+                                        <div>
+                                            <strong>Draft reply</strong>
+                                            <span class="small">Reply can be saved from the signed provider mailbox.</span>
+                                        </div>
+                                        <span class="status-pill">Draft action</span>
+                                    </div>
+                                    <p class="mailbox-message-body">Open the signed provider mailbox to save the reply draft. Live email sending stays behind the approved confirmation flow.</p>
+                                </article>
+                            </div>
+                            <div class="button-row">
+                                <button class="btn" type="button" data-action-id="ACTION-PROVIDER-SECTION-NAVIGATION" data-provider-nav="crm" data-one-time-action-state="navigate">Open CRM</button>
+                                <a class="btn primary" href="${oneTimeReviewHref(data.links?.email_preview, '/one-time-email-review.html')}" data-one-time-action-state="navigate">Preview Email</a>
+                                <button class="btn" type="button" disabled title="Use the signed provider mailbox to save live drafts.">Save Draft</button>
+                                <button class="btn" type="button" disabled title="Live email sending requires the approved confirmation flow.">Send Reply</button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderOneTimeProviderReview(data, viewAsSession = null) {
             applyOneTimeReviewBrand(viewAsSession);
             ensureOneTimeProviderShell(viewAsSession);
@@ -2385,7 +2526,7 @@
             document.getElementById('providerTitle').textContent = viewAsSession ? 'One Time as Rabbi Eli Scheller' : 'Eli Scheller Workspace';
             document.getElementById('providerSubtitle').textContent = viewAsSession
                 ? 'Workspace owner experience, read-only, same One Time scope'
-                : 'Scoped OneTimeOneTime CRM, content, automations, users, settings, payments, and portals. No cross-account super-admin access.';
+                : 'Scoped OneTimeOneTime CRM, inbox, content, users, messages, class, and support.';
             activeProviderSection = oneTimeReviewInitialSection();
             renderOneTimeProviderNav(data, viewAsSession);
             document.querySelectorAll('[data-provider-section]').forEach(panel => panel.classList.add('provider-section-hidden'));
@@ -2405,7 +2546,7 @@
             const activityPanel = document.querySelector('[data-provider-section="activity"]');
             document.getElementById('providerOverview').innerHTML = `
                 <div class="overview-metric"><strong>One Time</strong><span class="small">${viewAsSession ? 'Rabbi workspace' : 'Branded review workspace'}</span></div>
-                <div class="overview-metric"><strong>${escapeHtml(login.owner_login_username || data.provider?.login_username || 'ELISHELLER')}</strong><span class="small">Owner login username</span></div>
+                <div class="overview-metric"><strong>info@onetimeonetime.com</strong><span class="small">CRM inbox</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(String((data.workspace_users || []).length || 4))}</strong><span class="small">Workspace users</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(String(data.crm_workspace?.current_records?.support_items || 2))}</strong><span class="small">CRM/support items</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(`${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0}`)}</strong><span class="small">Attendance minutes</span></div>
@@ -2423,15 +2564,15 @@
                 reviewCard('Read-only view-as session', viewAsSession.banner || 'Viewing as Rabbi Eli Scheller', 'writes disabled'),
                 reviewCard('Allowed modules', (viewAsSession.allowed_modules || data.admin_review?.modules || []).join(', '), 'Rabbi scope'),
             ] : [
-                reviewCard('Rabbi/provider owner', data.provider?.display_name || data.provider?.name || 'Rabbi Eli Scheller', data.provider?.role || 'workspace_owner'),
-                reviewCard('Login identity', `Username ${login.owner_login_username || data.provider?.login_username || 'ELISHELLER'} is mapped. Password handoff is WhatsApp-only and was not sent from this review.`, login.password_state || 'handoff pending'),
-                reviewCard('Shloimie admin/manager', data.admin?.name || 'Shloimie', data.admin?.role || 'workspace_admin'),
-                reviewCard('TEST parent', `${parent.name || ''} sees only ${student.display_name || student.name || 'one linked TEST student'}`, parent.role || 'parent'),
-                reviewCard('TEST student', `${student.display_name || student.name || ''} has no bot or BNA accountability goals in review mode`, student.role || 'student'),
+                reviewCard('CRM inbox', 'Emails to info@onetimeonetime.com live in the One Time mailbox and CRM thread list.', 'Open Mailbox'),
+                reviewCard('Parent and student', `${parent.name || 'TEST Parent One Time'} is linked to ${student.display_name || student.name || 'TEST Student One Time'}.`, 'One Time only'),
+                reviewCard('Live class', `${classSession.title || 'TEST Weekly Mishnah Live Class'} / ${classSession.masechta || ''} ${classSession.perek || ''}`, classSession.status || 'review ready'),
+                reviewCard('Support queue', data.support_ticket?.latest_activity || 'Parent support and private questions appear in CRM/Messages.', data.support_ticket?.status || 'open'),
             ]).join('');
             if (usersPanel) {
+                const rabbiVisibleUsers = (data.workspace_users || []).filter(user => !/platform|support|shloimie/i.test(`${user.name || ''} ${user.role || ''} ${user.access_level || ''}`));
                 document.getElementById('oneTimeUsers').innerHTML = [
-                    miniCardGrid((data.workspace_users || []).map(user => ({
+                    miniCardGrid((rabbiVisibleUsers.length ? rabbiVisibleUsers : data.workspace_users || []).map(user => ({
                         title: user.name,
                         body: `${user.role || ''}. ${user.access_level || ''}. Modules: ${(user.modules || []).join(', ')}`,
                         status: user.status || user.login_username || '',
@@ -2446,29 +2587,19 @@
                 ].join('');
             }
             if (crmPanel) {
-                document.getElementById('oneTimeCrm').innerHTML = [
-                    miniCardGrid((data.crm_workspace?.pipelines || []).map(item => ({
-                        title: item.title,
-                        body: item.body,
-                        status: item.status,
-                    }))),
-                    reviewCard('CRM record types', (data.crm_workspace?.contact_types || []).join(', '), 'workspace scoped'),
-                    reviewCard('Portal navigation', `Rabbi can open Parent View, Student View, Classroom, Email Review, and Landing from the left toolbar, then return to this provider workspace.`, 'mapped'),
-                ].join('');
+                document.getElementById('oneTimeCrm').innerHTML = renderOneTimeCrmWorkspace(data);
             }
             if (mailboxPanel) {
                 const readinessTarget = document.getElementById('providerMailboxReadiness');
                 const mailboxTarget = document.getElementById('providerMailbox');
+                const mailboxSearchForm = document.getElementById('providerMailboxSearchForm');
+                if (mailboxSearchForm) mailboxSearchForm.classList.add('hidden');
                 if (readinessTarget) readinessTarget.innerHTML = [
                     '<span class="status-pill">info@onetimeonetime.com</span>',
-                    '<span class="status-pill">Provider login required for live inbox</span>',
-                    '<span class="status-pill">Bulk email locked</span>',
+                    '<span class="status-pill">One Time CRM mailbox</span>',
+                    '<span class="status-pill">Draft replies in signed provider login</span>',
                 ].join('');
-                if (mailboxTarget) mailboxTarget.innerHTML = reviewCard(
-                    'Live CRM mailbox',
-                    'The logged-in provider portal reads Resend inbound email from bna_communications and can save reply drafts. Sending uses Resend only after exact confirmation.',
-                    'ready route'
-                );
+                if (mailboxTarget) mailboxTarget.innerHTML = renderOneTimeReviewMailbox(data);
             }
             if (contentPanel) {
                 document.getElementById('oneTimeContent').innerHTML = miniCardGrid((data.content_workspace?.sections || []).map(item => ({

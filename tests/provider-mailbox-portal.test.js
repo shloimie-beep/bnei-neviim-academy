@@ -28,7 +28,16 @@ test('provider portal renders One Time mailbox CRM controls', () => {
   assert.match(providerHtml, /ACTION-PROVIDER-MAILBOX-SEND/);
   assert.match(providerHtml, /\/api\/provider-portal\/mailbox/);
   assert.match(providerHtml, /SEND_RESEND_EMAIL/);
-  assert.match(providerHtml, /Bulk email locked/);
+  assert.doesNotMatch(providerHtml, /Bulk email locked/);
+
+  const readinessBlock = sourceBlock(
+    providerHtml,
+    /function mailboxReadinessPills\(readiness = \{\}\)/,
+    /function renderProviderMailboxThreadList/
+  );
+  assert.match(readinessBlock, /Draft replies only/);
+  assert.match(readinessBlock, /Parent and student email stored in One Time CRM/);
+  assert.doesNotMatch(readinessBlock, /Inbound webhook|runtime config|configured|not configured|needs secret|Bulk email locked/i);
 });
 
 test('provider mailbox API is One Time scoped and backed by bna_communications', () => {
