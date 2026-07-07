@@ -33492,3 +33492,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   watchdog with 0 findings, tracked secret audit, and `git diff --check`.
 - Status: local verified, pending commit, push, Railway deployment, production
   prompt readback, and final register update.
+
+## 2026-07-08T01:10:49+03:00 - One Time Agent Mode brand/helper/toolbar prompt deployed
+
+- Pushed commit `ea416c22` to `origin/master`.
+- Railway production deployment
+  `1e0ec95d-b83d-441f-8aa9-083d47cc5720` reached `SUCCESS` for commit
+  `ea416c22`.
+- Production prompt readback returned 200 for
+  `https://bneineviimacademy.org/agent-review-prompts/one-time-brand-helper-toolbar-audit.md`
+  and confirmed the prompt key, `REQ-20260707-136`, `## Exact Navigation`,
+  `autosave=1`, `OPERATIONS_DROPOFF_FAILED`, the One Time Communications email
+  route, and the 1440/1024/768/430/390 viewport matrix.
+- Production `index.json` readback returned 200 and confirmed
+  `"prompt_count": 15` plus the new prompt key.
+- Live Agent Mode acceptance smoke passed:
+  `ops/live-smokes/2026-07-07T22-10-40-895Z-one-time-agent-mode-acceptance-live-smoke.md`.
+- Result: `REQ-20260707-136` is deployed/live-smoked. The One Time
+  brand/helper/toolbar register now has the prompt/drop-off refresh closed;
+  external provider setup and the separate One Time Railway target remain
+  blocked in the active execution run.
