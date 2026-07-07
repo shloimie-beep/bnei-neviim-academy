@@ -1,6 +1,6 @@
 # Agent Mode Prompt - Rabbi Scheller Provider Admin
 
-Generated: 2026-06-26T08:47:05.914Z
+Generated: 2026-07-07T15:06:26.071Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -47,8 +47,8 @@ Focus: One Time provider admin scope, provider helper links, payment/access prev
 6. For any claimed write, verify the typed action/audit/result record. If no record exists, mark the claim failed.
 7. Include the newest Drive recording trace status from the hub; do not claim the recording processed beyond the trace evidence.
 8. You must submit the structured result yourself before your final answer. Normal save path: use the Agent Review Hub/drop-off page. If that form fails, use the exact drop-off URL below. If that still fails, use the Emergency paste JSON and save control on the drop-off page. If the browser cannot submit any page, POST the same JSON to the API fallback.
-9. A successful final answer must start with SAVED AGR-... and include the saved readback URL. Do not finish with downloadable artifacts, owner-upload instructions, claims that a JSON handoff is prepared, file handoff language, or manual-upload wording.
-10. If every save path fails, the final answer must start with DROP-OFF FAILED and include the complete redacted JSON payload so the owner can recover it. This is the only allowed manual payload handoff.
+9. A successful final answer must start with OPERATIONS_DROPOFF_SAVED: AGR-... and include the saved readback URL. Do not finish with downloadable artifacts, owner-upload instructions, claims that a JSON handoff is prepared, file handoff language, or manual-upload wording.
+10. If every save path fails, the final answer must start with OPERATIONS_DROPOFF_FAILED: <exact UI/API error> and include the complete redacted JSON payload so Codex can recover it. This is the only allowed manual payload handoff.
 11. The window is safe to close only after the Agent Review Hub or readback API shows the AGR result for this prompt key and idempotency key.
 12. If a scoped context redirects to public/sign-in content and cannot open after owner takeover login, stop that context, save BLOCKED through the self-save path, and do not audit the public helper as the scoped helper.
 
@@ -89,4 +89,4 @@ Emergency fallback: open the drop-off page and use "Emergency paste JSON and sav
 }
 ```
 
-End with SAVED AGR-... and the readback URL after a successful save. End with DROP-OFF FAILED and the redacted JSON payload only if all save paths failed.
+End with OPERATIONS_DROPOFF_SAVED: AGR-... and the readback URL after a successful save. End with OPERATIONS_DROPOFF_FAILED: <exact UI/API error> and the redacted JSON payload only if all save paths failed.

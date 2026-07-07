@@ -1,0 +1,869 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260707-110",
+  "parent_raw_id": "RAW-20260707-011",
+  "source_statement_ids": [
+    "SRC-20260707-011-001",
+    "SRC-20260707-011-002",
+    "SRC-20260707-011-003",
+    "SRC-20260707-011-004",
+    "SRC-20260707-011-005",
+    "SRC-20260707-011-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [
+      "PKT-20260707-111",
+      "PKT-20260707-112",
+      "PKT-20260707-113"
+    ],
+    "depends_on_packet_ids": [
+      "PKT-20260707-100"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260707-011-parent-trial-login-and-ia-consistency.md",
+      "tasks-pending/2026-07-07-parent-student-login-ui-polish.md",
+      "memory-topics/ui-quality-goals.md",
+      "memory-topics/one-time-rabbi-sheller.md",
+      "memory-topics/workspace-scope-isolation.md",
+      "docs/PRODUCT-QUALITY-COMPILER.md",
+      "docs/UI-PATTERN-REFERENCE.md",
+      "docs/UI-STATE-MATRIX.md",
+      "docs/VISUAL-QUALITY-HARNESS.md",
+      "docs/BROWSER-AGENT-SECURITY.md",
+      "ops/visual-quality-rubric.md"
+    ],
+    "produces": [
+      "tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md",
+      "ops/prompt-packets/2026-07-07-parent-trial-login-and-ia-consistency/00-parent-trial-login-ia-consistency.product-quality.json",
+      "ops/agent-mode-prompts/2026-07-07-parent-trial-login-and-ia-consistency.md",
+      "ops/ui-audits/2026-07-07-parent-trial-login-and-ia-consistency/"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-parent-trial-login-and-ia-consistency/00-parent-trial-login-ia-consistency.product-quality.json",
+    "terminal_condition": "Parent trial/login and IA consistency work is not done until the parent/student journey is audited, safe access/email blockers are explicit, implementation is evidence-backed, and app-visible changes are deployed/live-smoked.",
+    "handoff_target": "tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md"
+  },
+  "stage": "STAGE_1_SPEC_COMPILER",
+  "packet_role": "SPEC_COMPILER",
+  "status": "generated",
+  "title": "Parent Trial Login And Cross-Workspace IA Consistency",
+  "created_at": "2026-07-07T17:32:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN",
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "INTERNAL_AGENT_SUPPORT",
+    "EMAIL_PROVIDER_SETUP"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260707-011",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "SUPER_RAMBLE",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "COMMUNITY_CLASSROOM",
+      "COMMUNICATIONS_EMAIL",
+      "PAYMENTS_ACCESS",
+      "EXTERNAL_WRITE_REQUEST",
+      "SECURITY_PRIVACY",
+      "DECISION_REQUIRED",
+      "VERIFIER_CLOSEOUT",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.98,
+    "reasons": [
+      "The operator asked for a real parent-style login/welcome flow, parent/student login role split, schedule, library, click tracking, and student password reset.",
+      "The request includes external email/access mutation language but lacks exact recipient and class link.",
+      "The operator used broad product-quality language around cramped UI, consistency, side panels, categories, subcategories, filters, and toolbar placement.",
+      "The request spans Super Admin, Rabbi/provider, parent, student, Agent Mode, Operations drop-off, and release proof."
+    ],
+    "affected_product_surfaces": [
+      "One Time parent/member signup and login journey",
+      "One Time student login and class/library access journey",
+      "Parent portal household, schedule, library, billing/trial, click, and attendance visibility",
+      "Operations Super Admin and Rabbi/provider admin shell",
+      "Agent Mode audit access and Operations Agent Review drop-off"
+    ],
+    "likely_external_provider_blockers": [
+      "Exact recipient email is ambiguous in the raw request.",
+      "Exact One Time class link is not stated in this turn.",
+      "Real access grant or trial/member creation needs confirmation of test versus production scope.",
+      "Real email send must use approved copy, recipient, sender, and class link."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-control-tower-parent-trial-login-ia-consistency",
+      "01-current-state-parent-student-rabbi-ia-visual-audit",
+      "02-agent-mode-navigation-prompt-pack",
+      "03-safe-test-access-link-or-preview",
+      "04-parent-student-workflow-fixes",
+      "05-verification-deploy-live-smoke"
+    ],
+    "next_exact_packet": "Inspect current parent/student access routes and produce navigation-specific Agent Mode prompts before broad UI implementation."
+  },
+  "operator_intent_summary": "Shloimie wants to experience One Time as a fresh parent receiving a 30-day welcome/login, then verify that parent and student portals, schedule, library, click/attendance tracking, student login reset, and role-specific views work cleanly. He also wants Super Admin, Rabbi/provider, parent, and student interfaces to share the same IA grammar for side panels, categories, top subcategories, filters, and drawers.",
+  "raw_quotes": [
+    "I want to get a login to my email sdrtler as if I was a parent",
+    "hi welcome you're 30-day Starts Now",
+    "I need to be able to see the schedule",
+    "I need to be able to see the library",
+    "tracking the clicks of the students",
+    "there should be a parent login and a student login",
+    "from the parent login I'm able to reset the student password",
+    "I thought we're structuring everything like the BNA super admin viewer",
+    "all of those things in the filters across every single workspace is all going to be positioned the same way",
+    "make like an agent mode like page as if there was like a student that just doesn't need a password"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260707-110",
+      "decision": "Do not send a live parent trial/login email or mutate access until exact recipient, class link, copy, and test-vs-production scope are auditable.",
+      "status": "needs_operator_decision"
+    },
+    {
+      "id": "DEC-20260707-111",
+      "decision": "Keep parent and student roles separate in the product model, even if the first audited release shares some underlying data.",
+      "status": "accepted_for_audit"
+    }
+  ],
+  "out_of_scope": [
+    "No live email send until exact recipient, copy, class link, sender, and account scope are confirmed.",
+    "No Stripe charge, checkout creation, billing mutation, DNS change, WhatsApp/SMS send, provider account write, or legacy CRM write.",
+    "No shared real password for Agent Mode, student, parent, Rabbi, or Super Admin.",
+    "No broad UI implementation before current-state audit and Definition of Ready.",
+    "No staging, reverting, or committing unrelated dirty work."
+  ],
+  "affected_surfaces": [
+    "Parent login and parent/member portal",
+    "Student login and student portal",
+    "One Time welcome/trial/access email path",
+    "One Time schedule, library, click tracking, and attendance readbacks",
+    "Operations Super Admin shell",
+    "Rabbi/provider admin shell",
+    "Agent Review drop-off and Agent Mode audit test link"
+  ],
+  "affected_routes": [
+    "/parent/login",
+    "/parent.html",
+    "/student/login",
+    "/student.html",
+    "/rabbi-member?review=one-time",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+    "/agent-review-dropoff.html?prompt_key=parent-trial-signup-journey-audit&context_key=one-time-parent-student-journey&requirement_id=REQ-PARENT-TRIAL-JOURNEY&autosave=1"
+  ],
+  "affected_files": [
+    "server.js",
+    "public/parent-login.html",
+    "public/parent.html",
+    "public/student.html",
+    "public/operations.html",
+    "public/rabbi-member.html",
+    "public/css/bna-app-shell.css",
+    "public/css/one-time-shared-review.css",
+    "tests/parent-student-portal-contract.test.js",
+    "tests/one-time-admin-mailbox-access.test.js",
+    "scripts/audit-parent-student-login-ui-polish.mjs",
+    "tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "Existing parent access/magic-link API and email-send behavior",
+      "Existing student password account API and parent reset/set support",
+      "Parent portal sections for schedule, library, trial/billing, click, and attendance visibility",
+      "Student portal class/library access and student-safe actions",
+      "Operations Super Admin side panel, top subcategories, filters, and drawer placement",
+      "Rabbi/provider admin side panel, top subcategories, filters, and drawer placement",
+      "Agent Review drop-off route and failure-reporting behavior"
+    ],
+    "known_from_operator": [
+      "Parent/student UI still feels cramped in some places.",
+      "Rabbi/provider view is confusing and appears to be broken into lame or inconsistent categories.",
+      "Super Admin layout is closer to the desired grammar.",
+      "Agent Mode prompts need exact navigation and failure drop-off behavior."
+    ],
+    "known_blockers": [
+      "Exact live email recipient and class link are missing.",
+      "No-password Agent Mode walkthrough link must be verified or built before asking agents to audit as real users.",
+      "Broad IA fixes are blocked until current-state visual/route evidence exists."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "completely random parent",
+      "30-day starts now",
+      "see the schedule",
+      "see the library",
+      "tracking the clicks",
+      "parent login and student login",
+      "structured really weird",
+      "lots of buttons and weird stuff",
+      "hard for me to tell",
+      "UI looks super cramped",
+      "agent mode prompts are not thorough enough",
+      "everything needs to be consistent"
+    ],
+    "expanded_phrases": {
+      "completely random parent": "Provide a safe test/smoke parent journey that behaves like a new signup without exposing or mutating unrelated real family records.",
+      "30-day starts now": "Welcome/trial state must have exact copy, trial start date, next action, class link, and billing/access implications.",
+      "see the schedule": "Parent/student portal must expose the correct parent-safe or student-safe schedule view, or show a precise blocked/empty state.",
+      "see the library": "Portal must show the correct One Time library/member-library destination, tier gating, and empty/blocked states.",
+      "tracking the clicks": "Student link clicks/class access must be logged or explicitly marked as missing with a proposed first-party event model.",
+      "parent login and student login": "Role split must be explicit: parent manages household/billing/access/attendance; student receives student-safe class/library actions.",
+      "structured really weird": "IA must have predictable category/subcategory/filter placement and no unclear role/view identity.",
+      "everything needs to be consistent": "Across workspaces and roles, shared shell primitives should keep side panel, top tabs/subcategories, filters, and drawers in the same positions."
+    }
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/ui-quality-goals.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/workspace-scope-isolation.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260707-110",
+      "statement": "Compile and validate the parent trial/login and IA consistency packet.",
+      "expected_result": "The broad ramble becomes exact requirements, blockers, routes, audits, prompts, and release gates.",
+      "acceptance_criteria": [
+        "Raw intake and register exist.",
+        "Product Quality packet validates.",
+        "Requirements split live email/access mutation from audit and UI work."
+      ]
+    },
+    {
+      "id": "REQ-20260707-111",
+      "statement": "Prepare the live parent trial login email path without sending until exact details are confirmed.",
+      "expected_result": "Codex knows which route/API can create or preview a parent login and what is blocked before sending.",
+      "acceptance_criteria": [
+        "Existing parent access route/API inspected.",
+        "Exact recipient, class link, account scope, sender, and copy are either confirmed or listed as blockers.",
+        "No live email/access grant occurs without confirmation."
+      ]
+    },
+    {
+      "id": "REQ-20260707-112",
+      "statement": "Identify or create a safe no-password Agent Mode parent/student walkthrough link.",
+      "expected_result": "Agent Mode can audit parent/student journeys as realistic test users without Super Admin navigation or shared real credentials.",
+      "acceptance_criteria": [
+        "Link uses test/review/smoke data only.",
+        "No billing, external send, or private data mutation occurs.",
+        "Desktop and mobile routes render the intended parent/student role views."
+      ]
+    },
+    {
+      "id": "REQ-20260707-115",
+      "statement": "Audit and repair IA consistency across Super Admin, Rabbi/provider, parent, and student views.",
+      "expected_result": "The app uses a consistent navigation grammar for side panels, top subcategories, filters, and drawers while preserving role-appropriate data.",
+      "acceptance_criteria": [
+        "Audit compares routes at 1440 and 390 widths.",
+        "Each role has a clear active role/view label.",
+        "Categories/subcategories/filters are logically placed and not duplicated.",
+        "App-visible fixes are deployed and live-smoked before Done."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "blocked_pending_current_state_inspection",
+    "criteria": [
+      "Raw source preserved.",
+      "PQC packet validates.",
+      "Current parent/student access APIs and routes are inspected.",
+      "Agent Mode audit prompts name exact routes and drop-off URLs.",
+      "Live email/access grant is separated behind an explicit Decision blocker.",
+      "Current-state screenshots exist before broad UI implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/parent/login",
+      "viewport": 1440,
+      "auth_role": "anonymous_parent",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent login without a parent session.",
+      "expected_visible_title": "Parent Login",
+      "expected_visible_message": "Parent login explains access code or secure link entry without admin clutter.",
+      "expected_primary_action": "Continue",
+      "expected_secondary_actions": [
+        "Request access",
+        "Help"
+      ],
+      "forbidden_content": [
+        "admin diagnostics",
+        "raw tokens",
+        "billing internals"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Parent login heading, input, and continue action are readable and labelled.",
+      "accessibility_expectation": "Controls are keyboard reachable and 44px minimum on mobile.",
+      "test_smoke_assertion": "Parent login renders without overflow or private data.",
+      "requirement_id": "REQ-20260707-113"
+    },
+    "empty": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_parent",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the One Time parent review route on mobile.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "If no schedule/library data exists, the empty state says what is missing and what happens next.",
+      "expected_primary_action": "View schedule or library",
+      "expected_secondary_actions": [
+        "Request help",
+        "Back"
+      ],
+      "forbidden_content": [
+        "blank card",
+        "Super Admin setup warnings",
+        "unrelated student data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is associated with its section heading.",
+      "accessibility_expectation": "Empty state actions are tappable and do not overlap.",
+      "test_smoke_assertion": "Parent review empty state is understandable and scoped.",
+      "requirement_id": "REQ-20260707-113"
+    },
+    "populated": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "review_parent",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the parent review route with test/review data.",
+      "expected_visible_title": "Parent Portal",
+      "expected_visible_message": "Parent sees schedule, library, trial/access state, and student activity if available.",
+      "expected_primary_action": "Open next class or library",
+      "expected_secondary_actions": [
+        "Manage student login",
+        "View activity"
+      ],
+      "forbidden_content": [
+        "other households",
+        "student-private notes not parent-safe",
+        "admin configuration cards"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Parent sections have clear headings and button names.",
+      "accessibility_expectation": "Cards align to a stable grid with no wasted first-viewport dead space.",
+      "test_smoke_assertion": "Parent review route shows correct sections or explicit blocked states.",
+      "requirement_id": "REQ-20260707-113"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 1440,
+      "auth_role": "super_admin_viewing_provider_workspace",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Operations in the Rabbi/provider workspace and inspect side panel, top subcategories, and filters.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Top filters and subcategories match the shared shell grammar and do not look like a separate unrelated app.",
+      "expected_primary_action": "Switch role/view or open selected section",
+      "expected_secondary_actions": [
+        "Filters",
+        "View as"
+      ],
+      "forbidden_content": [
+        "duplicated category bars",
+        "unclear role label",
+        "random Super Admin-only diagnostics in Rabbi view"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Current workspace, role, active category, and active subcategory are discoverable.",
+      "accessibility_expectation": "Filter controls have visible labels and predictable order.",
+      "test_smoke_assertion": "Provider workspace IA placement is consistent with Super Admin shell.",
+      "requirement_id": "REQ-20260707-115"
+    },
+    "error": {
+      "route": "/student/login",
+      "viewport": 390,
+      "auth_role": "anonymous_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open student login and trigger invalid or missing credential state if possible.",
+      "expected_visible_title": "Student Login",
+      "expected_visible_message": "The error explains how to get access without exposing secrets.",
+      "expected_primary_action": "Try again",
+      "expected_secondary_actions": [
+        "Ask parent",
+        "Help"
+      ],
+      "forbidden_content": [
+        "stack trace",
+        "raw password hash",
+        "parent billing details"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error is visible near the relevant input/action.",
+      "accessibility_expectation": "Error text wraps cleanly at 390px.",
+      "test_smoke_assertion": "Student error state is student-safe and does not overflow.",
+      "requirement_id": "REQ-20260707-114"
+    },
+    "blocked_setup": {
+      "route": "/parent.html",
+      "viewport": 1024,
+      "auth_role": "parent_without_confirmed_trial_or_class_link",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent portal without confirmed access/trial/class data.",
+      "expected_visible_title": "Parent Portal",
+      "expected_visible_message": "Blocked setup explains missing access, class link, or schedule without blaming the user.",
+      "expected_primary_action": "Request access",
+      "expected_secondary_actions": [
+        "Contact support"
+      ],
+      "forbidden_content": [
+        "misleading active trial",
+        "wrong class link",
+        "unapproved billing state"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked reason is tied to disabled or unavailable action.",
+      "accessibility_expectation": "Blocked controls expose reason in visible text.",
+      "test_smoke_assertion": "Missing setup shows a clear blocked state.",
+      "requirement_id": "REQ-20260707-111"
+    },
+    "preview_only": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "agent_mode_review_parent",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the no-password Agent Mode/review link.",
+      "expected_visible_title": "Parent Portal",
+      "expected_visible_message": "Preview/test status is visible enough for auditors and not visible as production copy to real parents.",
+      "expected_primary_action": "Audit parent journey",
+      "expected_secondary_actions": [
+        "Open student view",
+        "Report findings"
+      ],
+      "forbidden_content": [
+        "real private student data",
+        "live send",
+        "payment action"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview/test state is discernible before actions.",
+      "accessibility_expectation": "Agent prompt controls remain keyboard reachable.",
+      "test_smoke_assertion": "Agent Mode preview route is safe and no-password.",
+      "requirement_id": "REQ-20260707-112"
+    },
+    "success_readback": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_parent",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent review route after data load.",
+      "expected_visible_title": "Parent Portal",
+      "expected_visible_message": "Schedule/library/activity readback fits mobile without cramped controls.",
+      "expected_primary_action": "Open next class",
+      "expected_secondary_actions": [
+        "Library",
+        "Student login"
+      ],
+      "forbidden_content": [
+        "horizontal overflow",
+        "overlapping filters",
+        "clipped button labels"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Readback sections are announced in logical order.",
+      "accessibility_expectation": "No element creates horizontal scroll at 390px.",
+      "test_smoke_assertion": "Mobile parent readback has no overflow or clipped labels.",
+      "requirement_id": "REQ-20260707-113"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "wrong_scope_or_provider_role",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Inspect Operations/Rabbi provider view where role is not Super Admin.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Wrong-role or provider-only state hides Super Admin configuration noise.",
+      "expected_primary_action": "Open allowed workspace section",
+      "expected_secondary_actions": [
+        "Back",
+        "Help"
+      ],
+      "forbidden_content": [
+        "Super Admin-only diagnostics",
+        "unrelated BNA records",
+        "private parent/student data outside scope"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Role and workspace are clear.",
+      "accessibility_expectation": "Permission messages do not trap focus.",
+      "test_smoke_assertion": "Provider view does not leak Super Admin noise.",
+      "requirement_id": "REQ-20260707-115"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+      "viewport": 390,
+      "auth_role": "super_admin_viewing_provider_workspace",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile Operations/provider workspace and open any menu/drawer/filter panel.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Drawer/filter placement matches the shared shell and does not cover essential context.",
+      "expected_primary_action": "Close drawer or apply filter",
+      "expected_secondary_actions": [
+        "Clear",
+        "Back"
+      ],
+      "forbidden_content": [
+        "filter overlay clipping",
+        "duplicate nav bars",
+        "unlabelled menu icon"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Drawer has labelled open/close controls.",
+      "accessibility_expectation": "Drawer is tappable, closable, and does not cause horizontal overflow.",
+      "test_smoke_assertion": "Mobile drawer/filter state is consistent and usable.",
+      "requirement_id": "REQ-20260707-115"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/parent/login",
+        "viewport": 1440,
+        "state": "logged_out"
+      },
+      {
+        "route": "/parent/login",
+        "viewport": 390,
+        "state": "mobile"
+      },
+      {
+        "route": "/parent.html?review=one-time",
+        "viewport": 1440,
+        "state": "review_parent"
+      },
+      {
+        "route": "/parent.html?review=one-time",
+        "viewport": 1024,
+        "state": "tablet_review_parent"
+      },
+      {
+        "route": "/parent.html?review=one-time",
+        "viewport": 768,
+        "state": "small_tablet_review_parent"
+      },
+      {
+        "route": "/parent.html?review=one-time",
+        "viewport": 430,
+        "state": "narrow_mobile_review_parent"
+      },
+      {
+        "route": "/parent.html?review=one-time",
+        "viewport": 390,
+        "state": "mobile_review_parent"
+      },
+      {
+        "route": "/student/login",
+        "viewport": 1440,
+        "state": "logged_out"
+      },
+      {
+        "route": "/student/login",
+        "viewport": 390,
+        "state": "mobile"
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 1440,
+        "state": "review_student"
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 390,
+        "state": "mobile_review_student"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 1440,
+        "state": "provider_workspace_ia"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 1024,
+        "state": "provider_workspace_tablet_ia"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 768,
+        "state": "provider_workspace_small_tablet_ia"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 430,
+        "state": "provider_workspace_narrow_mobile_ia"
+      },
+      {
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class",
+        "viewport": 390,
+        "state": "provider_workspace_mobile_ia"
+      }
+    ],
+    "defect_codes_to_use": [
+      "VQ-LAYOUT-002",
+      "VQ-RESPONSIVE-001",
+      "VQ-ALIGN-001",
+      "VQ-IA-004",
+      "VQ-A11Y-001",
+      "VQ-CONTENT-003"
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "All parent/student buttons and filter controls are at least 44px tall on mobile.",
+      "Role, workspace, active category, and active subcategory are visible and programmatically discoverable.",
+      "Top filters and drawer controls have visible labels or standard icon labels/tooltips.",
+      "No clipped text, overlapping controls, or horizontal overflow at 390px."
+    ],
+    "verification": [
+      "Playwright screenshot and DOM measurements at 1440 and 390 widths.",
+      "Keyboard/focus pass for login, drawer, filter, and primary journey actions.",
+      "Privacy assertions for role-scoped content."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Send parent trial/login email",
+      "selector_or_action_key": "ACTION-ONETIME-PARENT-TRIAL-LOGIN-SEND",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Codex + operator",
+      "external_write": true,
+      "handler_or_blocker": "Blocked until exact recipient, class link, sender, copy, and test/production account scope are confirmed.",
+      "registry_required": true
+    },
+    {
+      "label": "Generate parent access link preview",
+      "selector_or_action_key": "ACTION-PARENT-ACCESS-LINK-PREVIEW",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Use existing parent access preview/dry-run route if available; otherwise create no-send preview implementation packet.",
+      "registry_required": true
+    },
+    {
+      "label": "Set or reset student login from parent portal",
+      "selector_or_action_key": "ACTION-PARENT-RESET-STUDENT-LOGIN",
+      "action_state": "INTERNAL_SUPPORT_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Inspect existing bna_student_password_accounts APIs and parent portal UI before implementation.",
+      "registry_required": true
+    },
+    {
+      "label": "Open Agent Mode parent/student test walkthrough",
+      "selector_or_action_key": "ACTION-AGENT-MODE-ONETIME-PARENT-STUDENT-WALKTHROUGH",
+      "action_state": "TEST_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Stable test/review route or generated test-only link.",
+      "registry_required": true
+    },
+    {
+      "label": "Switch/view role as Super Admin, Rabbi, parent, or student",
+      "selector_or_action_key": "ACTION-VIEW-AS-ROLE-AUDIT",
+      "action_state": "INTERNAL_SUPPORT_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Inspect Operations view-as/role routes and forbid shared credentials.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "visible_fields": [
+      "role/view identity",
+      "workspace/project label",
+      "trial status and trial start date where confirmed",
+      "next class link where confirmed",
+      "schedule summary",
+      "library/member-library access status",
+      "student click/activity status where supported",
+      "attendance/readback status where supported",
+      "student login/reset state where supported"
+    ],
+    "forbidden_fields": [
+      "raw tokens",
+      "passwords",
+      "password hashes",
+      "other household data",
+      "private student notes not approved for parent view",
+      "Super Admin-only diagnostics in Rabbi/provider/parent/student views",
+      "unapproved billing/Stripe internals"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_external_crm_writes": true,
+    "role_scope_invariants": [
+      "Parent scope sees only approved household/student and billing/access/activity data.",
+      "Student scope is student-safe and does not expose parent billing, adult/private notes, or admin controls.",
+      "Provider/Rabbi scope cannot read unrelated BNA/private/provider/family data.",
+      "Super Admin view-as must make the viewed role obvious and must not rely on shared real credentials.",
+      "Agent Mode test links must use safe test/review data and no live send/payment/write actions."
+    ],
+    "secret_handling": "No cookies, session IDs, access codes, login links, raw private bodies, or secret-shaped values may be committed in screenshots or reports."
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260707-110-A",
+      "scope": "Raw capture, register, PQC, and prompt pack",
+      "instructions": [
+        "Preserve raw source and parse requirements.",
+        "Validate PQC packet.",
+        "Create thorough Agent Mode prompts with exact drop-off/failure reporting."
+      ]
+    },
+    {
+      "batch_id": "BATCH-20260707-110-B",
+      "scope": "Access/email/workflow route inspection",
+      "instructions": [
+        "Inspect existing parent access, student password, schedule, library, click, and attendance routes/APIs.",
+        "Do not send email or mutate real access.",
+        "Record exact blockers and no-send preview path."
+      ]
+    },
+    {
+      "batch_id": "BATCH-20260707-110-C",
+      "scope": "Current-state IA and journey audit",
+      "instructions": [
+        "Capture desktop/mobile screenshots and route evidence.",
+        "Compare Super Admin, Rabbi/provider, parent, and student IA placement.",
+        "Record findings with severity and exact recommendation."
+      ]
+    },
+    {
+      "batch_id": "BATCH-20260707-110-D",
+      "scope": "Scoped implementation after audit",
+      "instructions": [
+        "Fix only audited defects and missing ready behavior.",
+        "Update route/action registries if changing visible routes/actions.",
+        "Run tests, commit, push, deploy, and live smoke for app-visible work."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "large",
+    "source_files_to_read": [
+      "server.js",
+      "public/operations.html",
+      "public/parent-login.html",
+      "public/parent.html",
+      "public/student.html",
+      "public/rabbi-member.html",
+      "tests/parent-student-portal-contract.test.js",
+      "tests/one-time-admin-mailbox-access.test.js",
+      "ops/action-registry.json",
+      "ops/route-registry.json"
+    ],
+    "files_allowed_to_edit": [
+      "raw-input/RAW-20260707-011-parent-trial-login-and-ia-consistency.md",
+      "tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md",
+      "ops/prompt-packets/2026-07-07-parent-trial-login-and-ia-consistency/00-parent-trial-login-ia-consistency.product-quality.json",
+      "ops/agent-mode-prompts/2026-07-07-parent-trial-login-and-ia-consistency.md",
+      "scripts/audit-parent-trial-login-and-ia-consistency.mjs",
+      "public/parent-login.html",
+      "public/parent.html",
+      "public/student.html",
+      "public/operations.html",
+      "public/css/bna-app-shell.css",
+      "tests/parent-student-portal-contract.test.js"
+    ],
+    "max_files_to_edit": 12,
+    "max_routes_to_touch": 8,
+    "max_major_surfaces": 4,
+    "split_threshold_reason": "This is a super-ramble spanning email/access, parent portal, student portal, provider/admin IA, Agent Mode, and release proof. Implementation must split after audit.",
+    "split_if_exceeds": true,
+    "context_risk_level": "high"
+  },
+  "tests": {
+    "commands": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-07-parent-trial-login-and-ia-consistency/00-parent-trial-login-ia-consistency.product-quality.json",
+      "node --test tests/parent-student-portal-contract.test.js",
+      "node --test tests/one-time-admin-mailbox-access.test.js",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "live_smoke_required": true,
+    "visual_smoke_required": true
+  },
+  "evidence": {
+    "required_paths": [
+      "tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md",
+      "ops/prompt-packets/2026-07-07-parent-trial-login-and-ia-consistency/",
+      "ops/ui-audits/2026-07-07-parent-trial-login-and-ia-consistency/",
+      "ops/live-smokes/"
+    ],
+    "redaction_rules": [
+      "Do not commit real login links, access codes, cookies, or secrets.",
+      "Use redacted screenshots if any private parent/student data appears.",
+      "Do not expose raw private message bodies or contact exports."
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Parent/student access and email routes are inspected.",
+      "Live email/access grant is either completed with explicit exact approval and redacted evidence, or blocked with exact missing details.",
+      "Agent Mode prompt pack exists and names exact navigation/drop-off/failure rules.",
+      "Current-state desktop/mobile screenshots exist for parent, student, Rabbi/provider, and Super Admin IA surfaces.",
+      "Scoped app fixes are implemented only after audit evidence.",
+      "Focused tests and relevant watchdogs pass.",
+      "Route/action registries are updated if visible routes/actions change.",
+      "Scoped changes are committed and pushed.",
+      "App-visible/server-visible work is deployed and live-smoked.",
+      "Register, ledger, and changelog record evidence and remaining blockers."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260707-011-parent-trial-login-and-ia-consistency.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-07-parent-trial-login-and-ia-consistency/00-parent-trial-login-ia-consistency.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "local file inspection",
+      "PQC validation",
+      "Agent Mode prompt generation",
+      "Playwright visual audit",
+      "focused route/API tests",
+      "safe implementation",
+      "commit/push/deploy/live smoke"
+    ],
+    "skipped_actions_policy": "Skip live email sends, access grants, Stripe, DNS, WhatsApp/SMS, provider account writes, and production data mutation until exact approval and blockers are resolved.",
+    "blocker_decisions": [
+      "DEC-20260707-110",
+      "DEC-20260707-111"
+    ],
+    "evidence_paths": [
+      "tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md",
+      "ops/ui-audits/2026-07-07-parent-trial-login-and-ia-consistency/"
+    ],
+    "final_status_path": "tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-07-parent-trial-login-and-ia-consistency/01-current-state-parent-student-rabbi-ia-audit.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 findings or precise blockers linked to REQ-20260707-110 through REQ-20260707-117."
+  },
+  "next_packet": {
+    "id": "PKT-20260707-111",
+    "condition": "Create after current route/API inspection identifies the exact no-send preview/test link or missing implementation.",
+    "purpose": "Current-state parent/student access and IA audit packet."
+  },
+  "app_visible": true
+}

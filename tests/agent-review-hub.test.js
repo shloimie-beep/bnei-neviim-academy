@@ -43,11 +43,11 @@ test('Agent Review context matrix covers Issue #24 role cards', () => {
   assert.equal(AGENT_REVIEW_CONTEXTS.some((item) => item.role === 'super_admin' && item.context_type.includes('live')), true);
 });
 
-test('Agent Mode prompt pack has exactly 11 generated mobile-copyable files', () => {
-  assert.equal(AGENT_MODE_PROMPTS.length, 11);
+test('Agent Mode prompt pack has exactly 14 generated mobile-copyable files', () => {
+  assert.equal(AGENT_MODE_PROMPTS.length, 14);
   assert.equal(packageJson.scripts['agent-review:prompts'], 'node scripts/generate-agent-review-prompts.cjs');
   const index = buildPromptIndex({ baseUrl: 'https://bneineviimacademy.org' });
-  assert.equal(index.length, 11);
+  assert.equal(index.length, 14);
 
   for (const prompt of index) {
     const filePath = path.join(root, 'public', 'agent-review-prompts', prompt.file);
@@ -63,8 +63,8 @@ test('Agent Mode prompt pack has exactly 11 generated mobile-copyable files', ()
     assert.match(text, /Preferred drop-off: https:\/\/bneineviimacademy\.org\/operations\/agent-review\/dropoff/);
     assert.match(text, /API fallback: https:\/\/bneineviimacademy\.org\/api\/bna\/agent-review\/results/);
     assert.match(text, /You must submit the structured result yourself/);
-    assert.match(text, /SAVED AGR-\.\.\./);
-    assert.match(text, /DROP-OFF FAILED/);
+    assert.match(text, /OPERATIONS_DROPOFF_SAVED: AGR-\.\.\./);
+    assert.match(text, /OPERATIONS_DROPOFF_FAILED:/);
     assert.match(text, /Emergency fallback: open the drop-off page and use "Emergency paste JSON and save"/);
     assert.match(text, /readback API shows the AGR result/);
     assert.match(text, /Do not ask for or store passwords/);
@@ -78,6 +78,18 @@ test('Agent Mode prompt pack has exactly 11 generated mobile-copyable files', ()
       'here is the file',
       'manual upload required',
     ].forEach((phrase) => assert.doesNotMatch(text, new RegExp(phrase, 'i'), `${prompt.file} must not contain ${phrase}`));
+  }
+
+  for (const key of [
+    'one-time-parent-trial-journey',
+    'one-time-student-login-reset-journey',
+    'one-time-role-ia-consistency',
+  ]) {
+    const prompt = index.find((item) => item.key === key);
+    assert.ok(prompt, key);
+    const text = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', prompt.file), 'utf8');
+    assert.match(text, /## Exact Navigation/);
+    assert.match(text, /## Required Audit Output/);
   }
 });
 

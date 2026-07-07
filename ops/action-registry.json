@@ -1711,7 +1711,7 @@
       "status": "active",
       "test": {
         "type": "static",
-        "expected_result": "Prompt index has 11 files and each prompt references the Agent Review Hub and typed result endpoint."
+        "expected_result": "Prompt index has 14 files and each prompt references the Agent Review Hub and typed result endpoint."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

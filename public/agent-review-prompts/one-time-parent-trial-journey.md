@@ -1,0 +1,112 @@
+# Agent Mode Prompt - One Time Parent Trial Journey
+
+Generated: 2026-07-07T15:06:26.071Z
+Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
+Raw/source ID: RAW-20260626-001
+Parent goal: PARENT-20260626-001
+Primary requirement: REQ-20260707-113
+Agent review run ID: 2026-06-26-agent-review-dropoff-repair
+Return URL: https://bneineviimacademy.org/operations/agent-review?prompt=one-time-parent-trial-journey
+Drop-off URL: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-parent-trial-journey&requirement_id=REQ-20260707-113&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-parent-trial-journey&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-parent-trial-journey%3Aall-contexts
+Prompt key: one-time-parent-trial-journey
+Idempotency key: 2026-06-26-agent-review-dropoff-repair:one-time-parent-trial-journey:all-contexts
+
+## Copy Metadata
+
+```json
+{
+  "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+  "prompt_key": "one-time-parent-trial-journey",
+  "context_key": null,
+  "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=one-time-parent-trial-journey",
+  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-parent-trial-journey&requirement_id=REQ-20260707-113&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-parent-trial-journey&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-parent-trial-journey%3Aall-contexts",
+  "requirement_id": "REQ-20260707-113",
+  "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-parent-trial-journey:all-contexts"
+}
+```
+
+## Start
+
+Open the Agent Review Hub: https://bneineviimacademy.org/operations/agent-review
+
+Use takeover mode if an Operations login is required. Do not ask for or store passwords, cookies, API keys, refresh tokens, screenshots with private data, or reusable access secrets. External services such as Google, Railway, Stripe, Vimeo, DNS, Buffer, WhatsApp, and email remain separate logins and are out of scope unless the hub says otherwise.
+
+## Review Contexts
+
+- One Time Parent: role parent, workspace rabbi_sheller_provider, project one_time_mishnah_class, route /parent.html?review=one-time, helper One Time parent review portal.
+- One Time Classroom: role classroom_member, workspace rabbi_sheller_provider, project one_time_mishnah_class, route /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS, helper One Time classroom helper.
+
+## Work To Perform
+
+Focus: no-password parent review journey, 30-day trial state, schedule/class link, library/resource access, student click/attendance visibility, billing/trial boundaries, and parent-safe support actions.
+
+## Exact Navigation
+
+1. Open /parent.html?review=one-time directly. Confirm this is a no-password TEST parent route, not a real account.
+2. Audit the first viewport at 1440px, then repeat the same route at 1024px, 768px, 430px, and 390px.
+3. Inspect the header/top section spacing, role label, selected category, top subcategory position, filters, buttons, and mobile overflow.
+4. Find the schedule or next-class area. Record whether a brand-new parent can immediately see when class happens and what link to use.
+5. Find the library/resource area. Click the classroom/library link and verify it opens /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS or an equivalent TEST One Time classroom route.
+6. Find 30-day trial, billing, and access-state copy. Record whether it is clear without showing admin-only setup/debug information.
+7. Find student click, attendance, or activity information. Record whether the parent can tell if the child clicked or attended.
+8. Find support/private question UI. Record whether it is parent-safe and does not send real messages in review mode.
+9. Open /one-time-email-review.html and inspect the parent welcome/trial email preview. Do not send email.
+
+## Required Audit Output
+
+- PASS/FAIL for schedule visibility, class link visibility, library visibility, trial/billing clarity, student click/activity visibility, attendance visibility, support UI, and student-login management expectations.
+- Top 5 UI/IA fixes in Codex-ready language, with severity labels P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.
+- Explicit missing pieces before Codex can send a real parent welcome email.
+- Recommended email copy shape, but no live send.
+
+1. Open each listed review context from the hub.
+2. Confirm the visible "Reviewing as" banner, role, workspace/project, expiry, and Exit control.
+3. Converse naturally with the scoped helper using paraphrases, typos, follow-ups, and corrections.
+4. Follow every internal link returned by the helper and verify route, section/tab, role, workspace, project, expected landmark, authorization result, and safe fallback.
+5. Test safe preview actions only. Do not send, publish, charge, deploy, change DNS, rotate credentials, move Drive files, retry production workers, or mutate student data.
+6. For any claimed write, verify the typed action/audit/result record. If no record exists, mark the claim failed.
+7. Include the newest Drive recording trace status from the hub; do not claim the recording processed beyond the trace evidence.
+8. You must submit the structured result yourself before your final answer. Normal save path: use the Agent Review Hub/drop-off page. If that form fails, use the exact drop-off URL below. If that still fails, use the Emergency paste JSON and save control on the drop-off page. If the browser cannot submit any page, POST the same JSON to the API fallback.
+9. A successful final answer must start with OPERATIONS_DROPOFF_SAVED: AGR-... and include the saved readback URL. Do not finish with downloadable artifacts, owner-upload instructions, claims that a JSON handoff is prepared, file handoff language, or manual-upload wording.
+10. If every save path fails, the final answer must start with OPERATIONS_DROPOFF_FAILED: <exact UI/API error> and include the complete redacted JSON payload so Codex can recover it. This is the only allowed manual payload handoff.
+11. The window is safe to close only after the Agent Review Hub or readback API shows the AGR result for this prompt key and idempotency key.
+12. If a scoped context redirects to public/sign-in content and cannot open after owner takeover login, stop that context, save BLOCKED through the self-save path, and do not audit the public helper as the scoped helper.
+
+## Result Shape
+
+Preferred drop-off: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-parent-trial-journey&requirement_id=REQ-20260707-113&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-parent-trial-journey&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-parent-trial-journey%3Aall-contexts
+API fallback: https://bneineviimacademy.org/api/bna/agent-review/results
+Emergency fallback: open the drop-off page and use "Emergency paste JSON and save" only after the normal save path and exact drop-off URL fail.
+
+```json
+{
+  "raw_id": "RAW-20260626-001",
+  "parent_goal_id": "PARENT-20260626-001",
+  "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+  "requirement_id": "REQ-20260707-113",
+  "prompt_key": "one-time-parent-trial-journey",
+  "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=one-time-parent-trial-journey",
+  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-parent-trial-journey&requirement_id=REQ-20260707-113&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-parent-trial-journey&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-parent-trial-journey%3Aall-contexts",
+  "status": "pass|fail|blocked",
+  "role_workspace": "role/workspace tested",
+  "conversation_summary": "brief summary, no private transcript body",
+  "routes_visited": [
+    "canonical route keys and paths"
+  ],
+  "helper_responses": [
+    "short redacted summaries only"
+  ],
+  "link_action_outcomes": [
+    "PASS/FAIL per link/action"
+  ],
+  "evidence": [
+    "screenshot path or DOM/readback evidence, redacted"
+  ],
+  "severity": "none|low|medium|high|critical",
+  "blocker": "required when status is blocked",
+  "suggested_correction": "exact repair or none",
+  "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-parent-trial-journey:all-contexts:<attempt-id>"
+}
+```
+
+End with OPERATIONS_DROPOFF_SAVED: AGR-... and the readback URL after a successful save. End with OPERATIONS_DROPOFF_FAILED: <exact UI/API error> and the redacted JSON payload only if all save paths failed.

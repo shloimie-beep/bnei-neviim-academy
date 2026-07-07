@@ -132,6 +132,30 @@ const AGENT_REVIEW_CONTEXTS = [
     prohibited_actions: ['access BNA school records', 'change membership tier', 'see private admin notes'],
   },
   {
+    key: 'one_time_parent',
+    label: 'One Time Parent',
+    role: 'parent',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    target_route: '/parent.html?review=one-time',
+    helper_surface: 'One Time parent review portal',
+    context_type: 'fixture_read_only',
+    permitted_actions: ['review parent schedule, library, trial/access, attendance, and support UI', 'test parent-safe navigation', 'verify no-password review link'],
+    prohibited_actions: ['send real welcome email', 'create a real parent account', 'grant access', 'change billing', 'expose unrelated families'],
+  },
+  {
+    key: 'one_time_student',
+    label: 'One Time Student',
+    role: 'student',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    target_route: '/student.html?review=one-time',
+    helper_surface: 'One Time student review portal',
+    context_type: 'fixture_read_only',
+    permitted_actions: ['review student class, library, worksheet, attendance, and progress UI', 'test student-safe navigation', 'verify no-password review link'],
+    prohibited_actions: ['view parent billing', 'change student credentials', 'access BNA school accountability goals', 'expose other students'],
+  },
+  {
     key: 'one_time_classroom',
     label: 'One Time Classroom',
     role: 'classroom_member',
@@ -206,6 +230,76 @@ const AGENT_MODE_PROMPTS = [
     context_keys: ['one_time_member', 'one_time_classroom'],
     requirement_id: 'REQ-20260626-004',
     focus: 'member library, classroom, question/support flow, fixture-only review data, and no raw recording exposure',
+  },
+  {
+    key: 'one-time-parent-trial-journey',
+    title: 'One Time Parent Trial Journey',
+    context_keys: ['one_time_parent', 'one_time_classroom'],
+    requirement_id: 'REQ-20260707-113',
+    focus: 'no-password parent review journey, 30-day trial state, schedule/class link, library/resource access, student click/attendance visibility, billing/trial boundaries, and parent-safe support actions',
+    exact_navigation: [
+      'Open /parent.html?review=one-time directly. Confirm this is a no-password TEST parent route, not a real account.',
+      'Audit the first viewport at 1440px, then repeat the same route at 1024px, 768px, 430px, and 390px.',
+      'Inspect the header/top section spacing, role label, selected category, top subcategory position, filters, buttons, and mobile overflow.',
+      'Find the schedule or next-class area. Record whether a brand-new parent can immediately see when class happens and what link to use.',
+      'Find the library/resource area. Click the classroom/library link and verify it opens /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS or an equivalent TEST One Time classroom route.',
+      'Find 30-day trial, billing, and access-state copy. Record whether it is clear without showing admin-only setup/debug information.',
+      'Find student click, attendance, or activity information. Record whether the parent can tell if the child clicked or attended.',
+      'Find support/private question UI. Record whether it is parent-safe and does not send real messages in review mode.',
+      'Open /one-time-email-review.html and inspect the parent welcome/trial email preview. Do not send email.',
+    ],
+    audit_checklist: [
+      'PASS/FAIL for schedule visibility, class link visibility, library visibility, trial/billing clarity, student click/activity visibility, attendance visibility, support UI, and student-login management expectations.',
+      'Top 5 UI/IA fixes in Codex-ready language, with severity labels P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.',
+      'Explicit missing pieces before Codex can send a real parent welcome email.',
+      'Recommended email copy shape, but no live send.',
+    ],
+  },
+  {
+    key: 'one-time-student-login-reset-journey',
+    title: 'One Time Student Login And Parent Reset Journey',
+    context_keys: ['one_time_parent', 'one_time_student'],
+    requirement_id: 'REQ-20260707-114',
+    focus: 'student login experience, parent-managed student username/password reset expectations, access-code fallback, student-safe class/library state, and no parent billing/private-note leakage',
+    exact_navigation: [
+      'Open /student.html?review=one-time directly. Confirm this is a no-password TEST student route, not a real student account.',
+      'Audit the first viewport at 1440px, then repeat the same route at 1024px, 768px, 430px, and 390px.',
+      'Inspect the topbar/header spacing, sidebar or hamburger behavior, side categories, top subcategories, filters, button alignment, and text wrapping.',
+      'Confirm the student sees only student-safe class, library, worksheet/resource, attendance, progress, question/support, and achievement/reward information.',
+      'Confirm the student does not see parent billing, adult/private notes, Super Admin controls, provider-admin setup, raw debug data, or unrelated BNA school accountability records.',
+      'Click the visible Parent link from the student route and confirm it opens /parent.html?review=one-time or an equivalent TEST parent route.',
+      'In the parent route, look for whether the parent can understand how student login setup/reset should work. If review mode hides the real reset form, say whether a visible preview card is needed.',
+      'Open /student/login and audit the real logged-out student login shell at 1440px and 390px: username/password fields, access-code fallback, error/help copy, and mobile spacing.',
+      'Open /parent/login and audit whether the parent setup/reset model is clearly different from student login.',
+    ],
+    audit_checklist: [
+      'State whether parent and student login roles are visually and conceptually distinct.',
+      'PASS/FAIL for student-safe data, parent-managed reset expectation, access-code fallback, class link, library/resources, question/support, and mobile spacing.',
+      'List every place where the student view feels cramped, uneven, overstuffed, or contaminated by parent/admin/provider information.',
+      'Recommend the minimum secure product change needed before a real parent can reset a real student login.',
+    ],
+  },
+  {
+    key: 'one-time-role-ia-consistency',
+    title: 'One Time Role IA Consistency',
+    context_keys: ['operations_super_admin', 'rabbi_provider_admin', 'one_time_parent', 'one_time_student', 'one_time_member', 'one_time_classroom', 'wrong_role_error_states'],
+    requirement_id: 'REQ-20260707-115',
+    focus: 'consistent side panel, category, top subcategory, filter, drawer, role-label, and mobile IA placement across Super Admin, Rabbi/provider, parent, student, member, and classroom views',
+    exact_navigation: [
+      'Start at /operations/agent-review and open each listed review context from the hub when available.',
+      'Also open these direct TEST routes: /operations?view=tasks, /provider.html?review=one-time, /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.',
+      'For each route, capture the IA map at 1440px and 390px: side navigation categories, selected category state, top subcategories/tabs, filters/search controls, primary action buttons, role/workspace label, drawer/helper placement, and mobile menu behavior.',
+      'Compare each role against the Operations shell pattern. The position can adapt to role scope, but the placement model must feel the same across workspaces.',
+      'Flag any One Time screen that splits categories in a weird way, moves filters to a new position, duplicates controls, hides the role being viewed, or shows Super Admin setup/debug cards to Rabbi, parent, student, or member roles.',
+      'In the provider/Rabbi route, verify whether random configuration cards are actionable for Rabbi. If they are not actionable by Rabbi, report them as role-contaminating admin noise.',
+      'In parent/student/member/classroom routes, verify that the view never exposes unrelated BNA records, Operations task data, provider setup internals, raw tokens, or other families/students.',
+    ],
+    audit_checklist: [
+      'Produce a comparison table with one row per route and columns for side categories, top subcategories, filters, role label, drawer/helper, mobile behavior, and irrelevant/admin noise.',
+      'Rank inconsistencies by severity using P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.',
+      'Recommend a single shared IA rule for category/subcategory/filter placement that Codex can apply across provider, parent, student, member, classroom, and Operations views.',
+      'Do not propose color-only fixes. Prioritize structure, spacing, hierarchy, role clarity, and mobile behavior.',
+    ],
   },
   {
     key: 'cross-role-wrong-permission',
@@ -674,6 +768,22 @@ function renderAgentModePrompt(prompt, { baseUrl = '', generatedAt = new Date().
   const dropoffUrl = absoluteUrl(baseUrl, promptDropoffPath(prompt));
   const resultUrl = absoluteUrl(baseUrl, AGENT_REVIEW_RUN.result_endpoint);
   const metadata = promptCopyMetadata(prompt, { baseUrl });
+  const exactNavigation = Array.isArray(prompt.exact_navigation) && prompt.exact_navigation.length
+    ? [
+        '## Exact Navigation',
+        '',
+        ...prompt.exact_navigation.map((item, index) => `${index + 1}. ${item}`),
+        '',
+      ]
+    : [];
+  const auditChecklist = Array.isArray(prompt.audit_checklist) && prompt.audit_checklist.length
+    ? [
+        '## Required Audit Output',
+        '',
+        ...prompt.audit_checklist.map((item) => `- ${item}`),
+        '',
+      ]
+    : [];
   return [
     `# Agent Mode Prompt - ${prompt.title}`,
     '',
@@ -710,6 +820,8 @@ function renderAgentModePrompt(prompt, { baseUrl = '', generatedAt = new Date().
     '',
     `Focus: ${prompt.focus}.`,
     '',
+    ...exactNavigation,
+    ...auditChecklist,
     '1. Open each listed review context from the hub.',
     '2. Confirm the visible "Reviewing as" banner, role, workspace/project, expiry, and Exit control.',
     '3. Converse naturally with the scoped helper using paraphrases, typos, follow-ups, and corrections.',

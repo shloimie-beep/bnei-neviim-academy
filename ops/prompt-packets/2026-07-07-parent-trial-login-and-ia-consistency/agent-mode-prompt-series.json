@@ -1,0 +1,81 @@
+{
+  "packet_series_id": "parent-trial-login-and-ia-consistency-20260707",
+  "raw_id": "RAW-20260707-011",
+  "workspace": "rabbi_sheller_provider",
+  "project": "one_time_mishnah_class",
+  "status": "ready_for_parallel_agent_mode_operations_dropoff",
+  "created_at": "2026-07-07T18:05:00+03:00",
+  "registered_prompt_keys_added": [
+    "one-time-parent-trial-journey",
+    "one-time-student-login-reset-journey",
+    "one-time-role-ia-consistency"
+  ],
+  "parallel_execution": {
+    "parallel_safe_prompts": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "rule": "Run all four prompts in separate Agent Mode sessions when available. They use TEST/review routes and no-send/no-write guardrails."
+  },
+  "dropoff_contract": {
+    "primary": "operations_task_agent_review_dropoff",
+    "success_marker": "OPERATIONS_DROPOFF_SAVED: AGR-...",
+    "failure_marker": "OPERATIONS_DROPOFF_FAILED: <exact UI/API/connector error>",
+    "fallbacks": [
+      "retry exact operations dropoff URL",
+      "use operations API or emergency paste fallback when visible",
+      "return full redacted report in chat only when every save path fails"
+    ]
+  },
+  "prompts": [
+    {
+      "order": 1,
+      "title": "One Time Parent Trial Journey",
+      "registered_prompt_key": "one-time-parent-trial-journey",
+      "context_key": "one_time_parent",
+      "requirement_id": "REQ-20260707-113",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-parent-trial-journey:one_time_parent:20260707-parent-trial",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-parent-trial-journey&context_key=one_time_parent&requirement_id=REQ-20260707-113&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-parent-trial-journey&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-parent-trial-journey%3Aone_time_parent%3A20260707-parent-trial&autosave=1"
+    },
+    {
+      "order": 2,
+      "title": "One Time Student Login And Parent Reset Journey",
+      "registered_prompt_key": "one-time-student-login-reset-journey",
+      "context_key": "one_time_student",
+      "requirement_id": "REQ-20260707-114",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-student-login-reset-journey:one_time_student:20260707-student-reset",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-student-login-reset-journey&context_key=one_time_student&requirement_id=REQ-20260707-114&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-student-login-reset-journey&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-student-login-reset-journey%3Aone_time_student%3A20260707-student-reset&autosave=1"
+    },
+    {
+      "order": 3,
+      "title": "Cross-Role IA Consistency Audit",
+      "registered_prompt_key": "one-time-role-ia-consistency",
+      "context_key": "rabbi_provider_admin",
+      "requirement_id": "REQ-20260707-115",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-role-ia-consistency:rabbi_provider_admin:20260707-ia",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-role-ia-consistency&context_key=rabbi_provider_admin&requirement_id=REQ-20260707-115&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-role-ia-consistency&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-role-ia-consistency%3Arabbi_provider_admin%3A20260707-ia&autosave=1"
+    },
+    {
+      "order": 4,
+      "title": "Parent Welcome Email And Live-Send Readiness Audit",
+      "registered_prompt_key": "one-time-parent-trial-journey",
+      "context_key": "one_time_parent",
+      "requirement_id": "REQ-20260707-111",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-parent-trial-journey:one_time_parent:20260707-email-readiness",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-parent-trial-journey&context_key=one_time_parent&requirement_id=REQ-20260707-111&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-parent-trial-journey&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-parent-trial-journey%3Aone_time_parent%3A20260707-email-readiness&autosave=1"
+    }
+  ],
+  "guardrails": [
+    "audit_only",
+    "no_code_edits",
+    "no_deploy",
+    "no_external_sends",
+    "no_payment_or_access_grants",
+    "no_dns_or_provider_mutations",
+    "no_drive_writes",
+    "no_credentials_or_shared_passwords",
+    "operations_agent_review_dropoff_required"
+  ]
+}
