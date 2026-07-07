@@ -1071,6 +1071,167 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications
   text-align: center;
 }
 
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"][data-one-time-rabbi-dashboard] {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 14px;
+  overflow: visible;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95)),
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(12px, 1.4vw, 18px);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] > .saas-page-heading {
+  margin-bottom: 0;
+  border: 1px solid rgba(237, 229, 24, 0.22);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(8, 19, 35, 0.86);
+  padding: 14px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] > .saas-page-heading .page-kicker {
+  color: var(--ot-ops-warning-gated);
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] > .saas-page-heading h2,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] h3,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-draft-card h3,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .settings-control-row strong {
+  color: var(--ot-ops-text) !important;
+  letter-spacing: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] > .saas-page-heading p,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] .settings-disabled-note,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .settings-control-row p {
+  color: var(--ot-ops-muted-text) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace],
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-draft-card,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .content-card,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .empty-state {
+  min-width: 0;
+  border-color: rgba(174, 185, 198, 0.24) !important;
+  border-radius: var(--ot-ops-radius);
+  background: linear-gradient(180deg, rgba(16, 38, 52, 0.95), rgba(8, 19, 35, 0.95)) !important;
+  color: var(--ot-ops-text) !important;
+  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18) !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  overflow: hidden;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector],
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] > .task-section-header {
+  align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] > .task-section-header > *,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector] > * {
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] > .task-section-header p,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] > .task-section-header span {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .one-time-email-workspace-intro {
+  display: block !important;
+  max-width: 78ch !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector] .task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector] .task-action {
+  min-width: 0;
+  min-height: 44px;
+  white-space: normal;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-readiness-gates] {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-workspace-view-rail] .ops-filter-track {
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px !important;
+  scroll-snap-type: x proximity;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-workspace-view-rail] .ops-filter-tab {
+  flex: 0 0 auto !important;
+  min-width: 142px !important;
+  min-height: 44px;
+  scroll-snap-align: start;
+  white-space: nowrap;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-operator-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.82fr) minmax(0, 1.18fr);
+  gap: 12px;
+  min-width: 0;
+  align-items: start;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .contact-list,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-list-view] {
+  min-width: 0;
+  overflow: hidden;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .task-form-grid,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-draft-meta {
+  grid-template-columns: 1fr;
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] input,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] select,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] textarea {
+  width: 100%;
+  min-width: 0;
+}
+
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .settings-control-row,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-draft-meta span,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .status-pill {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 @media (min-width: 920px) {
   body.bna-ops-shell-page.one-time-operations-active [data-one-time-task-route] > .task-status-toolbar {
     grid-template-columns: minmax(240px, 0.78fr) minmax(0, 1.22fr);
@@ -1110,7 +1271,47 @@ body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications
   }
 }
 
+@media (max-width: 1080px) {
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] .email-operator-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector],
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-operator-workspace] > .task-section-header {
+    grid-template-columns: 1fr;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] [data-email-inbox-selector] .task-actions {
+    justify-content: flex-start;
+  }
+}
+
 @media (max-width: 720px) {
+  body.bna-ops-shell-page.one-time-operations-active .mobile-app-header .menu-button,
+  body.bna-ops-shell-page.one-time-operations-active .mobile-app-header button,
+  body.bna-ops-shell-page.one-time-operations-active .mobile-app-header a,
+  body.bna-ops-shell-page.one-time-operations-active .mobile-app-header .page-status-pill {
+    min-height: 44px;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail] .ops-filter-track {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px !important;
+    scroll-snap-type: x proximity;
+  }
+
+  body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail] .ops-filter-tab {
+    flex: 0 0 auto !important;
+    min-width: 136px !important;
+    min-height: 44px;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+
   body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] > .task-heading,
   body.bna-ops-shell-page.one-time-operations-active [data-one-time-automation-route] .local-toolbar-header {
     align-items: stretch;

@@ -33379,3 +33379,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   live-smoked. Real billing, attendance, transcript/Rabbi-reference,
   password/access, and external-provider features remain separate blocked
   packets.
+
+
+## 2026-07-07T21:10:00Z - One Time toolbar density audit and scoped UI fixes locally verified
+
+- Created Product Quality packet `PKT-20260707-135` and repeatable Playwright
+  audit `scripts/audit-onetime-toolbar-filter-density.mjs` for Operations,
+  provider, parent, student, and member route topbar/filter density at 1440,
+  1024, 768, 430, and 390 widths.
+- Added `npm run audit:onetime-toolbar-density` and static contract coverage in
+  `tests/onetime-toolbar-filter-density-audit.test.js`.
+- Initial local audit found 27 toolbar/filter findings. Scoped fixes reduced
+  the final local audit to 6 findings, all P2 Operations desktop/tablet
+  top-rail density items:
+  `ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4/report.md`.
+- Implemented scoped fixes for One Time mobile review topbar rails, provider
+  mobile overflow/vertical labels, member mobile topbar/hero density,
+  Operations mobile top filter rails, and the One Time email workspace layout
+  that was clipping/offscreen in Communications.
+- Local verification passed: PQC validation, audit script syntax, 17 focused
+  tests, final toolbar density audit with 30 screenshots, and local
+  shared-review smoke
+  `ops/live-smokes/2026-07-07T21-07-25-682Z-one-time-shared-review-live-smoke.md`.
+- Status: local verified, pending commit, push, Railway deployment, production
+  toolbar audit/smoke, and final register update. Remaining Operations
+  desktop/tablet top-rail density is split to `PKT-20260707-138`; Agent Mode
+  prompt refresh remains `REQ-20260707-136`.

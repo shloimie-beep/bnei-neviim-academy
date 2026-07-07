@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T20:34:46.089Z",
+  "generated_at": "2026-07-07T21:12:27.117Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -296,6 +296,7 @@
     "ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-brand-helper-toolbar-isolation/00-onetime-brand-helper-toolbar-isolation.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-parent-student-helper-scope/00-onetime-parent-student-helper-scope.product-quality.json",
+    "ops/prompt-packets/2026-07-07-onetime-toolbar-filter-density-audit/00-onetime-toolbar-filter-density-audit.product-quality.json",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/01-navigation-filter-consistency-agent-mode.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/02-view-as-navigation-agent-mode.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/03-role-perspective-screen-matrix-agent-mode.md",

@@ -37,8 +37,8 @@
     }
 
     header {
-      min-height: 34vh;
-      padding: 36px clamp(18px, 5vw, 68px);
+      min-height: clamp(220px, 24vh, 300px);
+      padding: 28px clamp(18px, 5vw, 68px);
       display: grid;
       align-items: end;
       border-bottom: 1px solid rgba(237, 229, 24, 0.28);
@@ -145,25 +145,32 @@
       top: 0;
       z-index: 8;
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 8px;
       align-items: center;
       justify-content: flex-end;
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
       border-bottom: 1px solid var(--line);
       background: rgba(8, 9, 16, 0.96);
       padding: 10px clamp(16px, 4vw, 42px);
       backdrop-filter: blur(12px);
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
     }
 
     .member-topbar a {
-      min-height: 34px;
+      flex: 0 0 auto;
+      min-height: 44px;
       border: 1px solid var(--line);
-      border-radius: 6px;
+      border-radius: 8px;
       color: var(--ink);
       background: rgba(255, 255, 255, 0.06);
-      padding: 7px 10px;
+      padding: 9px 11px;
       font-size: 13px;
       font-weight: 850;
+      scroll-snap-align: start;
       white-space: nowrap;
     }
 
@@ -176,6 +183,7 @@
     }
 
     .member-brand-lockup {
+      flex: 0 0 auto;
       margin-right: auto;
       display: inline-flex;
       align-items: center;
@@ -283,16 +291,39 @@
       .split-fields { grid-template-columns: 1fr; }
       .member-topbar {
         justify-content: flex-start;
+        padding: 8px 12px;
       }
       .member-brand-lockup {
-        width: 100%;
+        min-width: 178px;
       }
       header {
-        min-height: 300px;
+        min-height: 220px;
+        padding: 24px 16px;
         background:
           linear-gradient(180deg, rgba(8, 9, 16, 0.78), rgba(8, 9, 16, 0.98)),
           url("/images/one-time/brand/onetime-hero-vertical.webp") right bottom / auto 100% no-repeat,
           var(--black);
+      }
+    }
+
+    @media (max-width: 460px) {
+      header {
+        min-height: 190px;
+      }
+
+      header h1 {
+        font-size: 30px;
+      }
+
+      header p {
+        margin-top: 8px;
+        font-size: 15px;
+      }
+
+      .member-hero-logo {
+        width: 58px;
+        height: 58px;
+        margin-bottom: 10px;
       }
     }
   </style>

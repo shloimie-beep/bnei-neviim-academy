@@ -680,8 +680,12 @@ body.one-time-view-as-readonly .overview-metric {
     flex-wrap: nowrap;
     gap: 6px;
     justify-content: flex-start;
-    overflow: visible;
-    padding-bottom: 2px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
   }
 
   body.one-time-review-active .portal-topbar-actions::-webkit-scrollbar,
@@ -693,13 +697,28 @@ body.one-time-view-as-readonly .overview-metric {
   body.one-time-review-active .portal-topbar-link,
   body.one-time-review-active header .nav a,
   body.one-time-review-active .top-actions button {
-    flex: 1 1 0;
-    min-width: 0;
+    flex: 0 0 auto;
+    min-width: max-content;
     min-height: 44px;
-    padding: 8px 6px;
+    padding: 8px 10px;
+    scroll-snap-align: start;
     text-align: center;
-    white-space: normal;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  body.one-time-review-active .overview-metric,
+  body.one-time-review-active .metric,
+  body.one-time-review-active .portal-card {
+    min-width: 0;
+  }
+
+  body.one-time-review-active .overview-metric strong,
+  body.one-time-review-active .metric strong,
+  body.one-time-review-active .portal-card strong {
+    min-width: 0;
     overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   body.one-time-review-active #portalPanel.one-time-provider-workspace {
@@ -752,7 +771,7 @@ body.one-time-view-as-readonly .overview-metric {
   body.one-time-review-active .portal-topbar-link,
   body.one-time-review-active header .nav a,
   body.one-time-review-active .top-actions button {
-    padding-inline: 9px;
+    padding-inline: 8px;
     font-size: 10px;
   }
 }

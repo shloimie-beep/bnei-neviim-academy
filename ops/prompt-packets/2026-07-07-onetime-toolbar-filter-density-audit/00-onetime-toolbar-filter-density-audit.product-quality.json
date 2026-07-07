@@ -1,0 +1,628 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260707-135",
+  "parent_raw_id": "RAW-20260707-013",
+  "source_statement_ids": [
+    "SRC-20260707-013-007",
+    "SRC-20260707-013-008",
+    "SRC-20260707-013-009"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260707-130",
+    "child_packet_ids": [
+      "PKT-20260707-136",
+      "PKT-20260707-138"
+    ],
+    "depends_on_packet_ids": [
+      "PKT-20260707-130",
+      "PKT-20260707-134"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260707-013-onetime-brand-helper-toolbar-isolation.md",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "public/operations.html",
+      "public/provider.html",
+      "public/parent.html",
+      "public/student.html",
+      "public/rabbi-member.html",
+      "public/css/bna-app-shell.css",
+      "public/css/one-time-shared-review.css",
+      "public/css/one-time-operations.css"
+    ],
+    "produces": [
+      "scripts/audit-onetime-toolbar-filter-density.mjs",
+      "tests/onetime-toolbar-filter-density-audit.test.js",
+      "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4/report.md",
+      "public/css/one-time-shared-review.css",
+      "public/css/one-time-operations.css",
+      "public/rabbi-member.html",
+      "public/operations.html",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-onetime-toolbar-filter-density-audit/00-onetime-toolbar-filter-density-audit.product-quality.json",
+    "terminal_condition": "The One Time toolbar/filter density audit packet validates, the repeatable audit harness captures route and viewport proof, scoped mobile/provider/member/email layout defects are repaired, remaining Operations desktop/tablet top-rail density is split to a follow-up packet, and the app-visible changes are deployed and live-smoked.",
+    "handoff_target": "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
+  },
+  "stage": "STAGE_4_INDEPENDENT_VERIFICATION",
+  "packet_role": "VISUAL_AUDITOR",
+  "status": "verified",
+  "title": "One Time Toolbar Filter Density Audit",
+  "created_at": "2026-07-07T23:52:00+03:00",
+  "workspace_key": "platform",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "RABBI_PROVIDER_ADMIN",
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260707-013",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "SUPER_RAMBLE",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY",
+      "VERIFIER_CLOSEOUT"
+    ],
+    "confidence": 0.93,
+    "reasons": [
+      "The operator called out wasted top space, oversized pills, subcategory/filter consistency, desktop/mobile behavior, and role-specific One Time views.",
+      "The affected surface crosses Operations, provider, parent, student, and member review routes, so current-state measurement must precede implementation.",
+      "A repeatable harness lets Agent Mode and Codex compare the same top-section measurements instead of relying on unstructured chat output."
+    ],
+    "affected_product_surfaces": [
+      "Operations One Time workspace top rail",
+      "One Time provider review topbar and mailbox toolbar",
+      "One Time parent review topbar and filters",
+      "One Time student review topbar and board filters",
+      "One Time member route navigation"
+    ],
+    "likely_external_provider_blockers": [
+      "No Stripe, email, WhatsApp, Telegram, Drive, Vimeo, Zoom, DNS, credential, payment, access, provider, or production-data mutation is approved in this audit.",
+      "Authenticated live Rabbi/provider mailbox data remains privacy-gated; this audit measures layout only."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-onetime-toolbar-filter-density-audit",
+      "01-toolbar-density-findings-triage",
+      "02-small-css-implementation-packet",
+      "03-agent-mode-dropoff-template-refresh"
+    ],
+    "next_exact_packet": "Create a small implementation packet only for the highest-impact toolbar/filter defect confirmed by this audit."
+  },
+  "operator_intent_summary": "The One Time and shared portal top sections should be compact, logical, role-consistent, and usable on desktop and mobile, with side-panel categories, top subcategories, filters, and action buttons appearing in predictable positions without wasted space, clipping, overlap, or uncontrolled scrolling.",
+  "raw_quotes": [
+    "the top toolbar, I don't even know if it's called a toolbar, the top section, is just, there's a lot of empty space",
+    "it's just not spaced out well. It's just wasted space, and in mobile, it's not gonna run well",
+    "the top section is like this top toolbar with like these pills that just takes up too space too much space",
+    "all of the the side panels the categories and the top all of those things in the filters across every single workspace is all going to be positioned the same way",
+    "when I say a million-dollar app ... everything needs to be consistent"
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260707-131",
+      "decision": "Run a current-state toolbar/filter density audit before applying global CSS or IA changes.",
+      "status": "accepted_for_current_batch"
+    }
+  ],
+  "out_of_scope": [
+    "No external sends, live email, WhatsApp, Telegram, payment, Stripe, access grant, DNS, provider, credential, Drive, Vimeo, Zoom, or production-data mutation.",
+    "No broad rewrite of the Operations shell, parent portal, student portal, provider portal, or member portal in this audit packet.",
+    "No authenticated billing, attendance, transcript, Rabbi-reference, or password reset implementation.",
+    "No claim that visual work is complete merely because measurements were captured."
+  ],
+  "affected_surfaces": [
+    "Operations One Time workspace top rail and local toolbars",
+    "One Time provider review topbar and mailbox toolbar",
+    "One Time parent review topbar and filter rows",
+    "One Time student review topbar and board filter rows",
+    "One Time member navigation topbar"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+    "/provider.html?review=one-time",
+    "/parent.html?review=one-time",
+    "/student.html?review=one-time",
+    "/rabbi-member"
+  ],
+  "affected_files": [
+    "scripts/audit-onetime-toolbar-filter-density.mjs",
+    "tests/onetime-toolbar-filter-density-audit.test.js",
+    "package.json",
+    "public/css/bna-app-shell.css",
+    "public/css/one-time-shared-review.css",
+    "public/css/one-time-operations.css",
+    "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+    "ops/agent-task-ledger.jsonl",
+    "ops/agent-changelog.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/css/one-time-shared-review.css already constrains One Time portal topbars and mobile review actions.",
+      "public/css/one-time-operations.css already includes scoped repairs for several One Time Operations rails and toolbars.",
+      "Existing shared-review smoke catches whole-page horizontal overflow but does not measure top cluster height, row count, clipped control text, touch target size, or overlap.",
+      "Agent Mode reports have been inconsistent unless the prompt names exact navigation paths and a drop-off/reporting contract."
+    ],
+    "known_blockers": [
+      "Operations routes need an Operations session cookie; the audit skips those checks only if credentials are unavailable.",
+      "The audit may produce findings that span several routes and must be split into small implementation packets before CSS changes."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "million-dollar app",
+      "professional",
+      "clean",
+      "sloppy",
+      "toolbar",
+      "filters",
+      "buttons should be equal",
+      "wasted space",
+      "mobile"
+    ],
+    "expanded_phrases": {
+      "million-dollar app": "Measured consistency: stable category/subcategory/filter hierarchy, no uncontrolled horizontal overflow, aligned controls, compact top chrome, mobile 44px touch targets, role-appropriate content, screenshot proof, and deploy/live-smoke gates for app-visible changes.",
+      "professional": "Predictable spacing, consistent controls, route-specific information architecture, no debug/admin leakage in user views, and no subjective done status without evidence.",
+      "clean": "Top sections are compact and organized, with no redundant row stacking, no clipped labels, and no wasted first-viewport space.",
+      "sloppy": "Any overlap, clipped control, inconsistent height spread, confusing row order, uncontrolled scroll, or irrelevant setup/admin content is a visual defect requiring a finding.",
+      "toolbar": "The audit treats brand topbars, top filter rails, tab lists, local toolbars, mailbox toolbar, board toolbar, and filter rows as measurable top-section controls.",
+      "filters": "Filters must be in predictable top rows or controlled mobile overflow, not scattered or duplicated without role meaning.",
+      "buttons should be equal": "Top controls must have consistent heights and at least 44px mobile tap targets.",
+      "wasted space": "First meaningful content and toolbar cluster height are measured against desktop and mobile thresholds.",
+      "mobile": "390px and 430px widths are required, with no page overflow, overlap, clipped labels, or too-small controls."
+    },
+    "first_party_pattern_interpretation": "Use BNA's first-party Operations and portal shells plus One Time-specific review CSS. Do not introduce GHL, LeadConnector, or external CRM runtime behavior."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/workspace-scope-isolation.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260707-135",
+      "statement": "Create and run a repeatable One Time toolbar/filter density audit before broad top-section layout implementation.",
+      "expected_result": "A Playwright harness captures topbar/filter measurements and screenshots across Operations, provider, parent, student, and member routes at 1440, 1024, 768, 430, and 390 widths.",
+      "acceptance_criteria": [
+        "Audit checks whole-page horizontal overflow, top cluster height, stacked row count, top control height spread, clipped toolbar control text, mobile tap target size, top control overlap, and first-content vertical position.",
+        "Audit writes report.json, report.md, and route/viewport screenshots under ops/ui-audits.",
+        "Operations checks authenticate when credentials are available and are explicitly skipped with a reason when not available.",
+        "Findings include route, viewport, screenshot, defect code, severity, evidence, and expected fix.",
+        "Scoped CSS/layout fixes reduce automated findings from 27 to 6 and remove provider mobile overflow, provider mobile vertical-letter topbar, Operations mobile rail overheight/tap-target findings, member topbar tap-target findings, and One Time email workspace clipping.",
+        "No external provider write, private data mutation, payment, access, credential, DNS, send, or production-data mutation is performed."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "Raw intake and parent register already exist.",
+      "Affected route matrix is explicit.",
+      "Existing CSS and smoke scripts were inspected.",
+      "The packet role is VISUAL_AUDITOR, so implementation remains forbidden until findings are triaged into a smaller packet.",
+      "No external or private-data mutation is required to audit layout."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1440,
+      "auth_role": "operations_super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the authenticated Operations One Time overview route.",
+      "expected_visible_title": "One Time Mishnah Class",
+      "expected_visible_message": "Program Overview",
+      "expected_primary_action": "Top section tabs",
+      "expected_secondary_actions": ["Sidebar module buttons", "Top filter rail"],
+      "forbidden_content": ["Sign in to BNA Operations", "uncontrolled horizontal overflow", "overlapping top controls"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Top filter rail exposes tab semantics when used.",
+      "accessibility_expectation": "Controls remain visible and at least 44px on mobile.",
+      "test_smoke_assertion": "Toolbar audit captures measurements for Operations overview.",
+      "requirement_id": "REQ-20260707-135"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "viewport": 1024,
+      "auth_role": "operations_super_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the authenticated Operations One Time communications route.",
+      "expected_visible_title": "Communications",
+      "expected_visible_message": "Rabbi inbox or safe empty mailbox state",
+      "expected_primary_action": "Top communication tabs",
+      "expected_secondary_actions": ["Inbox filters", "Mailbox toolbar"],
+      "forbidden_content": ["raw private email body in committed evidence", "overlapping top controls"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Tabs and filters are named and reachable.",
+      "accessibility_expectation": "Mailbox filter controls keep a stable height.",
+      "test_smoke_assertion": "Toolbar audit captures communications route or records auth skip.",
+      "requirement_id": "REQ-20260707-135"
+    },
+    "populated": {
+      "route": "/provider.html?review=one-time",
+      "viewport": 768,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open provider review route with TEST fixture data.",
+      "expected_visible_title": "OneTimeOneTime Provider Review",
+      "expected_visible_message": "Scoped provider workspace",
+      "expected_primary_action": "Provider topbar navigation",
+      "expected_secondary_actions": ["Mailbox search toolbar", "Workspace navigation"],
+      "forbidden_content": ["BNA color flash", "credential form as primary content", "horizontal overflow"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Navigation and toolbar controls have stable labels.",
+      "accessibility_expectation": "Provider controls wrap or grid without overlap.",
+      "test_smoke_assertion": "Toolbar audit captures provider topbar and mailbox toolbar measurements.",
+      "requirement_id": "REQ-20260707-135"
+    },
+    "filtered_empty": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 430,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent review route and inspect first viewport before changing filters.",
+      "expected_visible_title": "Parent Review Portal",
+      "expected_visible_message": "TEST Student One Time",
+      "expected_primary_action": "Parent topbar navigation",
+      "expected_secondary_actions": ["Student login", "Assistant/help", "Goal filters"],
+      "forbidden_content": ["overlap", "clipped topbar labels", "mobile controls under 44px"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Parent toolbar links and filters have visible names.",
+      "accessibility_expectation": "430px top controls remain tappable.",
+      "test_smoke_assertion": "Toolbar audit detects mobile topbar density for parent review.",
+      "requirement_id": "REQ-20260707-135"
+    },
+    "error": {
+      "route": "/student.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open student review route and inspect first viewport before API data finishes.",
+      "expected_visible_title": "ONE TIME STUDENT REVIEW",
+      "expected_visible_message": "Student dashboard for live Mishnayos",
+      "expected_primary_action": "Student topbar navigation",
+      "expected_secondary_actions": ["Board filters", "Assistant/help"],
+      "forbidden_content": ["page horizontal scroll", "overlapping top controls", "hidden first content"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Student filters and topbar controls are named.",
+      "accessibility_expectation": "390px controls remain tappable and unclipped.",
+      "test_smoke_assertion": "Toolbar audit detects mobile topbar density for student review.",
+      "requirement_id": "REQ-20260707-135"
+    },
+    "blocked_setup": {
+      "route": "/rabbi-member",
+      "viewport": 1440,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the One Time member route without performing provider setup.",
+      "expected_visible_title": "One Time member navigation",
+      "expected_visible_message": "Member route",
+      "expected_primary_action": "Member topbar links",
+      "expected_secondary_actions": ["Library", "Class access"],
+      "forbidden_content": ["payment setup action", "credential mutation", "uncontrolled topbar scroll"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Member navigation has clear link names.",
+      "accessibility_expectation": "Navigation remains compact on desktop and mobile.",
+      "test_smoke_assertion": "Toolbar audit captures member route topbar density.",
+      "requirement_id": "REQ-20260707-135"
+    },
+    "preview_only": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 768,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent review route with preview-only data.",
+      "expected_visible_title": "Parent Review Portal",
+      "expected_visible_message": "TEST-only review fixture",
+      "expected_primary_action": "Topbar navigation",
+      "expected_secondary_actions": ["Filters", "Helper launcher"],
+      "forbidden_content": ["real billing data", "other family data", "admin diagnostics as parent content"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Review route keeps role boundary visible.",
+      "accessibility_expectation": "Top filter controls do not hide role boundary.",
+      "test_smoke_assertion": "Toolbar audit includes screenshot proof for parent preview.",
+      "requirement_id": "REQ-20260707-135"
+    },
+    "success_readback": {
+      "route": "/student.html?review=one-time",
+      "viewport": 1024,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Run the toolbar density audit and inspect report.json for student route metrics.",
+      "expected_visible_title": "Student dashboard for live Mishnayos",
+      "expected_visible_message": "topClusterHeight and topRowCount are captured",
+      "expected_primary_action": "Audit report",
+      "expected_secondary_actions": ["Screenshot path", "Finding list"],
+      "forbidden_content": ["missing screenshot", "missing route metric", "silent failure"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "N/A for report readback.",
+      "accessibility_expectation": "Report records accessibility-relevant tap target findings.",
+      "test_smoke_assertion": "Static test requires report.json/report.md output and metrics names.",
+      "requirement_id": "REQ-20260707-135"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 390,
+      "auth_role": "missing_operations_session",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Run the audit without Operations credentials.",
+      "expected_visible_title": "Operations auth skipped",
+      "expected_visible_message": "Operations session unavailable",
+      "expected_primary_action": "Record skip reason",
+      "expected_secondary_actions": ["Continue public/review routes"],
+      "forbidden_content": ["fake pass for authenticated route", "credential prompt in report", "secret value"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "N/A for skipped authenticated route.",
+      "accessibility_expectation": "N/A for skipped authenticated route.",
+      "test_smoke_assertion": "Audit records skipped Operations checks when session is unavailable.",
+      "requirement_id": "REQ-20260707-135"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/student.html?review=one-time",
+      "viewport": 430,
+      "auth_role": "anonymous_review_fixture",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open student review route on 430px width and inspect topbar/filter area.",
+      "expected_visible_title": "ONE TIME STUDENT REVIEW",
+      "expected_visible_message": "Board filters remain controlled",
+      "expected_primary_action": "Top controls",
+      "expected_secondary_actions": ["Drawer/menu if present", "Filter tabs"],
+      "forbidden_content": ["uncontrolled page scroll", "tiny top buttons", "overlapping filter tabs"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile filters use accessible buttons/tabs.",
+      "accessibility_expectation": "All visible top controls are at least 44px high.",
+      "test_smoke_assertion": "Toolbar audit flags tiny controls and overlap at 430px.",
+      "requirement_id": "REQ-20260707-135"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview", "viewport": 1440, "state": "operations overview top rail" },
+      { "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi", "viewport": 1024, "state": "operations communications top rail" },
+      { "route": "/provider.html?review=one-time", "viewport": 768, "state": "provider review topbar" },
+      { "route": "/parent.html?review=one-time", "viewport": 430, "state": "parent mobile topbar and filters" },
+      { "route": "/student.html?review=one-time", "viewport": 390, "state": "student mobile topbar and filters" },
+      { "route": "/rabbi-member", "viewport": 1440, "state": "member topbar" }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260707-135-001",
+        "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+        "viewport": 1024,
+        "screenshot_before": "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4/screenshots/operations-onetime-communications-1024-desktop-tablet.png",
+        "screenshot_after_or_blocker": "Split to PKT-20260707-138 because the remaining issue is a broader Operations desktop/tablet top-rail information-architecture density pass.",
+        "defect_codes": ["VQ-DENSITY-001"],
+        "severity": "P2",
+        "user_impact": "Operations One Time top subcategory/filter rails still take too much desktop/tablet vertical space even after mobile/provider/member/email clipping fixes.",
+        "expected_fix": "Create a separate Operations top-rail desktop/tablet density implementation packet that revises the top category/subcategory/filter hierarchy without breaking the shared shell.",
+        "requirement_id": "REQ-20260707-135"
+      }
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Mobile top controls must be at least 44px high.",
+      "Toolbar controls must not overlap or clip labels without intentional scroll.",
+      "Tab/filter controls must retain accessible names.",
+      "First content must remain visible without excessive top chrome."
+    ],
+    "blocked_items": [
+      "Operations authenticated screenshots are blocked only if Operations credentials are unavailable."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Run One Time toolbar density audit",
+      "selector_or_action_key": "npm run audit:onetime-toolbar-density",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Runs Playwright read-only layout measurements and screenshots.",
+      "registry_required": false
+    },
+    {
+      "label": "Capture route viewport screenshot",
+      "selector_or_action_key": "scripts/audit-onetime-toolbar-filter-density.mjs screenshot",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Writes local ignored evidence under ops/ui-audits without mutating the app.",
+      "registry_required": false
+    },
+    {
+      "label": "External provider action",
+      "selector_or_action_key": "payment_email_dns_provider_write",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Explicitly out of scope for the audit packet.",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "visible_fields": [
+      "route id",
+      "viewport id",
+      "topClusterHeight",
+      "topRowCount",
+      "buttonHeightSpread",
+      "tinyMobileControls",
+      "clippedTopControls",
+      "overlapPairs",
+      "screenshot path",
+      "finding code and expected fix"
+    ],
+    "storage": [
+      "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4/report.json",
+      "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4/report.md",
+      "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4/screenshots/*.png"
+    ],
+    "forbidden_data": [
+      "raw private email bodies",
+      "secrets",
+      "passwords",
+      "payment card data",
+      "billing records",
+      "student private transcript bodies",
+      "provider credentials",
+      "external provider tokens"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "privacy_boundary": "The audit reads layout and redacted screen state only. It must not commit screenshots containing raw private message bodies or secrets, and it must not use page content to approve any external action.",
+    "forbidden_actions": [
+      "external send",
+      "payment or charge",
+      "access grant",
+      "password reset",
+      "DNS or provider mutation",
+      "credential display or mutation",
+      "raw private data commit"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "id": "BATCH-20260707-135-1",
+      "scope": "Toolbar/filter density audit harness plus scoped One Time mobile/provider/member/email layout fixes.",
+      "requirements": ["REQ-20260707-135"],
+      "instructions": [
+        "Add a Playwright audit script that measures top toolbar/filter density across the route and viewport matrix.",
+        "Add a static contract test for the audit script.",
+        "Run the audit locally or live, write report.json/report.md/screenshots, and record concrete findings.",
+        "Implement only scoped CSS/layout fixes where the audit exposes a clear narrow defect: One Time review mobile topbar rails, One Time member topbar/hero density, Operations mobile top filter rail, and One Time email workspace clipping.",
+        "Split the remaining Operations desktop/tablet top-rail IA density issue to a follow-up implementation packet."
+      ],
+      "out_of_scope": [
+        "Global CSS rewrite",
+        "Route IA rewrite",
+        "External provider setup or mutation",
+        "Private data readback",
+        "Payment, access, password, DNS, email, or WhatsApp changes"
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/css/bna-app-shell.css",
+      "public/css/one-time-shared-review.css",
+      "public/css/one-time-operations.css",
+      "scripts/smoke-one-time-shared-review-live.mjs",
+      "scripts/audit-parent-student-login-ui-polish.mjs",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
+    ],
+    "files_allowed_to_edit": [
+      "scripts/audit-onetime-toolbar-filter-density.mjs",
+      "tests/onetime-toolbar-filter-density-audit.test.js",
+      "package.json",
+      "ops/prompt-packets/2026-07-07-onetime-toolbar-filter-density-audit/00-onetime-toolbar-filter-density-audit.product-quality.json",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "max_files_to_edit": 7,
+    "max_routes_to_touch": 6,
+    "max_major_surfaces": 4,
+    "split_threshold_reason": "The audit can inspect multiple routes, but any implementation fix must split to three or fewer routes and one major surface.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "required": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-07-onetime-toolbar-filter-density-audit/00-onetime-toolbar-filter-density-audit.product-quality.json",
+      "node --check scripts/audit-onetime-toolbar-filter-density.mjs",
+      "node --test tests/onetime-toolbar-filter-density-audit.test.js",
+      "npm run audit:onetime-toolbar-density -- --base-url http://127.0.0.1:8080 --out-dir ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4",
+      "npm run app:smoke:one-time-shared-review -- --base-url http://127.0.0.1:8080 --report-dir ops/live-smokes",
+      "npm run watchdog:protocol-drift"
+    ],
+    "live_smoke_required": true,
+    "manual_browser_check": [
+      "Review report.md findings and screenshots before creating the implementation packet.",
+      "If a CSS fix is implemented later, rerun the audit and shared-review live smoke after deployment."
+    ]
+  },
+  "evidence": {
+    "required_paths": [
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4/report.md",
+      "ops/live-smokes/2026-07-07T21-07-25-682Z-one-time-shared-review-live-smoke.md",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "screenshot_evidence_required": true,
+    "deploy_evidence_required": true
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Audit script and static contract test are added.",
+      "Audit script syntax and contract test pass.",
+      "Current-state audit runs and writes report.json/report.md/screenshots.",
+      "Scoped mobile/provider/member/email layout fixes are verified by a final local audit and shared-review smoke.",
+      "Remaining Operations desktop/tablet top-rail density findings are recorded in the requirement register with next implementation packet or exact blocker.",
+      "Protocol drift watchdog passes.",
+      "Tracked changes are committed, pushed, deployed, and live-smoked because app-visible code changes are included."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260707-013-onetime-brand-helper-toolbar-isolation.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-07-onetime-toolbar-filter-density-audit/00-onetime-toolbar-filter-density-audit.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "Read current One Time CSS and smoke/audit patterns",
+      "Add toolbar density audit script and test",
+      "Patch scoped One Time review/member/Operations email/mobile layout defects",
+      "Run PQC validator, syntax, test, audit, and watchdog",
+      "Record findings and next packet in task register",
+      "Commit, push, deploy, and live-smoke scoped changes"
+    ],
+    "skipped_actions_policy": "Skip Operations screenshots only when Operations credentials are unavailable; never skip public/review routes without recording failure.",
+    "blocker_decisions": [
+      "DEC-20260707-131"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-local-final4/report.md",
+      "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md#final-audit",
+    "next_packet_path": "ops/prompt-packets/2026-07-07-onetime-toolbar-filter-density-audit/"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 findings or exact blocker recorded."
+  },
+  "next_packet": {
+    "id": "PKT-20260707-138",
+    "title": "Operations Top Rail Desktop Tablet Density Implementation",
+    "status": "pending_child_packet",
+    "reason": "The remaining final4 audit findings are isolated to Operations desktop/tablet top-rail density and need their own IA/layout implementation packet. Agent Mode prompt refresh remains PKT-20260707-136."
+  },
+  "app_visible": true
+}
