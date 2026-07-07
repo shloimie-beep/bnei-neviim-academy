@@ -7,6 +7,10 @@
   `ops/agent-fleet-readbacks/2026-07-02-background-agent-readback.md`
 - Drive trace readback:
   `ops/drive-traces/2026-07-02-newest-ui-correction-recording-trace.md`
+- Job 101 parser/private transcript-doc apply closeout:
+  `ops/drive-transcript-visibility/2026-07-02/APPLY-CLOSEOUT.md`
+- Job 101 review triage and canonical UI follow-up reduction:
+  `ops/drive-transcript-visibility/2026-07-02/JOB-101-REVIEW-TRIAGE.md`
 - UI correction packets:
   `ops/prompt-packets/2026-07-02-ui-correction-recording/`
 - TEST/mock data dry-run:

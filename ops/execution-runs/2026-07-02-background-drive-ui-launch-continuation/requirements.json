@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-02-background-drive-ui-launch-continuation",
   "title": "Background Agent, Drive UI Recording, Mock Data, Railway Provisioning",
-  "updated_at": "2026-07-07T22:47:00+03:00",
+  "updated_at": "2026-07-07T23:18:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260702-006",
@@ -240,7 +240,7 @@
       "id": "REQ-20260702-103",
       "title": "Trace newest Drive recording and UI correction status",
       "expected_result": "Newest Drive recording trace is summarized with redacted IDs and parser/UI-correction status.",
-      "status": "blocked",
+      "status": "done",
       "source_id": "RAW-20260702-006",
       "source_statement_ids": [
         "RAW-20260702-006-S002"
@@ -255,9 +255,9 @@
       "depends_on": [
         "REQ-20260702-101"
       ],
-      "implementation_status": "Newest Drive recording/content job 101 was found and is transcribed. OpenAI keyholder v2 now validates and transcription credential fallback is implemented locally, but job 101 has no visible structured parser output and no private Drive transcript-library doc yet. Raw transcript body was not committed.",
+      "implementation_status": "Newest Drive recording/content job 101 trace is reconciled. Later apply evidence proves Job 101 parser dry-run and repair/rerun completed without raw transcript exposure; private Drive transcript docs for jobs 101/100/85/84/83/82 were created or updated under the recorded approval phrase; Drive connector search/readability was verified. UI correction output was reduced to canonical follow-up clusters rather than hundreds of duplicate review rows.",
       "can_continue_without_operator": true,
-      "next_action": "Restore app/API reachability for dry-run reprocess, run dry-run parser repair for content_job 101, then apply private Drive transcript doc sync only after exact approval.",
+      "next_action": "No further action for this trace requirement. Keep separate follow-up work for Operations filter layout, contacts/communications IA, mobile helper input QA, Rabbi/One Time scope isolation, and protected Job 101 review-row cleanup when DB reachability and exact approvals allow.",
       "acceptance_criteria": [
         "No transcript body exposed",
         "Redacted file/job IDs only",
@@ -269,7 +269,12 @@
         "ops/drive-transcript-visibility/2026-07-02/JOB-101-TRACE.md",
         "ops/drive-transcript-visibility/2026-07-02/BACKLOG-20260625-20260702.md",
         "ops/drive-transcript-visibility/2026-07-02/DRIVE-TRANSCRIPT-LIBRARY-PLAN.md",
-        "ops/drive-transcript-visibility/2026-07-02/VERIFICATION.md"
+        "ops/drive-transcript-visibility/2026-07-02/VERIFICATION.md",
+        "raw-input/RAW-20260702-014-apply-private-drive-transcript-docs-and-job101-parser-closeout.md",
+        "tasks-pending/2026-07-02-apply-private-drive-transcript-docs-and-job101-parser-closeout.md",
+        "ops/drive-transcript-visibility/2026-07-02/APPLY-CLOSEOUT.md",
+        "ops/drive-transcript-visibility/2026-07-02/JOB-101-REVIEW-TRIAGE.md",
+        "ops/drive-transcript-visibility/2026-07-02/JOB-101-REVIEW-TRIAGE.json"
       ],
       "verification": [
         "PASS npm run drive:trace-newest-recording (PARTIAL)",
@@ -278,7 +283,10 @@
         "PASS npm run keyholder:diagnose",
         "PASS npm run openai:diagnose",
         "PASS npm run content:sync-drive-library -- --dry-run --no-ai",
-        "PASS npm run content:export-digests -- --privacy-scan"
+        "PASS npm run content:export-digests -- --privacy-scan",
+        "PASS apply closeout readback: parser dry-run, parser repair/rerun, private Drive docs, and Drive connector search/readability all recorded done",
+        "PASS Job 101 review triage reduced noisy parser output to canonical follow-up clusters without raw transcript body",
+        "PASS no score/progress/grading writes; protected rows remain blocked separately"
       ],
       "implementation_files": [
         "ops/drive-traces/2026-07-02-newest-ui-correction-recording-trace.md",
@@ -288,10 +296,7 @@
         "scripts/sync-drive-content-library.mjs"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-02T19:20:00+03:00",
-      "blocker": "Content job 101 is discovered and transcribed, but no structured parser/class/UI output exists and no private Drive transcript-library doc has been written.",
-      "blocker_owner": "Drive intake/parser pipeline",
-      "blocker_next_action": "Run dry-run parser repair for content_job 101 without committing raw transcript text; Drive doc sync requires APPROVE_20260702_PRIVATE_DRIVE_TRANSCRIPT_DOC_SYNC_FOR_BACKLOG_AND_FUTURE_UPLOADS."
+      "updated_at": "2026-07-07T23:18:00+03:00"
     },
     {
       "id": "REQ-20260702-104",

@@ -6,6 +6,22 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-07T23:18:00+03:00 - Job 101 Drive trace blocker reconciled
+
+- Closed stale active-run blocker `REQ-20260702-103` using later apply proof
+  already present in `ops/drive-transcript-visibility/2026-07-02/`.
+- Evidence shows Job 101 parser dry-run and repair/rerun completed without raw
+  transcript exposure, scoped private Drive transcript docs were created or
+  updated under the recorded approval phrase, and Drive connector
+  search/readability was verified.
+- Job 101 review output is reduced to canonical follow-up clusters instead of
+  hundreds of duplicate/noisy parser review rows.
+- Guardrails preserved: no new Drive mutation, no raw transcript commit, no
+  score/progress/grading writes, no external send, no payment/access/DNS,
+  credential, provider, Vimeo, or production-data mutation was performed.
+- Active execution run now has only two blockers: provider setup aliases and
+  Railway/internal DB bootstrap/live smoke.
+
 ## 2026-07-07T22:47:00+03:00 - Agent fleet readiness blocker cleared
 
 - Closed stale active-run blocker `REQ-20260702-102` after fresh readback.

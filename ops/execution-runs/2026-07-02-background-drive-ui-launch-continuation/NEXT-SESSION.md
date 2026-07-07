@@ -16,6 +16,10 @@ Current state:
    running as PID 13544, `npm run agent:fleet:readiness` returned Overall OK,
    and `npm run agent:fleet:once` correctly refused to start a duplicate
    supervisor while that lock is active.
+6. Newest Drive recording/content job `101` trace is reconciled: parser
+   dry-run and repair/rerun are done, scoped private Drive transcript docs were
+   created/updated under the recorded approval phrase, Drive connector
+   search/readability passed, and no raw transcript body is committed.
 
 Top Codex task:
 
@@ -43,18 +47,19 @@ Recently resolved:
 1. `REQ-20260702-102` - agent-fleet readiness/status is verified. Keep the
    existing supervisor running; do not start a duplicate once-run while the
    lock is active.
+2. `REQ-20260702-103` - newest Drive recording/content job `101` trace and
+   parser/private transcript-doc visibility are reconciled from
+   `ops/drive-transcript-visibility/2026-07-02/APPLY-CLOSEOUT.md` and
+   `ops/drive-transcript-visibility/2026-07-02/JOB-101-REVIEW-TRIAGE.md`.
 
 Still blocked:
 
-1. `REQ-20260702-103` - repair or rerun structured parsing for newest Drive
-   recording `content_job:101` without committing raw transcript text.
-   Updated evidence:
-   - `ops/drive-transcript-visibility/2026-07-02/JOB-101-TRACE.md`
-   - `ops/drive-transcript-visibility/2026-07-02/BACKLOG-20260625-20260702.md`
-   - `ops/drive-transcript-visibility/2026-07-02/DRIVE-TRANSCRIPT-LIBRARY-PLAN.md`
-   - `ops/drive-transcript-visibility/2026-07-02/VERIFICATION.md`
-   Next safe action: restore app/API reachability for the dry-run reprocess
-   command, run parser repair for `content_job:101`, and apply private Drive
-   transcript-doc sync only after exact approval.
-2. Campaign send remains blocked on final copy, exact segment/list,
+1. `REQ-20260702-108` - provider setup remains blocked on exact Zoom session
+   alias, Vimeo token/drop folder, Stripe sandbox/product/price aliases, and
+   Whapi/WAPI instance/phone aliases. No send/payment/provider mutation should
+   run until those values and scope are explicit.
+2. `REQ-20260702-110` - final app bootstrap/live smoke remains blocked because
+   local Railway DB bootstrap cannot reach the internal Postgres host. Deploy
+   `one-time-web`, then run bootstrap inside the Railway service and live smoke.
+3. Campaign send remains blocked on final copy, exact segment/list,
    suppression/unsubscribe proof, seed pass, and exact real-send packet.
