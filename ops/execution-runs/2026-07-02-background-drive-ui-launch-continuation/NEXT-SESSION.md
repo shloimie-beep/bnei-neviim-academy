@@ -61,11 +61,15 @@ Still blocked:
    No send/payment/provider mutation should run until those values and scope
    are explicit.
 2. `REQ-20260702-110` - final app bootstrap/live smoke remains blocked because
-   the current Railway token/env cannot read `one-time-web` variables:
-   `Service 'one-time-web' not found`. Reconcile Railway auth/target context so
-   current CLI/token can see `one-time-production` / `one-time-web` /
-   `production`, then rerun `npm run one-time:setup:check`,
-   `npm run one-time:db:bootstrap`, and only then the post-setup
-   deploy/live-smoke packet.
+   the current Railway token/env is reading BNA production, not the separate
+   One Time target. The setup checker now reports project
+   `skillful-motivation` with visible services `Postgres`,
+   `academy-telegram-worker`, `rabbi-telegram-worker`, and
+   `skillful-motivation`; target service `one-time-web` is not visible.
+   Reconcile Railway auth/target context so current CLI/token can see
+   `one-time-production` / `one-time-web` / `production`, then rerun
+   `npm run one-time:railway-target:guard`,
+   `npm run one-time:setup:check`, `npm run one-time:db:bootstrap`, and only
+   then the post-setup deploy/live-smoke packet.
 3. Campaign send remains blocked on final copy, exact segment/list,
    suppression/unsubscribe proof, seed pass, and exact real-send packet.

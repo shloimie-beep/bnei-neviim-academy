@@ -114,3 +114,44 @@ test('One Time setup readiness consumes successful Railway provisioning report',
   const joinDomain = report.items.find((item) => item.id === 'SETUP-ONETIME-JOIN-DOMAIN-001');
   assert.deepEqual(joinDomain.missing_fields, ['ONE_TIME_JOIN_DNS_CONFIGURED']);
 });
+
+test('One Time setup readiness blocks stale provisioning proof when current Railway auth cannot see service', async () => {
+  const { buildOneTimeExternalSetupReadiness } = await import(setupUrl);
+  const repoRoot = path.join(__dirname, '..');
+  const report = buildOneTimeExternalSetupReadiness({
+    repoRoot,
+    env: {
+      ONE_TIME_PUBLIC_DOMAIN: 'join.onetimeonetime.com',
+      ONE_TIME_JOIN_DOMAIN_ATTACHED: 'true',
+      ONE_TIME_JOIN_DNS_CONFIGURED: 'true',
+      ONE_TIME_APEX_ROOT_UNTOUCHED: 'true',
+    },
+    railwayProvisioningReport: 'ops/one-time-mishnah/onetime-railway-provisioning-report.json',
+    railwayVariables: {
+      ok: false,
+      attempted: true,
+      source: 'railway_token_or_env',
+      reason: "Service 'one-time-web' not found",
+      current_project: 'skillful-motivation',
+      current_environment: 'production',
+      visible_services: ['Postgres', 'skillful-motivation'],
+      expected_service: 'one-time-web',
+      expected_environment: 'production',
+      target_service_visible: false,
+      diagnosis:
+        'Current Railway auth context can read project "skillful-motivation" with services [Postgres, skillful-motivation], but cannot see target service "one-time-web".',
+    },
+  });
+
+  const railway = report.items.find((item) => item.id === 'SETUP-ONETIME-RAILWAY-001');
+  const database = report.items.find((item) => item.id === 'SETUP-ONETIME-DB-001');
+  assert.equal(railway.ready, false);
+  assert.equal(database.ready, false);
+  assert.ok(railway.missing_fields.includes('current_railway_auth_can_read_one-time-web'));
+  assert.match(railway.warnings.join(' '), /cannot see target service "one-time-web"/);
+  assert.match(railway.warnings.join(' '), /Historical guarded Railway provisioning report exists/);
+  assert.doesNotMatch(railway.warnings.join(' '), /Ready from guarded Railway provisioning report/);
+  assert.equal(report.blockers.some((item) => item.id === 'SETUP-ONETIME-RAILWAY-001'), true);
+  assert.equal(report.blockers.some((item) => item.id === 'SETUP-ONETIME-DB-001'), true);
+  assert.doesNotMatch(JSON.stringify(report), /postgres:\/\/|sk_live_|sk_test_/i);
+});

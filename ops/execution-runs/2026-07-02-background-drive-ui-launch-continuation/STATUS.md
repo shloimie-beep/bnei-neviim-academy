@@ -33,10 +33,11 @@ evidence.
 - `REQ-20260702-109`: done. Top visible task is now GoDaddy DNS for
   `join.onetimeonetime.com`.
 - `REQ-20260702-110`: blocked. Current closeout work is pushed to `master`,
-  but fresh read-only setup check reports the current Railway token/env cannot
-  read `one-time-web` variables: `Service 'one-time-web' not found`. Deploy,
-  DB bootstrap, and live smoke remain blocked until Railway auth/target context
-  can see `one-time-production` / `one-time-web` / `production`.
+  BNA production deploy/live smoke passed, and One Time setup tooling now
+  blocks stale historical provisioning proof. Current Railway auth reads BNA
+  project `skillful-motivation` and cannot see target service `one-time-web`.
+  Deploy, DB bootstrap, and live smoke remain blocked until Railway auth/target
+  context can see `one-time-production` / `one-time-web` / `production`.
 
 PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/64
 

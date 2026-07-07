@@ -6,6 +6,23 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-07T23:36:00+03:00 - One Time Railway auth diagnostic hardened
+
+- Updated `scripts/check-onetime-external-setup-readiness.mjs` so a current
+  Railway readback that cannot see `one-time-web` blocks stale historical
+  provisioning proof instead of reporting railway-only readiness.
+- The checker now reads current Railway status after `Service 'one-time-web'
+  not found` and reports the current project plus visible services.
+- Current readback: Railway auth can read BNA project `skillful-motivation`
+  with services `Postgres`, `academy-telegram-worker`,
+  `rabbi-telegram-worker`, and `skillful-motivation`; target service
+  `one-time-web` is not visible.
+- Focused test coverage added in
+  `tests/one-time-external-setup-readiness.test.js`.
+- Verification: syntax check passed, focused readiness tests passed 5/5,
+  `npm run one-time:setup:check` correctly blocked full setup, and
+  `npm run one-time:railway-target:guard` now correctly blocks 0/1.
+
 ## 2026-07-07T23:29:00+03:00 - BNA post-push deploy readback verified
 
 - Verified BNA Railway deployment

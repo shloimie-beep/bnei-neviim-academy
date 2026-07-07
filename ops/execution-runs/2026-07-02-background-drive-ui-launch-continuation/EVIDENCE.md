@@ -23,6 +23,8 @@
   `ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md`
 - Current read-only setup/blocker readback:
   `ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.md`
+- Current Railway auth diagnostic readback:
+  `ops/one-time-mishnah/launch-unblocker/2026-07-07-railway-auth-diagnostic-readback.md`
 - Domain/DNS task:
   `ops/domain-readbacks/2026-07-02-join-onetimeonetime-domain-task.md`
 - Provider setup status:

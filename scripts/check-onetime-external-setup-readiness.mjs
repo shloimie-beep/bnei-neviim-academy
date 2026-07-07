@@ -115,10 +115,61 @@ function loadRailwayTokenEnv(repoRoot) {
   return env;
 }
 
+function railwayCommandForPlatform(args) {
+  return process.platform === 'win32'
+    ? { command: 'cmd.exe', args: ['/d', '/s', '/c', 'railway.cmd', ...args] }
+    : { command: 'railway', args };
+}
+
+function parseRailwayStatusSummary(text, { service = 'one-time-web', environment = 'production' } = {}) {
+  try {
+    const statusJson = JSON.parse(text || '{}');
+    const environmentNodes = (statusJson.environments?.edges || [])
+      .map((edge) => edge?.node)
+      .filter(Boolean);
+    const envNode =
+      environmentNodes.find((node) => node.name === environment) ||
+      environmentNodes.find((node) => String(node.name || '').toLowerCase() === 'production') ||
+      environmentNodes[0] ||
+      {};
+    const serviceNames = (statusJson.services?.edges || [])
+      .map((edge) => edge?.node?.name)
+      .filter(Boolean)
+      .sort();
+    const instanceServices = (envNode.serviceInstances?.edges || [])
+      .map((edge) => edge?.node?.serviceName)
+      .filter(Boolean)
+      .sort();
+    const visibleServices = [...new Set([...serviceNames, ...instanceServices])].sort();
+    return {
+      current_project: statusJson.name || '',
+      current_environment: envNode.name || '',
+      visible_services: visibleServices,
+      expected_service: service,
+      expected_environment: environment,
+      target_service_visible: visibleServices.includes(service),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function buildRailwayReadbackDiagnosis(summary, reason = '') {
+  if (!summary) return '';
+  const serviceList = summary.visible_services?.length
+    ? summary.visible_services.join(', ')
+    : 'none';
+  const currentProject = summary.current_project || 'unknown project';
+  const expectedService = summary.expected_service || 'one-time-web';
+  if (!summary.target_service_visible && /service.+not found/i.test(reason)) {
+    return `Current Railway auth context can read project "${currentProject}" with services [${serviceList}], but cannot see target service "${expectedService}". Use a Railway token/session for one-time-production or set the local Railway target to the One Time project/service before deploy/bootstrap.`;
+  }
+  return `Current Railway auth context summary: project "${currentProject}", services [${serviceList}].`;
+}
+
 function runRailwayVariablesReadback({ repoRoot, service = 'one-time-web', environment = 'production' } = {}) {
   const railwayArgs = ['variable', 'list', '--service', service, '--environment', environment, '--json'];
-  const command = process.platform === 'win32' ? 'cmd.exe' : 'railway';
-  const args = process.platform === 'win32' ? ['/d', '/s', '/c', 'railway.cmd', ...railwayArgs] : railwayArgs;
+  const { command, args } = railwayCommandForPlatform(railwayArgs);
 
   function runWithEnv(commandEnv) {
     return spawnSync(command, args, {
@@ -151,11 +202,27 @@ function runRailwayVariablesReadback({ repoRoot, service = 'one-time-web', envir
     return { ok: false, attempted: true, source, reason: result.error.message || 'Railway variable readback failed.' };
   }
   if (result.status !== 0) {
+    const reason = String(result.stderr || result.stdout || `Railway exited ${result.status}`).split(/\r?\n/)[0];
+    let currentContext = null;
+    if (/service.+not found|project.+not found|environment.+not found/i.test(reason)) {
+      const statusArgs = railwayCommandForPlatform(['status', '--json']);
+      const statusResult = spawnSync(statusArgs.command, statusArgs.args, {
+        cwd: repoRoot,
+        env: tokenEnv,
+        encoding: 'utf8',
+        maxBuffer: 1024 * 1024 * 4,
+      });
+      if (statusResult.status === 0 && statusResult.stdout) {
+        currentContext = parseRailwayStatusSummary(statusResult.stdout, { service, environment });
+      }
+    }
     return {
       ok: false,
       attempted: true,
       source,
-      reason: String(result.stderr || result.stdout || `Railway exited ${result.status}`).split(/\r?\n/)[0],
+      reason,
+      ...(currentContext || {}),
+      diagnosis: buildRailwayReadbackDiagnosis(currentContext, reason),
     };
   }
   try {
@@ -251,13 +318,18 @@ function railwayReadiness(env, repoRoot, provisioningReportPath, railwayVariable
   const missingExpected = expectedEnvMissing(env);
   const provisioningReport = readJsonIfExists(provisioningReportPath, repoRoot);
   const provisionedByReport = successfulRailwayProvisioning(provisioningReport);
+  const currentTargetReadbackBlocked = Boolean(
+    railwayVariables?.attempted &&
+      railwayVariables.ok === false &&
+      /service.+not found|project.+not found|environment.+not found/i.test(String(railwayVariables.reason || '')),
+  );
   const railwayVariablesReady =
     railwayVariables?.ok &&
     railwayVariables.one_time_public_domain_matches &&
     railwayVariables.default_workspace_matches &&
     railwayVariables.default_project_matches;
   const envReady = serviceReady && projectReady && environmentReady && missingExpected.length === 0;
-  const ready = envReady || provisionedByReport;
+  const ready = (envReady || provisionedByReport) && !currentTargetReadbackBlocked;
   return {
     ready,
     source: provisionedByReport ? 'railway_provisioning_report' : 'env',
@@ -271,14 +343,18 @@ function railwayReadiness(env, repoRoot, provisioningReportPath, railwayVariable
     missing: ready
       ? []
       : [
+          currentTargetReadbackBlocked ? 'current_railway_auth_can_read_one-time-web' : '',
           serviceReady && projectReady && environmentReady ? '' : 'railway_project_service_environment_label',
           ...missingExpected,
         ],
     warning: ready
       ? ''
-      : `Missing explicit One Time Railway target. ${missingExpected
+      : [
+        railwayVariables?.diagnosis || '',
+        `Missing explicit One Time Railway target. ${missingExpected
         .map((key) => `${key} missing or mismatch; expected ${ONE_TIME_EXPECTED_ENV[key]}.`)
         .join(' ')}`.trim(),
+      ].filter(Boolean).join(' '),
   };
 }
 
@@ -495,7 +571,9 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       warnings: [
         railway.warning,
         railway.source === 'railway_provisioning_report'
-          ? `Ready from guarded Railway provisioning report: ${railway.provisioning_report_path}.`
+          ? railway.ready
+            ? `Ready from guarded Railway provisioning report: ${railway.provisioning_report_path}.`
+            : `Historical guarded Railway provisioning report exists at ${railway.provisioning_report_path}, but current Railway readback blocks target proof.`
           : '',
       ],
       verification: [

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-02-background-drive-ui-launch-continuation",
   "title": "Background Agent, Drive UI Recording, Mock Data, Railway Provisioning",
-  "updated_at": "2026-07-07T23:28:00+03:00",
+  "updated_at": "2026-07-07T23:36:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260702-006",
@@ -604,9 +604,9 @@
         "REQ-20260702-108",
         "REQ-20260702-109"
       ],
-      "implementation_status": "Current repo closeout is pushed and active-run validation passes, but One Time deploy/bootstrap/live smoke cannot proceed. Fresh read-only setup check reports current Railway token/env cannot read one-time-web variables: Service 'one-time-web' not found. Database bootstrap dry-run is available and mutation-free, but apply requires BOOTSTRAP_ONE_TIME_DATABASE plus proven APP_INSTANCE=onetime, DEFAULT_WORKSPACE_KEY=rabbi_sheller_provider, DEFAULT_PROJECT_KEY=one_time_mishnah_class, and a reachable One Time DATABASE_URL in the active Railway context.",
+      "implementation_status": "Current repo closeout is pushed, BNA production deploy/live smoke passed, and One Time setup tooling now correctly blocks stale historical provisioning proof when the current Railway auth context cannot see one-time-web. Current Railway auth can read BNA project skillful-motivation with services Postgres, academy-telegram-worker, rabbi-telegram-worker, and skillful-motivation, but cannot see target service one-time-web.",
       "can_continue_without_operator": true,
-      "next_action": "Reconcile Railway auth/target context so the current CLI/token can see one-time-production / one-time-web / production, rerun npm run one-time:setup:check and npm run one-time:db:bootstrap, then run the post-setup deploy/live-smoke packet only after setup check is ready.",
+      "next_action": "Provide Railway auth/target context that can read one-time-production / one-time-web / production, then rerun npm run one-time:railway-target:guard, npm run one-time:setup:check, and npm run one-time:db:bootstrap before any One Time deploy/live-smoke packet.",
       "acceptance_criteria": [
         "All requirements terminal",
         "Guardrails held",
@@ -616,19 +616,28 @@
       "evidence": [
         "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64",
         "ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.md",
-        "ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.json"
+        "ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.json",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-07-railway-auth-diagnostic-readback.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-07-railway-auth-diagnostic-readback.json"
       ],
       "verification": [
         "BLOCKED npm run one-time:setup:check exited 1: Service one-time-web not found; ready count 2/8",
         "PASS npm run one-time:railway-target:guard exited 0 for historical provisioning report but repeated current one-time-web readback failure",
-        "PASS npm run one-time:db:bootstrap dry-run exited 0 with mutation_performed false and confirmation required BOOTSTRAP_ONE_TIME_DATABASE"
+        "PASS npm run one-time:db:bootstrap dry-run exited 0 with mutation_performed false and confirmation required BOOTSTRAP_ONE_TIME_DATABASE",
+        "PASS node --check scripts/check-onetime-external-setup-readiness.mjs",
+        "PASS node --test tests/one-time-external-setup-readiness.test.js (5/5)",
+        "BLOCKED npm run one-time:setup:check now reports current project skillful-motivation and visible services, with one-time-web not visible",
+        "BLOCKED npm run one-time:railway-target:guard now returns ready_count 0/1 instead of accepting stale provisioning proof"
       ],
-      "implementation_files": [],
+      "implementation_files": [
+        "scripts/check-onetime-external-setup-readiness.mjs",
+        "tests/one-time-external-setup-readiness.test.js"
+      ],
       "deployment_required": false,
-      "updated_at": "2026-07-07T23:28:00+03:00",
-      "blocker": "Current Railway token/env cannot read one-time-web variables; one-time:setup:check reports Service 'one-time-web' not found, so DB reference, deploy, bootstrap, and live smoke cannot be proven from this context.",
+      "updated_at": "2026-07-07T23:36:00+03:00",
+      "blocker": "Current Railway auth context is BNA production, not the separate One Time target: it can read project skillful-motivation and cannot see service one-time-web, so DB reference, deploy, bootstrap, and live smoke cannot be proven from this context.",
       "blocker_owner": "Codex / Railway deployment runtime",
-      "blocker_next_action": "Reconcile Railway auth/target context so the current CLI/token can see one-time-production / one-time-web / production, rerun npm run one-time:setup:check and npm run one-time:db:bootstrap, then run the post-setup deploy/live-smoke packet only after setup check is ready.",
+      "blocker_next_action": "Provide Railway auth/target context that can read one-time-production / one-time-web / production, then rerun npm run one-time:railway-target:guard, npm run one-time:setup:check, and npm run one-time:db:bootstrap before any One Time deploy/live-smoke packet.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64",
       "implementation_commit": "edec1133",
       "pushed_commit": "edec1133"
