@@ -98,18 +98,18 @@ buttons.
 
 | ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
 |---|---|---|---|---|---|---|
-| REQ-20260707-060 | raw/register/memory | Preserve raw and parsed findings. | PASS raw/register/memory readback. | Pending | Pending | n/a |
-| REQ-20260707-061 | prompt packet + Agent Review prompt generator | Make Operations drop-off primary. | PASS `node --test tests/agent-mode-task-dropoff.test.js`; PASS `node --check src/lib/bna/agent-review-hub.js`; PASS prompt manifest parse. | Pending | Pending | required after push |
-| REQ-20260707-062 | prompt packet files | Replace GitHub-first dropoff with Operations-saved `AGR-*` contract. | PASS `node --test tests/agent-mode-operations-dropoff-prompts.test.js`. | Pending | Pending | n/a |
-| REQ-20260707-063 | register | Capture implementation candidates only; no UI code yet. | PASS implementation candidate table recorded; no UI code started without audit evidence. | Pending | Pending | n/a |
-| REQ-20260707-064 | memory topic + prompt files | Record reusable parallel loop. | PASS `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`; PASS `git diff --check`. | Pending | Pending | n/a |
+| REQ-20260707-060 | raw/register/memory | Preserve raw and parsed findings. | PASS raw/register/memory readback. | `18948a7b` | `18948a7b` | n/a |
+| REQ-20260707-061 | prompt packet + Agent Review prompt generator | Make Operations drop-off primary. | PASS `node --test tests/agent-mode-task-dropoff.test.js`; PASS `node --check src/lib/bna/agent-review-hub.js`; PASS prompt manifest parse. | `18948a7b` | `18948a7b` | PASS Railway deployment `8a8551cd-c859-47cd-a7bb-06dbd18e716a` SUCCESS; PASS `npm run app:smoke:one-time-agent-mode-acceptance`; report `ops/live-smokes/2026-07-07T10-36-50-000Z-one-time-agent-mode-acceptance-live-smoke.md` |
+| REQ-20260707-062 | prompt packet files | Replace GitHub-first dropoff with Operations-saved `AGR-*` contract. | PASS `node --test tests/agent-mode-operations-dropoff-prompts.test.js`. | `18948a7b` | `18948a7b` | n/a |
+| REQ-20260707-063 | register | Capture implementation candidates only; no UI code yet. | PASS implementation candidate table recorded; no UI code started without audit evidence. | `18948a7b` | `18948a7b` | n/a |
+| REQ-20260707-064 | memory topic + prompt files | Record reusable parallel loop. | PASS `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`; PASS `git diff --check`. | `18948a7b` | `18948a7b` | n/a |
 
 ## Final audit
 
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |
 |---|---|---|---|---|---|
 | REQ-20260707-060 | Done | `raw-input/RAW-20260707-006-agent-mode-operations-dropoff-ui-audit-results.md`; memory note in `memory/2026-07-07.md`. | Raw/register/memory files. | PASS file readback during implementation. | n/a |
-| REQ-20260707-061 | Done | Operations-first prompt contract in README, prompt manifest, prompt files, and generated Agent Review prompt text. | `ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/`; `src/lib/bna/agent-review-hub.js`; tests. | PASS `node --test tests/agent-mode-task-dropoff.test.js`; PASS `node --check src/lib/bna/agent-review-hub.js`; PASS prompt manifest parse. | Deploy/live smoke pending until push/deploy closeout. |
+| REQ-20260707-061 | Done | Operations-first prompt contract in README, prompt manifest, prompt files, and generated Agent Review prompt text. | `ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/`; `src/lib/bna/agent-review-hub.js`; tests. | PASS `node --test tests/agent-mode-task-dropoff.test.js`; PASS `node --check src/lib/bna/agent-review-hub.js`; PASS prompt manifest parse; PASS Railway deployment `8a8551cd-c859-47cd-a7bb-06dbd18e716a` SUCCESS; PASS `npm run app:smoke:one-time-agent-mode-acceptance`. | Runtime proof report: `ops/live-smokes/2026-07-07T10-36-50-000Z-one-time-agent-mode-acceptance-live-smoke.md`. |
 | REQ-20260707-062 | Done | `OPERATIONS-DROPOFF.md` and prompts 01-04 require `OPERATIONS_DROPOFF_SAVED` or `OPERATIONS_DROPOFF_FAILED`. | Prompt packet files and `tests/agent-mode-operations-dropoff-prompts.test.js`. | PASS `node --test tests/agent-mode-operations-dropoff-prompts.test.js`. | n/a |
 | REQ-20260707-063 | Done | Implementation candidate table in this register. | This register. | PASS register readback; no UI code started without current-state audit packet. | Future UI implementation requires current-state audit and before screenshots. |
 | REQ-20260707-064 | Done | Memory topic and prompt files record Operations drop-off as primary parallel loop. | `memory-topics/ui-quality-goals.md`; prompt packet files. | PASS `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`; PASS `git diff --check`. | Agent fleet DB ingestion of saved `AGR-*` results remains a follow-up if not already automated. |

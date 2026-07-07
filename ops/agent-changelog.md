@@ -30567,3 +30567,15 @@ Report: ops/agent-fleet-runs/2026-07-07T06-21-46-153Z-task-1945.md
 
 Deployment gate:
 - Pending commit/push/deploy closeout at the time this entry was written.
+
+## 2026-07-07T13:36:50+03:00 - Agent Mode Operations Drop-Off Deployed
+
+- Runtime commit `18948a7b` was pushed to `master`.
+- Railway production service `skillful-motivation` deployed
+  `8a8551cd-c859-47cd-a7bb-06dbd18e716a` and reached `SUCCESS`.
+- Live smoke passed: `npm run app:smoke:one-time-agent-mode-acceptance`.
+- Evidence report:
+  `ops/live-smokes/2026-07-07T10-36-50-000Z-one-time-agent-mode-acceptance-live-smoke.md`.
+- Railway doctor remains blocked by target guard because the local Railway
+  target lacks an explicit service name/ID; explicit service status was used
+  instead.
