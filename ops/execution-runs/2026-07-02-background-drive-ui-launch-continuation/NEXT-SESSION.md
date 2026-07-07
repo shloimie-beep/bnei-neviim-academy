@@ -55,11 +55,17 @@ Recently resolved:
 Still blocked:
 
 1. `REQ-20260702-108` - provider setup remains blocked on exact Zoom session
-   alias, Vimeo token/drop folder, Stripe sandbox/product/price aliases, and
-   Whapi/WAPI instance/phone aliases. No send/payment/provider mutation should
-   run until those values and scope are explicit.
+   alias, One Time Drive drop-folder alias, Rabbi Stripe sandbox/test key
+   status and `$67/month` product/price alias, Whapi/WAPI instance/phone,
+   campaign copy/list/suppression proof, and explicit seed approval packet.
+   No send/payment/provider mutation should run until those values and scope
+   are explicit.
 2. `REQ-20260702-110` - final app bootstrap/live smoke remains blocked because
-   local Railway DB bootstrap cannot reach the internal Postgres host. Deploy
-   `one-time-web`, then run bootstrap inside the Railway service and live smoke.
+   the current Railway token/env cannot read `one-time-web` variables:
+   `Service 'one-time-web' not found`. Reconcile Railway auth/target context so
+   current CLI/token can see `one-time-production` / `one-time-web` /
+   `production`, then rerun `npm run one-time:setup:check`,
+   `npm run one-time:db:bootstrap`, and only then the post-setup
+   deploy/live-smoke packet.
 3. Campaign send remains blocked on final copy, exact segment/list,
    suppression/unsubscribe proof, seed pass, and exact real-send packet.

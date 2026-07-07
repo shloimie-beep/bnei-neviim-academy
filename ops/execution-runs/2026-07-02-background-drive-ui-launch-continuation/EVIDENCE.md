@@ -21,6 +21,8 @@
   `ops/one-time-mishnah/onetime-railway-provisioning-report.json`
 - Setup checker report:
   `ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md`
+- Current read-only setup/blocker readback:
+  `ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.md`
 - Domain/DNS task:
   `ops/domain-readbacks/2026-07-02-join-onetimeonetime-domain-task.md`
 - Provider setup status:

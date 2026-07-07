@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-02-background-drive-ui-launch-continuation",
   "title": "Background Agent, Drive UI Recording, Mock Data, Railway Provisioning",
-  "updated_at": "2026-07-07T23:18:00+03:00",
+  "updated_at": "2026-07-07T23:28:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260702-006",
@@ -497,9 +497,9 @@
       "depends_on": [
         "REQ-20260702-101"
       ],
-      "implementation_status": "Deep keyholder alias discovery and provider readbacks completed. Resend domain is verified. Zoom account/client credentials work in read-only auth. Vimeo client credentials work in read-only auth, but no user access token alias/drop-folder alias was found. Stripe keyholder currently has a live key, not a sandbox test key/product price. Whapi/WAPI token material exists locally, but One Time scoped instance/phone aliases remain missing. Safe Resend/Zoom/Vimeo client env values were propagated to one-time-web and verified by fingerprint.",
+      "implementation_status": "Current read-only setup check confirms provider/campaign setup is still incomplete. Vimeo credentials/access token are visible by safe alias, but One Time Drive drop-folder alias is missing; Zoom session/join alias is missing; Rabbi Stripe sandbox/test key status and /month product/price alias are missing; Whapi/WAPI instance ID and phone number are missing; campaign copy/list/suppression/seed approval are missing. No provider mutation or external send occurred.",
       "can_continue_without_operator": true,
-      "next_action": "Provide or label the remaining exact aliases: One Time Zoom session/join alias, VIMEO_ACCESS_TOKEN, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS, Rabbi Stripe test key and $67/month price/product aliases, Whapi/WAPI instance/phone aliases.",
+      "next_action": "Provide or label the exact missing setup values: One Time Zoom session/join alias, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS, Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet.",
       "acceptance_criteria": [
         "No real broadcast",
         "No live payment",
@@ -512,23 +512,27 @@
         "ops/one-time-mishnah/launch-unblocker/2026-07-02-rabbi-whatsapp-setup-message.md",
         "ops/keyholder-readbacks/2026-07-02-one-time-provider-alias-inventory.md",
         "ops/qa-runs/2026-07-02T15-39-30-010Z-provider-credential-diagnostics.md",
-        "ops/qa-runs/2026-07-02T15-39-35-269Z-provider-env-railway-audit.md"
+        "ops/qa-runs/2026-07-02T15-39-35-269Z-provider-env-railway-audit.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.json"
       ],
       "verification": [
         "PASS npm run keyholder:diagnose -- --json",
         "PASS node scripts/provider-credentials-diagnostics.mjs --json",
         "PASS provider env propagation pushed 8/8 safe variables to one-time-web with deploy skipped",
-        "PASS provider env Railway audit matched 8/8 required values"
+        "PASS provider env Railway audit matched 8/8 required values",
+        "BLOCKED npm run one-time:setup:check exited 1 with provider/campaign missing fields and no external writes",
+        "PASS read-only guardrails: no provider mutation, DNS mutation, email/WhatsApp send, live payment, credential change, Drive/Vimeo upload, or database mutation"
       ],
       "implementation_files": [
         "ops/provider-config-readbacks/2026-07-02-one-time-provider-setup-status.md",
         "ops/provider-config-readbacks/2026-07-02-one-time-provider-setup-status.json"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-02T15:42:42+03:00",
-      "blocker": "Remaining provider/campaign setup is exact: Zoom session/join alias, Vimeo access token and Drive drop-folder alias, Stripe sandbox key/product price, Whapi/WAPI instance/phone, and campaign copy/list/suppression/approval.",
+      "updated_at": "2026-07-07T23:28:00+03:00",
+      "blocker": "Provider/campaign setup remains incomplete in current read-only setup check.",
       "blocker_owner": "Shloimie / provider account owners",
-      "blocker_next_action": "Provide or label the remaining exact aliases: One Time Zoom session/join alias, VIMEO_ACCESS_TOKEN, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS, Rabbi Stripe test key and $67/month price/product aliases, Whapi/WAPI instance/phone aliases."
+      "blocker_next_action": "Provide or label the exact missing setup values: One Time Zoom session/join alias, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS, Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet."
     },
     {
       "id": "REQ-20260702-109",
@@ -600,9 +604,9 @@
         "REQ-20260702-108",
         "REQ-20260702-109"
       ],
-      "implementation_status": "PR #64 finalization is in progress. DNS and DB gates are now ready, provider env values were propagated safely, but DB bootstrap apply is blocked from local because Railway Postgres resolves to an internal host; run bootstrap from inside deployed one-time-web after deploy. Validation/commit/push/merge/deploy still pending for this continuation batch.",
+      "implementation_status": "Current repo closeout is pushed and active-run validation passes, but One Time deploy/bootstrap/live smoke cannot proceed. Fresh read-only setup check reports current Railway token/env cannot read one-time-web variables: Service 'one-time-web' not found. Database bootstrap dry-run is available and mutation-free, but apply requires BOOTSTRAP_ONE_TIME_DATABASE plus proven APP_INSTANCE=onetime, DEFAULT_WORKSPACE_KEY=rabbi_sheller_provider, DEFAULT_PROJECT_KEY=one_time_mishnah_class, and a reachable One Time DATABASE_URL in the active Railway context.",
       "can_continue_without_operator": true,
-      "next_action": "Run full validation, commit/push PR #64 updates, mark ready/merge if checks pass, deploy one-time-web, then run DB bootstrap via Railway SSH and live smoke.",
+      "next_action": "Reconcile Railway auth/target context so the current CLI/token can see one-time-production / one-time-web / production, rerun npm run one-time:setup:check and npm run one-time:db:bootstrap, then run the post-setup deploy/live-smoke packet only after setup check is ready.",
       "acceptance_criteria": [
         "All requirements terminal",
         "Guardrails held",
@@ -610,15 +614,21 @@
         "One top operator task"
       ],
       "evidence": [
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.json"
       ],
-      "verification": [],
+      "verification": [
+        "BLOCKED npm run one-time:setup:check exited 1: Service one-time-web not found; ready count 2/8",
+        "PASS npm run one-time:railway-target:guard exited 0 for historical provisioning report but repeated current one-time-web readback failure",
+        "PASS npm run one-time:db:bootstrap dry-run exited 0 with mutation_performed false and confirmation required BOOTSTRAP_ONE_TIME_DATABASE"
+      ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-07-02T15:42:42+03:00",
-      "blocker": "DB bootstrap cannot run from local Railway env because the Postgres host is internal-only; deploy one-time-web first and run bootstrap inside the Railway service.",
+      "updated_at": "2026-07-07T23:28:00+03:00",
+      "blocker": "Current Railway token/env cannot read one-time-web variables; one-time:setup:check reports Service 'one-time-web' not found, so DB reference, deploy, bootstrap, and live smoke cannot be proven from this context.",
       "blocker_owner": "Codex / Railway deployment runtime",
-      "blocker_next_action": "Run full validation, commit/push PR #64 updates, mark ready/merge if checks pass, deploy one-time-web, then run DB bootstrap via Railway SSH and live smoke.",
+      "blocker_next_action": "Reconcile Railway auth/target context so the current CLI/token can see one-time-production / one-time-web / production, rerun npm run one-time:setup:check and npm run one-time:db:bootstrap, then run the post-setup deploy/live-smoke packet only after setup check is ready.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64",
       "implementation_commit": "edec1133",
       "pushed_commit": "edec1133"

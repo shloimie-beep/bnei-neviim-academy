@@ -25,15 +25,18 @@ evidence.
   variables, and `DATABASE_URL` service reference.
 - `REQ-20260702-107`: done. Railway custom domain attachment and GoDaddy DNS
   verification for `join.onetimeonetime.com` are complete.
-- `REQ-20260702-108`: blocked. Resend path is
-  configured but no send occurred; Vimeo token/drop-folder, Stripe sandbox,
-  Whapi/WAPI, and Zoom aliases remain missing.
+- `REQ-20260702-108`: blocked. Current read-only setup check still needs the
+  Zoom session/join alias, One Time Drive drop-folder alias, Rabbi Stripe
+  sandbox/test key status plus `$67/month` product/price alias, Whapi/WAPI
+  instance/phone, campaign copy/list/suppression proof, and seed approval
+  packet. No provider mutation or send occurred.
 - `REQ-20260702-109`: done. Top visible task is now GoDaddy DNS for
   `join.onetimeonetime.com`.
-- `REQ-20260702-110`: blocked. Commit `edec1133` was pushed and draft PR #64
-  was opened historically; current closeout work is pushed to `master`, but
-  final app bootstrap/live smoke still waits for the approved Railway internal
-  deploy/DB bootstrap path and remaining provider aliases.
+- `REQ-20260702-110`: blocked. Current closeout work is pushed to `master`,
+  but fresh read-only setup check reports the current Railway token/env cannot
+  read `one-time-web` variables: `Service 'one-time-web' not found`. Deploy,
+  DB bootstrap, and live smoke remain blocked until Railway auth/target context
+  can see `one-time-production` / `one-time-web` / `production`.
 
 PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/64
 

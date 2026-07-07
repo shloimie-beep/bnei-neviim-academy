@@ -6,6 +6,22 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-07T23:28:00+03:00 - One Time readiness blocker sharpened
+
+- Ran read-only One Time readiness checks after repo closeout.
+- `npm run one-time:setup:check` exited 1 with no external writes and reported
+  current Railway variable readback cannot find `one-time-web`.
+- `npm run one-time:railway-target:guard` exited 0 from the historical guarded
+  provisioning report, but repeated the same current `one-time-web` readback
+  failure.
+- `npm run one-time:db:bootstrap` dry-run exited 0 with mutation performed
+  `false`; apply still requires `BOOTSTRAP_ONE_TIME_DATABASE` and proven One
+  Time environment guards.
+- Updated active-run blockers `REQ-20260702-108` and `REQ-20260702-110` with
+  current missing provider/campaign fields and Railway auth/target blocker.
+- Evidence:
+  `ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.md`.
+
 ## 2026-07-07T23:18:00+03:00 - Job 101 Drive trace blocker reconciled
 
 - Closed stale active-run blocker `REQ-20260702-103` using later apply proof
