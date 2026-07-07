@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T12:44:21.790Z",
+  "generated_at": "2026-07-07T14:36:03.025Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -300,6 +300,7 @@
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/OPERATIONS-DROPOFF.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/README.md",
     "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/agent-mode-prompt-series.json",
+    "ops/prompt-packets/2026-07-07-parent-student-login-ui-polish/00-parent-student-login-ui-polish.product-quality.json",
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/00-control-tower.product-quality.json",
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/01-current-state-visual-audit.md",
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/02-telegram-codex-progress-notifications.md",
@@ -512,6 +513,7 @@
     "tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md",
     "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
     "tasks-pending/2026-07-07-parallel-agent-mode-mobile-communications-dashboard-email-status.md",
+    "tasks-pending/2026-07-07-parent-student-login-ui-polish.md",
     "tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"

@@ -736,7 +736,13 @@
       cursor: wait;
     }
     @media (max-width: 520px) {
-      .bna-bot-launcher { right: 12px; bottom: 12px; }
+      .bna-bot-launcher {
+        right: 12px;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        max-width: calc(100vw - 24px);
+        min-height: 44px;
+        padding: 0 0.85rem;
+      }
       [dir="rtl"] .bna-bot-launcher { left: 12px; right: auto; }
       .bna-bot-nudge {
         right: 12px;

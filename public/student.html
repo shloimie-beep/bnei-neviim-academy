@@ -69,6 +69,10 @@
             gap: 12px;
         }
 
+        .brand-lockup > div {
+            min-width: 0;
+        }
+
         .brand-mark {
             display: grid;
             place-items: center;
@@ -86,6 +90,7 @@
             color: #173f64;
             font-size: 15px;
             line-height: 1.1;
+            overflow-wrap: anywhere;
         }
 
         .brand-lockup span {
@@ -93,9 +98,14 @@
             color: var(--muted);
             font-size: 12px;
             line-height: 1.2;
+            overflow-wrap: anywhere;
         }
 
         .brand-chip {
+            min-height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             border: 1px solid rgba(47, 100, 141, 0.14);
             border-radius: 999px;
             background: #f7fbff;
@@ -115,6 +125,10 @@
         }
 
         .portal-topbar-link {
+            min-height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             border: 1px solid rgba(47, 100, 141, 0.14);
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.72);
@@ -124,6 +138,7 @@
             font-weight: 900;
             text-decoration: none;
             white-space: nowrap;
+            line-height: 1.15;
         }
 
         body::before {
@@ -242,6 +257,9 @@
 
         button,
         .button-link {
+            min-height: 44px;
+            display: inline-grid;
+            place-items: center;
             border: 0;
             border-radius: 999px;
             padding: 12px 17px;
@@ -250,6 +268,8 @@
             background: var(--forest);
             font: 800 13px "Trebuchet MS", Verdana, sans-serif;
             letter-spacing: 0.03em;
+            line-height: 1.15;
+            text-align: center;
             text-decoration: none;
             transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
         }
@@ -300,6 +320,7 @@
             display: none;
             align-items: center;
             gap: 8px;
+            min-height: 44px;
             margin: 0 0 12px;
         }
 
@@ -1146,28 +1167,65 @@
             }
 
             .brand-topbar {
-                padding: 10px 14px;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 10px;
             }
 
-            .brand-topbar {
-                align-items: flex-start;
+            .brand-lockup {
+                flex: 0 0 auto;
+                max-width: 42%;
+                gap: 10px;
+            }
+
+            .brand-mark {
+                width: 34px;
+                height: 34px;
+            }
+
+            .brand-lockup strong {
+                font-size: 13px;
+            }
+
+            .brand-lockup span {
+                font-size: 11px;
             }
 
             .portal-topbar-actions {
-                max-width: 48%;
+                flex: 1 1 auto;
+                width: auto;
+                min-width: 0;
+                max-width: none;
+                display: flex;
+                flex-wrap: nowrap;
                 gap: 6px;
+                justify-content: flex-start;
+                overflow: visible;
+                padding-bottom: 2px;
+            }
+
+            [data-student-topbar-home],
+            [data-student-topbar-assistant],
+            .portal-topbar-actions::-webkit-scrollbar {
+                display: none;
             }
 
             .portal-topbar-link {
-                padding: 6px 8px;
-                font-size: 10px;
+                flex: 1 1 0;
+                min-width: 0;
+                min-height: 44px;
+                padding: 8px 6px;
+                font-size: 11px;
+                text-align: center;
+                white-space: normal;
+                overflow-wrap: anywhere;
             }
 
             .brand-chip { display: none; }
 
             .shell {
                 width: min(100% - 18px, 980px);
-                padding-top: 18px;
+                padding-top: 14px;
             }
 
             .hero,
@@ -1276,6 +1334,19 @@
                 font-size: 10px;
             }
 
+            body.bna-universal-assistant-active {
+                padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+            }
+
+            body.bna-student-page:not(.one-time-review-active) .bna-bot-launcher:not(.is-panel-open) {
+                position: static;
+                width: min(100% - 18px, 360px);
+                margin: 12px auto 20px;
+                display: flex;
+                justify-content: center;
+                box-sizing: border-box;
+            }
+
             .calendar-controls,
             .calendar-control-group,
             .calendar-status-grid {
@@ -1291,6 +1362,17 @@
                 inset: auto 10px 10px 10px;
                 width: auto;
                 max-height: min(72vh, 680px);
+            }
+        }
+
+        @media (max-width: 380px) {
+            .brand-lockup {
+                max-width: 40%;
+            }
+
+            .portal-topbar-link {
+                padding-inline: 9px;
+                font-size: 10px;
             }
         }
     </style>
@@ -1584,16 +1666,16 @@
                 intro: 'Open your private link, review your Torah progress, and work through your goals honestly.',
                 portalIntro: 'Your Torah progress is read-only. Your own goals are below it.',
                 privateAccess: 'Private Access',
-                enterCode: 'כניסת תלמיד',
-                accessHelp: 'היכנס עם שם המשתמש והסיסמה שההורה הגדיר עבורך.',
-                studentUsername: 'שם משתמש',
-                studentPassword: 'סיסמה',
-                studentLogin: 'כניסה',
-                accessFallback: 'בתקופת המעבר, גם קישור קוד הגישה הפרטי עדיין עובד.',
+                enterCode: 'Student login',
+                accessHelp: 'Sign in with the username and password your parent set for you.',
+                studentUsername: 'Username',
+                studentPassword: 'Password',
+                studentLogin: 'Sign in',
+                accessFallback: 'During rollout, your private access-code link still works.',
                 accessCode: 'Access code',
                 codePlaceholder: 'Paste code here',
                 openGoals: 'Open My Board',
-                clearCode: 'יציאה',
+                clearCode: 'Use a different code',
                 menu: 'Menu',
                 opening: 'Opening your board...',
                 torahTitle: 'Torah Trip Progress',

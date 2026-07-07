@@ -52,16 +52,23 @@ body.one-time-review-active header .brand {
   min-width: 0;
 }
 
+body.one-time-review-active .brand-lockup > div,
+body.one-time-review-active header .brand > div {
+  min-width: 0;
+}
+
 body.one-time-review-active .brand-lockup strong,
 body.one-time-review-active .brand-lockup h1,
 body.one-time-review-active header .brand strong {
   color: var(--one-time-white) !important;
+  overflow-wrap: anywhere;
 }
 
 body.one-time-review-active .brand-lockup span,
 body.one-time-review-active .brand-lockup p,
 body.one-time-review-active header .brand span {
   color: var(--one-time-muted) !important;
+  overflow-wrap: anywhere;
 }
 
 body.one-time-review-active .brand-mark {
@@ -183,7 +190,7 @@ body.one-time-review-active select:focus {
 body.one-time-review-active button,
 body.one-time-review-active .btn,
 body.one-time-review-active .button-link {
-  min-height: 36px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -365,7 +372,7 @@ body.one-time-review-active .one-time-sidebar-action {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 34px;
+  min-height: 44px;
   border: 1px solid rgba(8, 119, 156, 0.18);
   border-radius: 8px;
   color: var(--one-time-navy);
@@ -378,7 +385,7 @@ body.one-time-review-active .one-time-sidebar-action {
 
 body.one-time-review-active #portalPanel.one-time-provider-workspace .workspace-nav button {
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -646,14 +653,53 @@ body.one-time-view-as-readonly .overview-metric {
 @media (max-width: 820px) {
   body.one-time-review-active .brand-topbar,
   body.one-time-review-active header .topbar {
-    align-items: flex-start;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+  }
+
+  body.one-time-review-active .brand-lockup,
+  body.one-time-review-active header .brand {
+    flex: 0 0 auto;
+    max-width: 42%;
+  }
+
+  body.one-time-review-active .brand-mark {
+    width: 34px;
+    height: 34px;
   }
 
   body.one-time-review-active .portal-topbar-actions,
   body.one-time-review-active .top-actions,
   body.one-time-review-active header .nav {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
     max-width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
     justify-content: flex-start;
+    overflow: visible;
+    padding-bottom: 2px;
+  }
+
+  body.one-time-review-active .portal-topbar-actions::-webkit-scrollbar,
+  body.one-time-review-active .top-actions::-webkit-scrollbar,
+  body.one-time-review-active header .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.one-time-review-active .portal-topbar-link,
+  body.one-time-review-active header .nav a,
+  body.one-time-review-active .top-actions button {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 6px;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   body.one-time-review-active #portalPanel.one-time-provider-workspace {
@@ -688,6 +734,26 @@ body.one-time-view-as-readonly .overview-metric {
     display: block;
     border: 0;
     background: rgba(8, 9, 16, 0.42);
+  }
+}
+
+@media (max-width: 380px) {
+  body.one-time-review-active .brand-lockup,
+  body.one-time-review-active header .brand {
+    max-width: 40%;
+  }
+
+  body.one-time-review-active .portal-topbar-actions,
+  body.one-time-review-active .top-actions,
+  body.one-time-review-active header .nav {
+    gap: 5px;
+  }
+
+  body.one-time-review-active .portal-topbar-link,
+  body.one-time-review-active header .nav a,
+  body.one-time-review-active .top-actions button {
+    padding-inline: 9px;
+    font-size: 10px;
   }
 }
 

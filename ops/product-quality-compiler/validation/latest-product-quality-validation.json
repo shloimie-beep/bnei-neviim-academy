@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-07T12:43:58.960Z",
+  "generated_at": "2026-07-07T14:18:13.968Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-07-helper-crisp-aligned-ui-closeout/00-helper-crisp-aligned-ui-closeout.product-quality.json"
+    "ops/prompt-packets/2026-07-07-parent-student-login-ui-polish/00-parent-student-login-ui-polish.product-quality.json"
   ],
   "total": 1,
   "passed": 1,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-07-helper-crisp-aligned-ui-closeout/00-helper-crisp-aligned-ui-closeout.product-quality.json",
+      "file": "ops/prompt-packets/2026-07-07-parent-student-login-ui-polish/00-parent-student-login-ui-polish.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []

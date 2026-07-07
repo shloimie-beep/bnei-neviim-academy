@@ -30653,3 +30653,26 @@ Deployment gate:
 - Live smoke passed: `ops/live-smokes/2026-07-07T11-58-05-874Z-one-time-agent-mode-acceptance-live-smoke.md`.
 - Targeted deployed smoke passed: `ops/live-smokes/2026-07-07T11-59-42-698Z-agent-dropoff-view-as-rabbi-live-smoke.md`.
 - The targeted smoke verified the deployed Operations button, deployed Agent Review drop-off autosave/Ctrl+Enter support, and the read-only/no-send/no-charge View-as Rabbi endpoint. The smoke report redacts the Operations session cookie and signed view-as token.
+## 2026-07-07T17:34:47+03:00 - Parent and student login UI polish local verification
+
+- Captured raw intake `RAW-20260707-010`, created the parent/student login
+  polish register, and validated the Product Quality packet.
+- Added `scripts/audit-parent-student-login-ui-polish.mjs` and
+  `npm run audit:parent-student-login-ui` for repeatable desktop/tablet/mobile
+  screenshot audits across student login, parent login, and One Time
+  student/parent review routes.
+- Implemented the first scoped UI pass: compact mobile topbars, equal touch
+  targets, fixed parent-facing copy, repaired English student-login labels,
+  moved the mobile student helper launcher below the login card, and normalized
+  One Time review mobile controls.
+- Before evidence: `ops/ui-audits/2026-07-07-parent-student-login-ui-polish/`
+  captured 20 screenshots and 22 findings.
+- Final local evidence:
+  `ops/ui-audits/2026-07-07-parent-student-login-ui-polish-local-after-final-2/`
+  captured 20 screenshots and 0 automated findings.
+- Verification: `npm run pqc:validate -- ...00-parent-student-login-ui-polish.product-quality.json`;
+  `npm run audit:parent-student-login-ui -- --base-url=http://127.0.0.1:8080 ...`;
+  `node --test tests\parent-student-portal-contract.test.js tests\public-route-privacy-contract.test.js tests\one-time-shared-review-branding.test.js`;
+  `npm run watchdog:protocol-drift` with 0 findings.
+- Status: local verified, pending commit/push/deploy/live smoke. External
+  Agent Mode drop-off reports are still pending.

@@ -1,0 +1,724 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260707-100",
+  "parent_raw_id": "RAW-20260707-010",
+  "source_statement_ids": [
+    "SRC-20260707-010-001",
+    "SRC-20260707-010-002",
+    "SRC-20260707-010-003"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260707-090"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260707-010-parent-student-login-ui-polish.md",
+      "memory-topics/ui-quality-goals.md",
+      "memory-topics/one-time-rabbi-sheller.md",
+      "memory-topics/workspace-scope-isolation.md",
+      "docs/PRODUCT-QUALITY-COMPILER.md",
+      "docs/UI-PATTERN-REFERENCE.md",
+      "docs/UI-STATE-MATRIX.md",
+      "docs/VISUAL-QUALITY-HARNESS.md",
+      "docs/BROWSER-AGENT-SECURITY.md",
+      "ops/visual-quality-rubric.md"
+    ],
+    "produces": [
+      "tasks-pending/2026-07-07-parent-student-login-ui-polish.md",
+      "ops/prompt-packets/2026-07-07-parent-student-login-ui-polish/00-parent-student-login-ui-polish.product-quality.json",
+      "ops/ui-audits/2026-07-07-parent-student-login-ui-polish/"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-07-parent-student-login-ui-polish/00-parent-student-login-ui-polish.product-quality.json",
+    "terminal_condition": "Parent/student entry UI is not done until current-state evidence, implementation, tests, deploy, and live smoke pass.",
+    "handoff_target": "tasks-pending/2026-07-07-parent-student-login-ui-polish.md"
+  },
+  "stage": "STAGE_1_SPEC_COMPILER",
+  "packet_role": "SPEC_COMPILER",
+  "status": "generated",
+  "title": "Parent And Student Login UI Polish",
+  "created_at": "2026-07-07T17:05:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260707-010",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY",
+      "VERIFIER_CLOSEOUT",
+      "DEPLOY_RELEASE"
+    ],
+    "confidence": 0.96,
+    "reasons": [
+      "Operator explicitly said the student login and parent login look terrible and unprofessional.",
+      "Operator named uneven spacing and inconsistent layout as the visible defect.",
+      "Operator asked for Agent Mode prompts and for Codex to keep fixing the UI.",
+      "Parent/student surfaces are role-sensitive and require scope/privacy checks before app-visible completion."
+    ],
+    "affected_product_surfaces": [
+      "Student login shell and student review entry",
+      "Parent/member login shell and parent review entry",
+      "Cross-role entry consistency between Operations view-as, provider/Rabbi, parent/member, and student views"
+    ],
+    "likely_external_provider_blockers": [
+      "No external email, payment, access grant, DNS, credential, or provider account write is needed or approved.",
+      "Any real parent/student account mutation remains out of scope for this UI polish pass.",
+      "App-visible completion requires deploy and live smoke after commit/push."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-parent-student-login-ui-polish",
+      "01-current-state-parent-student-visual-audit",
+      "02-parent-student-entry-polish-implementation",
+      "03-verification-deploy-live-smoke"
+    ],
+    "next_exact_packet": "Run current-state parent/student entry visual audit at desktop and mobile before editing UI."
+  },
+  "operator_intent_summary": "Shloimie wants the student and parent login/entry surfaces to stop looking uneven, unprofessional, and poorly spaced. The immediate outcome is navigation-first Agent Mode audit prompts plus a scoped Codex visual audit and implementation pass.",
+  "raw_quotes": [
+    "The student login looks terrible.",
+    "The parent login, it looks unprofessional.",
+    "Things are not even.",
+    "It's not spaced out well.",
+    "make sure that they're dropping it off in the right section",
+    "give me some agent mode prompts",
+    "Keep fixing stuff. Let's fix up this UI so it works."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260707-100",
+      "decision": "Run Agent Mode audits in parallel as audit-only prompts and let Codex implement from recovered drop-off reports plus local visual evidence.",
+      "status": "accepted_for_current_batch"
+    }
+  ],
+  "out_of_scope": [
+    "No full-app redesign in this packet.",
+    "No live email, payment, access grant, DNS, credential, provider account, or production data mutation.",
+    "No real impersonation through shared passwords.",
+    "No staging or reverting unrelated dirty work.",
+    "No claiming completion without desktop/mobile visual evidence and live smoke."
+  ],
+  "affected_surfaces": [
+    "Student login and student preview entry",
+    "Parent login shell",
+    "Parent/member login and parent preview entry",
+    "Cross-role entry consistency between Student, Parent/Member, Provider/Rabbi, and Operations view-as"
+  ],
+  "affected_routes": [
+    "/student.html?review=one-time",
+    "/student/login",
+    "/parent/login",
+    "/parent.html?review=one-time",
+    "/rabbi-member?review=one-time",
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview"
+  ],
+  "affected_files": [
+    "public/student.html",
+    "public/parent-login.html",
+    "public/parent.html",
+    "public/rabbi-member.html",
+    "public/css/one-time-shared-review.css",
+    "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+    "tests/parent-student-portal-contract.test.js",
+    "scripts/smoke-one-time-shared-review-live.mjs",
+    "tasks-pending/2026-07-07-parent-student-login-ui-polish.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "Student review entry at desktop 1440 and mobile 390",
+      "Student login shell at desktop 1440 and mobile 390",
+      "Parent login shell at desktop 1440 and mobile 390",
+      "Parent review entry at desktop 1440 and mobile 390",
+      "Buttons, cards, form controls, spacing, headings, status labels, and role-scope copy"
+    ],
+    "known_from_operator": [
+      "Student login appears terrible.",
+      "Parent login appears unprofessional.",
+      "Spacing and alignment are visibly uneven."
+    ],
+    "known_blockers": [
+      "Implementation is blocked until current-state visual evidence is captured.",
+      "Agent Mode reports may still fail drop-off and must report the failure explicitly."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "terrible",
+      "unprofessional",
+      "not even",
+      "not spaced out well",
+      "ridiculous"
+    ],
+    "expanded_phrases": {
+      "terrible": "Visible UI has obvious product-quality defects that a non-technical user can notice immediately.",
+      "unprofessional": "The entry screen lacks consistent hierarchy, spacing, button treatment, and confidence-building role context.",
+      "not even": "Buttons, cards, inputs, and columns do not align to a consistent grid or equal-height control model.",
+      "not spaced out well": "Vertical and horizontal spacing is inconsistent, wasteful, cramped, or poorly grouped across desktop/mobile.",
+      "ridiculous": "The screen is not acceptable for a production-facing parent/student portal and needs evidence-backed repair.",
+      "clean": "The screen has a simple hierarchy, no duplicated action rows, no debug clutter, and clear primary/secondary action grouping.",
+      "professional": "The screen uses consistent typography, alignment, spacing, card/form hierarchy, role labels, and responsive behavior suitable for a parent or student-facing production portal."
+    }
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "memory-topics/ui-quality-goals.md",
+    "memory-topics/one-time-rabbi-sheller.md",
+    "memory-topics/workspace-scope-isolation.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260707-100",
+      "statement": "Compile and validate the parent/student login UI polish packet.",
+      "expected_result": "The vague UI complaint becomes exact routes, states, visual criteria, audit prompts, tests, evidence paths, and release gates.",
+      "acceptance_criteria": [
+        "Raw intake and register exist.",
+        "Product Quality packet validates.",
+        "Agent Mode prompts specify exact routes and drop-off coordinates."
+      ]
+    },
+    {
+      "id": "REQ-20260707-103",
+      "statement": "Repair parent/student entry UI spacing, alignment, and mobile professionalism after current-state audit.",
+      "expected_result": "Parent/student entry surfaces look consistent, role-clear, responsive, and production-ready at desktop and mobile widths.",
+      "acceptance_criteria": [
+        "Buttons have consistent height and logical grouping.",
+        "Cards/forms align to a clean grid and avoid awkward empty space.",
+        "Mobile 390 has no horizontal overflow, clipping, or overlapping text.",
+        "Parent/student role scope is explicit and no admin/provider private data appears.",
+        "Focused tests and live smoke pass."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "blocked_pending_visual_audit",
+    "criteria": [
+      "Raw source preserved.",
+      "Affected routes bounded.",
+      "PQC packet validates.",
+      "Current-state screenshots and findings exist before UI edits.",
+      "No external writes or credential decisions are needed."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/student.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the student review route directly in a desktop browser.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Student entry loads without layout jump, overlapping cards, or hidden role context.",
+      "expected_primary_action": "Continue / student action",
+      "expected_secondary_actions": [
+        "Return",
+        "Help"
+      ],
+      "forbidden_content": [
+        "admin diagnostics",
+        "provider setup fields",
+        "parent contact fields"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The student role and main action are announced in heading and button order.",
+      "accessibility_expectation": "Loading content settles without focus jump or inaccessible hidden controls.",
+      "test_smoke_assertion": "Student review entry renders with no overlap, no horizontal overflow, and a visible role label.",
+      "requirement_id": "REQ-20260707-103"
+    },
+    "empty": {
+      "route": "/student/login",
+      "viewport": 1024,
+      "auth_role": "anonymous_student",
+      "workspace_project": "bna_platform / student_login",
+      "how_to_enter_state": "Open the public student login route without a student session.",
+      "expected_visible_title": "Student Login",
+      "expected_visible_message": "Access-code or login state is clear, centered, and not visually stranded.",
+      "expected_primary_action": "Continue",
+      "expected_secondary_actions": [
+        "Back",
+        "Help"
+      ],
+      "forbidden_content": [
+        "blank card without next action",
+        "stale student session data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The login form fields and continue action have readable labels.",
+      "accessibility_expectation": "The login shell remains keyboard reachable and does not depend on placeholder-only labels.",
+      "test_smoke_assertion": "Student login shell has a clear action and no stale private data.",
+      "requirement_id": "REQ-20260707-103"
+    },
+    "populated": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 1440,
+      "auth_role": "review_mode_parent_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the parent/member review route directly in a desktop browser.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Parent/member entry uses balanced hierarchy, aligned actions, and clear preview role context.",
+      "expected_primary_action": "Continue / parent action",
+      "expected_secondary_actions": [
+        "Return",
+        "Help"
+      ],
+      "forbidden_content": [
+        "admin diagnostics",
+        "provider private fields",
+        "unapproved student-private data"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The parent/member role context is visible near the main heading and primary action.",
+      "accessibility_expectation": "Cards and actions follow a logical reading order.",
+      "test_smoke_assertion": "Parent/member entry has aligned actions and no role-scope leakage.",
+      "requirement_id": "REQ-20260707-103"
+    },
+    "filtered_empty": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 768,
+      "auth_role": "review_mode_parent_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the parent/member review route at tablet width and inspect any empty preview sections.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Any empty/preview section gives a clear reason and recovery action.",
+      "expected_primary_action": "Return or continue",
+      "expected_secondary_actions": [
+        "Clear filter",
+        "Help"
+      ],
+      "forbidden_content": [
+        "confusing blank space",
+        "unlabelled filter row"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty or filtered-empty text is associated with the relevant section heading.",
+      "accessibility_expectation": "Recovery controls remain reachable without pointer-only interaction.",
+      "test_smoke_assertion": "No empty state appears as a broken blank card or wasted first viewport.",
+      "requirement_id": "REQ-20260707-103"
+    },
+    "error": {
+      "route": "/student/login",
+      "viewport": 390,
+      "auth_role": "anonymous_student",
+      "workspace_project": "bna_platform / student_login",
+      "how_to_enter_state": "Open student login on mobile and trigger or inspect the visible error/invalid state if available.",
+      "expected_visible_title": "Student Login",
+      "expected_visible_message": "Invalid or unavailable login state explains what happened without cramped text.",
+      "expected_primary_action": "Try again",
+      "expected_secondary_actions": [
+        "Back",
+        "Help"
+      ],
+      "forbidden_content": [
+        "stack traces",
+        "raw access codes",
+        "token values"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error text is announced or located directly beside the affected form/action.",
+      "accessibility_expectation": "Error text wraps cleanly and does not occlude the retry action.",
+      "test_smoke_assertion": "Mobile login error state has no clipped labels, overflow, or secret-like text.",
+      "requirement_id": "REQ-20260707-103"
+    },
+    "blocked_setup": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 430,
+      "auth_role": "review_mode_parent_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent/member review on narrow mobile and inspect any login-required or setup-blocked message.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Preview/login-required state is clear and does not look broken.",
+      "expected_primary_action": "Return / request access",
+      "expected_secondary_actions": [
+        "Back",
+        "Help"
+      ],
+      "forbidden_content": [
+        "request for shared password",
+        "live send or payment control"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked/setup message is tied to the disabled or unavailable action.",
+      "accessibility_expectation": "Disabled or blocked controls explain their reason in visible text.",
+      "test_smoke_assertion": "Blocked parent/member state is clear and has no live-send/payment controls.",
+      "requirement_id": "REQ-20260707-103"
+    },
+    "preview_only": {
+      "route": "/student.html?review=one-time",
+      "viewport": 430,
+      "auth_role": "review_mode_student",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open student review route on narrow mobile and inspect preview-only controls.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Preview-only status is visible and the student-facing controls are child-safe.",
+      "expected_primary_action": "Student preview action",
+      "expected_secondary_actions": [
+        "Return",
+        "Help"
+      ],
+      "forbidden_content": [
+        "live post",
+        "cross-student data",
+        "admin controls"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview-only status is discoverable before interactive student actions.",
+      "accessibility_expectation": "Student actions remain tappable and clearly labelled at 430px.",
+      "test_smoke_assertion": "Student preview mode shows no live post, cross-student data, or admin controls.",
+      "requirement_id": "REQ-20260707-103"
+    },
+    "success_readback": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_parent_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open parent/member review route on 390px mobile after successful load/readback.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Entry page shows a successful preview/readback state without overflow.",
+      "expected_primary_action": "Continue",
+      "expected_secondary_actions": [
+        "Return",
+        "Help"
+      ],
+      "forbidden_content": [
+        "horizontal scroll",
+        "overlapping buttons",
+        "clipped label"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Success/readback status is readable without disrupting focus order.",
+      "accessibility_expectation": "Primary and secondary actions remain at least 44px tall.",
+      "test_smoke_assertion": "Mobile parent/member entry has no horizontal scroll, overlap, or clipped action labels.",
+      "requirement_id": "REQ-20260707-103"
+    },
+    "permission_denied": {
+      "route": "/student/login",
+      "viewport": 390,
+      "auth_role": "wrong_scope_or_stale_session",
+      "workspace_project": "bna_platform / student_login",
+      "how_to_enter_state": "Open student login with wrong-scope or stale-session conditions if present, otherwise inspect logged-out denial/recovery state.",
+      "expected_visible_title": "Student Login",
+      "expected_visible_message": "Wrong or stale access is cleared or rejected with a clear recovery action.",
+      "expected_primary_action": "Return to login",
+      "expected_secondary_actions": [
+        "Clear session",
+        "Help"
+      ],
+      "forbidden_content": [
+        "private student data",
+        "parent contact fields",
+        "admin diagnostics"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Permission denial or session-clear message is visible near recovery actions.",
+      "accessibility_expectation": "Recovery controls can be reached by keyboard and touch.",
+      "test_smoke_assertion": "Wrong-scope student login state exposes no private student, parent, or admin data.",
+      "requirement_id": "REQ-20260707-103"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/parent.html?review=one-time",
+      "viewport": 390,
+      "auth_role": "review_mode_parent_member",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the parent/member entry route on mobile and inspect the detail/action area.",
+      "expected_visible_title": "One Time",
+      "expected_visible_message": "Mobile detail/entry state fits in the viewport with tappable actions.",
+      "expected_primary_action": "Continue",
+      "expected_secondary_actions": [
+        "Return",
+        "Close"
+      ],
+      "forbidden_content": [
+        "text clipped inside buttons",
+        "control overlap",
+        "horizontal overflow"
+      ],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Mobile detail/entry controls have clear accessible names and close/return path.",
+      "accessibility_expectation": "Controls fit within viewport, wrap predictably, and remain tappable.",
+      "test_smoke_assertion": "Mobile detail state renders without clipped text, overlapping controls, or horizontal overflow.",
+      "requirement_id": "REQ-20260707-103"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 1440,
+        "state": "populated"
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 1024,
+        "state": "populated"
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 768,
+        "state": "populated"
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 430,
+        "state": "mobile"
+      },
+      {
+        "route": "/student.html?review=one-time",
+        "viewport": 390,
+        "state": "mobile"
+      },
+      {
+        "route": "/student/login",
+        "viewport": 1440,
+        "state": "logged_out"
+      },
+      {
+        "route": "/student/login",
+        "viewport": 390,
+        "state": "mobile"
+      },
+      {
+        "route": "/parent/login",
+        "viewport": 1440,
+        "state": "logged_out"
+      },
+      {
+        "route": "/parent/login",
+        "viewport": 390,
+        "state": "mobile"
+      },
+      {
+        "route": "/parent.html?review=one-time",
+        "viewport": 1440,
+        "state": "populated"
+      },
+      {
+        "route": "/parent.html?review=one-time",
+        "viewport": 1024,
+        "state": "populated"
+      },
+      {
+        "route": "/parent.html?review=one-time",
+        "viewport": 768,
+        "state": "populated"
+      },
+      {
+        "route": "/parent.html?review=one-time",
+        "viewport": 430,
+        "state": "mobile"
+      },
+      {
+        "route": "/parent.html?review=one-time",
+        "viewport": 390,
+        "state": "mobile"
+      }
+    ],
+    "defect_codes_to_use": [
+      "VQ-LAYOUT-002",
+      "VQ-RESPONSIVE-001",
+      "VQ-ALIGN-001",
+      "VQ-IA-004",
+      "VQ-A11Y-001"
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "Buttons remain at least 44px tall on mobile.",
+      "Input labels and role labels are visible and programmatically discoverable.",
+      "Error and blocked states provide clear recovery actions.",
+      "Text does not clip or overlap at 390px."
+    ],
+    "verification": [
+      "Playwright DOM measurements for overflow and button height.",
+      "Manual screenshot review for spacing and hierarchy."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Student login / continue",
+      "selector_or_action_key": "ACTION-STUDENT-LOGIN-CONTINUE",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Existing student login/access-code handler or explicit blocked/login-required UI state",
+      "registry_required": true
+    },
+    {
+      "label": "Parent/member continue",
+      "selector_or_action_key": "ACTION-PARENT-MEMBER-CONTINUE",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Parent/member review route navigation or preview-only blocked state",
+      "registry_required": true
+    },
+    {
+      "label": "Return to Operations / Super Admin",
+      "selector_or_action_key": "ACTION-ONETIME-RETURN-SUPER-ADMIN",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Client navigation back to Operations One Time workspace when present",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": {
+    "visible_fields": [
+      "role context",
+      "workspace/project label where relevant",
+      "preview/read-only status where relevant",
+      "clear login/help copy"
+    ],
+    "forbidden_fields": [
+      "raw tokens",
+      "passwords",
+      "private student records",
+      "parent contact fields in student scope",
+      "admin/provider diagnostics in parent/student scope"
+    ]
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_external_crm_writes": true,
+    "role_scope_invariants": [
+      "Student scope cannot expose parent contact fields, admin controls, provider data, or cross-student private data.",
+      "Parent/member scope can show only approved parent/member-visible preview data.",
+      "Review routes must remain preview/read-only unless a real authenticated session is intentionally present."
+    ],
+    "secret_handling": "No cookies, session IDs, access codes, raw private bodies, or secret-shaped values may be committed in screenshots or reports."
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260707-100-A",
+      "scope": "Current-state visual audit and defect list",
+      "instructions": [
+        "Capture screenshots at 1440 and 390 for student/parent entry routes.",
+        "Record spacing, alignment, overflow, role-scope, and mobile defects using visual-quality codes.",
+        "Do not edit UI until this audit exists."
+      ]
+    },
+    {
+      "batch_id": "BATCH-20260707-100-B",
+      "scope": "First scoped parent/student entry polish implementation",
+      "instructions": [
+        "Fix only defects proven by the current-state audit.",
+        "Prefer shared entry-surface styles over one-off per-page hacks.",
+        "Keep role-specific data boundaries intact."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/student.html",
+      "public/parent-login.html",
+      "public/parent.html",
+      "public/rabbi-member.html",
+      "public/css/one-time-shared-review.css",
+      "tests/parent-student-portal-contract.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/student.html",
+      "public/parent-login.html",
+      "public/parent.html",
+      "public/rabbi-member.html",
+      "public/css/one-time-shared-review.css",
+      "tests/parent-student-portal-contract.test.js",
+      "tasks-pending/2026-07-07-parent-student-login-ui-polish.md"
+    ],
+    "max_files_to_edit": 7,
+    "max_routes_to_touch": 5,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "If the audit expands into Operations CRM, communications, Stripe, mailbox, or full classroom redesign, split a new packet.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "commands": [
+      "node --test tests/parent-student-portal-contract.test.js",
+      "node --test tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "npm run app:smoke:one-time-shared-review -- --no-report"
+    ],
+    "live_smoke_required": true,
+    "visual_smoke_required": true
+  },
+  "evidence": {
+    "required_paths": [
+      "ops/ui-audits/2026-07-07-parent-student-login-ui-polish/",
+      "tasks-pending/2026-07-07-parent-student-login-ui-polish.md",
+      "ops/live-smokes/"
+    ],
+    "redaction_rules": [
+      "No raw student names/contact details unless already test/review data.",
+      "No cookies, access codes, session IDs, or secrets in screenshots or report text."
+    ]
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Current-state screenshots and findings exist.",
+      "Scoped UI fixes are implemented.",
+      "Focused tests pass.",
+      "Screenshots prove no overflow and professional spacing at 1440 and 390.",
+      "Scoped changes are committed and pushed.",
+      "Production deployment succeeds.",
+      "Live smoke passes against latest deployment.",
+      "Register records evidence and remaining blockers."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260707-010-parent-student-login-ui-polish.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-07-parent-student-login-ui-polish/00-parent-student-login-ui-polish.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": [
+      "local file inspection",
+      "Playwright visual audit",
+      "focused UI implementation",
+      "tests",
+      "commit/push/deploy/live smoke"
+    ],
+    "skipped_actions_policy": "Skip external writes, payments, access grants, sends, DNS, credentials, and production data mutation.",
+    "blocker_decisions": [
+      "DEC-20260707-100"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-07-parent-student-login-ui-polish/",
+      "tasks-pending/2026-07-07-parent-student-login-ui-polish.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-07-parent-student-login-ui-polish.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-07-parent-student-login-ui-polish/01-current-state-parent-student-visual-audit.md"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 findings or a precise blocker linked to REQ-20260707-100."
+  },
+  "next_packet": {
+    "id": "PKT-20260707-101",
+    "condition": "Create only after current-state screenshots/findings exist.",
+    "purpose": "Focused implementation packet for parent/student entry UI polish."
+  },
+  "app_visible": true
+}

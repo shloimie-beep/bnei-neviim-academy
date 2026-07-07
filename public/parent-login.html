@@ -30,7 +30,7 @@
         main {
             width: min(960px, calc(100% - 32px));
             margin: 0 auto;
-            padding: 42px 0;
+            padding: 34px 0 42px;
         }
 
         .topbar {
@@ -51,6 +51,10 @@
             min-width: 0;
         }
 
+        .brand > div {
+            min-width: 0;
+        }
+
         .mark {
             display: grid;
             place-items: center;
@@ -65,6 +69,11 @@
         .brand strong,
         h1 {
             color: var(--blue);
+        }
+
+        .brand strong,
+        .brand span {
+            overflow-wrap: anywhere;
         }
 
         .brand span,
@@ -156,6 +165,13 @@
             color: var(--blue);
         }
 
+        button.secondary,
+        a.button.secondary {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            color: var(--blue);
+        }
+
         .status {
             min-height: 20px;
             font-size: 13px;
@@ -189,22 +205,93 @@
         }
 
         @media (max-width: 760px) {
+            main {
+                width: min(100% - 24px, 960px);
+                padding: 14px 0 34px;
+            }
+
             .topbar {
-                align-items: flex-start;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 10px;
+            }
+
+            .brand {
+                flex: 0 0 auto;
+                max-width: 42%;
+            }
+
+            .mark {
+                width: 34px;
+                height: 34px;
+            }
+
+            .brand strong {
+                font-size: 13px;
+            }
+
+            .brand span {
+                font-size: 11px;
             }
 
             .topbar-actions {
-                max-width: 52%;
+                flex: 1 1 auto;
+                width: auto;
+                min-width: 0;
+                max-width: none;
+                display: flex;
+                flex-wrap: nowrap;
                 gap: 6px;
+                justify-content: flex-start;
+                overflow: visible;
+                padding-bottom: 2px;
+            }
+
+            .topbar-actions::-webkit-scrollbar {
+                display: none;
             }
 
             .topbar-actions .button {
-                padding: 9px 10px;
-                font-size: 12px;
+                flex: 1 1 0;
+                min-width: 0;
+                min-height: 44px;
+                padding: 8px 6px;
+                font-size: 11px;
+                line-height: 1.15;
+                text-align: center;
+                white-space: normal;
+                overflow-wrap: anywhere;
             }
 
             .layout {
                 grid-template-columns: 1fr;
+                gap: 20px;
+                align-items: start;
+            }
+
+            h1 {
+                font-size: clamp(34px, 11vw, 46px);
+            }
+
+            p {
+                font-size: 15px;
+                line-height: 1.45;
+            }
+
+            form,
+            .session-panel {
+                padding: 18px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .brand {
+                max-width: 40%;
+            }
+
+            .topbar-actions .button {
+                padding-inline: 9px;
+                font-size: 10px;
             }
         }
     </style>
@@ -229,7 +316,7 @@
         <div class="layout">
             <section>
                 <h1>Parent Login</h1>
-                <p>Use the email or phone number BNA has on file with the access code you received from the office. Parent sessions are separate from Operations and only open your own household.</p>
+                <p>Use the email or phone number BNA has on file with the access code you received from the office. Parent sessions only open your own household.</p>
             </section>
 
             <section id="continuePanel" class="session-panel hidden" aria-live="polite">
