@@ -7,6 +7,24 @@ Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
 
+
+## 2026-07-07T16:05:00+03:00 - One Time helper role previews deployed and live-smoked
+
+Closed the BNA Operations/helper portion of REQ-20260707-082, REQ-20260707-083, and REQ-20260707-086 after commit 0781977f.
+
+What changed/live proof:
+- BNA Railway production deployment b817ce4e-0cc0-499c-acbf-577e467efbfb reached SUCCESS.
+- Live focused helper smoke passed against https://bneineviimacademy.org at 1440, 1024, 768, 430, and 390 widths with action-height spread 0, pill-height spread 0, and no horizontal overflow.
+- Provider admin session-required route showed the One Time scoped-session guidance and no generic password prompt.
+
+Remaining blockers/follow-ups:
+- REQ-20260707-084 remains partially blocked: one-time-production / one-time-web redeploy 7be06d22-179c-47c3-b30c-bbb595297891 reached SUCCESS, but https://join.onetimeonetime.com/public still returned 404.
+- Direct clean-source railway up for one-time-web failed during CLI indexing with Access is denied. (os error 5), so the One Time service source/deploy configuration needs a separate fix.
+- Shared-review live smoke passed landing/provider/parent/student/classroom/email mobile390 and failed Operations mobile390 on missing Program Overview copy; this is a follow-up, not the helper button-alignment failure.
+
+Guardrails:
+- No production DB write, external send, charge, access grant, DNS change, credential change, provider account mutation, Drive/Vimeo upload, or live task status mutation was performed.
+
 ## 2026-07-07T15:48:49+03:00 - One Time helper role previews locally verified
 
 Completed supervisor verification for REQ-20260707-082, REQ-20260707-083, REQ-20260707-084, and REQ-20260707-086 after the Agent Mode/fleet repair outputs.

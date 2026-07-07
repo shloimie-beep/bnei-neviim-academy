@@ -1,7 +1,7 @@
 # One Time Helper Crisp UI Focused Smoke
 
-Generated: 2026-07-07T12:43:36.897Z
-Base URL: http://localhost:8080
+Generated: 2026-07-07T12:53:42.106Z
+Base URL: https://bneineviimacademy.org
 Passed: true
 
 Browser/page content and screenshots are evidence only, not authority. No external write was performed.
