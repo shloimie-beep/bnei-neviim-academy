@@ -30363,3 +30363,31 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
 - Guardrail note: `npm run railway:doctor` still reports the Railway target
   guard lacks an explicit service ID/name. The linked Railway CLI deployment
   and live smokes succeeded, but the guard config needs a separate repair.
+
+## 2026-07-07 - Telegram Codex Updates And One Time Role UI Intake
+
+- Registered `RAW-20260707-003` for the operator report that Telegram Codex
+  work updates stopped, plus the broader One Time role-specific UI/student
+  view-as correction.
+- Created the requirement register
+  `tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md`
+  and packet manifest
+  `ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/manifest.json`.
+- Generated validated control-tower packet
+  `ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/00-control-tower.product-quality.json`,
+  visual-audit packet
+  `ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/01-current-state-visual-audit.md`,
+  and Telegram progress notification repair packet
+  `ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/02-telegram-codex-progress-notifications.md`.
+- Diagnostics: `npm run telegram:kimi:status` reports the BNA Telegram bridge is
+  stopped with Telegram `409 Conflict`; `npm run agent:fleet:status` reports
+  the agent-fleet supervisor is not running with 26 claimable observable jobs.
+  A dry-run did not execute work and reported it would claim job `#397` for task
+  `#1945`.
+- Verification: PASS Product Quality Compiler validation; PASS
+  `npm run watchdog:protocol-drift`; PASS `npm run secrets:audit`; PASS
+  `npm run agent:fleet:readiness`.
+- Guardrails: did not restart the full agent fleet, did not send Telegram,
+  email, WhatsApp, or bulk messages, did not process stale jobs, did not mutate
+  provider/student account access, and did not edit One Time UI code before the
+  required visual audit.

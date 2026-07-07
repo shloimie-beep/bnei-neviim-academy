@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-07T04:29:26.557Z",
+  "generated_at": "2026-07-07T04:58:29.493Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json"
+    "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/00-control-tower.product-quality.json"
   ],
   "total": 1,
   "passed": 1,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json",
+      "file": "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/00-control-tower.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []
