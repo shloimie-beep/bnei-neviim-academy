@@ -33449,3 +33449,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/live-smokes/2026-07-07T21-38-57-542Z-one-time-shared-review-live-smoke.md`.
 - Status: local verified, pending commit, push, Railway deployment, production
   toolbar audit/smoke, and final register update.
+
+
+## 2026-07-08T00:47:00+03:00 - One Time Operations top rail density deployed
+
+- Pushed commit `e6ce79d5` to `origin/master`.
+- Railway production deployment
+  `8e56af0f-690c-4b35-a0e8-c0609c0635ec` reached `SUCCESS`.
+- Production toolbar-density audit
+  `ops/ui-audits/2026-07-07-onetime-operations-toprail-density-live-after-deploy/report.md`
+  captured 30 screenshots with 0 automated findings. Operations overview and
+  communications top clusters are now 111px at 1440/1024 and 116px at 768.
+- Production shared-review smoke
+  `ops/live-smokes/2026-07-07T21-45-10-377Z-one-time-shared-review-live-smoke.md`
+  passed landing, provider, parent, student, classroom, email, and Operations
+  routes at mobile390, tablet768, and desktop1440.
+- Production app smoke
+  `ops/live-smokes/2026-07-07T21-45-11-035Z-live-app-smoke.md` passed.
+- Result: `REQ-20260707-138` is deployed/live-smoked. The remaining open item
+  in this One Time UI register is the Agent Mode prompt refresh
+  `REQ-20260707-136`.
