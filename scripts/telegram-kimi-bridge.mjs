@@ -6239,6 +6239,7 @@ function shouldUseRecordingIntake(routing = {}, caption = '', transcriptText = '
   return Boolean(
     routing.parserOnly
     && routing.shouldParse
+    && String(transcriptText || '').trim()
     && buildRecordingIntakeTranscript(caption, transcriptText)
   );
 }

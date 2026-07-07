@@ -1,0 +1,51 @@
+{
+  "recorded_at": "2026-07-07T14:05:00+03:00",
+  "task_id": 1393,
+  "agent_job_id": 290,
+  "run_id": "task-1393-2026-07-07T10-50-09-609Z-a5cf5b",
+  "title": "Auto BNA Drive recovery after parser persistence deploy",
+  "related_source": "recording_intake:1782116206",
+  "paired_caption_task_id": 1392,
+  "status": "done_local_repair_pending_supervisor_verification",
+  "summary": "Task #1393 was a stale parser-created row from recording_intake:1782116206, not a standalone recovery requirement. Live readback showed canonical parse run 22 filed parser instructions, Drive caption, and title text as tasks/content/class-session items when no transcript body was present. The local repair prevents caption-only/metadata-only recording intake from filing operational records and feeds only the actual Transcript body into canonical intake.",
+  "live_readback": {
+    "task_source_type": "recording_intake",
+    "task_source_id": "1782116206",
+    "intake_parse_run_id": 22,
+    "intake_parse_item_id": 9572,
+    "raw_intake_stable_id": "RAW-20260622-001",
+    "raw_text_chars": 594,
+    "transcript_text_chars": 0,
+    "parse_run_status": "partially_filed",
+    "parser_version": "canonical-intake-parser-v1"
+  },
+  "files_changed": [
+    "server.js",
+    "scripts/telegram-kimi-bridge.mjs",
+    "tests/final-register-surfaces-closeout.test.js",
+    "tests/telegram-media-routing.test.js",
+    "ops/queue-audits/2026-07-07-task-1393-drive-recovery-parser-guard-closeout.md",
+    "ops/queue-audits/2026-07-07-task-1393-drive-recovery-parser-guard-closeout.json"
+  ],
+  "verification": [
+    "PASS node --check server.js",
+    "PASS node --check scripts/telegram-kimi-bridge.mjs",
+    "PASS node --test tests/final-register-surfaces-closeout.test.js tests/telegram-runtime-status.test.js tests/telegram-media-routing.test.js",
+    "PASS node --test tests/ingestion/w3-intake-service.test.js tests/ingestion/w3-intake-persistence.test.js tests/watchdog-raw-intake-drift.test.js",
+    "PASS node --test tests/class-drive-intake-shared-patch.test.js tests/telegram-goal-board-api-coverage.test.js",
+    "PASS npm run bna:run:status",
+    "PASS npm run bna:run:next",
+    "PASS npm run agent:fleet:status"
+  ],
+  "guardrails": [
+    "No live task status mutation",
+    "No Drive write",
+    "No production DB write beyond read-only API readbacks",
+    "No parser reprocess rerun",
+    "No external send",
+    "No deploy",
+    "No DNS/payment/access/credential/provider mutation",
+    "No raw transcript/private body/secret committed"
+  ],
+  "next_action": "Supervisor baseline verification may close task #1393 as locally repaired by the parser guard. Deploy/live smoke remains gated by the parent release process."
+}

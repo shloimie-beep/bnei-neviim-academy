@@ -19,6 +19,10 @@ test('uploaded recordings and freeform rambles share canonical raw-first intake'
   assert.match(server, /if \(!force && previousParse\?\.mixed_recording_parse\?\.parsed_at\)/);
   assert.match(server, /dry-run reused the stored parse/);
   assert.match(server, /const intake = await createCanonicalIntakeParseRun/);
+  assert.match(server, /function extractRecordingTranscriptBody/);
+  assert.match(server, /const transcriptBody = extractRecordingTranscriptBody\(job\.transcript_text\)/);
+  assert.match(server, /recording intake transcript_text must include actual transcript content beyond caption\/context metadata/);
+  assert.match(server, /transcriptText: transcriptBody/);
   assert.match(server, /source_type: sourceType/);
   assert.match(server, /source_table: contentBacked && job\.id \? 'bna_content_jobs' : null/);
   assert.match(server, /raw_intake: intake\.raw_intake/);

@@ -51,6 +51,15 @@ test('parser-only recordings use recording intake instead of Content jobs', () =
   assert.match(bridge, /no Content job was created/);
 });
 
+test('caption-only parser recordings wait for a real transcript', () => {
+  const { classifyMediaRouting, shouldUseRecordingIntake } = loadMediaRouting();
+  const caption = 'Auto BNA Drive recovery after parser persistence deploy';
+  const routing = classifyMediaRouting(caption, '');
+
+  assert.equal(routing.shouldParse, true);
+  assert.equal(shouldUseRecordingIntake(routing, caption, ''), false);
+});
+
 test('explicit WhatsApp content captions still route to Content', () => {
   const { classifyMediaRouting, shouldGenerateWhatsAppDraft, shouldUseRecordingIntake } = loadMediaRouting();
   const caption = 'WhatsApp parent update: make this into short bullets for parents.';

@@ -59493,6 +59493,19 @@ function mixedRecordingCountsFromApply(applied = null, intake = {}) {
   };
 }
 
+function extractRecordingTranscriptBody(transcriptText = '') {
+  const text = String(transcriptText || '').trim();
+  if (!text) return '';
+  const marker = text.match(/(?:^|\n)\s*Transcript:\s*/i);
+  if (marker) {
+    return text.slice((marker.index || 0) + marker[0].length).trim();
+  }
+  if (/^\s*Caption\/context\s*:/i.test(text)) {
+    return '';
+  }
+  return text;
+}
+
 function progressOnlyMixedRecordingParsePayload(parsed = {}) {
   const report = parsed.report && typeof parsed.report === 'object' && !Array.isArray(parsed.report)
     ? parsed.report
@@ -59596,39 +59609,57 @@ async function parseMixedRecordingSource({
   noAi = false,
   noProgressWrites = false,
 } = {}) {
-  const rawInput = [
-    instruction ? `Operator instruction:\n${instruction}` : '',
-    job.title ? `Recording title: ${job.title}` : '',
-    job.caption ? `Caption: ${job.caption}` : '',
-    job.transcript_text || '',
-  ].filter(Boolean).join('\n\n').trim();
-  const sourceId = job.id || job.source_message_id || job.local_path || intakeStableHash(rawInput).slice(0, 24);
+  const transcriptBody = extractRecordingTranscriptBody(job.transcript_text);
+  if (!transcriptBody) {
+    const error = new Error('recording intake transcript_text must include actual transcript content beyond caption/context metadata');
+    error.statusCode = 400;
+    throw error;
+  }
+  const rawInput = transcriptBody;
+  const sourceFingerprint = [
+    job.title || '',
+    job.caption || '',
+    transcriptBody,
+  ].filter(Boolean).join('\n\n');
+  const sourceId = job.id || job.source_message_id || job.local_path || intakeStableHash(sourceFingerprint || rawInput).slice(0, 24);
   const sourceType = contentBacked ? 'content_recording' : 'recording_intake';
+  const recordingJob = {
+    ...job,
+    transcript_text: transcriptBody,
+  };
   const intake = await createCanonicalIntakeParseRun({
     rawInput,
+    transcriptText: transcriptBody,
     source_type: sourceType,
     source_channel: job.source_type || sourceType,
     source_id: sourceId,
     source_table: contentBacked && job.id ? 'bna_content_jobs' : null,
+    source_title: job.title || '',
     created_by: 'recording_parser',
+    metadata: {
+      recording_title: job.title || null,
+      recording_caption: job.caption || null,
+      recording_source: recordingSourceContext(job),
+      instruction_present: Boolean(instruction),
+    },
     dry_run: Boolean(dryRun),
     aiStructuredJson: noAi ? null : undefined,
   });
   const parsed = mixedRecordingParsedFromCanonical(intake.parsed);
-  const effectiveProjectKey = projectKey || inferProjectKeyFromTranscript(rawInput) || DEFAULT_PROJECT_KEY;
+  const effectiveProjectKey = projectKey || inferProjectKeyFromTranscript(sourceFingerprint || rawInput) || DEFAULT_PROJECT_KEY;
   const students = await activeStudentsForMixedRecordingParse({ projectKey: effectiveProjectKey });
   const progressOnlyParsed = progressOnlyMixedRecordingParsePayload(
     noAi
       ? basicMixedRecordingParse({
-          job,
+          job: recordingJob,
           students,
           error: new Error('No-AI parser mode requested for repair run.'),
         })
-      : await generateMixedRecordingParse({ job, students })
+      : await generateMixedRecordingParse({ job: recordingJob, students })
   );
   if (dryRun) {
     const progressOnlyDryRun = await persistMixedRecordingParse({
-      job,
+      job: recordingJob,
       parsed: progressOnlyParsed,
       students,
       previousParse,
@@ -59698,7 +59729,7 @@ async function parseMixedRecordingSource({
         },
       }
     : await persistProgressOnlyMixedRecordingParse({
-        job,
+        job: recordingJob,
         previousParse: nextParse,
         projectKey: effectiveProjectKey,
         students,
@@ -60080,7 +60111,7 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
     });
     return res.json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -60142,7 +60173,7 @@ app.post('/api/bna/recording-intake/parse-mixed-recording', requireAdmin, async 
       source: recordingSourceContext(job),
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
