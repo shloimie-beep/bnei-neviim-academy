@@ -179,6 +179,11 @@ test('hub and session pages expose banner, Exit, prompt links, and typed result 
   assert.match(dropoff, /\/api\/bna\/agent-review\/dropoff-context/);
   assert.match(dropoff, /\/api\/bna\/agent-review\/results/);
   assert.match(dropoff, /parseReport/);
+  assert.match(dropoff, /autoSaveRequested/);
+  assert.match(dropoff, /scheduleAutosave/);
+  assert.match(dropoff, /Autosave is enabled/);
+  assert.match(dropoff, /Ctrl\+Enter/);
+  assert.match(dropoff, /requestSubmit\(\)/);
 });
 
 test('Agent Review pages inline scripts parse', () => {

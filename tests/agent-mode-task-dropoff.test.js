@@ -174,6 +174,12 @@ test('backend routes persist prompt copy and task-linked Agent Review results', 
   assert.match(server, /ON CONFLICT \(idempotency_key\) DO UPDATE/);
 });
 
+test('task PATCH route avoids duplicate agent_status assignments when spawning agent jobs', () => {
+  assert.match(server, /const hasFieldAssignment = \(column\) => fields\.some/);
+  assert.match(server, /!suppliedKeys\.has\('agent_status'\) && !hasFieldAssignment\('agent_status'\).*task_kind === 'agent_job'/s);
+  assert.match(server, /!suppliedKeys\.has\('agent_status'\) && !hasFieldAssignment\('agent_status'\) && updates\.stage === 'assigned'/);
+});
+
 test('drop-off page supports task-specific fields for mobile Agent Mode save', () => {
   [
     'id="taskId"',

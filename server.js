@@ -82486,6 +82486,7 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
   const values = [];
   let idx = 1;
   const suppliedKeys = new Set(Object.keys(updates || {}));
+  const hasFieldAssignment = (column) => fields.some((field) => new RegExp(`^${column}\\s*=`).test(field));
   
   const allowedFields = new Set([
     'title',
@@ -82623,7 +82624,7 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
     if (updates.task_kind === 'pending_access') {
       if (!suppliedKeys.has('item_type')) fields.push(`item_type = 'task'`);
       if (!suppliedKeys.has('decision_required')) fields.push(`decision_required = FALSE`);
-      if (!suppliedKeys.has('agent_status')) fields.push(`agent_status = 'none'`);
+      if (!suppliedKeys.has('agent_status') && !hasFieldAssignment('agent_status')) fields.push(`agent_status = 'none'`);
       if (!suppliedKeys.has('next_action')) fields.push(`next_action = COALESCE(next_action, 'Request the missing access or material')`);
       if (!suppliedKeys.has('why_exists')) fields.push(`why_exists = COALESCE(why_exists, 'Missing access, assets, or outside input is blocking progress.')`);
     }
@@ -82631,27 +82632,27 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
       if (!suppliedKeys.has('item_type')) fields.push(`item_type = 'task'`);
       if (!suppliedKeys.has('decision_required')) fields.push(`decision_required = FALSE`);
       if (!suppliedKeys.has('assigned_to')) fields.push(`assigned_to = COALESCE(assigned_to, 'Codex')`);
-      if (!suppliedKeys.has('agent_status')) fields.push(`agent_status = CASE WHEN agent_status IN ('none', '') OR agent_status IS NULL THEN 'queued' ELSE agent_status END`);
+      if (!suppliedKeys.has('agent_status') && !hasFieldAssignment('agent_status')) fields.push(`agent_status = CASE WHEN agent_status IN ('none', '') OR agent_status IS NULL THEN 'queued' ELSE agent_status END`);
       if (!suppliedKeys.has('next_action')) fields.push(`next_action = COALESCE(next_action, 'Watch agent job status')`);
     }
     if (updates.task_kind === 'history') {
       if (!suppliedKeys.has('stage')) fields.push(`stage = 'done'`);
       if (!suppliedKeys.has('completed_at')) fields.push(`completed_at = COALESCE(completed_at, NOW())`);
-      if (!suppliedKeys.has('agent_status')) fields.push(`agent_status = CASE WHEN LOWER(COALESCE(assigned_to, '')) ~ '(codex|kimi|system|agent)' THEN 'completed' ELSE agent_status END`);
+      if (!suppliedKeys.has('agent_status') && !hasFieldAssignment('agent_status')) fields.push(`agent_status = CASE WHEN LOWER(COALESCE(assigned_to, '')) ~ '(codex|kimi|system|agent)' THEN 'completed' ELSE agent_status END`);
     }
     if (updates.blocked_reason && !suppliedKeys.has('blocked_at')) fields.push(`blocked_at = COALESCE(blocked_at, NOW())`);
     if (updates.blocked_reason && !suppliedKeys.has('needs_review')) fields.push(`needs_review = TRUE`);
-    if (!suppliedKeys.has('agent_status') && (
+    if (!suppliedKeys.has('agent_status') && !hasFieldAssignment('agent_status') && (
       updates.stage === 'done'
       || updates.completed_at
       || updates.verified_at
     )) {
       fields.push(`agent_status = CASE WHEN LOWER(COALESCE(assigned_to, '')) ~ '(codex|kimi|system|agent)' THEN 'completed' ELSE agent_status END`);
       if (!suppliedKeys.has('task_kind')) fields.push(`task_kind = 'history'`);
-    } else if (!suppliedKeys.has('agent_status') && updates.stage === 'in_progress' && isAgentAssignee(updates.assigned_to || updates.assignedTo || '')) {
+    } else if (!suppliedKeys.has('agent_status') && !hasFieldAssignment('agent_status') && updates.stage === 'in_progress' && isAgentAssignee(updates.assigned_to || updates.assignedTo || '')) {
       fields.push(`agent_status = 'running'`);
       if (!suppliedKeys.has('task_kind')) fields.push(`task_kind = 'agent_job'`);
-    } else if (!suppliedKeys.has('agent_status') && updates.stage === 'assigned' && isAgentAssignee(updates.assigned_to || updates.assignedTo || '')) {
+    } else if (!suppliedKeys.has('agent_status') && !hasFieldAssignment('agent_status') && updates.stage === 'assigned' && isAgentAssignee(updates.assigned_to || updates.assignedTo || '')) {
       fields.push(`agent_status = 'queued'`);
       if (!suppliedKeys.has('task_kind')) fields.push(`task_kind = 'agent_job'`);
     }

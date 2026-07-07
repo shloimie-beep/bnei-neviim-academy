@@ -26,6 +26,29 @@ test('One Time Agent Mode prompt series has a navigation-first template', () => 
   ].forEach((needle) => assert.match(template, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
 });
 
+test('One Time prompt files include registered drop-off coordinates', () => {
+  for (const prompt of manifest.prompts) {
+    assert.ok(prompt.registered_prompt_key, `${prompt.file} missing registered_prompt_key`);
+    assert.ok(prompt.context_key, `${prompt.file} missing context_key`);
+    assert.ok(prompt.requirement_id, `${prompt.file} missing requirement_id`);
+    assert.ok(prompt.idempotency_key, `${prompt.file} missing idempotency_key`);
+    assert.match(prompt.dropoff_url, /\/operations\/agent-review\/dropoff\?/);
+    assert.match(prompt.dropoff_url, /autosave=1/);
+    assert.match(prompt.dropoff_url, new RegExp(`prompt_key=${prompt.registered_prompt_key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+    assert.match(prompt.dropoff_url, new RegExp(`context_key=${prompt.context_key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+
+    const text = fs.readFileSync(path.join(promptDir, prompt.file), 'utf8');
+    [
+      `prompt_key: \`${prompt.registered_prompt_key}\``,
+      `context_key: \`${prompt.context_key}\``,
+      `requirement_id: \`${prompt.requirement_id}\``,
+      `idempotency_key: \`${prompt.idempotency_key}\``,
+      prompt.dropoff_url,
+      'POST https://bneineviimacademy.org/api/bna/agent-review/results',
+    ].forEach((needle) => assert.match(text, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `${prompt.file} missing ${needle}`));
+  }
+});
+
 test('parallel One Time prompt files avoid GitHub-only failure endings', () => {
   for (const prompt of manifest.prompts) {
     const text = fs.readFileSync(path.join(promptDir, prompt.file), 'utf8');

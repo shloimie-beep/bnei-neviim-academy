@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T11:19:13.665Z",
+  "generated_at": "2026-07-07T11:52:43.478Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -505,6 +505,7 @@
     "tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md",
     "tasks-pending/2026-07-06-onetime-vimeo-folder-library-workflow.md",
     "tasks-pending/2026-07-06-worker-credentials-policy-and-dirty-closeout.md",
+    "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md",
     "tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md",
     "tasks-pending/2026-07-07-agent-mode-operations-dropoff-loop-and-ui-audit-results.md",
     "tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md",

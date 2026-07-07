@@ -61,6 +61,14 @@ test('Super Admin can launch a scoped Rabbi provider session without passwords',
   assert.doesNotMatch(viewBlock, /password_hash|password_digest|password_salt|setup_token/i);
 });
 
+test('Operations visible Rabbi portal action uses read-only View-as Rabbi route', () => {
+  assert.match(operationsHtml, /startOneTimeViewAsRabbiSession\(\) \{ return this\.request\('POST', '\/one-time\/view-as-rabbi\/start', \{\}\); \}/);
+  assert.match(operationsHtml, /const result = await api\.startOneTimeViewAsRabbiSession\(\)/);
+  assert.match(operationsHtml, /window\.location\.href = result\.view_url \|\| '\/provider\.html\?review=one-time'/);
+  assert.match(operationsHtml, /View One Time as Rabbi/);
+  assert.doesNotMatch(operationsHtml, /const result = await api\.startOneTimeProviderSession\(\)/);
+});
+
 test('Provider portal labels admin-on-Rabbi-account mode', () => {
   assert.match(providerHtml, /oneTimeAdminProviderMode/);
   assert.match(providerHtml, /function ensureAdminProviderBanner/);
@@ -91,4 +99,15 @@ test('registries cover Super Admin email inbox switching and provider session la
   assert.equal(route.required_role, 'platform_super_admin');
   assert.equal(route.public_allowed, false);
   assert.match(route.security_expectation, /no password|no secret|provider session cookie/i);
+
+  const viewAsRoute = routes.find((item) => item.route === '/api/bna/one-time/view-as-rabbi/start');
+  assert.ok(viewAsRoute, 'missing view-as Rabbi route registry row');
+  assert.equal(viewAsRoute.access, 'private');
+  assert.equal(viewAsRoute.required_role, 'platform_super_admin');
+  assert.equal(viewAsRoute.public_allowed, false);
+  assert.match(viewAsRoute.security_expectation, /read-only token|no external write/i);
+
+  const visibleAction = actions.find((item) => item.action_id === 'ACTION-ONETIME-PROVIDER-SESSION-START');
+  assert.equal(visibleAction.route, '/api/bna/one-time/view-as-rabbi/start');
+  assert.match(visibleAction.expected_behavior, /read-only View-as Rabbi/i);
 });

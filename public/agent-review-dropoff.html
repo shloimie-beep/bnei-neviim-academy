@@ -179,6 +179,10 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const state = { prompt: null, context: null, session: null };
+    const autoSaveRequested = ['1', 'true', 'yes'].includes(String(params.get('autosave') || '').toLowerCase());
+    let autoSaveTimer = null;
+    let autoSaveInFlight = false;
+    let lastAutoSaveFingerprint = '';
     const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
     const api = async (path, options = {}) => {
       const response = await fetch(path, {
@@ -236,7 +240,9 @@
       const contexts = state.prompt?.context_keys || (state.context?.key ? [state.context.key] : []);
       document.getElementById('contextKey').innerHTML = contexts.map((key) => `<option value="${esc(key)}">${esc(key)}</option>`).join('');
       if (state.context?.key) document.getElementById('contextKey').value = state.context.key;
-      document.getElementById('loadStatus').textContent = data.takeover_hint || '';
+      document.getElementById('loadStatus').textContent = autoSaveRequested
+        ? `${data.takeover_hint || ''} Autosave is enabled: paste the full report and wait for an AGR readback. Ctrl+Enter also saves.`
+        : `${data.takeover_hint || ''} Paste the full report, then click save or press Ctrl+Enter.`;
     }
     async function boot() {
       try {
@@ -274,6 +280,40 @@
       document.getElementById('rerunPrompt').textContent = data.rerun_prompt || 'No rerun prompt required for PASS.';
       return data;
     }
+    function payloadFingerprint(payload = {}) {
+      return JSON.stringify({
+        prompt_key: payload.prompt_key,
+        context_key: payload.context_key,
+        requirement_id: payload.requirement_id,
+        status: payload.status,
+        severity: payload.severity,
+        blocker: payload.blocker,
+        suggested_correction: payload.suggested_correction,
+        report_text: payload.report_text,
+      });
+    }
+    function scheduleAutosave() {
+      if (!autoSaveRequested) return;
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(async () => {
+        const reportText = document.getElementById('reportText').value.trim();
+        if (reportText.length < 80 || autoSaveInFlight) return;
+        const payload = payloadFromForm();
+        const fingerprint = payloadFingerprint(payload);
+        if (fingerprint === lastAutoSaveFingerprint) return;
+        autoSaveInFlight = true;
+        document.getElementById('saveStatus').textContent = 'Autosaving Agent Review result...';
+        try {
+          const data = await savePayload(payload);
+          lastAutoSaveFingerprint = fingerprint;
+          document.getElementById('saveStatus').innerHTML = `Autosaved ${esc(data.result_ref)}.`;
+        } catch (error) {
+          document.getElementById('saveStatus').textContent = error.message || 'Autosave could not save result.';
+        } finally {
+          autoSaveInFlight = false;
+        }
+      }, 1800);
+    }
     async function markBlocked() {
       document.getElementById('status').value = 'blocked';
       if (!document.getElementById('blocker').value.trim()) document.getElementById('blocker').value = 'Scoped context could not be opened safely; owner rerun required.';
@@ -293,6 +333,14 @@
         document.getElementById('saveStatus').innerHTML = `Saved ${esc(data.result_ref)}.`;
       } catch (error) {
         document.getElementById('saveStatus').textContent = error.message || 'Could not save result.';
+      }
+    });
+    document.getElementById('dropoffForm').addEventListener('input', scheduleAutosave);
+    document.getElementById('dropoffForm').addEventListener('change', scheduleAutosave);
+    document.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        document.getElementById('dropoffForm').requestSubmit();
       }
     });
     boot();

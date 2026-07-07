@@ -8619,6 +8619,7 @@
             getOneTimeTrialReferralConfig() { return this.request('GET', '/one-time/trial-referral-config'); },
             getOneTimePaymentAccessClassLinks() { return this.request('GET', '/one-time/payment-access-class-links'); },
             startOneTimeProviderSession() { return this.request('POST', '/one-time/provider-session/start', {}); },
+            startOneTimeViewAsRabbiSession() { return this.request('POST', '/one-time/view-as-rabbi/start', {}); },
             getOneTimeCrmImportPreview() { return this.request('GET', '/one-time/crm-import-preview'); },
             getOneTimeTestIdentitiesPreview() { return this.request('GET', '/one-time/test-identities-preview'); },
             getOneTimeAgentModeAcceptance() { return this.request('GET', '/one-time/agent-mode-acceptance'); },
@@ -20998,10 +20999,10 @@
             const button = event?.currentTarget || event?.target?.closest?.('[data-action-id="ACTION-ONETIME-PROVIDER-SESSION-START"]') || null;
             if (button) button.disabled = true;
             try {
-                const result = await api.startOneTimeProviderSession();
-                window.location.href = result.view_url || '/provider.html?admin_provider=one-time&section=mailbox';
+                const result = await api.startOneTimeViewAsRabbiSession();
+                window.location.href = result.view_url || '/provider.html?review=one-time';
             } catch (error) {
-                alert(error.message || 'Could not open Rabbi provider account.');
+                alert(error.message || 'Could not open read-only Rabbi view.');
                 if (button) button.disabled = false;
             }
         }
@@ -21025,7 +21026,7 @@
                         <button type="button" class="task-action ${activeScope.id === 'rabbi' ? 'primary' : ''}" data-action-id="ACTION-OPERATIONS-EMAIL-INBOX-RABBI" onclick="setEmailInboxScope('rabbi')">
                             ${escapeHtml(rabbiScope.label)} (${Number(rabbiCount)})
                         </button>
-                        <button type="button" class="task-action" data-action-id="ACTION-ONETIME-PROVIDER-SESSION-START" onclick="openOneTimeProviderSession(event)">Open Rabbi Provider Portal</button>
+                        <button type="button" class="task-action" data-action-id="ACTION-ONETIME-PROVIDER-SESSION-START" onclick="openOneTimeProviderSession(event)">View One Time as Rabbi</button>
                     </div>
                 </div>
             `;

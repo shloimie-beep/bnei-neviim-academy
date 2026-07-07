@@ -39,24 +39,44 @@
       "order": 1,
       "file": "01-navigation-filter-consistency-agent-mode.md",
       "packet_id": "onetime-ui-audit-20260707-040-nav-filter-consistency",
+      "registered_prompt_key": "navigation-ia-duplicate-control-audit",
+      "context_key": "rabbi_provider_admin",
+      "requirement_id": "REQ-20260626-002",
+      "idempotency_key": "onetime-ui-audit-20260707-040-nav-filter-consistency",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=navigation-ia-duplicate-control-audit&context_key=rabbi_provider_admin&requirement_id=REQ-20260626-002&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dnavigation-ia-duplicate-control-audit&idempotency_key=onetime-ui-audit-20260707-040-nav-filter-consistency&autosave=1",
       "purpose": "Audit category, subcategory, filter, toolbar, and button consistency."
     },
     {
       "order": 2,
       "file": "02-view-as-navigation-agent-mode.md",
       "packet_id": "onetime-ui-audit-20260707-041-view-as-navigation",
+      "registered_prompt_key": "rabbi-provider-admin",
+      "context_key": "rabbi_provider_admin",
+      "requirement_id": "REQ-20260626-004",
+      "idempotency_key": "onetime-ui-audit-20260707-041-view-as-navigation",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-provider-admin&context_key=rabbi_provider_admin&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-provider-admin&idempotency_key=onetime-ui-audit-20260707-041-view-as-navigation&autosave=1",
       "purpose": "Audit login-once view-as navigation from Shloimie's login into Rabbi/provider/student/member perspectives."
     },
     {
       "order": 3,
       "file": "03-role-perspective-screen-matrix-agent-mode.md",
       "packet_id": "onetime-ui-audit-20260707-042-role-perspective-matrix",
+      "registered_prompt_key": "cross-role-wrong-permission",
+      "context_key": "wrong_role_error_states",
+      "requirement_id": "REQ-20260626-004",
+      "idempotency_key": "onetime-ui-audit-20260707-042-role-perspective-matrix",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=cross-role-wrong-permission&context_key=wrong_role_error_states&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dcross-role-wrong-permission&idempotency_key=onetime-ui-audit-20260707-042-role-perspective-matrix&autosave=1",
       "purpose": "Build a role perspective matrix for Super Admin, Rabbi/provider, member/parent, and student views."
     },
     {
       "order": 4,
       "file": "04-consistency-view-as-synthesis-agent-mode.md",
       "packet_id": "onetime-ui-audit-20260707-043-consistency-view-as-synthesis",
+      "registered_prompt_key": "final-regression-pass",
+      "context_key": "operations_super_admin",
+      "requirement_id": "REQ-20260626-007",
+      "idempotency_key": "onetime-ui-audit-20260707-043-consistency-view-as-synthesis",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&context_key=operations_super_admin&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=onetime-ui-audit-20260707-043-consistency-view-as-synthesis&autosave=1",
       "purpose": "Synthesize audit reports into small Codex-ready Product Quality Compiler packets."
     }
   ],

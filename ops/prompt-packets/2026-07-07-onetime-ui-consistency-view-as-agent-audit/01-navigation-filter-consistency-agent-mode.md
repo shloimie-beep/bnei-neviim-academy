@@ -18,6 +18,19 @@ This prompt is independent and may be run at the same time as Prompts 02 and
 `onetime-ui-audit-20260707-040-nav-filter-consistency`. If another prompt's
 finding would help, record it as "pending another audit" instead of blocking.
 
+Registered Operations drop-off metadata:
+- agent_review_run_id: `2026-06-26-agent-review-dropoff-repair`
+- prompt_key: `navigation-ia-duplicate-control-audit`
+- context_key: `rabbi_provider_admin`
+- requirement_id: `REQ-20260626-002`
+- idempotency_key: `onetime-ui-audit-20260707-040-nav-filter-consistency`
+- exact drop-off URL:
+  `https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=navigation-ia-duplicate-control-audit&context_key=rabbi_provider_admin&requirement_id=REQ-20260626-002&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dnavigation-ia-duplicate-control-audit&idempotency_key=onetime-ui-audit-20260707-040-nav-filter-consistency&autosave=1`
+- API fallback:
+  `POST https://bneineviimacademy.org/api/bna/agent-review/results`
+  with the same `prompt_key`, `context_key`, `requirement_id`, and
+  `idempotency_key`.
+
 Do not edit code. Do not deploy. Do not send emails, WhatsApps, Telegram
 messages, payments, access grants, DNS changes, credential changes, Drive
 writes, provider mutations, or production-data writes.

@@ -15,6 +15,19 @@ This prompt is independent and may be run at the same time as Prompts 01 and
 reached because Prompt 02 has not yet identified a safe path, add an exact
 blocker row and continue with the reachable routes.
 
+Registered Operations drop-off metadata:
+- agent_review_run_id: `2026-06-26-agent-review-dropoff-repair`
+- prompt_key: `cross-role-wrong-permission`
+- context_key: `wrong_role_error_states`
+- requirement_id: `REQ-20260626-004`
+- idempotency_key: `onetime-ui-audit-20260707-042-role-perspective-matrix`
+- exact drop-off URL:
+  `https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=cross-role-wrong-permission&context_key=wrong_role_error_states&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dcross-role-wrong-permission&idempotency_key=onetime-ui-audit-20260707-042-role-perspective-matrix&autosave=1`
+- API fallback:
+  `POST https://bneineviimacademy.org/api/bna/agent-review/results`
+  with the same `prompt_key`, `context_key`, `requirement_id`, and
+  `idempotency_key`.
+
 Do not edit code. Do not deploy. Do not send messages. Do not charge cards or
 grant access. Do not change DNS, credentials, provider accounts, Drive files,
 or production data.

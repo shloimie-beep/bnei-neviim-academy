@@ -30591,3 +30591,20 @@ Verification:
 - PASS `npm run watchdog:protocol-drift` with 0 findings
 
 Report: tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md
+
+## 2026-07-07T14:52:07+03:00 - Failed Agent Mode drop-off recovery and One Time repair queue
+
+- Captured `RAW-20260707-008` and registered the failed Agent Mode report outputs under `tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md`.
+- Recovered the three failed reports into live Agent Review results: `AGR-cc397d5a121c3c5b`, `AGR-e47ff4bc5894732e`, and `AGR-b9ee5a9f7eac9600`.
+- Queued the resulting One Time repair work for the Codex agent fleet: task `#2025` / job `#408`, task `#2026` / job `#410`, and task `#2027` / job `#409`.
+- Hardened the Agent Mode prompt/drop-off loop locally: prompt packet files now carry exact registered drop-off coordinates with `autosave=1`; the drop-off page supports autosave and Ctrl/Cmd+Enter save; task PATCH job-spawn patches avoid duplicate `agent_status` SQL assignments.
+- Switched the visible Super Admin action from live provider-session launch to read-only `View One Time as Rabbi` using `/api/bna/one-time/view-as-rabbi/start`.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --test tests/agent-mode-task-dropoff.test.js tests/agent-mode-operations-dropoff-prompts.test.js tests/agent-review-hub.test.js tests/one-time-admin-mailbox-access.test.js`
+- PASS prompt manifest JSON parse
+- PASS `npm run agent:fleet:status` listed jobs `#408`, `#410`, and `#409` as the first claimable observable jobs.
+
+Deployment gate:
+- PENDING commit, push, deploy, and live smoke for app-visible changes.

@@ -22,6 +22,19 @@ This prompt is independent and may be run at the same time as Prompts 01 and
 `onetime-ui-audit-20260707-041-view-as-navigation`. If another prompt's
 finding would help, record it as "pending another audit" instead of blocking.
 
+Registered Operations drop-off metadata:
+- agent_review_run_id: `2026-06-26-agent-review-dropoff-repair`
+- prompt_key: `rabbi-provider-admin`
+- context_key: `rabbi_provider_admin`
+- requirement_id: `REQ-20260626-004`
+- idempotency_key: `onetime-ui-audit-20260707-041-view-as-navigation`
+- exact drop-off URL:
+  `https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-provider-admin&context_key=rabbi_provider_admin&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-provider-admin&idempotency_key=onetime-ui-audit-20260707-041-view-as-navigation&autosave=1`
+- API fallback:
+  `POST https://bneineviimacademy.org/api/bna/agent-review/results`
+  with the same `prompt_key`, `context_key`, `requirement_id`, and
+  `idempotency_key`.
+
 Login:
 If login is required, ask for browser takeover and let Shloimie type
 credentials directly into the browser. Do not ask for credentials in chat and

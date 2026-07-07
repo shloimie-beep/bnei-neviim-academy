@@ -58,6 +58,19 @@ This is the join/synthesis prompt. Do not run it as one of the first parallel
 sessions unless at least two input reports already exist. If only one report
 exists, produce a light synthesis and mark missing inputs as blockers.
 
+Registered Operations drop-off metadata:
+- agent_review_run_id: `2026-06-26-agent-review-dropoff-repair`
+- prompt_key: `final-regression-pass`
+- context_key: `operations_super_admin`
+- requirement_id: `REQ-20260626-007`
+- idempotency_key: `onetime-ui-audit-20260707-043-consistency-view-as-synthesis`
+- exact drop-off URL:
+  `https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&context_key=operations_super_admin&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=onetime-ui-audit-20260707-043-consistency-view-as-synthesis&autosave=1`
+- API fallback:
+  `POST https://bneineviimacademy.org/api/bna/agent-review/results`
+  with the same `prompt_key`, `context_key`, `requirement_id`, and
+  `idempotency_key`.
+
 Inputs to look for:
 - onetime-ui-audit-20260707-040-nav-filter-consistency
 - onetime-ui-audit-20260707-041-view-as-navigation

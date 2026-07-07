@@ -419,16 +419,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-PROVIDER-SESSION-START",
-      "label": "Open Rabbi Provider Portal",
+      "label": "View One Time as Rabbi",
       "surface": "operations_communications_email_workspace",
-      "route": "/api/bna/one-time/provider-session/start",
+      "route": "/api/bna/one-time/view-as-rabbi/start",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-PROVIDER-SESSION-START\"]",
-      "expected_behavior": "Platform super-admin opens a real Rabbi / One Time provider session cookie and is redirected to the provider mailbox without receiving or exposing the provider password.",
+      "expected_behavior": "Platform super-admin opens a short-lived read-only View-as Rabbi session for the One Time provider workspace without receiving or exposing the provider password.",
       "permission": "platform_super_admin",
-      "status": "active_guarded_session_write",
+      "status": "active_read_only_view_as",
       "test": {
         "type": "static_and_api_contract",
-        "expected_result": "Endpoint requires all-scope admin identity, resolves the One Time provider account, sets a provider session cookie, returns no password/secrets, and performs no external email send."
+        "expected_result": "Endpoint requires all-scope admin identity, returns a signed read-only View-as Rabbi URL, returns no password/secrets, and performs no external email send."
       },
       "related_goal_ids": [
         "GOAL-CORE-003",
