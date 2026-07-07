@@ -30676,3 +30676,18 @@ Deployment gate:
   `npm run watchdog:protocol-drift` with 0 findings.
 - Status: local verified, pending commit/push/deploy/live smoke. External
   Agent Mode drop-off reports are still pending.
+## 2026-07-07T17:45:20+03:00 - Parent and student login UI polish deployed
+
+- Pushed commit `eb9e2ee6` to `origin/master`.
+- Railway production deployment
+  `810c8ef6-28c9-4599-9b4c-25dd185cd2b6` reached `SUCCESS` for
+  `bneineviimacademy.org`.
+- Production visual smoke:
+  `ops/ui-audits/2026-07-07-parent-student-login-ui-polish-live-after-deploy/`
+  captured 20 screenshots across student login, parent login, One Time student
+  review, and One Time parent review at desktop/tablet/mobile widths.
+- Result: 0 automated findings. Guardrails: no payment, checkout, access
+  grant, external send, DNS write, credential change, provider mutation, or
+  production data mutation.
+- External Agent Mode audit reports for `REQ-20260707-101` remain pending as
+  follow-up inputs.
