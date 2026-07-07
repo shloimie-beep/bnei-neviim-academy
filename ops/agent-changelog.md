@@ -30341,3 +30341,25 @@ Report: ops/agent-fleet-runs/2026-07-05T18-17-34-396Z-task-1851.md
   access grant, no DNS/provider mutation, no Drive write, no external CRM
   write, no password/session token/secret printed or committed, and no raw
   private email bodies committed.
+
+## 2026-07-07 - One Time Admin Mailbox Access Published And Live Verified
+
+- Published commit `bc02662f` to `origin/master` and deployed Railway
+  production service `skillful-motivation`; deployment
+  `5c34eb5c-bd44-4f9c-bc11-974c5519bf38` reports `SUCCESS`.
+- Live verification passed for the general app smoke, Operations workspace
+  taxonomy, Email/Resend UX at desktop and mobile widths, and the exact
+  Super Admin provider-session launch path.
+- Focused live readback confirmed the Rabbi inbox page exposes the BNA/Rabbi
+  inbox actions, `POST /api/bna/one-time/provider-session/start` returns
+  `admin_on_provider_account`, the provider workspace/project are
+  `rabbi_sheller_provider` / `one_time_mishnah_class`, and no password, secret,
+  external send, or raw private email body is returned or committed.
+- Evidence:
+  `ops/live-smokes/2026-07-07T04-38-47-113Z-live-app-smoke.md`;
+  `ops/live-smokes/2026-07-07T04-39-25-649Z-operations-workspace-taxonomy-live-smoke.md`;
+  `ops/live-smokes/2026-07-07T04-39-25-748Z-email-resend-ux-live-smoke.md`;
+  `ops/live-smokes/2026-07-07-onetime-admin-provider-session-live-readback.md`.
+- Guardrail note: `npm run railway:doctor` still reports the Railway target
+  guard lacks an explicit service ID/name. The linked Railway CLI deployment
+  and live smokes succeeded, but the guard config needs a separate repair.
