@@ -85,11 +85,13 @@ not authorize active GHL runtime paths.
   `REQ-20260708-085`: Rabbi Telegram bot, super-admin support ticket dings, and
   Agent Mode bot/helper smoke-test loop. Register:
   `tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md`. Current
-  status: local implementation verified with full `npm test` 1646/1646,
-  action/protocol watchdogs, secrets audit, helper-destination watchdog, and
-  no-secret Rabbi Telegram readiness proof. Super-admin support-ticket ding
-  hooks and the Agent Mode smoke prompt are pending deploy/live smoke. Rabbi
-  live bot startup and Rabbi Telegram delivery remain blocked until
+  status: super-admin support-ticket ding hooks and the Rabbi Telegram/helper
+  Agent Mode smoke prompt are committed, pushed, deployed to OneTime
+  deployment `02195be0-33a2-4bee-96b3-c559a5c51256`, and live-smoked.
+  Verification included full `npm test` 1646/1646, action/protocol watchdogs,
+  secrets audit, helper-destination watchdog, OneTime target guard, and
+  no-secret Rabbi Telegram readiness proof. Rabbi live bot startup and Rabbi
+  Telegram delivery remain blocked until
   `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is supplied or inferred. Full Rabbi
   bot/helper agent parity remains open after runtime delivery is configured.
 - [x] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /

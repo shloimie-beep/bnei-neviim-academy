@@ -34570,3 +34570,40 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining performance work: `/operations` is still the slowest measured path
   because the Operations shell remains 2.35MB. The next batch should split and
   lazy-load the Operations shell/modules rather than weakening helper reasoning.
+
+## 2026-07-08T21:44:00+03:00 - Rabbi Telegram ticket readiness and Agent Mode smoke prompt deployed
+
+- Registered `RAW-20260708-023` and `REQ-20260708-081` through
+  `REQ-20260708-085` for Rabbi Telegram scoping, super-admin support-ticket
+  dings, Rabbi helper/bot guardrails, and Agent Mode smoke/drop-off testing.
+- Added a shared redacted Telegram notification/readiness utility and wired
+  support-ticket alert hooks through support ticket creation paths, helper
+  ticket creation, universal assistant tickets, and action-runner ticket
+  creation. Ticket alerts include ticket/scope/severity/review location and
+  do not include raw private ticket bodies or token/chat IDs.
+- Added `npm run telegram:rabbi:readiness`; readiness proof shows super-admin
+  Telegram token/chat target configured locally, Rabbi token and OneTime ops
+  credentials configured, and Rabbi delivery blocked only by missing
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`.
+- Added deployed Agent Review prompt
+  `rabbi-telegram-helper-ticket-smoke`, with exact navigation, drop-off
+  instructions, Rabbi chat-ID blocker check, and no WhatsApp/WAPI send guard.
+- Fixed related guardrails uncovered by the full suite: scoped Operations
+  identity readback for `/api/bna/auth/me`, OneTime member review student
+  preview navigation, duplicate provider-session fallback links, OneTime
+  operations CSS hidden-control pattern, and stale route/action resolver
+  expectations.
+- Commit `74a1d4960c301052bcbb0cc22fe7da05a7e969e4` was pushed to
+  `origin/master` and deployed to Railway deployment
+  `02195be0-33a2-4bee-96b3-c559a5c51256` on `one-time-web`, which reached
+  `SUCCESS`.
+- Verification passed: full `npm test` 1646/1646, `npm run
+  telegram:rabbi:readiness`, `npm run watchdog:helper-destinations`,
+  `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, `npm run
+  secrets:audit`, `npm run one-time:target:guard`, `npm run
+  app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`,
+  and live prompt readback for
+  `/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md`.
+- No synthetic production support ticket was created and no live Telegram
+  support-ticket alert was sent during smoke. The next real configured support
+  ticket should trigger the super-admin ding.
