@@ -33613,3 +33613,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Review tests 33/33 for the combined release.
 - Status: local verified, pending commit, push, Railway deployment, and live
   smoke before terminal Done.
+
+## 2026-07-08T09:50:00+03:00 - Agent Review protocol pushed, live deploy blocked
+
+- Commit `8f3320a0` is pushed to `origin/master` and includes the Agent Review
+  Start Audit/drop-off repair plus the reusable Agent Mode protocol/template.
+- Clean focused verification passed: Agent Review/drop-off/action-registry
+  tests 33/33, combined classroom tests 16/16, `node --check server.js`,
+  `node --check src/lib/bna/agent-review-hub.js`, action watchdog, protocol
+  drift watchdog, tracked secret audit, and `git diff --check`.
+- Full `npm test` remains blocked outside this Agent Review scope: 1606/1614
+  passed, with 8 failures in helper destination resolver, One Time Operations
+  CSS/product route guards, provider review navigation, provider no-session
+  route mapping, and scoped Studio auth/me preservation.
+- Production readback is stale: the live Agent Review prompt pack still shows
+  `Generated: 2026-07-08T06:05:00.620Z`, lacks
+  `Reusable protocol/template: docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md`, and
+  the live drop-off HTML lacks the new partial BLOCKED/readback fields.
+- `npm run app:smoke:one-time-agent-mode-acceptance` passed, but that smoke is
+  read-only and does not prove the new Agent Review prompt/drop-off assets are
+  deployed.
+- Railway deployment is blocked: the target guard accepts explicit service
+  `skillful-motivation`, but `railway link` fails `Unauthorized` for the
+  project-scoped token. Owner or an agent with valid Railway target auth must
+  deploy `8f3320a0` and rerun production prompt/drop-off readbacks before this
+  app-visible repair can be marked fully Done.

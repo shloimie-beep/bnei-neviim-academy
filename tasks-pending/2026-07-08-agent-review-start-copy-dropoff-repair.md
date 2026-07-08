@@ -69,9 +69,9 @@ later if branch drift, auth, or unrelated dirty work prevents a safe push/deploy
 | ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
 |---|---|---|---|---|---|---|
 | REQ-20260708-014 | raw-input, tasks-pending, ops agent-review evidence | Record failed audit before code edits. | PASS raw record and execution-run evidence include failed/partial findings, routes visited, and blocker. | Pending | Pending | Not required |
-| REQ-20260708-007..011 | `server.js`, `public/agent-review.html`, `public/agent-review-dropoff.html`, `src/lib/bna/agent-review-hub.js`, agent review prompt files | Reuse typed result API; add start state, copy gate, partial blocked fields, readback UI, and regenerated prompt contract. | PASS `node --check server.js`; PASS 66 focused tests; PASS `npm run watchdog:actions`; PASS `git diff --check`. | Pending | Pending | Required |
-| REQ-20260708-012..013 | drop-off UI/tests/scripts | Add local draft autosave, secret-looking draft guard, compliance tests, registries. | PASS 66 focused tests; PASS action watchdog; route/action registries updated. | Pending | Pending | App-visible deployment required |
-| REQ-20260708-015 | docs + prompt generator tests | Create a reusable Agent Mode template/protocol artifact and lock it to generated prompts with regression coverage. | PASS protocol doc added; PASS generated prompts include protocol pointer; PASS focused tests 33/33. | Pending | Pending | Not required |
+| REQ-20260708-007..011 | `server.js`, `public/agent-review.html`, `public/agent-review-dropoff.html`, `src/lib/bna/agent-review-hub.js`, agent review prompt files | Reuse typed result API; add start state, copy gate, partial blocked fields, readback UI, and regenerated prompt contract. | PASS `node --check server.js`; PASS focused Agent Review tests 33/33; PASS `npm run watchdog:actions`; PASS `git diff --check`. | Commit `8f3320a0` pushed to `origin/master` | BLOCKED | Production still serves the older Agent Review prompt/drop-off assets; Railway deploy is blocked by explicit target auth/link failure. |
+| REQ-20260708-012..013 | drop-off UI/tests/scripts | Add local draft autosave, secret-looking draft guard, compliance tests, registries. | PASS focused Agent Review tests 33/33; PASS action watchdog; route/action registries updated. | Commit `8f3320a0` pushed to `origin/master` | BLOCKED | App-visible deployment/live smoke blocked by Railway target auth. |
+| REQ-20260708-015 | docs + prompt generator tests | Create a reusable Agent Mode template/protocol artifact and lock it to generated prompts with regression coverage. | PASS protocol doc added; PASS generated prompts include protocol pointer; PASS focused tests 33/33. | Commit `8f3320a0` pushed to `origin/master` | BLOCKED for live app assets; GitHub-visible protocol is pushed. | Production prompt readback does not yet include the protocol pointer because deploy has not picked up `8f3320a0`. |
 
 ## Final Audit
 
@@ -101,9 +101,24 @@ later if branch drift, auth, or unrelated dirty work prevents a safe push/deploy
 | Full `npm test` | FAILED outside this scope | Full suite still has 8 failures in existing helper destination resolver, One Time Operations CSS/product/provider/route tests, and scoped Studio auth tests. The Agent Review/drop-off tests pass inside the suite. |
 | Deploy/live production proof | BLOCKED | Not pushed/deployed from this checkout. Production cannot verify the new Start Audit UI until scoped commit, push, and deployment happen. |
 
-Remaining closeout blocker: this worktree contains unrelated dirty app work in
-`server.js`, `public/one-time-classroom.html`,
-`src/platform/instances/one-time-shared-review-data.js`, and
-`tests/one-time-rabbi-ui-final-local-smoke.test.js`. A scoped commit/push/deploy
-for only the Agent Review drop-off repair is unsafe from this mixed checkout
-without either separating the unrelated edits or approving a combined release.
+## 2026-07-08 Pushed/Live Readback Evidence
+
+| Item | Result | Evidence |
+|---|---|---|
+| Commit/push | PASS | `8f3320a0 Add One Time classroom rewards scoreboard` is on `master` and `origin/master`; it includes the Agent Review protocol/drop-off/template changes plus the separate classroom scoreboard lane. |
+| Clean focused Agent Review tests | PASS | `node --test tests/agent-review-hub.test.js tests/agent-mode-task-dropoff.test.js tests/agent-mode-operations-dropoff-prompts.test.js tests/watchdog-action-registry.test.js` passed 33/33. |
+| Clean combined classroom tests | PASS | `node --test tests/one-time-classroom-calendar-community-bot.test.js tests/one-time-forum-gamification-plan.test.js tests/one-time-gamification-badge-audit.test.js tests/one-time-rabbi-ui-final-local-smoke.test.js` passed 16/16 for the combined commit. |
+| Syntax and hygiene | PASS | `node --check server.js`; `node --check src/lib/bna/agent-review-hub.js`; `npm run watchdog:actions`; `npm run watchdog:protocol-drift`; `npm run secrets:audit`; `git diff --check`. |
+| Full `npm test` | FAIL outside this Agent Review scope | 1606/1614 passed. Failing tests: helper destination resolver readbacks/results; One Time Operations CSS global override guard; scoped OneTime product APIs/public draft route regex; provider review navigation click intercept; provider admin-provider no-session route count; Operations scoped Studio auth/me preservation. |
+| Production prompt readback | BLOCKED stale deploy | `https://bneineviimacademy.org/agent-review-prompts/one-time-brand-helper-toolbar-audit.md` returned 200 but still showed `Generated: 2026-07-08T06:05:00.620Z` and did not include `Reusable protocol/template: docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md`. |
+| Production prompt index readback | BLOCKED stale deploy | `https://bneineviimacademy.org/agent-review-prompts/index.json` returned 200 with `generated_at=2026-07-08T06:05:00.620Z`, not the committed `2026-07-08T06:33:18.874Z` prompt pack. |
+| Production drop-off readback | BLOCKED stale deploy | Exact drop-off URL returned 200, but live HTML did not contain `blocked_route_or_step`, `partial_routes_visited`, `readbackPanel`, or the robust `data.result?.result_ref` readback fallback. |
+| Live acceptance smoke | PASS unrelated to new prompt assets | `npm run app:smoke:one-time-agent-mode-acceptance` passed and wrote `ops/live-smokes/2026-07-08T06-45-04-413Z-one-time-agent-mode-acceptance-live-smoke.md`; this smoke does not prove the new Agent Review prompt/drop-off assets are deployed. |
+| Railway deploy gate | BLOCKED | `npm run railway:doctor` without service target was blocked by the target guard. With `BNA_RAILWAY_SERVICE_NAME=skillful-motivation`, the guard selected the intended BNA target, but `railway link --project bd5b6d78-5e83-4e83-89b2-cd5f52ed7889 --environment production --service skillful-motivation --json` failed `Unauthorized`. Owner/agent with valid Railway target auth must deploy `8f3320a0` and rerun production readback. |
+
+Remaining closeout blocker: implementation and GitHub-visible protocol are
+pushed, but app-visible Agent Review prompt/drop-off assets are not live. Do
+not mark the Agent Review drop-off repair fully Done until Railway deploy
+auth/target access is repaired, production serves commit `8f3320a0` or later,
+and prompt/drop-off readbacks confirm the reusable protocol and partial
+BLOCKED save fields.
