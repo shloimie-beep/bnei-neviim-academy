@@ -499,6 +499,12 @@ const ONE_TIME_CLASSROOM_THREAD_TYPES = new Set([
   'source_discussion',
 ]);
 const ONE_TIME_CLASSROOM_EVENT_TYPES = new Set(['approved_question', 'approved_response', 'rabbi_featured', 'assignment_participation']);
+const ONE_TIME_CLASSROOM_REWARD_WEIGHTS = Object.freeze({
+  approved_question: 5,
+  approved_response: 3,
+  rabbi_featured: 8,
+  assignment_participation: 2,
+});
 const ONE_TIME_CURRICULUM_SEDARIM = [
   { key: 'zeraim', title: 'Zeraim', description: 'Seeds, berachos, agriculture, and daily avodah.', sequence: 1 },
   { key: 'moed', title: 'Moed', description: 'Shabbos, Yom Tov, and sacred time.', sequence: 2 },
@@ -28924,19 +28930,70 @@ function oneTimeClassroomParticipationSummary(events = []) {
       approved_responses: 0,
       rabbi_featured: 0,
       assignment_participation: 0,
+      public_points: 0,
+      reward_labels: [],
       latest_at: event.created_at,
     };
     if (event.event_type === 'approved_question') current.approved_questions += 1;
     if (event.event_type === 'approved_response') current.approved_responses += 1;
     if (event.event_type === 'rabbi_featured') current.rabbi_featured += 1;
     if (event.event_type === 'assignment_participation') current.assignment_participation += 1;
+    current.public_points += Number(ONE_TIME_CLASSROOM_REWARD_WEIGHTS[event.event_type] || 0);
     current.latest_at = event.created_at || current.latest_at;
     map.set(key, current);
   }
   return [...map.values()]
-    .sort((a, b) => String(b.latest_at || '').localeCompare(String(a.latest_at || '')))
+    .sort((a, b) => Number(b.public_points || 0) - Number(a.public_points || 0) || String(b.latest_at || '').localeCompare(String(a.latest_at || '')))
     .slice(0, 12)
-    .map((entry) => ({ ...entry, public_rank: null, public_points: null }));
+    .map((entry, index) => ({
+      ...entry,
+      public_rank: index + 1,
+      reward_labels: oneTimeClassroomRewardLabels(entry),
+    }));
+}
+
+function oneTimeClassroomRewardLabels(entry = {}) {
+  const labels = [];
+  if (Number(entry.rabbi_featured || 0) > 0) labels.push('Rabbi Featured');
+  if (Number(entry.approved_questions || 0) > 0) labels.push('Published Question');
+  if (Number(entry.approved_responses || 0) > 0) labels.push('Published Answer');
+  if (Number(entry.assignment_participation || 0) > 0) labels.push('Review Participant');
+  if (Number(entry.public_points || 0) >= 10) labels.push('Classroom Contributor');
+  return labels.slice(0, 4);
+}
+
+function oneTimeClassroomRewardsScoreboard(events = []) {
+  return oneTimeClassroomParticipationSummary(events)
+    .filter((entry) => Number(entry.public_points || 0) > 0)
+    .map((entry) => ({
+      public_rank: entry.public_rank,
+      actor_type: entry.actor_type,
+      actor_id: entry.actor_id,
+      actor_label: entry.actor_label || 'Approved participant',
+      public_points: entry.public_points,
+      approved_questions: entry.approved_questions,
+      approved_responses: entry.approved_responses,
+      rabbi_featured: entry.rabbi_featured,
+      assignment_participation: entry.assignment_participation,
+      reward_labels: entry.reward_labels,
+      latest_at: entry.latest_at,
+    }));
+}
+
+function oneTimeClassroomRewardPolicy() {
+  return {
+    title: 'Approved classroom rewards',
+    member_visible: true,
+    positive_only: true,
+    source: 'approved classroom participation events',
+    weights: ONE_TIME_CLASSROOM_REWARD_WEIGHTS,
+    allowed_event_types: [...ONE_TIME_CLASSROOM_EVENT_TYPES],
+    guardrails: [
+      'Only approved classroom-visible events count.',
+      'Raw private replies, held responses, rejected messages, and unreviewed student text are not exposed.',
+      'No negative points, automatic prizes, coupons, discounts, access grants, or external notifications are created from the scoreboard.',
+    ],
+  };
 }
 
 function oneTimeClassroomScreenResponse(text = '') {
@@ -29090,7 +29147,8 @@ async function getOneTimeClassroomParticipation(projectId, db = pool, { memberSa
   return {
     events: memberSafe ? events.slice(0, 40) : events,
     participation_summary: oneTimeClassroomParticipationSummary(events),
-    leaderboard: [],
+    leaderboard: oneTimeClassroomRewardsScoreboard(events),
+    reward_policy: oneTimeClassroomRewardPolicy(),
   };
 }
 
@@ -29169,7 +29227,8 @@ async function getOneTimeClassroomData({ db = pool, memberLibrary = null, member
     threads,
     top_questions: oneTimeClassroomTopQa(threads, participation),
     participation_summary: participation.participation_summary,
-    leaderboard: [],
+    leaderboard: participation.leaderboard,
+    reward_policy: participation.reward_policy,
     participation_events: memberSafe ? [] : participation.events,
     bot_policy: {
       source_grounded_only: true,

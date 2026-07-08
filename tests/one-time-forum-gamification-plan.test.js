@@ -30,7 +30,7 @@ test('One Time forum moderation plan exists with the required safety sections', 
 });
 
 test('One Time forum moderation plan blocks unsafe public forum behavior', () => {
-  assert.match(plan, /No public forum, member-visible answer feed/);
+  assert.match(plan, /No public forum, unreviewed member-visible answer\s+feed/);
   assert.match(plan, /Nothing submitted by a child, parent, member, or Rabbi participant becomes\s+public or member-visible automatically/);
   assert.match(plan, /Bullying, insults, name-calling/);
   assert.match(plan, /Sharing phone numbers, emails, addresses, or private contact info/);
@@ -41,9 +41,11 @@ test('One Time forum moderation plan blocks unsafe public forum behavior', () =>
 test('One Time gamification plan rewards quality without leaderboards or shame', () => {
   assert.match(plan, /Internal points for a thoughtful question/);
   assert.match(plan, /Rabbi\/admin mark as excellent/);
-  assert.match(plan, /Not allowed for launch:[\s\S]*Public shame[\s\S]*Negative points[\s\S]*Open leaderboard/);
-  assert.match(plan, /Leaderboard rule: no leaderboard unless Shloimie explicitly approves/);
-  assert.match(plan, /No leaderboard appears/);
+  assert.match(plan, /Not allowed for launch:[\s\S]*Public shame[\s\S]*Negative points[\s\S]*Open anonymous\/public leaderboard/);
+  assert.match(plan, /Approved 2026-07-08 scoreboard rule/);
+  assert.match(plan, /approved_question = 5/);
+  assert.match(plan, /Raw private replies, held responses, rejected\s+messages, unreviewed student text/);
+  assert.match(plan, /Approved-only rewards scoreboard appears only from reviewed classroom events/);
 });
 
 test('One Time forum moderation plan keeps external writes approval-gated', () => {

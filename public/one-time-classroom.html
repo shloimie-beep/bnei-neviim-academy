@@ -255,6 +255,55 @@
       color: #fff;
       font-weight: 700;
     }
+    .scoreboard-row {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .rank-badge {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #080910;
+      color: #ffce2e;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .score-points {
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .score-points span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 3px;
+      text-transform: uppercase;
+    }
+    .reward-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .reward-chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(8, 9, 16, 0.16);
+      border-radius: 999px;
+      background: #fff8d6;
+      color: #4f3b00;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
     .bot-panel {
       display: grid;
       gap: 10px;
@@ -276,6 +325,8 @@
       .topbar { align-items: flex-start; flex-direction: column; }
       .top-actions { justify-content: flex-start; }
       .hero-copy { padding: 20px; }
+      .scoreboard-row { grid-template-columns: 34px minmax(0, 1fr); }
+      .score-points { grid-column: 2; text-align: left; }
     }
   </style>
   <link rel="stylesheet" href="/css/one-time-shared-review.css">
@@ -494,6 +545,7 @@
           <div class="pill-row">
             <span class="pill">Internal calendar</span>
             <span class="pill">Approved questions</span>
+            <span class="pill">Rewards scoreboard</span>
             <span class="pill">Private replies</span>
             <span class="pill">Rabbi moderation</span>
           </div>
@@ -534,9 +586,12 @@
           </section>
           <section class="span-4">
             <div class="section-title">
-              <h2>Approved Participation</h2>
+              <div>
+                <h2>Rewards Scoreboard</h2>
+                <div class="status">Approved questions, answers, and review participation only.</div>
+              </div>
             </div>
-            <div id="participationList" class="item-list"></div>
+            <div id="scoreboardList" class="item-list"></div>
           </section>
         </div>
 
@@ -590,7 +645,7 @@
       todayVideo: document.getElementById('todayVideo'),
       calendarList: document.getElementById('calendarList'),
       curriculumList: document.getElementById('curriculumList'),
-      participationList: document.getElementById('participationList'),
+      scoreboardList: document.getElementById('scoreboardList'),
       topQuestions: document.getElementById('topQuestions'),
       threadList: document.getElementById('threadList'),
       logoutLink: document.getElementById('memberLogoutLink'),
@@ -689,18 +744,26 @@
       }).join('') : '<div class="empty">Curriculum units are not available yet.</div>';
     }
 
-    function renderApprovedParticipation() {
-      const rows = state.classroom?.participation_summary || [];
-      els.participationList.innerHTML = rows.length ? rows.map((row) => `
-        <div class="item participation-row">
-          <span class="participation-marker">OK</span>
-          <div>
-            <strong>${escapeHtml(row.actor_label || 'Approved participant')}</strong>
-            <p>${Number(row.approved_questions || 0)} questions / ${Number(row.approved_responses || 0)} responses / ${Number(row.rabbi_featured || 0)} featured</p>
+    function renderRewardsScoreboard() {
+      const rows = state.classroom?.leaderboard?.length
+        ? state.classroom.leaderboard
+        : (state.classroom?.participation_summary || []);
+      els.scoreboardList.innerHTML = rows.length ? rows.map((row, index) => {
+        const labels = Array.isArray(row.reward_labels) && row.reward_labels.length ? row.reward_labels : ['Reviewed'];
+        const rank = Number(row.public_rank || index + 1);
+        const points = Number(row.public_points || 0);
+        return `
+          <div class="item scoreboard-row">
+            <span class="rank-badge" aria-label="Rank ${rank}">${rank}</span>
+            <div>
+              <strong>${escapeHtml(row.actor_label || 'Approved participant')}</strong>
+              <p>${Number(row.approved_questions || 0)} question${Number(row.approved_questions || 0) === 1 ? '' : 's'} / ${Number(row.approved_responses || 0)} answer${Number(row.approved_responses || 0) === 1 ? '' : 's'} / ${Number(row.rabbi_featured || 0)} featured</p>
+              <div class="reward-chip-row">${labels.map((label) => `<span class="reward-chip">${escapeHtml(label)}</span>`).join('')}</div>
+            </div>
+            <strong class="score-points">${points}<span>points</span></strong>
           </div>
-          <strong>Reviewed</strong>
-        </div>
-      `).join('') : '<div class="empty">Approved participation will appear after review.</div>';
+        `;
+      }).join('') : '<div class="empty">Approved rewards will appear after Rabbi/admin review.</div>';
     }
 
     function renderTopQuestions() {
@@ -741,7 +804,7 @@
       renderToday();
       renderCalendar();
       renderCurriculum();
-      renderApprovedParticipation();
+      renderRewardsScoreboard();
       renderTopQuestions();
       renderThreads();
       els.content.classList.remove('hidden');

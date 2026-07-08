@@ -472,7 +472,9 @@ function classroomPayload() {
       ],
       curriculum: [{ id: 1, title: 'Seder Moed', description: 'Review unit.' }],
       classes: [{ id: 1, curriculum_unit_id: 1, title: 'Mishnah Aleph', description: 'Review class.', class_date: '2026-06-21', package_status: 'published' }],
-      participation_summary: [{ actor_label: 'Review participant', approved_questions: 1, approved_responses: 1, rabbi_featured: 0 }],
+      participation_summary: [{ actor_label: 'Review participant', approved_questions: 1, approved_responses: 1, rabbi_featured: 0, assignment_participation: 1, public_rank: 1, public_points: 10, reward_labels: ['Published Question', 'Published Answer', 'Review Participant'] }],
+      leaderboard: [{ public_rank: 1, actor_label: 'Review participant', public_points: 10, approved_questions: 1, approved_responses: 1, rabbi_featured: 0, assignment_participation: 1, reward_labels: ['Published Question', 'Published Answer', 'Review Participant'] }],
+      reward_policy: { title: 'Approved classroom rewards', member_visible: true, positive_only: true },
       top_questions: [{ thread_title: 'Why this Mishnah first?', body_preview: 'Approved question preview.', author_label: 'Review participant' }],
       threads: [
         {

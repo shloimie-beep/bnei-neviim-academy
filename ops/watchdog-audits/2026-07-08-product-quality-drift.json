@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T06:07:00.176Z",
+  "generated_at": "2026-07-08T06:37:46.914Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -16,6 +16,7 @@
     "AGENTS.md",
     "MEMORY.md",
     "TASKS.md",
+    "docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md",
     "docs/AGENT-TRACE-OBSERVABILITY.md",
     "docs/BNA-RAMBLE-TO-DONE.md",
     "docs/BROWSER-AGENT-SECURITY.md",
@@ -317,6 +318,7 @@
     "ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/AGENT-MODE-PROMPTS.md",
     "ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/README.md",
     "ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/agent-mode-prompt-series.json",
+    "ops/prompt-packets/2026-07-08-onetime-classroom-rewards-scoreboard/00-onetime-classroom-rewards-scoreboard.product-quality.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",
@@ -534,6 +536,7 @@
     "tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md",
     "tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md",
     "tasks-pending/2026-07-08-agent-review-start-copy-dropoff-repair.md",
+    "tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md",
     "tasks-pending/2026-07-08-parent-trial-email-vimeo-watch-continuation.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"

@@ -33541,3 +33541,75 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Status: local verified, pending scoped commit, push, Railway deployment, live
   parent-trial dry run, real approved email send, live readbacks, and final
   register closeout.
+
+## 2026-07-08T09:22:00+03:00 - Agent Review start/copy/drop-off repair local verified
+
+- Added first-class Agent Review Start Audit state and `/api/bna/agent-review/prompts/start`
+  so each prompt can create or reuse an in-progress AGR record before Copy.
+- Gated Copy Agent Prompt through Start Audit and prepended the started AGR
+  state, readback URL, idempotency key, and drop-off guardrails into copied
+  prompts.
+- Hardened generated Agent Mode prompt text with top/bottom Start Audit,
+  BLOCKED-save, emergency paste, API fallback, no-manual-upload, and final
+  `OPERATIONS_DROPOFF_SAVED` / `OPERATIONS_DROPOFF_FAILED` requirements.
+- Extended the drop-off form/API for partial BLOCKED saves, local draft
+  autosave, blocked route/step, attempted action, observed failure, partial
+  route/helper fields, evidence notes, and robust AGR readback confirmation.
+- Recorded the failed partial One Time audit in the Agent Review execution-run
+  evidence without marking Issue #24 complete.
+- Local verification passed: `npm run agent-review:prompts`; 32/32 focused
+  Agent Review/drop-off/action-registry tests; `node --check server.js`;
+  `node --check src/lib/bna/agent-review-hub.js`; action watchdog; protocol
+  drift watchdog; tracked secret audit; JSON parse checks; and `git diff
+  --check`.
+- Browser smoke passed against the edited local server and saved synthetic
+  BLOCKED readback `AGR-af79c7b82048ff1d`.
+- Agent fleet is running as PID 13544 and readiness returned Overall OK true.
+- Full `npm test` still fails on 8 existing/current-worktree failures outside
+  this Agent Review scope. Scoped commit/push/deploy/live production proof is
+  blocked until unrelated dirty app work is separated or approved for a combined
+  release.
+
+## 2026-07-08T09:31:00+03:00 - Agent Review Agent Mode protocol template locked
+
+- Preserved the operator clarification as
+  `RAW-20260708-005-agent-mode-template-protocol-lock.md`.
+- Added `docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md` as the reusable protocol for
+  future Agent Review Agent Mode prompts.
+- Added a durable `AGENTS.md` rule requiring Agent Review prompts to use the
+  reusable Start Audit -> Copy -> Drop-off -> Readback protocol.
+- Updated `src/lib/bna/agent-review-hub.js` so generated prompts include
+  `Reusable protocol/template: docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md`.
+- Regenerated the 15 prompt files and extended `tests/agent-review-hub.test.js`
+  so the protocol doc, generator, and generated prompt pack stay aligned.
+- Verification passed: `npm run agent-review:prompts`; focused Agent Review,
+  Agent Mode drop-off, and action-registry tests 33/33; `node --check` for
+  `server.js` and `src/lib/bna/agent-review-hub.js`; action watchdog; protocol
+  drift watchdog; tracked secret audit; and `git diff --check`.
+
+## 2026-07-08T09:39:00+03:00 - One Time classroom rewards scoreboard local verified
+
+- Preserved the scoreboard request as
+  `RAW-20260708-004-onetime-classroom-rewards-scoreboard.md` and compiled it
+  into Product Quality packet `PKT-20260708-004`.
+- Added an approved-only rewards scoreboard to the One Time classroom route.
+  Rows show rank, participant label, positive points, approved question/answer
+  counts, Rabbi-featured counts, and reward labels.
+- Replaced the empty classroom `leaderboard` payload with member-safe
+  scoreboard data generated only from approved classroom-visible participation
+  events.
+- Added explicit reward scoring: `approved_question = 5`,
+  `approved_response = 3`, `rabbi_featured = 8`, and
+  `assignment_participation = 2`.
+- Updated the One Time moderation/gamification plan so future agents preserve
+  the new rule: approved-only classroom scoreboard is allowed; raw private
+  replies, held/rejected/unreviewed text, negative points, public shame,
+  prizes, coupons, credits, access grants, external notifications, and open
+  forum behavior remain forbidden.
+- Local verification passed: `node --check server.js`; focused classroom,
+  gamification, forum-plan, and local One Time UI smoke tests 16/16;
+  Product Quality Compiler validation 1/1; action watchdog 0 findings;
+  protocol drift watchdog; Agent Review prompt regeneration and focused Agent
+  Review tests 33/33 for the combined release.
+- Status: local verified, pending commit, push, Railway deployment, and live
+  smoke before terminal Done.

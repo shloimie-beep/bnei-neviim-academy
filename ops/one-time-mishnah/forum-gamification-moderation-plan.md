@@ -2,9 +2,11 @@
 
 Date: 2026-06-15
 
-Status: local readiness plan. No public forum, member-visible answer feed,
-student discussion surface, reward ledger, notification send, access grant, or
-external connector write exists from this document.
+Status: local readiness plan with approved-only classroom rewards scoreboard
+allowed as of 2026-07-08. No public forum, unreviewed member-visible answer
+feed, open student discussion surface, reward ledger, notification send,
+access grant, prize/coupon/credit, or external connector write exists from
+this document.
 
 ## Purpose
 
@@ -30,7 +32,9 @@ Current limits:
 
 - There is no approved member-visible question feed.
 - There is no public forum.
-- There is no points/reward ledger.
+- There is an approved-only classroom participation event table that can power
+  a member-visible positive rewards scoreboard. There is still no prize,
+  coupon, credit, payment, access-grant, or external reward ledger.
 - There is no AI moderation classifier attached to a public/member posting
   surface.
 - There is no approved parent/provider policy for student discussion.
@@ -144,13 +148,19 @@ Not allowed for launch:
 - Public shame.
 - Negative points.
 - Public discipline labels.
-- Open leaderboard.
-- Ranking students against each other.
+- Open anonymous/public leaderboard.
+- Ranking students by raw volume, private replies, unreviewed text, discipline,
+  or negative behavior.
 - Rewarding volume over quality.
 - Automatic prizes, coupons, discounts, or payment credits.
 
-Leaderboard rule: no leaderboard unless Shloimie explicitly approves the
-audience, privacy format, scoring formula, opt-out path, and smoke test.
+Approved 2026-07-08 scoreboard rule: the One Time classroom may show a
+member-visible positive rewards scoreboard that counts only approved
+classroom-visible participation events. Initial scoring formula:
+`approved_question = 5`, `approved_response = 3`, `rabbi_featured = 8`, and
+`assignment_participation = 2`. Raw private replies, held responses, rejected
+messages, unreviewed student text, negative points, prizes, coupons, discounts,
+access grants, and external notifications remain forbidden.
 
 ## Data Model Candidates
 
@@ -253,7 +263,8 @@ Required before any member-visible surface:
   recommendation.
 - Reviewer can approve an anonymized digest preview without publishing.
 - Reviewer can mark an excellent question and award private points/badge.
-- No leaderboard appears.
+- Approved-only rewards scoreboard appears only from reviewed classroom events.
+- No raw/private/unreviewed leaderboard appears.
 - No public/member feed appears until explicit approval.
 - No email/WhatsApp/SMS/Telegram/portal send runs during dry-run.
 - Audit log shows every state transition.
@@ -262,6 +273,8 @@ Required before any member-visible surface:
 
 Keep the current private moderation queue as the launch foundation. The next
 safe build step is an AI moderation dry-run and reviewer scoring panel inside
-Operations, still private and no-send. Delay any member-visible forum, digest,
-points display, or leaderboard until the policy and smoke path above are
-explicitly approved.
+Operations, still private and no-send. The approved-only classroom rewards
+scoreboard may display reviewed classroom participation, but any broader
+member-visible forum, digest, reward ledger, prize, coupon, credit, access
+grant, or external notification still requires a separate approved policy and
+smoke path.

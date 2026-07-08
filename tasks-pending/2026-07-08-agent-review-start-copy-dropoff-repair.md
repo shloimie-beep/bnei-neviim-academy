@@ -39,6 +39,7 @@ Source raw record:
 | REQ-20260708-012 | Add autosave/draft persistence for drop-off notes without storing secrets. | RAW-20260708-002 | BNA Operations / Agent Review | Codex | draft-persistence | P1 | 2 | REQ-20260708-010 | Drop-off page locally or server-side autosaves draft text/state and excludes cookies, passwords, API keys, screenshots with private data, refresh tokens, and reusable access secrets. | public/agent-review-dropoff.html, tests | yes | Done locally, pending deploy/live smoke |
 | REQ-20260708-013 | Add watchdog/tests for generated prompt compliance and blocked partial save. | RAW-20260708-002 | BNA Operations / Agent Review | Codex | verification | P0 | 2 | REQ-20260708-007, REQ-20260708-010 | Tests verify generated prompts include Start Audit, Copy, drop-off URL, blocked save, final answer format, API fallback, no manual upload language; blocked partial save is accepted. | tests/agent-review-hub.test.js, tests/agent-mode-task-dropoff.test.js, tests/agent-mode-operations-dropoff-prompts.test.js | no | Done locally |
 | REQ-20260708-014 | Record the failed One Time Agent Mode audit as durable fail/partial evidence. | RAW-20260708-002 | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | audit-record | P0 | 0 | none | Durable record exists with fail/partial status, blocker, visited routes, partial findings, and future backlog recommendations. It does not mark Issue #24 complete. | raw-input, tasks-pending, ledger/changelog | no | Done locally |
+| REQ-20260708-015 | Lock the Agent Mode workflow into a reusable template/protocol. | RAW-20260708-005 | BNA Operations / Agent Review | Codex | prompt-template-protocol | P0 | 2 | REQ-20260708-007, REQ-20260708-009 | A repo-visible Agent Mode protocol/template artifact documents the reusable Start Audit -> Copy -> Drop-off -> Readback sequence, names the generator/source prompt, and tests prove generated prompts stay aligned to the template. | docs, src/lib/bna/agent-review-hub.js, tests/agent-review-hub.test.js | no | Done locally |
 
 ## Parsed Tasks
 
@@ -70,6 +71,7 @@ later if branch drift, auth, or unrelated dirty work prevents a safe push/deploy
 | REQ-20260708-014 | raw-input, tasks-pending, ops agent-review evidence | Record failed audit before code edits. | PASS raw record and execution-run evidence include failed/partial findings, routes visited, and blocker. | Pending | Pending | Not required |
 | REQ-20260708-007..011 | `server.js`, `public/agent-review.html`, `public/agent-review-dropoff.html`, `src/lib/bna/agent-review-hub.js`, agent review prompt files | Reuse typed result API; add start state, copy gate, partial blocked fields, readback UI, and regenerated prompt contract. | PASS `node --check server.js`; PASS 66 focused tests; PASS `npm run watchdog:actions`; PASS `git diff --check`. | Pending | Pending | Required |
 | REQ-20260708-012..013 | drop-off UI/tests/scripts | Add local draft autosave, secret-looking draft guard, compliance tests, registries. | PASS 66 focused tests; PASS action watchdog; route/action registries updated. | Pending | Pending | App-visible deployment required |
+| REQ-20260708-015 | docs + prompt generator tests | Create a reusable Agent Mode template/protocol artifact and lock it to generated prompts with regression coverage. | PASS protocol doc added; PASS generated prompts include protocol pointer; PASS focused tests 33/33. | Pending | Pending | Not required |
 
 ## Final Audit
 
@@ -83,3 +85,25 @@ later if branch drift, auth, or unrelated dirty work prevents a safe push/deploy
 | REQ-20260708-012 | Done locally, pending deploy/live smoke | Drop-off autosaves local browser drafts under prompt/run/idempotency scope and refuses secret-looking drafts. | `public/agent-review-dropoff.html` | PASS focused tests 66/66; inline script parse passed. | Commit, push, deploy. |
 | REQ-20260708-013 | Done locally | Added registry/test coverage for start route/action, regenerated prompts, partial blocked save fields, and drop-off/readback contract. | `tests/agent-review-hub.test.js`; registries | PASS 66 focused tests; PASS `npm run watchdog:actions`; PASS `git diff --check`. | None after deploy evidence is recorded. |
 | REQ-20260708-014 | Done locally | `RAW-20260708-002` and execution-run evidence preserve the failed partial audit, routes visited, blocker, and partial findings without marking Issue #24 complete. | `raw-input/RAW-20260708-002-agent-review-start-copy-dropoff-repair.md`; `ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/2026-07-08-one-time-brand-helper-toolbar-audit-failed-partial.md`; this register | PASS file/readback inspection. | None. |
+| REQ-20260708-015 | Done locally | `docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md` documents the reusable workflow; `src/lib/bna/agent-review-hub.js` generated prompts point to it; `tests/agent-review-hub.test.js` locks the doc, generator, and generated prompt pack together. | `raw-input/RAW-20260708-005-agent-mode-template-protocol-lock.md`; `docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md`; `public/agent-review-prompts/*.md`; `tests/agent-review-hub.test.js` | PASS `npm run agent-review:prompts`; PASS focused tests 33/33; PASS watchdogs/hygiene. | Commit/push/deploy remains pending with the broader app-visible closeout. |
+
+## 2026-07-08 Continuation Evidence
+
+| Item | Result | Evidence |
+|---|---|---|
+| Prompt pack regenerated | PASS | `npm run agent-review:prompts` generated 15 files in `public/agent-review-prompts/`. |
+| Focused Agent Review/drop-off tests | PASS | `node --test tests/agent-review-hub.test.js tests/agent-mode-task-dropoff.test.js tests/agent-mode-operations-dropoff-prompts.test.js tests/watchdog-action-registry.test.js` passed 32/32. |
+| Syntax and JSON checks | PASS | `node --check server.js`; `node --check src/lib/bna/agent-review-hub.js`; JSON parse passed for the action registry, route registry, prompt index, and smoke JSON. |
+| Watchdogs and hygiene | PASS | `npm run watchdog:actions` passed with 0 findings and report `ops/watchdog-audits/2026-07-08T06-08-watchdog-action-audit.md`; `npm run watchdog:protocol-drift` wrote `ops/watchdog-audits/2026-07-08-product-quality-drift.md`; `npm run secrets:audit` passed with 0 tracked secret-risk files; `git diff --check` exited 0 with line-ending warnings only. |
+| Agent fleet | PASS | `npm run agent:fleet:status` showed supervisor PID 13544 running; `npm run agent:fleet:readiness` returned Overall OK true. No duplicate supervisor was started. |
+| Browser smoke | PASS local edited server | `ops/live-smokes/2026-07-08T06-20-30-agent-review-start-dropoff-local-smoke.md` saved synthetic BLOCKED AGR readback `AGR-af79c7b82048ff1d` for `one-time-brand-helper-toolbar-audit`. |
+| Template/protocol lock | PASS local | `docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md` added; generated prompts now include `Reusable protocol/template: docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md`; focused tests passed 33/33. |
+| Full `npm test` | FAILED outside this scope | Full suite still has 8 failures in existing helper destination resolver, One Time Operations CSS/product/provider/route tests, and scoped Studio auth tests. The Agent Review/drop-off tests pass inside the suite. |
+| Deploy/live production proof | BLOCKED | Not pushed/deployed from this checkout. Production cannot verify the new Start Audit UI until scoped commit, push, and deployment happen. |
+
+Remaining closeout blocker: this worktree contains unrelated dirty app work in
+`server.js`, `public/one-time-classroom.html`,
+`src/platform/instances/one-time-shared-review-data.js`, and
+`tests/one-time-rabbi-ui-final-local-smoke.test.js`. A scoped commit/push/deploy
+for only the Agent Review drop-off repair is unsafe from this mixed checkout
+without either separating the unrelated edits or approving a combined release.

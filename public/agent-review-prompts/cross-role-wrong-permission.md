@@ -1,6 +1,6 @@
 # Agent Mode Prompt - Cross-Role Wrong-Permission/Error States
 
-Generated: 2026-07-08T06:05:00.620Z
+Generated: 2026-07-08T06:33:18.874Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -10,6 +10,7 @@ Return URL: https://bneineviimacademy.org/operations/agent-review?prompt=cross-r
 Drop-off URL: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=cross-role-wrong-permission&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dcross-role-wrong-permission&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Across-role-wrong-permission%3Aall-contexts&autosave=1
 Prompt key: cross-role-wrong-permission
 Idempotency key: 2026-06-26-agent-review-dropoff-repair:cross-role-wrong-permission:all-contexts
+Reusable protocol/template: docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md
 
 ## Required Workflow State
 

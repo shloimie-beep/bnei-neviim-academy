@@ -45,22 +45,31 @@ test('Operations Community ledger shows implemented read-only badge audit readin
   assert.equal(packageJson.scripts['app:smoke:one-time-gamification'], 'node scripts/smoke-one-time-gamification-live.mjs');
 });
 
-test('public One Time classroom does not render a ranked public leaderboard', () => {
-  assert.match(classroom, /Approved Participation/);
-  assert.match(classroom, /renderApprovedParticipation/);
+test('public One Time classroom renders an approved-only rewards scoreboard', () => {
+  assert.match(classroom, /Rewards Scoreboard/);
+  assert.match(classroom, /renderRewardsScoreboard/);
   assert.match(classroom, /participation_summary/);
-  assert.match(classroom, /Reviewed/);
-  assert.doesNotMatch(classroom, />Leaderboard</);
-  assert.doesNotMatch(classroom, /class="rank"/);
-  assert.doesNotMatch(classroom, /Number\(row\.points/);
-  assert.doesNotMatch(classroom, /Number\(row\.rank/);
+  assert.match(classroom, /state\.classroom\?\.leaderboard/);
+  assert.match(classroom, /Approved rewards will appear after Rabbi\/admin review/);
+  assert.match(classroom, /reward-chip/);
+  assert.match(classroom, /public_points/);
+  assert.match(classroom, /public_rank/);
+  assert.doesNotMatch(classroom, /negative points|automatic prizes|coupon|discount|access grant/i);
 });
 
-test('server member-safe classroom payload keeps leaderboard empty', () => {
+test('server member-safe classroom payload exposes only approved reward scoreboard rows', () => {
   assert.match(server, /function oneTimeClassroomParticipationSummary/);
+  assert.match(server, /function oneTimeClassroomRewardsScoreboard/);
+  assert.match(server, /ONE_TIME_CLASSROOM_REWARD_WEIGHTS/);
+  assert.match(server, /approved_question: 5/);
+  assert.match(server, /approved_response: 3/);
+  assert.match(server, /rabbi_featured: 8/);
+  assert.match(server, /assignment_participation: 2/);
+  assert.match(server, /if \(event\.status !== 'approved' \|\| event\.visibility !== 'classroom'\) continue/);
   assert.match(server, /participation_summary: participation\.participation_summary/);
-  assert.match(server, /leaderboard: \[\]/);
-  assert.doesNotMatch(server, /oneTimeClassroomLeaderboard/);
+  assert.match(server, /leaderboard: participation\.leaderboard/);
+  assert.match(server, /reward_policy: participation\.reward_policy/);
+  assert.match(server, /Raw private replies, held responses, rejected messages, and unreviewed student text are not exposed/);
 });
 
 test('route registry declares private badge readiness and badge mutation routes', () => {

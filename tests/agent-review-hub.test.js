@@ -20,6 +20,7 @@ const server = fs.readFileSync(path.join(root, 'server.js'), 'utf8');
 const hub = fs.readFileSync(path.join(root, 'public', 'agent-review.html'), 'utf8');
 const session = fs.readFileSync(path.join(root, 'public', 'agent-review-session.html'), 'utf8');
 const dropoff = fs.readFileSync(path.join(root, 'public', 'agent-review-dropoff.html'), 'utf8');
+const agentModeProtocol = fs.readFileSync(path.join(root, 'docs', 'AGENT-REVIEW-AGENT-MODE-PROTOCOL.md'), 'utf8');
 const routeRegistry = JSON.parse(fs.readFileSync(path.join(root, 'ops', 'route-registry.json'), 'utf8'));
 const actionRegistry = JSON.parse(fs.readFileSync(path.join(root, 'ops', 'action-registry.json'), 'utf8'));
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
@@ -62,6 +63,7 @@ test('Agent Mode prompt pack has exactly 15 generated mobile-copyable files', ()
     assert.match(text, /dropoff_url/);
     assert.match(text, /requirement_id/);
     assert.match(text, /idempotency_key/);
+    assert.match(text, /Reusable protocol\/template: docs\/AGENT-REVIEW-AGENT-MODE-PROTOCOL\.md/);
     assert.match(text, /Preferred drop-off: https:\/\/bneineviimacademy\.org\/operations\/agent-review\/dropoff/);
     assert.match(text, /autosave=1/);
     assert.match(text, /API fallback: https:\/\/bneineviimacademy\.org\/api\/bna\/agent-review\/results/);
@@ -115,6 +117,58 @@ test('Agent Mode prompt pack has exactly 15 generated mobile-copyable files', ()
   assert.match(brandText, /black\/yellow scoped/);
   assert.match(brandText, /Communications loops or bad-display switches/);
   assert.match(brandText, /OPERATIONS_DROPOFF_FAILED/);
+});
+
+test('Agent Mode protocol template locks reusable Start Audit drop-off sequence', () => {
+  [
+    'src/lib/bna/agent-review-hub.js',
+    'renderAgentModePrompt',
+    'docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md',
+    'public/agent-review.html',
+    'public/agent-review-dropoff.html',
+    'public/agent-review-prompts/*.md',
+    'npm run agent-review:prompts',
+    'tests/agent-review-hub.test.js',
+    'Click Start Audit / I started this agent mode',
+    'Do not treat a partial audit as pass',
+    'If blocked midway, save BLOCKED immediately',
+    'Emergency paste JSON and save',
+    'POST to /api/bna/agent-review/results',
+    'readback API shows the AGR result',
+    'OPERATIONS_DROPOFF_SAVED: AGR-...',
+    'OPERATIONS_DROPOFF_FAILED:',
+    'blocked_route_or_step',
+    'partial_routes_visited',
+    'partial_helper_responses',
+  ].forEach((needle) => assert.match(agentModeProtocol, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
+
+  [
+    'download this report',
+    'upload it yourself',
+    'I compiled the JSON',
+    'here is the file',
+    'manual upload required',
+  ].forEach((phrase) => assert.match(agentModeProtocol, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
+
+  const prompts = buildPromptIndex({ baseUrl: 'https://bneineviimacademy.org' });
+  for (const prompt of prompts) {
+    const text = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', prompt.file), 'utf8');
+    for (const phrase of [
+      'Click Start Audit / I started this agent mode',
+      'Do not treat a partial audit as pass',
+      'If blocked midway, save BLOCKED immediately',
+      'Emergency paste JSON and save',
+      'POST to /api/bna/agent-review/results',
+      'readback API shows the AGR result',
+      'OPERATIONS_DROPOFF_SAVED: AGR-...',
+      'OPERATIONS_DROPOFF_FAILED:',
+      'blocked_route_or_step',
+      'partial_routes_visited',
+      'partial_helper_responses',
+    ]) {
+      assert.match(text, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `${prompt.file} missing ${phrase}`);
+    }
+  }
 });
 
 test('server exposes secure review-session and result APIs', () => {

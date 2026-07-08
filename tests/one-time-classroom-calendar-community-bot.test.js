@@ -110,12 +110,17 @@ test('Member library and classroom pages expose classroom navigation, six Sedari
   [
     'One Time Mishnah Classroom',
     'Six Sedarim',
+    'Rewards Scoreboard',
     'Reply Queue',
     'Rabbi Threads',
     'Responses are reviewed before visibility',
     '/api/one-time-classroom?code=',
     'Submit For Review',
     'new URLSearchParams(window.location.search).get',
+    'renderRewardsScoreboard',
+    'scoreboardList',
+    'state.classroom?.leaderboard',
+    'Approved rewards will appear after Rabbi/admin review',
   ].forEach((needle) => assert.match(classroomHtml, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
   [
     'Source Bot',

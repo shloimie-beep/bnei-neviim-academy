@@ -320,15 +320,19 @@
         method: 'POST',
         body: JSON.stringify(payload),
       });
+      const savedRef = data.result_ref || data.result?.result_ref || 'unknown';
+      const readbackUrl = data.readback_url || data.operations_url || (savedRef !== 'unknown' ? `/api/bna/agent-review/results/${encodeURIComponent(savedRef)}` : '#');
+      data.result_ref = savedRef;
+      data.readback_url = readbackUrl;
       document.getElementById('readbackPanel').hidden = false;
-      document.getElementById('resultRef').textContent = `Saved ${data.result_ref}`;
-      document.getElementById('readbackLink').href = data.readback_url || data.operations_url || '#';
+      document.getElementById('resultRef').textContent = `Saved ${savedRef}`;
+      document.getElementById('readbackLink').href = readbackUrl;
       document.getElementById('readbackMeta').innerHTML = [
-        ['AGR ID', data.result_ref],
+        ['AGR ID', savedRef],
         ['Status', data.result?.status || payload.status || 'unknown'],
         ['Prompt key', data.result?.prompt_key || payload.prompt_key || 'unknown'],
         ['Idempotency key', data.result?.idempotency_key || payload.idempotency_key || 'unknown'],
-        ['Readback URL', data.readback_url || data.operations_url || 'unknown'],
+        ['Readback URL', readbackUrl],
         ['Timestamp', data.result?.updated_at || data.result?.created_at || new Date().toISOString()],
       ].map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('');
       if (data.repair_url || data.task_url) {

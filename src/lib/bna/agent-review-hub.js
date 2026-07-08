@@ -866,6 +866,7 @@ function renderAgentModePrompt(prompt, { baseUrl = '', generatedAt = new Date().
     `Drop-off URL: ${dropoffUrl}`,
     `Prompt key: ${prompt.key}`,
     `Idempotency key: ${metadata.idempotency_key}`,
+    `Reusable protocol/template: docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md`,
     '',
     '## Required Workflow State',
     '',

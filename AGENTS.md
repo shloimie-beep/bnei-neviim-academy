@@ -720,6 +720,18 @@ Keep `MEMORY.md` compact and curated.
   `/operations-manifest.json`. Do not make the public or parent install launch
   the private Operations app.
 
+## Agent Review Agent Mode Protocol
+
+- Agent Review Agent Mode prompts must use the reusable protocol in
+  `docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md` and the generator in
+  `src/lib/bna/agent-review-hub.js`.
+- Do not create one-off Agent Mode prompts that bypass the required workflow:
+  Start Audit, Copy Agent Prompt, keep/open drop-off, save pass/fail/blocked,
+  verify AGR readback, then answer in chat.
+- If a route, login, helper, viewport, action, or save path blocks the audit,
+  the prompt must require a partial `BLOCKED` save through Agent Review
+  drop-off before any chat final.
+
 ## Current AI Setup
 
 - Codex is the primary development agent and visible machine-work owner.

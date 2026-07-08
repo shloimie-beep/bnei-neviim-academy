@@ -1,6 +1,6 @@
 # Agent Mode Prompt - One Time Student Login And Parent Reset Journey
 
-Generated: 2026-07-08T06:05:00.620Z
+Generated: 2026-07-08T06:33:18.874Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -10,6 +10,7 @@ Return URL: https://bneineviimacademy.org/operations/agent-review?prompt=one-tim
 Drop-off URL: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-student-login-reset-journey&requirement_id=REQ-20260707-114&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-student-login-reset-journey&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-student-login-reset-journey%3Aall-contexts&autosave=1
 Prompt key: one-time-student-login-reset-journey
 Idempotency key: 2026-06-26-agent-review-dropoff-repair:one-time-student-login-reset-journey:all-contexts
+Reusable protocol/template: docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md
 
 ## Required Workflow State
 
