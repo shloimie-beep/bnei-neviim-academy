@@ -34512,3 +34512,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/live-smokes/2026-07-08T17-17-31-400Z-one-time-direct-zoom-link-only-email.md`.
 - No WhatsApp/WAPI/SMS, payment/access, account grant, DNS, Zoom meeting
   creation, Vimeo, Drive, Stripe, or external CRM mutation was performed.
+
+## 2026-07-08T20:29:00+03:00 - Codex Telegram done updates and OneTime WAPI readiness
+
+- Registered `RAW-20260708-020`, `RAW-20260708-021`, `REQ-20260708-076`, and
+  `REQ-20260708-077`.
+- Updated `npm run telegram:codex-progress` so Codex completion updates render
+  as brief bullets: Done, Verified, optional Blocked, Next, and Task.
+- Sent two live Telegram progress updates with token/chat id hidden: one for the
+  progress-update change and one for the OneTime WAPI readiness result.
+- Configured the current OneTime class-link runtime variables on `one-time-web`
+  production without committing the raw Zoom URL, then redeployed deployment
+  `e724304b-671b-4ea8-8514-5ed2ed9acc72` to `SUCCESS`.
+- Live WAPI diagnostics now show `auto_reply_class_link_configured=true` and
+  `external_write_performed=false`.
+- WAPI/WhatsApp remains intentionally blocked because the Rabbi-scoped WAPI
+  sender token/account is missing and auto-reply approval gates remain disabled.
+- Verification passed: `node --test tests/codex-progress-telegram.test.js`,
+  `node --check scripts/send-codex-progress-telegram.mjs`,
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`,
+  and read-only WAPI diagnostics.
+- Evidence:
+  `ops/watchdog-audits/2026-07-08-codex-progress-telegram-update.md` and
+  `ops/watchdog-audits/2026-07-08-onetime-wapi-class-link-readiness.md`.

@@ -7,12 +7,14 @@ async function loadModule() {
   return import(pathToFileURL(path.join(__dirname, '..', 'scripts', 'send-codex-progress-telegram.mjs')).href);
 }
 
-test('Codex Telegram progress formatter uses fixed verified next structure', async () => {
+test('Codex Telegram progress formatter uses brief bullet structure', async () => {
   const { formatCodexProgressMessage, parseProgressArgs } = await loadModule();
   const args = parseProgressArgs([
     '--fixed',
     'Registered the notification repair path.',
     '--verified=Tests pass.',
+    '--blocked',
+    'WAPI credentials are missing.',
     '--next',
     'Run the One Time visual audit.',
     '--packet',
@@ -20,10 +22,11 @@ test('Codex Telegram progress formatter uses fixed verified next structure', asy
   ]);
   const message = formatCodexProgressMessage(args);
 
-  assert.match(message, /^Codex update\nFixed: Registered the notification repair path\./);
-  assert.match(message, /\nVerified: Tests pass\./);
-  assert.match(message, /\nNext: Run the One Time visual audit\./);
-  assert.match(message, /\nPacket: PKT-20260707-032/);
+  assert.match(message, /^Codex update\n- Done: Registered the notification repair path\./);
+  assert.match(message, /\n- Verified: Tests pass\./);
+  assert.match(message, /\n- Blocked: WAPI credentials are missing\./);
+  assert.match(message, /\n- Next: Run the One Time visual audit\./);
+  assert.match(message, /\n- Packet: PKT-20260707-032/);
   assert.equal(args.dryRun, true);
   assert.equal(args.send, false);
 });
@@ -45,7 +48,7 @@ test('Codex Telegram progress send path does not expose chat target in result', 
   const calls = [];
   const result = await sendTelegramProgress(
     { token: 'test-token-for-fetch-only', chatId: '123456789' },
-    'Codex update\nFixed: one\nVerified: two\nNext: three',
+    'Codex update\n- Done: one\n- Verified: two\n- Next: three',
     {
       fetchImpl: async (url, options) => {
         calls.push({ url, options });

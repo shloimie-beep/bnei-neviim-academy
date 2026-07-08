@@ -992,6 +992,9 @@
   files under `ops/agent-fleet-runs/`, not in `verification_notes` or Telegram
   messages.
 - Telegram completion replies must explicitly say when a requested test, fix, deploy, or verification was accomplished, with the concrete verification result.
+- Codex completion updates to Telegram should use brief bullet points: Done,
+  Verified, Blocked when applicable, Next, and a task or packet ID. Full logs
+  and proof belong in repo evidence, not Telegram.
 - When Shloimie says `build everything`, he means Codex should choose the order,
   start working through the queued tasks without asking for ordering
   confirmation, and report back as tasks are completed or verified.

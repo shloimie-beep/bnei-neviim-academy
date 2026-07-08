@@ -56,6 +56,7 @@ export function parseProgressArgs(argv = []) {
   const args = {
     fixed: '',
     verified: '',
+    blocked: '',
     next: '',
     packet: '',
     task: '',
@@ -79,6 +80,9 @@ export function parseProgressArgs(argv = []) {
     } else if (arg === '--verified' || arg.startsWith('--verified=')) {
       args.verified = optionValue(argv, index);
       if (!arg.includes('=')) index += 1;
+    } else if (arg === '--blocked' || arg.startsWith('--blocked=')) {
+      args.blocked = optionValue(argv, index);
+      if (!arg.includes('=')) index += 1;
     } else if (arg === '--next' || arg.startsWith('--next=')) {
       args.next = optionValue(argv, index);
       if (!arg.includes('=')) index += 1;
@@ -100,20 +104,22 @@ function compactLine(value, maxLength = 900) {
 export function formatCodexProgressMessage(input = {}) {
   const fixed = compactLine(input.fixed);
   const verified = compactLine(input.verified);
+  const blocked = compactLine(input.blocked);
   const next = compactLine(input.next);
   if (!fixed || !verified || !next) {
     throw new Error('Progress update requires --fixed, --verified, and --next.');
   }
   const lines = [
     'Codex update',
-    `Fixed: ${fixed}`,
-    `Verified: ${verified}`,
-    `Next: ${next}`,
+    `- Done: ${fixed}`,
+    `- Verified: ${verified}`,
   ];
+  if (blocked) lines.push(`- Blocked: ${blocked}`);
+  lines.push(`- Next: ${next}`);
   const packet = compactLine(input.packet, 220);
   const task = compactLine(input.task, 220);
-  if (packet) lines.push(`Packet: ${packet}`);
-  if (task) lines.push(`Task: ${task}`);
+  if (packet) lines.push(`- Packet: ${packet}`);
+  if (task) lines.push(`- Task: ${task}`);
   return lines.join('\n');
 }
 
