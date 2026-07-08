@@ -34888,3 +34888,30 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`; full helper autonomy still has 124
   missing wrappers, 12 fallback/setup blockers, and unsaved all-contract Agent
   Mode PASS/BLOCKED proof.
+
+## 2026-07-08T23:20:00+03:00 - Rabbi helper parent/student summary wrapper batch local verified
+
+- Added 9 Rabbi / OneTime read-only parent/student summary wrappers:
+  `list_students`, `show_assignments`, `show_child_calendar`,
+  `view_parent_visible_notes`, `show_my_assignments`, `show_my_goals`,
+  `show_parent_students`, `show_student_progress`, and
+  `show_student_progress_for_parent`.
+- Updated the helper registry, deterministic planner, provider-safe
+  permissions/safety lists, parity map, Rabbi 163-contract scope map, and
+  focused helper/scope tests.
+- The Rabbi scope map remains exactly 163 contracts and now reports 36
+  `tool_wrapper_available_local`, 12 `registered_fallback_only_blocker`, and
+  115 `tool_wrapper_missing`.
+- Verification passed:
+  `node --test tests/bna-helper-tools.test.js
+  tests/rabbi-helper-tool-scope-map.test.js
+  tests/one-time-rbac-negative-isolation.test.js
+  tests/workspace-rbac-negative-isolation.test.js` (28/28).
+- Broad `npm test` is blocked by unrelated Operations shell/action-coverage
+  drift: 1658/1662 passed, with failures in
+  `operations-automation-center`,
+  `service-provider-studio-operations-ui`, and two
+  `watchdog-action-registry` coverage hash checks.
+- Remaining blockers: the 9 new wrappers still need commit/push and a clean
+  deploy/live smoke path; all 36 local wrappers still need saved all-contract
+  Agent Mode PASS/BLOCKED proof before autonomy can be claimed.

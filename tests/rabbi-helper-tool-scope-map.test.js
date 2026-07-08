@@ -159,7 +159,31 @@ test('Rabbi helper scope map marks the read-only runtime batch as locally wrappe
     assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
   }
 
-  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 27);
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 36);
+});
+
+test('Rabbi helper scope map marks parent and student summary wrappers as locally wrapper-backed', () => {
+  const parentStudentNames = [
+    'list_students',
+    'show_assignments',
+    'show_child_calendar',
+    'view_parent_visible_notes',
+    'show_my_assignments',
+    'show_my_goals',
+    'show_parent_students',
+    'show_student_progress',
+    'show_student_progress_for_parent',
+  ];
+  const parentStudentContracts = scopeMap.contracts.filter((contract) => parentStudentNames.includes(contract.source.helper_tool_name));
+  assert.equal(parentStudentContracts.length, 9);
+
+  for (const contract of parentStudentContracts) {
+    assert.equal(contract.rabbi_contract.action_policy, 'read_only');
+    assert.equal(contract.rabbi_contract.confirmation_policy, 'safe_without_confirmation_after_scope_check');
+    assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
+    assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
+    assert.ok(contract.rabbi_contract.negative_tests.some((check) => /unrelated parent, family, student/i.test(check)));
+  }
 });
 
 test('account bot scope template supports narrower subaccounts like Benny tasks and Studio', () => {

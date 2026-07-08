@@ -119,6 +119,23 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
     workspace_key: 'rabbi_sheller_provider',
     project_key: 'one_time_mishnah_class',
   }).ok, true);
+  for (const toolName of [
+    'list_students',
+    'show_assignments',
+    'show_my_assignments',
+    'show_my_goals',
+    'show_parent_students',
+    'show_student_progress',
+    'show_student_progress_for_parent',
+    'show_child_calendar',
+    'view_parent_visible_notes',
+  ]) {
+    assert.equal(registry.validate(toolName, {
+      student_id: 11,
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+    }).ok, true, `${toolName} should validate scoped student summary args`);
+  }
 
   const validClassroomDraft = registry.validate('create_provider_classroom_draft', {
     title: 'Rabbi classroom draft',
@@ -286,6 +303,27 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
     helperPermissionForTool(registry.get('list_provider_leads'), context, { project_key: 'one_time_mishnah_class' }).allowed,
     true
   );
+  for (const toolName of [
+    'list_students',
+    'show_assignments',
+    'show_my_assignments',
+    'show_my_goals',
+    'show_parent_students',
+    'show_student_progress',
+    'show_student_progress_for_parent',
+    'show_child_calendar',
+    'view_parent_visible_notes',
+  ]) {
+    assert.equal(
+      helperPermissionForTool(registry.get(toolName), context, {
+        student_id: 11,
+        workspace_key: 'rabbi_sheller_provider',
+        project_key: 'one_time_mishnah_class',
+      }).allowed,
+      true,
+      `${toolName} should be allowed for the Rabbi project scope`
+    );
+  }
   assert.equal(
     helperPermissionForTool(registry.get('create_automation'), context, { project_key: 'one_time_mishnah_class' }).allowed,
     true
@@ -316,6 +354,22 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
   );
   assert.equal(
     helperPermissionForTool(registry.get('view_email_log'), context, { project_key: 'bna' }).allowed,
+    false
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('list_students'), context, {
+      student_id: 11,
+      workspace_key: 'bna',
+      project_key: 'one_time_mishnah_class',
+    }).allowed,
+    false
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('show_student_progress_for_parent'), context, {
+      student_id: 11,
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'bna',
+    }).allowed,
     false
   );
 });
@@ -418,6 +472,17 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(deterministicPlan('list provider leads', registry, oneTimeContext).actions[0].tool, 'list_provider_leads');
   assert.equal(deterministicPlan('open content item 9', registry, oneTimeContext).actions[0].tool, 'open_content_item_url');
   assert.equal(deterministicPlan('open content item 9', registry, oneTimeContext).actions[0].args.content_id, 9);
+  assert.equal(deterministicPlan('list students', registry, oneTimeContext).actions[0].tool, 'list_students');
+  assert.equal(deterministicPlan('show parent students', registry, oneTimeContext).actions[0].tool, 'show_parent_students');
+  assert.equal(deterministicPlan('show assignments for student 11', registry, oneTimeContext).actions[0].tool, 'show_my_assignments');
+  assert.equal(deterministicPlan('show assignments for student 11', registry, oneTimeContext).actions[0].args.student_id, 11);
+  assert.equal(deterministicPlan('show assignments for parents', registry, oneTimeContext).actions[0].tool, 'show_assignments');
+  assert.equal(deterministicPlan('show my assignments', registry, oneTimeContext).actions[0].tool, 'show_my_assignments');
+  assert.equal(deterministicPlan('show my goals', registry, oneTimeContext).actions[0].tool, 'show_my_goals');
+  assert.equal(deterministicPlan('show student progress for student 11', registry, oneTimeContext).actions[0].tool, 'show_student_progress');
+  assert.equal(deterministicPlan('show student progress for parent about student 11', registry, oneTimeContext).actions[0].tool, 'show_student_progress_for_parent');
+  assert.equal(deterministicPlan('show child calendar for student 11', registry, oneTimeContext).actions[0].tool, 'show_child_calendar');
+  assert.equal(deterministicPlan('view parent visible notes for student 11', registry, oneTimeContext).actions[0].tool, 'view_parent_visible_notes');
 });
 
 test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reject cross-scope execution', async () => {
@@ -525,6 +590,94 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
             updated_at: '2026-07-08T07:30:00.000Z',
             media_url_present: true,
             drive_file_present: true,
+          }],
+        };
+      }
+      if (/FROM bna_students st/i.test(sql)) {
+        return {
+          rows: [{
+            id: 11,
+            signup_id: 12,
+            name: 'Student One',
+            name_en: 'Student One',
+            name_he: 'תלמיד א',
+            grade: '7',
+            current_school: 'One Time',
+            status: 'active',
+            tags: ['review'],
+            created_at: '2026-07-08T02:00:00.000Z',
+            updated_at: '2026-07-08T03:00:00.000Z',
+            parent_email: 'parent@example.com',
+            parent_phone: '+15555555555',
+            student_access_code: 'student-secret-123',
+            notes: 'private student note',
+          }],
+        };
+      }
+      if (/FROM bna_assignment_students ast/i.test(sql)) {
+        return {
+          rows: [{
+            assignment_student_id: 21,
+            assignment_id: 22,
+            student_id: 11,
+            student_name: 'Student One',
+            title: 'Review Mishnah Peah',
+            language_mode: 'en_he',
+            worksheet_type: 'review',
+            schedule_text: 'Tonight',
+            assignment_status: 'assigned',
+            status: 'open',
+            scheduled_start_at: '2026-07-09T16:00:00.000Z',
+            due_at: '2026-07-10T16:00:00.000Z',
+            sync_mode: 'manual',
+            sync_status: 'not_synced',
+            classroom_state: 'draft',
+            material_url_present: true,
+            youtube_url_present: true,
+            classroom_link_present: true,
+            calendar_link_present: true,
+            worksheet_body: 'private worksheet body',
+            raw_instructions: 'private instructions',
+            material_url: 'https://private.example/material',
+            youtube_url: 'https://youtube.example/private',
+          }],
+        };
+      }
+      if (/FROM bna_accountability_events ae/i.test(sql) && /student_goal/i.test(sql)) {
+        return {
+          rows: [{
+            id: 31,
+            student_id: 11,
+            student_name: 'Student One',
+            title: 'Finish review',
+            topic: 'Peah',
+            goal_target_value: 10,
+            goal_actual_value: 6,
+            goal_unit: 'mishnayos',
+            progress_percent: 60,
+            follow_up_required: true,
+            next_check_in_date: '2026-07-12',
+            occurred_at: '2026-07-08T03:30:00.000Z',
+            updated_at: '2026-07-08T04:00:00.000Z',
+            notes: 'private goal note',
+            metadata: { private: true },
+          }],
+        };
+      }
+      if (/FROM bna_accountability_events ae/i.test(sql)) {
+        return {
+          rows: [{
+            id: 32,
+            student_id: 11,
+            student_name: 'Student One',
+            event_type: 'parent_update',
+            title: 'Parent-visible update',
+            topic: 'Review',
+            notes: 'Student practiced six Mishnayos.',
+            question_text: 'private question body',
+            occurred_at: '2026-07-08T04:30:00.000Z',
+            created_at: '2026-07-08T04:30:00.000Z',
+            metadata: { private: true },
           }],
         };
       }
@@ -725,6 +878,91 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
   assert.equal(contentItem.data.content_item.media_url_returned, false);
   assert.equal(Object.prototype.hasOwnProperty.call(contentItem.data.content_item, 'media_url'), false);
 
+  const students = await registry.execute('list_students', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(students.tool, 'list_students');
+  assert.equal(students.data.students[0].name, 'Student One');
+  assert.equal(students.data.students[0].parent_contact_returned, false);
+  assert.equal(students.data.students[0].student_access_code_returned, false);
+  assert.equal(students.data.students[0].private_notes_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(students.data.students[0], 'parent_email'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(students.data.students[0], 'parent_phone'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(students.data.students[0], 'student_access_code'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(students.data.students[0], 'notes'), false);
+
+  const parentStudents = await registry.execute('show_parent_students', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(parentStudents.tool, 'show_parent_students');
+  assert.equal(parentStudents.data.students[0].parent_contact_returned, false);
+
+  const assignments = await registry.execute('show_my_assignments', {
+    student_id: 11,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(assignments.tool, 'show_my_assignments');
+  assert.equal(assignments.data.assignments[0].worksheet_returned, false);
+  assert.equal(assignments.data.assignments[0].raw_instructions_returned, false);
+  assert.equal(assignments.data.assignments[0].material_url_present, true);
+  assert.equal(assignments.data.assignments[0].material_url_returned, false);
+  assert.equal(assignments.data.assignments[0].youtube_url_returned, false);
+  assert.equal(assignments.data.assignments[0].classroom_link_returned, false);
+  assert.equal(assignments.data.assignments[0].calendar_link_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(assignments.data.assignments[0], 'worksheet_body'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(assignments.data.assignments[0], 'raw_instructions'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(assignments.data.assignments[0], 'material_url'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(assignments.data.assignments[0], 'youtube_url'), false);
+
+  const goals = await registry.execute('show_my_goals', {
+    student_id: 11,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(goals.tool, 'show_my_goals');
+  assert.equal(goals.data.goals[0].raw_notes_returned, false);
+  assert.equal(goals.data.goals[0].private_goal_metadata_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(goals.data.goals[0], 'notes'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(goals.data.goals[0], 'metadata'), false);
+
+  const progress = await registry.execute('show_student_progress_for_parent', {
+    student_id: 11,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(progress.tool, 'show_student_progress_for_parent');
+  assert.equal(progress.data.audience, 'parent');
+  assert.equal(progress.data.parent_contact_returned, false);
+  assert.equal(progress.data.student_access_code_returned, false);
+  assert.equal(progress.data.private_notes_returned, false);
+  assert.equal(progress.data.assignments[0].material_url_returned, false);
+  assert.equal(progress.data.goals[0].raw_notes_returned, false);
+
+  const childCalendar = await registry.execute('show_child_calendar', {
+    student_id: 11,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(childCalendar.tool, 'show_child_calendar');
+  assert.equal(childCalendar.data.events[0].meeting_url_present, true);
+  assert.equal(childCalendar.data.events[0].meeting_url_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(childCalendar.data.events[0], 'meeting_url'), false);
+
+  const parentVisibleNotes = await registry.execute('view_parent_visible_notes', {
+    student_id: 11,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(parentVisibleNotes.tool, 'view_parent_visible_notes');
+  assert.equal(parentVisibleNotes.data.notes[0].note_preview, 'Student practiced six Mishnayos.');
+  assert.equal(parentVisibleNotes.data.notes[0].raw_notes_returned, false);
+  assert.equal(parentVisibleNotes.data.notes[0].private_metadata_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(parentVisibleNotes.data.notes[0], 'notes'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(parentVisibleNotes.data.notes[0], 'metadata'), false);
+
   await assert.rejects(
     () => registry.execute('create_rabbi_source_sheet_task', {
       title: 'Cross scope source sheet',
@@ -736,6 +974,13 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
   await assert.rejects(
     () => registry.execute('open_calendar_event', {
       event_id: 44,
+      workspace_key: 'bna',
+      project_key: 'one_time_mishnah_class',
+    }, context, db),
+    /workspace scope mismatch/
+  );
+  await assert.rejects(
+    () => registry.execute('list_students', {
       workspace_key: 'bna',
       project_key: 'one_time_mishnah_class',
     }, context, db),

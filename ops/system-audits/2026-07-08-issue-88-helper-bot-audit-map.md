@@ -94,6 +94,23 @@ Follow-up Rabbi read-only wrapper batch:
   current implementation statuses: 27 `tool_wrapper_available_local`, 12
   `registered_fallback_only_blocker`, and 124 `tool_wrapper_missing`.
 
+Follow-up Rabbi parent/student summary wrapper batch:
+
+- Added scoped read-only wrappers for `list_students`, `show_assignments`,
+  `show_child_calendar`, `view_parent_visible_notes`,
+  `show_my_assignments`, `show_my_goals`, `show_parent_students`,
+  `show_student_progress`, and `show_student_progress_for_parent`.
+- The wrappers recompute/lock scope to `rabbi_sheller_provider` /
+  `one_time_mishnah_class`, return provider-visible parent/student summaries,
+  and do not return parent contact values, student access codes, private notes,
+  worksheet bodies, raw instructions, private assignment links, raw goal
+  metadata, raw parent-note metadata, or meeting URLs.
+- Refreshed `ops/helper-tool-parity-map.json`/`.md` so the parent/student
+  summary batch now shows as `tool_available`.
+- Kept the Rabbi scope map at the original 163-contract audit baseline, with
+  current implementation statuses: 36 `tool_wrapper_available_local`, 12
+  `registered_fallback_only_blocker`, and 115 `tool_wrapper_missing`.
+
 ## Negative Tests Added
 
 Added focused coverage in `tests/bna-helper-tools.test.js` for the packet's
@@ -112,6 +129,10 @@ scope/privacy implications:
 - Rabbi parent-response drafts remain draft-only and do not send.
 - Rabbi raw-intake capture does not return raw private text in the result
   card.
+- Rabbi parent/student summary execution rejects cross-workspace args and
+  omits parent contact values, student access codes, private notes, worksheet
+  bodies, raw instructions, private links, raw goal metadata, raw note
+  metadata, and meeting URLs.
 
 ## Verification
 
@@ -135,7 +156,7 @@ Follow-up verification:
 - PASS `node --test tests/bna-helper-tools.test.js
   tests/rabbi-helper-tool-scope-map.test.js
   tests/one-time-rbac-negative-isolation.test.js
-  tests/workspace-rbac-negative-isolation.test.js` (27/27)
+  tests/workspace-rbac-negative-isolation.test.js` (28/28)
 - PASS `node --test tests/watchdog-action-registry.test.js` (5/5) after
   regenerating `ops/action-registry/one-time-action-coverage.*`
 - PASS full `npm test` (1661/1661)
@@ -149,26 +170,30 @@ Follow-up verification:
 - PASS live prompt readback
   `/agent-review-prompts/rabbi-helper-tool-scope-map.md` returned `200` with
   `REQ-20260708-093` and `RABBI-HELPER-SCOPE-163`
+- BROAD BLOCKED `npm test` currently passes 1658/1662 and fails four unrelated
+  Operations/action-coverage tests:
+  `operations-automation-center`,
+  `service-provider-studio-operations-ui`, and the two
+  `watchdog-action-registry` coverage hash tests.
 
 ## Remaining Agent-Mode Autonomy Gaps
 
 1. Query/filter/result-card tools are still not implemented for many natural
-   questions. The refreshed base parity map now has 136 `tool_needed` rows,
+   questions. The refreshed base parity map now has 127 `tool_needed` rows,
    including parent/student progress reads, payments/accounting reads,
    CRM/contact filters beyond the first read-only batch, content/class/session
    reads, calendar drafts, and several prompt/goal lifecycle operations.
-2. The Rabbi 163-contract scope baseline has 27 local runtime wrappers so far.
-   Twelve contracts are fallback/setup blockers, and 124 contracts still show
+2. The Rabbi 163-contract scope baseline has 36 local runtime wrappers so far.
+   Twelve contracts are fallback/setup blockers, and 115 contracts still show
    `tool_wrapper_missing`.
-3. The exact missing-wrapper breakdown is 53 `internal_write`, 39 `read_only`,
+3. The exact missing-wrapper breakdown is 53 `internal_write`, 30 `read_only`,
    28 `draft_only`, 2 `approval_gated_external_write`, and 2
    `approval_gated_internal_state_change`.
-4. The 27 local wrappers are not full agent-mode autonomy yet. The first 18
-   are committed/pushed/deployed/prompt-readback verified; the read-only batch
-   is committed and pushed as `9e611cbd`, but deploy/live smoke is blocked
-   because the local worktree contains unrelated dirty `server.js`,
-   Operations shell/performance, Telegram readiness, and raw-input changes.
-   All 27 still need saved Agent Mode PASS/BLOCKED results.
+4. The 36 local wrappers are not full agent-mode autonomy yet. The first 27
+   are committed/pushed/deployed/prompt-readback verified through deployment
+   `2107fae5-1a73-49ec-96e8-5a3a66bb8e43`; the new 9 parent/student summary
+   wrappers are local-verified and still need a clean deploy/live smoke path.
+   All 36 still need saved Agent Mode PASS/BLOCKED results.
 5. Scoped Operations deep links for Rabbi/One Time are conservative by default.
    Helper permissions allow project-scoped task/navigation tools, but the route
    destination resolver currently blocks `/operations` for non-super-admin
@@ -181,9 +206,9 @@ Follow-up verification:
    live-readback evidence for every row.
 7. Planner coverage is still partial. Deterministic planner coverage exists
    for navigation, tickets, task updates, performance reports, classroom
-   drafts, automation drafts, the first Rabbi alias batch, and the read-only
-   batch, but most remaining inventory rows do not have natural-language intent
-   routing or safe missing-input prompts.
+   drafts, automation drafts, the first Rabbi alias batch, the read-only batch,
+   and the parent/student summary batch, but most remaining inventory rows do
+   not have natural-language intent routing or safe missing-input prompts.
 8. Confirmation-gated execution exists, but agent-mode autonomy still needs a
    productized action console/timeline UI with visible plan, confirmation,
    execution, result links, errors, and audit readback across desktop/mobile.
@@ -191,10 +216,10 @@ Follow-up verification:
    sends, Buffer, WAPI/WhatsApp, Stripe/payment, DNS, Vimeo/Drive/Zoom writes,
    access grants, destructive actions, and provider secret changes require
    separate approval gates and evidence.
-10. Live deploy and prompt readback are complete for the first alias batch, but Agent
-   Review has not yet saved a PASS/BLOCKED result for the refreshed map, the
-   first alias batch, the read-only batch, and the scope/privacy negative tests
-   in this scoped audit.
+10. Live deploy and prompt readback are complete for the first 27 wrappers, but
+   Agent Review has not yet saved a PASS/BLOCKED result for the refreshed map,
+   the first alias batch, the read-only batch, the parent/student summary
+   batch, and the scope/privacy negative tests in this scoped audit.
 
 ## Guardrails Observed
 

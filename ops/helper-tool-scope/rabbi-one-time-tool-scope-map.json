@@ -3,9 +3,9 @@
   "source": {
     "path": "ops/helper-tool-parity-map.json",
     "total_rows": 270,
-    "tool_needed_count": 136,
+    "tool_needed_count": 127,
     "contract_count": 163,
-    "preserved_audit_contract_count": 27,
+    "preserved_audit_contract_count": 36,
     "source_status_filter": "tool_needed plus preserved helper-bot-workspace-agent-01-audit-map audit contracts"
   },
   "target_account": {
@@ -111,7 +111,7 @@
       "draft_only": 33
     },
     "by_capability_group": {
-      "tasks": 56,
+      "tasks": 51,
       "communications": 11,
       "operations": 29,
       "calendar": 14,
@@ -120,12 +120,12 @@
       "parents": 25,
       "provider_setup": 10,
       "students": 29,
-      "agent_ops": 2,
+      "agent_ops": 8,
       "provider": 11
     },
     "by_implementation_status": {
-      "tool_wrapper_missing": 124,
-      "tool_wrapper_available_local": 27,
+      "tool_wrapper_missing": 115,
+      "tool_wrapper_available_local": 36,
       "registered_fallback_only_blocker": 12
     }
   },
@@ -12755,13 +12755,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "show_assignments",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "own family and parent-visible records only",
+          "side_effect:read_only",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action show_assignments has no direct helper wrapper yet."
+        "notes": "Typed action show_assignments maps to helper tool show_assignments."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -12849,8 +12850,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for show_assignments, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep show_assignments in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -12870,13 +12871,14 @@
         "api_endpoint": "/api/bna/calendar-events",
         "method": "POST",
         "helper_tool_name": "show_child_calendar",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "own family and parent-visible records only",
+          "side_effect:read_only",
           "roles:parent,super_admin,platform_manager,support_admin,technical_agent,admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action show_child_calendar has no direct helper wrapper yet."
+        "notes": "Typed action show_child_calendar maps to helper tool show_child_calendar."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -12963,8 +12965,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for show_child_calendar, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep show_child_calendar in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -13098,13 +13100,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "view_parent_visible_notes",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "own family and parent-visible records only",
+          "side_effect:read_only",
           "roles:parent,super_admin,platform_manager,support_admin,technical_agent,admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action view_parent_visible_notes has no direct helper wrapper yet."
+        "notes": "Typed action view_parent_visible_notes maps to helper tool view_parent_visible_notes."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -13190,8 +13193,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for view_parent_visible_notes, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep view_parent_visible_notes in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -17366,19 +17369,19 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "list_students",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "student-safe own records only"
         ],
         "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+        "notes": "Preserved helper-bot audit contract after local parity-map status changed; Agent Mode evidence is still required before autonomy."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
         "capability_slug": "list_students",
         "capability_groups": [
-          "students",
-          "tasks"
+          "agent_ops",
+          "students"
         ],
         "scope_lock": {
           "workspace_key": "rabbi_sheller_provider",
@@ -17416,7 +17419,6 @@
           ],
           "required_slots": [
             "intent",
-            "task_or_decision_target_when_updating",
             "one_time_student_or_class_context"
           ],
           "default_slots": {
@@ -17459,8 +17461,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for list_students, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep list_students in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -17594,19 +17596,19 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "show_my_assignments",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "student-safe own records only"
         ],
         "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+        "notes": "Preserved helper-bot audit contract after local parity-map status changed; Agent Mode evidence is still required before autonomy."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
         "capability_slug": "show_my_assignments",
         "capability_groups": [
-          "students",
-          "tasks"
+          "agent_ops",
+          "students"
         ],
         "scope_lock": {
           "workspace_key": "rabbi_sheller_provider",
@@ -17644,7 +17646,6 @@
           ],
           "required_slots": [
             "intent",
-            "task_or_decision_target_when_updating",
             "one_time_student_or_class_context"
           ],
           "default_slots": {
@@ -17687,8 +17688,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for show_my_assignments, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep show_my_assignments in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -17708,17 +17709,18 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "show_my_goals",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "student-safe own records only"
         ],
         "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+        "notes": "Preserved helper-bot audit contract after local parity-map status changed; Agent Mode evidence is still required before autonomy."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
         "capability_slug": "show_my_goals",
         "capability_groups": [
+          "agent_ops",
           "students",
           "tasks"
         ],
@@ -17801,8 +17803,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for show_my_goals, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep show_my_goals in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -17822,20 +17824,20 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "show_parent_students",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "student-safe own records only"
         ],
         "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+        "notes": "Preserved helper-bot audit contract after local parity-map status changed; Agent Mode evidence is still required before autonomy."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
         "capability_slug": "show_parent_students",
         "capability_groups": [
+          "agent_ops",
           "parents",
-          "students",
-          "tasks"
+          "students"
         ],
         "scope_lock": {
           "workspace_key": "rabbi_sheller_provider",
@@ -17873,7 +17875,6 @@
           ],
           "required_slots": [
             "intent",
-            "task_or_decision_target_when_updating",
             "one_time_student_or_class_context",
             "one_time_family_or_parent_context"
           ],
@@ -17917,8 +17918,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for show_parent_students, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep show_parent_students in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -17938,19 +17939,19 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "show_student_progress",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "student-safe own records only"
         ],
         "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+        "notes": "Preserved helper-bot audit contract after local parity-map status changed; Agent Mode evidence is still required before autonomy."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
         "capability_slug": "show_student_progress",
         "capability_groups": [
-          "students",
-          "tasks"
+          "agent_ops",
+          "students"
         ],
         "scope_lock": {
           "workspace_key": "rabbi_sheller_provider",
@@ -17988,7 +17989,6 @@
           ],
           "required_slots": [
             "intent",
-            "task_or_decision_target_when_updating",
             "one_time_student_or_class_context"
           ],
           "default_slots": {
@@ -18031,8 +18031,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for show_student_progress, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep show_student_progress in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -18052,20 +18052,20 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "show_student_progress_for_parent",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "student-safe own records only"
         ],
         "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+        "notes": "Preserved helper-bot audit contract after local parity-map status changed; Agent Mode evidence is still required before autonomy."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
         "capability_slug": "show_student_progress_for_parent",
         "capability_groups": [
+          "agent_ops",
           "parents",
-          "students",
-          "tasks"
+          "students"
         ],
         "scope_lock": {
           "workspace_key": "rabbi_sheller_provider",
@@ -18103,7 +18103,6 @@
           ],
           "required_slots": [
             "intent",
-            "task_or_decision_target_when_updating",
             "one_time_student_or_class_context",
             "one_time_family_or_parent_context"
           ],
@@ -18147,8 +18146,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for show_student_progress_for_parent, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep show_student_progress_for_parent in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",

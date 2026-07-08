@@ -6,17 +6,17 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 
 - external_blocker: 26
 - requires_confirmation: 49
-- student_safe_only: 8
-- tool_available: 51
-- tool_needed: 136
+- student_safe_only: 7
+- tool_available: 61
+- tool_needed: 127
 
 ## Surfaces
 
-- operations: 177
+- operations: 183
 - parent: 21
 - provider: 37
 - rabbi: 9
-- student: 26
+- student: 20
 
 ## Notes
 
@@ -118,6 +118,7 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | list content jobs | create_content_item | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | list payment roster | list_payment_roster | external_blocker | yes | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | list provider leads | list_provider_leads | tool_available | no | src/lib/bna/helper/tool-registry.js |
+| operations | list students | list_students | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | list tasks | show_task_report | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | mark attendance | mark_attendance | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | Mark event admin-only | mark_event_admin_only | tool_needed | no | public/operations.html |
@@ -149,6 +150,5 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | preview send | preview_send | external_blocker | yes | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | Preview social schedule package | preview_social_schedule_package | external_blocker | yes | public/operations.html |
 | operations | publish library item after approval | publish_library_item_after_approval | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
-| operations | Queue Telegram report | queue_telegram_report | tool_needed | yes | public/operations.html |
 
 Full machine-readable map: `ops/helper-tool-parity-map.json` (270 records).

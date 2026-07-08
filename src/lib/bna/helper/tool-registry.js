@@ -38,6 +38,15 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'show_contact_communication_history',
   'list_provider_leads',
   'open_content_item_url',
+  'list_students',
+  'show_assignments',
+  'show_my_assignments',
+  'show_my_goals',
+  'show_parent_students',
+  'show_student_progress',
+  'show_student_progress_for_parent',
+  'show_child_calendar',
+  'view_parent_visible_notes',
   'create_support_ticket',
   'create_report_problem_ticket',
   'create_ticket',
@@ -2289,6 +2298,377 @@ async function listProviderLeadsTool({ args, context, deps, db }) {
   });
 }
 
+function projectScopeSql(alias = 'st', signupAlias = 'su', projectAlias = 'p', startIndex = 1) {
+  return `(${alias}.project_id = $${startIndex} OR ${signupAlias}.project_id = $${startIndex} OR ${projectAlias}.project_key = $${startIndex + 1})`;
+}
+
+function safeStudentSummary(row = {}) {
+  return {
+    id: row.id,
+    signup_id: row.signup_id || null,
+    name: row.name || null,
+    name_en: row.name_en || null,
+    name_he: row.name_he || null,
+    grade: row.grade || null,
+    current_school: row.current_school || null,
+    status: row.status || null,
+    tags: Array.isArray(row.tags) ? row.tags.slice(0, 12) : [],
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+    parent_contact_returned: false,
+    student_access_code_returned: false,
+    private_notes_returned: false,
+  };
+}
+
+async function queryRabbiStudents({ args = {}, context = {}, deps = {}, db, limit = 25 } = {}) {
+  const { projectId, projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const params = [projectId || 0, projectKey];
+  const conditions = [projectScopeSql('st', 'su', 'p', 1), `COALESCE(st.status, 'active') NOT IN ('inactive', 'archived')`];
+  if (args.student_id) {
+    params.push(args.student_id);
+    conditions.push(`st.id = $${params.length}`);
+  }
+  if (args.search) {
+    params.push(compactText(args.search, 120));
+    conditions.push(`(st.name ILIKE '%' || $${params.length} || '%' OR st.name_en ILIKE '%' || $${params.length} || '%' OR st.name_he ILIKE '%' || $${params.length} || '%')`);
+  }
+  params.push(helperLimit(args.limit, limit, 100));
+  const result = await db.query(
+    `SELECT st.id, st.signup_id, st.name, st.name_en, st.name_he, st.grade,
+            st.current_school, st.status, st.tags, st.created_at, st.updated_at
+     FROM bna_students st
+     LEFT JOIN signups su ON su.id = st.signup_id
+     LEFT JOIN bna_projects p ON p.id = COALESCE(st.project_id, su.project_id)
+     WHERE ${conditions.join(' AND ')}
+     ORDER BY st.name ASC, st.id ASC
+     LIMIT $${params.length}`,
+    params
+  );
+  return {
+    projectId,
+    projectKey,
+    workspaceKey,
+    rows: result.rows,
+    students: result.rows.map(safeStudentSummary),
+  };
+}
+
+function visibilityExpr(alias = 'ast', audience = 'student') {
+  const keys = audience === 'parent'
+    ? [`${alias}.metadata->>'parent_visible'`, `${alias}.metadata->>'share_with_parent'`]
+    : [`${alias}.metadata->>'student_visible'`, `${alias}.metadata->>'share_with_student'`];
+  return `LOWER(COALESCE(${keys.join(', ')}, 'true')) <> 'false'`;
+}
+
+function safeAssignmentRow(row = {}) {
+  return {
+    id: row.assignment_student_id || null,
+    assignment_id: row.assignment_id,
+    student_id: row.student_id || null,
+    student_name: row.student_name || null,
+    title: row.title || null,
+    language_mode: row.language_mode || null,
+    worksheet_type: row.worksheet_type || null,
+    schedule_text: row.schedule_text || null,
+    assignment_status: row.assignment_status || null,
+    status: row.status || null,
+    scheduled_start_at: row.scheduled_start_at || null,
+    due_at: row.due_at || null,
+    sync_mode: row.sync_mode || null,
+    sync_status: row.sync_status || null,
+    classroom_state: row.classroom_state || null,
+    worksheet_returned: false,
+    raw_instructions_returned: false,
+    material_url_present: Boolean(row.material_url_present),
+    material_url_returned: false,
+    youtube_url_present: Boolean(row.youtube_url_present),
+    youtube_url_returned: false,
+    classroom_link_present: Boolean(row.classroom_link_present),
+    classroom_link_returned: false,
+    calendar_link_present: Boolean(row.calendar_link_present),
+    calendar_link_returned: false,
+  };
+}
+
+async function queryRabbiAssignments({ args = {}, context = {}, deps = {}, db, audience = 'student', limit = 25 } = {}) {
+  const { projectId, projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const params = [projectId || 0, projectKey];
+  const conditions = [
+    `(a.project_id = $1 OR st.project_id = $1 OR su.project_id = $1 OR p.project_key = $2)`,
+    `COALESCE(a.status, 'draft') <> 'archived'`,
+    `COALESCE(ast.status, 'assigned') <> 'archived'`,
+    visibilityExpr('ast', audience),
+  ];
+  if (args.student_id) {
+    params.push(args.student_id);
+    conditions.push(`st.id = $${params.length}`);
+  }
+  params.push(helperLimit(args.limit, limit, 100));
+  const result = await db.query(
+    `SELECT a.id AS assignment_id, a.title, a.language_mode, a.worksheet_type,
+            a.schedule_text, a.status AS assignment_status, a.sync_mode,
+            a.material_url IS NOT NULL AS material_url_present,
+            a.youtube_url IS NOT NULL AS youtube_url_present,
+            ast.id AS assignment_student_id, ast.student_id, COALESCE(ast.student_name, st.name) AS student_name,
+            ast.status, ast.scheduled_start_at, ast.due_at, ast.sync_status,
+            ast.classroom_state,
+            ast.classroom_alternate_link IS NOT NULL AS classroom_link_present,
+            ast.calendar_html_link IS NOT NULL AS calendar_link_present
+     FROM bna_assignment_students ast
+     JOIN bna_assignments a ON a.id = ast.assignment_id
+     LEFT JOIN bna_students st ON st.id = ast.student_id
+     LEFT JOIN signups su ON su.id = st.signup_id
+     LEFT JOIN bna_projects p ON p.id = COALESCE(a.project_id, st.project_id, su.project_id)
+     WHERE ${conditions.join(' AND ')}
+     ORDER BY COALESCE(ast.scheduled_start_at, ast.due_at, ast.created_at) ASC, ast.id DESC
+     LIMIT $${params.length}`,
+    params
+  );
+  return {
+    projectKey,
+    workspaceKey,
+    assignments: result.rows.map(safeAssignmentRow),
+  };
+}
+
+function safeGoalRow(row = {}) {
+  return {
+    id: row.id,
+    student_id: row.student_id || null,
+    student_name: row.student_name || null,
+    title: row.title || null,
+    topic: row.topic || null,
+    goal_target_value: row.goal_target_value || null,
+    goal_actual_value: row.goal_actual_value || null,
+    goal_unit: row.goal_unit || null,
+    progress_percent: row.progress_percent === null || row.progress_percent === undefined ? null : Number(row.progress_percent),
+    follow_up_required: Boolean(row.follow_up_required),
+    next_check_in_date: row.next_check_in_date || null,
+    occurred_at: row.occurred_at || null,
+    updated_at: row.updated_at || null,
+    raw_notes_returned: false,
+    private_goal_metadata_returned: false,
+  };
+}
+
+async function queryRabbiGoals({ args = {}, context = {}, deps = {}, db, audience = 'student', limit = 25 } = {}) {
+  const { projectId, projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const visibleKeys = audience === 'parent'
+    ? [`ae.metadata->>'parent_visible'`, `ae.metadata->'goal_board'->>'parent_visible'`, `ae.metadata->>'share_with_parent'`]
+    : [`ae.metadata->>'student_visible'`, `ae.metadata->'goal_board'->>'student_visible'`, `ae.metadata->>'share_with_student'`];
+  const params = [projectId || 0, projectKey];
+  const conditions = [
+    `(ae.project_id = $1 OR st.project_id = $1 OR su.project_id = $1 OR p.project_key = $2)`,
+    `ae.event_type = 'student_goal'`,
+    `LOWER(COALESCE(${visibleKeys.join(', ')}, 'true')) <> 'false'`,
+    `COALESCE(ae.metadata->'goal_board'->>'status', '') <> 'archived'`,
+  ];
+  if (args.student_id) {
+    params.push(args.student_id);
+    conditions.push(`st.id = $${params.length}`);
+  }
+  params.push(helperLimit(args.limit, limit, 100));
+  const result = await db.query(
+    `SELECT ae.id, ae.student_id, COALESCE(ae.student_name, st.name) AS student_name,
+            ae.title, ae.topic, ae.goal_target_value, ae.goal_actual_value,
+            ae.goal_unit, ae.progress_percent, ae.follow_up_required,
+            ae.next_check_in_date, ae.occurred_at, ae.updated_at
+     FROM bna_accountability_events ae
+     LEFT JOIN bna_students st ON st.id = ae.student_id
+     LEFT JOIN signups su ON su.id = st.signup_id
+     LEFT JOIN bna_projects p ON p.id = COALESCE(ae.project_id, st.project_id, su.project_id)
+     WHERE ${conditions.join(' AND ')}
+     ORDER BY COALESCE(ae.follow_up_required, FALSE) DESC,
+              COALESCE(ae.progress_percent, -1) ASC,
+              ae.occurred_at DESC NULLS LAST,
+              ae.id DESC
+     LIMIT $${params.length}`,
+    params
+  );
+  return {
+    projectKey,
+    workspaceKey,
+    goals: result.rows.map(safeGoalRow),
+  };
+}
+
+async function queryRabbiCalendarEvents({ args = {}, context = {}, deps = {}, db, audience = 'parent', limit = 25 } = {}) {
+  const { projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const visibilityList = audience === 'parent' ? ['parent', 'student', 'provider', 'public'] : ['student', 'provider', 'public'];
+  const params = [workspaceKey, visibilityList];
+  const conditions = [
+    `ce.workspace_key = $1`,
+    `ce.status NOT IN ('cancelled', 'archived')`,
+    `ce.visibility = ANY($2::text[])`,
+  ];
+  if (args.student_id) {
+    params.push(args.student_id);
+    conditions.push(`(
+      ce.related_type IN ('class_session', 'provider_program')
+      OR (ce.related_type = 'student' AND ce.related_id = $${params.length})
+      OR COALESCE(ce.metadata_json->>'student_id', ce.metadata_json->>'studentId', '') = $${params.length}::text
+      OR COALESCE(ce.metadata_json->'student_ids', '[]'::jsonb) ? $${params.length}::text
+      OR COALESCE(ce.metadata_json->'studentIds', '[]'::jsonb) ? $${params.length}::text
+    )`);
+  }
+  params.push(helperLimit(args.limit, limit, 100));
+  const result = await db.query(
+    `SELECT ce.id, ce.related_type, ce.related_id, ce.title, ce.start_at, ce.end_at,
+            ce.status, ce.visibility, ce.source, ce.created_at, ce.updated_at,
+            ce.meeting_url IS NOT NULL AS meeting_url_present
+     FROM bna_calendar_events ce
+     WHERE ${conditions.join(' AND ')}
+     ORDER BY ce.start_at ASC, ce.id ASC
+     LIMIT $${params.length}`,
+    params
+  );
+  return {
+    projectKey,
+    workspaceKey,
+    events: result.rows.map(safeCalendarEvent),
+  };
+}
+
+function safeParentVisibleNote(row = {}) {
+  return {
+    id: row.id,
+    student_id: row.student_id || null,
+    student_name: row.student_name || null,
+    event_type: row.event_type || null,
+    title: row.title || null,
+    topic: row.topic || null,
+    note_preview: compactText(row.notes || row.question_text || '', 220) || null,
+    occurred_at: row.occurred_at || null,
+    created_at: row.created_at || null,
+    raw_notes_returned: false,
+    private_metadata_returned: false,
+  };
+}
+
+async function queryRabbiParentVisibleNotes({ args = {}, context = {}, deps = {}, db, limit = 25 } = {}) {
+  const { projectId, projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const params = [projectId || 0, projectKey];
+  const conditions = [
+    `(ae.project_id = $1 OR st.project_id = $1 OR su.project_id = $1 OR p.project_key = $2)`,
+    `LOWER(COALESCE(ae.metadata->>'parent_visible', ae.metadata->'goal_board'->>'parent_visible', ae.metadata->>'share_with_parent', 'false')) = 'true'`,
+  ];
+  if (args.student_id) {
+    params.push(args.student_id);
+    conditions.push(`st.id = $${params.length}`);
+  }
+  params.push(helperLimit(args.limit, limit, 50));
+  const result = await db.query(
+    `SELECT ae.id, ae.student_id, COALESCE(ae.student_name, st.name) AS student_name,
+            ae.event_type, ae.title, ae.topic, ae.notes, ae.question_text,
+            ae.occurred_at, ae.created_at
+     FROM bna_accountability_events ae
+     LEFT JOIN bna_students st ON st.id = ae.student_id
+     LEFT JOIN signups su ON su.id = st.signup_id
+     LEFT JOIN bna_projects p ON p.id = COALESCE(ae.project_id, st.project_id, su.project_id)
+     WHERE ${conditions.join(' AND ')}
+     ORDER BY COALESCE(ae.occurred_at, ae.created_at) DESC, ae.id DESC
+     LIMIT $${params.length}`,
+    params
+  );
+  return {
+    projectKey,
+    workspaceKey,
+    notes: result.rows.map(safeParentVisibleNote),
+  };
+}
+
+async function listStudentsTool(payload) {
+  const { rows, students, projectKey, workspaceKey } = await queryRabbiStudents({ ...payload, limit: 25 });
+  return helperResultCard({
+    tool: payload.tool?.name || 'list_students',
+    recordType: 'helper_audit',
+    recordId: null,
+    label: 'One Time students',
+    summary: `Found ${rows.length} scoped One Time student row(s).`,
+    url: `/operations?view=students&workspace=${workspaceKey}`,
+    data: { scope: { workspace_key: workspaceKey, project_key: projectKey }, students },
+  });
+}
+
+async function showAssignmentsTool(payload) {
+  const audience = payload.tool?.name === 'show_assignments' ? 'parent' : 'student';
+  const { assignments, projectKey, workspaceKey } = await queryRabbiAssignments({ ...payload, audience, limit: 25 });
+  return helperResultCard({
+    tool: payload.tool?.name || 'show_assignments',
+    recordType: 'helper_audit',
+    recordId: payload.args.student_id || null,
+    label: 'One Time assignments',
+    summary: `Found ${assignments.length} scoped visible assignment row(s).`,
+    url: `/operations?view=students&workspace=${workspaceKey}`,
+    data: { scope: { workspace_key: workspaceKey, project_key: projectKey }, audience, assignments },
+  });
+}
+
+async function showGoalsTool(payload) {
+  const { goals, projectKey, workspaceKey } = await queryRabbiGoals({ ...payload, audience: 'student', limit: 25 });
+  return helperResultCard({
+    tool: payload.tool?.name || 'show_my_goals',
+    recordType: 'helper_audit',
+    recordId: payload.args.student_id || null,
+    label: 'One Time student goals',
+    summary: `Found ${goals.length} scoped visible goal row(s).`,
+    url: `/operations?view=students&workspace=${workspaceKey}`,
+    data: { scope: { workspace_key: workspaceKey, project_key: projectKey }, audience: 'student', goals },
+  });
+}
+
+async function showStudentProgressTool(payload) {
+  const audience = payload.tool?.name === 'show_student_progress_for_parent' ? 'parent' : 'student';
+  const studentsResult = await queryRabbiStudents({ ...payload, limit: payload.args.student_id ? 1 : 10 });
+  const assignmentsResult = await queryRabbiAssignments({ ...payload, audience, limit: 20 });
+  const goalsResult = await queryRabbiGoals({ ...payload, audience, limit: 20 });
+  return helperResultCard({
+    tool: payload.tool?.name || 'show_student_progress',
+    recordType: 'helper_audit',
+    recordId: payload.args.student_id || null,
+    label: 'One Time student progress',
+    summary: `Found ${studentsResult.students.length} student(s), ${assignmentsResult.assignments.length} assignment(s), and ${goalsResult.goals.length} visible goal(s).`,
+    url: `/operations?view=students&workspace=${studentsResult.workspaceKey}`,
+    data: {
+      scope: { workspace_key: studentsResult.workspaceKey, project_key: studentsResult.projectKey },
+      audience,
+      students: studentsResult.students,
+      assignments: assignmentsResult.assignments,
+      goals: goalsResult.goals,
+      parent_contact_returned: false,
+      student_access_code_returned: false,
+      private_notes_returned: false,
+    },
+  });
+}
+
+async function showChildCalendarTool(payload) {
+  const { events, projectKey, workspaceKey } = await queryRabbiCalendarEvents({ ...payload, audience: 'parent', limit: 25 });
+  return helperResultCard({
+    tool: 'show_child_calendar',
+    recordType: 'helper_audit',
+    recordId: payload.args.student_id || null,
+    label: 'One Time child calendar',
+    summary: `Found ${events.length} scoped visible calendar event(s).`,
+    url: `/operations?view=calendar&workspace=${workspaceKey}`,
+    data: { scope: { workspace_key: workspaceKey, project_key: projectKey }, audience: 'parent', events },
+  });
+}
+
+async function viewParentVisibleNotesTool(payload) {
+  const { notes, projectKey, workspaceKey } = await queryRabbiParentVisibleNotes({ ...payload, limit: 25 });
+  return helperResultCard({
+    tool: 'view_parent_visible_notes',
+    recordType: 'helper_audit',
+    recordId: payload.args.student_id || null,
+    label: 'Parent-visible notes',
+    summary: `Found ${notes.length} scoped parent-visible note row(s).`,
+    url: `/operations?view=students&workspace=${workspaceKey}`,
+    data: { scope: { workspace_key: workspaceKey, project_key: projectKey }, notes },
+  });
+}
+
 async function createStudentTool({ args, context, deps, db }) {
   const project = await deps.resolveProjectFromInput({ project_key: args.project_key || context.projectKey || 'bna' }, db);
   deps.assertProjectAccess(context.req, project);
@@ -3034,6 +3414,116 @@ function buildToolRegistry(deps = {}) {
         project_key: { type: 'string', maxLength: 120 },
       },
     }, openContentItemUrlTool),
+    makeDefinition({
+      name: 'list_students',
+      description: 'List scoped One Time student summaries without parent contact values, access codes, or private notes.',
+      category: 'students',
+      sideEffectLevel: 'read_only',
+      schema: {
+        student_id: { type: 'integer' },
+        search: { type: 'string', maxLength: 120 },
+        limit: { type: 'integer', default: 25 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, listStudentsTool),
+    makeDefinition({
+      name: 'show_assignments',
+      description: 'Show parent-visible scoped One Time assignment summaries without worksheet bodies, raw instructions, or private links.',
+      category: 'students',
+      sideEffectLevel: 'read_only',
+      schema: {
+        student_id: { type: 'integer' },
+        limit: { type: 'integer', default: 25 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, showAssignmentsTool),
+    makeDefinition({
+      name: 'show_my_assignments',
+      description: 'Show student-visible scoped One Time assignment summaries without worksheet bodies, raw instructions, or private links.',
+      category: 'students',
+      sideEffectLevel: 'read_only',
+      schema: {
+        student_id: { type: 'integer' },
+        limit: { type: 'integer', default: 25 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, showAssignmentsTool),
+    makeDefinition({
+      name: 'show_my_goals',
+      description: 'Show student-visible scoped One Time goal summaries without raw notes or private goal metadata.',
+      category: 'students',
+      sideEffectLevel: 'read_only',
+      schema: {
+        student_id: { type: 'integer' },
+        limit: { type: 'integer', default: 25 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, showGoalsTool),
+    makeDefinition({
+      name: 'show_parent_students',
+      description: 'Show scoped One Time student roster summaries for parent-facing review without contact values or access codes.',
+      category: 'students',
+      sideEffectLevel: 'read_only',
+      schema: {
+        student_id: { type: 'integer' },
+        search: { type: 'string', maxLength: 120 },
+        limit: { type: 'integer', default: 25 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, listStudentsTool),
+    makeDefinition({
+      name: 'show_student_progress',
+      description: 'Show student-visible scoped One Time progress summaries without parent contact values, access codes, private notes, or raw assignment links.',
+      category: 'students',
+      sideEffectLevel: 'read_only',
+      schema: {
+        student_id: { type: 'integer' },
+        limit: { type: 'integer', default: 25 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, showStudentProgressTool),
+    makeDefinition({
+      name: 'show_student_progress_for_parent',
+      description: 'Show parent-visible scoped One Time progress summaries without contact values, access codes, private notes, or raw assignment links.',
+      category: 'students',
+      sideEffectLevel: 'read_only',
+      schema: {
+        student_id: { type: 'integer' },
+        limit: { type: 'integer', default: 25 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, showStudentProgressTool),
+    makeDefinition({
+      name: 'show_child_calendar',
+      description: 'Show parent-visible scoped One Time calendar summaries without meeting URLs.',
+      category: 'calendar',
+      sideEffectLevel: 'read_only',
+      schema: {
+        student_id: { type: 'integer' },
+        limit: { type: 'integer', default: 25 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, showChildCalendarTool),
+    makeDefinition({
+      name: 'view_parent_visible_notes',
+      description: 'Show scoped One Time parent-visible note previews without raw private metadata or non-parent-visible notes.',
+      category: 'students',
+      sideEffectLevel: 'read_only',
+      schema: {
+        student_id: { type: 'integer' },
+        limit: { type: 'integer', default: 25 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, viewParentVisibleNotesTool),
     makeDefinition({
       name: 'create_support_ticket',
       description: 'Create a first-party Operations support ticket or problem report.',

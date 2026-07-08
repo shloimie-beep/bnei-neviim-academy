@@ -1342,6 +1342,21 @@
   },
   {
     "surface": "operations",
+    "label": "list students",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "list_students",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
+    ],
+    "confirmation_required": false,
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
+  },
+  {
+    "surface": "operations",
     "label": "list tasks",
     "current_file": "src/lib/bna/helper/tool-registry.js",
     "api_endpoint": "/api/bna/helper/message",
@@ -2281,6 +2296,36 @@
   },
   {
     "surface": "operations",
+    "label": "show my assignments",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "show_my_assignments",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
+    ],
+    "confirmation_required": false,
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
+  },
+  {
+    "surface": "operations",
+    "label": "show my goals",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "show_my_goals",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
+    ],
+    "confirmation_required": false,
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
+  },
+  {
+    "surface": "operations",
     "label": "show one time launch checklist",
     "current_file": "src/lib/bna/helper/tool-registry.js",
     "api_endpoint": "/api/bna/helper/message",
@@ -2301,6 +2346,21 @@
     "api_endpoint": "/api/bna/helper/message",
     "method": "POST",
     "helper_tool_name": "show_operating_goals",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
+    ],
+    "confirmation_required": false,
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
+  },
+  {
+    "surface": "operations",
+    "label": "show parent students",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "show_parent_students",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
       "side_effect:read_only"
@@ -2351,6 +2411,36 @@
     "confirmation_required": false,
     "status": "external_blocker",
     "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+  },
+  {
+    "surface": "operations",
+    "label": "show student progress",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "show_student_progress",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
+    ],
+    "confirmation_required": false,
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
+  },
+  {
+    "surface": "operations",
+    "label": "show student progress for parent",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "show_student_progress_for_parent",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
+    ],
+    "confirmation_required": false,
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
   },
   {
     "surface": "operations",
@@ -2952,11 +3042,12 @@
     "helper_tool_name": "show_assignments",
     "scope_rules": [
       "own family and parent-visible records only",
+      "side_effect:read_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action show_assignments has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action show_assignments maps to helper tool show_assignments."
   },
   {
     "surface": "parent",
@@ -2967,11 +3058,12 @@
     "helper_tool_name": "show_child_calendar",
     "scope_rules": [
       "own family and parent-visible records only",
+      "side_effect:read_only",
       "roles:parent,super_admin,platform_manager,support_admin,technical_agent,admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action show_child_calendar has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action show_child_calendar maps to helper tool show_child_calendar."
   },
   {
     "surface": "parent",
@@ -2996,11 +3088,12 @@
     "helper_tool_name": "view_parent_visible_notes",
     "scope_rules": [
       "own family and parent-visible records only",
+      "side_effect:read_only",
       "roles:parent,super_admin,platform_manager,support_admin,technical_agent,admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action view_parent_visible_notes has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action view_parent_visible_notes maps to helper tool view_parent_visible_notes."
   },
   {
     "surface": "provider",
@@ -3894,20 +3987,6 @@
   },
   {
     "surface": "student",
-    "label": "list students",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
-    "helper_tool_name": "list_students",
-    "scope_rules": [
-      "student-safe own records only"
-    ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
-  },
-  {
-    "surface": "student",
     "label": "Open calendar event",
     "current_file": "public/student.html",
     "api_endpoint": "/api/bna/calendar-events",
@@ -3945,81 +4024,12 @@
     "helper_tool_name": "show_assignments",
     "scope_rules": [
       "student-safe own records only",
+      "side_effect:read_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "student_safe_only",
-    "notes": "Typed action show_assignments has no direct helper wrapper yet."
-  },
-  {
-    "surface": "student",
-    "label": "show my assignments",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
-    "helper_tool_name": "show_my_assignments",
-    "scope_rules": [
-      "student-safe own records only"
-    ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
-  },
-  {
-    "surface": "student",
-    "label": "show my goals",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
-    "helper_tool_name": "show_my_goals",
-    "scope_rules": [
-      "student-safe own records only"
-    ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
-  },
-  {
-    "surface": "student",
-    "label": "show parent students",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
-    "helper_tool_name": "show_parent_students",
-    "scope_rules": [
-      "student-safe own records only"
-    ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
-  },
-  {
-    "surface": "student",
-    "label": "show student progress",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
-    "helper_tool_name": "show_student_progress",
-    "scope_rules": [
-      "student-safe own records only"
-    ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
-  },
-  {
-    "surface": "student",
-    "label": "show student progress for parent",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
-    "helper_tool_name": "show_student_progress_for_parent",
-    "scope_rules": [
-      "student-safe own records only"
-    ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+    "status": "tool_available",
+    "notes": "Typed action show_assignments maps to helper tool show_assignments."
   },
   {
     "surface": "student",

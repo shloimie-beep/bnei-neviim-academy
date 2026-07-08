@@ -32,9 +32,20 @@ function extractTaskId(text = '') {
   return value ? Number(value) : null;
 }
 
+function extractStudentId(text = '') {
+  const value = firstMatch(text, /\bstudent\s*#?\s*(\d+)\b/i) || firstMatch(text, /\bchild\s*#?\s*(\d+)\b/i);
+  return value ? Number(value) : null;
+}
+
 function selectedTaskId(context = {}) {
   const record = context.pageContext?.selectedRecord || context.selectedRecord || {};
   if (String(record.type || '').toLowerCase() === 'task' && record.id) return Number(record.id) || null;
+  return null;
+}
+
+function selectedStudentId(context = {}) {
+  const record = context.pageContext?.selectedRecord || context.selectedRecord || {};
+  if (String(record.type || '').toLowerCase() === 'student' && record.id) return Number(record.id) || null;
   return null;
 }
 
@@ -56,6 +67,10 @@ function extractAutomationIdOrSelected(text = '', context = {}) {
 
 function extractTaskIdOrSelected(text = '', context = {}) {
   return extractTaskId(text) || selectedTaskId(context);
+}
+
+function extractStudentIdOrSelected(text = '', context = {}) {
+  return extractStudentId(text) || selectedStudentId(context);
 }
 
 function extractEmail(text = '') {
@@ -94,6 +109,19 @@ function contactHistoryArgs(text = '', context = {}) {
   if (phone) args.phone = phone;
   const name = firstMatch(text, /\b(?:for|with|about)\s+([A-Z][A-Za-z.' -]{1,80})(?:\s*(?:email|phone|contact|history|messages?)|\s*$)/);
   if (!email && !phone && !contactId && !signupId && !studentId && name) args.contact_name = compactText(name, 120);
+  return args;
+}
+
+function studentSummaryArgs(text = '', context = {}) {
+  const args = {
+    workspace_key: context.workspaceKey || undefined,
+    project_key: context.projectKey || undefined,
+  };
+  const studentId = extractStudentIdOrSelected(text, context);
+  if (studentId) args.student_id = studentId;
+  const search = firstMatch(text, /\b(?:student|child|kid)\s+named\s+([A-Z][A-Za-z.' -]{1,80})/i)
+    || firstMatch(text, /\b(?:for|about)\s+([A-Z][A-Za-z.' -]{1,80})(?:\s*(?:assignments?|goals?|progress|calendar|notes?|students?)|\s*$)/);
+  if (!studentId && search) args.search = compactText(search, 120);
   return args;
 }
 
@@ -349,6 +377,61 @@ function deterministicPlan(message = '', registry, context = {}) {
         project_key: context.projectKey || undefined,
       },
       reason: 'Universal natural-language intake request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(view|show|list)\b.*\b(parent[-\s]?visible notes?|parent notes?|notes? for parents?|family[-\s]?visible notes?)\b/i.test(text)) {
+    reply = 'I can show scoped parent-visible note previews without returning private notes or metadata.';
+    actions.push({
+      tool: 'view_parent_visible_notes',
+      label: 'View parent-visible notes',
+      args: studentSummaryArgs(text, context),
+      reason: 'Rabbi / One Time parent-visible notes request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(show|view|check|list)\b.*\b(student progress|progress for parent|parent progress|my progress|child progress)\b/i.test(text)) {
+    const tool = /\b(parent|child)\b/i.test(text) ? 'show_student_progress_for_parent' : 'show_student_progress';
+    reply = tool === 'show_student_progress_for_parent'
+      ? 'I can show parent-visible One Time student progress without private notes, access codes, or raw links.'
+      : 'I can show student-visible One Time progress without private notes, access codes, or raw links.';
+    actions.push({
+      tool,
+      label: tool === 'show_student_progress_for_parent' ? 'Show parent-visible progress' : 'Show student progress',
+      args: studentSummaryArgs(text, context),
+      reason: 'Rabbi / One Time student progress request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(show|view|list|check)\b.*\b(my assignments?|student assignments?|assignments?|homework)\b/i.test(text)) {
+    const tool = /\b(my|student)\b/i.test(text) ? 'show_my_assignments' : 'show_assignments';
+    reply = tool === 'show_my_assignments'
+      ? 'I can show student-visible One Time assignments without worksheet bodies, raw instructions, or private links.'
+      : 'I can show parent-visible One Time assignments without worksheet bodies, raw instructions, or private links.';
+    actions.push({
+      tool,
+      label: tool === 'show_my_assignments' ? 'Show my assignments' : 'Show assignments',
+      args: studentSummaryArgs(text, context),
+      reason: 'Rabbi / One Time assignment summary request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(show|view|list|check)\b.*\b(my goals?|student goals?)\b|\bwhat are my goals?\b/i.test(text)) {
+    reply = 'I can show student-visible One Time goals without raw notes or private metadata.';
+    actions.push({
+      tool: 'show_my_goals',
+      label: 'Show my goals',
+      args: studentSummaryArgs(text, context),
+      reason: 'Rabbi / One Time student goal request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(show|view|list|check)\b.*\b(child|children|kid|student)\b.*\b(calendar|schedule)\b/i.test(text)) {
+    reply = 'I can show the parent-visible child calendar without returning meeting links.';
+    actions.push({
+      tool: 'show_child_calendar',
+      label: 'Show child calendar',
+      args: studentSummaryArgs(text, context),
+      reason: 'Rabbi / One Time child calendar request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(show|view|list)\b.*\b(parent students?|student roster|students|children|kids|roster)\b/i.test(text)) {
+    const tool = /\bparent students?\b/i.test(text) ? 'show_parent_students' : 'list_students';
+    reply = 'I can list scoped One Time student summaries without parent contact values, access codes, or private notes.';
+    actions.push({
+      tool,
+      label: tool === 'show_parent_students' ? 'Show parent students' : 'List students',
+      args: studentSummaryArgs(text, context),
+      reason: 'Rabbi / One Time student summary request',
     });
   } else if (/\b(show|list|status)\b.*\b(goals?|quality goals?|watchdog goals?)\b|\bwhat goals?\b/i.test(text)) {
     const tool = scopedTool(registry, context, 'show_operating_goals', 'show_goal_status');

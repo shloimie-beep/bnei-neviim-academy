@@ -33,6 +33,15 @@ const PRESERVED_RUNTIME_ALIAS_TOOL_NAMES = new Set([
   'show_contact_communication_history',
   'list_provider_leads',
   'open_content_item_url',
+  'list_students',
+  'show_assignments',
+  'show_child_calendar',
+  'view_parent_visible_notes',
+  'show_my_assignments',
+  'show_my_goals',
+  'show_parent_students',
+  'show_student_progress',
+  'show_student_progress_for_parent',
 ]);
 const PRESERVED_RUNTIME_ALIAS_SURFACES = new Map([
   ['capture_ramble', new Set(['operations'])],
@@ -52,6 +61,15 @@ const PRESERVED_RUNTIME_ALIAS_SURFACES = new Map([
   ['show_contact_communication_history', new Set(['operations'])],
   ['list_provider_leads', new Set(['operations'])],
   ['open_content_item_url', new Set(['operations'])],
+  ['list_students', new Set(['student'])],
+  ['show_assignments', new Set(['parent'])],
+  ['show_child_calendar', new Set(['parent'])],
+  ['view_parent_visible_notes', new Set(['parent'])],
+  ['show_my_assignments', new Set(['student'])],
+  ['show_my_goals', new Set(['student'])],
+  ['show_parent_students', new Set(['student'])],
+  ['show_student_progress', new Set(['student'])],
+  ['show_student_progress_for_parent', new Set(['student'])],
 ]);
 
 const TARGET_ACCOUNT = {
@@ -247,6 +265,48 @@ function sourceKey(record = {}) {
 
 function sourceKeyFromContract(contract = {}) {
   return sourceKey(contract.source || {});
+}
+
+function sourceRecordFromContract(contract = {}) {
+  const source = contract.source || {};
+  return {
+    surface: source.surface || '',
+    label: source.label || '',
+    current_file: source.current_file || '',
+    api_endpoint: source.api_endpoint || '',
+    method: source.method || '',
+    helper_tool_name: source.helper_tool_name || '',
+    scope_rules: source.scope_rules || source.source_scope_rules || [],
+    confirmation_required: Boolean(source.confirmation_required ?? source.source_confirmation_required),
+    status: source.status || source.source_status || 'tool_needed',
+    notes: source.notes || '',
+  };
+}
+
+function preservedSurfaceScopeRules(surface = '') {
+  if (surface === 'parent') return ['parent/family scope only'];
+  if (surface === 'student') return ['student-safe own records only'];
+  if (surface === 'provider' || surface === 'rabbi') return ['provider/rabbi scope only'];
+  return ['admin/project scoped operations only'];
+}
+
+function preservedRuntimeAliasRecord(toolName, surface) {
+  return {
+    surface,
+    label: toolName.replace(/_/g, ' '),
+    current_file: 'tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md',
+    api_endpoint: '',
+    method: '',
+    helper_tool_name: toolName,
+    scope_rules: preservedSurfaceScopeRules(surface),
+    confirmation_required: false,
+    status: runtimeRegistry.get(toolName)?.available ? 'tool_available' : 'tool_needed',
+    notes: 'Preserved helper-bot audit contract after local parity-map status changed; Agent Mode evidence is still required before autonomy.',
+  };
+}
+
+function hasContractSourceFor(records, toolName, surface) {
+  return records.some((record) => record.helper_tool_name === toolName && record.surface === surface);
 }
 
 function sourceLooseKey(record = {}) {
@@ -527,11 +587,31 @@ for (const contract of existingScopeMap?.contracts || []) {
   if (currentSourceByLooseKey.has(looseKey)) {
     const current = currentSourceByLooseKey.get(looseKey);
     contractSourceByKey.set(sourceKey(current), current);
+    continue;
+  }
+  const previous = sourceRecordFromContract(contract);
+  const preservedSurfaces = PRESERVED_RUNTIME_ALIAS_SURFACES.get(previous.helper_tool_name);
+  if (preservedSurfaces?.has(previous.surface)) {
+    if (runtimeRegistry.get(previous.helper_tool_name)?.available) {
+      previous.status = 'tool_available';
+      previous.notes = 'Preserved helper-bot audit contract after local parity-map status changed; Agent Mode evidence is still required before autonomy.';
+    }
+    contractSourceByKey.set(sourceKey(previous), previous);
   }
 }
 for (const record of sourceRecords) {
-  if (PRESERVED_RUNTIME_ALIAS_TOOL_NAMES.has(record.helper_tool_name) && !existingToolNames.has(record.helper_tool_name)) {
+  const preservedSurfaces = PRESERVED_RUNTIME_ALIAS_SURFACES.get(record.helper_tool_name);
+  if (PRESERVED_RUNTIME_ALIAS_TOOL_NAMES.has(record.helper_tool_name) && preservedSurfaces?.has(record.surface) && !existingToolNames.has(record.helper_tool_name)) {
     contractSourceByKey.set(sourceKey(record), record);
+  }
+}
+for (const [toolName, surfaces] of PRESERVED_RUNTIME_ALIAS_SURFACES.entries()) {
+  for (const surface of surfaces) {
+    const records = [...contractSourceByKey.values()];
+    if (!hasContractSourceFor(records, toolName, surface)) {
+      const fallback = preservedRuntimeAliasRecord(toolName, surface);
+      contractSourceByKey.set(sourceKey(fallback), fallback);
+    }
   }
 }
 const contractSourceRecords = [...contractSourceByKey.values()]
