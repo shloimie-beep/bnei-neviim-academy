@@ -34403,3 +34403,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   plus the viewport screenshots in the same folder.
 - No live form submit, lead creation, email, WhatsApp, checkout, payment,
   access grant, Zoom, Vimeo, Drive, or external provider write was performed.
+
+## 2026-07-08T19:34:00+03:00 - OneTime parent invite preflight deployed
+
+- Pushed commit `c471afb8` and deployed it to OneTime Railway service
+  `one-time-web`; deployment `c378f14c-e42c-4f59-bae7-b0dd602415ab` reached
+  `SUCCESS`.
+- Added structured no-send preflight blockers to the OneTime parent-trial
+  invite route. Production sends now block before any DB write or email send
+  unless the request/runtime has a parent email, real parent name, real live
+  student display name, and a valid HTTPS live shiur / Zoom link.
+- Reused OneTime runtime class-link aliases for parent invite live-class links:
+  `ONE_TIME_LIVE_CLASS_URL`, `ONE_TIME_ZOOM_JOIN_URL`,
+  `ONE_TIME_TONIGHT_CLASS_LINK`, and the existing OneTime class-link aliases.
+- Updated the workspace-scope watchdog to assert the new preflight contract.
+- Verification passed: `node --check server.js`, focused tests 35/35,
+  `npm run watchdog:workspace-scope`, `npm run watchdog:actions`,
+  `npm run watchdog:protocol-drift`, `npm run secrets:audit`,
+  `git diff --check`, and live OneTime smoke against
+  `https://join.onetimeonetime.com`.
+- Evidence:
+  `ops/watchdog-audits/2026-07-08-onetime-parent-invite-preflight-live-smoke.md`.
+- No parent invite email, WhatsApp/WAPI message, parent/member/student/access
+  record mutation, checkout, payment, Zoom, Vimeo, Drive, DNS, or external
+  provider write was performed by this smoke.
