@@ -136,6 +136,17 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
     'google_drive_create_folder_preview',
     'google_business_place_id_lookup',
     'google_business_list_locations_preview',
+    'add_decision_option',
+    'add_timeline_note',
+    'create_calendar_event',
+    'update_calendar_event',
+    'create_parent_visible_event',
+    'mark_event_admin_only',
+    'create_provider_class_session',
+    'create_referral_ledger_entry',
+    'request_provider_contact',
+    'retitle_task_naturally',
+    'update_task_stage',
     'create_calendar_event_draft',
     'update_calendar_event_draft',
     'create_shoutout_draft',
@@ -157,6 +168,12 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
       title: 'Draft title',
       start_at: '2026-08-01T19:00:00+03:00',
       event_id: 44,
+      task_id: 44,
+      provider_id: 7,
+      option_label: 'Hybrid path',
+      new_title: 'Verify One Time calendar',
+      stage: 'in_progress',
+      note: 'Internal note body should not be returned raw.',
       raw_text: 'Distill this One Time ramble into tasks.',
       message: 'Draft this safely',
       goal: 'Draft parent campaign',
@@ -352,6 +369,17 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
     'google_drive_create_folder_preview',
     'google_business_place_id_lookup',
     'google_business_list_locations_preview',
+    'add_decision_option',
+    'add_timeline_note',
+    'create_calendar_event',
+    'update_calendar_event',
+    'create_parent_visible_event',
+    'mark_event_admin_only',
+    'create_provider_class_session',
+    'create_referral_ledger_entry',
+    'request_provider_contact',
+    'retitle_task_naturally',
+    'update_task_stage',
     'create_calendar_event_draft',
     'update_calendar_event_draft',
     'create_shoutout_draft',
@@ -374,6 +402,12 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
         title: 'Draft title',
         start_at: '2026-08-01T19:00:00+03:00',
         event_id: 44,
+        task_id: 44,
+        provider_id: 7,
+        option_label: 'Hybrid path',
+        new_title: 'Verify One Time calendar',
+        stage: 'in_progress',
+        note: 'Internal note body should not be returned raw.',
         raw_text: 'Distill this One Time ramble into tasks.',
         message: 'Draft this safely',
         goal: 'Draft parent campaign',
@@ -561,6 +595,18 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(deterministicPlan('preview Google Drive folder "One Time class summaries"', registry, oneTimeContext).actions[0].tool, 'google_drive_create_folder_preview');
   assert.equal(deterministicPlan('lookup Google Business place id for Rabbi Scheller One Time', registry, oneTimeContext).actions[0].tool, 'google_business_place_id_lookup');
   assert.equal(deterministicPlan('list Google Business locations for Rabbi Scheller One Time', registry, oneTimeContext).actions[0].tool, 'google_business_list_locations_preview');
+  assert.equal(deterministicPlan('add decision option Hybrid path to task 44', registry, oneTimeContext).actions[0].tool, 'add_decision_option');
+  assert.equal(deterministicPlan('add decision option Hybrid path to task 44', registry, oneTimeContext).actions[0].args.option_label, 'Hybrid path');
+  assert.equal(deterministicPlan('add timeline note to task 44: parent asked about schedule', registry, oneTimeContext).actions[0].tool, 'add_timeline_note');
+  assert.equal(deterministicPlan('create calendar event "One Time review" on 2026-08-04', registry, oneTimeContext).actions[0].tool, 'create_calendar_event');
+  assert.equal(deterministicPlan('update calendar event 44 to 2026-08-05', registry, oneTimeContext).actions[0].tool, 'update_calendar_event');
+  assert.equal(deterministicPlan('create parent visible event "Class reminder" on 2026-08-06', registry, oneTimeContext).actions[0].tool, 'create_parent_visible_event');
+  assert.equal(deterministicPlan('mark event 44 admin only', registry, oneTimeContext).actions[0].tool, 'mark_event_admin_only');
+  assert.equal(deterministicPlan('create provider class session "Week 2" on 2026-08-07', registry, oneTimeContext).actions[0].tool, 'create_provider_class_session');
+  assert.equal(deterministicPlan('create referral ledger entry for Sarah referral', registry, oneTimeContext).actions[0].tool, 'create_referral_ledger_entry');
+  assert.equal(deterministicPlan('request provider 7 contact message please call parent', registry, oneTimeContext).actions[0].tool, 'request_provider_contact');
+  assert.equal(deterministicPlan('retitle task 44 to Verify One Time calendar', registry, oneTimeContext).actions[0].tool, 'retitle_task_naturally');
+  assert.equal(deterministicPlan('update task 44 stage in_progress', registry, oneTimeContext).actions[0].tool, 'update_task_stage');
   assert.equal(deterministicPlan('draft calendar event "Week 1 Mishnah class" on 2026-08-01', registry, oneTimeContext).actions[0].tool, 'create_calendar_event_draft');
   assert.equal(deterministicPlan('update calendar event 44 draft to 2026-08-02', registry, oneTimeContext).actions[0].tool, 'update_calendar_event_draft');
   assert.equal(deterministicPlan('draft shoutout for student 11 about review effort', registry, oneTimeContext).actions[0].tool, 'create_shoutout_draft');
@@ -1352,6 +1398,158 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
   assert.equal(adminMessageDraft.data.preview.parent_impersonation_performed, false);
   assert.equal(adminMessageDraft.data.preview.raw_private_body_returned, false);
 
+  const assertScopedInternalPreview = (result) => {
+    assert.equal(result.data.scope.workspace_key, 'rabbi_sheller_provider');
+    assert.equal(result.data.scope.project_key, 'one_time_mishnah_class');
+    assert.equal(result.data.preview.workspace_key, 'rabbi_sheller_provider');
+    assert.equal(result.data.preview.project_key, 'one_time_mishnah_class');
+    assert.equal(result.data.preview.executed, false);
+    assert.equal(result.data.preview.internal_write_performed, false);
+    assert.equal(result.data.preview.external_write_performed, false);
+    assert.equal(result.data.preview.external_send_performed, false);
+    assert.equal(result.data.preview.external_publish_performed, false);
+    assert.equal(result.data.preview.payment_or_access_change_performed, false);
+    assert.equal(result.data.preview.credential_write_performed, false);
+    assert.equal(result.data.preview.raw_private_body_returned, false);
+    assert.equal(result.data.preview.raw_contact_export_returned, false);
+    assert.equal(result.data.preview.raw_urls_returned, false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.data.preview, 'body'), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.data.preview, 'message'), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.data.preview, 'note'), false);
+  };
+
+  const decisionOption = await registry.execute('add_decision_option', {
+    task_id: 44,
+    option_label: 'Hybrid path',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(decisionOption.data.delegated_action_id, 'add_decision_option');
+  assert.equal(decisionOption.data.approval_required, true);
+  assert.equal(decisionOption.data.preview.option_label, 'Hybrid path');
+  assert.equal(decisionOption.data.preview.next_options_returned, false);
+  assertScopedInternalPreview(decisionOption);
+
+  const timelineNote = await registry.execute('add_timeline_note', {
+    note: 'Private parent note should not return raw.',
+    related_type: 'task',
+    related_id: 44,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    dry_run: true,
+  }, context, db);
+  assert.equal(timelineNote.data.delegated_action_id, 'add_timeline_note');
+  assert.equal(timelineNote.data.preview.note_preview_returned, false);
+  assertScopedInternalPreview(timelineNote);
+
+  const createdInternalEvent = await registry.execute('create_calendar_event', {
+    title: 'One Time review',
+    start_at: '2026-08-04T19:00:00+03:00',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    dry_run: true,
+  }, context, db);
+  assert.equal(createdInternalEvent.data.delegated_action_id, 'create_calendar_event');
+  assert.equal(createdInternalEvent.data.preview.title, 'One Time review');
+  assert.equal(createdInternalEvent.data.preview.google_calendar_write_performed, false);
+  assertScopedInternalPreview(createdInternalEvent);
+
+  const updatedInternalEvent = await registry.execute('update_calendar_event', {
+    event_id: 44,
+    start_at: '2026-08-05T19:00:00+03:00',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    dry_run: true,
+  }, context, db);
+  assert.equal(updatedInternalEvent.data.delegated_action_id, 'update_calendar_event');
+  assert.equal(updatedInternalEvent.data.preview.event_id, 44);
+  assert.equal(updatedInternalEvent.data.preview.google_calendar_write_performed, false);
+  assertScopedInternalPreview(updatedInternalEvent);
+
+  const parentVisibleEvent = await registry.execute('create_parent_visible_event', {
+    title: 'Class reminder',
+    start_at: '2026-08-06T19:00:00+03:00',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(parentVisibleEvent.data.delegated_action_id, 'create_calendar_event');
+  assert.equal(parentVisibleEvent.data.approval_required, true);
+  assert.equal(parentVisibleEvent.data.preview.visibility, 'parent');
+  assert.equal(parentVisibleEvent.data.preview.source, 'rabbi_helper_internal');
+  assertScopedInternalPreview(parentVisibleEvent);
+
+  const adminOnlyEvent = await registry.execute('mark_event_admin_only', {
+    event_id: 44,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    dry_run: true,
+  }, context, db);
+  assert.equal(adminOnlyEvent.data.delegated_action_id, 'mark_event_admin_only');
+  assert.equal(adminOnlyEvent.data.preview.visibility, 'internal');
+  assertScopedInternalPreview(adminOnlyEvent);
+
+  const providerClassSession = await registry.execute('create_provider_class_session', {
+    title: 'Week 2',
+    start_at: '2026-08-07T19:00:00+03:00',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    dry_run: true,
+  }, context, db);
+  assert.equal(providerClassSession.data.delegated_action_id, 'create_provider_class_session');
+  assert.equal(providerClassSession.data.preview.visibility, 'provider');
+  assert.equal(providerClassSession.data.preview.related_type, 'class_session');
+  assertScopedInternalPreview(providerClassSession);
+
+  const referralLedger = await registry.execute('create_referral_ledger_entry', {
+    title: 'Sarah referral',
+    notes: 'Private referral details should not return raw.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(referralLedger.data.delegated_action_id, 'create_referral_ledger_entry');
+  assert.equal(referralLedger.data.approval_required, true);
+  assert.equal(referralLedger.data.preview.no_send, true);
+  assert.equal(referralLedger.data.preview.referral_link_created, false);
+  assert.equal(referralLedger.data.preview.reward_created, false);
+  assert.equal(referralLedger.data.preview.lead_contact_fields_returned, false);
+  assertScopedInternalPreview(referralLedger);
+
+  const providerContact = await registry.execute('request_provider_contact', {
+    provider_id: 7,
+    message: 'Private callback request should not return raw.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    dry_run: true,
+  }, context, db);
+  assert.equal(providerContact.data.delegated_action_id, 'request_provider_contact');
+  assert.equal(providerContact.data.preview.provider_id, 7);
+  assert.equal(providerContact.data.preview.live_send_performed, false);
+  assert.equal(providerContact.data.preview.request_body_returned, false);
+  assertScopedInternalPreview(providerContact);
+
+  const retitledTask = await registry.execute('retitle_task_naturally', {
+    task_id: 44,
+    new_title: 'Verify One Time calendar',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(retitledTask.data.delegated_action_id, 'retitle_task_naturally');
+  assert.equal(retitledTask.data.approval_required, true);
+  assert.equal(retitledTask.data.preview.next_title, 'Verify One Time calendar');
+  assert.equal(retitledTask.data.preview.raw_previous_title_copied, false);
+  assertScopedInternalPreview(retitledTask);
+
+  const taskStage = await registry.execute('update_task_stage', {
+    task_id: 44,
+    stage: 'in_progress',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    dry_run: true,
+  }, context, db);
+  assert.equal(taskStage.data.delegated_action_id, 'update_task_stage');
+  assert.equal(taskStage.data.preview.stage, 'in_progress');
+  assertScopedInternalPreview(taskStage);
+
   await assert.rejects(
     () => registry.execute('draft_email_campaign', {
       goal: 'Cross scope campaign',
@@ -1397,6 +1595,16 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
       query: 'Cross-scope Drive search',
       workspace_key: 'bna',
       project_key: 'one_time_mishnah_class',
+    }, context, db),
+    /workspace scope mismatch/
+  );
+  await assert.rejects(
+    () => registry.execute('update_task_stage', {
+      task_id: 44,
+      stage: 'in_progress',
+      workspace_key: 'bna',
+      project_key: 'one_time_mishnah_class',
+      dry_run: true,
     }, context, db),
     /workspace scope mismatch/
   );

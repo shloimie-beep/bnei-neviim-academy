@@ -195,7 +195,7 @@ test('Rabbi helper scope map marks the read-only runtime batch as locally wrappe
     assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
   }
 
-  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 66);
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 84);
 });
 
 test('Rabbi helper scope map marks parent and student summary wrappers as locally wrapper-backed', () => {
@@ -277,6 +277,33 @@ test('Rabbi helper scope map marks draft-only sidekick wrappers as locally wrapp
     assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
     assert.match(contract.rabbi_contract.agent_mode_probe.expected_result, /draft|preview|no external/i);
     assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
+  }
+});
+
+test('Rabbi helper scope map marks internal action wrappers as locally wrapper-backed', () => {
+  const internalActionNames = [
+    'add_decision_option',
+    'add_timeline_note',
+    'create_calendar_event',
+    'update_calendar_event',
+    'create_parent_visible_event',
+    'mark_event_admin_only',
+    'create_provider_class_session',
+    'create_referral_ledger_entry',
+    'request_provider_contact',
+    'retitle_task_naturally',
+    'update_task_stage',
+  ];
+  const internalActionContracts = scopeMap.contracts.filter((contract) => internalActionNames.includes(contract.source.helper_tool_name));
+  assert.equal(internalActionContracts.length, 18);
+
+  for (const contract of internalActionContracts) {
+    assert.equal(contract.rabbi_contract.action_policy, 'internal_write');
+    assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
+    assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
+    assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
+    assert.ok(contract.rabbi_contract.negative_tests.some((check) => /workspace_key=bna/i.test(check)));
+    assert.match(contract.rabbi_contract.agent_mode_probe.expected_result, /scoped|workspace|no external/i);
   }
 });
 

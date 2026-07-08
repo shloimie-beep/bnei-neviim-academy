@@ -678,6 +678,156 @@ function deterministicPlan(message = '', registry, context = {}) {
       args: { workspace_key: context.workspaceKey || undefined, project_key: context.projectKey || undefined },
       reason: 'Rabbi / One Time provider contact lead request',
     });
+  } else if (isRabbiOneTimeContext(context) && /\badd\b.*\bdecision\s+option\b.*\btask\s*#?\d+\b|\badd\s+option\b.*\btask\s*#?\d+\b/i.test(text)) {
+    const taskId = extractTaskIdOrSelected(text, context);
+    const option = firstMatch(text, /\badd\s+(?:decision\s+)?option\s+(.+?)\s+(?:to|for)\s+task\s*#?\d+\b/i)
+      || textAfterIntent(text, /(?:option)\s*(?:to|for)?\s*task\s*#?\d+\s*[:\-]?\s*([\s\S]+)$/i, 'Review option');
+    reply = `I can add that scoped decision option to task #${taskId}.`;
+    actions.push({
+      tool: 'add_decision_option',
+      label: 'Add decision option',
+      args: {
+        ...previewScopeArgs(text, context),
+        task_id: taskId || undefined,
+        option_label: option,
+      },
+      reason: 'Rabbi / One Time decision option request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\badd\b.*\btimeline\s+note\b|\badd\b.*\binternal\s+note\b/i.test(text)) {
+    const taskId = extractTaskIdOrSelected(text, context);
+    const note = textAfterIntent(text, /(?:timeline\s+note|internal\s+note)\s*(?:to|on)?\s*(?:task\s*#?\d+)?\s*[:\-]?\s*([\s\S]+)$/i, text);
+    reply = taskId ? `I can add a scoped internal note linked to task #${taskId}.` : 'I can add a scoped internal timeline note.';
+    actions.push({
+      tool: 'add_timeline_note',
+      label: 'Add timeline note',
+      args: {
+        ...previewScopeArgs(text, context),
+        note,
+        related_type: taskId ? 'task' : undefined,
+        related_id: taskId || undefined,
+        visibility: 'internal',
+      },
+      reason: 'Rabbi / One Time internal timeline note request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(retitle|rename)\b.*\btask\s*#?\d+\b/i.test(text)) {
+    const taskId = extractTaskIdOrSelected(text, context);
+    const newTitle = textAfterIntent(text, /(?:retitle|rename)\s+task\s*#?\d+\s*(?:to|as|:|-)\s*([\s\S]+)$/i, 'Updated One Time task title');
+    reply = `I can retitle scoped task #${taskId} while preserving the original provenance.`;
+    actions.push({
+      tool: 'retitle_task_naturally',
+      label: 'Retitle task',
+      args: {
+        ...previewScopeArgs(text, context),
+        task_id: taskId || undefined,
+        new_title: newTitle,
+        reason: 'Natural-language helper retitle request',
+      },
+      reason: 'Rabbi / One Time task retitle request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(update|move|set|mark)\b.*\btask\s*#?\d+\b.*\b(stage|status|in progress|done|blocked|pending|needs decision|archive)\b/i.test(text)) {
+    const taskId = extractTaskIdOrSelected(text, context);
+    const stage = firstMatch(text, /\b(?:stage|status|to|as)\s+([a-z][a-z0-9_ -]{1,40})$/i)
+      || firstMatch(text, /\b(in progress|in_progress|done|blocked|pending|needs decision|needs_decision|archive|archived)\b/i)
+      || 'in_progress';
+    reply = `I can move scoped task #${taskId} to ${stage}.`;
+    actions.push({
+      tool: 'update_task_stage',
+      label: 'Update task stage',
+      args: {
+        ...previewScopeArgs(text, context),
+        task_id: taskId || undefined,
+        stage,
+      },
+      reason: 'Rabbi / One Time task stage request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(mark|set)\b.*\bevent\s*#?\d+\b.*\b(admin only|admin-only|internal only|internal)\b/i.test(text)) {
+    const eventId = extractCalendarEventId(text);
+    reply = eventId ? `I can restrict scoped calendar event #${eventId} to internal visibility.` : 'I can restrict the scoped calendar event once its ID is supplied.';
+    actions.push({
+      tool: 'mark_event_admin_only',
+      label: 'Mark event admin-only',
+      args: { ...previewScopeArgs(text, context), event_id: eventId || undefined },
+      reason: 'Rabbi / One Time calendar visibility request',
+    });
+  } else if (isRabbiOneTimeContext(context) && !/\b(draft|preview|plan)\b/i.test(text) && /\b(update|edit|change|move)\b.*\bcalendar event\b|\bcalendar event\s*#?\d+\b.*\b(update|edit|change|move|to)\b/i.test(text)) {
+    const eventId = extractCalendarEventId(text);
+    reply = eventId ? `I can update scoped calendar event #${eventId}.` : 'I can update the scoped calendar event once its ID is supplied.';
+    actions.push({
+      tool: 'update_calendar_event',
+      label: 'Update calendar event',
+      args: {
+        ...previewScopeArgs(text, context),
+        event_id: eventId || undefined,
+        title: previewQuotedText(text) || undefined,
+        start_at: previewDate(text) || guessScheduledAt(text) || undefined,
+      },
+      reason: 'Rabbi / One Time calendar update request',
+    });
+  } else if (isRabbiOneTimeContext(context) && !/\b(draft|preview|plan)\b/i.test(text) && /\b(create|add|new|schedule)\b.*\bparent[- ]visible event\b/i.test(text)) {
+    reply = 'I can create a scoped One Time parent-visible internal event through the Rabbi workspace.';
+    actions.push({
+      tool: 'create_parent_visible_event',
+      label: 'Create parent-visible event',
+      args: {
+        ...previewScopeArgs(text, context),
+        title: previewQuotedText(text) || textAfterIntent(text, /(?:parent[- ]visible event)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, 'One Time parent-visible event'),
+        start_at: previewDate(text) || guessScheduledAt(text) || 'TBD',
+      },
+      reason: 'Rabbi / One Time parent-visible calendar request',
+    });
+  } else if (isRabbiOneTimeContext(context) && !/\b(draft|preview|plan)\b/i.test(text) && /\b(create|add|new|schedule)\b.*\b(provider class session|class session|shiur session)\b/i.test(text)) {
+    reply = 'I can create a scoped Rabbi provider class session.';
+    actions.push({
+      tool: 'create_provider_class_session',
+      label: 'Create provider class session',
+      args: {
+        ...previewScopeArgs(text, context),
+        title: previewQuotedText(text) || textAfterIntent(text, /(?:provider class session|class session|shiur session)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, 'One Time class session'),
+        start_at: previewDate(text) || guessScheduledAt(text) || 'TBD',
+      },
+      reason: 'Rabbi / One Time provider class session request',
+    });
+  } else if (isRabbiOneTimeContext(context) && !/\b(draft|preview|plan)\b/i.test(text) && /\b(create|add|new|schedule)\b.*\b(calendar event|event)\b/i.test(text)) {
+    reply = 'I can create a scoped One Time internal calendar event without Google Calendar sync.';
+    actions.push({
+      tool: 'create_calendar_event',
+      label: 'Create calendar event',
+      args: {
+        ...previewScopeArgs(text, context),
+        title: previewQuotedText(text) || textAfterIntent(text, /(?:calendar event|event)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, 'One Time calendar event'),
+        start_at: previewDate(text) || guessScheduledAt(text) || 'TBD',
+        visibility: 'provider',
+        source: 'rabbi_helper_internal',
+        related_type: 'class_session',
+      },
+      reason: 'Rabbi / One Time calendar event request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(create|add|log|record)\b.*\breferral ledger\b|\blog\b.*\breferral\b/i.test(text)) {
+    const title = textAfterIntent(text, /(?:referral ledger|referral)\s*(?:entry|for|from|:|-)?\s*([\s\S]+)$/i, 'One Time referral review');
+    reply = 'I can create a scoped One Time referral ledger entry without sending, links, rewards, or contact export.';
+    actions.push({
+      tool: 'create_referral_ledger_entry',
+      label: 'Create referral ledger entry',
+      args: {
+        ...previewScopeArgs(text, context),
+        title: title || 'One Time referral review',
+      },
+      reason: 'Rabbi / One Time referral ledger request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(request|ask|contact)\b.*\bprovider\b.*\b(contact|callback|call|message)\b|\bprovider contact request\b/i.test(text)) {
+    const providerId = Number(firstMatch(text, /\bprovider\s*#?\s*(\d+)\b/i)) || undefined;
+    const message = textAfterIntent(text, /(?:message|saying|about|:|-)\s*([\s\S]+)$/i, 'Please follow up through the provider contact workflow.');
+    reply = providerId ? `I can save a scoped contact request for provider #${providerId}.` : 'I can save a scoped provider contact request once the provider ID is supplied.';
+    actions.push({
+      tool: 'request_provider_contact',
+      label: 'Request provider contact',
+      args: {
+        ...previewScopeArgs(text, context),
+        provider_id: providerId,
+        message,
+      },
+      reason: 'Rabbi / One Time provider contact request',
+    });
   } else if (/\b(save|store|rotate|replace)\b.*\b(api key|apikey|token|secret)\b|\b(api key|token|secret)\b.*\b(save|store|belongs to|for)\b/i.test(text)) {
     const integrationType = guessIntegrationType(text);
     const rotate = /\b(rotate|replace)\b/i.test(text);

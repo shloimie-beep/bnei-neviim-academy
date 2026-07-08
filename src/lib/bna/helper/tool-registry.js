@@ -55,6 +55,17 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'google_drive_create_folder_preview',
   'google_business_place_id_lookup',
   'google_business_list_locations_preview',
+  'add_decision_option',
+  'add_timeline_note',
+  'create_calendar_event',
+  'update_calendar_event',
+  'create_parent_visible_event',
+  'mark_event_admin_only',
+  'create_provider_class_session',
+  'create_referral_ledger_entry',
+  'request_provider_contact',
+  'retitle_task_naturally',
+  'update_task_stage',
   'create_calendar_event_draft',
   'update_calendar_event_draft',
   'create_shoutout_draft',
@@ -3245,6 +3256,414 @@ async function draftMessageToAdminTool(payload) {
   }));
 }
 
+function noExternalWriteFlags() {
+  return {
+    external_write_performed: false,
+    external_send_performed: false,
+    external_publish_performed: false,
+    payment_or_access_change_performed: false,
+    credential_write_performed: false,
+    raw_private_body_returned: false,
+    raw_contact_export_returned: false,
+    raw_external_ids_returned: false,
+    raw_urls_returned: false,
+    student_access_code_returned: false,
+  };
+}
+
+function safeInternalActionSummary(actionId, inputs = {}, actionPreview = {}, result = {}) {
+  const inputFields = Object.keys(inputs || {}).filter((key) => ![
+    'body',
+    'description',
+    'message',
+    'note',
+    'notes',
+    'parent_email',
+    'parent_phone',
+    'referred_email',
+    'referred_phone',
+    'text',
+  ].includes(key));
+  const base = {
+    action_id: actionId,
+    ...noExternalWriteFlags(),
+    workspace_key: inputs.workspace_key || RABBI_WORKSPACE_KEY,
+    project_key: inputs.project_key || RABBI_PROJECT_KEY,
+    status: result.executed
+      ? 'executed_internal_write'
+      : result.approval_required
+        ? 'approval_required_before_internal_write'
+        : 'previewed_internal_write',
+    dry_run: Boolean(result.dry_run),
+    executed: Boolean(result.executed),
+    internal_write_performed: Boolean(result.executed),
+    approval_required_before_live_action: Boolean(result.approval_required),
+    preview_error: actionPreview.preview_error || result.error || null,
+    input_fields: inputFields.slice(0, 18),
+    body_preview_returned: false,
+    message_preview_returned: false,
+    note_preview_returned: false,
+  };
+
+  if (actionId === 'add_decision_option') {
+    return {
+      ...base,
+      task_id: Number(inputs.task_id || 0) || null,
+      option_label: compactText(inputs.option_label || actionPreview.planned_option?.label || '', 140) || null,
+      decision_required: Boolean(actionPreview.decision_required || inputs.decision_required),
+      next_stage: actionPreview.next_stage || null,
+      next_options_returned: false,
+    };
+  }
+
+  if (actionId === 'add_timeline_note') {
+    return {
+      ...base,
+      related_type: compactText(inputs.related_type || actionPreview.related_type || '', 80) || null,
+      related_id: inputs.related_id || actionPreview.related_id || null,
+      visibility: compactText(inputs.visibility || '', 80) || 'internal',
+    };
+  }
+
+  if (actionId === 'update_task_stage') {
+    return {
+      ...base,
+      task_id: Number(inputs.task_id || actionPreview.task_id || 0) || null,
+      stage: compactText(inputs.stage || actionPreview.next_stage || '', 80) || null,
+    };
+  }
+
+  if (actionId === 'retitle_task_naturally') {
+    return {
+      ...base,
+      task_id: Number(inputs.task_id || actionPreview.task_id || 0) || null,
+      next_title: compactText(inputs.new_title || actionPreview.next_title || '', 180) || null,
+      raw_previous_title_copied: false,
+    };
+  }
+
+  if (actionId === 'create_calendar_event' || actionId === 'update_calendar_event') {
+    const previewEvent = actionPreview.preview || actionPreview.event || {};
+    return {
+      ...base,
+      event_id: Number(inputs.event_id || actionPreview.event_id || previewEvent.id || 0) || null,
+      title: compactText(inputs.title || previewEvent.title || actionPreview.title || '', 180) || null,
+      start_at: inputs.start_at || previewEvent.start_at || actionPreview.start_at || null,
+      end_at: inputs.end_at || previewEvent.end_at || actionPreview.end_at || null,
+      visibility: compactText(inputs.visibility || previewEvent.visibility || actionPreview.visibility || '', 80) || null,
+      source: compactText(inputs.source || previewEvent.source || actionPreview.source || '', 80) || null,
+      related_type: compactText(inputs.related_type || previewEvent.related_type || actionPreview.related_type || '', 80) || null,
+      fields: compactList(actionPreview.fields, 12),
+      meeting_url_returned: false,
+      google_calendar_write_performed: false,
+    };
+  }
+
+  if (actionId === 'mark_event_admin_only') {
+    return {
+      ...base,
+      event_id: Number(inputs.event_id || actionPreview.event_id || 0) || null,
+      visibility: 'internal',
+      google_calendar_write_performed: false,
+    };
+  }
+
+  if (actionId === 'create_provider_class_session') {
+    const previewEvent = actionPreview.preview || actionPreview.event || {};
+    return {
+      ...base,
+      title: compactText(inputs.title || previewEvent.title || '', 180) || null,
+      start_at: inputs.start_at || previewEvent.start_at || null,
+      visibility: 'provider',
+      related_type: 'class_session',
+      meeting_url_returned: false,
+      google_calendar_write_performed: false,
+    };
+  }
+
+  if (actionId === 'create_referral_ledger_entry') {
+    return {
+      ...base,
+      title: compactText(inputs.title || actionPreview.title || '', 180) || null,
+      no_send: true,
+      referral_link_created: false,
+      reward_created: false,
+      lead_contact_fields_returned: false,
+    };
+  }
+
+  if (actionId === 'request_provider_contact') {
+    return {
+      ...base,
+      provider_id: Number(inputs.provider_id || actionPreview.provider_id || 0) || null,
+      student_id: Number(inputs.student_id || actionPreview.student_id || 0) || null,
+      preferred_contact_method: compactText(inputs.preferred_contact_method || actionPreview.preferred_contact_method || '', 80) || null,
+      live_send_performed: false,
+      external_booking_owned_by_provider: Boolean(actionPreview.external_booking_owned_by_provider),
+      request_body_returned: false,
+    };
+  }
+
+  return base;
+}
+
+async function runRabbiInternalActionTool({ args, context, db, deps, tool }, spec) {
+  const { projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const actor = {
+    user_id: context.userName || context.userId || 'rabbi_helper',
+    role: 'admin',
+    workspace_id: workspaceKey,
+    workspace_key: workspaceKey,
+    project_key: projectKey,
+  };
+  const inputs = {
+    ...(spec.defaults || {}),
+    ...args,
+    workspace_key: workspaceKey,
+    project_key: projectKey,
+  };
+  const dryRun = Boolean(args.dry_run || args.preview_only || spec.requiresConfirmation);
+  const result = await runAction({
+    action_id: spec.actionId,
+    inputs,
+    dry_run: dryRun,
+    approved: false,
+    source: 'operations_helper',
+    actor,
+  }, {
+    db,
+    source: 'operations_helper',
+    actor,
+  });
+  const actionPreview = redactValue(result.preview || result.result || {});
+  const preview = safeInternalActionSummary(spec.actionId, inputs, actionPreview, {
+    ...result,
+    approval_required: result.approval_required || Boolean(spec.requiresConfirmation),
+  });
+  const approvalRequired = Boolean(result.approval_required || spec.requiresConfirmation);
+  const actionVerb = result.executed
+    ? 'ran as a scoped internal write'
+    : approvalRequired
+      ? 'prepared as an approval-gated internal write preview'
+      : 'prepared as a scoped internal write preview';
+  return helperResultCard({
+    tool: tool?.name || spec.name,
+    recordType: 'helper_audit',
+    recordId: null,
+    label: spec.label,
+    summary: `${spec.label} ${actionVerb}. No external send, publish, sync, upload, credential, payment, access, or cross-workspace write was performed.`,
+    url: `/operations?view=tasks&workspace=${workspaceKey}`,
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      delegated_action_id: spec.actionId,
+      action_success: Boolean(result.success),
+      missing_inputs: result.missing_inputs || [],
+      approval_required: approvalRequired,
+      action_audit_log_id: result.audit_log?.action_run_id || null,
+      preview,
+    },
+  });
+}
+
+const RABBI_INTERNAL_ACTION_SCOPE_SCHEMA = {
+  dry_run: { type: 'boolean', default: false },
+  preview_only: { type: 'boolean', default: false },
+  workspace_key: { type: 'string', maxLength: 120 },
+  project_key: { type: 'string', maxLength: 120 },
+};
+
+const RABBI_INTERNAL_ACTION_TOOL_DEFINITIONS = [
+  {
+    name: 'add_decision_option',
+    actionId: 'add_decision_option',
+    label: 'Decision option update',
+    description: 'Add a scoped One Time decision option preview/write without creating an agent job or external write.',
+    category: 'tasks',
+    sideEffectLevel: 'internal_write',
+    requiresConfirmation: true,
+    schema: {
+      task_id: { type: 'integer', required: true },
+      option_label: { type: 'string', required: true, maxLength: 140 },
+      option_value: { type: 'string', maxLength: 240 },
+      rationale: { type: 'string', maxLength: 300 },
+      reason: { type: 'string', maxLength: 300 },
+      recommended: { type: 'boolean' },
+      current_options: { type: 'array', maxItems: 12 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'add_timeline_note',
+    actionId: 'add_timeline_note',
+    label: 'Timeline note update',
+    description: 'Add a scoped One Time internal timeline note without returning the raw note body.',
+    category: 'tasks',
+    sideEffectLevel: 'internal_write',
+    schema: {
+      note: { type: 'string', required: true, maxLength: 2000 },
+      related_type: { type: 'string', maxLength: 80 },
+      related_id: { type: 'integer' },
+      visibility: { type: 'string', maxLength: 80 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'create_calendar_event',
+    actionId: 'create_calendar_event',
+    label: 'Calendar event update',
+    description: 'Create a scoped One Time internal calendar event without Google Calendar sync.',
+    category: 'calendar',
+    sideEffectLevel: 'internal_write',
+    schema: {
+      title: { type: 'string', required: true, maxLength: 180 },
+      start_at: { type: 'string', required: true, maxLength: 80 },
+      end_at: { type: 'string', maxLength: 80 },
+      description: { type: 'string', maxLength: 1000 },
+      visibility: { type: 'string', maxLength: 40 },
+      source: { type: 'string', maxLength: 80 },
+      related_type: { type: 'string', maxLength: 80 },
+      related_id: { type: 'integer' },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'update_calendar_event',
+    actionId: 'update_calendar_event',
+    label: 'Calendar event update',
+    description: 'Update a scoped One Time internal calendar event without Google Calendar sync.',
+    category: 'calendar',
+    sideEffectLevel: 'internal_write',
+    schema: {
+      event_id: { type: 'integer', required: true },
+      title: { type: 'string', maxLength: 180 },
+      start_at: { type: 'string', maxLength: 80 },
+      end_at: { type: 'string', maxLength: 80 },
+      description: { type: 'string', maxLength: 1000 },
+      visibility: { type: 'string', maxLength: 40 },
+      status: { type: 'string', maxLength: 40 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'create_parent_visible_event',
+    actionId: 'create_calendar_event',
+    label: 'Parent-visible event update',
+    description: 'Create a scoped One Time parent-visible internal event through the Rabbi workspace, never the BNA-only parent shortcut.',
+    category: 'calendar',
+    sideEffectLevel: 'internal_write',
+    requiresConfirmation: true,
+    defaults: {
+      visibility: 'parent',
+      source: 'rabbi_helper_internal',
+      related_type: 'class_session',
+    },
+    schema: {
+      title: { type: 'string', required: true, maxLength: 180 },
+      start_at: { type: 'string', required: true, maxLength: 80 },
+      end_at: { type: 'string', maxLength: 80 },
+      description: { type: 'string', maxLength: 1000 },
+      related_id: { type: 'integer' },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'mark_event_admin_only',
+    actionId: 'mark_event_admin_only',
+    label: 'Calendar visibility update',
+    description: 'Restrict a scoped One Time calendar event to internal/admin visibility without external calendar sync.',
+    category: 'calendar',
+    sideEffectLevel: 'internal_write',
+    schema: {
+      event_id: { type: 'integer', required: true },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'create_provider_class_session',
+    actionId: 'create_provider_class_session',
+    label: 'Provider class session update',
+    description: 'Create a scoped Rabbi provider class session without exposing BNA school accountability data.',
+    category: 'calendar',
+    sideEffectLevel: 'internal_write',
+    schema: {
+      title: { type: 'string', required: true, maxLength: 180 },
+      start_at: { type: 'string', required: true, maxLength: 80 },
+      end_at: { type: 'string', maxLength: 80 },
+      description: { type: 'string', maxLength: 1000 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'create_referral_ledger_entry',
+    actionId: 'create_referral_ledger_entry',
+    label: 'Referral ledger update',
+    description: 'Create a scoped One Time referral ledger preview/write without sending, exporting contacts, minting rewards, or creating referral links.',
+    category: 'contacts_crm',
+    sideEffectLevel: 'internal_write',
+    requiresConfirmation: true,
+    schema: {
+      title: { type: 'string', required: true, maxLength: 180 },
+      referrer_name: { type: 'string', maxLength: 160 },
+      referred_name: { type: 'string', maxLength: 160 },
+      student_name: { type: 'string', maxLength: 160 },
+      source_detail: { type: 'string', maxLength: 240 },
+      interest_level: { type: 'string', maxLength: 40 },
+      next_follow_up_date: { type: 'string', maxLength: 40 },
+      notes: { type: 'string', maxLength: 1000 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'request_provider_contact',
+    actionId: 'request_provider_contact',
+    label: 'Provider contact request update',
+    description: 'Save a scoped One Time provider contact request without live send, booking, contact export, or raw body return.',
+    category: 'contacts_crm',
+    sideEffectLevel: 'internal_write',
+    schema: {
+      provider_id: { type: 'integer', required: true },
+      message: { type: 'string', required: true, maxLength: 2000 },
+      subject: { type: 'string', maxLength: 180 },
+      student_id: { type: 'integer' },
+      service_id: { type: 'integer' },
+      preferred_contact_method: { type: 'string', maxLength: 80 },
+      request_type: { type: 'string', maxLength: 80 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'retitle_task_naturally',
+    actionId: 'retitle_task_naturally',
+    label: 'Task title update',
+    description: 'Retitle a scoped One Time task with a concise title while preserving raw provenance.',
+    category: 'tasks',
+    sideEffectLevel: 'internal_write',
+    requiresConfirmation: true,
+    schema: {
+      task_id: { type: 'integer', required: true },
+      new_title: { type: 'string', required: true, maxLength: 120 },
+      current_title: { type: 'string', maxLength: 180 },
+      reason: { type: 'string', maxLength: 300 },
+      source_comment_id: { type: 'integer' },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'update_task_stage',
+    actionId: 'update_task_stage',
+    label: 'Task stage update',
+    description: 'Move a scoped One Time task to another Operations stage without external writes.',
+    category: 'tasks',
+    sideEffectLevel: 'internal_write',
+    schema: {
+      task_id: { type: 'integer', required: true },
+      stage: { type: 'string', required: true, maxLength: 80 },
+      verification_notes: { type: 'string', maxLength: 1000 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+];
+
 async function createStudentTool({ args, context, deps, db }) {
   const project = await deps.resolveProjectFromInput({ project_key: args.project_key || context.projectKey || 'bna' }, db);
   deps.assertProjectAccess(context.req, project);
@@ -4207,6 +4626,14 @@ function buildToolRegistry(deps = {}) {
         project_key: { type: 'string', maxLength: 120 },
       },
     }, googleBusinessListLocationsPreviewTool),
+    ...RABBI_INTERNAL_ACTION_TOOL_DEFINITIONS.map((spec) => makeDefinition({
+      name: spec.name,
+      description: spec.description,
+      category: spec.category,
+      sideEffectLevel: spec.sideEffectLevel,
+      requiresConfirmation: Boolean(spec.requiresConfirmation),
+      schema: spec.schema,
+    }, (payload) => runRabbiInternalActionTool(payload, spec))),
     makeDefinition({
       name: 'create_calendar_event_draft',
       description: 'Preview a scoped One Time calendar event without creating an internal event or syncing Google Calendar.',

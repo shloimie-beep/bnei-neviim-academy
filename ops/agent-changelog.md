@@ -35023,3 +35023,50 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   commit/push and clean deploy/live smoke; full autonomy remains blocked by 85
   missing wrappers, 12 fallback blockers, and saved all-163 Agent Mode
   PASS/BLOCKED proof.
+
+## 2026-07-08T23:51:47+03:00 - Rabbi Sidekick And Operations Fast Path Deployed
+
+- Deployed the Rabbi Telegram scoped sidekick runtime, Agent Mode smoke prompt,
+  the 66 wrapper-backed Rabbi helper contract batch, and the Operations
+  residual-slowness fast path to the explicit OneTime Railway service.
+- Release branch `codex/rabbi-sidekick-release-20260708` was pushed at
+  `2895654e`; closeout evidence is on
+  `codex/rabbi-helper-tool-scope-20260708` at `c9f9ab54` plus this follow-up
+  closeout.
+- Railway deployment
+  `eb599c39-36f7-4f80-9d6d-2a8fc5c6406f` reached `SUCCESS` for
+  `one-time-production` / `one-time-web` / `production`.
+- Live OneTime smoke passed against `https://join.onetimeonetime.com`.
+- Live readbacks passed for
+  `/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md`,
+  `/js/operations-shell.js`, and `/js/operations-deferred-renderers.js`.
+- Live Operations profile after deploy showed the One Time overview visible in
+  1,325ms, 8 fetches total, 6 after overview, max fetch 330ms, 0 long tasks,
+  0 console errors, 0 failed requests, and 0 dashboard error banners.
+- Sent a concise super-admin Telegram progress ding for the deploy closeout;
+  the send returned `sent=true` and `message_id_present=true`.
+- Rabbi live Telegram delivery remains blocked only by the missing
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`; no live Rabbi Telegram message was
+  sent and no raw token/chat ID was printed.
+
+## 2026-07-08T23:56:57+03:00 - Rabbi Helper Internal Action Wrappers Locally Verified
+
+- Added scoped Rabbi / OneTime internal-action helper wrappers for decision
+  options, timeline notes, internal calendar create/update, parent-visible
+  event previews, admin-only visibility, provider class sessions, referral
+  ledger entries, provider contact requests, natural task retitles, and task
+  stage updates.
+- The wrappers recompute `rabbi_sheller_provider` /
+  `one_time_mishnah_class`, reject BNA workspace substitution, redact raw
+  note/message/contact bodies, and keep wrapper-level approval-required
+  actions in preview mode until a deliberate confirm path exists.
+- Refreshed the Rabbi scope map: 163 contracts, 84 local wrapper-backed
+  contracts, 67 missing wrappers, and 12 registered fallback/setup blockers.
+- Verification passed: `node --check` for touched helper/generator files,
+  `node scripts/generate-rabbi-helper-tool-scope-map.mjs`, and
+  `node --test tests/bna-helper-tools.test.js
+  tests/rabbi-helper-tool-scope-map.test.js tests/agent-review-hub.test.js`
+  37/37.
+- Remaining blockers: the newest 18 wrappers still need commit/push,
+  deploy/live smoke, and saved Agent Mode PASS/BLOCKED proof; full autonomy
+  remains blocked by 67 missing wrappers and 12 fallback blockers.
