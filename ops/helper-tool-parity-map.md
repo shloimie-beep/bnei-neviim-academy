@@ -6,15 +6,15 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 
 - external_blocker: 26
 - requires_confirmation: 49
-- student_safe_only: 9
-- tool_available: 41
-- tool_needed: 145
+- student_safe_only: 8
+- tool_available: 51
+- tool_needed: 136
 
 ## Surfaces
 
-- operations: 176
+- operations: 177
 - parent: 21
-- provider: 38
+- provider: 37
 - rabbi: 9
 - student: 26
 
@@ -114,9 +114,10 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | generate worksheet | generate_worksheet | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
 | operations | ingest class video from drive or upload | ingest_class_video_from_drive_or_upload | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
 | operations | link prompt to goal | link_prompt_to_goal | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
-| operations | list calendar sessions | list_calendar_sessions | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
+| operations | list calendar sessions | list_calendar_sessions | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | list content jobs | create_content_item | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | list payment roster | list_payment_roster | external_blocker | yes | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
+| operations | list provider leads | list_provider_leads | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | list tasks | show_task_report | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | mark attendance | mark_attendance | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | Mark event admin-only | mark_event_admin_only | tool_needed | no | public/operations.html |
@@ -128,8 +129,8 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | mark task verified | mark_task_verified | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | Move lead stage | move_lead_stage | tool_needed | no | public/operations.html |
 | operations | Move task workspace | move_task_workspace | tool_needed | yes | public/operations.html |
-| operations | Open calendar event | open_calendar_event | tool_needed | no | public/operations.html |
-| operations | Open content item | open_content_item_url | tool_needed | no | public/operations.html |
+| operations | Open calendar event | open_calendar_event | tool_available | no | public/operations.html |
+| operations | Open content item | open_content_item_url | tool_available | no | public/operations.html |
 | operations | open operations view | open_operations_view | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | parse recording | parse_recording | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | parse student questions | parse_student_questions | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
@@ -149,6 +150,5 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | Preview social schedule package | preview_social_schedule_package | external_blocker | yes | public/operations.html |
 | operations | publish library item after approval | publish_library_item_after_approval | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
 | operations | Queue Telegram report | queue_telegram_report | tool_needed | yes | public/operations.html |
-| operations | Record agent result | record_agent_result | tool_needed | no | public/operations.html |
 
 Full machine-readable map: `ops/helper-tool-parity-map.json` (270 records).

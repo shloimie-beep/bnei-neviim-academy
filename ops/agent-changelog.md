@@ -34733,6 +34733,31 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No Railway/environment mutation, payment/access grant, DNS, Zoom, Vimeo,
   Drive, Stripe, or external CRM mutation was performed.
 
+## 2026-07-08T22:37:14+03:00 - Rabbi helper read-only wrapper batch locally verified
+
+- Continued `REQ-20260708-095` for the Rabbi / One Time helper autonomy goal.
+- Added scoped read-only helper wrappers and planner intents for
+  `show_one_time_launch_checklist`, `list_calendar_sessions`,
+  `open_calendar_event`, `view_email_log`,
+  `show_contact_communication_history`, `list_provider_leads`, and
+  `open_content_item_url`.
+- The wrappers recompute `rabbi_sheller_provider` /
+  `one_time_mishnah_class` scope and return summaries only: no meeting URLs,
+  raw media/Drive URLs, email bodies, raw message bodies, raw email addresses,
+  contact exports, parent phone/email values, or raw contact notes.
+- Refreshed helper parity and the Rabbi scope map: 270 parity rows, 136
+  current `tool_needed` rows, 163 preserved Rabbi contracts, 27 local wrappers,
+  12 registered fallback blockers, and 124 missing wrappers.
+- Verification passed: `node --check` on touched helper files, `node
+  scripts/generate-helper-tool-parity-map.mjs`, `node
+  scripts/generate-rabbi-helper-tool-scope-map.mjs`, focused helper/scope/RBAC
+  tests (27/27), `node --test tests/watchdog-action-registry.test.js` (5/5),
+  full `npm test` (1661/1661), `npm run watchdog:actions`, `npm run
+  secrets:audit`, and `npm run watchdog:protocol-drift`.
+- Remaining autonomy blocker: the read-only batch still needs
+  commit/push/deploy/live smoke, and the full 163-contract probe still needs
+  saved Agent Mode PASS/BLOCKED evidence.
+
 ## 2026-07-08T22:24:00+03:00 - Rabbi Telegram communication alerts locally verified
 
 - Registered `RAW-20260708-029` and `REQ-20260708-096` for the continuation

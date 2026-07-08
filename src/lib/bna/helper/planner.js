@@ -62,6 +62,41 @@ function extractEmail(text = '') {
   return firstMatch(text, /\b([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})\b/i);
 }
 
+function extractPhone(text = '') {
+  const match = String(text || '').match(/\b(?:\+?\d[\d\s().-]{6,}\d)\b/);
+  return match ? compactText(match[0], 80) : '';
+}
+
+function extractCalendarEventId(text = '') {
+  const value = firstMatch(text, /\b(?:calendar\s*)?event\s*#?\s*(\d+)\b/i);
+  return value ? Number(value) : null;
+}
+
+function extractContentId(text = '') {
+  const value = firstMatch(text, /\b(?:content(?: item)?|recording|library item)\s*#?\s*(\d+)\b/i);
+  return value ? Number(value) : null;
+}
+
+function contactHistoryArgs(text = '', context = {}) {
+  const args = {
+    workspace_key: context.workspaceKey || undefined,
+    project_key: context.projectKey || undefined,
+  };
+  const contactId = firstMatch(text, /\bcontact\s*#?\s*(\d+)\b/i);
+  const signupId = firstMatch(text, /\bsignup\s*#?\s*(\d+)\b/i);
+  const studentId = firstMatch(text, /\bstudent\s*#?\s*(\d+)\b/i);
+  if (contactId) args.contact_id = Number(contactId);
+  if (signupId) args.signup_id = Number(signupId);
+  if (studentId) args.student_id = Number(studentId);
+  const email = extractEmail(text);
+  const phone = extractPhone(text);
+  if (email) args.email = email;
+  if (phone) args.phone = phone;
+  const name = firstMatch(text, /\b(?:for|with|about)\s+([A-Z][A-Za-z.' -]{1,80})(?:\s*(?:email|phone|contact|history|messages?)|\s*$)/);
+  if (!email && !phone && !contactId && !signupId && !studentId && name) args.contact_name = compactText(name, 120);
+  return args;
+}
+
 function extractSubject(text = '') {
   return compactText(firstMatch(text, /\bsubject\s*[:\-]\s*([^,\n]+?)(?:\s*,?\s*\bbody\b|\s*$)/i), 240);
 }
@@ -402,6 +437,64 @@ function deterministicPlan(message = '', registry, context = {}) {
       label: 'Create integration setup task',
       args: { integration_type: integrationType, reason: text, project_key: context.projectKey || undefined },
       reason: 'Integration setup request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(launch checklist|launch readiness|one time checklist|rabbi checklist|what still blocks launch)\b/i.test(text)) {
+    reply = 'I can show the scoped One Time launch checklist without changing anything.';
+    actions.push({
+      tool: 'show_one_time_launch_checklist',
+      label: 'Show One Time launch checklist',
+      args: { workspace_key: context.workspaceKey || undefined, project_key: context.projectKey || undefined },
+      reason: 'Rabbi / One Time launch checklist request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\bopen\b.*\b(?:calendar\s*)?event\s*#?\s*\d+\b/i.test(text)) {
+    const eventId = extractCalendarEventId(text);
+    reply = eventId ? `I can open scoped calendar event #${eventId}.` : 'I can open the scoped calendar event once its ID is supplied.';
+    actions.push({
+      tool: 'open_calendar_event',
+      label: eventId ? `Open calendar event #${eventId}` : 'Open calendar event',
+      args: { event_id: eventId || undefined, workspace_key: context.workspaceKey || undefined, project_key: context.projectKey || undefined },
+      reason: 'Rabbi / One Time calendar event request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(list|show|what|view)\b.*\b(calendar sessions?|class sessions?|upcoming sessions?|schedule)\b|\b(upcoming|next)\b.*\b(class|shiur|session|calendar)\b/i.test(text)) {
+    reply = 'I can list scoped One Time calendar sessions without returning meeting links.';
+    actions.push({
+      tool: 'list_calendar_sessions',
+      label: 'List One Time calendar sessions',
+      args: { workspace_key: context.workspaceKey || undefined, project_key: context.projectKey || undefined },
+      reason: 'Rabbi / One Time calendar list request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\bopen\b.*\b(content(?: item)?|recording|library item)\s*#?\s*\d+\b/i.test(text)) {
+    const contentId = extractContentId(text);
+    reply = contentId ? `I can open scoped content item #${contentId}.` : 'I can open the scoped content item once its ID is supplied.';
+    actions.push({
+      tool: 'open_content_item_url',
+      label: contentId ? `Open content item #${contentId}` : 'Open content item',
+      args: { content_id: contentId || undefined, workspace_key: context.workspaceKey || undefined, project_key: context.projectKey || undefined },
+      reason: 'Rabbi / One Time content item request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(view|show|list|check)\b.*\b(email log|recent emails|email history)\b/i.test(text)) {
+    reply = 'I can show scoped One Time email log summaries without returning bodies or raw addresses.';
+    actions.push({
+      tool: 'view_email_log',
+      label: 'View One Time email log',
+      args: { workspace_key: context.workspaceKey || undefined, project_key: context.projectKey || undefined },
+      reason: 'Rabbi / One Time email log request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(show|view|list|check)\b.*\b(contact|communication|message|whatsapp|email)\b.*\b(history|thread|timeline|log)\b/i.test(text)) {
+    reply = 'I can show scoped communication history summaries once the contact identifier is supplied.';
+    actions.push({
+      tool: 'show_contact_communication_history',
+      label: 'Show contact communication history',
+      args: contactHistoryArgs(text, context),
+      reason: 'Rabbi / One Time communication history request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(list|show|view|check)\b.*\b(provider leads?|provider contacts?|service provider leads?|provider intake|intake leads?|parent leads?|signups?)\b/i.test(text)) {
+    reply = 'I can list scoped One Time contact lead and signup summaries without exposing contact exports.';
+    actions.push({
+      tool: 'list_provider_leads',
+      label: 'List provider contact leads',
+      args: { workspace_key: context.workspaceKey || undefined, project_key: context.projectKey || undefined },
+      reason: 'Rabbi / One Time provider contact lead request',
     });
   } else if (/\b(save|store|rotate|replace)\b.*\b(api key|apikey|token|secret)\b|\b(api key|token|secret)\b.*\b(save|store|belongs to|for)\b/i.test(text)) {
     const integrationType = guessIntegrationType(text);

@@ -3,9 +3,9 @@
   "source": {
     "path": "ops/helper-tool-parity-map.json",
     "total_rows": 270,
-    "tool_needed_count": 145,
+    "tool_needed_count": 136,
     "contract_count": 163,
-    "preserved_audit_contract_count": 18,
+    "preserved_audit_contract_count": 27,
     "source_status_filter": "tool_needed plus preserved helper-bot-workspace-agent-01-audit-map audit contracts"
   },
   "target_account": {
@@ -90,9 +90,9 @@
   },
   "counts": {
     "by_surface": {
-      "operations": 96,
+      "operations": 97,
       "parent": 19,
-      "provider": 31,
+      "provider": 30,
       "rabbi": 2,
       "student": 15
     },
@@ -111,9 +111,9 @@
       "draft_only": 33
     },
     "by_capability_group": {
-      "tasks": 59,
+      "tasks": 56,
       "communications": 11,
-      "operations": 28,
+      "operations": 29,
       "calendar": 14,
       "contacts_crm": 9,
       "studio": 17,
@@ -124,8 +124,8 @@
       "provider": 11
     },
     "by_implementation_status": {
-      "tool_wrapper_missing": 133,
-      "tool_wrapper_available_local": 18,
+      "tool_wrapper_missing": 124,
+      "tool_wrapper_available_local": 27,
       "registered_fallback_only_blocker": 12
     }
   },
@@ -6198,23 +6198,23 @@
       "source": {
         "surface": "operations",
         "label": "list calendar sessions",
-        "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-        "api_endpoint": "",
-        "method": "",
+        "current_file": "src/lib/bna/helper/tool-registry.js",
+        "api_endpoint": "/api/bna/helper/message",
+        "method": "POST",
         "helper_tool_name": "list_calendar_sessions",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
-          "admin/super_admin or scoped workspace login required"
+          "admin/super_admin or scoped workspace login required",
+          "side_effect:read_only"
         ],
         "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+        "notes": "Helper registry tool with side effect read_only."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
         "capability_slug": "list_calendar_sessions",
         "capability_groups": [
-          "calendar",
-          "tasks"
+          "calendar"
         ],
         "scope_lock": {
           "workspace_key": "rabbi_sheller_provider",
@@ -6251,8 +6251,7 @@
             "Use the Rabbi bot to list calendar sessions, scoped to rabbi_sheller_provider / one_time_mishnah_class."
           ],
           "required_slots": [
-            "intent",
-            "task_or_decision_target_when_updating"
+            "intent"
           ],
           "default_slots": {
             "workspace_key": "rabbi_sheller_provider",
@@ -6293,8 +6292,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for list_calendar_sessions, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep list_calendar_sessions in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -6307,6 +6306,118 @@
     },
     {
       "id": "RABBI-HELPER-SCOPE-056",
+      "source": {
+        "surface": "operations",
+        "label": "list provider leads",
+        "current_file": "src/lib/bna/helper/tool-registry.js",
+        "api_endpoint": "/api/bna/helper/message",
+        "method": "POST",
+        "helper_tool_name": "list_provider_leads",
+        "source_status": "tool_available",
+        "source_scope_rules": [
+          "admin/super_admin or scoped workspace login required",
+          "side_effect:read_only"
+        ],
+        "source_confirmation_required": false,
+        "notes": "Helper registry tool with side effect read_only."
+      },
+      "rabbi_contract": {
+        "target_account_key": "rabbi_scheller_onetime_bot",
+        "capability_slug": "list_provider_leads",
+        "capability_groups": [
+          "contacts_crm"
+        ],
+        "scope_lock": {
+          "workspace_key": "rabbi_sheller_provider",
+          "project_key": "one_time_mishnah_class",
+          "provider_scope": "rabbi_sheller_provider",
+          "server_recomputes_scope": true,
+          "client_scope_trusted": false,
+          "cross_workspace_allowed": false
+        },
+        "surface_policy": "operations_action_redelegated_to_rabbi_project_scope_only",
+        "allowed_account_roles": [
+          "one_time_admin",
+          "project_owner",
+          "project_manager",
+          "provider_admin"
+        ],
+        "side_effect_level": "read_only",
+        "action_policy": "read_only",
+        "confirmation_policy": "safe_without_confirmation_after_scope_check",
+        "allowed_data": [
+          "One Time provider/project records explicitly linked to rabbi_sheller_provider / one_time_mishnah_class",
+          "Provider-visible task, class, content, contact, parent, student, payment, and integration summaries needed for this tool",
+          "Redacted audit IDs, status summaries, and scoped links"
+        ],
+        "forbidden_data": [
+          "BNA Academy, global Operations, unrelated provider, unrelated parent/family/student, or public-default records",
+          "Raw private message bodies, raw contact exports, secrets, passwords, API keys, setup tokens, session cookies, student access codes, and unredacted screenshots",
+          "External provider mutations unless the action_policy and confirmation_policy explicitly allow them"
+        ],
+        "planner_intent": {
+          "natural_language_examples": [
+            "List provider leads for the One Time program, only inside Rabbi Scheller's workspace.",
+            "handle list provider leads for One Time without touching BNA Academy or another provider.",
+            "Use the Rabbi bot to list provider leads, scoped to rabbi_sheller_provider / one_time_mishnah_class."
+          ],
+          "required_slots": [
+            "intent"
+          ],
+          "default_slots": {
+            "workspace_key": "rabbi_sheller_provider",
+            "project_key": "one_time_mishnah_class",
+            "provider_scope": "rabbi_sheller_provider",
+            "actor_account_key": "rabbi_scheller_onetime_bot",
+            "source_surface": "operations"
+          },
+          "forbidden_slots": [
+            "workspace_key=bna",
+            "project_key=bna",
+            "global_admin_scope",
+            "unrelated_provider_id",
+            "raw_private_body",
+            "secret_or_token_value"
+          ],
+          "disambiguation_rule": "If a target record, recipient segment, class/session, payment/access record, or integration is ambiguous, ask one scoped clarification or create a draft/setup task instead of guessing."
+        },
+        "result_rules": {
+          "result_cards_include_scope_badge": true,
+          "links_must_resolve_through_destination_resolver": true,
+          "audit_log_required": true,
+          "redaction_required": true
+        },
+        "negative_tests": [
+          "Reject workspace_key=bna or any project_key other than one_time_mishnah_class.",
+          "Reject browser route substitution from a provider/Rabbi helper into global /operations admin scope.",
+          "Assert result links, result cards, and audit records echo rabbi_sheller_provider / one_time_mishnah_class.",
+          "Reject global contact exports, raw private message bodies, WAPI phonebook dumps, and unrelated provider contacts."
+        ],
+        "agent_mode_probe": {
+          "safe_prompt": "List provider leads for Rabbi Scheller's One Time account. Keep it scoped to rabbi_sheller_provider / one_time_mishnah_class; do not touch BNA Academy, global Operations, another provider, live sends, payments, uploads, credentials, DNS, or access unless this tool explicitly asks for a draft-only result.",
+          "expected_result": "The bot should plan or execute only within the One Time project scope and return scoped evidence.",
+          "failure_signals": [
+            "Mentions or opens BNA Academy/global Operations data.",
+            "Uses a different workspace_key, project_key, provider ID, or public brand.",
+            "Performs an external write or credential/payment/access change without an explicit approval gate.",
+            "Shows raw private message bodies, contact exports, secrets, tokens, student access codes, or unrelated student/family data."
+          ]
+        },
+        "implementation_gap": {
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep list_provider_leads in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
+          "likely_files": [
+            "src/lib/bna/helper/tool-registry.js",
+            "src/lib/bna/helper/permissions.js",
+            "src/lib/bna/helper/planner.js",
+            "src/lib/bna/helper/destination-resolver.js",
+            "server.js"
+          ]
+        }
+      }
+    },
+    {
+      "id": "RABBI-HELPER-SCOPE-057",
       "source": {
         "surface": "operations",
         "label": "mark attendance",
@@ -6417,7 +6528,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-057",
+      "id": "RABBI-HELPER-SCOPE-058",
       "source": {
         "surface": "operations",
         "label": "Mark event admin-only",
@@ -6528,7 +6639,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-058",
+      "id": "RABBI-HELPER-SCOPE-059",
       "source": {
         "surface": "operations",
         "label": "Mark event parent-visible",
@@ -6641,7 +6752,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-059",
+      "id": "RABBI-HELPER-SCOPE-060",
       "source": {
         "surface": "operations",
         "label": "Mark event student-visible",
@@ -6754,7 +6865,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-060",
+      "id": "RABBI-HELPER-SCOPE-061",
       "source": {
         "surface": "operations",
         "label": "mark pending received",
@@ -6865,7 +6976,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-061",
+      "id": "RABBI-HELPER-SCOPE-062",
       "source": {
         "surface": "operations",
         "label": "mark task verified",
@@ -6976,7 +7087,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-062",
+      "id": "RABBI-HELPER-SCOPE-063",
       "source": {
         "surface": "operations",
         "label": "Move lead stage",
@@ -7088,7 +7199,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-063",
+      "id": "RABBI-HELPER-SCOPE-064",
       "source": {
         "surface": "operations",
         "label": "Move task workspace",
@@ -7201,7 +7312,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-064",
+      "id": "RABBI-HELPER-SCOPE-065",
       "source": {
         "surface": "operations",
         "label": "Open calendar event",
@@ -7209,13 +7320,14 @@
         "api_endpoint": "/api/bna/calendar-events",
         "method": "POST",
         "helper_tool_name": "open_calendar_event",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "side_effect:read_only",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action open_calendar_event has no direct helper wrapper yet."
+        "notes": "Typed action open_calendar_event maps to helper tool open_calendar_event."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -7299,8 +7411,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for open_calendar_event, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep open_calendar_event in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -7312,7 +7424,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-065",
+      "id": "RABBI-HELPER-SCOPE-066",
       "source": {
         "surface": "operations",
         "label": "Open content item",
@@ -7320,13 +7432,14 @@
         "api_endpoint": "/api/bna/content",
         "method": "GET/POST",
         "helper_tool_name": "open_content_item_url",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "side_effect:read_only",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action open_content_item_url has no direct helper wrapper yet."
+        "notes": "Typed action open_content_item_url maps to helper tool open_content_item_url."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -7411,8 +7524,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for open_content_item_url, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep open_content_item_url in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -7425,7 +7538,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-066",
+      "id": "RABBI-HELPER-SCOPE-067",
       "source": {
         "surface": "operations",
         "label": "parse recording",
@@ -7539,7 +7652,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-067",
+      "id": "RABBI-HELPER-SCOPE-068",
       "source": {
         "surface": "operations",
         "label": "parse student questions",
@@ -7653,7 +7766,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-068",
+      "id": "RABBI-HELPER-SCOPE-069",
       "source": {
         "surface": "operations",
         "label": "Post community message",
@@ -7767,7 +7880,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-069",
+      "id": "RABBI-HELPER-SCOPE-070",
       "source": {
         "surface": "operations",
         "label": "Preview campaign segment",
@@ -7878,7 +7991,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-070",
+      "id": "RABBI-HELPER-SCOPE-071",
       "source": {
         "surface": "operations",
         "label": "publish library item after approval",
@@ -7992,7 +8105,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-071",
+      "id": "RABBI-HELPER-SCOPE-072",
       "source": {
         "surface": "operations",
         "label": "Queue Telegram report",
@@ -8103,7 +8216,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-072",
+      "id": "RABBI-HELPER-SCOPE-073",
       "source": {
         "surface": "operations",
         "label": "Record agent result",
@@ -8214,7 +8327,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-073",
+      "id": "RABBI-HELPER-SCOPE-074",
       "source": {
         "surface": "operations",
         "label": "Refine email",
@@ -8328,7 +8441,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-074",
+      "id": "RABBI-HELPER-SCOPE-075",
       "source": {
         "surface": "operations",
         "label": "Refine newsletter draft",
@@ -8439,7 +8552,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-075",
+      "id": "RABBI-HELPER-SCOPE-076",
       "source": {
         "surface": "operations",
         "label": "reprocess decision",
@@ -8550,7 +8663,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-076",
+      "id": "RABBI-HELPER-SCOPE-077",
       "source": {
         "surface": "operations",
         "label": "Request provider contact",
@@ -8662,7 +8775,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-077",
+      "id": "RABBI-HELPER-SCOPE-078",
       "source": {
         "surface": "operations",
         "label": "Retitle task naturally",
@@ -8774,7 +8887,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-078",
+      "id": "RABBI-HELPER-SCOPE-079",
       "source": {
         "surface": "operations",
         "label": "Review moderated question",
@@ -8887,7 +9000,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-079",
+      "id": "RABBI-HELPER-SCOPE-080",
       "source": {
         "surface": "operations",
         "label": "Route bug to Codex",
@@ -8999,7 +9112,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-080",
+      "id": "RABBI-HELPER-SCOPE-081",
       "source": {
         "surface": "operations",
         "label": "Save newsletter revision",
@@ -9110,7 +9223,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-081",
+      "id": "RABBI-HELPER-SCOPE-082",
       "source": {
         "surface": "operations",
         "label": "Select weekly update hero",
@@ -9221,7 +9334,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-082",
+      "id": "RABBI-HELPER-SCOPE-083",
       "source": {
         "surface": "operations",
         "label": "Show contact communication history",
@@ -9229,13 +9342,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "show_contact_communication_history",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "side_effect:read_only",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action show_contact_communication_history has no direct helper wrapper yet."
+        "notes": "Typed action show_contact_communication_history maps to helper tool show_contact_communication_history."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -9322,8 +9436,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for show_contact_communication_history, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep show_contact_communication_history in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -9336,26 +9450,27 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-083",
+      "id": "RABBI-HELPER-SCOPE-084",
       "source": {
         "surface": "operations",
         "label": "show one time launch checklist",
-        "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-        "api_endpoint": "",
-        "method": "",
+        "current_file": "src/lib/bna/helper/tool-registry.js",
+        "api_endpoint": "/api/bna/helper/message",
+        "method": "POST",
         "helper_tool_name": "show_one_time_launch_checklist",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
-          "admin/super_admin or scoped workspace login required"
+          "admin/super_admin or scoped workspace login required",
+          "side_effect:read_only"
         ],
         "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+        "notes": "Helper registry tool with side effect read_only."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
         "capability_slug": "show_one_time_launch_checklist",
         "capability_groups": [
-          "tasks"
+          "operations"
         ],
         "scope_lock": {
           "workspace_key": "rabbi_sheller_provider",
@@ -9392,8 +9507,7 @@
             "Use the Rabbi bot to show one time launch checklist, scoped to rabbi_sheller_provider / one_time_mishnah_class."
           ],
           "required_slots": [
-            "intent",
-            "task_or_decision_target_when_updating"
+            "intent"
           ],
           "default_slots": {
             "workspace_key": "rabbi_sheller_provider",
@@ -9434,8 +9548,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for show_one_time_launch_checklist, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep show_one_time_launch_checklist in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -9447,7 +9561,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-084",
+      "id": "RABBI-HELPER-SCOPE-085",
       "source": {
         "surface": "operations",
         "label": "show operating goals",
@@ -9559,7 +9673,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-085",
+      "id": "RABBI-HELPER-SCOPE-086",
       "source": {
         "surface": "operations",
         "label": "submit question",
@@ -9673,7 +9787,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-086",
+      "id": "RABBI-HELPER-SCOPE-087",
       "source": {
         "surface": "operations",
         "label": "Submit student question for moderation",
@@ -9786,7 +9900,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-087",
+      "id": "RABBI-HELPER-SCOPE-088",
       "source": {
         "surface": "operations",
         "label": "Sync Google Calendar",
@@ -9897,7 +10011,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-088",
+      "id": "RABBI-HELPER-SCOPE-089",
       "source": {
         "surface": "operations",
         "label": "Sync Google Classroom",
@@ -10008,7 +10122,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-089",
+      "id": "RABBI-HELPER-SCOPE-090",
       "source": {
         "surface": "operations",
         "label": "transcribe video",
@@ -10122,7 +10236,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-090",
+      "id": "RABBI-HELPER-SCOPE-091",
       "source": {
         "surface": "operations",
         "label": "Update calendar event",
@@ -10233,7 +10347,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-091",
+      "id": "RABBI-HELPER-SCOPE-092",
       "source": {
         "surface": "operations",
         "label": "update calendar event draft",
@@ -10345,7 +10459,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-092",
+      "id": "RABBI-HELPER-SCOPE-093",
       "source": {
         "surface": "operations",
         "label": "update goal progress",
@@ -10459,7 +10573,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-093",
+      "id": "RABBI-HELPER-SCOPE-094",
       "source": {
         "surface": "operations",
         "label": "update goal status",
@@ -10570,7 +10684,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-094",
+      "id": "RABBI-HELPER-SCOPE-095",
       "source": {
         "surface": "operations",
         "label": "Update provider profile",
@@ -10681,7 +10795,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-095",
+      "id": "RABBI-HELPER-SCOPE-096",
       "source": {
         "surface": "operations",
         "label": "Update task stage",
@@ -10793,7 +10907,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-096",
+      "id": "RABBI-HELPER-SCOPE-097",
       "source": {
         "surface": "operations",
         "label": "View email log",
@@ -10801,13 +10915,14 @@
         "api_endpoint": "/api/bna/communications/email/drafts",
         "method": "POST",
         "helper_tool_name": "view_email_log",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "side_effect:read_only",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action view_email_log has no direct helper wrapper yet."
+        "notes": "Typed action view_email_log maps to helper tool view_email_log."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -10893,8 +11008,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for view_email_log, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep view_email_log in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -10907,7 +11022,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-097",
+      "id": "RABBI-HELPER-SCOPE-098",
       "source": {
         "surface": "parent",
         "label": "Create calendar event",
@@ -11021,7 +11136,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-098",
+      "id": "RABBI-HELPER-SCOPE-099",
       "source": {
         "surface": "parent",
         "label": "Create help request",
@@ -11136,7 +11251,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-099",
+      "id": "RABBI-HELPER-SCOPE-100",
       "source": {
         "surface": "parent",
         "label": "create parent question",
@@ -11252,7 +11367,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-100",
+      "id": "RABBI-HELPER-SCOPE-101",
       "source": {
         "surface": "parent",
         "label": "Create parent-visible event",
@@ -11365,7 +11480,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-101",
+      "id": "RABBI-HELPER-SCOPE-102",
       "source": {
         "surface": "parent",
         "label": "create parent visible summary",
@@ -11479,7 +11594,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-102",
+      "id": "RABBI-HELPER-SCOPE-103",
       "source": {
         "surface": "parent",
         "label": "Create report-problem ticket",
@@ -11594,7 +11709,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-103",
+      "id": "RABBI-HELPER-SCOPE-104",
       "source": {
         "surface": "parent",
         "label": "Create ticket",
@@ -11709,7 +11824,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-104",
+      "id": "RABBI-HELPER-SCOPE-105",
       "source": {
         "surface": "parent",
         "label": "Draft message to admin",
@@ -11826,7 +11941,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-105",
+      "id": "RABBI-HELPER-SCOPE-106",
       "source": {
         "surface": "parent",
         "label": "Draft parent response",
@@ -11940,7 +12055,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-106",
+      "id": "RABBI-HELPER-SCOPE-107",
       "source": {
         "surface": "parent",
         "label": "Draft weekly update",
@@ -12054,7 +12169,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-107",
+      "id": "RABBI-HELPER-SCOPE-108",
       "source": {
         "surface": "parent",
         "label": "Generate student worksheet",
@@ -12172,7 +12287,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-108",
+      "id": "RABBI-HELPER-SCOPE-109",
       "source": {
         "surface": "parent",
         "label": "Open calendar event",
@@ -12180,13 +12295,14 @@
         "api_endpoint": "/api/bna/calendar-events",
         "method": "POST",
         "helper_tool_name": "open_calendar_event",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "own family and parent-visible records only",
+          "side_effect:read_only",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action open_calendar_event has no direct helper wrapper yet."
+        "notes": "Typed action open_calendar_event maps to helper tool open_calendar_event."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -12273,8 +12389,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for open_calendar_event, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep open_calendar_event in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -12286,7 +12402,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-109",
+      "id": "RABBI-HELPER-SCOPE-110",
       "source": {
         "surface": "parent",
         "label": "Post community message",
@@ -12403,7 +12519,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-110",
+      "id": "RABBI-HELPER-SCOPE-111",
       "source": {
         "surface": "parent",
         "label": "Request provider contact",
@@ -12518,7 +12634,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-111",
+      "id": "RABBI-HELPER-SCOPE-112",
       "source": {
         "surface": "parent",
         "label": "Select weekly update hero",
@@ -12631,7 +12747,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-112",
+      "id": "RABBI-HELPER-SCOPE-113",
       "source": {
         "surface": "parent",
         "label": "Show assignments",
@@ -12746,7 +12862,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-113",
+      "id": "RABBI-HELPER-SCOPE-114",
       "source": {
         "surface": "parent",
         "label": "Show child calendar",
@@ -12860,7 +12976,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-114",
+      "id": "RABBI-HELPER-SCOPE-115",
       "source": {
         "surface": "parent",
         "label": "update parent helper profile",
@@ -12974,7 +13090,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-115",
+      "id": "RABBI-HELPER-SCOPE-116",
       "source": {
         "surface": "parent",
         "label": "View parent-visible notes",
@@ -13087,7 +13203,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-116",
+      "id": "RABBI-HELPER-SCOPE-117",
       "source": {
         "surface": "provider",
         "label": "Add timeline note",
@@ -13199,7 +13315,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-117",
+      "id": "RABBI-HELPER-SCOPE-118",
       "source": {
         "surface": "provider",
         "label": "Preview launch calendar plan",
@@ -13310,7 +13426,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-118",
+      "id": "RABBI-HELPER-SCOPE-119",
       "source": {
         "surface": "provider",
         "label": "Capture provider Google Business link",
@@ -13421,7 +13537,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-119",
+      "id": "RABBI-HELPER-SCOPE-120",
       "source": {
         "surface": "provider",
         "label": "Preview Classroom topic material",
@@ -13532,7 +13648,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-120",
+      "id": "RABBI-HELPER-SCOPE-121",
       "source": {
         "surface": "provider",
         "label": "Create One Time video library item",
@@ -13645,7 +13761,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-121",
+      "id": "RABBI-HELPER-SCOPE-122",
       "source": {
         "surface": "provider",
         "label": "Create provider class session",
@@ -13756,7 +13872,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-122",
+      "id": "RABBI-HELPER-SCOPE-123",
       "source": {
         "surface": "provider",
         "label": "create provider landing page",
@@ -13868,7 +13984,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-123",
+      "id": "RABBI-HELPER-SCOPE-124",
       "source": {
         "surface": "provider",
         "label": "create provider lead",
@@ -13981,7 +14097,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-124",
+      "id": "RABBI-HELPER-SCOPE-125",
       "source": {
         "surface": "provider",
         "label": "create provider offer",
@@ -14093,7 +14209,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-125",
+      "id": "RABBI-HELPER-SCOPE-126",
       "source": {
         "surface": "provider",
         "label": "Create provider question/post",
@@ -14206,7 +14322,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-126",
+      "id": "RABBI-HELPER-SCOPE-127",
       "source": {
         "surface": "provider",
         "label": "create provider workspace",
@@ -14318,7 +14434,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-127",
+      "id": "RABBI-HELPER-SCOPE-128",
       "source": {
         "surface": "provider",
         "label": "Create Rabbi shiur idea",
@@ -14430,7 +14546,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-128",
+      "id": "RABBI-HELPER-SCOPE-129",
       "source": {
         "surface": "provider",
         "label": "Create Rabbi source-sheet task",
@@ -14543,7 +14659,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-129",
+      "id": "RABBI-HELPER-SCOPE-130",
       "source": {
         "surface": "provider",
         "label": "Create referral ledger entry",
@@ -14654,7 +14770,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-130",
+      "id": "RABBI-HELPER-SCOPE-131",
       "source": {
         "surface": "provider",
         "label": "Create ticket",
@@ -14767,7 +14883,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-131",
+      "id": "RABBI-HELPER-SCOPE-132",
       "source": {
         "surface": "provider",
         "label": "Preview Google Business locations",
@@ -14878,7 +14994,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-132",
+      "id": "RABBI-HELPER-SCOPE-133",
       "source": {
         "surface": "provider",
         "label": "Preview Google Business Place ID lookup",
@@ -14989,7 +15105,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-133",
+      "id": "RABBI-HELPER-SCOPE-134",
       "source": {
         "surface": "provider",
         "label": "Preview Drive folder creation",
@@ -15100,7 +15216,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-134",
+      "id": "RABBI-HELPER-SCOPE-135",
       "source": {
         "surface": "provider",
         "label": "Preview Drive file search",
@@ -15211,7 +15327,7 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-135",
+      "id": "RABBI-HELPER-SCOPE-136",
       "source": {
         "surface": "provider",
         "label": "Preview Drive file move",
@@ -15322,119 +15438,6 @@
       }
     },
     {
-      "id": "RABBI-HELPER-SCOPE-136",
-      "source": {
-        "surface": "provider",
-        "label": "list provider leads",
-        "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-        "api_endpoint": "",
-        "method": "",
-        "helper_tool_name": "list_provider_leads",
-        "source_status": "tool_needed",
-        "source_scope_rules": [
-          "provider workspace only; no other providers or BNA private student data"
-        ],
-        "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
-      },
-      "rabbi_contract": {
-        "target_account_key": "rabbi_scheller_onetime_bot",
-        "capability_slug": "list_provider_leads",
-        "capability_groups": [
-          "contacts_crm",
-          "tasks"
-        ],
-        "scope_lock": {
-          "workspace_key": "rabbi_sheller_provider",
-          "project_key": "one_time_mishnah_class",
-          "provider_scope": "rabbi_sheller_provider",
-          "server_recomputes_scope": true,
-          "client_scope_trusted": false,
-          "cross_workspace_allowed": false
-        },
-        "surface_policy": "native_rabbi_provider_project_scope",
-        "allowed_account_roles": [
-          "one_time_admin",
-          "project_owner",
-          "project_manager",
-          "provider_admin"
-        ],
-        "side_effect_level": "read_only",
-        "action_policy": "read_only",
-        "confirmation_policy": "safe_without_confirmation_after_scope_check",
-        "allowed_data": [
-          "One Time provider/project records explicitly linked to rabbi_sheller_provider / one_time_mishnah_class",
-          "Provider-visible task, class, content, contact, parent, student, payment, and integration summaries needed for this tool",
-          "Redacted audit IDs, status summaries, and scoped links"
-        ],
-        "forbidden_data": [
-          "BNA Academy, global Operations, unrelated provider, unrelated parent/family/student, or public-default records",
-          "Raw private message bodies, raw contact exports, secrets, passwords, API keys, setup tokens, session cookies, student access codes, and unredacted screenshots",
-          "External provider mutations unless the action_policy and confirmation_policy explicitly allow them"
-        ],
-        "planner_intent": {
-          "natural_language_examples": [
-            "List provider leads for the One Time program, only inside Rabbi Scheller's workspace.",
-            "handle list provider leads for One Time without touching BNA Academy or another provider.",
-            "Use the Rabbi bot to list provider leads, scoped to rabbi_sheller_provider / one_time_mishnah_class."
-          ],
-          "required_slots": [
-            "intent",
-            "task_or_decision_target_when_updating"
-          ],
-          "default_slots": {
-            "workspace_key": "rabbi_sheller_provider",
-            "project_key": "one_time_mishnah_class",
-            "provider_scope": "rabbi_sheller_provider",
-            "actor_account_key": "rabbi_scheller_onetime_bot",
-            "source_surface": "provider"
-          },
-          "forbidden_slots": [
-            "workspace_key=bna",
-            "project_key=bna",
-            "global_admin_scope",
-            "unrelated_provider_id",
-            "raw_private_body",
-            "secret_or_token_value"
-          ],
-          "disambiguation_rule": "If a target record, recipient segment, class/session, payment/access record, or integration is ambiguous, ask one scoped clarification or create a draft/setup task instead of guessing."
-        },
-        "result_rules": {
-          "result_cards_include_scope_badge": true,
-          "links_must_resolve_through_destination_resolver": true,
-          "audit_log_required": true,
-          "redaction_required": true
-        },
-        "negative_tests": [
-          "Reject workspace_key=bna or any project_key other than one_time_mishnah_class.",
-          "Reject browser route substitution from a provider/Rabbi helper into global /operations admin scope.",
-          "Assert result links, result cards, and audit records echo rabbi_sheller_provider / one_time_mishnah_class.",
-          "Reject global contact exports, raw private message bodies, WAPI phonebook dumps, and unrelated provider contacts."
-        ],
-        "agent_mode_probe": {
-          "safe_prompt": "List provider leads for Rabbi Scheller's One Time account. Keep it scoped to rabbi_sheller_provider / one_time_mishnah_class; do not touch BNA Academy, global Operations, another provider, live sends, payments, uploads, credentials, DNS, or access unless this tool explicitly asks for a draft-only result.",
-          "expected_result": "The bot should plan or execute only within the One Time project scope and return scoped evidence.",
-          "failure_signals": [
-            "Mentions or opens BNA Academy/global Operations data.",
-            "Uses a different workspace_key, project_key, provider ID, or public brand.",
-            "Performs an external write or credential/payment/access change without an explicit approval gate.",
-            "Shows raw private message bodies, contact exports, secrets, tokens, student access codes, or unrelated student/family data."
-          ]
-        },
-        "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for list_provider_leads, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
-          "likely_files": [
-            "src/lib/bna/helper/tool-registry.js",
-            "src/lib/bna/helper/permissions.js",
-            "src/lib/bna/helper/planner.js",
-            "src/lib/bna/helper/destination-resolver.js",
-            "server.js"
-          ]
-        }
-      }
-    },
-    {
       "id": "RABBI-HELPER-SCOPE-137",
       "source": {
         "surface": "provider",
@@ -15443,13 +15446,14 @@
         "api_endpoint": "/api/bna/calendar-events",
         "method": "POST",
         "helper_tool_name": "open_calendar_event",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "provider workspace only; no other providers or BNA private student data",
+          "side_effect:read_only",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action open_calendar_event has no direct helper wrapper yet."
+        "notes": "Typed action open_calendar_event maps to helper tool open_calendar_event."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -15533,8 +15537,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for open_calendar_event, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep open_calendar_event in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",

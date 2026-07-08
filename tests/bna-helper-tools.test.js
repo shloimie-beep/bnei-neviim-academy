@@ -88,6 +88,37 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
     workspace_key: 'rabbi_sheller_provider',
     project_key: 'one_time_mishnah_class',
   }).ok, true);
+  assert.equal(registry.validate('show_one_time_launch_checklist', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }).ok, true);
+  assert.equal(registry.validate('list_calendar_sessions', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }).ok, true);
+  assert.equal(registry.validate('open_calendar_event', {
+    event_id: 44,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }).ok, true);
+  assert.equal(registry.validate('view_email_log', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }).ok, true);
+  assert.equal(registry.validate('show_contact_communication_history', {
+    email: 'parent@example.com',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }).ok, true);
+  assert.equal(registry.validate('list_provider_leads', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }).ok, true);
+  assert.equal(registry.validate('open_content_item_url', {
+    content_id: 9,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }).ok, true);
 
   const validClassroomDraft = registry.validate('create_provider_classroom_draft', {
     title: 'Rabbi classroom draft',
@@ -208,9 +239,10 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
   const context = {
     userRole: 'one_time_admin',
     projectKey: 'one_time_mishnah_class',
+    workspaceKey: 'rabbi_sheller_provider',
     identity: {
       role: 'one_time_admin',
-      scope: { type: 'project', projectKey: 'one_time_mishnah_class' },
+      scope: { type: 'project', projectKey: 'one_time_mishnah_class', workspaceKey: 'rabbi_sheller_provider' },
     },
   };
 
@@ -239,6 +271,22 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
     true
   );
   assert.equal(
+    helperPermissionForTool(registry.get('show_one_time_launch_checklist'), context, { project_key: 'one_time_mishnah_class' }).allowed,
+    true
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('open_calendar_event'), context, { event_id: 7, workspace_key: 'rabbi_sheller_provider', project_key: 'one_time_mishnah_class' }).allowed,
+    true
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('view_email_log'), context, { project_key: 'one_time_mishnah_class' }).allowed,
+    true
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('list_provider_leads'), context, { project_key: 'one_time_mishnah_class' }).allowed,
+    true
+  );
+  assert.equal(
     helperPermissionForTool(registry.get('create_automation'), context, { project_key: 'one_time_mishnah_class' }).allowed,
     true
   );
@@ -260,6 +308,14 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
   );
   assert.equal(
     helperPermissionForTool(registry.get('create_rabbi_source_sheet_task'), context, { project_key: 'bna' }).allowed,
+    false
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('open_calendar_event'), context, { event_id: 7, workspace_key: 'bna', project_key: 'one_time_mishnah_class' }).allowed,
+    false
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('view_email_log'), context, { project_key: 'bna' }).allowed,
     false
   );
 });
@@ -352,6 +408,16 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(deterministicPlan('draft parent response about tonight class reminder', registry, oneTimeContext).actions[0].tool, 'draft_parent_response');
   assert.equal(deterministicPlan('draft weekly update about the review goals', registry, oneTimeContext).actions[0].tool, 'draft_weekly_update');
   assert.equal(deterministicPlan('create help request because the Rabbi login is confusing', registry, oneTimeContext).actions[0].tool, 'create_help_request');
+  assert.equal(deterministicPlan('show the One Time launch checklist', registry, oneTimeContext).actions[0].tool, 'show_one_time_launch_checklist');
+  assert.equal(deterministicPlan('show upcoming calendar sessions', registry, oneTimeContext).actions[0].tool, 'list_calendar_sessions');
+  assert.equal(deterministicPlan('open calendar event 44', registry, oneTimeContext).actions[0].tool, 'open_calendar_event');
+  assert.equal(deterministicPlan('open calendar event 44', registry, oneTimeContext).actions[0].args.event_id, 44);
+  assert.equal(deterministicPlan('view recent email log', registry, oneTimeContext).actions[0].tool, 'view_email_log');
+  assert.equal(deterministicPlan('show communication history for parent@example.com', registry, oneTimeContext).actions[0].tool, 'show_contact_communication_history');
+  assert.equal(deterministicPlan('show communication history for parent@example.com', registry, oneTimeContext).actions[0].args.email, 'parent@example.com');
+  assert.equal(deterministicPlan('list provider leads', registry, oneTimeContext).actions[0].tool, 'list_provider_leads');
+  assert.equal(deterministicPlan('open content item 9', registry, oneTimeContext).actions[0].tool, 'open_content_item_url');
+  assert.equal(deterministicPlan('open content item 9', registry, oneTimeContext).actions[0].args.content_id, 9);
 });
 
 test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reject cross-scope execution', async () => {
@@ -385,8 +451,10 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
       parse_status: 'parsed',
     }),
   };
+  const executedQueries = [];
   const db = {
     query: async (sql, params) => {
+      executedQueries.push({ sql, params });
       if (/INSERT INTO bna_support_tickets/i.test(sql)) {
         return {
           rows: [{
@@ -396,6 +464,133 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
             description: params[2],
             severity: params[3],
             category: params[4],
+          }],
+        };
+      }
+      if (/FROM bna_tasks/i.test(sql)) {
+        return {
+          rows: [{
+            id: 901,
+            title: 'Finish launch smoke',
+            display_title: 'Finish launch smoke',
+            summary: 'Run Agent Mode scoped probe.',
+            stage: 'assigned',
+            category: 'technology',
+            waiting_on: 'Codex',
+            agent_status: 'ready',
+            updated_at: '2026-07-08T08:00:00.000Z',
+          }],
+        };
+      }
+      if (/FROM bna_calendar_events/i.test(sql) && /WHERE id = \$1/i.test(sql)) {
+        return {
+          rows: [{
+            id: params[0],
+            title: 'Mishnah review',
+            start_at: '2026-07-09T18:00:00.000Z',
+            end_at: '2026-07-09T19:00:00.000Z',
+            status: 'scheduled',
+            visibility: 'provider',
+            source: 'manual',
+            related_type: 'class_session',
+            related_id: 11,
+            meeting_url_present: true,
+          }],
+        };
+      }
+      if (/FROM bna_calendar_events/i.test(sql)) {
+        return {
+          rows: [{
+            id: 44,
+            title: 'Mishnah review',
+            start_at: '2026-07-09T18:00:00.000Z',
+            end_at: '2026-07-09T19:00:00.000Z',
+            status: 'scheduled',
+            visibility: 'provider',
+            source: 'manual',
+            related_type: 'class_session',
+            related_id: 11,
+            meeting_url_present: true,
+          }],
+        };
+      }
+      if (/FROM bna_content_jobs/i.test(sql)) {
+        return {
+          rows: [{
+            id: params[0],
+            title: 'Peah recording',
+            status: 'approved',
+            source_type: 'telegram_media',
+            created_at: '2026-07-08T07:00:00.000Z',
+            updated_at: '2026-07-08T07:30:00.000Z',
+            media_url_present: true,
+            drive_file_present: true,
+          }],
+        };
+      }
+      if (/FROM bna_communications/i.test(sql) && /c\.channel = 'email'/i.test(sql)) {
+        return {
+          rows: [{
+            id: 31,
+            channel: 'email',
+            direction: 'outbound',
+            communication_type: 'weekly_update',
+            from_name: 'One Time',
+            from_address: 'rabbi@example.com',
+            to_name: 'Parent',
+            to_address: 'parent@example.com',
+            subject: 'This week',
+            provider: 'resend',
+            status: 'sent',
+            occurred_at: '2026-07-08T06:00:00.000Z',
+            created_at: '2026-07-08T06:00:00.000Z',
+            body_text: 'should never return',
+          }],
+        };
+      }
+      if (/FROM bna_communications/i.test(sql)) {
+        return {
+          rows: [{
+            id: 32,
+            channel: 'whatsapp',
+            direction: 'inbound',
+            communication_type: 'question',
+            from_name: 'Parent',
+            from_address: 'parent@example.com',
+            to_name: 'One Time',
+            to_address: 'rabbi@example.com',
+            subject: 'Question',
+            provider: 'wapi',
+            status: 'logged',
+            occurred_at: '2026-07-08T05:00:00.000Z',
+            created_at: '2026-07-08T05:00:00.000Z',
+            body_text: 'private body should never return',
+          }],
+        };
+      }
+      if (/FROM bna_parent_leads/i.test(sql)) {
+        return {
+          rows: [{
+            record_type: 'parent_lead',
+            id: 12,
+            parent_name: 'Parent One',
+            student_name: 'Student One',
+            lead_type: 'content_interest',
+            status: 'interested',
+            interest_level: 'hot',
+            source: 'website_form',
+            source_detail: 'landing page',
+            last_inbound_at: '2026-07-08T04:15:00.000Z',
+            last_outbound_at: null,
+            next_follow_up_date: '2026-07-09',
+            tag_count: 2,
+            communication_count: 3,
+            latest_communication_at: '2026-07-08T04:30:00.000Z',
+            parent_email: 'private@example.com',
+            created_at: '2026-07-08T03:00:00.000Z',
+            updated_at: '2026-07-08T04:00:00.000Z',
+            parent_phone: 'private phone',
+            notes: 'private lead notes',
           }],
         };
       }
@@ -455,9 +650,92 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
   assert.equal(ramble.data.delegated_tool, 'capture_raw_intake');
   assert.equal(ramble.data.raw_text_returned, false);
 
+  const launchChecklist = await registry.execute('show_one_time_launch_checklist', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(launchChecklist.tool, 'show_one_time_launch_checklist');
+  assert.equal(launchChecklist.data.scope.workspace_key, 'rabbi_sheller_provider');
+  assert.equal(launchChecklist.data.tasks[0].id, 901);
+
+  const sessions = await registry.execute('list_calendar_sessions', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(sessions.tool, 'list_calendar_sessions');
+  assert.equal(sessions.data.events[0].meeting_url_present, true);
+  assert.equal(sessions.data.events[0].meeting_url_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(sessions.data.events[0], 'meeting_url'), false);
+
+  const calendarEvent = await registry.execute('open_calendar_event', {
+    event_id: 44,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(calendarEvent.tool, 'open_calendar_event');
+  assert.equal(calendarEvent.data.event.id, 44);
+  assert.equal(calendarEvent.data.event.meeting_url_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(calendarEvent.data.event, 'meeting_url'), false);
+
+  const emailLog = await registry.execute('view_email_log', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(emailLog.tool, 'view_email_log');
+  assert.equal(emailLog.data.emails[0].body_returned, false);
+  assert.equal(emailLog.data.emails[0].from.email_domain, 'example.com');
+  assert.equal(emailLog.data.emails[0].from.address_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(emailLog.data.emails[0], 'body_text'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(emailLog.data.emails[0].from, 'address'), false);
+
+  const communicationHistory = await registry.execute('show_contact_communication_history', {
+    email: 'parent@example.com',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(communicationHistory.tool, 'show_contact_communication_history');
+  assert.equal(communicationHistory.data.body_returned, false);
+  assert.equal(communicationHistory.data.communications[0].raw_message_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(communicationHistory.data.communications[0], 'body_text'), false);
+
+  const providerLeads = await registry.execute('list_provider_leads', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(providerLeads.tool, 'list_provider_leads');
+  assert.equal(providerLeads.data.leads[0].parent_name, 'Parent One');
+  assert.equal(providerLeads.data.leads[0].student_name, 'Student One');
+  assert.equal(providerLeads.data.leads[0].email_domain, 'example.com');
+  assert.equal(providerLeads.data.leads[0].communication_count, 3);
+  assert.equal(providerLeads.data.leads[0].parent_email_returned, false);
+  assert.equal(providerLeads.data.leads[0].parent_phone_returned, false);
+  assert.equal(providerLeads.data.leads[0].notes_returned, false);
+  assert.equal(providerLeads.data.leads[0].raw_contact_export_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(providerLeads.data.leads[0], 'parent_email'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(providerLeads.data.leads[0], 'parent_phone'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(providerLeads.data.leads[0], 'notes'), false);
+
+  const contentItem = await registry.execute('open_content_item_url', {
+    content_id: 9,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(contentItem.tool, 'open_content_item_url');
+  assert.equal(contentItem.data.content_item.media_url_present, true);
+  assert.equal(contentItem.data.content_item.media_url_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(contentItem.data.content_item, 'media_url'), false);
+
   await assert.rejects(
     () => registry.execute('create_rabbi_source_sheet_task', {
       title: 'Cross scope source sheet',
+      workspace_key: 'bna',
+      project_key: 'one_time_mishnah_class',
+    }, context, db),
+    /workspace scope mismatch/
+  );
+  await assert.rejects(
+    () => registry.execute('open_calendar_event', {
+      event_id: 44,
       workspace_key: 'bna',
       project_key: 'one_time_mishnah_class',
     }, context, db),
@@ -471,6 +749,7 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
     }, context, db),
     /project scope mismatch/
   );
+  assert.ok(executedQueries.every((query) => !/bna_email_log/i.test(query.sql)), 'read-only email wrapper should use scoped communications, not unscoped legacy email log');
 });
 
 test('BNA Helper planner resolves explicit typed actions before hosted AI', async () => {

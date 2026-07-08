@@ -1284,16 +1284,17 @@
   {
     "surface": "operations",
     "label": "list calendar sessions",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
     "helper_tool_name": "list_calendar_sessions",
     "scope_rules": [
-      "admin/super_admin or scoped workspace login required"
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
   },
   {
     "surface": "operations",
@@ -1323,6 +1324,21 @@
     "confirmation_required": true,
     "status": "external_blocker",
     "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+  },
+  {
+    "surface": "operations",
+    "label": "list provider leads",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "list_provider_leads",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
+    ],
+    "confirmation_required": false,
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
   },
   {
     "surface": "operations",
@@ -1497,11 +1513,12 @@
     "helper_tool_name": "open_calendar_event",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action open_calendar_event has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action open_calendar_event maps to helper tool open_calendar_event."
   },
   {
     "surface": "operations",
@@ -1512,11 +1529,12 @@
     "helper_tool_name": "open_content_item_url",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action open_content_item_url has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action open_content_item_url maps to helper tool open_content_item_url."
   },
   {
     "surface": "operations",
@@ -2209,11 +2227,12 @@
     "helper_tool_name": "show_contact_communication_history",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action show_contact_communication_history has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action show_contact_communication_history maps to helper tool show_contact_communication_history."
   },
   {
     "surface": "operations",
@@ -2263,16 +2282,17 @@
   {
     "surface": "operations",
     "label": "show one time launch checklist",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
     "helper_tool_name": "show_one_time_launch_checklist",
     "scope_rules": [
-      "admin/super_admin or scoped workspace login required"
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
   },
   {
     "surface": "operations",
@@ -2654,11 +2674,12 @@
     "helper_tool_name": "view_email_log",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action view_email_log has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action view_email_log maps to helper tool view_email_log."
   },
   {
     "surface": "parent",
@@ -2855,11 +2876,12 @@
     "helper_tool_name": "open_calendar_event",
     "scope_rules": [
       "own family and parent-visible records only",
+      "side_effect:read_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action open_calendar_event has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action open_calendar_event maps to helper tool open_calendar_event."
   },
   {
     "surface": "parent",
@@ -3225,20 +3247,6 @@
   },
   {
     "surface": "provider",
-    "label": "list provider leads",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
-    "helper_tool_name": "list_provider_leads",
-    "scope_rules": [
-      "provider workspace only; no other providers or BNA private student data"
-    ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
-  },
-  {
-    "surface": "provider",
     "label": "Open calendar event",
     "current_file": "public/provider.html",
     "api_endpoint": "/api/bna/calendar-events",
@@ -3246,11 +3254,12 @@
     "helper_tool_name": "open_calendar_event",
     "scope_rules": [
       "provider workspace only; no other providers or BNA private student data",
+      "side_effect:read_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action open_calendar_event has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action open_calendar_event maps to helper tool open_calendar_event."
   },
   {
     "surface": "provider",
@@ -3906,11 +3915,12 @@
     "helper_tool_name": "open_calendar_event",
     "scope_rules": [
       "student-safe own records only",
+      "side_effect:read_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "student_safe_only",
-    "notes": "Typed action open_calendar_event has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action open_calendar_event maps to helper tool open_calendar_event."
   },
   {
     "surface": "student",

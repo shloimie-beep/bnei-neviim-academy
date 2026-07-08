@@ -26,6 +26,13 @@ const PRESERVED_RUNTIME_ALIAS_TOOL_NAMES = new Set([
   'create_rabbi_shiur_idea',
   'draft_parent_response',
   'draft_weekly_update',
+  'show_one_time_launch_checklist',
+  'list_calendar_sessions',
+  'open_calendar_event',
+  'view_email_log',
+  'show_contact_communication_history',
+  'list_provider_leads',
+  'open_content_item_url',
 ]);
 const PRESERVED_RUNTIME_ALIAS_SURFACES = new Map([
   ['capture_ramble', new Set(['operations'])],
@@ -38,6 +45,13 @@ const PRESERVED_RUNTIME_ALIAS_SURFACES = new Map([
   ['create_rabbi_shiur_idea', new Set(['operations', 'provider'])],
   ['draft_parent_response', new Set(['operations', 'parent'])],
   ['draft_weekly_update', new Set(['operations', 'parent'])],
+  ['show_one_time_launch_checklist', new Set(['operations'])],
+  ['list_calendar_sessions', new Set(['operations'])],
+  ['open_calendar_event', new Set(['operations', 'parent', 'provider'])],
+  ['view_email_log', new Set(['operations'])],
+  ['show_contact_communication_history', new Set(['operations'])],
+  ['list_provider_leads', new Set(['operations'])],
+  ['open_content_item_url', new Set(['operations'])],
 ]);
 
 const TARGET_ACCOUNT = {

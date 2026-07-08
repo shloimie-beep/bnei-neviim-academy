@@ -78,6 +78,22 @@ Follow-up Rabbi runtime alias batch:
   18 `tool_wrapper_available_local`, 12 `registered_fallback_only_blocker`,
   and 133 `tool_wrapper_missing`.
 
+Follow-up Rabbi read-only wrapper batch:
+
+- Added scoped read-only wrappers for `show_one_time_launch_checklist`,
+  `list_calendar_sessions`, `open_calendar_event`, `view_email_log`,
+  `show_contact_communication_history`, `list_provider_leads`, and
+  `open_content_item_url`.
+- The wrappers recompute/lock scope to `rabbi_sheller_provider` /
+  `one_time_mishnah_class`, summarize results, and do not return meeting URLs,
+  raw media/Drive URLs, email bodies, raw message bodies, raw email addresses,
+  contact exports, parent phone/email values, or raw contact notes.
+- Refreshed `ops/helper-tool-parity-map.json`/`.md` so the second batch now
+  shows as `tool_available`.
+- Kept the Rabbi scope map at the original 163-contract audit baseline, with
+  current implementation statuses: 27 `tool_wrapper_available_local`, 12
+  `registered_fallback_only_blocker`, and 124 `tool_wrapper_missing`.
+
 ## Negative Tests Added
 
 Added focused coverage in `tests/bna-helper-tools.test.js` for the packet's
@@ -119,8 +135,13 @@ Follow-up verification:
 - PASS `node --test tests/bna-helper-tools.test.js
   tests/rabbi-helper-tool-scope-map.test.js
   tests/one-time-rbac-negative-isolation.test.js
-  tests/workspace-rbac-negative-isolation.test.js` (26/26)
-- PASS full `npm test` (1660/1660)
+  tests/workspace-rbac-negative-isolation.test.js` (27/27)
+- PASS `node --test tests/watchdog-action-registry.test.js` (5/5) after
+  regenerating `ops/action-registry/one-time-action-coverage.*`
+- PASS full `npm test` (1661/1661)
+- PASS `npm run watchdog:actions`
+- PASS `npm run secrets:audit`
+- PASS `npm run watchdog:protocol-drift`
 - PASS Railway deployment `500242a9-860f-4599-a145-eb9515bae0a4` reached
   `SUCCESS` on `one-time-production` / `one-time-web` / `production`
 - PASS `npm run app:smoke:onetime-separate-instance --
@@ -132,42 +153,46 @@ Follow-up verification:
 ## Remaining Agent-Mode Autonomy Gaps
 
 1. Query/filter/result-card tools are still not implemented for many natural
-   questions. The refreshed base parity map still has 145 `tool_needed` rows,
-   including
-   parent/student progress reads, payments/accounting reads, CRM/contact
-   filters, content/class/session reads, provider leads, calendar drafts, and
-   several prompt/goal lifecycle operations.
-2. The Rabbi 163-contract scope baseline has only 18 local runtime wrappers so
-   far. Twelve contracts are fallback/setup blockers, and 133 contracts still
-   show `tool_wrapper_missing`.
-3. The 18 local wrappers are not full agent-mode autonomy yet. They are
-   committed, pushed, deployed, and prompt-readback verified, but still need a
-   saved Agent Mode PASS/BLOCKED result.
-4. Scoped Operations deep links for Rabbi/One Time are conservative by default.
+   questions. The refreshed base parity map now has 136 `tool_needed` rows,
+   including parent/student progress reads, payments/accounting reads,
+   CRM/contact filters beyond the first read-only batch, content/class/session
+   reads, calendar drafts, and several prompt/goal lifecycle operations.
+2. The Rabbi 163-contract scope baseline has 27 local runtime wrappers so far.
+   Twelve contracts are fallback/setup blockers, and 124 contracts still show
+   `tool_wrapper_missing`.
+3. The exact missing-wrapper breakdown is 53 `internal_write`, 39 `read_only`,
+   28 `draft_only`, 2 `approval_gated_external_write`, and 2
+   `approval_gated_internal_state_change`.
+4. The 27 local wrappers are not full agent-mode autonomy yet. The first 18
+   are committed/pushed/deployed/prompt-readback verified; the read-only batch
+   still needs commit/push/deploy/live smoke, and all 27 need saved Agent Mode
+   PASS/BLOCKED results.
+5. Scoped Operations deep links for Rabbi/One Time are conservative by default.
    Helper permissions allow project-scoped task/navigation tools, but the route
    destination resolver currently blocks `/operations` for non-super-admin
    scoped roles and falls back to `/provider`. Autonomy needs an explicit
    route-policy packet for which scoped roles may open `tasks`, `studio`, or
    other allowed Operations modules without gaining platform-wide access.
-5. The parity map remains inventory-level. It does not yet include full
+6. The parity map remains inventory-level. It does not yet include full
    per-capability fields from the issue's suggested schema such as result
    renderer, parameter contract, negative-test owner, deep-link renderer, and
    live-readback evidence for every row.
-6. Planner coverage is still partial. Deterministic planner coverage exists
+7. Planner coverage is still partial. Deterministic planner coverage exists
    for navigation, tickets, task updates, performance reports, classroom
-   drafts, automation drafts, and the first Rabbi alias batch, but most
-   remaining inventory rows do not have natural-language intent routing or
-   safe missing-input prompts.
-7. Confirmation-gated execution exists, but agent-mode autonomy still needs a
+   drafts, automation drafts, the first Rabbi alias batch, and the read-only
+   batch, but most remaining inventory rows do not have natural-language intent
+   routing or safe missing-input prompts.
+8. Confirmation-gated execution exists, but agent-mode autonomy still needs a
    productized action console/timeline UI with visible plan, confirmation,
    execution, result links, errors, and audit readback across desktop/mobile.
-8. External-write/autonomy lanes remain blocked by policy and credentials:
+9. External-write/autonomy lanes remain blocked by policy and credentials:
    sends, Buffer, WAPI/WhatsApp, Stripe/payment, DNS, Vimeo/Drive/Zoom writes,
    access grants, destructive actions, and provider secret changes require
    separate approval gates and evidence.
-9. Live deploy and prompt readback are complete for this issue, but Agent
+10. Live deploy and prompt readback are complete for the first alias batch, but Agent
    Review has not yet saved a PASS/BLOCKED result for the refreshed map, the
-   first alias batch, and the scope/privacy negative tests in this scoped audit.
+   first alias batch, the read-only batch, and the scope/privacy negative tests
+   in this scoped audit.
 
 ## Guardrails Observed
 

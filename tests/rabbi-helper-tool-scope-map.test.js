@@ -135,8 +135,31 @@ test('Rabbi helper scope map marks the first runtime alias batch as locally wrap
     assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
   }
 
-  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, aliasContracts.length);
+  assert.ok(scopeMap.counts.by_implementation_status.tool_wrapper_available_local >= aliasContracts.length);
   assert.ok(scopeMap.counts.by_implementation_status.tool_wrapper_missing > aliasContracts.length);
+});
+
+test('Rabbi helper scope map marks the read-only runtime batch as locally wrapper-backed', () => {
+  const readOnlyNames = [
+    'show_one_time_launch_checklist',
+    'list_calendar_sessions',
+    'open_calendar_event',
+    'view_email_log',
+    'show_contact_communication_history',
+    'list_provider_leads',
+    'open_content_item_url',
+  ];
+  const readOnlyContracts = scopeMap.contracts.filter((contract) => readOnlyNames.includes(contract.source.helper_tool_name));
+  assert.equal(readOnlyContracts.length, 9);
+
+  for (const contract of readOnlyContracts) {
+    assert.equal(contract.rabbi_contract.action_policy, 'read_only');
+    assert.equal(contract.rabbi_contract.confirmation_policy, 'safe_without_confirmation_after_scope_check');
+    assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
+    assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
+  }
+
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 27);
 });
 
 test('account bot scope template supports narrower subaccounts like Benny tasks and Studio', () => {

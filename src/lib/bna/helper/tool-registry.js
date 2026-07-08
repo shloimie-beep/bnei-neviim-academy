@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const { confirmationPolicyForTool, inferSideEffectLevel } = require('./confirmation-gates');
 const { resolveHelperDestination } = require('./destination-resolver');
-const { helperPermissionForTool } = require('./permissions');
+const { helperPermissionForTool, normalizeWorkspaceKey } = require('./permissions');
 const { redactText, redactValue } = require('./redaction');
 const { helperResultCard, helperResultLink } = require('./result-links');
 const { notifySuperAdminSupportTicket } = require('../telegram-notifications');
@@ -9,6 +9,9 @@ const vimeoIntegration = require('../../integrations/vimeo');
 const { parseIntakeText } = require('../intake-parser');
 const { extractedItemCounts, normalizeSourceChannel } = require('../ramble-protocol');
 const { STANDING_GOALS, affectedGoalIdsForText } = require('../goal-registry');
+
+const RABBI_WORKSPACE_KEY = 'rabbi_sheller_provider';
+const RABBI_PROJECT_KEY = 'one_time_mishnah_class';
 
 const REQUIRED_HELPER_TOOL_NAMES = [
   'create_task',
@@ -28,6 +31,13 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'route_bug_to_codex',
   'audit_queue_status',
   'show_task_report',
+  'show_one_time_launch_checklist',
+  'list_calendar_sessions',
+  'open_calendar_event',
+  'view_email_log',
+  'show_contact_communication_history',
+  'list_provider_leads',
+  'open_content_item_url',
   'create_support_ticket',
   'create_report_problem_ticket',
   'create_ticket',
@@ -1231,8 +1241,89 @@ async function createTaskTool({ args, context, deps, db }) {
   });
 }
 
+function rabbiScopeError(reason) {
+  const error = new Error(`permission_denied: ${reason}`);
+  error.code = 'permission_denied';
+  error.statusCode = 403;
+  return error;
+}
+
+function explicitArgValue(args = {}, ...keys) {
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(args, key) && args[key] !== undefined && args[key] !== null && args[key] !== '') {
+      return args[key];
+    }
+  }
+  return '';
+}
+
 function rabbiProjectKey(args = {}, context = {}) {
-  return args.project_key || context.projectKey || 'one_time_mishnah_class';
+  const explicitProject = explicitArgValue(args, 'project_key', 'project');
+  if (explicitProject && normalizeProjectKey(explicitProject) !== RABBI_PROJECT_KEY) {
+    throw rabbiScopeError('Rabbi helper project scope mismatch');
+  }
+  const scopedProject = context.identity?.scope?.projectKey || context.identity?.scope?.project_key || '';
+  if (context.identity?.scope?.type === 'project' && scopedProject && normalizeProjectKey(scopedProject) !== RABBI_PROJECT_KEY) {
+    throw rabbiScopeError('Rabbi helper project scope mismatch');
+  }
+  return RABBI_PROJECT_KEY;
+}
+
+function rabbiWorkspaceKey(args = {}, context = {}) {
+  const explicitWorkspace = explicitArgValue(args, 'workspace_key', 'workspace');
+  if (explicitWorkspace && normalizeWorkspaceKey(explicitWorkspace) !== RABBI_WORKSPACE_KEY) {
+    throw rabbiScopeError('Rabbi helper workspace scope mismatch');
+  }
+  const scopedWorkspace = context.identity?.scope?.workspaceKey
+    || context.identity?.scope?.workspace_key
+    || context.helperScope?.workspaceKey
+    || context.helperScope?.workspace_key
+    || '';
+  if (scopedWorkspace && normalizeWorkspaceKey(scopedWorkspace) !== RABBI_WORKSPACE_KEY) {
+    throw rabbiScopeError('Rabbi helper workspace scope mismatch');
+  }
+  return RABBI_WORKSPACE_KEY;
+}
+
+async function resolveRabbiProject({ args = {}, context = {}, deps = {}, db }) {
+  const projectKey = rabbiProjectKey(args, context);
+  const workspaceKey = rabbiWorkspaceKey(args, context);
+  const project = deps.resolveProjectFromInput
+    ? await deps.resolveProjectFromInput({ project_key: projectKey, workspace_key: workspaceKey }, db)
+    : { id: null, project_key: projectKey, workspace_key: workspaceKey };
+  if (project?.project_key && normalizeProjectKey(project.project_key) !== projectKey) {
+    throw rabbiScopeError('Rabbi helper project scope mismatch');
+  }
+  if (project?.workspace_key && normalizeWorkspaceKey(project.workspace_key) !== workspaceKey) {
+    throw rabbiScopeError('Rabbi helper workspace scope mismatch');
+  }
+  if (deps.assertProjectAccess) deps.assertProjectAccess(context.req, project);
+  return { project, projectKey, workspaceKey, projectId: normalizeNumber(project?.id) };
+}
+
+function helperLimit(value, fallback = 10, max = 50) {
+  const number = normalizeNumber(value);
+  if (!Number.isFinite(number) || number <= 0) return fallback;
+  return Math.max(1, Math.min(Math.trunc(number), max));
+}
+
+function appendQueryParam(path = '', key = '', value = '') {
+  if (!path || !key || value === undefined || value === null || value === '') return path || null;
+  const separator = path.includes('?') ? '&' : '?';
+  return `${path}${separator}${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`;
+}
+
+function emailDomain(value = '') {
+  const domain = String(value || '').split('@')[1] || '';
+  return domain ? domain.toLowerCase() : null;
+}
+
+function safeCommunicationParty(name = '', address = '') {
+  return {
+    name: compactText(name, 120) || null,
+    email_domain: emailDomain(address),
+    address_returned: false,
+  };
 }
 
 async function createRabbiTaskAliasTool(payload, aliasToolName, defaults) {
@@ -1758,6 +1849,443 @@ async function showTaskReportTool({ args, context, db }) {
     summary: `Found ${result.rows.length} task rows for this report.`,
     url: '/operations?view=tasks',
     data: { tasks: result.rows },
+  });
+}
+
+async function showOneTimeLaunchChecklistTool({ args, context, deps, db }) {
+  const { projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const limit = helperLimit(args.limit, 20, 50);
+  const result = await db.query(
+    `SELECT id, title, display_title, summary, stage, category, waiting_on, agent_status, updated_at
+     FROM bna_tasks
+     WHERE COALESCE(project_key, '') = $1
+       AND COALESCE(stage, '') <> 'done'
+     ORDER BY updated_at DESC NULLS LAST, id DESC
+     LIMIT $2`,
+    [projectKey, limit]
+  );
+  return helperResultCard({
+    tool: 'show_one_time_launch_checklist',
+    recordType: 'helper_audit',
+    recordId: null,
+    label: 'One Time launch checklist',
+    summary: `Found ${result.rows.length} open One Time launch/task row(s).`,
+    url: `/operations?view=tasks&workspace=${workspaceKey}`,
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      checklist: [
+        { key: 'tool_scope', label: 'Helper tool scope map', status: 'tracked_in_repo' },
+        { key: 'agent_mode', label: 'Agent Mode probes', status: 'run_per_batch' },
+        { key: 'external_writes', label: 'External sends/publishes/payments/access grants', status: 'approval_gated' },
+      ],
+      tasks: result.rows.map((row) => ({
+        id: row.id,
+        title: row.display_title || row.title,
+        summary: row.summary || null,
+        stage: row.stage || null,
+        category: row.category || null,
+        waiting_on: row.waiting_on || null,
+        agent_status: row.agent_status || null,
+        updated_at: row.updated_at || null,
+      })),
+    },
+  });
+}
+
+function safeCalendarEvent(row = {}) {
+  return {
+    id: row.id,
+    title: row.title,
+    related_type: row.related_type || null,
+    related_id: row.related_id || null,
+    start_at: row.start_at,
+    end_at: row.end_at || null,
+    status: row.status || null,
+    visibility: row.visibility || null,
+    source: row.source || null,
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+    meeting_url_present: Boolean(row.meeting_url_present),
+    meeting_url_returned: false,
+    description_returned: false,
+  };
+}
+
+async function listCalendarSessionsTool({ args, context, deps, db }) {
+  const { workspaceKey, projectKey } = await resolveRabbiProject({ args, context, deps, db });
+  const params = [workspaceKey];
+  const conditions = [`workspace_key = $1`];
+  if (args.status) {
+    params.push(compactText(args.status, 40));
+    conditions.push(`status = $${params.length}`);
+  }
+  if (args.date_from) {
+    params.push(compactText(args.date_from, 40));
+    conditions.push(`start_at >= $${params.length}`);
+  }
+  if (args.date_to) {
+    params.push(compactText(args.date_to, 40));
+    conditions.push(`start_at <= $${params.length}`);
+  }
+  params.push(helperLimit(args.limit, 10, 50));
+  const result = await db.query(
+    `SELECT id, related_type, related_id, title, start_at, end_at, status, visibility,
+            source, created_at, updated_at, meeting_url IS NOT NULL AS meeting_url_present
+     FROM bna_calendar_events
+     WHERE ${conditions.join(' AND ')}
+     ORDER BY start_at ASC, id ASC
+     LIMIT $${params.length}`,
+    params
+  );
+  return helperResultCard({
+    tool: 'list_calendar_sessions',
+    recordType: 'helper_audit',
+    recordId: null,
+    label: 'One Time calendar sessions',
+    summary: `Found ${result.rows.length} scoped One Time calendar event(s).`,
+    url: `/operations?view=calendar&workspace=${workspaceKey}`,
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      events: result.rows.map(safeCalendarEvent),
+    },
+  });
+}
+
+async function openCalendarEventTool({ args, context, deps, db }) {
+  const { workspaceKey, projectKey } = await resolveRabbiProject({ args, context, deps, db });
+  const result = await db.query(
+    `SELECT id, related_type, related_id, title, start_at, end_at, status, visibility,
+            source, created_at, updated_at, meeting_url IS NOT NULL AS meeting_url_present
+     FROM bna_calendar_events
+     WHERE id = $1 AND workspace_key = $2
+     LIMIT 1`,
+    [args.event_id, workspaceKey]
+  );
+  if (!result.rows[0]) {
+    return helperResultCard({
+      ok: false,
+      tool: 'open_calendar_event',
+      recordType: 'calendar_event',
+      recordId: args.event_id,
+      label: `Calendar event #${args.event_id}`,
+      summary: 'No One Time calendar event was found for that scoped ID.',
+      status: 'not_found',
+      data: { scope: { workspace_key: workspaceKey, project_key: projectKey } },
+    });
+  }
+  const destination = resolveHelperDestination({
+    intent: 'open_calendar_event',
+    actor: {
+      role: context.identity?.role || context.userRole || 'admin',
+      scope: context.identity?.scope || {},
+      workspace_key: workspaceKey,
+      project_key: projectKey,
+      user_id: context.userName || context.identity?.username || 'BNA Helper',
+    },
+    context,
+    channel: 'operations_helper',
+    helperTool: 'open_calendar_event',
+    target: {
+      view: 'calendar',
+      workspace_key: workspaceKey,
+    },
+    reason: 'Open scoped One Time calendar event',
+  });
+  return helperResultCard({
+    ok: destination.ok,
+    tool: 'open_calendar_event',
+    recordType: 'calendar_event',
+    recordId: args.event_id,
+    label: `Calendar event #${args.event_id}`,
+    summary: destination.ok
+      ? `Prepared a scoped calendar event link for #${args.event_id}.`
+      : `Found the scoped event, but could not prepare the Operations link: ${destination.reason}.`,
+    url: destination.ok ? appendQueryParam(destination.path, 'event', args.event_id) : destination.fallback?.path || null,
+    status: destination.ok ? 'prepared' : 'blocked',
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      event: safeCalendarEvent(result.rows[0]),
+      destination,
+    },
+  });
+}
+
+function safeContentItem(row = {}) {
+  return {
+    id: row.id,
+    title: row.title,
+    status: row.status || null,
+    source_type: row.source_type || null,
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+    media_url_present: Boolean(row.media_url_present),
+    media_url_returned: false,
+    drive_file_present: Boolean(row.drive_file_present),
+    drive_file_id_returned: false,
+  };
+}
+
+async function openContentItemUrlTool({ args, context, deps, db }) {
+  const { project, projectKey, workspaceKey, projectId } = await resolveRabbiProject({ args, context, deps, db });
+  const result = await db.query(
+    `SELECT cj.id, cj.title, cj.status, cj.source_type, cj.created_at, cj.updated_at,
+            cj.media_url IS NOT NULL AS media_url_present,
+            cj.drive_file_id IS NOT NULL AS drive_file_present
+     FROM bna_content_jobs cj
+     LEFT JOIN bna_projects p ON p.id = cj.project_id
+     WHERE cj.id = $1
+       AND (cj.project_id = $2 OR p.project_key = $3)
+     LIMIT 1`,
+    [args.content_id, projectId || project.id || 0, projectKey]
+  );
+  if (!result.rows[0]) {
+    return helperResultCard({
+      ok: false,
+      tool: 'open_content_item_url',
+      recordType: 'content_job',
+      recordId: args.content_id,
+      label: `Content item #${args.content_id}`,
+      summary: 'No One Time content item was found for that scoped ID.',
+      status: 'not_found',
+      data: { scope: { workspace_key: workspaceKey, project_key: projectKey } },
+    });
+  }
+  return helperResultCard({
+    tool: 'open_content_item_url',
+    recordType: 'content_job',
+    recordId: args.content_id,
+    label: `Content item #${args.content_id}`,
+    summary: `Prepared a scoped content item link for #${args.content_id}.`,
+    url: helperResultLink('content_job', args.content_id),
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      content_item: safeContentItem(result.rows[0]),
+    },
+  });
+}
+
+function safeCommunicationRow(row = {}) {
+  return {
+    id: row.id,
+    channel: row.channel || null,
+    direction: row.direction || null,
+    communication_type: row.communication_type || null,
+    subject: row.subject || null,
+    status: row.status || null,
+    provider: row.provider || null,
+    occurred_at: row.occurred_at || null,
+    created_at: row.created_at || null,
+    from: safeCommunicationParty(row.from_name, row.from_address),
+    to: safeCommunicationParty(row.to_name, row.to_address),
+    body_returned: false,
+    raw_message_returned: false,
+  };
+}
+
+async function viewEmailLogTool({ args, context, deps, db }) {
+  const { projectId, projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const params = [projectId || 0, projectKey];
+  const conditions = [`c.channel = 'email'`, `(c.project_id = $1 OR p.project_key = $2)`];
+  if (args.status) {
+    params.push(compactText(args.status, 80));
+    conditions.push(`c.status = $${params.length}`);
+  }
+  if (args.direction) {
+    params.push(compactText(args.direction, 40));
+    conditions.push(`c.direction = $${params.length}`);
+  }
+  params.push(helperLimit(args.limit, 10, 50));
+  const result = await db.query(
+    `SELECT c.id, c.channel, c.direction, c.communication_type, c.from_name, c.from_address,
+            c.to_name, c.to_address, c.subject, c.provider, c.status, c.occurred_at, c.created_at
+     FROM bna_communications c
+     LEFT JOIN bna_projects p ON p.id = c.project_id
+     WHERE ${conditions.join(' AND ')}
+     ORDER BY COALESCE(c.occurred_at, c.created_at) DESC, c.id DESC
+     LIMIT $${params.length}`,
+    params
+  );
+  return helperResultCard({
+    tool: 'view_email_log',
+    recordType: 'helper_audit',
+    recordId: null,
+    label: 'One Time email log',
+    summary: `Found ${result.rows.length} scoped One Time email log row(s).`,
+    url: `/operations?view=communications&workspace=${workspaceKey}`,
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      emails: result.rows.map(safeCommunicationRow),
+    },
+  });
+}
+
+function contactHistoryFilters(args = {}) {
+  const filters = [];
+  const values = [];
+  function push(sql, ...inputValues) {
+    const start = values.length;
+    let index = 0;
+    filters.push(sql.replace(/\?/g, () => `$${start + (++index)}`));
+    values.push(...inputValues);
+  }
+  if (args.contact_id) push('c.contact_id = ?', args.contact_id);
+  if (args.signup_id) push('c.signup_id = ?', args.signup_id);
+  if (args.student_id) push('c.student_id = ?', args.student_id);
+  if (args.email) {
+    values.push(String(args.email).toLowerCase());
+    filters.push(`(LOWER(COALESCE(c.from_address, '')) = $${values.length} OR LOWER(COALESCE(c.to_address, '')) = $${values.length})`);
+  }
+  if (args.phone) {
+    const phone = String(args.phone || '').replace(/\D+/g, '');
+    if (phone) push(`regexp_replace(COALESCE(c.metadata::text, ''), '\\D', '', 'g') LIKE '%' || ? || '%'`, phone);
+  }
+  if (args.contact_name) {
+    const contactName = compactText(args.contact_name, 120);
+    push(
+      `(COALESCE(c.from_name, '') ILIKE '%' || ? || '%' OR COALESCE(c.to_name, '') ILIKE '%' || ? || '%')`,
+      contactName,
+      contactName
+    );
+  }
+  return { filters, values };
+}
+
+async function showContactCommunicationHistoryTool({ args, context, deps, db }) {
+  const { projectId, projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const scopedParams = [projectId || 0, projectKey];
+  const { filters, values } = contactHistoryFilters(args);
+  if (!filters.length) {
+    return helperResultCard({
+      ok: false,
+      tool: 'show_contact_communication_history',
+      recordType: 'helper_audit',
+      recordId: null,
+      label: 'Contact communication history',
+      summary: 'A scoped contact, signup, student, email, phone, or contact name is required before showing communication history.',
+      status: 'needs_input',
+      data: { scope: { workspace_key: workspaceKey, project_key: projectKey }, body_returned: false },
+    });
+  }
+  const offsetFilters = filters.map((filter) => filter.replace(/\$(\d+)/g, (_, number) => `$${Number(number) + scopedParams.length}`));
+  const params = scopedParams.concat(values);
+  params.push(helperLimit(args.limit, 10, 50));
+  const result = await db.query(
+    `SELECT c.id, c.channel, c.direction, c.communication_type, c.from_name, c.from_address,
+            c.to_name, c.to_address, c.subject, c.provider, c.status, c.occurred_at, c.created_at
+     FROM bna_communications c
+     LEFT JOIN bna_projects p ON p.id = c.project_id
+     WHERE (c.project_id = $1 OR p.project_key = $2)
+       AND (${offsetFilters.join(' OR ')})
+     ORDER BY COALESCE(c.occurred_at, c.created_at) DESC, c.id DESC
+     LIMIT $${params.length}`,
+    params
+  );
+  return helperResultCard({
+    tool: 'show_contact_communication_history',
+    recordType: 'helper_audit',
+    recordId: args.contact_id || args.signup_id || args.student_id || null,
+    label: 'Contact communication history',
+    summary: `Found ${result.rows.length} scoped communication row(s).`,
+    url: `/operations?view=communications&workspace=${workspaceKey}`,
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      communications: result.rows.map(safeCommunicationRow),
+      body_returned: false,
+    },
+  });
+}
+
+function safeProviderLead(row = {}) {
+  return {
+    id: row.id,
+    record_type: row.record_type || 'parent_lead',
+    parent_name: compactText(row.parent_name, 140) || null,
+    student_name: compactText(row.student_name, 140) || null,
+    lead_type: row.lead_type || null,
+    status: row.status || null,
+    interest_level: row.interest_level || null,
+    source: row.source || null,
+    source_detail: compactText(row.source_detail, 120) || null,
+    last_inbound_at: row.last_inbound_at || null,
+    last_outbound_at: row.last_outbound_at || null,
+    next_follow_up_date: row.next_follow_up_date || null,
+    tag_count: Number(row.tag_count || 0),
+    communication_count: Number(row.communication_count || 0),
+    latest_communication_at: row.latest_communication_at || null,
+    email_domain: emailDomain(row.parent_email),
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+    parent_email_returned: false,
+    parent_phone_returned: false,
+    notes_returned: false,
+    raw_contact_export_returned: false,
+  };
+}
+
+async function listProviderLeadsTool({ args, context, deps, db }) {
+  const { projectId, projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const params = [projectId || 0, projectKey];
+  const leadConditions = [`(l.project_id = $1 OR p.project_key = $2)`];
+  const signupConditions = [`(s.project_id = $1 OR sp.project_key = $2)`];
+  if (args.status) {
+    params.push(compactText(args.status, 80));
+    leadConditions.push(`l.status = $${params.length}`);
+    signupConditions.push(`s.status = $${params.length}`);
+  }
+  if (args.search) {
+    params.push(compactText(args.search, 120));
+    leadConditions.push(`(l.parent_name ILIKE '%' || $${params.length} || '%' OR l.student_name ILIKE '%' || $${params.length} || '%' OR l.source_detail ILIKE '%' || $${params.length} || '%')`);
+    signupConditions.push(`(s.parent_name ILIKE '%' || $${params.length} || '%' OR s.student_name ILIKE '%' || $${params.length} || '%')`);
+  }
+  params.push(helperLimit(args.limit, 10, 50));
+  const result = await db.query(
+    `SELECT *
+     FROM (
+       SELECT 'parent_lead' AS record_type,
+              l.id, l.parent_name, l.student_name, l.lead_type, l.status,
+              l.interest_level, l.source, l.source_detail, l.last_inbound_at,
+              l.last_outbound_at, l.next_follow_up_date,
+              COALESCE(cardinality(l.tags), 0)::int AS tag_count,
+              l.parent_email, l.created_at, l.updated_at,
+              COUNT(cc.id)::int AS communication_count,
+              MAX(cc.occurred_at) AS latest_communication_at
+       FROM bna_parent_leads l
+       LEFT JOIN bna_projects p ON p.id = l.project_id
+       LEFT JOIN bna_contact_communications cc ON cc.lead_id = l.id
+       WHERE ${leadConditions.join(' AND ')}
+       GROUP BY l.id
+       UNION ALL
+       SELECT 'signup' AS record_type,
+              s.id, s.parent_name, s.student_name, 'signup' AS lead_type,
+              COALESCE(s.status, 'new') AS status,
+              NULL AS interest_level, 'signup' AS source, NULL AS source_detail,
+              NULL AS last_inbound_at, NULL AS last_outbound_at,
+              NULL AS next_follow_up_date,
+              COALESCE(cardinality(s.tags), 0)::int AS tag_count,
+              s.parent_email, s.created_at, s.updated_at,
+              COUNT(cc.id)::int AS communication_count,
+              MAX(cc.occurred_at) AS latest_communication_at
+       FROM signups s
+       LEFT JOIN bna_projects sp ON sp.id = s.project_id
+       LEFT JOIN bna_contact_communications cc ON cc.signup_id = s.id
+       WHERE ${signupConditions.join(' AND ')}
+       GROUP BY s.id
+     ) scoped_provider_leads
+     ORDER BY updated_at DESC NULLS LAST, id DESC
+     LIMIT $${params.length}`,
+    params
+  );
+  return helperResultCard({
+    tool: 'list_provider_leads',
+    recordType: 'helper_audit',
+    recordId: null,
+    label: 'One Time provider contact leads',
+    summary: `Found ${result.rows.length} scoped One Time contact lead/signup row(s).`,
+    url: `/operations?view=contacts&workspace=${workspaceKey}`,
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      leads: result.rows.map(safeProviderLead),
+    },
   });
 }
 
@@ -2416,6 +2944,96 @@ function buildToolRegistry(deps = {}) {
         limit: { type: 'integer', default: 25 },
       },
     }, showTaskReportTool),
+    makeDefinition({
+      name: 'show_one_time_launch_checklist',
+      description: 'Show a read-only One Time launch checklist plus scoped open tasks/blockers.',
+      category: 'reports',
+      sideEffectLevel: 'read_only',
+      schema: {
+        limit: { type: 'integer', default: 20 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, showOneTimeLaunchChecklistTool),
+    makeDefinition({
+      name: 'list_calendar_sessions',
+      description: 'List One Time calendar sessions without returning meeting URLs or private descriptions.',
+      category: 'calendar',
+      sideEffectLevel: 'read_only',
+      schema: {
+        status: { type: 'string', maxLength: 40 },
+        date_from: { type: 'string', maxLength: 40 },
+        date_to: { type: 'string', maxLength: 40 },
+        limit: { type: 'integer', default: 10 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, listCalendarSessionsTool),
+    makeDefinition({
+      name: 'open_calendar_event',
+      description: 'Open a scoped One Time calendar event link after verifying workspace ownership.',
+      category: 'calendar',
+      sideEffectLevel: 'read_only',
+      schema: {
+        event_id: { type: 'integer', required: true },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, openCalendarEventTool),
+    makeDefinition({
+      name: 'view_email_log',
+      description: 'Show scoped One Time email log summaries without email bodies or raw addresses.',
+      category: 'communications',
+      sideEffectLevel: 'read_only',
+      schema: {
+        status: { type: 'string', maxLength: 80 },
+        direction: { type: 'string', maxLength: 40 },
+        limit: { type: 'integer', default: 10 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, viewEmailLogTool),
+    makeDefinition({
+      name: 'show_contact_communication_history',
+      description: 'Show scoped contact communication summaries without raw private message bodies.',
+      category: 'communications',
+      sideEffectLevel: 'read_only',
+      schema: {
+        contact_id: { type: 'integer' },
+        signup_id: { type: 'integer' },
+        student_id: { type: 'integer' },
+        email: { type: 'string', maxLength: 240 },
+        phone: { type: 'string', maxLength: 80 },
+        contact_name: { type: 'string', maxLength: 120 },
+        limit: { type: 'integer', default: 10 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, showContactCommunicationHistoryTool),
+    makeDefinition({
+      name: 'list_provider_leads',
+      description: 'List One Time provider contact lead and signup summaries without contact exports, raw notes, or phone/email values.',
+      category: 'contacts_crm',
+      sideEffectLevel: 'read_only',
+      schema: {
+        status: { type: 'string', maxLength: 80 },
+        search: { type: 'string', maxLength: 120 },
+        limit: { type: 'integer', default: 10 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, listProviderLeadsTool),
+    makeDefinition({
+      name: 'open_content_item_url',
+      description: 'Open a scoped One Time content item link without returning raw media or Drive URLs.',
+      category: 'content',
+      sideEffectLevel: 'read_only',
+      schema: {
+        content_id: { type: 'integer', required: true },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, openContentItemUrlTool),
     makeDefinition({
       name: 'create_support_ticket',
       description: 'Create a first-party Operations support ticket or problem report.',
