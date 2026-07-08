@@ -34056,3 +34056,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/watchdog-audits/2026-07-08-onetime-parent-student-auth-deploy-blocker.md`.
 - Status: pushed and locally verified, but deploy/live-smoke blocked. No live
   email resend was performed.
+
+## 2026-07-08T16:42:03+03:00 - OneTime parent/student auth deployed and live-smoked
+
+- Deployed the OneTime parent/student auth cleanup to the explicit OneTime
+  Railway target using account-authenticated Railway CLI access:
+  `one-time-production / production / one-time-web`.
+- OneTime deployment `d434dd9b-d619-41c2-abc8-c8918219dc68` reached
+  `SUCCESS`.
+- Live readbacks against `https://join.onetimeonetime.com` passed for
+  `/one-time-parent`, `/member-library`, `/one-time-classroom`,
+  `/rabbi-member`, and `/api/one-time/instance-config`.
+- Verified live parent setup has the OneTime forgot-password route and no
+  BNA/Academy leak, member-library/classroom no longer expose fallback/
+  recovery-code or public-return markers, and Rabbi-member no longer contains
+  the old portrait marker.
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
+  passed.
+- Live no-send parent invite dry run passed with production mode,
+  `test_labeled=false`, `launch_ready=true`, OneTime parent/member/classroom
+  paths only, and no local/external writes.
+- No live email resend was performed because the existing record still had
+  old test/walkthrough labels and the exact live OneTime student display name
+  still needs operator confirmation before the cleaned route will send.
+- Evidence:
+  `ops/watchdog-audits/2026-07-08-onetime-parent-student-auth-deploy-live-smoke.md`.

@@ -1,0 +1,88 @@
+{
+  "id": "WATCH-20260708-ONETIME-PARENT-STUDENT-AUTH-DEPLOY-LIVE-SMOKE",
+  "checked_at": "2026-07-08T16:42:03+03:00",
+  "implementation_commit": "b7ba8418c36d4efc4ab999b42cf1db1c66686627",
+  "status_commit": "b3fb7075b09d3e4736956c600809eb8b4ff67031",
+  "deployment": {
+    "surface": "one-time-web",
+    "project": "one-time-production",
+    "deployment_id": "d434dd9b-d619-41c2-abc8-c8918219dc68",
+    "status": "SUCCESS",
+    "base_url": "https://join.onetimeonetime.com"
+  },
+  "live_route_smoke": {
+    "ok": true,
+    "routes": [
+      {
+        "path": "/one-time-parent?reset=TESTTOKEN",
+        "status": 200,
+        "title": "OneTimeOneTime Parent Setup",
+        "has_bna_leak": false,
+        "has_fallback_recovery": false,
+        "has_parent_reset_request_route": true,
+        "has_public_return": false
+      },
+      {
+        "path": "/member-library",
+        "status": 200,
+        "has_bna_leak": false,
+        "has_fallback_recovery": false,
+        "has_no_separate_password_copy": true,
+        "has_forgot_parent_password": true,
+        "has_member_session_marker": true,
+        "has_public_return": false
+      },
+      {
+        "path": "/one-time-classroom",
+        "status": 200,
+        "has_bna_leak": false,
+        "has_fallback_recovery": false,
+        "has_no_separate_password_copy": true,
+        "has_forgot_parent_password": true,
+        "has_member_session_marker": true,
+        "has_public_return": false
+      },
+      {
+        "path": "/rabbi-member",
+        "status": 200,
+        "has_old_portrait_marker": false,
+        "has_public_return": false
+      },
+      {
+        "path": "/api/one-time/instance-config",
+        "status": 200
+      }
+    ],
+    "separate_instance_smoke_passed": true
+  },
+  "parent_invite_dry_run": {
+    "success": true,
+    "dry_run": true,
+    "no_send": true,
+    "external_write_performed": false,
+    "local_write_performed": false,
+    "parent_portal_path": "/one-time-parent",
+    "member_library_path": "/member-library",
+    "classroom_path": "/one-time-classroom",
+    "invite_mode": "production",
+    "test_labeled": false,
+    "launch_ready": true,
+    "live_class_url_included": true,
+    "confirm_required": "SEND_ONE_TIME_PARENT_TRIAL_INVITE",
+    "scoped_workspace": "rabbi_sheller_provider",
+    "scoped_project": "one_time_mishnah_class"
+  },
+  "live_send": {
+    "performed": false,
+    "blocker": "Exact live OneTime student display name is required before resending the live parent invite."
+  },
+  "guardrails": [
+    "No live email sent",
+    "No payment or checkout created",
+    "No Zoom/Drive/Vimeo/DNS mutation",
+    "No setup token committed",
+    "No member access code committed",
+    "No full recipient address committed",
+    "No full Zoom URL committed"
+  ]
+}
