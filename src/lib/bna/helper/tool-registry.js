@@ -180,20 +180,7 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'publish_library_item_after_approval',
 ];
 
-const FALLBACK_ONLY_TOOL_NAMES = [
-  'create_contact',
-  'create_parent',
-  'create_course',
-  'create_worksheet',
-  'create_provider_profile',
-  'create_setup_flow',
-  'ingest_class_video_from_drive_or_upload',
-  'transcribe_video',
-  'parse_student_questions',
-  'generate_worksheet',
-  'create_library_item',
-  'publish_library_item_after_approval',
-];
+const FALLBACK_ONLY_TOOL_NAMES = [];
 
 const TASK_CATEGORIES = new Set([
   'admin',
@@ -3968,7 +3955,11 @@ function safeLocalScopedToolPreview(spec = {}, inputs = {}, { workspaceKey, proj
     ? 'approval_required_before_external_write'
     : spec.sideEffectLevel === 'destructive_or_state_change'
       ? 'approval_required_before_state_change'
-      : 'approval_required_before_internal_write';
+      : spec.sideEffectLevel === 'read_only'
+        ? 'approval_required_before_scoped_read'
+        : spec.sideEffectLevel === 'draft_only'
+          ? 'approval_required_before_draft_generation'
+          : 'approval_required_before_internal_write';
   const base = {
     tool_name: spec.name,
     local_scope_request_created: true,
@@ -4002,6 +3993,7 @@ function safeLocalScopedToolPreview(spec = {}, inputs = {}, { workspaceKey, proj
     lesson_id: 'lesson_id',
     prompt_id: 'prompt_id',
     recording_id: 'recording_id',
+    content_id: 'content_id',
     class_session_id: 'class_session_id',
     event_id: 'event_id',
     email_id: 'email_id',
@@ -4014,6 +4006,9 @@ function safeLocalScopedToolPreview(spec = {}, inputs = {}, { workspaceKey, proj
     question_id: 'question_id',
     community_id: 'community_id',
     duplicate_of_pending_id: 'duplicate_of_pending_id',
+    course_id: 'course_id',
+    worksheet_id: 'worksheet_id',
+    setup_flow_key: 'setup_flow_key',
     drive_file_id: 'drive_file_id_present',
     title: 'title',
     topic: 'topic',
@@ -4136,6 +4131,18 @@ const RABBI_LOCAL_SCOPE_TOOL_DEFINITIONS = [
   ['update_provider_lead', 'Provider lead update packet', 'Prepare a scoped provider lead update without exporting contacts or moving unrelated leads.', 'contacts_crm', { lead_id: { type: 'integer', required: true }, stage: { type: 'string', maxLength: 80 }, status: { type: 'string', maxLength: 80 }, notes: { type: 'string', maxLength: 1000 } }, true],
   ['update_rabbi_brand_kit', 'Rabbi brand kit packet', 'Prepare a scoped Rabbi brand-kit update without publishing assets.', 'provider_setup', { provider_id: { type: 'integer' }, brand_key: { type: 'string', maxLength: 120 }, colors: { type: 'object' }, logo_url: { type: 'string', maxLength: 400 }, notes: { type: 'string', maxLength: 1000 } }, true],
   ['upload_provider_asset_reference', 'Provider asset reference packet', 'Prepare a scoped provider asset reference without uploading, reading Drive, or returning raw URLs.', 'tasks', { provider_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, asset_type: { type: 'string', maxLength: 120 }, asset_url: { type: 'string', maxLength: 400 }, drive_file_id: { type: 'string', maxLength: 180 } }, true],
+  ['create_contact', 'Contact creation packet', 'Prepare a scoped One Time contact creation request without exporting contacts or writing global CRM records.', 'contacts_crm', { title: { type: 'string', maxLength: 180 }, contact_name: { type: 'string', maxLength: 180 }, display_name: { type: 'string', maxLength: 180 }, email: { type: 'string', maxLength: 180 }, phone: { type: 'string', maxLength: 80 }, parent_id: { type: 'integer' }, student_id: { type: 'integer' }, lead_id: { type: 'integer' }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['create_course', 'Course creation packet', 'Prepare a scoped One Time course creation request without provisioning Google Classroom or public course records.', 'studio', { course_id: { type: 'string', maxLength: 180 }, title: { type: 'string', maxLength: 180 }, topic: { type: 'string', maxLength: 180 }, class_count: { type: 'integer' }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['create_library_item', 'Library item creation packet', 'Prepare a scoped library item creation request without publishing, uploading, or exposing raw media links.', 'studio', { content_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, topic: { type: 'string', maxLength: 180 }, body: { type: 'string', maxLength: 10000 }, media_url: { type: 'string', maxLength: 400 }, drive_file_id: { type: 'string', maxLength: 180 }, vimeo_url: { type: 'string', maxLength: 400 } }, true],
+  ['create_parent', 'Parent creation packet', 'Prepare a scoped parent creation request without exposing contact exports or granting access.', 'parents', { parent_id: { type: 'integer' }, student_id: { type: 'integer' }, display_name: { type: 'string', maxLength: 180 }, email: { type: 'string', maxLength: 180 }, phone: { type: 'string', maxLength: 80 }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['create_provider_profile', 'Provider profile creation packet', 'Prepare a scoped provider profile creation request without publishing public profile pages.', 'provider_setup', { provider_id: { type: 'integer' }, display_name: { type: 'string', maxLength: 180 }, title: { type: 'string', maxLength: 180 }, summary: { type: 'string', maxLength: 1000 }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['create_setup_flow', 'Setup flow creation packet', 'Prepare a scoped setup-flow request without provisioning accounts, credentials, DNS, or external integrations.', 'operations', { setup_flow_key: { type: 'string', maxLength: 120 }, provider_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['create_worksheet', 'Worksheet creation packet', 'Prepare a scoped worksheet creation request without publishing worksheet bodies or returning raw answer content.', 'studio', { worksheet_id: { type: 'integer' }, assignment_id: { type: 'integer' }, student_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, topic: { type: 'string', maxLength: 180 }, body: { type: 'string', maxLength: 10000 } }, true],
+  ['generate_worksheet', 'Worksheet draft generation packet', 'Prepare a scoped worksheet draft request without calling AI generation services or returning full worksheet bodies.', 'studio', { worksheet_id: { type: 'integer' }, assignment_id: { type: 'integer' }, student_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, topic: { type: 'string', maxLength: 180 }, transcript_text: { type: 'string', maxLength: 12000 } }, true, 'draft_only'],
+  ['ingest_class_video_from_drive_or_upload', 'Class video ingest packet', 'Prepare a scoped class-video ingest readiness request without reading Drive, uploading files, or returning raw media URLs.', 'studio', { recording_id: { type: 'integer' }, content_id: { type: 'integer' }, class_session_id: { type: 'integer' }, drive_file_id: { type: 'string', maxLength: 180 }, drive_url: { type: 'string', maxLength: 400 }, media_url: { type: 'string', maxLength: 400 }, title: { type: 'string', maxLength: 180 } }, true, 'read_only'],
+  ['parse_student_questions', 'Student question parse packet', 'Prepare a scoped student-question parse request without returning raw transcript or private question text.', 'students', { recording_id: { type: 'integer' }, content_id: { type: 'integer' }, student_id: { type: 'integer' }, question_id: { type: 'integer' }, transcript_text: { type: 'string', maxLength: 12000 }, topic: { type: 'string', maxLength: 180 } }, true],
+  ['publish_library_item_after_approval', 'Library item publish approval packet', 'Prepare a scoped library publish approval request without publishing or calling external platforms.', 'studio', { content_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, approval_note: { type: 'string', maxLength: 1000 }, vimeo_url: { type: 'string', maxLength: 400 } }, true, 'external_write'],
+  ['transcribe_video', 'Video transcription readiness packet', 'Prepare a scoped transcription readiness request without calling transcription services or returning transcripts.', 'studio', { recording_id: { type: 'integer' }, content_id: { type: 'integer' }, media_url: { type: 'string', maxLength: 400 }, drive_file_id: { type: 'string', maxLength: 180 }, title: { type: 'string', maxLength: 180 } }, true, 'read_only'],
 ].map(([name, label, description, category, schema, requiresConfirmation = false, sideEffectLevel = 'internal_write']) => ({
   name,
   label,

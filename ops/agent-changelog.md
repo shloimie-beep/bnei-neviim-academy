@@ -35210,3 +35210,38 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`; deploy/live smoke for 85 local-only
   wrappers is still blocked by the OneTime Railway failed-deploy path; saved
   all-163 Agent Mode proof is still required before autonomy can be claimed.
+
+## 2026-07-09T00:40:00+03:00 - Rabbi Helper Fallback Blockers Replaced Locally
+
+- Replaced the final 12 Rabbi / OneTime fallback-only helper blockers with
+  scoped local wrappers for contacts, parents, courses, worksheets, library
+  items, provider profile/setup packets, video ingest/transcription,
+  student-question parsing, worksheet generation, and library publish approval.
+- Current scope map: 163 contracts, 163 `tool_wrapper_available_local`, 0
+  `registered_fallback_only_blocker`, and 0 `tool_wrapper_missing`.
+- Focused verification passed 53/53 across helper tools, Rabbi scope map,
+  Agent Review prompts, Rabbi Telegram notifications, and Codex progress
+  formatting.
+- Remaining blockers: deploy/live smoke for the 97 local-only wrappers, saved
+  all-163 Agent Mode PASS/BLOCKED proof, external approval gates, and
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` for live Rabbi Telegram delivery.
+
+## 2026-07-09T00:36:18+03:00 - Rabbi Helper Fallback Replacements Locally Verified
+
+- Replaced the final 12 registered fallback-only Rabbi helper placeholders
+  with scoped local packet/readiness wrappers for contacts, parents, courses,
+  worksheets, library items, provider profiles, setup flows, class-video
+  ingest, transcription readiness, student-question parsing, worksheet
+  generation, and library publish approval.
+- The Rabbi scope map now reports 163 `tool_wrapper_available_local`, 0
+  `registered_fallback_only_blocker`, and 0 `tool_wrapper_missing`.
+- Guardrails: the new wrappers still return scoped local request packets only;
+  no live contact/parent/course/worksheet/provider setup, Drive/Vimeo read or
+  upload, transcription call, public publish, access grant, credential write,
+  or external provider mutation was performed.
+- Verification passed: `node --check` for touched helper/generator files,
+  `node scripts/generate-rabbi-helper-tool-scope-map.mjs`, and focused
+  helper/scope/Agent Review tests 41/41.
+- Remaining blockers: deploy/live smoke for 97 local-only wrappers after the
+  Railway failure path is investigated, external approval gates, and saved
+  all-163 Agent Mode PASS/BLOCKED proof.

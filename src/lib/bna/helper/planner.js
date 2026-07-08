@@ -410,6 +410,9 @@ function rabbiLocalScopePrimitivePlan(text = '', context = {}) {
   const questionId = extractGenericId(text, ['question']) || undefined;
   const communityId = extractGenericId(text, ['community']) || undefined;
   const offerId = extractGenericId(text, ['offer']) || undefined;
+  const contentId = extractContentId(text) || undefined;
+  const courseId = firstMatch(text, /\bcourse\s*#?\s*([A-Za-z0-9_-]{3,})\b/i) || undefined;
+  const worksheetId = extractGenericId(text, ['worksheet']) || undefined;
   const status = firstMatch(text, /\bstatus\s*(?:to|=|:|-)?\s*(active|paused|done|complete|completed|blocked|archived|in_progress|in progress|open|closed)\b/i)
     || firstMatch(text, /\b(active|paused|done|complete|completed|blocked|archived|in_progress|in progress|open|closed)\b$/i);
   const progress = firstMatch(text, /\b(?:progress|percent)\s*(?:to|=|:|-)?\s*(\d{1,3})\b/i);
@@ -424,6 +427,185 @@ function rabbiLocalScopePrimitivePlan(text = '', context = {}) {
     reason,
     reply,
   });
+
+  if (/\b(create|add)\b.*\bcontact\b|\bcontact\b.*\b(create|add)\b/i.test(text)) {
+    return makePlan(
+      'create_contact',
+      'Create contact',
+      {
+        parent_id: parentId,
+        student_id: studentId,
+        lead_id: leadId,
+        contact_name: previewQuotedText(text) || firstMatch(text, /\b(?:contact|for)\s+([A-Z][A-Za-z.' -]{1,80})/),
+      },
+      'Rabbi / One Time scoped contact creation packet',
+      'I can prepare a scoped contact creation packet without exporting contacts or writing global CRM records.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\bcourse\b|\bcourse\b.*\b(create|add|make)\b/i.test(text)) {
+    return makePlan(
+      'create_course',
+      'Create course',
+      {
+        course_id: courseId,
+        title: localPacketTitle(text, /(?:course)\s*(?:for|about|called|named|:|-)?\s*([\s\S]+)$/i, 'One Time course'),
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped course creation packet',
+      'I can prepare a scoped course creation packet without provisioning Google Classroom or public course records.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\blibrary item\b|\blibrary item\b.*\b(create|add|make)\b/i.test(text) && !/\bpublish\b/i.test(text)) {
+    return makePlan(
+      'create_library_item',
+      'Create library item',
+      {
+        content_id: contentId,
+        title: localPacketTitle(text, /(?:library item)\s*(?:for|about|called|named|:|-)?\s*([\s\S]+)$/i, 'One Time library item'),
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+        drive_file_id: firstMatch(text, /\bdrive file\s*#?\s*([A-Za-z0-9_-]{4,})\b/i) || undefined,
+      },
+      'Rabbi / One Time scoped library item creation packet',
+      'I can prepare a scoped library-item creation packet without publishing, uploading, or exposing raw media links.'
+    );
+  }
+
+  if (/\b(create|add)\s+(?:a\s+|new\s+)?parent\b/i.test(text) && !/\b(parent question|parent visible|event|summary)\b/i.test(text)) {
+    return makePlan(
+      'create_parent',
+      'Create parent',
+      {
+        parent_id: parentId,
+        student_id: studentId,
+        display_name: previewQuotedText(text) || firstMatch(text, /\b(?:parent|for)\s+([A-Z][A-Za-z.' -]{1,80})/),
+      },
+      'Rabbi / One Time scoped parent creation packet',
+      'I can prepare a scoped parent creation packet without exposing contact exports or granting access.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\bprovider profile\b|\bprovider profile\b.*\b(create|add|make)\b/i.test(text)) {
+    return makePlan(
+      'create_provider_profile',
+      'Create provider profile',
+      {
+        provider_id: providerId,
+        display_name: previewQuotedText(text) || firstMatch(text, /\b(?:display name|name)\s*(?:to|=|:|-)\s*([^,\n]+)/i) || undefined,
+        summary: textAfterIntent(text, /(?:provider profile)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, text),
+      },
+      'Rabbi / One Time scoped provider profile creation packet',
+      'I can prepare a scoped provider-profile creation packet without publishing public profile pages.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\bsetup flow\b|\bsetup flow\b.*\b(create|add|make)\b/i.test(text)) {
+    return makePlan(
+      'create_setup_flow',
+      'Create setup flow',
+      {
+        provider_id: providerId,
+        setup_flow_key: firstMatch(text, /\b(?:setup flow key|flow key|key)\s*(?:to|=|:|-)?\s*([a-z0-9_-]+)/i) || undefined,
+        title: previewQuotedText(text) || 'One Time setup flow',
+      },
+      'Rabbi / One Time scoped setup-flow packet',
+      'I can prepare a scoped setup-flow packet without provisioning accounts, credentials, DNS, or integrations.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\bworksheet\b|\bworksheet\b.*\b(create|add|make)\b/i.test(text) && !/\b(transcript|generate)\b/i.test(text)) {
+    return makePlan(
+      'create_worksheet',
+      'Create worksheet',
+      {
+        worksheet_id: worksheetId,
+        assignment_id: assignmentId,
+        student_id: studentId,
+        title: localPacketTitle(text, /(?:worksheet)\s*(?:for)?\s*(?:student\s*#?\d+|assignment\s*#?\d+)?\s*(?:about|called|named|:|-)?\s*([\s\S]+)$/i, 'One Time worksheet'),
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped worksheet creation packet',
+      'I can prepare a scoped worksheet creation packet without publishing worksheet bodies or returning raw answer content.'
+    );
+  }
+
+  if ((/\bgenerate\b.*\bworksheet\b|\bworksheet\b.*\bgenerate\b/i.test(text)) && !/\b(student|assignment)\b/i.test(text)) {
+    return makePlan(
+      'generate_worksheet',
+      'Generate worksheet',
+      {
+        worksheet_id: worksheetId,
+        assignment_id: assignmentId,
+        student_id: studentId,
+        title: previewQuotedText(text) || 'One Time worksheet draft',
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped worksheet draft generation packet',
+      'I can prepare a scoped worksheet draft request without calling AI generation services or returning full worksheet bodies.'
+    );
+  }
+
+  if (/\b(ingest|import)\b.*\b(class )?video\b|\b(class )?video\b.*\b(ingest|import|upload)\b/i.test(text)) {
+    return makePlan(
+      'ingest_class_video_from_drive_or_upload',
+      'Ingest class video',
+      {
+        recording_id: recordingId,
+        content_id: contentId,
+        class_session_id: classSessionId,
+        drive_file_id: firstMatch(text, /\bdrive file\s*#?\s*([A-Za-z0-9_-]{4,})\b/i) || undefined,
+        title: previewQuotedText(text) || 'One Time class video ingest',
+      },
+      'Rabbi / One Time scoped class-video ingest packet',
+      'I can prepare a scoped class-video ingest readiness packet without reading Drive, uploading files, or returning raw media URLs.'
+    );
+  }
+
+  if (/\bparse\b.*\bstudent questions?\b|\bstudent questions?\b.*\bparse\b/i.test(text)) {
+    return makePlan(
+      'parse_student_questions',
+      'Parse student questions',
+      {
+        recording_id: recordingId,
+        content_id: contentId,
+        student_id: studentId,
+        question_id: questionId,
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped student-question parse packet',
+      'I can prepare a scoped student-question parse packet without returning raw transcript or private question text.'
+    );
+  }
+
+  if (/\bpublish\b.*\blibrary item\b|\blibrary item\b.*\bpublish\b/i.test(text)) {
+    return makePlan(
+      'publish_library_item_after_approval',
+      'Publish library item after approval',
+      {
+        content_id: contentId,
+        title: previewQuotedText(text) || 'One Time library item publish request',
+        approval_note: text,
+      },
+      'Rabbi / One Time scoped library publish approval packet',
+      'I can prepare a scoped library publish approval packet, but it will not publish or call external platforms.'
+    );
+  }
+
+  if (/\btranscribe\b.*\b(video|recording)\b|\b(video|recording)\b.*\btranscribe\b/i.test(text)) {
+    return makePlan(
+      'transcribe_video',
+      'Transcribe video',
+      {
+        recording_id: recordingId,
+        content_id: contentId,
+        drive_file_id: firstMatch(text, /\bdrive file\s*#?\s*([A-Za-z0-9_-]{4,})\b/i) || undefined,
+        title: previewQuotedText(text) || 'One Time video transcription',
+      },
+      'Rabbi / One Time scoped video transcription readiness packet',
+      'I can prepare a scoped transcription readiness packet without calling transcription services or returning transcripts.'
+    );
+  }
 
   if (/\bapprove\b.*\bemail\b/i.test(text)) {
     return makePlan(
@@ -1115,7 +1297,7 @@ function deterministicPlan(message = '', registry, context = {}) {
       args: { ...previewScopeArgs(text, context), raw_text: text },
       reason: 'Rabbi / One Time ramble distillation request',
     });
-  } else if (isRabbiOneTimeContext(context) && /\b(create|add|make|save)\b.*\b(one time )?(video )?library item\b|\bvideo library card\b/i.test(text)) {
+  } else if (isRabbiOneTimeContext(context) && /\b(create|add|make|save)\b.*\b(one time )?video library item\b|\bvideo library card\b|\bvideo\b.*\blibrary item\b/i.test(text)) {
     const title = previewQuotedText(text) || textAfterIntent(text, /(?:library item|video library card)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, 'One Time video library item');
     reply = 'I can prepare a scoped One Time video-library item without publishing or returning raw media links.';
     actions.push({

@@ -110,27 +110,36 @@ test('Rabbi helper scope map does not classify write-shaped missing wrappers as 
     ['ask_for_help', 'internal_write'],
     ['attach_drive_file', 'internal_write'],
     ['capture_provider_google_business_link', 'internal_write'],
+    ['create_contact', 'internal_write'],
     ['create_accountability_note', 'internal_write'],
     ['create_assignment', 'internal_write'],
     ['create_class_session', 'internal_write'],
+    ['create_course', 'internal_write'],
     ['create_goal', 'internal_write'],
     ['create_lesson', 'internal_write'],
+    ['create_library_item', 'internal_write'],
+    ['create_parent', 'internal_write'],
     ['create_parent_question', 'internal_write'],
     ['create_parent_visible_summary', 'internal_write'],
     ['create_provider_landing_page', 'internal_write'],
     ['create_provider_lead', 'internal_write'],
     ['create_provider_offer', 'internal_write'],
+    ['create_provider_profile', 'internal_write'],
     ['create_provider_question_post', 'approval_gated_external_write'],
+    ['create_setup_flow', 'internal_write'],
     ['create_provider_workspace', 'internal_write'],
     ['create_student_goal', 'internal_write'],
     ['create_student_question', 'internal_write'],
     ['create_student_question_queue', 'internal_write'],
+    ['create_worksheet', 'internal_write'],
     ['create_worksheet_from_transcript', 'internal_write'],
     ['delete_calendar_event', 'approval_gated_internal_state_change'],
     ['distill_ramble', 'draft_only'],
     ['generate_social_posts_from_newsletter', 'draft_only'],
     ['generate_student_worksheet', 'draft_only'],
+    ['generate_worksheet', 'draft_only'],
     ['google_drive_move_file_preview', 'approval_gated_internal_state_change'],
+    ['ingest_class_video_from_drive_or_upload', 'read_only'],
     ['link_prompt_to_goal', 'internal_write'],
     ['mark_attendance', 'internal_write'],
     ['mark_event_parent_visible', 'internal_write'],
@@ -140,7 +149,9 @@ test('Rabbi helper scope map does not classify write-shaped missing wrappers as 
     ['move_lead_stage', 'approval_gated_internal_state_change'],
     ['move_task_workspace', 'approval_gated_internal_state_change'],
     ['parse_recording', 'internal_write'],
+    ['parse_student_questions', 'internal_write'],
     ['post_community_message', 'approval_gated_external_write'],
+    ['publish_library_item_after_approval', 'approval_gated_external_write'],
     ['queue_telegram_report', 'approval_gated_external_write'],
     ['record_agent_result', 'internal_write'],
     ['reprocess_decision', 'internal_write'],
@@ -155,6 +166,7 @@ test('Rabbi helper scope map does not classify write-shaped missing wrappers as 
     ['submit_worksheet_answer', 'internal_write'],
     ['sync_google_calendar', 'approval_gated_external_write'],
     ['sync_google_classroom', 'approval_gated_external_write'],
+    ['transcribe_video', 'read_only'],
     ['update_goal_progress', 'internal_write'],
     ['update_goal_status', 'internal_write'],
     ['update_parent_helper_profile', 'internal_write'],
@@ -170,7 +182,9 @@ test('Rabbi helper scope map does not classify write-shaped missing wrappers as 
     assert.ok(contracts.length > 0, `${toolName} should remain represented in the Rabbi scope map`);
     for (const contract of contracts) {
       assert.equal(contract.rabbi_contract.action_policy, expectedPolicy, `${toolName} should be ${expectedPolicy}`);
-      assert.notEqual(contract.rabbi_contract.action_policy, 'read_only', `${toolName} should not be read-only`);
+      if (expectedPolicy !== 'read_only') {
+        assert.notEqual(contract.rabbi_contract.action_policy, 'read_only', `${toolName} should not be read-only`);
+      }
     }
   }
 });
@@ -232,8 +246,8 @@ test('Rabbi helper scope map marks the read-only runtime batch as locally wrappe
     assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
   }
 
-  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 151);
-  assert.equal(scopeMap.counts.by_implementation_status.registered_fallback_only_blocker, 12);
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 163);
+  assert.equal(scopeMap.counts.by_implementation_status.registered_fallback_only_blocker || 0, 0);
 });
 
 test('Rabbi helper scope map marks parent and student summary wrappers as locally wrapper-backed', () => {
@@ -450,6 +464,37 @@ test('Rabbi helper scope map marks final approval and provider packet wrappers a
     }
   }
 
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_missing || 0, 0);
+});
+
+test('Rabbi helper scope map replaces the final fallback-only blockers with local scoped wrappers', () => {
+  const formerFallbackNames = [
+    'create_contact',
+    'create_course',
+    'create_library_item',
+    'create_parent',
+    'create_provider_profile',
+    'create_setup_flow',
+    'create_worksheet',
+    'generate_worksheet',
+    'ingest_class_video_from_drive_or_upload',
+    'parse_student_questions',
+    'publish_library_item_after_approval',
+    'transcribe_video',
+  ];
+  const contracts = scopeMap.contracts.filter((contract) => formerFallbackNames.includes(contract.source.helper_tool_name));
+  assert.equal(contracts.length, formerFallbackNames.length);
+
+  for (const contract of contracts) {
+    assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
+    assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
+    assert.ok(contract.rabbi_contract.negative_tests.some((check) => /workspace_key=bna/i.test(check)));
+    assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
+    assert.notEqual(contract.rabbi_contract.implementation_gap.implementation_status, 'registered_fallback_only_blocker');
+  }
+
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 163);
+  assert.equal(scopeMap.counts.by_implementation_status.registered_fallback_only_blocker || 0, 0);
   assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_missing || 0, 0);
 });
 

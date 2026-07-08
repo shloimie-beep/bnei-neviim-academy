@@ -124,8 +124,7 @@
       "provider": 11
     },
     "by_implementation_status": {
-      "tool_wrapper_available_local": 151,
-      "registered_fallback_only_blocker": 12
+      "tool_wrapper_available_local": 163
     }
   },
   "contracts": [
@@ -1794,8 +1793,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "create_contact is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_contact in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -1907,8 +1906,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "create_course is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_course in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -2359,8 +2358,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "create_library_item is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_library_item in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -2587,8 +2586,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "create_parent is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_parent in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -2923,8 +2922,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "create_provider_profile is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_provider_profile in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -3484,8 +3483,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "create_setup_flow is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_setup_flow in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -3824,8 +3823,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "create_worksheet is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_worksheet in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -5289,8 +5288,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "generate_worksheet is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep generate_worksheet in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -6074,8 +6073,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "ingest_class_video_from_drive_or_upload is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep ingest_class_video_from_drive_or_upload in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -7758,8 +7757,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "parse_student_questions is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep parse_student_questions in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -8098,8 +8097,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "publish_library_item_after_approval is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep publish_library_item_after_approval in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -10232,8 +10231,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "registered_fallback_only_blocker",
-          "next_action": "transcribe_video is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep transcribe_video in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
