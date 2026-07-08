@@ -34535,3 +34535,38 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Evidence:
   `ops/watchdog-audits/2026-07-08-codex-progress-telegram-update.md` and
   `ops/watchdog-audits/2026-07-08-onetime-wapi-class-link-readiness.md`.
+
+## 2026-07-08T21:00:00+03:00 - OneTime Operations/helper performance first fix
+
+- Registered `RAW-20260708-022` and `REQ-20260708-078` through
+  `REQ-20260708-080` for the app/backend/helper slowness report.
+- Added a current-state performance audit script and PQC packet with live API,
+  browser, helper-plan, console/error, and screenshot evidence.
+- Deployed the first safe performance fix to OneTime Railway service
+  `one-time-web`: `/operations` and `/operations.html` now return
+  `Cache-Control: private, no-cache, max-age=0, must-revalidate`, so the
+  2.35MB Operations shell can be browser-stored and revalidated instead of
+  being discarded as `no-store`.
+- Added deterministic helper routing for raw slowness/performance wording such
+  as `slow`, `laggy`, and `takes forever`; live helper planning remains
+  deterministic and about 260ms for those reports, without downgrading model
+  quality or safety gates.
+- Fixed the OneTime release guard to match the current public CTA `Sign Up Now`
+  and added an account-auth switch to the Railway redeploy helper so the
+  OneTime project can deploy without accidentally using the BNA project token.
+- Railway deployment `17147745-74f0-4b5d-a627-48903de33382` reached `SUCCESS`.
+- Verification passed: `node --check server.js`,
+  `node --check src/lib/bna/helper/planner.js`,
+  `node --check scripts/audit-app-helper-performance.mjs`,
+  `node --test tests/bna-helper-tools.test.js`,
+  `node --test tests/release-captain.test.js`, PQC validation,
+  action watchdog, protocol-drift watchdog, secrets audit, OneTime target guard,
+  OneTime live smoke, live header readback, and live performance audit.
+- Evidence:
+  `ops/performance-audits/2026-07-08-app-backend-helper-performance/report.md`,
+  `ops/performance-audits/2026-07-08-app-backend-helper-performance/before-report.md`,
+  `ops/performance-audits/2026-07-08-app-backend-helper-performance/local-after-report.md`,
+  and `tasks-pending/2026-07-08-app-backend-helper-performance.md`.
+- Remaining performance work: `/operations` is still the slowest measured path
+  because the Operations shell remains 2.35MB. The next batch should split and
+  lazy-load the Operations shell/modules rather than weakening helper reasoning.

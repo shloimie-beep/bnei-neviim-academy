@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-07-08T17:51:13.419Z",
-  "base_url": "http://127.0.0.1:8097",
-  "repeats": 1,
+  "generated_at": "2026-07-08T17:58:52.166Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "repeats": 2,
   "external_write_performed": false,
   "auth_available": true,
-  "auth_source": "OPS",
+  "auth_source": "ONE_TIME_OPS",
   "operations_login": {
     "ok": true,
     "status": 200,
-    "duration_ms": 3420,
+    "duration_ms": 585,
     "blocker": "",
     "cookie_recorded": false
   },
@@ -20,8 +20,21 @@
         {
           "status": 200,
           "ok": true,
+          "duration_ms": 427,
+          "bytes": 70,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "status",
+            "database",
+            "social_post_provider"
+          ]
+        },
+        {
+          "status": 200,
+          "ok": true,
           "duration_ms": 240,
-          "bytes": 107,
+          "bytes": 70,
           "cache_control": "",
           "content_type": "application/json; charset=utf-8",
           "json_keys": [
@@ -32,11 +45,11 @@
         }
       ],
       "summary": {
-        "count": 1,
+        "count": 2,
         "min_ms": 240,
         "median_ms": 240,
-        "p95_ms": 240,
-        "max_ms": 240
+        "p95_ms": 427,
+        "max_ms": 427
       }
     },
     {
@@ -46,8 +59,33 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 3,
-          "bytes": 379,
+          "duration_ms": 232,
+          "bytes": 950,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "app_mode",
+            "app_instance",
+            "single_tenant",
+            "workspace_key",
+            "project_key",
+            "brand_key",
+            "public_language",
+            "student_bot_enabled",
+            "bna_accountability_enabled",
+            "sefaria_study_assistant_enabled",
+            "enabled_modules",
+            "disabled_features",
+            "app_visible",
+            "secrets_included",
+            "external_write_performed"
+          ]
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 229,
+          "bytes": 950,
           "cache_control": "",
           "content_type": "application/json; charset=utf-8",
           "json_keys": [
@@ -70,11 +108,11 @@
         }
       ],
       "summary": {
-        "count": 1,
-        "min_ms": 3,
-        "median_ms": 3,
-        "p95_ms": 3,
-        "max_ms": 3
+        "count": 2,
+        "min_ms": 229,
+        "median_ms": 229,
+        "p95_ms": 232,
+        "max_ms": 232
       }
     },
     {
@@ -84,7 +122,16 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 9,
+          "duration_ms": 1328,
+          "bytes": 2356672,
+          "cache_control": "private, no-cache, max-age=0, must-revalidate",
+          "content_type": "text/html; charset=UTF-8",
+          "json_keys": []
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 1928,
           "bytes": 2356672,
           "cache_control": "private, no-cache, max-age=0, must-revalidate",
           "content_type": "text/html; charset=UTF-8",
@@ -92,11 +139,11 @@
         }
       ],
       "summary": {
-        "count": 1,
-        "min_ms": 9,
-        "median_ms": 9,
-        "p95_ms": 9,
-        "max_ms": 9
+        "count": 2,
+        "min_ms": 1328,
+        "median_ms": 1328,
+        "p95_ms": 1928,
+        "max_ms": 1928
       }
     },
     {
@@ -106,7 +153,18 @@
         {
           "status": 401,
           "ok": false,
-          "duration_ms": 1,
+          "duration_ms": 242,
+          "bytes": 44,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "error"
+          ]
+        },
+        {
+          "status": 401,
+          "ok": false,
+          "duration_ms": 252,
           "bytes": 44,
           "cache_control": "",
           "content_type": "application/json; charset=utf-8",
@@ -116,11 +174,11 @@
         }
       ],
       "summary": {
-        "count": 1,
-        "min_ms": 1,
-        "median_ms": 1,
-        "p95_ms": 1,
-        "max_ms": 1
+        "count": 2,
+        "min_ms": 242,
+        "median_ms": 242,
+        "p95_ms": 252,
+        "max_ms": 252
       }
     },
     {
@@ -130,7 +188,22 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 4,
+          "duration_ms": 244,
+          "bytes": 3262,
+          "cache_control": "",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "success",
+            "classroom",
+            "internal_fields_hidden",
+            "test_only",
+            "external_write_performed"
+          ]
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 245,
           "bytes": 3262,
           "cache_control": "",
           "content_type": "application/json; charset=utf-8",
@@ -144,11 +217,11 @@
         }
       ],
       "summary": {
-        "count": 1,
-        "min_ms": 4,
-        "median_ms": 4,
-        "p95_ms": 4,
-        "max_ms": 4
+        "count": 2,
+        "min_ms": 244,
+        "median_ms": 244,
+        "p95_ms": 245,
+        "max_ms": 245
       }
     },
     {
@@ -158,7 +231,18 @@
         {
           "status": 401,
           "ok": false,
-          "duration_ms": 1,
+          "duration_ms": 243,
+          "bytes": 40,
+          "cache_control": "no-store",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "error"
+          ]
+        },
+        {
+          "status": 401,
+          "ok": false,
+          "duration_ms": 251,
           "bytes": 40,
           "cache_control": "no-store",
           "content_type": "application/json; charset=utf-8",
@@ -168,11 +252,11 @@
         }
       ],
       "summary": {
-        "count": 1,
-        "min_ms": 1,
-        "median_ms": 1,
-        "p95_ms": 1,
-        "max_ms": 1
+        "count": 2,
+        "min_ms": 243,
+        "median_ms": 243,
+        "p95_ms": 251,
+        "max_ms": 251
       }
     },
     {
@@ -182,8 +266,32 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 241,
-          "bytes": 26615,
+          "duration_ms": 273,
+          "bytes": 26682,
+          "cache_control": "no-store",
+          "content_type": "application/json; charset=utf-8",
+          "json_keys": [
+            "success",
+            "helperName",
+            "helperScope",
+            "accessSummary",
+            "suggestedActions",
+            "knowledgeSources",
+            "toneProfile",
+            "safetyPolicy",
+            "actor",
+            "workspace",
+            "allowedTools",
+            "tools",
+            "integrationReadiness",
+            "pageContext"
+          ]
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "duration_ms": 261,
+          "bytes": 26682,
           "cache_control": "no-store",
           "content_type": "application/json; charset=utf-8",
           "json_keys": [
@@ -205,11 +313,11 @@
         }
       ],
       "summary": {
-        "count": 1,
-        "min_ms": 241,
-        "median_ms": 241,
-        "p95_ms": 241,
-        "max_ms": 241
+        "count": 2,
+        "min_ms": 261,
+        "median_ms": 261,
+        "p95_ms": 273,
+        "max_ms": 273
       }
     }
   ],
@@ -218,7 +326,7 @@
       "name": "deterministic navigation",
       "status": 200,
       "ok": true,
-      "duration_ms": 996,
+      "duration_ms": 256,
       "planner": "deterministic",
       "helper_status": "planned",
       "action_count": 1,
@@ -229,12 +337,23 @@
       "name": "deterministic performance report",
       "status": 200,
       "ok": true,
-      "duration_ms": 973,
+      "duration_ms": 260,
       "planner": "deterministic",
       "helper_status": "confirmation_required",
       "action_count": 1,
       "first_tool": "create_support_ticket",
       "response_bytes": 921
+    },
+    {
+      "name": "complex planning fallback",
+      "status": 200,
+      "ok": true,
+      "duration_ms": 262,
+      "planner": "deterministic",
+      "helper_status": "confirmation_required",
+      "action_count": 1,
+      "first_tool": "create_support_ticket",
+      "response_bytes": 1176
     }
   ],
   "browser_timings": [
@@ -243,8 +362,8 @@
       "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
       "viewport": "1440x1000",
       "selector_found": true,
-      "navigation_ms": 5810,
-      "click_ms": 28,
+      "navigation_ms": 2549,
+      "click_ms": 41,
       "click_label": "switchView communications",
       "console_error_count": 0,
       "console_errors": [],
@@ -253,30 +372,30 @@
       "screenshot": "ops/performance-audits/2026-07-08-app-backend-helper-performance/operations-desktop.png",
       "title": "One Time Mishnah Class - Operations",
       "ready_state": "complete",
-      "dom_nodes": 587,
+      "dom_nodes": 1518,
       "script_count": 5,
       "stylesheet_count": 6,
-      "button_count": 143,
+      "button_count": 168,
       "link_count": 1,
       "iframe_count": 0,
-      "body_text_length": 2083,
+      "body_text_length": 22527,
       "horizontal_overflow": false,
-      "transfer_size": 211104,
-      "resource_count": 8,
-      "dom_content_loaded_ms": 3248,
-      "load_event_ms": 3372
+      "transfer_size": 140221,
+      "resource_count": 28,
+      "dom_content_loaded_ms": 1231,
+      "load_event_ms": 1232
     },
     {
       "id": "provider-desktop",
       "path": "/provider.html?admin_provider=one-time&section=communications",
       "viewport": "1440x960",
       "selector_found": true,
-      "navigation_ms": 1248,
+      "navigation_ms": 2053,
       "click_ms": null,
       "click_label": "",
       "console_error_count": 1,
       "console_errors": [
-        "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        "Failed to load resource: the server responded with a status of 401 ()"
       ],
       "failed_request_count": 0,
       "failed_requests": [],
@@ -291,18 +410,18 @@
       "iframe_count": 0,
       "body_text_length": 801,
       "horizontal_overflow": false,
-      "transfer_size": 148850,
+      "transfer_size": 32218,
       "resource_count": 5,
-      "dom_content_loaded_ms": 32,
-      "load_event_ms": 32
+      "dom_content_loaded_ms": 825,
+      "load_event_ms": 825
     },
     {
       "id": "member-library-mobile",
       "path": "/member-library",
       "viewport": "390x844",
       "selector_found": true,
-      "navigation_ms": 1305,
-      "click_ms": 4,
+      "navigation_ms": 1956,
+      "click_ms": 14,
       "click_label": "fallback drawer toggle",
       "console_error_count": 0,
       "console_errors": [],
@@ -319,17 +438,17 @@
       "iframe_count": 0,
       "body_text_length": 333,
       "horizontal_overflow": false,
-      "transfer_size": 95240,
+      "transfer_size": 22464,
       "resource_count": 3,
-      "dom_content_loaded_ms": 77,
-      "load_event_ms": 77
+      "dom_content_loaded_ms": 727,
+      "load_event_ms": 727
     },
     {
       "id": "classroom-mobile",
       "path": "/one-time-classroom",
       "viewport": "390x844",
       "selector_found": true,
-      "navigation_ms": 1260,
+      "navigation_ms": 2095,
       "click_ms": 12,
       "click_label": "fallback drawer toggle",
       "console_error_count": 0,
@@ -347,15 +466,15 @@
       "iframe_count": 0,
       "body_text_length": 727,
       "horizontal_overflow": false,
-      "transfer_size": 146954,
+      "transfer_size": 54436,
       "resource_count": 4,
-      "dom_content_loaded_ms": 31,
-      "load_event_ms": 31
+      "dom_content_loaded_ms": 874,
+      "load_event_ms": 874
     }
   ],
   "first_fix_recommendation": {
-    "target": "operations_initial_load",
-    "reason": "Operations initial browser load took 5810ms; inspect large inline Operations shell and first render work."
+    "target": "api_latency",
+    "reason": "/operations median 1328ms is the slowest measured API path."
   },
   "passed": true
 }
