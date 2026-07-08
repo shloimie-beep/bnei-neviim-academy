@@ -121,6 +121,13 @@ Follow-up verification:
   tests/one-time-rbac-negative-isolation.test.js
   tests/workspace-rbac-negative-isolation.test.js` (26/26)
 - PASS full `npm test` (1660/1660)
+- PASS Railway deployment `500242a9-860f-4599-a145-eb9515bae0a4` reached
+  `SUCCESS` on `one-time-production` / `one-time-web` / `production`
+- PASS `npm run app:smoke:onetime-separate-instance --
+  https://join.onetimeonetime.com`
+- PASS live prompt readback
+  `/agent-review-prompts/rabbi-helper-tool-scope-map.md` returned `200` with
+  `REQ-20260708-093` and `RABBI-HELPER-SCOPE-163`
 
 ## Remaining Agent-Mode Autonomy Gaps
 
@@ -133,8 +140,8 @@ Follow-up verification:
 2. The Rabbi 163-contract scope baseline has only 18 local runtime wrappers so
    far. Twelve contracts are fallback/setup blockers, and 133 contracts still
    show `tool_wrapper_missing`.
-3. The 18 local wrappers are not full agent-mode autonomy yet. They still need
-   commit/push/deploy where app-visible, live readback where applicable, and a
+3. The 18 local wrappers are not full agent-mode autonomy yet. They are
+   committed, pushed, deployed, and prompt-readback verified, but still need a
    saved Agent Mode PASS/BLOCKED result.
 4. Scoped Operations deep links for Rabbi/One Time are conservative by default.
    Helper permissions allow project-scoped task/navigation tools, but the route
@@ -158,10 +165,9 @@ Follow-up verification:
    sends, Buffer, WAPI/WhatsApp, Stripe/payment, DNS, Vimeo/Drive/Zoom writes,
    access grants, destructive actions, and provider secret changes require
    separate approval gates and evidence.
-9. Live agent-mode proof is not complete for this issue. Local tests passed,
-   but there was no deploy/live smoke or Agent Review saved PASS/BLOCKED result
-   for the refreshed map, the first alias batch, and the scope/privacy negative
-   tests in this scoped audit.
+9. Live deploy and prompt readback are complete for this issue, but Agent
+   Review has not yet saved a PASS/BLOCKED result for the refreshed map, the
+   first alias batch, and the scope/privacy negative tests in this scoped audit.
 
 ## Guardrails Observed
 

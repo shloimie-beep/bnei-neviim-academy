@@ -6,6 +6,22 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-08T22:26:07+03:00 - Rabbi helper alerts deployed to OneTime
+
+- Pushed commits `9618a4d4` and `16a69c9e` on
+  `codex/rabbi-helper-tool-scope-20260708`.
+- Deployed the current local OneTime bundle to Railway service `one-time-web`
+  in project `one-time-production`; deployment
+  `500242a9-860f-4599-a145-eb9515bae0a4` reached `SUCCESS`.
+- Live smoke passed for `https://join.onetimeonetime.com` health, instance
+  config, public routes, parent, student, provider, and classroom routes.
+- Live Agent Review prompt readback passed:
+  `/agent-review-prompts/rabbi-helper-tool-scope-map.md` returned `200` and
+  contained `REQ-20260708-093` plus `RABBI-HELPER-SCOPE-163`.
+- Post-deploy Rabbi Telegram readiness remains blocked only by missing
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`; no live Rabbi Telegram message was
+  sent during verification.
+
 ## 2026-07-08T22:21:17+03:00 - Rabbi helper first runtime alias batch local verified
 
 - Implemented the first Rabbi / One Time helper runtime alias batch for
