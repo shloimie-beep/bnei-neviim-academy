@@ -7,10 +7,10 @@ Raw input: `raw-input/RAW-20260708-007-onetime-email-brand-scope-guardrails.md`
 | ID | Status | Requirement | Evidence |
 | --- | --- | --- | --- |
 | REQ-20260708-032 | Done, deployed/dry-run verified | OneTime parent invite links use `https://join.onetimeonetime.com` and do not derive from Academy/request host. | `server.js`, `tests/one-time-parent-trial-invite.test.js`; live dry-run preview returned OneTime parent/member/classroom links only. |
-| REQ-20260708-033 | Done, deployed/code verified; live send blocked | OneTime parent invite emails use the scoped OneTime Resend sender identity when configured. | `server.js`, `scripts/watchdog-workspace-scope-guardrails.mjs`; `npm run watchdog:workspace-scope` passed; no live send performed. |
+| REQ-20260708-033 | Done, deployed/live send verified | OneTime parent invite emails use the scoped OneTime Resend sender identity when configured. | `server.js`, `scripts/watchdog-workspace-scope-guardrails.mjs`; `npm run watchdog:workspace-scope` passed; live send readback provider was `resend`. |
 | REQ-20260708-034 | Done, deployed/dry-run verified | Parent invite copy is clean OneTime copy with no Academy/backend language and supports a validated live-shiur Zoom link. | `src/lib/bna/rabbi-emails.js`, `tests/one-time-parent-trial-invite.test.js`; live dry-run accepted a dummy HTTPS Zoom URL for preview validation. |
 | REQ-20260708-035 | Done, pushed | Shared-repo workspace-scope guardrail exists and is wired into watchdog closeout. | `scripts/watchdog-workspace-scope-guardrails.mjs`, `package.json`, `tests/workspace-scope-guardrails.test.js`; `npm run watchdog:all` passed. |
-| DEC-20260708-007 | Blocked | Live resend to the operator test Gmail requires verified exact Zoom join link and sender readiness. | Do not send live email until exact Zoom join link, OneTime sender readiness, and explicit send approval are verified. |
+| DEC-20260708-007 | Resolved | Live resend to the operator test Gmail requires verified exact Zoom join link and sender readiness. | Exact Zoom link was supplied in chat, sender readiness passed, and one approved parent invite was sent/read back. |
 
 ## Done Criteria
 
@@ -45,4 +45,5 @@ Raw input: `raw-input/RAW-20260708-007-onetime-email-brand-scope-guardrails.md`
   `ops/live-smokes/2026-07-08T10-34-17-527Z-one-time-agent-mode-acceptance-live-smoke.md`.
 - PASS shared One Time review live smoke:
   `ops/live-smokes/2026-07-08T10-34-17-754Z-one-time-shared-review-live-smoke.md`.
-- BLOCKED live resend: local `.env*`/`.secrets` scan found `NO_ZOOM_ALIAS_FOUND`, so Codex did not send a new parent invite email.
+- PASS live resend/readback:
+  `ops/watchdog-audits/2026-07-08-onetime-parent-invite-live-send-readback.md`.

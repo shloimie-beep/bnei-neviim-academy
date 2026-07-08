@@ -6,6 +6,22 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-08T14:07:10+03:00 - OneTime parent invite sent from scoped Resend sender
+
+- Sent the approved OneTime parent invite to the redacted operator test Gmail
+  address after the exact Zoom link was supplied in chat.
+- Pre-send checks passed: Resend health reported
+  `info@onetimeonetime.com`, domain `onetimeonetime.com`, domain verified, and
+  `send_allowed: true`; dry-run preview used only
+  `https://join.onetimeonetime.com` parent/member/classroom links.
+- Send response passed: `email_sent: true`, `external_write_performed: true`,
+  `local_write_performed: true`, `no_payment_created: true`, and
+  `no_checkout_created: true`.
+- Safe readback passed: latest Rabbi communication for
+  `one_time_parent_trial_invite` was `status: sent`, `provider: resend`.
+- Redacted proof:
+  `ops/watchdog-audits/2026-07-08-onetime-parent-invite-live-send-readback.md`.
+
 ## 2026-07-08T13:33:00+03:00 - OneTime email scope guardrails deployed and dry-run live-smoked
 
 - Patched the OneTime parent trial invite path so parent setup, member library,
