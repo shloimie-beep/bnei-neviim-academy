@@ -33974,3 +33974,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   route/action registry JSON parse, and `git diff --check`.
 - Status: local verified, pending commit, push, production deploy/live smoke,
   and single approved resend.
+
+## 2026-07-08T14:48:31+03:00 - OneTime parent setup fix deployed and resent
+
+- Commit `85613771` was pushed to `origin/master`.
+- BNA service deployment `198ae4df-d25a-4920-a850-c4552a04d175` reached
+  `SUCCESS`.
+- OneTime service deployment `2b4af747-513f-440f-b532-a06695c4f80c` reached
+  `SUCCESS`.
+- Production `https://join.onetimeonetime.com/one-time-parent?reset=TESTTOKEN`
+  returned `200`, title `OneTimeOneTime Parent Setup`, reset form present, and
+  no BNA/Academy copy.
+- Production dry run on the OneTime API returned `/one-time-parent`,
+  `/one-time-classroom`, and `/member-library` paths only, with no send.
+- Sent the approved single-recipient OneTime parent trial invite from the
+  OneTime service API through Resend to the redacted operator test Gmail
+  address.
+- Read back scoped Rabbi communications row `4` with
+  `email_type=one_time_parent_trial_invite`, `status=sent`, `provider=resend`,
+  and no Academy/BNA in the subject.
+- The resent parent password setup link expires at
+  `2026-07-15T11:48:30.964Z`.
+- Evidence:
+  `ops/watchdog-audits/2026-07-08-onetime-parent-setup-fix-live-send-readback.md`.

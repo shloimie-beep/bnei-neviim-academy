@@ -11,9 +11,9 @@ Raw input: `raw-input/RAW-20260708-007-onetime-email-brand-scope-guardrails.md`
 | REQ-20260708-034 | Done, deployed/dry-run verified | Parent invite copy is clean OneTime copy with no Academy/backend language and supports a validated live-shiur Zoom link. | `src/lib/bna/rabbi-emails.js`, `tests/one-time-parent-trial-invite.test.js`; live dry-run accepted a dummy HTTPS Zoom URL for preview validation. |
 | REQ-20260708-035 | Done, pushed | Shared-repo workspace-scope guardrail exists and is wired into watchdog closeout. | `scripts/watchdog-workspace-scope-guardrails.mjs`, `package.json`, `tests/workspace-scope-guardrails.test.js`; `npm run watchdog:all` passed. |
 | DEC-20260708-007 | Resolved | Live resend to the operator test Gmail requires verified exact Zoom join link and sender readiness. | Exact Zoom link was supplied in chat, sender readiness passed, and one approved parent invite was sent/read back. |
-| REQ-20260708-036 | Local verified, pending push/deploy/live smoke | OneTime parent password setup links must land on a OneTime-only setup page, not the generic Academy parent portal/reset surface. | `server.js` routes `/one-time-parent`; `public/one-time-parent.html`; `tests/one-time-parent-trial-invite.test.js`; `scripts/watchdog-workspace-scope-guardrails.mjs`. |
-| REQ-20260708-037 | Local verified, pending push/deploy/live send | OneTime parent trial invite setup tokens must be fresh and long-lived enough for a trial invite walkthrough. | `server.js` adds `ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS` capped at seven days and passes it to the trial invite reset token. |
-| REQ-20260708-038 | Pending deploy/live smoke | Resend the single approved OneTime parent invite after the setup route and expiry fix are deployed and verified. | Pending production smoke and safe communications readback. |
+| REQ-20260708-036 | Done, pushed/deployed/live-smoked | OneTime parent password setup links must land on a OneTime-only setup page, not the generic Academy parent portal/reset surface. | `server.js` routes `/one-time-parent`; `public/one-time-parent.html`; production `join.onetimeonetime.com/one-time-parent?reset=TESTTOKEN` returned 200 with OneTime copy and no BNA/Academy copy; `ops/watchdog-audits/2026-07-08-onetime-parent-setup-fix-live-send-readback.md`. |
+| REQ-20260708-037 | Done, deployed/live-send verified | OneTime parent trial invite setup tokens must be fresh and long-lived enough for a trial invite walkthrough. | `server.js` adds `ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS` capped at seven days; live resend returned parent setup expiry `2026-07-15T11:48:30.964Z`. |
+| REQ-20260708-038 | Done, live sent/read back | Resend the single approved OneTime parent invite after the setup route and expiry fix are deployed and verified. | Live resend was sent from the OneTime service API through Resend and read back from scoped Rabbi communications as `sent`; `ops/watchdog-audits/2026-07-08-onetime-parent-setup-fix-live-send-readback.md`. |
 
 ## Done Criteria
 
@@ -68,3 +68,30 @@ Raw input: `raw-input/RAW-20260708-007-onetime-email-brand-scope-guardrails.md`
   - PASS `node scripts/watchdog-workspace-scope-guardrails.mjs --json`
   - PASS route/action registry JSON parse
   - PASS `git diff --check`
+
+## Production Closeout - 2026-07-08
+
+- PASS commit `85613771f16dd9d2ed8947a50e2b0b48b9952f3e` pushed to
+  `origin/master`.
+- PASS BNA service deployment
+  `198ae4df-d25a-4920-a850-c4552a04d175` reached `SUCCESS`.
+- PASS OneTime service deployment
+  `2b4af747-513f-440f-b532-a06695c4f80c` reached `SUCCESS`.
+- PASS live OneTime setup route smoke:
+  `https://join.onetimeonetime.com/one-time-parent?reset=TESTTOKEN` returned
+  `200`, title `OneTimeOneTime Parent Setup`, reset form present, no
+  BNA/Academy copy.
+- PASS live OneTime API dry run on
+  `https://join.onetimeonetime.com/api/bna/one-time/parent-trial-invite`
+  returned OneTime-only parent/classroom/library paths and `no_send=true`.
+- PASS live resend from the OneTime service API to the approved redacted
+  operator test Gmail address with the supplied live-shiur link included.
+- PASS scoped Rabbi communications readback returned
+  `email_type=one_time_parent_trial_invite`, `status=sent`, `provider=resend`,
+  and no Academy/BNA in the subject.
+- PASS parent password setup expiry on the resent invite is
+  `2026-07-15T11:48:30.964Z`.
+- Evidence:
+  `ops/watchdog-audits/2026-07-08-onetime-parent-setup-fix-live-send-readback.md`
+  and
+  `ops/watchdog-audits/2026-07-08-onetime-parent-setup-fix-live-send-readback.json`.
