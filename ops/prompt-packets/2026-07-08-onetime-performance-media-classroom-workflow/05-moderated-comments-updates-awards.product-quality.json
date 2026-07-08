@@ -38,7 +38,7 @@
   },
   "stage": "STAGE_3_CODEX_IMPLEMENTATION",
   "packet_role": "IMPLEMENTATION_PACKET",
-  "status": "verified",
+  "status": "done",
   "title": "One Time Moderated Comments And Student Updates",
   "created_at": "2026-07-08T12:25:00+03:00",
   "workspace_key": "rabbi_sheller_provider",

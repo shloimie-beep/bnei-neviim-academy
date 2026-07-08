@@ -33810,3 +33810,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   reply exposure was added.
 - Status: local verified, pending commit, push, deploy, and live smoke before
   `REQ-20260708-028` and `REQ-20260708-029` can be terminal Done.
+
+## 2026-07-08T12:24:00+03:00 - One Time moderated comments/update feed deployed and live-smoked
+
+- Commit `0cee2a86` was pushed to `origin/master`; Railway auto-deployed it to
+  production service `skillful-motivation`.
+- Railway deployment `d1cd18ac-fdbb-4e61-8834-98aa3fe601f5` reached `SUCCESS`
+  on commit `0cee2a86`.
+- Live smoke passed and wrote
+  `ops/live-smokes/2026-07-08T09-21-15-474Z-one-time-class-updates-live-smoke.md`.
+- Production HTML readback confirmed the deployed classroom page includes
+  `Class Updates`, `renderClassUpdates`, `state.classroom?.class_updates`, and
+  the approved-updates empty state.
+- Production browser smoke loaded the live classroom HTML at 1440 and 390
+  widths with a mocked member-safe classroom payload. It confirmed a published
+  comment row, Rabbi-featured progress row, `+8` points label, and zero
+  horizontal overflow.
+- Guardrails held: no Drive upload, Vimeo upload/privacy mutation, external
+  email/Telegram/WhatsApp send, payment/access/DNS/provider write, open
+  student-to-student chat, raw private reply exposure, or production classroom
+  record mutation was performed.
+- `REQ-20260708-028` and `REQ-20260708-029` are Done. Remaining open work is
+  `REQ-20260708-027` access-code/session UX and blocked
+  `DEC-20260708-006` Drive-to-Vimeo automation.
