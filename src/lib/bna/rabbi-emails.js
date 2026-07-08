@@ -52,11 +52,12 @@ function rabbiTemplateBody(templateKey, context = {}) {
       context.studentName ? `Student: ${context.studentName}` : '',
       '',
       context.passwordSetupUrl ? `Set your parent password here: ${context.passwordSetupUrl}` : '',
+      context.liveClassUrl ? `Tonight's live shiur Zoom link: ${context.liveClassUrl}` : '',
       context.memberLibraryUrl ? `Open the class library here: ${context.memberLibraryUrl}` : '',
       context.classroomUrl ? `Open the classroom here: ${context.classroomUrl}` : '',
       '',
       'After you set your parent password, you can open the parent portal and set or reset the student login.',
-      'If anything looks wrong, reply to this email and the office will fix it.',
+      `If anything looks wrong, reply to this email and ${context.supportName || 'OneTimeOneTime'} will help.`,
     ],
     revoke_expiry: [
       `Hi ${name},`,

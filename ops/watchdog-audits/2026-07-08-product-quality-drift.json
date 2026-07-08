@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T09:44:17.677Z",
+  "generated_at": "2026-07-08T10:26:31.128Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -543,6 +543,7 @@
     "tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md",
     "tasks-pending/2026-07-08-agent-review-start-copy-dropoff-repair.md",
     "tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md",
+    "tasks-pending/2026-07-08-onetime-email-brand-scope-guardrails.md",
     "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
     "tasks-pending/2026-07-08-parent-trial-email-vimeo-watch-continuation.md",
     "tasks-pending/_template-goal-mode-correction-output.md",

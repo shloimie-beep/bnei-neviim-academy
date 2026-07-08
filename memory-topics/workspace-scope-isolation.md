@@ -10,4 +10,10 @@
 - Scope contamination findings for One Time UI cleanup must check contacts,
   communications, tasks/decisions, classroom/content records, payments/access,
   questions/responses, and integration diagnostics.
+- OneTime/Rabbi routes, parent/student/provider/member portals, emails, and
+  helper actions must not infer public URLs, sender identity, branding,
+  diagnostics, or data scope from the BNA Academy request host or defaults.
+  Use explicit OneTime workspace/project/domain/sender configuration for
+  OneTime flows, and add/maintain executable watchdog coverage for known
+  boundary leaks.
 

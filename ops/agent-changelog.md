@@ -6,6 +6,23 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-08T13:33:00+03:00 - OneTime email scope guardrails local verified
+
+- Patched the OneTime parent trial invite path so parent setup, member library,
+  and classroom links use the explicit OneTime public base instead of the
+  current request host.
+- OneTime-scoped email sends now prefer the OneTime Resend identity when
+  configured, instead of depending on generic Academy sender defaults.
+- Parent invite copy now supports a validated live-shiur Zoom link line and
+  avoids Academy/backend wording.
+- Added `npm run watchdog:workspace-scope` and wired it into `watchdog:all` so
+  known OneTime/BNA boundary leaks fail closeout.
+- Verification passed: `node --check server.js`, focused parent/email/scope
+  tests, `npm run watchdog:workspace-scope -- --json`, and
+  `npm run watchdog:protocol-drift`.
+- Live resend remains blocked: no local Zoom alias was found for tonight's
+  actual shiur link, so no external email was sent.
+
 ## 2026-07-07T23:36:00+03:00 - One Time Railway auth diagnostic hardened
 
 - Updated `scripts/check-onetime-external-setup-readiness.mjs` so a current
@@ -33886,3 +33903,31 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - `REQ-20260708-027` is Done. `REQ-20260708-023` remains blocked by
   `DEC-20260708-006` pending exact Drive/Vimeo target, token/privacy/rollback
   policy, and explicit upload-smoke approval.
+
+## 2026-07-08T13:27:00+03:00 - OneTime email/domain scope guardrails local verified
+
+- Captured the OneTime parent email brand/domain bleed report as
+  `raw-input/RAW-20260708-007-onetime-email-brand-scope-guardrails.md` and
+  registered requirements in
+  `tasks-pending/2026-07-08-onetime-email-brand-scope-guardrails.md`.
+- Updated OneTime parent-trial invite link generation so parent, member
+  library, classroom, and password setup URLs use the configured OneTime
+  public base URL instead of the Academy/request host.
+- Updated OneTime parent invite email copy to stay OneTime-scoped, include an
+  optional validated live-shiur Zoom link, and avoid Academy/backend wording.
+- Added `scripts/watchdog-workspace-scope-guardrails.mjs`, wired it into
+  `npm run watchdog:all`, and added test coverage for the workspace-scope
+  guardrail.
+- Refreshed One Time review smoke/test expectations for the current
+  access/fallback-code classroom UX and regenerated action coverage artifacts.
+- Verification passed: `node --check server.js`, focused OneTime/workspace
+  tests 21/21, `npm run watchdog:workspace-scope`, `npm run watchdog:all`, and
+  `npm run app:smoke:one-time-shared-review`.
+- Full-suite pulse remains 1610/1618 passing with 8 pre-existing failures
+  outside this scope.
+- Guardrails held: no live email resend, no Zoom/Vimeo/Drive/Stripe/DNS
+  mutation, no payment/access mutation, and no production data mutation.
+- Status: local verified, pending commit, push, deployment, and live smoke for
+  server-visible changes. The live resend remains blocked by
+  `DEC-20260708-007` until the exact Zoom link, sender readiness, and explicit
+  send approval are verified.

@@ -10,37 +10,52 @@ const {
 const server = fs.readFileSync('server.js', 'utf8');
 
 test('One Time parent trial invite has scoped email copy and setup links', () => {
-  const subject = rabbiTemplateSubject('parent_trial_invite', { programName: 'One Time Mishnayos' });
+  const subject = rabbiTemplateSubject('parent_trial_invite', { programName: 'OneTimeOneTime Mishnah' });
   assert.match(subject, /30-day trial starts now/);
 
   const body = rabbiTemplateBody('parent_trial_invite', {
+    programName: 'OneTimeOneTime Mishnah',
     recipientName: 'Parent',
     studentName: 'TEST Student',
-    passwordSetupUrl: 'https://example.test/parent?reset=token',
-    memberLibraryUrl: 'https://example.test/member-library?code=OT-test',
-    classroomUrl: 'https://example.test/one-time-classroom?code=OT-test',
+    passwordSetupUrl: 'https://join.onetimeonetime.com/parent?reset=token',
+    liveClassUrl: 'https://zoom.us/j/123456789',
+    memberLibraryUrl: 'https://join.onetimeonetime.com/member-library?code=OT-test',
+    classroomUrl: 'https://join.onetimeonetime.com/one-time-classroom?code=OT-test',
   });
-  assert.match(body, /Welcome to One Time Mishnayos/);
+  assert.match(body, /Welcome to OneTimeOneTime Mishnah/);
   assert.match(body, /Your 30-day trial starts now/);
   assert.match(body, /Set your parent password here/);
+  assert.match(body, /Tonight's live shiur Zoom link/);
   assert.match(body, /Open the class library here/);
   assert.match(body, /Open the classroom here/);
   assert.match(body, /set or reset the student login/);
+  assert.doesNotMatch(body, /Academy|bneineviimacademy/i);
 
   const template = buildRabbiEmailTemplate('parent_trial_invite', {
+    programName: 'OneTimeOneTime Mishnah',
     recipientName: 'Parent',
-    passwordSetupUrl: 'https://example.test/parent?reset=token',
+    passwordSetupUrl: 'https://join.onetimeonetime.com/parent?reset=token',
   });
   assert.match(template.html, /Set your parent password here/);
 });
 
 test('admin parent trial invite route is explicit, test-labeled, and non-payment', () => {
+  const routeStart = server.indexOf("app.post('/api/bna/one-time/parent-trial-invite'");
+  const routeEnd = server.indexOf("app.get('/api/bna/rabbi/site'", routeStart);
+  const route = server.slice(routeStart, routeEnd);
+
   assert.match(server, /ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM = 'SEND_ONE_TIME_PARENT_TRIAL_INVITE'/);
   assert.match(server, /app\.post\('\/api\/bna\/one-time\/parent-trial-invite', requireAdmin/);
   assert.match(server, /assertRabbiAdminAccess\(req\)/);
   assert.match(server, /one-time-parent-trial/);
   assert.match(server, /createParentPasswordResetToken\(\{[\s\S]*sendEmail: false/);
   assert.match(server, /buildRabbiEmailTemplate\('parent_trial_invite'/);
+  assert.match(server, /function configuredOneTimePublicBaseUrl/);
+  assert.match(route, /const oneTimeBaseUrl = configuredOneTimePublicBaseUrl\(\)/);
+  assert.match(route, /oneTimeParentPortalPasswordResetUrl\(reset\.token\)/);
+  assert.match(route, /liveClassUrl/);
+  assert.doesNotMatch(route, /requestBaseUrl\(req\)/);
+  assert.doesNotMatch(route, /Bnei Neviim Academy|bneineviimacademy\.org/);
   assert.match(server, /one_time_member_access/);
   assert.match(server, /no_payment_created: true/);
   assert.match(server, /no_checkout_created: true/);

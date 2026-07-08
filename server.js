@@ -454,6 +454,10 @@ app.use((req, res, next) => {
 const DEFAULT_PROJECT_KEY = 'bna';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
 const ONE_TIME_PROVIDER_WORKSPACE_KEY = 'rabbi_sheller_provider';
+const ONE_TIME_PUBLIC_DOMAIN = String(process.env.ONE_TIME_PUBLIC_DOMAIN || 'join.onetimeonetime.com')
+  .trim()
+  .replace(/^https?:\/\//i, '')
+  .replace(/\/+$/, '') || 'join.onetimeonetime.com';
 const ONE_TIME_EMAIL_DOMAIN = 'onetimeonetime.com';
 const ONE_TIME_EMAIL_FROM = 'info@onetimeonetime.com';
 const ONE_TIME_EMAIL_FROM_NAME = 'OneTimeOneTime Mishnah';
@@ -4203,8 +4207,52 @@ function requestBaseUrl(req) {
   return `${protocol}://${req.get('host')}`;
 }
 
+function normalizePublicBaseUrl(value, fallback = '') {
+  const raw = String(value || fallback || '').trim();
+  if (!raw) return '';
+  try {
+    const parsed = new URL(raw);
+    if (!/^https?:$/i.test(parsed.protocol)) return String(fallback || '').replace(/\/+$/, '');
+    return parsed.origin.replace(/\/+$/, '');
+  } catch (_) {
+    return raw.replace(/\/+$/, '');
+  }
+}
+
 function configuredPublicBaseUrl() {
-  return String(process.env.PUBLIC_BASE_URL || process.env.APP_BASE_URL || process.env.BNA_APP_URL || 'https://bneineviimacademy.org').trim().replace(/\/+$/, '');
+  return normalizePublicBaseUrl(process.env.PUBLIC_BASE_URL || process.env.APP_BASE_URL || process.env.BNA_APP_URL || 'https://bneineviimacademy.org');
+}
+
+function configuredOneTimePublicBaseUrl() {
+  return normalizePublicBaseUrl(
+    process.env.ONE_TIME_PUBLIC_BASE_URL || process.env.ONE_TIME_APP_URL || process.env.ONETIME_BASE_URL || `https://${ONE_TIME_PUBLIC_DOMAIN}`,
+    `https://${ONE_TIME_PUBLIC_DOMAIN}`
+  );
+}
+
+function scopedPublicUrl(baseUrl, pathValue = '') {
+  const base = normalizePublicBaseUrl(baseUrl);
+  const pathText = String(pathValue || '').trim();
+  if (!base || !pathText) return base;
+  if (/^https?:\/\//i.test(pathText)) return pathText;
+  return `${base}${pathText.startsWith('/') ? pathText : `/${pathText}`}`;
+}
+
+function oneTimeParentPortalPasswordResetUrl(token) {
+  if (!token) return '';
+  return scopedPublicUrl(configuredOneTimePublicBaseUrl(), `/parent?reset=${encodeURIComponent(token)}`);
+}
+
+function normalizeHttpsExternalUrl(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  try {
+    const parsed = new URL(raw);
+    if (parsed.protocol !== 'https:') return '';
+    return parsed.toString();
+  } catch (_) {
+    return '';
+  }
 }
 
 function parentPortalUrl(req, token) {
@@ -4380,7 +4428,8 @@ async function sendGmailMessage({ to, subject, text, html, workspace = null }) {
 }
 
 async function sendEmail({ workspace = null, to, subject, text, html }) {
-  if (EMAIL_PROVIDER === 'resend' && RESEND_API_KEY && RESEND_FROM_EMAIL) {
+  const identity = academySenderIdentity(workspace);
+  if ((identity?.oneTime || EMAIL_PROVIDER === 'resend') && RESEND_API_KEY && (identity?.oneTime || RESEND_FROM_EMAIL)) {
     return sendResendMessage({ workspace, to, subject, text, html });
   }
   return sendGmailMessage({ workspace, to, subject, text, html });
@@ -78432,15 +78481,26 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
   const parentName = limitText(body.parent_name || body.parentName || body.name || 'One Time Parent Trial', 160);
   const studentName = limitText(body.student_name || body.studentName || body.child_name || body.childName || 'TEST One Time Student', 160);
   const trialDays = Math.max(1, Math.min(Number(body.trial_days || body.trialDays || 30) || 30, 90));
+  const rawLiveClassUrl = body.live_class_url || body.liveClassUrl || body.zoom_url || body.zoomUrl || '';
+  const liveClassUrl = normalizeHttpsExternalUrl(rawLiveClassUrl);
   if (!parentEmail) return res.status(400).json({ error: 'parent_email is required' });
+  if (rawLiveClassUrl && !liveClassUrl) return res.status(400).json({ error: 'live_class_url/zoom_url must be a valid https URL' });
   try {
     const project = await assertRabbiAdminAccess(req);
+    const oneTimeBaseUrl = configuredOneTimePublicBaseUrl();
     const preview = {
       parent_email: parentEmail,
       parent_name: parentName,
       student_name: studentName,
       trial_days: trialDays,
-      subject: buildRabbiEmailTemplate('parent_trial_invite', { recipientName: parentName }).subject,
+      subject: buildRabbiEmailTemplate('parent_trial_invite', { recipientName: parentName, programName: ONE_TIME_EMAIL_FROM_NAME }).subject,
+      one_time_public_base_url: oneTimeBaseUrl,
+      links_will_use: {
+        parent_portal: scopedPublicUrl(oneTimeBaseUrl, '/parent'),
+        member_library: scopedPublicUrl(oneTimeBaseUrl, '/member-library'),
+        classroom: scopedPublicUrl(oneTimeBaseUrl, '/one-time-classroom'),
+      },
+      live_class_url_included: Boolean(liveClassUrl),
       confirm_required: ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM,
       no_payment_created: true,
       no_checkout_created: true,
@@ -78653,13 +78713,15 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         sendEmail: false,
       }, client);
 
-      const baseUrl = requestBaseUrl(req);
-      const memberLibraryUrl = `${baseUrl}/member-library?code=${encodeURIComponent(memberAccess.access_code)}`;
-      const classroomUrl = `${baseUrl}/one-time-classroom?code=${encodeURIComponent(memberAccess.access_code)}`;
+      const passwordSetupUrl = oneTimeParentPortalPasswordResetUrl(reset.token) || reset.url;
+      const memberLibraryUrl = scopedPublicUrl(oneTimeBaseUrl, `/member-library?code=${encodeURIComponent(memberAccess.access_code)}`);
+      const classroomUrl = scopedPublicUrl(oneTimeBaseUrl, `/one-time-classroom?code=${encodeURIComponent(memberAccess.access_code)}`);
       const template = buildRabbiEmailTemplate('parent_trial_invite', {
+        programName: ONE_TIME_EMAIL_FROM_NAME,
         recipientName: parentName,
         studentName,
-        passwordSetupUrl: reset.url,
+        passwordSetupUrl,
+        liveClassUrl,
         memberLibraryUrl,
         classroomUrl,
       });
@@ -78709,6 +78771,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
           student_id: student.id,
           lead_id: lead.id,
           member_access_id: memberAccess.id,
+          one_time_public_base_url: oneTimeBaseUrl,
+          live_class_url_included: Boolean(liveClassUrl),
           no_payment_created: true,
           no_checkout_created: true,
         },
@@ -78739,6 +78803,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
             trial_days: trialDays,
             email_sent: Boolean(emailResult.ok),
             email_error: emailResult.error || null,
+            one_time_public_base_url: oneTimeBaseUrl,
+            live_class_url_included: Boolean(liveClassUrl),
             no_payment_created: true,
             no_checkout_created: true,
           }),
@@ -78761,6 +78827,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         member_access_expires_at: memberAccess.expires_at,
         email_sent: Boolean(emailResult.ok),
         email_error: emailResult.error || null,
+        one_time_public_base_url: oneTimeBaseUrl,
+        live_class_url_included: Boolean(liveClassUrl),
         member_library_url: memberLibraryUrl,
         classroom_url: classroomUrl,
         parent_password_setup_expires_at: reset.expires_at,
