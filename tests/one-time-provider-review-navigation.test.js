@@ -39,6 +39,63 @@ function createProviderReviewServer() {
         external_write_performed: false,
       });
     }
+    if (url.pathname === '/api/provider-portal/session') {
+      return json(res, signedProviderPortalPayload(`http://127.0.0.1:${activePort || 0}`));
+    }
+    if (url.pathname === '/api/provider-portal/inquiries') {
+      return json(res, { cards: [] });
+    }
+    if (url.pathname === '/api/provider-portal/calendar-events') {
+      return json(res, { events: [] });
+    }
+    if (url.pathname === '/api/provider-portal/mailbox') {
+      return json(res, {
+        mailbox: {
+          readiness: {
+            inbox_address: 'info@onetimeonetime.com',
+            readiness: { send_allowed: false },
+          },
+          threads: [
+            {
+              thread_key: 'parent-welcome',
+              contact_name: 'One Time Parent',
+              contact_email: 'parent@example.test',
+              subject: 'Welcome question',
+              preview: 'Can you confirm tonight class link?',
+              message_count: 1,
+              needs_reply: true,
+            },
+          ],
+        },
+      });
+    }
+    if (url.pathname === '/api/provider-portal/mailbox/parent-welcome') {
+      return json(res, {
+        mailbox: {
+          readiness: {
+            inbox_address: 'info@onetimeonetime.com',
+            readiness: { send_allowed: false },
+          },
+        },
+        thread: {
+          thread_key: 'parent-welcome',
+          subject: 'Welcome question',
+          reply_to_address: 'parent@example.test',
+          messages: [
+            {
+              direction: 'inbound',
+              from_name: 'One Time Parent',
+              from_address: 'parent@example.test',
+              subject: 'Welcome question',
+              preview: 'Can you confirm tonight class link?',
+              body_text: 'Can you confirm tonight class link?',
+              status: 'received',
+              occurred_at: '2026-07-08T12:00:00.000Z',
+            },
+          ],
+        },
+      });
+    }
 
     const requested = url.pathname === '/' ? '/provider.html' : url.pathname;
     const filePath = path.resolve(publicRoot, decodeURIComponent(requested.replace(/^\/+/, '')));
@@ -64,6 +121,81 @@ function createProviderReviewServer() {
   };
 }
 
+function signedProviderPortalPayload(baseUrl) {
+  return {
+    provider: {
+      id: 1,
+      provider_name: 'Rabbi Eli Scheller',
+      display_name: 'Rabbi Eli Scheller',
+      login_username: 'one_time_admin',
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+      entitlement_plan: 'rabbi_sheller_partner',
+      status: 'active',
+      plan: { label: 'OneTimeOneTime Mishnah workspace' },
+    },
+    scope: {
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+      entitlements: ['crm_contacts', 'parent_portal', 'student_portal'],
+    },
+    profile: { id: 1 },
+    services: [
+      {
+        id: 8,
+        title: 'OneTimeOneTime Mishnah Class',
+        description: 'Live class and member library workspace.',
+        status: 'active',
+        service_type: 'learning',
+        city: 'Online',
+      },
+    ],
+    links: {
+      one_time_home: '/one-time',
+      parent: '/parent.html?review=one-time',
+      student: '/student.html?review=one-time',
+      member: '/rabbi-member?review=one-time',
+      classroom: '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS',
+      email_preview: '/one-time-email-review.html',
+    },
+    crm_workspace: {
+      current_records: { parents: 0, students: 0, support_items: 1 },
+    },
+    one_time_class_media_enabled: true,
+    one_time_class_media: [],
+    wapi_setup: {
+      integration: {
+        label: 'WhatsApp / WAPI',
+        status: 'not_configured',
+        notes: 'Connect Whapi/WAPI, paste the token, and BNA will verify before messages are enabled.',
+      },
+      instructions: ['Connect Whapi/WAPI.', 'Save the token for verification.'],
+      docs_url: `${baseUrl}/docs`,
+      dashboard_url: `${baseUrl}/dashboard`,
+    },
+    guardrails: {
+      public_changes: 'One Time provider changes stay pending review until approved.',
+    },
+    messages: [
+      {
+        id: 1,
+        subject: 'Parent support',
+        direction: 'parent_to_provider',
+        status: 'draft_available',
+        created_at: '2026-07-08T12:00:00.000Z',
+        body: 'Parent support message captured in the One Time CRM.',
+      },
+    ],
+    entitlements: [],
+    integrations: [],
+    access_checklist: [],
+    media: [],
+    comments: [],
+    google_business: {},
+    upgrade: {},
+  };
+}
+
 function sourceBlock(source, startPattern, endPattern) {
   const start = source.search(startPattern);
   assert.notEqual(start, -1, `missing start pattern ${startPattern}`);
@@ -73,19 +205,70 @@ function sourceBlock(source, startPattern, endPattern) {
   return tail.slice(0, end);
 }
 
-test('One Time provider review and view-as sessions use the same Rabbi-facing section model', () => {
+test('One Time provider review, view-as, and signed sessions use the same Rabbi-facing section model', () => {
   const sectionsBlock = sourceBlock(
     providerHtml,
-    /if \(oneTimeReviewMode \|\| oneTimeViewAsRabbiToken\) \{/,
+    /if \(oneTimeReviewMode \|\| oneTimeViewAsRabbiToken \|\| signedOneTimeSession\) \{/,
     /const sections = providerIsPlusPlan/
   );
 
-  assert.match(sectionsBlock, /oneTimeReviewMode \|\| oneTimeViewAsRabbiToken/);
+  assert.match(sectionsBlock, /oneTimeReviewMode \|\| oneTimeViewAsRabbiToken \|\| signedOneTimeSession/);
+  assert.match(sectionsBlock, /providerWapiSetupEnabled\(\)/);
   for (const section of ['overview', 'crm', 'mailbox', 'communications', 'content', 'class_setup', 'class_media', 'users', 'badges', 'activity']) {
     assert.match(sectionsBlock, new RegExp(`id: '${section}'`), `missing ${section} review section`);
   }
   for (const hiddenSection of ['commercial', 'integrations', 'access']) {
     assert.doesNotMatch(sectionsBlock, new RegExp(`id: '${hiddenSection}'`), `review model should not expose ${hiddenSection}`);
+  }
+});
+
+test('signed One Time provider session uses production Rabbi workspace navigation', async () => {
+  const local = createProviderReviewServer();
+  const baseUrl = await local.listen();
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1180, height: 840 } });
+    await page.goto(`${baseUrl}/provider.html?admin_provider=one-time&section=crm`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('[data-provider-nav="crm"].active');
+
+    const navText = await page.locator('#providerNav').innerText();
+    assert.match(navText, /CRM/);
+    assert.match(navText, /Mailbox/);
+    assert.match(navText, /WhatsApp/);
+    for (const hidden of ['Commercial Model', 'External Apps', 'Access Checklist', 'API Usage', 'Settings']) {
+      assert.doesNotMatch(navText, new RegExp(hidden, 'i'));
+    }
+
+    const crmText = await page.locator('[data-provider-section="crm"]').innerText();
+    assert.match(crmText, /One Time CRM Inbox/);
+    assert.match(crmText, /Open Inbox/);
+    assert.match(crmText, /Preview Email/);
+    assert.doesNotMatch(crmText, /TEST Parent|TEST Student|test\.parent|configured|not configured|BNA Academy/i);
+
+    const bodyText = await page.locator('body').innerText();
+    assert.match(bodyText, /RABBI ACCOUNT/);
+    assert.doesNotMatch(bodyText, /TEST review mode|Close Preview|TEST-ONETIME-REVIEW-ACCESS/i);
+
+    const parentHref = await page.locator('.one-time-sidebar-action', { hasText: 'Parent View' }).getAttribute('href');
+    const studentHref = await page.locator('.one-time-sidebar-action', { hasText: 'Student View' }).getAttribute('href');
+    const classroomHref = await page.locator('.one-time-sidebar-action', { hasText: 'Classroom' }).getAttribute('href');
+    assert.equal(parentHref, '/parent/login');
+    assert.equal(studentHref, '/student/login');
+    assert.equal(classroomHref, '/one-time-classroom.html');
+
+    await page.locator('#providerNav [data-provider-nav="whatsapp_setup"]').click();
+    await page.waitForSelector('[data-provider-section="whatsapp_setup"]:not(.provider-section-hidden)');
+    const whatsAppText = await page.locator('[data-provider-section="whatsapp_setup"]').innerText();
+    assert.match(whatsAppText, /No send/);
+    assert.match(whatsAppText, /Save WhatsApp Setup/);
+    assert.doesNotMatch(whatsAppText, /Send WhatsApp now|SEND_WHATSAPP/i);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+    assert.equal(mobileOverflow, false);
+  } finally {
+    await browser.close();
+    await local.close();
   }
 });
 

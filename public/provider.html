@@ -1274,6 +1274,10 @@
                 || workspaceKey === 'rabbi_sheller_provider';
         }
 
+        function isSignedOneTimeProviderSession(data = portalState) {
+            return Boolean(portalDataIsOneTimeProvider(data) && !oneTimeReviewMode && !oneTimeViewAsRabbiToken);
+        }
+
         function clearAdminProviderBanner() {
             document.getElementById('oneTimeAdminProviderBanner')?.remove();
             document.body.classList.remove('one-time-admin-provider-active');
@@ -1574,8 +1578,9 @@
         }
 
         function providerSections() {
-            if (oneTimeReviewMode || oneTimeViewAsRabbiToken) {
-                return [
+            const signedOneTimeSession = isSignedOneTimeProviderSession();
+            if (oneTimeReviewMode || oneTimeViewAsRabbiToken || signedOneTimeSession) {
+                const sections = [
                     { id: 'overview', label: 'Dashboard', group: 'Workspace' },
                     { id: 'crm', label: 'CRM', group: 'Workspace' },
                     { id: 'mailbox', label: 'Mailbox', group: 'Workspace' },
@@ -1587,6 +1592,10 @@
                     { id: 'badges', label: 'Badges', group: 'Program' },
                     { id: 'activity', label: 'Support', group: 'Admin' },
                 ];
+                if (signedOneTimeSession && providerWapiSetupEnabled()) {
+                    sections.splice(4, 0, { id: 'whatsapp_setup', label: 'WhatsApp', group: 'Workspace' });
+                }
+                return sections;
             }
             const sections = providerIsPlusPlan()
                 ? [
@@ -2045,19 +2054,42 @@
             const googleBusiness = data.google_business || {};
             const upgrade = data.upgrade || {};
             const plan = provider.plan || {};
+            const oneTimeProviderWorkspace = portalDataIsOneTimeProvider(data);
             document.getElementById('loginPanel').classList.add('hidden');
             document.getElementById('setupPanel').classList.add('hidden');
-            document.getElementById('portalPanel').classList.remove('hidden');
-            document.getElementById('portalPanel').classList.remove('one-time-provider-workspace', 'one-time-sidebar-open');
-            document.getElementById('providerTitle').textContent = provider.provider_name || 'Provider portal';
-            document.getElementById('providerSubtitle').textContent = `${plan.label || friendlyStatus(provider.entitlement_plan, 'Provider')} / ${friendlyStatus(provider.status || 'review')} workspace`;
+            const portalPanel = document.getElementById('portalPanel');
+            portalPanel.classList.remove('hidden');
+            portalPanel.classList.remove('one-time-sidebar-open');
+            if (oneTimeProviderWorkspace) {
+                applyOneTimeProviderSessionBrand(data);
+                ensureOneTimeProviderShell(null, { providerSession: true });
+                activeProviderSection = providerSections().some(item => item.id === providerSectionFromLocation())
+                    ? providerSectionFromLocation()
+                    : 'overview';
+            } else {
+                portalPanel.classList.remove('one-time-provider-workspace');
+                document.body.classList.remove('one-time-review-active', 'one-time-admin-provider-active');
+            }
+            document.getElementById('providerTitle').textContent = oneTimeProviderWorkspace
+                ? (provider.provider_name || provider.display_name || 'Rabbi Eli Scheller')
+                : (provider.provider_name || 'Provider portal');
+            document.getElementById('providerSubtitle').textContent = oneTimeProviderWorkspace
+                ? 'OneTimeOneTime Mishnah workspace'
+                : `${plan.label || friendlyStatus(provider.entitlement_plan, 'Provider')} / ${friendlyStatus(provider.status || 'review')} workspace`;
             document.getElementById('profileNotice').textContent = data.guardrails?.public_changes || 'Edits stay pending review until BNA approves them.';
-            document.getElementById('providerOverview').innerHTML = `
-                <div class="overview-metric"><strong>${services.length}</strong><span class="small">Services</span></div>
-                <div class="overview-metric"><strong>${escapeHtml(friendlyStatus(provider.status || 'review'))}</strong><span class="small">Listing status</span></div>
-                <div class="overview-metric"><strong>${escapeHtml(plan.label || friendlyStatus(provider.entitlement_plan, 'Plan'))}</strong><span class="small">Commercial plan</span></div>
-                <div class="overview-metric"><strong>${escapeHtml(friendlyStatus(provider.integration_status || 'no_access'))}</strong><span class="small">Integration status</span></div>
-            `;
+            document.getElementById('providerOverview').innerHTML = oneTimeProviderWorkspace
+                ? `
+                    <div class="overview-metric"><strong>One Time</strong><span class="small">Rabbi workspace</span></div>
+                    <div class="overview-metric"><strong>info@onetimeonetime.com</strong><span class="small">CRM inbox</span></div>
+                    <div class="overview-metric"><strong>${escapeHtml(String(services.length || 1))}</strong><span class="small">Program services</span></div>
+                    <div class="overview-metric"><strong>${escapeHtml(String(messages.length || data.crm_workspace?.current_records?.support_items || 0))}</strong><span class="small">Messages/support</span></div>
+                `
+                : `
+                    <div class="overview-metric"><strong>${services.length}</strong><span class="small">Services</span></div>
+                    <div class="overview-metric"><strong>${escapeHtml(friendlyStatus(provider.status || 'review'))}</strong><span class="small">Listing status</span></div>
+                    <div class="overview-metric"><strong>${escapeHtml(plan.label || friendlyStatus(provider.entitlement_plan, 'Plan'))}</strong><span class="small">Commercial plan</span></div>
+                    <div class="overview-metric"><strong>${escapeHtml(friendlyStatus(provider.integration_status || 'no_access'))}</strong><span class="small">Integration status</span></div>
+                `;
             document.getElementById('commercialSummary').innerHTML = `
                 <article class="service-card">
                     <div class="service-head">
@@ -2106,6 +2138,39 @@
                 `).join('')
                 : '<p class="small">Coming soon: external app review details will appear here.</p>';
             renderProviderWapiSetup(data.wapi_setup || null);
+            if (oneTimeProviderWorkspace) {
+                const oneTimeCrm = document.getElementById('oneTimeCrm');
+                const oneTimeUsers = document.getElementById('oneTimeUsers');
+                const oneTimeContent = document.getElementById('oneTimeContent');
+                const oneTimeBadges = document.getElementById('oneTimeBadges');
+                if (oneTimeCrm) oneTimeCrm.innerHTML = renderOneTimeCrmWorkspace(data);
+                if (oneTimeUsers) {
+                    oneTimeUsers.innerHTML = miniCardGrid([
+                        {
+                            title: provider.provider_name || provider.display_name || 'Rabbi Eli Scheller',
+                            body: 'Workspace owner for the OneTimeOneTime Mishnah class.',
+                            status: provider.login_username || 'provider owner'
+                        }
+                    ]);
+                }
+                if (oneTimeContent) {
+                    oneTimeContent.innerHTML = miniCardGrid((services.length ? services : [{
+                        title: 'OneTimeOneTime Mishnah Class',
+                        description: 'Live class and member library workspace.',
+                        status: 'active'
+                    }]).map(service => ({
+                        title: service.title,
+                        body: service.description || 'OneTime class content and library.',
+                        status: service.status || service.service_type || 'Program'
+                    })));
+                }
+                if (oneTimeBadges) {
+                    oneTimeBadges.innerHTML = [
+                        reviewCard('Badges and rewards', 'Question, attendance, review, and participation awards are scoped to the OneTime student/classroom experience.', 'Rabbi controlled'),
+                        reviewCard('Published questions', 'Rabbi-approved questions can be featured for the class and reflected in the student scoreboard.', 'Moderated')
+                    ].join('');
+                }
+            }
             document.getElementById('accessChecklist').innerHTML = accessChecklist.length
                 ? accessChecklist.map(item => `
                     <article class="service-card">
@@ -2246,7 +2311,11 @@
                 ? `${renderDriveDropoffLinks(driveDropoffLinks)}${renderClassMediaList(classMedia)}`
                 : '<p class="small">Class Media is available only in the Rabbi Sheller / One Time provider workspace.</p>';
             renderProviderScopePanels(data);
-            renderProviderNav();
+            if (oneTimeProviderWorkspace) {
+                renderOneTimeProviderNav(data);
+            } else {
+                renderProviderNav();
+            }
             setProviderSection(activeProviderSection);
             ensureAdminProviderBanner(data);
         }
@@ -2284,6 +2353,14 @@
             return `<div class="one-time-card-grid">${items.map(item => miniCard(item.title, item.body, item.status, item.link, item.linkLabel)).join('')}</div>`;
         }
 
+        function oneTimeRoleLink(links = {}, key, liveFallback, reviewFallback) {
+            const value = String(links[key] || '').trim();
+            if (isSignedOneTimeProviderSession() && /review=one-time|TEST-ONETIME-REVIEW-ACCESS/i.test(value)) {
+                return liveFallback;
+            }
+            return value || (isSignedOneTimeProviderSession() ? liveFallback : reviewFallback);
+        }
+
         function renderOneTimeProviderNav(data = {}, viewAsSession = null) {
             const nav = document.getElementById('providerNav');
             const sections = providerSections();
@@ -2291,6 +2368,11 @@
             const driveDropoffLinks = Array.isArray(data.drive_dropoff_links) ? data.drive_dropoff_links : [];
             const login = data.login_access || {};
             const workspace = data.settings_center?.workspace || {};
+            const landingHref = oneTimeRoleLink(links, 'one_time_home', '/one-time', '/one-time');
+            const parentHref = oneTimeRoleLink(links, 'parent', '/parent/login', '/parent.html?review=one-time');
+            const studentHref = oneTimeRoleLink(links, 'student', '/student/login', '/student.html?review=one-time');
+            const memberHref = oneTimeRoleLink(links, 'member', '/rabbi-member', '/rabbi-member?review=one-time');
+            const classroomHref = oneTimeRoleLink(links, 'classroom', '/one-time-classroom.html', '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS');
             const groups = [];
             sections.forEach((section) => {
                 let group = groups.find(item => item.label === section.group);
@@ -2310,14 +2392,14 @@
                 <div class="one-time-sidebar-card">
                     <strong>${escapeHtml(login.owner_display_name || data.provider?.display_name || data.provider?.name || 'Rabbi Eli Scheller')}</strong>
                     <span>Login: ${escapeHtml(login.owner_login_username || data.provider?.login_username || 'ELISHELLER')}</span>
-                    <span>${escapeHtml(login.password_state || 'WhatsApp handoff pending')}</span>
+                    <span>${escapeHtml(isSignedOneTimeProviderSession(data) ? 'Provider login active' : (login.password_state || 'WhatsApp handoff pending'))}</span>
                 </div>
                 <div class="one-time-sidebar-actions">
-                    <a class="one-time-sidebar-action" href="${escapeHtml(links.one_time_home || '/one-time')}">Landing <span>Open</span></a>
-                    <a class="one-time-sidebar-action" href="${escapeHtml(links.parent || '/parent.html?review=one-time')}">Parent View <span>Open</span></a>
-                    <a class="one-time-sidebar-action" href="${escapeHtml(links.student || '/student.html?review=one-time')}">Student View <span>Open</span></a>
-                    <a class="one-time-sidebar-action" href="${escapeHtml(links.member || '/rabbi-member?review=one-time')}">Member View <span>Open</span></a>
-                    <a class="one-time-sidebar-action" href="${escapeHtml(links.classroom || '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS')}">Classroom <span>Open</span></a>
+                    <a class="one-time-sidebar-action" href="${escapeHtml(landingHref)}">Landing <span>Open</span></a>
+                    <a class="one-time-sidebar-action" href="${escapeHtml(parentHref)}">Parent View <span>Open</span></a>
+                    <a class="one-time-sidebar-action" href="${escapeHtml(studentHref)}">Student View <span>Open</span></a>
+                    <a class="one-time-sidebar-action" href="${escapeHtml(memberHref)}">Member View <span>Open</span></a>
+                    <a class="one-time-sidebar-action" href="${escapeHtml(classroomHref)}">Classroom <span>Open</span></a>
                 </div>
                 ${groups.map(group => `
                     <div class="one-time-sidebar-group">
@@ -2332,13 +2414,13 @@
             `;
         }
 
-        function ensureOneTimeProviderShell(viewAsSession = null) {
+        function ensureOneTimeProviderShell(viewAsSession = null, options = {}) {
             const portal = document.getElementById('portalPanel');
             portal.classList.add('one-time-provider-workspace');
             const hero = portal.querySelector('.hero');
             const logout = document.getElementById('logoutButton');
             if (logout) {
-                logout.textContent = viewAsSession ? 'Exit Rabbi View' : 'Close Preview';
+                logout.textContent = viewAsSession ? 'Exit Rabbi View' : (options.providerSession ? 'Sign Out' : 'Close Preview');
                 logout.setAttribute('data-action-id', viewAsSession ? 'ACTION-ONETIME-VIEW-AS-RABBI-EXIT' : 'ACTION-PROVIDER-SECTION-NAVIGATION');
                 logout.setAttribute('data-one-time-action-state', 'navigate');
                 logout.setAttribute('data-button-state', 'working');
@@ -2377,7 +2459,7 @@
                     button.setAttribute('data-button-state', button.disabled ? 'blocked' : 'working');
                 }
                 if (button.disabled && !button.title) {
-                    button.title = 'Review-only or gated until setup is complete.';
+                    button.title = 'Unavailable until the required setup is complete.';
                 }
             });
         }
@@ -2427,6 +2509,38 @@
             }
         }
 
+        function applyOneTimeProviderSessionBrand(data = portalState) {
+            document.body.classList.add('one-time-review-active', 'one-time-admin-provider-active');
+            document.body.classList.remove('one-time-view-as-readonly');
+            document.title = 'OneTimeOneTime Rabbi Workspace';
+            const mark = document.querySelector('.brand-mark');
+            if (mark && !mark.querySelector('img')) {
+                mark.textContent = '';
+                const img = document.createElement('img');
+                img.src = '/images/one-time/brand/onetimelogo.webp';
+                img.alt = '';
+                mark.appendChild(img);
+            }
+            const title = document.querySelector('.brand-lockup > div > strong');
+            const subtitle = document.querySelector('.brand-lockup > div > span');
+            const chip = document.querySelector('.brand-chip');
+            if (title) title.textContent = 'OneTimeOneTime';
+            if (subtitle) subtitle.textContent = 'Rabbi Eli Scheller workspace';
+            if (chip) chip.textContent = 'RABBI ACCOUNT';
+            const actions = document.querySelector('.portal-topbar-actions');
+            if (actions) {
+                const links = data.links || {};
+                actions.innerHTML = `
+                    <a class="portal-topbar-link" href="${escapeHtml(oneTimeRoleLink(links, 'one_time_home', '/one-time', '/one-time'))}">One Time</a>
+                    <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'parent', '/parent/login', '/parent.html?review=one-time'))}">Parent</a>
+                    <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'student', '/student/login', '/student.html?review=one-time'))}">Student</a>
+                    <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'member', '/rabbi-member', '/rabbi-member?review=one-time'))}">Member</a>
+                    <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'classroom', '/one-time-classroom.html', '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS'))}">Classroom</a>
+                    <span class="brand-chip">RABBI ACCOUNT</span>
+                `;
+            }
+        }
+
         function oneTimeReviewHref(value, fallback = '#') {
             return escapeHtml(value || fallback);
         }
@@ -2450,6 +2564,15 @@
             const supportTicket = data.support_ticket || {};
             const privateQuestion = data.private_question || {};
             const records = data.crm_workspace?.current_records || {};
+            const fixtureFallback = Boolean(oneTimeReviewMode && !oneTimeViewAsRabbiToken);
+            const parentName = parent.name || (fixtureFallback ? 'TEST Parent One Time' : 'Parents');
+            const studentName = student.display_name || student.name || (fixtureFallback ? 'TEST Student One Time' : 'Students');
+            const parentBody = parent.name || student.display_name || student.name
+                ? `Parent account linked to ${student.display_name || student.name || (fixtureFallback ? 'TEST Student One Time' : 'student records')}.${parent.email ? ` Email: ${parent.email}.` : ''}`
+                : `${records.parents || 0} parent record${Number(records.parents || 0) === 1 ? '' : 's'} in the One Time CRM. Open the mailbox to review captured email threads.`;
+            const studentBody = student.display_name || student.name
+                ? 'Student record for class access, attendance, library progress, private questions, badges, and rewards.'
+                : `${records.students || 0} student record${Number(records.students || 0) === 1 ? '' : 's'} in the One Time CRM.`;
             return [
                 `
                     <article class="service-card">
@@ -2470,13 +2593,13 @@
                 `,
                 miniCardGrid([
                     {
-                        title: parent.name || 'TEST Parent One Time',
-                        body: `Parent account linked to ${student.display_name || student.name || 'TEST Student One Time'}. Email: ${parent.email || 'test.parent+onetime@example.test'}.`,
+                        title: parentName,
+                        body: parentBody,
                         status: 'Parent'
                     },
                     {
-                        title: student.display_name || student.name || 'TEST Student One Time',
-                        body: 'Student record for class access, attendance, library progress, private questions, badges, and rewards.',
+                        title: studentName,
+                        body: studentBody,
                         status: 'Student'
                     },
                     {

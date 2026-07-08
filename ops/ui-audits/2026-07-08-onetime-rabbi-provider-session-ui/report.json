@@ -1,0 +1,363 @@
+{
+  "generated_at": "2026-07-08T15:10:01.293Z",
+  "route": "/provider.html?admin_provider=one-time",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "captures": [
+    {
+      "id": "crm-desktop-1440",
+      "section": "crm",
+      "width": 1440,
+      "height": 1000,
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-rabbi-provider-session-ui/screenshots/crm-desktop-1440.png",
+      "metrics": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "noHorizontalOverflow": true,
+        "navText": "OneTimeOneTime Mishnah\nrabbi_sheller_provider\none_time_mishnah_class\nScoped provider workspace\nRabbi Eli Scheller\nLogin: one_time_admin\nProvider login active\nLanding\nOpen\nParent View\nOpen\nStudent View\nOpen\nMember View\nOpen\nClassroom\nOpen\nWORKSPACE\nDashboard\nCRM\nMailbox\nMessages\nWhatsApp\nPROGRAM\nContent\nLive Class\nLibrary\nBadges\nADMIN\nUsers\nSupport",
+        "sectionText": "CRM\nOne Time CRM Inbox\n\nEmails to info@onetimeonetime.com are stored in this One Time CRM mailbox and tied back to parents, students, support tickets, and private Rabbi questions.\n\nRabbi workspace\n1 parent\n1 student\n1 support items\nOpen Inbox\nPreview Email\nDraft Message\nParent View\nStudent View\nParents\n\n0 parent records in the One Time CRM. Open the mailbox to review captured email threads.\n\nParent\nStudents\n\n0 student records in the One Time CRM.\n\nStudent\nWorksheet link question\n\nParent support request stored in the One Time CRM.\n\nSupport\nPrivate Rabbi question\n\nStudent private question waiting for Rabbi review.\n\nPrivate question\nMessage Actions\n\nUse the inbox for email threads, Messages for parent/student portal messages, and Preview Email to review the current email templates before any live send is approved.\n\nRole actions\nOpen Inbox\nPreview Email\nDraft Message\nParent View\nStudent View",
+        "hasTestLabel": false,
+        "hasBnaAcademy": false,
+        "hasGenericSections": false,
+        "navButtons": [
+          {
+            "label": "Dashboard",
+            "left": 173,
+            "top": 890.9375,
+            "right": 439,
+            "bottom": 934.9375,
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "CRM",
+            "left": 173,
+            "top": 942.9375,
+            "right": 439,
+            "bottom": 986.9375,
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Mailbox",
+            "left": 173,
+            "top": 994.9375,
+            "right": 439,
+            "bottom": 1038.9375,
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Messages",
+            "left": 173,
+            "top": 1046.9375,
+            "right": 439,
+            "bottom": 1090.9375,
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "WhatsApp",
+            "left": 173,
+            "top": 1098.9375,
+            "right": 439,
+            "bottom": 1142.9375,
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Content",
+            "left": 173,
+            "top": 1186.9375,
+            "right": 439,
+            "bottom": 1230.9375,
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Live Class",
+            "left": 173,
+            "top": 1238.9375,
+            "right": 439,
+            "bottom": 1282.9375,
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Library",
+            "left": 173,
+            "top": 1290.9375,
+            "right": 439,
+            "bottom": 1334.9375,
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Badges",
+            "left": 173,
+            "top": 1342.9375,
+            "right": 439,
+            "bottom": 1386.9375,
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Users",
+            "left": 173,
+            "top": 1430.9375,
+            "right": 439,
+            "bottom": 1474.9375,
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Support",
+            "left": 173,
+            "top": 1482.9375,
+            "right": 439,
+            "bottom": 1526.9375,
+            "width": 266,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "id": "crm-mobile-390",
+      "section": "crm",
+      "width": 390,
+      "height": 844,
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-rabbi-provider-session-ui/screenshots/crm-mobile-390.png",
+      "metrics": {
+        "scrollWidth": 390,
+        "innerWidth": 390,
+        "noHorizontalOverflow": true,
+        "navText": "OneTimeOneTime Mishnah\nrabbi_sheller_provider\none_time_mishnah_class\nScoped provider workspace\nRabbi Eli Scheller\nLogin: one_time_admin\nProvider login active\nLanding\nOpen\nParent View\nOpen\nStudent View\nOpen\nMember View\nOpen\nClassroom\nOpen\nWORKSPACE\nDashboard\nCRM\nMailbox\nMessages\nWhatsApp\nPROGRAM\nContent\nLive Class\nLibrary\nBadges\nADMIN\nUsers\nSupport",
+        "sectionText": "CRM\nOne Time CRM Inbox\n\nEmails to info@onetimeonetime.com are stored in this One Time CRM mailbox and tied back to parents, students, support tickets, and private Rabbi questions.\n\nRabbi workspace\n1 parent\n1 student\n1 support items\nOpen Inbox\nPreview Email\nDraft Message\nParent View\nStudent View\nParents\n\n0 parent records in the One Time CRM. Open the mailbox to review captured email threads.\n\nParent\nStudents\n\n0 student records in the One Time CRM.\n\nStudent\nWorksheet link question\n\nParent support request stored in the One Time CRM.\n\nSupport\nPrivate Rabbi question\n\nStudent private question waiting for Rabbi review.\n\nPrivate question\nMessage Actions\n\nUse the inbox for email threads, Messages for parent/student portal messages, and Preview Email to review the current email templates before any live send is approved.\n\nRole actions\nOpen Inbox\nPreview Email\nDraft Message\nParent View\nStudent View",
+        "hasTestLabel": false,
+        "hasBnaAcademy": false,
+        "hasGenericSections": false,
+        "navButtons": [
+          {
+            "label": "Dashboard",
+            "left": -323,
+            "top": 546,
+            "right": -29,
+            "bottom": 590,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "CRM",
+            "left": -323,
+            "top": 598,
+            "right": -29,
+            "bottom": 642,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Mailbox",
+            "left": -323,
+            "top": 650,
+            "right": -29,
+            "bottom": 694,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Messages",
+            "left": -323,
+            "top": 702,
+            "right": -29,
+            "bottom": 746,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "WhatsApp",
+            "left": -323,
+            "top": 754,
+            "right": -29,
+            "bottom": 798,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Content",
+            "left": -323,
+            "top": 842,
+            "right": -29,
+            "bottom": 886,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Live Class",
+            "left": -323,
+            "top": 894,
+            "right": -29,
+            "bottom": 938,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Library",
+            "left": -323,
+            "top": 946,
+            "right": -29,
+            "bottom": 990,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Badges",
+            "left": -323,
+            "top": 998,
+            "right": -29,
+            "bottom": 1042,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Users",
+            "left": -323,
+            "top": 1086,
+            "right": -29,
+            "bottom": 1130,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Support",
+            "left": -323,
+            "top": 1138,
+            "right": -29,
+            "bottom": 1182,
+            "width": 294,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "id": "whatsapp-mobile-430",
+      "section": "whatsapp_setup",
+      "width": 430,
+      "height": 932,
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-rabbi-provider-session-ui/screenshots/whatsapp-mobile-430.png",
+      "metrics": {
+        "scrollWidth": 430,
+        "innerWidth": 430,
+        "noHorizontalOverflow": true,
+        "navText": "OneTimeOneTime Mishnah\nrabbi_sheller_provider\none_time_mishnah_class\nScoped provider workspace\nRabbi Eli Scheller\nLogin: one_time_admin\nProvider login active\nLanding\nOpen\nParent View\nOpen\nStudent View\nOpen\nMember View\nOpen\nClassroom\nOpen\nWORKSPACE\nDashboard\nCRM\nMailbox\nMessages\nWhatsApp\nPROGRAM\nContent\nLive Class\nLibrary\nBadges\nADMIN\nUsers\nSupport",
+        "sectionText": "WhatsApp / WAPI Setup\nWhatsApp / WAPI\n\nConnect WAPI and BNA will verify before messages are enabled.\n\nComing soon\nNo saved token yet\nNo WhatsApp send from this page\nRaw token hidden after save\n\nSendable link: http://127.0.0.1:63499/provider?section=whatsapp_setup\n\nSetup steps\nConnect WAPI.\nSave the token for verification.\nNo send\nWhapi Docs\nWhapi Dashboard\nSave setup for BNA\n\nPaste the token once. It is saved as a provider-scoped secret reference/fingerprint for BNA verification and is not shown back on this page.\n\nProvider scoped\nAPI token\nLinked WhatsApp phone\nInstance or channel ID\nNotes\nI scanned/connected the phone in Whapi and want BNA to verify this setup before any WhatsApp send is enabled.\nSave WhatsApp Setup",
+        "hasTestLabel": false,
+        "hasBnaAcademy": false,
+        "hasGenericSections": false,
+        "navButtons": [
+          {
+            "label": "Dashboard",
+            "left": -323,
+            "top": 546,
+            "right": -29,
+            "bottom": 590,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "CRM",
+            "left": -323,
+            "top": 598,
+            "right": -29,
+            "bottom": 642,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Mailbox",
+            "left": -323,
+            "top": 650,
+            "right": -29,
+            "bottom": 694,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Messages",
+            "left": -323,
+            "top": 702,
+            "right": -29,
+            "bottom": 746,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "WhatsApp",
+            "left": -323,
+            "top": 754,
+            "right": -29,
+            "bottom": 798,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Content",
+            "left": -323,
+            "top": 842,
+            "right": -29,
+            "bottom": 886,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Live Class",
+            "left": -323,
+            "top": 894,
+            "right": -29,
+            "bottom": 938,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Library",
+            "left": -323,
+            "top": 946,
+            "right": -29,
+            "bottom": 990,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Badges",
+            "left": -323,
+            "top": 998,
+            "right": -29,
+            "bottom": 1042,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Users",
+            "left": -323,
+            "top": 1086,
+            "right": -29,
+            "bottom": 1130,
+            "width": 294,
+            "height": 44
+          },
+          {
+            "label": "Support",
+            "left": -323,
+            "top": 1138,
+            "right": -29,
+            "bottom": 1182,
+            "width": 294,
+            "height": 44
+          }
+        ]
+      }
+    }
+  ],
+  "passed": true
+}

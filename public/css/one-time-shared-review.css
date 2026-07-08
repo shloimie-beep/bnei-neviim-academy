@@ -314,6 +314,8 @@ body.one-time-review-active #portalPanel.one-time-provider-workspace > .workspac
   z-index: 35;
   display: grid;
   grid-template-columns: 1fr;
+  grid-auto-rows: auto;
+  align-items: stretch;
   gap: 10px;
   max-height: calc(100vh - 104px);
   overflow: auto;
@@ -333,6 +335,8 @@ body.one-time-review-active .one-time-sidebar-card,
 body.one-time-review-active .one-time-sidebar-actions,
 body.one-time-review-active .one-time-sidebar-group {
   display: grid;
+  grid-auto-rows: auto;
+  min-width: 0;
   gap: 8px;
 }
 

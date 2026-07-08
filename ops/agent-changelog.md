@@ -34235,3 +34235,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no real Drive upload, no Vimeo upload, no production DB write, no
   portal/latest-class publish, no bot knowledge promotion, and no raw media or
   transcript body committed.
+
+## 2026-07-08T18:11:28+03:00 - OneTime Rabbi provider session UI locally verified
+
+- Implemented `REQ-20260708-052` so signed Rabbi provider sessions use the
+  OneTime scoped section model instead of the generic provider setup model.
+- Updated `public/provider.html` to brand signed OneTime sessions as the Rabbi
+  workspace, remove review/test shortcuts from signed-mode role links, show
+  OneTime CRM/action cards, and keep WhatsApp as a no-send setup action.
+- Fixed the OneTime provider sidebar row sizing in
+  `public/css/one-time-shared-review.css`, resolving the button overlap/click
+  interception found by Playwright.
+- Added signed-session Playwright coverage in
+  `tests/one-time-provider-review-navigation.test.js`.
+- Evidence: PQC packet
+  `ops/prompt-packets/2026-07-08-onetime-rabbi-provider-session-ui/00-rabbi-provider-session-ui.product-quality.json`
+  and visual proof
+  `ops/ui-audits/2026-07-08-onetime-rabbi-provider-session-ui/report.md`.
+- Verification passed: PQC validation; focused provider tests 15/15; targeted
+  desktop/mobile visual proof; `npm run watchdog:protocol-drift`;
+  `npm run watchdog:actions`; `npm run secrets:audit`; `git diff --check`.
+- Guardrails: no WhatsApp sent, no parent invite resent, no payment/access/DNS/
+  Zoom/Vimeo/Drive mutation.

@@ -11,7 +11,7 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
 | REQ-20260708-049 | Pending | Prepare a concise OneTime WhatsApp welcome/class-link message and send one approved test to the redacted operator phone from the Rabbi / OneTime sender after WAPI readiness and copy/link are verified. | Blocked by WAPI setup and send approval details; see `DEC-20260708-010` and `DEC-20260708-011`. |
 | REQ-20260708-050 | Deployed / WAPI credential and class-link blocked | Build/verify the OneTime WhatsApp bot MVP: immediate response, phone/contact capture, interest question, current class link send, and CRM communication log. | Deployed in commit `8fc92f71` to OneTime deployment `b38765d5-7386-4f0d-ad9d-befe4005bee8`; live OneTime smoke passed. Code evaluates OneTime WAPI inbound webhook scope, logs inbound messages into `bna_contact_communications`, stamps an auto-reply plan onto the inbound CRM record, and sends only when `ONE_TIME_WAPI_AUTO_REPLY_ENABLED=true`, `ONE_TIME_WAPI_AUTO_REPLY_CONFIRM=APPROVE_ONE_TIME_WAPI_AUTO_REPLY`, `ONE_TIME_WHATSAPP_CLASS_LINK` is configured, and the sender uses `one_time_scoped` WAPI credentials. No WhatsApp was sent. Tests: `node --check server.js`; focused WAPI/prompt/provider tests passed. |
 | REQ-20260708-051 | Done / Email sent | Create a safe Rabbi Scheller scoped-login/password-setup flow so Shloimie can log in as Rabbi Scheller and inspect the Rabbi view without using the super-admin account. | Live readback showed Rabbi provider session and view-as routes work. Deployed OneTime-branded provider setup email with guarded admin recipient override. Setup email sent to redacted operator Gmail through Resend after deployment `6d74a813-235b-41f6-81ea-777f6a2183e8`; readback status `sent`, provider `resend`, subject OneTime-branded and not BNA-branded. |
-| REQ-20260708-052 | Pending | Polish Rabbi scoped UI: OneTime brand, no pictures, no BNA branding in user-visible Rabbi surfaces, no random diagnostic/configuration cards without actions, consistent side panel/top filter/button layout. | Requires current-state UI audit/PQC packet before product UI implementation. |
+| REQ-20260708-052 | Local verified / pending deploy | Polish Rabbi scoped UI: OneTime brand, no pictures, no BNA branding in user-visible Rabbi surfaces, no random diagnostic/configuration cards without actions, consistent side panel/top filter/button layout. | Implemented signed Rabbi provider sessions on the OneTime section model, sanitized review/test links in signed mode, replaced generic provider diagnostics with OneTime CRM/action content, and fixed OneTime sidebar row sizing so nav buttons do not overlap. Evidence: PQC packet `ops/prompt-packets/2026-07-08-onetime-rabbi-provider-session-ui/00-rabbi-provider-session-ui.product-quality.json`; visual proof `ops/ui-audits/2026-07-08-onetime-rabbi-provider-session-ui/report.md`; tests 15/15; watchdog/action/secrets/diff gates passed. Deploy/live smoke still required before Done. |
 | REQ-20260708-053 | Deployed / live prompt readback passed | Verify and harden Agent Mode autonomous loop for this workstream: navigation-first prompts, Start/Drop-off/Readback path, failure/blocker reporting, and safe parallel execution. | Updated `src/lib/bna/agent-review-hub.js`, regenerated `public/agent-review-prompts/*.md`, and refreshed `ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/` so agents must start/drop off through Operations, navigate exact Super Admin -> Rabbi -> real live parent/student login/setup/classroom paths, inspect Communications > Email and Communications > WhatsApp, and save BLOCKED/FAIL even when navigation breaks. Commits `8fc92f71` and `86e050f3` pushed; OneTime deployments `b38765d5-7386-4f0d-ad9d-befe4005bee8` and `7a499173-cb63-4c62-a651-d9197ce6218f` reached `SUCCESS`. Live readback of `https://join.onetimeonetime.com/agent-review-prompts/rabbi-provider-admin.md` confirmed `Communications > WhatsApp`, WAPI readiness, `parent/login`, `student/login`, `one-time-parent`, and the WhatsApp no-send guard. |
 | REQ-20260708-054 | Deployed / WAPI credential blocked | Ensure OneTime CRM is built out for WAPI/WhatsApp contacts, communications, follow-up state, provider/Rabbi scope, and readback in Operations. | Deployed WAPI send path stamps project scope into outbound attempts/results and chooses OneTime-scoped WAPI credentials. Follow-up scopes inbound webhook records by OneTime workspace/project when supplied, records auto-reply readiness into CRM metadata/source context, exposes `auto_reply_configured` / `auto_reply_readiness` in WAPI diagnostics, and keeps live sends blocked without scoped WAPI token + class-link env + approval gate. Live WAPI setup remains not configured until `DEC-20260708-010` is resolved. |
 
@@ -92,6 +92,36 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
   - No parent invite resend was performed.
   - No payment/access/DNS/Zoom/Vimeo/Drive mutation was performed.
 
+## Evidence - 2026-07-08 Rabbi Provider Session UI Cleanup
+
+- Product Quality Compiler packet:
+  - `ops/prompt-packets/2026-07-08-onetime-rabbi-provider-session-ui/00-rabbi-provider-session-ui.product-quality.json`
+- Implementation files:
+  - `public/provider.html`
+  - `public/css/one-time-shared-review.css`
+  - `tests/one-time-provider-review-navigation.test.js`
+- Local UI behavior:
+  - Signed OneTime provider sessions now use the same Rabbi-facing section model as review/view-as.
+  - Signed mode strips `review=one-time` and `TEST-ONETIME-REVIEW-ACCESS` role links from Parent, Student, Member, and Classroom shortcuts.
+  - Signed CRM content uses OneTime action cards and count-based empty states instead of TEST parent/student fallback labels.
+  - Generic provider setup/admin sections such as Commercial Model, External Apps, Access Checklist, API Usage, and Settings are no longer in the signed Rabbi section navigation.
+  - OneTime sidebar rows now auto-size, preventing adjacent nav buttons from overlapping/intercepting clicks.
+- Verification passed:
+  - `npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-rabbi-provider-session-ui/00-rabbi-provider-session-ui.product-quality.json`
+  - `node --test tests/one-time-provider-review-navigation.test.js tests/provider-wapi-setup-portal.test.js tests/one-time-admin-mailbox-access.test.js` passed 15/15.
+  - Targeted visual proof passed for desktop CRM, mobile CRM, and mobile WhatsApp setup: `ops/ui-audits/2026-07-08-onetime-rabbi-provider-session-ui/report.md`.
+  - `npm run watchdog:protocol-drift`
+  - `npm run watchdog:actions`
+  - `npm run secrets:audit`
+  - `git diff --check`
+- External-send status:
+  - No WhatsApp was sent.
+  - No parent invite resend was performed.
+  - No payment/access/DNS/Zoom/Vimeo/Drive mutation was performed.
+- Closeout records:
+  - `ops/agent-changelog.md`
+  - `ops/agent-task-ledger.jsonl`
+
 ## Suggested WhatsApp Draft
 
 Status: draft only, not sent.
@@ -114,5 +144,5 @@ Status: draft only, not sent.
 | B2 | WAPI/CRM audit and safe config | `REQ-20260708-048`, `REQ-20260708-054` | Pending |
 | B3 | WhatsApp no-send preview and single test send | `REQ-20260708-049` | Pending WAPI/copy/link approval |
 | B4 | WhatsApp bot MVP | `REQ-20260708-050` | Deployed; live send blocked on WAPI credentials, class-link env, and approval |
-| B5 | Rabbi login/view-as and UI audit | `REQ-20260708-051`, `REQ-20260708-052` | Pending |
+| B5 | Rabbi login/view-as and UI audit | `REQ-20260708-051`, `REQ-20260708-052` | Local verified; deploy/live smoke pending for `REQ-20260708-052` |
 | B6 | Agent Mode autonomous loop prompts/drop-off hardening | `REQ-20260708-053` | Deployed and live prompt readback passed |
