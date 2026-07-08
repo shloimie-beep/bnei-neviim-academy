@@ -34081,3 +34081,32 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   still needs operator confirmation before the cleaned route will send.
 - Evidence:
   `ops/watchdog-audits/2026-07-08-onetime-parent-student-auth-deploy-live-smoke.md`.
+
+## 2026-07-08T17:20:00+03:00 - OneTime WAPI/Rabbi login guardrails locally verified
+
+- Captured the OneTime resend, WAPI, Rabbi login, CRM, and Agent Mode loop
+  ramble as `RAW-20260708-010` and registered requirements in
+  `tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md`.
+- Added OneTime/Rabbi-scoped WAPI credential resolution:
+  `ONE_TIME_WAPI_API_TOKEN`, `ONETIME_WAPI_API_TOKEN`,
+  `RABBI_SHELLER_WAPI_API_TOKEN`, `RABBI_SCHELLER_WAPI_API_TOKEN`, and matching
+  `.secrets` filenames are now supported without committing raw credentials.
+- Updated outbound WAPI send logging so WhatsApp attempts/results carry the
+  OneTime project scope in `bna_contact_communications` and use scoped
+  credentials when the workspace/project is Rabbi / OneTime.
+- Updated WAPI diagnostics so scoped readbacks report OneTime credential
+  readiness instead of only the generic BNA token state.
+- Updated provider password setup email copy so OneTime provider setup emails
+  are OneTime-branded, and added a guarded admin-only recipient override for
+  sending the Rabbi setup flow to a test recipient without permanently changing
+  the provider contact email.
+- Live readback before deploy showed Rabbi provider session and view-as routes
+  work, but WAPI is not configured on the live OneTime app and the current
+  parent invite record still has stale test/student labels.
+- Verification passed: `node --check server.js`; focused WAPI/provider/parent
+  tests 34/34; and `npm run watchdog:protocol-drift`.
+- Status: local verified, pending commit, push, deploy, live smoke, and the
+  approved Rabbi setup email send. Parent invite resend remains blocked until
+  the exact live OneTime student display name is provided. WhatsApp send
+  remains blocked until the Rabbi WAPI credential folder/token is supplied and
+  configured.

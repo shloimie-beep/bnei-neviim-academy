@@ -2633,6 +2633,21 @@ const WAPI_API_TOKEN =
   usableSecretValue(process.env.WHAPI_API_TOKEN) ||
   usableSecretValue(readLocalSecretFile('wapi-api-token.txt')) ||
   usableSecretValue(readLocalSecretFile('whapi-api-token.txt'));
+const ONE_TIME_WAPI_API_BASE_URL =
+  process.env.ONE_TIME_WAPI_API_BASE_URL ||
+  process.env.ONETIME_WAPI_API_BASE_URL ||
+  process.env.RABBI_SHELLER_WAPI_API_BASE_URL ||
+  process.env.RABBI_SCHELLER_WAPI_API_BASE_URL ||
+  WAPI_API_BASE_URL;
+const ONE_TIME_WAPI_API_TOKEN =
+  usableSecretValue(process.env.ONE_TIME_WAPI_API_TOKEN) ||
+  usableSecretValue(process.env.ONETIME_WAPI_API_TOKEN) ||
+  usableSecretValue(process.env.RABBI_SHELLER_WAPI_API_TOKEN) ||
+  usableSecretValue(process.env.RABBI_SCHELLER_WAPI_API_TOKEN) ||
+  usableSecretValue(readLocalSecretFile('one-time-wapi-api-token.txt')) ||
+  usableSecretValue(readLocalSecretFile('onetime-wapi-api-token.txt')) ||
+  usableSecretValue(readLocalSecretFile('rabbi-sheller-wapi-api-token.txt')) ||
+  usableSecretValue(readLocalSecretFile('rabbi-scheller-wapi-api-token.txt'));
 const WAPI_SEND_TIMEOUT_MS = Math.max(
   1000,
   Number(process.env.WAPI_SEND_TIMEOUT_MS || process.env.WHAPI_SEND_TIMEOUT_MS || 15000)
@@ -7228,26 +7243,43 @@ async function setParentPasswordFromResetToken({ token, password }, db = pool) {
   }
 }
 
-async function sendProviderPasswordSetupEmail({ provider, url, req }) {
-  const email = normalizeEmail(provider?.contact_email);
+async function sendProviderPasswordSetupEmail({ provider, url, req, toEmail = '' }) {
+  const email = normalizeEmail(toEmail || provider?.contact_email);
   if (!email) {
     return { ok: false, error: 'Provider contact email is missing' };
   }
   const username = limitText(provider.login_username, 120) || `provider-${provider.id}`;
-  const providerName = limitText(provider.provider_name || provider.display_name, 160) || 'your BNA provider listing';
-  const subject = 'Set up your BNA provider workspace password';
-  const text = [
-    `Hi ${limitText(provider.contact_name, 80) || 'there'},`,
-    '',
-    `Your BNA provider workspace is ready for ${providerName}.`,
-    '',
-    `Username: ${username}`,
-    `Set your password here: ${url}`,
-    '',
-    'This secure link expires in 1 hour. After setting your password, you can update your profile, services, media, and provider messages from the BNA provider portal.',
-    '',
-    'Bnei Neviim Academy Office',
-  ].join('\n');
+  const oneTimeProvider = isOneTimeClassMediaProvider(provider);
+  const providerName = limitText(provider.provider_name || provider.display_name, 160) || (oneTimeProvider ? 'OneTimeOneTime Mishnah' : 'your BNA provider listing');
+  const subject = oneTimeProvider
+    ? 'Set up your OneTimeOneTime Mishnah workspace password'
+    : 'Set up your BNA provider workspace password';
+  const greeting = `Hi ${limitText(provider.contact_name, 80) || 'there'},`;
+  const text = oneTimeProvider
+    ? [
+      greeting,
+      '',
+      `Your OneTimeOneTime Mishnah workspace is ready for ${providerName}.`,
+      '',
+      `Username: ${username}`,
+      `Set your password here: ${url}`,
+      '',
+      'This secure link expires in 1 hour. After setting your password, you can manage the OneTime Mishnah class mailbox, contacts, class media, WhatsApp setup, and provider messages from your workspace.',
+      '',
+      'OneTimeOneTime Mishnah Class',
+    ].join('\n')
+    : [
+      greeting,
+      '',
+      `Your BNA provider workspace is ready for ${providerName}.`,
+      '',
+      `Username: ${username}`,
+      `Set your password here: ${url}`,
+      '',
+      'This secure link expires in 1 hour. After setting your password, you can update your profile, services, media, and provider messages from the BNA provider portal.',
+      '',
+      'Bnei Neviim Academy Office',
+    ].join('\n');
   const html = text.replace(/\n/g, '<br>');
   try {
     const result = await sendEmail({
@@ -7268,6 +7300,8 @@ async function sendProviderPasswordSetupEmail({ provider, url, req }) {
       metadata: {
         provider_id: provider.id || null,
         requested_from: req?.ip || null,
+        one_time_provider: oneTimeProvider,
+        recipient_override: Boolean(toEmail),
       },
     });
     return { ok: true, id: result.data.id };
@@ -7285,6 +7319,8 @@ async function sendProviderPasswordSetupEmail({ provider, url, req }) {
       metadata: {
         provider_id: provider.id || null,
         requested_from: req?.ip || null,
+        one_time_provider: oneTimeProvider,
+        recipient_override: Boolean(toEmail),
       },
     }).catch(() => {});
     return { ok: false, error: message };
@@ -7299,10 +7335,12 @@ async function ensureProviderLoginUsername(providerId, db = pool) {
     throw error;
   }
   const provider = (await db.query(
-    `SELECT id, provider_name, display_name, contact_name, contact_email, login_username, status
-     FROM bna_service_providers
-     WHERE id = $1
-       AND status NOT IN ('rejected', 'archived')
+    `SELECT sp.id, sp.project_id, p.project_key, sp.provider_name, sp.display_name,
+            sp.contact_name, sp.contact_email, sp.login_username, sp.status
+     FROM bna_service_providers sp
+     LEFT JOIN bna_projects p ON p.id = sp.project_id
+     WHERE sp.id = $1
+       AND sp.status NOT IN ('rejected', 'archived')
      LIMIT 1`,
     [id]
   )).rows[0];
@@ -7321,17 +7359,20 @@ async function ensureProviderLoginUsername(providerId, db = pool) {
   ];
   for (const candidate of candidates) {
     const updated = (await db.query(
-      `UPDATE bna_service_providers
+      `UPDATE bna_service_providers sp
        SET login_username = $2,
            updated_at = NOW()
-       WHERE id = $1
+       FROM bna_projects p
+       WHERE sp.id = $1
+         AND p.id = sp.project_id
          AND NOT EXISTS (
            SELECT 1
            FROM bna_service_providers other
-           WHERE other.id <> $1
+           WHERE other.id <> sp.id
              AND lower(COALESCE(other.login_username, '')) = lower($2)
          )
-       RETURNING id, provider_name, display_name, contact_name, contact_email, login_username, status`,
+       RETURNING sp.id, sp.project_id, p.project_key, sp.provider_name, sp.display_name,
+         sp.contact_name, sp.contact_email, sp.login_username, sp.status`,
       [id, candidate]
     )).rows[0];
     if (updated) return updated;
@@ -7342,9 +7383,9 @@ async function ensureProviderLoginUsername(providerId, db = pool) {
   throw error;
 }
 
-async function createProviderPasswordSetupToken({ providerId, req, metadata = {} }, db = pool) {
+async function createProviderPasswordSetupToken({ providerId, req, metadata = {}, recipientEmail = '' }, db = pool) {
   const provider = await ensureProviderLoginUsername(providerId, db);
-  const email = normalizeEmail(provider.contact_email);
+  const email = normalizeEmail(recipientEmail || provider.contact_email);
   if (!email) {
     const error = new Error('Provider contact email is required before sending a setup email');
     error.statusCode = 400;
@@ -7365,12 +7406,15 @@ async function createProviderPasswordSetupToken({ providerId, req, metadata = {}
       expiresAt,
       req?.ip || null,
       req?.headers?.['user-agent'] || null,
-      JSON.stringify(metadata || {}),
+      JSON.stringify({
+        ...(metadata || {}),
+        recipient_override: Boolean(recipientEmail),
+      }),
     ]
   )).rows[0];
 
   const url = providerPortalPasswordSetupUrl(req, token);
-  const emailResult = await sendProviderPasswordSetupEmail({ provider, url, req });
+  const emailResult = await sendProviderPasswordSetupEmail({ provider, url, req, toEmail: email });
   await db.query(
     `INSERT INTO bna_provider_messages (
        provider_id, direction, channel, subject, body, status, source, source_context, metadata
@@ -7388,6 +7432,7 @@ async function createProviderPasswordSetupToken({ providerId, req, metadata = {}
         provider_id: provider.id,
         email_sent: Boolean(emailResult.ok),
         email_error: emailResult.error || null,
+        recipient_override: Boolean(recipientEmail),
       }),
     ]
   ).catch(() => {});
@@ -8077,15 +8122,15 @@ async function resolveParentAccessTarget({ contactType, contactId }, db = pool) 
   }
 
   if (type === 'signup') {
-    const row = (await db.query('SELECT id, parent_email, parent_name, parent_phone, student_name FROM signups WHERE id = $1', [id])).rows[0];
+    const row = (await db.query('SELECT id, project_id, parent_email, parent_name, parent_phone, student_name FROM signups WHERE id = $1', [id])).rows[0];
     return row ? { type, row, parent_email: row.parent_email } : null;
   }
   if (type === 'student') {
-    const row = (await db.query('SELECT id, parent_email, parent_name, parent_phone, name FROM bna_students WHERE id = $1', [id])).rows[0];
+    const row = (await db.query('SELECT id, project_id, parent_email, parent_name, parent_phone, name FROM bna_students WHERE id = $1', [id])).rows[0];
     return row ? { type, row, parent_email: row.parent_email } : null;
   }
   if (type === 'lead') {
-    const row = (await db.query('SELECT id, parent_email, parent_name, parent_phone, student_name FROM bna_parent_leads WHERE id = $1', [id])).rows[0];
+    const row = (await db.query('SELECT id, project_id, parent_email, parent_name, parent_phone, student_name FROM bna_parent_leads WHERE id = $1', [id])).rows[0];
     return row ? { type, row, parent_email: row.parent_email } : null;
   }
   const error = new Error('contact_type must be signup, student, or lead');
@@ -8217,6 +8262,10 @@ async function sendParentMagicLinkWhatsApp({ target, parentEmail, url, req }, db
   }
 
   const targetIds = parentAccessTargetIds(target);
+  const targetProjectKey = target?.row?.project_id
+    ? (await db.query('SELECT project_key FROM bna_projects WHERE id = $1 LIMIT 1', [target.row.project_id])).rows[0]?.project_key || ''
+    : '';
+  const targetWorkspaceKey = normalizeProjectKey(targetProjectKey) === ONE_TIME_PROJECT_KEY ? ONE_TIME_PROVIDER_WORKSPACE_KEY : '';
   const attempt = await createOutboundWapiCommunicationAttempt({
     recipient: {
       to: recipient,
@@ -8224,12 +8273,14 @@ async function sendParentMagicLinkWhatsApp({ target, parentEmail, url, req }, db
       lead_id: targetIds.lead_id,
       signup_id: targetIds.signup_id,
       student_id: targetIds.student_id,
+      project_id: target?.row?.project_id || null,
       name: target?.row?.parent_name || target?.row?.student_name || recipient,
       phone: parentPhone,
       match_source: `parent_access_${target.type || 'contact'}`,
     },
     messageBody,
     summary: 'Parent portal login link WhatsApp send attempted',
+    projectId: target?.row?.project_id || null,
     source: 'parent_access_link',
     createdBy: req?.opsUser || 'admin',
     metadata: {
@@ -8245,6 +8296,8 @@ async function sendParentMagicLinkWhatsApp({ target, parentEmail, url, req }, db
       to: recipient,
       body: messageBody,
       typingTime: 0,
+      workspace_key: targetWorkspaceKey,
+      project_key: targetProjectKey,
     });
     await updateOutboundWapiCommunicationResult(attempt.id, {
       sendResult,
@@ -47160,13 +47213,21 @@ app.patch('/api/bna/service-providers/:id', requireAdmin, async (req, res) => {
 
 app.post('/api/bna/service-providers/:id/setup-email', requireAdmin, async (req, res) => {
   try {
+    const recipientEmail = normalizeEmail(req.body?.recipient_email || req.body?.recipientEmail || req.body?.to_email || req.body?.toEmail || '');
+    if (recipientEmail && String(req.body?.confirm || '').trim() !== 'SEND_PROVIDER_SETUP_EMAIL_TO_OVERRIDE') {
+      return res.status(400).json({
+        error: 'Provider setup email override sends require confirm: SEND_PROVIDER_SETUP_EMAIL_TO_OVERRIDE',
+      });
+    }
     const result = await createProviderPasswordSetupToken({
       providerId: req.params.id,
       req,
       metadata: {
         source: 'operations_resend',
         requested_by: req.opsUser || 'operations',
+        recipient_override: Boolean(recipientEmail),
       },
+      recipientEmail,
     });
     res.json({
       success: true,
@@ -47176,6 +47237,7 @@ app.post('/api/bna/service-providers/:id/setup-email', requireAdmin, async (req,
       expires_at: result.expires_at,
       email_sent: Boolean(result.email_sent),
       email_error: result.email_error || null,
+      recipient_override: Boolean(recipientEmail),
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
@@ -62184,6 +62246,22 @@ function normalizeWapiRecipient(value) {
   return normalizePhoneDigits(raw);
 }
 
+function isOneTimeWapiScope(scope = {}) {
+  return normalizeWorkspaceKey(scope.workspace_key || scope.workspace || '') === ONE_TIME_PROVIDER_WORKSPACE_KEY
+    || normalizeProjectKey(scope.project_key || scope.project || '') === ONE_TIME_PROJECT_KEY;
+}
+
+function wapiCredentialsForScope(scope = {}) {
+  const oneTimeScope = isOneTimeWapiScope(scope);
+  const scopedToken = oneTimeScope ? ONE_TIME_WAPI_API_TOKEN : '';
+  return {
+    token: scopedToken || WAPI_API_TOKEN,
+    baseUrl: oneTimeScope ? (ONE_TIME_WAPI_API_BASE_URL || WAPI_API_BASE_URL) : WAPI_API_BASE_URL,
+    credential_scope: scopedToken ? 'one_time_scoped' : 'default',
+    one_time_scope: oneTimeScope,
+  };
+}
+
 async function resolveWapiOutboundRecipient(body = {}, db = pool) {
   const explicitTo = normalizeWapiRecipient(body.to || body.phone || body.chat_id || body.chatId);
   if (explicitTo) {
@@ -62193,6 +62271,7 @@ async function resolveWapiOutboundRecipient(body = {}, db = pool) {
       lead_id: body.lead_id || null,
       signup_id: body.signup_id || null,
       student_id: body.student_id || null,
+      project_id: body.project_id || null,
       name: body.name || explicitTo,
       phone: explicitTo,
       match_source: 'explicit_recipient',
@@ -62201,7 +62280,7 @@ async function resolveWapiOutboundRecipient(body = {}, db = pool) {
 
   if (body.signup_id) {
     const signup = (await db.query(
-      `SELECT id, parent_name, student_name, parent_phone
+      `SELECT id, project_id, parent_name, student_name, parent_phone
        FROM signups
        WHERE id = $1
        LIMIT 1`,
@@ -62215,6 +62294,7 @@ async function resolveWapiOutboundRecipient(body = {}, db = pool) {
       signup_id: signup.id,
       lead_id: null,
       student_id: null,
+      project_id: signup.project_id || null,
       name: signup.parent_name || signup.student_name || to,
       phone: signup.parent_phone,
       match_source: 'signup_id',
@@ -62223,7 +62303,7 @@ async function resolveWapiOutboundRecipient(body = {}, db = pool) {
 
   if (body.lead_id) {
     const lead = (await db.query(
-      `SELECT id, parent_name, parent_phone
+      `SELECT id, project_id, parent_name, parent_phone
        FROM bna_parent_leads
        WHERE id = $1
        LIMIT 1`,
@@ -62237,6 +62317,7 @@ async function resolveWapiOutboundRecipient(body = {}, db = pool) {
       lead_id: lead.id,
       signup_id: null,
       student_id: null,
+      project_id: lead.project_id || null,
       name: lead.parent_name || to,
       phone: lead.parent_phone,
       match_source: 'lead_id',
@@ -62245,7 +62326,7 @@ async function resolveWapiOutboundRecipient(body = {}, db = pool) {
 
   if (body.student_id) {
     const student = (await db.query(
-      `SELECT id, name, parent_name, parent_phone
+      `SELECT id, project_id, name, parent_name, parent_phone
        FROM bna_students
        WHERE id = $1
        LIMIT 1`,
@@ -62259,6 +62340,7 @@ async function resolveWapiOutboundRecipient(body = {}, db = pool) {
       lead_id: null,
       signup_id: null,
       student_id: student.id,
+      project_id: student.project_id || null,
       name: student.parent_name || student.name || to,
       phone: student.parent_phone,
       match_source: 'student_id',
@@ -62300,6 +62382,7 @@ async function createOutboundWapiCommunicationAttempt({
   recipient,
   messageBody,
   summary,
+  projectId = null,
   source = 'dashboard',
   createdBy = 'admin',
   metadata = {},
@@ -62307,16 +62390,17 @@ async function createOutboundWapiCommunicationAttempt({
 }, db = pool) {
   const communication = (await db.query(
     `INSERT INTO bna_contact_communications (
-      contact_type, lead_id, signup_id, student_id, channel, direction,
+      project_id, contact_type, lead_id, signup_id, student_id, channel, direction,
       summary, body, follow_up_required, occurred_at, created_by, source,
       source_context, metadata
     ) VALUES (
-      $1, $2, $3, $4, 'whatsapp', 'outbound',
-      $5, $6, TRUE, NOW(), $7, 'wapi',
-      $8, $9
+      $1, $2, $3, $4, $5, 'whatsapp', 'outbound',
+      $6, $7, TRUE, NOW(), $8, 'wapi',
+      $9, $10
     )
     RETURNING *`,
     [
+      projectId || recipient.project_id || null,
       recipient.contact_type || 'general',
       recipient.lead_id || null,
       recipient.signup_id || null,
@@ -62329,6 +62413,7 @@ async function createOutboundWapiCommunicationAttempt({
         match_source: recipient.match_source,
         delivery_status: 'attempted',
         attempted_at: new Date().toISOString(),
+        project_id: projectId || recipient.project_id || null,
         ...sourceContext,
       }),
       JSON.stringify({
@@ -62336,6 +62421,7 @@ async function createOutboundWapiCommunicationAttempt({
         source,
         delivery_status: 'attempted',
         sent: false,
+        project_id: projectId || recipient.project_id || null,
         recipient_phone: recipient.phone || recipient.to,
         recipient_name: recipient.name || null,
       }),
@@ -62407,8 +62493,17 @@ async function updateOutboundWapiCommunicationResult(communicationId, { sendResu
   return result.rows[0] || null;
 }
 
-async function sendWapiTextMessage({ to, body, typingTime = 0, noLinkPreview = true, timeoutMs = WAPI_SEND_TIMEOUT_MS }) {
-  if (!WAPI_API_TOKEN) {
+async function sendWapiTextMessage({
+  to,
+  body,
+  typingTime = 0,
+  noLinkPreview = true,
+  timeoutMs = WAPI_SEND_TIMEOUT_MS,
+  workspace_key = '',
+  project_key = '',
+}) {
+  const credentials = wapiCredentialsForScope({ workspace_key, project_key });
+  if (!credentials.token) {
     const error = new Error('WAPI_API_TOKEN or WHAPI_API_TOKEN is not configured for outbound WhatsApp sending');
     error.statusCode = 503;
     throw error;
@@ -62423,10 +62518,10 @@ async function sendWapiTextMessage({ to, body, typingTime = 0, noLinkPreview = t
   const timer = setTimeout(() => controller.abort(), Math.max(1000, Number(timeoutMs || WAPI_SEND_TIMEOUT_MS)));
   let response;
   try {
-    response = await fetch(`${WAPI_API_BASE_URL.replace(/\/+$/, '')}/messages/text`, {
+    response = await fetch(`${credentials.baseUrl.replace(/\/+$/, '')}/messages/text`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${WAPI_API_TOKEN}`,
+        Authorization: `Bearer ${credentials.token}`,
         'Content-Type': 'application/json',
       },
       signal: controller.signal,
@@ -62472,16 +62567,17 @@ async function recordOutboundWapiCommunication({ recipient, messageBody, sendRes
   const summary = `WhatsApp sent to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240);
   const communication = (await db.query(
     `INSERT INTO bna_contact_communications (
-      contact_type, lead_id, signup_id, student_id, channel, direction,
+      project_id, contact_type, lead_id, signup_id, student_id, channel, direction,
       summary, body, follow_up_required, occurred_at, created_by, source,
       source_context, metadata
     ) VALUES (
-      $1, $2, $3, $4, 'whatsapp', 'outbound',
-      $5, $6, FALSE, NOW(), $7, 'wapi',
-      $8, $9
+      $1, $2, $3, $4, $5, 'whatsapp', 'outbound',
+      $6, $7, FALSE, NOW(), $8, 'wapi',
+      $9, $10
     )
     RETURNING *`,
     [
+      recipient.project_id || null,
       recipient.contact_type || 'general',
       recipient.lead_id || null,
       recipient.signup_id || null,
@@ -62495,12 +62591,14 @@ async function recordOutboundWapiCommunication({ recipient, messageBody, sendRes
         delivery_status: 'sent',
         wapi_message_id: sentMessageId,
         wapi_status: sendResult?.status || null,
+        project_id: recipient.project_id || null,
       }),
       JSON.stringify({
         ...metadata,
         source,
         delivery_status: 'sent',
         sent: true,
+        project_id: recipient.project_id || null,
         recipient_phone: recipient.phone || recipient.to,
         recipient_name: recipient.name || null,
         wapi_response: sendResult?.response || null,
@@ -63349,6 +63447,17 @@ app.get('/api/bna/wapi/sync-runs', requireAdmin, async (req, res) => {
 
 app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
   try {
+    const requestedProjectKey = requestedProjectKeyForScopedList(req);
+    const requestedWorkspaceKey = normalizeWorkspaceKey(req.query.workspace || req.query.workspace_key || '');
+    const diagnosticProjectKey = requestedProjectKey || workspaceProjectKey(requestedWorkspaceKey);
+    const diagnosticWorkspaceKey = requestedWorkspaceKey || workspaceKeyForProject(diagnosticProjectKey);
+    const credentials = wapiCredentialsForScope({
+      workspace_key: diagnosticWorkspaceKey,
+      project_key: diagnosticProjectKey,
+    });
+    const requiredWapiEnv = credentials.one_time_scope
+      ? ['ONE_TIME_WAPI_API_TOKEN or RABBI_SHELLER_WAPI_API_TOKEN or WAPI_API_TOKEN']
+      : ['WAPI_API_TOKEN or WHAPI_API_TOKEN'];
     const latestSyncRun = (await pool.query(
       `SELECT *
        FROM bna_wapi_sync_runs
@@ -63358,14 +63467,17 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
     res.json({
       success: true,
       inbound_webhook_configured: Boolean(String(process.env.WAPI_WEBHOOK_SECRET || '').trim()),
-      outbound_configured: Boolean(WAPI_API_TOKEN),
-      sync_configured: Boolean(WAPI_API_TOKEN),
-      outbound_base_url: WAPI_API_BASE_URL,
+      outbound_configured: Boolean(credentials.token),
+      sync_configured: Boolean(credentials.token),
+      outbound_base_url: credentials.baseUrl,
+      credential_scope: credentials.credential_scope,
+      workspace_key: diagnosticWorkspaceKey || null,
+      project_key: diagnosticProjectKey || null,
       send_endpoint: '/api/bna/contact-communications/send-whatsapp',
       sync_endpoint: '/api/bna/wapi/sync',
       latest_sync_run: latestSyncRun,
-      required_outbound_env: WAPI_API_TOKEN ? [] : ['WAPI_API_TOKEN or WHAPI_API_TOKEN'],
-      required_sync_env: WAPI_API_TOKEN ? [] : ['WAPI_API_TOKEN or WHAPI_API_TOKEN'],
+      required_outbound_env: credentials.token ? [] : requiredWapiEnv,
+      required_sync_env: credentials.token ? [] : requiredWapiEnv,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -64018,13 +64130,25 @@ app.post('/api/bna/contact-communications/send-whatsapp', requireAdmin, async (r
   let recipient = null;
   let attempt = null;
   try {
+    const requestedProject = await resolveProjectForScopedWrite(req, body);
     recipient = await resolveWapiOutboundRecipient(body);
+    const recipientProjectId = recipient.project_id || requestedProject?.id || null;
+    recipient.project_id = recipientProjectId;
+    const recipientProjectKey = recipientProjectId
+      ? (await pool.query('SELECT project_key FROM bna_projects WHERE id = $1 LIMIT 1', [recipientProjectId])).rows[0]?.project_key || requestedProject?.project_key || ''
+      : requestedProject?.project_key || '';
+    const recipientWorkspaceKey = normalizeWorkspaceKey(body.workspace_key || body.workspace || workspaceKeyForProject(recipientProjectKey));
     attempt = await createOutboundWapiCommunicationAttempt({
       recipient,
       messageBody,
+      projectId: recipientProjectId,
       source: body.source || 'dashboard',
       createdBy: body.created_by || req.opsUser || 'admin',
-      metadata: body.metadata || {},
+      metadata: {
+        ...(body.metadata || {}),
+        workspace_key: recipientWorkspaceKey || null,
+        project_key: recipientProjectKey || null,
+      },
     });
     const sendResult = await sendWapiTextMessage({
       to: recipient.to,
@@ -64032,6 +64156,8 @@ app.post('/api/bna/contact-communications/send-whatsapp', requireAdmin, async (r
       typingTime: body.typing_time || body.typingTime || 0,
       noLinkPreview: body.no_link_preview ?? body.noLinkPreview ?? true,
       timeoutMs: body.timeout_ms || body.timeoutMs || WAPI_SEND_TIMEOUT_MS,
+      workspace_key: recipientWorkspaceKey,
+      project_key: recipientProjectKey,
     });
     const communication = await updateOutboundWapiCommunicationResult(attempt.id, {
       sendResult,
