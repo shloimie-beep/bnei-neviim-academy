@@ -33676,3 +33676,33 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   and private/unreviewed events are not exposed.
 - Guardrails held: no external send, payment, prize, coupon, credit, access
   grant, provider write, or unreviewed publication was performed.
+
+## 2026-07-08T11:25:00+03:00 - One Time member library lag/filter fix local verified
+
+- Captured `RAW-20260708-006` and created the One Time performance/media/
+  classroom workflow register with requirements `REQ-20260708-021` through
+  `REQ-20260708-031`.
+- Added Product Quality Compiler packets for the super-ramble control tower,
+  current-state audit, and first member-library implementation batch. Packets
+  00-02 validate with `npm run pqc:validate`.
+- Ran the current-state browser audit and saved desktop/mobile evidence under
+  `ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/`.
+  Caveat: live TEST member-library access returned 401/0 cards, so populated
+  member-library proof used a synthetic local browser smoke.
+- Updated `public/member-library.html` so Vimeo/HTML5 players lazy-activate
+  only after `Play Video`, the raw Vimeo `Open Media` link is not exposed,
+  search rendering is debounced, filters now include `Newest`, `Materials`,
+  and `Worksheets`, and single desktop cards no longer stretch into a
+  full-width media slab.
+- Updated focused contract/live-smoke expectations so the member-library smoke
+  asserts zero Vimeo iframes before `Play Video`.
+- Local verification passed: focused tests 17/17, `node --check` for the
+  Vimeo/member-library smoke script, and local Playwright smoke on 1440 and
+  430 viewports confirming zero iframes before `Play Video`, one iframe after,
+  no raw Vimeo media link, required filters present, no page overflow, and a
+  380px desktop card width in the synthetic proof.
+- Guardrails held: no Drive upload, Vimeo upload, external send, payment,
+  access grant, DNS/provider mutation, public publish, or unreviewed student
+  comment publication was performed.
+- Status: local verified, pending commit, push, deployment, and live readback/
+  smoke before `REQ-20260708-021` and `REQ-20260708-022` can be terminal Done.

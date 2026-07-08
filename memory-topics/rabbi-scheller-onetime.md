@@ -33,3 +33,16 @@
   credits live, or spend credits before account connection and approval.
 - No live charge, payment link, access grant, send, or external sync without
   explicit approval.
+- One Time parent/student classroom and library access should resolve from
+  authenticated login, setup/magic link, or session context. Access codes may
+  remain as a support fallback, but the default UX should not make logged-in
+  parents/students feel like they are "joining" a classroom by code.
+- One Time class/session pages should keep video, slideshow, worksheets/source
+  sheets, comments, public updates, awards, and watch/progress data attached to
+  the same class context so members never have to guess which materials belong
+  to which class.
+- One Time media security should use honest controls: member-only access,
+  private Vimeo embeds, no raw download links by default, view-only rendered
+  slides/PDFs instead of editable PowerPoint by default, watermarking/logging
+  where useful, and clear residual-risk handling. Do not promise that browser
+  media can fully prevent screenshots, screen recording, or determined capture.

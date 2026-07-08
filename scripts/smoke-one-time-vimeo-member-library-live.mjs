@@ -316,9 +316,10 @@ async function collectMemberLibraryUiState({ appUrl, width }) {
         toolbar_visible: document.querySelector('#libraryToolbar')?.classList.contains('visible') || false,
         filters_horizontal: Boolean(rail && getComputedStyle(rail).display === 'flex' && getComputedStyle(rail).flexWrap === 'nowrap'),
         filter_scrolls: Boolean(rail && rail.scrollWidth >= rail.clientWidth),
-        has_all_filters: ['All', 'Recently Added', 'Continue Watching', 'Masechta', 'Perek', 'Review', 'Completed'].every((label) => text.includes(label)),
+        has_all_filters: ['All', 'Newest', 'Continue Watching', 'Masechta', 'Perek', 'Materials', 'Worksheets', 'Review', 'Completed'].every((label) => text.includes(label)),
         has_grouping: /Berachos/i.test(text) && /Perek 1/i.test(text) && /Mishnah 1-2/i.test(text),
         has_progress: /0% complete/i.test(text) && /Mark Complete/i.test(text),
+        media_lazy_before_play: document.querySelectorAll('iframe[data-library-item-id]').length === 0 && /Play Video/i.test(text),
         page_overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
         client_width: document.documentElement.clientWidth,
         scroll_width: document.documentElement.scrollWidth,
@@ -326,6 +327,7 @@ async function collectMemberLibraryUiState({ appUrl, width }) {
     });
     assert(state.toolbar_visible && state.filters_horizontal, 'member-library filter rail did not render horizontally');
     assert(state.has_all_filters && state.has_grouping && state.has_progress, 'member-library filters/grouping/progress missing');
+    assert(state.media_lazy_before_play, 'member-library should not mount Vimeo iframes before Play Video');
     assert(!state.page_overflow, `Member library page overflowed at ${width}px: ${state.scroll_width} > ${state.client_width}`);
     return { width, state, console_errors: consoleErrors };
   } finally {

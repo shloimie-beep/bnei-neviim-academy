@@ -1,0 +1,984 @@
+{
+  "generated_at": "2026-07-08T08:09:09.426Z",
+  "base_url": "https://bneineviimacademy.org",
+  "access": "TEST-ONETIME-REVIEW-ACCESS",
+  "external_write_performed": false,
+  "internal_write_performed": false,
+  "guardrails": [
+    "No comment submit",
+    "No progress mutation",
+    "No Drive/Vimeo/upload/provider write",
+    "No send/payment/access grant/publish"
+  ],
+  "pages": [
+    {
+      "surface": "member-library",
+      "viewport": 1440,
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 1603,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 15,
+          "error": ""
+        },
+        {
+          "label": "click_recently_added_filter",
+          "ok": false,
+          "ms": 8003,
+          "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Recently Added/i }).first()\u001b[22m\n"
+        },
+        {
+          "label": "type_unmatched_search",
+          "ok": false,
+          "ms": 8004,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"zzzz-"
+        },
+        {
+          "label": "clear_search",
+          "ok": false,
+          "ms": 8013,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"\")\u001b[2"
+        }
+      ],
+      "counts": {
+        "dom_nodes": 68,
+        "cards": 0,
+        "iframes": 0,
+        "videos": 0,
+        "filter_buttons": 0,
+        "asset_links": 0,
+        "media_links": 0
+      },
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": [],
+      "status_text": "Invalid or inactive member library access code",
+      "member_meta": "Access code required",
+      "counts_after_interactions": {
+        "dom_nodes": 68,
+        "cards": 0,
+        "iframes": 0,
+        "videos": 0
+      },
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-1440-before.png"
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 1440,
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 917,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 8,
+          "error": ""
+        },
+        {
+          "label": "toggle_first_details_no_submit",
+          "ok": true,
+          "ms": 135,
+          "error": ""
+        },
+        {
+          "label": "focus_first_response_textarea_no_submit",
+          "ok": true,
+          "ms": 94,
+          "error": ""
+        }
+      ],
+      "counts": {
+        "dom_nodes": 126,
+        "cards_items": 2,
+        "details": 0,
+        "textareas": 1,
+        "iframes": 0,
+        "scoreboard_rows": 0
+      },
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": [],
+      "status_text": "Classroom opened.",
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-1440-before.png"
+    },
+    {
+      "surface": "member-library",
+      "viewport": 1024,
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 1450,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 11,
+          "error": ""
+        },
+        {
+          "label": "click_recently_added_filter",
+          "ok": false,
+          "ms": 8015,
+          "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Recently Added/i }).first()\u001b[22m\n"
+        },
+        {
+          "label": "type_unmatched_search",
+          "ok": false,
+          "ms": 8015,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"zzzz-"
+        },
+        {
+          "label": "clear_search",
+          "ok": false,
+          "ms": 8003,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"\")\u001b[2"
+        }
+      ],
+      "counts": {
+        "dom_nodes": 68,
+        "cards": 0,
+        "iframes": 0,
+        "videos": 0,
+        "filter_buttons": 0,
+        "asset_links": 0,
+        "media_links": 0
+      },
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": [],
+      "status_text": "Invalid or inactive member library access code",
+      "member_meta": "Access code required",
+      "counts_after_interactions": {
+        "dom_nodes": 68,
+        "cards": 0,
+        "iframes": 0,
+        "videos": 0
+      },
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-1024-before.png"
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 1024,
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 903,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 7,
+          "error": ""
+        },
+        {
+          "label": "toggle_first_details_no_submit",
+          "ok": true,
+          "ms": 111,
+          "error": ""
+        },
+        {
+          "label": "focus_first_response_textarea_no_submit",
+          "ok": true,
+          "ms": 95,
+          "error": ""
+        }
+      ],
+      "counts": {
+        "dom_nodes": 126,
+        "cards_items": 2,
+        "details": 0,
+        "textareas": 1,
+        "iframes": 0,
+        "scoreboard_rows": 0
+      },
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": [],
+      "status_text": "Opening classroom...",
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-1024-before.png"
+    },
+    {
+      "surface": "member-library",
+      "viewport": 768,
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 1594,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 833,
+          "error": ""
+        },
+        {
+          "label": "click_recently_added_filter",
+          "ok": false,
+          "ms": 8010,
+          "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Recently Added/i }).first()\u001b[22m\n"
+        },
+        {
+          "label": "type_unmatched_search",
+          "ok": false,
+          "ms": 8003,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"zzzz-"
+        },
+        {
+          "label": "clear_search",
+          "ok": false,
+          "ms": 8005,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"\")\u001b[2"
+        }
+      ],
+      "counts": {
+        "dom_nodes": 68,
+        "cards": 0,
+        "iframes": 0,
+        "videos": 0,
+        "filter_buttons": 0,
+        "asset_links": 0,
+        "media_links": 0
+      },
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": [],
+      "status_text": "Invalid or inactive member library access code",
+      "member_meta": "Access code required",
+      "counts_after_interactions": {
+        "dom_nodes": 68,
+        "cards": 0,
+        "iframes": 0,
+        "videos": 0
+      },
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-768-before.png"
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 768,
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 897,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 8,
+          "error": ""
+        },
+        {
+          "label": "toggle_first_details_no_submit",
+          "ok": true,
+          "ms": 107,
+          "error": ""
+        },
+        {
+          "label": "focus_first_response_textarea_no_submit",
+          "ok": true,
+          "ms": 94,
+          "error": ""
+        }
+      ],
+      "counts": {
+        "dom_nodes": 126,
+        "cards_items": 2,
+        "details": 0,
+        "textareas": 1,
+        "iframes": 0,
+        "scoreboard_rows": 0
+      },
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": [],
+      "status_text": "Opening classroom...",
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-768-before.png"
+    },
+    {
+      "surface": "member-library",
+      "viewport": 430,
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 1658,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 11,
+          "error": ""
+        },
+        {
+          "label": "click_recently_added_filter",
+          "ok": false,
+          "ms": 8007,
+          "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Recently Added/i }).first()\u001b[22m\n"
+        },
+        {
+          "label": "type_unmatched_search",
+          "ok": false,
+          "ms": 8007,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"zzzz-"
+        },
+        {
+          "label": "clear_search",
+          "ok": false,
+          "ms": 8005,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"\")\u001b[2"
+        }
+      ],
+      "counts": {
+        "dom_nodes": 68,
+        "cards": 0,
+        "iframes": 0,
+        "videos": 0,
+        "filter_buttons": 0,
+        "asset_links": 0,
+        "media_links": 0
+      },
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": [],
+      "status_text": "Invalid or inactive member library access code",
+      "member_meta": "Access code required",
+      "counts_after_interactions": {
+        "dom_nodes": 68,
+        "cards": 0,
+        "iframes": 0,
+        "videos": 0
+      },
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-430-before.png"
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 430,
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 988,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 22,
+          "error": ""
+        },
+        {
+          "label": "toggle_first_details_no_submit",
+          "ok": true,
+          "ms": 144,
+          "error": ""
+        },
+        {
+          "label": "focus_first_response_textarea_no_submit",
+          "ok": true,
+          "ms": 94,
+          "error": ""
+        }
+      ],
+      "counts": {
+        "dom_nodes": 185,
+        "cards_items": 7,
+        "details": 1,
+        "textareas": 2,
+        "iframes": 1,
+        "scoreboard_rows": 1
+      },
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": [],
+      "status_text": "Classroom opened.",
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-430-before.png"
+    },
+    {
+      "surface": "member-library",
+      "viewport": 390,
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 1537,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 11,
+          "error": ""
+        },
+        {
+          "label": "click_recently_added_filter",
+          "ok": false,
+          "ms": 8004,
+          "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Recently Added/i }).first()\u001b[22m\n"
+        },
+        {
+          "label": "type_unmatched_search",
+          "ok": false,
+          "ms": 8003,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"zzzz-"
+        },
+        {
+          "label": "clear_search",
+          "ok": false,
+          "ms": 8010,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"\")\u001b[2"
+        }
+      ],
+      "counts": {
+        "dom_nodes": 68,
+        "cards": 0,
+        "iframes": 0,
+        "videos": 0,
+        "filter_buttons": 0,
+        "asset_links": 0,
+        "media_links": 0
+      },
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": [],
+      "status_text": "Invalid or inactive member library access code",
+      "member_meta": "Access code required",
+      "counts_after_interactions": {
+        "dom_nodes": 68,
+        "cards": 0,
+        "iframes": 0,
+        "videos": 0
+      },
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-390-before.png"
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 390,
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 901,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 7,
+          "error": ""
+        },
+        {
+          "label": "toggle_first_details_no_submit",
+          "ok": true,
+          "ms": 112,
+          "error": ""
+        },
+        {
+          "label": "focus_first_response_textarea_no_submit",
+          "ok": true,
+          "ms": 92,
+          "error": ""
+        }
+      ],
+      "counts": {
+        "dom_nodes": 126,
+        "cards_items": 2,
+        "details": 0,
+        "textareas": 1,
+        "iframes": 0,
+        "scoreboard_rows": 0
+      },
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": [],
+      "status_text": "Opening classroom...",
+      "screenshot": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-390-before.png"
+    }
+  ],
+  "findings": [
+    {
+      "surface": "member-library",
+      "viewport": 1440,
+      "code": "PERF-SLOW-TIMING",
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 1603,
+          "error": ""
+        },
+        {
+          "label": "click_recently_added_filter",
+          "ok": false,
+          "ms": 8003,
+          "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Recently Added/i }).first()\u001b[22m\n"
+        },
+        {
+          "label": "type_unmatched_search",
+          "ok": false,
+          "ms": 8004,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"zzzz-"
+        },
+        {
+          "label": "clear_search",
+          "ok": false,
+          "ms": 8013,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"\")\u001b[2"
+        }
+      ]
+    },
+    {
+      "surface": "member-library",
+      "viewport": 1440,
+      "code": "CONSOLE-NOISE",
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 1440,
+      "code": "PERF-SLOW-TIMING",
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 917,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 1440,
+      "code": "CONSOLE-NOISE",
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "surface": "member-library",
+      "viewport": 1024,
+      "code": "PERF-SLOW-TIMING",
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 1450,
+          "error": ""
+        },
+        {
+          "label": "click_recently_added_filter",
+          "ok": false,
+          "ms": 8015,
+          "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Recently Added/i }).first()\u001b[22m\n"
+        },
+        {
+          "label": "type_unmatched_search",
+          "ok": false,
+          "ms": 8015,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"zzzz-"
+        },
+        {
+          "label": "clear_search",
+          "ok": false,
+          "ms": 8003,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"\")\u001b[2"
+        }
+      ]
+    },
+    {
+      "surface": "member-library",
+      "viewport": 1024,
+      "code": "CONSOLE-NOISE",
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 1024,
+      "code": "PERF-SLOW-TIMING",
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 903,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 1024,
+      "code": "CONSOLE-NOISE",
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "surface": "member-library",
+      "viewport": 768,
+      "code": "PERF-SLOW-TIMING",
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 1594,
+          "error": ""
+        },
+        {
+          "label": "usable_state_visible",
+          "ok": true,
+          "ms": 833,
+          "error": ""
+        },
+        {
+          "label": "click_recently_added_filter",
+          "ok": false,
+          "ms": 8010,
+          "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Recently Added/i }).first()\u001b[22m\n"
+        },
+        {
+          "label": "type_unmatched_search",
+          "ok": false,
+          "ms": 8003,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"zzzz-"
+        },
+        {
+          "label": "clear_search",
+          "ok": false,
+          "ms": 8005,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"\")\u001b[2"
+        }
+      ]
+    },
+    {
+      "surface": "member-library",
+      "viewport": 768,
+      "code": "CONSOLE-NOISE",
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 768,
+      "code": "PERF-SLOW-TIMING",
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 897,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 768,
+      "code": "CONSOLE-NOISE",
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "surface": "member-library",
+      "viewport": 430,
+      "code": "PERF-SLOW-TIMING",
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 1658,
+          "error": ""
+        },
+        {
+          "label": "click_recently_added_filter",
+          "ok": false,
+          "ms": 8007,
+          "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Recently Added/i }).first()\u001b[22m\n"
+        },
+        {
+          "label": "type_unmatched_search",
+          "ok": false,
+          "ms": 8007,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"zzzz-"
+        },
+        {
+          "label": "clear_search",
+          "ok": false,
+          "ms": 8005,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"\")\u001b[2"
+        }
+      ]
+    },
+    {
+      "surface": "member-library",
+      "viewport": 430,
+      "code": "CONSOLE-NOISE",
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 430,
+      "code": "PERF-SLOW-TIMING",
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 988,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 430,
+      "code": "CONSOLE-NOISE",
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "surface": "member-library",
+      "viewport": 390,
+      "code": "PERF-SLOW-TIMING",
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 1537,
+          "error": ""
+        },
+        {
+          "label": "click_recently_added_filter",
+          "ok": false,
+          "ms": 8004,
+          "error": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /Recently Added/i }).first()\u001b[22m\n"
+        },
+        {
+          "label": "type_unmatched_search",
+          "ok": false,
+          "ms": 8003,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"zzzz-"
+        },
+        {
+          "label": "clear_search",
+          "ok": false,
+          "ms": 8010,
+          "error": "locator.fill: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#librarySearch')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"librarySearch\" autocomplete=\"off\" placeholder=\"Title, Masechta, Perek\"/>\u001b[22m\n\u001b[2m    - fill(\"\")\u001b[2"
+        }
+      ]
+    },
+    {
+      "surface": "member-library",
+      "viewport": 390,
+      "code": "CONSOLE-NOISE",
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": []
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 390,
+      "code": "PERF-SLOW-TIMING",
+      "timings": [
+        {
+          "label": "goto_domcontentloaded",
+          "ok": true,
+          "ms": 901,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "surface": "one-time-classroom",
+      "viewport": 390,
+      "code": "CONSOLE-NOISE",
+      "console_messages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 ()"
+        },
+        {
+          "type": "warning",
+          "text": "Allow attribute will take precedence over 'allowfullscreen'."
+        }
+      ],
+      "page_errors": []
+    }
+  ],
+  "recommendation": "First implementation should lazy-load member-library media embeds and preserve thumbnails until the user explicitly opens a lesson, then add clearer newest/material filters. The audit also confirms classroom code/auth UX, slides/worksheets, Drive-to-Vimeo automation, and moderated updates should remain separate packets."
+}

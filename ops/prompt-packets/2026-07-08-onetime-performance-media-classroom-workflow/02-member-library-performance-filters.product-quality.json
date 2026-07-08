@@ -1,0 +1,598 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260708-007",
+  "parent_raw_id": "RAW-20260708-006",
+  "source_statement_ids": [
+    "SRC-20260708-006-001",
+    "SRC-20260708-006-002"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260708-005",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260708-005",
+      "PKT-20260708-006"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260708-006-onetime-performance-media-classroom-workflow.md",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-performance-audit.md",
+      "public/member-library.html",
+      "tests/one-time-member-library.test.js",
+      "scripts/smoke-one-time-vimeo-member-library-live.mjs"
+    ],
+    "produces": [
+      "public/member-library.html",
+      "tests/one-time-member-library.test.js",
+      "scripts/smoke-one-time-vimeo-member-library-live.mjs",
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/02-member-library-performance-filters.product-quality.json",
+    "terminal_condition": "The packet is complete when member-library Vimeo players lazy-activate, newest/material/worksheet filters are present, focused tests pass, and deployment/live smoke either passes or is explicitly blocked.",
+    "handoff_target": "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "in_progress",
+  "title": "One Time Member Library Performance And Filter Fix",
+  "created_at": "2026-07-08T11:35:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260708-006",
+    "classification": [
+      "BUG_REPORT",
+      "PRODUCT_QUALITY",
+      "UI_IMPLEMENTATION"
+    ],
+    "confidence": 0.96,
+    "reasons": [
+      "The operator reported laggy app/button behavior.",
+      "Static inspection found eager Vimeo iframes and full-grid rerenders on the One Time member library.",
+      "The first implementation batch can safely reduce local UI work without external provider writes."
+    ],
+    "affected_product_surfaces": [
+      "One Time member library"
+    ],
+    "likely_external_provider_blockers": [],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": false,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "01-current-state-performance-visual-audit",
+      "02-member-library-performance-filters",
+      "03-media-security-slides-worksheets"
+    ],
+    "next_exact_packet": "Create the media security/slides/worksheets packet after this performance/filter batch is verified."
+  },
+  "operator_intent_summary": "Make the One Time member library feel faster and easier to browse by reducing heavy video initialization and adding clear newest/material filters.",
+  "raw_quotes": [
+    "the entire app is extremely laggy",
+    "the buttons like click and it just lags",
+    "make sure there's proper filters so they can see what's the newest one that's uploaded"
+  ],
+  "decisions_captured": [],
+  "out_of_scope": [
+    "No Drive upload, Vimeo upload, Vimeo privacy mutation, email/WhatsApp/Telegram send, payment, access grant, or public publish.",
+    "No classroom-code auth rewrite, slides/worksheets schema change, or moderated public-comment implementation in this packet.",
+    "No claim that lazy private embeds fully prevent copying or screen recording."
+  ],
+  "affected_surfaces": [
+    "One Time member library"
+  ],
+  "affected_routes": [
+    "/member-library",
+    "/api/member-library"
+  ],
+  "affected_files": [
+    "public/member-library.html",
+    "tests/one-time-member-library.test.js",
+    "scripts/smoke-one-time-vimeo-member-library-live.mjs"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "public/member-library.html filter/media render functions",
+      "One Time member-library current-state audit screenshots and metrics",
+      "member-library smoke test expectations"
+    ],
+    "observed": [
+      "The live audit produced route screenshots but member-library TEST access returned 401 and zero cards, so populated live evidence remains caveated.",
+      "Static inspection found Vimeo iframes mounted directly for each Vimeo card.",
+      "Static inspection found search input re-rendering the library on every keystroke.",
+      "Existing filters did not include first-class Materials or Worksheets views."
+    ],
+    "known_blockers": [
+      "Live populated member-library smoke depends on valid TEST access and deployment."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "extremely laggy",
+      "buttons click and it lags",
+      "proper filters",
+      "newest one that's uploaded"
+    ],
+    "expanded_phrases": {
+      "extremely laggy": "Avoid initializing media players or rebuilding heavy DOM until the user explicitly opens a lesson.",
+      "buttons click and it lags": "Filter/search/progress actions should update visible UI without remounting every video player.",
+      "proper filters": "Filters should include all, newest, continue watching, Masechta, Perek, materials, worksheets, review, and completed.",
+      "newest one that's uploaded": "Newest is a first-class filter label sorted by published/class date."
+    },
+    "first_party_pattern_interpretation": "Keep One Time member-library access and progress APIs intact while improving browser-side rendering."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260708-021",
+      "statement": "Reduce One Time member-library visible lag by lazy-activating media players.",
+      "expected_result": "Vimeo iframes do not mount until a member clicks Play Video, while progress tracking still records open/progress events.",
+      "acceptance_criteria": [
+        "No Vimeo iframe is present in the synthetic library card before Play Video.",
+        "Play Video activates the embedded player and preserves access-code scoped progress tracking.",
+        "Search/filter/progress behavior does not reset security or expose raw Vimeo download links."
+      ]
+    },
+    {
+      "id": "REQ-20260708-022",
+      "statement": "Upgrade One Time member-library filters.",
+      "expected_result": "The library exposes clear Newest, Materials, and Worksheets filters alongside existing progress and Mishnah navigation filters.",
+      "acceptance_criteria": [
+        "Filter rail includes All, Newest, Continue Watching, Masechta, Perek, Materials, Worksheets, Review, and Completed.",
+        "Search includes asset titles/types and is debounced.",
+        "Mobile filter rail stays horizontally usable without page overflow."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Raw intake is preserved as RAW-20260708-006.",
+      "Current-state audit exists under ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/.",
+      "External Drive/Vimeo provider writes are explicitly out of scope.",
+      "Implementation is limited to the member-library browser surface and proof harness.",
+      "Access control, progress API contract, and member-safe field filtering remain unchanged."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/member-library",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open member library and submit an access code.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Loading",
+      "expected_primary_action": "Open Library",
+      "expected_secondary_actions": ["Open Classroom"],
+      "forbidden_content": ["raw secrets", "stack traces"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Loading status is visible.",
+      "accessibility_expectation": "Inputs and button remain reachable.",
+      "test_smoke_assertion": "Focused tests keep /api/member-library access path intact.",
+      "requirement_id": "REQ-20260708-021"
+    },
+    "empty": {
+      "route": "/member-library",
+      "viewport": "390",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use an access state with no matching published items.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "No published library items match this view.",
+      "expected_primary_action": "Search",
+      "expected_secondary_actions": ["All"],
+      "forbidden_content": ["stale hidden cards"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state is announced in the library result area.",
+      "accessibility_expectation": "Search/filter controls stay keyboard reachable.",
+      "test_smoke_assertion": "Empty state copy remains present.",
+      "requirement_id": "REQ-20260708-022"
+    },
+    "populated": {
+      "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render a seeded published Vimeo library item.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Newest",
+      "expected_primary_action": "Play Video",
+      "expected_secondary_actions": ["Continue Watching", "Mark Complete"],
+      "forbidden_content": ["raw Vimeo download button", "private admin notes"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Library card actions have readable labels.",
+      "accessibility_expectation": "Play and filter controls meet touch target expectations.",
+      "test_smoke_assertion": "Synthetic smoke sees zero iframes before Play Video.",
+      "requirement_id": "REQ-20260708-021"
+    },
+    "filtered_empty": {
+      "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "768",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Type an unmatched search term or select a filter with no matches.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "No published library items match this view.",
+      "expected_primary_action": "Search",
+      "expected_secondary_actions": ["All", "Newest"],
+      "forbidden_content": ["old results after search"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filter result count remains understandable.",
+      "accessibility_expectation": "Debounced search does not block input focus.",
+      "test_smoke_assertion": "Search input handler debounces renderLibraryItems.",
+      "requirement_id": "REQ-20260708-022"
+    },
+    "error": {
+      "route": "/member-library?code=INVALID",
+      "viewport": "390",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use invalid or expired access.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Could not open library",
+      "expected_primary_action": "Open Library",
+      "expected_secondary_actions": ["Questions/support"],
+      "forbidden_content": ["member rows", "media links"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error is visible near the access form.",
+      "accessibility_expectation": "Error is readable and not color-only.",
+      "test_smoke_assertion": "API denial still does not expose content.",
+      "requirement_id": "REQ-20260708-021"
+    },
+    "blocked_setup": {
+      "route": "/member-library",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Attempt to use Drive/Vimeo upload automation from this packet.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "External upload not in this packet",
+      "expected_primary_action": "Play Video",
+      "expected_secondary_actions": ["Open Library"],
+      "forbidden_content": ["Drive upload", "Vimeo upload"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "No upload control is introduced.",
+      "accessibility_expectation": "n/a",
+      "test_smoke_assertion": "No provider-write code is touched.",
+      "requirement_id": "REQ-20260708-021"
+    },
+    "preview_only": {
+      "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1024",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render a Vimeo library item before Play Video.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Private video",
+      "expected_primary_action": "Play Video",
+      "expected_secondary_actions": ["Continue Watching"],
+      "forbidden_content": ["mounted iframe before click"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview button has visible text.",
+      "accessibility_expectation": "Preview button is keyboard-focusable.",
+      "test_smoke_assertion": "media_lazy_before_play is true.",
+      "requirement_id": "REQ-20260708-021"
+    },
+    "success_readback": {
+      "route": "/api/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Fetch member library payload for a valid access state.",
+      "expected_visible_title": "Member library payload",
+      "expected_visible_message": "items",
+      "expected_primary_action": "Read payload",
+      "expected_secondary_actions": ["Render Library"],
+      "forbidden_content": ["approval flags", "private admin notes"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Payload maps to labeled UI controls.",
+      "accessibility_expectation": "n/a",
+      "test_smoke_assertion": "tests/one-time-member-library.test.js keeps public view safe.",
+      "requirement_id": "REQ-20260708-021"
+    },
+    "permission_denied": {
+      "route": "/api/member-library",
+      "viewport": "390",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Fetch API without access.",
+      "expected_visible_title": "Access denied",
+      "expected_visible_message": "A valid access code is required",
+      "expected_primary_action": "Open Library",
+      "expected_secondary_actions": ["Support fallback"],
+      "forbidden_content": ["library items"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Denied state is explicit.",
+      "accessibility_expectation": "Denied state is readable.",
+      "test_smoke_assertion": "Wrong access returns no member payload.",
+      "requirement_id": "REQ-20260708-021"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "430",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open member library on mobile and use filters.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "Materials",
+      "expected_primary_action": "Filter",
+      "expected_secondary_actions": ["Play Video"],
+      "forbidden_content": ["horizontal page overflow", "overlapping filter text"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filter buttons remain named.",
+      "accessibility_expectation": "Touch targets remain usable at mobile width.",
+      "test_smoke_assertion": "Live smoke checks no page overflow.",
+      "requirement_id": "REQ-20260708-022"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {
+        "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 1440,
+        "auth_role": "MEMBER_PARENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-021"
+      },
+      {
+        "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 1024,
+        "auth_role": "MEMBER_PARENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-021"
+      },
+      {
+        "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 768,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-022"
+      },
+      {
+        "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 430,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-022"
+      },
+      {
+        "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+        "viewport": 390,
+        "auth_role": "STUDENT_PORTAL",
+        "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+        "required": true,
+        "requirement_id": "REQ-20260708-022"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260708-007-001",
+        "route": "/member-library",
+        "viewport": "1440",
+        "screenshot_before": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-1440-before.png",
+        "screenshot_after_or_blocker": "pending focused verification after implementation",
+        "defect_codes": ["VQ-PERF-001"],
+        "severity": "P0",
+        "user_impact": "Eager media-player mounting can make library filters/buttons feel slow as video count grows.",
+        "expected_fix": "Lazy-activate video players only when a member clicks Play Video.",
+        "requirement_id": "REQ-20260708-021"
+      },
+      {
+        "finding_id": "VQF-20260708-007-002",
+        "route": "/member-library",
+        "viewport": "430",
+        "screenshot_before": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-430-before.png",
+        "screenshot_after_or_blocker": "pending focused verification after implementation",
+        "defect_codes": ["VQ-RESP-003"],
+        "severity": "P1",
+        "user_impact": "Filter rail did not expose clear materials/worksheet paths requested by the operator.",
+        "expected_fix": "Add clear Newest, Materials, and Worksheets filter labels while preserving mobile horizontal rail usability.",
+        "requirement_id": "REQ-20260708-022"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus responsive touch-target and no-overlap checks.",
+    "required_checks": [
+      "Play Video button has visible text",
+      "filter buttons have readable labels",
+      "search input stays keyboard reachable",
+      "mobile filter rail does not create page overflow",
+      "private video preview does not trap keyboard focus"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Play Video",
+      "selector_or_action_key": "activateMedia",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Activates the local embedded media player and records member-library progress through the existing scoped API.",
+      "registry_required": false
+    },
+    {
+      "label": "Newest filter",
+      "selector_or_action_key": "setLibraryFilter('recent')",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Sorts visible items by published/class date without external writes.",
+      "registry_required": false
+    },
+    {
+      "label": "Materials filter",
+      "selector_or_action_key": "setLibraryFilter('materials')",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Shows items with class assets already returned by the member-safe API.",
+      "registry_required": false
+    },
+    {
+      "label": "Worksheets filter",
+      "selector_or_action_key": "setLibraryFilter('worksheets')",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Shows items with worksheet/source-sheet assets already returned by the member-safe API.",
+      "registry_required": false
+    },
+    {
+      "label": "Mark Complete",
+      "selector_or_action_key": "setItemProgress",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Uses existing /api/member-library/items/:id/progress endpoint scoped by access code.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": [
+    "member library item id/title/class date/published date",
+    "media provider and Vimeo id",
+    "thumbnail URL",
+    "Masechta/Perek/Mishnah range",
+    "watch progress seconds/percent",
+    "approved member-safe asset type/title/url"
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Only the One Time member-library browser surface is changed.",
+      "No raw Vimeo direct link is shown for Vimeo-hosted member videos.",
+      "Member access-code progress scoping remains unchanged.",
+      "Assets shown are only those already returned by the member-safe API."
+    ],
+    "forbidden_content": [
+      "external upload",
+      "raw video download link for Vimeo items",
+      "private admin notes",
+      "unpublished media",
+      "secrets or access tokens"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260708-007-A",
+      "scope": "Member-library lazy media and filter fix",
+      "instructions": [
+        "Do not alter server access-control or publish rules.",
+        "Render Vimeo and HTML5 video players only after Play Video.",
+        "Debounce search rendering.",
+        "Add Newest, Materials, and Worksheets filter paths.",
+        "Update focused tests and smoke expectations."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/member-library.html",
+      "tests/one-time-member-library.test.js",
+      "scripts/smoke-one-time-vimeo-member-library-live.mjs",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-performance-audit.md"
+    ],
+    "files_allowed_to_edit": [
+      "public/member-library.html",
+      "tests/one-time-member-library.test.js",
+      "scripts/smoke-one-time-vimeo-member-library-live.mjs",
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 2,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Slides, worksheets schema, classroom auth UX, comments, awards, and Drive/Vimeo automation are separate child packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command_or_check": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/02-member-library-performance-filters.product-quality.json",
+      "expected_result": "Implementation packet validates."
+    },
+    {
+      "command_or_check": "node --test tests/one-time-member-library.test.js tests/one-time-classroom-calendar-community-bot.test.js tests/one-time-canonical-journey.test.js",
+      "expected_result": "Member-library contracts and classroom navigation contracts still pass."
+    },
+    {
+      "command_or_check": "npm run watchdog:protocol-drift",
+      "expected_result": "No product-quality protocol drift for the packet."
+    },
+    {
+      "command_or_check": "npm run secrets:audit",
+      "expected_result": "No secrets introduced."
+    }
+  ],
+  "evidence": {
+    "expected_paths": [
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/member-library-performance-audit.md",
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "PQC implementation packet validates.",
+      "Focused member-library and classroom navigation tests pass.",
+      "Vimeo iframes are lazy before Play Video in smoke coverage.",
+      "Requirement register records evidence and remaining blockers.",
+      "Changes are committed, pushed, deployed, and live-smoked, or deployment is explicitly blocked."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260708-006-onetime-performance-media-classroom-workflow.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/02-member-library-performance-filters.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "edit member-library UI",
+      "update focused tests",
+      "validate PQC packet",
+      "run focused tests",
+      "record evidence"
+    ],
+    "skipped_actions_policy": "Skip Drive/Vimeo uploads, sends, access grants, and public publishes.",
+    "blocker_decisions": [],
+    "evidence_paths": [
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No unhandled protocol drift findings after implementation closeout."
+  },
+  "next_packet": {
+    "type": "SECURITY_AUDITOR",
+    "description": "Media security policy plus slideshow/worksheet class-material UX.",
+    "path": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json"
+  }
+}

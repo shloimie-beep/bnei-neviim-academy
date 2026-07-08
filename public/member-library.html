@@ -236,8 +236,9 @@
 
     .library-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 380px));
       gap: 16px;
+      justify-content: start;
       margin-top: 20px;
     }
 
@@ -253,6 +254,65 @@
       min-height: 190px;
       background: #e7edf5;
       place-items: center;
+    }
+
+    .media-preview {
+      position: relative;
+      display: grid;
+      width: 100%;
+      min-height: 190px;
+      overflow: hidden;
+      place-items: center;
+      text-align: center;
+    }
+
+    .media-preview img {
+      grid-area: 1 / 1;
+      min-height: 190px;
+      filter: saturate(0.9);
+    }
+
+    .media-preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(23, 32, 51, 0.08), rgba(23, 32, 51, 0.58));
+      pointer-events: none;
+    }
+
+    .media-preview .media-placeholder {
+      grid-area: 1 / 1;
+    }
+
+    .media-kind,
+    .media-play-button {
+      position: relative;
+      z-index: 1;
+      grid-area: 1 / 1;
+    }
+
+    .media-kind {
+      align-self: start;
+      justify-self: start;
+      margin: 12px;
+      min-height: 26px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      color: #fff;
+      background: rgba(23, 32, 51, 0.68);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .media-play-button {
+      align-self: center;
+      justify-self: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-color: #fff;
+      color: var(--ink);
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(23, 32, 51, 0.22);
     }
 
     .media-frame img,
@@ -408,6 +468,14 @@
       .library-toolbar.visible {
         grid-template-columns: 1fr;
       }
+
+      .library-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-rail {
+        padding-bottom: 10px;
+      }
     }
   </style>
 </head>
@@ -467,15 +535,19 @@
     let currentPayload = null;
     let activeFilter = 'all';
     let searchTerm = '';
+    let searchRenderTimer = null;
     const progressSyncTimers = new Map();
     const vimeoPlayers = new Map();
+    const activeMediaItems = new Set();
 
     const filters = [
       ['all', 'All'],
-      ['recent', 'Recently Added'],
+      ['recent', 'Newest'],
       ['continue', 'Continue Watching'],
       ['masechta', 'Masechta'],
       ['perek', 'Perek'],
+      ['materials', 'Materials'],
+      ['worksheets', 'Worksheets'],
       ['review', 'Review'],
       ['completed', 'Completed'],
     ];
@@ -495,13 +567,41 @@
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
+    function itemId(item) {
+      return Number(item?.id || 0);
+    }
+
+    function mediaKindLabel(item) {
+      if (item.media_provider === 'vimeo') return 'Private video';
+      if (/\.(mp4|webm)(\?|#|$)/i.test(item.media_url || '')) return 'Video';
+      if (item.media_url) return 'Media link';
+      return 'Class media';
+    }
+
+    function renderMediaPreview(item, actionLabel = 'Play Video') {
+      const id = itemId(item);
+      const thumbnail = item.thumbnail_url
+        ? `<img src="${escapeHtml(item.thumbnail_url)}" alt="">`
+        : `<div class="media-placeholder">${escapeHtml(mediaKindLabel(item))} available</div>`;
+      return `
+        <div class="media-preview">
+          ${thumbnail}
+          <span class="media-kind">${escapeHtml(mediaKindLabel(item))}</span>
+          <button class="media-play-button" type="button" onclick="activateMedia(${id})">${escapeHtml(actionLabel)}</button>
+        </div>
+      `;
+    }
+
     function mediaMarkup(item) {
       const mediaUrl = item.media_url || '';
+      const active = activeMediaItems.has(itemId(item));
       if (item.media_provider === 'vimeo' && item.vimeo_id) {
-        return `<iframe data-library-item-id="${Number(item.id)}" src="https://player.vimeo.com/video/${encodeURIComponent(item.vimeo_id)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="${escapeHtml(item.title)}"></iframe>`;
+        if (!active) return renderMediaPreview(item, 'Play Video');
+        return `<iframe loading="lazy" data-library-item-id="${itemId(item)}" src="https://player.vimeo.com/video/${encodeURIComponent(item.vimeo_id)}?dnt=1" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="${escapeHtml(item.title)}"></iframe>`;
       }
       if (/\.(mp4|webm)(\?|#|$)/i.test(mediaUrl)) {
-        return `<video data-library-item-id="${Number(item.id)}" controls src="${escapeHtml(mediaUrl)}" poster="${escapeHtml(item.thumbnail_url || '')}"></video>`;
+        if (!active) return renderMediaPreview(item, 'Play Video');
+        return `<video data-library-item-id="${itemId(item)}" controls preload="metadata" src="${escapeHtml(mediaUrl)}" poster="${escapeHtml(item.thumbnail_url || '')}"></video>`;
       }
       if (item.thumbnail_url) {
         return `<img src="${escapeHtml(item.thumbnail_url)}" alt="">`;
@@ -594,6 +694,19 @@
       ].filter(Boolean);
     }
 
+    function itemAssets(item) {
+      return Array.isArray(item.assets) ? item.assets : [];
+    }
+
+    function itemHasAssetType(item, types = []) {
+      const allowed = new Set(types);
+      return itemAssets(item).some((asset) => allowed.has(String(asset.asset_type || '').toLowerCase()));
+    }
+
+    function itemHasMaterials(item) {
+      return itemAssets(item).length > 0;
+    }
+
     function filteredItems(items) {
       const query = searchTerm.toLowerCase();
       return items.filter((item) => {
@@ -604,11 +717,14 @@
           item.masechta,
           item.perek,
           item.mishnah_range,
+          ...itemAssets(item).map((asset) => `${asset.title || ''} ${asset.asset_type || ''}`),
         ].join(' ').toLowerCase();
         if (query && !haystack.includes(query)) return false;
         if (activeFilter === 'continue') return progress > 0 && progress < 95;
         if (activeFilter === 'completed') return progress >= 95;
-        if (activeFilter === 'review') return item.review_state === 'review_ready' || (item.assets || []).length > 0;
+        if (activeFilter === 'materials') return itemHasMaterials(item);
+        if (activeFilter === 'worksheets') return itemHasAssetType(item, ['worksheet', 'source_sheet']);
+        if (activeFilter === 'review') return item.review_state === 'review_ready' || itemHasMaterials(item);
         return true;
       }).sort((a, b) => {
         if (activeFilter === 'recent') return String(b.published_at || b.class_date || '').localeCompare(String(a.published_at || a.class_date || ''));
@@ -639,7 +755,9 @@
         }).length,
         masechta: new Set(items.map((item) => item.masechta).filter(Boolean)).size,
         perek: new Set(items.map((item) => `${item.masechta || ''}:${item.perek || ''}`).filter((value) => value !== ':')).size,
-        review: items.filter((item) => item.review_state === 'review_ready' || (item.assets || []).length > 0).length,
+        materials: items.filter(itemHasMaterials).length,
+        worksheets: items.filter((item) => itemHasAssetType(item, ['worksheet', 'source_sheet'])).length,
+        review: items.filter((item) => item.review_state === 'review_ready' || itemHasMaterials(item)).length,
         completed: items.filter((item) => itemProgress(item) >= 95).length,
       };
       filterRail.innerHTML = filters.map(([key, label]) => `
@@ -663,14 +781,14 @@
               <div class="progress-bar" style="--progress:${progress}%"><span></span></div>
               <div class="status">${progress}% complete</div>
               <div class="progress-actions">
-                ${item.media_url ? `<a class="media-link" href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener" onclick="recordMediaOpen(${Number(item.id)})">Open Media</a>` : ''}
-                <button type="button" onclick="setItemProgress(${Number(item.id)}, 50)">Continue Watching</button>
-                <button type="button" onclick="setItemProgress(${Number(item.id)}, 100)">Mark Complete</button>
+                ${item.media_url && item.media_provider !== 'vimeo' ? `<a class="media-link" href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener" onclick="recordMediaOpen(${itemId(item)})">Open Media</a>` : ''}
+                <button type="button" onclick="setItemProgress(${itemId(item)}, 50)">Continue Watching</button>
+                <button type="button" onclick="setItemProgress(${itemId(item)}, 100)">Mark Complete</button>
               </div>
             </div>
-            ${(item.assets || []).length ? `
+            ${itemHasMaterials(item) ? `
               <ul class="asset-list">
-                ${item.assets.map((asset) => `
+                ${itemAssets(item).map((asset) => `
                   <li><a href="${escapeHtml(asset.file_url)}" target="_blank" rel="noopener">${escapeHtml(asset.title || asset.asset_type || 'Asset')}</a></li>
                 `).join('')}
               </ul>
@@ -684,6 +802,7 @@
       const items = currentPayload?.member_library?.items || [];
       renderFilterRail(items);
       const visibleItems = filteredItems(items);
+      vimeoPlayers.clear();
       if (!visibleItems.length) {
         grid.className = 'library-grid';
         grid.innerHTML = '<div class="empty-state">No published library items match this view.</div>';
@@ -708,6 +827,19 @@
 
     window.setLibraryFilter = function setLibraryFilter(key) {
       activeFilter = filters.some(([filterKey]) => filterKey === key) ? key : 'all';
+      renderLibraryItems();
+    };
+
+    window.activateMedia = function activateMedia(itemIdValue) {
+      const item = (currentPayload?.member_library?.items || []).find((entry) => Number(entry.id) === Number(itemIdValue));
+      if (!item) return;
+      activeMediaItems.add(Number(item.id));
+      recordItemProgress(item, {
+        percent: itemProgress(item),
+        seconds: Number(item.watch_progress_seconds || 0),
+        eventType: 'open_media',
+        player: item.media_provider || 'preview',
+      });
       renderLibraryItems();
     };
 
@@ -807,6 +939,8 @@
 
     function renderLibrary(payload) {
       currentPayload = payload;
+      activeMediaItems.clear();
+      vimeoPlayers.clear();
       const access = payload.member_library?.access || {};
       const classroom = payload.classroom || {};
       memberMeta.textContent = access.member_label ? `${access.member_label} | ${String(access.tier || '').replace(/_/g, ' ')}` : 'Member library';
@@ -855,7 +989,8 @@
 
     librarySearch.addEventListener('input', (event) => {
       searchTerm = event.target.value || '';
-      renderLibraryItems();
+      window.clearTimeout(searchRenderTimer);
+      searchRenderTimer = window.setTimeout(renderLibraryItems, 120);
     });
 
     memberLogoutLink?.addEventListener('click', () => {
