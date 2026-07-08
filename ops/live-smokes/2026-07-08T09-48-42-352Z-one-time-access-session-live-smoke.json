@@ -1,0 +1,179 @@
+{
+  "started_at": "2026-07-08T09:48:42.352Z",
+  "base_url": "https://bneineviimacademy.org",
+  "deployment_id": "67a09a61-ad98-4f70-99a3-a5b2b6ecc562",
+  "commit": "00d2da52",
+  "route": "/member-library?code=SMOKE-ACCESS-UX and /one-time-classroom?code=SMOKE-ACCESS-UX",
+  "checks": [
+    {
+      "name": "member-html-status-ok",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "member-html-marker-Current One Time access",
+      "pass": true
+    },
+    {
+      "name": "member-html-marker-Use fallback access code",
+      "pass": true
+    },
+    {
+      "name": "member-html-marker-Fallback access code",
+      "pass": true
+    },
+    {
+      "name": "member-html-marker-setAccessPanelState",
+      "pass": true
+    },
+    {
+      "name": "member-html-marker-currentAccessCode()",
+      "pass": true
+    },
+    {
+      "name": "member-html-marker-Secure access required",
+      "pass": true
+    },
+    {
+      "name": "classroom-html-status-ok",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "classroom-html-marker-Current One Time access",
+      "pass": true
+    },
+    {
+      "name": "classroom-html-marker-Use fallback access code",
+      "pass": true
+    },
+    {
+      "name": "classroom-html-marker-Fallback access code",
+      "pass": true
+    },
+    {
+      "name": "classroom-html-marker-setAccessPanelState",
+      "pass": true
+    },
+    {
+      "name": "classroom-html-marker-document.body.classList.add('one-time-review-active', 'one-time-classroom-review-shell')",
+      "pass": true
+    },
+    {
+      "name": "classroom-old-test-only-copy-absent",
+      "pass": true
+    },
+    {
+      "name": "member-no-horizontal-overflow-1440",
+      "pass": true,
+      "overflow": 0,
+      "viewport": 1440
+    },
+    {
+      "name": "member-classroom-cta-carries-code-1440",
+      "pass": true,
+      "href": "/one-time-classroom?code=SMOKE-ACCESS-UX",
+      "viewport": 1440
+    },
+    {
+      "name": "classroom-no-horizontal-overflow-1440",
+      "pass": true,
+      "overflow": 0,
+      "viewport": 1440
+    },
+    {
+      "name": "classroom-normal-route-not-review-shell-1440",
+      "pass": true,
+      "bodyClass": "bna-universal-assistant-active bna-assistant-surface-one-time-member",
+      "viewport": 1440
+    },
+    {
+      "name": "classroom-connected-access-panel-1440",
+      "pass": true,
+      "viewport": 1440
+    },
+    {
+      "name": "classroom-fallback-closed-after-secure-access-1440",
+      "pass": true,
+      "viewport": 1440
+    },
+    {
+      "name": "classroom-zero-eager-iframes-1440",
+      "pass": true,
+      "iframeCount": 0,
+      "viewport": 1440
+    },
+    {
+      "name": "classroom-fallback-open-without-current-access-1440",
+      "pass": true,
+      "viewport": 1440
+    },
+    {
+      "name": "console-errors-1440",
+      "pass": true,
+      "viewport": 1440,
+      "consoleErrors": []
+    },
+    {
+      "name": "member-no-horizontal-overflow-390",
+      "pass": true,
+      "overflow": 0,
+      "viewport": 390
+    },
+    {
+      "name": "member-classroom-cta-carries-code-390",
+      "pass": true,
+      "href": "/one-time-classroom?code=SMOKE-ACCESS-UX",
+      "viewport": 390
+    },
+    {
+      "name": "classroom-no-horizontal-overflow-390",
+      "pass": true,
+      "overflow": 0,
+      "viewport": 390
+    },
+    {
+      "name": "classroom-normal-route-not-review-shell-390",
+      "pass": true,
+      "bodyClass": "bna-universal-assistant-active bna-assistant-surface-one-time-member",
+      "viewport": 390
+    },
+    {
+      "name": "classroom-connected-access-panel-390",
+      "pass": true,
+      "viewport": 390
+    },
+    {
+      "name": "classroom-fallback-closed-after-secure-access-390",
+      "pass": true,
+      "viewport": 390
+    },
+    {
+      "name": "classroom-zero-eager-iframes-390",
+      "pass": true,
+      "iframeCount": 0,
+      "viewport": 390
+    },
+    {
+      "name": "classroom-fallback-open-without-current-access-390",
+      "pass": true,
+      "viewport": 390
+    },
+    {
+      "name": "console-errors-390",
+      "pass": true,
+      "viewport": 390,
+      "consoleErrors": []
+    }
+  ],
+  "screenshots": [
+    "ops/live-smokes/2026-07-08T09-48-42-352Z-one-time-access-session-live-smoke-member-1440.png",
+    "ops/live-smokes/2026-07-08T09-48-42-352Z-one-time-access-session-live-smoke-classroom-1440.png",
+    "ops/live-smokes/2026-07-08T09-48-42-352Z-one-time-access-session-live-smoke-member-390.png",
+    "ops/live-smokes/2026-07-08T09-48-42-352Z-one-time-access-session-live-smoke-classroom-390.png"
+  ],
+  "status": "passed",
+  "guardrail": "Production smoke used live HTML/static assets and mocked only member-safe API payloads in the browser. No production database mutation, external send, upload, publish, payment, access grant, DNS, OAuth, or secret request was performed.",
+  "completed_at": "2026-07-08T09:48:54.200Z",
+  "failed": []
+}

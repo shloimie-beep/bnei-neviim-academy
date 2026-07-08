@@ -33860,3 +33860,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   publish, student access grant, or production data mutation was performed.
 - Status: local verified, pending commit, push, deploy, and live smoke before
   `REQ-20260708-027` can be terminal Done.
+
+## 2026-07-08T12:49:21+03:00 - One Time current-access/fallback-code UX deployed and live-smoked
+
+- Commit `00d2da52` was pushed to `origin/master`; Railway auto-deployed it to
+  production service `skillful-motivation`.
+- Railway deployment `67a09a61-ad98-4f70-99a3-a5b2b6ecc562` reached `SUCCESS`
+  on commit `00d2da52372d52ffeb039d861104d9e53e7558a4`.
+- Live smoke passed and wrote
+  `ops/live-smokes/2026-07-08T09-48-42-352Z-one-time-access-session-live-smoke.md`.
+- Production HTML readback confirmed `Current One Time access`,
+  `Use fallback access code`, `setAccessPanelState`, `currentAccessCode()`,
+  and the classroom review-mode class hook. The old member-facing
+  `This review route uses TEST-only member-library data` sentence is absent.
+- Production browser smoke loaded the live member library and classroom at
+  1440 and 390 widths with a mocked member-safe API payload. It confirmed no
+  horizontal overflow, no console errors, current-access connected state,
+  fallback drawer closed after secure access, fallback drawer open with no
+  current access, normal classroom route not using the review shell, and zero
+  eager Vimeo iframes.
+- Guardrails held: no Drive upload, Vimeo upload/privacy mutation, external
+  email/Telegram/WhatsApp send, payment/access/DNS/provider write, public
+  publish, student access grant, or production classroom/member record mutation
+  was performed.
+- `REQ-20260708-027` is Done. `REQ-20260708-023` remains blocked by
+  `DEC-20260708-006` pending exact Drive/Vimeo target, token/privacy/rollback
+  policy, and explicit upload-smoke approval.
