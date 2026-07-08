@@ -34440,6 +34440,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Pushed runtime commit `fbabe124` and deployed it to OneTime Railway service
   `one-time-web`; deployment `85b1f0f0-b3ae-49b1-8b00-9932a1cd7631` reached
   `SUCCESS`.
+- Set `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID_BNA`, and
+  `TELEGRAM_CHAT_ID_SHLOIMIE` on the OneTime Railway production service from
+  local secret config without printing values; env-enabled redeploy
+  `14e74ce9-cc29-49a3-aed1-21ab0dfe1af3` reached `SUCCESS`.
 - Verification passed: `node --check server.js`, focused OneTime tests 18/18,
   action watchdog, protocol-drift watchdog, secrets audit, `git diff --check`,
   and live smoke against `https://join.onetimeonetime.com`.

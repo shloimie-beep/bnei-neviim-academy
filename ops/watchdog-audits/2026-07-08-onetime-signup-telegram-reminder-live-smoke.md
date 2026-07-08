@@ -7,6 +7,7 @@ Runtime commit: `fbabe124`
 Railway service: `one-time-web`
 Railway environment: `production`
 Railway deployment: `85b1f0f0-b3ae-49b1-8b00-9932a1cd7631`
+Telegram-env redeploy: `14e74ce9-cc29-49a3-aed1-21ab0dfe1af3`
 Deployment status: `SUCCESS`
 
 ## Implementation
@@ -21,6 +22,9 @@ Deployment status: `SUCCESS`
   source, lead id, and created time when present.
 - `sendTelegramNotification` now normalizes text input, reports skipped/missing
   configuration without throwing, and returns a small status object.
+- Production OneTime Railway variables now include `TELEGRAM_BOT_TOKEN`,
+  `TELEGRAM_CHAT_ID_BNA`, and `TELEGRAM_CHAT_ID_SHLOIMIE`; values were set from
+  local secret config without printing the secret values.
 
 ## Verification
 
@@ -31,6 +35,11 @@ Deployment status: `SUCCESS`
 - `npm run secrets:audit` passed.
 - `git diff --check` passed with line-ending warnings only.
 - Railway deployment `85b1f0f0-b3ae-49b1-8b00-9932a1cd7631` reached
+  `SUCCESS`.
+- OneTime Telegram variables were read back by key-presence only:
+  `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID_BNA`, and
+  `TELEGRAM_CHAT_ID_SHLOIMIE` are present.
+- Env-enabled redeploy `14e74ce9-cc29-49a3-aed1-21ab0dfe1af3` reached
   `SUCCESS`.
 - Live smoke passed:
   `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`.
