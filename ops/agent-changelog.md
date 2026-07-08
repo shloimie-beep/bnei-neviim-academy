@@ -34257,3 +34257,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `npm run watchdog:actions`; `npm run secrets:audit`; `git diff --check`.
 - Guardrails: no WhatsApp sent, no parent invite resent, no payment/access/DNS/
   Zoom/Vimeo/Drive mutation.
+
+## 2026-07-08T18:20:00+03:00 - OneTime Rabbi provider session UI deployed
+
+- Pushed commit `62d82621` to `origin/master`.
+- Deployed the OneTime service through Railway deployment
+  `07a373a0-9598-4887-88bc-d60e92b5625f`; status reached `SUCCESS`.
+- Live smoke passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`.
+- Live readback of `https://join.onetimeonetime.com/provider.html` confirmed
+  the deployed signed-session code: `isSignedOneTimeProviderSession`,
+  `Provider login active`, `RABBI ACCOUNT`, `/parent/login`,
+  `/student/login`, and `signedOneTimeSession`.
+- `REQ-20260708-052` is now deployed/live-smoked. Remaining blocked items are
+  external-input only: exact live OneTime student display name for parent invite
+  resend, and Rabbi WAPI credentials/class-link env for WhatsApp send.
