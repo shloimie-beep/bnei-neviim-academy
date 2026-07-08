@@ -23,3 +23,17 @@
 - Tests: `tests/agent-review-hub.test.js`, `tests/public-helper-agent-review-guardrails.test.js`, `tests/app-select-dropdown.test.js`, `tests/operations-pwa-login.test.js`, `tests/rabbi-scheller-auth-navigation-contract.test.js`.
 - Local gate logs: `ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/*.log`.
 - Watchdog reports: `ops/watchdog-audits/2026-06-26T06-38-watchdog-action-audit.md`, `ops/watchdog-audits/2026-06-26T06-38-watchdog-link-audit.md`, `ops/watchdog-audits/2026-06-26T06-38-watchdog-security-routes.md`.
+
+## 2026-07-08 Follow-up: One Time Failed Partial Audit
+
+- Source raw record:
+  `raw-input/RAW-20260708-002-agent-review-start-copy-dropoff-repair.md`.
+- Requirement register:
+  `tasks-pending/2026-07-08-agent-review-start-copy-dropoff-repair.md`.
+- Failed partial audit evidence:
+  `ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/2026-07-08-one-time-brand-helper-toolbar-audit-failed-partial.md`
+  and matching JSON.
+- Result: the failed ChatGPT Agent Mode run is recorded as `fail_partial`
+  because it visited One Time review contexts but did not save an AGR
+  drop-off/readback before answering in chat. This evidence does not mark
+  Issue #24 complete.

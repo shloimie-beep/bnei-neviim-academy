@@ -156,6 +156,12 @@
           <label>Last role/context<input name="last_completed_role_context" id="lastCompletedRoleContext" placeholder="owner_task_decision / Operations task card"></label>
           <label>Idempotency key<input name="idempotency_key" id="idempotencyKey"></label>
           <label class="wide">Blocker<input name="blocker" id="blocker" placeholder="Required when status is BLOCKED"></label>
+          <label class="wide">Blocked route or step<input name="blocked_route_or_step" id="blockedRouteOrStep" placeholder="/operations... or workspace switcher / helper / save path"></label>
+          <label class="wide">Attempted action<input name="attempted_action" id="attemptedAction" placeholder="What the agent tried to do before blocking"></label>
+          <label class="wide">Observed failure<input name="observed_failure" id="observedFailure" placeholder="Exact UI/API/navigation/helper failure"></label>
+          <label class="wide">Partial routes visited<textarea name="partial_routes_visited" id="partialRoutesVisited" placeholder="One route per line. These are acceptable for BLOCKED even if the full route matrix is incomplete."></textarea></label>
+          <label class="wide">Partial helper responses<textarea name="partial_helper_responses" id="partialHelperResponses" placeholder="Short redacted summaries only, one per line."></textarea></label>
+          <label class="wide">Evidence notes<textarea name="evidence_notes" id="evidenceNotes" placeholder="Redacted screenshots/DOM notes, readback IDs, exact blocker notes."></textarea></label>
           <label class="wide">Suggested correction<input name="suggested_correction" id="suggestedCorrection" placeholder="Correction or rerun note when FAIL/BLOCKED"></label>
           <label class="wide">Emergency paste JSON and save<textarea name="report_text" id="reportText" placeholder="Paste the Agent Mode JSON only if the normal self-save path failed. JSON is parsed when possible; plain text is saved as a redacted summary."></textarea></label>
         </div>
@@ -172,6 +178,7 @@
         <a class="button" id="readbackLink" href="#" target="_blank" rel="noopener" data-action-id="ACTION-AGENT-REVIEW-VIEW-RESULT">Open readback</a>
         <a class="button" id="repairLink" href="#" data-action-id="ACTION-AGENT-REVIEW-RERUN-PROMPT" hidden>Open repair</a>
       </div>
+      <div class="meta" id="readbackMeta"></div>
       <pre id="rerunPrompt"></pre>
     </section>
   </main>
@@ -181,8 +188,7 @@
     const state = { prompt: null, context: null, session: null };
     const autoSaveRequested = ['1', 'true', 'yes'].includes(String(params.get('autosave') || '').toLowerCase());
     let autoSaveTimer = null;
-    let autoSaveInFlight = false;
-    let lastAutoSaveFingerprint = '';
+    const draftSecretPattern = /(api[_-]?key|authorization|cookie|password|refresh[_-]?token|access[_-]?token)\s*[:=]/i;
     const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
     const api = async (path, options = {}) => {
       const response = await fetch(path, {
@@ -240,8 +246,9 @@
       const contexts = state.prompt?.context_keys || (state.context?.key ? [state.context.key] : []);
       document.getElementById('contextKey').innerHTML = contexts.map((key) => `<option value="${esc(key)}">${esc(key)}</option>`).join('');
       if (state.context?.key) document.getElementById('contextKey').value = state.context.key;
+      loadDraft();
       document.getElementById('loadStatus').textContent = autoSaveRequested
-        ? `${data.takeover_hint || ''} Autosave is enabled: paste the full report and wait for an AGR readback. Ctrl+Enter also saves.`
+        ? `${data.takeover_hint || ''} Local draft autosave is enabled. Partial notes stay in this browser only; click save or Mark blocked to create the AGR readback. Ctrl+Enter also saves.`
         : `${data.takeover_hint || ''} Paste the full report, then click save or press Ctrl+Enter.`;
     }
     async function boot() {
@@ -259,11 +266,54 @@
       const form = new FormData(document.getElementById('dropoffForm'));
       const payload = Object.fromEntries(form.entries());
       Object.assign(payload, parseReport(payload.report_text));
+      if (!payload.routes_visited && payload.partial_routes_visited) payload.routes_visited = String(payload.partial_routes_visited).split(/\n+/).filter(Boolean);
+      if (!payload.helper_responses && payload.partial_helper_responses) payload.helper_responses = String(payload.partial_helper_responses).split(/\n+/).filter(Boolean);
+      if (!payload.evidence && payload.evidence_notes) payload.evidence = String(payload.evidence_notes).split(/\n+/).filter(Boolean);
       payload.agent_review_run_id = params.get('agent_review_run_id') || state.prompt?.copy_metadata?.agent_review_run_id || '';
       payload.task_id = payload.task_id || params.get('task_id') || state.prompt?.copy_metadata?.task_id || '';
       payload.return_url = params.get('return_url') || state.prompt?.return_url || '/operations/agent-review';
       payload.dropoff_url = window.location.pathname + window.location.search;
       return payload;
+    }
+    function draftStorageKey() {
+      return [
+        'bna-agent-review-dropoff-draft',
+        params.get('agent_review_run_id') || state.prompt?.copy_metadata?.agent_review_run_id || '',
+        document.getElementById('promptKey').value || params.get('prompt_key') || '',
+        document.getElementById('idempotencyKey').value || params.get('idempotency_key') || '',
+      ].join(':');
+    }
+    function draftPayloadFromForm() {
+      const payload = payloadFromForm();
+      delete payload.session;
+      delete payload.token;
+      return payload;
+    }
+    function saveDraftLocally() {
+      if (!autoSaveRequested) return;
+      const payload = draftPayloadFromForm();
+      const serialized = JSON.stringify(payload);
+      if (draftSecretPattern.test(serialized)) {
+        document.getElementById('saveStatus').textContent = 'Draft not autosaved because it looks like it may contain a secret. Redact it before saving.';
+        return;
+      }
+      localStorage.setItem(draftStorageKey(), JSON.stringify({ saved_at: new Date().toISOString(), payload }));
+      document.getElementById('saveStatus').textContent = 'Draft saved locally in this browser.';
+    }
+    function loadDraft() {
+      if (!autoSaveRequested) return;
+      try {
+        const raw = localStorage.getItem(draftStorageKey());
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        const payload = parsed?.payload && typeof parsed.payload === 'object' ? parsed.payload : {};
+        for (const [key, value] of Object.entries(payload)) {
+          const field = document.querySelector(`[name="${CSS.escape(key)}"]`);
+          if (!field || field.readOnly) continue;
+          field.value = Array.isArray(value) ? value.join('\n') : value;
+        }
+        document.getElementById('saveStatus').textContent = `Restored local draft from ${parsed.saved_at || 'this browser'}.`;
+      } catch {}
     }
     async function savePayload(payload) {
       const data = await api('/api/bna/agent-review/results', {
@@ -273,50 +323,33 @@
       document.getElementById('readbackPanel').hidden = false;
       document.getElementById('resultRef').textContent = `Saved ${data.result_ref}`;
       document.getElementById('readbackLink').href = data.readback_url || data.operations_url || '#';
+      document.getElementById('readbackMeta').innerHTML = [
+        ['AGR ID', data.result_ref],
+        ['Status', data.result?.status || payload.status || 'unknown'],
+        ['Prompt key', data.result?.prompt_key || payload.prompt_key || 'unknown'],
+        ['Idempotency key', data.result?.idempotency_key || payload.idempotency_key || 'unknown'],
+        ['Readback URL', data.readback_url || data.operations_url || 'unknown'],
+        ['Timestamp', data.result?.updated_at || data.result?.created_at || new Date().toISOString()],
+      ].map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('');
       if (data.repair_url || data.task_url) {
         document.getElementById('repairLink').hidden = false;
         document.getElementById('repairLink').href = data.repair_url || data.task_url;
       }
       document.getElementById('rerunPrompt').textContent = data.rerun_prompt || 'No rerun prompt required for PASS.';
+      try { localStorage.removeItem(draftStorageKey()); } catch {}
       return data;
-    }
-    function payloadFingerprint(payload = {}) {
-      return JSON.stringify({
-        prompt_key: payload.prompt_key,
-        context_key: payload.context_key,
-        requirement_id: payload.requirement_id,
-        status: payload.status,
-        severity: payload.severity,
-        blocker: payload.blocker,
-        suggested_correction: payload.suggested_correction,
-        report_text: payload.report_text,
-      });
     }
     function scheduleAutosave() {
       if (!autoSaveRequested) return;
       clearTimeout(autoSaveTimer);
-      autoSaveTimer = setTimeout(async () => {
-        const reportText = document.getElementById('reportText').value.trim();
-        if (reportText.length < 80 || autoSaveInFlight) return;
-        const payload = payloadFromForm();
-        const fingerprint = payloadFingerprint(payload);
-        if (fingerprint === lastAutoSaveFingerprint) return;
-        autoSaveInFlight = true;
-        document.getElementById('saveStatus').textContent = 'Autosaving Agent Review result...';
-        try {
-          const data = await savePayload(payload);
-          lastAutoSaveFingerprint = fingerprint;
-          document.getElementById('saveStatus').innerHTML = `Autosaved ${esc(data.result_ref)}.`;
-        } catch (error) {
-          document.getElementById('saveStatus').textContent = error.message || 'Autosave could not save result.';
-        } finally {
-          autoSaveInFlight = false;
-        }
-      }, 1800);
+      autoSaveTimer = setTimeout(saveDraftLocally, 600);
     }
     async function markBlocked() {
       document.getElementById('status').value = 'blocked';
       if (!document.getElementById('blocker').value.trim()) document.getElementById('blocker').value = 'Scoped context could not be opened safely; owner rerun required.';
+      if (!document.getElementById('blockedRouteOrStep').value.trim()) document.getElementById('blockedRouteOrStep').value = document.getElementById('currentRoute').value || 'drop-off or review context';
+      if (!document.getElementById('attemptedAction').value.trim()) document.getElementById('attemptedAction').value = 'Continue Agent Mode audit and save structured result.';
+      if (!document.getElementById('observedFailure').value.trim()) document.getElementById('observedFailure').value = document.getElementById('blocker').value;
       document.getElementById('saveStatus').textContent = 'Saving blocked result...';
       try {
         const data = await savePayload(payloadFromForm());

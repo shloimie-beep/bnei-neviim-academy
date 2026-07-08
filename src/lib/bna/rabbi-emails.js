@@ -6,6 +6,7 @@ function rabbiTemplateSubject(templateKey, context = {}) {
     failed_checkout: `${program} checkout needs attention`,
     abandoned_checkout_followup: `Finish your ${program} checkout`,
     manual_grant: `${program} access was added`,
+    parent_trial_invite: `Your ${program} 30-day trial starts now`,
     revoke_expiry: `${program} access update`,
     magic_login: `${program} member login link`,
   };
@@ -43,6 +44,19 @@ function rabbiTemplateBody(templateKey, context = {}) {
       '',
       `${program} access was added manually by the office.`,
       loginUrl ? `Member login: ${loginUrl}` : '',
+    ],
+    parent_trial_invite: [
+      `Hi ${name},`,
+      '',
+      `Welcome to ${program}. Your 30-day trial starts now.`,
+      context.studentName ? `Student: ${context.studentName}` : '',
+      '',
+      context.passwordSetupUrl ? `Set your parent password here: ${context.passwordSetupUrl}` : '',
+      context.memberLibraryUrl ? `Open the class library here: ${context.memberLibraryUrl}` : '',
+      context.classroomUrl ? `Open the classroom here: ${context.classroomUrl}` : '',
+      '',
+      'After you set your parent password, you can open the parent portal and set or reset the student login.',
+      'If anything looks wrong, reply to this email and the office will fix it.',
     ],
     revoke_expiry: [
       `Hi ${name},`,

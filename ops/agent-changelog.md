@@ -33512,3 +33512,32 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   brand/helper/toolbar register now has the prompt/drop-off refresh closed;
   external provider setup and the separate One Time Railway target remain
   blocked in the active execution run.
+
+## 2026-07-08T09:03:00+03:00 - Parent trial email, watch tracking, and Agent Review drop-off repair local verified
+
+- Added a scoped One Time parent trial invite flow for the operator-approved
+  test parent email, redacted in repo, with explicit
+  `SEND_ONE_TIME_PARENT_TRIAL_INVITE` confirmation, TEST-labeled
+  student/lead/member access, parent password setup URL, classroom/library
+  links, email log, and contact communication log.
+- Added server-side One Time member watch progress and append-only watch
+  events, with the member library syncing manual progress, media opens, HTML5
+  video updates, and Vimeo Player time updates.
+- Verified Vimeo readiness through the official folder workflow: keyholder
+  Vimeo access is configured, but the safe import folder has 0 candidate files,
+  so no Vimeo upload/import/publish was performed.
+- Repaired the Agent Review workflow so prompt cards expose Start Audit,
+  Copy Agent Prompt auto-starts and prepends the in-progress AGR state,
+  generated prompts require drop-off/readback before final chat, and the
+  drop-off form supports partial BLOCKED saves, local draft autosave, readback
+  metadata, and secret-looking draft suppression.
+- Preserved the failed partial `one-time-brand-helper-toolbar-audit` result in
+  the Agent Review execution-run evidence without marking Issue #24 complete,
+  and refreshed read-only agent-fleet readiness evidence.
+- Local verification passed: `node --check server.js`, `npm run
+  agent-review:prompts`, focused test suite 66/66, `npm run
+  watchdog:actions`, `npm run watchdog:protocol-drift`, `npm run
+  secrets:audit`, and `git diff --check`.
+- Status: local verified, pending scoped commit, push, Railway deployment, live
+  parent-trial dry run, real approved email send, live readbacks, and final
+  register closeout.

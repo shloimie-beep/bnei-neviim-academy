@@ -1,6 +1,6 @@
 # One Time Action Coverage
 
-Generated at 2026-07-05T15:00:14.842Z.
+Generated at 2026-07-08T06:08:45.909Z.
 
 Scope: `rabbi_sheller_provider` / `one_time_mishnah_class`
 
@@ -11,7 +11,7 @@ Requirement: REQ-20260621-502
 - Status: covered
 - Product controls inventoried: 21
 - Registry hook controls inventoried: 19
-- Root registry actions: 95
+- Root registry actions: 118
 - Detailed registry actions: 80
 - Registry external/app-visible write controls: 7
 - Registry missing/repair rows: 0

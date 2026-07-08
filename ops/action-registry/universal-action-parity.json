@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T13:48:16.699Z",
+  "generated_at": "2026-07-08T06:08:45.969Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,63 +16,63 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "99bc960419cbb6eb395f10a04a1668ce8c8569743f38b692fe7985f8ab41f37b",
+  "content_hash": "2b808703028837e242131762ac2d8100e4208ea2ee573801604e903710ea8b3f",
   "source_hashes": {
-    "ops/action-registry.json": "2bc19dbdeb96aeda26d3d4f006f52a74e5391ea10cd4069a7103ec1b9ceb22be",
+    "ops/action-registry.json": "882409bac9d110588d3ead1d8284c45a210a624150e5cf1a8b638e0bcf1f74b2",
     "ops/action-registry/actions.json": "d14449dbfad1fc46dce7f89ed3899f25fea6e98159c428f054c3229b060423cf",
-    "public/operations.html": "d91c1a96fd24abdeae487c73c6c72eaf3cb7bfffe4c163ff383b71e78977a749",
-    "public/parent.html": "ebed41f8db8ab749a4a0690f2e859292df33328f2cbe10ecae947f040a394d49",
-    "public/student.html": "97a237b64e4eabfafc7b0c561410172e24f614f5b3ce36821a9e96e8a58dda47",
-    "public/provider.html": "a60302671afbdb0606b5d70e61381cc3faa01a27890bea5a28a2e065ea38e427",
+    "public/operations.html": "9859c3fd7fbfeb76f6fd5b3a48cc69f0aa97fb9a7df2a41863e89854104c2a18",
+    "public/parent.html": "66ae1e08509deedc6b14ee659a2f345c864664bb5be8e9535ebabc84c63ed702",
+    "public/student.html": "09c489fcd2efa913325b5cce77c8397770dded93ad6372db8d5d8b0b2d2ca08b",
+    "public/provider.html": "6792d8ec7d042e61e04a9030343e8bb2a6b9f658972e8bb64ee3e1fb467fe017",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 95,
+    "root_actions": 118,
     "detailed_actions": 80,
-    "total_registry_rows": 175,
-    "visible_controls": 40,
-    "visible_controls_classified": 40,
+    "total_registry_rows": 198,
+    "visible_controls": 51,
+    "visible_controls_classified": 51,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
     "blocked_connector": 11,
-    "risky_actions": 83,
+    "risky_actions": 94,
     "risky_without_approval": 0,
     "visible_by_classification": {
-      "read_only": 6,
+      "read_only": 8,
       "secure_deep_link_only": 5,
-      "preview_then_approve": 21,
+      "preview_then_approve": 28,
       "blocked_connector": 4,
       "not_applicable": 2,
-      "executable": 2
+      "executable": 4
     },
     "registry_by_classification": {
-      "secure_deep_link_only": 19,
-      "executable": 18,
-      "preview_then_approve": 75,
-      "read_only": 50,
+      "secure_deep_link_only": 23,
+      "executable": 20,
+      "preview_then_approve": 86,
+      "read_only": 56,
       "blocked_connector": 11,
       "not_applicable": 2
     }
   },
   "parity_sources": {
     "ui_button": {
-      "count": 40
+      "count": 51
     },
     "telegram_request": {
       "count": 80
     },
     "website_assistant_request": {
-      "count": 175
+      "count": 198
     },
     "operations_helper_request": {
-      "count": 161
+      "count": 180
     },
     "automation_action": {
-      "count": 76
+      "count": 83
     },
     "agent_work_handoff": {
-      "count": 98
+      "count": 100
     }
   },
   "release_gate": {
@@ -80,7 +80,7 @@
       {
         "name": "all_visible_controls_classified",
         "passed": true,
-        "value": "40/40"
+        "value": "51/51"
       },
       {
         "name": "zero_visible_missing_contracts",
@@ -110,12 +110,12 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 175
+        "value": 198
       },
       {
         "name": "agent_work_handoff_parity_present",
         "passed": true,
-        "value": 98
+        "value": 100
       }
     ]
   },
@@ -343,6 +343,76 @@
       "risk": "high",
       "registry_layer": "root",
       "result_renderer": "Remains disabled until a relationship-scoped protected join reference is approved; raw Zoom join URLs and host/start URLs are never exposed."
+    },
+    {
+      "action_id": "ACTION-ONETIME-PROVIDER-SESSION-START",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "read_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Platform super-admin opens a short-lived read-only View-as Rabbi session for the One Time provider workspace without receiving or exposing the provider password."
+    },
+    {
+      "action_id": "ACTION-ONETIME-STUDENT-PREVIEW",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Opens the One Time student review route with TEST-only student data, no BNA accountability records, and no live student message/payment/access writes."
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-PREVIEW",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Opens the One Time member review route with TEST-only member/library/session/question/support data and blocks real login-link, support-ticket, question, payment, notification, or access-grant writes."
+    },
+    {
+      "action_id": "ACTION-OPERATIONS-EMAIL-INBOX-BNA",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Switches the Super Admin email workspace to BNA / Shloimie scoped email rows and drafts using workspace=bna and project_key=bna."
+    },
+    {
+      "action_id": "ACTION-OPERATIONS-EMAIL-INBOX-RABBI",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Switches the Super Admin email workspace to Rabbi / One Time scoped email rows and drafts using workspace=rabbi_sheller_provider and project_key=one_time_mishnah_class."
     },
     {
       "action_id": "ACTION-INTEGRATION-SETUP-OPEN",
@@ -611,6 +681,20 @@
       "result_renderer": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data."
     },
     {
+      "action_id": "ACTION-PROVIDER-MAILBOX-SEARCH",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Searches the Rabbi/One Time provider mailbox thread list using the private provider mailbox API; reads only scoped bna_communications email rows and performs no external send."
+    },
+    {
       "action_id": "ACTION-PROVIDER-WAPI-SETUP-SAVE",
       "file": "public/provider.html",
       "surface": "provider_portal",
@@ -623,6 +707,34 @@
       "risk": "high",
       "registry_layer": "root",
       "result_renderer": "Saves Rabbi/One Time provider-scoped Whapi/WAPI setup details to BNA integration and secret-reference records for verification; the raw token is not rendered back, and no WhatsApp send, broadcast, payment, access grant, or external provider mutation runs from this action."
+    },
+    {
+      "action_id": "ACTION-ONETIME-VIEW-AS-RABBI-EXIT",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "read_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Ends the local read-only view-as preview session and returns the operator to the One Time Operations workspace."
+    },
+    {
+      "action_id": "ACTION-ONETIME-PROVIDER-SESSION-EXIT",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "executable",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "medium",
+      "registry_layer": "root",
+      "result_renderer": "Returns the operator to Operations with the Rabbi / One Time inbox filter visible; provider logout remains available through the provider Sign Out control."
     },
     {
       "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
@@ -679,6 +791,48 @@
       "risk": "medium",
       "registry_layer": "root",
       "result_renderer": "Saves a provider inquiry response draft only and returns explicit no_send/external_write_performed=false metadata."
+    },
+    {
+      "action_id": "ACTION-PROVIDER-MAILBOX-THREAD-OPEN",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Loads a scoped One Time email thread timeline from bna_communications using the private provider mailbox thread API."
+    },
+    {
+      "action_id": "ACTION-PROVIDER-MAILBOX-DRAFT",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "executable",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "medium",
+      "registry_layer": "root",
+      "result_renderer": "Saves a local One Time mailbox reply draft in bna_communications with no_send/external_write_performed=false metadata."
+    },
+    {
+      "action_id": "ACTION-PROVIDER-MAILBOX-SEND",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Sends a one-to-one One Time mailbox reply through Resend only after provider session, workspace scope, Resend readiness, and exact SEND_RESEND_EMAIL confirmation; bulk email remains unavailable."
     }
   ],
   "action_rows": [
@@ -710,6 +864,99 @@
         "BNA Helper"
       ],
       "result_renderer": "Opens the scoped Operations helper drawer.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
+      "label": "One Time Helper",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_public_landing",
+      "route": "/one-time",
+      "permission": "anonymous public visitor",
+      "allowed_roles": [
+        "anonymous public visitor"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the One Time-scoped public helper without school goals, Hebrew/English toggle behavior, private parent billing, attendance, student transcripts, access codes, or admin data.",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "One Time Helper"
+      ],
+      "result_renderer": "Opens the One Time-scoped public helper without school goals, Hebrew/English toggle behavior, private parent billing, attendance, student transcripts, access codes, or admin data.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-PARENT-HELPER-OPEN",
+      "label": "One Time Parent Helper",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_parent_review",
+      "route": "/parent.html?review=one-time",
+      "permission": "TEST-only parent review fixture or authenticated parent scope",
+      "allowed_roles": [
+        "TEST-only parent review fixture or authenticated parent scope"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the One Time-scoped parent helper with trial, schedule, child access, billing-support, attendance-support, and Rabbi question guidance without exposing private billing records, student transcripts, access codes, other families, or admin data.",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "One Time Parent Helper"
+      ],
+      "result_renderer": "Opens the One Time-scoped parent helper with trial, schedule, child access, billing-support, attendance-support, and Rabbi question guidance without exposing private billing records, student transcripts, access codes, other families, or admin data.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-STUDENT-HELPER-OPEN",
+      "label": "One Time Student Helper",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_student_review",
+      "route": "/student.html?review=one-time",
+      "permission": "TEST-only student review fixture or authenticated student scope",
+      "allowed_roles": [
+        "TEST-only student review fixture or authenticated student scope"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the One Time-scoped student helper with class, library, worksheet, and Rabbi question guidance without exposing parent billing, private parent messages, full transcripts, access codes, other students, or admin data.",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "One Time Student Helper"
+      ],
+      "result_renderer": "Opens the One Time-scoped student helper with class, library, worksheet, and Rabbi question guidance without exposing parent billing, private parent messages, full transcripts, access codes, other students, or admin data.",
       "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
@@ -1242,7 +1489,7 @@
     },
     {
       "action_id": "ACTION-ONETIME-VIEW-AS-RABBI-EXIT",
-      "label": "Exit View as Rabbi",
+      "label": "Return to Super Admin",
       "registry_layer": "root",
       "category": "",
       "surface": "one_time_provider_view_as_rabbi",
@@ -1252,7 +1499,7 @@
         "platform_super_admin"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Ends the local read-only view-as preview session and returns the operator to the normal One Time provider review view.",
+      "execution_handler": "Ends the local read-only view-as preview session and returns the operator to the One Time Operations workspace.",
       "status": "active",
       "classification": "read_only",
       "risk": "low",
@@ -1265,9 +1512,195 @@
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "Exit View as Rabbi"
+        "Return to Super Admin"
       ],
-      "result_renderer": "Ends the local read-only view-as preview session and returns the operator to the normal One Time provider review view.",
+      "result_renderer": "Ends the local read-only view-as preview session and returns the operator to the One Time Operations workspace.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-OPERATIONS-EMAIL-INBOX-BNA",
+      "label": "View BNA Inbox",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_communications_email_workspace",
+      "route": "/operations?view=communications&section=email",
+      "permission": "platform_super_admin",
+      "allowed_roles": [
+        "platform_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Switches the Super Admin email workspace to BNA / Shloimie scoped email rows and drafts using workspace=bna and project_key=bna.",
+      "status": "active_readonly",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "View BNA Inbox"
+      ],
+      "result_renderer": "Switches the Super Admin email workspace to BNA / Shloimie scoped email rows and drafts using workspace=bna and project_key=bna.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-OPERATIONS-EMAIL-INBOX-RABBI",
+      "label": "View Rabbi / One Time Inbox",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_communications_email_workspace",
+      "route": "/operations?view=communications&section=email&inbox=rabbi",
+      "permission": "platform_super_admin",
+      "allowed_roles": [
+        "platform_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Switches the Super Admin email workspace to Rabbi / One Time scoped email rows and drafts using workspace=rabbi_sheller_provider and project_key=one_time_mishnah_class.",
+      "status": "active_readonly",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "View Rabbi / One Time Inbox"
+      ],
+      "result_renderer": "Switches the Super Admin email workspace to Rabbi / One Time scoped email rows and drafts using workspace=rabbi_sheller_provider and project_key=one_time_mishnah_class.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-PROVIDER-SESSION-START",
+      "label": "View One Time as Rabbi",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_communications_email_workspace",
+      "route": "/api/bna/one-time/view-as-rabbi/start",
+      "permission": "platform_super_admin",
+      "allowed_roles": [
+        "platform_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Platform super-admin opens a short-lived read-only View-as Rabbi session for the One Time provider workspace without receiving or exposing the provider password.",
+      "status": "active_read_only_view_as",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "View One Time as Rabbi"
+      ],
+      "result_renderer": "Platform super-admin opens a short-lived read-only View-as Rabbi session for the One Time provider workspace without receiving or exposing the provider password.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-STUDENT-PREVIEW",
+      "label": "Student Preview",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_one_time_safe_role_preview",
+      "route": "/student.html?review=one-time",
+      "permission": "platform_super_admin",
+      "allowed_roles": [
+        "platform_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the One Time student review route with TEST-only student data, no BNA accountability records, and no live student message/payment/access writes.",
+      "status": "active_readonly",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Student Preview"
+      ],
+      "result_renderer": "Opens the One Time student review route with TEST-only student data, no BNA accountability records, and no live student message/payment/access writes.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-PREVIEW",
+      "label": "Member Preview",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_one_time_safe_role_preview",
+      "route": "/rabbi-member?review=one-time",
+      "permission": "platform_super_admin",
+      "allowed_roles": [
+        "platform_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the One Time member review route with TEST-only member/library/session/question/support data and blocks real login-link, support-ticket, question, payment, notification, or access-grant writes.",
+      "status": "active_readonly",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Member Preview"
+      ],
+      "result_renderer": "Opens the One Time member review route with TEST-only member/library/session/question/support data and blocks real login-link, support-ticket, question, payment, notification, or access-grant writes.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-PROVIDER-SESSION-EXIT",
+      "label": "Return to Super Admin Inbox",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_provider_admin_session_banner",
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "permission": "platform_super_admin",
+      "allowed_roles": [
+        "platform_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Returns the operator to Operations with the Rabbi / One Time inbox filter visible; provider logout remains available through the provider Sign Out control.",
+      "status": "active_navigation",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Return to Super Admin Inbox"
+      ],
+      "result_renderer": "Returns the operator to Operations with the Rabbi / One Time inbox filter visible; provider logout remains available through the provider Sign Out control.",
       "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
@@ -1898,9 +2331,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "setStudioSection",
@@ -1929,9 +2362,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "createStudioProjectFromForm",
@@ -1960,9 +2393,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio&section=source",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "saveStudioSourceFromForm",
@@ -1991,9 +2424,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio&section=source",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "prepareStudioReviewPackFromForm",
@@ -2022,9 +2455,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio&section=storyboard",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "generateStudioStoryboard",
@@ -2053,9 +2486,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio&section=prompts",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "compileStudioPrompt",
@@ -2084,9 +2517,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "native_details_summary",
@@ -2115,9 +2548,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio&section=prompts",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "saveStudioLibraryFromForm",
@@ -2140,15 +2573,170 @@
       "audit_event": ""
     },
     {
+      "action_id": "ACTION-STUDIO-SIDEKICK-PATCH-PREVIEW",
+      "label": "Draft Prompt Patch",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
+      "allowed_roles": [
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "previewStudioSidekickPatch",
+      "status": "active_no_external_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Draft Prompt Patch"
+      ],
+      "result_renderer": "Turns Studio image/render observations and prompt corrections into a reversible local patch preview without vendor calls or external writes.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-STUDIO-OPENART-PROMPT-EXPORT",
+      "label": "Export OpenArt Prompt",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
+      "allowed_roles": [
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "exportStudioOpenArtPrompt",
+      "status": "active_no_external_write",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Export OpenArt Prompt"
+      ],
+      "result_renderer": "Builds and optionally copies an OpenArt-ready prompt export with character continuity and guardrail checklists; it does not call OpenArt or spend credits.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-STUDIO-OPENART-PROMPT-COPY",
+      "label": "Copy OpenArt Prompt",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
+      "allowed_roles": [
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "copyStudioOpenArtPrompt",
+      "status": "active_no_external_write",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Copy OpenArt Prompt"
+      ],
+      "result_renderer": "Copies the already prepared OpenArt prompt export to the browser clipboard without additional backend or vendor calls.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF",
+      "label": "Create Worker Handoff",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=handoff",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
+      "allowed_roles": [
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "handoffStudioAiVideoWorker",
+      "status": "active_no_external_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Create Worker Handoff"
+      ],
+      "result_renderer": "Creates an idempotent local AI video worker review packet containing scoped source, storyboard, scene prompt pack, OpenArt request plan, review steps, and exact vendor blockers; it performs no OpenArt call, upload, publish, send, credit spend, or external write.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-STUDIO-REPAIR-PLAN",
+      "label": "Plan Studio Repair",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "permission": "one_time_ai_studio_operator_or_one_time_ai_video_worker_or_super_admin",
+      "allowed_roles": [
+        "one_time_ai_studio_operator_or_one_time_ai_video_worker_or_super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "planStudioRepairRequest",
+      "status": "active_no_external_write",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Plan Studio Repair"
+      ],
+      "result_renderer": "Creates a Studio-only repair plan with file/route/test allowlists and explicit no-shell/no-deploy/no-external-write constraints.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
       "action_id": "ACTION-STUDIO-PREVIEW-CORRECTION",
       "label": "Preview Correction",
       "registry_layer": "root",
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio&section=prompts",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "previewStudioCorrection",
@@ -2177,9 +2765,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio&section=prompts",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "applyStudioCorrection",
@@ -2208,9 +2796,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio&section=storyboard",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "updateStudioSceneFromForm",
@@ -2239,9 +2827,9 @@
       "category": "",
       "surface": "operations_service_provider_studio",
       "route": "/operations?view=studio&section=jobs",
-      "permission": "super_admin_or_provider_workspace_admin",
+      "permission": "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker",
       "allowed_roles": [
-        "super_admin_or_provider_workspace_admin"
+        "super_admin_or_provider_workspace_admin_or_one_time_ai_studio_operator_or_one_time_ai_video_worker"
       ],
       "allowed_workspaces": [],
       "execution_handler": "renderStudioMock",
@@ -2977,6 +3565,37 @@
       "audit_event": ""
     },
     {
+      "action_id": "ACTION-AGENT-REVIEW-START-AUDIT",
+      "label": "Start Audit",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Creates or returns an in-progress AGR record for the prompt before Copy Agent Prompt is allowed, preserving prompt key, run, requirement, owner, context, started_at, status, and idempotency key.",
+      "status": "active",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Start Audit"
+      ],
+      "result_renderer": "Creates or returns an in-progress AGR record for the prompt before Copy Agent Prompt is allowed, preserving prompt key, run, requirement, owner, context, started_at, status, and idempotency key.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
       "action_id": "ACTION-AGENT-REVIEW-RETURN-HUB",
       "label": "Hub",
       "registry_layer": "root",
@@ -3050,7 +3669,7 @@
         "super_admin"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Copies the mobile-friendly Agent Mode prompt with agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, and idempotency_key metadata.",
+      "execution_handler": "Copies the mobile-friendly Agent Mode prompt only after Start Audit has created or returned the in-progress AGR record, then includes agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, result_ref, and idempotency_key metadata.",
       "status": "active",
       "classification": "executable",
       "risk": "medium",
@@ -3065,7 +3684,7 @@
       "website_examples": [
         "Copy prompt"
       ],
-      "result_renderer": "Copies the mobile-friendly Agent Mode prompt with agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, and idempotency_key metadata.",
+      "result_renderer": "Copies the mobile-friendly Agent Mode prompt only after Start Audit has created or returned the in-progress AGR record, then includes agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, result_ref, and idempotency_key metadata.",
       "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
@@ -3190,6 +3809,130 @@
         "Rerun after repair"
       ],
       "result_renderer": "Opens a rerun/drop-off path linked to the repair item created for a FAIL or BLOCKED Agent Review result.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-TASK-MANAGER-LIST",
+      "label": "Open One Time tasks",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_manager",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin_or_scoped_one_time_task_role",
+      "allowed_roles": [
+        "super_admin_or_scoped_one_time_task_role"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "switchView",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open One Time tasks"
+      ],
+      "result_renderer": "Opens the task manager filtered to the identity's One Time project scope for scoped Studio/video worker sessions.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-TASK-MANAGER-OPEN-DETAIL",
+      "label": "Open One Time task",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_manager",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin_or_scoped_one_time_task_role",
+      "allowed_roles": [
+        "super_admin_or_scoped_one_time_task_role"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "/api/bna/tasks/:id",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open One Time task"
+      ],
+      "result_renderer": "Opens a task detail record only after the task API confirms it belongs to the scoped One Time project.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-TASK-MANAGER-SAVE",
+      "label": "Save One Time task",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_manager",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin_or_scoped_one_time_task_role",
+      "allowed_roles": [
+        "super_admin_or_scoped_one_time_task_role"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "/api/bna/tasks, /api/bna/tasks/:id",
+      "status": "active",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Save One Time task"
+      ],
+      "result_renderer": "Creates or updates only task-manager fields for records inside the scoped One Time project.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-TASK-MANAGER-COMMENT",
+      "label": "Comment on One Time task",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_manager",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin_or_scoped_one_time_task_role",
+      "allowed_roles": [
+        "super_admin_or_scoped_one_time_task_role"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "/api/bna/tasks/:id/comments",
+      "status": "active",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Comment on One Time task"
+      ],
+      "result_renderer": "Adds comments only to One Time project tasks and defaults One Time task comments to project visibility.",
       "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
@@ -3470,6 +4213,130 @@
       ],
       "result_renderer": "Saves a provider inquiry response draft only and returns explicit no_send/external_write_performed=false metadata.",
       "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PROVIDER-MAILBOX-SEARCH",
+      "label": "Search mailbox",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider?section=mailbox",
+      "permission": "authenticated One Time provider workspace member",
+      "allowed_roles": [
+        "authenticated One Time provider workspace member"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Searches the Rabbi/One Time provider mailbox thread list using the private provider mailbox API; reads only scoped bna_communications email rows and performs no external send.",
+      "status": "active_readonly",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Search mailbox"
+      ],
+      "result_renderer": "Searches the Rabbi/One Time provider mailbox thread list using the private provider mailbox API; reads only scoped bna_communications email rows and performs no external send.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PROVIDER-MAILBOX-THREAD-OPEN",
+      "label": "Open mailbox thread",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider?section=mailbox",
+      "permission": "authenticated One Time provider workspace member",
+      "allowed_roles": [
+        "authenticated One Time provider workspace member"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Loads a scoped One Time email thread timeline from bna_communications using the private provider mailbox thread API.",
+      "status": "active_readonly",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open mailbox thread"
+      ],
+      "result_renderer": "Loads a scoped One Time email thread timeline from bna_communications using the private provider mailbox thread API.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PROVIDER-MAILBOX-DRAFT",
+      "label": "Save mailbox draft",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider?section=mailbox",
+      "permission": "authenticated One Time provider workspace member",
+      "allowed_roles": [
+        "authenticated One Time provider workspace member"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Saves a local One Time mailbox reply draft in bna_communications with no_send/external_write_performed=false metadata.",
+      "status": "active_local_write",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Save mailbox draft"
+      ],
+      "result_renderer": "Saves a local One Time mailbox reply draft in bna_communications with no_send/external_write_performed=false metadata.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PROVIDER-MAILBOX-SEND",
+      "label": "Send mailbox reply",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider?section=mailbox",
+      "permission": "authenticated One Time provider workspace member with explicit send confirmation",
+      "allowed_roles": [
+        "authenticated One Time provider workspace member with explicit send confirmation"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Sends a one-to-one One Time mailbox reply through Resend only after provider session, workspace scope, Resend readiness, and exact SEND_RESEND_EMAIL confirmation; bulk email remains unavailable.",
+      "status": "active_external_write_guarded",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Send mailbox reply"
+      ],
+      "result_renderer": "Sends a one-to-one One Time mailbox reply through Resend only after provider session, workspace scope, Resend readiness, and exact SEND_RESEND_EMAIL confirmation; bulk email remains unavailable.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -8008,6 +8875,7 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": false,
       "action_ids": [
+        "ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF",
         "ACTION-STUDIO-APPLY-CORRECTION",
         "ACTION-STUDIO-COMPILE-PROMPT",
         "ACTION-STUDIO-CREATE-PROJECT",
@@ -8016,11 +8884,15 @@
         "ACTION-STUDIO-MOCK-RENDER",
         "ACTION-STUDIO-OPEN-DIAGNOSTICS",
         "ACTION-STUDIO-OPEN-SOURCE",
+        "ACTION-STUDIO-OPENART-PROMPT-COPY",
+        "ACTION-STUDIO-OPENART-PROMPT-EXPORT",
         "ACTION-STUDIO-PREPARE-REVIEW-PACK",
         "ACTION-STUDIO-PREVIEW-CORRECTION",
+        "ACTION-STUDIO-REPAIR-PLAN",
         "ACTION-STUDIO-SAVE-LIBRARY",
         "ACTION-STUDIO-SAVE-SCENE",
-        "ACTION-STUDIO-SAVE-SOURCE"
+        "ACTION-STUDIO-SAVE-SOURCE",
+        "ACTION-STUDIO-SIDEKICK-PATCH-PREVIEW"
       ],
       "reason": ""
     },
@@ -8033,10 +8905,12 @@
     },
     {
       "category": "landing_page",
-      "state": "not_applicable_current_surface",
+      "state": "covered_by_canonical_registry",
       "visible_currently": false,
-      "action_ids": [],
-      "reason": "No current visible control in this category; future work must add a typed registry row before exposing UI or assistant execution."
+      "action_ids": [
+        "ACTION-ONETIME-PUBLIC-HELPER-OPEN"
+      ],
+      "reason": ""
     },
     {
       "category": "seo",
@@ -8079,6 +8953,8 @@
         "ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-SEND",
         "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS",
+        "ACTION-ONETIME-PROVIDER-SESSION-EXIT",
+        "ACTION-ONETIME-PROVIDER-SESSION-START",
         "ACTION-PROVIDER-CLASSROOM-DRAFT",
         "classroom_topic_material_preview",
         "create_provider_class_session",
@@ -8104,6 +8980,7 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": false,
       "action_ids": [
+        "ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF",
         "create_one_time_video_library_item"
       ],
       "reason": ""
@@ -8120,9 +8997,10 @@
     {
       "category": "community",
       "state": "covered_by_canonical_registry",
-      "visible_currently": false,
+      "visible_currently": true,
       "action_ids": [
         "ACTION-PROVIDER-CLASSROOM-DRAFT",
+        "ACTION-PROVIDER-MAILBOX-THREAD-OPEN",
         "create_provider_classroom_draft",
         "create_provider_question_post",
         "post_community_message"
@@ -8168,6 +9046,9 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-ONETIME-PROVIDER-SESSION-START",
+        "ACTION-OPERATIONS-EMAIL-INBOX-BNA",
+        "ACTION-OPERATIONS-EMAIL-INBOX-RABBI",
         "ACTION-PARENT-ACCESS-LINK-EMAIL",
         "ACTION-PARENT-PASSWORD-SETUP-SEND",
         "approve_email",
@@ -8199,6 +9080,8 @@
         "ACTION-ONETIME-MEMBER-LIBRARY-APPROVE",
         "ACTION-PROVIDER-CLASSROOM-DRAFT",
         "ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT",
+        "ACTION-PROVIDER-MAILBOX-DRAFT",
+        "ACTION-STUDIO-SIDEKICK-PATCH-PREVIEW",
         "approve_email",
         "approve_newsletter",
         "create_provider_classroom_draft",
@@ -8356,6 +9239,7 @@
         "ACTION-AGENT-REVIEW-PROMPT-OPEN",
         "ACTION-AGENT-REVIEW-RERUN-PROMPT",
         "ACTION-AGENT-REVIEW-RETURN-HUB",
+        "ACTION-AGENT-REVIEW-START-AUDIT",
         "ACTION-AGENT-REVIEW-SUBMIT-RESULT",
         "ACTION-AGENT-REVIEW-VIEW-RESULT",
         "ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL",
@@ -8369,6 +9253,7 @@
         "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-EVIDENCE",
         "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS",
         "ACTION-ONETIME-SCOPED-AGENT-STATUS",
+        "ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF",
         "ACTION-STUDIO-HANDOFF-CONTENT",
         "ACTION-TASK-AGENT-MODE-COPY-PROMPT",
         "ACTION-TASK-AGENT-MODE-OPEN-DROPOFF",

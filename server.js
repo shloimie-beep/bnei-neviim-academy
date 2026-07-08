@@ -6594,6 +6594,7 @@ function parentAccessEligible(records) {
 
 const NEXT_YEAR_LOGIN_PREPARE_CONFIRM = 'PREPARE_NEXT_YEAR_LOGINS';
 const PARENT_PASSWORD_SETUP_CONFIRM = 'SEND_PARENT_PASSWORD_SETUP';
+const ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM = 'SEND_ONE_TIME_PARENT_TRIAL_INVITE';
 
 function nextYearLoginIssueLabels(item = {}) {
   const issues = [];
@@ -6918,7 +6919,7 @@ async function createParentMagicLink({ parentEmail, req, requestedBy = 'parent',
   };
 }
 
-async function createParentPasswordResetToken({ parentEmail, req, metadata = {} }, db = pool) {
+async function createParentPasswordResetToken({ parentEmail, req, metadata = {}, sendEmail = true, emailSender = sendParentPasswordResetEmail }, db = pool) {
   const email = normalizeEmail(parentEmail);
   if (!email) {
     const error = new Error('A parent email is required');
@@ -6950,7 +6951,9 @@ async function createParentPasswordResetToken({ parentEmail, req, metadata = {} 
   );
 
   const url = parentPortalPasswordResetUrl(req, token);
-  const emailResult = await sendParentPasswordResetEmail({ parentEmail: email, url, req });
+  const emailResult = sendEmail
+    ? await emailSender({ parentEmail: email, url, req })
+    : { ok: false, skipped: true };
   await db.query(
     `INSERT INTO bna_contact_communications (
        contact_type, signup_id, student_id, channel, direction,
@@ -6966,7 +6969,9 @@ async function createParentPasswordResetToken({ parentEmail, req, metadata = {} 
       emailResult.ok ? 'Parent password reset link sent' : 'Parent password reset link created',
       emailResult.ok
         ? 'A parent portal password setup/reset link was sent to the linked parent email.'
-        : 'A parent portal password setup/reset link was created, but email sending did not complete.',
+        : emailResult.skipped
+          ? 'A parent portal password setup/reset link was created for a scoped invitation. No generic parent password email was sent.'
+          : 'A parent portal password setup/reset link was created, but email sending did not complete.',
       JSON.stringify({
         parent_email: email,
         password_reset_sent: Boolean(emailResult.ok),
@@ -10805,7 +10810,8 @@ async function latestAgentReviewResultsByPrompt(db = pool) {
   try {
     const result = await db.query(
       `SELECT DISTINCT ON (prompt_key)
-          result_ref, prompt_key, status, severity, requirement_id, metadata, updated_at, created_at
+          result_ref, prompt_key, status, severity, requirement_id,
+          idempotency_key, submitted_by, metadata, updated_at, created_at
        FROM bna_agent_review_results
        WHERE COALESCE(prompt_key, '') <> ''
        ORDER BY prompt_key, updated_at DESC, created_at DESC`
@@ -10819,6 +10825,10 @@ async function latestAgentReviewResultsByPrompt(db = pool) {
         status: row.status,
         severity: row.severity,
         requirement_id: row.requirement_id,
+        idempotency_key: row.idempotency_key,
+        started_at: metadata.started_at || (row.status === 'in_progress' ? row.created_at : null),
+        started_by: metadata.started_by || row.submitted_by || null,
+        workflow_state: metadata.workflow_state || null,
         repair_requirement_id: repair?.requirement_id || metadata.repair_requirement_id || null,
         repair_url: repair?.operations_url || metadata.repair_url || null,
         updated_at: row.updated_at,
@@ -10827,6 +10837,23 @@ async function latestAgentReviewResultsByPrompt(db = pool) {
   } catch {
     return {};
   }
+}
+
+function agentReviewResultIsTerminal(row = null) {
+  return ['pass', 'fail', 'blocked'].includes(String(row?.status || '').toLowerCase());
+}
+
+async function agentReviewResultByIdempotencyKey(idempotencyKey = '', db = pool) {
+  const safeKey = safeAgentReviewText(idempotencyKey, 160);
+  if (!safeKey) return null;
+  const result = await db.query(
+    `SELECT *
+     FROM bna_agent_review_results
+     WHERE idempotency_key = $1
+     LIMIT 1`,
+    [safeKey]
+  );
+  return result.rows[0] || null;
 }
 
 function parseAgentReviewDropoffBody(body = {}) {
@@ -10892,6 +10919,19 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
   const promptKey = safeAgentReviewText(body.prompt_key || body.promptKey || taskReview?.prompt_key || '', 120) || null;
   const status = normalizeAgentReviewResultStatus(body.status);
   const summary = safeAgentReviewResultText(body.conversation_summary || body.summary || '', 4000);
+  const routesVisited = body.routes_visited || body.routesVisited || body.partial_routes_visited || body.partialRoutesVisited;
+  const helperResponses = body.helper_responses || body.helperResponses || body.partial_helper_responses || body.partialHelperResponses || body.bot_responses || body.botResponses;
+  const linkActionOutcomes = body.link_action_outcomes || body.linkActionOutcomes;
+  const evidence = body.evidence || body.evidence_notes || body.evidenceNotes;
+  const workflowState = status === 'in_progress'
+    ? 'in_progress'
+    : status === 'pass'
+      ? 'saved_readback_verified'
+      : status === 'blocked'
+        ? 'blocked_saved'
+        : status === 'fail'
+          ? 'failed_save_paths_exhausted'
+          : 'save_attempted';
   const idempotencyBasis = [
     body.agent_review_run_id || body.agentReviewRunId || AGENT_REVIEW_RUN.agent_review_run_id,
     session?.session_ref || 'owner',
@@ -10999,10 +11039,10 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
       status,
       safeAgentReviewResultText(body.severity || 'none', 40),
       summary,
-      JSON.stringify(normalizeReviewJsonArray(body.routes_visited || body.routesVisited)),
-      JSON.stringify(normalizeReviewJsonArray(body.helper_responses || body.helperResponses || body.bot_responses || body.botResponses)),
-      JSON.stringify(normalizeReviewJsonArray(body.link_action_outcomes || body.linkActionOutcomes)),
-      JSON.stringify(normalizeReviewJsonArray(body.evidence)),
+      JSON.stringify(normalizeReviewJsonArray(routesVisited)),
+      JSON.stringify(normalizeReviewJsonArray(helperResponses)),
+      JSON.stringify(normalizeReviewJsonArray(linkActionOutcomes)),
+      JSON.stringify(normalizeReviewJsonArray(evidence)),
       safeAgentReviewResultText(body.suggested_correction || body.suggestedCorrection || '', 4000),
       idempotencyKey,
       identity?.username || session?.created_by || req.opsUser || 'agent_review_session',
@@ -11021,10 +11061,21 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
         owner_clarity: taskReview?.owner_clarity || null,
         return_url: safeAgentReviewResultText(body.return_url || body.returnUrl || taskReview?.exact_return_url || AGENT_REVIEW_RUN.hub_path, 500),
         dropoff_url: safeAgentReviewResultText(body.dropoff_url || body.dropoffUrl || taskReview?.exact_dropoff_url || (prompt ? promptDropoffPath(prompt) : AGENT_REVIEW_RUN.dropoff_path), 500),
+        workflow_state: workflowState,
+        started_at: status === 'in_progress' ? safeAgentReviewResultText(body.started_at || body.startedAt || new Date().toISOString(), 80) : undefined,
+        started_by: status === 'in_progress' ? safeAgentReviewResultText(identity?.username || req?.opsUser || session?.created_by || 'agent_review_owner', 120) : undefined,
+        prompt_start_required: true,
+        prompt_copy_gated_by_start: true,
         current_route: safeAgentReviewResultText(body.current_route || body.currentRoute || '', 500),
         last_completed_route: safeAgentReviewResultText(body.last_completed_route || body.lastCompletedRoute || '', 500),
         last_completed_role_context: safeAgentReviewResultText(body.last_completed_role_context || body.lastCompletedRoleContext || '', 500),
         blocker: safeAgentReviewResultText(body.blocker || body.blocked_reason || body.blockedReason || '', 1000),
+        blocked_route_or_step: safeAgentReviewResultText(body.blocked_route_or_step || body.blockedRouteOrStep || '', 800),
+        attempted_action: safeAgentReviewResultText(body.attempted_action || body.attemptedAction || '', 800),
+        observed_failure: safeAgentReviewResultText(body.observed_failure || body.observedFailure || '', 1000),
+        partial_routes_visited: normalizeReviewJsonArray(body.partial_routes_visited || body.partialRoutesVisited),
+        partial_helper_responses: normalizeReviewJsonArray(body.partial_helper_responses || body.partialHelperResponses),
+        evidence_notes: safeAgentReviewResultText(body.evidence_notes || body.evidenceNotes || '', 1600),
         repair_item: repairItem,
         repair_requirement_id: repairItem?.requirement_id || null,
         repair_task_id: repairTask?.id || null,
@@ -11353,6 +11404,116 @@ app.get('/api/bna/agent-review/contexts', requireAdmin, async (req, res) => {
     prompts: buildPromptIndex({ baseUrl: requestBaseUrl(req), resultsByPrompt }),
     external_write_performed: false,
   });
+});
+
+app.post('/api/bna/agent-review/prompts/start', requireAdmin, async (req, res) => {
+  try {
+    const identity = requireAgentReviewOwner(req, res);
+    if (!identity) return;
+    if (!verifyAgentReviewCsrf(req)) {
+      return res.status(403).json({
+        success: false,
+        error: 'Missing or invalid Agent Review CSRF token.',
+        external_write_performed: false,
+      });
+    }
+    const baseUrl = requestBaseUrl(req);
+    const promptKey = safeAgentReviewText(req.body?.prompt_key || req.body?.promptKey || '', 120);
+    const prompts = buildPromptIndex({ baseUrl });
+    const prompt = prompts.find((item) => item.key === promptKey) || null;
+    if (!prompt) {
+      return res.status(404).json({
+        success: false,
+        error: 'Unknown Agent Review prompt.',
+        external_write_performed: false,
+      });
+    }
+    const contextKey = safeAgentReviewText(req.body?.context_key || req.body?.contextKey || prompt.context_keys?.[0] || '', 120);
+    const context = contextByKey(contextKey);
+    if (!context) {
+      return res.status(400).json({
+        success: false,
+        error: 'Start Audit requires a known Agent Review context.',
+        external_write_performed: false,
+      });
+    }
+    const idempotencyKey = safeAgentReviewText(req.body?.idempotency_key || req.body?.idempotencyKey || prompt.idempotency_key, 160);
+    const existing = await agentReviewResultByIdempotencyKey(idempotencyKey);
+    if (existing && agentReviewResultIsTerminal(existing)) {
+      const metadata = existing.metadata && typeof existing.metadata === 'object' ? existing.metadata : parseJsonMaybe(existing.metadata) || {};
+      return res.json({
+        success: true,
+        already_terminal: true,
+        result_ref: existing.result_ref,
+        status: existing.status,
+        workflow_state: metadata.workflow_state || (existing.status === 'pass' ? 'saved_readback_verified' : existing.status === 'blocked' ? 'blocked_saved' : 'failed_save_paths_exhausted'),
+        prompt_key: prompt.key,
+        idempotency_key: existing.idempotency_key,
+        started_at: metadata.started_at || existing.created_at,
+        readback_url: `/api/bna/agent-review/results/${encodeURIComponent(existing.result_ref)}`,
+        operations_url: `/operations/agent-review?result=${encodeURIComponent(existing.result_ref)}`,
+        dropoff_url: prompt.dropoff_url,
+        prompt,
+        external_write_performed: false,
+      });
+    }
+    if (existing) {
+      const metadata = existing.metadata && typeof existing.metadata === 'object' ? existing.metadata : parseJsonMaybe(existing.metadata) || {};
+      return res.json({
+        success: true,
+        already_started: true,
+        result_ref: existing.result_ref,
+        status: existing.status,
+        workflow_state: metadata.workflow_state || 'in_progress',
+        prompt_key: prompt.key,
+        idempotency_key: existing.idempotency_key,
+        started_at: metadata.started_at || existing.created_at,
+        readback_url: `/api/bna/agent-review/results/${encodeURIComponent(existing.result_ref)}`,
+        operations_url: `/operations/agent-review?result=${encodeURIComponent(existing.result_ref)}`,
+        dropoff_url: prompt.dropoff_url,
+        prompt,
+        external_write_performed: false,
+      });
+    }
+    const startedAt = new Date().toISOString();
+    const result = await saveAgentReviewResult({
+      agent_review_run_id: AGENT_REVIEW_RUN.agent_review_run_id,
+      raw_id: AGENT_REVIEW_RUN.raw_id,
+      parent_goal_id: AGENT_REVIEW_RUN.parent_goal_id,
+      prompt_key: prompt.key,
+      context_key: context.key,
+      requirement_id: prompt.requirement_id,
+      status: 'in_progress',
+      severity: 'none',
+      summary: `Agent Review audit started for ${prompt.key}. Awaiting PASS, FAIL, or BLOCKED drop-off and readback verification.`,
+      evidence: ['Start Audit clicked in Agent Review Hub before Copy Agent Prompt.'],
+      idempotency_key: idempotencyKey,
+      return_url: prompt.return_url,
+      dropoff_url: prompt.dropoff_url,
+      started_at: startedAt,
+    }, { req, identity });
+    res.json({
+      success: true,
+      started: true,
+      result_ref: result.result_ref,
+      status: result.status,
+      workflow_state: 'in_progress',
+      prompt_key: prompt.key,
+      idempotency_key: result.idempotency_key,
+      started_at: startedAt,
+      readback_url: `/api/bna/agent-review/results/${encodeURIComponent(result.result_ref)}`,
+      operations_url: `/operations/agent-review?result=${encodeURIComponent(result.result_ref)}`,
+      dropoff_url: prompt.dropoff_url,
+      prompt,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: safeAgentReviewResultText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
 });
 
 app.get('/api/bna/agent-review/dropoff-context', async (req, res) => {
@@ -16426,6 +16587,40 @@ CREATE INDEX IF NOT EXISTS idx_one_time_library_publish_events_project_id ON one
 CREATE INDEX IF NOT EXISTS idx_one_time_library_publish_events_library_item_id ON one_time_library_publish_events (library_item_id);
 CREATE INDEX IF NOT EXISTS idx_one_time_library_publish_events_class_session_id ON one_time_library_publish_events (class_session_id);
 CREATE INDEX IF NOT EXISTS idx_one_time_library_publish_events_action ON one_time_library_publish_events (action);
+
+CREATE TABLE IF NOT EXISTS one_time_member_watch_progress (
+  id BIGSERIAL PRIMARY KEY,
+  access_id BIGINT NOT NULL REFERENCES one_time_member_access(id) ON DELETE CASCADE,
+  library_item_id BIGINT NOT NULL REFERENCES one_time_member_library_items(id) ON DELETE CASCADE,
+  class_session_id INTEGER REFERENCES bna_class_sessions(id) ON DELETE SET NULL,
+  watch_seconds INTEGER NOT NULL DEFAULT 0,
+  progress_percent INTEGER NOT NULL DEFAULT 0 CHECK (progress_percent >= 0 AND progress_percent <= 100),
+  open_count INTEGER NOT NULL DEFAULT 0,
+  completed_at TIMESTAMP,
+  last_event_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(access_id, library_item_id)
+);
+CREATE INDEX IF NOT EXISTS idx_one_time_member_watch_progress_access ON one_time_member_watch_progress (access_id, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_one_time_member_watch_progress_item ON one_time_member_watch_progress (library_item_id, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS one_time_member_watch_events (
+  id BIGSERIAL PRIMARY KEY,
+  access_id BIGINT NOT NULL REFERENCES one_time_member_access(id) ON DELETE CASCADE,
+  library_item_id BIGINT NOT NULL REFERENCES one_time_member_library_items(id) ON DELETE CASCADE,
+  class_session_id INTEGER REFERENCES bna_class_sessions(id) ON DELETE SET NULL,
+  event_type TEXT NOT NULL CHECK (event_type IN ('open_media', 'progress', 'timeupdate', 'mark_complete', 'heartbeat')),
+  watch_seconds INTEGER NOT NULL DEFAULT 0,
+  progress_percent INTEGER NOT NULL DEFAULT 0 CHECK (progress_percent >= 0 AND progress_percent <= 100),
+  request_ip_hash TEXT,
+  user_agent_hash TEXT,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_one_time_member_watch_events_access ON one_time_member_watch_events (access_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_one_time_member_watch_events_item ON one_time_member_watch_events (library_item_id, created_at DESC);
 `;
 
 const liveAccessTierSqlValues = LIVE_ACCESS_TIER_VALUES.map((value) => `'${value}'`).join(', ');
@@ -28524,10 +28719,38 @@ function buildMemberLibraryItemSnapshot(packageView = {}) {
   };
 }
 
-function oneTimeMemberLibraryPublicView(row = {}) {
+function clampOneTimeWatchPercent(value) {
+  const number = Math.round(Number(value || 0));
+  if (!Number.isFinite(number)) return 0;
+  return Math.max(0, Math.min(100, number));
+}
+
+function clampOneTimeWatchSeconds(value) {
+  const number = Math.round(Number(value || 0));
+  if (!Number.isFinite(number)) return 0;
+  return Math.max(0, Math.min(24 * 60 * 60, number));
+}
+
+function normalizeOneTimeWatchEventType(value = '') {
+  const normalized = String(value || '').trim().toLowerCase().replace(/[-\s]+/g, '_');
+  return ['open_media', 'progress', 'timeupdate', 'mark_complete', 'heartbeat'].includes(normalized) ? normalized : 'progress';
+}
+
+function oneTimeMemberWatchProgressView(row = {}) {
+  return {
+    watch_progress_seconds: clampOneTimeWatchSeconds(row.watch_seconds),
+    watch_progress_percent: clampOneTimeWatchPercent(row.progress_percent),
+    open_count: Number(row.open_count || 0),
+    completed_at: row.completed_at || null,
+    last_event_at: row.last_event_at || row.updated_at || null,
+  };
+}
+
+function oneTimeMemberLibraryPublicView(row = {}, progress = {}) {
   const item = oneTimeLibraryItemView(row);
   const snapshot = item.package_snapshot || {};
   const assets = Array.isArray(snapshot.assets) ? snapshot.assets : [];
+  const watchProgress = oneTimeMemberWatchProgressView(progress || {});
   return {
     id: item.id,
     class_session_id: item.class_session_id,
@@ -28542,8 +28765,11 @@ function oneTimeMemberLibraryPublicView(row = {}) {
     perek: snapshot.perek || '',
     mishnah_range: snapshot.mishnah_range || '',
     duration_seconds: snapshot.duration_seconds || null,
-    watch_progress_seconds: 0,
-    watch_progress_percent: 0,
+    watch_progress_seconds: watchProgress.watch_progress_seconds,
+    watch_progress_percent: watchProgress.watch_progress_percent,
+    watch_open_count: watchProgress.open_count,
+    watch_completed_at: watchProgress.completed_at,
+    watch_last_event_at: watchProgress.last_event_at,
     review_state: snapshot.transcript_status === 'approved' ? 'review_ready' : 'needs_review',
     assets: assets
       .filter((asset) => asset && asset.status !== 'archived')
@@ -29184,9 +29410,21 @@ async function getOneTimeMemberLibraryForAccessCode(accessCode = '', db = pool) 
        AND publish_status = 'published'
      ORDER BY COALESCE(class_date, published_at::date) DESC, published_at DESC, id DESC`
   )).rows;
-  const visibleItems = rows
-    .filter((item) => libraryVisibilityAllowsMember(item.library_visibility, tier, item.required_tier))
-    .map(oneTimeMemberLibraryPublicView);
+  const visibleRows = rows
+    .filter((item) => libraryVisibilityAllowsMember(item.library_visibility, tier, item.required_tier));
+  const visibleIds = visibleRows.map((item) => Number(item.id)).filter(Number.isFinite);
+  const progressRows = visibleIds.length
+    ? (await db.query(
+      `SELECT *
+       FROM one_time_member_watch_progress
+       WHERE access_id = $1
+         AND library_item_id = ANY($2::bigint[])`,
+      [access.id, visibleIds]
+    )).rows
+    : [];
+  const progressByItemId = new Map(progressRows.map((row) => [Number(row.library_item_id), row]));
+  const visibleItems = visibleRows
+    .map((item) => oneTimeMemberLibraryPublicView(item, progressByItemId.get(Number(item.id))));
   return {
     access: {
       member_label: access.member_label || 'One Time member',
@@ -29196,6 +29434,135 @@ async function getOneTimeMemberLibraryForAccessCode(accessCode = '', db = pool) 
     },
     items: visibleItems,
   };
+}
+
+async function getOneTimeVisibleLibraryItemForAccess({ accessCode = '', itemId = 0, db = pool } = {}) {
+  const code = String(accessCode || '').trim();
+  const id = Number(itemId || 0);
+  if (!code) {
+    const error = new Error('Member library access code is required');
+    error.statusCode = 400;
+    throw error;
+  }
+  if (!Number.isFinite(id) || id <= 0) {
+    const error = new Error('Library item id is required');
+    error.statusCode = 400;
+    throw error;
+  }
+  const access = (await db.query(
+    `SELECT *
+     FROM one_time_member_access
+     WHERE access_code = $1
+       AND status = 'active'
+       AND (expires_at IS NULL OR expires_at > NOW())
+     LIMIT 1`,
+    [code]
+  )).rows[0];
+  if (!access) {
+    const error = new Error('Invalid or inactive member library access code');
+    error.statusCode = 401;
+    throw error;
+  }
+  const item = (await db.query(
+    `SELECT *
+     FROM one_time_member_library_items
+     WHERE id = $1
+       AND destination = 'member_library'
+       AND publish_status = 'published'
+     LIMIT 1`,
+    [id]
+  )).rows[0];
+  if (!item || !libraryVisibilityAllowsMember(item.library_visibility, normalizeOneTimeMemberTier(access.tier), item.required_tier)) {
+    const error = new Error('Library item was not found for this member');
+    error.statusCode = 404;
+    throw error;
+  }
+  return { access, item };
+}
+
+async function recordOneTimeMemberWatchProgress({ accessCode = '', itemId = 0, eventType = 'progress', watchSeconds = 0, progressPercent = 0, req = null, metadata = {}, db = pool } = {}) {
+  const { access, item } = await getOneTimeVisibleLibraryItemForAccess({ accessCode, itemId, db });
+  const normalizedEventType = normalizeOneTimeWatchEventType(eventType);
+  const seconds = clampOneTimeWatchSeconds(watchSeconds);
+  const percent = normalizedEventType === 'mark_complete' ? 100 : clampOneTimeWatchPercent(progressPercent);
+  const requestIpHash = req ? sha256Hex(getRequestIp(req) || 'unknown') : null;
+  const userAgentHash = req?.headers?.['user-agent'] ? sha256Hex(req.headers['user-agent']) : null;
+  const safeMetadata = {
+    source: 'one_time_member_library',
+    event_type: normalizedEventType,
+    client_reported: true,
+    ...metadata,
+  };
+  const client = db.connect ? await db.connect() : null;
+  const runner = client || db;
+  try {
+    if (client) await client.query('BEGIN');
+    const progress = (await runner.query(
+      `INSERT INTO one_time_member_watch_progress (
+         access_id, library_item_id, class_session_id,
+         watch_seconds, progress_percent, open_count, completed_at,
+         last_event_at, metadata, updated_at
+       ) VALUES (
+         $1, $2, $3,
+         $4, $5, CASE WHEN $6 = 'open_media' THEN 1 ELSE 0 END,
+         CASE WHEN $5 >= 95 THEN NOW() ELSE NULL END,
+         NOW(), $7::jsonb, NOW()
+       )
+       ON CONFLICT (access_id, library_item_id) DO UPDATE SET
+         watch_seconds = GREATEST(one_time_member_watch_progress.watch_seconds, EXCLUDED.watch_seconds),
+         progress_percent = GREATEST(one_time_member_watch_progress.progress_percent, EXCLUDED.progress_percent),
+         open_count = one_time_member_watch_progress.open_count + CASE WHEN $6 = 'open_media' THEN 1 ELSE 0 END,
+         completed_at = CASE
+           WHEN GREATEST(one_time_member_watch_progress.progress_percent, EXCLUDED.progress_percent) >= 95
+             THEN COALESCE(one_time_member_watch_progress.completed_at, NOW())
+           ELSE one_time_member_watch_progress.completed_at
+         END,
+         last_event_at = NOW(),
+         metadata = COALESCE(one_time_member_watch_progress.metadata, '{}'::jsonb) || EXCLUDED.metadata,
+         updated_at = NOW()
+       RETURNING *`,
+      [
+        access.id,
+        item.id,
+        item.class_session_id || null,
+        seconds,
+        percent,
+        normalizedEventType,
+        JSON.stringify(safeMetadata),
+      ]
+    )).rows[0];
+    const event = (await runner.query(
+      `INSERT INTO one_time_member_watch_events (
+         access_id, library_item_id, class_session_id, event_type,
+         watch_seconds, progress_percent, request_ip_hash, user_agent_hash, metadata
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
+       RETURNING id, created_at`,
+      [
+        access.id,
+        item.id,
+        item.class_session_id || null,
+        normalizedEventType,
+        seconds,
+        percent,
+        requestIpHash,
+        userAgentHash,
+        JSON.stringify(safeMetadata),
+      ]
+    )).rows[0];
+    if (client) await client.query('COMMIT');
+    return {
+      access_id: Number(access.id),
+      library_item_id: Number(item.id),
+      class_session_id: item.class_session_id ? Number(item.class_session_id) : null,
+      event_id: event?.id ? Number(event.id) : null,
+      progress: oneTimeMemberWatchProgressView(progress),
+    };
+  } catch (error) {
+    if (client) await client.query('ROLLBACK').catch(() => {});
+    throw error;
+  } finally {
+    if (client) client.release();
+  }
 }
 
 async function oneTimeClassMediaServiceContext(db, providerId, body = {}) {
@@ -74898,6 +75265,34 @@ app.get('/api/member-library', async (req, res) => {
   }
 });
 
+app.post('/api/member-library/items/:id/progress', async (req, res) => {
+  const body = req.body || {};
+  try {
+    const result = await recordOneTimeMemberWatchProgress({
+      accessCode: body.code || body.access_code || body.accessCode || req.query.code || req.query.access_code || '',
+      itemId: req.params.id,
+      eventType: body.event_type || body.eventType || 'progress',
+      watchSeconds: body.watch_seconds ?? body.watchSeconds ?? body.seconds ?? 0,
+      progressPercent: body.progress_percent ?? body.progressPercent ?? body.percent ?? 0,
+      req,
+      metadata: {
+        route: '/member-library',
+        player: limitText(body.player || body.media_provider || body.mediaProvider || '', 80) || null,
+      },
+    });
+    res.json({
+      success: true,
+      progress: result.progress,
+      library_item_id: result.library_item_id,
+      class_session_id: result.class_session_id,
+      event_id: result.event_id,
+      private_fields_hidden: true,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 app.get('/api/one-time-classroom', async (req, res) => {
   try {
     const accessCode = String(req.query.code || req.query.access_code || '').trim();
@@ -77893,6 +78288,357 @@ app.post('/api/bna/rabbi/communications/send', requireAdmin, async (req, res) =>
       context: { memberUrl: rabbiAdminUrl(req, '/rabbi-member'), metadata: { source: 'admin_send' } },
     });
     res.json({ success: true, communication: result });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const dryRun = body.dry_run === true || body.dryRun === true || /^(?:1|true|yes)$/i.test(String(body.dry_run || body.dryRun || ''));
+  const parentEmail = normalizeEmail(body.parent_email || body.parentEmail || body.email);
+  const parentName = limitText(body.parent_name || body.parentName || body.name || 'One Time Parent Trial', 160);
+  const studentName = limitText(body.student_name || body.studentName || body.child_name || body.childName || 'TEST One Time Student', 160);
+  const trialDays = Math.max(1, Math.min(Number(body.trial_days || body.trialDays || 30) || 30, 90));
+  if (!parentEmail) return res.status(400).json({ error: 'parent_email is required' });
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    const preview = {
+      parent_email: parentEmail,
+      parent_name: parentName,
+      student_name: studentName,
+      trial_days: trialDays,
+      subject: buildRabbiEmailTemplate('parent_trial_invite', { recipientName: parentName }).subject,
+      confirm_required: ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM,
+      no_payment_created: true,
+      no_checkout_created: true,
+      no_vimeo_upload: true,
+      scoped_to: {
+        workspace_key: 'rabbi_sheller_provider',
+        project_key: ONE_TIME_PROJECT_KEY,
+      },
+    };
+    if (dryRun) {
+      return res.json({
+        success: true,
+        dry_run: true,
+        no_send: true,
+        external_write_performed: false,
+        local_write_performed: false,
+        preview,
+      });
+    }
+    if (String(body.confirm || '').trim() !== ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM) {
+      return res.status(400).json({
+        error: `One Time parent trial invite emails require confirm: ${ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM}`,
+        hint: 'Use this only for an explicit per-parent test/trial invite. It creates scoped test/trial access but does not create a payment or checkout.',
+        preview,
+      });
+    }
+
+    const client = await pool.connect();
+    let committed = false;
+    try {
+      await client.query('BEGIN');
+      const tags = ['TEST', 'codex-test', 'one-time-trial', 'one-time-parent-trial'];
+      const studentNotes = 'TEST One Time parent trial student created from approved Codex parent-trial invite flow. Safe to archive after walkthrough.';
+      let student = (await client.query(
+        `SELECT *
+         FROM bna_students
+         WHERE project_id = $1
+           AND lower(COALESCE(parent_email, '')) = lower($2)
+           AND 'one-time-parent-trial' = ANY(COALESCE(tags, '{}'::text[]))
+         ORDER BY updated_at DESC NULLS LAST, id DESC
+         LIMIT 1`,
+        [project.id, parentEmail]
+      )).rows[0] || null;
+      if (student) {
+        student = (await client.query(
+          `UPDATE bna_students
+           SET name = COALESCE(NULLIF($2, ''), name),
+               parent_name = COALESCE(NULLIF($3, ''), parent_name),
+               parent_email = $4,
+               tags = (
+                 SELECT ARRAY(
+                   SELECT DISTINCT tag_value
+                   FROM unnest(COALESCE(tags, '{}'::text[]) || $5::text[]) AS tag_values(tag_value)
+                   WHERE trim(tag_value) <> ''
+                 )
+               ),
+               notes = COALESCE(NULLIF(notes, ''), $6),
+               status = 'active',
+               updated_at = NOW()
+           WHERE id = $1
+           RETURNING *`,
+          [student.id, studentName, parentName, parentEmail, tags, studentNotes]
+        )).rows[0];
+      } else {
+        student = (await client.query(
+          `INSERT INTO bna_students (
+             project_id, name, parent_name, parent_email, tags, status, notes
+           ) VALUES ($1, $2, $3, $4, $5::text[], 'active', $6)
+           RETURNING *`,
+          [project.id, studentName, parentName, parentEmail, tags, studentNotes]
+        )).rows[0];
+      }
+      const studentAccessCode = await ensureStudentAccessCode(student.id, { regenerate: false }, client);
+
+      let lead = (await client.query(
+        `SELECT *
+         FROM bna_parent_leads
+         WHERE project_id = $1
+           AND lower(COALESCE(parent_email, '')) = lower($2)
+           AND 'one-time-parent-trial' = ANY(COALESCE(tags, '{}'::text[]))
+         ORDER BY updated_at DESC NULLS LAST, id DESC
+         LIMIT 1`,
+        [project.id, parentEmail]
+      )).rows[0] || null;
+      const leadMetadata = {
+        source: 'one_time_parent_trial_invite',
+        project_key: ONE_TIME_PROJECT_KEY,
+        trial_days: trialDays,
+        student_id: student.id,
+        no_payment_created: true,
+        no_checkout_created: true,
+        test_labeled: true,
+      };
+      if (lead) {
+        lead = (await client.query(
+          `UPDATE bna_parent_leads
+           SET parent_name = COALESCE(NULLIF($2, ''), parent_name),
+               parent_email = $3,
+               student_name = COALESCE(NULLIF($4, ''), student_name),
+               lead_type = 'group_member',
+               status = 'follow_up',
+               interest_level = 'warm',
+               source = 'manual',
+               source_detail = 'Approved One Time parent trial invite',
+               owner = 'Shloimie',
+               tags = (
+                 SELECT ARRAY(
+                   SELECT DISTINCT tag_value
+                   FROM unnest(COALESCE(tags, '{}'::text[]) || $5::text[]) AS tag_values(tag_value)
+                   WHERE trim(tag_value) <> ''
+                 )
+               ),
+               metadata = COALESCE(metadata, '{}'::jsonb) || $6::jsonb,
+               updated_at = NOW()
+           WHERE id = $1
+           RETURNING *`,
+          [lead.id, parentName, parentEmail, studentName, tags, JSON.stringify(leadMetadata)]
+        )).rows[0];
+      } else {
+        lead = (await client.query(
+          `INSERT INTO bna_parent_leads (
+             project_id, parent_name, parent_email, student_name,
+             lead_type, status, interest_level, source, source_detail,
+             owner, tags, notes, metadata
+           ) VALUES (
+             $1, $2, $3, $4,
+             'group_member', 'follow_up', 'warm', 'manual', 'Approved One Time parent trial invite',
+             'Shloimie', $5::text[], $6, $7::jsonb
+           )
+           RETURNING *`,
+          [project.id, parentName, parentEmail, studentName, tags, studentNotes, JSON.stringify(leadMetadata)]
+        )).rows[0];
+      }
+
+      const member = await ensureRabbiMember({
+        projectId: project.id,
+        displayName: parentName,
+        email: parentEmail,
+        notes: 'TEST One Time parent trial member access for operator walkthrough.',
+        metadata: {
+          source: 'one_time_parent_trial_invite',
+          trial_days: trialDays,
+          student_id: student.id,
+          lead_id: lead.id,
+          test_labeled: true,
+        },
+        db: client,
+      });
+
+      const expiresAt = new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000);
+      let memberAccess = (await client.query(
+        `SELECT *
+         FROM one_time_member_access
+         WHERE lower(COALESCE(member_email, '')) = lower($1)
+           AND COALESCE(metadata->>'source', '') = 'one_time_parent_trial_invite'
+           AND status = 'active'
+         ORDER BY updated_at DESC NULLS LAST, id DESC
+         LIMIT 1`,
+        [parentEmail]
+      )).rows[0] || null;
+      if (memberAccess) {
+        memberAccess = (await client.query(
+          `UPDATE one_time_member_access
+           SET member_label = $2,
+               tier = 'live_class',
+               expires_at = $3,
+               notes = $4,
+               metadata = COALESCE(metadata, '{}'::jsonb) || $5::jsonb,
+               updated_at = NOW()
+           WHERE id = $1
+           RETURNING *`,
+          [
+            memberAccess.id,
+            `${parentName} / ${studentName}`,
+            expiresAt,
+            'TEST One Time parent trial access for operator walkthrough.',
+            JSON.stringify({ source: 'one_time_parent_trial_invite', student_id: student.id, member_id: member.id, trial_days: trialDays }),
+          ]
+        )).rows[0];
+      } else {
+        memberAccess = (await client.query(
+          `INSERT INTO one_time_member_access (
+             access_code, member_label, member_email, tier, status,
+             expires_at, notes, metadata
+           ) VALUES ($1, $2, $3, 'live_class', 'active', $4, $5, $6::jsonb)
+           RETURNING *`,
+          [
+            `OT-${generateSecureToken(12)}`,
+            `${parentName} / ${studentName}`,
+            parentEmail,
+            expiresAt,
+            'TEST One Time parent trial access for operator walkthrough.',
+            JSON.stringify({ source: 'one_time_parent_trial_invite', student_id: student.id, member_id: member.id, lead_id: lead.id, trial_days: trialDays, test_labeled: true }),
+          ]
+        )).rows[0];
+      }
+
+      const reset = await createParentPasswordResetToken({
+        parentEmail,
+        req,
+        metadata: {
+          source: 'one_time_parent_trial_invite',
+          project_key: ONE_TIME_PROJECT_KEY,
+          student_id: student.id,
+          lead_id: lead.id,
+          member_id: member.id,
+          member_access_id: memberAccess.id,
+          no_generic_email_sent: true,
+        },
+        sendEmail: false,
+      }, client);
+
+      const baseUrl = requestBaseUrl(req);
+      const memberLibraryUrl = `${baseUrl}/member-library?code=${encodeURIComponent(memberAccess.access_code)}`;
+      const classroomUrl = `${baseUrl}/one-time-classroom?code=${encodeURIComponent(memberAccess.access_code)}`;
+      const template = buildRabbiEmailTemplate('parent_trial_invite', {
+        recipientName: parentName,
+        studentName,
+        passwordSetupUrl: reset.url,
+        memberLibraryUrl,
+        classroomUrl,
+      });
+      await client.query('COMMIT');
+      committed = true;
+      let emailResult = { ok: false, provider: 'not_sent', providerMessageId: null, error: null };
+      try {
+        const sent = await sendEmail({
+          workspace: 'one_time_mishnah_class',
+          to: parentEmail,
+          subject: template.subject,
+          text: template.text,
+          html: template.html,
+        });
+        emailResult = {
+          ok: true,
+          provider: sent?.provider || EMAIL_PROVIDER || 'gmail',
+          providerMessageId: sent?.data?.id || null,
+          error: null,
+        };
+      } catch (error) {
+        emailResult = {
+          ok: false,
+          provider: EMAIL_PROVIDER || 'gmail',
+          providerMessageId: null,
+          error: error.message,
+        };
+      }
+      await logEmail({
+        projectId: project.id,
+        memberId: member.id,
+        emailType: 'one_time_parent_trial_invite',
+        templateKey: 'parent_trial_invite',
+        to: parentEmail,
+        recipientName: parentName,
+        subject: template.subject,
+        text: template.text,
+        html: template.html,
+        provider: emailResult.provider,
+        providerMessageId: emailResult.providerMessageId,
+        status: emailResult.ok ? 'sent' : 'failed',
+        error: emailResult.error,
+        metadata: {
+          workspace_key: 'rabbi_sheller_provider',
+          project_key: ONE_TIME_PROJECT_KEY,
+          source: 'one_time_parent_trial_invite',
+          student_id: student.id,
+          lead_id: lead.id,
+          member_access_id: memberAccess.id,
+          no_payment_created: true,
+          no_checkout_created: true,
+        },
+      });
+      await pool.query(
+        `INSERT INTO bna_contact_communications (
+           project_id, contact_type, lead_id, student_id, channel, direction,
+           summary, body, follow_up_required, occurred_at, created_by, source,
+           source_context, metadata
+         ) VALUES (
+           $1, 'lead', $2, $3, 'email', 'outbound',
+           $4, $5, FALSE, NOW(), $6, 'dashboard',
+           $7::jsonb, $8::jsonb
+         )`,
+        [
+          project.id,
+          lead.id,
+          student.id,
+          emailResult.ok ? 'One Time parent trial invite sent' : 'One Time parent trial invite attempted',
+          emailResult.ok
+            ? 'Sent One Time parent trial invite with parent password setup, classroom, and member library links.'
+            : `One Time parent trial invite send failed: ${emailResult.error || 'unknown error'}`,
+          req.opsUser || 'admin',
+          JSON.stringify({ source: 'one_time_parent_trial_invite', member_access_id: memberAccess.id, member_id: member.id }),
+          JSON.stringify({
+            parent_email: parentEmail,
+            student_id: student.id,
+            trial_days: trialDays,
+            email_sent: Boolean(emailResult.ok),
+            email_error: emailResult.error || null,
+            no_payment_created: true,
+            no_checkout_created: true,
+          }),
+        ]
+      ).catch(() => {});
+      res.json({
+        success: true,
+        dry_run: false,
+        no_payment_created: true,
+        no_checkout_created: true,
+        external_write_performed: Boolean(emailResult.ok),
+        local_write_performed: true,
+        parent_email: parentEmail,
+        student_id: student.id,
+        student_name: student.name,
+        student_access_code_created: Boolean(studentAccessCode),
+        lead_id: lead.id,
+        member_id: member.id,
+        member_access_id: memberAccess.id,
+        member_access_expires_at: memberAccess.expires_at,
+        email_sent: Boolean(emailResult.ok),
+        email_error: emailResult.error || null,
+        member_library_url: memberLibraryUrl,
+        classroom_url: classroomUrl,
+        parent_password_setup_expires_at: reset.expires_at,
+      });
+    } catch (error) {
+      if (!committed) await client.query('ROLLBACK').catch(() => {});
+      res.status(error.statusCode || 500).json({ error: error.message });
+    } finally {
+      client.release();
+    }
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }

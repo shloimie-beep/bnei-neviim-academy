@@ -1,27 +1,27 @@
 # Universal Action Parity
 
-Generated at 2026-07-05T13:48:16.699Z.
+Generated at 2026-07-08T06:08:45.969Z.
 
 Requirement: REQ-20260623-013
 
 ## Release Gate
 
 - Status: passed
-- all_visible_controls_classified: pass (40/40)
+- all_visible_controls_classified: pass (51/51)
 - zero_visible_missing_contracts: pass (0)
 - zero_missing_handlers: pass (0)
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (175)
-- agent_work_handoff_parity_present: pass (98)
+- website_assistant_request_parity_present: pass (198)
+- agent_work_handoff_parity_present: pass (100)
 
 ## Summary
 
-- Root registry actions: 95
+- Root registry actions: 118
 - Detailed typed actions: 80
-- Visible UI hooks: 40
-- Visible UI hooks classified: 40
+- Visible UI hooks: 51
+- Visible UI hooks classified: 51
 - Missing contracts: 0
 - Missing handlers: 0
 - Missing tests: 0
@@ -31,23 +31,23 @@ Requirement: REQ-20260623-013
 
 | Source | Count |
 | --- | ---: |
-| ui_button | 40 |
+| ui_button | 51 |
 | telegram_request | 80 |
-| website_assistant_request | 175 |
-| operations_helper_request | 161 |
-| automation_action | 76 |
-| agent_work_handoff | 98 |
+| website_assistant_request | 198 |
+| operations_helper_request | 180 |
+| automation_action | 83 |
+| agent_work_handoff | 100 |
 
 ## Visible Control Classifications
 
 | Classification | Count |
 | --- | ---: |
-| read_only | 6 |
+| read_only | 8 |
 | secure_deep_link_only | 5 |
-| preview_then_approve | 21 |
+| preview_then_approve | 28 |
 | blocked_connector | 4 |
 | not_applicable | 2 |
-| executable | 2 |
+| executable | 4 |
 
 ## Required Category Coverage
 
@@ -55,22 +55,22 @@ Requirement: REQ-20260623-013
 | --- | --- | --- |
 | provider_profile | covered_by_canonical_registry | capture_provider_google_business_link<br>google_business_list_locations_preview<br>google_business_place_id_lookup<br>update_provider_profile |
 | provider_listing | covered_by_canonical_registry | request_provider_contact |
-| provider_website | covered_by_canonical_registry | ACTION-STUDIO-APPLY-CORRECTION<br>ACTION-STUDIO-COMPILE-PROMPT<br>ACTION-STUDIO-CREATE-PROJECT<br>ACTION-STUDIO-GENERATE-STORYBOARD<br>ACTION-STUDIO-HANDOFF-CONTENT<br>ACTION-STUDIO-MOCK-RENDER |
+| provider_website | covered_by_canonical_registry | ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF<br>ACTION-STUDIO-APPLY-CORRECTION<br>ACTION-STUDIO-COMPILE-PROMPT<br>ACTION-STUDIO-CREATE-PROJECT<br>ACTION-STUDIO-GENERATE-STORYBOARD<br>ACTION-STUDIO-HANDOFF-CONTENT |
 | brand | not_applicable_current_surface | No current visible control in this category; future work must add a typed registry row before exposing UI or assistant execution. |
-| landing_page | not_applicable_current_surface | No current visible control in this category; future work must add a typed registry row before exposing UI or assistant execution. |
+| landing_page | covered_by_canonical_registry | ACTION-ONETIME-PUBLIC-HELPER-OPEN |
 | seo | covered_by_canonical_registry | capture_provider_google_business_link<br>google_business_list_locations_preview<br>google_business_place_id_lookup |
 | course | covered_by_canonical_registry | ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>classroom_topic_material_preview<br>create_provider_class_session<br>create_provider_classroom_draft<br>create_rabbi_shiur_idea |
 | class | covered_by_canonical_registry | ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-RETURN-HUB<br>ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED<br>ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN |
 | lesson | covered_by_canonical_registry | create_one_time_video_library_item<br>create_rabbi_shiur_idea |
-| video | covered_by_canonical_registry | create_one_time_video_library_item |
+| video | covered_by_canonical_registry | ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF<br>create_one_time_video_library_item |
 | worksheet | covered_by_canonical_registry | generate_student_worksheet |
-| community | covered_by_canonical_registry | ACTION-PROVIDER-CLASSROOM-DRAFT<br>create_provider_classroom_draft<br>create_provider_question_post<br>post_community_message |
+| community | covered_by_canonical_registry | ACTION-PROVIDER-CLASSROOM-DRAFT<br>ACTION-PROVIDER-MAILBOX-THREAD-OPEN<br>create_provider_classroom_draft<br>create_provider_question_post<br>post_community_message |
 | announcement | covered_by_canonical_registry | approve_newsletter<br>draft_email_from_newsletter<br>draft_weekly_update<br>find_latest_newsletter_draft<br>generate_social_posts_from_newsletter<br>generate_whatsapp_from_newsletter |
 | chart | not_applicable_current_surface | No current visible control in this category; future work must add a typed registry row before exposing UI or assistant execution. |
 | dashboard_layout | covered_by_canonical_registry | open_internal_calendar<br>show_child_calendar |
-| email_campaign | covered_by_canonical_registry | ACTION-PARENT-ACCESS-LINK-EMAIL<br>ACTION-PARENT-PASSWORD-SETUP-SEND<br>approve_email<br>draft_email<br>draft_email_campaign<br>draft_email_from_newsletter |
+| email_campaign | covered_by_canonical_registry | ACTION-ONETIME-PROVIDER-SESSION-START<br>ACTION-OPERATIONS-EMAIL-INBOX-BNA<br>ACTION-OPERATIONS-EMAIL-INBOX-RABBI<br>ACTION-PARENT-ACCESS-LINK-EMAIL<br>ACTION-PARENT-PASSWORD-SETUP-SEND<br>approve_email |
 | drip_sequence | covered_by_canonical_registry | draft_drip_sequence |
-| template_version | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-LIBRARY-APPROVE<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT<br>approve_email<br>approve_newsletter<br>create_provider_classroom_draft |
+| template_version | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-LIBRARY-APPROVE<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT<br>ACTION-PROVIDER-MAILBOX-DRAFT<br>ACTION-STUDIO-SIDEKICK-PATCH-PREVIEW<br>approve_email |
 | automation | covered_by_canonical_registry | ACTION-HELPER-CREATE-AUTOMATION<br>draft_automation |
 | segment | covered_by_canonical_registry | ACTION-CRM-CONTACT-CARD-EXPAND<br>ACTION-CRM-CONTACTS-FILTER<br>create_referral_ledger_entry<br>move_lead_stage<br>preview_campaign_segment<br>request_provider_contact |
 | reminder | covered_by_canonical_registry | create_calendar_event<br>create_student_schedule_item<br>delete_calendar_event<br>open_calendar_event<br>pause_scheduled_email<br>preview_social_schedule_package |

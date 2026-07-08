@@ -47,6 +47,8 @@ test('One Time member library tables cover assets, items, access codes, and publ
     'CREATE TABLE IF NOT EXISTS one_time_member_library_items',
     'CREATE TABLE IF NOT EXISTS one_time_member_access',
     'CREATE TABLE IF NOT EXISTS one_time_library_publish_events',
+    'CREATE TABLE IF NOT EXISTS one_time_member_watch_progress',
+    'CREATE TABLE IF NOT EXISTS one_time_member_watch_events',
   ].forEach((needle) => assert.match(server, new RegExp(needle.replace(/[()]/g, '\\$&'))));
   assert.match(server, /asset_type TEXT NOT NULL DEFAULT 'worksheet' CHECK \(asset_type IN \('worksheet', 'source_sheet', 'thumbnail', 'transcript', 'example', 'other'\)\)/);
   assert.match(server, /destination TEXT NOT NULL DEFAULT 'member_library' CHECK \(destination IN \('member_library'\)\)/);
@@ -95,6 +97,8 @@ test('Member library API returns only published tier-visible safe items', () => 
   const publicView = sliceBetween(server, 'function oneTimeMemberLibraryPublicView', 'function normalizeOneTimeClassroomModerationStatus');
   assert.doesNotMatch(publicView, /approval_flag|approved_by|rollback_metadata|transcript_notes|private_admin_only|package_status/);
   assert.match(server, /app\.get\('\/api\/member-library'/);
+  assert.match(server, /app\.post\('\/api\/member-library\/items\/:id\/progress'/);
+  assert.match(server, /recordOneTimeMemberWatchProgress/);
   assert.match(server, /app\.get\(\['\/member-library', '\/one-time-member-library'\]/);
 });
 
@@ -141,7 +145,13 @@ test('Public member page uses the safe access-code API and does not expose admin
   assert.match(memberLibraryHtml, /Completed/);
   assert.match(memberLibraryHtml, /metadata-chip/);
   assert.match(memberLibraryHtml, /watch_progress_percent/);
+  assert.match(memberLibraryHtml, /watch_progress_seconds/);
   assert.match(memberLibraryHtml, /setItemProgress/);
+  assert.match(memberLibraryHtml, /recordItemProgress/);
+  assert.match(memberLibraryHtml, /\/api\/member-library\/items\/\$\{encodeURIComponent\(item\.id\)\}\/progress/);
+  assert.match(memberLibraryHtml, /player\.vimeo\.com\/api\/player\.js/);
+  assert.match(memberLibraryHtml, /attachVimeoTracking/);
+  assert.match(memberLibraryHtml, /timeupdate/);
   assert.match(memberLibraryHtml, /Open Media/);
   assert.match(memberLibraryHtml, /asset\.file_url/);
   assert.doesNotMatch(memberLibraryHtml, /approval_flag|approved_by|rollback_metadata|transcript_notes|private_admin_only|package_status|bna_students|goal board|accounting/i);

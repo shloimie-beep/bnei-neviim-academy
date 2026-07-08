@@ -719,7 +719,7 @@ function promptCopyMetadata(prompt, { baseUrl = '', contextKey = '' } = {}) {
 
 function normalizePromptStatus(value = '') {
   const normalized = String(value || '').trim().toLowerCase();
-  if (['copied', 'result_pending', 'result_saved', 'failed', 'blocked', 'repair_created', 'rerun_required', 'not_started'].includes(normalized)) {
+  if (['started', 'in_progress', 'copied', 'save_attempted', 'result_pending', 'result_saved', 'saved_readback_verified', 'failed', 'blocked', 'blocked_saved', 'failed_save_paths_exhausted', 'repair_created', 'rerun_required', 'not_started'].includes(normalized)) {
     return normalized;
   }
   if (normalized === 'pass') return 'result_saved';
@@ -730,10 +730,21 @@ function normalizePromptStatus(value = '') {
 function promptStatusFromResult(result = null) {
   if (!result) return 'not_started';
   const status = String(result.status || '').toLowerCase();
+  if (['in_progress', 'started'].includes(status)) return 'in_progress';
   if (status === 'pass') return 'result_saved';
   if (status === 'fail') return result.repair_requirement_id ? 'repair_created' : 'failed';
   if (status === 'blocked') return 'blocked';
   return 'result_pending';
+}
+
+function promptWorkflowStateFromResult(result = null) {
+  if (!result) return 'not_started';
+  const status = String(result.status || '').toLowerCase();
+  if (['in_progress', 'started'].includes(status)) return 'in_progress';
+  if (status === 'pass') return 'saved_readback_verified';
+  if (status === 'blocked') return 'blocked_saved';
+  if (status === 'fail') return 'failed_save_paths_exhausted';
+  return 'save_attempted';
 }
 
 function buildAgentReviewRepairItem({ resultRef = '', promptKey = '', requirementId = '', status = '', severity = '', blocker = '' } = {}) {
@@ -770,26 +781,40 @@ function buildAgentReviewContexts({ baseUrl = '', newestRecordingTrace = null } 
 
 function buildPromptIndex({ baseUrl = '', resultsByPrompt = {}, copiedPromptKeys = [] } = {}) {
   const copied = new Set(copiedPromptKeys || []);
-  return AGENT_MODE_PROMPTS.map((prompt) => ({
-    ...prompt,
-    file: promptFileName(prompt),
-    path: promptPublicPath(prompt),
-    url: absoluteUrl(baseUrl, promptPublicPath(prompt)),
-    return_url: absoluteUrl(baseUrl, promptReturnPath(prompt)),
-    dropoff_url: absoluteUrl(baseUrl, promptDropoffPath(prompt)),
-    idempotency_key: promptIdempotencyKey(prompt),
-    copy_metadata: promptCopyMetadata(prompt, { baseUrl }),
-    status: copied.has(prompt.key)
-      ? 'copied'
-      : promptStatusFromResult(resultsByPrompt[prompt.key] || null),
-    last_result_ref: resultsByPrompt[prompt.key]?.result_ref || null,
-    last_result_url: resultsByPrompt[prompt.key]?.result_ref
-      ? absoluteUrl(baseUrl, `/api/bna/agent-review/results/${encodeURIComponent(resultsByPrompt[prompt.key].result_ref)}`)
-      : null,
-    repair_requirement_id: resultsByPrompt[prompt.key]?.repair_requirement_id || null,
-    repair_url: resultsByPrompt[prompt.key]?.repair_url || null,
-    rerun_required: ['fail', 'blocked'].includes(String(resultsByPrompt[prompt.key]?.status || '').toLowerCase()),
-  }));
+  return AGENT_MODE_PROMPTS.map((prompt) => {
+    const latestResult = resultsByPrompt[prompt.key] || null;
+    const status = copied.has(prompt.key) ? 'copied' : promptStatusFromResult(latestResult);
+    const workflowState = copied.has(prompt.key) && !latestResult ? 'started' : promptWorkflowStateFromResult(latestResult);
+    const idempotencyKey = promptIdempotencyKey(prompt);
+    const resultRef = latestResult?.result_ref || null;
+    return {
+      ...prompt,
+      file: promptFileName(prompt),
+      path: promptPublicPath(prompt),
+      url: absoluteUrl(baseUrl, promptPublicPath(prompt)),
+      return_url: absoluteUrl(baseUrl, promptReturnPath(prompt)),
+      dropoff_url: absoluteUrl(baseUrl, promptDropoffPath(prompt)),
+      idempotency_key: idempotencyKey,
+      copy_metadata: {
+        ...promptCopyMetadata(prompt, { baseUrl }),
+        current_workflow_state: workflowState,
+        current_result_ref: resultRef,
+        started_at: latestResult?.started_at || null,
+      },
+      status,
+      workflow_state: workflowState,
+      started_at: latestResult?.started_at || null,
+      started_by: latestResult?.started_by || null,
+      latest_result_status: latestResult?.status || null,
+      last_result_ref: resultRef,
+      last_result_url: resultRef
+        ? absoluteUrl(baseUrl, `/api/bna/agent-review/results/${encodeURIComponent(resultRef)}`)
+        : null,
+      repair_requirement_id: latestResult?.repair_requirement_id || null,
+      repair_url: latestResult?.repair_url || null,
+      rerun_required: ['fail', 'blocked'].includes(String(latestResult?.status || '').toLowerCase()),
+    };
+  });
 }
 
 function renderRerunPrompt({ prompt = null, resultRef = '', repair = null, baseUrl = '' } = {}) {
@@ -841,6 +866,20 @@ function renderAgentModePrompt(prompt, { baseUrl = '', generatedAt = new Date().
     `Drop-off URL: ${dropoffUrl}`,
     `Prompt key: ${prompt.key}`,
     `Idempotency key: ${metadata.idempotency_key}`,
+    '',
+    '## Required Workflow State',
+    '',
+    'First open the Agent Review Hub. Confirm this prompt key. Click Start Audit / I started this agent mode if not already started. Open the drop-off page and keep it available. Then run the audit. If any context, route, login, helper, link, viewport, action, or save path fails, immediately save a BLOCKED result through the drop-off page with exact route attempted, what failed, partial findings, and smallest repair suggestion. Do not end in chat until the Agent Review Hub or readback API shows the AGR result for this prompt key and idempotency key. Final answer must start with OPERATIONS_DROPOFF_SAVED: AGR-... or OPERATIONS_DROPOFF_FAILED: ...',
+    '',
+    '- Do not treat a partial audit as pass.',
+    '- Do not say a JSON handoff is prepared.',
+    '- Do not ask the owner to manually upload the payload.',
+    '- If blocked midway, save BLOCKED immediately.',
+    '- If browser can still reach drop-off, use drop-off before any chat final.',
+    '- If normal form fails, use exact drop-off URL.',
+    '- If exact drop-off URL fails, use Emergency paste JSON and save.',
+    '- If UI save fails, POST to /api/bna/agent-review/results.',
+    '- Only if every save path fails may you return OPERATIONS_DROPOFF_FAILED with complete redacted JSON payload.',
     '',
     '## Copy Metadata',
     '',
@@ -901,10 +940,16 @@ function renderAgentModePrompt(prompt, { baseUrl = '', generatedAt = new Date().
       helper_responses: ['short redacted summaries only'],
       link_action_outcomes: ['PASS/FAIL per link/action'],
       evidence: ['screenshot path or DOM/readback evidence, redacted'],
+      blocked_route_or_step: 'required when blocked',
+      attempted_action: 'required when blocked',
+      observed_failure: 'required when blocked',
+      partial_routes_visited: ['routes visited before blocker'],
+      partial_helper_responses: ['helper responses before blocker'],
+      evidence_notes: 'redacted notes for readback',
       severity: 'none|low|medium|high|critical',
       blocker: 'required when status is blocked',
       suggested_correction: 'exact repair or none',
-      idempotency_key: `${metadata.idempotency_key}:<attempt-id>`,
+      idempotency_key: metadata.idempotency_key,
     }, null, 2),
     '```',
     '',
@@ -915,6 +960,7 @@ function renderAgentModePrompt(prompt, { baseUrl = '', generatedAt = new Date().
 
 function normalizeAgentReviewResultStatus(value) {
   const normalized = String(value || '').trim().toLowerCase();
+  if (['start', 'started', 'in_progress', 'draft'].includes(normalized)) return 'in_progress';
   if (['pass', 'passed', 'ok', 'success'].includes(normalized)) return 'pass';
   if (['fail', 'failed', 'failure'].includes(normalized)) return 'fail';
   if (['blocked', 'blocker'].includes(normalized)) return 'blocked';

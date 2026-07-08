@@ -117,6 +117,11 @@
       color: var(--muted);
       overflow-wrap: anywhere;
     }
+    .timer {
+      font-variant-numeric: tabular-nums;
+      color: var(--amber);
+      font-weight: 700;
+    }
     .pill {
       display: inline-flex;
       align-items: center;
@@ -221,6 +226,27 @@
     };
     const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
     const pillTone = (status = '') => /pass|processed|confirmed/i.test(status) ? 'ok' : /partial|unknown|needs/i.test(status) ? 'partial' : /block|fail|error|missing/i.test(status) ? 'blocked' : '';
+    const terminalPromptStates = new Set(['saved_readback_verified', 'result_saved', 'blocked_saved', 'blocked', 'failed', 'failed_save_paths_exhausted', 'repair_created', 'rerun_required']);
+    function workflowLabel(prompt = {}) {
+      const stateName = prompt.workflow_state || prompt.status || 'not_started';
+      return String(stateName).replace(/_/g, ' ');
+    }
+    function elapsedLabel(startedAt = '') {
+      const started = Date.parse(startedAt || '');
+      if (!Number.isFinite(started)) return '';
+      const seconds = Math.max(0, Math.floor((Date.now() - started) / 1000));
+      const minutes = Math.floor(seconds / 60);
+      const remainder = seconds % 60;
+      return `${minutes}:${String(remainder).padStart(2, '0')}`;
+    }
+    function refreshPromptTimers() {
+      state.prompts.forEach((prompt) => {
+        const timer = document.getElementById(`prompt-timer-${prompt.key}`);
+        if (!timer) return;
+        const isTerminal = terminalPromptStates.has(prompt.workflow_state || prompt.status);
+        timer.textContent = prompt.started_at && !isTerminal ? `Started ${elapsedLabel(prompt.started_at)} ago` : '';
+      });
+    }
 
     function renderSummary(data) {
       const trace = data.newest_recording_trace || {};
@@ -264,14 +290,17 @@
         <article class="prompt-card" data-prompt-key="${esc(prompt.key)}">
           <div class="actions" style="justify-content:space-between">
             <h3>${esc(prompt.title)}</h3>
-            <span class="pill ${pillTone(prompt.status)}" id="prompt-status-${esc(prompt.key)}">${esc((prompt.status || 'not_started').replace(/_/g, ' '))}</span>
+            <span class="pill ${pillTone(prompt.workflow_state || prompt.status)}" id="prompt-status-${esc(prompt.key)}">${esc(workflowLabel(prompt))}</span>
           </div>
           <small>${esc(prompt.requirement_id)} / ${esc(prompt.key)}</small>
+          <small>Start/result: <span id="prompt-result-${esc(prompt.key)}">${esc(prompt.last_result_ref || 'not started')}</span></small>
+          <small class="timer" id="prompt-timer-${esc(prompt.key)}">${esc(prompt.started_at && !terminalPromptStates.has(prompt.workflow_state || prompt.status) ? `Started ${elapsedLabel(prompt.started_at)} ago` : '')}</small>
           <small>Drop-off: ${esc(prompt.dropoff_url)}</small>
           <div class="actions">
-            <button type="button" onclick="copyPrompt('${esc(prompt.key)}')" data-action-id="ACTION-AGENT-REVIEW-COPY-PROMPT">Copy prompt</button>
+            <button type="button" onclick="startPromptAudit('${esc(prompt.key)}')" data-action-id="ACTION-AGENT-REVIEW-START-AUDIT">Start Audit</button>
+            <button type="button" onclick="copyPrompt('${esc(prompt.key)}')" data-action-id="ACTION-AGENT-REVIEW-COPY-PROMPT">Copy Agent Prompt</button>
             <button type="button" onclick="openPromptContext('${esc(prompt.key)}')" data-action-id="ACTION-AGENT-REVIEW-OPEN-CONTEXT">Open context</button>
-            <a class="button primary" href="${esc(prompt.dropoff_url)}" data-action-id="ACTION-AGENT-REVIEW-OPEN-DROPOFF">Open drop-off</a>
+            <a class="button primary" href="${esc(prompt.dropoff_url)}" target="_blank" rel="noopener" data-action-id="ACTION-AGENT-REVIEW-OPEN-DROPOFF">Open drop-off</a>
             <button type="button" onclick="markPromptBlocked('${esc(prompt.key)}')" data-action-id="ACTION-AGENT-REVIEW-MARK-BLOCKED">Mark blocked</button>
             <a class="button" href="${esc(prompt.path)}" target="_blank" rel="noopener" data-action-id="ACTION-AGENT-REVIEW-PROMPT-OPEN">Prompt file</a>
             ${prompt.last_result_url ? `<a class="button" href="${esc(prompt.last_result_url)}" target="_blank" rel="noopener" data-action-id="ACTION-AGENT-REVIEW-VIEW-RESULT">View saved result</a>` : ''}
@@ -280,6 +309,7 @@
           <div class="status" id="prompt-action-${esc(prompt.key)}">${prompt.last_result_ref ? `Last saved ${esc(prompt.last_result_ref)}` : 'Result pending.'}</div>
         </article>
       `).join('');
+      refreshPromptTimers();
     }
 
     async function openContext(contextKey) {
@@ -302,17 +332,101 @@
       return state.prompts.find((prompt) => prompt.key === promptKey) || null;
     }
 
+    function updatePromptFromStart(promptKey, data = {}) {
+      const prompt = promptByKey(promptKey);
+      if (!prompt) return;
+      prompt.workflow_state = data.workflow_state || 'in_progress';
+      prompt.status = data.status || 'in_progress';
+      prompt.started_at = data.started_at || prompt.started_at || new Date().toISOString();
+      prompt.started_by = data.started_by || prompt.started_by || '';
+      prompt.last_result_ref = data.result_ref || prompt.last_result_ref || null;
+      prompt.last_result_url = data.readback_url || prompt.last_result_url || null;
+      prompt.idempotency_key = data.idempotency_key || prompt.idempotency_key;
+      prompt.copy_metadata = {
+        ...(prompt.copy_metadata || {}),
+        current_workflow_state: prompt.workflow_state,
+        current_result_ref: prompt.last_result_ref,
+        started_at: prompt.started_at,
+      };
+      const status = document.getElementById(`prompt-status-${promptKey}`);
+      const result = document.getElementById(`prompt-result-${promptKey}`);
+      if (status) {
+        status.textContent = workflowLabel(prompt);
+        status.className = `pill ${pillTone(prompt.workflow_state || prompt.status)}`;
+      }
+      if (result) result.textContent = prompt.last_result_ref || 'not started';
+      refreshPromptTimers();
+    }
+
+    async function startPromptAudit(promptKey, options = {}) {
+      const prompt = promptByKey(promptKey);
+      const status = document.getElementById(`prompt-action-${promptKey}`);
+      if (!prompt) return null;
+      if (terminalPromptStates.has(prompt.workflow_state || prompt.status) && prompt.last_result_ref) {
+        if (!options.quiet && status) status.textContent = `Already saved as ${prompt.last_result_ref}.`;
+        return {
+          result_ref: prompt.last_result_ref,
+          idempotency_key: prompt.idempotency_key,
+          started_at: prompt.started_at,
+          workflow_state: prompt.workflow_state,
+          readback_url: prompt.last_result_url,
+        };
+      }
+      if (prompt.workflow_state === 'in_progress' && prompt.last_result_ref) {
+        if (!options.quiet && status) status.textContent = `Audit already started as ${prompt.last_result_ref}.`;
+        return {
+          result_ref: prompt.last_result_ref,
+          idempotency_key: prompt.idempotency_key,
+          started_at: prompt.started_at,
+          workflow_state: prompt.workflow_state,
+          readback_url: prompt.last_result_url,
+        };
+      }
+      if (status && !options.quiet) status.textContent = 'Starting audit...';
+      const data = await api('/api/bna/agent-review/prompts/start', {
+        method: 'POST',
+        headers: { 'X-BNA-Agent-Review-CSRF': state.csrf },
+        body: JSON.stringify({
+          prompt_key: prompt.key,
+          requirement_id: prompt.requirement_id,
+          context_key: prompt.context_keys?.[0] || '',
+          idempotency_key: prompt.idempotency_key,
+        }),
+      });
+      updatePromptFromStart(promptKey, data);
+      if (status && !options.quiet) {
+        status.innerHTML = `Started ${esc(data.result_ref)}. <a href="${esc(data.readback_url || data.operations_url)}" target="_blank" rel="noopener">Readback</a>`;
+      }
+      return data;
+    }
+
     async function copyPrompt(promptKey) {
       const prompt = promptByKey(promptKey);
       const status = document.getElementById(`prompt-action-${promptKey}`);
       if (!prompt) return;
-      status.textContent = 'Copying prompt...';
+      status.textContent = 'Starting audit before copy...';
       try {
+        const start = await startPromptAudit(promptKey, { quiet: true });
         const response = await fetch(prompt.path, { credentials: 'same-origin' });
         const text = await response.text();
-        await navigator.clipboard?.writeText(text);
-        document.getElementById(`prompt-status-${promptKey}`).textContent = 'copied';
-        status.textContent = `Copied with idempotency key ${prompt.idempotency_key}.`;
+        const current = promptByKey(promptKey) || prompt;
+        const startedPreamble = [
+          '# Current Agent Review Started State',
+          '',
+          `Start Audit result/draft ID: ${start?.result_ref || current.last_result_ref || 'not available'}`,
+          `Workflow state: ${start?.workflow_state || current.workflow_state || 'in_progress'}`,
+          `Started at: ${start?.started_at || current.started_at || 'recorded in hub'}`,
+          `Prompt key: ${current.key}`,
+          `Idempotency key: ${start?.idempotency_key || current.idempotency_key}`,
+          `Readback URL: ${start?.readback_url || current.last_result_url || 'open the saved readback from the hub after saving'}`,
+          '',
+          'Use this same idempotency key when saving PASS, FAIL, or BLOCKED so the started AGR record becomes the final readback record.',
+          '',
+        ].join('\n');
+        await navigator.clipboard?.writeText(`${startedPreamble}${text}`);
+        const pill = document.getElementById(`prompt-status-${promptKey}`);
+        if (pill && current.workflow_state !== 'in_progress') pill.textContent = workflowLabel(current);
+        status.textContent = `Copied after Start Audit with idempotency key ${start?.idempotency_key || current.idempotency_key}.`;
       } catch (error) {
         status.textContent = error.message || 'Could not copy prompt.';
       }
@@ -342,14 +456,27 @@
             status: 'blocked',
             severity: 'high',
             blocker: 'Marked blocked from Agent Review Hub prompt card.',
+            blocked_route_or_step: 'Agent Review Hub prompt card',
+            attempted_action: 'Save BLOCKED from prompt card before completion.',
+            observed_failure: 'Agent Mode run could not continue from this prompt card.',
+            partial_routes_visited: [],
+            partial_helper_responses: [],
+            evidence_notes: 'Hub Mark blocked action used.',
             summary: 'Scoped review prompt was marked blocked before completion.',
             evidence: ['Hub prompt card Mark blocked action'],
             return_url: prompt.return_url,
             dropoff_url: prompt.dropoff_url,
-            idempotency_key: `${prompt.idempotency_key}:hub-blocked`,
+            idempotency_key: prompt.idempotency_key,
           }),
         });
-        document.getElementById(`prompt-status-${promptKey}`).textContent = 'blocked';
+        const current = promptByKey(promptKey);
+        if (current) {
+          current.workflow_state = 'blocked_saved';
+          current.status = 'blocked';
+          current.last_result_ref = data.result_ref;
+          current.last_result_url = data.readback_url;
+        }
+        document.getElementById(`prompt-status-${promptKey}`).textContent = 'blocked saved';
         status.innerHTML = `Saved ${esc(data.result_ref)}. <a href="${esc(data.readback_url || data.operations_url)}" target="_blank" rel="noopener">Readback</a>`;
       } catch (error) {
         status.textContent = error.message || 'Could not mark blocked.';
@@ -383,6 +510,7 @@
         renderSummary(data);
         renderContexts();
         renderPrompts();
+        setInterval(refreshPromptTimers, 30000);
       } catch (error) {
         document.getElementById('summaryBand').innerHTML = `<div class="metric"><span>Blocked</span><strong>${esc(error.message || 'Could not load hub')}</strong></div>`;
       }

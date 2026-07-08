@@ -1,6 +1,6 @@
 # Agent Mode Prompt - Parent Portal
 
-Generated: 2026-07-07T22:05:55.230Z
+Generated: 2026-07-08T06:05:00.620Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -10,6 +10,20 @@ Return URL: https://bneineviimacademy.org/operations/agent-review?prompt=parent-
 Drop-off URL: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=parent-portal&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dparent-portal&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aparent-portal%3Aall-contexts&autosave=1
 Prompt key: parent-portal
 Idempotency key: 2026-06-26-agent-review-dropoff-repair:parent-portal:all-contexts
+
+## Required Workflow State
+
+First open the Agent Review Hub. Confirm this prompt key. Click Start Audit / I started this agent mode if not already started. Open the drop-off page and keep it available. Then run the audit. If any context, route, login, helper, link, viewport, action, or save path fails, immediately save a BLOCKED result through the drop-off page with exact route attempted, what failed, partial findings, and smallest repair suggestion. Do not end in chat until the Agent Review Hub or readback API shows the AGR result for this prompt key and idempotency key. Final answer must start with OPERATIONS_DROPOFF_SAVED: AGR-... or OPERATIONS_DROPOFF_FAILED: ...
+
+- Do not treat a partial audit as pass.
+- Do not say a JSON handoff is prepared.
+- Do not ask the owner to manually upload the payload.
+- If blocked midway, save BLOCKED immediately.
+- If browser can still reach drop-off, use drop-off before any chat final.
+- If normal form fails, use exact drop-off URL.
+- If exact drop-off URL fails, use Emergency paste JSON and save.
+- If UI save fails, POST to /api/bna/agent-review/results.
+- Only if every save path fails may you return OPERATIONS_DROPOFF_FAILED with complete redacted JSON payload.
 
 ## Copy Metadata
 
@@ -82,10 +96,20 @@ Emergency fallback: open the drop-off page and use "Emergency paste JSON and sav
   "evidence": [
     "screenshot path or DOM/readback evidence, redacted"
   ],
+  "blocked_route_or_step": "required when blocked",
+  "attempted_action": "required when blocked",
+  "observed_failure": "required when blocked",
+  "partial_routes_visited": [
+    "routes visited before blocker"
+  ],
+  "partial_helper_responses": [
+    "helper responses before blocker"
+  ],
+  "evidence_notes": "redacted notes for readback",
   "severity": "none|low|medium|high|critical",
   "blocker": "required when status is blocked",
   "suggested_correction": "exact repair or none",
-  "idempotency_key": "2026-06-26-agent-review-dropoff-repair:parent-portal:all-contexts:<attempt-id>"
+  "idempotency_key": "2026-06-26-agent-review-dropoff-repair:parent-portal:all-contexts"
 }
 ```
 

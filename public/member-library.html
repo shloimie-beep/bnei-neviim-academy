@@ -451,6 +451,7 @@
     <section class="library-grid" id="libraryGrid" aria-live="polite"></section>
   </main>
 
+  <script src="https://player.vimeo.com/api/player.js"></script>
   <script>
     const form = document.getElementById('accessForm');
     const codeInput = document.getElementById('accessCode');
@@ -466,6 +467,8 @@
     let currentPayload = null;
     let activeFilter = 'all';
     let searchTerm = '';
+    const progressSyncTimers = new Map();
+    const vimeoPlayers = new Map();
 
     const filters = [
       ['all', 'All'],
@@ -495,10 +498,10 @@
     function mediaMarkup(item) {
       const mediaUrl = item.media_url || '';
       if (item.media_provider === 'vimeo' && item.vimeo_id) {
-        return `<iframe src="https://player.vimeo.com/video/${encodeURIComponent(item.vimeo_id)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="${escapeHtml(item.title)}"></iframe>`;
+        return `<iframe data-library-item-id="${Number(item.id)}" src="https://player.vimeo.com/video/${encodeURIComponent(item.vimeo_id)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="${escapeHtml(item.title)}"></iframe>`;
       }
       if (/\.(mp4|webm)(\?|#|$)/i.test(mediaUrl)) {
-        return `<video controls src="${escapeHtml(mediaUrl)}" poster="${escapeHtml(item.thumbnail_url || '')}"></video>`;
+        return `<video data-library-item-id="${Number(item.id)}" controls src="${escapeHtml(mediaUrl)}" poster="${escapeHtml(item.thumbnail_url || '')}"></video>`;
       }
       if (item.thumbnail_url) {
         return `<img src="${escapeHtml(item.thumbnail_url)}" alt="">`;
@@ -516,11 +519,57 @@
       return Math.max(0, Math.min(100, Math.round(stored)));
     }
 
+    function currentAccessCode() {
+      return String(codeInput.value || localStorage.getItem('one_time_member_library_code') || '').trim();
+    }
+
+    async function recordItemProgress(item, { percent = 0, seconds = 0, eventType = 'progress', player = '' } = {}) {
+      if (!item?.id) return null;
+      const normalizedPercent = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+      const normalizedSeconds = Math.max(0, Math.round(Number(seconds) || 0));
+      localStorage.setItem(progressKey(item), String(normalizedPercent));
+      item.watch_progress_percent = Math.max(Number(item.watch_progress_percent || 0), normalizedPercent);
+      item.watch_progress_seconds = Math.max(Number(item.watch_progress_seconds || 0), normalizedSeconds);
+      const code = currentAccessCode();
+      if (!code) return null;
+      try {
+        const response = await fetch(`/api/member-library/items/${encodeURIComponent(item.id)}/progress`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            code,
+            event_type: eventType,
+            progress_percent: normalizedPercent,
+            watch_seconds: normalizedSeconds,
+            player,
+          }),
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || 'Progress sync failed');
+        if (payload.progress) {
+          item.watch_progress_percent = payload.progress.watch_progress_percent ?? item.watch_progress_percent;
+          item.watch_progress_seconds = payload.progress.watch_progress_seconds ?? item.watch_progress_seconds;
+          localStorage.setItem(progressKey(item), String(item.watch_progress_percent || normalizedPercent));
+        }
+        return payload;
+      } catch (error) {
+        console.warn('Member library progress sync failed:', error.message);
+        return null;
+      }
+    }
+
     function setItemProgress(itemId, percent) {
       const items = currentPayload?.member_library?.items || [];
       const item = items.find((entry) => Number(entry.id) === Number(itemId));
       if (!item) return;
-      localStorage.setItem(progressKey(item), String(Math.max(0, Math.min(100, Number(percent) || 0))));
+      const normalizedPercent = Math.max(0, Math.min(100, Number(percent) || 0));
+      const estimatedSeconds = item.duration_seconds ? Math.round(Number(item.duration_seconds || 0) * (normalizedPercent / 100)) : 0;
+      recordItemProgress(item, {
+        percent: normalizedPercent,
+        seconds: estimatedSeconds,
+        eventType: normalizedPercent >= 95 ? 'mark_complete' : 'progress',
+        player: 'manual_button',
+      });
       renderLibraryItems();
     }
 
@@ -614,7 +663,7 @@
               <div class="progress-bar" style="--progress:${progress}%"><span></span></div>
               <div class="status">${progress}% complete</div>
               <div class="progress-actions">
-                ${item.media_url ? `<a class="media-link" href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener">Open Media</a>` : ''}
+                ${item.media_url ? `<a class="media-link" href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener" onclick="recordMediaOpen(${Number(item.id)})">Open Media</a>` : ''}
                 <button type="button" onclick="setItemProgress(${Number(item.id)}, 50)">Continue Watching</button>
                 <button type="button" onclick="setItemProgress(${Number(item.id)}, 100)">Mark Complete</button>
               </div>
@@ -644,6 +693,7 @@
       if (groups.length === 1 && !groups[0].title) {
         grid.className = 'library-grid';
         grid.innerHTML = groups[0].items.map(renderLibraryCard).join('');
+        attachProgressObservers();
         return;
       }
       grid.className = 'library-results';
@@ -653,6 +703,7 @@
           <div class="library-grid">${group.items.map(renderLibraryCard).join('')}</div>
         </section>
       `).join('');
+      attachProgressObservers();
     }
 
     window.setLibraryFilter = function setLibraryFilter(key) {
@@ -661,6 +712,98 @@
     };
 
     window.setItemProgress = setItemProgress;
+
+    window.recordMediaOpen = function recordMediaOpen(itemId) {
+      const item = (currentPayload?.member_library?.items || []).find((entry) => Number(entry.id) === Number(itemId));
+      if (!item) return true;
+      recordItemProgress(item, {
+        percent: itemProgress(item),
+        seconds: Number(item.watch_progress_seconds || 0),
+        eventType: 'open_media',
+        player: item.media_provider || 'link',
+      });
+      return true;
+    };
+
+    function throttledProgressSync(item, details = {}) {
+      if (!item?.id) return;
+      const now = Date.now();
+      const previous = progressSyncTimers.get(Number(item.id)) || 0;
+      if (now - previous < 12000 && details.eventType !== 'mark_complete') return;
+      progressSyncTimers.set(Number(item.id), now);
+      recordItemProgress(item, details).then(() => {
+        renderFilterRail(currentPayload?.member_library?.items || []);
+      });
+    }
+
+    function attachHtmlVideoTracking(item, video) {
+      if (!item || video.dataset.progressBound === '1') return;
+      video.dataset.progressBound = '1';
+      video.addEventListener('play', () => {
+        throttledProgressSync(item, {
+          percent: itemProgress(item),
+          seconds: Math.round(video.currentTime || 0),
+          eventType: 'open_media',
+          player: 'html5_video',
+        });
+      });
+      video.addEventListener('timeupdate', () => {
+        const duration = Number(video.duration || item.duration_seconds || 0);
+        const seconds = Math.round(video.currentTime || 0);
+        const percent = duration > 0 ? Math.round((seconds / duration) * 100) : itemProgress(item);
+        throttledProgressSync(item, { percent, seconds, eventType: 'timeupdate', player: 'html5_video' });
+      });
+      video.addEventListener('ended', () => {
+        throttledProgressSync(item, {
+          percent: 100,
+          seconds: Math.round(video.currentTime || item.duration_seconds || 0),
+          eventType: 'mark_complete',
+          player: 'html5_video',
+        });
+      });
+    }
+
+    function attachVimeoTracking(item, iframe) {
+      if (!item || iframe.dataset.progressBound === '1' || !window.Vimeo?.Player) return;
+      iframe.dataset.progressBound = '1';
+      try {
+        const player = new window.Vimeo.Player(iframe);
+        vimeoPlayers.set(Number(item.id), player);
+        player.on('play', () => {
+          throttledProgressSync(item, {
+            percent: itemProgress(item),
+            seconds: Number(item.watch_progress_seconds || 0),
+            eventType: 'open_media',
+            player: 'vimeo',
+          });
+        });
+        player.on('timeupdate', (event) => {
+          const seconds = Math.round(Number(event.seconds || 0));
+          const percent = Math.round(Number(event.percent || 0) * 100);
+          throttledProgressSync(item, { percent, seconds, eventType: 'timeupdate', player: 'vimeo' });
+        });
+        player.on('ended', async () => {
+          const seconds = await player.getCurrentTime().catch(() => item.duration_seconds || 0);
+          throttledProgressSync(item, {
+            percent: 100,
+            seconds: Math.round(Number(seconds || item.duration_seconds || 0)),
+            eventType: 'mark_complete',
+            player: 'vimeo',
+          });
+        });
+      } catch (error) {
+        console.warn('Vimeo progress tracking unavailable:', error.message);
+      }
+    }
+
+    function attachProgressObservers() {
+      const items = currentPayload?.member_library?.items || [];
+      grid.querySelectorAll('[data-library-item-id]').forEach((node) => {
+        const item = items.find((entry) => Number(entry.id) === Number(node.dataset.libraryItemId));
+        if (node.tagName === 'VIDEO') attachHtmlVideoTracking(item, node);
+        if (node.tagName === 'IFRAME') attachVimeoTracking(item, node);
+      });
+    }
 
     function renderLibrary(payload) {
       currentPayload = payload;

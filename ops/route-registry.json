@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-07-07T15:35:00+03:00",
+  "updated_at": "2026-07-08T06:20:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -1897,6 +1897,24 @@
       "expected_logged_in_behavior": "return_context_cards_prompt_pack_csrf_and_newest_recording_trace_status",
       "privacy_risk": "critical",
       "security_expectation": "Returns redacted review metadata only and no secrets.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/agent-review/prompts/start",
+      "surface": "agent_review_prompt_start_api",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_or_return_in_progress_agent_review_result_before_prompt_copy_with_csrf_and_no_external_write",
+      "privacy_risk": "critical",
+      "security_expectation": "Requires owner login plus Agent Review CSRF; records redacted workflow state only and performs no external provider write.",
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-006",

@@ -11,6 +11,7 @@ const {
   AGENT_REVIEW_SESSION_TTL_MINUTES,
   buildAgentReviewRepairItem,
   buildPromptIndex,
+  normalizeAgentReviewResultStatus,
   renderRerunPrompt,
 } = require('../src/lib/bna/agent-review-hub');
 
@@ -64,6 +65,11 @@ test('Agent Mode prompt pack has exactly 15 generated mobile-copyable files', ()
     assert.match(text, /Preferred drop-off: https:\/\/bneineviimacademy\.org\/operations\/agent-review\/dropoff/);
     assert.match(text, /autosave=1/);
     assert.match(text, /API fallback: https:\/\/bneineviimacademy\.org\/api\/bna\/agent-review\/results/);
+    assert.match(text, /## Required Workflow State/);
+    assert.match(text, /Click Start Audit \/ I started this agent mode/);
+    assert.match(text, /Do not treat a partial audit as pass/);
+    assert.match(text, /If blocked midway, save BLOCKED immediately/);
+    assert.match(text, /POST to \/api\/bna\/agent-review\/results/);
     assert.match(text, /You must submit the structured result yourself/);
     assert.match(text, /OPERATIONS_DROPOFF_SAVED: AGR-\.\.\./);
     assert.match(text, /OPERATIONS_DROPOFF_FAILED:/);
@@ -71,6 +77,9 @@ test('Agent Mode prompt pack has exactly 15 generated mobile-copyable files', ()
     assert.match(text, /readback API shows the AGR result/);
     assert.match(text, /Do not ask for or store passwords/);
     assert.match(text, /save BLOCKED/);
+    assert.match(text, /blocked_route_or_step/);
+    assert.match(text, /partial_routes_visited/);
+    assert.match(text, /partial_helper_responses/);
     assert.doesNotMatch(text, /OPS_PASSWORD|API_KEY=|COOKIE=/);
     assert.doesNotMatch(text, /If Agent Mode cannot save, return the full redacted report in chat/i);
     [
@@ -112,7 +121,10 @@ test('server exposes secure review-session and result APIs', () => {
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_agent_review_sessions/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_agent_review_results/);
   assert.match(server, /app\.get\('\/api\/bna\/agent-review\/contexts', requireAdmin/);
+  assert.match(server, /app\.post\('\/api\/bna\/agent-review\/prompts\/start', requireAdmin/);
   assert.match(server, /latestAgentReviewResultsByPrompt/);
+  assert.match(server, /agentReviewResultByIdempotencyKey/);
+  assert.match(server, /status:\s*'in_progress'/);
   assert.match(server, /app\.get\('\/api\/bna\/agent-review\/dropoff-context'/);
   assert.match(server, /app\.post\('\/api\/bna\/agent-review\/sessions', requireAdmin/);
   assert.match(server, /verifyAgentReviewCsrf\(req\)/);
@@ -140,6 +152,29 @@ test('Agent Review login returnTo preserves hub and drop-off pages only', () => 
   assert.match(server, /agentReviewExactLoginUrl/);
   assert.match(server, /takeover_hint: 'Use takeover mode to log in once, then return here\.'/);
   assert.match(fs.readFileSync(path.join(root, 'public', 'operations-login.html'), 'utf8'), /allowedPaths = new Set\(\['\/operations', '\/operations\/agent-review', '\/operations\/agent-review\/dropoff'\]\)/);
+});
+
+test('Start Audit state is a first-class prompt workflow state', () => {
+  assert.equal(normalizeAgentReviewResultStatus('started'), 'in_progress');
+  assert.equal(normalizeAgentReviewResultStatus('in_progress'), 'in_progress');
+  const index = buildPromptIndex({
+    baseUrl: 'https://bneineviimacademy.org',
+    resultsByPrompt: {
+      'one-time-brand-helper-toolbar-audit': {
+        result_ref: 'AGR-started',
+        prompt_key: 'one-time-brand-helper-toolbar-audit',
+        status: 'in_progress',
+        requirement_id: 'REQ-20260707-136',
+        idempotency_key: '2026-06-26-agent-review-dropoff-repair:one-time-brand-helper-toolbar-audit:all-contexts',
+        started_at: '2026-07-08T00:00:00.000Z',
+      },
+    },
+  });
+  const prompt = index.find((item) => item.key === 'one-time-brand-helper-toolbar-audit');
+  assert.equal(prompt.status, 'in_progress');
+  assert.equal(prompt.workflow_state, 'in_progress');
+  assert.equal(prompt.last_result_ref, 'AGR-started');
+  assert.equal(prompt.copy_metadata.current_result_ref, 'AGR-started');
 });
 
 test('FAIL and BLOCKED Agent Review results create repair and rerun metadata', () => {
@@ -175,12 +210,19 @@ test('hub and session pages expose banner, Exit, prompt links, and typed result 
   assert.match(hub, /ACTION-AGENT-REVIEW-OPEN-CONTEXT/);
   assert.match(hub, /ACTION-AGENT-REVIEW-SUBMIT-RESULT/);
   assert.match(hub, /ACTION-AGENT-REVIEW-PROMPT-OPEN/);
+  assert.match(hub, /ACTION-AGENT-REVIEW-START-AUDIT/);
   assert.match(hub, /ACTION-AGENT-REVIEW-COPY-PROMPT/);
   assert.match(hub, /ACTION-AGENT-REVIEW-OPEN-DROPOFF/);
   assert.match(hub, /ACTION-AGENT-REVIEW-MARK-BLOCKED/);
   assert.match(hub, /ACTION-AGENT-REVIEW-VIEW-RESULT/);
   assert.match(hub, /ACTION-AGENT-REVIEW-RERUN-PROMPT/);
   assert.match(hub, /copyPrompt/);
+  assert.match(hub, /startPromptAudit/);
+  assert.match(hub, /\/api\/bna\/agent-review\/prompts\/start/);
+  assert.match(hub, /Starting audit before copy/);
+  assert.match(hub, /Copy Agent Prompt/);
+  assert.match(hub, /Start Audit/);
+  assert.match(hub, /Started \$\{elapsedLabel/);
   assert.match(hub, /markPromptBlocked/);
   assert.match(hub, /newest_recording_trace/);
   assert.match(hub, /\.\.\.options,\s*credentials: 'same-origin',\s*headers: \{ 'Content-Type': 'application\/json', \.\.\.\(options\.headers \|\| \{\}\) \}/);
@@ -199,6 +241,15 @@ test('hub and session pages expose banner, Exit, prompt links, and typed result 
 
   assert.match(dropoff, /Agent Review Drop-Off/);
   assert.match(dropoff, /Emergency paste JSON and save/);
+  assert.match(dropoff, /blocked_route_or_step/);
+  assert.match(dropoff, /attempted_action/);
+  assert.match(dropoff, /observed_failure/);
+  assert.match(dropoff, /partial_routes_visited/);
+  assert.match(dropoff, /partial_helper_responses/);
+  assert.match(dropoff, /evidence_notes/);
+  assert.match(dropoff, /readbackMeta/);
+  assert.match(dropoff, /Draft saved locally in this browser/);
+  assert.match(dropoff, /Draft not autosaved because it looks like it may contain a secret/);
   assert.match(dropoff, /ACTION-AGENT-REVIEW-SUBMIT-RESULT/);
   assert.match(dropoff, /ACTION-AGENT-REVIEW-MARK-BLOCKED/);
   assert.match(dropoff, /ACTION-AGENT-REVIEW-VIEW-RESULT/);
@@ -208,7 +259,7 @@ test('hub and session pages expose banner, Exit, prompt links, and typed result 
   assert.match(dropoff, /parseReport/);
   assert.match(dropoff, /autoSaveRequested/);
   assert.match(dropoff, /scheduleAutosave/);
-  assert.match(dropoff, /Autosave is enabled/);
+  assert.match(dropoff, /Local draft autosave is enabled/);
   assert.match(dropoff, /Ctrl\+Enter/);
   assert.match(dropoff, /requestSubmit\(\)/);
 });
@@ -232,6 +283,7 @@ test('route and action registries cover Agent Review Hub surface', () => {
     '/agent-review/session',
     '/operations/agent-review/dropoff',
     '/api/bna/agent-review/contexts',
+    '/api/bna/agent-review/prompts/start',
     '/api/bna/agent-review/dropoff-context',
     '/api/bna/agent-review/sessions',
     '/api/bna/agent-review/session',
@@ -246,6 +298,7 @@ test('route and action registries cover Agent Review Hub surface', () => {
     'ACTION-AGENT-REVIEW-EXIT',
     'ACTION-AGENT-REVIEW-SUBMIT-RESULT',
     'ACTION-AGENT-REVIEW-PROMPT-OPEN',
+    'ACTION-AGENT-REVIEW-START-AUDIT',
     'ACTION-AGENT-REVIEW-RETURN-HUB',
     'ACTION-AGENT-REVIEW-COPY-SESSION',
     'ACTION-AGENT-REVIEW-COPY-PROMPT',

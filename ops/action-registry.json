@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-26T18:00:00+03:00",
+  "updated_at": "2026-07-08T06:20:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -1770,11 +1770,31 @@
       "status": "active",
       "test": {
         "type": "static",
-        "expected_result": "Prompt index has 14 files and each prompt references the Agent Review Hub and typed result endpoint."
+        "expected_result": "Prompt index has 15 files and each prompt references the Agent Review Hub and typed result endpoint."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-START-AUDIT",
+      "label": "Start Audit",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-START-AUDIT\"]",
+      "expected_behavior": "Creates or returns an in-progress AGR record for the prompt before Copy Agent Prompt is allowed, preserving prompt key, run, requirement, owner, context, started_at, status, and idempotency key.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_and_browser",
+        "expected_result": "POST /api/bna/agent-review/prompts/start requires CSRF, returns an AGR ref/readback, and Copy Agent Prompt auto-starts if needed."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
       ]
     },
     {
@@ -1820,7 +1840,7 @@
       "surface": "agent_review_hub",
       "route": "/operations/agent-review",
       "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-COPY-PROMPT\"]",
-      "expected_behavior": "Copies the mobile-friendly Agent Mode prompt with agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, and idempotency_key metadata.",
+      "expected_behavior": "Copies the mobile-friendly Agent Mode prompt only after Start Audit has created or returned the in-progress AGR record, then includes agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, result_ref, and idempotency_key metadata.",
       "permission": "super_admin",
       "status": "active",
       "test": {
