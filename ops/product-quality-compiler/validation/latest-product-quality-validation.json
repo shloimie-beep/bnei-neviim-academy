@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-08T16:05:02.193Z",
+  "generated_at": "2026-07-08T17:50:50.799Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-08-onetime-public-signup-agent-workflow/00-onetime-public-signup-agent-workflow.product-quality.json"
+    "ops/prompt-packets/2026-07-08-app-backend-helper-performance/00-current-state-performance-audit.product-quality.json"
   ],
   "total": 1,
   "passed": 1,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-08-onetime-public-signup-agent-workflow/00-onetime-public-signup-agent-workflow.product-quality.json",
+      "file": "ops/prompt-packets/2026-07-08-app-backend-helper-performance/00-current-state-performance-audit.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []

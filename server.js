@@ -10663,8 +10663,17 @@ app.get(['/', '/index.html', '/public', '/public/'], (req, res, next) => {
 
 app.get(['/rabbi.html'], sendOneTimePublicLanding);
 
+function setOperationsShellCacheHeader(res) {
+  res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
+}
+
 app.use(express.static('public', {
   setHeaders(res, filePath) {
+    const normalizedPath = String(filePath || '').replace(/\\/g, '/');
+    if (normalizedPath.endsWith('/operations.html')) {
+      setOperationsShellCacheHeader(res);
+      return;
+    }
     if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
       res.setHeader('Cache-Control', 'no-store');
     }
@@ -85837,7 +85846,7 @@ app.get('/agent-review/session', async (req, res) => {
 });
 
 app.get(['/operations', '/operations/agents/runs/:runKey'], requireAdmin, (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
+  setOperationsShellCacheHeader(res);
   res.sendFile(path.join(__dirname, 'public', 'operations.html'));
 });
 

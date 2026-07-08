@@ -208,6 +208,7 @@ function guessSupportCategory(text = '') {
   if (/\b(drive|google doc|upload)\b/.test(lower)) return 'drive';
   if (/\b(student|parent|family|kid|child)\b/.test(lower)) return 'student_parent_data';
   if (/\b(link|url|button|route|page)\b/.test(lower)) return 'link';
+  if (/\b(slow|slowness|lag|laggy|performance|takes forever|loading forever)\b/.test(lower)) return 'other';
   return 'task_manager';
 }
 
@@ -437,7 +438,7 @@ function deterministicPlan(message = '', registry, context = {}) {
     const body = textAfterIntent(text, /(?:comment|note)\s*(?:to|on)?\s*task\s*#?\d+\s*[:\-]?\s*([\s\S]+)$/i, 'Helper comment');
     reply = `I can add that comment to task #${taskId}.`;
     actions.push({ tool: 'add_task_comment', label: 'Add task comment', args: { task_id: taskId, body }, reason: 'Task comment request' });
-  } else if (/\b(report|file|create|open)\b.*\b(problem|bug|issue|support ticket|ticket)\b|\b(broken|not working|looks wrong|looked wrong|error)\b/i.test(text)) {
+  } else if (/\b(report|file|create|open)\b.*\b(problem|bug|issue|support ticket|ticket)\b|\b(broken|not working|looks wrong|looked wrong|error|slow|slowness|lag|laggy|performance|takes forever|loading forever)\b/i.test(text)) {
     const title = textAfterIntent(text, /(?:report|file|create|open)?\s*(?:a\s*)?(?:problem|bug|issue|support ticket|ticket)\s*(?:about|for|:|-)?\s*([\s\S]+)$/i, text);
     reply = 'I can create a first-party support ticket with the current page context.';
     actions.push({

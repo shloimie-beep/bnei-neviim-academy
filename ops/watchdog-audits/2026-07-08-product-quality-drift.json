@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T17:30:55.705Z",
+  "generated_at": "2026-07-08T17:49:57.280Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -315,6 +315,7 @@
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/01-current-state-visual-audit.md",
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/02-telegram-codex-progress-notifications.md",
     "ops/prompt-packets/2026-07-07-telegram-updates-onetime-ui-access/manifest.json",
+    "ops/prompt-packets/2026-07-08-app-backend-helper-performance/00-current-state-performance-audit.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/AGENT-MODE-PROMPTS.md",
     "ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/README.md",
     "ops/prompt-packets/2026-07-08-onetime-brand-helper-toolbar-agent-audit/agent-mode-prompt-series.json",
@@ -550,6 +551,7 @@
     "tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md",
     "tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md",
     "tasks-pending/2026-07-08-agent-review-start-copy-dropoff-repair.md",
+    "tasks-pending/2026-07-08-app-backend-helper-performance.md",
     "tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md",
     "tasks-pending/2026-07-08-onetime-email-brand-scope-guardrails.md",
     "tasks-pending/2026-07-08-onetime-launch-ready-parent-student-invite.md",

@@ -53,6 +53,8 @@ test('BNA Helper backend exposes HELPER-03 storage, redaction fields, and routes
   assert.match(server, /helperPermissionForTool/);
   assert.match(server, /insertHelperAudit/);
   assert.match(server, /Cache-Control', 'no-store'/);
+  assert.match(server, /function setOperationsShellCacheHeader[\s\S]*private, no-cache, max-age=0, must-revalidate/);
+  assert.match(server, /app\.get\(\['\/operations', '\/operations\/agents\/runs\/:runKey'\][\s\S]*setOperationsShellCacheHeader\(res\)/);
   assert.match(server, /confirmation_text[\s\S]*CONFIRM/);
 });
 
@@ -280,6 +282,9 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(deterministicPlan('edit task 44 title to Fix the parent reset copy', registry, context).actions[0].args.title, 'Fix the parent reset copy');
   assert.equal(deterministicPlan('report problem the task page button looks wrong', registry, context).actions[0].tool, 'create_support_ticket');
   assert.equal(deterministicPlan('report problem the task page button looks wrong', registry, context).actions[0].args.category, 'link');
+  const performancePlan = deterministicPlan('the whole app is slow and laggy and takes forever to load', registry, context);
+  assert.equal(performancePlan.actions[0].tool, 'create_support_ticket');
+  assert.equal(performancePlan.actions[0].args.category, 'other');
   const classroomPlan = deterministicPlan(
     'Start an 8-class provider classroom where students reply privately and the teacher publishes selected questions',
     registry,
@@ -333,6 +338,13 @@ test('BNA Helper planner resolves explicit typed actions before hosted AI', asyn
     assert.equal(ticketPlan.actions[0].tool, 'create_support_ticket');
     assert.equal(ticketPlan.actions[0].args.category, 'link');
     assert.equal(ticketPlan.actions[0].args.severity, 'normal');
+
+    const performanceTicketPlan = await buildHelperPlan('the backend is laggy and takes forever to open pages', registry, {
+      projectKey: 'bna',
+    });
+    assert.equal(fetchCalled, false);
+    assert.equal(performanceTicketPlan.actions[0].tool, 'create_support_ticket');
+    assert.equal(performanceTicketPlan.actions[0].args.category, 'other');
   } finally {
     if (previousApiKey === undefined) delete process.env.OPENAI_API_KEY;
     else process.env.OPENAI_API_KEY = previousApiKey;
