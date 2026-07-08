@@ -49,6 +49,16 @@ test('admin parent trial invite route is launch-ready by default and smoke-label
   assert.match(server, /app\.post\('\/api\/bna\/one-time\/parent-trial-invite', requireAdmin/);
   assert.match(server, /assertRabbiAdminAccess\(req\)/);
   assert.match(server, /one-time-parent-trial/);
+  assert.match(server, /function oneTimeParentTrialInvitePreflight/);
+  assert.match(server, /function configuredOneTimeLiveClassUrl/);
+  assert.match(server, /ONE_TIME_ZOOM_JOIN_URL/);
+  assert.match(server, /ONE_TIME_LIVE_CLASS_URL/);
+  assert.match(server, /missing_student_name/);
+  assert.match(server, /missing_live_class_url/);
+  assert.match(route, /preflight\.blocker_codes\.includes\('invalid_live_class_url'\)/);
+  assert.match(route, /One Time parent trial invite is not launch-ready/);
+  assert.match(route, /configuredOneTimeLiveClassUrl\(\)/);
+  assert.match(route, /preflight,\s*[\r\n\s]*preview/);
   assert.match(server, /createParentPasswordResetToken\(\{[\s\S]*sendEmail: false/);
   assert.match(server, /buildRabbiEmailTemplate\('parent_trial_invite'/);
   assert.match(server, /function configuredOneTimePublicBaseUrl/);
@@ -57,8 +67,6 @@ test('admin parent trial invite route is launch-ready by default and smoke-label
   assert.match(route, /ttlMs: ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS/);
   assert.match(route, /parent_portal: scopedPublicUrl\(oneTimeBaseUrl, '\/one-time-parent'\)/);
   assert.match(route, /liveClassUrl/);
-  assert.match(route, /student_name is required for a launch-ready OneTime parent invite/);
-  assert.match(route, /parent_name is required for a launch-ready OneTime parent invite/);
   assert.match(route, /inviteMode = smokeMode \? 'smoke_test' : 'production'/);
   assert.match(route, /test_labeled: smokeMode/);
   assert.match(route, /one-time-live-invite/);

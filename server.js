@@ -2655,6 +2655,9 @@ const ONE_TIME_WAPI_AUTO_REPLY_APPROVED =
   String(process.env.ONE_TIME_WAPI_AUTO_REPLY_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY';
 const ONE_TIME_WHATSAPP_CLASS_LINK = String(
   process.env.ONE_TIME_WHATSAPP_CLASS_LINK ||
+  process.env.ONE_TIME_LIVE_CLASS_URL ||
+  process.env.ONE_TIME_ZOOM_JOIN_URL ||
+  process.env.ONE_TIME_TONIGHT_CLASS_LINK ||
   process.env.ONE_TIME_CURRENT_CLASS_LINK ||
   process.env.ONETIME_CLASS_LINK ||
   ''
@@ -4287,6 +4290,79 @@ function normalizeHttpsExternalUrl(value) {
   } catch (_) {
     return '';
   }
+}
+
+function configuredOneTimeLiveClassUrl() {
+  return normalizeHttpsExternalUrl(ONE_TIME_WHATSAPP_CLASS_LINK);
+}
+
+function oneTimeParentTrialInvitePreflight({
+  parentEmail = '',
+  rawParentName = '',
+  rawStudentName = '',
+  rawLiveClassUrl = '',
+  liveClassUrl = '',
+  dryRun = false,
+  smokeMode = false,
+  inviteMode = 'production',
+  trialDays = 30,
+  oneTimeBaseUrl = '',
+} = {}) {
+  const blockers = [];
+  const warnings = [];
+  const addBlocker = (code, field, message) => blockers.push({ code, field, message });
+  const addWarning = (code, field, message) => warnings.push({ code, field, message });
+  const parentNamePresent = Boolean(String(rawParentName || '').trim());
+  const studentNamePresent = Boolean(String(rawStudentName || '').trim());
+  const rawLiveClassUrlPresent = Boolean(String(rawLiveClassUrl || '').trim());
+  const liveClassUrlPresent = Boolean(liveClassUrl);
+
+  if (!normalizeEmail(parentEmail)) {
+    addBlocker('missing_parent_email', 'parent_email', 'A parent email is required before any OneTime invite can be sent.');
+  }
+  if (!smokeMode && !parentNamePresent) {
+    addBlocker('missing_parent_name', 'parent_name', 'A real parent display name is required for launch-ready OneTime invites.');
+  }
+  if (!smokeMode && !studentNamePresent) {
+    addBlocker('missing_student_name', 'student_name', 'A real live student display name is required before resending the parent invite.');
+  }
+  if (rawLiveClassUrlPresent && !liveClassUrlPresent) {
+    addBlocker('invalid_live_class_url', 'live_class_url', 'The live class / Zoom URL must be a valid https URL.');
+  }
+  if (!smokeMode && !liveClassUrlPresent) {
+    addBlocker('missing_live_class_url', 'live_class_url', 'A current live shiur / Zoom link must be provided or configured before a launch-ready invite is sent.');
+  }
+  if (smokeMode) {
+    addWarning('smoke_mode_labels_enabled', 'invite_mode', 'Smoke mode may create TEST/codex labels and must not be used for the live parent flow.');
+  }
+
+  return {
+    ready_to_send: blockers.length === 0,
+    launch_ready: blockers.length === 0 && !smokeMode,
+    dry_run: Boolean(dryRun),
+    invite_mode: inviteMode,
+    test_labeled: Boolean(smokeMode),
+    no_send: true,
+    local_write_performed: false,
+    external_write_performed: false,
+    confirm_required: ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM,
+    blocker_codes: blockers.map((item) => item.code),
+    blockers,
+    warnings,
+    checks: {
+      parent_email_present: Boolean(normalizeEmail(parentEmail)),
+      parent_name_present: parentNamePresent,
+      student_name_present: studentNamePresent,
+      live_class_url_present: liveClassUrlPresent,
+      raw_live_class_url_present: rawLiveClassUrlPresent,
+      live_class_url_config_source: rawLiveClassUrlPresent ? 'request' : (liveClassUrlPresent ? 'runtime_env' : 'missing'),
+      one_time_public_base_url: oneTimeBaseUrl,
+      parent_portal_path: '/one-time-parent',
+      trial_days: Number(trialDays || 30),
+      no_payment_created: true,
+      no_checkout_created: true,
+    },
+  };
 }
 
 function parentPortalUrl(req, token) {
@@ -79207,14 +79283,34 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
   const studentName = limitText(rawStudentName || (dryRun ? 'OneTime student' : ''), 160);
   const trialDays = Math.max(1, Math.min(Number(body.trial_days || body.trialDays || 30) || 30, 90));
   const rawLiveClassUrl = body.live_class_url || body.liveClassUrl || body.zoom_url || body.zoomUrl || '';
-  const liveClassUrl = normalizeHttpsExternalUrl(rawLiveClassUrl);
-  if (!parentEmail) return res.status(400).json({ error: 'parent_email is required' });
-  if (!dryRun && !parentName) return res.status(400).json({ error: 'parent_name is required for a launch-ready OneTime parent invite' });
-  if (!dryRun && !studentName) return res.status(400).json({ error: 'student_name is required for a launch-ready OneTime parent invite' });
-  if (rawLiveClassUrl && !liveClassUrl) return res.status(400).json({ error: 'live_class_url/zoom_url must be a valid https URL' });
+  const requestedLiveClassUrl = normalizeHttpsExternalUrl(rawLiveClassUrl);
+  const liveClassUrl = requestedLiveClassUrl || (!String(rawLiveClassUrl || '').trim() ? configuredOneTimeLiveClassUrl() : '');
+  const oneTimeBaseUrl = configuredOneTimePublicBaseUrl();
+  const preflight = oneTimeParentTrialInvitePreflight({
+    parentEmail,
+    rawParentName,
+    rawStudentName,
+    rawLiveClassUrl,
+    liveClassUrl,
+    dryRun,
+    smokeMode,
+    inviteMode,
+    trialDays,
+    oneTimeBaseUrl,
+  });
+  if (!parentEmail) return res.status(400).json({ error: 'parent_email is required', preflight });
+  if (preflight.blocker_codes.includes('invalid_live_class_url')) {
+    return res.status(400).json({ error: 'live_class_url/zoom_url must be a valid https URL', preflight });
+  }
+  if (!dryRun && preflight.blockers.length) {
+    return res.status(400).json({
+      error: 'One Time parent trial invite is not launch-ready',
+      hint: 'Resolve the listed preflight blockers before using SEND_ONE_TIME_PARENT_TRIAL_INVITE.',
+      preflight,
+    });
+  }
   try {
     const project = await assertRabbiAdminAccess(req);
-    const oneTimeBaseUrl = configuredOneTimePublicBaseUrl();
     const preview = {
       parent_email: parentEmail,
       parent_name: parentName,
@@ -79239,6 +79335,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         workspace_key: 'rabbi_sheller_provider',
         project_key: ONE_TIME_PROJECT_KEY,
       },
+      preflight,
     };
     if (dryRun) {
       return res.json({
@@ -79247,6 +79344,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         no_send: true,
         external_write_performed: false,
         local_write_performed: false,
+        preflight,
         preview,
       });
     }
@@ -79254,6 +79352,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
       return res.status(400).json({
         error: `One Time parent trial invite emails require confirm: ${ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM}`,
         hint: 'Use this only for an explicit per-parent OneTime invite. It creates scoped trial access but does not create a payment or checkout.',
+        preflight,
         preview,
       });
     }
@@ -79630,6 +79729,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         email_error: emailResult.error || null,
         one_time_public_base_url: oneTimeBaseUrl,
         live_class_url_included: Boolean(liveClassUrl),
+        preflight,
         member_library_url: memberLibraryUrl,
         classroom_url: classroomUrl,
         parent_password_setup_expires_at: reset.expires_at,

@@ -111,14 +111,19 @@ check(
 );
 
 check(
-  /liveClassUrl/.test(parentInviteRoute) && /normalizeHttpsExternalUrl/.test(parentInviteRoute),
+  /liveClassUrl/.test(parentInviteRoute)
+    && /normalizeHttpsExternalUrl/.test(parentInviteRoute)
+    && /configuredOneTimeLiveClassUrl\(\)/.test(parentInviteRoute)
+    && /missing_live_class_url/.test(server),
   'WSG-ONETIME-LIVE-LINK-VALIDATION',
   'medium',
-  'OneTime parent invite route should validate the optional live class/Zoom link before sending.'
+  'OneTime parent invite route should validate and require a live class/Zoom link before production sending.'
 );
 
 check(
-  /student_name is required for a launch-ready OneTime parent invite/.test(parentInviteRoute)
+  /function oneTimeParentTrialInvitePreflight/.test(server)
+    && /missing_student_name/.test(server)
+    && /One Time parent trial invite is not launch-ready/.test(parentInviteRoute)
     && !/TEST One Time Student/.test(parentInviteRoute)
     && /inviteMode = smokeMode \? 'smoke_test' : 'production'/.test(parentInviteRoute),
   'WSG-ONETIME-NO-TEST-INVITE-DEFAULT',
