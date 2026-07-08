@@ -100,7 +100,10 @@ test('shared One Time review pages include review branding assets', () => {
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /excludes BNA school accountability goals/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /OneTimeOneTime Student Review/);
   const classroomHtml = fs.readFileSync('public/one-time-classroom.html', 'utf8');
-  assert.match(classroomHtml, /TEST-only member-library data/);
+  assert.match(classroomHtml, /Current One Time access/);
+  assert.match(classroomHtml, /Use fallback access code/);
+  assert.match(classroomHtml, /Review classroom access/);
+  assert.doesNotMatch(classroomHtml, /TEST-only member-library data/);
   assert.match(classroomHtml, /renderClassMedia/);
   assert.match(classroomHtml, /activateClassroomMedia/);
   assert.match(classroomHtml, /<iframe/);

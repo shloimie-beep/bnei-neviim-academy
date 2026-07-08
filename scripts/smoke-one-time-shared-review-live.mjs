@@ -116,7 +116,7 @@ async function main() {
       label: 'classroom',
       path: '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS',
       expectedTitle: /One Time Mishnah Classroom/i,
-      requiredText: ['One Time Mishnah Classroom', 'TEST-only member-library data', 'Vimeo manual/sample reference'],
+      requiredText: ['One Time Mishnah Classroom', 'Review classroom access', 'Class Materials', 'Class Updates', 'Vimeo manual/sample reference'],
       requiredSelectors: ['img[src*="onetimelogo"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
       forbidText: ['Bnei Neviim Academy', 'Dratler Family'],

@@ -135,6 +135,7 @@ test('Member library and classroom pages expose classroom navigation, six Sedari
     'classUpdates',
     'state.classroom?.class_updates',
     'Current One Time access',
+    'Review classroom access',
     'Use fallback access code',
     'Fallback access code',
     'setAccessPanelState',
@@ -159,7 +160,6 @@ test('Member library and classroom pages expose classroom navigation, six Sedari
     'askBot',
     'Fallback Vimeo Link',
     'loading="eager"',
-    'This review route uses TEST-only member-library data',
   ].forEach((needle) => assert.doesNotMatch(classroomHtml, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
 
   const scripts = [...classroomHtml.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]).join('\n');
