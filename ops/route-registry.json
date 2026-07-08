@@ -462,12 +462,69 @@
       "required_role": null,
       "workspace_scope_required": false,
       "public_allowed": true,
-      "expected_logged_out_behavior": "load_one_time_public_landing",
-      "expected_logged_in_behavior": "load_one_time_public_landing",
+      "expected_logged_out_behavior": "load_one_time_public_landing_without_bna_preview_chrome",
+      "expected_logged_in_behavior": "load_one_time_public_landing_without_bna_preview_chrome",
       "privacy_risk": "normal",
+      "canonical_target": "/one-time",
+      "security_expectation": "Public OneTime landing only: no BNA provider preview banner, BNA site nav, private member data, student records, WAPI send, email send, access grant, payment, or Operations data.",
       "related_goal_ids": [
         "GOAL-CORE-003",
-        "GOAL-CORE-014"
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/rabbi.html",
+      "surface": "one_time_public_landing_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_one_time_public_landing_without_bna_preview_chrome",
+      "expected_logged_in_behavior": "load_one_time_public_landing_without_bna_preview_chrome",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time",
+      "security_expectation": "Server route must intercept the legacy static file before express.static so direct /rabbi.html does not expose old BNA preview content.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/rabbi-preview",
+      "surface": "one_time_public_landing_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_one_time_public_landing_without_bna_preview_chrome",
+      "expected_logged_in_behavior": "load_one_time_public_landing_without_bna_preview_chrome",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time",
+      "security_expectation": "Public OneTime landing only; legacy BNA preview wording must not be served.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/one-time-mishnayos",
+      "surface": "one_time_public_landing_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_one_time_public_landing_without_bna_preview_chrome",
+      "expected_logged_in_behavior": "load_one_time_public_landing_without_bna_preview_chrome",
+      "privacy_risk": "normal",
+      "canonical_target": "/one-time",
+      "security_expectation": "Public OneTime landing only; no BNA provider preview, private member data, external sends, access grants, or Operations data.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
       ]
     },
     {

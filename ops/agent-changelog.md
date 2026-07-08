@@ -34272,3 +34272,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - `REQ-20260708-052` is now deployed/live-smoked. Remaining blocked items are
   external-input only: exact live OneTime student display name for parent invite
   resend, and Rabbi WAPI credentials/class-link env for WhatsApp send.
+
+## 2026-07-08T18:32:00+03:00 - OneTime public Rabbi aliases and assistant locally verified
+
+- Registered `RAW-20260708-014` and `REQ-20260708-070` for the public Rabbi /
+  OneTime landing/helper brand leak.
+- Routed `/rabbi`, `/rabbi.html`, `/rabbi-preview`, and
+  `/one-time-mishnayos` to the focused OneTime public landing instead of the
+  old BNA provider-preview page.
+- Updated the OneTime public helper to present as `Rabbi Scheller Assistant`,
+  use Rabbi Scheller digital assistant copy, and show schedule/program/
+  speak-to-Rabbi lead-capture actions.
+- Added a OneTime-only public helper data source so the Rabbi helper does not
+  use generic `BNAHelperKnowledge` choices like `Learn about BNA`.
+- Updated the server `one_time_public` assistant context so it starts from
+  OneTime/Rabbi public knowledge and explicitly blocks generic BNA helper
+  knowledge, raw transcripts, private portal data, and WhatsApp send claims.
+- Local rendered Playwright smoke passed for `/one-time`, `/rabbi`,
+  `/rabbi.html`, `/rabbi-preview`, and `/one-time-mishnayos`: every route
+  served the OneTime landing, every helper launcher read
+  `Rabbi Scheller Assistant`, and old BNA preview bad hits were absent.
+- Verification passed: `node --check server.js`; focused tests 14/14; PQC
+  validation; protocol drift watchdog; action watchdog; secrets audit; and
+  `git diff --check`.
+- Guardrails: no WhatsApp sent, no WAPI credential stored, no transcript/
+  Vimeo/Drive promotion, no parent invite resend, no payment/access/DNS/Zoom/
+  email mutation.

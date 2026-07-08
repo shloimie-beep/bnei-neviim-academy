@@ -10585,6 +10585,8 @@ app.get(['/', '/index.html', '/public', '/public/'], (req, res, next) => {
   return sendOneTimePublicLanding(req, res);
 });
 
+app.get(['/rabbi.html'], sendOneTimePublicLanding);
+
 app.use(express.static('public', {
   setHeaders(res, filePath) {
     if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
@@ -70309,6 +70311,10 @@ function publicAssistantUnknownPolicyQuestion(message = '') {
 }
 
 function publicAssistantPolicyBoundaryReply(body = {}, actor = {}) {
+  const surface = normalizeAssistantSurface(body.surface || body.page || body.context?.surface);
+  if (surface === 'one_time_public') {
+    return 'I do not have a verified OneTime policy for that in the current public class context. I can capture the question for Rabbi Scheller follow-up, or I can help with the schedule, the program, the 30-day trial, or member access.';
+  }
   return assistantResponseIsHebrew(body, actor)
     ? 'אין לי מדיניות מאומתת של BNA בנושא הזה בתוך התוכן הציבורי הנוכחי. אפשר לשלוח את השאלה לשלוימי, או שאפשר לשאול אותי על תוכנית 10-1, שלטון עצמי, התאמה לילד, או איך מתחילים שיחה.'
     : 'I do not have a verified BNA policy for that in the current public content. I can pass the question to Shloimie, or I can help with the 10-1 program, self-governance, fit for your child, or how to start a conversation.';
@@ -70369,6 +70375,10 @@ function publicAssistantTier3UnsafeActionMetadata(body = {}) {
 }
 
 function publicAssistantPrivateBoundaryReply(body = {}, actor = {}) {
+  const surface = normalizeAssistantSurface(body.surface || body.page || body.context?.surface);
+  if (surface === 'one_time_public') {
+    return 'I cannot show or collect private student, family, billing, access-code, transcript, or account details in this public chat. Use the scoped parent/student/member login path, or ask a public schedule/program question and I can capture it for Rabbi Scheller follow-up.';
+  }
   return assistantResponseIsHebrew(body, actor)
     ? 'לא אוכל להציג או לאסוף פרטי תלמיד, משפחה, תשלום, קוד גישה או חשבון בצאט ציבורי. השתמשו בנתיב המתאים: /parent/login, /student, /provider, או בטופס התמיכה הציבורי /signup.html#contact.'
     : 'I cannot show or collect private student, family, billing, access-code, or account details in this public chat. Use the right scoped path instead: /parent/login, /student, /provider, or the public support/contact form at /signup.html#contact.';
@@ -70376,6 +70386,7 @@ function publicAssistantPrivateBoundaryReply(body = {}, actor = {}) {
 
 function publicAssistantActionReply(body = {}, actor = {}, result = {}, kind = 'lead') {
   const he = assistantResponseIsHebrew(body, actor);
+  const surface = normalizeAssistantSurface(body.surface || body.page || body.context?.surface);
   const ticketId = result.ticket?.id || null;
   const taskId = result.task?.id || null;
   if (kind === 'codex_review') {
@@ -70387,6 +70398,9 @@ function publicAssistantActionReply(body = {}, actor = {}, result = {}, kind = '
     return he
       ? `קיבלתי את ההצעה. שמרתי אותה כהחלטה לשלוימי${taskId ? ` #${taskId}` : ''}, כדי שלא תלך לאיבוד בתוך השיחה.`
       : `I captured that suggestion as a Shloimie decision${taskId ? ` #${taskId}` : ''}, so it does not disappear inside the chat.`;
+  }
+  if (surface === 'one_time_public') {
+    return `Thank you. I saved this for Rabbi Scheller's OneTime team${ticketId ? ` as ticket #${ticketId}` : ''}. No WhatsApp or email was sent from this public chat; the team will use the approved OneTime follow-up path.`;
   }
   return he
     ? `תודה. העברתי את ההודעה לשלוימי${ticketId ? ` בכרטיס #${ticketId}` : ''}. לפרטי קשר נוספים, השתמשו בטופס יצירת הקשר המאושר.`
@@ -70468,7 +70482,18 @@ async function buildAssistantConversationMemory({ actor = {}, thread = {}, db = 
   }
 }
 
-async function buildPublicAssistantKnowledgeBase({ db = pool, message = '' } = {}) {
+async function buildPublicAssistantKnowledgeBase({ db = pool, message = '', surface = '' } = {}) {
+  if (normalizeAssistantSurface(surface) === 'one_time_public') {
+    return [
+      'OneTimeOneTime public assistant scope: Rabbi Scheller digital assistant for the OneTime Mishnayos class only.',
+      'Public topics allowed: class schedule, program fit, 30-day trial, public member-login path, worksheets/source sheets when publicly described, and routing public questions to Rabbi Scheller follow-up.',
+      'Lead capture rule: public visitors may ask for follow-up or leave contact interest; the server may record a first-party scoped follow-up item, but the assistant must not claim WhatsApp, email, Zoom, payment, access, Vimeo, Drive, or transcript actions happened unless a current server result explicitly says so.',
+      'Workspace boundary: project one_time_mishnah_class, workspace rabbi_sheller_provider. Do not use BNA Academy enrollment, BNA accountability, BNA service-provider, BNA parent/student portal, or generic BNA public helper knowledge as OneTime public facts.',
+      'Transcript boundary: raw class transcripts and recordings are private. Only approved OneTime class summaries or transcript-derived knowledge rows may be used after the transcript pipeline promotes them through a reviewed OneTime/Rabbi policy.',
+      'Private-data boundary: do not expose parent billing, attendance, student transcript, access code, login, member library, provider CRM, Operations, admin diagnostics, or other student/family data in this public chat.',
+      'Unknown policy rule: if a OneTime policy is not verified in the current OneTime public context, say it is not verified and offer to capture the question for Rabbi Scheller follow-up.',
+    ].join('\n');
+  }
   const base = [
     'BNA = Bnei Neviim Academy = Whole Child Torah Learning Community.',
     'Current public reality: BNA is currently centered on the 10-1 program, a 10:00 to 1:00 Torah learning and whole-child growth window with Rabbi Shloimie.',
@@ -70527,13 +70552,15 @@ async function buildPublicAssistantKnowledgeBase({ db = pool, message = '' } = {
 async function buildSafeAssistantContextSummary({ actor = {}, message = '', thread = {}, body = {}, db = pool } = {}) {
   const surface = normalizeAssistantSurface(body.surface || body.page || body.context?.surface || thread.surface);
   const memory = await buildAssistantConversationMemory({ actor, thread, db });
-  const publicKnowledge = await buildPublicAssistantKnowledgeBase({ db, message });
+  const publicKnowledge = await buildPublicAssistantKnowledgeBase({ db, message, surface });
   const roleLines = [];
   let sourceBoundary = 'public BNA website/content only; no private portal, provider, student, family, or Operations records.';
   if (surface === 'one_time_public') {
-    roleLines.push('Role mode: One Time public Mishnayos class guide. Stay in English and answer only public class, trial, schedule, worksheet, member-login, and Rabbi Scheller question-routing topics.');
-    roleLines.push('One Time scope rule: do not show BNA school goals, private parent billing, attendance, student transcripts, access codes, other students, admin diagnostics, or Operations records.');
-    sourceBoundary = 'One Time public landing/class/signup context only; no authenticated parent, student, billing, attendance, transcript, member, provider, or Operations data.';
+    roleLines.push("Role mode: Rabbi Scheller digital assistant for the public OneTime Mishnayos class landing. Stay in English and answer only public class, schedule, program, 30-day trial, member-login, and Rabbi Scheller question-routing topics.");
+    roleLines.push('One Time scope rule: do not show or infer BNA Academy enrollment, BNA school goals, private parent billing, attendance, student transcripts, access codes, other students, admin diagnostics, generic BNA helper knowledge, or Operations records.');
+    roleLines.push('WhatsApp rule: if the visitor asks for WhatsApp/class-link follow-up, capture the request only. Do not claim a WhatsApp message was sent or that WAPI/Happy is connected unless a current server result explicitly confirms it.');
+    roleLines.push('Transcript rule: do not use or mention raw class transcripts as knowledge. Use only approved OneTime transcript-derived summaries when supplied by the server context.');
+    sourceBoundary = 'OneTime public landing/class/signup context only; no BNA Academy public knowledge, authenticated parent, student, billing, attendance, transcript, member, provider, WAPI, or Operations data.';
   } else if (actor.type === 'parent') {
     roleLines.push('Role mode: parent accountability coach. Remember parent goals/interests only inside this parent-scoped actor memory and do not expose other households.');
     roleLines.push('Parent onboarding mode: guide child goals, home expectations, recordings, parser instructions, motivators, chores, meals, tablet/setup context, and self-governance language conversationally before any reviewed record is created.');
@@ -70555,7 +70582,9 @@ async function buildSafeAssistantContextSummary({ actor = {}, message = '', thre
       `Source boundary: ${sourceBoundary}`,
       ...roleLines,
       'Assistant style: concise, warm, Shloimie-like, practical, and inspiring. Walk the person through the next step in chat instead of sending them to settings.',
-      'Policy/fact rule: if a requested policy or fact is not explicitly verified in the supplied source boundary, say it is not verified in the current BNA context and offer to ask Shloimie.',
+      surface === 'one_time_public'
+        ? 'Policy/fact rule: if a requested policy or fact is not explicitly verified in the supplied OneTime source boundary, say it is not verified in the current OneTime context and offer to capture it for Rabbi Scheller follow-up.'
+        : 'Policy/fact rule: if a requested policy or fact is not explicitly verified in the supplied source boundary, say it is not verified in the current BNA context and offer to ask Shloimie.',
       'If a person reports a real bug, missing UI, or product suggestion, the server records it as an internal ticket, Codex review item, or Shloimie decision. Do not claim a record was created unless the current server result says so.',
       '',
       publicKnowledge,
@@ -85600,10 +85629,7 @@ function redirectOneTimeMemberHome(req, res) {
 
 app.get(['/one-time/member-login', '/member', '/member-portal'], redirectOneTimeMemberHome);
 
-app.get(['/rabbi', '/rabbi-preview', '/one-time-mishnayos'], (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
-  res.sendFile(path.join(__dirname, 'public', 'rabbi.html'));
-});
+app.get(['/rabbi', '/rabbi-preview', '/one-time-mishnayos'], sendOneTimePublicLanding);
 
 app.get(['/rabbi-member', '/rabbi/member'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');

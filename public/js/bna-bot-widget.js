@@ -14,7 +14,14 @@
   } catch {}
   if (isParent && query.get('onboard') === 'accountability') return;
   window.BNABotWidgetLoaded = true;
-  const isOneTimePublic = /^(?:\/one-time|\/rabbi)(?:\/|$|\.html$)/.test(path)
+  const isOneTimePublicDocument = document.documentElement?.dataset?.appSelectSurface === 'one-time'
+    || document.body?.dataset?.oneTimeWorkspace === 'rabbi_sheller_provider'
+    || document.body?.dataset?.siteConfig === '/config/service-provider-sites/one-time.json';
+  const isOneTimePublic = (
+    /^(?:\/one-time|\/rabbi)(?:\/|$|\.html$)/.test(path)
+      || ['/rabbi-preview', '/one-time-mishnayos'].includes(path)
+      || isOneTimePublicDocument
+    )
     && !/^(?:\/rabbi-member)(?:\/|$|\.html$)/.test(path);
   const isOneTimeMember = /^(?:\/rabbi-member|\/member-library|\/one-time-classroom|\/provider-participant)(?:\/|$|\.html$)/.test(path)
     || ['/member', '/member.html', '/member-portal', '/one-time/member-login'].includes(path);
@@ -225,18 +232,19 @@
     if (surface === 'one_time_public') {
       return {
         ...base,
-        helperTitle: 'One Time Helper',
-        surfaceLabel: 'One Time public help',
-        intro: "Hi, I'm the One Time helper. I can help with the Mishnayos class, the 30-day trial, schedule questions, worksheets, member access, or how to ask Rabbi Scheller a question. This public helper does not show school goals, private parent billing, attendance, student transcripts, access codes, or admin data.",
+        helperTitle: 'Rabbi Scheller Assistant',
+        surfaceLabel: 'Rabbi Scheller digital assistant',
+        intro: "Hi, I'm Rabbi Scheller's digital assistant. I can help with the Mishnayos class schedule, the program, the 30-day trial, member access, or getting a public-safe message to Rabbi Scheller. I only answer public OneTime questions and do not show private parent billing, attendance, student transcripts, access codes, raw class transcripts, or admin data.",
         cards: [
-          ['Class fit', 'Ask about the daily live Mishnayos class, who it is for, schedule expectations, and the 30-day trial.'],
-          ['Member access', 'Find the public member login path or ask what happens after a family joins.'],
-          ['Question for Rabbi Scheller', 'Draft a public-safe question without exposing private student, billing, attendance, or account details.'],
+          ['Schedule and program', 'Ask about the live Mishnayos class, who it is for, timing, and what a family should expect.'],
+          ['Start or log in', 'Ask about the 30-day trial, the public member login path, or what happens after a family joins.'],
+          ['Speak to Rabbi Scheller', 'Leave a public-safe question or contact request without exposing private student, billing, attendance, or account details.'],
         ],
         prompts: [
+          'What is the OneTime Mishnayos class schedule?',
+          'Tell me about the program.',
           'How does the 30-day trial work?',
-          'Where do I log in after joining?',
-          'Help me ask Rabbi Scheller a class question.',
+          'I want to speak to Rabbi Scheller.',
         ],
       };
     }
@@ -328,6 +336,69 @@
     };
   }
 
+  function oneTimePublicHelperData() {
+    return {
+      intro:
+        "Hi - I'm Rabbi Scheller's digital assistant. I can help with the OneTime Mishnayos class schedule, the program, the 30-day trial, member access, or getting a public-safe message to Rabbi Scheller.",
+      choices: [
+        { id: 'schedule', label: 'Ask about schedule' },
+        { id: 'program', label: 'Hear about the program' },
+        { id: 'trial', label: 'Start 30 days free' },
+        { id: 'member_access', label: 'Member login help' },
+        { id: 'rabbi_question', label: 'Speak to Rabbi Scheller' },
+      ],
+      nudges: {
+        first: {
+          body: 'Need help with Rabbi Scheller\'s Mishnayos class?',
+          actions: [{ type: 'open', label: 'Open Rabbi Scheller Assistant' }],
+        },
+        second: {
+          body: 'I can help with the schedule, the program, the 30-day trial, member login, or a question for Rabbi Scheller.',
+          actions: [
+            { type: 'path', path: 'schedule', label: 'Schedule' },
+            { type: 'path', path: 'program', label: 'Program' },
+            { type: 'path', path: 'rabbi_question', label: 'Speak to Rabbi' },
+          ],
+        },
+      },
+      paths: {
+        schedule: {
+          body: 'The assistant can help with public schedule questions and capture anything that needs Rabbi Scheller follow-up. For private access or attendance questions, use the scoped member or parent login path.',
+          actions: [
+            { type: 'prefill', label: 'Ask schedule question', prompt: 'I have a schedule question about the OneTime Mishnayos class: ' },
+            { type: 'scroll', target: '#start-free', label: 'Start free' },
+          ],
+        },
+        program: {
+          body: 'OneTimeOneTime is the public Mishnayos class with Rabbi Scheller. Ask about fit, what students receive, the class flow, worksheets, or how the 30-day trial works.',
+          actions: [
+            { type: 'prefill', label: 'Ask about program', prompt: 'I want to know if the OneTime Mishnayos class is right for my child: ' },
+          ],
+        },
+        trial: {
+          body: 'You can start from the public 30-day trial section. This helper will not create a payment, access grant, email, or WhatsApp send from public chat.',
+          actions: [
+            { type: 'scroll', target: '#start-free', label: 'Start 30 days free' },
+          ],
+        },
+        member_access: {
+          body: 'If you already joined, use the member login path. This public helper does not display private access codes, billing, attendance, or student records.',
+          actions: [
+            { type: 'link', href: '/rabbi-member', label: 'Member login' },
+          ],
+        },
+        rabbi_question: {
+          body: 'Share a public-safe question or contact request for Rabbi Scheller. Please do not post private student, billing, access-code, or transcript details in this public chat.',
+          actions: [
+            { type: 'prefill', label: 'Leave message', prompt: 'I would like Rabbi Scheller to follow up about: ' },
+          ],
+        },
+      },
+      safety:
+        'This sounds urgent or safety-related. Please bring in a trusted adult right now and contact local emergency support if anyone may be in danger. This public helper cannot handle emergencies.',
+    };
+  }
+
   function fallbackPublicHelperData() {
     if (isHebrew()) {
       return {
@@ -381,6 +452,7 @@
   }
 
   function publicHelperData() {
+    if (surface === 'one_time_public') return oneTimePublicHelperData();
     const lang = isHebrew() ? 'he' : 'en';
     const helper = window.BNAHelperKnowledge;
     if (helper && typeof helper.get === 'function') {
@@ -1063,7 +1135,7 @@
 
   function publicFollowupCopy() {
     if (surface === 'one_time_public') {
-      return 'Want help with the One Time class, 30-day trial, member access, or a question for Rabbi Scheller?';
+      return 'Want help with Rabbi Scheller\'s Mishnayos class, the schedule, the program, or member access?';
     }
     return isHebrew()
       ? 'אפשר לשאול על תוכנית 10-1, על שלטון עצמי, או לשלוח לשלוימי הודעה קצרה.'
@@ -1092,24 +1164,7 @@
 
   function showPublicNudge(stage) {
     if (!isPublicLeadSurface() || dismissedPublicPrompt || panel.classList.contains('is-open')) return;
-    const data = surface === 'one_time_public'
-      ? {
-          nudges: {
-            first: {
-              body: 'Need help with the One Time Mishnayos class?',
-              actions: [{ type: 'open', label: 'Open One Time Helper' }],
-            },
-            second: {
-              body: 'I can help with the 30-day trial, class schedule, member login, or a question for Rabbi Scheller.',
-              actions: [
-                { type: 'scroll', target: '#start-free', label: 'Start free' },
-                { type: 'link', href: '/rabbi-member', label: 'Member login' },
-                { type: 'open', label: 'Ask a question' },
-              ],
-            },
-          },
-        }
-      : publicHelperData();
+    const data = publicHelperData();
     const config = stage === 'second' ? data.nudges?.second : data.nudges?.first;
     if (!config?.body) return;
     nudge.innerHTML = `
@@ -1210,9 +1265,10 @@
   function publicInitialHelperActions() {
     if (surface === 'one_time_public') {
       return [
-        { type: 'scroll', target: '#start-free', label: 'Start 30 days free' },
+        { type: 'prefill', label: 'Ask about schedule', prompt: 'I have a schedule question about the OneTime Mishnayos class: ' },
+        { type: 'prefill', label: 'Tell me about the program', prompt: 'Tell me about Rabbi Scheller\'s OneTime Mishnayos program.' },
+        { type: 'prefill', label: 'Speak to Rabbi Scheller', prompt: 'I would like Rabbi Scheller to follow up about: ' },
         { type: 'link', href: '/rabbi-member', label: 'Member login' },
-        { type: 'prefill', label: 'Ask Rabbi Scheller', prompt: 'I have a question about the One Time Mishnayos class: ' },
       ];
     }
     if (surface === 'one_time_parent') {

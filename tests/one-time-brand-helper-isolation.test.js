@@ -19,14 +19,26 @@ test('One Time landing mounts helper without BNA nav or language toggle chrome',
 
 test('One Time public helper has separate surface, copy, actions, and black-yellow skin', () => {
   assert.match(widget, /const isOneTimePublic = /);
+  assert.match(widget, /const isOneTimePublicDocument = /);
+  assert.match(widget, /\['\/rabbi-preview', '\/one-time-mishnayos'\]\.includes\(path\)/);
+  assert.match(widget, /document\.documentElement\?\.dataset\?\.appSelectSurface === 'one-time'/);
   assert.match(widget, /\? 'one_time_public'/);
   assert.match(widget, /surface === 'one_time_public'/);
-  assert.match(widget, /One Time public help/);
-  assert.match(widget, /This public helper does not show school goals, private parent billing, attendance, student transcripts, access codes, or admin data/);
-  assert.match(widget, /Open One Time Helper/);
+  assert.match(widget, /Rabbi Scheller digital assistant/);
+  assert.match(widget, /Rabbi Scheller Assistant/);
+  assert.match(widget, /I only answer public OneTime questions and do not show private parent billing, attendance, student transcripts, access codes, raw class transcripts, or admin data/);
+  assert.match(widget, /Open Rabbi Scheller Assistant/);
+  assert.match(widget, /Speak to Rabbi Scheller/);
   assert.match(widget, /Start 30 days free/);
   assert.match(widget, /bna-assistant-surface-one-time-public/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher/);
+
+  const oneTimePublicDataBlock = widget.slice(
+    widget.indexOf('function oneTimePublicHelperData()'),
+    widget.indexOf('function fallbackPublicHelperData()')
+  );
+  assert.match(oneTimePublicDataBlock, /Rabbi Scheller's digital assistant/);
+  assert.doesNotMatch(oneTimePublicDataBlock, /Learn about BNA|How BNA works|BNA model path|Service-provider ecosystem path/);
 });
 
 test('One Time select controls do not use the default BNA-blue app-select theme', () => {
@@ -44,7 +56,9 @@ test('One Time helper surfaces normalize and store under the One Time project', 
   assert.match(server, /projectKey: ONE_TIME_PROJECT_KEY/);
   assert.match(server, /metadata: \{ source: 'assistant_surface_scope', workspace_key: surfaceSpec\.workspaceKey \}/);
   assert.match(server, /surface === 'one_time_public'/);
-  assert.match(server, /One Time public landing\/class\/signup context only/);
+  assert.match(server, /Rabbi Scheller digital assistant/);
+  assert.match(server, /OneTime public landing\/class\/signup context only/);
+  assert.match(server, /Do not use BNA Academy enrollment, BNA accountability, BNA service-provider, BNA parent\/student portal, or generic BNA public helper knowledge as OneTime public facts/);
   assert.match(server, /if \(surface\.startsWith\('one_time_'\)\) return WORKSPACES\.RABBI_SHELLER_PROVIDER/);
 });
 
@@ -71,8 +85,22 @@ test('One Time public helper launcher is registered as a visible action', () => 
   const action = actionRegistry.actions.find((item) => item.action_id === 'ACTION-ONETIME-PUBLIC-HELPER-OPEN');
   assert.ok(action);
   assert.equal(action.route, '/one-time');
-  assert.equal(action.label, 'One Time Helper');
-  assert.match(action.expected_behavior, /without school goals/);
+  assert.equal(action.label, 'Rabbi Scheller Assistant');
+  assert.match(action.expected_behavior, /schedule, program, 30-day trial, member login/);
+  assert.match(action.expected_behavior, /raw class transcripts/);
+});
+
+test('One Time Rabbi public aliases are registry-covered and route to the focused landing', () => {
+  const routes = new Map(routeRegistry.routes.map((item) => [item.route, item]));
+  for (const route of ['/rabbi', '/rabbi.html', '/rabbi-preview', '/one-time-mishnayos']) {
+    const row = routes.get(route);
+    assert.ok(row, `${route} missing from route registry`);
+    assert.equal(row.canonical_target, '/one-time');
+    assert.match(row.expected_logged_out_behavior || '', /without_bna_preview_chrome/);
+    assert.match(row.security_expectation || '', /no BNA provider preview|legacy BNA preview|Server route must intercept/);
+  }
+  assert.match(server, /app\.get\(\['\/rabbi\.html'\], sendOneTimePublicLanding\)/);
+  assert.match(server, /app\.get\(\['\/rabbi', '\/rabbi-preview', '\/one-time-mishnayos'\], sendOneTimePublicLanding\)/);
 });
 
 test('One Time parent and student helper launchers are registered visible actions', () => {

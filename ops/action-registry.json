@@ -31,16 +31,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
-      "label": "One Time Helper",
+      "label": "Rabbi Scheller Assistant",
       "surface": "one_time_public_landing",
       "route": "/one-time",
       "selector_hint": "body.bna-assistant-surface-one-time-public .bna-bot-launcher",
-      "expected_behavior": "Opens the One Time-scoped public helper without school goals, Hebrew/English toggle behavior, private parent billing, attendance, student transcripts, access codes, or admin data.",
+      "expected_behavior": "Opens Rabbi Scheller's OneTime-scoped public digital assistant for schedule, program, 30-day trial, member login, and public-safe speak-to-Rabbi lead capture; it does not show BNA Academy, school goals, Hebrew/English toggle behavior, private parent billing, attendance, student transcripts, raw class transcripts, access codes, or admin data.",
       "permission": "anonymous public visitor",
       "status": "active",
       "test": {
         "type": "contract",
-        "expected_result": "tests/one-time-brand-helper-isolation.test.js verifies One Time helper scripts, surface, copy, styling, and server project scoping."
+        "expected_result": "tests/one-time-brand-helper-isolation.test.js verifies Rabbi Scheller Assistant scripts, surface, copy, styling, no generic BNA helper choices, and server project scoping."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

@@ -38,6 +38,7 @@ const server = fs.readFileSync('server.js', 'utf8');
 const migration = fs.readFileSync('railway-migration-2026-06-15-rabbi-checkout-access.sql', 'utf8');
 const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
 const publicRabbiHtml = fs.readFileSync('public/rabbi.html', 'utf8');
+const oneTimeLandingHtml = fs.readFileSync('public/one-time/index.html', 'utf8');
 const publicRabbiMemberHtml = fs.readFileSync('public/rabbi-member.html', 'utf8');
 const publicRabbiJs = fs.readFileSync('public/js/rabbi-launch.js', 'utf8');
 const publicRabbiMemberJs = fs.readFileSync('public/js/rabbi-member.js', 'utf8');
@@ -205,9 +206,9 @@ test('server exposes scoped Rabbi admin, public, member, and webhook routes', ()
   assert.match(server, /assertWorkspaceAccess\(req, 'rabbi_sheller_provider'\)/);
 });
 
-test('public preview pages and Operations launch panel keep Rabbi launch separate from the BNA homepage', () => {
-  assert.match(server, /app\.get\(\['\/rabbi', '\/rabbi-preview', '\/one-time-mishnayos'\]/);
-  assert.match(server, /res\.sendFile\(path\.join\(__dirname, 'public', 'rabbi\.html'\)\)/);
+test('public Rabbi aliases serve the focused OneTime landing instead of the legacy BNA preview page', () => {
+  assert.match(server, /app\.get\(\['\/rabbi\.html'\], sendOneTimePublicLanding\)/);
+  assert.match(server, /app\.get\(\['\/rabbi', '\/rabbi-preview', '\/one-time-mishnayos'\], sendOneTimePublicLanding\)/);
   const rootHandler = server.match(/app\.get\(\['\/', '\/index\.html', '\/public', '\/public\/'\][\s\S]*?\n\}\);/);
   assert.ok(rootHandler, 'missing explicit One Time single-tenant root handler');
   assert.match(rootHandler[0], /sendOneTimePublicLanding/);
@@ -215,6 +216,12 @@ test('public preview pages and Operations launch panel keep Rabbi launch separat
   assert.doesNotMatch(server, /app\.get\(\s*'\/'[\s\S]*rabbi\.html/);
   assert.match(server, /defaults\.price_amount_cents/);
 
+  assert.match(oneTimeLandingHtml, /Your Child Can Love Learning Mishnayos/);
+  assert.match(oneTimeLandingHtml, /data-one-time-workspace="rabbi_sheller_provider"/);
+  assert.match(oneTimeLandingHtml, /data-one-time-project="one_time_mishnah_class"/);
+  assert.doesNotMatch(oneTimeLandingHtml, /Preview mode only\. The BNA homepage is not replaced\./);
+
+  // The old preview artifact can remain for historical tests, but public Rabbi routes must not serve it.
   assert.match(publicRabbiHtml, /Preview mode only\. The BNA homepage is not replaced\./);
   assert.match(publicRabbiHtml, /OneTimeOneTime - Rabbi Eli Scheller/);
   assert.match(publicRabbiHtml, /--yellow: #ffd400/);

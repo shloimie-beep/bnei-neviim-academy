@@ -14,6 +14,7 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
 | REQ-20260708-052 | Deployed / live smoke passed | Polish Rabbi scoped UI: OneTime brand, no pictures, no BNA branding in user-visible Rabbi surfaces, no random diagnostic/configuration cards without actions, consistent side panel/top filter/button layout. | Implemented signed Rabbi provider sessions on the OneTime section model, sanitized review/test links in signed mode, replaced generic provider diagnostics with OneTime CRM/action content, and fixed OneTime sidebar row sizing so nav buttons do not overlap. Commit `62d82621` pushed and deployed to OneTime Railway deployment `07a373a0-9598-4887-88bc-d60e92b5625f`, status `SUCCESS`. Live smoke passed for `https://join.onetimeonetime.com`; deployed provider page readback confirmed `isSignedOneTimeProviderSession`, `Provider login active`, `RABBI ACCOUNT`, `/parent/login`, `/student/login`, and `signedOneTimeSession`. Evidence: PQC packet `ops/prompt-packets/2026-07-08-onetime-rabbi-provider-session-ui/00-rabbi-provider-session-ui.product-quality.json`; visual proof `ops/ui-audits/2026-07-08-onetime-rabbi-provider-session-ui/report.md`; tests 15/15; watchdog/action/secrets/diff gates passed. |
 | REQ-20260708-053 | Deployed / live prompt readback passed | Verify and harden Agent Mode autonomous loop for this workstream: navigation-first prompts, Start/Drop-off/Readback path, failure/blocker reporting, and safe parallel execution. | Updated `src/lib/bna/agent-review-hub.js`, regenerated `public/agent-review-prompts/*.md`, and refreshed `ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/` so agents must start/drop off through Operations, navigate exact Super Admin -> Rabbi -> real live parent/student login/setup/classroom paths, inspect Communications > Email and Communications > WhatsApp, and save BLOCKED/FAIL even when navigation breaks. Commits `8fc92f71` and `86e050f3` pushed; OneTime deployments `b38765d5-7386-4f0d-ad9d-befe4005bee8` and `7a499173-cb63-4c62-a651-d9197ce6218f` reached `SUCCESS`. Live readback of `https://join.onetimeonetime.com/agent-review-prompts/rabbi-provider-admin.md` confirmed `Communications > WhatsApp`, WAPI readiness, `parent/login`, `student/login`, `one-time-parent`, and the WhatsApp no-send guard. |
 | REQ-20260708-054 | Deployed / WAPI credential blocked | Ensure OneTime CRM is built out for WAPI/WhatsApp contacts, communications, follow-up state, provider/Rabbi scope, and readback in Operations. | Deployed WAPI send path stamps project scope into outbound attempts/results and chooses OneTime-scoped WAPI credentials. Follow-up scopes inbound webhook records by OneTime workspace/project when supplied, records auto-reply readiness into CRM metadata/source context, exposes `auto_reply_configured` / `auto_reply_readiness` in WAPI diagnostics, and keeps live sends blocked without scoped WAPI token + class-link env + approval gate. Live WAPI setup remains not configured until `DEC-20260708-010` is resolved. |
+| REQ-20260708-070 | Local verified / pending deploy | Make the public Rabbi / OneTime landing aliases and helper bubble fully OneTime scoped: `/rabbi` must not serve the old BNA provider-preview page, and the public helper must present as Rabbi Scheller's digital assistant with schedule/program/speak-to-Rabbi lead capture and no BNA helper knowledge bleed. | Implemented route/helper/server scope fixes. Local rendered smoke passed for `/one-time`, `/rabbi`, `/rabbi.html`, `/rabbi-preview`, and `/one-time-mishnayos`: each route served the OneTime landing, helper button read `Rabbi Scheller Assistant`, and old BNA preview bad hits were absent. Evidence: raw intake `raw-input/RAW-20260708-014-onetime-rabbi-public-assistant-isolation.md`; PQC packet `ops/prompt-packets/2026-07-08-onetime-rabbi-public-assistant-isolation/00-onetime-rabbi-public-assistant-isolation.product-quality.json`; visual proof `ops/ui-audits/2026-07-08-onetime-rabbi-public-assistant-isolation/report.md`; tests 14/14; PQC, protocol drift, action watchdog, secrets audit, and diff check passed. WhatsApp send and transcript knowledge promotion remain blocked by `DEC-20260708-010`, `DEC-20260708-011`, and Vimeo transcript decisions. |
 
 ## Decisions
 
@@ -68,6 +69,31 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
   - `node --test tests/one-time-wapi-scope-contract.test.js tests/agent-review-hub.test.js tests/agent-mode-operations-dropoff-prompts.test.js tests/provider-wapi-setup-portal.test.js`
 - Secret/link guard:
   - Focused scan found no committed raw Zoom password link; the only matching Zoom meeting id evidence was an older redacted readback file with `pwd=[redacted]`.
+
+## Evidence - 2026-07-08 Public Rabbi Alias And Assistant Isolation
+
+- Requirement: `REQ-20260708-070`.
+- Raw input: `raw-input/RAW-20260708-014-onetime-rabbi-public-assistant-isolation.md`.
+- PQC packet:
+  `ops/prompt-packets/2026-07-08-onetime-rabbi-public-assistant-isolation/00-onetime-rabbi-public-assistant-isolation.product-quality.json`.
+- Code changes:
+  - `/rabbi`, `/rabbi.html`, `/rabbi-preview`, and `/one-time-mishnayos` route to the focused OneTime landing instead of the old BNA provider-preview page.
+  - OneTime public helper detection now uses OneTime route aliases and OneTime page data attributes, so join-domain `/` and aliases stay on `one_time_public`.
+  - OneTime public helper visible copy now says `Rabbi Scheller Assistant` / Rabbi Scheller digital assistant with schedule/program/speak-to-Rabbi lead capture.
+  - OneTime public helper data bypasses the generic BNA helper knowledge bundle.
+  - Server one_time_public assistant context now starts from OneTime/Rabbi public knowledge and blocks generic BNA helper knowledge, raw transcripts, private portal data, and WhatsApp send claims.
+- Verification passed:
+  - `node --check server.js`
+  - `node --test tests/one-time-brand-helper-isolation.test.js tests/rabbi-checkout-access.test.js` with 14/14 passing
+  - `npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-rabbi-public-assistant-isolation/00-onetime-rabbi-public-assistant-isolation.product-quality.json`
+  - `npm run watchdog:protocol-drift`
+  - `npm run watchdog:actions`
+  - `npm run secrets:audit`
+  - `git diff --check`
+  - Local Playwright smoke report:
+    `ops/ui-audits/2026-07-08-onetime-rabbi-public-assistant-isolation/report.md`
+- Guardrails: no WhatsApp sent, no WAPI credential stored, no transcript/Vimeo/Drive promotion, no parent invite resend, no payment/access/DNS/Zoom/email mutation.
+- Remaining before Done: commit, push, deploy OneTime service, then live-smoke/readback `/`, `/one-time`, `/rabbi`, and helper identity.
   - OneTime WhatsApp class link is now read from `ONE_TIME_WHATSAPP_CLASS_LINK` / related env names and is not committed in source.
 - External-send status:
   - No WhatsApp was sent.
