@@ -17,6 +17,12 @@
 - For BNA school-wide parent reminders, prefer parents tied to current
   canonical BNA student records and exclude stale duplicates/signup-only
   records unless Shloimie explicitly broadens the audience.
+- For Rabbi / One Time, support tickets belong to Shloimie/super-admin review
+  and should ding Shloimie's Telegram. Rabbi communications, including scoped
+  email, WhatsApp/WAPI, provider messages, and student/class messages, should
+  ding Rabbi Scheller's Telegram once `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`
+  is configured. Alerts must be metadata-only and scoped to
+  `rabbi_sheller_provider` / `one_time_mishnah_class`.
 - 2026-07-06 correction: the Webers are just away/on vacation and are not
   hosting today's BNA meeting. Do not describe them as having permanently left
   or stopped hosting unless Shloimie explicitly says that later.

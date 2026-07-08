@@ -70,6 +70,12 @@ test('Operations route uses a small split bootstrap with cacheable shell assets'
   assert.match(operationsShellJs, /function renderAppShell/);
   assert.match(operationsShellJs, /OPERATIONS_DEFERRED_RENDER_CHUNK = '\/js\/operations-deferred-renderers\.js'/);
   assert.match(operationsShellJs, /renderDeferredView\('content', 'renderContent'\)/);
+  assert.match(operationsShellJs, /const EMAIL_INBOX_SCOPES = \[/);
+  assert.match(operationsShellJs, /function emailInboxScopeRecord/);
+  assert.match(operationsShellJs, /function emailInboxFilters/);
+  assert.match(operationsShellJs, /async function fetchCommunicationsIntegrationBundle/);
+  assert.match(operationsShellJs, /function dataRequestWithTimeout/);
+  assert.match(operationsShellJs, /const needsWorkspaceDirectoryData = !oneTimeProgramLightPass/);
   assert.doesNotMatch(operationsShellJs, /function renderContent\(/);
   assert.doesNotMatch(operationsShellJs, /function renderStudents\(/);
   assert.doesNotMatch(operationsShellJs, /function renderLiveClasses\(/);
@@ -77,6 +83,7 @@ test('Operations route uses a small split bootstrap with cacheable shell assets'
   assert.match(operationsDeferredRenderersJs, /function renderContent\(/);
   assert.match(operationsDeferredRenderersJs, /function renderStudents\(/);
   assert.match(operationsDeferredRenderersJs, /function renderLiveClasses\(/);
+  assert.doesNotMatch(operationsDeferredRenderersJs, /const EMAIL_INBOX_SCOPES = \[/);
   assert.match(operationsDeferredRenderersJs, /window\.__operationsDeferredRenderersLoaded = true/);
   assert.match(operationsShellJs, /const oneTimeProgramFastPass = !options\.background/);
   assert.match(operationsShellJs, /window\.setTimeout\(\(\) => loadData\(\{ background: true \}\), 0\)/);

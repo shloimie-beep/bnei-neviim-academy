@@ -6,6 +6,33 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-08T23:41:42+03:00 - Rabbi sidekick and Operations residual slowness locally verified
+
+- Expanded Rabbi Scheller's Telegram/helper contract so both surfaces are
+  OneTime-scoped sidekicks for contacts, communications, content, safe web
+  research, scoped Drive context previews, and internal reminders.
+- Added scoped OneTime Drive map context to the Rabbi Telegram bridge and
+  kept broad BNA Drive listings out of the Rabbi profile.
+- Refreshed the Rabbi Telegram Agent Mode smoke prompt so agents test
+  Telegram readiness, helper scope, Drive/web preview behavior, progress-ding
+  format, and Operations drop-off even when live Telegram is blocked.
+- Added 17 draft-only Rabbi helper wrappers for calendar, email campaign,
+  drip sequence, automation, newsletter/social drafts, worksheet drafts,
+  campaign segments, shoutouts, and admin-message drafts; the Rabbi 163-contract
+  map now reports 66 local wrapper-backed contracts, 12 fallback blockers, and
+  85 missing wrappers.
+- Profiled residual Operations slowness. Local OneTime overview visibility
+  improved from 4,588ms before this batch to 1,768ms after the light overview
+  path; live current profile showed 1,939ms and no console errors.
+- Verification passed: focused helper/scope/prompt/runtime/Operations/action
+  tests, `npm test` 1666/1666, `npm run secrets:audit`, and
+  `npm run watchdog:protocol-drift`.
+- Sent one concise operator Telegram progress update with fixed, verified,
+  blocked, next, packet, and task fields.
+- Remaining blockers: Rabbi live Telegram delivery still needs
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`; this local batch still needs
+  commit/push/deploy/live smoke before app-visible work is marked deployed.
+
 ## 2026-07-08T22:26:07+03:00 - Rabbi helper alerts deployed to OneTime
 
 - Pushed commits `9618a4d4` and `16a69c9e` on

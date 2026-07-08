@@ -142,8 +142,13 @@ test('Agent Mode prompt pack has exactly 18 generated mobile-copyable files', ()
   assert.ok(rabbiTelegramPrompt);
   const rabbiTelegramText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', rabbiTelegramPrompt.file), 'utf8');
   assert.match(rabbiTelegramText, /REQ-20260708-084/);
+  assert.match(rabbiTelegramText, /REQ-20260708-100 scoped sidekick behavior/);
   assert.match(rabbiTelegramText, /TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER/);
   assert.match(rabbiTelegramText, /super-admin support ticket ding routing/);
+  assert.match(rabbiTelegramText, /scoped Drive\/web sidekick behavior/);
+  assert.match(rabbiTelegramText, /Where should I upload tonight's class recording or source sheet/);
+  assert.match(rabbiTelegramText, /no broad BNA Drive listing/);
+  assert.match(rabbiTelegramText, /brief progress-ding format/);
   assert.match(rabbiTelegramText, /Do not send a WhatsApp message/);
   assert.match(rabbiTelegramText, /OPERATIONS_DROPOFF_FAILED/);
 

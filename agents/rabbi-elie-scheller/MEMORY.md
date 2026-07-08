@@ -17,6 +17,12 @@ Status: scaffold
   BNA school parents and students.
 - Rabbi Elie needs a support ticket path for reporting broken system behavior
   or access problems to Shloimie/Codex.
+- Rabbi Elie's Telegram bot and in-platform helper should act as the same
+  OneTime-scoped sidekick for contacts, communications, content, safe web
+  research, scoped Drive/context previews, and internal reminders.
+- Support tickets should route to Shloimie/super-admin with a concise Telegram
+  ding. Rabbi communications and class/student messages should go to Rabbi's
+  Telegram only after the intended Rabbi chat ID is configured.
 
 ## Preferences
 
@@ -27,3 +33,7 @@ Status: scaffold
 - Keep BNA-only fields, BNA private students, BNA accounting, BNA devices, and
   operator-only changelog details out of Rabbi-facing output unless Shloimie
   explicitly grants access later.
+- Prefer preview/readiness/result-card behavior for Drive, web research,
+  content, and communications actions. Do not send, publish, upload, grant
+  access, charge, change credentials, or mutate provider accounts without exact
+  approval and configured credentials.

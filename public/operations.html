@@ -17965,21 +17965,22 @@
             `;
         }
 
-        async function loadRabbiLaunchData() {
+        async function loadRabbiLaunchData(options = {}) {
+            const overviewOnly = options.overviewOnly === true;
             const [configRes, tiersRes, providersRes, checkoutsRes, membersRes, grantsRes, libraryRes, liveRes, commsRes, siteRes, productSystemRes, testIdentitiesRes, agentModeRes] = await Promise.allSettled([
                 api.getRabbiConfig(),
                 api.getRabbiTiers(),
-                api.getRabbiProviderSettings(),
+                overviewOnly ? Promise.resolve(null) : api.getRabbiProviderSettings(),
                 api.getRabbiCheckouts(),
                 api.getRabbiMembers(),
                 api.getRabbiAccessGrants(),
-                api.getRabbiLibraryItems(),
-                api.getRabbiLiveSessions(),
-                api.getRabbiCommunications(),
-                api.getRabbiSite(),
-                api.getOneTimeProductSystem(),
-                api.getOneTimeTestIdentitiesPreview(),
-                api.getOneTimeAgentModeAcceptance(),
+                overviewOnly ? Promise.resolve(null) : api.getRabbiLibraryItems(),
+                overviewOnly ? Promise.resolve(null) : api.getRabbiLiveSessions(),
+                overviewOnly ? Promise.resolve(null) : api.getRabbiCommunications(),
+                overviewOnly ? Promise.resolve(null) : api.getRabbiSite(),
+                overviewOnly ? Promise.resolve(null) : api.getOneTimeProductSystem(),
+                overviewOnly ? Promise.resolve(null) : api.getOneTimeTestIdentitiesPreview(),
+                overviewOnly ? Promise.resolve(null) : api.getOneTimeAgentModeAcceptance(),
             ]);
             if (configRes.status === 'fulfilled') {
                 rabbiLaunch.config = configRes.value || null;
@@ -37112,6 +37113,31 @@
             if (errors.length) throw new Error(errors.join('; '));
         }
 
+        function dataRequestWithTimeout(promise, fallbackValue = null, label = 'data request', timeoutMs = 4500) {
+            let settled = false;
+            let timer = null;
+            return new Promise((resolve, reject) => {
+                timer = window.setTimeout(() => {
+                    settled = true;
+                    console.warn(`${label} timed out after ${timeoutMs}ms; continuing with fallback data.`);
+                    resolve(fallbackValue);
+                }, timeoutMs);
+                Promise.resolve(promise)
+                    .then((value) => {
+                        if (settled) return;
+                        settled = true;
+                        window.clearTimeout(timer);
+                        resolve(value);
+                    })
+                    .catch((error) => {
+                        if (settled) return;
+                        settled = true;
+                        window.clearTimeout(timer);
+                        reject(error);
+                    });
+            });
+        }
+
         async function loadData(options = {}) {
             if (loadDataInFlight && options.background) return;
             loadDataInFlight = true;
@@ -37124,11 +37150,14 @@
                 if (!options.background) render([], { force: true });
 
                 const activeView = currentView;
-                const oneTimeProgramFastPass = !options.background
-                    && activeView === 'service_providers'
+                const oneTimeProgramOverviewPass = activeView === 'service_providers'
                     && serviceProviderSection === 'overview'
                     && currentWorkspaceIsOneTime();
+                const oneTimeProgramFastPass = !options.background && oneTimeProgramOverviewPass;
+                const oneTimeProgramBackgroundOverviewPass = Boolean(options.background) && oneTimeProgramOverviewPass;
+                const oneTimeProgramLightPass = oneTimeProgramFastPass || oneTimeProgramBackgroundOverviewPass;
                 queueOneTimeProgramHydration = oneTimeProgramFastPass;
+                const nonCriticalDataTimeoutMs = oneTimeProgramLightPass ? 2200 : 4500;
                 const workspaceFilter = currentWorkspaceKey() === 'platform' ? '' : currentWorkspaceKey();
                 const operatorSetupVisible = activeView === 'admin' && adminSection === 'operator_setup';
                 if (operatorSetupVisible) {
@@ -37144,34 +37173,34 @@
                 const studioTaskOnlySession = isStudioTaskOnlySession();
                 const needsLocalClassroomData = activeView === 'students' || (activeView === 'content' && activeContentSection === 'one_time_library');
                 const needsDashboardData = activeView === 'dashboard';
-                const needsPlatformData = !oneTimeProgramFastPass && (needsDashboardData || ['watchdog', 'pipelines', 'calendar', 'communications', 'internal_dialogue', 'service_providers', 'api_usage', 'admin', 'integrations', 'settings'].includes(activeView));
-                const needsCalendarData = !oneTimeProgramFastPass && (needsDashboardData || activeView === 'calendar' || (activeView === 'integrations' && ['google', 'connectors'].includes(activeIntegrationsSection)) || (activeView === 'settings' && ['calendar', 'calendar_classroom', 'google_classroom', 'integrations', 'google_workspace'].includes(activeSettingsSection)));
-                const needsGoogleIntegrationData = !oneTimeProgramFastPass && ((activeView === 'integrations' && activeIntegrationsSection === 'google') || (activeView === 'settings' && ['google_workspace', 'google_calendar', 'google_classroom', 'integrations', 'integrations_core', 'calendar_classroom'].includes(activeSettingsSection)));
-                const needsPipelineData = !oneTimeProgramFastPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'pipelines', 'tasks', 'service_providers'].includes(activeView));
-                const needsDialogueData = !oneTimeProgramFastPass && (needsDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection)));
-                const needsProjectData = !oneTimeProgramFastPass && (needsDashboardData || ['pipelines', 'service_providers', 'studio', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection)));
-                const needsTaskData = !oneTimeProgramFastPass && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'pipelines', 'internal_dialogue'].includes(activeView));
-                const needsAgentFleetData = !oneTimeProgramFastPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView));
-                const needsQueueHealthData = !oneTimeProgramFastPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView));
+                const needsPlatformData = !oneTimeProgramLightPass && (needsDashboardData || ['watchdog', 'pipelines', 'calendar', 'communications', 'internal_dialogue', 'service_providers', 'api_usage', 'admin', 'integrations', 'settings'].includes(activeView));
+                const needsCalendarData = !oneTimeProgramLightPass && (needsDashboardData || activeView === 'calendar' || (activeView === 'integrations' && ['google', 'connectors'].includes(activeIntegrationsSection)) || (activeView === 'settings' && ['calendar', 'calendar_classroom', 'google_classroom', 'integrations', 'google_workspace'].includes(activeSettingsSection)));
+                const needsGoogleIntegrationData = !oneTimeProgramLightPass && ((activeView === 'integrations' && activeIntegrationsSection === 'google') || (activeView === 'settings' && ['google_workspace', 'google_calendar', 'google_classroom', 'integrations', 'integrations_core', 'calendar_classroom'].includes(activeSettingsSection)));
+                const needsPipelineData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'pipelines', 'tasks', 'service_providers'].includes(activeView));
+                const needsDialogueData = !oneTimeProgramLightPass && (needsDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection)));
+                const needsProjectData = !oneTimeProgramLightPass && (needsDashboardData || ['pipelines', 'service_providers', 'studio', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection)));
+                const needsTaskData = !oneTimeProgramLightPass && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'pipelines', 'internal_dialogue'].includes(activeView));
+                const needsAgentFleetData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView));
+                const needsQueueHealthData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView));
                 const canUseAgentControl = opsMe?.scope?.type === 'all';
-                const needsAgentRunData = !oneTimeProgramFastPass && canUseAgentControl && ['agents', 'tasks'].includes(activeView);
-                const needsPeopleData = !oneTimeProgramFastPass && (needsDashboardData || ['contacts', 'admin'].includes(activeView) || (activeView === 'settings' && ['users_roles', 'users_access'].includes(activeSettingsSection)));
-                const needsContactData = !oneTimeProgramFastPass && (needsDashboardData || ['contacts', 'communications', 'service_providers', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal', 'communications'].includes(activeSettingsSection)));
+                const needsAgentRunData = !oneTimeProgramLightPass && canUseAgentControl && ['agents', 'tasks'].includes(activeView);
+                const needsPeopleData = !oneTimeProgramLightPass && (needsDashboardData || ['contacts', 'admin'].includes(activeView) || (activeView === 'settings' && ['users_roles', 'users_access'].includes(activeSettingsSection)));
+                const needsContactData = !oneTimeProgramLightPass && (needsDashboardData || ['contacts', 'communications', 'service_providers', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal', 'communications'].includes(activeSettingsSection)));
                 const needsWapiPhonebookData = activeView === 'communications' && communicationsSection === 'whatsapp';
-                const needsAnnouncementData = !oneTimeProgramFastPass && (needsDashboardData || activeView === 'communications' || (activeView === 'settings' && activeSettingsSection === 'communications'));
+                const needsAnnouncementData = !oneTimeProgramLightPass && (needsDashboardData || activeView === 'communications' || (activeView === 'settings' && activeSettingsSection === 'communications'));
                 const needsSignupData = needsContactData || activeView === 'students' || activeView === 'accounting' || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection));
-                const needsAccountingData = !oneTimeProgramFastPass && (needsDashboardData || ['accounting', 'api_usage'].includes(activeView) || (activeView === 'settings' && ['billing_payments', 'billing', 'payment_links', 'api_limits'].includes(activeSettingsSection)));
-                const needsContentData = !oneTimeProgramFastPass && (needsDashboardData || ['content', 'service_providers', 'calendar'].includes(activeView));
-                const needsStudioData = !oneTimeProgramFastPass && ['studio', 'api_usage'].includes(activeView);
-                const needsCommunityData = !oneTimeProgramFastPass && (needsDashboardData || activeView === 'community');
-                const needsLiveClassData = !oneTimeProgramFastPass && (needsDashboardData || ['live_classes', 'contacts', 'students'].includes(activeView));
-                const needsStudentRosterData = !oneTimeProgramFastPass && (needsDashboardData || needsLocalClassroomData || needsCommunityData || ['contacts', 'api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection)));
-                const needsStudentData = !oneTimeProgramFastPass && (needsDashboardData || needsLocalClassroomData || ['api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'student_portal'].includes(activeSettingsSection)));
+                const needsAccountingData = !oneTimeProgramLightPass && (needsDashboardData || ['accounting', 'api_usage'].includes(activeView) || (activeView === 'settings' && ['billing_payments', 'billing', 'payment_links', 'api_limits'].includes(activeSettingsSection)));
+                const needsContentData = !oneTimeProgramLightPass && (needsDashboardData || ['content', 'service_providers', 'calendar'].includes(activeView));
+                const needsStudioData = !oneTimeProgramLightPass && ['studio', 'api_usage'].includes(activeView);
+                const needsCommunityData = !oneTimeProgramLightPass && (needsDashboardData || activeView === 'community');
+                const needsLiveClassData = !oneTimeProgramLightPass && (needsDashboardData || ['live_classes', 'contacts', 'students'].includes(activeView));
+                const needsStudentRosterData = !oneTimeProgramLightPass && (needsDashboardData || needsLocalClassroomData || needsCommunityData || ['contacts', 'api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection)));
+                const needsStudentData = !oneTimeProgramLightPass && (needsDashboardData || needsLocalClassroomData || ['api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'student_portal'].includes(activeSettingsSection)));
                 const needsProviderData = needsDashboardData || ['service_providers', 'contacts', 'communications', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'external_apps') || (activeView === 'settings' && ['provider_index', 'provider_portal', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models', 'payment_links', 'external_apps'].includes(activeSettingsSection));
                 const needsRabbiLaunchData = !oneTimeProgramFastPass && needsProviderData && isProviderWorkspace();
-                const needsSupportData = !oneTimeProgramFastPass && (needsDashboardData || ['admin', 'communications', 'api_usage', 'internal_dialogue', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'api_limits', 'bot_permissions'].includes(activeSettingsSection)));
-                const needsNotificationData = !oneTimeProgramFastPass && (needsDashboardData || ['admin', 'communications', 'content', 'contacts', 'service_providers', 'api_usage'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'bot_permissions'].includes(activeSettingsSection)));
-                const needsCommunicationsIntegrationData = !oneTimeProgramFastPass && (needsDashboardData || (activeView === 'integrations' && activeIntegrationsSection === 'communications') || (activeView === 'communications' && ['overview', 'email', 'settings'].includes(communicationsSection)) || (activeView === 'settings' && ['communications', 'communications_core', 'email_identities', 'social_accounts', 'integrations', 'integrations_core'].includes(activeSettingsSection)));
+                const needsSupportData = !oneTimeProgramLightPass && (needsDashboardData || ['admin', 'communications', 'api_usage', 'internal_dialogue', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'api_limits', 'bot_permissions'].includes(activeSettingsSection)));
+                const needsNotificationData = !oneTimeProgramLightPass && (needsDashboardData || ['admin', 'communications', 'content', 'contacts', 'service_providers', 'api_usage'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'bot_permissions'].includes(activeSettingsSection)));
+                const needsCommunicationsIntegrationData = !oneTimeProgramLightPass && (needsDashboardData || (activeView === 'integrations' && activeIntegrationsSection === 'communications') || (activeView === 'communications' && ['overview', 'email', 'settings'].includes(communicationsSection)) || (activeView === 'settings' && ['communications', 'communications_core', 'email_identities', 'social_accounts', 'integrations', 'integrations_core'].includes(activeSettingsSection)));
                 const needsIntegrationsReadinessData = currentWorkspaceIsGlobal() && (
                     needsDashboardData ||
                     activeView === 'watchdog' ||
@@ -37179,7 +37208,9 @@
                     (activeView === 'settings' && ['integrations', 'integrations_core'].includes(activeSettingsSection))
                 );
                 const needsAutomationData = activeView === 'automations';
-                const needsBrandingData = true; // lightweight; always fetch
+                const needsWorkspaceDirectoryData = !oneTimeProgramLightPass;
+                const needsBrandingData = !oneTimeProgramLightPass;
+                const shouldLoadServiceProvidersData = needsProviderData && !oneTimeProgramBackgroundOverviewPass;
                 const contentFilters = contentDataProjectFilters();
                 const communityFilters = communityDataProjectFilters();
                 const liveClassFilters = liveClassDataProjectFilters();
@@ -37194,9 +37225,9 @@
                 const selectedStudentFilters = selectedStudentDetailDataFilters();
                 const shouldLoadOneTimeContentData = needsContentData && (currentWorkspaceIsGlobal() || currentWorkspaceIsOneTime());
                 const [workspaceDirectoryRes, workspacePlatformRes, workspaceBrandingRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, workspaceUsersRes, workspaceRoleAuditRes, tasksRes, agentFleetRes, queueHealthRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, wapiPhonebookReportRes, parentAnnouncementsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, oneTimeClassesRes, oneTimeClassroomRes, oneTimeQuestionQueueRes, membersRes, liveSessionsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes, ws11CoursesRes, ws11WorksheetsRes, ws11CourseQuestionsRes, ws11GamificationRes, ws11ShoutoutsRes, googleIntegrationRes, notificationsRes, notificationPreferencesRes, communicationsIntegrationRes, automationsRes, integrationsReadinessRes] = await Promise.allSettled([
-                    api.getWorkspaceDirectory({ workspace: currentWorkspaceKey() }),
+                    needsWorkspaceDirectoryData ? dataRequestWithTimeout(api.getWorkspaceDirectory({ workspace: currentWorkspaceKey() }), null, 'workspace directory', nonCriticalDataTimeoutMs) : Promise.resolve(null),
                     needsPlatformData ? api.getWorkspacePlatform(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ workspaces: [], connector_settings: [], bot_actions: [], bot_action_logs: [] }),
-                    needsBrandingData ? api.getWorkspaceBranding(currentWorkspaceKey()).catch(() => null) : Promise.resolve(null),
+                    needsBrandingData ? dataRequestWithTimeout(api.getWorkspaceBranding(currentWorkspaceKey()).catch(() => null), null, 'workspace branding', nonCriticalDataTimeoutMs) : Promise.resolve(null),
                     needsCalendarData ? api.getCalendarEvents(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ events: [] }),
                     needsPipelineData ? api.getPipelineCards(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ cards: [] }),
                     needsDialogueData ? api.getInternalDialogue(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ threads: [], messages: [] }),
@@ -37210,7 +37241,7 @@
                     needsSupportData ? api.getSupportTickets() : Promise.resolve({ tickets: [] }),
                     needsSignupData || needsAccountingData ? api.getSignups() : Promise.resolve({ signups: [] }),
                     needsContactData ? api.getParentLeads(workspaceDataFilters) : Promise.resolve({ leads: [] }),
-                    needsProviderData ? api.getServiceProviders({ approved_only: false }) : Promise.resolve({ providers: [] }),
+                    shouldLoadServiceProvidersData ? dataRequestWithTimeout(api.getServiceProviders({ approved_only: false }), { providers: serviceProviders }, 'service providers', oneTimeProgramFastPass ? 3200 : 6000) : Promise.resolve({ providers: serviceProviders }),
                     needsContactData ? api.getContactCommunications(workspaceDataFilters) : Promise.resolve({ communications: [] }),
                     needsWapiPhonebookData ? api.getWapiPhonebookReport(100, { workspace: currentWorkspaceKey() }) : Promise.resolve(null),
                     needsAnnouncementData ? api.getParentAnnouncements(workspaceFilter ? { workspace: workspaceFilter, limit: 20 } : { limit: 20 }) : Promise.resolve({ announcements: [] }),
@@ -37390,7 +37421,7 @@
                     agentRunDetailTask = null;
                     agentRunsNotice = '';
                 }
-                if (needsRabbiLaunchData) await loadRabbiLaunchData();
+                if (needsRabbiLaunchData) await loadRabbiLaunchData({ overviewOnly: oneTimeProgramBackgroundOverviewPass });
                 if (activeView === 'intake') await loadIntakeData();
                 if (needsStudioData) await loadStudioData({ includeDetail: activeView === 'studio' });
                 if (activeView === 'students' || (activeView === 'admin' && adminSection === 'identity')) {

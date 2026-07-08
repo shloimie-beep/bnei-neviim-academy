@@ -73,6 +73,7 @@ const rabbiElieTokenFile = path.join(repoRoot, '.secrets', 'telegram-rabbi-elie-
 const googleOAuthClientFile = path.join(repoRoot, '.secrets', 'google-oauth-client.json');
 const googleRefreshTokenFile = path.join(repoRoot, '.secrets', 'google-refresh-token.txt');
 const googleDrivePipelineFile = path.join(repoRoot, '.secrets', 'google-drive-pipeline.json');
+const oneTimeDriveMapFile = path.join(repoRoot, 'ops', 'one-time-mishnah-class', 'drive-social-ingestion-map.json');
 const mediaInboxDir = path.join(repoRoot, 'media-inbox');
 const mediaDropDir = path.join(repoRoot, 'media-drop');
 const mediaDropInboxDir = path.join(mediaDropDir, 'inbox');
@@ -596,17 +597,19 @@ function buildApiSystemInstructions(config = {}) {
   if (isScopedProjectBot(config)) {
     return [
       'You are Rabbi Elie Scheller\'s scoped One Time Mishnah Class Telegram sidekick.',
-      'Answer using ONLY the repo/app context provided by the user message.',
+      'Answer using only the repo/app context, scoped One Time Drive context, and safe web research context provided to this message.',
       'Keep the reply practical, organized, and concise.',
       'Use ASCII characters only in the final reply.',
-      'Your scope is One Time Mishnah Class tasks, comments, brainstorming, shiur ideas, source-sheet work, Torah class prep, marketing/community/legacy CRM setup planning, and decisions inside that project.',
+      'Your scope is One Time Mishnah Class tasks, comments, contacts, parent/student/provider communications, content work, brainstorming, shiur ideas, source-sheet work, Torah class prep, marketing/community setup planning, and decisions inside that project.',
       'Do not expose or discuss BNA private Students, Accounting, Devices, student accountability, broad content pipelines, credentials, private access codes, or operator-only Changelog details.',
       'If asked for out-of-scope BNA private data, say this bot is scoped to One Time Mishnah Class and suggest asking Shloimie through the academy bot.',
+      'Support tickets are routed to Shloimie/super-admin review. Rabbi communications and class/student messages stay Rabbi/OneTime-scoped.',
+      'Drive and web research answers must be preview/read-only unless an approved scoped action result is provided. Do not claim that you moved Drive files, changed permissions, uploaded, sent, published, charged, granted access, edited credentials, or mutated external providers.',
       'Usually summarize and ask before creating tasks unless the message explicitly says to create, add, file, assign, or comment on a task.',
       'When a task should be created, ask for or infer the useful fields: category, assignee, urgency, decision required, and any context.',
       'Allowed assignees are Rabbi Elie Scheller, Shloimie, and Unassigned.',
       'Allowed One Time categories are Marketing, Content, Technology, Admin, Accounting, Community Setup, Community, General, Torah Class Prep, Source Sheets, and Shiur Ideas.',
-      'Codex/repo editing is disabled for this scoped bot unless Shloimie explicitly enables it later.',
+      'Codex/repo editing and external-provider writes are disabled for this scoped bot unless Shloimie explicitly enables and approves the exact action later.',
       'When a decision is needed, give 2-3 options formatted exactly like "Option A: label", "Option B: label", and "Option C: label" so Telegram can create buttons.',
       'Do not ask unnecessary questions when a concise answer or next step is clear.',
     ].join('\n');
@@ -1222,6 +1225,55 @@ async function buildDriveContextForMessage(text) {
   }
   lines.push('');
   lines.push('Use this Drive context to answer location/status questions directly. Do not claim access to personal/shared drives that are not listed here.');
+  return lines.join('\n');
+}
+
+function buildScopedOneTimeDriveContextForMessage(text) {
+  if (!shouldAttachDriveContext(text)) return '';
+  let driveMap = null;
+  try {
+    driveMap = JSON.parse(fs.readFileSync(oneTimeDriveMapFile, 'utf8'));
+  } catch (error) {
+    return `One Time Drive context is configured but the scoped map could not be read: ${error instanceof Error ? error.message : String(error)}`;
+  }
+
+  if (
+    driveMap.workspace_key !== 'rabbi_sheller_provider' ||
+    driveMap.project_key !== ONE_TIME_PROJECT_KEY
+  ) {
+    return 'One Time Drive context is blocked because the committed folder map is not scoped to rabbi_sheller_provider / one_time_mishnah_class.';
+  }
+
+  const lines = [
+    'One Time scoped Drive context for Rabbi Elie Scheller:',
+    `- Workspace/project: ${driveMap.workspace_key} / ${driveMap.project_key}`,
+  ];
+  if (driveMap.root?.name) {
+    lines.push(`- Root: ${driveMap.root.name}${driveMap.root.webViewLink ? ` (${driveMap.root.webViewLink})` : ''}`);
+  }
+  if (driveMap.content_media_folder?.name) {
+    lines.push(`- Content/media folder: ${driveMap.content_media_folder.name}${driveMap.content_media_folder.webViewLink ? ` (${driveMap.content_media_folder.webViewLink})` : ''}`);
+  }
+
+  const rabbiFacing = (driveMap.lanes || []).filter((lane) => lane.rabbi_facing);
+  const internal = (driveMap.lanes || []).filter((lane) => !lane.rabbi_facing);
+  lines.push('');
+  lines.push('Rabbi-facing upload lanes:');
+  for (const lane of rabbiFacing) {
+    lines.push([
+      `- ${lane.name || lane.key}`,
+      lane.copy_label ? `copy label: ${lane.copy_label}` : '',
+      lane.purpose ? `purpose: ${lane.purpose}` : '',
+      lane.handling ? `handling: ${lane.handling}` : '',
+      lane.webViewLink ? `link: ${lane.webViewLink}` : '',
+    ].filter(Boolean).join(' | '));
+  }
+  if (internal.length) {
+    lines.push('');
+    lines.push(`Internal/super-admin lanes exist but are not Rabbi-facing by default: ${internal.map((lane) => lane.name || lane.key).join('; ')}`);
+  }
+  lines.push('');
+  lines.push('Use this scoped map for Drive/folder explanations and safe previews only. Do not claim live file listings, move files, change permissions, upload, publish, or send notifications unless an explicit approved tool/result says that happened.');
   return lines.join('\n');
 }
 
@@ -2968,7 +3020,18 @@ async function runKimiApiFallback(config, messageText, chatId, messageId) {
   }
 
   const externalContextParts = [];
-  if (!isScopedProjectBot(config)) {
+  if (isScopedProjectBot(config)) {
+    try {
+      const driveContext = buildScopedOneTimeDriveContextForMessage(messageText);
+      if (driveContext) {
+        log(`Attached scoped One Time Drive context to Kimi API fallback message ${messageId} (${driveContext.length} chars)`);
+        externalContextParts.push(driveContext);
+      }
+    } catch (error) {
+      externalContextParts.push(`Scoped One Time Drive context lookup failed: ${error instanceof Error ? error.message : String(error)}`);
+      log(`Scoped One Time Drive context lookup failed for Kimi API fallback message ${messageId}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  } else {
     try {
       const driveContext = await buildDriveContextForMessage(messageText);
       if (driveContext) {
@@ -3153,7 +3216,18 @@ async function runOpenAiResearchResponse(config, messageText, system, user) {
 
 async function runApiFallback(config, messageText, chatId, messageId) {
   const externalContextParts = [];
-  if (!isScopedProjectBot(config)) {
+  if (isScopedProjectBot(config)) {
+    try {
+      const driveContext = buildScopedOneTimeDriveContextForMessage(messageText);
+      if (driveContext) {
+        log(`Attached scoped One Time Drive context to API fallback message ${messageId} (${driveContext.length} chars)`);
+        externalContextParts.push(driveContext);
+      }
+    } catch (error) {
+      externalContextParts.push(`Scoped One Time Drive context lookup failed: ${error instanceof Error ? error.message : String(error)}`);
+      log(`Scoped One Time Drive context lookup failed for API fallback message ${messageId}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  } else {
     try {
       const driveContext = await buildDriveContextForMessage(messageText);
       if (driveContext) {

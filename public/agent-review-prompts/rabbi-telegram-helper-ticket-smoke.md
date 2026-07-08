@@ -1,6 +1,6 @@
 # Agent Mode Prompt - Rabbi Telegram Helper Ticket Smoke
 
-Generated: 2026-07-08T19:09:16.471Z
+Generated: 2026-07-08T20:40:42.518Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -55,7 +55,7 @@ Use takeover mode if an Operations login is required. Do not ask for or store pa
 
 ## Work To Perform
 
-Focus: Rabbi Telegram readiness, super-admin support ticket ding routing, Rabbi helper scope, OneTime communications scope, and autonomous drop-off behavior without live sends.
+Focus: Rabbi Telegram readiness, super-admin support ticket ding routing, Rabbi helper scope, OneTime communications scope, scoped Drive/web sidekick behavior, and autonomous drop-off behavior without live sends.
 
 ## Exact Navigation
 
@@ -66,20 +66,25 @@ Focus: Rabbi Telegram readiness, super-admin support ticket ding routing, Rabbi 
 5. Create no real ticket unless the page explicitly exposes a safe review/test mode. If a safe test button exists, create a synthetic support ticket titled Agent Mode Rabbi ticket smoke using an @example.invalid identity, then verify it appears in Tickets and records a super-admin Telegram notification/readiness state. If no safe test mode exists, do not submit; inspect the UI and report BLOCKED with the missing safe-smoke action.
 6. Open Communications > Email or /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email. Confirm Rabbi/OneTime email is visibly separated from Shloimie/BNA email and no unrelated BNA inbox is shown as the active Rabbi inbox.
 7. Open Communications > WhatsApp or /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=whatsapp. Confirm WAPI/Rabbi communications are scoped to OneTime and outbound sends remain blocked unless explicitly approved. Do not send a WhatsApp message.
-8. Open /provider.html?admin_provider=one-time&section=mailbox or click Open Rabbi Provider Portal. Confirm Rabbi provider view shows communications/actions that Rabbi can actually use, and does not show random Super Admin configured/not-configured diagnostics without an action.
-9. Open the provider helper if visible. Ask: What messages need my attention? How do I see student questions? What is the Telegram bot status? The helper should answer in OneTime/Rabbi scope only and should not claim it sent Telegram, email, or WhatsApp.
-10. Open /parent.html?review=one-time and /student.html?review=one-time. Find the support/help flow. Do not submit a live support ticket unless a safe review/test mode is explicit. Verify the route makes clear that support tickets go to staff/super-admin review, while Rabbi class communications stay Rabbi-scoped.
-11. Open /operations/agent-review/dropoff with this prompt key if the tab is not already open. Save PASS, FAIL, or BLOCKED with exact routes, click path, screenshots/DOM notes if available, Telegram/readiness state, and smallest Codex-ready repair suggestions.
-12. If any route, login, helper, ticket flow, Telegram readiness check, or drop-off save fails, do not stop in chat. Save BLOCKED through the drop-off. If UI drop-off fails, POST to /api/bna/agent-review/results. Only end with OPERATIONS_DROPOFF_SAVED: AGR-... or OPERATIONS_DROPOFF_FAILED: ... with the full redacted payload.
+8. Find any Telegram/runtime/readiness panel or helper answer that describes Rabbi Telegram. Confirm it reports the Rabbi profile, OneTime scope, token/config presence, missing/present TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER, and no live send unless the chat ID is configured. If the chat ID is missing, mark live Rabbi Telegram delivery BLOCKED, not FAIL.
+9. Open /provider.html?admin_provider=one-time&section=mailbox or click Open Rabbi Provider Portal. Confirm Rabbi provider view shows communications/actions that Rabbi can actually use, and does not show random Super Admin configured/not-configured diagnostics without an action.
+10. Open the provider helper if visible. Ask: What messages need my attention? How do I see student questions? What is the Telegram bot status? Where should I upload tonight's class recording or source sheet? Can you research a Mishnah class marketing question? The helper should answer in OneTime/Rabbi scope only, use scoped Drive/web context as preview/read-only context, and should not claim it sent Telegram, email, WhatsApp, moved Drive files, uploaded media, changed permissions, or mutated external providers.
+11. If a safe Telegram bot simulator, no-send runtime smoke, or readiness readback exists, run it. If the only way to test is a live Telegram send or external Telegram login, do not run it; save BLOCKED with the exact missing safe smoke path and the chat-ID/runtime blocker.
+12. Open /parent.html?review=one-time and /student.html?review=one-time. Find the support/help flow. Do not submit a live support ticket unless a safe review/test mode is explicit. Verify the route makes clear that support tickets go to staff/super-admin review, while Rabbi class communications stay Rabbi-scoped.
+13. Verify brief Codex/agent progress updates are represented by a no-secret Telegram progress path: concise Done, Verified, Blocked, Next, Packet, and Task fields. Do not send a progress update from Agent Mode unless the hub explicitly exposes a safe no-send test.
+14. Open /operations/agent-review/dropoff with this prompt key if the tab is not already open. Save PASS, FAIL, or BLOCKED with exact routes, click path, screenshots/DOM notes if available, Telegram/readiness state, and smallest Codex-ready repair suggestions.
+15. If any route, login, helper, ticket flow, Telegram readiness check, or drop-off save fails, do not stop in chat. Save BLOCKED through the drop-off. If UI drop-off fails, POST to /api/bna/agent-review/results. Only end with OPERATIONS_DROPOFF_SAVED: AGR-... or OPERATIONS_DROPOFF_FAILED: ... with the full redacted payload.
 
 ## Required Audit Output
 
 - PASS/FAIL for Super Admin ticket visibility, ticket owner/routing to Shloimie, safe synthetic ticket path, Telegram ticket ding readiness, and no raw private ticket body in notification previews.
 - PASS/FAIL for Rabbi Telegram readiness: Rabbi profile, Rabbi token present, TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER present/missing, OneTime ops credentials present/missing, runtime/startup status, and exact blocker.
-- PASS/FAIL for Rabbi communications scope across Email, WhatsApp, provider mailbox, provider helper, parent support, and student support.
+- PASS/FAIL for Rabbi communications scope across Email, WhatsApp, provider mailbox, provider helper, parent support, student support, student/class messages, and internal reminders.
+- PASS/FAIL for REQ-20260708-100 scoped sidekick behavior: contacts/communications/content/task context, safe web research, scoped OneTime Drive map/context previews, no broad BNA Drive listing, and no claim of external mutation.
+- PASS/FAIL for brief progress-ding format: Done, Verified, Blocked, Next, Packet, and Task; no secrets, chat IDs, raw private message bodies, setup links, access codes, or full contact exports.
 - List every place where Rabbi/helper views expose BNA data, unrelated inboxes, raw diagnostics, setup internals, tokens, chat IDs, or non-actionable configured/not-configured cards.
-- Recommend Codex-ready repairs for missing safe-smoke buttons, missing Telegram readiness display, missing super-admin ticket ding state, wrong ticket owner routing, or drop-off failures.
-- Confirm no live Telegram, email, WhatsApp, WAPI, Drive, payment, access grant, Zoom, Vimeo, or credential mutation was performed by Agent Mode.
+- Recommend Codex-ready repairs for missing safe-smoke buttons, missing Telegram readiness display, missing Rabbi scoped Drive/context answer, missing super-admin ticket ding state, wrong ticket owner routing, missing progress-ding state, or drop-off failures.
+- Confirm no live Telegram, email, WhatsApp, WAPI, Drive, payment, access grant, Zoom, Vimeo, web account, or credential mutation was performed by Agent Mode.
 
 1. Open each listed review context from the hub.
 2. Confirm the visible "Reviewing as" banner, role, workspace/project, expiry, and Exit control.

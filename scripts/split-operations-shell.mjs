@@ -56,6 +56,14 @@ const deferredContentRendererStart = scriptBody.indexOf(deferredContentRendererS
 const deferredEnd = scriptBody.indexOf(deferredEndMarker, deferredContentRendererStart);
 const deferredLiveStart = scriptBody.indexOf(deferredLiveStartMarker, deferredEnd);
 const deferredLiveEnd = scriptBody.indexOf(deferredLiveEndMarker, deferredLiveStart);
+const emailScopeHelperStartMarker = '\n        const EMAIL_INBOX_SCOPES = [';
+const emailScopeHelperEndMarker = '\n        function emailRecordProjectKey(record = {}) {';
+const communicationsBundleStartMarker = '\n        async function fetchCommunicationsIntegrationBundle(filters = workspaceDataProjectFilters()) {';
+const communicationsBundleEndMarker = '\n        async function refreshCommunicationsIntegrations() {';
+const emailScopeHelperStart = scriptBody.indexOf(emailScopeHelperStartMarker, deferredStart);
+const emailScopeHelperEnd = scriptBody.indexOf(emailScopeHelperEndMarker, emailScopeHelperStart);
+const communicationsBundleStart = scriptBody.indexOf(communicationsBundleStartMarker, deferredStart);
+const communicationsBundleEnd = scriptBody.indexOf(communicationsBundleEndMarker, communicationsBundleStart);
 if (
   deferredStart < 0
   || deferredCommandBotStart < 0
@@ -67,11 +75,21 @@ if (
   || deferredEnd < 0
   || deferredLiveStart < 0
   || deferredLiveEnd < 0
+  || emailScopeHelperStart < 0
+  || emailScopeHelperEnd < 0
+  || communicationsBundleStart < 0
+  || communicationsBundleEnd < 0
 ) {
   throw new Error('Could not find Operations deferred renderer chunk boundaries.');
 }
 
-const deferredBlock = normalizeGeneratedText(`${scriptBody.slice(deferredStart + 1, deferredCommandBotStart)}
+const emailScopeHelperBlock = normalizeGeneratedText(scriptBody.slice(emailScopeHelperStart + 1, emailScopeHelperEnd));
+const communicationsBundleBlock = normalizeGeneratedText(scriptBody.slice(communicationsBundleStart + 1, communicationsBundleEnd));
+let deferredRendererBlock = scriptBody.slice(deferredStart + 1, deferredCommandBotStart);
+deferredRendererBlock = deferredRendererBlock
+  .replace(scriptBody.slice(emailScopeHelperStart, emailScopeHelperEnd), '')
+  .replace(scriptBody.slice(communicationsBundleStart, communicationsBundleEnd), '');
+const deferredBlock = normalizeGeneratedText(`${deferredRendererBlock}
 ${scriptBody.slice(deferredCommandBotEnd + 1, deferredAccountingHelperStart)}
 ${scriptBody.slice(deferredAccountingHelperEnd + 1, deferredContentHelperStart)}
 ${scriptBody.slice(deferredContentRendererStart + 1, deferredEnd)}
@@ -209,6 +227,12 @@ mainScriptBody = replaceRequired(
   mainScriptBody,
   '\n        function render(errors = [], options = {}) {',
   `\n${deferredLoader}\n        function render(errors = [], options = {}) {`,
+);
+
+mainScriptBody = replaceRequired(
+  mainScriptBody,
+  '\n        async function loadData(options = {}) {',
+  `\n${emailScopeHelperBlock}\n${communicationsBundleBlock}\n        async function loadData(options = {}) {`,
 );
 
 [

@@ -1,6 +1,6 @@
 # Agent Mode Prompt - One Time Public Signup And WhatsApp Workflow
 
-Generated: 2026-07-08T19:09:16.471Z
+Generated: 2026-07-08T20:40:42.518Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001

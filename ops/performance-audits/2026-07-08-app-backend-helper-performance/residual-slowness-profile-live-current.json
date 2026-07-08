@@ -1,0 +1,193 @@
+{
+  "base_url": "https://join.onetimeonetime.com",
+  "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+  "out_suffix": "live-current",
+  "captured_at": "2026-07-08T20:40:39.240Z",
+  "credentials_source": "ONE_TIME_OPS",
+  "login": {
+    "ok": true,
+    "status": 200,
+    "duration_ms": 1421,
+    "response_bytes": 469,
+    "cookie": "present",
+    "blocker": ""
+  },
+  "marks": {
+    "dom_content_loaded_ms": 1080,
+    "shell_visible_ms": 1929,
+    "overview_visible_ms": 1939,
+    "capture_complete_ms": 11942,
+    "page_marks": [
+      {
+        "name": "domcontentloaded",
+        "time_ms": 1078,
+        "detail": {}
+      },
+      {
+        "name": "load",
+        "time_ms": 1079,
+        "detail": {}
+      },
+      {
+        "name": "overview_visible",
+        "time_ms": 1939,
+        "detail": {}
+      },
+      {
+        "name": "capture_complete",
+        "time_ms": 11941,
+        "detail": {}
+      }
+    ]
+  },
+  "navigation": {
+    "dom_content_loaded_ms": 1078,
+    "load_event_ms": 1079,
+    "duration_ms": 1079,
+    "transfer_size": 982,
+    "encoded_body_size": 682
+  },
+  "fetches": [
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 1070,
+      "end_ms": 1438,
+      "duration_ms": 368,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 1484,
+      "end_ms": 1734,
+      "duration_ms": 250,
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "fetch_summary": {
+    "count": 2,
+    "before_overview_count": 2,
+    "after_overview_count": 0,
+    "median_ms": 250,
+    "p95_ms": 368,
+    "max_ms": 368,
+    "top_slowest": [
+      {
+        "method": "GET",
+        "path": "/api/bna/auth/me",
+        "start_ms": 1070,
+        "duration_ms": 368,
+        "status": 200,
+        "after_overview": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/auth/me",
+        "start_ms": 1484,
+        "duration_ms": 250,
+        "status": 200,
+        "after_overview": false
+      }
+    ],
+    "by_family": [
+      {
+        "path": "/api/bna/auth/me",
+        "count": 2,
+        "total_ms": 618,
+        "max_ms": 368,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 309
+      }
+    ]
+  },
+  "long_tasks": {
+    "count": 0,
+    "total_ms": 0,
+    "max_ms": 0,
+    "top": []
+  },
+  "resources": {
+    "count": 12,
+    "transfer_size": 308212,
+    "encoded_body_size": 304612,
+    "scripts": [
+      {
+        "path": "/js/platform-ui/platform-ui.js",
+        "transfer_size": 9861,
+        "encoded_body_size": 9561,
+        "duration_ms": 375
+      },
+      {
+        "path": "/js/platform-ui/platform-ui-fixtures.js",
+        "transfer_size": 4938,
+        "encoded_body_size": 4638,
+        "duration_ms": 506
+      },
+      {
+        "path": "/js/app-select.js",
+        "transfer_size": 4743,
+        "encoded_body_size": 4443,
+        "duration_ms": 255
+      },
+      {
+        "path": "/js/operations-shell.js",
+        "transfer_size": 208051,
+        "encoded_body_size": 207751,
+        "duration_ms": 597
+      }
+    ],
+    "styles": [
+      {
+        "path": "/css2",
+        "transfer_size": 1042,
+        "encoded_body_size": 742,
+        "duration_ms": 166
+      },
+      {
+        "path": "/css/operations-shell.css",
+        "transfer_size": 25381,
+        "encoded_body_size": 25081,
+        "duration_ms": 366
+      },
+      {
+        "path": "/css/bna-app-shell.css",
+        "transfer_size": 5606,
+        "encoded_body_size": 5306,
+        "duration_ms": 246
+      },
+      {
+        "path": "/css/platform-ui/platform-ui.css",
+        "transfer_size": 3688,
+        "encoded_body_size": 3388,
+        "duration_ms": 256
+      },
+      {
+        "path": "/css/one-time-operations.css",
+        "transfer_size": 6140,
+        "encoded_body_size": 5840,
+        "duration_ms": 315
+      }
+    ]
+  },
+  "dom": {
+    "dom_nodes": 523,
+    "button_count": 123,
+    "link_count": 3,
+    "script_count": 5,
+    "stylesheet_count": 6,
+    "body_text_length": 2311,
+    "body_text_preview": "One Time Mishnah Class Provider workspace for members, classes, Studio, communications, payments, tasks, and setup. CURRENT WORKSPACE One Time Mishnah Class Provider / Provider Workspace Admin Scoped Overview Workspace Setup Overview OV Members MB Classes & Content CC Studio ST Live Class LC Schedule SC Community CO Communications CM Automations AU Payments PA Tasks TS Reporting RP Integrations IN Workspace Setup SU Back to all modules PROGRAM SECTIONS Overview Choose a section for this workspace. Overview 0 Launch 0 Program 0 Membership 0 Content 0 Schedule 0 Questions 0 Access 0 Settings 0 Platform Support Help Logout ONE TIME MISHNAH CLASS / OVERVIEW / OVERVIEW Overview Members 1 Classes ",
+    "error_banners": [
+      "Some dashboard data could not load: emailInboxFilters is not defined"
+    ],
+    "one_time_route": "overview",
+    "title": "One Time Mishnah Class - Operations"
+  },
+  "console_errors": [],
+  "failed_requests": []
+}

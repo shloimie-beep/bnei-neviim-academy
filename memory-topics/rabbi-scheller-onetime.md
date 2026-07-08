@@ -46,3 +46,10 @@
   slides/PDFs instead of editable PowerPoint by default, watermarking/logging
   where useful, and clear residual-risk handling. Do not promise that browser
   media can fully prevent screenshots, screen recording, or determined capture.
+- Rabbi Scheller's Telegram bot and in-platform helper should behave as a
+  serious OneTime-scoped sidekick for his contacts, communications, student
+  messages, content work, safe web research, scoped Drive/context previews, and
+  internal reminders. Support tickets still route to Shloimie/super-admin with
+  concise Telegram dings; Rabbi receives OneTime communication alerts when his
+  Telegram chat ID is configured. External sends, Drive/Vimeo/Zoom/WAPI writes,
+  payments, access grants, credentials, and cross-workspace data remain gated.

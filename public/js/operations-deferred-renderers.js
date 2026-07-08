@@ -1259,34 +1259,6 @@
             `;
         }
 
-        const EMAIL_INBOX_SCOPES = [
-            {
-                id: 'bna',
-                label: 'BNA / Shloimie',
-                workspace: 'bna',
-                project_key: 'bna',
-                address: 'office@bneineviimacademy.org',
-                action_id: 'ACTION-OPERATIONS-EMAIL-INBOX-BNA',
-            },
-            {
-                id: 'rabbi',
-                label: 'Rabbi / One Time',
-                workspace: 'rabbi_sheller_provider',
-                project_key: 'one_time_mishnah_class',
-                address: 'info@onetimeonetime.com',
-                action_id: 'ACTION-OPERATIONS-EMAIL-INBOX-RABBI',
-            },
-        ];
-
-        function emailInboxScopeRecord(scopeId = emailInboxScope) {
-            return EMAIL_INBOX_SCOPES.find(scope => scope.id === scopeId) || EMAIL_INBOX_SCOPES[0];
-        }
-
-        function emailInboxFilters(scopeId = emailInboxScope) {
-            const scope = emailInboxScopeRecord(scopeId);
-            return workspaceDataProjectFilters(scope.workspace);
-        }
-
         function emailRecordProjectKey(record = {}) {
             const metadata = parseObjectMaybe(record.metadata);
             const workspace = normalizeWorkspaceKey(record.workspace_key || record.workspace || metadata.workspace_key || metadata.workspace || '');
@@ -4468,35 +4440,6 @@
                     </section>
                 </div>
             `;
-        }
-
-        async function fetchCommunicationsIntegrationBundle(filters = workspaceDataProjectFilters()) {
-            const [bufferHealthRes, bufferChannelsRes, resendHealthRes, resendDomainsRes, resendEventsRes, socialDraftsRes, emailDraftsRes, dnsTasksRes] = await Promise.allSettled([
-                api.getBufferIntegrationHealth(),
-                api.getBufferChannels(),
-                api.getResendIntegrationHealth(),
-                api.getResendDomains(),
-                api.getResendEvents(),
-                api.getSocialDrafts(filters),
-                api.getEmailDrafts(filters),
-                api.getDnsTasks({ ...filters, provider: 'resend' })
-            ]);
-            const errors = [bufferHealthRes, bufferChannelsRes, resendHealthRes, resendDomainsRes, resendEventsRes, socialDraftsRes, emailDraftsRes, dnsTasksRes]
-                .filter(result => result.status === 'rejected')
-                .map(result => result.reason?.message || 'Communications integration check failed');
-            return {
-                bufferHealth: bufferHealthRes.status === 'fulfilled' ? bufferHealthRes.value : communicationsIntegrationState.bufferHealth,
-                bufferChannels: bufferChannelsRes.status === 'fulfilled' ? (bufferChannelsRes.value?.channels || []) : communicationsIntegrationState.bufferChannels,
-                resendHealth: resendHealthRes.status === 'fulfilled' ? resendHealthRes.value : communicationsIntegrationState.resendHealth,
-                resendDomains: resendDomainsRes.status === 'fulfilled' ? (resendDomainsRes.value?.domains || []) : communicationsIntegrationState.resendDomains,
-                resendEvents: resendEventsRes.status === 'fulfilled' ? (resendEventsRes.value?.events || []) : communicationsIntegrationState.resendEvents,
-                socialDrafts: socialDraftsRes.status === 'fulfilled' ? (socialDraftsRes.value?.drafts || []) : communicationsIntegrationState.socialDrafts,
-                emailDrafts: emailDraftsRes.status === 'fulfilled' ? (emailDraftsRes.value?.drafts || []) : communicationsIntegrationState.emailDrafts,
-                dnsTasks: dnsTasksRes.status === 'fulfilled' ? (dnsTasksRes.value?.dns_tasks || []) : communicationsIntegrationState.dnsTasks,
-                errors,
-                notice: errors.length ? 'Needs setup' : 'Checked',
-                schedulePreview: communicationsIntegrationState.schedulePreview
-            };
         }
 
         async function refreshCommunicationsIntegrations() {

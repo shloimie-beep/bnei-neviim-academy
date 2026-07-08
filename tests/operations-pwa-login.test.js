@@ -97,9 +97,16 @@ test('Operations shell falls back scoped Studio/task-only sessions to allowed vi
   assert.match(operationsHtml, /function isStudioTaskOnlySession/);
   assert.match(operationsHtml, /\['studio', 'tasks', 'dashboard'\]/);
   assert.match(operationsHtml, /one_time_ai_video_worker/);
-  assert.match(operationsHtml, /const needsPipelineData = !oneTimeProgramFastPass && !studioTaskOnlySession/);
-  assert.match(operationsHtml, /const needsAgentFleetData = !oneTimeProgramFastPass && !studioTaskOnlySession/);
-  assert.match(operationsHtml, /const needsQueueHealthData = !oneTimeProgramFastPass && !studioTaskOnlySession/);
+  assert.match(operationsHtml, /const oneTimeProgramBackgroundOverviewPass = Boolean\(options\.background\) && oneTimeProgramOverviewPass/);
+  assert.match(operationsHtml, /const oneTimeProgramLightPass = oneTimeProgramFastPass \|\| oneTimeProgramBackgroundOverviewPass/);
+  assert.match(operationsHtml, /async function loadRabbiLaunchData\(options = \{\}\)/);
+  assert.match(operationsHtml, /const overviewOnly = options\.overviewOnly === true/);
+  assert.match(operationsHtml, /overviewOnly \? Promise\.resolve\(null\) : api\.getOneTimeProductSystem\(\)/);
+  assert.match(operationsHtml, /loadRabbiLaunchData\(\{ overviewOnly: oneTimeProgramBackgroundOverviewPass \}\)/);
+  assert.match(operationsHtml, /const needsPipelineData = !oneTimeProgramLightPass && !studioTaskOnlySession/);
+  assert.match(operationsHtml, /const needsAgentFleetData = !oneTimeProgramLightPass && !studioTaskOnlySession/);
+  assert.match(operationsHtml, /const needsQueueHealthData = !oneTimeProgramLightPass && !studioTaskOnlySession/);
+  assert.ok(serverJs.includes("if (/^\\/api\\/bna\\/workspace-settings\\/[^/]+\\/branding$/.test(routePath) && method === 'GET') return true;"));
   assert.doesNotMatch(operationsHtml, /if \(!viewAllowed\(currentView\)\) currentView = 'dashboard'/);
 });
 

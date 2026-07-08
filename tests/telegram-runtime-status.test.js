@@ -95,6 +95,23 @@ test('academy bridge can use env-based Google Drive auth on hosted worker', () =
   assert.match(workerRunbook, /GOOGLE_DRIVE_PIPELINE_FOLDER_ID=\$\{\{skillful-motivation\.GOOGLE_DRIVE_PIPELINE_FOLDER_ID\}\}/);
 });
 
+test('Rabbi scoped bridge uses only One Time Drive map context for Drive questions', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+  const rabbiGuide = fs.readFileSync('agents/rabbi-elie-scheller/AGENTS.md', 'utf8');
+  const rabbiMemory = fs.readFileSync('agents/rabbi-elie-scheller/MEMORY.md', 'utf8');
+
+  assert.match(bridge, /oneTimeDriveMapFile/);
+  assert.match(bridge, /function buildScopedOneTimeDriveContextForMessage/);
+  assert.match(bridge, /driveMap\.workspace_key !== 'rabbi_sheller_provider'/);
+  assert.match(bridge, /driveMap\.project_key !== ONE_TIME_PROJECT_KEY/);
+  assert.match(bridge, /Attached scoped One Time Drive context to API fallback message/);
+  assert.match(bridge, /Attached scoped One Time Drive context to Kimi API fallback message/);
+  assert.match(bridge, /Drive and web research answers must be preview\/read-only/);
+  assert.match(bridge, /Support tickets are routed to Shloimie\/super-admin review/);
+  assert.match(rabbiGuide, /scoped Drive map\/context previews/);
+  assert.match(rabbiMemory, /safe web\s+research, scoped Drive\/context previews/);
+});
+
 test('academy bridge exits loudly after repeated duplicate getUpdates conflicts', () => {
   const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
 

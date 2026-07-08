@@ -7,6 +7,8 @@
   `raw-input/RAW-20260708-029-rabbi-telegram-helper-agent-scope-continuation.md`
 - Latest continuation intake:
   `raw-input/RAW-20260708-031-rabbi-telegram-agent-parity-progress-dings.md`
+- Agent-loop expansion intake:
+  `raw-input/RAW-20260708-033-rabbi-telegram-agent-loop-expansion.md`
 - Source channel: `codex_chat`
 - Workspace: `rabbi_sheller_provider`
 - Project: `one_time_mishnah_class`
@@ -25,6 +27,12 @@
   External sends, publishing, Drive writes, uploads, payments, access grants,
   and cross-workspace data access remain gated by explicit approval and scoped
   credentials.
+- Rabbi Telegram and the in-platform Rabbi helper should share the same
+  OneTime-scoped sidekick contract for contacts, communications, class/student
+  messages, content, safe web research, scoped Drive map/context previews, and
+  internal reminders.
+- Agent Mode must treat Rabbi live Telegram delivery as `BLOCKED` until the
+  intended `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured and verified.
 
 ## Requirements
 
@@ -37,6 +45,13 @@
 | `REQ-20260708-085` | Rabbi Telegram runtime readiness and blocker clarity | `Done / Runtime Blocked` | A no-secret readiness check reports Rabbi token/chat ID/ops credential presence, runtime profile, startup status, and exact blocker. Missing Rabbi chat ID stays a blocker until Shloimie supplies or triggers it. | `scripts/check-rabbi-telegram-ticket-readiness.mjs`; `npm run telegram:rabbi:readiness`; evidence in `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md` |
 | `REQ-20260708-096` | Rabbi Telegram communication alerts | `Deployed / runtime chat ID blocked` | OneTime/Rabbi parent/provider portal messages, Resend inbound email, and inbound WAPI/WhatsApp communications trigger a Rabbi Telegram notification only when scoped to `rabbi_sheller_provider` / `one_time_mishnah_class`; support tickets continue to ding Shloimie/super-admin; Telegram alert text is metadata-only and excludes raw private bodies, secrets, setup links, access codes, and unrelated BNA/provider data. | `src/lib/bna/telegram-notifications.js`, `server.js`, `scripts/check-rabbi-telegram-ticket-readiness.mjs`, `tests/rabbi-telegram-notifications.test.js`; PASS `node --check src/lib/bna/telegram-notifications.js`; PASS `node --check server.js`; PASS `node --check scripts/check-rabbi-telegram-ticket-readiness.mjs`; PASS `node --test tests/rabbi-telegram-notifications.test.js` 9/9; PASS focused prompt/scope tests 25/25; PASS provider mailbox / Resend inbound / WAPI tests 27/27; PASS full `npm test` 1660/1660; Railway deployment `500242a9-860f-4599-a145-eb9515bae0a4` `SUCCESS`; PASS OneTime live smoke; readiness evidence `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md`. Full live Rabbi send remains blocked until `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured. |
 | `REQ-20260708-097` | Rabbi Telegram/helper agent parity, progress dings, and Agent Mode bot smokes | `Open / partial deployed / chat ID blocked` | Rabbi Telegram bot and in-portal helper share the same OneTime-scoped helper contract for contacts, communications, content, Drive/search previews, reminders, and safe internal work; Codex/agent task progress can produce concise Telegram summaries with done/pending/blocker/next-step status; Agent Mode prompts explicitly test bot/helper flows and always save PASS/FAIL/BLOCKED results to Operations drop-off, even when login, route, bot runtime, or credentials fail. | Source `RAW-20260708-031`; read-only Rabbi helper wrapper batch deployed through Railway deployment `2107fae5-1a73-49ec-96e8-5a3a66bb8e43`; OneTime live smoke passed; live prompt readback returned `200` with `REQ-20260708-093` and `RABBI-HELPER-SCOPE-163`; runtime live Rabbi Telegram delivery remains blocked by `DEC-20260708-016`. |
+| `REQ-20260708-100` | Rabbi Telegram full scoped sidekick expansion | `Local verified / deploy pending / chat ID blocked` | Rabbi Telegram bot and Rabbi in-platform helper can answer from OneTime-scoped contacts, communications, student/class messages, content/task state, safe web research context, and scoped Drive map/context previews; support tickets continue to route to Shloimie/super-admin with concise Telegram dings; Rabbi receives communication/internal reminder dings only after his chat ID is configured; Agent Mode prompts smoke-test bot/helper/drop-off behavior and save PASS/FAIL/BLOCKED results without live external sends or provider writes. | Source `RAW-20260708-033`; updated Rabbi bot guide/memory, scoped OneTime Drive context in `scripts/telegram-kimi-bridge.mjs`, Agent Mode smoke prompt/readback artifacts, and runtime tests. PASS `node --check scripts/telegram-kimi-bridge.mjs`; PASS focused prompt/runtime/helper tests; PASS full `npm test` 1666/1666; PASS no-write `npm run telegram:rabbi:readiness`. Live Rabbi Telegram delivery remains blocked until `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured. |
+
+## Continuation Tasks
+
+| ID | Canonical key | Task | Owner | Workspace/project | Source | Requirement | Next action | Visible lane | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `TASK-20260708-017` | rabbi_telegram_sidekick_smoke_contract | Update Rabbi Telegram runtime context, Agent Mode smoke instructions, and readiness evidence for the full scoped sidekick loop. | Codex | `rabbi_sheller_provider` / `one_time_mishnah_class` | `RAW-20260708-033` | `REQ-20260708-100` | Commit/push the locally verified sidekick batch, deploy/live-smoke OneTime, then live-readback the refreshed Agent Mode prompt. Rabbi live-send smoke remains blocked until the intended chat ID exists. | internal | Local verified / deploy pending |
 
 ## Decisions / Blockers
 
@@ -58,6 +73,10 @@
 5. Add Agent Mode smoke prompts for Rabbi Telegram/helper/ticket routing.
 6. Verify, deploy OneTime if server-visible behavior changed, live-smoke, then
    record ledger/changelog proof.
+7. Continue `REQ-20260708-100` by aligning Rabbi bot runtime context with the
+   scoped helper contract, adding scoped OneTime Drive/context previews,
+   refreshing Agent Mode smoke prompts, and keeping live Rabbi delivery blocked
+   until `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured.
 
 ## Closeout Checklist
 

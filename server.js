@@ -9011,6 +9011,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/workspaces' && method === 'GET') return true;
   if (/^\/api\/bna\/workspaces\/[^/]+$/.test(routePath) && method === 'GET') return true;
   if (routePath === '/api/bna/session/workspace' && method === 'POST') return true;
+  if (/^\/api\/bna\/workspace-settings\/[^/]+\/branding$/.test(routePath) && method === 'GET') return true;
   if (routePath === '/api/bna/agent-fleet/status' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/helper/context' && method === 'GET') return true;
   if (routePath === '/api/bna/helper/tools' && method === 'GET') return true;
