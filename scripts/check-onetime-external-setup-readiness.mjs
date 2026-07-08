@@ -241,6 +241,21 @@ function runRailwayVariablesReadback({ repoRoot, service = 'one-time-web', envir
       one_time_public_domain_matches: variables.ONE_TIME_PUBLIC_DOMAIN === 'join.onetimeonetime.com',
       default_workspace_matches: variables.DEFAULT_WORKSPACE_KEY === 'rabbi_sheller_provider',
       default_project_matches: variables.DEFAULT_PROJECT_KEY === 'one_time_mishnah_class',
+      one_time_drive_drop_folder_present: Boolean(normalizeValue(
+        variables.ONE_TIME_DRIVE_DROP_FOLDER_ALIAS ||
+        variables.ONE_TIME_DRIVE_DROP_FOLDER_ID ||
+        variables.DRIVE_DROP_FOLDER_ID,
+      )),
+      vimeo_access_token_present: Boolean(normalizeValue(
+        variables.VIMEO_ACCESS_TOKEN ||
+        variables.ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS,
+      )),
+      vimeo_private_smoke_target_present: Boolean(normalizeValue(
+        variables.VIMEO_TEST_PROJECT_URI ||
+        variables.BNA_VIMEO_TEST_PROJECT_URI ||
+        variables.VIMEO_TEST_PROJECT_NAME ||
+        variables.BNA_VIMEO_TEST_PROJECT_NAME,
+      )),
     };
   } catch {
     return { ok: false, attempted: true, source, reason: 'Railway returned non-JSON variable output.' };
@@ -470,6 +485,9 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     repoRoot,
     inspectKeyholder,
   );
+  const driveDropFolderConfigured =
+    driveDropFolder.configured ||
+    railway.current_variables?.one_time_drive_drop_folder_present === true;
 
   const stripeTestSecret = configuredFromEnvOrSecret(
     env,
@@ -638,14 +656,16 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       id: 'SETUP-ONETIME-VIMEO-001',
       title: 'Vimeo / Drive / OBS media setup',
       clears: ['REQ-20260701-713'],
-      ready: vimeoAccess.configured && driveDropFolder.configured,
+      ready: vimeoAccess.configured && driveDropFolderConfigured,
       missing: [
         vimeoAccess.configured ? '' : 'VIMEO_ACCESS_TOKEN_alias_or_keyholder_path',
-        driveDropFolder.configured ? '' : 'ONE_TIME_DRIVE_DROP_FOLDER_ALIAS',
+        driveDropFolderConfigured ? '' : 'ONE_TIME_DRIVE_DROP_FOLDER_ALIAS',
       ],
       warnings: [
         vimeoClientId.configured && vimeoClientSecret.configured && vimeoAccess.configured
-          ? 'Vimeo client credentials and access token are present by safe keyholder alias; remaining media setup needs the One Time Drive/drop folder and any private test-folder/OBS decisions.'
+          ? driveDropFolderConfigured
+            ? 'Vimeo client credentials, access token, and One Time Drive/drop folder are present by safe keyholder/Railway readback; private Vimeo smoke still needs a valid upload token plus test account/project confirmation.'
+            : 'Vimeo client credentials and access token are present by safe keyholder alias; remaining media setup needs the One Time Drive/drop folder and any private test-folder/OBS decisions.'
           : vimeoClientId.configured && vimeoClientSecret.configured
             ? 'Vimeo client credentials are present by safe keyholder alias; upload/readback still needs an access token alias.'
             : 'Vimeo client credential aliases were not all found.',

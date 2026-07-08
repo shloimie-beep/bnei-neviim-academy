@@ -1,0 +1,39 @@
+﻿{
+  "generated_at": "2026-07-08T15:20:02.829Z",
+  "command": "node scripts/vimeo-private-smoke.mjs --json",
+  "safe_write_policy": {
+    "real_class_recordings_uploaded": false,
+    "public_publish_performed": false,
+    "existing_production_assets_modified_or_deleted": false,
+    "token_printed": false
+  },
+  "result": {
+    "provider": "vimeo",
+    "status": "credential_invalid",
+    "readiness_status": "credential_invalid",
+    "ready": false,
+    "reason": "Vimeo rejected the configured access token.",
+    "next_action": "Regenerate the Vimeo token from the intended app/account and update VIMEO_ACCESS_TOKEN server-side.",
+    "external_write_performed": false,
+    "public_publish_performed": false,
+    "ok": false,
+    "error": {
+      "message": "Something strange occurred. Please get in touch with the app's creator.",
+      "status": 401,
+      "code": null,
+      "blocker": null
+    },
+    "capabilities": {
+      "read_account": false,
+      "upload": false,
+      "edit_metadata": false,
+      "private_playback": false
+    },
+    "smoke_ran": false
+  },
+  "credential_readiness": {
+    "vimeo_access_token_present": true,
+    "vimeo_access_token_source": "keyholder",
+    "token_printed": false
+  }
+}

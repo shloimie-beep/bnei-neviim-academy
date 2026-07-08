@@ -1,12 +1,12 @@
 # One Time External Setup Readiness Check
 
-Generated: 2026-07-02T18:02:27.624Z
+Generated: 2026-07-08T15:35:31.276Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: full_setup
 External write performed: false
 Secret values printed: false
-Ready items: 3/8
+Ready items: 4/8
 All external setup ready: false
 
 ## Items
@@ -41,10 +41,10 @@ Warnings: Zoom account/client credentials are present by safe keyholder alias; c
 
 ### SETUP-ONETIME-VIMEO-001 - Vimeo / Drive / OBS media setup
 
-Ready: false
+Ready: true
 Clears: REQ-20260701-713
-Missing: VIMEO_ACCESS_TOKEN_alias_or_keyholder_path, ONE_TIME_DRIVE_DROP_FOLDER_ALIAS
-Warnings: Vimeo client credentials are present by safe keyholder alias; upload/readback still needs an access token alias.
+Missing: none
+Warnings: Vimeo client credentials, access token, and One Time Drive/drop folder are present by safe keyholder/Railway readback; private Vimeo smoke still needs a valid upload token plus test account/project confirmation.
 
 ### SETUP-ONETIME-STRIPE-001 - Rabbi Stripe sandbox
 
@@ -57,7 +57,7 @@ Warnings: Live Stripe key appears configured; sandbox-only smoke must not use it
 
 Ready: false
 Clears: not mapped
-Missing: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number
+Missing: whapi_wapi_instance_id, whapi_wapi_phone_number
 Warnings: none
 
 ### SETUP-ONETIME-CAMPAIGN-001 - Campaign seed / real campaign

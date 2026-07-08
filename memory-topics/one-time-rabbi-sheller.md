@@ -23,6 +23,13 @@
   `G:\My Drive\OneTime Vimeo Studio Desktop Test`. V1 automatic trimming is
   limited to leading/trailing black or silence edges and must not be described
   as semantic class-start/class-end detection.
+- On 2026-07-08, Shloimie's broad approval allowed safe continuation of the
+  One Time Vimeo workflow. OpenAI transcription passed on a synthetic speech
+  smoke through keyholder credential `openaiv2.txt`, with transcript body kept
+  out of GitHub proof. The One Time Drive drop folder ID was set on the
+  `one-time-web` Railway production service with `--skip-deploys`. Vimeo live
+  upload remains blocked because the configured keyholder Vimeo token returned
+  401 in private smoke; no upload or public publish was performed.
 - One Time transcript-derived bot knowledge must use only approved scoped
   class transcript/session context and must not leak BNA Academy, unrelated
   provider, private student, or raw transcript evidence into member/student

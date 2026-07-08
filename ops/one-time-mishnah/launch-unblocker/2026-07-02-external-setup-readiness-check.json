@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T18:02:27.624Z",
+  "generated_at": "2026-07-08T15:35:31.276Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -215,18 +215,21 @@
   "railway_variable_readback": {
     "ok": true,
     "attempted": true,
-    "source": "railway_token_or_env",
+    "source": "railway_cli_session_fallback",
     "service": "one-time-web",
     "environment": "production",
-    "key_count": 40,
+    "key_count": 45,
     "database_url_present": true,
     "database_url_length": 98,
     "database_url_usable": true,
     "one_time_public_domain_matches": true,
     "default_workspace_matches": true,
-    "default_project_matches": true
+    "default_project_matches": true,
+    "one_time_drive_drop_folder_present": true,
+    "vimeo_access_token_present": false,
+    "vimeo_private_smoke_target_present": false
   },
-  "ready_count": 3,
+  "ready_count": 4,
   "total_count": 8,
   "all_required_external_setup_ready": false,
   "post_setup_execution_packet": "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md",
@@ -303,13 +306,10 @@
       "clears_requirements": [
         "REQ-20260701-713"
       ],
-      "ready": false,
-      "missing_fields": [
-        "VIMEO_ACCESS_TOKEN_alias_or_keyholder_path",
-        "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS"
-      ],
+      "ready": true,
+      "missing_fields": [],
       "warnings": [
-        "Vimeo client credentials are present by safe keyholder alias; upload/readback still needs an access token alias."
+        "Vimeo client credentials, access token, and One Time Drive/drop folder are present by safe keyholder/Railway readback; private Vimeo smoke still needs a valid upload token plus test account/project confirmation."
       ],
       "verification_after_setup": [
         "fingerprint-only Vimeo readback",
@@ -340,7 +340,6 @@
       "clears_requirements": [],
       "ready": false,
       "missing_fields": [
-        "whapi_wapi_token_alias",
         "whapi_wapi_instance_id",
         "whapi_wapi_phone_number"
       ],
@@ -381,17 +380,6 @@
       ]
     },
     {
-      "id": "SETUP-ONETIME-VIMEO-001",
-      "title": "Vimeo / Drive / OBS media setup",
-      "missing_fields": [
-        "VIMEO_ACCESS_TOKEN_alias_or_keyholder_path",
-        "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS"
-      ],
-      "warnings": [
-        "Vimeo client credentials are present by safe keyholder alias; upload/readback still needs an access token alias."
-      ]
-    },
-    {
       "id": "SETUP-ONETIME-STRIPE-001",
       "title": "Rabbi Stripe sandbox",
       "missing_fields": [
@@ -406,7 +394,6 @@
       "id": "SETUP-ONETIME-WHAPI-001",
       "title": "Whapi/WAPI provider details",
       "missing_fields": [
-        "whapi_wapi_token_alias",
         "whapi_wapi_instance_id",
         "whapi_wapi_phone_number"
       ],

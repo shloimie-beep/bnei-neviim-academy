@@ -5,6 +5,11 @@ const { spawnSync } = require('node:child_process');
 const ffmpegPath = require('ffmpeg-static');
 
 const folderWorkflow = require('./one-time-vimeo-folder-library');
+const {
+  classifyProviderHttpError,
+  loadOpenAiCredentialCandidates,
+  redactProviderError,
+} = require('../integrations/ai-credential-resolver');
 
 const ONE_TIME_WORKSPACE_KEY = folderWorkflow.ONE_TIME_WORKSPACE_KEY;
 const ONE_TIME_PROJECT_KEY = folderWorkflow.ONE_TIME_PROJECT_KEY;
@@ -99,16 +104,28 @@ function redactCredentialText(value = '') {
     .replace(/Bearer\s+[A-Za-z0-9._~+/-]+/gi, 'Bearer [redacted]');
 }
 
-function readOpenAiApiKey(repoRoot = process.cwd(), options = {}) {
-  if (usableSecretValue(options.openaiApiKey)) return usableSecretValue(options.openaiApiKey);
-  if (usableSecretValue(process.env.OPENAI_API_KEY)) return usableSecretValue(process.env.OPENAI_API_KEY);
-  for (const fileName of ['openai-api-key.txt', 'openaiv2.txt']) {
-    const secretPath = path.join(repoRoot, '.secrets', fileName);
-    if (!fs.existsSync(secretPath)) continue;
-    const value = usableSecretValue(fs.readFileSync(secretPath, 'utf8'));
-    if (value) return value;
+function readOpenAiCredentialCandidates(repoRoot = process.cwd(), options = {}) {
+  const direct = usableSecretValue(options.openaiApiKey);
+  if (Object.prototype.hasOwnProperty.call(options, 'openaiApiKey') && !direct) return [];
+  if (direct) {
+    return [{
+      provider: 'openai',
+      source: 'options.openaiApiKey',
+      source_type: 'direct_option',
+      apiKey: direct,
+      fingerprint: sha256(direct).slice(0, 12),
+    }];
   }
-  return '';
+  return loadOpenAiCredentialCandidates({
+    repoRoot,
+    env: options.env || process.env,
+    keyholderRoots: options.keyholderRoots,
+    secretsRoot: options.secretsRoot,
+  });
+}
+
+function readOpenAiApiKey(repoRoot = process.cwd(), options = {}) {
+  return readOpenAiCredentialCandidates(repoRoot, options)[0]?.apiKey || '';
 }
 
 function sidecarPathsFor(videoPath, dropRoot) {
@@ -532,8 +549,8 @@ async function transcribeRenderedOutput(candidate, rendered = {}, options = {}) 
   const mediaPath = rendered.video_path || candidate.output.video_path;
   if (!options.transcribeOpenAI || !mediaPath || !fs.existsSync(mediaPath)) return null;
   const repoRoot = path.resolve(options.repoRoot || process.cwd());
-  const apiKey = readOpenAiApiKey(repoRoot, options);
-  if (!apiKey) {
+  const credentials = readOpenAiCredentialCandidates(repoRoot, options);
+  if (!credentials.length) {
     return { status: 'blocked', error: 'OPENAI_API_KEY is not configured for transcription.' };
   }
   const stats = fs.statSync(mediaPath);
@@ -543,41 +560,73 @@ async function transcribeRenderedOutput(candidate, rendered = {}, options = {}) 
       error: `Edited output is ${stats.size} bytes; transcription smoke limit is ${TRANSCRIPTION_MAX_BYTES} bytes.`,
     };
   }
-  const form = new FormData();
   const model = options.transcriptionModel || DEFAULT_TRANSCRIPTION_MODEL;
-  form.append('model', model);
-  form.append('file', new Blob([fs.readFileSync(mediaPath)], { type: mimeTypeForMedia(mediaPath) }), path.basename(mediaPath));
-  form.append('response_format', 'json');
-  form.append('prompt', 'This is a short One Time Mishnah workflow smoke or class recording. Preserve Hebrew and English words when clear. Do not invent content.');
-  const response = await fetch(`${String(options.openAiBaseUrl || DEFAULT_OPENAI_BASE_URL).replace(/\/+$/, '')}/audio/transcriptions`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}` },
-    body: form,
-    signal: AbortSignal.timeout(Math.max(1000, Number(options.openAiTimeoutMs || 120000) || 120000)),
-  });
-  const body = await response.text();
-  if (!response.ok) {
-    return { status: 'failed', error: redactCredentialText(`OpenAI transcription ${response.status}: ${body.slice(0, 300)}`) };
+  const mediaBytes = fs.readFileSync(mediaPath);
+  const failures = [];
+  for (const credential of credentials) {
+    const form = new FormData();
+    form.append('model', model);
+    form.append('file', new Blob([mediaBytes], { type: mimeTypeForMedia(mediaPath) }), path.basename(mediaPath));
+    form.append('response_format', 'json');
+    form.append('prompt', 'This is a short One Time Mishnah workflow smoke or class recording. Preserve Hebrew and English words when clear. Do not invent content.');
+    const response = await fetch(`${String(options.openAiBaseUrl || DEFAULT_OPENAI_BASE_URL).replace(/\/+$/, '')}/audio/transcriptions`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${credential.apiKey}` },
+      body: form,
+      signal: AbortSignal.timeout(Math.max(1000, Number(options.openAiTimeoutMs || 120000) || 120000)),
+    });
+    const body = await response.text();
+    if (!response.ok) {
+      const classification = classifyProviderHttpError(response.status, body);
+      failures.push({
+        source: credential.source,
+        source_type: credential.source_type,
+        classification,
+        error: redactProviderError(`OpenAI transcription ${response.status}: ${body.slice(0, 300)}`, [credential.apiKey]),
+      });
+      if (classification === 'auth_invalid_key') continue;
+      break;
+    }
+    let parsed = {};
+    try {
+      parsed = JSON.parse(body);
+    } catch (error) {
+      return {
+        status: 'failed',
+        provider: 'openai',
+        model,
+        credential_source: credential.source,
+        credential_source_type: credential.source_type,
+        error: redactCredentialText(`OpenAI transcription JSON parse failed: ${error.message}`),
+      };
+    }
+    const text = transcriptTextFromOpenAiResponse(parsed);
+    candidate.transcript.present = Boolean(text);
+    candidate.transcript.status = text ? 'review' : candidate.transcript.status;
+    candidate.transcript.length = text.length;
+    candidate.transcript.sha256 = text ? sha256(text).slice(0, 16) : '';
+    candidate.transcript.text = text;
+    return {
+      status: text ? 'transcribed' : 'empty',
+      provider: 'openai',
+      model,
+      credential_source: credential.source,
+      credential_source_type: credential.source_type,
+      transcript_present: Boolean(text),
+      transcript_length: text.length,
+      transcript_sha256: candidate.transcript.sha256,
+      attempted_credential_count: failures.length + 1,
+    };
   }
-  let parsed = {};
-  try {
-    parsed = JSON.parse(body);
-  } catch (error) {
-    return { status: 'failed', error: redactCredentialText(`OpenAI transcription JSON parse failed: ${error.message}`) };
-  }
-  const text = transcriptTextFromOpenAiResponse(parsed);
-  candidate.transcript.present = Boolean(text);
-  candidate.transcript.status = text ? 'review' : candidate.transcript.status;
-  candidate.transcript.length = text.length;
-  candidate.transcript.sha256 = text ? sha256(text).slice(0, 16) : '';
-  candidate.transcript.text = text;
   return {
-    status: text ? 'transcribed' : 'empty',
+    status: 'failed',
     provider: 'openai',
     model,
-    transcript_present: Boolean(text),
-    transcript_length: text.length,
-    transcript_sha256: candidate.transcript.sha256,
+    attempted_credential_count: failures.length,
+    error: failures.length
+      ? `OpenAI transcription failed for configured credential candidates: ${failures.map((failure) => `${failure.source_type}:${failure.classification}`).join(', ')}`
+      : 'OpenAI transcription failed before a provider response was available.',
+    credential_failures: failures,
   };
 }
 
@@ -834,7 +883,10 @@ async function runStudioPipeline(options = {}) {
     const safe = safeCandidateReport(candidate, rendered, repoRoot);
     if (rendered.transcription) {
       safe.transcription_result = rendered.transcription;
-      if (rendered.transcription.provider === 'openai' && rendered.transcription.status === 'transcribed') {
+      if (
+        rendered.transcription.provider === 'openai'
+        && !['failed', 'blocked'].includes(rendered.transcription.status)
+      ) {
         report.external_ai_transcription_performed = true;
       }
     }
@@ -964,6 +1016,7 @@ module.exports = {
   parseBlackSegments,
   parseSilenceSegments,
   probeVideo,
+  readOpenAiCredentialCandidates,
   readOpenAiApiKey,
   redactCredentialText,
   runStudioPipeline,

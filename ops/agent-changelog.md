@@ -34298,3 +34298,32 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no WhatsApp sent, no WAPI credential stored, no transcript/
   Vimeo/Drive promotion, no parent invite resend, no payment/access/DNS/Zoom/
   email mutation.
+
+## 2026-07-08T18:45:00+03:00 - OneTime Vimeo approved provider readiness verified
+
+- Registered `RAW-20260708-013` as broad approval to continue safe OneTime
+  Vimeo workflow steps, while keeping real upload, portal/latest-class, and bot
+  knowledge blocked until provider and class-package gates pass.
+- Added keyholder-first OpenAI credential candidate handling to the OneTime
+  Vimeo Studio pipeline so stale repo secrets do not block a valid keyholder
+  credential.
+- Ran a synthetic speech transcription smoke. The report records
+  `external_ai_transcription_performed=true`, transcript present, length `73`,
+  and hash `32e598043f89f6f4`; no transcript body was committed.
+- Verified the Drive folder `04 Content and Media Intake`
+  (`1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv`) through the Drive connector and set
+  `ONE_TIME_DRIVE_DROP_FOLDER_ID` on the `one-time-web` Railway production
+  service with `--skip-deploys`.
+- Updated the external setup readiness checker so safe Railway readback counts
+  the Drive drop folder. The Vimeo/Drive setup item is now ready at
+  config-presence level, while unrelated launch setup areas remain open.
+- Updated the Vimeo private smoke script to read the token through the
+  keyholder helper without printing it, then attempted the approved private
+  synthetic smoke. Vimeo returned `credential_invalid` 401, so no upload,
+  public publish, production DB write, portal publish, or bot promotion was
+  performed.
+- Evidence: `tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md`,
+  PQC packet
+  `ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/05-approved-provider-readiness-transcription.product-quality.json`,
+  transcription smoke report, private smoke blocker report, and external
+  readiness report.

@@ -226,6 +226,25 @@ test('studio OpenAI transcription helpers extract text without exposing keys', (
   assert.doesNotMatch(pipeline.redactCredentialText('bad sk-proj-abc123XYZ'), /sk-proj-abc123XYZ/);
 });
 
+test('studio OpenAI key resolver prefers keyholder candidates over stale repo secrets', () => {
+  const root = tempDir();
+  const keyholder = path.join(root, 'BNA-Keyholder');
+  const secrets = path.join(root, '.secrets');
+  fs.mkdirSync(keyholder, { recursive: true });
+  fs.mkdirSync(secrets, { recursive: true });
+  fs.writeFileSync(path.join(keyholder, 'openaiv2.txt'), 'sk-keyholder-valid-for-test');
+  fs.writeFileSync(path.join(secrets, 'openai-api-key.txt'), 'sk-stale-repo-secret-for-test');
+
+  const candidates = pipeline.readOpenAiCredentialCandidates(root, {
+    env: {},
+    keyholderRoots: [keyholder],
+    secretsRoot: secrets,
+  });
+
+  assert.equal(candidates[0].source, 'keyholder:openaiv2.txt');
+  assert.equal(pipeline.readOpenAiApiKey(root, { env: {}, keyholderRoots: [keyholder], secretsRoot: secrets }), 'sk-keyholder-valid-for-test');
+});
+
 test('package script exposes the studio processor', () => {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   assert.match(pkg.scripts['one-time:vimeo-studio'], /one-time-vimeo-studio-pipeline\.mjs/);
@@ -235,4 +254,11 @@ test('studio processor CLI exposes opt-in transcription flag', () => {
   const cli = fs.readFileSync('scripts/one-time-vimeo-studio-pipeline.mjs', 'utf8');
   assert.match(cli, /--transcribe-openai/);
   assert.match(cli, /transcribeOpenAI = true/);
+});
+
+test('Vimeo private smoke script loads Vimeo token through keyholder helper', () => {
+  const cli = fs.readFileSync('scripts/vimeo-private-smoke.mjs', 'utf8');
+  assert.match(cli, /loadSecret/);
+  assert.match(cli, /vimeo-access-token/);
+  assert.match(cli, /vimeo_access_token_source/);
 });

@@ -1,15 +1,36 @@
 {
-  "generated_at": "2026-07-08T15:32:07.727Z",
+  "generated_at": "2026-07-08T15:35:29.121Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-08-onetime-rabbi-public-assistant-isolation/00-onetime-rabbi-public-assistant-isolation.product-quality.json"
+    "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/00-vimeo-folder-v1-control.product-quality.json",
+    "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/01-vimeo-folder-v1-local-processor.product-quality.json",
+    "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/04-desktop-setup-local-video-smoke.product-quality.json",
+    "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/05-approved-provider-readiness-transcription.product-quality.json"
   ],
-  "total": 1,
-  "passed": 1,
+  "total": 4,
+  "passed": 4,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-08-onetime-rabbi-public-assistant-isolation/00-onetime-rabbi-public-assistant-isolation.product-quality.json",
+      "file": "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/00-vimeo-folder-v1-control.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/01-vimeo-folder-v1-local-processor.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/04-desktop-setup-local-video-smoke.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/05-approved-provider-readiness-transcription.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []
