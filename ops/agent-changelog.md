@@ -34609,3 +34609,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No synthetic production support ticket was created and no live Telegram
   support-ticket alert was sent during smoke. The next real configured support
   ticket should trigger the super-admin ding.
+
+## 2026-07-08T21:47:46+03:00 - Issue #88 helper bot audit map refresh
+
+- Audited GitHub issue #88 / `helper-bot-workspace-agent-01-audit-map`
+  against the local helper implementation, action registry, route registry,
+  Operations helper UI, and relevant helper tests.
+- Regenerated the helper parity map from local source after `npm run
+  helper:parity` showed the checked-in map was stale: 270 records now cover
+  newer helper/action rows, with 36 `tool_available`, 34
+  `requires_confirmation`, 26 `external_blocker`, 11 `student_safe_only`, and
+  163 `tool_needed`.
+- Added negative helper destination/permission tests for provider/Rabbi
+  attempts to jump into BNA Operations, cross-origin route targets,
+  parent/student Operations fallbacks, and One Time project-scoped navigation
+  refusal.
+- Recorded exact remaining agent-mode autonomy gaps in
+  `ops/system-audits/2026-07-08-issue-88-helper-bot-audit-map.md`.
+- Verification passed: `npm run helper:parity`, `node --check
+  scripts/generate-helper-tool-parity-map.mjs`, `node --check server.js`,
+  `node --test tests/bna-helper-tools.test.js`,
+  `node --test tests/helper-scope-profile-knowledge.test.js`,
+  `node --test tests/universal-assistant-mvp.test.js`, and
+  `node --test tests/service-provider-scope-routes.test.js`.
+- No helper runtime behavior, external writes, sends, payments, DNS/account
+  changes, credential writes, access grants, uploads, Drive/Vimeo/Zoom writes,
+  production data mutation, or external CRM writes were performed.

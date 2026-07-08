@@ -208,6 +208,22 @@
   },
   {
     "surface": "operations",
+    "label": "capture raw intake",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "capture_raw_intake",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write"
+    ],
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Helper registry tool with side effect internal_write."
+  },
+  {
+    "surface": "operations",
     "label": "convert decision to task",
     "current_file": "src/lib/bna/helper/tool-registry.js",
     "api_endpoint": "/api/bna/helper/message",
@@ -248,7 +264,7 @@
       "side_effect:internal_write"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
+    "status": "requires_confirmation",
     "notes": "Helper registry tool with side effect internal_write."
   },
   {
@@ -646,6 +662,23 @@
   },
   {
     "surface": "operations",
+    "label": "Create provider classroom draft",
+    "current_file": "public/operations.html",
+    "api_endpoint": "/api/bna/service-providers",
+    "method": "POST/PATCH",
+    "helper_tool_name": "create_provider_classroom_draft",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "explicit confirmation required before execution",
+      "side_effect:draft_only",
+      "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
+    ],
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_provider_classroom_draft maps to helper tool create_provider_classroom_draft."
+  },
+  {
+    "surface": "operations",
     "label": "create provider profile",
     "current_file": "src/lib/bna/helper/tool-registry.js",
     "api_endpoint": "/api/bna/helper/message",
@@ -815,6 +848,22 @@
   },
   {
     "surface": "operations",
+    "label": "create support ticket",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "create_support_ticket",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write"
+    ],
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Helper registry tool with side effect internal_write."
+  },
+  {
+    "surface": "operations",
     "label": "Create task",
     "current_file": "public/operations.html",
     "api_endpoint": "/api/bna/tasks",
@@ -938,6 +987,21 @@
   },
   {
     "surface": "operations",
+    "label": "Draft automation",
+    "current_file": "public/operations.html",
+    "api_endpoint": "",
+    "method": "",
+    "helper_tool_name": "draft_automation",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
+    ],
+    "confirmation_required": true,
+    "status": "tool_needed",
+    "notes": "Typed action draft_automation has no direct helper wrapper yet."
+  },
+  {
+    "surface": "operations",
     "label": "draft buffer post",
     "current_file": "src/lib/bna/helper/tool-registry.js",
     "api_endpoint": "/api/bna/helper/message",
@@ -950,6 +1014,21 @@
     "confirmation_required": false,
     "status": "tool_available",
     "notes": "Covered by an existing helper wrapper or alias."
+  },
+  {
+    "surface": "operations",
+    "label": "Draft drip sequence",
+    "current_file": "public/operations.html",
+    "api_endpoint": "",
+    "method": "",
+    "helper_tool_name": "draft_drip_sequence",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
+    ],
+    "confirmation_required": true,
+    "status": "tool_needed",
+    "notes": "Typed action draft_drip_sequence has no direct helper wrapper yet."
   },
   {
     "surface": "operations",
@@ -966,6 +1045,21 @@
     "confirmation_required": false,
     "status": "tool_available",
     "notes": "Typed action draft_email maps to helper tool draft_email."
+  },
+  {
+    "surface": "operations",
+    "label": "Draft email campaign",
+    "current_file": "public/operations.html",
+    "api_endpoint": "/api/bna/communications/email/drafts",
+    "method": "POST",
+    "helper_tool_name": "draft_email_campaign",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
+    ],
+    "confirmation_required": true,
+    "status": "tool_needed",
+    "notes": "Typed action draft_email_campaign has no direct helper wrapper yet."
   },
   {
     "surface": "operations",
@@ -1414,6 +1508,21 @@
   },
   {
     "surface": "operations",
+    "label": "open operations view",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "open_operations_view",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
+    ],
+    "confirmation_required": false,
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
+  },
+  {
+    "surface": "operations",
     "label": "parse recording",
     "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
     "api_endpoint": "",
@@ -1471,6 +1580,21 @@
     "confirmation_required": false,
     "status": "tool_needed",
     "notes": "Typed action post_community_message has no direct helper wrapper yet."
+  },
+  {
+    "surface": "operations",
+    "label": "Preview campaign segment",
+    "current_file": "public/operations.html",
+    "api_endpoint": "",
+    "method": "",
+    "helper_tool_name": "preview_campaign_segment",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
+    ],
+    "confirmation_required": true,
+    "status": "tool_needed",
+    "notes": "Typed action preview_campaign_segment has no direct helper wrapper yet."
   },
   {
     "surface": "operations",
@@ -1669,6 +1793,21 @@
   },
   {
     "surface": "operations",
+    "label": "Record agent result",
+    "current_file": "public/operations.html",
+    "api_endpoint": "",
+    "method": "",
+    "helper_tool_name": "record_agent_result",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "roles:super_admin,platform_manager,support_admin,technical_agent,admin,operator"
+    ],
+    "confirmation_required": false,
+    "status": "tool_needed",
+    "notes": "Typed action record_agent_result has no direct helper wrapper yet."
+  },
+  {
+    "surface": "operations",
     "label": "Refine email",
     "current_file": "public/operations.html",
     "api_endpoint": "/api/bna/communications/email/drafts",
@@ -1805,16 +1944,18 @@
   {
     "surface": "operations",
     "label": "run watchdog audit",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
     "helper_tool_name": "run_watchdog_audit",
     "scope_rules": [
-      "admin/super_admin or scoped workspace login required"
+      "admin/super_admin or scoped workspace login required",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write"
     ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Helper registry tool with side effect internal_write."
   },
   {
     "surface": "operations",
@@ -1862,6 +2003,21 @@
     "confirmation_required": true,
     "status": "requires_confirmation",
     "notes": "Helper registry tool with side effect access_grant."
+  },
+  {
+    "surface": "operations",
+    "label": "Schedule assistant reminder",
+    "current_file": "public/operations.html",
+    "api_endpoint": "",
+    "method": "",
+    "helper_tool_name": "schedule_assistant_reminder",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "roles:super_admin,admin,operator,provider_admin,provider_manager,parent"
+    ],
+    "confirmation_required": true,
+    "status": "external_blocker",
+    "notes": "Typed action schedule_assistant_reminder has no direct helper wrapper yet."
   },
   {
     "surface": "operations",
@@ -2045,6 +2201,21 @@
     "confirmation_required": false,
     "status": "tool_needed",
     "notes": "Typed action show_contact_communication_history has no direct helper wrapper yet."
+  },
+  {
+    "surface": "operations",
+    "label": "show goal status",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "show_goal_status",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
+    ],
+    "confirmation_required": false,
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
   },
   {
     "surface": "operations",
@@ -2325,6 +2496,22 @@
     ],
     "confirmation_required": true,
     "status": "tool_needed",
+    "notes": "Helper registry tool with side effect internal_write."
+  },
+  {
+    "surface": "operations",
+    "label": "update automation",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
+    "helper_tool_name": "update_automation",
+    "scope_rules": [
+      "admin/super_admin or scoped workspace login required",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write"
+    ],
+    "confirmation_required": true,
+    "status": "requires_confirmation",
     "notes": "Helper registry tool with side effect internal_write."
   },
   {
@@ -2684,6 +2871,21 @@
   },
   {
     "surface": "parent",
+    "label": "Schedule assistant reminder",
+    "current_file": "public/parent.html",
+    "api_endpoint": "",
+    "method": "",
+    "helper_tool_name": "schedule_assistant_reminder",
+    "scope_rules": [
+      "own family and parent-visible records only",
+      "roles:super_admin,admin,operator,provider_admin,provider_manager,parent"
+    ],
+    "confirmation_required": true,
+    "status": "external_blocker",
+    "notes": "Typed action schedule_assistant_reminder has no direct helper wrapper yet."
+  },
+  {
+    "surface": "parent",
     "label": "Select weekly update hero",
     "current_file": "public/parent.html",
     "api_endpoint": "",
@@ -2831,6 +3033,23 @@
     "confirmation_required": false,
     "status": "tool_needed",
     "notes": "Typed action create_provider_class_session has no direct helper wrapper yet."
+  },
+  {
+    "surface": "provider",
+    "label": "Create provider classroom draft",
+    "current_file": "public/provider.html",
+    "api_endpoint": "/api/bna/service-providers",
+    "method": "POST/PATCH",
+    "helper_tool_name": "create_provider_classroom_draft",
+    "scope_rules": [
+      "provider workspace only; no other providers or BNA private student data",
+      "explicit confirmation required before execution",
+      "side_effect:draft_only",
+      "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
+    ],
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_provider_classroom_draft maps to helper tool create_provider_classroom_draft."
   },
   {
     "surface": "provider",
@@ -3189,6 +3408,21 @@
   },
   {
     "surface": "provider",
+    "label": "Schedule assistant reminder",
+    "current_file": "public/provider.html",
+    "api_endpoint": "",
+    "method": "",
+    "helper_tool_name": "schedule_assistant_reminder",
+    "scope_rules": [
+      "provider workspace only; no other providers or BNA private student data",
+      "roles:super_admin,admin,operator,provider_admin,provider_manager,parent"
+    ],
+    "confirmation_required": true,
+    "status": "external_blocker",
+    "notes": "Typed action schedule_assistant_reminder has no direct helper wrapper yet."
+  },
+  {
+    "surface": "provider",
     "label": "show provider integration status",
     "current_file": "src/lib/bna/helper/tool-registry.js",
     "api_endpoint": "/api/bna/helper/message",
@@ -3363,6 +3597,23 @@
     "confirmation_required": true,
     "status": "tool_needed",
     "notes": "Typed action create_one_time_video_library_item has no direct helper wrapper yet."
+  },
+  {
+    "surface": "rabbi",
+    "label": "Create provider classroom draft",
+    "current_file": "public/rabbi.html",
+    "api_endpoint": "/api/bna/service-providers",
+    "method": "POST/PATCH",
+    "helper_tool_name": "create_provider_classroom_draft",
+    "scope_rules": [
+      "one_time_mishnah_class scope only",
+      "explicit confirmation required before execution",
+      "side_effect:draft_only",
+      "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
+    ],
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_provider_classroom_draft maps to helper tool create_provider_classroom_draft."
   },
   {
     "surface": "rabbi",

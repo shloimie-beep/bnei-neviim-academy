@@ -13,6 +13,7 @@ const {
   sanitizeHelperPageContext,
 } = require('../src/lib/bna/helper/context');
 const { getIntegrationReadiness } = require('../src/lib/bna/helper/integrations');
+const { resolveHelperDestination } = require('../src/lib/bna/helper/destination-resolver');
 const { helperPermissionForTool } = require('../src/lib/bna/helper/permissions');
 const { buildHelperPlan, deterministicPlan } = require('../src/lib/bna/helper/planner');
 const { redactValue } = require('../src/lib/bna/helper/redaction');
@@ -54,7 +55,8 @@ test('BNA Helper backend exposes HELPER-03 storage, redaction fields, and routes
   assert.match(server, /insertHelperAudit/);
   assert.match(server, /Cache-Control', 'no-store'/);
   assert.match(server, /function setOperationsShellCacheHeader[\s\S]*private, no-cache, max-age=0, must-revalidate/);
-  assert.match(server, /app\.get\(\['\/operations', '\/operations\/agents\/runs\/:runKey'\][\s\S]*setOperationsShellCacheHeader\(res\)/);
+  assert.match(server, /function sendOperationsShell[\s\S]*setOperationsShellCacheHeader\(res\)[\s\S]*operations-bootstrap\.html/);
+  assert.match(server, /app\.get\(\['\/operations', '\/operations\/agents\/runs\/:runKey'\], requireAdmin, sendOperationsShell\)/);
   assert.match(server, /confirmation_text[\s\S]*CONFIRM/);
 });
 
@@ -363,6 +365,103 @@ test('BNA Helper open_operations_view returns a direct deep link', async () => {
   assert.equal(result.tool, 'open_operations_view');
   assert.equal(result.url, '/operations?view=settings&section=calendar_classroom&workspace=bna');
   assert.equal(result.label, 'Open settings / calendar_classroom');
+});
+
+test('BNA Helper destination resolver refuses unsafe scope and route substitutions', () => {
+  const providerActor = {
+    role: 'provider_admin',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    scope: { type: 'provider', providerId: 'provider-1' },
+  };
+
+  const providerToBnaOperations = resolveHelperDestination({
+    intent: 'open_operations_view',
+    actor: providerActor,
+    target: { view: 'tasks', workspace_key: 'bna' },
+    helperTool: 'open_operations_view',
+  });
+  assert.equal(providerToBnaOperations.ok, false);
+  assert.match(providerToBnaOperations.authorization_result, /workspace_scope_mismatch/);
+  assert.equal(providerToBnaOperations.fallback.path, '/provider');
+  assert.equal(providerToBnaOperations.checks.browser_click_substitution_allowed, false);
+
+  const externalRoute = resolveHelperDestination({
+    intent: 'open_operations_view',
+    actor: providerActor,
+    target: { route: 'https://example.invalid/steal-data' },
+    helperTool: 'open_operations_view',
+  });
+  assert.equal(externalRoute.ok, false);
+  assert.match(externalRoute.authorization_result, /non_same_origin_or_invalid_route/);
+  assert.equal(externalRoute.attempted_path, null);
+  assert.equal(externalRoute.fallback.path, '/provider');
+
+  const parentToOperations = resolveHelperDestination({
+    intent: 'open_operations_view',
+    actor: {
+      role: 'parent',
+      workspace_key: 'bna',
+      project_key: 'bna',
+      scope: { type: 'parent', familyId: 'family-1' },
+    },
+    target: { view: 'admin', workspace_key: 'bna' },
+    helperTool: 'open_operations_view',
+  });
+  assert.equal(parentToOperations.ok, false);
+  assert.match(parentToOperations.authorization_result, /role_not_allowed/);
+  assert.equal(parentToOperations.fallback.path, '/parent');
+
+  const studentToOperations = resolveHelperDestination({
+    intent: 'open_operations_view',
+    actor: {
+      role: 'student',
+      workspace_key: 'bna',
+      project_key: 'bna',
+      scope: { type: 'student', studentId: 'student-1' },
+    },
+    target: { view: 'tasks', workspace_key: 'bna' },
+    helperTool: 'open_operations_view',
+  });
+  assert.equal(studentToOperations.ok, false);
+  assert.match(studentToOperations.authorization_result, /role_not_allowed/);
+  assert.equal(studentToOperations.fallback.path, '/student');
+});
+
+test('BNA Helper execution keeps One Time helpers out of BNA workspace links', async () => {
+  const registry = buildToolRegistry();
+  const oneTimeContext = {
+    userRole: 'one_time_admin',
+    workspaceKey: 'rabbi_sheller_provider',
+    projectKey: 'one_time_mishnah_class',
+    identity: {
+      role: 'one_time_admin',
+      scope: {
+        type: 'project',
+        workspaceKey: 'rabbi_sheller_provider',
+        projectKey: 'one_time_mishnah_class',
+      },
+    },
+    helperScope: {
+      scopeType: 'rabbi',
+      workspaceKey: 'rabbi_sheller_provider',
+    },
+  };
+
+  await assert.rejects(
+    () => registry.execute('open_operations_view', { view: 'tasks', workspace_key: 'bna' }, oneTimeContext),
+    /workspace scope mismatch/
+  );
+
+  const scopedResult = await registry.execute(
+    'open_operations_view',
+    { view: 'tasks', workspace_key: 'rabbi_sheller_provider' },
+    oneTimeContext
+  );
+  assert.equal(scopedResult.status, 'blocked');
+  assert.equal(scopedResult.url, '/provider');
+  assert.match(scopedResult.data.destination.authorization_result, /role_not_allowed/);
+  assert.equal(scopedResult.data.destination.checks.browser_click_substitution_allowed, false);
 });
 
 test('Operations exposes the HELPER-03 helper drawer, scoped context, and client endpoint calls', () => {

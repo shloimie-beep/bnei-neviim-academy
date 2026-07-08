@@ -4,18 +4,18 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 
 ## Summary
 
-- external_blocker: 23
-- requires_confirmation: 26
+- external_blocker: 26
+- requires_confirmation: 34
 - student_safe_only: 11
-- tool_available: 34
-- tool_needed: 160
+- tool_available: 36
+- tool_needed: 163
 
 ## Surfaces
 
-- operations: 164
-- parent: 20
-- provider: 36
-- rabbi: 8
+- operations: 176
+- parent: 21
+- provider: 38
+- rabbi: 9
 - student: 26
 
 ## Notes
@@ -44,9 +44,10 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | audit queue status | audit_queue_status | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | Capture provider Google Business link | capture_provider_google_business_link | tool_needed | yes | public/operations.html |
 | operations | capture ramble | capture_ramble | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
+| operations | capture raw intake | capture_raw_intake | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | convert decision to task | convert_decision_to_task | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | create accountability note | create_accountability_note | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
-| operations | create automation | create_automation | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
+| operations | create automation | create_automation | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | create buffer setup task | create_integration_setup_task | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | Create calendar event | create_calendar_event | tool_needed | no | public/operations.html |
 | operations | create calendar event draft | create_calendar_event_draft | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
@@ -73,6 +74,7 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | create pending item | create_pending_blocker | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | create product tier draft | create_task | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | Create provider class session | create_provider_class_session | tool_needed | no | public/operations.html |
+| operations | Create provider classroom draft | create_provider_classroom_draft | requires_confirmation | yes | public/operations.html |
 | operations | create provider profile | create_provider_profile | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
 | operations | Create Rabbi shiur idea | create_rabbi_shiur_idea | tool_needed | yes | public/operations.html |
 | operations | Create Rabbi source-sheet task | create_rabbi_source_sheet_task | tool_needed | yes | public/operations.html |
@@ -84,6 +86,7 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | create stripe setup task | create_integration_setup_task | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | create student | create_student | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | Create student schedule item | create_student_schedule_item | external_blocker | no | public/operations.html |
+| operations | create support ticket | create_support_ticket | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | Create task | create_task | tool_available | no | public/operations.html |
 | operations | Create ticket | create_ticket | tool_needed | no | public/operations.html |
 | operations | create vimeo setup task | create_integration_setup_task | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
@@ -92,8 +95,11 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | create zoom meeting after confirmation and credentials | create_zoom_meeting_after_confirmation_and_credentials | external_blocker | yes | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | create zoom setup task | create_integration_setup_task | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | distill ramble | distill_ramble | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
+| operations | Draft automation | draft_automation | tool_needed | yes | public/operations.html |
 | operations | draft buffer post | draft_social_post | tool_available | no | src/lib/bna/helper/tool-registry.js |
+| operations | Draft drip sequence | draft_drip_sequence | tool_needed | yes | public/operations.html |
 | operations | Draft email | draft_email | tool_available | no | public/operations.html |
+| operations | Draft email campaign | draft_email_campaign | tool_needed | yes | public/operations.html |
 | operations | Draft email from newsletter | draft_email_from_newsletter | tool_needed | no | public/operations.html |
 | operations | draft mishnayos landing page | draft_mishnayos_landing_page | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | Draft parent response | draft_parent_response | tool_needed | no | public/operations.html |
@@ -124,10 +130,12 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | Move task workspace | move_task_workspace | tool_needed | yes | public/operations.html |
 | operations | Open calendar event | open_calendar_event | tool_needed | no | public/operations.html |
 | operations | Open content item | open_content_item_url | tool_needed | no | public/operations.html |
+| operations | open operations view | open_operations_view | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | parse recording | parse_recording | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | parse student questions | parse_student_questions | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
 | operations | Pause scheduled email | pause_scheduled_email | external_blocker | yes | public/operations.html |
 | operations | Post community message | post_community_message | tool_needed | no | public/operations.html |
+| operations | Preview campaign segment | preview_campaign_segment | tool_needed | yes | public/operations.html |
 | operations | Preview Classroom topic material | classroom_topic_material_preview | tool_needed | yes | public/operations.html |
 | operations | Preview Drive Doc creation | google_drive_create_doc_preview | tool_needed | yes | public/operations.html |
 | operations | Preview Drive file move | google_drive_move_file_preview | tool_needed | yes | public/operations.html |
@@ -141,14 +149,6 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | Preview social schedule package | preview_social_schedule_package | external_blocker | yes | public/operations.html |
 | operations | publish library item after approval | publish_library_item_after_approval | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
 | operations | Queue Telegram report | queue_telegram_report | tool_needed | yes | public/operations.html |
-| operations | Refine email | refine_email | tool_needed | no | public/operations.html |
-| operations | Refine newsletter draft | refine_newsletter_draft | tool_needed | no | public/operations.html |
-| operations | reprocess decision | reprocess_decision | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
-| operations | request missing input | request_missing_input | tool_available | no | src/lib/bna/helper/tool-registry.js |
-| operations | Request provider contact | request_provider_contact | tool_needed | no | public/operations.html |
-| operations | Retitle task naturally | retitle_task_naturally | tool_needed | yes | public/operations.html |
-| operations | Review moderated question | review_moderated_question | tool_needed | yes | public/operations.html |
-| operations | rotate provider api key | rotate_provider_api_key | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
-| operations | Route bug to Codex | route_bug_to_codex | tool_needed | yes | public/operations.html |
+| operations | Record agent result | record_agent_result | tool_needed | no | public/operations.html |
 
-Full machine-readable map: `ops/helper-tool-parity-map.json` (254 records).
+Full machine-readable map: `ops/helper-tool-parity-map.json` (270 records).
