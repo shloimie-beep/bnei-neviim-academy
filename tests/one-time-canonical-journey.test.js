@@ -30,6 +30,8 @@ test('One Time member pages expose home, modules, support, logout, and public re
   assert.match(rabbiMember, /One Time home[\s\S]*Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout[\s\S]*Return to public site/);
   assert.match(memberLibrary, /One Time home[\s\S]*Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout[\s\S]*Return to public site/);
   assert.match(classroom, /One Time home[\s\S]*Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout[\s\S]*Return to public site/);
+  assert.doesNotMatch(classroom, /<body class="one-time-review-active/);
+  assert.match(classroom, /document\.body\.classList\.add\('one-time-review-active', 'one-time-classroom-review-shell'\)/);
   assert.match(participant, /One Time home[\s\S]*Provider login[\s\S]*Member home[\s\S]*Library[\s\S]*Account\/logout[\s\S]*Return to public site/);
 });
 

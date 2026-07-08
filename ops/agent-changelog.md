@@ -33833,3 +33833,30 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - `REQ-20260708-028` and `REQ-20260708-029` are Done. Remaining open work is
   `REQ-20260708-027` access-code/session UX and blocked
   `DEC-20260708-006` Drive-to-Vimeo automation.
+
+## 2026-07-08T12:42:36+03:00 - One Time current-access/fallback-code UX local verified
+
+- Added Product Quality packet
+  `ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/06-access-code-session-ux.product-quality.json`
+  and validated it.
+- Updated `/member-library` so secure-link/current browser access is the
+  primary visible state and manual access-code entry lives inside a
+  `Use fallback access code` support drawer.
+- Updated `/one-time-classroom` with the same current-access/fallback pattern.
+  The classroom page now opens member-facing by default instead of always
+  rendering as the internal review shell; review styling is applied only when
+  review mode is requested.
+- The member library classroom CTA now carries the resolved current access
+  code through `currentAccessCode()` so the classroom opens from the same
+  secure-link/current-browser access.
+- Local browser smoke passed at 1440 and 390 widths and wrote
+  `ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/access-session-ux-local-smoke.md`.
+  It confirmed no horizontal overflow, no console errors, current-access
+  connected state, fallback drawer behavior, normal classroom route not using
+  the review shell, and zero eager Vimeo iframes.
+- Verification passed: PQC packet 06 and focused tests 17/17.
+- Guardrails held: no Drive upload, Vimeo upload/privacy mutation, external
+  email/Telegram/WhatsApp send, payment/access/DNS/provider write, public
+  publish, student access grant, or production data mutation was performed.
+- Status: local verified, pending commit, push, deploy, and live smoke before
+  `REQ-20260708-027` can be terminal Done.

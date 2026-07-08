@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T09:15:49.403Z",
+  "generated_at": "2026-07-08T09:44:17.677Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -324,6 +324,7 @@
     "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/02-member-library-performance-filters.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/05-moderated-comments-updates-awards.product-quality.json",
+    "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/06-access-code-session-ux.product-quality.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",

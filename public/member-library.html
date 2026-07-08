@@ -88,13 +88,76 @@
 
     .access-panel {
       display: grid;
-      grid-template-columns: minmax(220px, 1fr) auto;
-      gap: 10px;
-      align-items: end;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
       padding: 16px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--panel);
+    }
+
+    .access-panel.connected {
+      border-color: rgba(17, 100, 102, 0.28);
+      background: #eef7f2;
+    }
+
+    .access-copy {
+      display: grid;
+      gap: 5px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .access-copy h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .access-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 760px;
+    }
+
+    .access-fallback {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .access-fallback summary {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 42px;
+      padding: 0 12px;
+      color: var(--accent);
+      font-weight: 800;
+      list-style: none;
+    }
+
+    .access-fallback summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .fallback-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+      padding: 0 12px 12px;
     }
 
     label {
@@ -456,13 +519,13 @@
         justify-content: flex-start;
       }
 
-      .access-panel {
-        grid-template-columns: 1fr;
-      }
-
       .classroom-strip {
         align-items: flex-start;
         flex-direction: column;
+      }
+
+      .fallback-grid {
+        grid-template-columns: 1fr;
       }
 
       .library-toolbar.visible {
@@ -501,11 +564,21 @@
 
   <main>
     <form class="access-panel" id="accessForm">
-      <label>
-        Access code
-        <input id="accessCode" name="code" autocomplete="off" spellcheck="false">
-      </label>
-      <button type="submit" id="loadButton">Open Library</button>
+      <div class="access-copy">
+        <span class="eyebrow">Current One Time access</span>
+        <h2 id="accessTitle">Open your library</h2>
+        <p id="accessHelp">Use the secure invite link from your parent account or One Time email. Manual code entry is only for support or older links.</p>
+      </div>
+      <details class="access-fallback" id="accessFallbackDetails">
+        <summary>Use fallback access code</summary>
+        <div class="fallback-grid">
+          <label>
+            Fallback access code
+            <input id="accessCode" name="code" autocomplete="off" spellcheck="false">
+          </label>
+          <button type="submit" id="loadButton">Open Library</button>
+        </div>
+      </details>
     </form>
     <div class="status" id="status"></div>
     <section class="classroom-strip" id="classroomStrip" aria-live="polite"></section>
@@ -524,6 +597,9 @@
     const form = document.getElementById('accessForm');
     const codeInput = document.getElementById('accessCode');
     const loadButton = document.getElementById('loadButton');
+    const accessTitle = document.getElementById('accessTitle');
+    const accessHelp = document.getElementById('accessHelp');
+    const accessFallbackDetails = document.getElementById('accessFallbackDetails');
     const statusEl = document.getElementById('status');
     const grid = document.getElementById('libraryGrid');
     const memberMeta = document.getElementById('memberMeta');
@@ -621,6 +697,26 @@
 
     function currentAccessCode() {
       return String(codeInput.value || localStorage.getItem('one_time_member_library_code') || '').trim();
+    }
+
+    function setAccessPanelState(mode = 'idle', message = '') {
+      const hasCurrentAccess = mode === 'loading' || mode === 'connected';
+      form.classList.toggle('connected', mode === 'connected');
+      accessFallbackDetails.open = mode === 'needs_code' || mode === 'error';
+      if (mode === 'loading') {
+        accessTitle.textContent = 'Opening your One Time library';
+        accessHelp.textContent = 'Checking the secure access from your invite link or this browser.';
+      } else if (mode === 'connected') {
+        accessTitle.textContent = 'Current One Time access';
+        accessHelp.textContent = message || 'Your secure link opened the member library. Use fallback access code only if support asks you to.';
+      } else if (mode === 'error') {
+        accessTitle.textContent = 'Access help';
+        accessHelp.textContent = message || 'This link or fallback code could not open the library. Check the latest invite link or contact support.';
+      } else {
+        accessTitle.textContent = 'Open your library';
+        accessHelp.textContent = message || 'Use the secure invite link from your parent account or One Time email. Manual code entry is only for support or older links.';
+      }
+      if (!hasCurrentAccess && mode !== 'error') form.classList.remove('connected');
     }
 
     async function recordItemProgress(item, { percent = 0, seconds = 0, eventType = 'progress', player = '' } = {}) {
@@ -948,7 +1044,7 @@
       libraryToolbar.classList.add('visible');
       classroomStrip.innerHTML = `
         <p>Classroom: ${Number((classroom.calendar_items || []).length)} calendar item${Number((classroom.calendar_items || []).length) === 1 ? '' : 's'}, ${Number((classroom.threads || []).length)} Rabbi thread${Number((classroom.threads || []).length) === 1 ? '' : 's'}, ${Number((classroom.leaderboard || []).length)} leaderboard row${Number((classroom.leaderboard || []).length) === 1 ? '' : 's'}.</p>
-        <a href="/one-time-classroom?code=${encodeURIComponent(codeInput.value.trim())}">Open Classroom</a>
+        <a href="/one-time-classroom?code=${encodeURIComponent(currentAccessCode())}">Open Classroom</a>
       `;
       renderLibraryItems();
     }
@@ -956,27 +1052,31 @@
     async function loadLibrary(code) {
       const trimmed = String(code || '').trim();
       if (!trimmed) {
-        statusEl.textContent = 'Enter an access code.';
+        setAccessPanelState('needs_code');
+        statusEl.textContent = 'Use your secure invite link, or open the fallback access code field if support gave you a code.';
         statusEl.className = 'status error';
         return;
       }
       loadButton.disabled = true;
       statusEl.textContent = 'Loading...';
       statusEl.className = 'status';
+      setAccessPanelState('loading');
       try {
         const response = await fetch(`/api/member-library?code=${encodeURIComponent(trimmed)}`, { credentials: 'same-origin' });
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.error || 'Could not open library.');
         localStorage.setItem('one_time_member_library_code', trimmed);
         statusEl.textContent = '';
+        setAccessPanelState('connected');
         renderLibrary(payload);
       } catch (error) {
         currentPayload = null;
-        memberMeta.textContent = 'Access code required';
+        memberMeta.textContent = 'Secure access required';
         libraryToolbar.classList.remove('visible');
         grid.innerHTML = '';
         statusEl.textContent = error.message || 'Could not open library.';
         statusEl.className = 'status error';
+        setAccessPanelState('error', 'This secure link or fallback code could not open the library. Try the latest invite link or contact support.');
       } finally {
         loadButton.disabled = false;
       }
@@ -1004,6 +1104,8 @@
     if (initialCode) {
       codeInput.value = initialCode;
       loadLibrary(initialCode);
+    } else {
+      setAccessPanelState('needs_code');
     }
   </script>
   <script src="/js/bna-helper-knowledge.js"></script>

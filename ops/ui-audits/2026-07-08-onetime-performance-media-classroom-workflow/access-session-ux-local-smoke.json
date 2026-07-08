@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-07-08T09:41:45.832Z",
+  "base_url": "http://127.0.0.1:58775",
+  "ok": true,
+  "checks": [
+    {
+      "viewport": "desktop",
+      "console_errors": [],
+      "member_overflow_px": 0,
+      "classroom_overflow_px": 0
+    },
+    {
+      "viewport": "mobile",
+      "console_errors": [],
+      "member_overflow_px": 0,
+      "classroom_overflow_px": 0
+    }
+  ],
+  "screenshots": [
+    "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/access-session-desktop-member-library.png",
+    "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/access-session-desktop-classroom.png",
+    "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/access-session-mobile-member-library.png",
+    "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/access-session-mobile-classroom.png"
+  ],
+  "guardrail": "Mocked local browser smoke only; no production readback, database mutation, external upload, send, publish, charge, DNS, OAuth, or secret request was performed."
+}
