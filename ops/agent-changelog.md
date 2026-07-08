@@ -34915,3 +34915,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers: the 9 new wrappers still need commit/push and a clean
   deploy/live smoke path; all 36 local wrappers still need saved all-contract
   Agent Mode PASS/BLOCKED proof before autonomy can be claimed.
+
+## 2026-07-08T23:02:27+03:00 - Operations deferred renderer split deployed
+
+- Deployed the pushed Operations performance split from clean release branch
+  `codex/rabbi-helper-ops-perf-release-20260708` at `1110f65f`.
+- Railway deployment
+  `899dad03-98e2-4572-8355-4cd93427be6d` reached `SUCCESS` for
+  `one-time-production` / `one-time-web` / `production`.
+- OneTime live smoke passed against `https://join.onetimeonetime.com`.
+- Live asset readback confirmed `/js/operations-shell.js` status `200` length
+  `1198701` and `/js/operations-deferred-renderers.js` status `200` length
+  `938744`.
+- Sent one concise operator Telegram progress update with done, verified,
+  blocked, next, packet, and task bullets; token/chat ID values were not
+  printed.
+- This deploy closed `REQ-20260708-086` and `REQ-20260708-098`; the later
+  parent/student summary wrapper commit `17ff491b` remains a separate
+  undeployed follow-up.
