@@ -34327,3 +34327,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/05-approved-provider-readiness-transcription.product-quality.json`,
   transcription smoke report, private smoke blocker report, and external
   readiness report.
+
+## 2026-07-08T18:46:00+03:00 - OneTime public Rabbi aliases and assistant deployed
+
+- Pushed commit `cff35ec7` and deployed the clean OneTime snapshot through
+  Railway deployment `554814f1-6ed1-4319-ad43-dee32f71c00e`; status reached
+  `SUCCESS`.
+- Live smoke passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`.
+- Rendered Playwright live smoke passed for `/`, `/one-time`, `/rabbi`,
+  `/rabbi.html`, `/rabbi-preview`, and `/one-time-mishnayos`: every route
+  served the OneTime landing, every helper launcher read
+  `Rabbi Scheller Assistant`, the body scope was
+  `bna-assistant-surface-one-time-public`, and old BNA preview/helper bad hits
+  were absent.
+- Live proof:
+  `ops/ui-audits/2026-07-08-onetime-rabbi-public-assistant-isolation/live-report.md`
+  and
+  `ops/ui-audits/2026-07-08-onetime-rabbi-public-assistant-isolation/live-rabbi-helper-mobile.png`.
+- `REQ-20260708-070` is deployed/live-smoked. Remaining related blockers are
+  external-input only: Rabbi WAPI credentials/class-link approval for WhatsApp,
+  exact live student display name for parent invite resend, and separate Vimeo
+  transcript promotion approval.
