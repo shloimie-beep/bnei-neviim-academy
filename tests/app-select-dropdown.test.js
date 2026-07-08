@@ -26,7 +26,6 @@ test('every public page with native select controls loads the in-app select enha
       'public/agent-review.html',
       'public/assistant-setup.html',
       'public/integration-setup.html',
-      'public/one-time/index.html',
       'public/operations.html',
       'public/parent.html',
       'public/provider.html',

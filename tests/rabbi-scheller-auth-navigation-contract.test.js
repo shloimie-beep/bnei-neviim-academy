@@ -65,12 +65,14 @@ test('provider portal API Usage is feature-flagged and honest until instrumentat
 test('provider portal section navigation is registered and excludes super-admin sections', () => {
   const providerSectionsBlock = provider.match(/function providerSections\(\) \{[\s\S]*?return sections;\s*\}/)?.[0] || '';
   assert.match(providerSectionsBlock, /overview/);
-  assert.match(providerSectionsBlock, /profile/);
-  assert.match(providerSectionsBlock, /services/);
+  assert.match(providerSectionsBlock, /crm/);
+  assert.match(providerSectionsBlock, /mailbox/);
   assert.match(providerSectionsBlock, /class_setup/);
   assert.match(providerSectionsBlock, /communications/);
+  assert.match(providerSectionsBlock, /class_media/);
+  assert.match(providerSectionsBlock, /users/);
+  assert.match(providerSectionsBlock, /badges/);
   assert.match(providerSectionsBlock, /activity/);
-  assert.match(providerSectionsBlock, /settings/);
   assert.doesNotMatch(providerSectionsBlock, /platform_suite|Platform Suite|accounting|Accounting|Team\/Admin|credentials|deployment/i);
   assert.match(provider, /data-action-id="ACTION-PROVIDER-SECTION-NAVIGATION" data-provider-nav="\$\{escapeHtml\(section\.id\)\}"/);
 

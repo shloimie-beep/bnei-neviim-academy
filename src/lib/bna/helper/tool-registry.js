@@ -4,6 +4,7 @@ const { resolveHelperDestination } = require('./destination-resolver');
 const { helperPermissionForTool } = require('./permissions');
 const { redactText, redactValue } = require('./redaction');
 const { helperResultCard, helperResultLink } = require('./result-links');
+const { notifySuperAdminSupportTicket } = require('../telegram-notifications');
 const vimeoIntegration = require('../../integrations/vimeo');
 const { parseIntakeText } = require('../intake-parser');
 const { extractedItemCounts, normalizeSourceChannel } = require('../ramble-protocol');
@@ -1553,6 +1554,19 @@ async function createSupportTicketTool({ args, context, deps, db }) {
     ]
   );
   const ticket = result.rows[0];
+  notifySuperAdminSupportTicket({
+    ticket: {
+      ...ticket,
+      project_key: project.project_key,
+      workspace_key: project.workspace_key || (project.project_key === 'one_time_mishnah_class' ? 'rabbi_sheller_provider' : null),
+    },
+    context: {
+      source: 'bna_helper_support_ticket',
+      projectKey: project.project_key,
+      workspaceKey: project.workspace_key || (project.project_key === 'one_time_mishnah_class' ? 'rabbi_sheller_provider' : null),
+      reviewPath: '/operations?view=admin&section=tickets',
+    },
+  }).catch((error) => console.error('Helper support ticket Telegram alert error:', error.message || error));
   return helperResultCard({
     tool: 'create_support_ticket',
     recordType: 'support_ticket',

@@ -47,6 +47,7 @@
     "telegram:kimi:stop": "powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1 -Stop",
     "telegram:kimi:status": "powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1 -Status",
     "telegram:codex-progress": "node scripts/send-codex-progress-telegram.mjs",
+    "telegram:rabbi:readiness": "node scripts/check-rabbi-telegram-ticket-readiness.mjs",
     "audit:onetime-role-ui": "node scripts/audit-onetime-role-ui-current-state.mjs",
     "audit:onetime-toolbar-density": "node scripts/audit-onetime-toolbar-filter-density.mjs",
     "audit:parent-student-login-ui": "node scripts/audit-parent-student-login-ui-polish.mjs",

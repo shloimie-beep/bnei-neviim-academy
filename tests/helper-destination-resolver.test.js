@@ -36,12 +36,12 @@ test('helper destination resolver builds canonical Operations links from route a
   assert.equal(destination.path, '/operations?view=tasks&section=pending&workspace=bna&task=42');
   assert.equal(destination.canonical_path, '/operations');
   assert.equal(destination.route_key, 'operations');
-  assert.equal(destination.required_role, 'super_admin');
+  assert.equal(destination.required_role, 'super_admin_or_scoped_one_time_studio_task_role');
   assert.equal(destination.role, 'super_admin');
   assert.equal(destination.workspace_key, 'bna');
   assert.equal(destination.project_key, 'bna');
   assert.equal(destination.section, 'pending');
-  assert.equal(destination.expected_page_landmark, 'authorized_operations_dashboard_only');
+  assert.equal(destination.expected_page_landmark, 'authorized_operations_view_limited_by_allowedViews');
   assert.equal(destination.authorization_result, 'allowed');
   assert.match(destination.why_correct, /registered route operations|Operations helper navigation request/);
   assert.equal(destination.action_key, 'ACTION-HELPER-OPEN-OPERATIONS-VIEW');
@@ -52,7 +52,7 @@ test('helper destination resolver builds canonical Operations links from route a
 });
 
 test('helper destination resolver exposes route/action registry readbacks', () => {
-  assert.equal(findRouteRecord('/operations?view=tasks')?.surface, 'operations');
+  assert.equal(findRouteRecord('/operations?view=tasks')?.surface, 'operations_task_manager');
   assert.equal(findRouteRecord('/service-providers')?.access, 'public');
   assert.equal(findRouteRecord('/providers/example-slug')?.surface, 'public_provider_profile');
   assert.equal(findRegisteredAction({ helperTool: 'open_operations_view' })?.action_id, 'ACTION-HELPER-OPEN-OPERATIONS-VIEW');
@@ -208,7 +208,7 @@ test('helper result links expose route/action resolver proof for internal links'
   assert.equal(links[0].destination.workspace, 'bna');
   assert.equal(links[0].destination.project, 'bna');
   assert.equal(links[0].destination.section, 'pending');
-  assert.equal(links[0].destination.expectedPageLandmark, 'authorized_operations_dashboard_only');
+  assert.equal(links[0].destination.expectedPageLandmark, 'authorized_operations_view_limited_by_allowedViews');
   assert.equal(links[0].destination.authorizationResult, 'allowed');
   assert.match(links[0].destination.whyCorrect, /Operations helper navigation request/);
   assert.equal(links[0].destination.safeFallback, null);

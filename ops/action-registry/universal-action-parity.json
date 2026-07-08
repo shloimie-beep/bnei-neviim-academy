@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T10:20:39.104Z",
+  "generated_at": "2026-07-08T18:36:03.160Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,27 +16,27 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "2b808703028837e242131762ac2d8100e4208ea2ee573801604e903710ea8b3f",
+  "content_hash": "9d193466116f8a508ba6f6fa5e5bb14279fcee50e6123d1fffbc0d0ce30fcae8",
   "source_hashes": {
-    "ops/action-registry.json": "882409bac9d110588d3ead1d8284c45a210a624150e5cf1a8b638e0bcf1f74b2",
+    "ops/action-registry.json": "a1f52146f471db79322530a38f28aa9ab2ae110929c0d84dedad16cff55e98e1",
     "ops/action-registry/actions.json": "d14449dbfad1fc46dce7f89ed3899f25fea6e98159c428f054c3229b060423cf",
     "public/operations.html": "9859c3fd7fbfeb76f6fd5b3a48cc69f0aa97fb9a7df2a41863e89854104c2a18",
-    "public/parent.html": "66ae1e08509deedc6b14ee659a2f345c864664bb5be8e9535ebabc84c63ed702",
+    "public/parent.html": "073ee01460177e5906ac46831bb875ad6548d838925ab1316bab4e1e9943e5f8",
     "public/student.html": "09c489fcd2efa913325b5cce77c8397770dded93ad6372db8d5d8b0b2d2ca08b",
-    "public/provider.html": "6792d8ec7d042e61e04a9030343e8bb2a6b9f658972e8bb64ee3e1fb467fe017",
+    "public/provider.html": "4ee7bd29e86a69797206d03085f76c5fb3aefc86bbac90aa272e746ad8cc3ccc",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 118,
+    "root_actions": 120,
     "detailed_actions": 80,
-    "total_registry_rows": 198,
+    "total_registry_rows": 200,
     "visible_controls": 51,
     "visible_controls_classified": 51,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
     "blocked_connector": 11,
-    "risky_actions": 94,
+    "risky_actions": 95,
     "risky_without_approval": 0,
     "visible_by_classification": {
       "read_only": 8,
@@ -48,8 +48,8 @@
     },
     "registry_by_classification": {
       "secure_deep_link_only": 23,
-      "executable": 20,
-      "preview_then_approve": 86,
+      "executable": 21,
+      "preview_then_approve": 87,
       "read_only": 56,
       "blocked_connector": 11,
       "not_applicable": 2
@@ -63,13 +63,13 @@
       "count": 80
     },
     "website_assistant_request": {
-      "count": 198
+      "count": 200
     },
     "operations_helper_request": {
       "count": 180
     },
     "automation_action": {
-      "count": 83
+      "count": 85
     },
     "agent_work_handoff": {
       "count": 100
@@ -110,7 +110,7 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 198
+        "value": 200
       },
       {
         "name": "agent_work_handoff_parity_present",
@@ -869,7 +869,7 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
-      "label": "One Time Helper",
+      "label": "Rabbi Scheller Assistant",
       "registry_layer": "root",
       "category": "",
       "surface": "one_time_public_landing",
@@ -879,7 +879,7 @@
         "anonymous public visitor"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Opens the One Time-scoped public helper without school goals, Hebrew/English toggle behavior, private parent billing, attendance, student transcripts, access codes, or admin data.",
+      "execution_handler": "Opens Rabbi Scheller's OneTime-scoped public digital assistant with concise parent-facing copy. The landing nudge asks whether the visitor wants his son to love Torah after 10 seconds, then says where the class is holding by masechta 20 seconds later. Internal scope guardrails remain OneTime-only and do not expose BNA Academy or private portal data.",
       "status": "active",
       "classification": "secure_deep_link_only",
       "risk": "low",
@@ -892,9 +892,9 @@
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "One Time Helper"
+        "Rabbi Scheller Assistant"
       ],
-      "result_renderer": "Opens the One Time-scoped public helper without school goals, Hebrew/English toggle behavior, private parent billing, attendance, student transcripts, access codes, or admin data.",
+      "result_renderer": "Opens Rabbi Scheller's OneTime-scoped public digital assistant with concise parent-facing copy. The landing nudge asks whether the visitor wants his son to love Torah after 10 seconds, then says where the class is holding by masechta 20 seconds later. Internal scope guardrails remain OneTime-only and do not expose BNA Academy or private portal data.",
       "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
@@ -927,6 +927,68 @@
       ],
       "result_renderer": "Opens the One Time-scoped parent helper with trial, schedule, child access, billing-support, attendance-support, and Rabbi question guidance without exposing private billing records, student transcripts, access codes, other families, or admin data.",
       "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-PARENT-PASSWORD-SET",
+      "label": "Save parent password",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_parent_password_setup",
+      "route": "/one-time-parent",
+      "permission": "parent_setup_token_holder",
+      "allowed_roles": [
+        "parent_setup_token_holder"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Submits the one-time reset token and new password to the parent password reset API, then removes the reset token from the address bar and keeps the user on the OneTimeOneTime setup surface.",
+      "status": "active",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Save parent password"
+      ],
+      "result_renderer": "Submits the one-time reset token and new password to the parent password reset API, then removes the reset token from the address bar and keeps the user on the OneTimeOneTime setup surface.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ONETIME-PARENT-PASSWORD-REQUEST",
+      "label": "Email me a new password link",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "one_time_parent_password_setup",
+      "route": "/one-time-parent",
+      "permission": "parent_email_holder",
+      "allowed_roles": [
+        "parent_email_holder"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Requests a OneTimeOneTime-branded parent password reset email to the signup email without exposing whether the email exists.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Email me a new password link"
+      ],
+      "result_renderer": "Requests a OneTimeOneTime-branded parent password reset email to the signup email without exposing whether the email exists.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -1396,7 +1458,7 @@
     },
     {
       "action_id": "ACTION-ONETIME-INTEREST-FORM",
-      "label": "Request 30-Day Trial",
+      "label": "Sign Up Now",
       "registry_layer": "root",
       "category": "",
       "surface": "one_time_public_focused_offer",
@@ -1406,7 +1468,7 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Creates a first-party OneTime interest lead with explicit consent for review only; no checkout, external send, live charge, or access grant.",
+      "execution_handler": "Creates a first-party OneTime interest lead from the email-only public signup strip with hidden explicit consent/source metadata; no checkout, external send, live charge, or access grant.",
       "status": "active",
       "classification": "preview_then_approve",
       "risk": "high",
@@ -1419,9 +1481,9 @@
       "test_present": true,
       "telegram_examples": [],
       "website_examples": [
-        "Request 30-Day Trial"
+        "Sign Up Now"
       ],
-      "result_renderer": "Creates a first-party OneTime interest lead with explicit consent for review only; no checkout, external send, live charge, or access grant.",
+      "result_renderer": "Creates a first-party OneTime interest lead from the email-only public signup strip with hidden explicit consent/source metadata; no checkout, external send, live charge, or access grant.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -9046,6 +9108,7 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-ONETIME-PARENT-PASSWORD-REQUEST",
         "ACTION-ONETIME-PROVIDER-SESSION-START",
         "ACTION-OPERATIONS-EMAIL-INBOX-BNA",
         "ACTION-OPERATIONS-EMAIL-INBOX-RABBI",

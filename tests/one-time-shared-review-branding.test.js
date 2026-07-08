@@ -88,7 +88,7 @@ test('shared One Time review pages include review branding assets', () => {
   assert.match(oneTimeHtml, /TODO: replace with final hero video\/image/);
   assert.match(oneTimeHtml, /\/images\/one-time\/press\/torahanytime-logo\.png/);
   assert.doesNotMatch(oneTimeHtml, /player\.vimeo\.com\/video\/1158542993\?h=daa31d3417/);
-  assert.match(oneTimeHtml, /\/api\/one-time\/campaign/);
+  assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
   assert.doesNotMatch(oneTimeHtml, /TEST-ONETIME-REVIEW-ACCESS/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /\/css\/one-time-shared-review\.css/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /OneTimeOneTime Rabbi Workspace Review/);

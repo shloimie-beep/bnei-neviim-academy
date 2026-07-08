@@ -1,6 +1,6 @@
 # Universal Action Parity
 
-Generated at 2026-07-08T10:20:39.104Z.
+Generated at 2026-07-08T18:36:03.160Z.
 
 Requirement: REQ-20260623-013
 
@@ -13,12 +13,12 @@ Requirement: REQ-20260623-013
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (198)
+- website_assistant_request_parity_present: pass (200)
 - agent_work_handoff_parity_present: pass (100)
 
 ## Summary
 
-- Root registry actions: 118
+- Root registry actions: 120
 - Detailed typed actions: 80
 - Visible UI hooks: 51
 - Visible UI hooks classified: 51
@@ -33,9 +33,9 @@ Requirement: REQ-20260623-013
 | --- | ---: |
 | ui_button | 51 |
 | telegram_request | 80 |
-| website_assistant_request | 198 |
+| website_assistant_request | 200 |
 | operations_helper_request | 180 |
-| automation_action | 83 |
+| automation_action | 85 |
 | agent_work_handoff | 100 |
 
 ## Visible Control Classifications
@@ -68,7 +68,7 @@ Requirement: REQ-20260623-013
 | announcement | covered_by_canonical_registry | approve_newsletter<br>draft_email_from_newsletter<br>draft_weekly_update<br>find_latest_newsletter_draft<br>generate_social_posts_from_newsletter<br>generate_whatsapp_from_newsletter |
 | chart | not_applicable_current_surface | No current visible control in this category; future work must add a typed registry row before exposing UI or assistant execution. |
 | dashboard_layout | covered_by_canonical_registry | open_internal_calendar<br>show_child_calendar |
-| email_campaign | covered_by_canonical_registry | ACTION-ONETIME-PROVIDER-SESSION-START<br>ACTION-OPERATIONS-EMAIL-INBOX-BNA<br>ACTION-OPERATIONS-EMAIL-INBOX-RABBI<br>ACTION-PARENT-ACCESS-LINK-EMAIL<br>ACTION-PARENT-PASSWORD-SETUP-SEND<br>approve_email |
+| email_campaign | covered_by_canonical_registry | ACTION-ONETIME-PARENT-PASSWORD-REQUEST<br>ACTION-ONETIME-PROVIDER-SESSION-START<br>ACTION-OPERATIONS-EMAIL-INBOX-BNA<br>ACTION-OPERATIONS-EMAIL-INBOX-RABBI<br>ACTION-PARENT-ACCESS-LINK-EMAIL<br>ACTION-PARENT-PASSWORD-SETUP-SEND |
 | drip_sequence | covered_by_canonical_registry | draft_drip_sequence |
 | template_version | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-LIBRARY-APPROVE<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT<br>ACTION-PROVIDER-MAILBOX-DRAFT<br>ACTION-STUDIO-SIDEKICK-PATCH-PREVIEW<br>approve_email |
 | automation | covered_by_canonical_registry | ACTION-HELPER-CREATE-AUTOMATION<br>draft_automation |

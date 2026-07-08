@@ -349,6 +349,10 @@
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
+    document.body.dataset.memberReviewMode = ONE_TIME_MEMBER_REVIEW_MODE ? 'true' : 'false';
+    document.querySelectorAll('[data-review-only]').forEach((node) => {
+      node.hidden = !ONE_TIME_MEMBER_REVIEW_MODE;
+    });
     $('loginForm')?.addEventListener('submit', requestLogin);
     $('questionForm')?.addEventListener('submit', submitQuestion);
     $('supportForm')?.addEventListener('submit', submitSupportTicket);

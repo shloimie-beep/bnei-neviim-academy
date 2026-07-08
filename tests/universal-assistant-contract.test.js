@@ -193,7 +193,7 @@ test('public assistant is proactive, bilingual, knowledge-scoped, and lead aware
   assert.match(server, /PUBLIC_HELPER_KNOWLEDGE_PATH/);
   assert.match(server, /function readPublicHelperKnowledgeBundle/);
   assert.match(server, /buildPublicHelperRetrievalContext/);
-  assert.match(server, /buildPublicAssistantKnowledgeBase\(\{ db, message \}\)/);
+  assert.match(server, /buildPublicAssistantKnowledgeBase\(\{ db, message, surface \}\)/);
   assert.match(server, /retrievedKnowledge\.slice\(0, 7\)/);
   assert.match(server, /Public helper knowledge module/);
   assert.match(server, /not transcript RAG/);

@@ -130,6 +130,9 @@ const {
 const {
   buildTelegramRuntimeReadiness,
 } = require('./src/lib/bna/telegram-runtime-status');
+const {
+  notifySuperAdminSupportTicket,
+} = require('./src/lib/bna/telegram-notifications');
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
 const bufferIntegration = require('./src/lib/integrations/buffer-client');
 const resendIntegration = require('./src/lib/integrations/resend-client');
@@ -38290,7 +38293,7 @@ async function createInAppNotification(input = {}, db = pool) {
        no_send = TRUE,
        external_write_performed = FALSE,
        updated_at = NOW()
-     RETURNING *`,
+     RETURNING *, (xmax = 0) AS inserted`,
     [
       key,
       projectId,
@@ -38309,7 +38312,30 @@ async function createInAppNotification(input = {}, db = pool) {
       limitText(input.createdBy || input.created_by || 'system', 120) || 'system',
     ]
   );
-  return inAppNotificationView(result.rows[0]);
+  const row = result.rows[0];
+  const notification = inAppNotificationView(row);
+  const sourceTable = String(input.sourceTable || input.source_table || '').trim().toLowerCase();
+  const relatedType = String(input.relatedType || input.related_type || '').trim().toLowerCase();
+  if (row?.inserted && (sourceTable === 'bna_support_tickets' || relatedType === 'support_ticket') && ['support_ticket_created', 'safety_moderation_flag'].includes(eventType)) {
+    notifySuperAdminSupportTicket({
+      ticket: {
+        id: input.relatedId || input.related_id || input.sourceId || input.source_id || null,
+        title,
+        severity: sourceContext.severity || input.priority || 'normal',
+        category: sourceContext.category || 'other',
+        workspace_key: workspaceKey,
+        project_key: input.projectKey || input.project_key || sourceContext.project_key || null,
+        source: sourceContext.source || eventType,
+      },
+      context: {
+        source: sourceContext.source || eventType,
+        workspaceKey,
+        projectKey: input.projectKey || input.project_key || sourceContext.project_key || null,
+        reviewPath: '/operations?view=admin&section=tickets',
+      },
+    }).catch((error) => console.error('Support ticket Telegram alert error:', error.message || error));
+  }
+  return notification;
 }
 
 function safeConnectorType(value) {
@@ -54468,9 +54494,9 @@ app.get('/api/parent/me', async (req, res) => {
 
 app.get('/api/bna/auth/me', async (req, res) => {
   try {
-    const admin = await identifyAdminRequest(req).catch(() => null);
-    if (admin) {
-      return res.json(await buildBnaIdentityPayload({ identity: admin, req, actor: 'admin' }));
+    const opsIdentity = await identifyOpsAssistantRequest(req).catch(() => null);
+    if (opsIdentity) {
+      return res.json(await buildBnaIdentityPayload({ identity: opsIdentity, req, actor: 'admin' }));
     }
     const cookies = parseCookies(req);
     const parentSession = await getValidParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => null);
@@ -72658,6 +72684,19 @@ async function createUniversalAssistantTicket({ req, actor, body, message, threa
     },
     db,
   });
+  notifySuperAdminSupportTicket({
+    ticket: {
+      ...supportTicket,
+      project_key: context.project?.project_key,
+      workspace_key: context.workspace?.workspace_key || workspaceKeyForProject(context.project?.project_key),
+    },
+    context: {
+      source: 'universal_assistant_support_ticket',
+      projectKey: context.project?.project_key,
+      workspaceKey: context.workspace?.workspace_key || workspaceKeyForProject(context.project?.project_key),
+      reviewPath: '/operations?view=admin&section=tickets',
+    },
+  }).catch((error) => console.error('Universal assistant ticket Telegram alert error:', error.message || error));
   return universalAssistantToolResult('create_ticket', {
     action,
     ticket: observableTicketView(observableTicket),
@@ -80244,6 +80283,7 @@ app.post('/api/rabbi/member/support-tickets', async (req, res) => {
     await createInAppNotification({
       eventType: 'member_support_ticket_created',
       projectId: auth.project.id,
+      projectKey: auth.project.project_key,
       workspaceKey: workspaceKeyForProject(auth.project.project_key),
       recipientLabel: 'Shloimie',
       recipientRole: 'operator',
@@ -82938,6 +82978,7 @@ app.post('/api/bna/support-tickets', requireAdmin, async (req, res) => {
         ? 'safety_moderation_flag'
         : 'support_ticket_created',
       projectId: project.id,
+      projectKey: project.project_key,
       workspaceKey: workspaceKeyForProject(project.project_key),
       recipientLabel: assignedTo || 'Shloimie',
       recipientRole: ['blocking', 'high'].includes(severity) && assignedTo === 'Codex' ? 'technical_owner' : 'operator',
@@ -82959,14 +83000,6 @@ app.post('/api/bna/support-tickets', requireAdmin, async (req, res) => {
       createdBy: req.opsUser || 'dashboard',
     }, client);
     await client.query('COMMIT');
-    if (['high', 'blocking'].includes(severity)) {
-      sendTelegramNotification(
-        `<b>One Time support ticket</b>\n\n` +
-        `Severity: ${escapeTelegramHtml(severity)}\n` +
-        `Title: ${escapeTelegramHtml(ticket.title)}\n` +
-        `Project: ${escapeTelegramHtml(project.short_name || project.name)}`
-      ).catch((err) => console.error('Support ticket Telegram notification error:', err));
-    }
     res.json({ success: true, ticket, task });
   } catch (err) {
     try { await client.query('ROLLBACK'); } catch {}
@@ -83170,6 +83203,7 @@ app.post('/api/bna/tickets', requireAdmin, async (req, res) => {
         ? 'safety_moderation_flag'
         : 'support_ticket_created',
       projectId: project.id,
+      projectKey: project.project_key,
       workspaceKey: workspaceKeyForProject(project.project_key),
       recipientLabel: ticket.assigned_to || 'Shloimie',
       recipientRole: 'operator',

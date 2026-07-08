@@ -69,7 +69,7 @@ test('One Time toolbar density audit keeps external-provider writes out of scope
 
 test('One Time Operations desktop and tablet top rail stays compact', () => {
   assert.match(oneTimeOperationsCss, /@media\s*\(min-width:\s*721px\)/);
-  assert.match(oneTimeOperationsCss, /\.one-time-operations-active \.ops-topbar-center[\s\S]*display:\s*none/);
+  assert.match(oneTimeOperationsCss, /\.one-time-operations-active \.ops-topbar-center[\s\S]*position:\s*absolute[\s\S]*inline-size:\s*1px[\s\S]*clip-path:\s*inset\(50%\)/);
   assert.match(oneTimeOperationsCss, /data-current-module="service_providers"[\s\S]*flex-wrap:\s*nowrap/);
   assert.match(oneTimeOperationsCss, /data-current-module="communications"[\s\S]*flex-wrap:\s*nowrap/);
   assert.match(oneTimeOperationsCss, /@media\s*\(min-width:\s*1280px\)[\s\S]*overflow-x:\s*hidden/);

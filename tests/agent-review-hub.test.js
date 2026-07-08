@@ -46,11 +46,11 @@ test('Agent Review context matrix covers Issue #24 role cards', () => {
   assert.equal(AGENT_REVIEW_CONTEXTS.some((item) => item.role === 'super_admin' && item.context_type.includes('live')), true);
 });
 
-test('Agent Mode prompt pack has exactly 16 generated mobile-copyable files', () => {
-  assert.equal(AGENT_MODE_PROMPTS.length, 16);
+test('Agent Mode prompt pack has exactly 17 generated mobile-copyable files', () => {
+  assert.equal(AGENT_MODE_PROMPTS.length, 17);
   assert.equal(packageJson.scripts['agent-review:prompts'], 'node scripts/generate-agent-review-prompts.cjs');
   const index = buildPromptIndex({ baseUrl: 'https://bneineviimacademy.org' });
-  assert.equal(index.length, 16);
+  assert.equal(index.length, 17);
 
   for (const prompt of index) {
     const filePath = path.join(root, 'public', 'agent-review-prompts', prompt.file);
@@ -99,6 +99,7 @@ test('Agent Mode prompt pack has exactly 16 generated mobile-copyable files', ()
     'one-time-role-ia-consistency',
     'one-time-brand-helper-toolbar-audit',
     'one-time-public-signup-whatsapp-workflow',
+    'rabbi-telegram-helper-ticket-smoke',
   ]) {
     const prompt = index.find((item) => item.key === key);
     assert.ok(prompt, key);
@@ -135,6 +136,15 @@ test('Agent Mode prompt pack has exactly 16 generated mobile-copyable files', ()
   assert.match(signupText, /prompt copied/);
   assert.match(signupText, /1440px, 1024px, 768px, 430px, and 390px/);
   assert.match(signupText, /no external send\/charge\/access\/WhatsApp occurred/);
+
+  const rabbiTelegramPrompt = index.find((item) => item.key === 'rabbi-telegram-helper-ticket-smoke');
+  assert.ok(rabbiTelegramPrompt);
+  const rabbiTelegramText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', rabbiTelegramPrompt.file), 'utf8');
+  assert.match(rabbiTelegramText, /REQ-20260708-084/);
+  assert.match(rabbiTelegramText, /TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER/);
+  assert.match(rabbiTelegramText, /super-admin support ticket ding routing/);
+  assert.match(rabbiTelegramText, /Do not send a WhatsApp message/);
+  assert.match(rabbiTelegramText, /OPERATIONS_DROPOFF_FAILED/);
 
   const rabbiPrompt = index.find((item) => item.key === 'rabbi-provider-admin');
   assert.ok(rabbiPrompt);

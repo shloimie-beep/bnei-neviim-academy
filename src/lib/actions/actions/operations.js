@@ -13,6 +13,9 @@ const {
 const {
   buildReminderPlan,
 } = require('../../../platform/assistant/reminder-notifications');
+const {
+  notifySuperAdminSupportTicket,
+} = require('../../bna/telegram-notifications');
 
 const {
   agentResultSummary,
@@ -2743,7 +2746,21 @@ async function createTicket(inputs = {}, context = {}) {
       context.actor?.user_id || 'action_registry',
     ]
   );
-  return { ...preview, ticket_created: true, ticket: result.rows[0] };
+  const ticket = result.rows[0];
+  notifySuperAdminSupportTicket({
+    ticket: {
+      ...ticket,
+      workspace_key: context.actor?.workspace_key || context.actor?.workspace_id || inputs.workspace_key || inputs.workspaceKey || null,
+      project_key: context.actor?.project_key || inputs.project_key || inputs.projectKey || null,
+    },
+    context: {
+      source: 'action_registry_support_ticket',
+      workspaceKey: context.actor?.workspace_key || context.actor?.workspace_id || inputs.workspace_key || inputs.workspaceKey || null,
+      projectKey: context.actor?.project_key || inputs.project_key || inputs.projectKey || null,
+      reviewPath: '/operations?view=admin&section=tickets',
+    },
+  }).catch((error) => console.error('Action support ticket Telegram alert error:', error.message || error));
+  return { ...preview, ticket_created: true, ticket };
 }
 
 async function createDecision(inputs = {}, context = {}) {

@@ -512,7 +512,16 @@ body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-c
 
   body.bna-ops-shell-page.one-time-operations-active .ops-topbar-center,
   body.bna-ops-shell-page.one-time-operations-active .ops-brand-actions > .ops-brand-chip:first-child {
-    display: none;
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
   }
 
   body.bna-ops-shell-page.one-time-operations-active .ops-brand-actions {
@@ -537,7 +546,16 @@ body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-c
   }
 
   body.bna-ops-shell-page.one-time-operations-active .ops-filter-rail-meta {
-    display: none;
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
   }
 
   body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-track,
