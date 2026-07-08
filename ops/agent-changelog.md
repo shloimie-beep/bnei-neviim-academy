@@ -35169,8 +35169,44 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   payment/access change, or official record mutation was performed.
 - Verification passed: `node --check` for touched helper/generator files,
   `node scripts/generate-rabbi-helper-tool-scope-map.mjs`, focused
-  helper/scope/Agent Review tests 40/40, and `git diff --check` with
-  line-ending warnings only.
+  helper/scope/integration/Agent Review tests 45/45, full `npm test`
+  1670/1670, `git diff --check` with line-ending warnings only, JSONL parse,
+  secrets audit, and protocol drift.
 - Remaining blockers: 12 fallback/setup blockers, deploy/live smoke for 85
   local-only wrappers after the Railway failure path is investigated, external
   approval gates, and saved all-163 Agent Mode PASS/BLOCKED proof.
+
+## 2026-07-09T00:24:00+03:00 - Rabbi Bot Smoke Prompt And Scoped Packet Closeout Verified
+
+- Refreshed the Rabbi Telegram/helper Agent Mode smoke prompt for
+  all-contact/all-message scope, staff-owned ticket separation, Rabbi
+  communication dings, and concise Codex/agent progress dings through the
+  Operations drop-off loop.
+- Completed local verification for the full 151 wrapper-backed Rabbi helper
+  scope map plus the bot smoke prompt refresh: focused helper/scope/integration/
+  Agent Review tests passed 45/45, full `npm test` passed 1670/1670,
+  `git diff --check` passed with only line-ending warnings, JSONL parse passed,
+  `npm run secrets:audit` passed, and `npm run watchdog:protocol-drift` passed.
+- Rabbi readiness remains a no-write PASS with token and Operations
+  credentials configured, but live Rabbi delivery is still blocked by missing
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`.
+- Production deploy/live readback is not claimed for this batch because the
+  OneTime Railway deploy path is still blocked by the prior failed deployments
+  after image push. Active OneTime production remains on the last successful
+  deployment `eb599c39-36f7-4f80-9d6d-2a8fc5c6406f`.
+
+## 2026-07-09T00:27:30+03:00 - Rabbi Helper Scope Progress Ding Sent
+
+- Sent the concise super-admin Telegram progress update for the Rabbi helper
+  scope and Rabbi bot smoke prompt batch; Telegram returned `sent=true` and
+  `message_id_present=true`.
+- Current verified state: 163 Rabbi helper scope contracts, 151 local
+  wrapper-backed contracts, 12 fallback/setup blockers, and 0 missing wrapper
+  rows.
+- Verification remains green: focused helper/scope/integration/Agent Review
+  tests 45/45, full `npm test` 1670/1670, Rabbi readiness no-write check,
+  JSONL parse, secrets audit, protocol drift, and `git diff --check`.
+- Remaining blockers: Rabbi live Telegram still needs
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`; deploy/live smoke for 85 local-only
+  wrappers is still blocked by the OneTime Railway failed-deploy path; saved
+  all-163 Agent Mode proof is still required before autonomy can be claimed.
