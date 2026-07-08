@@ -124,8 +124,8 @@
       "provider": 11
     },
     "by_implementation_status": {
-      "tool_wrapper_missing": 102,
-      "tool_wrapper_available_local": 49,
+      "tool_wrapper_missing": 85,
+      "tool_wrapper_available_local": 66,
       "registered_fallback_only_blocker": 12
     }
   },
@@ -1682,8 +1682,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_calendar_event_draft, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_calendar_event_draft in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -3599,8 +3599,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_shoutout_draft, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_shoutout_draft in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -4048,8 +4048,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for distill_ramble, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep distill_ramble in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -4159,8 +4159,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for draft_automation, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep draft_automation in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -4270,8 +4270,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for draft_drip_sequence, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep draft_drip_sequence in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -4383,8 +4383,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for draft_email_campaign, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep draft_email_campaign in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -4497,8 +4497,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for draft_email_from_newsletter, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep draft_email_from_newsletter in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -4610,8 +4610,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for draft_mishnayos_landing_page, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep draft_mishnayos_landing_page in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -4947,8 +4947,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for find_latest_newsletter_draft, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep find_latest_newsletter_draft in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -5060,8 +5060,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for generate_social_posts_from_newsletter, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep generate_social_posts_from_newsletter in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -5176,8 +5176,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for generate_student_worksheet, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep generate_student_worksheet in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -7985,8 +7985,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for preview_campaign_segment, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep preview_campaign_segment in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -8436,8 +8436,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for refine_email, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep refine_email in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -8548,8 +8548,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for refine_newsletter_draft, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep refine_newsletter_draft in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -10457,8 +10457,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for update_calendar_event_draft, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep update_calendar_event_draft in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -11938,8 +11938,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for draft_message_to_admin, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep draft_message_to_admin in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -12284,8 +12284,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for generate_student_worksheet, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep generate_student_worksheet in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",

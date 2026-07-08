@@ -380,7 +380,15 @@ function deterministicPlan(message = '', registry, context = {}) {
   const actions = [];
   let reply = 'I can help with that.';
 
-  if (/\b(capture|save|remember|raw intake|ramble|transcript|recording|goal mode|set (it|this|that) as a goal|make (it|this|that) a goal|from now on|always|never|every time|do all those things|finish everything)\b/i.test(text)) {
+  if (isRabbiOneTimeContext(context) && /\b(distill|summari[sz]e|parse|organize)\b.*\bramble\b|\bramble\b.*\b(distill|summari[sz]e|parse|organize)\b/i.test(text)) {
+    reply = 'I can distill this Rabbi / One Time ramble without returning raw private wording.';
+    actions.push({
+      tool: 'distill_ramble',
+      label: 'Distill ramble',
+      args: { ...previewScopeArgs(text, context), raw_text: text },
+      reason: 'Rabbi / One Time ramble distillation request',
+    });
+  } else if (/\b(capture|save|remember|raw intake|ramble|transcript|recording|goal mode|set (it|this|that) as a goal|make (it|this|that) a goal|from now on|always|never|every time|do all those things|finish everything)\b/i.test(text)) {
     const tool = scopedTool(registry, context, 'capture_ramble', 'capture_raw_intake');
     reply = 'I can capture this as raw intake, parse it into BNA lanes, and return the raw ID plus counts.';
     actions.push({
@@ -777,6 +785,182 @@ function deterministicPlan(message = '', registry, context = {}) {
       label: sending ? 'Send email' : 'Draft email',
       args: sending ? { to, subject, text: body } : { to, subject, body },
       reason: sending ? 'External email send request' : 'Email draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(update|edit|change|move)\b.*\bcalendar event\b.*\bdraft\b|\bcalendar event\b.*\bdraft\b.*\b(update|edit|change|move)\b/i.test(text)) {
+    reply = 'I can preview the scoped calendar event update without changing the event.';
+    actions.push({
+      tool: 'update_calendar_event_draft',
+      label: 'Calendar update draft',
+      args: {
+        ...previewScopeArgs(text, context),
+        event_id: extractCalendarEventId(text) || 0,
+        title: previewQuotedText(text) || undefined,
+        start_at: previewDate(text) || guessScheduledAt(text) || undefined,
+      },
+      reason: 'Rabbi / One Time calendar update draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|preview|plan)\b.*\b(calendar event|class session|session)\b|\b(calendar event|class session|session)\b.*\bdraft\b/i.test(text)) {
+    reply = 'I can preview the scoped calendar event without creating or syncing it.';
+    actions.push({
+      tool: 'create_calendar_event_draft',
+      label: 'Calendar event draft',
+      args: {
+        ...previewScopeArgs(text, context),
+        title: previewQuotedText(text) || textAfterIntent(text, /(?:calendar event|class session|session)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, 'One Time class session'),
+        start_at: previewDate(text) || guessScheduledAt(text) || 'TBD',
+        visibility: 'provider',
+      },
+      reason: 'Rabbi / One Time calendar event draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|create|write|prepare)\b.*\bshoutout\b|\bshoutout\b.*\bdraft\b/i.test(text)) {
+    reply = 'I can prepare a parent-safe shoutout draft for review.';
+    actions.push({
+      tool: 'create_shoutout_draft',
+      label: 'Shoutout draft',
+      args: {
+        ...previewScopeArgs(text, context),
+        student_id: extractStudentIdOrSelected(text, context) || undefined,
+        message: textAfterIntent(text, /(?:shoutout)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, text),
+      },
+      reason: 'Rabbi / One Time shoutout draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|preview|create|build)\b.*\b(automation|workflow)\b/i.test(text)) {
+    reply = 'I can compile a scoped automation draft without enabling it.';
+    actions.push({
+      tool: 'draft_automation',
+      label: 'Draft automation',
+      args: { ...previewScopeArgs(text, context), message: text },
+      reason: 'Rabbi / One Time automation draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|preview|create|build)\b.*\b(drip|sequence|nurture)\b/i.test(text)) {
+    reply = 'I can draft a scoped drip sequence without enabling or sending it.';
+    actions.push({
+      tool: 'draft_drip_sequence',
+      label: 'Draft drip sequence',
+      args: {
+        ...previewScopeArgs(text, context),
+        goal: textAfterIntent(text, /(?:drip|sequence|nurture)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, text),
+        message_count: Number(firstMatch(text, /\b(\d+)\s*(?:message|email|part)s?\b/i)) || 3,
+      },
+      reason: 'Rabbi / One Time drip sequence draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(preview|show|check)\b.*\b(campaign )?(segment|audience)\b/i.test(text)) {
+    reply = 'I can preview the scoped campaign audience without returning contacts.';
+    actions.push({
+      tool: 'preview_campaign_segment',
+      label: 'Preview campaign segment',
+      args: {
+        ...previewScopeArgs(text, context),
+        segment_name: previewQuotedText(text) || textAfterIntent(text, /(?:segment|audience)\s*(?:for|named|:|-)?\s*([\s\S]+)$/i, 'One Time campaign segment'),
+      },
+      reason: 'Rabbi / One Time campaign segment preview request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|preview|create|build)\b.*\bemail campaign\b/i.test(text)) {
+    reply = 'I can draft a scoped email campaign without sending it.';
+    actions.push({
+      tool: 'draft_email_campaign',
+      label: 'Draft email campaign',
+      args: {
+        ...previewScopeArgs(text, context),
+        goal: textAfterIntent(text, /(?:email campaign)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, text),
+        subject: extractSubject(text) || undefined,
+        body: extractBody(text) || undefined,
+      },
+      reason: 'Rabbi / One Time email campaign draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(find|open|show|get)\b.*\b(latest|newest)?\s*(newsletter|weekly update|parent update)\b.*\bdraft\b/i.test(text)) {
+    reply = 'I can find the latest scoped newsletter draft metadata without returning the raw body.';
+    actions.push({
+      tool: 'find_latest_newsletter_draft',
+      label: 'Find latest newsletter draft',
+      args: previewScopeArgs(text, context),
+      reason: 'Rabbi / One Time newsletter draft lookup request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(refine|revise|polish|rewrite|tighten)\b.*\b(newsletter|weekly update|parent update)\b/i.test(text)) {
+    reply = 'I can refine the scoped newsletter draft without saving or approving it.';
+    actions.push({
+      tool: 'refine_newsletter_draft',
+      label: 'Refine newsletter draft',
+      args: {
+        ...previewScopeArgs(text, context),
+        draft_body: extractBody(text) || undefined,
+        instruction: text,
+        save_revision: false,
+      },
+      reason: 'Rabbi / One Time newsletter refinement draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|create|turn|make)\b.*\bemail\b.*\b(newsletter|weekly update|parent update)\b|\b(newsletter|weekly update|parent update)\b.*\bemail draft\b/i.test(text)) {
+    reply = 'I can draft a scoped email from the newsletter without sending it.';
+    actions.push({
+      tool: 'draft_email_from_newsletter',
+      label: 'Draft email from newsletter',
+      args: {
+        ...previewScopeArgs(text, context),
+        newsletter_body: extractBody(text) || undefined,
+        subject: extractSubject(text) || undefined,
+      },
+      reason: 'Rabbi / One Time newsletter-to-email draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(generate|make|draft|create)\b.*\b(social|facebook|linkedin|posts?)\b.*\b(newsletter|weekly update|parent update)\b|\b(newsletter|weekly update|parent update)\b.*\b(social|facebook|linkedin|posts?)\b/i.test(text)) {
+    reply = 'I can generate scoped social post drafts from the newsletter without publishing.';
+    actions.push({
+      tool: 'generate_social_posts_from_newsletter',
+      label: 'Generate social drafts',
+      args: {
+        ...previewScopeArgs(text, context),
+        newsletter_body: extractBody(text) || undefined,
+        channels: [guessPlatform(text)],
+      },
+      reason: 'Rabbi / One Time newsletter social draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(refine|revise|polish|rewrite|tighten)\b.*\bemail\b/i.test(text)) {
+    reply = 'I can refine the scoped email draft without sending it.';
+    actions.push({
+      tool: 'refine_email',
+      label: 'Refine email',
+      args: {
+        ...previewScopeArgs(text, context),
+        body: extractBody(text) || textAfterIntent(text, /(?:email)\s*(?:body|copy|:|-)?\s*([\s\S]+)$/i, text),
+        instruction: text,
+      },
+      reason: 'Rabbi / One Time email refinement draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|generate|create|make)\b.*\bworksheet\b/i.test(text)) {
+    reply = 'I can preview a scoped student worksheet draft without mutating assignments.';
+    actions.push({
+      tool: 'generate_student_worksheet',
+      label: 'Generate worksheet draft',
+      args: {
+        ...previewScopeArgs(text, context),
+        student_id: extractStudentIdOrSelected(text, context) || undefined,
+        assignment_id: Number(firstMatch(text, /\bassignment\s*#?\s*(\d+)\b/i)) || undefined,
+        topic: textAfterIntent(text, /(?:worksheet)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, 'One Time Mishnah review'),
+      },
+      reason: 'Rabbi / One Time worksheet draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|create|write|prepare)\b.*\b(landing page|mishnayos page|one time page|homepage)\b/i.test(text)) {
+    reply = 'I can draft One Time landing page copy without changing the public page.';
+    actions.push({
+      tool: 'draft_mishnayos_landing_page',
+      label: 'Mishnayos landing draft',
+      args: {
+        ...previewScopeArgs(text, context),
+        title: previewQuotedText(text) || undefined,
+        prompt: text,
+      },
+      reason: 'Rabbi / One Time landing page draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|write|prepare|compose)\b.*\b(message to admin|admin message|note to admin|tell admin)\b/i.test(text)) {
+    const message = textAfterIntent(text, /(?:message to admin|admin message|note to admin|tell admin)\s*(?:about|for|:|-)?\s*([\s\S]+)$/i, text);
+    reply = 'I can draft a scoped admin message without sending it.';
+    actions.push({
+      tool: 'draft_message_to_admin',
+      label: 'Draft message to admin',
+      args: {
+        ...previewScopeArgs(text, context),
+        message,
+      },
+      reason: 'Rabbi / One Time admin-message draft request',
     });
   } else if (isRabbiOneTimeContext(context) && /\b(draft|write|prepare|compose)\b.*\b(parent response|parent reply|reply to parent|parent email)\b/i.test(text)) {
     const body = textAfterIntent(text, /(?:parent response|parent reply|reply to parent|parent email)\s*(?:about|for|:|-)?\s*([\s\S]+)$/i, text);

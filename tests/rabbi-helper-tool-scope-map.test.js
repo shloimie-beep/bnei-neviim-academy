@@ -195,7 +195,7 @@ test('Rabbi helper scope map marks the read-only runtime batch as locally wrappe
     assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
   }
 
-  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 49);
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 66);
 });
 
 test('Rabbi helper scope map marks parent and student summary wrappers as locally wrapper-backed', () => {
@@ -243,6 +243,40 @@ test('Rabbi helper scope map marks Google and classroom preview wrappers as loca
     ].includes(contract.rabbi_contract.confirmation_policy));
     assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
     assert.match(contract.rabbi_contract.agent_mode_probe.expected_result, /draft|preview|no external/i);
+  }
+});
+
+test('Rabbi helper scope map marks draft-only sidekick wrappers as locally wrapper-backed', () => {
+  const draftNames = [
+    'create_calendar_event_draft',
+    'update_calendar_event_draft',
+    'create_shoutout_draft',
+    'distill_ramble',
+    'draft_automation',
+    'draft_drip_sequence',
+    'draft_email_campaign',
+    'draft_email_from_newsletter',
+    'draft_mishnayos_landing_page',
+    'find_latest_newsletter_draft',
+    'generate_social_posts_from_newsletter',
+    'generate_student_worksheet',
+    'preview_campaign_segment',
+    'refine_email',
+    'refine_newsletter_draft',
+    'draft_message_to_admin',
+  ];
+  const draftContracts = scopeMap.contracts.filter((contract) => draftNames.includes(contract.source.helper_tool_name));
+  assert.equal(draftContracts.length, 17);
+
+  for (const contract of draftContracts) {
+    assert.equal(contract.rabbi_contract.action_policy, 'draft_only');
+    assert.ok([
+      'safe_without_confirmation_after_scope_check',
+      'explicit_confirmation_required',
+    ].includes(contract.rabbi_contract.confirmation_policy));
+    assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
+    assert.match(contract.rabbi_contract.agent_mode_probe.expected_result, /draft|preview|no external/i);
+    assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
   }
 });
 

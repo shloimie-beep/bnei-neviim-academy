@@ -55,6 +55,22 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'google_drive_create_folder_preview',
   'google_business_place_id_lookup',
   'google_business_list_locations_preview',
+  'create_calendar_event_draft',
+  'update_calendar_event_draft',
+  'create_shoutout_draft',
+  'distill_ramble',
+  'draft_automation',
+  'draft_drip_sequence',
+  'draft_email_campaign',
+  'draft_email_from_newsletter',
+  'draft_mishnayos_landing_page',
+  'find_latest_newsletter_draft',
+  'generate_social_posts_from_newsletter',
+  'generate_student_worksheet',
+  'preview_campaign_segment',
+  'refine_email',
+  'refine_newsletter_draft',
+  'draft_message_to_admin',
   'create_support_ticket',
   'create_report_problem_ticket',
   'create_ticket',
@@ -2842,6 +2858,393 @@ async function googleBusinessListLocationsPreviewTool(payload) {
   return runRabbiPreviewActionTool(payload, 'google_business_list_locations_preview', 'Google Business locations preview');
 }
 
+function draftTextPreview(value = '', max = 700) {
+  return compactText(redactText(value || ''), max) || null;
+}
+
+function noLiveDraftFlags() {
+  return {
+    executed: false,
+    dry_run_only: true,
+    no_send: true,
+    no_publish: true,
+    no_external_sync: true,
+    external_write_performed: false,
+    external_send_performed: false,
+    external_publish_performed: false,
+    payment_or_access_change_performed: false,
+    credential_write_performed: false,
+    raw_private_body_returned: false,
+    raw_contact_export_returned: false,
+    raw_external_ids_returned: false,
+    raw_urls_returned: false,
+  };
+}
+
+function safeAudienceSummary(preview = {}) {
+  const audience = preview.audience_preview || preview.audience || {};
+  return {
+    segment_name: compactText(audience.segment_name || audience.audience_label || preview.segment_name || '', 180) || null,
+    estimated_count: Number(audience.estimated_count || preview.estimated_count || 0),
+    consent_count: Number(audience.consent_count || preview.consent_count || 0),
+    sendable_count: Number(audience.sendable_count || preview.sendable_count || 0),
+    suppressed_count: Number(audience.suppressed_count || preview.suppressed_count || 0),
+    consent_checked: Boolean(audience.consent_checked || preview.consent_checked),
+    suppression_checked: Boolean(audience.suppression_checked || preview.suppression_checked),
+    contact_rows_returned: false,
+  };
+}
+
+function safeDraftActionSummary(actionId, preview = {}) {
+  const previewOk = !preview.preview_error;
+  const base = {
+    action_id: actionId,
+    ...noLiveDraftFlags(),
+    workspace_key: preview.workspace_key || preview.audience_preview?.workspace_key || RABBI_WORKSPACE_KEY,
+    project_key: preview.project_key || preview.audience_preview?.project_key || RABBI_PROJECT_KEY,
+    status: preview.status || null,
+    preview_error: preview.preview_error || null,
+    approval_required_before_live_action: true,
+  };
+  if (actionId === 'preview_campaign_segment') {
+    return {
+      ...base,
+      segment_preview_created: previewOk,
+      audience: safeAudienceSummary(preview),
+    };
+  }
+  if (actionId === 'draft_email_campaign') {
+    const content = preview.email?.version?.content || {};
+    const campaignBody = content.body || preview.body;
+    return {
+      ...base,
+      campaign_draft_created: previewOk && Boolean(preview.email || preview.draft_created || preview.goal || preview.subject || campaignBody),
+      goal: compactText(preview.goal || '', 300) || null,
+      audience: safeAudienceSummary(preview),
+      subject: compactText(content.subject || preview.subject || '', 180) || null,
+      body_preview: draftTextPreview(campaignBody),
+      body_preview_returned: Boolean(campaignBody),
+      ready_for_live_send: false,
+      blockers: compactList(preview.safety_gate?.blockers || preview.blockers, 10),
+    };
+  }
+  if (actionId === 'draft_drip_sequence') {
+    const sequence = preview.sequence || {};
+    const messageCount = Number(sequence.message_count || preview.message_count || compactList(sequence.messages || preview.messages, 12).length || 0);
+    return {
+      ...base,
+      drip_sequence_draft_created: previewOk && Boolean(preview.sequence || preview.goal || messageCount),
+      goal: compactText(preview.goal || '', 300) || null,
+      audience: safeAudienceSummary(preview),
+      message_count: messageCount,
+      intervals: compactList(sequence.intervals || preview.intervals, 10),
+      messages: compactList(sequence.messages || preview.messages, 12).map((message) => ({
+        message_number: message.message_number || null,
+        subject: compactText(message.subject || '', 180) || null,
+        delay: compactText(message.delay || '', 120) || null,
+        approval_state: message.approval_state || 'draft',
+      })),
+      ready_for_live_send: false,
+      blockers: compactList(preview.safety_gate?.blockers || preview.blockers, 10),
+    };
+  }
+  if (actionId === 'draft_automation') {
+    return {
+      ...base,
+      automation_draft_created: previewOk && Boolean(preview.draft || preview.steps || preview.workflow || preview.message || preview.goal),
+      trigger: compactText(preview.trigger?.label || preview.trigger_type || preview.definition?.trigger || '', 180) || null,
+      step_count: Array.isArray(preview.steps) ? preview.steps.length : Number(preview.step_count || 0),
+      steps: compactList(preview.steps, 12).map((step) => ({
+        step_id: step.step_id || null,
+        type: step.type || null,
+        label: compactText(step.label || step.action_type || step.condition_type || step.trigger_type || '', 180) || null,
+        approval_required: Boolean(step.approval_required),
+      })),
+      enabled: false,
+      blockers: compactList(preview.blockers || preview.safety_gate?.blockers, 10),
+    };
+  }
+  if (actionId === 'draft_email_from_newsletter') {
+    return {
+      ...base,
+      email_draft_created: previewOk && Boolean(preview.draft_created || preview.newsletter_body || preview.subject),
+      identity: compactText(preview.identity || '', 180) || null,
+      audience: compactText(preview.audience || '', 180) || null,
+      subject: compactText(preview.subject || '', 180) || null,
+      body_preview: draftTextPreview(preview.body),
+      body_preview_returned: Boolean(preview.body),
+      sent: false,
+    };
+  }
+  if (actionId === 'find_latest_newsletter_draft') {
+    return {
+      ...base,
+      newsletter_found: previewOk && Boolean(preview.found),
+      source: preview.source || null,
+      source_output_id: preview.draft?.id || null,
+      title: compactText(preview.draft?.title || '', 180) || null,
+      body_returned: false,
+    };
+  }
+  if (actionId === 'generate_social_posts_from_newsletter') {
+    return {
+      ...base,
+      social_drafts_created: previewOk && Boolean(preview.draft_created || preview.newsletter_body || preview.body || preview.channels),
+      channels: compactList(preview.channels, 8),
+      body_preview: draftTextPreview(preview.body),
+      body_preview_returned: Boolean(preview.body),
+      published: false,
+    };
+  }
+  if (actionId === 'refine_newsletter_draft') {
+    const newsletterDraft = preview.revised_body || preview.draft_body || preview.newsletter_body;
+    return {
+      ...base,
+      newsletter_refined: previewOk && Boolean(newsletterDraft || preview.source_found),
+      source_found: Boolean(preview.source_found),
+      source_output_id: preview.source_output_id || null,
+      title: compactText(preview.title || '', 180) || null,
+      revised_body_preview: draftTextPreview(preview.revised_body),
+      revised_body_returned: Boolean(preview.revised_body),
+      saved: false,
+      next_actions: compactList(preview.next_actions, 8),
+    };
+  }
+  if (actionId === 'refine_email') {
+    return {
+      ...base,
+      email_refined: previewOk && Boolean(preview.draft_created || preview.body),
+      subject: compactText(preview.subject || '', 180) || null,
+      body_preview: draftTextPreview(preview.body),
+      body_preview_returned: Boolean(preview.body),
+      sent: false,
+    };
+  }
+  if (actionId === 'create_calendar_event' || actionId === 'update_calendar_event') {
+    return {
+      ...base,
+      calendar_draft_created: previewOk && Boolean(preview.preview || preview.event || preview.title || preview.event_id),
+      title: compactText(preview.preview?.title || preview.event?.title || preview.title || '', 180) || null,
+      start_at: preview.preview?.start_at || preview.event?.start_at || preview.start_at || null,
+      end_at: preview.preview?.end_at || preview.event?.end_at || preview.end_at || null,
+      visibility: preview.preview?.visibility || preview.event?.visibility || preview.visibility || 'provider',
+      internal_calendar_write_performed: false,
+      google_calendar_write_performed: false,
+    };
+  }
+  return base;
+}
+
+async function runRabbiDraftActionTool({ args, context, db, deps, tool }, actionId, label, defaults = {}) {
+  const { projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const actor = {
+    user_id: context.userName || context.userId || 'rabbi_helper',
+    role: 'admin',
+    workspace_id: workspaceKey,
+    workspace_key: workspaceKey,
+    project_key: projectKey,
+  };
+  const inputs = {
+    ...defaults,
+    ...args,
+    workspace_key: workspaceKey,
+    project_key: projectKey,
+  };
+  const result = await runAction({
+    action_id: actionId,
+    inputs,
+    dry_run: true,
+    approved: false,
+    source: 'operations_helper',
+    actor,
+  }, {
+    db,
+    source: 'operations_helper',
+    actor,
+  });
+  const actionPreview = redactValue(result.preview || result.result || {});
+  const preview = safeDraftActionSummary(actionId, {
+    ...inputs,
+    ...actionPreview,
+  });
+  return helperResultCard({
+    tool: tool?.name || actionId,
+    recordType: 'helper_audit',
+    recordId: null,
+    label,
+    summary: `${label} prepared as a scoped draft/preview. No send, publish, sync, upload, credential, payment, access, or live external write was performed.`,
+    url: `/operations?view=content&workspace=${workspaceKey}`,
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      delegated_action_id: actionId,
+      action_success: Boolean(result.success),
+      missing_inputs: result.missing_inputs || [],
+      approval_required: Boolean(result.approval_required),
+      action_audit_log_id: result.audit_log?.action_run_id || null,
+      preview,
+    },
+  });
+}
+
+async function createCalendarEventDraftTool(payload) {
+  return runRabbiDraftActionTool(payload, 'create_calendar_event', 'Calendar event draft', {
+    visibility: 'provider',
+    source: 'rabbi_helper_draft',
+    related_type: 'class_session',
+  });
+}
+
+async function updateCalendarEventDraftTool(payload) {
+  return runRabbiDraftActionTool(payload, 'update_calendar_event', 'Calendar event update draft', {
+    visibility: 'provider',
+  });
+}
+
+async function draftAutomationTool(payload) {
+  return runRabbiDraftActionTool(payload, 'draft_automation', 'Automation draft');
+}
+
+async function draftDripSequenceTool(payload) {
+  return runRabbiDraftActionTool(payload, 'draft_drip_sequence', 'Drip sequence draft');
+}
+
+async function draftEmailCampaignTool(payload) {
+  return runRabbiDraftActionTool(payload, 'draft_email_campaign', 'Email campaign draft');
+}
+
+async function draftEmailFromNewsletterTool(payload) {
+  return runRabbiDraftActionTool(payload, 'draft_email_from_newsletter', 'Newsletter email draft');
+}
+
+async function findLatestNewsletterDraftTool(payload) {
+  return runRabbiDraftActionTool(payload, 'find_latest_newsletter_draft', 'Latest newsletter draft lookup');
+}
+
+async function generateSocialPostsFromNewsletterTool(payload) {
+  return runRabbiDraftActionTool(payload, 'generate_social_posts_from_newsletter', 'Newsletter social post drafts');
+}
+
+async function previewCampaignSegmentTool(payload) {
+  return runRabbiDraftActionTool(payload, 'preview_campaign_segment', 'Campaign segment preview');
+}
+
+async function refineEmailTool(payload) {
+  return runRabbiDraftActionTool(payload, 'refine_email', 'Email refinement draft');
+}
+
+async function refineNewsletterDraftTool(payload) {
+  return runRabbiDraftActionTool(payload, 'refine_newsletter_draft', 'Newsletter refinement draft');
+}
+
+async function runLocalRabbiDraftTool({ args, context, db, deps, tool }, label, buildPreview) {
+  const { projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const preview = {
+    action_id: tool?.name || label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+    ...noLiveDraftFlags(),
+    workspace_key: workspaceKey,
+    project_key: projectKey,
+    ...buildPreview(args, { workspaceKey, projectKey }),
+  };
+  return helperResultCard({
+    tool: tool?.name,
+    recordType: 'helper_audit',
+    recordId: null,
+    label,
+    summary: `${label} prepared as a scoped local draft. No send, publish, sync, upload, credential, payment, access, or live external write was performed.`,
+    url: `/operations?view=content&workspace=${workspaceKey}`,
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      local_draft_only: true,
+      preview,
+    },
+  });
+}
+
+async function createShoutoutDraftTool(payload) {
+  return runLocalRabbiDraftTool(payload, 'Student shoutout draft', (args) => ({
+    shoutout_draft_created: true,
+    student_id: args.student_id || null,
+    student_label: compactText(args.student_name || args.student_label || '', 120) || null,
+    title: compactText(args.title || 'One Time student shoutout', 180),
+    message_preview: draftTextPreview(args.message || args.body || args.notes || 'Draft a parent-safe shoutout for review.', 500),
+    audience: compactText(args.audience || 'provider_review_first', 120),
+    parent_visible_after_approval: true,
+  }));
+}
+
+async function distillRambleTool(payload) {
+  return runLocalRabbiDraftTool(payload, 'Ramble distillation draft', (args) => {
+    const rawText = compactText(args.raw_text || args.text || args.message || args.prompt || '', 12000);
+    const parsed = parseIntakeText({
+      raw_input: rawText,
+      source_type: 'operations_helper',
+      source_channel: 'operations_helper',
+      workspace_key: RABBI_WORKSPACE_KEY,
+      project_key: RABBI_PROJECT_KEY,
+    });
+    return {
+      ramble_distilled: true,
+      raw_text_returned: false,
+      text_length: rawText.length,
+      affected_goal_ids: affectedGoalIdsForText(rawText).slice(0, 8),
+      item_counts: extractedItemCounts(parsed),
+      visible_title_suggestions: compactList(parsed.tasks, 5).map((task) => compactText(task.title || task.canonical_title || '', 180)).filter(Boolean),
+      needs_register: Boolean(parsed.requirements?.length || parsed.tasks?.length || parsed.decisions?.length),
+    };
+  });
+}
+
+async function draftMishnayosLandingPageTool(payload) {
+  return runLocalRabbiDraftTool(payload, 'Mishnayos landing page draft', (args) => ({
+    landing_page_draft_created: true,
+    brand_scope: 'one_time_black_yellow',
+    title: compactText(args.title || 'OneTimeOneTime Mishnah', 180),
+    audience: compactText(args.audience || 'parents considering One Time Mishnayos', 180),
+    offer: compactText(args.offer || args.goal || 'Clear Mishnayos learning with Rabbi Scheller', 240),
+    sections: [
+      'hero_offer',
+      'parent_problem',
+      'rabbi_trust',
+      'classroom_preview',
+      'signup_call_to_action',
+    ],
+    copy_preview: draftTextPreview(args.copy || args.prompt || args.notes || 'Draft the One Time Mishnayos landing page copy for review.', 600),
+    public_page_changed: false,
+  }));
+}
+
+async function generateStudentWorksheetTool(payload) {
+  return runLocalRabbiDraftTool(payload, 'Student worksheet draft preview', (args) => ({
+    worksheet_draft_created: true,
+    student_id: args.student_id || null,
+    assignment_id: args.assignment_id || null,
+    topic: compactText(args.topic || args.title || 'One Time Mishnah review', 180),
+    level: compactText(args.level || 'student_safe', 80),
+    language: compactText(args.language || 'english', 80),
+    prompt_preview: draftTextPreview(args.prompt_patch || args.prompt || args.notes || 'Generate a student-safe worksheet outline for Rabbi review.', 600),
+    worksheet_outline: [
+      'review_prompt',
+      'inside_text_question',
+      'short_answer_question',
+      'parent_visible_completion_note',
+    ],
+    worksheet_body_returned: false,
+    student_access_code_returned: false,
+    official_assignment_mutated: false,
+  }));
+}
+
+async function draftMessageToAdminTool(payload) {
+  return runLocalRabbiDraftTool(payload, 'Message to admin draft', (args) => ({
+    admin_message_draft_created: true,
+    subject: compactText(args.subject || args.title || 'One Time admin message draft', 180),
+    message_preview: draftTextPreview(args.message || args.body || args.notes || 'Draft a message to BNA admin for review.', 700),
+    recipient_scope: 'bna_admin_review',
+    sent: false,
+    parent_impersonation_performed: false,
+  }));
+}
+
 async function createStudentTool({ args, context, deps, db }) {
   const project = await deps.resolveProjectFromInput({ project_key: args.project_key || context.projectKey || 'bna' }, db);
   deps.assertProjectAccess(context.req, project);
@@ -3804,6 +4207,257 @@ function buildToolRegistry(deps = {}) {
         project_key: { type: 'string', maxLength: 120 },
       },
     }, googleBusinessListLocationsPreviewTool),
+    makeDefinition({
+      name: 'create_calendar_event_draft',
+      description: 'Preview a scoped One Time calendar event without creating an internal event or syncing Google Calendar.',
+      category: 'calendar',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        title: { type: 'string', required: true, maxLength: 180 },
+        start_at: { type: 'string', required: true, maxLength: 80 },
+        end_at: { type: 'string', maxLength: 80 },
+        description: { type: 'string', maxLength: 1000 },
+        visibility: { type: 'string', maxLength: 40 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, createCalendarEventDraftTool),
+    makeDefinition({
+      name: 'update_calendar_event_draft',
+      description: 'Preview a scoped One Time calendar event update without changing the event or syncing Google Calendar.',
+      category: 'calendar',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        event_id: { type: 'integer', required: true },
+        title: { type: 'string', maxLength: 180 },
+        start_at: { type: 'string', maxLength: 80 },
+        end_at: { type: 'string', maxLength: 80 },
+        description: { type: 'string', maxLength: 1000 },
+        visibility: { type: 'string', maxLength: 40 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, updateCalendarEventDraftTool),
+    makeDefinition({
+      name: 'create_shoutout_draft',
+      description: 'Create a parent-safe One Time shoutout draft without publishing or notifying anyone.',
+      category: 'students',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        student_id: { type: 'integer' },
+        student_name: { type: 'string', maxLength: 120 },
+        student_label: { type: 'string', maxLength: 120 },
+        title: { type: 'string', maxLength: 180 },
+        message: { type: 'string', maxLength: 2000 },
+        body: { type: 'string', maxLength: 2000 },
+        notes: { type: 'string', maxLength: 2000 },
+        audience: { type: 'string', maxLength: 120 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, createShoutoutDraftTool),
+    makeDefinition({
+      name: 'distill_ramble',
+      description: 'Distill Rabbi / One Time natural-language ramble text into scoped lanes without returning raw private wording.',
+      category: 'intake',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        raw_text: { type: 'string', maxLength: 12000 },
+        text: { type: 'string', maxLength: 12000 },
+        message: { type: 'string', maxLength: 12000 },
+        prompt: { type: 'string', maxLength: 12000 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, distillRambleTool),
+    makeDefinition({
+      name: 'draft_automation',
+      description: 'Compile a scoped One Time automation draft without enabling it or sending messages.',
+      category: 'automations',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        message: { type: 'string', required: true, maxLength: 4000 },
+        goal: { type: 'string', maxLength: 1000 },
+        definition: { type: 'object' },
+        sample_event: { type: 'object' },
+        conversation_key: { type: 'string', maxLength: 180 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, draftAutomationTool),
+    makeDefinition({
+      name: 'draft_drip_sequence',
+      description: 'Draft a scoped One Time drip sequence preview without enabling or sending it.',
+      category: 'communications',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        goal: { type: 'string', required: true, maxLength: 1000 },
+        audience: { type: 'object' },
+        segment_name: { type: 'string', maxLength: 180 },
+        estimated_count: { type: 'integer' },
+        consent_count: { type: 'integer' },
+        messages: { type: 'array', maxItems: 12 },
+        message_count: { type: 'integer', default: 3 },
+        schedule: { type: 'object' },
+        intervals: { type: 'array', maxItems: 12 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, draftDripSequenceTool),
+    makeDefinition({
+      name: 'draft_email_campaign',
+      description: 'Draft a scoped One Time email campaign preview without sending email.',
+      category: 'communications',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        goal: { type: 'string', required: true, maxLength: 1000 },
+        audience: { type: 'object' },
+        segment_name: { type: 'string', maxLength: 180 },
+        estimated_count: { type: 'integer' },
+        consent_count: { type: 'integer' },
+        subject: { type: 'string', maxLength: 180 },
+        body: { type: 'string', maxLength: 4000 },
+        schedule: { type: 'object' },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, draftEmailCampaignTool),
+    makeDefinition({
+      name: 'draft_email_from_newsletter',
+      description: 'Draft a scoped email from a newsletter body without sending email.',
+      category: 'communications',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        output_id: { type: 'integer' },
+        newsletter_body: { type: 'string', maxLength: 10000 },
+        subject: { type: 'string', maxLength: 180 },
+        audience: { type: 'string', maxLength: 180 },
+        identity: { type: 'string', maxLength: 180 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, draftEmailFromNewsletterTool),
+    makeDefinition({
+      name: 'draft_mishnayos_landing_page',
+      description: 'Draft One Time Mishnayos landing page copy without changing the public page.',
+      category: 'content',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        title: { type: 'string', maxLength: 180 },
+        audience: { type: 'string', maxLength: 180 },
+        offer: { type: 'string', maxLength: 240 },
+        goal: { type: 'string', maxLength: 240 },
+        copy: { type: 'string', maxLength: 4000 },
+        prompt: { type: 'string', maxLength: 4000 },
+        notes: { type: 'string', maxLength: 4000 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, draftMishnayosLandingPageTool),
+    makeDefinition({
+      name: 'find_latest_newsletter_draft',
+      description: 'Find the newest scoped newsletter draft metadata without returning the raw newsletter body.',
+      category: 'content',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        output_id: { type: 'integer' },
+        status: { type: 'string', maxLength: 80 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, findLatestNewsletterDraftTool),
+    makeDefinition({
+      name: 'generate_social_posts_from_newsletter',
+      description: 'Generate scoped social post drafts from newsletter text without publishing or scheduling.',
+      category: 'communications',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        output_id: { type: 'integer' },
+        newsletter_body: { type: 'string', maxLength: 10000 },
+        body: { type: 'string', maxLength: 10000 },
+        channels: { type: 'array', maxItems: 8 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, generateSocialPostsFromNewsletterTool),
+    makeDefinition({
+      name: 'generate_student_worksheet',
+      description: 'Preview a scoped One Time student worksheet draft without mutating official assignments or exposing access codes.',
+      category: 'students',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        student_id: { type: 'integer' },
+        assignment_id: { type: 'integer' },
+        topic: { type: 'string', maxLength: 180 },
+        title: { type: 'string', maxLength: 180 },
+        prompt: { type: 'string', maxLength: 4000 },
+        prompt_patch: { type: 'string', maxLength: 4000 },
+        notes: { type: 'string', maxLength: 4000 },
+        language: { type: 'string', maxLength: 80 },
+        level: { type: 'string', maxLength: 80 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, generateStudentWorksheetTool),
+    makeDefinition({
+      name: 'preview_campaign_segment',
+      description: 'Preview a scoped One Time campaign segment without returning contacts or sending messages.',
+      category: 'communications',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        segment_name: { type: 'string', required: true, maxLength: 180 },
+        audience_label: { type: 'string', maxLength: 180 },
+        estimated_count: { type: 'integer' },
+        consent_count: { type: 'integer' },
+        suppression_counts: { type: 'object' },
+        exclusions: { type: 'array', maxItems: 12 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, previewCampaignSegmentTool),
+    makeDefinition({
+      name: 'refine_email',
+      description: 'Refine an email draft without sending or scheduling it.',
+      category: 'communications',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        body: { type: 'string', required: true, maxLength: 10000 },
+        instruction: { type: 'string', maxLength: 1000 },
+        subject: { type: 'string', maxLength: 180 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, refineEmailTool),
+    makeDefinition({
+      name: 'refine_newsletter_draft',
+      description: 'Refine a scoped newsletter draft preview without saving or approving it.',
+      category: 'content',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        output_id: { type: 'integer' },
+        draft_body: { type: 'string', maxLength: 10000 },
+        newsletter_body: { type: 'string', maxLength: 10000 },
+        instruction: { type: 'string', maxLength: 1000 },
+        save_revision: { type: 'boolean', default: false },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, refineNewsletterDraftTool),
+    makeDefinition({
+      name: 'draft_message_to_admin',
+      description: 'Draft a scoped message to BNA admin without sending it or impersonating a parent.',
+      category: 'communications',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        subject: { type: 'string', maxLength: 180 },
+        title: { type: 'string', maxLength: 180 },
+        message: { type: 'string', maxLength: 4000 },
+        body: { type: 'string', maxLength: 4000 },
+        notes: { type: 'string', maxLength: 4000 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, draftMessageToAdminTool),
     makeDefinition({
       name: 'create_support_ticket',
       description: 'Create a first-party Operations support ticket or problem report.',

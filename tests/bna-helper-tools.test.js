@@ -136,12 +136,37 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
     'google_drive_create_folder_preview',
     'google_business_place_id_lookup',
     'google_business_list_locations_preview',
+    'create_calendar_event_draft',
+    'update_calendar_event_draft',
+    'create_shoutout_draft',
+    'distill_ramble',
+    'draft_automation',
+    'draft_drip_sequence',
+    'draft_email_campaign',
+    'draft_email_from_newsletter',
+    'draft_mishnayos_landing_page',
+    'find_latest_newsletter_draft',
+    'generate_social_posts_from_newsletter',
+    'generate_student_worksheet',
+    'preview_campaign_segment',
+    'refine_email',
+    'refine_newsletter_draft',
+    'draft_message_to_admin',
   ]) {
     assert.equal(registry.validate(toolName, {
+      title: 'Draft title',
+      start_at: '2026-08-01T19:00:00+03:00',
+      event_id: 44,
+      raw_text: 'Distill this One Time ramble into tasks.',
+      message: 'Draft this safely',
+      goal: 'Draft parent campaign',
+      segment_name: 'One Time parents',
+      body: 'Draft body',
       student_id: 11,
+      assignment_id: 22,
       workspace_key: 'rabbi_sheller_provider',
       project_key: 'one_time_mishnah_class',
-    }).ok, true, `${toolName} should validate scoped student summary args`);
+    }).ok, true, `${toolName} should validate scoped draft args`);
   }
 
   const validClassroomDraft = registry.validate('create_provider_classroom_draft', {
@@ -327,10 +352,35 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
     'google_drive_create_folder_preview',
     'google_business_place_id_lookup',
     'google_business_list_locations_preview',
+    'create_calendar_event_draft',
+    'update_calendar_event_draft',
+    'create_shoutout_draft',
+    'distill_ramble',
+    'draft_automation',
+    'draft_drip_sequence',
+    'draft_email_campaign',
+    'draft_email_from_newsletter',
+    'draft_mishnayos_landing_page',
+    'find_latest_newsletter_draft',
+    'generate_social_posts_from_newsletter',
+    'generate_student_worksheet',
+    'preview_campaign_segment',
+    'refine_email',
+    'refine_newsletter_draft',
+    'draft_message_to_admin',
   ]) {
     assert.equal(
       helperPermissionForTool(registry.get(toolName), context, {
+        title: 'Draft title',
+        start_at: '2026-08-01T19:00:00+03:00',
+        event_id: 44,
+        raw_text: 'Distill this One Time ramble into tasks.',
+        message: 'Draft this safely',
+        goal: 'Draft parent campaign',
+        segment_name: 'One Time parents',
+        body: 'Draft body',
         student_id: 11,
+        assignment_id: 22,
         workspace_key: 'rabbi_sheller_provider',
         project_key: 'one_time_mishnah_class',
       }).allowed,
@@ -511,6 +561,22 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(deterministicPlan('preview Google Drive folder "One Time class summaries"', registry, oneTimeContext).actions[0].tool, 'google_drive_create_folder_preview');
   assert.equal(deterministicPlan('lookup Google Business place id for Rabbi Scheller One Time', registry, oneTimeContext).actions[0].tool, 'google_business_place_id_lookup');
   assert.equal(deterministicPlan('list Google Business locations for Rabbi Scheller One Time', registry, oneTimeContext).actions[0].tool, 'google_business_list_locations_preview');
+  assert.equal(deterministicPlan('draft calendar event "Week 1 Mishnah class" on 2026-08-01', registry, oneTimeContext).actions[0].tool, 'create_calendar_event_draft');
+  assert.equal(deterministicPlan('update calendar event 44 draft to 2026-08-02', registry, oneTimeContext).actions[0].tool, 'update_calendar_event_draft');
+  assert.equal(deterministicPlan('draft shoutout for student 11 about review effort', registry, oneTimeContext).actions[0].tool, 'create_shoutout_draft');
+  assert.equal(deterministicPlan('distill this ramble about the One Time bot', registry, oneTimeContext).actions[0].tool, 'distill_ramble');
+  assert.equal(deterministicPlan('draft automation when a parent signs up send welcome after review', registry, oneTimeContext).actions[0].tool, 'draft_automation');
+  assert.equal(deterministicPlan('draft 3 email drip sequence for new One Time parents', registry, oneTimeContext).actions[0].tool, 'draft_drip_sequence');
+  assert.equal(deterministicPlan('draft email campaign for One Time parent leads', registry, oneTimeContext).actions[0].tool, 'draft_email_campaign');
+  assert.equal(deterministicPlan('draft email from newsletter body: this week we reviewed Peah', registry, oneTimeContext).actions[0].tool, 'draft_email_from_newsletter');
+  assert.equal(deterministicPlan('draft Mishnayos landing page for One Time', registry, oneTimeContext).actions[0].tool, 'draft_mishnayos_landing_page');
+  assert.equal(deterministicPlan('find latest newsletter draft', registry, oneTimeContext).actions[0].tool, 'find_latest_newsletter_draft');
+  assert.equal(deterministicPlan('make social posts from newsletter body: class recap', registry, oneTimeContext).actions[0].tool, 'generate_social_posts_from_newsletter');
+  assert.equal(deterministicPlan('generate worksheet for student 11 assignment 22 about Mishnah Peah', registry, oneTimeContext).actions[0].tool, 'generate_student_worksheet');
+  assert.equal(deterministicPlan('preview campaign segment One Time interested parents', registry, oneTimeContext).actions[0].tool, 'preview_campaign_segment');
+  assert.equal(deterministicPlan('refine email body: hello parents', registry, oneTimeContext).actions[0].tool, 'refine_email');
+  assert.equal(deterministicPlan('refine newsletter body: this week was great', registry, oneTimeContext).actions[0].tool, 'refine_newsletter_draft');
+  assert.equal(deterministicPlan('draft message to admin about a parent question', registry, oneTimeContext).actions[0].tool, 'draft_message_to_admin');
 });
 
 test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reject cross-scope execution', async () => {
@@ -783,6 +849,20 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
             updated_at: '2026-07-08T04:00:00.000Z',
             parent_phone: 'private phone',
             notes: 'private lead notes',
+          }],
+        };
+      }
+      if (/FROM bna_content_outputs/i.test(sql)) {
+        return {
+          rows: [{
+            id: 41,
+            job_id: 55,
+            title: 'Private newsletter title',
+            body: 'Private newsletter body should not be returned raw',
+            status: 'draft',
+            output_type: 'weekly_newsletter',
+            updated_at: '2026-07-08T06:00:00.000Z',
+            created_at: '2026-07-08T05:00:00.000Z',
           }],
         };
       }
@@ -1093,6 +1173,193 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
   assert.equal(businessLocationsPreview.data.preview.raw_external_ids_returned, false);
   assert.equal(Object.prototype.hasOwnProperty.call(businessLocationsPreview.data.preview, 'account_id'), false);
   assert.equal(Object.prototype.hasOwnProperty.call(businessLocationsPreview.data.preview, 'location_id'), false);
+
+  const calendarDraft = await registry.execute('create_calendar_event_draft', {
+    title: 'Week 1 Mishnah class',
+    start_at: '2026-08-01T19:00:00+03:00',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(calendarDraft.data.delegated_action_id, 'create_calendar_event');
+  assert.equal(calendarDraft.data.preview.executed, false);
+  assert.equal(calendarDraft.data.preview.dry_run_only, true);
+  assert.equal(calendarDraft.data.preview.internal_calendar_write_performed, false);
+  assert.equal(calendarDraft.data.preview.google_calendar_write_performed, false);
+  assert.equal(calendarDraft.data.preview.title, 'Week 1 Mishnah class');
+
+  const calendarUpdateDraft = await registry.execute('update_calendar_event_draft', {
+    event_id: 44,
+    start_at: '2026-08-02T19:00:00+03:00',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(calendarUpdateDraft.data.delegated_action_id, 'update_calendar_event');
+  assert.equal(calendarUpdateDraft.data.preview.executed, false);
+  assert.equal(calendarUpdateDraft.data.preview.internal_calendar_write_performed, false);
+  assert.equal(calendarUpdateDraft.data.preview.google_calendar_write_performed, false);
+
+  const shoutoutDraft = await registry.execute('create_shoutout_draft', {
+    student_id: 11,
+    message: 'Great review effort this week.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(shoutoutDraft.data.local_draft_only, true);
+  assert.equal(shoutoutDraft.data.preview.no_publish, true);
+  assert.equal(shoutoutDraft.data.preview.external_publish_performed, false);
+  assert.equal(shoutoutDraft.data.preview.parent_visible_after_approval, true);
+
+  const distilledRamble = await registry.execute('distill_ramble', {
+    raw_text: 'Goal mode: scope the Rabbi bot to One Time tasks only and block BNA data.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(distilledRamble.data.preview.ramble_distilled, true);
+  assert.equal(distilledRamble.data.preview.raw_text_returned, false);
+  assert.equal(distilledRamble.data.preview.raw_private_body_returned, false);
+
+  const automationDraft = await registry.execute('draft_automation', {
+    message: 'When a parent signs up, draft a welcome follow-up task.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(automationDraft.data.delegated_action_id, 'draft_automation');
+  assert.equal(automationDraft.data.preview.enabled, false);
+  assert.equal(automationDraft.data.preview.external_send_performed, false);
+
+  const dripDraft = await registry.execute('draft_drip_sequence', {
+    goal: 'Welcome new One Time parents',
+    message_count: 3,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(dripDraft.data.delegated_action_id, 'draft_drip_sequence');
+  assert.equal(dripDraft.data.preview.drip_sequence_draft_created, true);
+  assert.equal(dripDraft.data.preview.message_count, 3);
+  assert.equal(dripDraft.data.preview.external_send_performed, false);
+
+  const campaignDraft = await registry.execute('draft_email_campaign', {
+    goal: 'Invite interested One Time parents',
+    segment_name: 'One Time interested parents',
+    subject: 'One Time Mishnayos',
+    body: 'Join the class after review.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(campaignDraft.data.delegated_action_id, 'draft_email_campaign');
+  assert.equal(campaignDraft.data.preview.campaign_draft_created, true);
+  assert.equal(campaignDraft.data.preview.ready_for_live_send, false);
+  assert.equal(campaignDraft.data.preview.external_send_performed, false);
+  assert.equal(campaignDraft.data.preview.audience.contact_rows_returned, false);
+
+  const newsletterEmailDraft = await registry.execute('draft_email_from_newsletter', {
+    newsletter_body: 'This week we reviewed Peah.',
+    subject: 'Weekly One Time update',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(newsletterEmailDraft.data.delegated_action_id, 'draft_email_from_newsletter');
+  assert.equal(newsletterEmailDraft.data.preview.email_draft_created, true);
+  assert.equal(newsletterEmailDraft.data.preview.sent, false);
+  assert.equal(newsletterEmailDraft.data.preview.raw_private_body_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(newsletterEmailDraft.data.preview, 'body'), false);
+
+  const landingDraft = await registry.execute('draft_mishnayos_landing_page', {
+    prompt: 'Draft a One Time landing page for parents.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(landingDraft.data.preview.landing_page_draft_created, true);
+  assert.equal(landingDraft.data.preview.brand_scope, 'one_time_black_yellow');
+  assert.equal(landingDraft.data.preview.public_page_changed, false);
+
+  const latestNewsletter = await registry.execute('find_latest_newsletter_draft', {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(latestNewsletter.data.delegated_action_id, 'find_latest_newsletter_draft');
+  assert.equal(typeof latestNewsletter.data.action_success, 'boolean');
+  assert.equal(typeof latestNewsletter.data.preview.newsletter_found, 'boolean');
+  assert.equal(latestNewsletter.data.preview.body_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(latestNewsletter.data.preview, 'body'), false);
+
+  const socialDraft = await registry.execute('generate_social_posts_from_newsletter', {
+    newsletter_body: 'Class recap for parents.',
+    channels: ['facebook', 'linkedin'],
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(socialDraft.data.delegated_action_id, 'generate_social_posts_from_newsletter');
+  assert.equal(socialDraft.data.preview.social_drafts_created, true);
+  assert.equal(socialDraft.data.preview.published, false);
+  assert.equal(socialDraft.data.preview.external_publish_performed, false);
+
+  const worksheetDraft = await registry.execute('generate_student_worksheet', {
+    student_id: 11,
+    assignment_id: 22,
+    topic: 'Mishnah Peah',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(worksheetDraft.data.preview.worksheet_draft_created, true);
+  assert.equal(worksheetDraft.data.preview.worksheet_body_returned, false);
+  assert.equal(worksheetDraft.data.preview.student_access_code_returned, false);
+  assert.equal(worksheetDraft.data.preview.official_assignment_mutated, false);
+
+  const segmentPreview = await registry.execute('preview_campaign_segment', {
+    segment_name: 'One Time interested parents',
+    estimated_count: 20,
+    consent_count: 18,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(segmentPreview.data.delegated_action_id, 'preview_campaign_segment');
+  assert.equal(segmentPreview.data.preview.segment_preview_created, true);
+  assert.equal(segmentPreview.data.preview.audience.contact_rows_returned, false);
+  assert.equal(segmentPreview.data.preview.external_send_performed, false);
+
+  const refinedEmail = await registry.execute('refine_email', {
+    body: 'hello parents',
+    instruction: 'Make it warmer.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(refinedEmail.data.delegated_action_id, 'refine_email');
+  assert.equal(refinedEmail.data.preview.email_refined, true);
+  assert.equal(refinedEmail.data.preview.sent, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(refinedEmail.data.preview, 'body'), false);
+
+  const refinedNewsletter = await registry.execute('refine_newsletter_draft', {
+    draft_body: 'This week was great.',
+    instruction: 'Make it clearer for parents.',
+    save_revision: false,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(refinedNewsletter.data.delegated_action_id, 'refine_newsletter_draft');
+  assert.equal(refinedNewsletter.data.preview.newsletter_refined, true);
+  assert.equal(refinedNewsletter.data.preview.saved, false);
+  assert.equal(refinedNewsletter.data.preview.raw_private_body_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(refinedNewsletter.data.preview, 'revised_body'), false);
+
+  const adminMessageDraft = await registry.execute('draft_message_to_admin', {
+    message: 'A parent has a question about the next class.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(adminMessageDraft.data.preview.admin_message_draft_created, true);
+  assert.equal(adminMessageDraft.data.preview.sent, false);
+  assert.equal(adminMessageDraft.data.preview.parent_impersonation_performed, false);
+  assert.equal(adminMessageDraft.data.preview.raw_private_body_returned, false);
+
+  await assert.rejects(
+    () => registry.execute('draft_email_campaign', {
+      goal: 'Cross scope campaign',
+      workspace_key: 'bna',
+      project_key: 'one_time_mishnah_class',
+    }, context, db),
+    /workspace scope mismatch/
+  );
   assert.ok(
     executedQueries.filter((query) => /INSERT INTO bna_bot_action_logs/i.test(query.sql)).length >= 7,
     'preview wrappers should write local action audit rows only'

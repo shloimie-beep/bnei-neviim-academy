@@ -34952,3 +34952,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers: the 22 locally verified but undeployed wrapper contracts
   still need clean deploy/live smoke, and all 49 wrapper-backed contracts still
   need saved all-contract Agent Mode PASS/BLOCKED proof.
+
+## 2026-07-08T23:41:16+03:00 - Rabbi helper draft-only sidekick wrappers locally verified
+
+- Added 16 Rabbi / OneTime draft-only sidekick helper wrappers covering 17
+  scope-map contracts: calendar event drafts, shoutout drafts, ramble
+  distillation, automation/drip/campaign drafts, newsletter email/social/refine
+  drafts, Mishnayos landing page drafts, student worksheet drafts, campaign
+  segment previews, email refinement, and parent admin-message drafts.
+- Wired deterministic natural-language planner coverage, helper permission and
+  safety allowlists, scope-map preservation, and privacy/scope negative tests.
+- Fixed delegated draft previews to run through the canonical
+  `operations_helper` dry-run channel after the wrapper enforces
+  `rabbi_sheller_provider` / `one_time_mishnah_class`, and gated created flags
+  so preview errors cannot masquerade as successful drafts.
+- Refreshed the Rabbi scope map: 163 contracts, 66 local wrapper-backed
+  contracts, 85 missing wrappers, and 12 registered fallback/setup blockers.
+- Verification passed: `node --check` for touched helper/generator files,
+  `node scripts/generate-rabbi-helper-tool-scope-map.mjs`,
+  `node scripts/generate-agent-review-prompts.cjs`,
+  `node --test tests/bna-helper-tools.test.js
+  tests/rabbi-helper-tool-scope-map.test.js` 25/25, and
+  `node --test tests/agent-review-hub.test.js` 11/11.
+- Remaining blockers: current draft-only sidekick batch still needs
+  commit/push and clean deploy/live smoke; full autonomy remains blocked by 85
+  missing wrappers, 12 fallback blockers, and saved all-163 Agent Mode
+  PASS/BLOCKED proof.
