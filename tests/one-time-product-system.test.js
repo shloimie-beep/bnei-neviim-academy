@@ -313,6 +313,11 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /no_checkout: true/);
   assert.match(server, /no_access_granted: true/);
   assert.match(server, /external_write_performed: false/);
+  assert.match(server, /function buildOneTimeSignupTelegramReminder/);
+  assert.match(server, /<b>New OneTime signup<\/b>/);
+  assert.match(server, /Review this lead in the OneTime CRM/);
+  assert.match(server, /Guardrail: no parent email, WhatsApp, checkout, payment, access grant, Zoom, Vimeo, or Drive action/);
+  assert.match(server, /sendOneTimeSignupTelegramReminder\(lead\)[\s\S]*\.catch\(\(err\) => console\.error\('OneTime signup Telegram reminder error:'/);
   assert.match(server, /product_readiness: oneTimeProductReadinessView/);
   assert.match(server, /crm_import_preview: crmImportPreview/);
   assert.match(server, /oneTimeCrmImportPreviewReadiness/);

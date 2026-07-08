@@ -43010,20 +43010,29 @@ function escapeTelegramHtml(value) {
 }
 
 async function sendTelegramNotification(message) {
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID_BNA) return;
+  const text = Array.isArray(message) ? message.join('\n') : String(message || '');
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID_BNA || !text.trim()) {
+    return { sent: false, skipped: true, reason: 'telegram_not_configured' };
+  }
 
   try {
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: TELEGRAM_CHAT_ID_BNA,
-        text: message,
+        text,
         parse_mode: 'HTML'
       })
     });
+    if (!response.ok) {
+      console.error('Telegram notification error:', response.status, await response.text().catch(() => ''));
+      return { sent: false, skipped: false, status: response.status };
+    }
+    return { sent: true, skipped: false, status: response.status };
   } catch (err) {
     console.error('Telegram notification error:', err);
+    return { sent: false, skipped: false, error: err.message || String(err) };
   }
 }
 
@@ -77374,6 +77383,32 @@ function oneTimeProductLeadView(row = {}) {
   };
 }
 
+function buildOneTimeSignupTelegramReminder(lead = {}) {
+  const safe = (value, fallback = 'Not provided') => escapeTelegramHtml(limitText(value || '', 320) || fallback);
+  return [
+    '<b>New OneTime signup</b>',
+    '',
+    `Email: ${safe(lead.parent_email || lead.email)}`,
+    `Parent: ${safe(lead.parent_name)}`,
+    `Student: ${safe(lead.student_name)}`,
+    `Region: ${safe(lead.region || 'worldwide')}`,
+    `Source: ${safe(lead.source_landing_page || '/one-time')}`,
+    lead.id ? `Lead ID: ${escapeTelegramHtml(lead.id)}` : '',
+    lead.created_at ? `Created: ${safe(lead.created_at)}` : '',
+    '',
+    'Action: Review this lead in the OneTime CRM and follow up.',
+    'Guardrail: no parent email, WhatsApp, checkout, payment, access grant, Zoom, Vimeo, or Drive action was triggered by this signup.'
+  ].filter(Boolean).join('\n');
+}
+
+async function sendOneTimeSignupTelegramReminder(lead = {}) {
+  const result = await sendTelegramNotification(buildOneTimeSignupTelegramReminder(lead));
+  if (result && !result.sent && !result.skipped) {
+    console.error('OneTime signup Telegram reminder failed:', result.error || result.status || 'unknown error');
+  }
+  return result;
+}
+
 function oneTimeScheduleView(row = {}) {
   return {
     id: row.id ? Number(row.id) : null,
@@ -78204,6 +78239,8 @@ app.get(['/api/bna/product-leads', '/api/bna/one-time/product-leads'], requireAd
 app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) => {
   try {
     const lead = await createOneTimeProductLead(req.body || {});
+    sendOneTimeSignupTelegramReminder(lead)
+      .catch((err) => console.error('OneTime signup Telegram reminder error:', err));
     res.json({
       success: true,
       lead,
