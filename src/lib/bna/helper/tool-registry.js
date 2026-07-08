@@ -97,6 +97,32 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'submit_checkoff',
   'submit_worksheet_answer',
   'update_student',
+  'approve_email',
+  'approve_newsletter',
+  'archive_duplicate_pending',
+  'delete_calendar_event',
+  'google_drive_move_file_preview',
+  'mark_event_parent_visible',
+  'mark_event_student_visible',
+  'move_lead_stage',
+  'move_task_workspace',
+  'post_community_message',
+  'queue_telegram_report',
+  'review_moderated_question',
+  'sync_google_calendar',
+  'sync_google_classroom',
+  'create_parent_question',
+  'create_parent_visible_summary',
+  'update_parent_helper_profile',
+  'create_provider_landing_page',
+  'create_provider_lead',
+  'create_provider_offer',
+  'create_provider_question_post',
+  'create_provider_workspace',
+  'update_provider_brand_kit',
+  'update_provider_lead',
+  'update_rabbi_brand_kit',
+  'upload_provider_asset_reference',
   'create_calendar_event_draft',
   'update_calendar_event_draft',
   'create_shoutout_draft',
@@ -3938,12 +3964,17 @@ const RABBI_INTERNAL_ACTION_TOOL_DEFINITIONS = [
 ];
 
 function safeLocalScopedToolPreview(spec = {}, inputs = {}, { workspaceKey, projectKey } = {}) {
+  const approvalStatus = spec.sideEffectLevel === 'external_write'
+    ? 'approval_required_before_external_write'
+    : spec.sideEffectLevel === 'destructive_or_state_change'
+      ? 'approval_required_before_state_change'
+      : 'approval_required_before_internal_write';
   const base = {
     tool_name: spec.name,
     local_scope_request_created: true,
     workspace_key: workspaceKey || RABBI_WORKSPACE_KEY,
     project_key: projectKey || RABBI_PROJECT_KEY,
-    status: spec.requiresConfirmation ? 'approval_required_before_internal_write' : 'scoped_local_request_prepared',
+    status: spec.requiresConfirmation ? approvalStatus : 'scoped_local_request_prepared',
     side_effect_level: spec.sideEffectLevel || 'internal_write',
     ...noExternalWriteFlags(),
     dry_run: true,
@@ -3972,6 +4003,17 @@ function safeLocalScopedToolPreview(spec = {}, inputs = {}, { workspaceKey, proj
     prompt_id: 'prompt_id',
     recording_id: 'recording_id',
     class_session_id: 'class_session_id',
+    event_id: 'event_id',
+    email_id: 'email_id',
+    newsletter_id: 'newsletter_id',
+    source_output_id: 'source_output_id',
+    lead_id: 'lead_id',
+    parent_id: 'parent_id',
+    provider_id: 'provider_id',
+    offer_id: 'offer_id',
+    question_id: 'question_id',
+    community_id: 'community_id',
+    duplicate_of_pending_id: 'duplicate_of_pending_id',
     drive_file_id: 'drive_file_id_present',
     title: 'title',
     topic: 'topic',
@@ -3982,6 +4024,14 @@ function safeLocalScopedToolPreview(spec = {}, inputs = {}, { workspaceKey, proj
     checkoff_status: 'checkoff_status',
     display_name: 'display_name',
     grade: 'grade',
+    visibility: 'visibility',
+    sync_direction: 'sync_direction',
+    report_type: 'report_type',
+    target_workspace_key: 'target_workspace_key',
+    target_project_key: 'target_project_key',
+    workspace_name: 'workspace_name',
+    slug: 'slug',
+    asset_type: 'asset_type',
   };
   const preview = { ...base };
   for (const [inputKey, outputKey] of Object.entries(fieldMap)) {
@@ -4007,6 +4057,12 @@ function safeLocalScopedToolPreview(spec = {}, inputs = {}, { workspaceKey, proj
 
 async function runRabbiLocalScopedTool({ args, context, db, deps, tool }, spec) {
   const { projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  if (args.target_workspace_key && normalizeWorkspaceKey(args.target_workspace_key) !== workspaceKey) {
+    throw rabbiScopeError('Rabbi helper target workspace scope mismatch');
+  }
+  if (args.target_project_key && normalizeProjectKey(args.target_project_key) !== projectKey) {
+    throw rabbiScopeError('Rabbi helper target project scope mismatch');
+  }
   const inputs = {
     ...args,
     workspace_key: workspaceKey,
@@ -4054,12 +4110,38 @@ const RABBI_LOCAL_SCOPE_TOOL_DEFINITIONS = [
   ['submit_checkoff', 'Student checkoff packet', 'Prepare a scoped student checkoff request without notifying parents automatically.', 'students', { student_id: { type: 'integer', required: true }, assignment_id: { type: 'integer' }, checkoff_status: { type: 'string', maxLength: 80 }, notes: { type: 'string', maxLength: 1000 } }],
   ['submit_worksheet_answer', 'Worksheet answer packet', 'Prepare a scoped worksheet-answer request without returning raw answer bodies.', 'students', { student_id: { type: 'integer', required: true }, assignment_id: { type: 'integer', required: true }, body: { type: 'string', maxLength: 4000 } }],
   ['update_student', 'Student update packet', 'Prepare a scoped student profile update without exposing parent contact or access codes.', 'students', { student_id: { type: 'integer', required: true }, display_name: { type: 'string', maxLength: 180 }, grade: { type: 'string', maxLength: 80 }, notes: { type: 'string', maxLength: 1000 } }, true],
-].map(([name, label, description, category, schema, requiresConfirmation = false]) => ({
+  ['approve_email', 'Email approval packet', 'Prepare a scoped email approval request without sending email or exposing raw body text.', 'communications', { email_id: { type: 'integer' }, subject: { type: 'string', maxLength: 240 }, body: { type: 'string', maxLength: 8000 }, recipient_segment: { type: 'string', maxLength: 180 }, approval_note: { type: 'string', maxLength: 1000 } }, true, 'external_write'],
+  ['approve_newsletter', 'Newsletter approval packet', 'Prepare a scoped newsletter approval request without publishing or sending it.', 'operations', { newsletter_id: { type: 'integer' }, source_output_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, body: { type: 'string', maxLength: 10000 }, approval_note: { type: 'string', maxLength: 1000 } }, true, 'destructive_or_state_change'],
+  ['archive_duplicate_pending', 'Duplicate pending archive packet', 'Prepare a scoped duplicate-pending archive request without changing task state.', 'tasks', { pending_id: { type: 'integer', required: true }, duplicate_of_pending_id: { type: 'integer' }, task_id: { type: 'integer' }, reason: { type: 'string', maxLength: 1000 } }, true, 'destructive_or_state_change'],
+  ['delete_calendar_event', 'Calendar event delete packet', 'Prepare a scoped calendar-event delete request without deleting or syncing anything.', 'calendar', { event_id: { type: 'integer', required: true }, reason: { type: 'string', maxLength: 1000 } }, true, 'destructive_or_state_change'],
+  ['google_drive_move_file_preview', 'Google Drive move preview packet', 'Prepare a scoped Drive move preview without reading Drive, moving files, or returning raw IDs.', 'integrations', { drive_file_id: { type: 'string', maxLength: 180 }, source_folder_id: { type: 'string', maxLength: 180 }, target_folder_id: { type: 'string', maxLength: 180 }, title: { type: 'string', maxLength: 180 } }, true, 'destructive_or_state_change'],
+  ['mark_event_parent_visible', 'Parent-visible event packet', 'Prepare a scoped parent-visible event visibility request without notifying parents.', 'parents', { event_id: { type: 'integer', required: true }, visibility: { type: 'string', maxLength: 80 }, reason: { type: 'string', maxLength: 1000 } }, true],
+  ['mark_event_student_visible', 'Student-visible event packet', 'Prepare a scoped student-visible event visibility request without notifying students.', 'students', { event_id: { type: 'integer', required: true }, visibility: { type: 'string', maxLength: 80 }, reason: { type: 'string', maxLength: 1000 } }, true],
+  ['move_lead_stage', 'Lead-stage move packet', 'Prepare a scoped provider lead-stage move without changing CRM state.', 'contacts_crm', { lead_id: { type: 'integer', required: true }, stage: { type: 'string', maxLength: 80 }, status: { type: 'string', maxLength: 80 }, reason: { type: 'string', maxLength: 1000 } }, true, 'destructive_or_state_change'],
+  ['move_task_workspace', 'Task workspace move packet', 'Prepare a scoped task workspace move without changing task ownership.', 'tasks', { task_id: { type: 'integer', required: true }, target_workspace_key: { type: 'string', maxLength: 120 }, target_project_key: { type: 'string', maxLength: 120 }, reason: { type: 'string', maxLength: 1000 } }, true, 'destructive_or_state_change'],
+  ['post_community_message', 'Community post packet', 'Prepare a scoped community post request without posting publicly or sending notifications.', 'communications', { community_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, message: { type: 'string', maxLength: 8000 }, body: { type: 'string', maxLength: 8000 }, channel: { type: 'string', maxLength: 80 } }, true, 'external_write'],
+  ['queue_telegram_report', 'Telegram report queue packet', 'Prepare a scoped Telegram report queue request without sending Telegram messages.', 'operations', { title: { type: 'string', maxLength: 180 }, report_type: { type: 'string', maxLength: 120 }, body: { type: 'string', maxLength: 8000 }, message: { type: 'string', maxLength: 8000 } }, true, 'external_write'],
+  ['review_moderated_question', 'Moderated question review packet', 'Prepare a scoped moderated-question review request without publishing or sending a response.', 'students', { question_id: { type: 'integer' }, student_id: { type: 'integer' }, status: { type: 'string', maxLength: 80 }, decision: { type: 'string', maxLength: 80 }, review_note: { type: 'string', maxLength: 1000 } }, true, 'destructive_or_state_change'],
+  ['sync_google_calendar', 'Google Calendar sync packet', 'Prepare a scoped Google Calendar sync request without calling Google Calendar.', 'calendar', { event_id: { type: 'integer' }, sync_direction: { type: 'string', maxLength: 80 }, reason: { type: 'string', maxLength: 1000 } }, true, 'external_write'],
+  ['sync_google_classroom', 'Google Classroom sync packet', 'Prepare a scoped Google Classroom sync request without calling Google Classroom.', 'integrations', { class_session_id: { type: 'integer' }, course_id: { type: 'string', maxLength: 180 }, sync_direction: { type: 'string', maxLength: 80 }, reason: { type: 'string', maxLength: 1000 } }, true, 'external_write'],
+  ['create_parent_question', 'Parent question packet', 'Prepare a scoped parent question request without exposing parent contact or raw private message bodies.', 'parents', { parent_id: { type: 'integer' }, student_id: { type: 'integer' }, question_text: { type: 'string', maxLength: 4000 }, topic: { type: 'string', maxLength: 180 } }],
+  ['create_parent_visible_summary', 'Parent-visible summary packet', 'Prepare a scoped parent-visible summary request without notifying parents or exposing private notes.', 'parents', { parent_id: { type: 'integer' }, student_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, summary: { type: 'string', maxLength: 4000 }, body: { type: 'string', maxLength: 4000 } }, true],
+  ['update_parent_helper_profile', 'Parent helper profile packet', 'Prepare a scoped parent-helper profile update without exposing contact values.', 'parents', { parent_id: { type: 'integer' }, display_name: { type: 'string', maxLength: 180 }, preferences: { type: 'object' }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['create_provider_landing_page', 'Provider landing page packet', 'Prepare a scoped provider landing-page request without changing public pages.', 'provider_setup', { provider_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, slug: { type: 'string', maxLength: 180 }, body: { type: 'string', maxLength: 10000 } }, true],
+  ['create_provider_lead', 'Provider lead packet', 'Prepare a scoped provider lead request without exporting contact fields.', 'contacts_crm', { lead_id: { type: 'integer' }, parent_id: { type: 'integer' }, student_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, notes: { type: 'string', maxLength: 1000 } }],
+  ['create_provider_offer', 'Provider offer packet', 'Prepare a scoped provider offer request without publishing pricing or granting access.', 'provider_setup', { provider_id: { type: 'integer' }, offer_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, price_label: { type: 'string', maxLength: 120 }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['create_provider_question_post', 'Provider question post packet', 'Prepare a scoped provider question post request without posting publicly.', 'students', { question_id: { type: 'integer' }, student_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, body: { type: 'string', maxLength: 8000 } }, true, 'external_write'],
+  ['create_provider_workspace', 'Provider workspace packet', 'Prepare a scoped provider workspace request without provisioning accounts or granting access.', 'provider_setup', { provider_id: { type: 'integer' }, workspace_name: { type: 'string', maxLength: 180 }, title: { type: 'string', maxLength: 180 }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['update_provider_brand_kit', 'Provider brand kit packet', 'Prepare a scoped provider brand-kit update without publishing assets.', 'provider_setup', { provider_id: { type: 'integer' }, brand_key: { type: 'string', maxLength: 120 }, colors: { type: 'object' }, logo_url: { type: 'string', maxLength: 400 }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['update_provider_lead', 'Provider lead update packet', 'Prepare a scoped provider lead update without exporting contacts or moving unrelated leads.', 'contacts_crm', { lead_id: { type: 'integer', required: true }, stage: { type: 'string', maxLength: 80 }, status: { type: 'string', maxLength: 80 }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['update_rabbi_brand_kit', 'Rabbi brand kit packet', 'Prepare a scoped Rabbi brand-kit update without publishing assets.', 'provider_setup', { provider_id: { type: 'integer' }, brand_key: { type: 'string', maxLength: 120 }, colors: { type: 'object' }, logo_url: { type: 'string', maxLength: 400 }, notes: { type: 'string', maxLength: 1000 } }, true],
+  ['upload_provider_asset_reference', 'Provider asset reference packet', 'Prepare a scoped provider asset reference without uploading, reading Drive, or returning raw URLs.', 'tasks', { provider_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, asset_type: { type: 'string', maxLength: 120 }, asset_url: { type: 'string', maxLength: 400 }, drive_file_id: { type: 'string', maxLength: 180 } }, true],
+].map(([name, label, description, category, schema, requiresConfirmation = false, sideEffectLevel = 'internal_write']) => ({
   name,
   label,
   description,
   category,
-  sideEffectLevel: 'internal_write',
+  sideEffectLevel,
   requiresConfirmation,
   nextAction: 'Review and connect this local scoped request to the durable workflow before marking Agent Mode autonomous.',
   schema: {

@@ -401,6 +401,15 @@ function rabbiLocalScopePrimitivePlan(text = '', context = {}) {
   const recordingId = extractGenericId(text, ['recording']) || undefined;
   const lessonId = extractGenericId(text, ['lesson']) || undefined;
   const classSessionId = extractGenericId(text, ['class session', 'session']) || undefined;
+  const eventId = extractGenericId(text, ['event']) || undefined;
+  const emailId = extractGenericId(text, ['email']) || undefined;
+  const newsletterId = extractGenericId(text, ['newsletter', 'update']) || undefined;
+  const parentId = extractGenericId(text, ['parent']) || undefined;
+  const providerId = extractGenericId(text, ['provider']) || undefined;
+  const leadId = extractGenericId(text, ['lead']) || undefined;
+  const questionId = extractGenericId(text, ['question']) || undefined;
+  const communityId = extractGenericId(text, ['community']) || undefined;
+  const offerId = extractGenericId(text, ['offer']) || undefined;
   const status = firstMatch(text, /\bstatus\s*(?:to|=|:|-)?\s*(active|paused|done|complete|completed|blocked|archived|in_progress|in progress|open|closed)\b/i)
     || firstMatch(text, /\b(active|paused|done|complete|completed|blocked|archived|in_progress|in progress|open|closed)\b$/i);
   const progress = firstMatch(text, /\b(?:progress|percent)\s*(?:to|=|:|-)?\s*(\d{1,3})\b/i);
@@ -415,6 +424,367 @@ function rabbiLocalScopePrimitivePlan(text = '', context = {}) {
     reason,
     reply,
   });
+
+  if (/\bapprove\b.*\bemail\b/i.test(text)) {
+    return makePlan(
+      'approve_email',
+      'Approve email',
+      {
+        email_id: emailId,
+        subject: extractSubject(text) || previewQuotedText(text) || undefined,
+        body: extractBody(text) || undefined,
+        recipient_segment: firstMatch(text, /\b(?:segment|recipients?)\s*(?:to|=|:|-)?\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped email approval packet',
+      'I can prepare a scoped email approval packet, but I will not send the email.'
+    );
+  }
+
+  if (/\bapprove\b.*\bnewsletter\b/i.test(text)) {
+    return makePlan(
+      'approve_newsletter',
+      'Approve newsletter',
+      {
+        newsletter_id: newsletterId,
+        source_output_id: extractGenericId(text, ['output', 'source']) || undefined,
+        title: previewQuotedText(text) || undefined,
+        body: extractBody(text) || undefined,
+      },
+      'Rabbi / One Time scoped newsletter approval packet',
+      'I can prepare a scoped newsletter approval packet without publishing or sending it.'
+    );
+  }
+
+  if (/\barchive\b.*\bduplicate\b.*\bpending\b|\bpending\b.*\bduplicate\b.*\barchive\b/i.test(text)) {
+    return makePlan(
+      'archive_duplicate_pending',
+      'Archive duplicate pending',
+      {
+        pending_id: pendingId,
+        duplicate_of_pending_id: extractGenericId(text, ['duplicate of', 'original pending']) || undefined,
+        task_id: taskId,
+        reason: text,
+      },
+      'Rabbi / One Time scoped duplicate-pending archive packet',
+      'I can prepare a scoped duplicate-pending archive packet without changing task state.'
+    );
+  }
+
+  if (/\bdelete\b.*\b(calendar )?event\b|\bremove\b.*\b(calendar )?event\b/i.test(text)) {
+    return makePlan(
+      'delete_calendar_event',
+      'Delete calendar event',
+      { event_id: eventId, reason: text },
+      'Rabbi / One Time scoped calendar-event delete packet',
+      'I can prepare a scoped calendar-event delete packet without deleting or syncing anything.'
+    );
+  }
+
+  if (/\b(move|relocate)\b.*\b(google drive|drive)\b.*\b(file|folder)\b|\bgoogle drive move\b/i.test(text)) {
+    return makePlan(
+      'google_drive_move_file_preview',
+      'Preview Drive move',
+      {
+        drive_file_id: firstMatch(text, /\b(?:drive file|file)\s*#?\s*([A-Za-z0-9_-]{6,})\b/i) || undefined,
+        target_folder_id: firstMatch(text, /\btarget folder\s*#?\s*([A-Za-z0-9_-]{6,})\b/i) || undefined,
+        title: previewQuotedText(text) || undefined,
+      },
+      'Rabbi / One Time scoped Drive move preview packet',
+      'I can prepare a scoped Drive move preview without reading Drive, moving files, or returning raw IDs.'
+    );
+  }
+
+  if (/\bmark\b.*\bevent\b.*\bparent visible\b|\bmake\b.*\bevent\b.*\bparent visible\b/i.test(text)) {
+    return makePlan(
+      'mark_event_parent_visible',
+      'Mark event parent-visible',
+      { event_id: eventId, visibility: 'parent', reason: text },
+      'Rabbi / One Time scoped parent-visible event packet',
+      'I can prepare a scoped parent-visible event packet without notifying parents.'
+    );
+  }
+
+  if (/\bmark\b.*\bevent\b.*\bstudent visible\b|\bmake\b.*\bevent\b.*\bstudent visible\b/i.test(text)) {
+    return makePlan(
+      'mark_event_student_visible',
+      'Mark event student-visible',
+      { event_id: eventId, visibility: 'student', reason: text },
+      'Rabbi / One Time scoped student-visible event packet',
+      'I can prepare a scoped student-visible event packet without notifying students.'
+    );
+  }
+
+  if (/\bmove\b.*\blead\b.*\bstage\b|\blead\b.*\bstage\b.*\b(move|update|set)\b/i.test(text)) {
+    return makePlan(
+      'move_lead_stage',
+      'Move lead stage',
+      {
+        lead_id: leadId,
+        stage: firstMatch(text, /\bstage\s*(?:to|=|:|-)?\s*([^,\n]+)/i) || status || undefined,
+        reason: text,
+      },
+      'Rabbi / One Time scoped lead-stage move packet',
+      'I can prepare a scoped lead-stage move packet without changing CRM state.'
+    );
+  }
+
+  if (/\bmove\b.*\btask\b.*\bworkspace\b|\btask\b.*\bworkspace\b.*\bmove\b/i.test(text)) {
+    return makePlan(
+      'move_task_workspace',
+      'Move task workspace',
+      {
+        task_id: taskId,
+        target_workspace_key: firstMatch(text, /\btarget workspace\s*(?:to|=|:|-)?\s*([a-z0-9_-]+)/i) || undefined,
+        target_project_key: firstMatch(text, /\btarget project\s*(?:to|=|:|-)?\s*([a-z0-9_-]+)/i) || undefined,
+        reason: text,
+      },
+      'Rabbi / One Time scoped task workspace move packet',
+      'I can prepare a scoped task workspace move packet without changing task ownership.'
+    );
+  }
+
+  if (/\bpost\b.*\bcommunity message\b|\bcommunity message\b.*\bpost\b/i.test(text)) {
+    return makePlan(
+      'post_community_message',
+      'Post community message',
+      {
+        community_id: communityId,
+        title: previewQuotedText(text) || 'One Time community message',
+        message: textAfterIntent(text, /(?:community message|post)\s*(?:to)?\s*(?:community\s*#?\d+)?\s*(?:about|:|-)?\s*([\s\S]+)$/i, text),
+      },
+      'Rabbi / One Time scoped community post packet',
+      'I can prepare a scoped community post packet without posting publicly or sending notifications.'
+    );
+  }
+
+  if (/\bqueue\b.*\btelegram\b.*\breport\b|\btelegram report\b.*\bqueue\b/i.test(text)) {
+    return makePlan(
+      'queue_telegram_report',
+      'Queue Telegram report',
+      {
+        title: previewQuotedText(text) || 'One Time Telegram report',
+        report_type: firstMatch(text, /\breport type\s*(?:to|=|:|-)?\s*([^,\n]+)/i) || undefined,
+        body: extractBody(text) || text,
+      },
+      'Rabbi / One Time scoped Telegram report packet',
+      'I can prepare a scoped Telegram report packet without sending Telegram messages.'
+    );
+  }
+
+  if (/\breview\b.*\bmoderated question\b|\bmoderated question\b.*\breview\b/i.test(text)) {
+    return makePlan(
+      'review_moderated_question',
+      'Review moderated question',
+      {
+        question_id: questionId,
+        student_id: studentId,
+        status: firstMatch(text, /\b(approved|approve|rejected|reject|needs_review|needs review)\b/i) || undefined,
+        review_note: text,
+      },
+      'Rabbi / One Time scoped moderated-question review packet',
+      'I can prepare a scoped moderated-question review packet without publishing or sending a response.'
+    );
+  }
+
+  if (/\bsync\b.*\bgoogle calendar\b|\bgoogle calendar\b.*\bsync\b/i.test(text)) {
+    return makePlan(
+      'sync_google_calendar',
+      'Sync Google Calendar',
+      {
+        event_id: eventId,
+        sync_direction: firstMatch(text, /\b(push|pull|two way|two-way|export|import)\b/i) || undefined,
+        reason: text,
+      },
+      'Rabbi / One Time scoped Google Calendar sync packet',
+      'I can prepare a scoped Google Calendar sync packet without calling Google Calendar.'
+    );
+  }
+
+  if (/\bsync\b.*\bgoogle classroom\b|\bgoogle classroom\b.*\bsync\b/i.test(text)) {
+    return makePlan(
+      'sync_google_classroom',
+      'Sync Google Classroom',
+      {
+        class_session_id: classSessionId,
+        course_id: firstMatch(text, /\bcourse\s*#?\s*([A-Za-z0-9_-]{3,})\b/i) || undefined,
+        sync_direction: firstMatch(text, /\b(push|pull|two way|two-way|export|import)\b/i) || undefined,
+        reason: text,
+      },
+      'Rabbi / One Time scoped Google Classroom sync packet',
+      'I can prepare a scoped Google Classroom sync packet without calling Google Classroom.'
+    );
+  }
+
+  if (/\b(create|add|submit)\b.*\bparent question\b|\bparent question\b.*\b(create|add|submit)\b/i.test(text)) {
+    return makePlan(
+      'create_parent_question',
+      'Create parent question',
+      {
+        parent_id: parentId,
+        student_id: studentId,
+        question_text: textAfterIntent(text, /(?:parent question)\s*(?:for)?\s*(?:parent\s*#?\d+|student\s*#?\d+)?\s*(?:about|:|-)?\s*([\s\S]+)$/i, text),
+      },
+      'Rabbi / One Time scoped parent question packet',
+      'I can prepare a scoped parent question packet without exposing parent contact or raw private message bodies.'
+    );
+  }
+
+  if (/\b(create|add|save)\b.*\bparent visible summary\b|\bparent visible summary\b.*\b(create|add|save)\b/i.test(text)) {
+    return makePlan(
+      'create_parent_visible_summary',
+      'Create parent-visible summary',
+      {
+        parent_id: parentId,
+        student_id: studentId,
+        title: previewQuotedText(text) || 'One Time parent-visible summary',
+        summary: textAfterIntent(text, /(?:parent visible summary)\s*(?:for)?\s*(?:parent\s*#?\d+|student\s*#?\d+)?\s*(?:about|:|-)?\s*([\s\S]+)$/i, text),
+      },
+      'Rabbi / One Time scoped parent-visible summary packet',
+      'I can prepare a scoped parent-visible summary packet without notifying parents or exposing private notes.'
+    );
+  }
+
+  if (/\bupdate\b.*\bparent helper profile\b|\bparent helper profile\b.*\bupdate\b/i.test(text)) {
+    return makePlan(
+      'update_parent_helper_profile',
+      'Update parent helper profile',
+      {
+        parent_id: parentId,
+        display_name: firstMatch(text, /\b(?:display name|name)\s*(?:to|=|:|-)\s*([^,\n]+)/i) || previewQuotedText(text) || undefined,
+      },
+      'Rabbi / One Time scoped parent helper profile packet',
+      'I can prepare a scoped parent-helper profile update without exposing contact values.'
+    );
+  }
+
+  if (/\b(create|draft|make)\b.*\bprovider landing page\b|\bprovider landing page\b.*\b(create|draft|make)\b/i.test(text)) {
+    return makePlan(
+      'create_provider_landing_page',
+      'Create provider landing page',
+      {
+        provider_id: providerId,
+        title: previewQuotedText(text) || 'One Time provider landing page',
+        slug: firstMatch(text, /\bslug\s*(?:to|=|:|-)?\s*([a-z0-9_-]+)/i) || undefined,
+        body: extractBody(text) || undefined,
+      },
+      'Rabbi / One Time scoped provider landing-page packet',
+      'I can prepare a scoped provider landing-page packet without changing public pages.'
+    );
+  }
+
+  if (/\b(create|add)\b.*\bprovider lead\b|\bprovider lead\b.*\b(create|add)\b/i.test(text)) {
+    return makePlan(
+      'create_provider_lead',
+      'Create provider lead',
+      {
+        lead_id: leadId,
+        parent_id: parentId,
+        student_id: studentId,
+        title: previewQuotedText(text) || 'One Time provider lead',
+      },
+      'Rabbi / One Time scoped provider lead packet',
+      'I can prepare a scoped provider lead packet without exporting contact fields.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\bprovider offer\b|\bprovider offer\b.*\b(create|add|make)\b/i.test(text)) {
+    return makePlan(
+      'create_provider_offer',
+      'Create provider offer',
+      {
+        provider_id: providerId,
+        offer_id: offerId,
+        title: previewQuotedText(text) || 'One Time provider offer',
+        price_label: firstMatch(text, /\bprice\s*(?:to|=|:|-)?\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped provider offer packet',
+      'I can prepare a scoped provider offer packet without publishing pricing or granting access.'
+    );
+  }
+
+  if (/\b(create|post)\b.*\bprovider question post\b|\bprovider question post\b.*\b(create|post)\b/i.test(text)) {
+    return makePlan(
+      'create_provider_question_post',
+      'Create provider question post',
+      {
+        question_id: questionId,
+        student_id: studentId,
+        title: previewQuotedText(text) || 'One Time provider question post',
+        body: extractBody(text) || undefined,
+      },
+      'Rabbi / One Time scoped provider question post packet',
+      'I can prepare a scoped provider question post packet without posting publicly.'
+    );
+  }
+
+  if (/\b(create|provision|make)\b.*\bprovider workspace\b|\bprovider workspace\b.*\b(create|provision|make)\b/i.test(text)) {
+    return makePlan(
+      'create_provider_workspace',
+      'Create provider workspace',
+      {
+        provider_id: providerId,
+        workspace_name: previewQuotedText(text) || firstMatch(text, /\bworkspace name\s*(?:to|=|:|-)?\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped provider workspace packet',
+      'I can prepare a scoped provider workspace packet without provisioning accounts or granting access.'
+    );
+  }
+
+  if (/\bupdate\b.*\bprovider brand kit\b|\bprovider brand kit\b.*\bupdate\b/i.test(text)) {
+    return makePlan(
+      'update_provider_brand_kit',
+      'Update provider brand kit',
+      {
+        provider_id: providerId,
+        brand_key: firstMatch(text, /\bbrand\s*(?:key)?\s*(?:to|=|:|-)?\s*([a-z0-9_-]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped provider brand-kit packet',
+      'I can prepare a scoped provider brand-kit packet without publishing assets.'
+    );
+  }
+
+  if (/\bupdate\b.*\bprovider lead\b|\bprovider lead\b.*\bupdate\b/i.test(text)) {
+    return makePlan(
+      'update_provider_lead',
+      'Update provider lead',
+      {
+        lead_id: leadId,
+        stage: firstMatch(text, /\bstage\s*(?:to|=|:|-)?\s*([^,\n]+)/i) || undefined,
+        status: status ? status.replace(/\s+/g, '_').toLowerCase() : undefined,
+      },
+      'Rabbi / One Time scoped provider lead update packet',
+      'I can prepare a scoped provider lead update packet without exporting contacts or moving unrelated leads.'
+    );
+  }
+
+  if (/\bupdate\b.*\brabbi brand kit\b|\brabbi brand kit\b.*\bupdate\b/i.test(text)) {
+    return makePlan(
+      'update_rabbi_brand_kit',
+      'Update Rabbi brand kit',
+      {
+        provider_id: providerId,
+        brand_key: firstMatch(text, /\bbrand\s*(?:key)?\s*(?:to|=|:|-)?\s*([a-z0-9_-]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped Rabbi brand-kit packet',
+      'I can prepare a scoped Rabbi brand-kit packet without publishing assets.'
+    );
+  }
+
+  if (/\bupload\b.*\bprovider asset\b|\bprovider asset\b.*\bupload\b|\bprovider asset reference\b/i.test(text)) {
+    return makePlan(
+      'upload_provider_asset_reference',
+      'Upload provider asset reference',
+      {
+        provider_id: providerId,
+        title: previewQuotedText(text) || 'One Time provider asset',
+        asset_type: firstMatch(text, /\basset type\s*(?:to|=|:|-)?\s*([^,\n]+)/i) || undefined,
+        asset_url: firstMatch(text, /(https?:\/\/[^\s]+)/i) || undefined,
+        drive_file_id: firstMatch(text, /\b(?:drive file|file)\s*#?\s*([A-Za-z0-9_-]{6,})\b/i) || undefined,
+      },
+      'Rabbi / One Time scoped provider asset reference packet',
+      'I can prepare a scoped provider asset reference packet without uploading, reading Drive, or returning raw URLs.'
+    );
+  }
 
   if (/\bask for help\b|\brequest help\b|\bhelp me with\b/i.test(text)) {
     return makePlan(

@@ -35150,3 +35150,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers: 30 missing wrappers, 12 fallback/setup blockers,
   deploy/live smoke for 55 local-only wrappers after the Railway failure path
   is investigated, and saved all-163 Agent Mode PASS/BLOCKED proof.
+
+## 2026-07-09T00:25:54+03:00 - Rabbi Helper Final Packet Wrappers Locally Verified
+
+- Added scoped local packet wrappers for the final 26 unique missing runtime
+  tool names, covering the last 30 Rabbi helper scope-map contracts: approvals,
+  event visibility, Drive move previews, lead/task moves, community/Telegram
+  posts, Google Calendar/Classroom sync packets, moderated question review,
+  parent profile/question/summary packets, provider landing/lead/offer/
+  workspace/brand/asset packets, and Rabbi brand-kit packets.
+- The Rabbi scope map now reports 151 `tool_wrapper_available_local`, 12
+  `registered_fallback_only_blocker`, and 0 `tool_wrapper_missing`.
+- Guardrails: all new wrappers recompute `rabbi_sheller_provider` /
+  `one_time_mishnah_class`, reject BNA workspace/project substitution, reject
+  target task-workspace moves outside the Rabbi scope, and return local packets
+  only. No email, Telegram, community post, Google sync, Drive move, delete,
+  CRM move, provider setup mutation, publish, upload, credential write,
+  payment/access change, or official record mutation was performed.
+- Verification passed: `node --check` for touched helper/generator files,
+  `node scripts/generate-rabbi-helper-tool-scope-map.mjs`, focused
+  helper/scope/Agent Review tests 40/40, and `git diff --check` with
+  line-ending warnings only.
+- Remaining blockers: 12 fallback/setup blockers, deploy/live smoke for 85
+  local-only wrappers after the Railway failure path is investigated, external
+  approval gates, and saved all-163 Agent Mode PASS/BLOCKED proof.

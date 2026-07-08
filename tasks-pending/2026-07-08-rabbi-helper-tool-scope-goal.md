@@ -24,7 +24,7 @@ Preserved in
 | Execution directive | Register first, then work requirements in batches until terminal statuses. |
 | Terminal statuses required | Done / Already satisfied / Blocked / Needs operator decision / Failed / Archived |
 | Deploy/live-smoke required for app-visible work | yes |
-| Next requirement IDs to work | Continue `REQ-20260708-095`; 121 contracts are now local wrapper-backed, 66 are deployed/live-smoked, the prior 18 internal-action wrappers are pushed but deploy-blocked after two Railway failures, the 13 content/provider action wrappers are pushed but not deployed, and the newest 24 local scoped packet wrappers are local verified; full autonomy remains blocked by 30 missing wrappers, 12 fallback blockers, deploy/live smoke for 55 local-only wrappers, and saved all-163 Agent Mode proof |
+| Next requirement IDs to work | Continue `REQ-20260708-095`; 151 contracts are now local wrapper-backed, 66 are deployed/live-smoked, the prior 18 internal-action wrappers are pushed but deploy-blocked after two Railway failures, and the 67 newer packet wrappers are local verified but not deployed; full autonomy remains blocked by 12 fallback blockers, deploy/live smoke for 85 local-only wrappers, external approval gates, and saved all-163 Agent Mode proof |
 
 ## Scope Rules
 
@@ -51,7 +51,7 @@ Preserved in
 | `REQ-20260708-092` | Add a reusable account-bot scope template for future subaccounts such as Benny. | `RAW-20260708-028` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | helper-scope | P0 | 1 | `REQ-20260708-091` | Template requires account key, workspace/project, allowed surfaces/tools, forbidden tools, and external approval policy; Benny example is tasks/studio only and denies payments, contacts/CRM, integrations, settings, agent fleet, and super-admin diagnostics. | `ops/helper-tool-scope/account-bot-scope-template.json` | no | Done / local verified |
 | `REQ-20260708-093` | Add the exact Agent Mode prompt for testing all mapped Rabbi tool contracts. | `RAW-20260708-028` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | agent-mode | P0 | 1 | `REQ-20260708-091` | Prompt key `rabbi-helper-tool-scope-map` tells Agent Mode to test every contract, save PASS/FAIL/BLOCKED through drop-off, refuse partial PASS, and avoid all live external mutations. | `src/lib/bna/agent-review-hub.js`, `public/agent-review-prompts/rabbi-helper-tool-scope-map.md`, `public/agent-review-prompts/index.json` | yes | Done / deployed / live readback verified |
 | `REQ-20260708-094` | Add validator coverage so the scope map cannot drift from helper parity. | `RAW-20260708-028` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | tests | P0 | 1 | `REQ-20260708-091`, `REQ-20260708-092`, `REQ-20260708-093` | Test fails if a current `tool_needed` parity row lacks a Rabbi contract, scope locks are missing, privacy/external-write gates are missing, natural-language probes are missing, or the Benny template loses its limits. | `tests/rabbi-helper-tool-scope-map.test.js`, `tests/agent-review-hub.test.js` | no | Done / local verified |
-| `REQ-20260708-095` | Implement the scoped helper wrappers, planner intents, result cards, audit writes, and live Agent Mode proof for the mapped contracts. | `RAW-20260708-028` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | implementation | P0 | 2+ | `REQ-20260708-091` through `REQ-20260708-094` | Each contract moves from `tool_wrapper_missing` to executable only after server-side scope filters, planner coverage, permission gates, destination/result-card scope, redacted audit logging, negative tests, and Agent Mode saved proof exist. | `src/lib/bna/helper/tool-registry.js`, `src/lib/bna/helper/planner.js`, `src/lib/bna/helper/permissions.js`, `src/lib/bna/helper/safety.js`, `src/lib/bna/helper/destination-resolver.js`, `server.js`, follow-up tests | yes for app/server-visible behavior | Open / 121 local, 66 deployed, 18 deploy-blocked, 37 deploy pending; full autonomy blocked |
+| `REQ-20260708-095` | Implement the scoped helper wrappers, planner intents, result cards, audit writes, and live Agent Mode proof for the mapped contracts. | `RAW-20260708-028` | `rabbi_sheller_provider` / `one_time_mishnah_class` | Codex | implementation | P0 | 2+ | `REQ-20260708-091` through `REQ-20260708-094` | Each contract moves from `tool_wrapper_missing` to executable only after server-side scope filters, planner coverage, permission gates, destination/result-card scope, redacted audit logging, negative tests, and Agent Mode saved proof exist. | `src/lib/bna/helper/tool-registry.js`, `src/lib/bna/helper/planner.js`, `src/lib/bna/helper/permissions.js`, `src/lib/bna/helper/safety.js`, `src/lib/bna/helper/destination-resolver.js`, `server.js`, follow-up tests | yes for app/server-visible behavior | Open / 151 local, 66 deployed, 18 deploy-blocked, 67 deploy pending; full autonomy blocked |
 
 ## Parsed tasks
 
@@ -59,7 +59,7 @@ Preserved in
 |---|---|---|---|---|---|---|---|---|
 | `TASK-20260708-014` | rabbi_helper_tool_scope_map | Maintain the generated 163-contract Rabbi helper scope map against helper parity. | Codex | `rabbi_sheller_provider` / `one_time_mishnah_class` | `RAW-20260708-028` | `REQ-20260708-091`, `REQ-20260708-094` | Regenerate with `node scripts/generate-rabbi-helper-tool-scope-map.mjs` whenever parity changes. | internal | Done / local verified |
 | `TASK-20260708-015` | rabbi_helper_agent_mode_prompt | Deploy and live-readback the registered `rabbi-helper-tool-scope-map` Agent Review prompt. | Codex | `rabbi_sheller_provider` / `one_time_mishnah_class` | `RAW-20260708-028` | `REQ-20260708-093` | Prompt read back live from `/agent-review-prompts/rabbi-helper-tool-scope-map.md` with `REQ-20260708-093` and `RABBI-HELPER-SCOPE-163`. | internal | Done / deployed |
-| `TASK-20260708-016` | rabbi_helper_wrapper_batches | Implement scoped helper wrapper batches from the generated map. | Codex | `rabbi_sheller_provider` / `one_time_mishnah_class` | `RAW-20260708-028` | `REQ-20260708-095` | Investigate Railway failures for deployment IDs `d970e263-1726-41c1-a694-10c1659503ee` and `75d6f181-e7c6-41a3-9e70-efcc4c61fea1`, then deploy/live-smoke all 55 local-only wrappers and continue the remaining 30 missing wrappers. | internal | Open / partial pushed + deploy blocked + local verified / autonomy blocked |
+| `TASK-20260708-016` | rabbi_helper_wrapper_batches | Implement scoped helper wrapper batches from the generated map. | Codex | `rabbi_sheller_provider` / `one_time_mishnah_class` | `RAW-20260708-028` | `REQ-20260708-095` | Investigate Railway failures for deployment IDs `d970e263-1726-41c1-a694-10c1659503ee` and `75d6f181-e7c6-41a3-9e70-efcc4c61fea1`, then deploy/live-smoke all 85 local-only wrappers and replace or explicitly block the 12 registered fallback-only tools. | internal | Open / no missing wrappers, partial pushed + deploy blocked + local verified / autonomy blocked |
 
 ## Decisions
 
@@ -75,28 +75,29 @@ Preserved in
 | `REQ-20260708-092` | `ops/helper-tool-scope/account-bot-scope-template.json` | Encode template and Benny example. | PASS `node --test tests/rabbi-helper-tool-scope-map.test.js` | Pending | Pending | Not required |
 | `REQ-20260708-093` | `src/lib/bna/agent-review-hub.js`, `public/agent-review-prompts/rabbi-helper-tool-scope-map.md`, `public/agent-review-prompts/index.json` | Register and generate exact Agent Mode prompt. | PASS `node --test tests/agent-review-hub.test.js`; PASS live readback `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md` returned `200` with `REQ-20260708-093` and `RABBI-HELPER-SCOPE-163` | `9618a4d4`, `16a69c9e` | `16a69c9e` | Railway deployment `500242a9-860f-4599-a145-eb9515bae0a4` `SUCCESS`; OneTime live smoke passed |
 | `REQ-20260708-094` | `tests/rabbi-helper-tool-scope-map.test.js`, `tests/agent-review-hub.test.js` | Add drift and guardrail tests. | PASS `node --check` touched files; PASS focused tests 16/16 | Pending | Pending | Not required |
-| `REQ-20260708-095` | `src/lib/bna/helper/tool-registry.js`, `planner.js`, `permissions.js`, `safety.js`, parity/scope maps, helper tests, action coverage, lazy-subnav tests | First runtime alias batch plus read-only batch plus parent/student summary batch plus dry-run preview wrappers, draft-only sidekick wrappers, internal-action wrappers, content/provider action wrappers, and the local scoped packet wrapper batch for help, Drive attachment, attendance, goals, lessons, questions, student updates, worksheet/checkoff, recording parse, and related OneTime classroom packets. Scope-map generator treats write-shaped missing wrappers as write/draft/approval-gated instead of read-only. | PASS `node --check src/lib/bna/helper/tool-registry.js`; PASS `node --check src/lib/bna/helper/planner.js`; PASS `node --check scripts/generate-rabbi-helper-tool-scope-map.mjs`; PASS `node scripts/generate-rabbi-helper-tool-scope-map.mjs`; PASS focused helper/scope/Agent Review tests 39/39 after current batch; PASS `git diff --check` with line-ending warnings only; refreshed Rabbi scope map 163 contracts with 121 `tool_wrapper_available_local`, 12 fallback blockers, and 30 missing wrappers | `9618a4d4`, `16a69c9e`, `9e611cbd`, `304d68a8`, `d23c9ec2`, `17ff491b`, `b49a74e2`, `381a8f34`, `2895654e`, `7abad605`, `a65a3457`; current local scoped packet batch commit pending | through `a65a3457`; current local scoped packet batch push pending | Railway deployment `eb599c39-36f7-4f80-9d6d-2a8fc5c6406f` `SUCCESS` covers the first 66 wrapper-backed contracts. Deploy attempts for the prior 18 internal-action wrappers failed after image push on `d970e263-1726-41c1-a694-10c1659503ee` and `75d6f181-e7c6-41a3-9e70-efcc4c61fea1`; 55 local-only wrappers are verified locally and still need deploy/live smoke. |
+| `REQ-20260708-095` | `src/lib/bna/helper/tool-registry.js`, `planner.js`, `permissions.js`, `safety.js`, parity/scope maps, helper tests, action coverage, lazy-subnav tests | First runtime alias batch plus read-only batch plus parent/student summary batch plus dry-run preview wrappers, draft-only sidekick wrappers, internal-action wrappers, content/provider action wrappers, the scoped packet wrapper batch, and the final approval/provider packet wrapper batch for email/newsletter approvals, visibility/state-change requests, community/Telegram/Google sync packets, parent/provider setup packets, lead/brand/asset packets, and moderated question review packets. Scope-map generator treats write-shaped missing wrappers as write/draft/approval-gated instead of read-only. | PASS `node --check src/lib/bna/helper/tool-registry.js`; PASS `node --check src/lib/bna/helper/planner.js`; PASS `node --check scripts/generate-rabbi-helper-tool-scope-map.mjs`; PASS `node scripts/generate-rabbi-helper-tool-scope-map.mjs`; PASS focused helper/scope/Agent Review tests 40/40; PASS `git diff --check` with line-ending warnings only; refreshed Rabbi scope map 163 contracts with 151 `tool_wrapper_available_local`, 12 fallback blockers, and 0 missing wrappers | `9618a4d4`, `16a69c9e`, `9e611cbd`, `304d68a8`, `d23c9ec2`, `17ff491b`, `b49a74e2`, `381a8f34`, `2895654e`, `7abad605`, `a65a3457`, `a97268ab`; current final packet batch commit pending | through `a97268ab`; current final packet batch push pending | Railway deployment `eb599c39-36f7-4f80-9d6d-2a8fc5c6406f` `SUCCESS` covers the first 66 wrapper-backed contracts. Deploy attempts for the prior 18 internal-action wrappers failed after image push on `d970e263-1726-41c1-a694-10c1659503ee` and `75d6f181-e7c6-41a3-9e70-efcc4c61fea1`; 85 local-only wrappers are verified locally and still need deploy/live smoke. |
 
 ## Final audit
 
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |
 |---|---|---|---|---|---|
 | `REQ-20260708-090` | Done | Raw/register files | `raw-input/RAW-20260708-028-rabbi-helper-tool-scope-goal.md`, this file | Manual source coverage | None |
-| `REQ-20260708-091` | Done / local verified | 163-contract JSON/MD map with stricter write/draft/approval policies | `scripts/generate-rabbi-helper-tool-scope-map.mjs`, `ops/helper-tool-scope/rabbi-one-time-tool-scope-map.json`, `ops/helper-tool-scope/rabbi-one-time-tool-scope-map.md` | PASS generator and focused helper/scope/Agent Review tests after current scoped packet batch; previous full `npm test` 1666/1666 | Full runtime wrappers still missing for 30 contracts; 12 fallback blockers remain |
+| `REQ-20260708-091` | Done / local verified | 163-contract JSON/MD map with stricter write/draft/approval policies | `scripts/generate-rabbi-helper-tool-scope-map.mjs`, `ops/helper-tool-scope/rabbi-one-time-tool-scope-map.json`, `ops/helper-tool-scope/rabbi-one-time-tool-scope-map.md` | PASS generator and focused helper/scope/Agent Review tests after current final packet batch; previous full `npm test` 1666/1666 | No contracts remain `tool_wrapper_missing`; 12 fallback blockers remain |
 | `REQ-20260708-092` | Done / local verified | Template JSON | `ops/helper-tool-scope/account-bot-scope-template.json` | PASS focused tests 16/16 | Automatic subaccount provisioning not implemented |
 | `REQ-20260708-093` | Done / deployed / live readback verified | Registered prompt and generated markdown; live readback returned `200` with expected markers | `src/lib/bna/agent-review-hub.js`, `public/agent-review-prompts/rabbi-helper-tool-scope-map.md`, `public/agent-review-prompts/index.json` | PASS Agent Review focused tests; PASS OneTime live smoke; PASS prompt readback | Agent Mode has not yet saved a PASS/BLOCKED/FAIL result for the all-163 probe run |
 | `REQ-20260708-094` | Done / local verified | Test files | `tests/rabbi-helper-tool-scope-map.test.js`, `tests/agent-review-hub.test.js` | PASS `node --check`; PASS focused tests 16/16 | None |
-| `REQ-20260708-095` | Open / 121 local wrapper-backed contracts, 66 deployed, 18 deploy-blocked, 37 deploy pending / autonomy blocked | 121 contracts now `tool_wrapper_available_local`; 12 are registered fallback blockers; 30 remain `tool_wrapper_missing`; no read-only wrappers remain missing | `src/lib/bna/helper/tool-registry.js`, `src/lib/bna/helper/planner.js`, `src/lib/bna/helper/permissions.js`, `src/lib/bna/helper/safety.js`, `scripts/generate-rabbi-helper-tool-scope-map.mjs`, action coverage artifacts, scope maps, tests | PASS focused helper/scope/Agent Review tests 39/39 after current batch; previous deploy/live smoke through Railway deployment `eb599c39-36f7-4f80-9d6d-2a8fc5c6406f` covers the first 66 wrapper-backed contracts | Full autonomy still blocked by 30 missing wrappers, 12 fallback blockers, deploy/live smoke for the 55 local-only wrappers after Railway deployment failure investigation, and saved Agent Mode proof |
+| `REQ-20260708-095` | Open / 151 local wrapper-backed contracts, 66 deployed, 18 deploy-blocked, 67 deploy pending / autonomy blocked | 151 contracts now `tool_wrapper_available_local`; 12 are registered fallback blockers; 0 remain `tool_wrapper_missing`; no read-only wrappers remain missing | `src/lib/bna/helper/tool-registry.js`, `src/lib/bna/helper/planner.js`, `src/lib/bna/helper/permissions.js`, `src/lib/bna/helper/safety.js`, `scripts/generate-rabbi-helper-tool-scope-map.mjs`, action coverage artifacts, scope maps, tests | PASS focused helper/scope/Agent Review tests 40/40; previous deploy/live smoke through Railway deployment `eb599c39-36f7-4f80-9d6d-2a8fc5c6406f` covers the first 66 wrapper-backed contracts | Full autonomy still blocked by 12 fallback blockers, deploy/live smoke for the 85 local-only wrappers after Railway deployment failure investigation, external approval gates, and saved Agent Mode proof |
 
 ## Exact Remaining Agent-Mode Autonomy Gaps
 
 The mapping batch does not make the Rabbi bot autonomous yet. These gaps still
 block full agent-mode autonomy:
 
-1. The refreshed base helper parity map still requires continued wrapper work.
-2. The Rabbi audit baseline still tracks 163 contracts: 121 now have local
-   wrappers, 12 are registered fallback/setup blockers, and 30 remain
-   `tool_wrapper_missing`.
+1. The refreshed base helper parity map has no remaining `tool_wrapper_missing`
+   contracts, but registered fallback placeholders still need real scoped
+   replacements before autonomy.
+2. The Rabbi audit baseline still tracks 163 contracts: 151 now have local
+   wrappers and 12 are registered fallback/setup blockers.
 3. Current action-policy breakdown: 88 `internal_write`, 35 `draft_only`, 9
    `approval_gated_external_write`, 9
    `approval_gated_internal_state_change`, and 22 `read_only`; no read-only
@@ -112,22 +113,25 @@ block full agent-mode autonomy:
    and `75d6f181-e7c6-41a3-9e70-efcc4c61fea1` both failed after image push
    without surfaced app error logs. The newest 13 content/provider action
    wrappers are pushed but not deployed yet. The newest 24 local scoped packet
-   wrappers are local verified and not deployed yet. All 121 wrapper-backed
+   wrappers and 30 final approval/provider packet contracts are local verified
+   and not deployed yet. All 151 wrapper-backed
    contracts still need saved Agent Mode PASS/BLOCKED proof before autonomy can
    be claimed.
 6. Natural-language planner coverage is wired for the first alias batch, the
    second read-only batch, the parent/student summary batch, the preview-action
    batch, the draft-only sidekick batch, the internal-action batch, and the
    content/provider action batch; the local scoped packet wrappers are
-   registered as safe scoped request packets. The remaining missing wrappers
-   still need intent routing and safe missing-input prompts.
+   registered as safe scoped request packets, and the final approval/provider
+   packet wrappers now have intent routing and safe no-write approval packets.
 7. Server-side scope filters, destination resolver calls, and scoped result
-   cards still need implementation/readback for the remaining wrappers.
+   cards still need implementation/readback for the 12 fallback-only tools
+   before those placeholders stop blocking autonomy.
 8. Redacted helper audit logging exists in the plan/execute pipeline, but
    per-tool audit readback proof still needs to be collected as batches land.
 9. Runtime negative tests now cover the first alias batch, read-only batch,
    parent/student summary batch, preview/draft batches, internal-action batch,
-   content/provider action batch, and local scoped packet batch
+   content/provider action batch, local scoped packet batch, and final
+   approval/provider packet batch
    workspace/project rejection plus privacy redaction; parent/student/provider
    privacy negative tests must continue to expand per wrapper batch.
 10. External-write, financial/access, credential, upload, DNS/account, publish,
@@ -136,14 +140,14 @@ block full agent-mode autonomy:
    gates exist.
 11. Agent Mode has not yet saved a PASS/BLOCKED/FAIL drop-off result for the
    all-163 probe run.
-12. Latest local scoped packet wrapper batch verification is focused so far:
+12. Latest final approval/provider packet wrapper batch verification is focused so far:
    `node --check` passed for touched helper/generator files,
    `node scripts/generate-rabbi-helper-tool-scope-map.mjs` refreshed the map,
    `git diff --check` had line-ending warnings only, and focused
-   helper/scope/Agent Review tests passed 39/39. Full `npm test`, deploy/live smoke, and saved Agent Mode
-   PASS/BLOCKED proof still remain for the newest 24 wrappers; deploy/live
-   smoke also remains pending for the prior 31 wrappers because of the Railway
-   deployment failures.
+   helper/scope/Agent Review tests passed 40/40. Full `npm test`,
+   deploy/live smoke, and saved Agent Mode PASS/BLOCKED proof still remain for
+   the newest final packet batch; deploy/live smoke also remains pending for
+   the prior 55 local-only wrappers because of the Railway deployment failures.
 
 ## Deploy Closeout - 66 Wrapper-Backed Contracts
 
@@ -162,10 +166,9 @@ block full agent-mode autonomy:
   `/js/operations-deferred-renderers.js` returned `200` with the expected split
   and fast-path markers.
 - Remaining blockers:
-  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` for live Rabbi Telegram sends, 30
-  missing wrappers after the local scoped packet wrapper batch, 12
-  fallback/setup blockers, deploy/live smoke for the 55 local-only wrappers,
-  and saved all-163 Agent Mode PASS/BLOCKED proof.
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` for live Rabbi Telegram sends, 12
+  fallback/setup blockers, deploy/live smoke for the 85 local-only wrappers,
+  external approval gates, and saved all-163 Agent Mode PASS/BLOCKED proof.
 
 ## Local Verification - Internal Action Wrapper Batch
 
@@ -241,13 +244,42 @@ block full agent-mode autonomy:
   reset live logins, return student access codes, move Drive files, call
   Google/Vimeo/Zoom/WAPI/Stripe/Buffer, or mutate official student/classroom
   records during verification.
-- Verification passed so far:
+- Verification passed:
+  `node --check src/lib/bna/helper/tool-registry.js`;
+  `node --check src/lib/bna/helper/planner.js`;
+  `node --check scripts/generate-rabbi-helper-tool-scope-map.mjs`;
+  `node scripts/generate-rabbi-helper-tool-scope-map.mjs`;
+  focused helper/scope/Agent Review tests 39/39; and `git diff --check` with
+  line-ending warnings only.
+- Next action: commit/push this scoped batch, send the super-admin Telegram
+  progress ding, and keep deploy/live smoke blocked behind the current Railway
+  failure investigation for the 55 local-only wrappers.
+
+## Local Verification - Final Approval/Provider Packet Wrapper Batch
+
+- Added scoped Rabbi / OneTime local packet wrappers for the last 26 unique
+  missing runtime names, covering 30 map contracts: email/newsletter approvals,
+  duplicate-pending archive, calendar delete, Drive move preview,
+  parent/student event visibility, lead/task moves, community/Telegram posts,
+  moderated question review, Google Calendar/Classroom sync packets,
+  parent-question/profile/summary packets, provider landing/lead/offer/
+  workspace/brand/asset packets, and Rabbi brand-kit packets.
+- The generated 163-contract scope map now reports 151
+  `tool_wrapper_available_local`, 12 `registered_fallback_only_blocker`, and 0
+  `tool_wrapper_missing`.
+- Guardrail: these wrappers return scoped local request packets only. Approval-
+  gated external-write/state-change tools report an approval-required status
+  and do not send, publish, sync, upload, move Drive files, delete calendar
+  events, change CRM/task state, grant access, write credentials, or mutate
+  official provider/parent/student records during verification.
+- Verification passed:
   `node --check src/lib/bna/helper/tool-registry.js`;
   `node --check src/lib/bna/helper/planner.js`;
   `node --check scripts/generate-rabbi-helper-tool-scope-map.mjs`;
   `node scripts/generate-rabbi-helper-tool-scope-map.mjs`;
   `node --test tests/bna-helper-tools.test.js tests/rabbi-helper-tool-scope-map.test.js tests/agent-review-hub.test.js`
-  passed 39/39; `git diff --check` reported only line-ending warnings.
-- Next action: run full `npm test`, closeout watchdogs, commit/push this scoped
-  batch, and keep deploy/live smoke blocked behind the current Railway failure
-  investigation for the 55 local-only wrappers.
+  passed 40/40; `git diff --check` reported only line-ending warnings.
+- Next action: commit/push this final packet batch, then either replace the 12
+  fallback-only tools with scoped wrappers or record explicit blockers, and
+  investigate the Railway failure path before deploy/live-smoke for the 85
+  local-only wrappers.

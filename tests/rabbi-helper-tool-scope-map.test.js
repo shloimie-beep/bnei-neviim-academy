@@ -104,6 +104,9 @@ test('Rabbi helper scope map keeps privacy, external writes, and student-parent 
 
 test('Rabbi helper scope map does not classify write-shaped missing wrappers as read-only', () => {
   const expectedPolicies = new Map([
+    ['approve_email', 'approval_gated_external_write'],
+    ['approve_newsletter', 'approval_gated_internal_state_change'],
+    ['archive_duplicate_pending', 'approval_gated_internal_state_change'],
     ['ask_for_help', 'internal_write'],
     ['attach_drive_file', 'internal_write'],
     ['capture_provider_google_business_link', 'internal_write'],
@@ -112,15 +115,26 @@ test('Rabbi helper scope map does not classify write-shaped missing wrappers as 
     ['create_class_session', 'internal_write'],
     ['create_goal', 'internal_write'],
     ['create_lesson', 'internal_write'],
+    ['create_parent_question', 'internal_write'],
+    ['create_parent_visible_summary', 'internal_write'],
+    ['create_provider_landing_page', 'internal_write'],
+    ['create_provider_lead', 'internal_write'],
+    ['create_provider_offer', 'internal_write'],
+    ['create_provider_question_post', 'approval_gated_external_write'],
+    ['create_provider_workspace', 'internal_write'],
     ['create_student_goal', 'internal_write'],
     ['create_student_question', 'internal_write'],
     ['create_student_question_queue', 'internal_write'],
     ['create_worksheet_from_transcript', 'internal_write'],
+    ['delete_calendar_event', 'approval_gated_internal_state_change'],
     ['distill_ramble', 'draft_only'],
     ['generate_social_posts_from_newsletter', 'draft_only'],
     ['generate_student_worksheet', 'draft_only'],
+    ['google_drive_move_file_preview', 'approval_gated_internal_state_change'],
     ['link_prompt_to_goal', 'internal_write'],
     ['mark_attendance', 'internal_write'],
+    ['mark_event_parent_visible', 'internal_write'],
+    ['mark_event_student_visible', 'internal_write'],
     ['mark_pending_received', 'internal_write'],
     ['mark_task_verified', 'internal_write'],
     ['move_lead_stage', 'approval_gated_internal_state_change'],
@@ -143,6 +157,10 @@ test('Rabbi helper scope map does not classify write-shaped missing wrappers as 
     ['sync_google_classroom', 'approval_gated_external_write'],
     ['update_goal_progress', 'internal_write'],
     ['update_goal_status', 'internal_write'],
+    ['update_parent_helper_profile', 'internal_write'],
+    ['update_provider_brand_kit', 'internal_write'],
+    ['update_provider_lead', 'internal_write'],
+    ['update_rabbi_brand_kit', 'internal_write'],
     ['update_student', 'internal_write'],
     ['upload_provider_asset_reference', 'internal_write'],
   ]);
@@ -191,7 +209,7 @@ test('Rabbi helper scope map marks the first runtime alias batch as locally wrap
   }
 
   assert.ok(scopeMap.counts.by_implementation_status.tool_wrapper_available_local >= aliasContracts.length);
-  assert.ok(scopeMap.counts.by_implementation_status.tool_wrapper_missing > aliasContracts.length);
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_missing || 0, 0);
 });
 
 test('Rabbi helper scope map marks the read-only runtime batch as locally wrapper-backed', () => {
@@ -214,7 +232,8 @@ test('Rabbi helper scope map marks the read-only runtime batch as locally wrappe
     assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
   }
 
-  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 121);
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 151);
+  assert.equal(scopeMap.counts.by_implementation_status.registered_fallback_only_blocker, 12);
 });
 
 test('Rabbi helper scope map marks parent and student summary wrappers as locally wrapper-backed', () => {
@@ -386,6 +405,52 @@ test('Rabbi helper scope map marks local task and student primitive wrappers as 
     assert.ok(contract.rabbi_contract.negative_tests.some((check) => /workspace_key=bna/i.test(check)));
     assert.match(contract.rabbi_contract.agent_mode_probe.expected_result, /scoped|workspace|no external/i);
   }
+});
+
+test('Rabbi helper scope map marks final approval and provider packet wrappers as locally wrapper-backed', () => {
+  const finalPacketNames = [
+    'approve_email',
+    'approve_newsletter',
+    'archive_duplicate_pending',
+    'delete_calendar_event',
+    'google_drive_move_file_preview',
+    'mark_event_parent_visible',
+    'mark_event_student_visible',
+    'move_lead_stage',
+    'move_task_workspace',
+    'post_community_message',
+    'queue_telegram_report',
+    'review_moderated_question',
+    'sync_google_calendar',
+    'sync_google_classroom',
+    'create_parent_question',
+    'create_parent_visible_summary',
+    'update_parent_helper_profile',
+    'create_provider_landing_page',
+    'create_provider_lead',
+    'create_provider_offer',
+    'create_provider_question_post',
+    'create_provider_workspace',
+    'update_provider_brand_kit',
+    'update_provider_lead',
+    'update_rabbi_brand_kit',
+    'upload_provider_asset_reference',
+  ];
+  const finalPacketContracts = scopeMap.contracts.filter((contract) => finalPacketNames.includes(contract.source.helper_tool_name));
+  assert.equal(finalPacketContracts.length, 30);
+
+  for (const contract of finalPacketContracts) {
+    assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
+    assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
+    assert.ok(contract.rabbi_contract.negative_tests.some((check) => /workspace_key=bna/i.test(check)));
+    assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
+    if (contract.rabbi_contract.action_policy.includes('approval_gated')) {
+      assert.equal(contract.rabbi_contract.confirmation_policy, 'explicit_confirmation_required');
+      assert.match(contract.rabbi_contract.agent_mode_probe.expected_result, /confirmation|approval|not perform/i);
+    }
+  }
+
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_missing || 0, 0);
 });
 
 test('account bot scope template supports narrower subaccounts like Benny tasks and Studio', () => {
