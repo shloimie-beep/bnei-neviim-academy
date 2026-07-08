@@ -34110,3 +34110,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   the exact live OneTime student display name is provided. WhatsApp send
   remains blocked until the Rabbi WAPI credential folder/token is supplied and
   configured.
+
+## 2026-07-08T17:32:00+03:00 - OneTime WAPI/Rabbi setup deployed and setup email sent
+
+- Pushed follow-up commit `340d1f77` so the OneTime provider setup email uses
+  the OneTime/Resend sender instead of the legacy generic Gmail path.
+- Deployed the OneTime service through account-authenticated Railway CLI to
+  `one-time-production / production / one-time-web`.
+- Deployment `76bb9349-99f9-41d9-8750-d19cd02115d2` reached `SUCCESS` for the
+  first WAPI/Rabbi setup batch.
+- Deployment `6d74a813-235b-41f6-81ea-777f6a2183e8` reached `SUCCESS` for the
+  OneTime sender fix.
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
+  passed after deployment.
+- Live scoped WAPI diagnostics now report
+  `rabbi_sheller_provider / one_time_mishnah_class`, but WAPI outbound/sync is
+  still not configured because the Rabbi WAPI token/folder has not been
+  supplied.
+- Live provider setup override guard passed: missing override confirm returned
+  400 with no send.
+- The approved Rabbi setup email override was sent to the redacted operator
+  Gmail through Resend. Rabbi communications readback showed `status=sent`,
+  `provider=resend`, OneTime subject present, and no BNA/Academy subject bleed.
+- No WhatsApp was sent, no parent invite was resent, no payment/access/DNS/
+  Zoom/Vimeo/Drive mutation was performed, and no weak Rabbi password or raw
+  setup token was committed.
