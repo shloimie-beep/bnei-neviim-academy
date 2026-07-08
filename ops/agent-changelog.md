@@ -34866,3 +34866,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `codex/rabbi-helper-tool-scope-20260708`.
 - `npm run one-time:target:guard` live target readbacks passed, but release
   deploy remains blocked by the intentionally mixed dirty shared worktree.
+
+## 2026-07-08T22:53:46+03:00 - Rabbi helper read-only wrapper batch deployed
+
+- Deployed the Rabbi / OneTime read-only helper wrapper batch from a clean
+  release worktree to avoid unrelated Operations/performance dirty files in the
+  main checkout.
+- Pushed release candidate branch
+  `codex/rabbi-helper-release-candidate-20260708` at `d23c9ec2`.
+- Railway deployment
+  `2107fae5-1a73-49ec-96e8-5a3a66bb8e43` reached `SUCCESS` for
+  `one-time-production` / `one-time-web` / `production`.
+- Live OneTime smoke passed against `https://join.onetimeonetime.com`.
+- Live prompt readback for
+  `/agent-review-prompts/rabbi-helper-tool-scope-map.md` returned `200` with
+  `REQ-20260708-093` and `RABBI-HELPER-SCOPE-163`.
+- Sent one concise operator Telegram progress update with done, verified,
+  blocked, next, packet, and task bullets; token/chat ID values were not
+  printed.
+- Remaining blockers: Rabbi Telegram live delivery still needs
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`; full helper autonomy still has 124
+  missing wrappers, 12 fallback/setup blockers, and unsaved all-contract Agent
+  Mode PASS/BLOCKED proof.
