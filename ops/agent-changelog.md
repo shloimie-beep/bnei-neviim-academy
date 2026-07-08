@@ -6,7 +6,7 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
-## 2026-07-08T13:33:00+03:00 - OneTime email scope guardrails local verified
+## 2026-07-08T13:33:00+03:00 - OneTime email scope guardrails deployed and dry-run live-smoked
 
 - Patched the OneTime parent trial invite path so parent setup, member library,
   and classroom links use the explicit OneTime public base instead of the
@@ -20,6 +20,13 @@ marked done, verified, deployed, or otherwise finished.
 - Verification passed: `node --check server.js`, focused parent/email/scope
   tests, `npm run watchdog:workspace-scope -- --json`, and
   `npm run watchdog:protocol-drift`.
+- Deployment `9b4ae9c8-8c38-4888-a8c9-f19b918eec3b` reached `SUCCESS` for
+  commit `01e0708621adba58df28f1af30c2b4cc7e9be846`, which includes app
+  commit `3e4c6cae98eee543f6e60907e20c478051583ea7`.
+- Live dry-run smoke passed with no send or write:
+  `ops/watchdog-audits/2026-07-08-onetime-parent-invite-scope-dry-run.md`.
+- Live app, Agent Review acceptance, and shared One Time review smokes passed
+  after deployment.
 - Live resend remains blocked: no local Zoom alias was found for tonight's
   actual shiur link, so no external email was sent.
 
