@@ -33757,3 +33757,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   publish, or unreviewed student comment publication was performed.
 - Status: local verified, pending commit, push, deploy, and live smoke before
   `REQ-20260708-024` through `REQ-20260708-026` can be terminal Done.
+
+## 2026-07-08T12:00:33+03:00 - One Time classroom materials/security deployed and live-smoked
+
+- Commit `856cee8f` was pushed to `origin/master`; Railway auto-deployed it to
+  production service `skillful-motivation`.
+- Railway deployment `ab2651c8-1c4f-497b-be3a-ea8b5745a4af` reached `SUCCESS`
+  on commit `856cee8f04ac83fdd1599d42b3d40bca7e8c868e`.
+- Live smoke passed and wrote
+  `ops/live-smokes/2026-07-08T08-59-04-813Z-one-time-classroom-materials-live-smoke.md`.
+- The live admin smoke created a temporary One Time class, added
+  `slide_deck`, `slideshow`, `worksheet`, and `source_sheet` assets, verified
+  member-safe preview returned `source_sheet`, `worksheet`, and `slide_deck`,
+  verified the editable `.pptx` slide source was hidden, and archived the
+  temporary class.
+- The production browser smoke loaded the live classroom HTML at 1440, 430,
+  and 390 widths with a mocked member payload. It confirmed Class Materials
+  groups for Slides, Worksheets, and Source Sheets, zero iframes before
+  `Play Video`, one iframe after, no raw Vimeo fallback link, no overflow, and
+  no toolbar clipping.
+- Guardrails held: no Drive upload, Vimeo upload/privacy mutation, Google
+  permission write, external send, payment/access/DNS/provider write, public
+  publish, or unreviewed student comment publication was performed.
+- `REQ-20260708-024`, `REQ-20260708-025`, and `REQ-20260708-026` are Done.
+  Remaining open work stays split into access-code UX, moderated comments,
+  updates/awards feed, and Drive-to-Vimeo automation approval.

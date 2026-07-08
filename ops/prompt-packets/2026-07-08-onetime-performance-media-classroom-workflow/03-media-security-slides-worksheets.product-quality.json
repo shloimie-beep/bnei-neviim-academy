@@ -39,7 +39,7 @@
   },
   "stage": "STAGE_3_CODEX_IMPLEMENTATION",
   "packet_role": "IMPLEMENTATION_PACKET",
-  "status": "verified",
+  "status": "done",
   "title": "One Time Media Security And Class Materials",
   "created_at": "2026-07-08T11:45:00+03:00",
   "workspace_key": "rabbi_sheller_provider",
@@ -551,7 +551,7 @@
       "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
       "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
       "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-materials-local-smoke.md",
-      "ops/live-smokes/"
+      "ops/live-smokes/2026-07-08T08-59-04-813Z-one-time-classroom-materials-live-smoke.md"
     ]
   },
   "app_visible": true,
@@ -585,7 +585,8 @@
     ],
     "evidence_paths": [
       "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
-      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-materials-local-smoke.md"
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-materials-local-smoke.md",
+      "ops/live-smokes/2026-07-08T08-59-04-813Z-one-time-classroom-materials-live-smoke.md"
     ],
     "final_status_path": "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
     "next_packet_path": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/04-drive-to-vimeo-automation.product-quality.json"
