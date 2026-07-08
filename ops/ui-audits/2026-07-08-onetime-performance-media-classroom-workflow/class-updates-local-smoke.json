@@ -1,0 +1,66 @@
+{
+  "started_at": "2026-07-08T09:15:14.342Z",
+  "base_url": "http://localhost:4317",
+  "route": "/one-time-classroom?code=SMOKE",
+  "checks": [
+    {
+      "name": "class-updates-title",
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "name": "published-comment-visible",
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "name": "progress-visible",
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "name": "points-visible",
+      "viewport": 1440,
+      "pass": true
+    },
+    {
+      "name": "no-horizontal-overflow",
+      "viewport": 1440,
+      "pass": true,
+      "overflow": 0
+    },
+    {
+      "name": "class-updates-title",
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "name": "published-comment-visible",
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "name": "progress-visible",
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "name": "points-visible",
+      "viewport": 390,
+      "pass": true
+    },
+    {
+      "name": "no-horizontal-overflow",
+      "viewport": 390,
+      "pass": true,
+      "overflow": 0
+    }
+  ],
+  "screenshots": [
+    "ops\\ui-audits\\2026-07-08-onetime-performance-media-classroom-workflow\\class-updates-local-1440.png",
+    "ops\\ui-audits\\2026-07-08-onetime-performance-media-classroom-workflow\\class-updates-local-390.png"
+  ],
+  "completed_at": "2026-07-08T09:15:15.440Z",
+  "status": "passed",
+  "failed": []
+}

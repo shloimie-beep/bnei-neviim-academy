@@ -47,10 +47,14 @@ test('Operations Community ledger shows implemented read-only badge audit readin
 
 test('public One Time classroom renders an approved-only rewards scoreboard', () => {
   assert.match(classroom, /Rewards Scoreboard/);
+  assert.match(classroom, /Class Updates/);
   assert.match(classroom, /renderRewardsScoreboard/);
+  assert.match(classroom, /renderClassUpdates/);
   assert.match(classroom, /participation_summary/);
   assert.match(classroom, /state\.classroom\?\.leaderboard/);
+  assert.match(classroom, /state\.classroom\?\.class_updates/);
   assert.match(classroom, /Approved rewards will appear after Rabbi\/admin review/);
+  assert.match(classroom, /Approved class updates will appear here after Rabbi\/admin review/);
   assert.match(classroom, /reward-chip/);
   assert.match(classroom, /public_points/);
   assert.match(classroom, /public_rank/);
@@ -68,6 +72,7 @@ test('server member-safe classroom payload exposes only approved reward scoreboa
   assert.match(server, /if \(event\.status !== 'approved' \|\| event\.visibility !== 'classroom'\) continue/);
   assert.match(server, /participation_summary: participation\.participation_summary/);
   assert.match(server, /leaderboard: participation\.leaderboard/);
+  assert.match(server, /class_updates: oneTimeClassroomUpdates\(threads, participation\)/);
   assert.match(server, /reward_policy: participation\.reward_policy/);
   assert.match(server, /Raw private replies, held responses, rejected messages, and unreviewed student text are not exposed/);
 });

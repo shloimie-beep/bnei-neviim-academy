@@ -1,36 +1,15 @@
 {
-  "generated_at": "2026-07-08T09:01:33.390Z",
+  "generated_at": "2026-07-08T09:17:54.901Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/00-control-tower.product-quality.json",
-    "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/01-current-state-performance-visual-audit.product-quality.json",
-    "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/02-member-library-performance-filters.product-quality.json",
-    "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json"
+    "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/05-moderated-comments-updates-awards.product-quality.json"
   ],
-  "total": 4,
-  "passed": 4,
+  "total": 1,
+  "passed": 1,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/00-control-tower.product-quality.json",
-      "passed": true,
-      "error_codes": [],
-      "errors": []
-    },
-    {
-      "file": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/01-current-state-performance-visual-audit.product-quality.json",
-      "passed": true,
-      "error_codes": [],
-      "errors": []
-    },
-    {
-      "file": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/02-member-library-performance-filters.product-quality.json",
-      "passed": true,
-      "error_codes": [],
-      "errors": []
-    },
-    {
-      "file": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json",
+      "file": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/05-moderated-comments-updates-awards.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []

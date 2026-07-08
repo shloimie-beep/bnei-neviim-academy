@@ -33782,3 +33782,31 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - `REQ-20260708-024`, `REQ-20260708-025`, and `REQ-20260708-026` are Done.
   Remaining open work stays split into access-code UX, moderated comments,
   updates/awards feed, and Drive-to-Vimeo automation approval.
+
+## 2026-07-08T12:18:00+03:00 - One Time moderated comments/update feed local verified
+
+- Added Product Quality packet
+  `ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/05-moderated-comments-updates-awards.product-quality.json`
+  and validated it.
+- Added a member-safe `class_updates` read model in `server.js` that is derived
+  only from approved visible classroom messages and approved classroom-visible
+  participation events.
+- Preserved the private-first response path: submitted member replies remain
+  hidden/pending until Rabbi/admin review, and member-safe payloads still hide
+  raw `participation_events`.
+- Updated the One Time classroom with a `Class Updates` section for published
+  comments, positive progress rows, award-style labels, and points where an
+  approved participation event created them.
+- Local browser smoke passed at 1440 and 390 widths and wrote
+  `ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/class-updates-local-smoke.md`.
+  It confirmed the feed renders published and progress updates, `+points`
+  appears, and there is no horizontal overflow.
+- Verification passed: PQC packet 05, focused One Time/community/gamification
+  tests 21/21, protocol drift watchdog with 0 findings, secrets audit, and
+  `git diff --check`.
+- Guardrails held: no Drive upload, Vimeo upload/privacy mutation, external
+  email/Telegram/WhatsApp send, payment/access/DNS/provider write, open
+  student-to-student chat, public publish outside admin review, or raw private
+  reply exposure was added.
+- Status: local verified, pending commit, push, deploy, and live smoke before
+  `REQ-20260708-028` and `REQ-20260708-029` can be terminal Done.

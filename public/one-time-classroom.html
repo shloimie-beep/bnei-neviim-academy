@@ -429,6 +429,40 @@
       font-size: 11px;
       font-weight: 700;
     }
+    .update-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      border-left: 3px solid #ffce2e;
+    }
+    .update-kind {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      border: 1px solid rgba(8, 9, 16, 0.16);
+      border-radius: 999px;
+      background: #f8faf7;
+      color: var(--muted);
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .update-points {
+      min-width: 54px;
+      text-align: right;
+      font-weight: 800;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .update-points span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
     .bot-panel {
       display: grid;
       gap: 10px;
@@ -464,6 +498,8 @@
       .hero-copy { padding: 20px; }
       .scoreboard-row { grid-template-columns: 34px minmax(0, 1fr); }
       .score-points { grid-column: 2; text-align: left; }
+      .update-row { grid-template-columns: 1fr; }
+      .update-points { text-align: left; }
     }
     @media (max-width: 360px) {
       .top-actions { grid-template-columns: 1fr; }
@@ -780,26 +816,37 @@
         <div class="grid">
           <section class="span-6">
             <div class="section-title">
+              <div>
+                <h2>Class Updates</h2>
+                <div class="status">Published comments and approved progress only.</div>
+              </div>
+            </div>
+            <div id="classUpdates" class="item-list"></div>
+          </section>
+          <section class="span-6">
+            <div class="section-title">
               <h2>Top Questions</h2>
             </div>
             <div id="topQuestions" class="item-list"></div>
           </section>
-          <section class="span-6">
-            <div class="section-title">
-              <h2>Reply Queue</h2>
-            </div>
-            <div class="item-list">
-              <article class="item">
-                <strong>Private first</strong>
-                <p>Students respond to Rabbi/admin threads below. Replies stay in review until Rabbi/admin chooses the next step.</p>
-              </article>
-              <article class="item">
-                <strong>No open chat</strong>
-                <p>Teacher-led discussion can be featured after review, but students do not publish directly to a public feed.</p>
-              </article>
-            </div>
-          </section>
         </div>
+
+        <section>
+          <div class="section-title">
+            <h2>Reply Queue</h2>
+            <span class="pill">Private first</span>
+          </div>
+          <div class="item-list">
+            <article class="item">
+              <strong>Private first</strong>
+              <p>Students respond to Rabbi/admin threads below. Replies stay in review until Rabbi/admin chooses the next step.</p>
+            </article>
+            <article class="item">
+              <strong>No open chat</strong>
+              <p>Teacher-led discussion can be featured after review, but students do not publish directly to a public feed.</p>
+            </article>
+          </div>
+        </section>
 
         <section>
           <div class="section-title">
@@ -832,6 +879,7 @@
       calendarList: document.getElementById('calendarList'),
       curriculumList: document.getElementById('curriculumList'),
       scoreboardList: document.getElementById('scoreboardList'),
+      classUpdates: document.getElementById('classUpdates'),
       topQuestions: document.getElementById('topQuestions'),
       threadList: document.getElementById('threadList'),
       logoutLink: document.getElementById('memberLogoutLink'),
@@ -1085,6 +1133,26 @@
       }).join('') : '<div class="empty">Approved rewards will appear after Rabbi/admin review.</div>';
     }
 
+    function renderClassUpdates() {
+      const rows = Array.isArray(state.classroom?.class_updates) ? state.classroom.class_updates : [];
+      els.classUpdates.innerHTML = rows.length ? rows.slice(0, 10).map((item) => {
+        const labels = Array.isArray(item.reward_labels) && item.reward_labels.length ? item.reward_labels : [item.status_label || 'Published'];
+        const points = Number(item.points || 0);
+        return `
+          <article class="item update-row">
+            <div>
+              <span class="update-kind">${escapeHtml(item.status_label || 'Published')}</span>
+              <strong>${escapeHtml(item.title || 'Class update')}</strong>
+              <p>${escapeHtml(item.body_preview || 'Approved classroom progress was posted after review.')}</p>
+              <div class="meta"><span>${escapeHtml(item.actor_label || 'Approved participant')}</span><span>${escapeHtml(item.thread_title || '')}</span></div>
+              <div class="reward-chip-row">${labels.map((label) => `<span class="reward-chip">${escapeHtml(label)}</span>`).join('')}</div>
+            </div>
+            ${points > 0 ? `<div class="update-points">+${points}<span>points</span></div>` : ''}
+          </article>
+        `;
+      }).join('') : '<div class="empty">Approved class updates will appear here after Rabbi/admin review.</div>';
+    }
+
     function renderTopQuestions() {
       const rows = state.classroom?.top_questions || [];
       els.topQuestions.innerHTML = rows.length ? rows.map((item) => `
@@ -1129,6 +1197,7 @@
       renderCalendar();
       renderCurriculum();
       renderRewardsScoreboard();
+      renderClassUpdates();
       renderTopQuestions();
       renderThreads();
       els.content.classList.remove('hidden');
@@ -1183,7 +1252,7 @@
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Could not submit response');
         form.elements.body.value = '';
-        status.textContent = data.message || 'Submitted for review.';
+        status.textContent = data.message || 'Submitted for review. It stays private until Rabbi/admin approval.';
       } catch (error) {
         status.textContent = error.message;
       } finally {

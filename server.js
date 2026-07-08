@@ -29186,6 +29186,66 @@ function oneTimeClassroomTopQa(threads = [], participation = {}) {
     .slice(0, 12);
 }
 
+function oneTimeClassroomUpdateEventLabel(eventType = '') {
+  const normalized = normalizeOneTimeClassroomEventType(eventType);
+  if (normalized === 'approved_question') return 'Published question';
+  if (normalized === 'approved_response') return 'Published answer';
+  if (normalized === 'rabbi_featured') return 'Rabbi featured';
+  if (normalized === 'assignment_participation') return 'Review participation';
+  return 'Classroom progress';
+}
+
+function oneTimeClassroomUpdates(threads = [], participation = {}) {
+  const updates = [];
+  for (const thread of threads || []) {
+    for (const message of thread.messages || []) {
+      if (message.status !== 'visible' || message.moderation_status !== 'approved') continue;
+      const isRabbi = message.author_type === 'admin' || message.author_type === 'rabbi';
+      updates.push({
+        id: `message:${message.id}`,
+        update_type: message.leaderboard_eligible || message.featured_rank !== null ? 'featured_comment' : 'published_comment',
+        title: isRabbi ? 'Rabbi posted an update' : 'Published classroom response',
+        status_label: message.leaderboard_eligible || message.featured_rank !== null ? 'Published + scoreboard' : 'Published',
+        actor_label: isRabbi ? message.author_name || 'Rabbi' : 'Approved participant',
+        thread_id: thread.id,
+        thread_title: thread.title || '',
+        message_id: message.id,
+        body_preview: message.body_preview || message.body || '',
+        reward_labels: message.leaderboard_eligible || message.featured_rank !== null ? ['Published', 'Scoreboard eligible'] : ['Published'],
+        points: message.leaderboard_eligible ? Number(ONE_TIME_CLASSROOM_REWARD_WEIGHTS.approved_response || 0) : 0,
+        created_at: message.approved_at || message.created_at || thread.updated_at || thread.created_at || null,
+      });
+    }
+  }
+  for (const event of participation.events || []) {
+    if (event.status !== 'approved' || event.visibility !== 'classroom') continue;
+    const label = oneTimeClassroomUpdateEventLabel(event.event_type);
+    updates.push({
+      id: `event:${event.id}`,
+      update_type: event.featured || event.event_type === 'rabbi_featured' ? 'award' : 'progress',
+      title: event.featured || event.event_type === 'rabbi_featured' ? 'Good job - Rabbi featured this' : 'Good job - classroom progress',
+      status_label: label,
+      actor_label: event.actor_label || 'Approved participant',
+      thread_id: event.community_thread_id || null,
+      message_id: event.community_message_id || null,
+      event_id: event.id,
+      body_preview: `${label} counted toward the classroom scoreboard after review.`,
+      reward_labels: oneTimeClassroomRewardLabels({
+        approved_questions: event.event_type === 'approved_question' ? 1 : 0,
+        approved_responses: event.event_type === 'approved_response' ? 1 : 0,
+        rabbi_featured: event.event_type === 'rabbi_featured' ? 1 : 0,
+        assignment_participation: event.event_type === 'assignment_participation' ? 1 : 0,
+        public_points: Number(event.points || ONE_TIME_CLASSROOM_REWARD_WEIGHTS[event.event_type] || 0),
+      }),
+      points: Number(event.points || ONE_TIME_CLASSROOM_REWARD_WEIGHTS[event.event_type] || 0),
+      created_at: event.created_at || null,
+    });
+  }
+  return updates
+    .sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')))
+    .slice(0, 16);
+}
+
 async function getOneTimeClassroomData({ db = pool, memberLibrary = null, memberSafe = false } = {}) {
   const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, db);
   await ensureOneTimeClassroomCommunity(db);
@@ -29238,6 +29298,7 @@ async function getOneTimeClassroomData({ db = pool, memberLibrary = null, member
     }))).sort((a, b) => String(a.start_at || '').localeCompare(String(b.start_at || ''))),
     threads,
     top_questions: oneTimeClassroomTopQa(threads, participation),
+    class_updates: oneTimeClassroomUpdates(threads, participation),
     participation_summary: participation.participation_summary,
     leaderboard: participation.leaderboard,
     reward_policy: participation.reward_policy,

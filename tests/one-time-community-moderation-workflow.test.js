@@ -183,6 +183,20 @@ test('existing One Time classroom response route remains private-first', () => {
   assert.match(responseRoute, /bna_community_moderation_events/);
 });
 
+test('member-safe One Time classroom updates are built only from approved visible data', () => {
+  const updatesHelper = server.slice(
+    server.indexOf('function oneTimeClassroomUpdates'),
+    server.indexOf('async function getOneTimeClassroomData')
+  );
+  assert.match(updatesHelper, /message\.status !== 'visible' \|\| message\.moderation_status !== 'approved'/);
+  assert.match(updatesHelper, /event\.status !== 'approved' \|\| event\.visibility !== 'classroom'/);
+  assert.match(updatesHelper, /published_comment/);
+  assert.match(updatesHelper, /featured_comment/);
+  assert.match(updatesHelper, /Good job - Rabbi featured this/);
+  assert.match(server, /class_updates: oneTimeClassroomUpdates\(threads, participation\)/);
+  assert.match(server, /participation_events: memberSafe \? \[\] : participation\.events/);
+});
+
 test('Operations shows no-write community moderation readiness panel', () => {
   assert.match(operations, /getOneTimeCommunityModerationReadiness/);
   assert.match(operations, /renderOneTimeCommunityModerationReadinessPanel/);
@@ -209,6 +223,10 @@ test('package exposes focused community live smoke script', () => {
 
 test('public classroom keeps private replies and no active bot surface', () => {
   assert.match(classroom, /Reply Queue/);
+  assert.match(classroom, /Class Updates/);
+  assert.match(classroom, /Published comments and approved progress only/);
+  assert.match(classroom, /renderClassUpdates/);
+  assert.match(classroom, /Approved class updates will appear here after Rabbi\/admin review/);
   assert.match(classroom, /els\.threadList\.addEventListener\('submit'/);
   assert.match(classroom, /\/api\/one-time-classroom\/threads\/\$\{encodeURIComponent\(form\.dataset\.threadId\)\}\/responses/);
   assert.match(classroom, /Submitting for review/);

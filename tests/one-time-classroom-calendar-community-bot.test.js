@@ -69,6 +69,14 @@ test('Classroom APIs expose admin readback, natural-language scheduling, moderat
   const threadRead = sliceBetween(server, 'async function getOneTimeClassroomThreads', 'async function getOneTimeClassroomParticipation');
   assert.match(threadRead, /COALESCE\(moderation_status, 'approved'\) = 'approved'/);
   assert.match(threadRead, /memberSafe/);
+
+  const updatesHelper = sliceBetween(server, 'function oneTimeClassroomUpdates', 'async function getOneTimeClassroomData');
+  assert.match(updatesHelper, /message\.status !== 'visible'/);
+  assert.match(updatesHelper, /message\.moderation_status !== 'approved'/);
+  assert.match(updatesHelper, /event\.status !== 'approved' \|\| event\.visibility !== 'classroom'/);
+  assert.match(updatesHelper, /Published classroom response/);
+  assert.match(updatesHelper, /Good job - classroom progress/);
+  assert.match(server, /class_updates: oneTimeClassroomUpdates\(threads, participation\)/);
 });
 
 test('One Time classroom bot endpoint is approval-blocked while private replies remain active', () => {
@@ -120,6 +128,12 @@ test('Member library and classroom pages expose classroom navigation, six Sedari
     'Play Video',
     'loading="lazy"',
     'Rewards Scoreboard',
+    'Class Updates',
+    'Published comments and approved progress only',
+    'Approved class updates will appear here after Rabbi/admin review',
+    'renderClassUpdates',
+    'classUpdates',
+    'state.classroom?.class_updates',
     'Reply Queue',
     'Rabbi Threads',
     'Responses are reviewed before visibility',
