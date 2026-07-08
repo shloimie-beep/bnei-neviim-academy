@@ -33638,3 +33638,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   project-scoped token. Owner or an agent with valid Railway target auth must
   deploy `8f3320a0` and rerun production prompt/drop-off readbacks before this
   app-visible repair can be marked fully Done.
+
+## 2026-07-08T09:56:00+03:00 - Agent Review protocol live verified
+
+- Production now serves the regenerated Agent Review prompt pack from
+  `8f3320a0`; the One Time brand/helper/toolbar prompt includes
+  `Reusable protocol/template: docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md`,
+  Start Audit, BLOCKED-save, and API fallback clauses.
+- Owner-authenticated exact drop-off route
+  `/operations/agent-review/dropoff?...&autosave=1` returns the live drop-off
+  page with partial BLOCKED fields, local autosave text, readback panel, and
+  robust `data.result?.result_ref` fallback.
+- Live Start Audit -> BLOCKED save -> AGR readback smoke passed and saved
+  `AGR-20c48b79b5aab67d` with unique idempotency key
+  `2026-07-08-live-agent-review-protocol-smoke:2026-07-08T06-54-13-788Z`.
+- The live smoke performed only an internal Agent Review result write. No
+  external send, payment/access/DNS/provider mutation, or private data payload
+  was used.
+- Issue #24 is not complete from this sub-scope; the One Time helper/UI audit
+  findings still need separate Agent Mode reruns and correction packets.

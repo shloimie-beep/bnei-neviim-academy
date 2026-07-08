@@ -68,10 +68,10 @@ later if branch drift, auth, or unrelated dirty work prevents a safe push/deploy
 
 | ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
 |---|---|---|---|---|---|---|
-| REQ-20260708-014 | raw-input, tasks-pending, ops agent-review evidence | Record failed audit before code edits. | PASS raw record and execution-run evidence include failed/partial findings, routes visited, and blocker. | Pending | Pending | Not required |
-| REQ-20260708-007..011 | `server.js`, `public/agent-review.html`, `public/agent-review-dropoff.html`, `src/lib/bna/agent-review-hub.js`, agent review prompt files | Reuse typed result API; add start state, copy gate, partial blocked fields, readback UI, and regenerated prompt contract. | PASS `node --check server.js`; PASS focused Agent Review tests 33/33; PASS `npm run watchdog:actions`; PASS `git diff --check`. | Commit `8f3320a0` pushed to `origin/master` | BLOCKED | Production still serves the older Agent Review prompt/drop-off assets; Railway deploy is blocked by explicit target auth/link failure. |
-| REQ-20260708-012..013 | drop-off UI/tests/scripts | Add local draft autosave, secret-looking draft guard, compliance tests, registries. | PASS focused Agent Review tests 33/33; PASS action watchdog; route/action registries updated. | Commit `8f3320a0` pushed to `origin/master` | BLOCKED | App-visible deployment/live smoke blocked by Railway target auth. |
-| REQ-20260708-015 | docs + prompt generator tests | Create a reusable Agent Mode template/protocol artifact and lock it to generated prompts with regression coverage. | PASS protocol doc added; PASS generated prompts include protocol pointer; PASS focused tests 33/33. | Commit `8f3320a0` pushed to `origin/master` | BLOCKED for live app assets; GitHub-visible protocol is pushed. | Production prompt readback does not yet include the protocol pointer because deploy has not picked up `8f3320a0`. |
+| REQ-20260708-014 | raw-input, tasks-pending, ops agent-review evidence | Record failed audit before code edits. | PASS raw record and execution-run evidence include failed/partial findings, routes visited, and blocker. | Committed and pushed before live smoke closeout | PASS | Not required |
+| REQ-20260708-007..011 | `server.js`, `public/agent-review.html`, `public/agent-review-dropoff.html`, `src/lib/bna/agent-review-hub.js`, agent review prompt files | Reuse typed result API; add start state, copy gate, partial blocked fields, readback UI, and regenerated prompt contract. | PASS `node --check server.js`; PASS focused Agent Review tests 33/33; PASS `npm run watchdog:actions`; PASS `git diff --check`; PASS live Start Audit/BLOCKED/readback smoke. | Commit `8f3320a0` pushed to `origin/master` | PASS live | Production prompt/drop-off assets are live; synthetic BLOCKED result `AGR-20c48b79b5aab67d` was saved and read back. |
+| REQ-20260708-012..013 | drop-off UI/tests/scripts | Add local draft autosave, secret-looking draft guard, compliance tests, registries. | PASS focused Agent Review tests 33/33; PASS action watchdog; route/action registries updated; PASS authenticated exact drop-off route contains partial BLOCKED fields and autosave/readback UI. | Commit `8f3320a0` pushed to `origin/master` | PASS live | App-visible drop-off/readback flow verified on production. |
+| REQ-20260708-015 | docs + prompt generator tests | Create a reusable Agent Mode template/protocol artifact and lock it to generated prompts with regression coverage. | PASS protocol doc added; PASS generated prompts include protocol pointer; PASS focused tests 33/33; PASS production prompt readback includes protocol pointer. | Commit `8f3320a0` pushed to `origin/master`; status closeout `192238b3` pushed. | PASS live | Production prompt pack includes the reusable protocol pointer and mandatory Start Audit/BLOCKED/API fallback clauses. |
 
 ## Final Audit
 
@@ -116,9 +116,17 @@ later if branch drift, auth, or unrelated dirty work prevents a safe push/deploy
 | Live acceptance smoke | PASS unrelated to new prompt assets | `npm run app:smoke:one-time-agent-mode-acceptance` passed and wrote `ops/live-smokes/2026-07-08T06-45-04-413Z-one-time-agent-mode-acceptance-live-smoke.md`; this smoke does not prove the new Agent Review prompt/drop-off assets are deployed. |
 | Railway deploy gate | BLOCKED | `npm run railway:doctor` without service target was blocked by the target guard. With `BNA_RAILWAY_SERVICE_NAME=skillful-motivation`, the guard selected the intended BNA target, but `railway link --project bd5b6d78-5e83-4e83-89b2-cd5f52ed7889 --environment production --service skillful-motivation --json` failed `Unauthorized`. Owner/agent with valid Railway target auth must deploy `8f3320a0` and rerun production readback. |
 
-Remaining closeout blocker: implementation and GitHub-visible protocol are
-pushed, but app-visible Agent Review prompt/drop-off assets are not live. Do
-not mark the Agent Review drop-off repair fully Done until Railway deploy
-auth/target access is repaired, production serves commit `8f3320a0` or later,
-and prompt/drop-off readbacks confirm the reusable protocol and partial
-BLOCKED save fields.
+## 2026-07-08 Final Live Evidence
+
+| Item | Result | Evidence |
+|---|---|---|
+| Production prompt readback after deploy | PASS | `https://bneineviimacademy.org/agent-review-prompts/one-time-brand-helper-toolbar-audit.md` returned 200 with `Generated: 2026-07-08T06:33:18.874Z`, `Reusable protocol/template: docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md`, Start Audit, BLOCKED, and API fallback clauses. |
+| Production prompt index after deploy | PASS | `https://bneineviimacademy.org/agent-review-prompts/index.json` returned 15 prompts from the regenerated pack. |
+| Authenticated exact drop-off route | PASS | Owner-authenticated `/operations/agent-review/dropoff?...&autosave=1` returned the live drop-off page with `blocked_route_or_step`, `partial_routes_visited`, `readbackPanel`, `data.result?.result_ref`, and local autosave text. |
+| Live Start Audit / BLOCKED save / readback | PASS | Production smoke saved synthetic partial BLOCKED result `AGR-20c48b79b5aab67d` using unique idempotency key `2026-07-08-live-agent-review-protocol-smoke:2026-07-08T06-54-13-788Z`; readback URL `https://bneineviimacademy.org/api/bna/agent-review/results/AGR-20c48b79b5aab67d` returned the same result/status/idempotency key. |
+
+Remaining note: this Agent Review drop-off/template sub-scope is implemented,
+pushed, live-smoked, and recorded. Full Issue #24 remains open because the
+One Time helper/UI findings from the failed audit still need separate Agent
+Mode runs and repair packets. Full `npm test` still has 8 unrelated failures
+outside this Agent Review scope, listed above.
