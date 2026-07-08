@@ -35264,3 +35264,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers: Railway post-image deployment failure, missing
   `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` for live Rabbi Telegram delivery,
   external approval gates, and saved all-163 Agent Mode PASS/BLOCKED proof.
+
+## 2026-07-09T00:54:00+03:00 - Rabbi Helper Progress Ding Sent
+
+- Sent the concise super-admin Telegram progress update for the Rabbi helper
+  scope closeout. `npm run telegram:codex-progress -- --send --json` returned
+  `sent=true`, `dry_run=false`, and `message_id_present=true`.
+- The update summarized the verified 163/0/0 helper scope state, full test
+  coverage, healthy OneTime live smoke, local OneTime boot proof, the missing
+  Rabbi chat ID blocker, and the Railway `a23e4e82` post-image deploy failure.
