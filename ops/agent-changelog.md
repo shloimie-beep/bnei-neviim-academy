@@ -35049,6 +35049,40 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`; no live Rabbi Telegram message was
   sent and no raw token/chat ID was printed.
 
+## 2026-07-08T23:58:00+03:00 - Rabbi helper internal-action wrappers locally verified
+
+- Added 18 Rabbi / OneTime internal-action wrapper-backed contracts across
+  decision options, timeline notes, calendar/session records, referral ledger
+  entries, provider contact requests, natural task retitles, and task stage
+  updates.
+- Runtime wrappers enforce `rabbi_sheller_provider` /
+  `one_time_mishnah_class`, return redacted result cards, and keep external
+  sends, public publishing, credential writes, payments, access changes,
+  Google Calendar sync, contact export, and cross-workspace writes out of this
+  batch.
+- The 163-contract Rabbi helper scope map now reports 84 local
+  wrapper-backed contracts, 12 fallback/setup blockers, and 67 missing
+  wrappers.
+- Verification passed: `node --check` for touched helper/generator files,
+  `node scripts/generate-rabbi-helper-tool-scope-map.mjs`, focused
+  helper/scope tests 26/26, and full `npm test` 1667/1667.
+- Commit/push: `7abad605` is pushed to
+  `codex/rabbi-helper-tool-scope-20260708`, and release branch
+  `codex/rabbi-internal-actions-release-20260708` is pushed at the same head.
+- Deploy blocker: clean Railway deploy attempts
+  `d970e263-1726-41c1-a694-10c1659503ee` and
+  `75d6f181-e7c6-41a3-9e70-efcc4c61fea1` both failed after build/image push
+  with no app runtime error logs surfaced by Railway.
+- Production safety: active OneTime production stayed on successful deployment
+  `eb599c39-36f7-4f80-9d6d-2a8fc5c6406f`, and live OneTime smoke passed after
+  the failed deploy attempts.
+- Sent a concise super-admin Telegram progress ding for the local verification
+  and deploy blocker; the send returned `sent=true` and
+  `message_id_present=true`.
+- Remaining blockers: deploy/live smoke for the 18 internal-action wrappers,
+  the 67 missing wrappers, 12 fallback blockers, and saved all-163 Agent Mode
+  PASS/BLOCKED proof.
+
 ## 2026-07-08T23:56:57+03:00 - Rabbi Helper Internal Action Wrappers Locally Verified
 
 - Added scoped Rabbi / OneTime internal-action helper wrappers for decision
@@ -35070,3 +35104,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers: the newest 18 wrappers still need commit/push,
   deploy/live smoke, and saved Agent Mode PASS/BLOCKED proof; full autonomy
   remains blocked by 67 missing wrappers and 12 fallback blockers.
+
+## 2026-07-09T00:07:10+03:00 - Rabbi Helper Content/Provider Wrappers Locally Verified
+
+- Added 7 scoped Rabbi / OneTime content/provider action wrappers covering 13
+  contracts: agent-result records, One Time video library items, moderated
+  student questions, newsletter revisions, weekly-update hero selection,
+  provider profile updates, and Google Business metadata capture.
+- Refreshed the Rabbi scope map: 163 contracts, 97 local wrapper-backed
+  contracts, 54 missing wrappers, and 12 registered fallback/setup blockers.
+- Planner coverage now routes plain-language requests for those wrapper
+  intents before broad raw-intake capture where needed.
+- Verification passed: `node --check` for touched helper/generator files,
+  `node scripts/generate-rabbi-helper-tool-scope-map.mjs`, and
+  `node --test tests/bna-helper-tools.test.js
+  tests/rabbi-helper-tool-scope-map.test.js tests/agent-review-hub.test.js`
+  38/38.
+- Guardrails: wrappers reject BNA scope substitution, redact raw newsletter
+  bodies, question text, transcript text, URLs, Google Place IDs, contact
+  exports, access codes, and private machine payloads, and keep
+  approval-required content/provider writes in preview mode.
+- Remaining blockers: 54 missing wrappers, 12 fallback/setup blockers,
+  deploy/live smoke for 31 local-only wrappers, and saved all-163 Agent Mode
+  PASS/BLOCKED proof.

@@ -66,6 +66,13 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'request_provider_contact',
   'retitle_task_naturally',
   'update_task_stage',
+  'record_agent_result',
+  'create_one_time_video_library_item',
+  'submit_student_question_for_moderation',
+  'save_newsletter_revision',
+  'select_weekly_update_hero',
+  'update_provider_profile',
+  'capture_provider_google_business_link',
   'create_calendar_event_draft',
   'update_calendar_event_draft',
   'create_shoutout_draft',
@@ -3404,6 +3411,104 @@ function safeInternalActionSummary(actionId, inputs = {}, actionPreview = {}, re
     };
   }
 
+  if (actionId === 'record_agent_result') {
+    return {
+      ...base,
+      task_id: Number(inputs.task_id || actionPreview.task_id || 0) || null,
+      agent_job_id: Number(inputs.agent_job_id || actionPreview.agent_job_id || 0) || null,
+      requirement_id: compactText(inputs.requirement_id || actionPreview.requirement_id || '', 80) || null,
+      result_status: compactText(inputs.status || actionPreview.status || '', 80) || null,
+      evidence_count: compactList(inputs.evidence || actionPreview.evidence_links, 20).length,
+      github_link_count: compactList(actionPreview.github_links, 20).length,
+      result_packet_returned: false,
+      summary_body_returned: false,
+    };
+  }
+
+  if (actionId === 'create_one_time_video_library_item') {
+    return {
+      ...base,
+      title: compactText(inputs.title || actionPreview.title || '', 180) || null,
+      release_status: compactText(inputs.release_status || actionPreview.release_status || '', 80) || null,
+      rabbi_review_status: compactText(inputs.rabbi_review_status || actionPreview.rabbi_review_status || '', 80) || null,
+      privacy_review_status: compactText(inputs.privacy_review_status || actionPreview.privacy_review_status || '', 80) || null,
+      content_job_created: Boolean(actionPreview.content_job_created && result.executed),
+      transcript_text_returned: false,
+      source_url_returned: false,
+      media_url_returned: false,
+      drive_file_id_returned: false,
+      thumbnail_url_returned: false,
+      published: false,
+      sent: false,
+    };
+  }
+
+  if (actionId === 'submit_student_question_for_moderation') {
+    return {
+      ...base,
+      title: compactText(inputs.title || actionPreview.title || '', 180) || null,
+      topic: compactText(inputs.topic || actionPreview.topic || '', 180) || null,
+      student_id: Number(inputs.student_id || actionPreview.student_id || 0) || null,
+      member_id: Number(inputs.member_id || actionPreview.member_id || 0) || null,
+      class_session_id: Number(inputs.class_session_id || actionPreview.class_session_id || 0) || null,
+      question_text_returned: false,
+      submitter_identity_returned: false,
+      public_post_created: false,
+      response_sent: false,
+    };
+  }
+
+  if (actionId === 'save_newsletter_revision') {
+    return {
+      ...base,
+      source_output_id: Number(inputs.source_output_id || inputs.output_id || 0) || null,
+      job_id: Number(inputs.job_id || 0) || null,
+      title: compactText(inputs.title || actionPreview.title || '', 180) || null,
+      saved: Boolean(actionPreview.saved && result.executed),
+      body_preview_returned: false,
+      body_returned: false,
+      sent: false,
+      published: false,
+    };
+  }
+
+  if (actionId === 'select_weekly_update_hero') {
+    return {
+      ...base,
+      update_id: Number(inputs.update_id || actionPreview.update_id || 0) || null,
+      selected_for_parent_portal: Boolean(actionPreview.selected_for_parent_portal || inputs.selected_for_parent_portal),
+      sent: false,
+      parent_notification_sent: false,
+      raw_update_body_returned: false,
+    };
+  }
+
+  if (actionId === 'update_provider_profile') {
+    return {
+      ...base,
+      provider_id: Number(inputs.provider_id || actionPreview.provider_id || 0) || null,
+      status: compactText(inputs.status || actionPreview.status || '', 80) || null,
+      display_name: compactText(inputs.display_name || actionPreview.display_name || '', 180) || null,
+      summary_returned: false,
+      public_publish_performed: false,
+    };
+  }
+
+  if (actionId === 'capture_provider_google_business_link') {
+    return {
+      ...base,
+      provider_id: Number(inputs.provider_id || actionPreview.provider_id || 0) || null,
+      provider_profile_id: Number(inputs.provider_profile_id || actionPreview.provider_profile_id || 0) || null,
+      google_business_status: compactText(actionPreview.google_business_status || 'manual', 80),
+      live_google_api_used: false,
+      google_business_profile_url_returned: false,
+      google_maps_url_returned: false,
+      google_place_id_returned: false,
+      place_id_needs_manual_lookup: Boolean(actionPreview.place_id_needs_manual_lookup),
+      public_listing_review_needed: Boolean(actionPreview.public_listing_review_needed),
+    };
+  }
+
   return base;
 }
 
@@ -3659,6 +3764,150 @@ const RABBI_INTERNAL_ACTION_TOOL_DEFINITIONS = [
       task_id: { type: 'integer', required: true },
       stage: { type: 'string', required: true, maxLength: 80 },
       verification_notes: { type: 'string', maxLength: 1000 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'record_agent_result',
+    actionId: 'record_agent_result',
+    label: 'Agent result update',
+    description: 'Append a scoped One Time agent-result packet without returning raw machine payloads or private proof bodies.',
+    category: 'agent_ops',
+    sideEffectLevel: 'internal_write',
+    schema: {
+      summary: { type: 'string', required: true, maxLength: 1000 },
+      status: { type: 'string', maxLength: 80 },
+      source_raw_id: { type: 'string', maxLength: 80 },
+      task_id: { type: 'integer' },
+      agent_job_id: { type: 'integer' },
+      requirement_id: { type: 'string', maxLength: 80 },
+      branch: { type: 'string', maxLength: 180 },
+      commit: { type: 'string', maxLength: 80 },
+      pull_request: { type: 'string', maxLength: 220 },
+      tests: { type: 'array', maxItems: 20 },
+      deployment: { type: 'string', maxLength: 220 },
+      evidence: { type: 'array', maxItems: 20 },
+      blockers: { type: 'array', maxItems: 12 },
+      machine_payload: { type: 'object' },
+      idempotency_key: { type: 'string', maxLength: 180 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'create_one_time_video_library_item',
+    actionId: 'create_one_time_video_library_item',
+    label: 'One Time video library item update',
+    description: 'Create a scoped One Time video-library item preview without publishing, sending, or returning raw media/Drive URLs.',
+    category: 'studio',
+    sideEffectLevel: 'internal_write',
+    requiresConfirmation: true,
+    schema: {
+      title: { type: 'string', required: true, maxLength: 180 },
+      source_type: { type: 'string', maxLength: 80 },
+      source_url: { type: 'string', maxLength: 400 },
+      media_url: { type: 'string', maxLength: 400 },
+      drive_file_id: { type: 'string', maxLength: 180 },
+      drive_folder_id: { type: 'string', maxLength: 180 },
+      transcript_text: { type: 'string', maxLength: 12000 },
+      transcript_status: { type: 'string', maxLength: 80 },
+      worksheet_notes: { type: 'string', maxLength: 2000 },
+      social_notes: { type: 'string', maxLength: 2000 },
+      newsletter_notes: { type: 'string', maxLength: 2000 },
+      summary: { type: 'string', maxLength: 1000 },
+      notes: { type: 'string', maxLength: 2000 },
+      source_content_job_id: { type: 'integer' },
+      release_status: { type: 'string', maxLength: 80 },
+      rabbi_review_status: { type: 'string', maxLength: 80 },
+      privacy_review_status: { type: 'string', maxLength: 80 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'submit_student_question_for_moderation',
+    actionId: 'submit_student_question_for_moderation',
+    label: 'Moderated student question update',
+    description: 'Create a scoped private Rabbi question-review task without public posting, sending, or exposing raw question identity.',
+    category: 'students',
+    sideEffectLevel: 'internal_write',
+    requiresConfirmation: true,
+    schema: {
+      question_text: { type: 'string', required: true, maxLength: 4000 },
+      title: { type: 'string', maxLength: 180 },
+      topic: { type: 'string', maxLength: 180 },
+      mishnah_ref: { type: 'string', maxLength: 160 },
+      submitter_label: { type: 'string', maxLength: 120 },
+      member_id: { type: 'integer' },
+      student_id: { type: 'integer' },
+      class_session_id: { type: 'integer' },
+      privacy_notes: { type: 'string', maxLength: 1000 },
+      context: { type: 'string', maxLength: 2000 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'save_newsletter_revision',
+    actionId: 'save_newsletter_revision',
+    label: 'Newsletter revision update',
+    description: 'Save a scoped newsletter revision preview without returning raw body text or sending/publishing it.',
+    category: 'communications',
+    sideEffectLevel: 'internal_write',
+    requiresConfirmation: true,
+    schema: {
+      body: { type: 'string', required: true, maxLength: 12000 },
+      title: { type: 'string', maxLength: 180 },
+      source_output_id: { type: 'integer' },
+      output_id: { type: 'integer' },
+      job_id: { type: 'integer' },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'select_weekly_update_hero',
+    actionId: 'select_weekly_update_hero',
+    label: 'Weekly update hero update',
+    description: 'Select a scoped weekly update hero preview without sending parent notifications or returning the raw update body.',
+    category: 'parents',
+    sideEffectLevel: 'internal_write',
+    requiresConfirmation: true,
+    schema: {
+      update_id: { type: 'integer', required: true },
+      provider_id: { type: 'integer' },
+      community_id: { type: 'integer' },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'update_provider_profile',
+    actionId: 'update_provider_profile',
+    label: 'Provider profile update',
+    description: 'Update scoped Rabbi provider profile draft fields without public publishing or cross-workspace writes.',
+    category: 'provider_setup',
+    sideEffectLevel: 'internal_write',
+    requiresConfirmation: true,
+    schema: {
+      provider_id: { type: 'integer', required: true },
+      display_name: { type: 'string', maxLength: 180 },
+      summary: { type: 'string', maxLength: 1000 },
+      status: { type: 'string', maxLength: 80 },
+      ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+    },
+  },
+  {
+    name: 'capture_provider_google_business_link',
+    actionId: 'capture_provider_google_business_link',
+    label: 'Provider Google Business link update',
+    description: 'Capture scoped provider Google Business metadata without live Google API use or returning raw URLs/place IDs.',
+    category: 'provider_setup',
+    sideEffectLevel: 'internal_write',
+    requiresConfirmation: true,
+    schema: {
+      provider_id: { type: 'integer' },
+      provider_profile_id: { type: 'integer' },
+      google_business_profile_url: { type: 'string', maxLength: 400 },
+      google_maps_url: { type: 'string', maxLength: 400 },
+      google_place_id: { type: 'string', maxLength: 220 },
+      place_id: { type: 'string', maxLength: 220 },
+      notes: { type: 'string', maxLength: 1000 },
       ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
     },
   },

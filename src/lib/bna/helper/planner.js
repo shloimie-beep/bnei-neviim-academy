@@ -388,6 +388,52 @@ function deterministicPlan(message = '', registry, context = {}) {
       args: { ...previewScopeArgs(text, context), raw_text: text },
       reason: 'Rabbi / One Time ramble distillation request',
     });
+  } else if (isRabbiOneTimeContext(context) && /\b(create|add|make|save)\b.*\b(one time )?(video )?library item\b|\bvideo library card\b/i.test(text)) {
+    const title = previewQuotedText(text) || textAfterIntent(text, /(?:library item|video library card)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, 'One Time video library item');
+    reply = 'I can prepare a scoped One Time video-library item without publishing or returning raw media links.';
+    actions.push({
+      tool: 'create_one_time_video_library_item',
+      label: 'Create One Time video library item',
+      args: {
+        ...previewScopeArgs(text, context),
+        title,
+        source_url: firstMatch(text, /(https?:\/\/[^\s]+)/i) || undefined,
+        release_status: 'draft',
+        rabbi_review_status: 'needs_review',
+        privacy_review_status: 'needs_review',
+      },
+      reason: 'Rabbi / One Time video library item request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(save|store)\b.*\bnewsletter revision\b|\bnewsletter revision\b.*\bsave\b/i.test(text)) {
+    const body = extractBody(text) || textAfterIntent(text, /(?:newsletter revision|body)\s*(?:as|:|-)?\s*([\s\S]+)$/i, text);
+    reply = 'I can save a scoped newsletter revision preview without sending or publishing it.';
+    actions.push({
+      tool: 'save_newsletter_revision',
+      label: 'Save newsletter revision',
+      args: {
+        ...previewScopeArgs(text, context),
+        body,
+        title: previewQuotedText(text) || 'One Time newsletter revision',
+        source_output_id: Number(firstMatch(text, /\b(?:output|source)\s*#?\s*(\d+)\b/i)) || undefined,
+      },
+      reason: 'Rabbi / One Time newsletter revision request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(capture|save|store|attach)\b.*\b(google business|google maps|place id)\b/i.test(text)) {
+    const providerId = Number(firstMatch(text, /\bprovider\s*#?\s*(\d+)\b/i)) || undefined;
+    const googleUrl = firstMatch(text, /(https?:\/\/[^\s]+)/i);
+    const placeId = firstMatch(text, /\bplace\s*id\s*[:#-]?\s*([A-Za-z0-9_-]{6,})\b/i);
+    reply = providerId ? `I can capture scoped Google Business metadata for provider #${providerId} without live Google API use.` : 'I can capture scoped Google Business metadata once the provider ID is supplied.';
+    actions.push({
+      tool: 'capture_provider_google_business_link',
+      label: 'Capture provider Google Business link',
+      args: {
+        ...previewScopeArgs(text, context),
+        provider_id: providerId,
+        google_business_profile_url: googleUrl || undefined,
+        google_place_id: placeId || undefined,
+      },
+      reason: 'Rabbi / One Time provider Google Business metadata request',
+    });
   } else if (/\b(capture|save|remember|raw intake|ramble|transcript|recording|goal mode|set (it|this|that) as a goal|make (it|this|that) a goal|from now on|always|never|every time|do all those things|finish everything)\b/i.test(text)) {
     const tool = scopedTool(registry, context, 'capture_ramble', 'capture_raw_intake');
     reply = 'I can capture this as raw intake, parse it into BNA lanes, and return the raw ID plus counts.';
@@ -827,6 +873,109 @@ function deterministicPlan(message = '', registry, context = {}) {
         message,
       },
       reason: 'Rabbi / One Time provider contact request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(record|save|append)\b.*\bagent result\b|\bagent result\b.*\b(task|job|requirement)\b/i.test(text)) {
+    const taskId = extractTaskIdOrSelected(text, context);
+    const requirementId = firstMatch(text, /\b(REQ-\d{8}-\d{3})\b/i);
+    const summary = textAfterIntent(text, /(?:agent result|result)\s*(?:for)?\s*(?:task\s*#?\d+|job\s*#?\d+|REQ-\d{8}-\d{3})?\s*[:\-]?\s*([\s\S]+)$/i, text);
+    reply = taskId ? `I can record a scoped agent result for task #${taskId}.` : 'I can record a scoped agent result once a task, job, or requirement is supplied.';
+    actions.push({
+      tool: 'record_agent_result',
+      label: 'Record agent result',
+      args: {
+        ...previewScopeArgs(text, context),
+        task_id: taskId || undefined,
+        requirement_id: requirementId || undefined,
+        summary,
+        status: firstMatch(text, /\b(PASS|FAIL|BLOCKED|done|failed|blocked)\b/i) || 'done',
+      },
+      reason: 'Rabbi / One Time agent result recording request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(create|add|make|save)\b.*\b(one time )?(video )?library item\b|\bvideo library card\b/i.test(text)) {
+    const title = previewQuotedText(text) || textAfterIntent(text, /(?:library item|video library card)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, 'One Time video library item');
+    reply = 'I can prepare a scoped One Time video-library item without publishing or returning raw media links.';
+    actions.push({
+      tool: 'create_one_time_video_library_item',
+      label: 'Create One Time video library item',
+      args: {
+        ...previewScopeArgs(text, context),
+        title,
+        source_url: firstMatch(text, /(https?:\/\/[^\s]+)/i) || undefined,
+        release_status: 'draft',
+        rabbi_review_status: 'needs_review',
+        privacy_review_status: 'needs_review',
+      },
+      reason: 'Rabbi / One Time video library item request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(submit|file|save|create)\b.*\b(student )?question\b.*\bmoderation|moderate\b.*\bquestion\b/i.test(text)) {
+    const questionText = textAfterIntent(text, /(?:question|moderation)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, text);
+    reply = 'I can submit a scoped private question for Rabbi moderation without public posting or sending a response.';
+    actions.push({
+      tool: 'submit_student_question_for_moderation',
+      label: 'Submit moderated question',
+      args: {
+        ...previewScopeArgs(text, context),
+        question_text: questionText,
+        title: previewQuotedText(text) || 'One Time moderated question',
+        student_id: extractStudentIdOrSelected(text, context) || undefined,
+      },
+      reason: 'Rabbi / One Time moderated question request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(save|store)\b.*\bnewsletter revision\b|\bnewsletter revision\b.*\bsave\b/i.test(text)) {
+    const body = extractBody(text) || textAfterIntent(text, /(?:newsletter revision|body)\s*(?:as|:|-)?\s*([\s\S]+)$/i, text);
+    reply = 'I can save a scoped newsletter revision preview without sending or publishing it.';
+    actions.push({
+      tool: 'save_newsletter_revision',
+      label: 'Save newsletter revision',
+      args: {
+        ...previewScopeArgs(text, context),
+        body,
+        title: previewQuotedText(text) || 'One Time newsletter revision',
+        source_output_id: Number(firstMatch(text, /\b(?:output|source)\s*#?\s*(\d+)\b/i)) || undefined,
+      },
+      reason: 'Rabbi / One Time newsletter revision request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(select|use|set)\b.*\bweekly update\b.*\b(hero|parent dashboard)\b|\bweekly update hero\b/i.test(text)) {
+    const updateId = Number(firstMatch(text, /\b(?:update|hero)\s*#?\s*(\d+)\b/i)) || Number(firstMatch(text, /\b#?(\d+)\b/)) || undefined;
+    reply = updateId ? `I can preview selecting weekly update #${updateId} for the parent dashboard hero.` : 'I can preview selecting the weekly update hero once its update ID is supplied.';
+    actions.push({
+      tool: 'select_weekly_update_hero',
+      label: 'Select weekly update hero',
+      args: {
+        ...previewScopeArgs(text, context),
+        update_id: updateId,
+      },
+      reason: 'Rabbi / One Time weekly update hero request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(update|edit|change)\b.*\bprovider profile\b|\bprovider profile\b.*\b(update|edit|change)\b/i.test(text)) {
+    const providerId = Number(firstMatch(text, /\bprovider\s*#?\s*(\d+)\b/i)) || undefined;
+    reply = providerId ? `I can preview a scoped provider profile update for provider #${providerId}.` : 'I can preview a scoped provider profile update once the provider ID is supplied.';
+    actions.push({
+      tool: 'update_provider_profile',
+      label: 'Update provider profile',
+      args: {
+        ...previewScopeArgs(text, context),
+        provider_id: providerId,
+        display_name: previewQuotedText(text) || undefined,
+        summary: textAfterIntent(text, /(?:summary|profile)\s*(?:as|:|-)?\s*([\s\S]+)$/i, undefined),
+      },
+      reason: 'Rabbi / One Time provider profile update request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(capture|save|store|attach)\b.*\b(google business|google maps|place id)\b/i.test(text)) {
+    const providerId = Number(firstMatch(text, /\bprovider\s*#?\s*(\d+)\b/i)) || undefined;
+    const googleUrl = firstMatch(text, /(https?:\/\/[^\s]+)/i);
+    const placeId = firstMatch(text, /\bplace\s*id\s*[:#-]?\s*([A-Za-z0-9_-]{6,})\b/i);
+    reply = providerId ? `I can capture scoped Google Business metadata for provider #${providerId} without live Google API use.` : 'I can capture scoped Google Business metadata once the provider ID is supplied.';
+    actions.push({
+      tool: 'capture_provider_google_business_link',
+      label: 'Capture provider Google Business link',
+      args: {
+        ...previewScopeArgs(text, context),
+        provider_id: providerId,
+        google_business_profile_url: googleUrl || undefined,
+        google_place_id: placeId || undefined,
+      },
+      reason: 'Rabbi / One Time provider Google Business metadata request',
     });
   } else if (/\b(save|store|rotate|replace)\b.*\b(api key|apikey|token|secret)\b|\b(api key|token|secret)\b.*\b(save|store|belongs to|for)\b/i.test(text)) {
     const integrationType = guessIntegrationType(text);

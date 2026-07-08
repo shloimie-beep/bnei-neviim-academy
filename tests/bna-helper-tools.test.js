@@ -147,6 +147,13 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
     'request_provider_contact',
     'retitle_task_naturally',
     'update_task_stage',
+    'record_agent_result',
+    'create_one_time_video_library_item',
+    'submit_student_question_for_moderation',
+    'save_newsletter_revision',
+    'select_weekly_update_hero',
+    'update_provider_profile',
+    'capture_provider_google_business_link',
     'create_calendar_event_draft',
     'update_calendar_event_draft',
     'create_shoutout_draft',
@@ -170,10 +177,13 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
       event_id: 44,
       task_id: 44,
       provider_id: 7,
+      update_id: 8,
       option_label: 'Hybrid path',
       new_title: 'Verify One Time calendar',
       stage: 'in_progress',
       note: 'Internal note body should not be returned raw.',
+      summary: 'Agent finished the scoped smoke.',
+      question_text: 'Private question body should not return raw.',
       raw_text: 'Distill this One Time ramble into tasks.',
       message: 'Draft this safely',
       goal: 'Draft parent campaign',
@@ -380,6 +390,13 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
     'request_provider_contact',
     'retitle_task_naturally',
     'update_task_stage',
+    'record_agent_result',
+    'create_one_time_video_library_item',
+    'submit_student_question_for_moderation',
+    'save_newsletter_revision',
+    'select_weekly_update_hero',
+    'update_provider_profile',
+    'capture_provider_google_business_link',
     'create_calendar_event_draft',
     'update_calendar_event_draft',
     'create_shoutout_draft',
@@ -404,10 +421,13 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
         event_id: 44,
         task_id: 44,
         provider_id: 7,
+        update_id: 8,
         option_label: 'Hybrid path',
         new_title: 'Verify One Time calendar',
         stage: 'in_progress',
         note: 'Internal note body should not be returned raw.',
+        summary: 'Agent finished the scoped smoke.',
+        question_text: 'Private question body should not return raw.',
         raw_text: 'Distill this One Time ramble into tasks.',
         message: 'Draft this safely',
         goal: 'Draft parent campaign',
@@ -607,6 +627,13 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(deterministicPlan('request provider 7 contact message please call parent', registry, oneTimeContext).actions[0].tool, 'request_provider_contact');
   assert.equal(deterministicPlan('retitle task 44 to Verify One Time calendar', registry, oneTimeContext).actions[0].tool, 'retitle_task_naturally');
   assert.equal(deterministicPlan('update task 44 stage in_progress', registry, oneTimeContext).actions[0].tool, 'update_task_stage');
+  assert.equal(deterministicPlan('record agent result for task 44: PASS scoped smoke', registry, oneTimeContext).actions[0].tool, 'record_agent_result');
+  assert.equal(deterministicPlan('create One Time video library item "Week 3 recording"', registry, oneTimeContext).actions[0].tool, 'create_one_time_video_library_item');
+  assert.equal(deterministicPlan('submit student question for moderation: why does the Mishnah begin here', registry, oneTimeContext).actions[0].tool, 'submit_student_question_for_moderation');
+  assert.equal(deterministicPlan('save newsletter revision body: this week we reviewed Peah', registry, oneTimeContext).actions[0].tool, 'save_newsletter_revision');
+  assert.equal(deterministicPlan('select weekly update 8 as hero', registry, oneTimeContext).actions[0].tool, 'select_weekly_update_hero');
+  assert.equal(deterministicPlan('update provider profile for provider 7 summary: private One Time class', registry, oneTimeContext).actions[0].tool, 'update_provider_profile');
+  assert.equal(deterministicPlan('capture provider 7 Google Business link https://maps.google.com/?cid=12345', registry, oneTimeContext).actions[0].tool, 'capture_provider_google_business_link');
   assert.equal(deterministicPlan('draft calendar event "Week 1 Mishnah class" on 2026-08-01', registry, oneTimeContext).actions[0].tool, 'create_calendar_event_draft');
   assert.equal(deterministicPlan('update calendar event 44 draft to 2026-08-02', registry, oneTimeContext).actions[0].tool, 'update_calendar_event_draft');
   assert.equal(deterministicPlan('draft shoutout for student 11 about review effort', registry, oneTimeContext).actions[0].tool, 'create_shoutout_draft');
@@ -1549,6 +1576,104 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
   assert.equal(taskStage.data.delegated_action_id, 'update_task_stage');
   assert.equal(taskStage.data.preview.stage, 'in_progress');
   assertScopedInternalPreview(taskStage);
+
+  const agentResult = await registry.execute('record_agent_result', {
+    task_id: 44,
+    summary: 'PASS scoped smoke completed.',
+    status: 'PASS',
+    evidence: ['ops/helper-tool-scope/rabbi-one-time-tool-scope-map.json'],
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    dry_run: true,
+  }, context, db);
+  assert.equal(agentResult.data.delegated_action_id, 'record_agent_result');
+  assert.equal(agentResult.data.preview.task_id, 44);
+  assert.equal(agentResult.data.preview.result_packet_returned, false);
+  assert.equal(agentResult.data.preview.summary_body_returned, false);
+  assertScopedInternalPreview(agentResult);
+
+  const videoLibraryItem = await registry.execute('create_one_time_video_library_item', {
+    title: 'Week 3 recording',
+    source_url: 'https://drive.example/private-video',
+    transcript_text: 'Private transcript text should not return raw.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(videoLibraryItem.data.delegated_action_id, 'create_one_time_video_library_item');
+  assert.equal(videoLibraryItem.data.approval_required, true);
+  assert.equal(videoLibraryItem.data.preview.title, 'Week 3 recording');
+  assert.equal(videoLibraryItem.data.preview.source_url_returned, false);
+  assert.equal(videoLibraryItem.data.preview.media_url_returned, false);
+  assert.equal(videoLibraryItem.data.preview.transcript_text_returned, false);
+  assertScopedInternalPreview(videoLibraryItem);
+
+  const moderatedQuestion = await registry.execute('submit_student_question_for_moderation', {
+    question_text: 'Why does the Mishnah begin here?',
+    student_id: 11,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(moderatedQuestion.data.delegated_action_id, 'submit_student_question_for_moderation');
+  assert.equal(moderatedQuestion.data.approval_required, true);
+  assert.equal(moderatedQuestion.data.preview.question_text_returned, false);
+  assert.equal(moderatedQuestion.data.preview.public_post_created, false);
+  assert.equal(moderatedQuestion.data.preview.response_sent, false);
+  assertScopedInternalPreview(moderatedQuestion);
+
+  const newsletterRevision = await registry.execute('save_newsletter_revision', {
+    body: 'Private newsletter body should not return raw.',
+    title: 'Weekly One Time update',
+    source_output_id: 41,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(newsletterRevision.data.delegated_action_id, 'save_newsletter_revision');
+  assert.equal(newsletterRevision.data.approval_required, true);
+  assert.equal(newsletterRevision.data.preview.body_preview_returned, false);
+  assert.equal(newsletterRevision.data.preview.body_returned, false);
+  assert.equal(newsletterRevision.data.preview.sent, false);
+  assertScopedInternalPreview(newsletterRevision);
+
+  const weeklyHero = await registry.execute('select_weekly_update_hero', {
+    update_id: 8,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(weeklyHero.data.delegated_action_id, 'select_weekly_update_hero');
+  assert.equal(weeklyHero.data.approval_required, true);
+  assert.equal(weeklyHero.data.preview.update_id, 8);
+  assert.equal(weeklyHero.data.preview.parent_notification_sent, false);
+  assert.equal(weeklyHero.data.preview.raw_update_body_returned, false);
+  assertScopedInternalPreview(weeklyHero);
+
+  const providerProfile = await registry.execute('update_provider_profile', {
+    provider_id: 7,
+    display_name: 'Rabbi Scheller One Time',
+    summary: 'Private profile summary should not return raw.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(providerProfile.data.delegated_action_id, 'update_provider_profile');
+  assert.equal(providerProfile.data.approval_required, true);
+  assert.equal(providerProfile.data.preview.provider_id, 7);
+  assert.equal(providerProfile.data.preview.summary_returned, false);
+  assert.equal(providerProfile.data.preview.public_publish_performed, false);
+  assertScopedInternalPreview(providerProfile);
+
+  const googleBusinessLink = await registry.execute('capture_provider_google_business_link', {
+    provider_id: 7,
+    google_business_profile_url: 'https://maps.google.com/?cid=12345',
+    google_place_id: 'private-place-id',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(googleBusinessLink.data.delegated_action_id, 'capture_provider_google_business_link');
+  assert.equal(googleBusinessLink.data.approval_required, true);
+  assert.equal(googleBusinessLink.data.preview.provider_id, 7);
+  assert.equal(googleBusinessLink.data.preview.live_google_api_used, false);
+  assert.equal(googleBusinessLink.data.preview.google_business_profile_url_returned, false);
+  assert.equal(googleBusinessLink.data.preview.google_place_id_returned, false);
+  assertScopedInternalPreview(googleBusinessLink);
 
   await assert.rejects(
     () => registry.execute('draft_email_campaign', {

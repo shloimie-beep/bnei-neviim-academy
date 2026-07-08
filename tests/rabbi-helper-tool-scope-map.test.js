@@ -195,7 +195,7 @@ test('Rabbi helper scope map marks the read-only runtime batch as locally wrappe
     assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
   }
 
-  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 84);
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 97);
 });
 
 test('Rabbi helper scope map marks parent and student summary wrappers as locally wrapper-backed', () => {
@@ -304,6 +304,28 @@ test('Rabbi helper scope map marks internal action wrappers as locally wrapper-b
     assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
     assert.ok(contract.rabbi_contract.negative_tests.some((check) => /workspace_key=bna/i.test(check)));
     assert.match(contract.rabbi_contract.agent_mode_probe.expected_result, /scoped|workspace|no external/i);
+  }
+});
+
+test('Rabbi helper scope map marks content and provider action wrappers as locally wrapper-backed', () => {
+  const contentProviderNames = [
+    'record_agent_result',
+    'create_one_time_video_library_item',
+    'submit_student_question_for_moderation',
+    'save_newsletter_revision',
+    'select_weekly_update_hero',
+    'update_provider_profile',
+    'capture_provider_google_business_link',
+  ];
+  const contentProviderContracts = scopeMap.contracts.filter((contract) => contentProviderNames.includes(contract.source.helper_tool_name));
+  assert.equal(contentProviderContracts.length, 13);
+
+  for (const contract of contentProviderContracts) {
+    assert.equal(contract.rabbi_contract.action_policy, 'internal_write');
+    assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
+    assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
+    assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
+    assert.ok(contract.rabbi_contract.negative_tests.some((check) => /workspace_key=bna/i.test(check)));
   }
 });
 
