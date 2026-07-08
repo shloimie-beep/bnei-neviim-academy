@@ -5,10 +5,10 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 ## Summary
 
 - external_blocker: 26
-- requires_confirmation: 34
-- student_safe_only: 11
-- tool_available: 36
-- tool_needed: 163
+- requires_confirmation: 49
+- student_safe_only: 9
+- tool_available: 41
+- tool_needed: 145
 
 ## Surfaces
 
@@ -43,7 +43,7 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | attach vimeo url | attach_vimeo_url_to_library_item | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | audit queue status | audit_queue_status | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | Capture provider Google Business link | capture_provider_google_business_link | tool_needed | yes | public/operations.html |
-| operations | capture ramble | capture_ramble | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
+| operations | capture ramble | capture_ramble | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | capture raw intake | capture_raw_intake | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | convert decision to task | convert_decision_to_task | tool_available | no | src/lib/bna/helper/tool-registry.js |
 | operations | create accountability note | create_accountability_note | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
@@ -61,7 +61,7 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | Create decision | create_decision | tool_available | no | public/operations.html |
 | operations | create dns setup task | create_dns_setup_task | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | create goal | create_goal | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
-| operations | Create help request | create_help_request | tool_needed | no | public/operations.html |
+| operations | Create help request | create_help_request | requires_confirmation | yes | public/operations.html |
 | operations | create integration setup task | create_integration_setup_task | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | create lesson | create_lesson | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | create library item | create_library_item | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
@@ -76,10 +76,10 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | Create provider class session | create_provider_class_session | tool_needed | no | public/operations.html |
 | operations | Create provider classroom draft | create_provider_classroom_draft | requires_confirmation | yes | public/operations.html |
 | operations | create provider profile | create_provider_profile | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
-| operations | Create Rabbi shiur idea | create_rabbi_shiur_idea | tool_needed | yes | public/operations.html |
-| operations | Create Rabbi source-sheet task | create_rabbi_source_sheet_task | tool_needed | yes | public/operations.html |
+| operations | Create Rabbi shiur idea | create_rabbi_shiur_idea | requires_confirmation | yes | public/operations.html |
+| operations | Create Rabbi source-sheet task | create_rabbi_source_sheet_task | requires_confirmation | yes | public/operations.html |
 | operations | Create referral ledger entry | create_referral_ledger_entry | tool_needed | yes | public/operations.html |
-| operations | Create report-problem ticket | create_report_problem_ticket | tool_needed | no | public/operations.html |
+| operations | Create report-problem ticket | create_report_problem_ticket | requires_confirmation | yes | public/operations.html |
 | operations | create resend setup task | create_integration_setup_task | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | create setup flow | create_setup_flow | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
 | operations | create shoutout draft | create_shoutout_draft | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
@@ -88,7 +88,7 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | Create student schedule item | create_student_schedule_item | external_blocker | no | public/operations.html |
 | operations | create support ticket | create_support_ticket | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | Create task | create_task | tool_available | no | public/operations.html |
-| operations | Create ticket | create_ticket | tool_needed | no | public/operations.html |
+| operations | Create ticket | create_ticket | requires_confirmation | yes | public/operations.html |
 | operations | create vimeo setup task | create_integration_setup_task | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | create wapi setup task | create_integration_setup_task | requires_confirmation | yes | src/lib/bna/helper/tool-registry.js |
 | operations | create worksheet | create_worksheet | tool_needed | yes | src/lib/bna/helper/tool-registry.js |
@@ -102,10 +102,10 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | Draft email campaign | draft_email_campaign | tool_needed | yes | public/operations.html |
 | operations | Draft email from newsletter | draft_email_from_newsletter | tool_needed | no | public/operations.html |
 | operations | draft mishnayos landing page | draft_mishnayos_landing_page | tool_needed | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
-| operations | Draft parent response | draft_parent_response | tool_needed | no | public/operations.html |
+| operations | Draft parent response | draft_parent_response | tool_available | no | public/operations.html |
 | operations | draft payment reminder | draft_payment_reminder | external_blocker | yes | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | draft social post | draft_social_post | tool_available | no | src/lib/bna/helper/tool-registry.js |
-| operations | Draft weekly update | draft_weekly_update | tool_needed | no | public/operations.html |
+| operations | Draft weekly update | draft_weekly_update | tool_available | no | public/operations.html |
 | operations | draft whatsapp | draft_whatsapp | external_blocker | no | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | Find latest newsletter draft | find_latest_newsletter_draft | tool_needed | no | public/operations.html |
 | operations | Generate social posts from newsletter | generate_social_posts_from_newsletter | tool_needed | no | public/operations.html |

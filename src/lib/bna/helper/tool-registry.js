@@ -12,6 +12,8 @@ const { STANDING_GOALS, affectedGoalIdsForText } = require('../goal-registry');
 
 const REQUIRED_HELPER_TOOL_NAMES = [
   'create_task',
+  'create_rabbi_shiur_idea',
+  'create_rabbi_source_sheet_task',
   'update_task',
   'add_task_comment',
   'mark_task_done',
@@ -23,16 +25,24 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'send_decision_to_codex',
   'open_operations_view',
   'create_codex_work_item',
+  'route_bug_to_codex',
   'audit_queue_status',
   'show_task_report',
   'create_support_ticket',
+  'create_report_problem_ticket',
+  'create_ticket',
+  'create_help_request',
   'capture_raw_intake',
+  'capture_ramble',
   'show_goal_status',
+  'show_operating_goals',
   'run_watchdog_audit',
   'create_student',
   'create_content_item',
   'draft_social_post',
   'draft_email',
+  'draft_parent_response',
+  'draft_weekly_update',
   'schedule_social_post_via_buffer',
   'send_email',
   'show_integration_status',
@@ -1101,6 +1111,37 @@ async function captureRawIntakeTool({ args, context, deps, db }) {
   });
 }
 
+function delegatedResult(result, aliasToolName, delegatedToolName, extraData = {}) {
+  const resultData = result?.data && typeof result.data === 'object' && !Array.isArray(result.data)
+    ? result.data
+    : { delegated_result: result?.data || null };
+  return {
+    ...result,
+    tool: aliasToolName,
+    data: {
+      ...resultData,
+      ...extraData,
+      delegated_tool: delegatedToolName,
+    },
+  };
+}
+
+async function captureRambleTool(payload) {
+  const { args } = payload;
+  const result = await captureRawIntakeTool({
+    ...payload,
+    args: {
+      raw_text: args.raw_text || args.text || args.message || args.prompt,
+      source_type: args.source_type || 'operations_helper',
+      source_channel: args.source_channel || 'operations_helper',
+      source_date: args.source_date || null,
+      intake_type: args.intake_type || 'helper',
+      project_key: args.project_key || undefined,
+    },
+  });
+  return delegatedResult(result, 'capture_ramble', 'capture_raw_intake');
+}
+
 async function showGoalStatusTool({ args }) {
   const related = args.text ? affectedGoalIdsForText(args.text) : [];
   const goals = related.length
@@ -1119,6 +1160,14 @@ async function showGoalStatusTool({ args }) {
       source: 'QUALITY-GOALS.md',
     },
   });
+}
+
+async function showOperatingGoalsTool(payload) {
+  const result = await showGoalStatusTool({
+    ...payload,
+    args: { text: payload.args.text || payload.args.goal_text || '' },
+  });
+  return delegatedResult(result, 'show_operating_goals', 'show_goal_status');
 }
 
 async function runWatchdogAuditTool({ args, context, deps, db }) {
@@ -1182,6 +1231,53 @@ async function createTaskTool({ args, context, deps, db }) {
   });
 }
 
+function rabbiProjectKey(args = {}, context = {}) {
+  return args.project_key || context.projectKey || 'one_time_mishnah_class';
+}
+
+async function createRabbiTaskAliasTool(payload, aliasToolName, defaults) {
+  const { args, context } = payload;
+  const title = compactText(args.title || args.topic || args.idea || args.prompt || defaults.title, 240);
+  const notes = [
+    args.notes || args.raw_text || args.prompt || args.idea || args.topic || '',
+    defaults.notes || '',
+    'Created through a Rabbi / One Time scoped natural-language helper alias.',
+  ].filter(Boolean).join('\n');
+  const result = await createTaskTool({
+    ...payload,
+    args: {
+      title,
+      notes,
+      summary: args.summary || defaults.summary || null,
+      assigned_to: args.assigned_to || 'Shloimie',
+      category: defaults.category,
+      urgency: args.urgency || 'this_week',
+      stage: args.stage || 'assigned',
+      due_date: args.due_date || null,
+      project_key: rabbiProjectKey(args, context),
+    },
+  });
+  return delegatedResult(result, aliasToolName, 'create_task', {
+    rabbi_alias_category: defaults.category,
+  });
+}
+
+async function createRabbiShiurIdeaTool(payload) {
+  return createRabbiTaskAliasTool(payload, 'create_rabbi_shiur_idea', {
+    title: 'Rabbi shiur idea',
+    category: 'shiur_ideas',
+    summary: 'Rabbi / One Time shiur idea task.',
+  });
+}
+
+async function createRabbiSourceSheetTaskTool(payload) {
+  return createRabbiTaskAliasTool(payload, 'create_rabbi_source_sheet_task', {
+    title: 'Prepare Rabbi source sheet',
+    category: 'source_sheets',
+    summary: 'Rabbi / One Time source sheet task.',
+  });
+}
+
 async function createCodexWorkItemTool({ args, context, deps, db }) {
   const brief = compactText(args.brief || args.notes || args.title, 10000);
   const task = await deps.createTaskFromText({
@@ -1207,6 +1303,29 @@ async function createCodexWorkItemTool({ args, context, deps, db }) {
     summary: `Created Codex work item #${task.id}.`,
     data: { task },
   });
+}
+
+async function routeBugToCodexTool(payload) {
+  const { args, context } = payload;
+  const title = compactText(args.title || args.issue || args.description || 'Route Rabbi helper issue to Codex', 240);
+  const brief = [
+    args.description || args.issue || args.notes || title,
+    args.expected ? `Expected: ${args.expected}` : '',
+    args.actual ? `Actual: ${args.actual}` : '',
+    'Scope: Rabbi Scheller / One Time only. Do not touch BNA Academy or unrelated provider data.',
+  ].filter(Boolean).join('\n');
+  const result = await createCodexWorkItemTool({
+    ...payload,
+    args: {
+      title,
+      brief,
+      summary: args.summary || 'Rabbi / One Time helper issue routed to Codex.',
+      category: 'technology',
+      urgency: args.urgency || 'this_week',
+      project_key: rabbiProjectKey(args, context),
+    },
+  });
+  return delegatedResult(result, 'route_bug_to_codex', 'create_codex_work_item');
 }
 
 async function updateTaskTool({ args, context, deps, db }) {
@@ -1578,6 +1697,35 @@ async function createSupportTicketTool({ args, context, deps, db }) {
   });
 }
 
+async function supportTicketAliasTool(payload, aliasToolName, fallbackTitle) {
+  const { args, context } = payload;
+  const result = await createSupportTicketTool({
+    ...payload,
+    args: {
+      title: compactText(args.title || args.issue || args.description || fallbackTitle, 180),
+      description: args.description || args.issue || args.body || args.notes || fallbackTitle,
+      expected: args.expected || null,
+      severity: args.severity || 'normal',
+      category: args.category || 'task_manager',
+      assigned_to: args.assigned_to || null,
+      project_key: rabbiProjectKey(args, context),
+    },
+  });
+  return delegatedResult(result, aliasToolName, 'create_support_ticket');
+}
+
+async function createReportProblemTicketTool(payload) {
+  return supportTicketAliasTool(payload, 'create_report_problem_ticket', 'Rabbi helper problem report');
+}
+
+async function createTicketTool(payload) {
+  return supportTicketAliasTool(payload, 'create_ticket', 'Rabbi helper ticket');
+}
+
+async function createHelpRequestTool(payload) {
+  return supportTicketAliasTool(payload, 'create_help_request', 'Rabbi helper help request');
+}
+
 async function showTaskReportTool({ args, context, db }) {
   const params = [];
   const conditions = [];
@@ -1829,6 +1977,38 @@ async function draftEmailTool({ args }) {
   });
 }
 
+async function draftParentResponseTool(payload) {
+  const { args } = payload;
+  const result = await draftEmailTool({
+    args: {
+      to: args.to || args.parent_email || '',
+      subject: args.subject || 'One Time parent response draft',
+      body: args.body || args.message || args.notes || args.prompt || 'Draft parent response for review.',
+      purpose: args.purpose || 'rabbi_parent_response_draft',
+    },
+  });
+  return delegatedResult(result, 'draft_parent_response', 'draft_email', {
+    draft_scope: 'provider_visible_parent_summary_only',
+    sent: false,
+  });
+}
+
+async function draftWeeklyUpdateTool(payload) {
+  const { args } = payload;
+  const result = await draftEmailTool({
+    args: {
+      to: args.to || args.recipient_segment || '',
+      subject: args.subject || 'One Time weekly update draft',
+      body: args.body || args.update || args.notes || args.prompt || 'Draft weekly update for review.',
+      purpose: args.purpose || 'rabbi_weekly_update_draft',
+    },
+  });
+  return delegatedResult(result, 'draft_weekly_update', 'draft_email', {
+    draft_scope: 'one_time_provider_update',
+    sent: false,
+  });
+}
+
 async function scheduleSocialPostViaBufferTool({ args, context, deps, db }) {
   const blocker = await createSetupBlocker({
     deps,
@@ -1960,6 +2140,24 @@ function buildToolRegistry(deps = {}) {
       },
     }, captureRawIntakeTool),
     makeDefinition({
+      name: 'capture_ramble',
+      description: 'Capture a Rabbi / One Time ramble as raw intake and parse it into BNA lanes.',
+      category: 'intake',
+      risk: 'medium',
+      schema: {
+        raw_text: { type: 'string', maxLength: 20000 },
+        text: { type: 'string', maxLength: 20000 },
+        message: { type: 'string', maxLength: 20000 },
+        prompt: { type: 'string', maxLength: 20000 },
+        source_type: { type: 'string', maxLength: 80, default: 'operations_helper' },
+        source_channel: { type: 'string', maxLength: 80, default: 'operations_helper' },
+        source_date: { type: 'string', maxLength: 40 },
+        intake_type: { type: 'string', maxLength: 80, default: 'helper' },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, captureRambleTool),
+    makeDefinition({
       name: 'show_goal_status',
       description: 'Show standing BNA goals or goals related to supplied text.',
       category: 'watchdog',
@@ -1968,6 +2166,18 @@ function buildToolRegistry(deps = {}) {
         goal_id: { type: 'string', maxLength: 80 },
       },
     }, showGoalStatusTool),
+    makeDefinition({
+      name: 'show_operating_goals',
+      description: 'Show operating and quality goals relevant to the Rabbi / One Time helper scope.',
+      category: 'watchdog',
+      sideEffectLevel: 'read_only',
+      schema: {
+        text: { type: 'string', maxLength: 4000 },
+        goal_text: { type: 'string', maxLength: 4000 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, showOperatingGoalsTool),
     makeDefinition({
       name: 'run_watchdog_audit',
       description: 'Create a Codex-owned request to run a local-safe watchdog audit.',
@@ -1998,6 +2208,45 @@ function buildToolRegistry(deps = {}) {
         project_key: { type: 'string', maxLength: 120 },
       },
     }, createTaskTool),
+    makeDefinition({
+      name: 'create_rabbi_shiur_idea',
+      description: 'Create a Rabbi / One Time shiur idea task from natural language.',
+      category: 'tasks',
+      schema: {
+        title: { type: 'string', maxLength: 240 },
+        topic: { type: 'string', maxLength: 240 },
+        idea: { type: 'string', maxLength: 4000 },
+        prompt: { type: 'string', maxLength: 4000 },
+        raw_text: { type: 'string', maxLength: 4000 },
+        notes: { type: 'string', maxLength: 10000 },
+        summary: { type: 'string', maxLength: 1000 },
+        assigned_to: { type: 'string', maxLength: 120 },
+        urgency: { type: 'string', maxLength: 40, default: 'this_week' },
+        stage: { type: 'string', maxLength: 40, default: 'assigned' },
+        due_date: { type: 'string', maxLength: 40 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, createRabbiShiurIdeaTool),
+    makeDefinition({
+      name: 'create_rabbi_source_sheet_task',
+      description: 'Create a Rabbi / One Time source sheet preparation task from natural language.',
+      category: 'tasks',
+      schema: {
+        title: { type: 'string', maxLength: 240 },
+        topic: { type: 'string', maxLength: 240 },
+        prompt: { type: 'string', maxLength: 4000 },
+        raw_text: { type: 'string', maxLength: 4000 },
+        notes: { type: 'string', maxLength: 10000 },
+        summary: { type: 'string', maxLength: 1000 },
+        assigned_to: { type: 'string', maxLength: 120 },
+        urgency: { type: 'string', maxLength: 40, default: 'this_week' },
+        stage: { type: 'string', maxLength: 40, default: 'assigned' },
+        due_date: { type: 'string', maxLength: 40 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, createRabbiSourceSheetTaskTool),
     makeDefinition({
       name: 'update_task',
       description: 'Update a task title, status, assignment, notes, or due date.',
@@ -2135,6 +2384,23 @@ function buildToolRegistry(deps = {}) {
       },
     }, createCodexWorkItemTool),
     makeDefinition({
+      name: 'route_bug_to_codex',
+      description: 'Route a Rabbi / One Time bug or helper issue to Codex as a scoped work item.',
+      category: 'codex',
+      schema: {
+        title: { type: 'string', maxLength: 240 },
+        issue: { type: 'string', maxLength: 4000 },
+        description: { type: 'string', maxLength: 4000 },
+        expected: { type: 'string', maxLength: 2000 },
+        actual: { type: 'string', maxLength: 2000 },
+        notes: { type: 'string', maxLength: 4000 },
+        summary: { type: 'string', maxLength: 1000 },
+        urgency: { type: 'string', maxLength: 40, default: 'this_week' },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, routeBugToCodexTool),
+    makeDefinition({
       name: 'audit_queue_status',
       description: 'Show Codex queue status.',
       category: 'codex',
@@ -2165,6 +2431,29 @@ function buildToolRegistry(deps = {}) {
         project_key: { type: 'string', maxLength: 120 },
       },
     }, createSupportTicketTool),
+    ...[
+      ['create_report_problem_ticket', 'Create a Rabbi / One Time problem-report ticket.', createReportProblemTicketTool],
+      ['create_ticket', 'Create a Rabbi / One Time support ticket.', createTicketTool],
+      ['create_help_request', 'Create a Rabbi / One Time help-request ticket.', createHelpRequestTool],
+    ].map(([name, description, handler]) => makeDefinition({
+      name,
+      description,
+      category: 'support',
+      risk: 'medium',
+      schema: {
+        title: { type: 'string', maxLength: 180 },
+        issue: { type: 'string', maxLength: 4000 },
+        description: { type: 'string', maxLength: 4000 },
+        body: { type: 'string', maxLength: 4000 },
+        notes: { type: 'string', maxLength: 4000 },
+        expected: { type: 'string', maxLength: 2000 },
+        severity: { type: 'string', maxLength: 40, default: 'normal' },
+        category: { type: 'string', maxLength: 80, default: 'task_manager' },
+        assigned_to: { type: 'string', maxLength: 120 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, handler)),
     makeDefinition({
       name: 'create_student',
       description: 'Create a BNA student record.',
@@ -2225,6 +2514,42 @@ function buildToolRegistry(deps = {}) {
         purpose: { type: 'string', maxLength: 240 },
       },
     }, draftEmailTool),
+    makeDefinition({
+      name: 'draft_parent_response',
+      description: 'Prepare a provider-visible parent response draft without sending email.',
+      category: 'communications',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        to: { type: 'string', maxLength: 240 },
+        parent_email: { type: 'string', maxLength: 240 },
+        subject: { type: 'string', maxLength: 240 },
+        body: { type: 'string', maxLength: 10000 },
+        message: { type: 'string', maxLength: 10000 },
+        notes: { type: 'string', maxLength: 10000 },
+        prompt: { type: 'string', maxLength: 10000 },
+        purpose: { type: 'string', maxLength: 240 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, draftParentResponseTool),
+    makeDefinition({
+      name: 'draft_weekly_update',
+      description: 'Prepare a Rabbi / One Time weekly update draft without sending it.',
+      category: 'communications',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        to: { type: 'string', maxLength: 240 },
+        recipient_segment: { type: 'string', maxLength: 240 },
+        subject: { type: 'string', maxLength: 240 },
+        body: { type: 'string', maxLength: 10000 },
+        update: { type: 'string', maxLength: 10000 },
+        notes: { type: 'string', maxLength: 10000 },
+        prompt: { type: 'string', maxLength: 10000 },
+        purpose: { type: 'string', maxLength: 240 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, draftWeeklyUpdateTool),
     makeDefinition({
       name: 'schedule_social_post_via_buffer',
       description: 'Schedule through Buffer only if a real Buffer scheduling adapter is configured.',

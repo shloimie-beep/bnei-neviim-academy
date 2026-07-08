@@ -195,16 +195,18 @@
   {
     "surface": "operations",
     "label": "capture ramble",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
     "helper_tool_name": "capture_ramble",
     "scope_rules": [
-      "admin/super_admin or scoped workspace login required"
+      "admin/super_admin or scoped workspace login required",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write"
     ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Helper registry tool with side effect internal_write."
   },
   {
     "surface": "operations",
@@ -473,11 +475,13 @@
     "helper_tool_name": "create_help_request",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write",
       "roles:parent,student,super_admin,platform_manager,support_admin,technical_agent"
     ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action create_help_request has no direct helper wrapper yet."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_help_request maps to helper tool create_help_request."
   },
   {
     "surface": "operations",
@@ -702,11 +706,12 @@
     "helper_tool_name": "create_rabbi_shiur_idea",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:internal_write",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action create_rabbi_shiur_idea has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action create_rabbi_shiur_idea maps to helper tool create_rabbi_shiur_idea."
   },
   {
     "surface": "operations",
@@ -717,11 +722,12 @@
     "helper_tool_name": "create_rabbi_source_sheet_task",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:internal_write",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action create_rabbi_source_sheet_task has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action create_rabbi_source_sheet_task maps to helper tool create_rabbi_source_sheet_task."
   },
   {
     "surface": "operations",
@@ -747,11 +753,13 @@
     "helper_tool_name": "create_report_problem_ticket",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write",
       "roles:parent,student,super_admin,platform_manager,support_admin,technical_agent"
     ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action create_report_problem_ticket has no direct helper wrapper yet."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_report_problem_ticket maps to helper tool create_report_problem_ticket."
   },
   {
     "surface": "operations",
@@ -887,11 +895,13 @@
     "helper_tool_name": "create_ticket",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write",
       "roles:parent,student,provider_admin,provider_manager,super_admin,platform_manager"
     ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action create_ticket has no direct helper wrapper yet."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_ticket maps to helper tool create_ticket."
   },
   {
     "surface": "operations",
@@ -1099,11 +1109,12 @@
     "helper_tool_name": "draft_parent_response",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:draft_only",
       "roles:parent,super_admin,platform_manager,support_admin,technical_agent,admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action draft_parent_response has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action draft_parent_response maps to helper tool draft_parent_response."
   },
   {
     "surface": "operations",
@@ -1143,11 +1154,12 @@
     "helper_tool_name": "draft_weekly_update",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action draft_weekly_update has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action draft_weekly_update maps to helper tool draft_weekly_update."
   },
   {
     "surface": "operations",
@@ -1935,11 +1947,12 @@
     "helper_tool_name": "route_bug_to_codex",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:internal_write",
       "roles:super_admin,admin,operator,technical_agent,system"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action route_bug_to_codex has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action route_bug_to_codex maps to helper tool route_bug_to_codex."
   },
   {
     "surface": "operations",
@@ -2264,16 +2277,17 @@
   {
     "surface": "operations",
     "label": "show operating goals",
-    "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-    "api_endpoint": "",
-    "method": "",
+    "current_file": "src/lib/bna/helper/tool-registry.js",
+    "api_endpoint": "/api/bna/helper/message",
+    "method": "POST",
     "helper_tool_name": "show_operating_goals",
     "scope_rules": [
-      "admin/super_admin or scoped workspace login required"
+      "admin/super_admin or scoped workspace login required",
+      "side_effect:read_only"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+    "status": "tool_available",
+    "notes": "Helper registry tool with side effect read_only."
   },
   {
     "surface": "operations",
@@ -2670,11 +2684,13 @@
     "helper_tool_name": "create_help_request",
     "scope_rules": [
       "own family and parent-visible records only",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write",
       "roles:parent,student,super_admin,platform_manager,support_admin,technical_agent"
     ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action create_help_request has no direct helper wrapper yet."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_help_request maps to helper tool create_help_request."
   },
   {
     "surface": "parent",
@@ -2728,11 +2744,13 @@
     "helper_tool_name": "create_report_problem_ticket",
     "scope_rules": [
       "own family and parent-visible records only",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write",
       "roles:parent,student,super_admin,platform_manager,support_admin,technical_agent"
     ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action create_report_problem_ticket has no direct helper wrapper yet."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_report_problem_ticket maps to helper tool create_report_problem_ticket."
   },
   {
     "surface": "parent",
@@ -2743,11 +2761,13 @@
     "helper_tool_name": "create_ticket",
     "scope_rules": [
       "own family and parent-visible records only",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write",
       "roles:parent,student,provider_admin,provider_manager,super_admin,platform_manager"
     ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action create_ticket has no direct helper wrapper yet."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_ticket maps to helper tool create_ticket."
   },
   {
     "surface": "parent",
@@ -2773,11 +2793,12 @@
     "helper_tool_name": "draft_parent_response",
     "scope_rules": [
       "own family and parent-visible records only",
+      "side_effect:draft_only",
       "roles:parent,super_admin,platform_manager,support_admin,technical_agent,admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action draft_parent_response has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action draft_parent_response maps to helper tool draft_parent_response."
   },
   {
     "surface": "parent",
@@ -2803,11 +2824,12 @@
     "helper_tool_name": "draft_weekly_update",
     "scope_rules": [
       "own family and parent-visible records only",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action draft_weekly_update has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action draft_weekly_update maps to helper tool draft_weekly_update."
   },
   {
     "surface": "parent",
@@ -3131,11 +3153,12 @@
     "helper_tool_name": "create_rabbi_shiur_idea",
     "scope_rules": [
       "provider workspace only; no other providers or BNA private student data",
+      "side_effect:internal_write",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action create_rabbi_shiur_idea has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action create_rabbi_shiur_idea maps to helper tool create_rabbi_shiur_idea."
   },
   {
     "surface": "provider",
@@ -3146,11 +3169,12 @@
     "helper_tool_name": "create_rabbi_source_sheet_task",
     "scope_rules": [
       "provider workspace only; no other providers or BNA private student data",
+      "side_effect:internal_write",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action create_rabbi_source_sheet_task has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action create_rabbi_source_sheet_task maps to helper tool create_rabbi_source_sheet_task."
   },
   {
     "surface": "provider",
@@ -3176,11 +3200,13 @@
     "helper_tool_name": "create_ticket",
     "scope_rules": [
       "provider workspace only; no other providers or BNA private student data",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write",
       "roles:parent,student,provider_admin,provider_manager,super_admin,platform_manager"
     ],
-    "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action create_ticket has no direct helper wrapper yet."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_ticket maps to helper tool create_ticket."
   },
   {
     "surface": "provider",
@@ -3716,11 +3742,13 @@
     "helper_tool_name": "create_help_request",
     "scope_rules": [
       "student-safe own records only",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write",
       "roles:parent,student,super_admin,platform_manager,support_admin,technical_agent"
     ],
-    "confirmation_required": false,
-    "status": "student_safe_only",
-    "notes": "Typed action create_help_request has no direct helper wrapper yet."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_help_request maps to helper tool create_help_request."
   },
   {
     "surface": "student",
@@ -3746,11 +3774,13 @@
     "helper_tool_name": "create_report_problem_ticket",
     "scope_rules": [
       "student-safe own records only",
+      "explicit confirmation required before execution",
+      "side_effect:internal_write",
       "roles:parent,student,super_admin,platform_manager,support_admin,technical_agent"
     ],
-    "confirmation_required": false,
-    "status": "student_safe_only",
-    "notes": "Typed action create_report_problem_ticket has no direct helper wrapper yet."
+    "confirmation_required": true,
+    "status": "requires_confirmation",
+    "notes": "Typed action create_report_problem_ticket maps to helper tool create_report_problem_ticket."
   },
   {
     "surface": "student",

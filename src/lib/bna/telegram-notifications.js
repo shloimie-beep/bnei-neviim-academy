@@ -39,6 +39,13 @@ function supportTicketAlertsEnabled(env = process.env) {
   return String(env.NODE_ENV || '').toLowerCase() === 'production' || Boolean(env.RAILWAY_ENVIRONMENT || env.RAILWAY_SERVICE_ID);
 }
 
+function rabbiCommunicationAlertsEnabled(env = process.env) {
+  const configured = env.TELEGRAM_RABBI_COMMUNICATION_ALERTS_ENABLED || env.RABBI_TELEGRAM_COMMUNICATION_ALERTS_ENABLED;
+  if (explicitlyFalse(configured)) return false;
+  if (truthy(configured)) return true;
+  return String(env.NODE_ENV || '').toLowerCase() === 'production' || Boolean(env.RAILWAY_ENVIRONMENT || env.RAILWAY_SERVICE_ID);
+}
+
 function loadTelegramNotificationConfig({ env = process.env, secretsDir = defaultSecretsDir } = {}) {
   const superAdminToken = firstConfigured([
     env.TELEGRAM_BOT_TOKEN_BNA,
@@ -75,6 +82,7 @@ function loadTelegramNotificationConfig({ env = process.env, secretsDir = defaul
 
   return {
     ticket_alerts_enabled: supportTicketAlertsEnabled(env),
+    rabbi_communication_alerts_enabled: rabbiCommunicationAlertsEnabled(env),
     super_admin: {
       token_configured: Boolean(superAdminToken),
       chat_id_configured: Boolean(superAdminChatId),
@@ -100,6 +108,7 @@ function loadTelegramNotificationConfig({ env = process.env, secretsDir = defaul
 function redactTelegramConfig(config = {}) {
   return {
     ticket_alerts_enabled: Boolean(config.ticket_alerts_enabled),
+    rabbi_communication_alerts_enabled: Boolean(config.rabbi_communication_alerts_enabled),
     super_admin: {
       token_configured: Boolean(config.super_admin?.token_configured),
       chat_id_configured: Boolean(config.super_admin?.chat_id_configured),
@@ -136,6 +145,31 @@ function projectKeyForTicket(ticket = {}, context = {}) {
   ).trim() || 'unknown_project';
 }
 
+function workspaceKeyForCommunication(communication = {}, context = {}) {
+  return String(
+    communication.workspace_key ||
+    communication.workspaceKey ||
+    context.workspace_key ||
+    context.workspaceKey ||
+    ''
+  ).trim() || 'unknown_workspace';
+}
+
+function projectKeyForCommunication(communication = {}, context = {}) {
+  return String(
+    communication.project_key ||
+    communication.projectKey ||
+    context.project_key ||
+    context.projectKey ||
+    ''
+  ).trim() || 'unknown_project';
+}
+
+function isRabbiOneTimeCommunication(communication = {}, context = {}) {
+  return workspaceKeyForCommunication(communication, context) === 'rabbi_sheller_provider'
+    && projectKeyForCommunication(communication, context) === 'one_time_mishnah_class';
+}
+
 function compactLine(value, fallback, maxLength = 220) {
   const text = previewMessage(redactText(String(value || '').replace(/\s+/g, ' ').trim()), maxLength);
   return text || fallback;
@@ -158,6 +192,45 @@ function formatSupportTicketTelegramAlert({ ticket = {}, context = {} } = {}) {
     `- Severity: ${severity}`,
     `- Category: ${category}`,
     `- Title: ${title}`,
+    `- Source: ${source}`,
+    `- Review: ${reviewPath}`,
+  ].join('\n');
+}
+
+function formatRabbiCommunicationTelegramAlert({ communication = {}, context = {} } = {}) {
+  const communicationLabel = communication.communication_id || communication.communicationId || communication.id
+    ? `#${communication.communication_id || communication.communicationId || communication.id}`
+    : 'new communication';
+  const channel = compactLine(communication.channel || context.channel, 'message', 80);
+  const direction = compactLine(communication.direction || context.direction, 'inbound', 80);
+  const subject = compactLine(communication.subject || communication.summary || context.subject || context.summary, 'OneTime communication received', 180);
+  const contact = compactLine(
+    communication.contact_label ||
+      communication.contactLabel ||
+      communication.parent_name ||
+      communication.parentName ||
+      communication.from_name ||
+      communication.fromName ||
+      communication.push_name ||
+      communication.pushName ||
+      context.contact_label ||
+      context.contactLabel,
+    'OneTime contact',
+    140
+  );
+  const workspaceKey = workspaceKeyForCommunication(communication, context);
+  const projectKey = projectKeyForCommunication(communication, context);
+  const source = compactLine(context.source || communication.source || communication.communication_type || 'rabbi_communication', 'rabbi_communication', 120);
+  const reviewPath = context.review_path || context.reviewPath || '/provider.html?admin_provider=one-time&section=mailbox';
+
+  return [
+    'OneTime communication received',
+    `- Communication: ${communicationLabel}`,
+    `- Scope: ${workspaceKey} / ${projectKey}`,
+    `- Channel: ${channel}`,
+    `- Direction: ${direction}`,
+    `- Contact: ${contact}`,
+    `- Subject: ${subject}`,
     `- Source: ${source}`,
     `- Review: ${reviewPath}`,
   ].join('\n');
@@ -188,6 +261,71 @@ async function sendTelegramMessage({ token, chatId, text, fetchImpl = global.fet
     };
   }
   return { sent: true, skipped: false, status: response.status };
+}
+
+async function notifyRabbiCommunication({
+  communication = {},
+  context = {},
+  env = process.env,
+  secretsDir = defaultSecretsDir,
+  fetchImpl = global.fetch,
+  dryRun = false,
+} = {}) {
+  const config = loadTelegramNotificationConfig({ env, secretsDir });
+  const text = formatRabbiCommunicationTelegramAlert({ communication, context });
+  const target = config.rabbi_elie_scheller || {};
+  const telegramTargetReady = Boolean(target.token && target.chat_id);
+  if (!isRabbiOneTimeCommunication(communication, context)) {
+    return {
+      attempted: false,
+      sent: false,
+      would_send: false,
+      blocker: 'not_rabbi_onetime_communication_scope',
+      text,
+      config: redactTelegramConfig(config),
+    };
+  }
+  if (!config.rabbi_communication_alerts_enabled) {
+    return {
+      attempted: false,
+      sent: false,
+      would_send: false,
+      blocker: 'rabbi_communication_telegram_alerts_disabled',
+      text,
+      config: redactTelegramConfig(config),
+    };
+  }
+  if (!telegramTargetReady) {
+    return {
+      attempted: false,
+      sent: false,
+      would_send: false,
+      blocker: 'rabbi_telegram_target_not_configured',
+      text,
+      config: redactTelegramConfig(config),
+    };
+  }
+  if (dryRun) {
+    return {
+      attempted: false,
+      sent: false,
+      would_send: true,
+      text,
+      config: redactTelegramConfig(config),
+    };
+  }
+  const sendResult = await sendTelegramMessage({
+    token: target.token,
+    chatId: target.chat_id,
+    text,
+    fetchImpl,
+  });
+  return {
+    attempted: true,
+    text,
+    config: redactTelegramConfig(config),
+    ...sendResult,
+  };
 }
 
 async function notifySuperAdminSupportTicket({
@@ -266,9 +404,13 @@ function buildRabbiTelegramReadiness({ env = process.env, secretsDir = defaultSe
 module.exports = {
   buildRabbiTelegramReadiness,
   compactLine,
+  formatRabbiCommunicationTelegramAlert,
   formatSupportTicketTelegramAlert,
+  isRabbiOneTimeCommunication,
   loadTelegramNotificationConfig,
+  notifyRabbiCommunication,
   notifySuperAdminSupportTicket,
+  rabbiCommunicationAlertsEnabled,
   redactTelegramConfig,
   sendTelegramMessage,
   supportTicketAlertsEnabled,

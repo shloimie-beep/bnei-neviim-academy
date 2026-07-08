@@ -1,5 +1,7 @@
 const TASK_SCOPE_TOOLS = new Set([
   'create_task',
+  'create_rabbi_shiur_idea',
+  'create_rabbi_source_sheet_task',
   'update_task',
   'add_task_comment',
   'mark_task_done',
@@ -11,11 +13,17 @@ const TASK_SCOPE_TOOLS = new Set([
   'send_decision_to_codex',
   'open_operations_view',
   'create_codex_work_item',
+  'route_bug_to_codex',
   'audit_queue_status',
   'show_task_report',
   'create_support_ticket',
+  'create_report_problem_ticket',
+  'create_ticket',
+  'create_help_request',
   'capture_raw_intake',
+  'capture_ramble',
   'show_goal_status',
+  'show_operating_goals',
   'run_watchdog_audit',
   'show_integration_status',
   'create_integration_setup_task',
@@ -30,6 +38,8 @@ const TASK_SCOPE_TOOLS = new Set([
   'create_provider_classroom_draft',
   'mark_manual_vimeo_upload_needed',
   'attach_vimeo_url_to_library_item',
+  'draft_parent_response',
+  'draft_weekly_update',
 ]);
 
 const PROVIDER_SCOPE_TOOLS = new Set([

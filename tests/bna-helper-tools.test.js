@@ -78,6 +78,17 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
   assert.equal(validTask.ok, true);
   assert.equal(validTask.args.title, 'Prepare source sheet');
 
+  assert.equal(registry.validate('create_rabbi_source_sheet_task', {
+    title: 'Prepare sources for Mishnah Peah',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }).ok, true);
+  assert.equal(registry.validate('draft_parent_response', {
+    body: 'We will review the question after class.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }).ok, true);
+
   const validClassroomDraft = registry.validate('create_provider_classroom_draft', {
     title: 'Rabbi classroom draft',
     raw_prompt: 'Start an 8-class private Rabbi Q&A classroom',
@@ -216,6 +227,18 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
     true
   );
   assert.equal(
+    helperPermissionForTool(registry.get('create_rabbi_source_sheet_task'), context, { project_key: 'one_time_mishnah_class' }).allowed,
+    true
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('draft_parent_response'), context, { project_key: 'one_time_mishnah_class' }).allowed,
+    true
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('route_bug_to_codex'), context, { project_key: 'one_time_mishnah_class' }).allowed,
+    true
+  );
+  assert.equal(
     helperPermissionForTool(registry.get('create_automation'), context, { project_key: 'one_time_mishnah_class' }).allowed,
     true
   );
@@ -233,6 +256,10 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
   );
   assert.equal(
     helperPermissionForTool(registry.get('create_task'), context, { project_key: 'bna' }).allowed,
+    false
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('create_rabbi_source_sheet_task'), context, { project_key: 'bna' }).allowed,
     false
   );
 });
@@ -315,6 +342,135 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(automationUpdatePlan.actions[0].tool, 'update_automation');
   assert.equal(automationUpdatePlan.actions[0].args.automation_id, 42);
   assert.equal(automationUpdatePlan.actions[0].args.enabled, false);
+
+  const oneTimeContext = { projectKey: 'one_time_mishnah_class', workspaceKey: 'rabbi_sheller_provider' };
+  assert.equal(deterministicPlan('capture this ramble: make the bot scoped for the rabbi', registry, oneTimeContext).actions[0].tool, 'capture_ramble');
+  assert.equal(deterministicPlan('show operating goals for this bot', registry, oneTimeContext).actions[0].tool, 'show_operating_goals');
+  assert.equal(deterministicPlan('create source sheet task for Mishnah Peah class three', registry, oneTimeContext).actions[0].tool, 'create_rabbi_source_sheet_task');
+  assert.equal(deterministicPlan('create shiur idea about reviewing the first perek', registry, oneTimeContext).actions[0].tool, 'create_rabbi_shiur_idea');
+  assert.equal(deterministicPlan('route bug to Codex: the One Time calendar page is broken', registry, oneTimeContext).actions[0].tool, 'route_bug_to_codex');
+  assert.equal(deterministicPlan('draft parent response about tonight class reminder', registry, oneTimeContext).actions[0].tool, 'draft_parent_response');
+  assert.equal(deterministicPlan('draft weekly update about the review goals', registry, oneTimeContext).actions[0].tool, 'draft_weekly_update');
+  assert.equal(deterministicPlan('create help request because the Rabbi login is confusing', registry, oneTimeContext).actions[0].tool, 'create_help_request');
+});
+
+test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reject cross-scope execution', async () => {
+  const createdTasks = [];
+  const deps = {
+    createTaskFromText: async (input) => {
+      const task = {
+        id: createdTasks.length + 1,
+        title: input.title,
+        category: input.category,
+        project_key: input.project_key,
+        notes: input.notes,
+      };
+      createdTasks.push(input);
+      return task;
+    },
+    resolveProjectFromInput: async ({ project_key }) => ({
+      id: 91,
+      project_key,
+      workspace_key: 'rabbi_sheller_provider',
+    }),
+    assertProjectAccess: () => {},
+    createRawIntakeRecord: async ({ rawInput }) => ({
+      id: 501,
+      stable_id: 'RAW-20260708-TEST',
+      raw_text: rawInput,
+      parse_status: 'raw',
+    }),
+    updateRawIntakeRecordAfterParse: async (record) => ({
+      ...record,
+      parse_status: 'parsed',
+    }),
+  };
+  const db = {
+    query: async (sql, params) => {
+      if (/INSERT INTO bna_support_tickets/i.test(sql)) {
+        return {
+          rows: [{
+            id: 77,
+            project_id: params[0],
+            title: params[1],
+            description: params[2],
+            severity: params[3],
+            category: params[4],
+          }],
+        };
+      }
+      throw new Error(`Unexpected test query: ${sql}`);
+    },
+  };
+  const registry = buildToolRegistry(deps);
+  const context = {
+    userName: 'Rabbi Helper Test',
+    userRole: 'one_time_admin',
+    projectKey: 'one_time_mishnah_class',
+    workspaceKey: 'rabbi_sheller_provider',
+    identity: {
+      role: 'one_time_admin',
+      scope: {
+        type: 'project',
+        projectKey: 'one_time_mishnah_class',
+        workspaceKey: 'rabbi_sheller_provider',
+      },
+    },
+  };
+
+  const sourceSheet = await registry.execute('create_rabbi_source_sheet_task', {
+    title: 'Prepare Peah source sheet',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(sourceSheet.tool, 'create_rabbi_source_sheet_task');
+  assert.equal(sourceSheet.data.delegated_tool, 'create_task');
+  assert.equal(sourceSheet.data.task.category, 'source_sheets');
+  assert.equal(sourceSheet.data.task.project_key, 'one_time_mishnah_class');
+
+  const parentDraft = await registry.execute('draft_parent_response', {
+    body: 'We will review this with the Rabbi after class.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(parentDraft.tool, 'draft_parent_response');
+  assert.equal(parentDraft.data.delegated_tool, 'draft_email');
+  assert.equal(parentDraft.data.sent, false);
+
+  const ticket = await registry.execute('create_help_request', {
+    title: 'Rabbi login needs help',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(ticket.tool, 'create_help_request');
+  assert.equal(ticket.data.delegated_tool, 'create_support_ticket');
+  assert.equal(ticket.record_id, 77);
+
+  const ramble = await registry.execute('capture_ramble', {
+    raw_text: 'Goal mode: keep the Rabbi helper scoped only to One Time.',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(ramble.tool, 'capture_ramble');
+  assert.equal(ramble.data.delegated_tool, 'capture_raw_intake');
+  assert.equal(ramble.data.raw_text_returned, false);
+
+  await assert.rejects(
+    () => registry.execute('create_rabbi_source_sheet_task', {
+      title: 'Cross scope source sheet',
+      workspace_key: 'bna',
+      project_key: 'one_time_mishnah_class',
+    }, context, db),
+    /workspace scope mismatch/
+  );
+  await assert.rejects(
+    () => registry.execute('draft_parent_response', {
+      body: 'Cross scope parent draft',
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'bna',
+    }, context, db),
+    /project scope mismatch/
+  );
 });
 
 test('BNA Helper planner resolves explicit typed actions before hosted AI', async () => {

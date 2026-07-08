@@ -7,6 +7,7 @@ const require = createRequire(import.meta.url);
 const {
   buildRabbiTelegramReadiness,
   loadTelegramNotificationConfig,
+  notifyRabbiCommunication,
   notifySuperAdminSupportTicket,
   redactTelegramConfig,
 } = require('../src/lib/bna/telegram-notifications');
@@ -38,6 +39,7 @@ function parseEnvFile(filePath) {
 function renderMarkdown(payload) {
   const rabbi = payload.rabbi_telegram;
   const ticket = payload.ticket_alert_dry_run;
+  const communication = payload.rabbi_communication_alert_dry_run;
   const lines = [
     '# Rabbi Telegram / Ticket Alert Readiness',
     '',
@@ -50,6 +52,8 @@ function renderMarkdown(payload) {
     `- Super-admin ticket alerts enabled: ${payload.notification_config.ticket_alerts_enabled}`,
     `- Super-admin Telegram target ready: ${payload.notification_config.super_admin.ready}`,
     `- Dry-run would send ticket alert: ${ticket.would_send}`,
+    `- Rabbi communication alerts enabled: ${payload.notification_config.rabbi_communication_alerts_enabled}`,
+    `- Dry-run would send Rabbi communication alert: ${communication.would_send}`,
     `- External write performed: ${payload.external_write_performed}`,
     '',
     '## Rabbi Telegram Blockers',
@@ -62,11 +66,18 @@ function renderMarkdown(payload) {
     ticket.text,
     '```',
     '',
+    '## Dry-Run Rabbi Communication Alert Preview',
+    '',
+    '```text',
+    communication.text,
+    '```',
+    '',
     '## Guardrails',
     '',
     '- No Telegram message was sent by this readiness check.',
     '- No token or chat ID is printed in this report.',
     '- The ticket alert body is intentionally brief and does not include raw private ticket descriptions.',
+    '- The Rabbi communication alert body is metadata-only and does not include raw private message bodies.',
   ];
   return `${lines.join('\n')}\n`;
 }
@@ -94,6 +105,26 @@ async function main() {
       reviewPath: '/operations?view=admin&section=tickets',
     },
   });
+  const communicationDryRun = await notifyRabbiCommunication({
+    env,
+    dryRun: true,
+    communication: {
+      id: 0,
+      channel: 'whatsapp',
+      direction: 'inbound',
+      subject: 'Readiness dry-run OneTime communication',
+      summary: 'Readiness dry-run OneTime communication',
+      contact_label: 'OneTime contact',
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+    },
+    context: {
+      source: 'readiness_check',
+      workspaceKey: 'rabbi_sheller_provider',
+      projectKey: 'one_time_mishnah_class',
+      reviewPath: '/provider.html?admin_provider=one-time&section=mailbox',
+    },
+  });
   const payload = {
     checked_at: new Date().toISOString(),
     external_write_performed: false,
@@ -106,6 +137,14 @@ async function main() {
       blocker: dryRun.blocker || null,
       text: dryRun.text,
       config: dryRun.config,
+    },
+    rabbi_communication_alert_dry_run: {
+      attempted: communicationDryRun.attempted,
+      sent: communicationDryRun.sent,
+      would_send: communicationDryRun.would_send,
+      blocker: communicationDryRun.blocker || null,
+      text: communicationDryRun.text,
+      config: communicationDryRun.config,
     },
   };
 

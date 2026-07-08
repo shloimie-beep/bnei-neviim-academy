@@ -3,8 +3,10 @@
   "source": {
     "path": "ops/helper-tool-parity-map.json",
     "total_rows": 270,
-    "tool_needed_count": 163,
-    "source_status_filter": "tool_needed"
+    "tool_needed_count": 145,
+    "contract_count": 163,
+    "preserved_audit_contract_count": 18,
+    "source_status_filter": "tool_needed plus preserved helper-bot-workspace-agent-01-audit-map audit contracts"
   },
   "target_account": {
     "account_key": "rabbi_scheller_onetime_bot",
@@ -109,9 +111,9 @@
       "draft_only": 33
     },
     "by_capability_group": {
-      "tasks": 60,
+      "tasks": 59,
       "communications": 11,
-      "operations": 27,
+      "operations": 28,
       "calendar": 14,
       "contacts_crm": 9,
       "studio": 17,
@@ -120,6 +122,11 @@
       "students": 29,
       "agent_ops": 2,
       "provider": 11
+    },
+    "by_implementation_status": {
+      "tool_wrapper_missing": 133,
+      "tool_wrapper_available_local": 18,
+      "registered_fallback_only_blocker": 12
     }
   },
   "contracts": [
@@ -1134,22 +1141,24 @@
       "source": {
         "surface": "operations",
         "label": "capture ramble",
-        "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-        "api_endpoint": "",
-        "method": "",
+        "current_file": "src/lib/bna/helper/tool-registry.js",
+        "api_endpoint": "/api/bna/helper/message",
+        "method": "POST",
         "helper_tool_name": "capture_ramble",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
-          "admin/super_admin or scoped workspace login required"
+          "admin/super_admin or scoped workspace login required",
+          "explicit confirmation required before execution",
+          "side_effect:internal_write"
         ],
-        "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+        "source_confirmation_required": true,
+        "notes": "Helper registry tool with side effect internal_write."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
         "capability_slug": "capture_ramble",
         "capability_groups": [
-          "tasks"
+          "operations"
         ],
         "scope_lock": {
           "workspace_key": "rabbi_sheller_provider",
@@ -1168,7 +1177,7 @@
         ],
         "side_effect_level": "read_only",
         "action_policy": "read_only",
-        "confirmation_policy": "safe_without_confirmation_after_scope_check",
+        "confirmation_policy": "explicit_confirmation_required",
         "allowed_data": [
           "One Time provider/project records explicitly linked to rabbi_sheller_provider / one_time_mishnah_class",
           "Provider-visible task, class, content, contact, parent, student, payment, and integration summaries needed for this tool",
@@ -1186,8 +1195,7 @@
             "Use the Rabbi bot to capture ramble, scoped to rabbi_sheller_provider / one_time_mishnah_class."
           ],
           "required_slots": [
-            "intent",
-            "task_or_decision_target_when_updating"
+            "intent"
           ],
           "default_slots": {
             "workspace_key": "rabbi_sheller_provider",
@@ -1228,8 +1236,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for capture_ramble, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep capture_ramble in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -1786,8 +1794,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_contact, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "create_contact is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -1899,8 +1907,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_course, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "create_course is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -2032,13 +2040,15 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "create_help_request",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "explicit confirmation required before execution",
+          "side_effect:internal_write",
           "roles:parent,student,super_admin,platform_manager,support_admin,technical_agent"
         ],
-        "source_confirmation_required": false,
-        "notes": "Typed action create_help_request has no direct helper wrapper yet."
+        "source_confirmation_required": true,
+        "notes": "Typed action create_help_request maps to helper tool create_help_request."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -2063,7 +2073,7 @@
         ],
         "side_effect_level": "internal_write",
         "action_policy": "internal_write",
-        "confirmation_policy": "confirm_when_record_scope_or_target_is_ambiguous",
+        "confirmation_policy": "explicit_confirmation_required",
         "allowed_data": [
           "One Time provider/project records explicitly linked to rabbi_sheller_provider / one_time_mishnah_class",
           "Provider-visible task, class, content, contact, parent, student, payment, and integration summaries needed for this tool",
@@ -2122,8 +2132,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_help_request, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_help_request in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -2349,8 +2359,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_library_item, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "create_library_item is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -2577,8 +2587,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_parent, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "create_parent is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -2913,8 +2923,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_provider_profile, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "create_provider_profile is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -2934,13 +2944,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "create_rabbi_shiur_idea",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "side_effect:internal_write",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": true,
-        "notes": "Typed action create_rabbi_shiur_idea has no direct helper wrapper yet."
+        "notes": "Typed action create_rabbi_shiur_idea maps to helper tool create_rabbi_shiur_idea."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -3024,8 +3035,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_rabbi_shiur_idea, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_rabbi_shiur_idea in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -3045,13 +3056,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "create_rabbi_source_sheet_task",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "side_effect:internal_write",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": true,
-        "notes": "Typed action create_rabbi_source_sheet_task has no direct helper wrapper yet."
+        "notes": "Typed action create_rabbi_source_sheet_task maps to helper tool create_rabbi_source_sheet_task."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -3136,8 +3148,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_rabbi_source_sheet_task, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_rabbi_source_sheet_task in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -3268,13 +3280,15 @@
         "api_endpoint": "/api/bna/tickets",
         "method": "POST",
         "helper_tool_name": "create_report_problem_ticket",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "explicit confirmation required before execution",
+          "side_effect:internal_write",
           "roles:parent,student,super_admin,platform_manager,support_admin,technical_agent"
         ],
-        "source_confirmation_required": false,
-        "notes": "Typed action create_report_problem_ticket has no direct helper wrapper yet."
+        "source_confirmation_required": true,
+        "notes": "Typed action create_report_problem_ticket maps to helper tool create_report_problem_ticket."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -3299,7 +3313,7 @@
         ],
         "side_effect_level": "internal_write",
         "action_policy": "internal_write",
-        "confirmation_policy": "confirm_when_record_scope_or_target_is_ambiguous",
+        "confirmation_policy": "explicit_confirmation_required",
         "allowed_data": [
           "One Time provider/project records explicitly linked to rabbi_sheller_provider / one_time_mishnah_class",
           "Provider-visible task, class, content, contact, parent, student, payment, and integration summaries needed for this tool",
@@ -3358,8 +3372,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_report_problem_ticket, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_report_problem_ticket in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -3470,8 +3484,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_setup_flow, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "create_setup_flow is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -3605,13 +3619,15 @@
         "api_endpoint": "/api/bna/tickets",
         "method": "POST",
         "helper_tool_name": "create_ticket",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "explicit confirmation required before execution",
+          "side_effect:internal_write",
           "roles:parent,student,provider_admin,provider_manager,super_admin,platform_manager"
         ],
-        "source_confirmation_required": false,
-        "notes": "Typed action create_ticket has no direct helper wrapper yet."
+        "source_confirmation_required": true,
+        "notes": "Typed action create_ticket maps to helper tool create_ticket."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -3636,7 +3652,7 @@
         ],
         "side_effect_level": "internal_write",
         "action_policy": "internal_write",
-        "confirmation_policy": "confirm_when_record_scope_or_target_is_ambiguous",
+        "confirmation_policy": "explicit_confirmation_required",
         "allowed_data": [
           "One Time provider/project records explicitly linked to rabbi_sheller_provider / one_time_mishnah_class",
           "Provider-visible task, class, content, contact, parent, student, payment, and integration summaries needed for this tool",
@@ -3695,8 +3711,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_ticket, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_ticket in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -3808,8 +3824,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_worksheet, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "create_worksheet is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -4614,13 +4630,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "draft_parent_response",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "side_effect:draft_only",
           "roles:parent,super_admin,platform_manager,support_admin,technical_agent,admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action draft_parent_response has no direct helper wrapper yet."
+        "notes": "Typed action draft_parent_response maps to helper tool draft_parent_response."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -4706,8 +4723,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for draft_parent_response, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep draft_parent_response in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -4727,13 +4744,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "draft_weekly_update",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "side_effect:draft_only",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action draft_weekly_update has no direct helper wrapper yet."
+        "notes": "Typed action draft_weekly_update maps to helper tool draft_weekly_update."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -4817,8 +4835,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for draft_weekly_update, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep draft_weekly_update in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -5271,8 +5289,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for generate_worksheet, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "generate_worksheet is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -6051,8 +6069,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for ingest_class_video_from_drive_or_upload, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "ingest_class_video_from_drive_or_upload is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -7622,8 +7640,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for parse_student_questions, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "parse_student_questions is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -7960,8 +7978,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for publish_library_item_after_approval, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "publish_library_item_after_approval is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -8877,13 +8895,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "route_bug_to_codex",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "admin/super_admin or scoped workspace login required",
+          "side_effect:internal_write",
           "roles:super_admin,admin,operator,technical_agent,system"
         ],
         "source_confirmation_required": true,
-        "notes": "Typed action route_bug_to_codex has no direct helper wrapper yet."
+        "notes": "Typed action route_bug_to_codex maps to helper tool route_bug_to_codex."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -8967,8 +8986,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for route_bug_to_codex, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep route_bug_to_codex in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -9432,16 +9451,17 @@
       "source": {
         "surface": "operations",
         "label": "show operating goals",
-        "current_file": "tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md",
-        "api_endpoint": "",
-        "method": "",
+        "current_file": "src/lib/bna/helper/tool-registry.js",
+        "api_endpoint": "/api/bna/helper/message",
+        "method": "POST",
         "helper_tool_name": "show_operating_goals",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
-          "admin/super_admin or scoped workspace login required"
+          "admin/super_admin or scoped workspace login required",
+          "side_effect:read_only"
         ],
         "source_confirmation_required": false,
-        "notes": "Requested in prompt inventory; wrapper or surface-specific handler still needed."
+        "notes": "Helper registry tool with side effect read_only."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -9526,8 +9546,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for show_operating_goals, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep show_operating_goals in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -10088,8 +10108,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for transcribe_video, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "registered_fallback_only_blocker",
+          "next_action": "transcribe_video is registered as fallback_only; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -11009,13 +11029,15 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "create_help_request",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "own family and parent-visible records only",
+          "explicit confirmation required before execution",
+          "side_effect:internal_write",
           "roles:parent,student,super_admin,platform_manager,support_admin,technical_agent"
         ],
-        "source_confirmation_required": false,
-        "notes": "Typed action create_help_request has no direct helper wrapper yet."
+        "source_confirmation_required": true,
+        "notes": "Typed action create_help_request maps to helper tool create_help_request."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -11040,7 +11062,7 @@
         ],
         "side_effect_level": "internal_write",
         "action_policy": "internal_write",
-        "confirmation_policy": "confirm_when_record_scope_or_target_is_ambiguous",
+        "confirmation_policy": "explicit_confirmation_required",
         "allowed_data": [
           "One Time provider/project records explicitly linked to rabbi_sheller_provider / one_time_mishnah_class",
           "Provider-visible task, class, content, contact, parent, student, payment, and integration summaries needed for this tool",
@@ -11101,8 +11123,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_help_request, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_help_request in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -11465,13 +11487,15 @@
         "api_endpoint": "/api/bna/tickets",
         "method": "POST",
         "helper_tool_name": "create_report_problem_ticket",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "own family and parent-visible records only",
+          "explicit confirmation required before execution",
+          "side_effect:internal_write",
           "roles:parent,student,super_admin,platform_manager,support_admin,technical_agent"
         ],
-        "source_confirmation_required": false,
-        "notes": "Typed action create_report_problem_ticket has no direct helper wrapper yet."
+        "source_confirmation_required": true,
+        "notes": "Typed action create_report_problem_ticket maps to helper tool create_report_problem_ticket."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -11496,7 +11520,7 @@
         ],
         "side_effect_level": "internal_write",
         "action_policy": "internal_write",
-        "confirmation_policy": "confirm_when_record_scope_or_target_is_ambiguous",
+        "confirmation_policy": "explicit_confirmation_required",
         "allowed_data": [
           "One Time provider/project records explicitly linked to rabbi_sheller_provider / one_time_mishnah_class",
           "Provider-visible task, class, content, contact, parent, student, payment, and integration summaries needed for this tool",
@@ -11557,8 +11581,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_report_problem_ticket, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_report_problem_ticket in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -11578,13 +11602,15 @@
         "api_endpoint": "/api/bna/tickets",
         "method": "POST",
         "helper_tool_name": "create_ticket",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "own family and parent-visible records only",
+          "explicit confirmation required before execution",
+          "side_effect:internal_write",
           "roles:parent,student,provider_admin,provider_manager,super_admin,platform_manager"
         ],
-        "source_confirmation_required": false,
-        "notes": "Typed action create_ticket has no direct helper wrapper yet."
+        "source_confirmation_required": true,
+        "notes": "Typed action create_ticket maps to helper tool create_ticket."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -11609,7 +11635,7 @@
         ],
         "side_effect_level": "internal_write",
         "action_policy": "internal_write",
-        "confirmation_policy": "confirm_when_record_scope_or_target_is_ambiguous",
+        "confirmation_policy": "explicit_confirmation_required",
         "allowed_data": [
           "One Time provider/project records explicitly linked to rabbi_sheller_provider / one_time_mishnah_class",
           "Provider-visible task, class, content, contact, parent, student, payment, and integration summaries needed for this tool",
@@ -11670,8 +11696,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_ticket, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_ticket in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -11808,13 +11834,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "draft_parent_response",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "own family and parent-visible records only",
+          "side_effect:draft_only",
           "roles:parent,super_admin,platform_manager,support_admin,technical_agent,admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action draft_parent_response has no direct helper wrapper yet."
+        "notes": "Typed action draft_parent_response maps to helper tool draft_parent_response."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -11900,8 +11927,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for draft_parent_response, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep draft_parent_response in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -11921,13 +11948,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "draft_weekly_update",
-        "source_status": "tool_needed",
+        "source_status": "tool_available",
         "source_scope_rules": [
           "own family and parent-visible records only",
+          "side_effect:draft_only",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": false,
-        "notes": "Typed action draft_weekly_update has no direct helper wrapper yet."
+        "notes": "Typed action draft_weekly_update maps to helper tool draft_weekly_update."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -12013,8 +12041,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for draft_weekly_update, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep draft_weekly_update in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -14298,13 +14326,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "create_rabbi_shiur_idea",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "provider workspace only; no other providers or BNA private student data",
+          "side_effect:internal_write",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": true,
-        "notes": "Typed action create_rabbi_shiur_idea has no direct helper wrapper yet."
+        "notes": "Typed action create_rabbi_shiur_idea maps to helper tool create_rabbi_shiur_idea."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -14388,8 +14417,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_rabbi_shiur_idea, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_rabbi_shiur_idea in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -14409,13 +14438,14 @@
         "api_endpoint": "",
         "method": "",
         "helper_tool_name": "create_rabbi_source_sheet_task",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "provider workspace only; no other providers or BNA private student data",
+          "side_effect:internal_write",
           "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
         ],
         "source_confirmation_required": true,
-        "notes": "Typed action create_rabbi_source_sheet_task has no direct helper wrapper yet."
+        "notes": "Typed action create_rabbi_source_sheet_task maps to helper tool create_rabbi_source_sheet_task."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -14500,8 +14530,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_rabbi_source_sheet_task, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_rabbi_source_sheet_task in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",
@@ -14632,13 +14662,15 @@
         "api_endpoint": "/api/bna/tickets",
         "method": "POST",
         "helper_tool_name": "create_ticket",
-        "source_status": "tool_needed",
+        "source_status": "requires_confirmation",
         "source_scope_rules": [
           "provider workspace only; no other providers or BNA private student data",
+          "explicit confirmation required before execution",
+          "side_effect:internal_write",
           "roles:parent,student,provider_admin,provider_manager,super_admin,platform_manager"
         ],
-        "source_confirmation_required": false,
-        "notes": "Typed action create_ticket has no direct helper wrapper yet."
+        "source_confirmation_required": true,
+        "notes": "Typed action create_ticket maps to helper tool create_ticket."
       },
       "rabbi_contract": {
         "target_account_key": "rabbi_scheller_onetime_bot",
@@ -14663,7 +14695,7 @@
         ],
         "side_effect_level": "internal_write",
         "action_policy": "internal_write",
-        "confirmation_policy": "confirm_when_record_scope_or_target_is_ambiguous",
+        "confirmation_policy": "explicit_confirmation_required",
         "allowed_data": [
           "One Time provider/project records explicitly linked to rabbi_sheller_provider / one_time_mishnah_class",
           "Provider-visible task, class, content, contact, parent, student, payment, and integration summaries needed for this tool",
@@ -14722,8 +14754,8 @@
           ]
         },
         "implementation_gap": {
-          "implementation_status": "tool_wrapper_missing",
-          "next_action": "Create a scoped helper wrapper for create_ticket, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.",
+          "implementation_status": "tool_wrapper_available_local",
+          "next_action": "Keep create_ticket in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.",
           "likely_files": [
             "src/lib/bna/helper/tool-registry.js",
             "src/lib/bna/helper/permissions.js",

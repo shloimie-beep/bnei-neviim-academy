@@ -25,8 +25,10 @@ test('Rabbi helper tool scope map covers every current tool-needed parity row', 
   assert.equal(scopeMap.source.path, 'ops/helper-tool-parity-map.json');
   assert.equal(scopeMap.source.total_rows, parityRows.length);
   assert.equal(scopeMap.source.tool_needed_count, toolNeededRows.length);
-  assert.equal(scopeMap.contracts.length, toolNeededRows.length);
-  assert.equal(contractKeys.size, toolNeededRows.length, 'scope contracts should not duplicate a parity row');
+  assert.equal(scopeMap.source.contract_count, scopeMap.contracts.length);
+  assert.equal(scopeMap.contracts.length, 163);
+  assert.equal(contractKeys.size, scopeMap.contracts.length, 'scope contracts should not duplicate a parity row');
+  assert.ok(scopeMap.source.preserved_audit_contract_count > 0);
 
   for (const key of sourceKeys) {
     assert.ok(contractKeys.has(key), `missing Rabbi scope contract for ${key}`);
@@ -40,7 +42,13 @@ test('Rabbi helper tool scope contracts lock every capability to One Time provid
 
   for (const contract of scopeMap.contracts) {
     const rabbi = contract.rabbi_contract;
-    assert.equal(contract.source.source_status, 'tool_needed');
+    assert.ok([
+      'tool_needed',
+      'tool_available',
+      'requires_confirmation',
+      'external_blocker',
+      'student_safe_only',
+    ].includes(contract.source.source_status));
     assert.equal(rabbi.target_account_key, 'rabbi_scheller_onetime_bot');
     assert.equal(rabbi.scope_lock.workspace_key, 'rabbi_sheller_provider');
     assert.equal(rabbi.scope_lock.project_key, 'one_time_mishnah_class');
@@ -57,7 +65,11 @@ test('Rabbi helper tool scope contracts lock every capability to One Time provid
     assert.equal(rabbi.result_rules.redaction_required, true);
     assert.equal(rabbi.agent_mode_probe.safe_prompt.includes('rabbi_sheller_provider / one_time_mishnah_class'), true);
     assert.ok(rabbi.agent_mode_probe.failure_signals.some((signal) => /BNA Academy/i.test(signal)));
-    assert.equal(rabbi.implementation_gap.implementation_status, 'tool_wrapper_missing');
+    assert.ok([
+      'tool_wrapper_missing',
+      'tool_wrapper_available_local',
+      'registered_fallback_only_blocker',
+    ].includes(rabbi.implementation_gap.implementation_status));
   }
 });
 
@@ -100,6 +112,31 @@ test('Rabbi helper scope map includes natural-language and Agent Mode probes for
     assert.ok(rabbi.agent_mode_probe.failure_signals.length >= 4);
     assert.ok(rabbi.implementation_gap.next_action.includes(contract.source.helper_tool_name));
   }
+});
+
+test('Rabbi helper scope map marks the first runtime alias batch as locally wrapper-backed', () => {
+  const aliasNames = [
+    'capture_ramble',
+    'show_operating_goals',
+    'route_bug_to_codex',
+    'create_report_problem_ticket',
+    'create_ticket',
+    'create_help_request',
+    'create_rabbi_source_sheet_task',
+    'create_rabbi_shiur_idea',
+    'draft_parent_response',
+    'draft_weekly_update',
+  ];
+  const aliasContracts = scopeMap.contracts.filter((contract) => aliasNames.includes(contract.source.helper_tool_name));
+  assert.equal(aliasContracts.length, 18);
+
+  for (const contract of aliasContracts) {
+    assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
+    assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
+  }
+
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, aliasContracts.length);
+  assert.ok(scopeMap.counts.by_implementation_status.tool_wrapper_missing > aliasContracts.length);
 });
 
 test('account bot scope template supports narrower subaccounts like Benny tasks and Studio', () => {

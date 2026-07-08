@@ -1,6 +1,10 @@
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+const require = createRequire(import.meta.url);
+const { buildToolRegistry } = require('../src/lib/bna/helper/tool-registry');
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourcePath = path.join(repoRoot, 'ops', 'helper-tool-parity-map.json');
@@ -11,6 +15,30 @@ const templatePath = path.join(outputDir, 'account-bot-scope-template.json');
 
 const RABBI_WORKSPACE_KEY = 'rabbi_sheller_provider';
 const RABBI_PROJECT_KEY = 'one_time_mishnah_class';
+const PRESERVED_RUNTIME_ALIAS_TOOL_NAMES = new Set([
+  'capture_ramble',
+  'show_operating_goals',
+  'route_bug_to_codex',
+  'create_report_problem_ticket',
+  'create_ticket',
+  'create_help_request',
+  'create_rabbi_source_sheet_task',
+  'create_rabbi_shiur_idea',
+  'draft_parent_response',
+  'draft_weekly_update',
+]);
+const PRESERVED_RUNTIME_ALIAS_SURFACES = new Map([
+  ['capture_ramble', new Set(['operations'])],
+  ['show_operating_goals', new Set(['operations'])],
+  ['route_bug_to_codex', new Set(['operations'])],
+  ['create_report_problem_ticket', new Set(['operations', 'parent'])],
+  ['create_ticket', new Set(['operations', 'parent', 'provider'])],
+  ['create_help_request', new Set(['operations', 'parent'])],
+  ['create_rabbi_source_sheet_task', new Set(['operations', 'provider'])],
+  ['create_rabbi_shiur_idea', new Set(['operations', 'provider'])],
+  ['draft_parent_response', new Set(['operations', 'parent'])],
+  ['draft_weekly_update', new Set(['operations', 'parent'])],
+]);
 
 const TARGET_ACCOUNT = {
   account_key: 'rabbi_scheller_onetime_bot',
@@ -32,6 +60,8 @@ const TARGET_ACCOUNT = {
     public_brand_scope: 'one_time_black_yellow',
   },
 };
+
+const runtimeRegistry = buildToolRegistry();
 
 const GLOBAL_SCOPE_INVARIANTS = [
   'Server recomputes workspace_key and project_key from the authenticated helper account; client-supplied scope is advisory only.',
@@ -190,6 +220,44 @@ function defaultSlots(record) {
   };
 }
 
+function sourceKey(record = {}) {
+  return [
+    record.surface,
+    record.label,
+    record.current_file,
+    record.api_endpoint,
+    record.method,
+    record.helper_tool_name,
+  ].join('|');
+}
+
+function sourceKeyFromContract(contract = {}) {
+  return sourceKey(contract.source || {});
+}
+
+function sourceLooseKey(record = {}) {
+  return [
+    record.surface,
+    record.label,
+    record.helper_tool_name,
+  ].join('|');
+}
+
+function shouldKeepContractSource(record = {}) {
+  const surfaces = PRESERVED_RUNTIME_ALIAS_SURFACES.get(record.helper_tool_name);
+  if (!surfaces) return true;
+  if (record.status === 'tool_needed') return true;
+  return surfaces.has(record.surface);
+}
+
+function readExistingScopeMap() {
+  try {
+    return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
 function naturalLanguageExamples(record, actionPolicy) {
   const label = sentenceCase(record.label || record.helper_tool_name);
   const safeVerb = actionPolicy.includes('external') || actionPolicy.includes('financial') || actionPolicy.includes('blocked')
@@ -249,6 +317,21 @@ function implementationNextActions(record, groups) {
   ];
   if (groups.includes('studio')) candidateFiles.push('public/operations.html');
   if (groups.includes('communications')) candidateFiles.push('src/lib/bna/helper/confirmation-gates.js');
+  const runtimeTool = runtimeRegistry.get(record.helper_tool_name);
+  if (runtimeTool?.available) {
+    return {
+      implementation_status: 'tool_wrapper_available_local',
+      next_action: `Keep ${record.helper_tool_name} in the runtime registry, preserve planner intent coverage, and collect Agent Mode PASS/BLOCKED evidence for the scoped Rabbi contract before marking autonomous.`,
+      likely_files: candidateFiles,
+    };
+  }
+  if (runtimeTool && runtimeTool.available === false) {
+    return {
+      implementation_status: `registered_${runtimeTool.unavailableReason || 'unavailable'}_blocker`,
+      next_action: `${record.helper_tool_name} is registered as ${runtimeTool.unavailableReason || 'unavailable'}; replace the blocker/fallback with a scoped executable wrapper plus negative tests before enabling autonomy.`,
+      likely_files: candidateFiles,
+    };
+  }
   return {
     implementation_status: 'tool_wrapper_missing',
     next_action: `Create a scoped helper wrapper for ${record.helper_tool_name}, add planner intent coverage, enforce Rabbi project filters server-side, and add negative scope tests before enabling Agent Mode execution.`,
@@ -338,6 +421,16 @@ function countBy(items, selector) {
   }, {});
 }
 
+function existingGeneratedAt() {
+  if (process.env.BNA_SCOPE_MAP_GENERATED_AT) return process.env.BNA_SCOPE_MAP_GENERATED_AT;
+  try {
+    const existing = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    return existing.generated_at || '';
+  } catch {
+    return '';
+  }
+}
+
 function escapePipe(value) {
   return String(value ?? '').replace(/\|/g, '\\|').replace(/\r?\n/g, '<br>');
 }
@@ -353,7 +446,8 @@ function buildMarkdown(map) {
   lines.push(`- Workspace: \`${map.target_account.workspace_key}\``);
   lines.push(`- Project: \`${map.target_account.project_key}\``);
   lines.push(`- Account key: \`${map.target_account.account_key}\``);
-  lines.push(`- Current mapped gaps: ${map.source.tool_needed_count} helper parity rows with \`tool_needed\``);
+  lines.push(`- Current parity gaps: ${map.source.tool_needed_count} helper parity rows with \`tool_needed\``);
+  lines.push(`- Audit baseline contracts kept in this map: ${map.source.contract_count} (${map.source.preserved_audit_contract_count} now have a non-\`tool_needed\` parity status)`);
   lines.push('');
   lines.push('## Global Invariants');
   lines.push('');
@@ -367,6 +461,7 @@ function buildMarkdown(map) {
   lines.push(`| Action policy | ${escapePipe(JSON.stringify(map.counts.by_action_policy))} |`);
   lines.push(`| Side effect | ${escapePipe(JSON.stringify(map.counts.by_side_effect_level))} |`);
   lines.push(`| Capability group | ${escapePipe(JSON.stringify(map.counts.by_capability_group))} |`);
+  lines.push(`| Implementation status | ${escapePipe(JSON.stringify(map.counts.by_implementation_status))} |`);
   lines.push('');
   lines.push('## Subaccount Template');
   lines.push('');
@@ -390,18 +485,46 @@ function buildMarkdown(map) {
   lines.push('');
   lines.push('## Remaining Implementation Gap');
   lines.push('');
-  lines.push('This map scopes all current missing helper wrappers, planner intents, and Agent Mode probes. It does not make the 163 missing wrappers executable by itself. Each contract still needs the scoped wrapper, planner mapping, permission gate, result card, audit write, and negative test before Agent Mode can mark that tool autonomous.');
+  lines.push('This map scopes the original 163 helper-bot audit contracts plus every current `tool_needed` parity row. It does not make missing wrappers executable by itself. Each contract still needs the scoped wrapper, planner mapping, permission gate, result card, audit write, and negative test before Agent Mode can mark that tool autonomous.');
+  lines.push('');
+  lines.push('Contracts marked `tool_wrapper_available_local` now have a local registry wrapper, but still need Agent Mode PASS/BLOCKED evidence before they stop blocking autonomy. Contracts marked `registered_*_blocker` are fallback/setup placeholders, not autonomous tool execution.');
   return `${lines.join('\n')}\n`;
 }
 
 fs.mkdirSync(outputDir, { recursive: true });
 
 const sourceRecords = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
-const toolNeeded = sourceRecords
-  .filter((record) => record.status === 'tool_needed')
+const existingScopeMap = readExistingScopeMap();
+const currentSourceByKey = new Map(sourceRecords.map((record) => [sourceKey(record), record]));
+const currentSourceByLooseKey = new Map(sourceRecords.map((record) => [sourceLooseKey(record), record]));
+const currentToolNeeded = sourceRecords.filter((record) => record.status === 'tool_needed');
+const contractSourceByKey = new Map();
+for (const record of currentToolNeeded) {
+  contractSourceByKey.set(sourceKey(record), record);
+}
+const existingToolNames = new Set((existingScopeMap?.contracts || []).map((contract) => contract.source?.helper_tool_name).filter(Boolean));
+for (const contract of existingScopeMap?.contracts || []) {
+  const key = sourceKeyFromContract(contract);
+  if (currentSourceByKey.has(key)) {
+    contractSourceByKey.set(key, currentSourceByKey.get(key));
+    continue;
+  }
+  const looseKey = sourceLooseKey(contract.source || {});
+  if (currentSourceByLooseKey.has(looseKey)) {
+    const current = currentSourceByLooseKey.get(looseKey);
+    contractSourceByKey.set(sourceKey(current), current);
+  }
+}
+for (const record of sourceRecords) {
+  if (PRESERVED_RUNTIME_ALIAS_TOOL_NAMES.has(record.helper_tool_name) && !existingToolNames.has(record.helper_tool_name)) {
+    contractSourceByKey.set(sourceKey(record), record);
+  }
+}
+const contractSourceRecords = [...contractSourceByKey.values()]
+  .filter(shouldKeepContractSource)
   .sort((a, b) => `${a.surface}:${a.helper_tool_name}`.localeCompare(`${b.surface}:${b.helper_tool_name}`));
 
-const contracts = toolNeeded.map(buildContract);
+const contracts = contractSourceRecords.map(buildContract);
 const capabilityGroupCounts = {};
 for (const contract of contracts) {
   for (const group of contract.rabbi_contract.capability_groups) {
@@ -410,12 +533,14 @@ for (const contract of contracts) {
 }
 
 const map = {
-  generated_at: process.env.BNA_SCOPE_MAP_GENERATED_AT || new Date().toISOString(),
+  generated_at: existingGeneratedAt() || new Date().toISOString(),
   source: {
     path: 'ops/helper-tool-parity-map.json',
     total_rows: sourceRecords.length,
-    tool_needed_count: toolNeeded.length,
-    source_status_filter: 'tool_needed',
+    tool_needed_count: currentToolNeeded.length,
+    contract_count: contractSourceRecords.length,
+    preserved_audit_contract_count: contractSourceRecords.filter((record) => record.status !== 'tool_needed').length,
+    source_status_filter: 'tool_needed plus preserved helper-bot-workspace-agent-01-audit-map audit contracts',
   },
   target_account: TARGET_ACCOUNT,
   global_scope_invariants: GLOBAL_SCOPE_INVARIANTS,
@@ -425,6 +550,7 @@ const map = {
     by_action_policy: countBy(contracts, (contract) => contract.rabbi_contract.action_policy),
     by_side_effect_level: countBy(contracts, (contract) => contract.rabbi_contract.side_effect_level),
     by_capability_group: capabilityGroupCounts,
+    by_implementation_status: countBy(contracts, (contract) => contract.rabbi_contract.implementation_gap.implementation_status),
   },
   contracts,
 };

@@ -131,6 +131,7 @@ const {
   buildTelegramRuntimeReadiness,
 } = require('./src/lib/bna/telegram-runtime-status');
 const {
+  notifyRabbiCommunication,
   notifySuperAdminSupportTicket,
 } = require('./src/lib/bna/telegram-notifications');
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
@@ -43919,6 +43920,26 @@ async function handleResendInboundWebhook(req, res) {
         fetchImpl: fetch,
       }),
     });
+    if (result?.success && !result.duplicate && result.communication_id) {
+      notifyRabbiCommunication({
+        communication: {
+          id: result.communication_id,
+          channel: 'email',
+          direction: 'inbound',
+          subject: event.data?.subject || 'OneTime email received',
+          summary: event.data?.subject || 'OneTime email received',
+          contact_label: 'Email contact',
+          workspace_key: result.workspace_key,
+          project_key: result.project_key,
+        },
+        context: {
+          source: 'resend_inbound_email',
+          workspaceKey: result.workspace_key,
+          projectKey: result.project_key,
+          reviewPath: '/provider.html?admin_provider=one-time&section=mailbox',
+        },
+      }).catch((error) => console.error('Rabbi email Telegram alert error:', error.message || error));
+    }
     return res.status(200).json(resendInboundResponse(result));
   } catch (err) {
     const safe = safeIntegrationError(err, 'Resend inbound webhook processing failed');
@@ -56602,6 +56623,8 @@ app.post('/api/parent-portal/provider-messages', async (req, res) => {
       await client.query('ROLLBACK');
       return res.status(404).json({ error: 'Provider is not available for parent messages' });
     }
+    const providerWithProject = await serviceProviderWithProject(providerId, client).catch(() => null);
+    const providerScope = serviceProviderScopeFromProvider(providerWithProject || provider);
     let service = null;
     if (serviceId) {
       service = (await client.query(
@@ -56659,6 +56682,25 @@ app.post('/api/parent-portal/provider-messages', async (req, res) => {
       ]
     ).catch(() => {});
     await client.query('COMMIT');
+    notifyRabbiCommunication({
+      communication: {
+        id: message.id,
+        channel: 'portal',
+        direction: 'inbound',
+        subject,
+        summary: `Parent/provider message: ${provider.provider_name}`,
+        contact_label: 'Parent portal contact',
+        workspace_key: providerScope.workspace_key,
+        project_key: providerScope.project_key,
+        provider_id: providerId,
+      },
+      context: {
+        source: 'parent_portal_provider_message',
+        workspaceKey: providerScope.workspace_key,
+        projectKey: providerScope.project_key,
+        reviewPath: '/provider.html?admin_provider=one-time&section=mailbox',
+      },
+    }).catch((error) => console.error('Rabbi provider message Telegram alert error:', error.message || error));
     res.json({ success: true, message });
   } catch (err) {
     await client.query('ROLLBACK').catch(() => {});
@@ -63815,6 +63857,32 @@ app.post('/api/webhooks/wapi', async (req, res) => {
         ].filter(Boolean).join(' '),
       ]
     );
+    if (
+      isOneTimeWapiScope(webhookScope) &&
+      !communicationResult.duplicate &&
+      !normalized.fromMe &&
+      !String(normalized.messageStatus || '').trim() &&
+      (normalized.messageText || normalized.hasMedia)
+    ) {
+      notifyRabbiCommunication({
+        communication: {
+          id: communicationResult.communication?.id || null,
+          channel: 'whatsapp',
+          direction: 'inbound',
+          subject: communicationResult.communication?.summary || 'WhatsApp message received',
+          summary: communicationResult.communication?.summary || 'WhatsApp message received',
+          contact_label: communicationResult.match?.matched_name || normalized.pushName || 'WhatsApp contact',
+          workspace_key: webhookScope.workspace_key,
+          project_key: webhookScope.project_key,
+        },
+        context: {
+          source: 'one_time_wapi_inbound',
+          workspaceKey: webhookScope.workspace_key,
+          projectKey: webhookScope.project_key,
+          reviewPath: '/operations?view=communications&workspace=rabbi_sheller_provider&project=one_time_mishnah_class',
+        },
+      }).catch((error) => console.error('Rabbi WAPI Telegram alert error:', error.message || error));
+    }
 
     console.log('[wapi] webhook received', {
       receivedAt,

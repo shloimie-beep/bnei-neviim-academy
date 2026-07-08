@@ -6,6 +6,29 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-08T22:21:17+03:00 - Rabbi helper first runtime alias batch local verified
+
+- Implemented the first Rabbi / One Time helper runtime alias batch for
+  `capture_ramble`, `show_operating_goals`, `route_bug_to_codex`,
+  `create_report_problem_ticket`, `create_ticket`, `create_help_request`,
+  `create_rabbi_source_sheet_task`, `create_rabbi_shiur_idea`,
+  `draft_parent_response`, and `draft_weekly_update`.
+- Refreshed the base helper parity map to 270 rows with 145 current
+  `tool_needed`, 41 `tool_available`, 49 `requires_confirmation`, 26
+  `external_blocker`, and 9 `student_safe_only` rows.
+- Updated the Rabbi 163-contract scope map to preserve the issue #88 audit
+  baseline while marking 18 contracts `tool_wrapper_available_local`, 12
+  `registered_fallback_only_blocker`, and 133 `tool_wrapper_missing`.
+- Added runtime negative tests for the alias batch: One Time project/workspace
+  scope rejection, draft-only parent responses, raw-intake redaction, and
+  scoped wrapper delegation.
+- Verification passed: focused helper/scope/RBAC tests 26/26 plus syntax
+  checks for the touched helper registry, planner, permissions, safety, and
+  scope-map generator files.
+- Remaining autonomy blockers are explicit in
+  `tasks-pending/2026-07-08-rabbi-helper-tool-scope-goal.md` and
+  `ops/system-audits/2026-07-08-issue-88-helper-bot-audit-map.md`.
+
 ## 2026-07-08T14:07:10+03:00 - OneTime parent invite sent from scoped Resend sender
 
 - Sent the approved OneTime parent invite to the redacted operator test Gmail
@@ -34635,6 +34658,88 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No helper runtime behavior, external writes, sends, payments, DNS/account
   changes, credential writes, access grants, uploads, Drive/Vimeo/Zoom writes,
   production data mutation, or external CRM writes were performed.
+
+## 2026-07-08T21:54:00+03:00 - OneTime Rabbi setup email resent
+
+- Registered `RAW-20260708-025` and `REQ-20260708-087` for the request to
+  resend the expired Rabbi provider setup email to the operator Gmail.
+- Sent a fresh OneTime provider setup email through
+  `POST /api/bna/service-providers/1/setup-email` using the
+  `SEND_PROVIDER_SETUP_EMAIL_TO_OVERRIDE` confirmation gate.
+- Live response returned `email_sent=true`, `recipient_override=true`,
+  `provider_id=1`, login username `one_time_admin`, and expiry
+  `2026-07-08T19:54:24.230Z`.
+- Provider-message readback found message `#3` for Rabbi Elie Scheller with
+  source `provider_setup`, `email_sent=true`, and `recipient_override=true`.
+- Evidence:
+  `ops/access/2026-07-08-onetime-rabbi-setup-email-resend.md`.
+- No raw setup token, setup URL, session cookie, or password was printed in
+  chat or committed; the Rabbi provider contact record was not changed.
+- No WhatsApp/WAPI, payment/access grant, DNS, Zoom, Vimeo, Drive, Stripe, or
+  external CRM mutation was performed.
+
+## 2026-07-08T21:58:00+03:00 - OneTime Rabbi WhatsApp follow-up blocked
+
+- Registered `RAW-20260708-026` and `REQ-20260708-088` for the request to send
+  one WhatsApp from the Rabbi/OneTime sender to the operator number ending
+  `2631`.
+- Treated the request as approval for one safe WhatsApp notice, but did not
+  send because live OneTime WAPI diagnostics still returned
+  `auto_reply_ready=false`.
+- Live blockers: `ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled`;
+  `ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY`;
+  `OneTime WAPI token missing`.
+- Intended safe copy would tell the operator the secure Rabbi setup email was
+  resent and to use the email link; it would not include the setup link over
+  WhatsApp.
+- No WhatsApp/WAPI message was sent. No setup token, setup URL, session cookie,
+  password, or full phone number was committed.
+
+## 2026-07-08T22:02:00+03:00 - Rabbi WAPI token saved and WhatsApp notice sent
+
+- Registered `RAW-20260708-027` and `REQ-20260708-089` after Shloimie
+  clarified that the secret-looking value was the Rabbi WAPI token and asked
+  Codex to save it securely.
+- Saved the token only in gitignored `.secrets/one-time-wapi-api-token.txt`
+  and `.secrets/rabbi-sheller-wapi-api-token.txt`.
+- Redacted verification: token length `32`, fingerprint `1bf76f7c0a3a`, both
+  files ignored by git.
+- Whapi health readback returned authenticated business sender status without
+  an external write.
+- Sent one safe WhatsApp setup-email notice to the operator number ending
+  `2631`. Provider returned `status_code=200`, message id present, fingerprint
+  `02b1625c5735`.
+- Evidence:
+  `ops/access/2026-07-08-onetime-rabbi-wapi-token-and-whatsapp-send.md`.
+- The WhatsApp did not include the setup/login link. The WAPI token, setup
+  token, setup URL, session cookie, password, and full phone number were not
+  committed.
+- No Railway/environment mutation, payment/access grant, DNS, Zoom, Vimeo,
+  Drive, Stripe, or external CRM mutation was performed.
+
+## 2026-07-08T22:24:00+03:00 - Rabbi Telegram communication alerts locally verified
+
+- Registered `RAW-20260708-029` and `REQ-20260708-096` for the continuation
+  request that Rabbi/OneTime communications should ding Rabbi Scheller's
+  Telegram bot, while support tickets continue to ding Shloimie/super-admin.
+- Added a Rabbi-scoped Telegram communication alert formatter/sender that only
+  sends for `rabbi_sheller_provider` / `one_time_mishnah_class`, uses the Rabbi
+  bot target, and returns explicit blockers for wrong scope, disabled alerts,
+  or missing Rabbi Telegram chat ID.
+- Wired metadata-only Rabbi communication alert hooks into parent/provider
+  portal messages, Resend inbound OneTime email, and inbound OneTime
+  WAPI/WhatsApp messages. Alert text does not include raw private message
+  bodies, setup links, access codes, tokens, or unrelated BNA/provider data.
+- Updated the Rabbi Telegram readiness report with a dry-run Rabbi
+  communication alert preview.
+- Verification passed: `node --check src/lib/bna/telegram-notifications.js`,
+  `node --check server.js`, `node --check
+  scripts/check-rabbi-telegram-ticket-readiness.mjs`, `node --test
+  tests/rabbi-telegram-notifications.test.js` (9/9), focused Agent Review /
+  helper scope tests (25/25), provider mailbox / Resend inbound / WAPI report
+  tests (27/27), and `npm run telegram:rabbi:readiness`.
+- Runtime blocker remains: `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is not
+  configured, so live Rabbi Telegram delivery is not enabled yet.
 
 ## 2026-07-08T21:55:10+03:00 - Operations shell split local verification
 

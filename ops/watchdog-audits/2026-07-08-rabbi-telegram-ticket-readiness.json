@@ -1,8 +1,9 @@
 {
-  "checked_at": "2026-07-08T18:38:27.823Z",
+  "checked_at": "2026-07-08T19:13:14.677Z",
   "external_write_performed": false,
   "notification_config": {
     "ticket_alerts_enabled": false,
+    "rabbi_communication_alerts_enabled": false,
     "super_admin": {
       "token_configured": true,
       "chat_id_configured": true,
@@ -48,6 +49,33 @@
     "text": "Support ticket opened\n- Ticket: new ticket\n- Scope: rabbi_sheller_provider / one_time_mishnah_class\n- Severity: normal\n- Category: bot_api\n- Title: Readiness dry-run support ticket\n- Source: readiness_check\n- Review: /operations?view=admin&section=tickets",
     "config": {
       "ticket_alerts_enabled": false,
+      "rabbi_communication_alerts_enabled": false,
+      "super_admin": {
+        "token_configured": true,
+        "chat_id_configured": true,
+        "ready": true
+      },
+      "rabbi_elie_scheller": {
+        "profile": "rabbi-elie-scheller",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "token_configured": true,
+        "chat_id_configured": false,
+        "ops_username_configured": true,
+        "ops_password_configured": true,
+        "ready": false
+      }
+    }
+  },
+  "rabbi_communication_alert_dry_run": {
+    "attempted": false,
+    "sent": false,
+    "would_send": false,
+    "blocker": "rabbi_communication_telegram_alerts_disabled",
+    "text": "OneTime communication received\n- Communication: new communication\n- Scope: rabbi_sheller_provider / one_time_mishnah_class\n- Channel: whatsapp\n- Direction: inbound\n- Contact: OneTime contact\n- Subject: Readiness dry-run OneTime communication\n- Source: readiness_check\n- Review: /provider.html?admin_provider=one-time&section=mailbox",
+    "config": {
+      "ticket_alerts_enabled": false,
+      "rabbi_communication_alerts_enabled": false,
       "super_admin": {
         "token_configured": true,
         "chat_id_configured": true,

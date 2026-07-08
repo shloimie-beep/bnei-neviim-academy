@@ -4,6 +4,19 @@ function compactText(value, max = 1000) {
   return String(value || '').replace(/\r/g, '').replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
+function isRabbiOneTimeContext(context = {}) {
+  const projectKey = String(context.projectKey || context.project_key || '').toLowerCase();
+  const workspaceKey = String(context.workspaceKey || context.workspace_key || context.helperScope?.workspaceKey || '').toLowerCase();
+  const scopeType = String(context.helperScope?.scopeType || context.scopeType || context.identity?.scope?.type || '').toLowerCase();
+  return projectKey === 'one_time_mishnah_class'
+    || workspaceKey === 'rabbi_sheller_provider'
+    || scopeType === 'rabbi';
+}
+
+function scopedTool(registry, context, aliasName, fallbackName) {
+  return isRabbiOneTimeContext(context) && registry.get(aliasName) ? aliasName : fallbackName;
+}
+
 function firstMatch(text, pattern) {
   const match = String(text || '').match(pattern);
   return match ? match[1] || '' : '';
@@ -289,9 +302,10 @@ function deterministicPlan(message = '', registry, context = {}) {
   let reply = 'I can help with that.';
 
   if (/\b(capture|save|remember|raw intake|ramble|transcript|recording|goal mode|set (it|this|that) as a goal|make (it|this|that) a goal|from now on|always|never|every time|do all those things|finish everything)\b/i.test(text)) {
+    const tool = scopedTool(registry, context, 'capture_ramble', 'capture_raw_intake');
     reply = 'I can capture this as raw intake, parse it into BNA lanes, and return the raw ID plus counts.';
     actions.push({
-      tool: 'capture_raw_intake',
+      tool,
       label: 'Capture raw intake',
       args: {
         raw_text: text,
@@ -302,9 +316,10 @@ function deterministicPlan(message = '', registry, context = {}) {
       reason: 'Universal natural-language intake request',
     });
   } else if (/\b(show|list|status)\b.*\b(goals?|quality goals?|watchdog goals?)\b|\bwhat goals?\b/i.test(text)) {
+    const tool = scopedTool(registry, context, 'show_operating_goals', 'show_goal_status');
     reply = 'I can show the related BNA standing goals.';
     actions.push({
-      tool: 'show_goal_status',
+      tool,
       label: 'Show related goals',
       args: { text },
       reason: 'Goal memory status request',
@@ -438,11 +453,31 @@ function deterministicPlan(message = '', registry, context = {}) {
     const body = textAfterIntent(text, /(?:comment|note)\s*(?:to|on)?\s*task\s*#?\d+\s*[:\-]?\s*([\s\S]+)$/i, 'Helper comment');
     reply = `I can add that comment to task #${taskId}.`;
     actions.push({ tool: 'add_task_comment', label: 'Add task comment', args: { task_id: taskId, body }, reason: 'Task comment request' });
-  } else if (/\b(report|file|create|open)\b.*\b(problem|bug|issue|support ticket|ticket)\b|\b(broken|not working|looks wrong|looked wrong|error|slow|slowness|lag|laggy|performance|takes forever|loading forever)\b/i.test(text)) {
-    const title = textAfterIntent(text, /(?:report|file|create|open)?\s*(?:a\s*)?(?:problem|bug|issue|support ticket|ticket)\s*(?:about|for|:|-)?\s*([\s\S]+)$/i, text);
+  } else if (isRabbiOneTimeContext(context) && /\b(route|send|file|create|open)\b.*\b(bug|issue|problem)\b.*\bcodex\b|\bcodex\b.*\b(bug|issue|problem|fix)\b/i.test(text)) {
+    const title = textAfterIntent(text, /(?:route|send|file|create|open)?\s*(?:a\s*)?(?:bug|issue|problem)\s*(?:to\s*)?(?:codex)?\s*(?:about|for|:|-)?\s*([\s\S]+)$/i, text);
+    reply = 'I can route this One Time issue to Codex as a scoped work item.';
+    actions.push({
+      tool: 'route_bug_to_codex',
+      label: 'Route issue to Codex',
+      args: {
+        title: title.slice(0, 240) || 'Route Rabbi helper issue to Codex',
+        issue: text,
+        project_key: context.projectKey || undefined,
+      },
+      reason: 'Rabbi / One Time Codex issue routing request',
+    });
+  } else if (/\b(report|file|create|open)\b.*\b(problem|bug|issue|support ticket|ticket|help request)\b|\b(broken|not working|looks wrong|looked wrong|error|slow|slowness|lag|laggy|performance|takes forever|loading forever)\b/i.test(text)) {
+    const title = textAfterIntent(text, /(?:report|file|create|open)?\s*(?:a\s*)?(?:problem|bug|issue|support ticket|ticket|help request)\s*(?:about|for|:|-)?\s*([\s\S]+)$/i, text);
+    const tool = isRabbiOneTimeContext(context)
+      ? /\bhelp request\b/i.test(text)
+        ? 'create_help_request'
+        : /\bticket\b/i.test(text)
+          ? 'create_ticket'
+          : 'create_report_problem_ticket'
+      : 'create_support_ticket';
     reply = 'I can create a first-party support ticket with the current page context.';
     actions.push({
-      tool: 'create_support_ticket',
+      tool,
       label: 'Create support ticket',
       args: {
         title: title.slice(0, 180) || 'Helper support report',
@@ -475,6 +510,32 @@ function deterministicPlan(message = '', registry, context = {}) {
       label: sending ? 'Send email' : 'Draft email',
       args: sending ? { to, subject, text: body } : { to, subject, body },
       reason: sending ? 'External email send request' : 'Email draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|write|prepare|compose)\b.*\b(parent response|parent reply|reply to parent|parent email)\b/i.test(text)) {
+    const body = textAfterIntent(text, /(?:parent response|parent reply|reply to parent|parent email)\s*(?:about|for|:|-)?\s*([\s\S]+)$/i, text);
+    reply = 'I can prepare a scoped parent response draft without sending it.';
+    actions.push({
+      tool: 'draft_parent_response',
+      label: 'Draft parent response',
+      args: {
+        body,
+        subject: 'One Time parent response draft',
+        project_key: context.projectKey || undefined,
+      },
+      reason: 'Rabbi / One Time parent-response draft request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(draft|write|prepare|compose)\b.*\b(weekly update|parent update|newsletter|class update)\b/i.test(text)) {
+    const body = textAfterIntent(text, /(?:weekly update|parent update|newsletter|class update)\s*(?:about|for|:|-)?\s*([\s\S]+)$/i, text);
+    reply = 'I can prepare a scoped One Time weekly update draft without sending it.';
+    actions.push({
+      tool: 'draft_weekly_update',
+      label: 'Draft weekly update',
+      args: {
+        body,
+        subject: 'One Time weekly update draft',
+        project_key: context.projectKey || undefined,
+      },
+      reason: 'Rabbi / One Time weekly update draft request',
     });
   } else if (/\bbuffer\b|\bschedule\b.*\b(post|social|facebook|linkedin|youtube)\b/i.test(text)) {
     const platform = guessPlatform(text);
@@ -511,6 +572,32 @@ function deterministicPlan(message = '', registry, context = {}) {
     const title = textAfterIntent(text, /(?:create\s*)?(?:a\s*)?(?:codex\s*)?(?:task|work item|job)\s*(?:to|for)?\s*[:\-]?\s*([\s\S]+)$/i, text);
     reply = 'I can create one Codex work item.';
     actions.push({ tool: 'create_codex_work_item', label: 'Create Codex task', args: { title: title || text, brief: text }, reason: 'Codex work request' });
+  } else if (isRabbiOneTimeContext(context) && /\b(create|add|new|prepare|make)\b.*\b(source sheet|source-sheet|mareh mekomos|worksheet sources?)\b/i.test(text)) {
+    const title = textAfterIntent(text, /(?:source sheet|source-sheet|mareh mekomos|worksheet sources?)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, text);
+    reply = 'I can create a scoped Rabbi source sheet preparation task.';
+    actions.push({
+      tool: 'create_rabbi_source_sheet_task',
+      label: 'Create source sheet task',
+      args: {
+        title: title || 'Prepare Rabbi source sheet',
+        prompt: text,
+        project_key: context.projectKey || undefined,
+      },
+      reason: 'Rabbi / One Time source-sheet task request',
+    });
+  } else if (isRabbiOneTimeContext(context) && /\b(create|add|new|save|capture)\b.*\b(shiur idea|class idea|lesson idea|torah idea|mishnah topic)\b/i.test(text)) {
+    const title = textAfterIntent(text, /(?:shiur idea|class idea|lesson idea|torah idea|mishnah topic)\s*(?:for|about|:|-)?\s*([\s\S]+)$/i, text);
+    reply = 'I can create a scoped Rabbi shiur idea task.';
+    actions.push({
+      tool: 'create_rabbi_shiur_idea',
+      label: 'Create shiur idea',
+      args: {
+        title: title || 'Rabbi shiur idea',
+        idea: text,
+        project_key: context.projectKey || undefined,
+      },
+      reason: 'Rabbi / One Time shiur idea request',
+    });
   } else if (/\b(create|add|new)\b.*\btask\b/i.test(text)) {
     const title = textAfterIntent(text, /(?:create|add|new)\s+(?:a\s*)?task\s*(?:to|for)?\s*[:\-]?\s*([\s\S]+)$/i, text);
     reply = 'I can create one Operations task.';
@@ -606,6 +693,7 @@ async function aiPlan(message = '', registry, context = {}) {
           'Use only listed tools and compact args. Do not include secrets.',
           'Use capture_raw_intake for rambles, transcripts, uploaded-class notes, goal-mode requests, and durable memory phrases before creating ordinary tasks.',
           'Use show_goal_status for goal-memory/status questions and run_watchdog_audit for watchdog audit requests.',
+          'For Rabbi / One Time scope, prefer Rabbi-specific aliases such as capture_ramble, show_operating_goals, create_rabbi_source_sheet_task, create_rabbi_shiur_idea, route_bug_to_codex, draft_parent_response, draft_weekly_update, create_ticket, create_help_request, and create_report_problem_ticket when available.',
           'External sends, social publishing, payments, destructive changes, and Buffer scheduling require confirmation.',
           'Use open_operations_view for navigation requests such as open tasks, decisions, pending, content, calendar, or a task detail.',
           'Use create_support_ticket for problem, bug, broken UI, or support-ticket reports.',
