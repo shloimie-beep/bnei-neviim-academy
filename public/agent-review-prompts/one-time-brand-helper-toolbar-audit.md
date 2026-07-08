@@ -1,6 +1,6 @@
 # Agent Mode Prompt - One Time Brand Helper Toolbar Audit
 
-Generated: 2026-07-08T06:33:18.874Z
+Generated: 2026-07-08T14:39:17.216Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -70,18 +70,21 @@ Focus: One Time black/yellow brand isolation, English-only public scope, helper 
 6. From Operations, use the workspace switcher to select One Time / Rabbi / One Time Mishnah Class. If the click path is not findable, record the failed click path and then open /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview.
 7. In the One Time Operations workspace, inspect the side panel, active workspace label, top subcategories, filters/search, primary action buttons, helper/drawer position, and any cards that say configured/not configured. If Rabbi cannot act on a card, mark it as role-contaminating admin noise.
 8. In Operations, open Communications > Email or /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email. Record whether the screen loops, switches to a broken display, or fails to show a clean Rabbi / One Time inbox distinction.
-9. Open /provider.html?review=one-time and /provider.html?admin_provider=one-time&section=mailbox if available. Confirm Rabbi/provider sees clear action buttons such as send message/email previews only where safe, and no random Super Admin diagnostics.
-10. Open /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.
-11. For every role route, audit 1440px, 1024px, 768px, 430px, and 390px. Compare category/subcategory/filter placement, toolbar density, button height, helper scope, role label, and mobile menu behavior against the Operations pattern.
-12. If any route, click path, login, helper, or drop-off step fails, do not stop in frustration. Save a BLOCKED or FAIL report through Operations drop-off with the exact route attempted, what failed, screenshots/DOM notes if available, and the smallest Codex-ready repair suggestion.
+9. In Operations, open Communications > WhatsApp or /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=whatsapp. Record whether WAPI readiness, WhatsApp contact history, and send controls are scoped to OneTime and clearly blocked when credentials are missing.
+10. Open /provider.html?review=one-time and /provider.html?admin_provider=one-time&section=mailbox if available. Confirm Rabbi/provider sees clear action buttons such as send message/email previews only where safe, and no random Super Admin diagnostics.
+11. Open /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.
+12. For every role route, audit 1440px, 1024px, 768px, 430px, and 390px. Compare category/subcategory/filter placement, toolbar density, button height, helper scope, role label, and mobile menu behavior against the Operations pattern.
+13. Open https://join.onetimeonetime.com/parent/login and https://join.onetimeonetime.com/student/login. Confirm login/reset surfaces are OneTime-only and do not flash BNA Academy branding or Hebrew/English toggle.
+14. If any route, click path, login, helper, or drop-off step fails, do not stop in frustration. Save a BLOCKED or FAIL report through Operations drop-off with the exact route attempted, what failed, screenshots/DOM notes if available, and the smallest Codex-ready repair suggestion.
 
 ## Required Audit Output
 
-- Produce a route matrix for /one-time, One Time Operations, Communications > Email, provider/Rabbi, parent, student, member, and classroom.
+- Produce a route matrix for /one-time, live One Time login/reset surfaces, One Time Operations, Communications > Email, Communications > WhatsApp, provider/Rabbi, parent, student, member, and classroom.
 - For each route include 1440px, 1024px, 768px, 430px, and 390px verdicts for spacing, topbar density, button alignment, filter placement, helper placement, role label, and overflow.
 - Flag brand bleed specifically: BNA colors/copy, Hebrew/English toggle, BNA Academy language, or non-One-Time helper language on One Time surfaces.
 - Flag role bleed specifically: Super Admin diagnostics in Rabbi/parent/student/member views, parent billing in student views, raw setup data in user views, or unrelated BNA records anywhere in One Time.
 - Report Communications loops or bad-display switches with exact click path and route/query string.
+- Report WhatsApp/WAPI readiness: whether inbound CRM logging, outbound send blocking, auto-reply readiness, and missing credentials are understandable without enabling a live send.
 - Rank fixes by P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.
 - End only with OPERATIONS_DROPOFF_SAVED after a saved AGR readback, or OPERATIONS_DROPOFF_FAILED with the full redacted payload if every save path fails.
 

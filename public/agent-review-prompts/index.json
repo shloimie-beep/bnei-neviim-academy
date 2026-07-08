@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T06:33:18.874Z",
+  "generated_at": "2026-07-08T14:39:17.216Z",
   "prompt_count": 15,
   "prompts": [
     {
@@ -85,6 +85,27 @@
       ],
       "requirement_id": "REQ-20260626-004",
       "focus": "One Time provider admin scope, provider helper links, payment/access previews, classroom setup, and no cross-workspace leakage",
+      "exact_navigation": [
+        "Open /operations/agent-review?prompt=rabbi-provider-admin first. Confirm this prompt key is visible, click Start Audit / I started this agent mode, and open the drop-off page in a second tab before auditing.",
+        "Open /operations. If login is required, use browser takeover so the owner types credentials directly. Do not ask for, store, screenshot, or repeat credentials.",
+        "Confirm you are in BNA Operations / Super Admin, then find the workspace switcher in the side panel or top shell.",
+        "Select the One Time / Rabbi workspace. Expected labels may include One Time, Rabbi / One Time, One Time Mishnah Class, rabbi_sheller_provider, or one_time_mishnah_class.",
+        "If the workspace switcher is missing, confusing, or broken, record the failed click path, then use /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview as the fallback.",
+        "Open Communications, then Email. If visible, click Rabbi / One Time or View Rabbi / One Time Inbox and confirm the panel says Now Viewing: Rabbi / One Time Inbox or shows info@onetimeonetime.com.",
+        "Click Open Rabbi Provider Portal. Confirm the resulting page is /provider.html?admin_provider=one-time&section=mailbox or an equivalent One Time provider route.",
+        "In the provider/Rabbi route, inspect mailbox, contacts/CRM, class media, WhatsApp setup, support, and dashboard areas. Rabbi view must be OneTime-branded, scoped to rabbi_sheller_provider / one_time_mishnah_class, and free of BNA Academy branding.",
+        "Record every card that says configured/not configured, diagnostics, setup internals, or raw status. If Rabbi cannot click it and perform a role-appropriate action, mark it as Super Admin noise that must move out of Rabbi view.",
+        "Click Student View, Parent/Member View, Classroom, and Library links if visible. Record whether each link opens the correct One Time route and whether the role boundary is clear.",
+        "Open /provider.html?review=one-time, /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS only after the visible click path has been attempted.",
+        "Repeat reachable provider and role routes at 1440px, 1024px, 768px, 430px, and 390px. Check toolbar density, button alignment, side-panel behavior, top subcategory/filter placement, helper placement, and text wrapping.",
+        "If any login, route, click path, helper, viewport, or drop-off step fails, immediately save BLOCKED through the Operations drop-off with exact step, expected result, observed result, partial findings, and smallest Codex-ready repair."
+      ],
+      "audit_checklist": [
+        "PASS/FAIL for Super Admin to Rabbi provider navigation, Communications inbox distinction, provider mailbox/CRM visibility, WhatsApp setup visibility, Student View, Parent/Member View, Classroom, Library, and return-to-Super-Admin path.",
+        "List every Rabbi/provider screen that shows BNA Academy branding, Hebrew/English toggle, BNA colors/copy, unrelated BNA records, raw diagnostics, setup internals, or non-actionable configured/not-configured cards.",
+        "Produce a route matrix with desktop 1440 and mobile 390/430 notes for spacing, toolbar density, filter placement, side-panel behavior, button consistency, role label, helper placement, and first useful content.",
+        "Recommend the smallest implementation packets for Rabbi CRM/mailbox cleanup, non-actionable card removal, view-as navigation repair, and responsive toolbar/filter alignment."
+      ],
       "file": "rabbi-provider-admin.md",
       "path": "/agent-review-prompts/rabbi-provider-admin.md",
       "url": "https://bneineviimacademy.org/agent-review-prompts/rabbi-provider-admin.md",
@@ -273,18 +294,24 @@
       "requirement_id": "REQ-20260707-113",
       "focus": "no-password parent review journey, 30-day trial state, schedule/class link, library/resource access, student click/attendance visibility, billing/trial boundaries, and parent-safe support actions",
       "exact_navigation": [
-        "Open /parent.html?review=one-time directly. Confirm this is a no-password TEST parent route, not a real account.",
-        "Audit the first viewport at 1440px, then repeat the same route at 1024px, 768px, 430px, and 390px.",
-        "Inspect the header/top section spacing, role label, selected category, top subcategory position, filters, buttons, and mobile overflow.",
+        "Open /operations/agent-review?prompt=one-time-parent-trial-journey first. Confirm this prompt key is visible, click Start Audit / I started this agent mode, and keep the drop-off page open.",
+        "Open the live One Time host https://join.onetimeonetime.com/. Confirm it is OneTimeOneTime / One Time Mishnah Class, black/yellow scoped, English-only, and not BNA Academy.",
+        "From the live host, attempt the visible parent/member login or access path first. Record whether a brand-new parent can understand how to set a password, reset a password, and enter the portal without seeing BNA Academy reset/login pages.",
+        "Open /one-time-parent, /parent/login, and /parent.html?review=one-time as fallback routes only after checking the visible path. Flag any expired setup link, BNA Academy reset page, recovery code, classroom code, test label, or fallback password copy.",
+        "Audit the parent route first viewport at 1440px, then repeat at 1024px, 768px, 430px, and 390px.",
+        "Inspect the header/top section spacing, role label, selected category, top subcategory position, filters, buttons, and mobile overflow. Buttons should have equal heights and predictable alignment.",
         "Find the schedule or next-class area. Record whether a brand-new parent can immediately see when class happens and what link to use.",
         "Find the library/resource area. Click the classroom/library link and verify it opens /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS or an equivalent TEST One Time classroom route.",
         "Find 30-day trial, billing, and access-state copy. Record whether it is clear without showing admin-only setup/debug information.",
         "Find student click, attendance, or activity information. Record whether the parent can tell if the child clicked or attended.",
+        "Find student login management. Confirm parent can reset the child password from parent scope, while parent forgot-password sends a reset to the signup email. Flag any separate classroom/recovery code as wrong.",
         "Find support/private question UI. Record whether it is parent-safe and does not send real messages in review mode.",
-        "Open /one-time-email-review.html and inspect the parent welcome/trial email preview. Do not send email."
+        "Open /one-time-email-review.html and inspect the parent welcome/trial email preview. Do not send email.",
+        "If any step fails, save a BLOCKED or FAIL report in Operations drop-off. Include exact route, click path, visible text, screenshot/DOM notes, and the smallest Codex-ready repair."
       ],
       "audit_checklist": [
         "PASS/FAIL for schedule visibility, class link visibility, library visibility, trial/billing clarity, student click/activity visibility, attendance visibility, support UI, and student-login management expectations.",
+        "PASS/FAIL for OneTime-only branding on live parent login/reset/setup surfaces, with no BNA Academy leakage, Hebrew/English toggle, test labels, expired setup flow, fallback classroom code, or recovery-code copy.",
         "Top 5 UI/IA fixes in Codex-ready language, with severity labels P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.",
         "Explicit missing pieces before Codex can send a real parent welcome email.",
         "Recommended email copy shape, but no live send."
@@ -326,21 +353,25 @@
         "one_time_student"
       ],
       "requirement_id": "REQ-20260707-114",
-      "focus": "student login experience, parent-managed student username/password reset expectations, access-code fallback, student-safe class/library state, and no parent billing/private-note leakage",
+      "focus": "student login experience, parent-managed student username/password reset expectations, no recovery/classroom-code fallback, student-safe class/library state, and no parent billing/private-note leakage",
       "exact_navigation": [
-        "Open /student.html?review=one-time directly. Confirm this is a no-password TEST student route, not a real student account.",
+        "Open /operations/agent-review?prompt=one-time-student-login-reset-journey first. Confirm this prompt key is visible, click Start Audit / I started this agent mode, and keep the drop-off page open.",
+        "Open the live One Time host https://join.onetimeonetime.com/. Attempt the visible student login/access path before using direct route fallbacks.",
+        "Open /student/login and audit the logged-out student login shell. It should be OneTime-branded and should not show BNA Academy reset, fallback classroom password, recovery code, or unrelated Academy copy.",
+        "Open /student.html?review=one-time directly as a review fixture only after checking the visible path.",
         "Audit the first viewport at 1440px, then repeat the same route at 1024px, 768px, 430px, and 390px.",
         "Inspect the topbar/header spacing, sidebar or hamburger behavior, side categories, top subcategories, filters, button alignment, and text wrapping.",
         "Confirm the student sees only student-safe class, library, worksheet/resource, attendance, progress, question/support, and achievement/reward information.",
         "Confirm the student does not see parent billing, adult/private notes, Super Admin controls, provider-admin setup, raw debug data, or unrelated BNA school accountability records.",
         "Click the visible Parent link from the student route and confirm it opens /parent.html?review=one-time or an equivalent TEST parent route.",
-        "In the parent route, look for whether the parent can understand how student login setup/reset should work. If review mode hides the real reset form, say whether a visible preview card is needed.",
-        "Open /student/login and audit the real logged-out student login shell at 1440px and 390px: username/password fields, access-code fallback, error/help copy, and mobile spacing.",
-        "Open /parent/login and audit whether the parent setup/reset model is clearly different from student login."
+        "In the parent route, confirm the parent-managed reset model: parent can reset the child password; parent forgot-password sends a reset to the signup email; no separate classroom/recovery code exists.",
+        "Open /student/login again at 1440px and 390px: username/password fields, forgot/reset copy, error/help copy, and mobile spacing.",
+        "Open /parent/login and audit whether the parent setup/reset model is clearly different from student login.",
+        "If any route, role boundary, login shell, or drop-off step fails, save BLOCKED or FAIL through Operations drop-off with exact failed step, partial findings, and suggested correction."
       ],
       "audit_checklist": [
         "State whether parent and student login roles are visually and conceptually distinct.",
-        "PASS/FAIL for student-safe data, parent-managed reset expectation, access-code fallback, class link, library/resources, question/support, and mobile spacing.",
+        "PASS/FAIL for student-safe data, parent-managed reset expectation, no recovery/classroom-code fallback, class link, library/resources, question/support, and mobile spacing.",
         "List every place where the student view feels cramped, uneven, overstuffed, or contaminated by parent/admin/provider information.",
         "Recommend the minimum secure product change needed before a real parent can reset a real student login."
       ],
@@ -389,7 +420,9 @@
       "focus": "consistent side panel, category, top subcategory, filter, drawer, role-label, and mobile IA placement across Super Admin, Rabbi/provider, parent, student, member, and classroom views",
       "exact_navigation": [
         "Start at /operations/agent-review and open each listed review context from the hub when available.",
-        "Also open these direct TEST routes: /operations?view=tasks, /provider.html?review=one-time, /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.",
+        "From /operations, navigate visibly through the workspace switcher into rabbi_sheller_provider / one_time_mishnah_class before using route fallbacks.",
+        "Also open these direct review routes after visible navigation has been attempted: /operations?view=tasks, /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class, /provider.html?admin_provider=one-time&section=mailbox, /provider.html?review=one-time, /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.",
+        "Compare against live One Time host routes where accessible: https://join.onetimeonetime.com/, https://join.onetimeonetime.com/parent/login, https://join.onetimeonetime.com/student/login, and https://join.onetimeonetime.com/provider.html?review=one-time.",
         "For each route, capture the IA map at 1440px and 390px: side navigation categories, selected category state, top subcategories/tabs, filters/search controls, primary action buttons, role/workspace label, drawer/helper placement, and mobile menu behavior.",
         "Compare each role against the Operations shell pattern. The position can adapt to role scope, but the placement model must feel the same across workspaces.",
         "Flag any One Time screen that splits categories in a weird way, moves filters to a new position, duplicates controls, hides the role being viewed, or shows Super Admin setup/debug cards to Rabbi, parent, student, or member roles.",
@@ -454,17 +487,20 @@
         "From Operations, use the workspace switcher to select One Time / Rabbi / One Time Mishnah Class. If the click path is not findable, record the failed click path and then open /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview.",
         "In the One Time Operations workspace, inspect the side panel, active workspace label, top subcategories, filters/search, primary action buttons, helper/drawer position, and any cards that say configured/not configured. If Rabbi cannot act on a card, mark it as role-contaminating admin noise.",
         "In Operations, open Communications > Email or /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email. Record whether the screen loops, switches to a broken display, or fails to show a clean Rabbi / One Time inbox distinction.",
+        "In Operations, open Communications > WhatsApp or /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=whatsapp. Record whether WAPI readiness, WhatsApp contact history, and send controls are scoped to OneTime and clearly blocked when credentials are missing.",
         "Open /provider.html?review=one-time and /provider.html?admin_provider=one-time&section=mailbox if available. Confirm Rabbi/provider sees clear action buttons such as send message/email previews only where safe, and no random Super Admin diagnostics.",
         "Open /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.",
         "For every role route, audit 1440px, 1024px, 768px, 430px, and 390px. Compare category/subcategory/filter placement, toolbar density, button height, helper scope, role label, and mobile menu behavior against the Operations pattern.",
+        "Open https://join.onetimeonetime.com/parent/login and https://join.onetimeonetime.com/student/login. Confirm login/reset surfaces are OneTime-only and do not flash BNA Academy branding or Hebrew/English toggle.",
         "If any route, click path, login, helper, or drop-off step fails, do not stop in frustration. Save a BLOCKED or FAIL report through Operations drop-off with the exact route attempted, what failed, screenshots/DOM notes if available, and the smallest Codex-ready repair suggestion."
       ],
       "audit_checklist": [
-        "Produce a route matrix for /one-time, One Time Operations, Communications > Email, provider/Rabbi, parent, student, member, and classroom.",
+        "Produce a route matrix for /one-time, live One Time login/reset surfaces, One Time Operations, Communications > Email, Communications > WhatsApp, provider/Rabbi, parent, student, member, and classroom.",
         "For each route include 1440px, 1024px, 768px, 430px, and 390px verdicts for spacing, topbar density, button alignment, filter placement, helper placement, role label, and overflow.",
         "Flag brand bleed specifically: BNA colors/copy, Hebrew/English toggle, BNA Academy language, or non-One-Time helper language on One Time surfaces.",
         "Flag role bleed specifically: Super Admin diagnostics in Rabbi/parent/student/member views, parent billing in student views, raw setup data in user views, or unrelated BNA records anywhere in One Time.",
         "Report Communications loops or bad-display switches with exact click path and route/query string.",
+        "Report WhatsApp/WAPI readiness: whether inbound CRM logging, outbound send blocking, auto-reply readiness, and missing credentials are understandable without enabling a live send.",
         "Rank fixes by P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.",
         "End only with OPERATIONS_DROPOFF_SAVED after a saved AGR readback, or OPERATIONS_DROPOFF_FAILED with the full redacted payload if every save path fails."
       ],

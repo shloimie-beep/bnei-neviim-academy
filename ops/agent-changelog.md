@@ -34159,3 +34159,30 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   knowledge promotion policy, Vimeo private smoke/upload target, and member
   publish gate. No real Drive, Vimeo, production database, member portal, or
   bot knowledge mutation was performed.
+
+## 2026-07-08T18:50:00+03:00 - OneTime Agent Mode prompts and WAPI bot gate locally verified
+
+- Refreshed the generated Agent Review prompt source and public prompt pack so
+  OneTime/Rabbi agents must start in Operations, click Start Audit, navigate
+  exact Super Admin -> Rabbi provider -> parent/student/classroom paths, inspect
+  live OneTime parent/student login-reset surfaces, inspect Communications
+  Email/WhatsApp, and save PASS/FAIL/BLOCKED through Operations drop-off even
+  when navigation fails.
+- Updated the parallel prompt packet under
+  `ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/`
+  with the same navigation-first, live-host, WhatsApp readiness, login-reset,
+  and no-chat-only handoff rules.
+- Added a guarded OneTime WAPI auto-reply path for inbound webhook messages:
+  it stamps CRM metadata/readiness, refuses duplicate recent replies, refuses
+  opt-out/wrong-number language, and sends only when OneTime auto-reply is
+  enabled, explicitly approved, class-link env is configured, and the WAPI
+  sender is `one_time_scoped`.
+- WAPI diagnostics now exposes `auto_reply_configured` and
+  `auto_reply_readiness` without exposing the current class link.
+- Verification passed: `node --check server.js`; focused prompt/WAPI/provider
+  tests 21/21.
+- Guardrails: no WhatsApp sent, no parent invite resent, no Zoom password/class
+  link committed, no payment/access/DNS/Zoom/Vimeo/Drive mutation.
+- Remaining blockers: Rabbi WAPI folder/token, `ONE_TIME_WHATSAPP_CLASS_LINK`
+  env/secret, final WhatsApp sender/copy approval, and exact live OneTime
+  student display name for the parent invite resend.

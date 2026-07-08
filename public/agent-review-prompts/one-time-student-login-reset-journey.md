@@ -1,6 +1,6 @@
 # Agent Mode Prompt - One Time Student Login And Parent Reset Journey
 
-Generated: 2026-07-08T06:33:18.874Z
+Generated: 2026-07-08T14:39:17.216Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -53,24 +53,28 @@ Use takeover mode if an Operations login is required. Do not ask for or store pa
 
 ## Work To Perform
 
-Focus: student login experience, parent-managed student username/password reset expectations, access-code fallback, student-safe class/library state, and no parent billing/private-note leakage.
+Focus: student login experience, parent-managed student username/password reset expectations, no recovery/classroom-code fallback, student-safe class/library state, and no parent billing/private-note leakage.
 
 ## Exact Navigation
 
-1. Open /student.html?review=one-time directly. Confirm this is a no-password TEST student route, not a real student account.
-2. Audit the first viewport at 1440px, then repeat the same route at 1024px, 768px, 430px, and 390px.
-3. Inspect the topbar/header spacing, sidebar or hamburger behavior, side categories, top subcategories, filters, button alignment, and text wrapping.
-4. Confirm the student sees only student-safe class, library, worksheet/resource, attendance, progress, question/support, and achievement/reward information.
-5. Confirm the student does not see parent billing, adult/private notes, Super Admin controls, provider-admin setup, raw debug data, or unrelated BNA school accountability records.
-6. Click the visible Parent link from the student route and confirm it opens /parent.html?review=one-time or an equivalent TEST parent route.
-7. In the parent route, look for whether the parent can understand how student login setup/reset should work. If review mode hides the real reset form, say whether a visible preview card is needed.
-8. Open /student/login and audit the real logged-out student login shell at 1440px and 390px: username/password fields, access-code fallback, error/help copy, and mobile spacing.
-9. Open /parent/login and audit whether the parent setup/reset model is clearly different from student login.
+1. Open /operations/agent-review?prompt=one-time-student-login-reset-journey first. Confirm this prompt key is visible, click Start Audit / I started this agent mode, and keep the drop-off page open.
+2. Open the live One Time host https://join.onetimeonetime.com/. Attempt the visible student login/access path before using direct route fallbacks.
+3. Open /student/login and audit the logged-out student login shell. It should be OneTime-branded and should not show BNA Academy reset, fallback classroom password, recovery code, or unrelated Academy copy.
+4. Open /student.html?review=one-time directly as a review fixture only after checking the visible path.
+5. Audit the first viewport at 1440px, then repeat the same route at 1024px, 768px, 430px, and 390px.
+6. Inspect the topbar/header spacing, sidebar or hamburger behavior, side categories, top subcategories, filters, button alignment, and text wrapping.
+7. Confirm the student sees only student-safe class, library, worksheet/resource, attendance, progress, question/support, and achievement/reward information.
+8. Confirm the student does not see parent billing, adult/private notes, Super Admin controls, provider-admin setup, raw debug data, or unrelated BNA school accountability records.
+9. Click the visible Parent link from the student route and confirm it opens /parent.html?review=one-time or an equivalent TEST parent route.
+10. In the parent route, confirm the parent-managed reset model: parent can reset the child password; parent forgot-password sends a reset to the signup email; no separate classroom/recovery code exists.
+11. Open /student/login again at 1440px and 390px: username/password fields, forgot/reset copy, error/help copy, and mobile spacing.
+12. Open /parent/login and audit whether the parent setup/reset model is clearly different from student login.
+13. If any route, role boundary, login shell, or drop-off step fails, save BLOCKED or FAIL through Operations drop-off with exact failed step, partial findings, and suggested correction.
 
 ## Required Audit Output
 
 - State whether parent and student login roles are visually and conceptually distinct.
-- PASS/FAIL for student-safe data, parent-managed reset expectation, access-code fallback, class link, library/resources, question/support, and mobile spacing.
+- PASS/FAIL for student-safe data, parent-managed reset expectation, no recovery/classroom-code fallback, class link, library/resources, question/support, and mobile spacing.
 - List every place where the student view feels cramped, uneven, overstuffed, or contaminated by parent/admin/provider information.
 - Recommend the minimum secure product change needed before a real parent can reset a real student login.
 

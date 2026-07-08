@@ -10,21 +10,39 @@ record whether the path is discoverable, safe, mobile-usable, and role-scoped.
 
 ## Required Start
 
-1. Open `https://bneineviimacademy.org/operations`.
-2. If login is required, ask for browser takeover and let Shloimie type the
+1. Open the Agent Review Hub for the prompt first, click `Start Audit` /
+   `I started this agent mode`, and open the prompt's exact drop-off URL in a
+   second tab before auditing.
+2. Open `https://bneineviimacademy.org/operations`.
+3. If login is required, ask for browser takeover and let Shloimie type the
    credentials directly. Do not ask for passwords in chat.
-3. Confirm the page is the BNA Operations / Super Admin surface.
-4. Find the workspace switcher in the left/sidebar/top Operations shell.
-5. Choose the One Time / Rabbi workspace. Expected visible labels may include:
+4. Confirm the page is the BNA Operations / Super Admin surface.
+5. Find the workspace switcher in the left/sidebar/top Operations shell.
+6. Choose the One Time / Rabbi workspace. Expected visible labels may include:
    - `One Time`
    - `Rabbi / One Time`
    - `One Time Mishnah Class`
    - `rabbi_sheller_provider`
    - `one_time_mishnah_class`
-6. If the workspace switcher is hard to find, broken, hidden on mobile, or
+7. If the workspace switcher is hard to find, broken, hidden on mobile, or
    ambiguous, this is a finding. Continue by using the exact URL fallback only
    after recording that the click path failed:
    `https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class`
+
+## Live One Time Host Check
+
+Before auditing direct fixture routes, open:
+
+- `https://join.onetimeonetime.com/`
+- `https://join.onetimeonetime.com/parent/login`
+- `https://join.onetimeonetime.com/student/login`
+
+Confirm that these surfaces are OneTimeOneTime / One Time Mishnah Class,
+black/yellow scoped, English-only, and do not flash BNA Academy branding,
+BNA cream/navy/teal colors, or a Hebrew/English toggle. Parent forgot-password
+must send a reset to the signup email. Parent scope should be able to reset the
+child password. Student scope must not rely on a separate classroom code,
+support recovery code, or fallback password.
 
 ## Super Admin To Rabbi Provider Path
 
@@ -68,6 +86,14 @@ After reaching the Rabbi provider portal:
 9. If a link is missing, confusing, opens the wrong route, requires unknown
    credentials, loops, or displays a broken/mobile-broken view, do not stop in
    chat. Save the finding in Operations drop-off.
+
+## WhatsApp / WAPI Path
+
+From Operations One Time workspace, open Communications / WhatsApp. Confirm
+whether the Rabbi WAPI sender is configured, whether inbound WhatsApp messages
+are logged into the One Time CRM, whether outbound sends are blocked unless
+explicitly confirmed, and whether auto-reply readiness explains missing
+credentials/class link without enabling a live send.
 
 ## Mandatory Drop-Off, Even On Failure
 

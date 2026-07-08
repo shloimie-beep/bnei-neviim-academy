@@ -13,9 +13,11 @@ Router classification: `PRODUCT_QUALITY` + `CURRENT_STATE_AUDIT` +
 
 Routes/screens covered: BNA Operations shell, Rabbi / One Time workspace,
 provider-admin-on-provider mailbox, provider portal, member/parent portal,
-student portal, classroom review shell, and any Super Admin view-as entry
-points discovered during the audit. View class: Super Admin, provider/Rabbi,
-member, parent, student, public/login, and internal Operations review.
+student portal, classroom review shell, live OneTime parent/student login and
+reset surfaces, Communications / WhatsApp WAPI readiness, and any Super Admin
+view-as entry points discovered during the audit. View class: Super Admin,
+provider/Rabbi, member, parent, student, public/login, and internal Operations
+review.
 Out-of-scope: code edits, deploys, external sends, payment/access/DNS changes,
 credentials, provider-account changes, Drive writes, production-data mutation,
 and any live account permission change except as an approval-gated blocker.
@@ -90,6 +92,13 @@ Product Quality Compiler expansion:
 - equal, predictable button/control sizing;
 - no redundant or illogical tabs;
 - no support/debug clutter in normal provider/student/member views;
+- no BNA Academy reset/login/branding bleed into OneTime parent/student flows;
+- no separate student classroom code, support recovery code, or fallback
+  password in the OneTime student model;
+- parent forgot-password resets the parent email, and parent scope can reset
+  the child password;
+- WhatsApp/WAPI readiness is clear, scoped, and no-send until credentials,
+  class link, sender, and approval gates pass;
 - One Time black/yellow brand preserved separately from BNA cream/navy/teal;
 - shared component behavior across BNA and One Time backends unless role or
   brand rules justify a difference.
@@ -117,6 +126,8 @@ Required output:
    - Super Admin view-as student/member navigation;
    - provider/student support-diagnostics separation.
    - Communications loop/bad-display repair.
+   - Communications WhatsApp/WAPI CRM readiness and no-send gate repair.
+   - OneTime parent/student login-reset brand and password-flow repair.
    - Rabbi dashboard non-actionable Super Admin card cleanup.
    - Top toolbar/top-section spacing and mobile first-viewport cleanup.
 7. For every packet include:

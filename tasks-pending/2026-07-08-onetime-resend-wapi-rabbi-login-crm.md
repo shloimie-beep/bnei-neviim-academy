@@ -9,11 +9,11 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
 | REQ-20260708-047 | Needs operator decision | Resend the full OneTime parent email flow to the redacted operator Gmail address using the live launch-ready flow, no test labels, no BNA/Academy leakage, and a real live student display name. | Blocked by `DEC-20260708-009`. Live OneTime route is deployed and no-send dry run passed in `ops/watchdog-audits/2026-07-08-onetime-parent-student-auth-deploy-live-smoke.md`. |
 | REQ-20260708-048 | Deployed / Needs operator input | Ingest Rabbi WAPI/WhatsApp credential folder into safe local secret/config handling without committing secrets, then verify sender/account readiness. | Deployed code supports OneTime/Rabbi-scoped WAPI env/local-secret names and scoped diagnostics. Live readback after deployment still showed WAPI outbound/sync not configured. Waiting for operator to paste/provide the WAPI folder/path; see `DEC-20260708-010`. |
 | REQ-20260708-049 | Pending | Prepare a concise OneTime WhatsApp welcome/class-link message and send one approved test to the redacted operator phone from the Rabbi / OneTime sender after WAPI readiness and copy/link are verified. | Blocked by WAPI setup and send approval details; see `DEC-20260708-010` and `DEC-20260708-011`. |
-| REQ-20260708-050 | Pending | Build/verify the OneTime WhatsApp bot MVP: immediate response, phone/contact capture, interest question, current class link send, and CRM communication log. | Pending WAPI/CRM audit. |
+| REQ-20260708-050 | Implemented locally / WAPI credential and class-link blocked | Build/verify the OneTime WhatsApp bot MVP: immediate response, phone/contact capture, interest question, current class link send, and CRM communication log. | Local code now evaluates OneTime WAPI inbound webhook scope, logs inbound messages into `bna_contact_communications`, stamps an auto-reply plan onto the inbound CRM record, and can send the OneTime welcome/class-link auto-reply only when `ONE_TIME_WAPI_AUTO_REPLY_ENABLED=true`, `ONE_TIME_WAPI_AUTO_REPLY_CONFIRM=APPROVE_ONE_TIME_WAPI_AUTO_REPLY`, `ONE_TIME_WHATSAPP_CLASS_LINK` is configured, and the sender uses `one_time_scoped` WAPI credentials. No WhatsApp was sent. Tests: `node --check server.js`; `node --test tests/one-time-wapi-scope-contract.test.js tests/provider-wapi-setup-portal.test.js`. |
 | REQ-20260708-051 | Done / Email sent | Create a safe Rabbi Scheller scoped-login/password-setup flow so Shloimie can log in as Rabbi Scheller and inspect the Rabbi view without using the super-admin account. | Live readback showed Rabbi provider session and view-as routes work. Deployed OneTime-branded provider setup email with guarded admin recipient override. Setup email sent to redacted operator Gmail through Resend after deployment `6d74a813-235b-41f6-81ea-777f6a2183e8`; readback status `sent`, provider `resend`, subject OneTime-branded and not BNA-branded. |
 | REQ-20260708-052 | Pending | Polish Rabbi scoped UI: OneTime brand, no pictures, no BNA branding in user-visible Rabbi surfaces, no random diagnostic/configuration cards without actions, consistent side panel/top filter/button layout. | Requires current-state UI audit/PQC packet before product UI implementation. |
-| REQ-20260708-053 | Audited / Still needs prompt refresh | Verify and harden Agent Mode autonomous loop for this workstream: navigation-first prompts, Start/Drop-off/Readback path, failure/blocker reporting, and safe parallel execution. | Existing `public/agent-review-prompts/one-time-parent-trial-journey.md` includes start state, exact drop-off URL, emergency paste fallback, API fallback, and saved-result final contract. Needs refresh so current OneTime/Rabbi/parent prompts use live OneTime routes and role flow. |
-| REQ-20260708-054 | Deployed / WAPI credential blocked | Ensure OneTime CRM is built out for WAPI/WhatsApp contacts, communications, follow-up state, provider/Rabbi scope, and readback in Operations. | Deployed WAPI send path stamps project scope into outbound attempts/results and chooses OneTime-scoped WAPI credentials when workspace/project is OneTime. Live WAPI diagnostics are OneTime-scoped but not configured until `DEC-20260708-010` is resolved. Tests: `tests/one-time-wapi-scope-contract.test.js`, `tests/provider-wapi-setup-portal.test.js`, `tests/parent-student-portal-contract.test.js`. |
+| REQ-20260708-053 | Implemented locally / prompt refresh verified | Verify and harden Agent Mode autonomous loop for this workstream: navigation-first prompts, Start/Drop-off/Readback path, failure/blocker reporting, and safe parallel execution. | Updated `src/lib/bna/agent-review-hub.js`, regenerated `public/agent-review-prompts/*.md`, and refreshed `ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/` so agents must start/drop off through Operations, navigate exact Super Admin -> Rabbi -> parent/student/classroom paths, audit live `join.onetimeonetime.com` login/reset surfaces, inspect Communications Email/WhatsApp, and save BLOCKED/FAIL even when navigation breaks. Tests: `node --test tests/agent-review-hub.test.js tests/agent-mode-operations-dropoff-prompts.test.js`. |
+| REQ-20260708-054 | Implemented locally / WAPI credential blocked | Ensure OneTime CRM is built out for WAPI/WhatsApp contacts, communications, follow-up state, provider/Rabbi scope, and readback in Operations. | Deployed WAPI send path already stamps project scope into outbound attempts/results and chooses OneTime-scoped WAPI credentials. Local follow-up now scopes inbound webhook records by OneTime workspace/project when supplied, records auto-reply readiness into CRM metadata/source context, exposes `auto_reply_configured` / `auto_reply_readiness` in WAPI diagnostics, and keeps live sends blocked without scoped WAPI token + class-link env + approval gate. Live WAPI diagnostics remain not configured until `DEC-20260708-010` is resolved. |
 
 ## Decisions
 
@@ -21,7 +21,7 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | DEC-20260708-009 | Exact live OneTime student display name for the parent invite resend. | The previous record still had old test/walkthrough labels. The cleaned route correctly requires a real `student_name` for live sends. | Shloimie | Reply with the exact student display name to show in the email. | Explicitly approve using an existing real student name from the operator family; do not resend. | Guessing risks creating/sending another wrong live record or mixing BNA student data into OneTime. | Provide the exact OneTime student display name for the resend. | `REQ-20260708-047` | Needs operator decision |
 | DEC-20260708-010 | Rabbi WAPI credential/source configuration. | The WAPI folder/path/credential values have not been provided in this turn yet. | Shloimie | Paste/provide the folder or files, then Codex stores usable secrets only in `.secrets`/environment and records redacted proof. | Use the existing generic WAPI token if it is actually Rabbi-scoped; postpone WhatsApp. | Wrong WAPI account could send from the wrong brand/number or leak BNA identity. | Provide the Rabbi WAPI folder/path and identify the intended sender account/number. | `REQ-20260708-048`, `REQ-20260708-049`, `REQ-20260708-050` | Needs operator input |
-| DEC-20260708-011 | WhatsApp test send payload approval. | Exact final copy and whether to use the current Zoom/class link from the latest approved OneTime invite are not yet confirmed after WAPI setup. | Shloimie/Codex | Codex drafts concise copy, runs a no-send preview/readiness check, then sends one test only to the redacted operator phone after approval is clear. | Send the rough ramble copy; do no WhatsApp send. | Sending too early can produce a fluffy/incorrect live message or expose wrong link/sender. | Approve the final copy/link/sender after WAPI readiness. | `REQ-20260708-049` | Pending |
+| DEC-20260708-011 | WhatsApp test send payload approval. | Exact final copy and whether to use the current Zoom/class link from the latest approved OneTime invite are not yet confirmed after WAPI setup. | Shloimie/Codex | Codex drafts concise copy, sets the class link through environment/secret config (`ONE_TIME_WHATSAPP_CLASS_LINK`) rather than committing it, runs a no-send preview/readiness check, then sends one test only to the redacted operator phone after approval is clear. | Send the rough ramble copy; do no WhatsApp send. | Sending too early can produce a fluffy/incorrect live message, expose wrong link/sender, or leak a Zoom password into source control. | Approve the final copy/link/sender after WAPI readiness and configure the current class link outside the repo. | `REQ-20260708-049` | Pending |
 | DEC-20260708-012 | Rabbi login credential policy. | User requested an easy password, but weak shared passwords should not be stored or sent in repo-visible evidence. | Codex/Shloimie | Use a password setup/reset link or a temporary secret kept outside repo, not a committed weak password. | Set an easy password; do not create login. | Weak credentials can expose the Rabbi workspace and private CRM. | Setup-link path used; no weak shared password stored or returned. | `REQ-20260708-051` | Resolved |
 
 ## Evidence - 2026-07-08 Local Batch
@@ -55,6 +55,25 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
   - Provider setup override with confirm sent to redacted operator Gmail, `email_sent=true`.
   - Rabbi communications readback showed latest provider setup email `status=sent`, `provider=resend`, OneTime subject present, BNA/Academy subject absent.
 
+## Evidence - 2026-07-08 Agent Prompt And WAPI Bot Batch
+
+- Local backend changes: `server.js`.
+- Prompt source and generated prompts:
+  - `src/lib/bna/agent-review-hub.js`
+  - `public/agent-review-prompts/*.md`
+  - `public/agent-review-prompts/index.json`
+  - `ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/`
+- Tests/verification passed:
+  - `node --check server.js`
+  - `node --test tests/one-time-wapi-scope-contract.test.js tests/agent-review-hub.test.js tests/agent-mode-operations-dropoff-prompts.test.js tests/provider-wapi-setup-portal.test.js`
+- Secret/link guard:
+  - Focused scan found no committed raw Zoom password link; the only matching Zoom meeting id evidence was an older redacted readback file with `pwd=[redacted]`.
+  - OneTime WhatsApp class link is now read from `ONE_TIME_WHATSAPP_CLASS_LINK` / related env names and is not committed in source.
+- External-send status:
+  - No WhatsApp was sent.
+  - No parent invite resend was performed.
+  - No payment/access/DNS/Zoom/Vimeo/Drive mutation was performed.
+
 ## Suggested WhatsApp Draft
 
 Status: draft only, not sent.
@@ -76,6 +95,6 @@ Status: draft only, not sent.
 | B1 | Parent invite resend readiness | `REQ-20260708-047` | Blocked on exact student display name |
 | B2 | WAPI/CRM audit and safe config | `REQ-20260708-048`, `REQ-20260708-054` | Pending |
 | B3 | WhatsApp no-send preview and single test send | `REQ-20260708-049` | Pending WAPI/copy/link approval |
-| B4 | WhatsApp bot MVP | `REQ-20260708-050` | Pending audit |
+| B4 | WhatsApp bot MVP | `REQ-20260708-050` | Implemented locally; live send blocked on WAPI credentials, class-link env, and approval |
 | B5 | Rabbi login/view-as and UI audit | `REQ-20260708-051`, `REQ-20260708-052` | Pending |
-| B6 | Agent Mode autonomous loop prompts/drop-off hardening | `REQ-20260708-053` | Pending |
+| B6 | Agent Mode autonomous loop prompts/drop-off hardening | `REQ-20260708-053` | Implemented locally and tests passed; pending commit/push/deploy/live readback |

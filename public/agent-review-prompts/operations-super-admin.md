@@ -1,6 +1,6 @@
 # Agent Mode Prompt - Operations Super-Admin
 
-Generated: 2026-07-08T06:33:18.874Z
+Generated: 2026-07-08T14:39:17.216Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001

@@ -2648,6 +2648,17 @@ const ONE_TIME_WAPI_API_TOKEN =
   usableSecretValue(readLocalSecretFile('onetime-wapi-api-token.txt')) ||
   usableSecretValue(readLocalSecretFile('rabbi-sheller-wapi-api-token.txt')) ||
   usableSecretValue(readLocalSecretFile('rabbi-scheller-wapi-api-token.txt'));
+const ONE_TIME_WAPI_AUTO_REPLY_ENABLED = /^(?:1|true|yes|live)$/i.test(
+  String(process.env.ONE_TIME_WAPI_AUTO_REPLY_ENABLED || '').trim()
+);
+const ONE_TIME_WAPI_AUTO_REPLY_APPROVED =
+  String(process.env.ONE_TIME_WAPI_AUTO_REPLY_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY';
+const ONE_TIME_WHATSAPP_CLASS_LINK = String(
+  process.env.ONE_TIME_WHATSAPP_CLASS_LINK ||
+  process.env.ONE_TIME_CURRENT_CLASS_LINK ||
+  process.env.ONETIME_CLASS_LINK ||
+  ''
+).trim();
 const WAPI_SEND_TIMEOUT_MS = Math.max(
   1000,
   Number(process.env.WAPI_SEND_TIMEOUT_MS || process.env.WHAPI_SEND_TIMEOUT_MS || 15000)
@@ -62269,6 +62280,254 @@ function wapiCredentialsForScope(scope = {}) {
   };
 }
 
+function oneTimeWapiAutoReplyMessage(classLink = ONE_TIME_WHATSAPP_CLASS_LINK) {
+  const link = String(classLink || '').trim();
+  return [
+    'Hi, welcome to the OneTimeOneTime Mishnah class.',
+    `Here is the link for today's shiur: ${link}`,
+    '',
+    'Thank you for your patience while we tune the Zoom setup and sound. The class is free while we finish setting up the technology.',
+    '',
+    'Reply here if you are interested in joining, and we will keep you posted.',
+  ].join('\n');
+}
+
+function wapiInboundLooksLikeOptOut(text = '') {
+  return /\b(stop|unsubscribe|remove me|wrong number|do not message|don't message)\b/i.test(String(text || ''));
+}
+
+function wapiWebhookScopeFromRequest(req, payload = {}) {
+  const requestedWorkspaceKey = normalizeWorkspaceKey(
+    req.query.workspace ||
+    req.query.workspace_key ||
+    payload.workspace ||
+    payload.workspace_key ||
+    payload.workspaceKey ||
+    ''
+  );
+  const requestedProjectKey = normalizeProjectKey(
+    req.query.project ||
+    req.query.project_key ||
+    payload.project ||
+    payload.project_key ||
+    payload.projectKey ||
+    workspaceProjectKey(requestedWorkspaceKey) ||
+    (isOneTimeSingleTenantRuntime() ? ONE_TIME_PROJECT_KEY : '')
+  );
+  return {
+    workspace_key: requestedWorkspaceKey || workspaceKeyForProject(requestedProjectKey),
+    project_key: requestedProjectKey,
+  };
+}
+
+function oneTimeWapiAutoReplyReadiness(scope = {}) {
+  const credentials = wapiCredentialsForScope(scope);
+  const classLinkConfigured = Boolean(ONE_TIME_WHATSAPP_CLASS_LINK);
+  const oneTimeScopedSender = credentials.credential_scope === 'one_time_scoped';
+  const ready = Boolean(
+    isOneTimeWapiScope(scope) &&
+    ONE_TIME_WAPI_AUTO_REPLY_ENABLED &&
+    ONE_TIME_WAPI_AUTO_REPLY_APPROVED &&
+    classLinkConfigured &&
+    credentials.token &&
+    oneTimeScopedSender
+  );
+  const blockers = [];
+  if (!isOneTimeWapiScope(scope)) blockers.push('not_one_time_scope');
+  if (!ONE_TIME_WAPI_AUTO_REPLY_ENABLED) blockers.push('ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled');
+  if (!ONE_TIME_WAPI_AUTO_REPLY_APPROVED) blockers.push('ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY');
+  if (!classLinkConfigured) blockers.push('ONE_TIME_WHATSAPP_CLASS_LINK missing');
+  if (!credentials.token) blockers.push('OneTime WAPI token missing');
+  if (credentials.token && !oneTimeScopedSender) blockers.push('OneTime auto-reply requires one_time_scoped WAPI credentials');
+  return {
+    ready,
+    blockers,
+    enabled: ONE_TIME_WAPI_AUTO_REPLY_ENABLED,
+    approved: ONE_TIME_WAPI_AUTO_REPLY_APPROVED,
+    class_link_configured: classLinkConfigured,
+    credential_scope: credentials.credential_scope,
+    one_time_scoped_sender: oneTimeScopedSender,
+    workspace_key: normalizeWorkspaceKey(scope.workspace_key || scope.workspace || ''),
+    project_key: normalizeProjectKey(scope.project_key || scope.project || ''),
+  };
+}
+
+async function stampWapiAutoReplyPlan(communicationId, plan = {}, db = pool) {
+  if (!communicationId) return null;
+  const result = await db.query(
+    `UPDATE bna_contact_communications
+     SET source_context = COALESCE(source_context, '{}'::jsonb) || $2::jsonb,
+         metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      communicationId,
+      JSON.stringify({ one_time_auto_reply: plan }),
+      JSON.stringify({ one_time_auto_reply: plan }),
+    ]
+  );
+  return result.rows[0] || null;
+}
+
+async function recentOneTimeWapiAutoReplyExists({ communication, normalized, scope }, db = pool) {
+  const phoneDigits = normalizePhoneDigits(normalized.fromNumber || normalized.chatId || '');
+  const result = await db.query(
+    `SELECT id
+     FROM bna_contact_communications
+     WHERE source = 'wapi'
+       AND direction = 'outbound'
+       AND metadata->>'auto_reply_type' = 'one_time_welcome_class_link'
+       AND occurred_at > NOW() - INTERVAL '12 hours'
+       AND (
+         ($1::int IS NOT NULL AND lead_id = $1::int)
+         OR ($2::int IS NOT NULL AND signup_id = $2::int)
+         OR ($3::int IS NOT NULL AND student_id = $3::int)
+         OR ($4 <> '' AND (
+           regexp_replace(COALESCE(metadata->>'recipient_phone', ''), '\\D', '', 'g') = $4
+           OR regexp_replace(COALESCE(source_context->>'recipient_phone', ''), '\\D', '', 'g') = $4
+         ))
+       )
+       AND (
+         $5 = ''
+         OR metadata->>'project_key' = $5
+         OR source_context->>'project_key' = $5
+       )
+     ORDER BY occurred_at DESC, id DESC
+     LIMIT 1`,
+    [
+      communication?.lead_id || null,
+      communication?.signup_id || null,
+      communication?.student_id || null,
+      phoneDigits,
+      normalizeProjectKey(scope.project_key || scope.project || ''),
+    ]
+  );
+  return result.rows[0] || null;
+}
+
+async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match, scope, webhookLogId }, db = pool) {
+  const readiness = oneTimeWapiAutoReplyReadiness(scope);
+  const messageText = String(normalized.messageText || '').trim();
+  const plan = {
+    auto_reply_type: 'one_time_welcome_class_link',
+    copy_version: '2026-07-08-r1',
+    status: 'blocked',
+    sent: false,
+    no_secret_link_in_source: true,
+    ...readiness,
+  };
+
+  if (normalized.fromMe) {
+    plan.blockers.push('inbound_only_outbound_from_me');
+  }
+  if (String(normalized.messageStatus || '').trim()) {
+    plan.blockers.push('delivery_status_event_not_customer_message');
+  }
+  if (!messageText && !normalized.hasMedia) {
+    plan.blockers.push('no_inbound_message_content');
+  }
+  if (wapiInboundLooksLikeOptOut(messageText)) {
+    plan.blockers.push('opt_out_or_wrong_number_language');
+  }
+
+  if (plan.blockers.length) {
+    plan.status = 'blocked';
+    await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
+    return plan;
+  }
+
+  const duplicate = await recentOneTimeWapiAutoReplyExists({ communication, normalized, scope }, db);
+  if (duplicate) {
+    plan.status = 'skipped_recent_reply_exists';
+    plan.recent_reply_communication_id = duplicate.id;
+    await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
+    return plan;
+  }
+
+  const recipientPhone = normalizeWapiRecipient(normalized.fromNumber || normalized.chatId || '');
+  if (!recipientPhone) {
+    plan.status = 'blocked';
+    plan.blockers.push('missing_reply_recipient');
+    await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
+    return plan;
+  }
+
+  const replyBody = oneTimeWapiAutoReplyMessage();
+  const recipient = {
+    to: recipientPhone,
+    phone: normalized.fromNumber || normalized.chatId || recipientPhone,
+    name: match?.matched_name || normalized.pushName || recipientPhone,
+    contact_type: communication?.contact_type || match?.contact_type || 'general',
+    lead_id: communication?.lead_id || match?.lead_id || null,
+    signup_id: communication?.signup_id || match?.signup_id || null,
+    student_id: communication?.student_id || match?.student_id || null,
+    project_id: communication?.project_id || null,
+    match_source: match?.match_source || 'wapi_inbound_auto_reply',
+  };
+  const attempt = await createOutboundWapiCommunicationAttempt({
+    recipient,
+    messageBody: replyBody,
+    summary: `OneTime WhatsApp auto-reply attempted to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240),
+    projectId: recipient.project_id,
+    source: 'one_time_wapi_auto_reply',
+    createdBy: 'OneTime WAPI bot',
+    sourceContext: {
+      auto_reply_type: 'one_time_welcome_class_link',
+      inbound_communication_id: communication?.id || null,
+      wapi_webhook_log_id: webhookLogId || null,
+      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+    },
+    metadata: {
+      auto_reply_type: 'one_time_welcome_class_link',
+      inbound_communication_id: communication?.id || null,
+      wapi_webhook_log_id: webhookLogId || null,
+      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+      class_link_configured: true,
+    },
+  }, db);
+
+  try {
+    const sendResult = await sendWapiTextMessage({
+      to: recipient.to,
+      body: replyBody,
+      typingTime: 1,
+      noLinkPreview: false,
+      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+    });
+    const outbound = await updateOutboundWapiCommunicationResult(attempt.id, {
+      sendResult,
+      summary: `OneTime WhatsApp auto-reply sent to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240),
+      metadata: {
+        auto_reply_type: 'one_time_welcome_class_link',
+        inbound_communication_id: communication?.id || null,
+      },
+    }, db);
+    plan.status = 'sent';
+    plan.sent = true;
+    plan.outbound_communication_id = outbound?.id || attempt.id;
+    await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
+    return plan;
+  } catch (error) {
+    const outbound = await updateOutboundWapiCommunicationResult(attempt.id, {
+      error,
+      metadata: {
+        auto_reply_type: 'one_time_welcome_class_link',
+        inbound_communication_id: communication?.id || null,
+      },
+    }, db).catch(() => null);
+    plan.status = 'failed';
+    plan.sent = false;
+    plan.outbound_communication_id = outbound?.id || attempt.id;
+    plan.error = error.message;
+    await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
+    return plan;
+  }
+}
+
 async function resolveWapiOutboundRecipient(body = {}, db = pool) {
   const explicitTo = normalizeWapiRecipient(body.to || body.phone || body.chat_id || body.chatId);
   if (explicitTo) {
@@ -63342,8 +63601,12 @@ app.post('/api/webhooks/wapi', async (req, res) => {
   const receivedAt = new Date().toISOString();
   const payload = req.body && typeof req.body === 'object' ? req.body : {};
   const normalized = normalizeWapiWebhookPayload(payload);
+  const webhookScope = wapiWebhookScopeFromRequest(req, payload);
 
   try {
+    const webhookProject = webhookScope.project_key
+      ? await getProjectByKey(webhookScope.project_key).catch(() => null)
+      : null;
     const logResult = await pool.query(
       `INSERT INTO bna_wapi_webhook_log (
         event_type, event_id, message_id, chat_id, from_number, push_name,
@@ -63371,7 +63634,34 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       normalized,
       webhookLogId: webhookLog.id,
       payload,
+      projectId: webhookProject?.id || null,
     });
+    const autoReplyResult = !isOneTimeWapiScope(webhookScope)
+      ? {
+          auto_reply_type: 'one_time_welcome_class_link',
+          status: 'not_applicable_non_onetime_scope',
+          sent: false,
+          blockers: ['not_one_time_scope'],
+        }
+      : communicationResult.duplicate
+      ? {
+          auto_reply_type: 'one_time_welcome_class_link',
+          status: 'skipped_duplicate_inbound',
+          sent: false,
+          blockers: ['duplicate_inbound_message'],
+        }
+      : await maybeSendOneTimeWapiAutoReply({
+          normalized,
+          communication: communicationResult.communication,
+          match: communicationResult.match,
+          scope: webhookScope,
+          webhookLogId: webhookLog.id,
+        }).catch((error) => ({
+          auto_reply_type: 'one_time_welcome_class_link',
+          status: 'failed',
+          sent: false,
+          error: error.message,
+        }));
     await pool.query(
       `UPDATE bna_wapi_webhook_log
        SET communication_id = $2,
@@ -63382,9 +63672,14 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       [
         webhookLog.id,
         communicationResult.communication?.id || null,
-        communicationResult.duplicate
-          ? `Duplicate WAPI message; linked to existing communication #${communicationResult.communication?.id}.`
-          : `Filed into contact communications #${communicationResult.communication?.id}.`,
+        [
+          communicationResult.duplicate
+            ? `Duplicate WAPI message; linked to existing communication #${communicationResult.communication?.id}.`
+            : `Filed into contact communications #${communicationResult.communication?.id}.`,
+          autoReplyResult
+            ? `OneTime auto-reply ${autoReplyResult.status || 'not_evaluated'}.`
+            : null,
+        ].filter(Boolean).join(' '),
       ]
     );
 
@@ -63398,6 +63693,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       fromNumber: normalized.fromNumber,
       hasMedia: normalized.hasMedia,
       mediaType: normalized.mediaType,
+      autoReplyStatus: autoReplyResult?.status || null,
     });
 
     res.json({
@@ -63406,6 +63702,14 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       webhookLogId: webhookLog.id || null,
       communicationId: communicationResult.communication?.id || null,
       duplicateCommunication: communicationResult.duplicate,
+      autoReply: autoReplyResult
+        ? {
+            status: autoReplyResult.status,
+            sent: Boolean(autoReplyResult.sent),
+            blockers: autoReplyResult.blockers || [],
+            outboundCommunicationId: autoReplyResult.outbound_communication_id || null,
+          }
+        : null,
     });
   } catch (err) {
     console.error('[wapi] webhook error', {
@@ -63482,6 +63786,14 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
       project_key: diagnosticProjectKey || null,
       send_endpoint: '/api/bna/contact-communications/send-whatsapp',
       sync_endpoint: '/api/bna/wapi/sync',
+      auto_reply_configured: oneTimeWapiAutoReplyReadiness({
+        workspace_key: diagnosticWorkspaceKey,
+        project_key: diagnosticProjectKey,
+      }).ready,
+      auto_reply_readiness: oneTimeWapiAutoReplyReadiness({
+        workspace_key: diagnosticWorkspaceKey,
+        project_key: diagnosticProjectKey,
+      }),
       latest_sync_run: latestSyncRun,
       required_outbound_env: credentials.token ? [] : requiredWapiEnv,
       required_sync_env: credentials.token ? [] : requiredWapiEnv,

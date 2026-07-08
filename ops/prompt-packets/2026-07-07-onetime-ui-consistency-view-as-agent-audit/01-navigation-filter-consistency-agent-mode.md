@@ -55,6 +55,9 @@ credentials directly into the browser. Do not ask for passwords in chat. Do not
 store, screenshot, or repeat passwords, cookies, API keys, or session tokens.
 
 Primary routes:
+- https://join.onetimeonetime.com/
+- https://join.onetimeonetime.com/parent/login
+- https://join.onetimeonetime.com/student/login
 - https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider
 - https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview
 - https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=participants
@@ -91,16 +94,25 @@ Audit checklist:
 7. Check the Communications section for state loops, repeated view switching,
    broken/terrible display modes, tab/filter transitions that circle back, and
    any console/network errors tied to those clicks.
-8. Check whether Super Admin/support diagnostics are leaking into normal Rabbi
+8. In Communications / WhatsApp, check whether WAPI readiness, inbound CRM
+   logging, outbound send blocking, and auto-reply readiness are clear and
+   OneTime-scoped. Do not send WhatsApp. Missing Rabbi WAPI credentials should
+   display as a blocker, not as random unexplained backend clutter.
+9. Check whether Super Admin/support diagnostics are leaking into normal Rabbi
    provider workflows. They may exist in Super Admin/support drawers; they
    should not dominate Rabbi/provider/student surfaces.
-9. Check Rabbi-facing dashboard cards. Non-actionable setup/configuration
+10. Check Rabbi-facing dashboard cards. Non-actionable setup/configuration
    cards like "not configured" / "configured" should be absent from normal
    Rabbi view unless the Rabbi can click them and perform a role-appropriate
    action.
-10. Compare BNA backend and One Time backend: identify the shared component
+11. Compare BNA backend and One Time backend: identify the shared component
    contract that should remain consistent, and the brand tokens that may
    differ.
+12. Check live One Time parent/student login/reset surfaces. Parent
+   forgot-password should send a reset to the signup email. Parent scope should
+   be able to reset the child password. Student scope must not show a separate
+   classroom code, support recovery code, fallback password, BNA Academy reset
+   page, or Hebrew/English toggle.
 
 Evidence to collect:
 - Screenshots or concise visual notes for 1440 and 390 on every audited route.
@@ -108,6 +120,9 @@ Evidence to collect:
 - One route-by-route table.
 - One consistency matrix for categories/subcategories/filters/buttons.
 - A Communications loop/bad-display reproduction table if the bug appears.
+- A WhatsApp/WAPI readiness table: sender configured, inbound CRM logging,
+  outbound send gate, auto-reply readiness, missing env/credential blockers,
+  and whether the UI explains each state clearly.
 - A Rabbi dashboard card inventory separating actionable Rabbi cards from
   Super Admin/support diagnostics.
 - List of P0/P1/P2 findings with defect codes:

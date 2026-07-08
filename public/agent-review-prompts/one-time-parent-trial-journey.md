@@ -1,6 +1,6 @@
 # Agent Mode Prompt - One Time Parent Trial Journey
 
-Generated: 2026-07-08T06:33:18.874Z
+Generated: 2026-07-08T14:39:17.216Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -57,19 +57,25 @@ Focus: no-password parent review journey, 30-day trial state, schedule/class lin
 
 ## Exact Navigation
 
-1. Open /parent.html?review=one-time directly. Confirm this is a no-password TEST parent route, not a real account.
-2. Audit the first viewport at 1440px, then repeat the same route at 1024px, 768px, 430px, and 390px.
-3. Inspect the header/top section spacing, role label, selected category, top subcategory position, filters, buttons, and mobile overflow.
-4. Find the schedule or next-class area. Record whether a brand-new parent can immediately see when class happens and what link to use.
-5. Find the library/resource area. Click the classroom/library link and verify it opens /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS or an equivalent TEST One Time classroom route.
-6. Find 30-day trial, billing, and access-state copy. Record whether it is clear without showing admin-only setup/debug information.
-7. Find student click, attendance, or activity information. Record whether the parent can tell if the child clicked or attended.
-8. Find support/private question UI. Record whether it is parent-safe and does not send real messages in review mode.
-9. Open /one-time-email-review.html and inspect the parent welcome/trial email preview. Do not send email.
+1. Open /operations/agent-review?prompt=one-time-parent-trial-journey first. Confirm this prompt key is visible, click Start Audit / I started this agent mode, and keep the drop-off page open.
+2. Open the live One Time host https://join.onetimeonetime.com/. Confirm it is OneTimeOneTime / One Time Mishnah Class, black/yellow scoped, English-only, and not BNA Academy.
+3. From the live host, attempt the visible parent/member login or access path first. Record whether a brand-new parent can understand how to set a password, reset a password, and enter the portal without seeing BNA Academy reset/login pages.
+4. Open /one-time-parent, /parent/login, and /parent.html?review=one-time as fallback routes only after checking the visible path. Flag any expired setup link, BNA Academy reset page, recovery code, classroom code, test label, or fallback password copy.
+5. Audit the parent route first viewport at 1440px, then repeat at 1024px, 768px, 430px, and 390px.
+6. Inspect the header/top section spacing, role label, selected category, top subcategory position, filters, buttons, and mobile overflow. Buttons should have equal heights and predictable alignment.
+7. Find the schedule or next-class area. Record whether a brand-new parent can immediately see when class happens and what link to use.
+8. Find the library/resource area. Click the classroom/library link and verify it opens /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS or an equivalent TEST One Time classroom route.
+9. Find 30-day trial, billing, and access-state copy. Record whether it is clear without showing admin-only setup/debug information.
+10. Find student click, attendance, or activity information. Record whether the parent can tell if the child clicked or attended.
+11. Find student login management. Confirm parent can reset the child password from parent scope, while parent forgot-password sends a reset to the signup email. Flag any separate classroom/recovery code as wrong.
+12. Find support/private question UI. Record whether it is parent-safe and does not send real messages in review mode.
+13. Open /one-time-email-review.html and inspect the parent welcome/trial email preview. Do not send email.
+14. If any step fails, save a BLOCKED or FAIL report in Operations drop-off. Include exact route, click path, visible text, screenshot/DOM notes, and the smallest Codex-ready repair.
 
 ## Required Audit Output
 
 - PASS/FAIL for schedule visibility, class link visibility, library visibility, trial/billing clarity, student click/activity visibility, attendance visibility, support UI, and student-login management expectations.
+- PASS/FAIL for OneTime-only branding on live parent login/reset/setup surfaces, with no BNA Academy leakage, Hebrew/English toggle, test labels, expired setup flow, fallback classroom code, or recovery-code copy.
 - Top 5 UI/IA fixes in Codex-ready language, with severity labels P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.
 - Explicit missing pieces before Codex can send a real parent welcome email.
 - Recommended email copy shape, but no live send.

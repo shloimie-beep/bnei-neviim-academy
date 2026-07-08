@@ -1,6 +1,6 @@
 # Agent Mode Prompt - One Time Role IA Consistency
 
-Generated: 2026-07-08T06:33:18.874Z
+Generated: 2026-07-08T14:39:17.216Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -63,12 +63,14 @@ Focus: consistent side panel, category, top subcategory, filter, drawer, role-la
 ## Exact Navigation
 
 1. Start at /operations/agent-review and open each listed review context from the hub when available.
-2. Also open these direct TEST routes: /operations?view=tasks, /provider.html?review=one-time, /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.
-3. For each route, capture the IA map at 1440px and 390px: side navigation categories, selected category state, top subcategories/tabs, filters/search controls, primary action buttons, role/workspace label, drawer/helper placement, and mobile menu behavior.
-4. Compare each role against the Operations shell pattern. The position can adapt to role scope, but the placement model must feel the same across workspaces.
-5. Flag any One Time screen that splits categories in a weird way, moves filters to a new position, duplicates controls, hides the role being viewed, or shows Super Admin setup/debug cards to Rabbi, parent, student, or member roles.
-6. In the provider/Rabbi route, verify whether random configuration cards are actionable for Rabbi. If they are not actionable by Rabbi, report them as role-contaminating admin noise.
-7. In parent/student/member/classroom routes, verify that the view never exposes unrelated BNA records, Operations task data, provider setup internals, raw tokens, or other families/students.
+2. From /operations, navigate visibly through the workspace switcher into rabbi_sheller_provider / one_time_mishnah_class before using route fallbacks.
+3. Also open these direct review routes after visible navigation has been attempted: /operations?view=tasks, /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class, /provider.html?admin_provider=one-time&section=mailbox, /provider.html?review=one-time, /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.
+4. Compare against live One Time host routes where accessible: https://join.onetimeonetime.com/, https://join.onetimeonetime.com/parent/login, https://join.onetimeonetime.com/student/login, and https://join.onetimeonetime.com/provider.html?review=one-time.
+5. For each route, capture the IA map at 1440px and 390px: side navigation categories, selected category state, top subcategories/tabs, filters/search controls, primary action buttons, role/workspace label, drawer/helper placement, and mobile menu behavior.
+6. Compare each role against the Operations shell pattern. The position can adapt to role scope, but the placement model must feel the same across workspaces.
+7. Flag any One Time screen that splits categories in a weird way, moves filters to a new position, duplicates controls, hides the role being viewed, or shows Super Admin setup/debug cards to Rabbi, parent, student, or member roles.
+8. In the provider/Rabbi route, verify whether random configuration cards are actionable for Rabbi. If they are not actionable by Rabbi, report them as role-contaminating admin noise.
+9. In parent/student/member/classroom routes, verify that the view never exposes unrelated BNA records, Operations task data, provider setup internals, raw tokens, or other families/students.
 
 ## Required Audit Output
 

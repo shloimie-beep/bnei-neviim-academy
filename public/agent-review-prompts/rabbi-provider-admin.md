@@ -1,6 +1,6 @@
 # Agent Mode Prompt - Rabbi Scheller Provider Admin
 
-Generated: 2026-07-08T06:33:18.874Z
+Generated: 2026-07-08T14:39:17.216Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -53,6 +53,29 @@ Use takeover mode if an Operations login is required. Do not ask for or store pa
 ## Work To Perform
 
 Focus: One Time provider admin scope, provider helper links, payment/access previews, classroom setup, and no cross-workspace leakage.
+
+## Exact Navigation
+
+1. Open /operations/agent-review?prompt=rabbi-provider-admin first. Confirm this prompt key is visible, click Start Audit / I started this agent mode, and open the drop-off page in a second tab before auditing.
+2. Open /operations. If login is required, use browser takeover so the owner types credentials directly. Do not ask for, store, screenshot, or repeat credentials.
+3. Confirm you are in BNA Operations / Super Admin, then find the workspace switcher in the side panel or top shell.
+4. Select the One Time / Rabbi workspace. Expected labels may include One Time, Rabbi / One Time, One Time Mishnah Class, rabbi_sheller_provider, or one_time_mishnah_class.
+5. If the workspace switcher is missing, confusing, or broken, record the failed click path, then use /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview as the fallback.
+6. Open Communications, then Email. If visible, click Rabbi / One Time or View Rabbi / One Time Inbox and confirm the panel says Now Viewing: Rabbi / One Time Inbox or shows info@onetimeonetime.com.
+7. Click Open Rabbi Provider Portal. Confirm the resulting page is /provider.html?admin_provider=one-time&section=mailbox or an equivalent One Time provider route.
+8. In the provider/Rabbi route, inspect mailbox, contacts/CRM, class media, WhatsApp setup, support, and dashboard areas. Rabbi view must be OneTime-branded, scoped to rabbi_sheller_provider / one_time_mishnah_class, and free of BNA Academy branding.
+9. Record every card that says configured/not configured, diagnostics, setup internals, or raw status. If Rabbi cannot click it and perform a role-appropriate action, mark it as Super Admin noise that must move out of Rabbi view.
+10. Click Student View, Parent/Member View, Classroom, and Library links if visible. Record whether each link opens the correct One Time route and whether the role boundary is clear.
+11. Open /provider.html?review=one-time, /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS only after the visible click path has been attempted.
+12. Repeat reachable provider and role routes at 1440px, 1024px, 768px, 430px, and 390px. Check toolbar density, button alignment, side-panel behavior, top subcategory/filter placement, helper placement, and text wrapping.
+13. If any login, route, click path, helper, viewport, or drop-off step fails, immediately save BLOCKED through the Operations drop-off with exact step, expected result, observed result, partial findings, and smallest Codex-ready repair.
+
+## Required Audit Output
+
+- PASS/FAIL for Super Admin to Rabbi provider navigation, Communications inbox distinction, provider mailbox/CRM visibility, WhatsApp setup visibility, Student View, Parent/Member View, Classroom, Library, and return-to-Super-Admin path.
+- List every Rabbi/provider screen that shows BNA Academy branding, Hebrew/English toggle, BNA colors/copy, unrelated BNA records, raw diagnostics, setup internals, or non-actionable configured/not-configured cards.
+- Produce a route matrix with desktop 1440 and mobile 390/430 notes for spacing, toolbar density, filter placement, side-panel behavior, button consistency, role label, helper placement, and first useful content.
+- Recommend the smallest implementation packets for Rabbi CRM/mailbox cleanup, non-actionable card removal, view-as navigation repair, and responsive toolbar/filter alignment.
 
 1. Open each listed review context from the hub.
 2. Confirm the visible "Reviewing as" banner, role, workspace/project, expiry, and Exit control.

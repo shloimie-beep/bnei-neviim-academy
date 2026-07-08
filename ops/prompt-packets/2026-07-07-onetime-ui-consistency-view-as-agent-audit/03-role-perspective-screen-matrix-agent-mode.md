@@ -52,10 +52,13 @@ Exact Super Admin to Rabbi provider path:
 5. Open Communications, then Email.
 6. Click "Rabbi / One Time" or "View Rabbi / One Time Inbox" if visible.
 7. Confirm "Now Viewing: Rabbi / One Time Inbox" or info@onetimeonetime.com.
-8. Click "Open Rabbi Provider Portal".
-9. Confirm you land in /provider.html?admin_provider=one-time&section=mailbox
+8. Open Communications, then WhatsApp. Confirm WAPI readiness, inbound CRM
+   logging, outbound send gate, and auto-reply readiness are OneTime-scoped
+   and understandable. Do not send WhatsApp.
+9. Click "Open Rabbi Provider Portal".
+10. Confirm you land in /provider.html?admin_provider=one-time&section=mailbox
    or an equivalent One Time provider route.
-10. Confirm OneTimeOneTime/Rabbi branding, rabbi_sheller_provider,
+11. Confirm OneTimeOneTime/Rabbi branding, rabbi_sheller_provider,
     one_time_mishnah_class, and clear provider/Rabbi context.
 
 Exact Rabbi provider to student/classroom/member path:
@@ -76,6 +79,8 @@ Routes and surfaces to inspect:
   https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider
 - Super Admin Rabbi email inbox:
   https://bneineviimacademy.org/operations?workspace=platform&view=communications&section=email&inbox=rabbi
+- Super Admin Rabbi WhatsApp/CRM:
+  https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=whatsapp
 - Admin-on-provider portal:
   https://bneineviimacademy.org/provider.html?admin_provider=one-time&section=mailbox
 - Normal provider login/portal:
@@ -87,6 +92,8 @@ Routes and surfaces to inspect:
   https://bneineviimacademy.org/student.html
 - One Time public host comparison:
   https://join.onetimeonetime.com/
+  https://join.onetimeonetime.com/parent/login
+  https://join.onetimeonetime.com/student/login
   https://join.onetimeonetime.com/provider.html?review=one-time
   https://join.onetimeonetime.com/student.html?review=one-time
 
@@ -106,6 +113,7 @@ Matrix columns:
 - first useful content;
 - empty/blocked/loading/error state;
 - visible support diagnostics;
+- WhatsApp/WAPI readiness when applicable;
 - privacy/scope risks;
 - screenshot/blocker;
 - recommended implementation packet.
@@ -126,10 +134,14 @@ Audit checklist:
    pushes useful content down on desktop or mobile.
 7. Check Communications routes for repeated loop/state-switching behavior,
    broken displays, and console/network errors.
-8. Inventory Rabbi/provider dashboard cards. Mark cards as actionable,
+8. Check live One Time login/reset surfaces. Parent forgot-password must send
+   a reset to the signup email. Parent scope should be able to reset the child
+   password. Student scope must not show a classroom code, support recovery
+   code, fallback password, BNA Academy reset page, or Hebrew/English toggle.
+9. Inventory Rabbi/provider dashboard cards. Mark cards as actionable,
    read-only useful, or non-actionable Super Admin/support/configuration
    clutter.
-9. Record exact blockers for unreachable roles. Do not use or ask for shared
+10. Record exact blockers for unreachable roles. Do not use or ask for shared
    passwords.
 
 Evidence to collect:

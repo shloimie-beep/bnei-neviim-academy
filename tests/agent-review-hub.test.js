@@ -111,12 +111,39 @@ test('Agent Mode prompt pack has exactly 15 generated mobile-copyable files', ()
   const brandText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', brandPrompt.file), 'utf8');
   assert.match(brandText, /REQ-20260707-136/);
   assert.match(brandText, /\/one-time/);
+  assert.match(brandText, /join\.onetimeonetime\.com\/parent\/login/);
+  assert.match(brandText, /Communications > WhatsApp/);
+  assert.match(brandText, /WAPI readiness/);
   assert.match(brandText, /\/operations\?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview/);
   assert.match(brandText, /\/operations\?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email/);
   assert.match(brandText, /1440px, 1024px, 768px, 430px, and 390px/);
   assert.match(brandText, /black\/yellow scoped/);
   assert.match(brandText, /Communications loops or bad-display switches/);
   assert.match(brandText, /OPERATIONS_DROPOFF_FAILED/);
+
+  const rabbiPrompt = index.find((item) => item.key === 'rabbi-provider-admin');
+  assert.ok(rabbiPrompt);
+  const rabbiText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', rabbiPrompt.file), 'utf8');
+  assert.match(rabbiText, /Open Rabbi Provider Portal/);
+  assert.match(rabbiText, /Now Viewing: Rabbi \/ One Time Inbox/);
+  assert.match(rabbiText, /Student View, Parent\/Member View, Classroom, and Library/);
+  assert.match(rabbiText, /Super Admin noise/);
+
+  const parentPrompt = index.find((item) => item.key === 'one-time-parent-trial-journey');
+  assert.ok(parentPrompt);
+  const parentText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', parentPrompt.file), 'utf8');
+  assert.match(parentText, /join\.onetimeonetime\.com/);
+  assert.match(parentText, /BNA Academy reset\/login pages/);
+  assert.match(parentText, /parent can reset the child password/);
+  assert.match(parentText, /separate classroom\/recovery code/);
+
+  const studentPrompt = index.find((item) => item.key === 'one-time-student-login-reset-journey');
+  assert.ok(studentPrompt);
+  const studentText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', studentPrompt.file), 'utf8');
+  assert.match(studentText, /no recovery\/classroom-code fallback/);
+  assert.match(studentText, /should not show BNA Academy reset/);
+  assert.match(studentText, /parent forgot-password sends a reset to the signup email/);
+  assert.doesNotMatch(studentText, /access-code fallback/);
 });
 
 test('Agent Mode protocol template locks reusable Start Audit drop-off sequence', () => {

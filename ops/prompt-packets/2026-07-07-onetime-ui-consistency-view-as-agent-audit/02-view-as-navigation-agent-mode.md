@@ -42,12 +42,16 @@ do not store, screenshot, or repeat passwords, cookies, API keys, or tokens.
 
 Known current routes to inspect:
 - https://bneineviimacademy.org/operations?workspace=platform&view=communications&section=email&inbox=rabbi
+- https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=whatsapp
 - https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider
 - https://bneineviimacademy.org/provider.html?admin_provider=one-time&section=mailbox
 - https://bneineviimacademy.org/provider.html
 - https://bneineviimacademy.org/rabbi-member
 - https://bneineviimacademy.org/student/login
 - https://bneineviimacademy.org/student.html
+- https://join.onetimeonetime.com/
+- https://join.onetimeonetime.com/parent/login
+- https://join.onetimeonetime.com/student/login
 
 Known implemented Super Admin action:
 - Operations Rabbi inbox should expose an "Open Rabbi Provider Portal" or
@@ -79,10 +83,13 @@ Exact Super Admin to One Time path:
 8. Click "Rabbi / One Time" or "View Rabbi / One Time Inbox" if visible.
 9. Confirm the email section says "Now Viewing: Rabbi / One Time Inbox" or
    shows info@onetimeonetime.com.
-10. Click "Open Rabbi Provider Portal".
-11. Confirm the browser opens /provider.html?admin_provider=one-time&section=mailbox
+10. Open Communications, then WhatsApp. Confirm WAPI readiness, inbound CRM
+    logging, outbound send gate, and auto-reply readiness are OneTime-scoped
+    and understandable. Do not send WhatsApp.
+11. Click "Open Rabbi Provider Portal".
+12. Confirm the browser opens /provider.html?admin_provider=one-time&section=mailbox
     or an equivalent One Time provider route.
-12. Confirm the provider view shows OneTimeOneTime/Rabbi branding,
+13. Confirm the provider view shows OneTimeOneTime/Rabbi branding,
     rabbi_sheller_provider, one_time_mishnah_class, and a clear Rabbi/provider
     context.
 
@@ -100,6 +107,11 @@ Exact Rabbi provider to student/classroom path:
    or an equivalent One Time classroom route.
 8. Record whether the classroom view is member/student-safe and scoped to the
    One Time Mishnah class.
+9. Open https://join.onetimeonetime.com/parent/login and
+   https://join.onetimeonetime.com/student/login. Parent forgot-password must
+   send a reset to the signup email. Parent scope should be able to reset the
+   child password. Student scope must not show BNA Academy reset pages,
+   classroom/recovery codes, fallback passwords, or Hebrew/English toggle.
 
 Failure rule:
 If any step fails, do not give up in chat. Open the Operations drop-off and save
@@ -120,7 +132,10 @@ Audit checklist:
    or expose private student records.
 5. Try to find a member/parent-facing preview or view-as path. If none exists,
    record exact blocker and recommended safe model.
-6. For every view-as state, record:
+6. For WhatsApp/WAPI state, record whether the sender is configured, whether
+   auto-reply is ready or blocked, and whether the blocker is clear without
+   enabling a live send.
+7. For every view-as state, record:
    - visible banner or lack of banner;
    - account/workspace/project shown;
    - return-to-Super-Admin path;
