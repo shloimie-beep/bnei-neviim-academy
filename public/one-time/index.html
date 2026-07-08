@@ -75,37 +75,26 @@
       margin: 0 auto;
     }
 
-    .announcement {
-      position: sticky;
-      top: 0;
-      z-index: 70;
-      color: #0c0d10;
-      background: var(--ot-yellow);
-      border-bottom: 1px solid rgba(8,9,16,0.26);
-    }
-    .announcement-inner {
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      font-size: 0.86rem;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-    .announcement-note {
-      font-size: 0.75rem;
-      font-weight: 760;
-      text-transform: none;
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .site-header {
       position: sticky;
-      top: 42px;
+      top: 0;
       z-index: 60;
-      background: rgba(8,9,16,0.92);
-      border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: rgba(8,9,16,0.96);
+      border-bottom: 2px solid var(--ot-yellow);
       backdrop-filter: blur(16px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.24);
     }
     .toolbar {
       min-height: 74px;
@@ -129,13 +118,14 @@
       place-items: center;
       overflow: hidden;
       border-radius: 8px;
-      background: var(--ot-yellow);
-      border: 1px solid rgba(237,229,24,0.8);
+      background: var(--ot-white);
+      border: 1px solid rgba(255,255,255,0.82);
     }
     .brand-mark img {
       width: 100%;
       height: 100%;
       object-fit: contain;
+      filter: brightness(0) contrast(1.2);
     }
     .brand strong {
       display: block;
@@ -303,30 +293,63 @@
       font-size: 0.78rem;
       font-weight: 800;
     }
-    .ticker {
+    .signup-strip {
       position: relative;
       z-index: 2;
       margin-top: auto;
-      overflow: hidden;
       color: #0b0c10;
       background: var(--ot-yellow);
       border-top: 1px solid rgba(8,9,16,0.32);
     }
-    .ticker-track {
-      min-height: 46px;
-      display: flex;
+    .signup-strip-inner {
+      min-height: 70px;
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(240px, 360px) auto minmax(120px, 0.35fr);
       align-items: center;
-      gap: 18px;
-      width: max-content;
-      animation: ticker 32s linear infinite;
-      font-size: 0.88rem;
-      font-weight: 950;
-      white-space: nowrap;
+      gap: 12px;
+      padding: 12px 0;
     }
-    .ticker-track span { padding-right: 18px; }
-    @keyframes ticker {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
+    .signup-strip-copy {
+      display: grid;
+      gap: 1px;
+      min-width: 0;
+    }
+    .signup-strip-copy strong {
+      font-size: 1.08rem;
+      line-height: 1.1;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+    .signup-strip-copy span,
+    .signup-strip-note {
+      color: rgba(8,9,16,0.72);
+      font-size: 0.86rem;
+      font-weight: 760;
+    }
+    .signup-strip input {
+      min-height: 46px;
+      border-color: rgba(8,9,16,0.24);
+      color: var(--ot-ink);
+      background: var(--ot-white);
+    }
+    .signup-strip input::placeholder { color: rgba(8,9,16,0.54); }
+    .signup-strip .strip-button {
+      min-width: 132px;
+      color: var(--ot-white);
+      background: var(--ot-black);
+      border-color: var(--ot-black);
+      box-shadow: none;
+    }
+    .signup-strip-note,
+    .signup-strip .form-status {
+      margin: 0;
+      color: rgba(8,9,16,0.76);
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+    .signup-strip .form-status {
+      min-height: 20px;
+      overflow-wrap: anywhere;
     }
 
     .section {
@@ -570,7 +593,6 @@
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .ticker-track { animation: none; }
       .button { transition: none; }
     }
 
@@ -580,8 +602,15 @@
         grid-template-columns: 1fr;
         padding: 12px 0;
       }
-      .site-header { top: 42px; }
       .nav { justify-content: flex-start; }
+      .signup-strip-inner {
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 0.8fr);
+      }
+      .signup-strip .strip-button,
+      .signup-strip-note,
+      .signup-strip .form-status {
+        grid-column: auto;
+      }
       .press-logos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .grid.three,
       .grid.four,
@@ -595,19 +624,30 @@
     }
 
     @media (max-width: 640px) {
-      .announcement-inner {
-        min-height: 58px;
+      .toolbar {
         display: grid;
-        justify-items: start;
-        gap: 2px;
-        padding: 7px 0;
+        grid-template-columns: 1fr;
+        gap: 10px;
       }
-      .site-header { top: 58px; }
       .brand span span { display: none; }
       .brand-mark { width: 44px; height: 44px; }
+      .nav {
+        width: 100%;
+        justify-content: flex-start;
+      }
       .nav a { padding: 7px 8px; font-size: 0.8rem; }
       .hero { min-height: auto; }
       .hero-content { padding-top: 62px; }
+      .signup-strip-inner {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+        padding: 14px 0;
+      }
+      .signup-strip .strip-button,
+      .signup-strip-note,
+      .signup-strip .form-status {
+        width: 100%;
+      }
       .section,
       .start-section { padding: 52px 0; }
       .press-logos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -617,18 +657,10 @@
   </style>
 </head>
 <body data-site-config="/config/service-provider-sites/one-time.json" data-one-time-rabbi-dashboard="public-offer" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
-  <div class="announcement">
-    <div class="wrap announcement-inner">
-      <span id="campaignHeadline">30 DAYS TO JOIN - START WITH 30 DAYS FREE</span>
-      <span class="announcement-note" id="campaignCountdown" data-countdown aria-live="polite">Enrollment deadline will be posted before launch</span>
-    </div>
-  </div>
-
   <header class="site-header">
     <div class="wrap toolbar">
       <a class="brand" href="/one-time" aria-label="OneTimeOneTime Mishnah home">
         <span class="brand-mark">
-          <!-- TODO: replace with final dark-header OneTimeOneTime logo asset if this placeholder is not the approved header logo. -->
           <img src="/images/one-time/brand/onetimelogo.webp" alt="">
         </span>
         <span>
@@ -641,8 +673,7 @@
         <a href="#program">Program</a>
         <a href="#how-it-works">How It Works</a>
         <a href="#faq">FAQ</a>
-        <!-- TODO: replace #start-free with the approved checkout/signup route when live signup is approved. -->
-        <a class="nav-cta" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Start Free</a>
+        <a class="nav-cta" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
         <a href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
       </nav>
     </div>
@@ -659,7 +690,7 @@
           <p class="hero-copy">Join the daily live Mishnayos class built for kids - exciting, clear, accountable, and connected to Rabbi Eli Scheller.</p>
           <p class="hero-support">Starting from the beginning on Rosh Chodesh Elul. Students learn every day, review clearly, track their progress, and become part of one of the most engaging Mishnayos classes in the world.</p>
           <div class="button-row">
-            <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Start 30 Days Free</a>
+            <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
             <a class="button secondary" href="#how-it-works" data-action-id="ACTION-ONETIME-WATCH-RABBI-CTA">See How It Works</a>
           </div>
           <p class="microcopy">No pressure. Try the class, worksheets, portal, and parent tracking for 30 days.</p>
@@ -670,13 +701,21 @@
             <span>Parent tracking</span>
           </div>
         </div>
-        <div class="ticker" aria-label="OneTimeOneTime Mishnah class highlights">
-          <div class="ticker-track">
-            <span>THE ONETIMEONETIME MISHNAH CLASS - LIVE LEARNING - CLEAR REVIEW - DAILY ACCOUNTABILITY - FINISH MISHNAYOS</span>
-            <span>THE ONETIMEONETIME MISHNAH CLASS - LIVE LEARNING - CLEAR REVIEW - DAILY ACCOUNTABILITY - FINISH MISHNAYOS</span>
-            <span>THE ONETIMEONETIME MISHNAH CLASS - LIVE LEARNING - CLEAR REVIEW - DAILY ACCOUNTABILITY - FINISH MISHNAYOS</span>
+        <form id="interestForm" class="signup-strip" aria-label="Sign up for OneTimeOneTime Mishnayos updates">
+          <div class="wrap signup-strip-inner" id="start-free">
+            <div class="signup-strip-copy">
+              <strong>Sign Up Now</strong>
+              <span>Get the 30-day start link and class updates.</span>
+            </div>
+            <label class="visually-hidden" for="signupEmail">Parent email</label>
+            <input id="signupEmail" name="email" type="email" autocomplete="email" placeholder="Parent email" required>
+            <input name="consent" type="hidden" value="yes">
+            <input name="source_landing_page" type="hidden" value="/one-time#start-free">
+            <button class="button strip-button" type="submit" data-action-id="ACTION-ONETIME-INTEREST-FORM" data-one-time-action-state="working">Sign Up Now</button>
+            <p class="signup-strip-note">No spam. No charge today.</p>
+            <p class="form-status" id="interestStatus" aria-live="polite"></p>
           </div>
-        </div>
+        </form>
       </div>
     </section>
 
@@ -769,7 +808,7 @@
         <h2>They don't just join a class. They join a mission.</h2>
         <p>Over two and a half years, students move through Mishnayos with consistency, clarity, and excitement. The goal is not only to cover material. The goal is for kids to enjoy learning, stay accountable, and feel proud of their progress.</p>
         <div class="button-row" style="justify-content: flex-start;">
-          <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Start 30 Days Free</a>
+          <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
         </div>
       </div>
     </section>
@@ -809,53 +848,22 @@
       </div>
     </section>
 
-    <section class="start-section" id="start-free">
+    <section class="start-section" id="next-step">
       <div class="wrap funnel">
         <div>
           <p class="eyebrow">START FREE</p>
-          <h2>Start with 30 days free.</h2>
-          <p>Let your child experience the class, the energy, the worksheets, the portal, and the accountability before committing.</p>
+          <h2>Start with one email.</h2>
+          <p>Put in your email and we will send the OneTimeOneTime start link, class details, and parent access next steps.</p>
           <div class="button-row" style="justify-content: flex-start;">
+            <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
             <a class="button dark" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
           </div>
         </div>
-        <form id="interestForm" class="signup-panel form-grid">
-          <div class="field-pair">
-            <label>
-              Parent name
-              <input name="parent_name" autocomplete="name" required>
-            </label>
-            <label>
-              Email
-              <input name="email" type="email" autocomplete="email">
-            </label>
-          </div>
-          <div class="field-pair">
-            <label>
-              Phone / WhatsApp
-              <input name="phone" autocomplete="tel">
-            </label>
-            <label>
-              Region
-              <select name="region">
-                <option value="us">US</option>
-                <option value="uk">UK</option>
-                <option value="israel">Israel</option>
-                <option value="other">Other</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            Notes
-            <textarea name="notes" placeholder="Best time zone, child's age range, or class questions"></textarea>
-          </label>
-          <label class="checkbox-label">
-            <input name="consent" type="checkbox" value="yes" required>
-            <span>I agree to be contacted about OneTimeOneTime Mishnayos and the 30-day free trial.</span>
-          </label>
-          <button class="button primary" type="submit" data-action-id="ACTION-ONETIME-INTEREST-FORM" data-one-time-action-state="working">Start Free</button>
-          <p class="form-status" id="interestStatus" aria-live="polite"></p>
-        </form>
+        <ul class="check-list">
+          <li>30-day start link</li>
+          <li>Tonight's class details when available</li>
+          <li>Parent portal setup instructions</li>
+        </ul>
       </div>
     </section>
   </main>
@@ -876,63 +884,18 @@
   </footer>
 
   <script>
-    const campaignHeadline = document.getElementById('campaignHeadline');
-    const campaignCountdown = document.getElementById('campaignCountdown');
     const form = document.getElementById('interestForm');
     const status = document.getElementById('interestStatus');
     const copyrightYear = document.getElementById('copyrightYear');
-    let campaignDeadlineMs = 0;
-    let campaignServerOffsetMs = 0;
 
     if (copyrightYear) copyrightYear.textContent = String(new Date().getFullYear());
-
-    function renderCountdown() {
-      if (!campaignDeadlineMs) return;
-      const now = Date.now() + campaignServerOffsetMs;
-      const remaining = campaignDeadlineMs - now;
-      if (remaining <= 0) {
-        campaignCountdown.textContent = 'Enrollment window expired';
-        form?.querySelector('button[type="submit"]')?.setAttribute('disabled', 'disabled');
-        return;
-      }
-      const days = Math.floor(remaining / 86400000);
-      const hours = Math.floor((remaining % 86400000) / 3600000);
-      const minutes = Math.floor((remaining % 3600000) / 60000);
-      const seconds = Math.floor((remaining % 60000) / 1000);
-      campaignCountdown.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s left`;
-    }
-
-    async function loadCampaign() {
-      try {
-        const response = await fetch('/api/one-time/campaign', { credentials: 'same-origin' });
-        const data = await response.json();
-        const campaign = data.campaign || {};
-        campaignHeadline.textContent = campaign.headline || '30 DAYS TO JOIN - START WITH 30 DAYS FREE';
-        if (!campaign.deadline_configured) {
-          campaignCountdown.textContent = 'Enrollment deadline will be posted before launch';
-          return;
-        }
-        campaignDeadlineMs = Date.parse(campaign.deadline_at);
-        campaignServerOffsetMs = Date.parse(campaign.server_now) - Date.now();
-        const dateText = new Intl.DateTimeFormat([], {
-          dateStyle: 'medium',
-          timeStyle: 'short',
-          timeZone: campaign.time_zone || 'Asia/Jerusalem',
-        }).format(new Date(campaignDeadlineMs));
-        campaignCountdown.setAttribute('aria-label', `Enrollment deadline ${dateText}`);
-        renderCountdown();
-        setInterval(renderCountdown, 1000);
-      } catch {
-        campaignCountdown.textContent = 'Campaign deadline unavailable';
-      }
-    }
 
     function formPayload(formElement) {
       const data = new FormData(formElement);
       return Object.fromEntries(data.entries());
     }
 
-    form.addEventListener('submit', async (event) => {
+    form?.addEventListener('submit', async (event) => {
       event.preventDefault();
       status.textContent = 'Saving your request...';
       const button = form.querySelector('button[type="submit"]');
@@ -947,18 +910,14 @@
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Could not save your request');
-        status.textContent = data.message || 'Your request was saved. We will follow up with next steps.';
+        status.textContent = data.message || "You're on the list. We will email the OneTimeOneTime start link.";
         form.reset();
       } catch (error) {
         status.textContent = error.message || 'Could not save your request.';
       } finally {
-        if (!campaignDeadlineMs || campaignDeadlineMs > Date.now() + campaignServerOffsetMs) {
-          button.disabled = false;
-        }
+        button.disabled = false;
       }
     });
-
-    loadCampaign();
   </script>
   <script src="/js/bna-helper-knowledge.js"></script>
   <script src="/js/bna-bot-widget.js"></script>

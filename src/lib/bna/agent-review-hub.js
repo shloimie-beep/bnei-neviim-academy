@@ -382,6 +382,38 @@ const AGENT_MODE_PROMPTS = [
     ],
   },
   {
+    key: 'one-time-public-signup-whatsapp-workflow',
+    title: 'One Time Public Signup And WhatsApp Workflow',
+    context_keys: ['one_time_public_landing', 'operations_super_admin', 'rabbi_provider_admin'],
+    requirement_id: 'REQ-20260708-071',
+    focus: 'public OneTime email-only signup strip, black/yellow landing header, Rabbi Scheller helper/WhatsApp readiness, first-party CRM capture, and Agent Review copied prompt/drop-off state',
+    exact_navigation: [
+      'Open /operations/agent-review?prompt=one-time-public-signup-whatsapp-workflow first. Confirm this prompt key is visible. Click Start Audit if it is not already started, then click Copy Agent Prompt. Confirm the card moves from Ready To Copy into Running / Drop-off Needed or shows prompt copied / awaiting drop-off. Keep the drop-off page open in a second tab before auditing.',
+      'Open the public OneTime host https://join.onetimeonetime.com/ and the fallback path https://join.onetimeonetime.com/one-time. Confirm the page is OneTimeOneTime Mishnah / Rabbi Scheller scoped and does not show BNA Academy, Hebrew/English toggle, BNA cream/navy/teal, provider-preview copy, test labels, or raw Operations data.',
+      'At 1440px, inspect the first viewport. The top toolbar should be black, bounded by a yellow outline/border, and should not have a separate yellow announcement bar above it. The logo should sit on a white tile and render as dark/black artwork.',
+      'At the bottom of the hero, before the next section, find the yellow Sign Up Now signup strip. It should have one visible email input only, one visible Sign Up Now button, concise parent-facing copy, and no visible Parent name, Phone / WhatsApp, Region, Notes, checkbox, checkout, access code, classroom code, or recovery-code field.',
+      'Click each visible Sign Up Now CTA from the header and hero. Confirm each lands on the same #start-free yellow email strip without layout jump, overlap, or horizontal overflow.',
+      'Submit testing rule: do not use a real parent email and do not trigger any external send. If you are on a local/dev route or the hub explicitly indicates a safe smoke route, submit a synthetic email such as agent-mode+timestamp@example.invalid and record the response flags. If you are on live production and cannot confirm synthetic first-party lead testing is allowed, do not submit; instead verify DOM, payload fields, and endpoint target. In all cases, report whether the form posts only to /api/one-time/interest and never to checkout, email, WhatsApp, Stripe, Zoom, Vimeo, Drive, or GHL.',
+      'Open the Rabbi Scheller Assistant bubble on the public page. Ask: "How do I sign up?", "What is the class schedule?", and "Can I message Rabbi Scheller on WhatsApp?" Verify the helper stays scoped to one_time_mishnah_class, names Rabbi Scheller Assistant or Rabbi Scheller digital assistant, and does not claim a WhatsApp was sent unless live WAPI send gates are configured and explicitly approved.',
+      'Open /operations. If login is required, use browser takeover so the owner types credentials directly. Do not ask for, store, repeat, or screenshot credentials. Navigate visibly to One Time / Rabbi / One Time Mishnah Class using the workspace switcher before using route fallbacks.',
+      'In Operations, open Communications > WhatsApp or fallback to /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=whatsapp. Confirm WAPI readiness, inbound CRM logging, outbound send blocking, missing-credential state, class-link configuration state, and WhatsApp contact history are scoped to OneTime. Do not send a WhatsApp message.',
+      'In Operations, open Communications > Email or fallback to /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email. Confirm the Rabbi / One Time inbox distinction is clear and the screen does not loop into a broken display.',
+      'Repeat the public landing checks at 1024px, 768px, 430px, and 390px. For each viewport, inspect header density, nav overflow, yellow signup strip placement, email input/button alignment, helper bubble placement, and first useful content. Record whether text or buttons overlap.',
+      'Return to the drop-off tab and save PASS, FAIL, or BLOCKED. If anything fails mid-audit, save BLOCKED immediately with exact route, viewport, clicked element, observed failure, partial findings, and smallest Codex-ready repair suggestion. Do not end in chat unless every drop-off and API save path fails.',
+    ],
+    audit_checklist: [
+      'PASS/FAIL for the public header: black toolbar, yellow outline, logo dark on white, no top yellow announcement, no BNA Academy/brand bleed.',
+      'PASS/FAIL for the signup strip: yellow bar at hero bottom before next section, one visible email input only, Sign Up Now CTA, no visible phone/name/region/notes/checkbox/recovery/classroom-code fields, and no checkout/access grant.',
+      'Report form behavior: endpoint, payload fields observed, whether a synthetic submit was performed, response flags if submitted, and confirmation that no external send/charge/access/WhatsApp occurred.',
+      'PASS/FAIL for Rabbi Scheller Assistant public helper scope, WhatsApp answer safety, and no BNA helper language.',
+      'PASS/FAIL for Operations Communications > WhatsApp readiness and Communications > Email inbox distinction. Include exact click path or fallback route used.',
+      'Viewport matrix for 1440px, 1024px, 768px, 430px, and 390px covering spacing, button alignment, topbar density, hero/signup strip placement, helper placement, and horizontal overflow.',
+      'Agent Review workflow proof: prompt key, copied/start AGR result ref, idempotency key, whether the card moved to Running / Drop-off Needed, and final AGR readback result.',
+      'Rank fixes by P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.',
+      'End only with OPERATIONS_DROPOFF_SAVED after saved AGR readback, or OPERATIONS_DROPOFF_FAILED with the full redacted payload if every save path fails.',
+    ],
+  },
+  {
     key: 'cross-role-wrong-permission',
     title: 'Cross-Role Wrong-Permission/Error States',
     context_keys: ['wrong_role_error_states'],
@@ -777,6 +809,8 @@ function promptStatusFromResult(result = null) {
 
 function promptWorkflowStateFromResult(result = null) {
   if (!result) return 'not_started';
+  const storedState = String(result.workflow_state || '').toLowerCase();
+  if (['prompt_copied'].includes(storedState)) return storedState;
   const status = String(result.status || '').toLowerCase();
   if (['in_progress', 'started'].includes(status)) return 'in_progress';
   if (status === 'pass') return 'saved_readback_verified';

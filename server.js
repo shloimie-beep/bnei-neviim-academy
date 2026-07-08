@@ -11162,8 +11162,9 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
   const helperResponses = body.helper_responses || body.helperResponses || body.partial_helper_responses || body.partialHelperResponses || body.bot_responses || body.botResponses;
   const linkActionOutcomes = body.link_action_outcomes || body.linkActionOutcomes;
   const evidence = body.evidence || body.evidence_notes || body.evidenceNotes;
+  const requestedWorkflowState = safeAgentReviewText(body.workflow_state || body.workflowState || '', 80);
   const workflowState = status === 'in_progress'
-    ? 'in_progress'
+    ? (requestedWorkflowState === 'prompt_copied' ? 'prompt_copied' : 'in_progress')
     : status === 'pass'
       ? 'saved_readback_verified'
       : status === 'blocked'

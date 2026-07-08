@@ -332,7 +332,7 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /appointment_intents_internal_only: true/);
   assert.match(server, /\/api\/bna\/one-time\/calendar-events/);
   assert.match(server, /\/api\/bna\/one-time\/appointment-intents/);
-  assert.match(server, /app\.get\(\['\/one-time', '\/one-time\/', '\/one-time\/mishnayos', '\/one-time\/us', '\/one-time\/uk', '\/one-time\/israel', '\/one-time\/interest'\]/);
+  assert.match(server, /app\.get\(\[[^\]]*'\/one-time'[^\]]*'\/one-time\/mishnayos'[^\]]*'\/one-time\/us'[^\]]*'\/one-time\/uk'[^\]]*'\/one-time\/israel'[^\]]*'\/one-time\/interest'[^\]]*\], sendOneTimePublicLanding\)/);
   assert.match(server, /app\.get\(\['\/one-time\/member-login', '\/member', '\/member-portal'\], redirectOneTimeMemberHome\)/);
 });
 
@@ -340,12 +340,20 @@ test('public OneTime draft page is noindex, interest-only, and has no checkout c
   assert.match(oneTimeHtml, /<meta name="robots" content="noindex, nofollow">/);
   assert.match(oneTimeHtml, /OneTimeOneTime Mishnah/);
   assert.match(oneTimeHtml, /Your Child Can Love Learning Mishnayos/);
-  assert.match(oneTimeHtml, /Start 30 Days Free/);
+  assert.match(oneTimeHtml, /Sign Up Now/);
   assert.match(oneTimeHtml, /#start-free/);
-  assert.match(oneTimeHtml, /\/api\/one-time\/campaign/);
+  assert.match(oneTimeHtml, /signup-strip/);
+  assert.match(oneTimeHtml, /id="signupEmail"/);
+  assert.match(oneTimeHtml, /source_landing_page/);
   assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
   assert.match(oneTimeHtml, /Consent is required before submitting/);
-  assert.match(oneTimeHtml, /Your request was saved\. We will follow up with next steps\./);
+  assert.match(oneTimeHtml, /You're on the list\. We will email the OneTimeOneTime start link\./);
+  assert.doesNotMatch(oneTimeHtml, /class="announcement"/);
+  assert.doesNotMatch(oneTimeHtml, /class="ticker"/);
+  assert.doesNotMatch(oneTimeHtml, />Parent name</);
+  assert.doesNotMatch(oneTimeHtml, />Phone \/ WhatsApp</);
+  assert.doesNotMatch(oneTimeHtml, />Region</);
+  assert.doesNotMatch(oneTimeHtml, />Notes</);
   assert.doesNotMatch(oneTimeHtml, /\/api\/rabbi\/checkout/);
   assert.doesNotMatch(oneTimeHtml, /Stripe checkout/i);
   assert.doesNotMatch(oneTimeHtml, /GreenInvoice checkout/i);

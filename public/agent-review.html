@@ -156,6 +156,47 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
     }
+    .prompt-lanes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+    .prompt-lane {
+      min-width: 0;
+      display: grid;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8faff;
+      padding: 10px;
+    }
+    .lane-header {
+      display: grid;
+      gap: 3px;
+      padding: 2px 2px 4px;
+    }
+    .lane-header h3 {
+      margin: 0;
+      font-size: 0.96rem;
+      letter-spacing: 0;
+    }
+    .lane-header small {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+    .prompt-lane-empty {
+      min-height: 72px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      text-align: center;
+      padding: 12px;
+      background: #fff;
+    }
     .prompt-card {
       display: grid;
       gap: 10px;
@@ -168,12 +209,12 @@
     .prompt-card h3 { margin: 0; font-size: 0.98rem; letter-spacing: 0; }
     .prompt-card small { color: var(--muted); overflow-wrap: anywhere; }
     @media (max-width: 960px) {
-      .band, .grid, .prompt-grid { grid-template-columns: 1fr 1fr; }
+      .band, .grid, .prompt-grid, .prompt-lanes { grid-template-columns: 1fr 1fr; }
       .form-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 620px) {
       header { position: static; }
-      .band, .grid, .prompt-grid, .form-grid { grid-template-columns: 1fr; }
+      .band, .grid, .prompt-grid, .prompt-lanes, .form-grid { grid-template-columns: 1fr; }
       .meta { grid-template-columns: 1fr; }
       button, .button { width: 100%; }
     }
@@ -225,7 +266,7 @@
       return data;
     };
     const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
-    const pillTone = (status = '') => /pass|processed|confirmed/i.test(status) ? 'ok' : /partial|unknown|needs/i.test(status) ? 'partial' : /block|fail|error|missing/i.test(status) ? 'blocked' : '';
+    const pillTone = (status = '') => /pass|processed|confirmed/i.test(status) ? 'ok' : /partial|unknown|needs|copied|progress|started/i.test(status) ? 'partial' : /block|fail|error|missing/i.test(status) ? 'blocked' : '';
     const terminalPromptStates = new Set(['saved_readback_verified', 'result_saved', 'blocked_saved', 'blocked', 'failed', 'failed_save_paths_exhausted', 'repair_created', 'rerun_required']);
     function workflowLabel(prompt = {}) {
       const stateName = prompt.workflow_state || prompt.status || 'not_started';
@@ -285,8 +326,33 @@
       document.getElementById('resultContext').innerHTML = state.contexts.map((context) => `<option value="${esc(context.key)}">${esc(context.label)}</option>`).join('');
     }
 
-    function renderPrompts() {
-      document.getElementById('promptGrid').innerHTML = state.prompts.map((prompt) => `
+    const promptLaneDefinitions = [
+      {
+        key: 'ready',
+        title: 'Ready To Copy',
+        description: 'Copy these into Agent Mode when you are ready to start the audit.',
+      },
+      {
+        key: 'running',
+        title: 'Running / Drop-off Needed',
+        description: 'Copied or started prompts belong here until PASS, FAIL, or BLOCKED is saved.',
+      },
+      {
+        key: 'saved',
+        title: 'Saved / Needs Repair',
+        description: 'Saved results, blocked audits, and reruns stay here for readback or repair.',
+      },
+    ];
+
+    function promptLaneKey(prompt = {}) {
+      const workflow = prompt.workflow_state || prompt.status || 'not_started';
+      if (terminalPromptStates.has(workflow) || prompt.rerun_required) return 'saved';
+      if (['in_progress', 'started', 'prompt_copied', 'copied'].includes(String(workflow).toLowerCase())) return 'running';
+      return 'ready';
+    }
+
+    function renderPromptCard(prompt) {
+      return `
         <article class="prompt-card" data-prompt-key="${esc(prompt.key)}">
           <div class="actions" style="justify-content:space-between">
             <h3>${esc(prompt.title)}</h3>
@@ -308,6 +374,28 @@
           </div>
           <div class="status" id="prompt-action-${esc(prompt.key)}">${prompt.last_result_ref ? `Last saved ${esc(prompt.last_result_ref)}` : 'Result pending.'}</div>
         </article>
+      `;
+    }
+
+    function renderPrompts() {
+      const root = document.getElementById('promptGrid');
+      root.className = 'prompt-lanes';
+      const groups = promptLaneDefinitions.reduce((acc, lane) => ({ ...acc, [lane.key]: [] }), {});
+      state.prompts.forEach((prompt) => {
+        const key = promptLaneKey(prompt);
+        groups[key] = groups[key] || [];
+        groups[key].push(prompt);
+      });
+      root.innerHTML = promptLaneDefinitions.map((lane) => `
+        <section class="prompt-lane" data-prompt-lane="${esc(lane.key)}">
+          <div class="lane-header">
+            <h3>${esc(lane.title)} <span class="pill">${esc(groups[lane.key]?.length || 0)}</span></h3>
+            <small>${esc(lane.description)}</small>
+          </div>
+          ${(groups[lane.key] || []).length
+            ? groups[lane.key].map(renderPromptCard).join('')
+            : `<div class="prompt-lane-empty">Nothing in ${esc(lane.title.toLowerCase())}.</div>`}
+        </section>
       `).join('');
       refreshPromptTimers();
     }
@@ -400,6 +488,28 @@
       return data;
     }
 
+    async function recordPromptCopied(prompt, start = {}) {
+      const contextKey = prompt.context_keys?.[0] || state.contexts[0]?.key || '';
+      return api('/api/bna/agent-review/results', {
+        method: 'POST',
+        body: JSON.stringify({
+          agent_review_run_id: prompt.copy_metadata?.agent_review_run_id,
+          prompt_key: prompt.key,
+          context_key: contextKey,
+          requirement_id: prompt.requirement_id,
+          status: 'in_progress',
+          severity: 'none',
+          workflow_state: 'prompt_copied',
+          summary: `Agent Review prompt copied for ${prompt.key}. Awaiting PASS, FAIL, or BLOCKED drop-off.`,
+          evidence: ['Copy Agent Prompt clicked after Start Audit.'],
+          return_url: prompt.return_url,
+          dropoff_url: prompt.dropoff_url,
+          idempotency_key: start?.idempotency_key || prompt.idempotency_key,
+          started_at: start?.started_at || prompt.started_at || new Date().toISOString(),
+        }),
+      });
+    }
+
     async function copyPrompt(promptKey) {
       const prompt = promptByKey(promptKey);
       const status = document.getElementById(`prompt-action-${promptKey}`);
@@ -424,9 +534,20 @@
           '',
         ].join('\n');
         await navigator.clipboard?.writeText(`${startedPreamble}${text}`);
-        const pill = document.getElementById(`prompt-status-${promptKey}`);
-        if (pill && current.workflow_state !== 'in_progress') pill.textContent = workflowLabel(current);
-        status.textContent = `Copied after Start Audit with idempotency key ${start?.idempotency_key || current.idempotency_key}.`;
+        const copiedReadback = await recordPromptCopied(current, start).catch(() => null);
+        current.workflow_state = 'prompt_copied';
+        current.status = 'in_progress';
+        current.last_result_ref = copiedReadback?.result_ref || start?.result_ref || current.last_result_ref || null;
+        current.last_result_url = copiedReadback?.readback_url || start?.readback_url || current.last_result_url || null;
+        current.copy_metadata = {
+          ...(current.copy_metadata || {}),
+          current_workflow_state: 'prompt_copied',
+          current_result_ref: current.last_result_ref,
+          started_at: start?.started_at || current.started_at,
+        };
+        renderPrompts();
+        const updatedStatus = document.getElementById(`prompt-action-${promptKey}`);
+        if (updatedStatus) updatedStatus.textContent = `Prompt copied and moved to Running / Drop-off Needed with idempotency key ${start?.idempotency_key || current.idempotency_key}.`;
       } catch (error) {
         status.textContent = error.message || 'Could not copy prompt.';
       }

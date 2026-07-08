@@ -79,6 +79,7 @@ ops/ui-audits/latest.json
 ops/chatgpt-ramble-dropoff/comment-pickups/
 ops/chatgpt-ramble-dropoff/pickups/
 ops/queue-audits/
+ops/qa-runs/*-provider-credential-diagnostics.json
 ops/watchdog-audits/2026-*-raw-intake-drift.md
 ops/watchdog-audits/2026-*-watchdog-action-audit.md
 ops/watchdog-audits/2026-*-watchdog-security-routes.md

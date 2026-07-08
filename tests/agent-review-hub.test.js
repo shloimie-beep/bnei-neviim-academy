@@ -46,11 +46,11 @@ test('Agent Review context matrix covers Issue #24 role cards', () => {
   assert.equal(AGENT_REVIEW_CONTEXTS.some((item) => item.role === 'super_admin' && item.context_type.includes('live')), true);
 });
 
-test('Agent Mode prompt pack has exactly 15 generated mobile-copyable files', () => {
-  assert.equal(AGENT_MODE_PROMPTS.length, 15);
+test('Agent Mode prompt pack has exactly 16 generated mobile-copyable files', () => {
+  assert.equal(AGENT_MODE_PROMPTS.length, 16);
   assert.equal(packageJson.scripts['agent-review:prompts'], 'node scripts/generate-agent-review-prompts.cjs');
   const index = buildPromptIndex({ baseUrl: 'https://bneineviimacademy.org' });
-  assert.equal(index.length, 15);
+  assert.equal(index.length, 16);
 
   for (const prompt of index) {
     const filePath = path.join(root, 'public', 'agent-review-prompts', prompt.file);
@@ -98,6 +98,7 @@ test('Agent Mode prompt pack has exactly 15 generated mobile-copyable files', ()
     'one-time-student-login-reset-journey',
     'one-time-role-ia-consistency',
     'one-time-brand-helper-toolbar-audit',
+    'one-time-public-signup-whatsapp-workflow',
   ]) {
     const prompt = index.find((item) => item.key === key);
     assert.ok(prompt, key);
@@ -120,6 +121,20 @@ test('Agent Mode prompt pack has exactly 15 generated mobile-copyable files', ()
   assert.match(brandText, /black\/yellow scoped/);
   assert.match(brandText, /Communications loops or bad-display switches/);
   assert.match(brandText, /OPERATIONS_DROPOFF_FAILED/);
+
+  const signupPrompt = index.find((item) => item.key === 'one-time-public-signup-whatsapp-workflow');
+  assert.ok(signupPrompt);
+  const signupText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', signupPrompt.file), 'utf8');
+  assert.match(signupText, /REQ-20260708-071/);
+  assert.match(signupText, /Sign Up Now/);
+  assert.match(signupText, /one visible email input only/);
+  assert.match(signupText, /Running \/ Drop-off Needed/);
+  assert.match(signupText, /\/api\/one-time\/interest/);
+  assert.match(signupText, /Do not send a WhatsApp message/);
+  assert.match(signupText, /Communications > WhatsApp/);
+  assert.match(signupText, /prompt copied/);
+  assert.match(signupText, /1440px, 1024px, 768px, 430px, and 390px/);
+  assert.match(signupText, /no external send\/charge\/access\/WhatsApp occurred/);
 
   const rabbiPrompt = index.find((item) => item.key === 'rabbi-provider-admin');
   assert.ok(rabbiPrompt);
@@ -231,6 +246,8 @@ test('server exposes secure review-session and result APIs', () => {
   assert.match(server, /res\.redirect\(303, '\/agent-review\/session'\)/);
   assert.match(server, /app\.post\('\/api\/bna\/agent-review\/results'/);
   assert.match(server, /parseAgentReviewDropoffBody/);
+  assert.match(server, /requestedWorkflowState/);
+  assert.match(server, /prompt_copied/);
   assert.match(server, /buildAgentReviewRepairItem/);
   assert.match(server, /renderRerunPrompt/);
   assert.match(server, /ON CONFLICT \(idempotency_key\) DO UPDATE/);
@@ -264,6 +281,25 @@ test('Start Audit state is a first-class prompt workflow state', () => {
   assert.equal(prompt.workflow_state, 'in_progress');
   assert.equal(prompt.last_result_ref, 'AGR-started');
   assert.equal(prompt.copy_metadata.current_result_ref, 'AGR-started');
+
+  const copiedIndex = buildPromptIndex({
+    baseUrl: 'https://bneineviimacademy.org',
+    resultsByPrompt: {
+      'one-time-public-signup-whatsapp-workflow': {
+        result_ref: 'AGR-copied',
+        prompt_key: 'one-time-public-signup-whatsapp-workflow',
+        status: 'in_progress',
+        workflow_state: 'prompt_copied',
+        requirement_id: 'REQ-20260708-071',
+        idempotency_key: '2026-06-26-agent-review-dropoff-repair:one-time-public-signup-whatsapp-workflow:all-contexts',
+        started_at: '2026-07-08T00:00:00.000Z',
+      },
+    },
+  });
+  const copiedPrompt = copiedIndex.find((item) => item.key === 'one-time-public-signup-whatsapp-workflow');
+  assert.equal(copiedPrompt.status, 'in_progress');
+  assert.equal(copiedPrompt.workflow_state, 'prompt_copied');
+  assert.equal(copiedPrompt.copy_metadata.current_workflow_state, 'prompt_copied');
 });
 
 test('FAIL and BLOCKED Agent Review results create repair and rerun metadata', () => {
@@ -307,9 +343,17 @@ test('hub and session pages expose banner, Exit, prompt links, and typed result 
   assert.match(hub, /ACTION-AGENT-REVIEW-RERUN-PROMPT/);
   assert.match(hub, /copyPrompt/);
   assert.match(hub, /startPromptAudit/);
+  assert.match(hub, /recordPromptCopied/);
+  assert.match(hub, /prompt_copied/);
+  assert.match(hub, /Ready To Copy/);
+  assert.match(hub, /Running \/ Drop-off Needed/);
+  assert.match(hub, /Saved \/ Needs Repair/);
+  assert.match(hub, /promptLaneKey/);
   assert.match(hub, /\/api\/bna\/agent-review\/prompts\/start/);
+  assert.match(hub, /\/api\/bna\/agent-review\/results/);
   assert.match(hub, /Starting audit before copy/);
   assert.match(hub, /Copy Agent Prompt/);
+  assert.match(hub, /Prompt copied and moved to Running \/ Drop-off Needed/);
   assert.match(hub, /Start Audit/);
   assert.match(hub, /Started \$\{elapsedLabel/);
   assert.match(hub, /markPromptBlocked/);

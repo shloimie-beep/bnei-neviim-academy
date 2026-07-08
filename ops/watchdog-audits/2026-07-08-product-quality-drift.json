@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T15:35:29.191Z",
+  "generated_at": "2026-07-08T16:10:44.193Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -326,6 +326,7 @@
     "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/05-moderated-comments-updates-awards.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/06-access-code-session-ux.product-quality.json",
+    "ops/prompt-packets/2026-07-08-onetime-public-signup-agent-workflow/00-onetime-public-signup-agent-workflow.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-rabbi-provider-session-ui/00-rabbi-provider-session-ui.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-rabbi-public-assistant-isolation/00-onetime-rabbi-public-assistant-isolation.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/00-vimeo-folder-v1-control.product-quality.json",

@@ -7,7 +7,10 @@ test('OneTime focused landing copy uses launch funnel offer and safe CTAs', () =
 
   assert.match(html, /OneTimeOneTime Mishnah/);
   assert.match(html, /Your Child Can Love Learning Mishnayos/);
-  assert.match(html, /Start 30 Days Free/);
+  assert.match(html, /Sign Up Now/);
+  assert.match(html, /signup-strip/);
+  assert.match(html, /id="signupEmail"/);
+  assert.match(html, /Get the 30-day start link and class updates/);
   assert.match(html, /See How It Works/);
   assert.match(html, /Member Login/);
   assert.match(html, /Starting from the beginning on Rosh Chodesh Elul/);
@@ -16,10 +19,16 @@ test('OneTime focused landing copy uses launch funnel offer and safe CTAs', () =
   assert.match(html, /Everything your child needs to stay connected/);
   assert.match(html, /How It Works/);
   assert.match(html, /Quick answers before you start/);
-  assert.match(html, /Your request was saved\. We will follow up with next steps\./);
+  assert.match(html, /You're on the list\. We will email the OneTimeOneTime start link\./);
   assert.match(html, /TODO: replace with final hero video\/image/);
-  assert.match(html, /\/api\/one-time\/campaign/);
   assert.match(html, /Consent is required before submitting/);
+  assert.doesNotMatch(html, /class="announcement"/);
+  assert.doesNotMatch(html, /class="ticker"/);
+  assert.doesNotMatch(html, />Parent name</);
+  assert.doesNotMatch(html, />Phone \/ WhatsApp</);
+  assert.doesNotMatch(html, />Region</);
+  assert.doesNotMatch(html, />Notes</);
+  assert.doesNotMatch(html, /source_landing_page[\s\S]{0,120}Phone/);
   assert.doesNotMatch(html, /private asset library/i);
   assert.doesNotMatch(html, /server-backed/i);
   assert.doesNotMatch(html, /video ID/i);
@@ -54,16 +63,16 @@ test('OneTime focused offer route and registries are declared', () => {
   assert.ok(routes.has('/one-time'));
   assert.ok(routes.has('/public'));
   assert.ok(routes.has('/one-time/mishnayos'));
-  assert.ok(routes.has('/api/one-time/campaign'));
   assert.ok(routes.has('/one-time/privacy.html'));
   assert.ok(routes.has('/one-time/terms.html'));
 
   const actions = new Set(actionRegistry.actions.map((action) => action.action_id));
   assert.ok(actions.has('ACTION-ONETIME-JOIN-SHIR-CTA'));
   assert.ok(actions.has('ACTION-ONETIME-WATCH-RABBI-CTA'));
-  assert.ok(actions.has('ACTION-ONETIME-CAMPAIGN-TIMER-READBACK'));
   assert.ok(actions.has('ACTION-ONETIME-INTEREST-FORM'));
   assert.ok(actions.has('ACTION-ONETIME-MEMBER-LOGIN-LINK'));
   const joinAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-JOIN-SHIR-CTA');
   assert.match(joinAction.selector_hint, /#start-free/);
+  const formAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-INTEREST-FORM');
+  assert.match(formAction.expected_behavior, /email/i);
 });

@@ -34349,3 +34349,37 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   external-input only: Rabbi WAPI credentials/class-link approval for WhatsApp,
   exact live student display name for parent invite resend, and separate Vimeo
   transcript promotion approval.
+
+## 2026-07-08T19:12:00+03:00 - OneTime public signup strip and Agent Review workflow locally verified
+
+- Registered `RAW-20260708-015` and `REQ-20260708-071` for the public
+  email-only signup strip, black/yellow header, and Agent Mode prompt-copy
+  workflow.
+- Reworked the OneTime public landing so the top yellow announcement is gone,
+  the sticky toolbar is black with a yellow border, the OneTime logo renders as
+  black artwork on a white tile, and the hero-bottom yellow strip has one
+  visible email input plus `Sign Up Now`.
+- Removed the old visible parent name, phone/WhatsApp, region, notes, and
+  checkbox fields from the public signup surface. The submit still posts only
+  to first-party `/api/one-time/interest` with hidden consent/source metadata.
+- Added Agent Review prompt lanes: `Ready To Copy`, `Running / Drop-off
+  Needed`, and `Saved / Needs Repair`.
+- Added a focused `one-time-public-signup-whatsapp-workflow` Agent Mode prompt
+  that audits public signup, Rabbi Scheller Assistant scope, WhatsApp/WAPI
+  readiness, Communications > Email, exact navigation, mobile/desktop
+  viewports, and mandatory drop-off/readback behavior.
+- Copying a standalone Agent Review prompt now records `prompt_copied` metadata
+  through the existing AGR result endpoint and immediately moves the prompt card
+  into the running/drop-off lane.
+- Security cleanup: removed tracked provider credential diagnostics JSON from
+  git without opening it and added a `.gitignore` guard for future
+  `*-provider-credential-diagnostics.json` reports.
+- Local verification passed: PQC validation, `node --check server.js`,
+  focused tests 30/30, action watchdog, protocol-drift watchdog, secrets audit,
+  and `git diff --check`.
+- Local Playwright smoke passed at 1440, 1024, 768, 430, and 390 widths with
+  screenshots and a mocked no-send synthetic signup; no real lead, email,
+  WhatsApp, checkout, payment, access grant, Zoom, Vimeo, Drive, or external
+  provider write was performed.
+- Evidence:
+  `ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/local-report.md`.

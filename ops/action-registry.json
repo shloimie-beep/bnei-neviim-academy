@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-08T14:24:17+03:00",
+  "updated_at": "2026-07-08T19:36:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -400,16 +400,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-INTEREST-FORM",
-      "label": "Request 30-Day Trial",
+      "label": "Sign Up Now",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "#interestForm button[type=\"submit\"]",
-      "expected_behavior": "Creates a first-party OneTime interest lead with explicit consent for review only; no checkout, external send, live charge, or access grant.",
+      "expected_behavior": "Creates a first-party OneTime interest lead from the email-only public signup strip with hidden explicit consent/source metadata; no checkout, external send, live charge, or access grant.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "api_guarded",
-        "expected_result": "Posts only to /api/one-time/interest after consent and returns a no-checkout/no-send/no-access-grant confirmation."
+        "expected_result": "Posts only email, hidden consent, and source metadata to /api/one-time/interest and returns a no-checkout/no-send/no-access-grant confirmation."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
