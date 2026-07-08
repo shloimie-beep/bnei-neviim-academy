@@ -34604,6 +34604,8 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`,
   and live prompt readback for
   `/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md`.
+- Sent one concise operator Telegram progress update after deploy with fixed,
+  verified, blocked, and next-step bullets.
 - No synthetic production support ticket was created and no live Telegram
   support-ticket alert was sent during smoke. The next real configured support
   ticket should trigger the super-admin ding.

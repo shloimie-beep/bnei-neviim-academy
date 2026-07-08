@@ -10,6 +10,8 @@
 
 - `npm run one-time:target:guard`: PASS after commit/push and after deploy.
 - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`: PASS.
+- `npm run telegram:codex-progress -- --send ...`: PASS. Sent one concise
+  operator progress update after deploy; no token/chat ID was printed.
 - Live Agent Review prompt readback:
   `https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md`
   returned `200` and contained:
