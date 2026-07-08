@@ -120,6 +120,7 @@ Follow-up verification:
   tests/rabbi-helper-tool-scope-map.test.js
   tests/one-time-rbac-negative-isolation.test.js
   tests/workspace-rbac-negative-isolation.test.js` (26/26)
+- PASS full `npm test` (1660/1660)
 
 ## Remaining Agent-Mode Autonomy Gaps
 

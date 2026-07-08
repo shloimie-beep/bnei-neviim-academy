@@ -22,9 +22,9 @@ marked done, verified, deployed, or otherwise finished.
 - Added runtime negative tests for the alias batch: One Time project/workspace
   scope rejection, draft-only parent responses, raw-intake redaction, and
   scoped wrapper delegation.
-- Verification passed: focused helper/scope/RBAC tests 26/26 plus syntax
-  checks for the touched helper registry, planner, permissions, safety, and
-  scope-map generator files.
+- Verification passed: focused helper/scope/RBAC tests 26/26, syntax checks
+  for the touched helper registry, planner, permissions, safety, and scope-map
+  generator files, and full `npm test` 1660/1660.
 - Remaining autonomy blockers are explicit in
   `tasks-pending/2026-07-08-rabbi-helper-tool-scope-goal.md` and
   `ops/system-audits/2026-07-08-issue-88-helper-bot-audit-map.md`.
