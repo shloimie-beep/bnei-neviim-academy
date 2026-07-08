@@ -464,7 +464,7 @@ const ONE_TIME_LIBRARY_APPROVAL_FLAG = 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHI
 const ONE_TIME_MEDIA_PROVIDERS = new Set(['vimeo', 'manual_url', 'drive', 'placeholder']);
 const ONE_TIME_TRANSCRIPT_STATUSES = new Set(['draft', 'review', 'approved']);
 const ONE_TIME_PACKAGE_STATUSES = new Set(['draft', 'review', 'approved', 'published', 'archived']);
-const ONE_TIME_ASSET_TYPES = new Set(['worksheet', 'source_sheet', 'thumbnail', 'transcript', 'example', 'other']);
+const ONE_TIME_ASSET_TYPES = new Set(['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other']);
 const ONE_TIME_ASSET_SOURCE_TYPES = new Set(['manual_url', 'uploaded_placeholder', 'drive_placeholder']);
 const ONE_TIME_ASSET_STATUSES = new Set(['draft', 'review', 'approved', 'published', 'archived']);
 const ONE_TIME_LIBRARY_DESTINATIONS = new Set(['member_library']);
@@ -16508,7 +16508,7 @@ CREATE TABLE IF NOT EXISTS one_time_class_assets (
   id BIGSERIAL PRIMARY KEY,
   project_id INTEGER NOT NULL REFERENCES bna_projects(id) ON DELETE CASCADE,
   class_session_id INTEGER NOT NULL REFERENCES bna_class_sessions(id) ON DELETE CASCADE,
-  asset_type TEXT NOT NULL DEFAULT 'worksheet' CHECK (asset_type IN ('worksheet', 'source_sheet', 'thumbnail', 'transcript', 'example', 'other')),
+  asset_type TEXT NOT NULL DEFAULT 'worksheet' CHECK (asset_type IN ('worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other')),
   title TEXT NOT NULL,
   description TEXT,
   file_url TEXT,
@@ -16525,6 +16525,9 @@ CREATE INDEX IF NOT EXISTS idx_one_time_class_assets_project_id ON one_time_clas
 CREATE INDEX IF NOT EXISTS idx_one_time_class_assets_class_session_id ON one_time_class_assets (class_session_id);
 CREATE INDEX IF NOT EXISTS idx_one_time_class_assets_status ON one_time_class_assets (status);
 CREATE INDEX IF NOT EXISTS idx_one_time_class_assets_type ON one_time_class_assets (asset_type);
+ALTER TABLE one_time_class_assets DROP CONSTRAINT IF EXISTS one_time_class_assets_asset_type_check;
+ALTER TABLE one_time_class_assets ADD CONSTRAINT one_time_class_assets_asset_type_check
+  CHECK (asset_type IN ('worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other'));
 
 CREATE TABLE IF NOT EXISTS one_time_member_library_items (
   id BIGSERIAL PRIMARY KEY,
@@ -28694,10 +28697,19 @@ function buildOneTimeClassPackage(classSession, assets = [], libraryItems = []) 
   };
 }
 
+function isOneTimeEditableSlideAsset(asset = {}) {
+  const type = String(asset.asset_type || '').toLowerCase();
+  if (!['slideshow', 'slide_deck'].includes(type)) return false;
+  const url = String(asset.file_url || '');
+  const metadata = asset.metadata && typeof asset.metadata === 'object' ? asset.metadata : {};
+  return metadata.editable_source === true || /\.(pptx?|key)(?:[?#]|$)/i.test(url);
+}
+
 function buildMemberLibraryItemSnapshot(packageView = {}) {
   const safeAssets = (packageView.assets || [])
     .filter((asset) => asset.status !== 'archived')
-    .filter((asset) => ['worksheet', 'source_sheet', 'thumbnail', 'example', 'other'].includes(asset.asset_type))
+    .filter((asset) => ['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'example', 'other'].includes(asset.asset_type))
+    .filter((asset) => !isOneTimeEditableSlideAsset(asset))
     .map((asset) => ({
       id: asset.id,
       asset_type: asset.asset_type,
@@ -28779,7 +28791,7 @@ function oneTimeMemberLibraryPublicView(row = {}, progress = {}) {
     review_state: snapshot.transcript_status === 'approved' ? 'review_ready' : 'needs_review',
     assets: assets
       .filter((asset) => asset && asset.status !== 'archived')
-      .filter((asset) => ['worksheet', 'source_sheet', 'example', 'other'].includes(asset.asset_type))
+      .filter((asset) => ['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'example', 'other'].includes(asset.asset_type))
       .filter((asset) => asset.file_url)
       .map((asset) => ({
         asset_type: normalizeOneTimeAssetType(asset.asset_type),

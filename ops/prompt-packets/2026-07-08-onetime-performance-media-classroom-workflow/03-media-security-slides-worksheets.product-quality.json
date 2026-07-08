@@ -1,0 +1,603 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260708-008",
+  "parent_raw_id": "RAW-20260708-006",
+  "source_statement_ids": [
+    "SRC-20260708-006-003",
+    "SRC-20260708-006-004",
+    "SRC-20260708-006-005",
+    "SRC-20260708-006-006"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260708-005",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260708-005",
+      "PKT-20260708-006",
+      "PKT-20260708-007"
+    ],
+    "blocks_packet_ids": [],
+    "consumes": [
+      "raw-input/RAW-20260708-006-onetime-performance-media-classroom-workflow.md",
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
+      "ops/one-time-mishnah/content-media-intake-workflow.md",
+      "ops/one-time-mishnah/first-party-capability-map.md",
+      "server.js",
+      "public/one-time-classroom.html",
+      "public/member-library.html"
+    ],
+    "produces": [
+      "server.js",
+      "public/one-time-classroom.html",
+      "tests/one-time-member-library.test.js",
+      "tests/one-time-classroom-calendar-community-bot.test.js",
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json",
+    "terminal_condition": "The packet is complete when reviewed class slides/worksheets/source sheets are represented as member-safe class assets, classroom media lazy-activates, member/classroom UI labels the material sections clearly, tests pass, and deployment/live smoke either passes or is blocked with evidence.",
+    "handoff_target": "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "verified",
+  "title": "One Time Media Security And Class Materials",
+  "created_at": "2026-07-08T11:45:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "MEMBER_PARENT_PORTAL",
+    "STUDENT_PORTAL",
+    "RABBI_PROVIDER_ADMIN"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260708-006",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "COMMUNITY_CLASSROOM",
+      "SECURITY_PRIVACY",
+      "UI_IMPLEMENTATION",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.95,
+    "reasons": [
+      "The operator asked for class-specific slideshows and worksheets beside videos.",
+      "The operator raised media-copying and download concerns.",
+      "Existing One Time asset storage already supports reviewed class materials, but slides are not first-class safe member assets yet."
+    ],
+    "affected_product_surfaces": [
+      "One Time classroom class materials",
+      "One Time member-library material metadata"
+    ],
+    "likely_external_provider_blockers": [
+      "Drive-to-Vimeo automated upload remains blocked by DEC-20260708-006.",
+      "Editable PowerPoint exposure policy remains a Rabbi/Shloimie decision under DEC-20260708-007."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "01-current-state-performance-visual-audit",
+      "02-member-library-performance-filters",
+      "03-media-security-slides-worksheets",
+      "04-drive-to-vimeo-automation",
+      "05-moderated-comments-updates-awards"
+    ],
+    "next_exact_packet": "After this packet, create the access-code UX packet or moderated-comments/update feed packet based on the next unblocked requirement."
+  },
+  "operator_intent_summary": "Make each One Time class page show the approved video, slideshow, worksheets, and source sheets in the right class context while applying honest member-only media security rules.",
+  "raw_quotes": [
+    "have a section for the actual slideshow",
+    "along with the video the students are going to be able to see the slides themselves",
+    "we don't really want people to just take our AI videos",
+    "we need a section for the actual worksheets that are applicable to that specific class"
+  ],
+  "decisions_captured": [
+    "DEC-20260708-007"
+  ],
+  "out_of_scope": [
+    "No Drive upload, Vimeo upload, Vimeo privacy mutation, Google Slides permission change, email/WhatsApp/Telegram send, payment/access grant, or public publish.",
+    "No implementation of comment publication, awards notifications, or classroom login/session rewrite.",
+    "No promise that browser-visible video or slides can be made impossible to copy, record, screenshot, or photograph."
+  ],
+  "affected_surfaces": [
+    "One Time classroom",
+    "One Time member-library class assets"
+  ],
+  "affected_routes": [
+    "/one-time-classroom",
+    "/api/one-time-classroom",
+    "/api/member-library"
+  ],
+  "affected_files": [
+    "server.js",
+    "public/one-time-classroom.html",
+    "tests/one-time-member-library.test.js",
+    "tests/one-time-classroom-calendar-community-bot.test.js",
+    "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "server.js One Time asset type normalization and public view filters",
+      "public/one-time-classroom.html today video and material rendering",
+      "tests/one-time-member-library.test.js safe asset assertions",
+      "tests/one-time-classroom-calendar-community-bot.test.js classroom UX assertions"
+    ],
+    "observed": [
+      "The member-safe public view exposes worksheet/source_sheet/example/other assets but not slideshow assets.",
+      "The classroom page eagerly mounts the today Vimeo iframe and shows a fallback Vimeo link.",
+      "The classroom page title area calls the main class panel Today / Live but does not split class-specific slides, worksheets, and source sheets.",
+      "Existing workflow docs already separate slideshows/source materials from recording transcription and external publishing."
+    ],
+    "known_blockers": [
+      "Drive-to-Vimeo automation is blocked by DEC-20260708-006.",
+      "Editable PowerPoint exposure is blocked pending explicit acceptance; this packet uses member-safe view-only material links as the default."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "proper filters",
+      "slideshow",
+      "worksheets applicable to that specific class",
+      "security audit"
+    ],
+    "expanded_phrases": {
+      "proper filters": "Class material navigation must distinguish video, slides, worksheets, and source sheets without asking the user to infer which file belongs to which class.",
+      "slideshow": "Approved slide assets must be first-class class materials and shown as view-only member-safe references by default.",
+      "worksheets applicable to that specific class": "Worksheet and source-sheet assets must be attached to the same class_session_id and rendered only under that class/session.",
+      "security audit": "The packet must state residual media-copying risks and enforce no raw Vimeo link or editable source-file exposure by default."
+    },
+    "first_party_pattern_interpretation": "Use existing One Time class assets and member-library package snapshots as the first-party material model; keep external provider upload and permission writes behind separate approval."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/BROWSER-AGENT-SECURITY.md",
+    "ops/visual-quality-rubric.md",
+    "ops/one-time-mishnah/content-media-intake-workflow.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260708-024",
+      "statement": "Add class-specific slideshow material support.",
+      "expected_result": "Approved slideshow or slide-deck assets are represented as member-safe class materials and can be viewed from the relevant class without exposing editable source files by default.",
+      "acceptance_criteria": [
+        "One Time asset type normalization accepts slideshow and slide_deck.",
+        "Member-safe package snapshots and public views include approved slideshow assets.",
+        "Classroom material rendering separates slide materials from worksheets/source sheets."
+      ]
+    },
+    {
+      "id": "REQ-20260708-025",
+      "statement": "Show class-specific worksheets and source sheets in the classroom.",
+      "expected_result": "Students/parents can see which worksheet/source-sheet materials belong to the selected class/session.",
+      "acceptance_criteria": [
+        "The classroom page renders a Class Materials section for the today/selected class.",
+        "Worksheet and source-sheet labels are clear and tied to the class item.",
+        "Empty material states explain that reviewed materials will appear after approval."
+      ]
+    },
+    {
+      "id": "REQ-20260708-026",
+      "statement": "Apply honest media/material security policy in the UI and data path.",
+      "expected_result": "The app avoids raw Vimeo fallback links and editable-source promises while documenting residual risks.",
+      "acceptance_criteria": [
+        "Classroom video embeds lazy-activate after Play Video.",
+        "Vimeo media does not show a raw fallback link in classroom/member surfaces.",
+        "The register records that member-only/view-only delivery reduces casual copying but cannot stop screenshots or screen recording."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Raw intake RAW-20260708-006 and register exist.",
+      "Current-state audit and member-library performance packet are complete enough to isolate this slice.",
+      "External Drive/Vimeo/Google writes are explicitly out of scope.",
+      "The implementation uses the existing class asset/member-library snapshot model.",
+      "Editable PowerPoint files are not exposed by default."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open classroom with a valid access code while payload fetch is pending.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "Opening classroom",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": ["Library"],
+      "forbidden_content": ["raw secrets", "stack traces"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Loading status is visible near the access form.",
+      "accessibility_expectation": "The access field and button remain keyboard reachable.",
+      "test_smoke_assertion": "Focused tests keep the classroom access route intact.",
+      "requirement_id": "REQ-20260708-025"
+    },
+    "empty": {
+      "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "390",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render a class with no approved assets.",
+      "expected_visible_title": "Class Materials",
+      "expected_visible_message": "Reviewed slides and worksheets will appear here after approval.",
+      "expected_primary_action": "Open Library",
+      "expected_secondary_actions": ["Questions/support"],
+      "forbidden_content": ["unapproved draft files", "admin notes"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty material state is visible text.",
+      "accessibility_expectation": "Empty state text is readable on mobile.",
+      "test_smoke_assertion": "Classroom HTML contains the material empty-state copy.",
+      "requirement_id": "REQ-20260708-025"
+    },
+    "populated": {
+      "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render a published class with slideshow and worksheet/source-sheet assets.",
+      "expected_visible_title": "Class Materials",
+      "expected_visible_message": "Slides",
+      "expected_primary_action": "Play Video",
+      "expected_secondary_actions": ["View slides", "Open worksheet"],
+      "forbidden_content": ["raw Vimeo fallback link", "editable PowerPoint download promise"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Material links have visible names and type labels.",
+      "accessibility_expectation": "Play and material links meet touch target expectations.",
+      "test_smoke_assertion": "Synthetic/live smoke sees zero classroom iframes before Play Video.",
+      "requirement_id": "REQ-20260708-024"
+    },
+    "filtered_empty": {
+      "route": "/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "768",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Select a material filter with no matching assets.",
+      "expected_visible_title": "One Time Member Library",
+      "expected_visible_message": "No published library items match this view.",
+      "expected_primary_action": "Search",
+      "expected_secondary_actions": ["Materials", "Worksheets"],
+      "forbidden_content": ["stale material results"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filter result state is visible.",
+      "accessibility_expectation": "Filter buttons stay reachable.",
+      "test_smoke_assertion": "Member library material filters remain intact.",
+      "requirement_id": "REQ-20260708-025"
+    },
+    "error": {
+      "route": "/one-time-classroom?code=INVALID",
+      "viewport": "390",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Use an invalid access state.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "Could not open classroom",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": ["Questions/support"],
+      "forbidden_content": ["class assets", "media links"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error is visible near the form.",
+      "accessibility_expectation": "Error text is readable and not color-only.",
+      "test_smoke_assertion": "API denial exposes no classroom material payload.",
+      "requirement_id": "REQ-20260708-026"
+    },
+    "blocked_setup": {
+      "route": "/one-time-classroom",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Attempt to use Drive-to-Vimeo or Google permission automation from this packet.",
+      "expected_visible_title": "One Time Mishnah Classroom",
+      "expected_visible_message": "External upload not in this packet",
+      "expected_primary_action": "View materials",
+      "expected_secondary_actions": ["Open Library"],
+      "forbidden_content": ["Drive upload", "Vimeo upload", "Google permission mutation"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "No upload action is introduced.",
+      "accessibility_expectation": "n/a",
+      "test_smoke_assertion": "No provider-write code path is added.",
+      "requirement_id": "REQ-20260708-026"
+    },
+    "preview_only": {
+      "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1024",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Render a Vimeo classroom video before the member clicks Play Video.",
+      "expected_visible_title": "Today / Live",
+      "expected_visible_message": "Private video",
+      "expected_primary_action": "Play Video",
+      "expected_secondary_actions": ["View slides"],
+      "forbidden_content": ["mounted iframe before click"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview button has a visible name.",
+      "accessibility_expectation": "Preview button is keyboard-focusable.",
+      "test_smoke_assertion": "Classroom lazy media assertion confirms no iframe before Play Video.",
+      "requirement_id": "REQ-20260708-026"
+    },
+    "success_readback": {
+      "route": "/api/member-library?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440",
+      "auth_role": "MEMBER_PARENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Fetch member-safe payload for a published class with slideshow assets.",
+      "expected_visible_title": "Member library payload",
+      "expected_visible_message": "assets",
+      "expected_primary_action": "Read payload",
+      "expected_secondary_actions": ["Render Class Materials"],
+      "forbidden_content": ["approval flags", "private admin notes", "raw transcript notes"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Payload maps to labeled UI controls.",
+      "accessibility_expectation": "n/a",
+      "test_smoke_assertion": "Tests assert slideshow/slide_deck assets are member-safe while transcript assets stay hidden.",
+      "requirement_id": "REQ-20260708-024"
+    },
+    "permission_denied": {
+      "route": "/api/one-time-classroom",
+      "viewport": "390",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Fetch classroom API without access.",
+      "expected_visible_title": "Access denied",
+      "expected_visible_message": "A valid access code is required",
+      "expected_primary_action": "Open Classroom",
+      "expected_secondary_actions": ["Support fallback"],
+      "forbidden_content": ["class assets", "media URLs"],
+      "screenshot_required": false,
+      "aria_semantic_expectation": "Denied state is explicit.",
+      "accessibility_expectation": "Denied state is readable.",
+      "test_smoke_assertion": "Wrong access returns no classroom content.",
+      "requirement_id": "REQ-20260708-026"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "430",
+      "auth_role": "STUDENT_PORTAL",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open classroom on mobile and view the today/video/materials panel.",
+      "expected_visible_title": "Class Materials",
+      "expected_visible_message": "Worksheets",
+      "expected_primary_action": "Play Video",
+      "expected_secondary_actions": ["View slides", "Open worksheet"],
+      "forbidden_content": ["horizontal page overflow", "overlapping material cards"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Material groups and links remain named.",
+      "accessibility_expectation": "Buttons and links remain at usable touch size.",
+      "test_smoke_assertion": "Live smoke checks no page overflow.",
+      "requirement_id": "REQ-20260708-025"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS", "viewport": 1440, "auth_role": "MEMBER_PARENT_PORTAL", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260708-024" },
+      { "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS", "viewport": 1024, "auth_role": "MEMBER_PARENT_PORTAL", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260708-026" },
+      { "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS", "viewport": 768, "auth_role": "STUDENT_PORTAL", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260708-025" },
+      { "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS", "viewport": 430, "auth_role": "STUDENT_PORTAL", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260708-025" },
+      { "route": "/one-time-classroom?code=TEST-ONETIME-REVIEW-ACCESS", "viewport": 390, "auth_role": "STUDENT_PORTAL", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260708-025" }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260708-008-001",
+        "route": "/one-time-classroom",
+        "viewport": "1440",
+        "screenshot_before": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-1440-before.png",
+        "screenshot_after_or_blocker": "pending focused verification after implementation",
+        "defect_codes": ["VQ-PERF-001"],
+        "severity": "P1",
+        "user_impact": "The classroom mounted the primary video iframe before the member chose to play, adding unnecessary load to the classroom page.",
+        "expected_fix": "Lazy-activate the classroom video player only after Play Video.",
+        "requirement_id": "REQ-20260708-026"
+      },
+      {
+        "finding_id": "VQF-20260708-008-002",
+        "route": "/one-time-classroom",
+        "viewport": "430",
+        "screenshot_before": "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-430-before.png",
+        "screenshot_after_or_blocker": "pending focused verification after implementation",
+        "defect_codes": ["VQ-IA-001"],
+        "severity": "P1",
+        "user_impact": "Slides, worksheets, and source sheets were not presented as clear class-specific material groups.",
+        "expected_fix": "Render a compact Class Materials block under the active class with Slides, Worksheets, and Source Sheets groups.",
+        "requirement_id": "REQ-20260708-025"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus responsive touch-target and no-overlap checks.",
+    "required_checks": [
+      "Play Video button has visible text",
+      "Class Materials groups use text headings",
+      "Material links include type labels",
+      "Mobile material cards do not overflow",
+      "Security/residual-risk language is not the only access-control mechanism"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Play Video",
+      "selector_or_action_key": "activateClassroomMedia",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Activates the local classroom embedded player after the user asks to play.",
+      "registry_required": false
+    },
+    {
+      "label": "View slides",
+      "selector_or_action_key": "class-material-link:slideshow",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Opens approved member-safe slide asset URL in a new tab; source permissions are not mutated.",
+      "registry_required": false
+    },
+    {
+      "label": "Open worksheet",
+      "selector_or_action_key": "class-material-link:worksheet",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "Opens approved member-safe worksheet/source-sheet asset URL in a new tab.",
+      "registry_required": false
+    },
+    {
+      "label": "Drive to Vimeo automation",
+      "selector_or_action_key": "drive-vimeo-upload",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Shloimie/account owner",
+      "external_write": true,
+      "handler_or_blocker": "Blocked by DEC-20260708-006 pending folder/account/token/privacy/rollback approval.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": [
+    "class_session_id",
+    "member-library item id/title/class date",
+    "media provider and Vimeo id",
+    "member-safe asset type/title/description/url/status",
+    "asset metadata for view-only/source policy when present"
+  ],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "scope_rules": [
+      "Only approved/published member-safe class assets are exposed to member/student classroom UI.",
+      "Transcript assets and admin-only notes stay hidden from the member-safe public view.",
+      "Vimeo items do not show raw fallback media links.",
+      "Slides default to view-only/member-safe asset links; editable PowerPoint files are not a default promise."
+    ],
+    "forbidden_content": [
+      "external upload",
+      "raw video download link for Vimeo items",
+      "editable source-file download promise",
+      "private admin notes",
+      "unpublished media",
+      "secrets or access tokens"
+    ],
+    "residual_risks": [
+      "A member who can see video or slides can still use screen recording, screenshots, or another camera.",
+      "View-only Drive/Slides settings reduce casual copying but are not perfect DRM.",
+      "Provider-hosted privacy and domain restrictions need owner-approved external setup."
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-20260708-008-A",
+      "scope": "Classroom material support and safe video preview",
+      "instructions": [
+        "Add slideshow and slide_deck to One Time asset type normalization and database check repair.",
+        "Include slideshow and slide_deck assets in member-safe snapshots/public views.",
+        "Render class materials in the classroom as Slides, Worksheets, and Source Sheets for the active class.",
+        "Lazy-activate the classroom video player after Play Video and do not show a raw Vimeo fallback link.",
+        "Update focused tests and evidence."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "server.js",
+      "public/one-time-classroom.html",
+      "public/member-library.html",
+      "tests/one-time-member-library.test.js",
+      "tests/one-time-classroom-calendar-community-bot.test.js",
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+    ],
+    "files_allowed_to_edit": [
+      "server.js",
+      "public/one-time-classroom.html",
+      "tests/one-time-member-library.test.js",
+      "tests/one-time-classroom-calendar-community-bot.test.js",
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md"
+    ],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Comment publication, update feeds, auth-code UX, and Drive/Vimeo automation remain separate child packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": [
+    {
+      "command_or_check": "npm run pqc:validate -- ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json",
+      "expected_result": "Implementation packet validates."
+    },
+    {
+      "command_or_check": "node --test tests/one-time-member-library.test.js tests/one-time-classroom-calendar-community-bot.test.js tests/one-time-canonical-journey.test.js",
+      "expected_result": "Member-safe assets and classroom material contracts pass."
+    },
+    {
+      "command_or_check": "npm run watchdog:protocol-drift",
+      "expected_result": "No product-quality protocol drift for the packet."
+    },
+    {
+      "command_or_check": "npm run secrets:audit",
+      "expected_result": "No secrets introduced."
+    }
+  ],
+  "evidence": {
+    "expected_paths": [
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
+      "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-materials-local-smoke.md",
+      "ops/live-smokes/"
+    ]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "PQC implementation packet validates.",
+      "Focused member-library and classroom tests pass.",
+      "Classroom video lazy activation is verified in browser smoke or live readback.",
+      "Requirement register records media security residual risk and evidence.",
+      "Changes are committed, pushed, deployed, and live-smoked, or deployment is explicitly blocked."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260708-006-onetime-performance-media-classroom-workflow.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": [
+      "edit class asset types and member-safe public view",
+      "edit classroom video/material rendering",
+      "update focused tests",
+      "validate PQC packet",
+      "run focused tests and smokes",
+      "record evidence"
+    ],
+    "skipped_actions_policy": "Skip Drive/Vimeo/Google upload or permission writes, sends, access grants, payment changes, and public publishes.",
+    "blocker_decisions": [
+      "DEC-20260708-006",
+      "DEC-20260708-007"
+    ],
+    "evidence_paths": [
+      "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
+      "ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-materials-local-smoke.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/04-drive-to-vimeo-automation.product-quality.json"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "No unhandled protocol drift findings after implementation closeout."
+  },
+  "next_packet": {
+    "type": "PROVIDER_SETUP_PACKET",
+    "description": "Drive-to-Vimeo automation remains blocked until external target, credential, privacy, duplicate, and rollback decisions are approved.",
+    "path": "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/04-drive-to-vimeo-automation.product-quality.json"
+  }
+}

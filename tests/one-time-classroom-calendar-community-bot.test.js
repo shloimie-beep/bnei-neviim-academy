@@ -110,6 +110,15 @@ test('Member library and classroom pages expose classroom navigation, six Sedari
   [
     'One Time Mishnah Classroom',
     'Six Sedarim',
+    'Class Materials',
+    'Reviewed slides and worksheets will appear here after approval',
+    'View slides',
+    'Open worksheet',
+    'Open source sheet',
+    'Member-only view reduces casual sharing',
+    'activateClassroomMedia',
+    'Play Video',
+    'loading="lazy"',
     'Rewards Scoreboard',
     'Reply Queue',
     'Rabbi Threads',
@@ -128,6 +137,8 @@ test('Member library and classroom pages expose classroom navigation, six Sedari
     '/api/one-time-classroom/bot',
     'botQuestion',
     'askBot',
+    'Fallback Vimeo Link',
+    'loading="eager"',
   ].forEach((needle) => assert.doesNotMatch(classroomHtml, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
 
   const scripts = [...classroomHtml.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]).join('\n');

@@ -50,7 +50,8 @@ test('One Time member library tables cover assets, items, access codes, and publ
     'CREATE TABLE IF NOT EXISTS one_time_member_watch_progress',
     'CREATE TABLE IF NOT EXISTS one_time_member_watch_events',
   ].forEach((needle) => assert.match(server, new RegExp(needle.replace(/[()]/g, '\\$&'))));
-  assert.match(server, /asset_type TEXT NOT NULL DEFAULT 'worksheet' CHECK \(asset_type IN \('worksheet', 'source_sheet', 'thumbnail', 'transcript', 'example', 'other'\)\)/);
+  assert.match(server, /asset_type TEXT NOT NULL DEFAULT 'worksheet' CHECK \(asset_type IN \('worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other'\)\)/);
+  assert.match(server, /one_time_class_assets_asset_type_check/);
   assert.match(server, /destination TEXT NOT NULL DEFAULT 'member_library' CHECK \(destination IN \('member_library'\)\)/);
   assert.match(server, /library_visibility TEXT NOT NULL DEFAULT 'private' CHECK \(library_visibility IN \('private', 'tier', 'specific_members', 'smoke'\)\)/);
   assert.match(server, /required_tier TEXT NOT NULL DEFAULT 'library_only' CHECK \(required_tier IN \('library_only', 'live_class', 'all_members', 'admin_preview', 'smoke'\)\)/);
@@ -96,6 +97,11 @@ test('Member library API returns only published tier-visible safe items', () => 
   assert.match(helper, /libraryVisibilityAllowsMember\(item\.library_visibility, tier, item\.required_tier\)/);
   const publicView = sliceBetween(server, 'function oneTimeMemberLibraryPublicView', 'function normalizeOneTimeClassroomModerationStatus');
   assert.doesNotMatch(publicView, /approval_flag|approved_by|rollback_metadata|transcript_notes|private_admin_only|package_status/);
+  assert.match(server, /const ONE_TIME_ASSET_TYPES = new Set\(\['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'thumbnail', 'transcript', 'example', 'other'\]\)/);
+  assert.match(server, /function isOneTimeEditableSlideAsset/);
+  assert.match(server, /!\s*isOneTimeEditableSlideAsset\(asset\)/);
+  assert.match(publicView, /\['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'example', 'other'\]\.includes\(asset\.asset_type\)/);
+  assert.doesNotMatch(publicView, /\['worksheet', 'source_sheet', 'slideshow', 'slide_deck', 'transcript'/);
   assert.match(server, /app\.get\('\/api\/member-library'/);
   assert.match(server, /app\.post\('\/api\/member-library\/items\/:id\/progress'/);
   assert.match(server, /recordOneTimeMemberWatchProgress/);

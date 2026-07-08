@@ -33727,3 +33727,33 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - `REQ-20260708-021` and `REQ-20260708-022` are Done; the remaining class
   materials, access-code UX, comment publication loop, updates/awards feed, and
   Drive-to-Vimeo automation stay in their split packets.
+
+## 2026-07-08T11:52:53+03:00 - One Time classroom materials/security local verified
+
+- Added Product Quality packet
+  `ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json`
+  and validated packets 00-03.
+- Updated One Time class assets so `slideshow` and `slide_deck` are accepted
+  reviewed material types, including an existing-table asset-type constraint
+  repair.
+- Member-safe snapshots now include approved slide assets, but editable slide
+  source links such as PowerPoint/Keynote files are filtered out by default.
+- Updated the One Time classroom so the active class renders Class Materials
+  groups for Slides, Worksheets, and Source Sheets, with reviewed-materials
+  empty state copy.
+- Classroom Vimeo video now lazy-activates after `Play Video`; the raw Vimeo
+  fallback link is no longer shown on the classroom route.
+- Fixed the classroom mobile top-action toolbar to use a two-column grid in
+  review mode instead of clipped horizontal action buttons.
+- Local Playwright smoke passed across 1440, 430, and 390 widths and wrote
+  `ops/ui-audits/2026-07-08-onetime-performance-media-classroom-workflow/classroom-materials-local-smoke.md`.
+  It confirmed zero iframes before `Play Video`, one iframe after, no page
+  overflow, no toolbar clipping, and visible Slides/Worksheets/Source Sheets.
+- Verification passed: `node --check server.js`, expanded One Time tests 23/23,
+  community/gamification tests 14/14, PQC packets 00-03, protocol drift
+  watchdog, secrets audit, JSONL parse, and `git diff --check`.
+- Guardrails held: no Drive upload, Vimeo upload/privacy mutation, Google
+  permission write, external send, payment/access/DNS/provider write, public
+  publish, or unreviewed student comment publication was performed.
+- Status: local verified, pending commit, push, deploy, and live smoke before
+  `REQ-20260708-024` through `REQ-20260708-026` can be terminal Done.

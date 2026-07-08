@@ -101,9 +101,11 @@ test('shared One Time review pages include review branding assets', () => {
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /OneTimeOneTime Student Review/);
   const classroomHtml = fs.readFileSync('public/one-time-classroom.html', 'utf8');
   assert.match(classroomHtml, /TEST-only member-library data/);
-  assert.match(classroomHtml, /classEmbedUrl/);
+  assert.match(classroomHtml, /renderClassMedia/);
+  assert.match(classroomHtml, /activateClassroomMedia/);
   assert.match(classroomHtml, /<iframe/);
-  assert.match(classroomHtml, /Fallback Vimeo Link/);
+  assert.doesNotMatch(classroomHtml, /Fallback Vimeo Link/);
+  assert.match(classroomHtml, /Play Video/);
   assert.match(classroomHtml, /\.video-embed \{ min-height: 0; \}/);
   assert.match(fs.readFileSync('public/one-time-email-review.html', 'utf8'), /\/images\/one-time\/brand\/onetimelogo\.webp/);
 

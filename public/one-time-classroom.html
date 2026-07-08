@@ -183,11 +183,136 @@
       background: #111;
       min-height: 220px;
     }
-    .video-embed iframe {
+    .video-embed iframe,
+    .video-embed video {
       width: 100%;
       height: 100%;
       border: 0;
       display: block;
+    }
+    .video-embed video { object-fit: contain; background: #111; }
+    .media-preview {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #111;
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+    }
+    .media-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .media-placeholder {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--muted);
+      background: linear-gradient(135deg, #dfece7, #fff8ed);
+      text-align: center;
+      font-weight: 700;
+    }
+    .media-kind {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      border-radius: 999px;
+      background: rgba(8, 9, 16, 0.74);
+      color: #fff;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .media-play-button {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      color: #080910;
+      border-color: var(--accent);
+      background: var(--accent);
+      font-weight: 800;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    }
+    .today-details {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+    .today-details h3,
+    .today-details p {
+      margin: 0;
+    }
+    .class-materials {
+      border-top: 1px solid var(--line);
+      margin-top: 4px;
+      padding-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+    .class-materials h4 {
+      margin: 0;
+      font-size: 15px;
+    }
+    .material-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .material-group {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #f8faf7;
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+    .material-group h5 {
+      margin: 0;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .material-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 7px;
+    }
+    .material-list a,
+    .material-pending {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px 9px;
+      display: grid;
+      gap: 2px;
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+    .material-type {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .security-note {
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 9px 10px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 12px;
     }
     .item-list { display: grid; gap: 10px; }
     .item {
@@ -322,11 +447,26 @@
       .hero, .grid, .video-focus { grid-template-columns: 1fr; }
       .span-8, .span-4, .span-6 { grid-column: span 1; }
       .video-embed { min-height: 0; }
+      .media-preview { min-height: 0; }
+      .material-grid { grid-template-columns: 1fr; }
       .topbar { align-items: flex-start; flex-direction: column; }
-      .top-actions { justify-content: flex-start; }
+      .top-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        justify-content: stretch;
+      }
+      .top-actions a,
+      .top-actions button {
+        width: 100%;
+        min-width: 0;
+      }
       .hero-copy { padding: 20px; }
       .scoreboard-row { grid-template-columns: 34px minmax(0, 1fr); }
       .score-points { grid-column: 2; text-align: left; }
+    }
+    @media (max-width: 360px) {
+      .top-actions { grid-template-columns: 1fr; }
     }
   </style>
   <link rel="stylesheet" href="/css/one-time-shared-review.css">
@@ -381,7 +521,11 @@
     body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .item,
     body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] details,
     body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .message,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .material-group,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .material-list a,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .material-pending,
     body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .empty,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .security-note,
     body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .bot-answer {
       color: var(--ink);
       border-color: var(--line) !important;
@@ -424,6 +568,7 @@
     }
 
     body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .video-embed,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .media-preview,
     body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .thumb {
       width: 100%;
       min-height: 0;
@@ -445,9 +590,15 @@
 
     body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .item,
     body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] details,
-    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .message {
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .message,
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .material-group {
       box-shadow: none;
       background: rgba(8, 9, 16, 0.42) !important;
+    }
+
+    body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .media-placeholder {
+      color: var(--muted);
+      background: rgba(8, 9, 16, 0.86) !important;
     }
 
     body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] summary {
@@ -505,10 +656,41 @@
         width: min(100% - 24px, 640px);
       }
 
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] header .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        overflow: visible;
+        padding-bottom: 0;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions a,
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions button {
+        width: 100%;
+        min-width: 0;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions button {
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .hero-copy,
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .access-panel,
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] section {
         padding: 16px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -635,7 +817,11 @@
     const reviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
     const queryCode = new URLSearchParams(window.location.search).get('code') || '';
     const reviewAccessCode = 'TEST-ONETIME-REVIEW-ACCESS';
-    const state = { code: queryCode || (reviewMode ? reviewAccessCode : localStorage.getItem('oneTimeClassroomCode') || ''), classroom: null };
+    const state = {
+      code: queryCode || (reviewMode ? reviewAccessCode : localStorage.getItem('oneTimeClassroomCode') || ''),
+      classroom: null,
+      activeMediaItems: new Set(),
+    };
     const els = {
       form: document.getElementById('accessForm'),
       code: document.getElementById('accessCode'),
@@ -668,13 +854,154 @@
       return item?.member_library_item?.media_url || item?.media_url || '';
     }
 
-    function classEmbedUrl(item) {
-      return item?.member_library_item?.embed_url || item?.embed_url || '';
+    function classMediaProvider(item) {
+      return item?.member_library_item?.media_provider || item?.media_provider || '';
+    }
+
+    function classVimeoId(item) {
+      return item?.member_library_item?.vimeo_id || item?.vimeo_id || '';
+    }
+
+    function classMediaId(item) {
+      return Number(item?.member_library_item?.id || item?.id || item?.class_session_id || 0);
+    }
+
+    function classAssets(item) {
+      return Array.isArray(item?.member_library_item?.assets)
+        ? item.member_library_item.assets
+        : (Array.isArray(item?.assets) ? item.assets : []);
+    }
+
+    function mediaKindLabel(item) {
+      if (classMediaProvider(item) === 'vimeo') return 'Private video';
+      const media = classMediaUrl(item);
+      if (/\.(mp4|webm)(\?|#|$)/i.test(media)) return 'Video';
+      if (media) return 'Hosted media';
+      return 'Class media';
+    }
+
+    function renderMediaPreview(item, actionLabel = 'Play Video') {
+      const thumbnail = item?.member_library_item?.thumbnail_url || item?.thumbnail_url || '';
+      return `
+        <div class="media-preview">
+          ${thumbnail ? `<img src="${escapeHtml(thumbnail)}" alt="">` : `<div class="media-placeholder">${escapeHtml(mediaKindLabel(item))} available</div>`}
+          <span class="media-kind">${escapeHtml(mediaKindLabel(item))}</span>
+          <button class="media-play-button" type="button" onclick="activateClassroomMedia(${classMediaId(item)})">${escapeHtml(actionLabel)}</button>
+        </div>
+      `;
+    }
+
+    function renderClassMedia(item) {
+      const id = classMediaId(item);
+      const media = classMediaUrl(item);
+      const provider = classMediaProvider(item);
+      const active = state.activeMediaItems.has(id);
+      const vimeoId = classVimeoId(item);
+      if (provider === 'vimeo' && vimeoId) {
+        if (!active) return renderMediaPreview(item, 'Play Video');
+        return `
+          <div class="video-embed">
+            <iframe
+              src="https://player.vimeo.com/video/${encodeURIComponent(vimeoId)}?dnt=1"
+              title="${escapeHtml(item.title || 'One Time lesson video')}"
+              loading="lazy"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowfullscreen></iframe>
+          </div>
+        `;
+      }
+      if (/\.(mp4|webm)(\?|#|$)/i.test(media)) {
+        if (!active) return renderMediaPreview(item, 'Play Video');
+        return `
+          <div class="video-embed">
+            <video controls preload="metadata" src="${escapeHtml(media)}" poster="${escapeHtml(item?.member_library_item?.thumbnail_url || item?.thumbnail_url || '')}"></video>
+          </div>
+        `;
+      }
+      return renderThumb(item);
     }
 
     function renderThumb(item) {
       const thumbnail = item?.member_library_item?.thumbnail_url || item?.thumbnail_url || '';
       return `<div class="thumb">${thumbnail ? `<img src="${escapeHtml(thumbnail)}" alt="">` : '<span>Video</span>'}</div>`;
+    }
+
+    function assetTypeLabel(assetType = '') {
+      const key = String(assetType || '').toLowerCase();
+      if (key === 'slideshow' || key === 'slide_deck') return 'Slides';
+      if (key === 'worksheet') return 'Worksheet';
+      if (key === 'source_sheet') return 'Source sheet';
+      if (key === 'example') return 'Example';
+      return 'Material';
+    }
+
+    function assetActionLabel(assetType = '') {
+      const key = String(assetType || '').toLowerCase();
+      if (key === 'slideshow' || key === 'slide_deck') return 'View slides';
+      if (key === 'worksheet') return 'Open worksheet';
+      if (key === 'source_sheet') return 'Open source sheet';
+      return 'Open material';
+    }
+
+    function isEditableSlideSource(asset = {}) {
+      const key = String(asset.asset_type || '').toLowerCase();
+      return ['slideshow', 'slide_deck'].includes(key) && /\.(pptx?|key)(?:[?#]|$)/i.test(String(asset.file_url || ''));
+    }
+
+    function renderMaterialAsset(asset) {
+      if (isEditableSlideSource(asset)) {
+        return `
+          <li class="material-pending">
+            <strong>${escapeHtml(asset.title || 'Slide source')}</strong>
+            <span class="material-type">View-only version pending</span>
+          </li>
+        `;
+      }
+      return `
+        <li>
+          <a href="${escapeHtml(asset.file_url)}" target="_blank" rel="noopener">
+            <strong>${escapeHtml(asset.title || assetActionLabel(asset.asset_type))}</strong>
+            <span class="material-type">${escapeHtml(assetActionLabel(asset.asset_type))}</span>
+          </a>
+        </li>
+      `;
+    }
+
+    function renderMaterialGroup(title, assets) {
+      return `
+        <div class="material-group">
+          <h5>${escapeHtml(title)}</h5>
+          ${assets.length ? `<ul class="material-list">${assets.map(renderMaterialAsset).join('')}</ul>` : '<div class="empty">Not posted yet.</div>'}
+        </div>
+      `;
+    }
+
+    function renderClassMaterials(item) {
+      const assets = classAssets(item).filter((asset) => asset?.file_url);
+      const slides = assets.filter((asset) => ['slideshow', 'slide_deck'].includes(String(asset.asset_type || '').toLowerCase()));
+      const worksheets = assets.filter((asset) => String(asset.asset_type || '').toLowerCase() === 'worksheet');
+      const sourceSheets = assets.filter((asset) => String(asset.asset_type || '').toLowerCase() === 'source_sheet');
+      const extras = assets.filter((asset) => ['example', 'other'].includes(String(asset.asset_type || '').toLowerCase()));
+      if (!slides.length && !worksheets.length && !sourceSheets.length && !extras.length) {
+        return `
+          <div class="class-materials">
+            <h4>Class Materials</h4>
+            <div class="empty">Reviewed slides and worksheets will appear here after approval.</div>
+          </div>
+        `;
+      }
+      return `
+        <div class="class-materials">
+          <h4>Class Materials</h4>
+          <div class="material-grid">
+            ${renderMaterialGroup('Slides', slides)}
+            ${renderMaterialGroup('Worksheets', worksheets)}
+            ${renderMaterialGroup('Source Sheets', sourceSheets)}
+            ${extras.length ? renderMaterialGroup('More', extras) : ''}
+          </div>
+          <div class="security-note">Member-only view reduces casual sharing, but video and slides can still be screen-recorded or screenshotted.</div>
+        </div>
+      `;
     }
 
     function renderToday() {
@@ -684,28 +1011,20 @@
         return;
       }
       const media = classMediaUrl(item);
-      const embed = classEmbedUrl(item);
+      const provider = classMediaProvider(item);
       els.todayVideo.innerHTML = `
-        ${embed ? `
-          <div class="video-embed">
-            <iframe
-              src="${escapeHtml(embed)}"
-              title="${escapeHtml(item.title || 'One Time lesson video')}"
-              loading="eager"
-              allow="fullscreen; picture-in-picture"
-              allowfullscreen></iframe>
-          </div>
-        ` : renderThumb(item)}
+        ${renderClassMedia(item)}
         <div class="today-details">
           <h3>${escapeHtml(item.title || 'Today video')}</h3>
           <p>${escapeHtml(item.description || item.summary || 'Class video and materials appear here after review.')}</p>
           <div class="meta">
             <span>${escapeHtml(item.class_date || 'No date')}</span>
-            <span>${escapeHtml(item.media_provider || 'manual')}</span>
+            <span>${escapeHtml(provider || 'manual')}</span>
             <span>${escapeHtml(item.package_status || 'published')}</span>
             <span>Captions/transcript: ${escapeHtml(item.transcript_status || 'pending review')}</span>
           </div>
-          ${media ? `<p><a href="${escapeHtml(media)}" target="_blank" rel="noopener"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Fallback Vimeo Link</button></a></p>` : ''}
+          ${media && provider !== 'vimeo' ? `<p><a href="${escapeHtml(media)}" target="_blank" rel="noopener"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Open Hosted Media</button></a></p>` : ''}
+          ${renderClassMaterials(item)}
         </div>
       `;
     }
@@ -797,6 +1116,11 @@
         </article>
       `).join('') : '<div class="empty">No approved classroom threads are visible yet.</div>';
     }
+
+    window.activateClassroomMedia = function activateClassroomMedia(id) {
+      state.activeMediaItems.add(Number(id));
+      renderToday();
+    };
 
     function renderAll() {
       const access = state.classroom?.access || {};
