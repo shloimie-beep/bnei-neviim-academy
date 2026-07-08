@@ -7283,6 +7283,7 @@ async function sendProviderPasswordSetupEmail({ provider, url, req, toEmail = ''
   const html = text.replace(/\n/g, '<br>');
   try {
     const result = await sendEmail({
+      workspace: oneTimeProvider ? ONE_TIME_PROJECT_KEY : null,
       to: email,
       subject,
       text,
@@ -7297,8 +7298,11 @@ async function sendProviderPasswordSetupEmail({ provider, url, req, toEmail = ''
       html,
       providerMessageId: result.data.id,
       provider: result.provider,
+      projectId: provider.project_id || null,
       metadata: {
         provider_id: provider.id || null,
+        workspace_key: oneTimeProvider ? ONE_TIME_PROVIDER_WORKSPACE_KEY : null,
+        project_key: oneTimeProvider ? ONE_TIME_PROJECT_KEY : null,
         requested_from: req?.ip || null,
         one_time_provider: oneTimeProvider,
         recipient_override: Boolean(toEmail),
@@ -7316,8 +7320,11 @@ async function sendProviderPasswordSetupEmail({ provider, url, req, toEmail = ''
       html,
       status: 'failed',
       error: message,
+      projectId: provider.project_id || null,
       metadata: {
         provider_id: provider.id || null,
+        workspace_key: oneTimeProvider ? ONE_TIME_PROVIDER_WORKSPACE_KEY : null,
+        project_key: oneTimeProvider ? ONE_TIME_PROJECT_KEY : null,
         requested_from: req?.ip || null,
         one_time_provider: oneTimeProvider,
         recipient_override: Boolean(toEmail),
