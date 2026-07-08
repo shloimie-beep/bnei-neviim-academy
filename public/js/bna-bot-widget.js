@@ -56,6 +56,8 @@
   const storagePrefix = `bnaAssistant:${surface}`;
   const HELPER_FIRST_NUDGE_DELAY_MS = 12000;
   const HELPER_SECOND_NUDGE_DELAY_MS = 45000;
+  const ONE_TIME_PUBLIC_FIRST_NUDGE_DELAY_MS = 10000;
+  const ONE_TIME_PUBLIC_SECOND_NUDGE_DELAY_MS = 20000;
   const HELPER_DISMISS_SUPPRESS_HOURS = 24;
   const PUBLIC_ASSISTANT_AUTOPROMPT_DELAY_MS = HELPER_FIRST_NUDGE_DELAY_MS;
   const PUBLIC_ASSISTANT_FOLLOWUP_DELAY_MS = HELPER_SECOND_NUDGE_DELAY_MS;
@@ -66,6 +68,19 @@
   const isHebrew = () => /^he\b/i.test(language()) || direction() === 'rtl';
   const studentAccessCode = () => isStudent ? (new URLSearchParams(window.location.search).get('code') || '') : '';
   const isPublicLeadSurface = () => ['public', 'signup', 'one_time_public'].includes(surface);
+
+  function oneTimeCurrentMasechta() {
+    const value =
+      document.documentElement?.dataset?.oneTimeCurrentMasechta ||
+      document.body?.dataset?.oneTimeCurrentMasechta ||
+      window.ONE_TIME_CURRENT_MASECHTA ||
+      'Maseches Berachos';
+    return String(value || 'Maseches Berachos').replace(/\s+/g, ' ').trim().slice(0, 80) || 'Maseches Berachos';
+  }
+
+  function oneTimeJoinMomentCopy() {
+    return `We are up to ${oneTimeCurrentMasechta()} now. It is a great time to join.`;
+  }
 
   function getOrCreateAnonymousId() {
     const existing = localStorage.getItem('bnaAssistantAnonymousId');
@@ -234,16 +249,16 @@
         ...base,
         helperTitle: 'Rabbi Scheller Assistant',
         surfaceLabel: 'Rabbi Scheller digital assistant',
-        intro: "Hi, I'm Rabbi Scheller's digital assistant. I can help with the Mishnayos class schedule, the program, the 30-day trial, member access, or getting a public-safe message to Rabbi Scheller. I only answer public OneTime questions and do not show private parent billing, attendance, student transcripts, access codes, raw class transcripts, or admin data.",
+        intro: "Hi. Do you want your son to love Torah? I can help you join Rabbi Scheller's OneTime Mishnayos class.",
         cards: [
-          ['Schedule and program', 'Ask about the live Mishnayos class, who it is for, timing, and what a family should expect.'],
-          ['Start or log in', 'Ask about the 30-day trial, the public member login path, or what happens after a family joins.'],
-          ['Speak to Rabbi Scheller', 'Leave a public-safe question or contact request without exposing private student, billing, attendance, or account details.'],
+          ['Join now', 'Start with the class link and parent setup.'],
+          ['Schedule', 'Ask when the live Mishnayos class meets.'],
+          ['Speak to Rabbi Scheller', 'Send a short question or contact request.'],
         ],
         prompts: [
-          'What is the OneTime Mishnayos class schedule?',
-          'Tell me about the program.',
-          'How does the 30-day trial work?',
+          'I want my son to join the OneTime Mishnayos class.',
+          'Where is the class holding now?',
+          'What is the schedule?',
           'I want to speak to Rabbi Scheller.',
         ],
       };
@@ -339,56 +354,58 @@
   function oneTimePublicHelperData() {
     return {
       intro:
-        "Hi - I'm Rabbi Scheller's digital assistant. I can help with the OneTime Mishnayos class schedule, the program, the 30-day trial, member access, or getting a public-safe message to Rabbi Scheller.",
+        "Hi. Do you want your son to love Torah? I can help you join Rabbi Scheller's OneTime Mishnayos class.",
       choices: [
-        { id: 'schedule', label: 'Ask about schedule' },
-        { id: 'program', label: 'Hear about the program' },
-        { id: 'trial', label: 'Start 30 days free' },
+        { id: 'trial', label: 'Sign Up Now' },
+        { id: 'schedule', label: 'Class schedule' },
+        { id: 'program', label: 'About the class' },
         { id: 'member_access', label: 'Member login help' },
         { id: 'rabbi_question', label: 'Speak to Rabbi Scheller' },
       ],
       nudges: {
         first: {
-          body: 'Need help with Rabbi Scheller\'s Mishnayos class?',
-          actions: [{ type: 'open', label: 'Open Rabbi Scheller Assistant' }],
+          body: 'Hi. Do you want your son to love Torah?',
+          actions: [
+            { type: 'scroll', target: '#start-free', label: 'Sign Up Now' },
+            { type: 'open', label: 'Ask a question' },
+          ],
         },
         second: {
-          body: 'I can help with the schedule, the program, the 30-day trial, member login, or a question for Rabbi Scheller.',
+          body: oneTimeJoinMomentCopy(),
           actions: [
+            { type: 'scroll', target: '#start-free', label: 'Join now' },
             { type: 'path', path: 'schedule', label: 'Schedule' },
-            { type: 'path', path: 'program', label: 'Program' },
-            { type: 'path', path: 'rabbi_question', label: 'Speak to Rabbi' },
           ],
         },
       },
       paths: {
         schedule: {
-          body: 'The assistant can help with public schedule questions and capture anything that needs Rabbi Scheller follow-up. For private access or attendance questions, use the scoped member or parent login path.',
+          body: `${oneTimeJoinMomentCopy()} Ask your schedule question and we will help you get started.`,
           actions: [
             { type: 'prefill', label: 'Ask schedule question', prompt: 'I have a schedule question about the OneTime Mishnayos class: ' },
             { type: 'scroll', target: '#start-free', label: 'Start free' },
           ],
         },
         program: {
-          body: 'OneTimeOneTime is the public Mishnayos class with Rabbi Scheller. Ask about fit, what students receive, the class flow, worksheets, or how the 30-day trial works.',
+          body: 'OneTimeOneTime is Rabbi Scheller\'s live Mishnayos class for boys who should enjoy learning, review clearly, and feel proud of their progress.',
           actions: [
             { type: 'prefill', label: 'Ask about program', prompt: 'I want to know if the OneTime Mishnayos class is right for my child: ' },
           ],
         },
         trial: {
-          body: 'You can start from the public 30-day trial section. This helper will not create a payment, access grant, email, or WhatsApp send from public chat.',
+          body: 'Start with one email. We will send the class details and parent setup next steps.',
           actions: [
             { type: 'scroll', target: '#start-free', label: 'Start 30 days free' },
           ],
         },
         member_access: {
-          body: 'If you already joined, use the member login path. This public helper does not display private access codes, billing, attendance, or student records.',
+          body: 'Already joined? Open the member login path here.',
           actions: [
             { type: 'link', href: '/rabbi-member', label: 'Member login' },
           ],
         },
         rabbi_question: {
-          body: 'Share a public-safe question or contact request for Rabbi Scheller. Please do not post private student, billing, access-code, or transcript details in this public chat.',
+          body: 'Send a short question or contact request for Rabbi Scheller.',
           actions: [
             { type: 'prefill', label: 'Leave message', prompt: 'I would like Rabbi Scheller to follow up about: ' },
           ],
@@ -1135,7 +1152,7 @@
 
   function publicFollowupCopy() {
     if (surface === 'one_time_public') {
-      return 'Want help with Rabbi Scheller\'s Mishnayos class, the schedule, the program, or member access?';
+      return oneTimeJoinMomentCopy();
     }
     return isHebrew()
       ? 'אפשר לשאול על תוכנית 10-1, על שלטון עצמי, או לשלוח לשלוימי הודעה קצרה.'
@@ -1207,14 +1224,16 @@
   function schedulePublicFollowup() {
     if (!isPublicLeadSurface() || dismissedPublicPrompt) return;
     if (publicAutoPromptTimer || publicFollowupTimer) return;
+    const firstDelay = surface === 'one_time_public' ? ONE_TIME_PUBLIC_FIRST_NUDGE_DELAY_MS : HELPER_FIRST_NUDGE_DELAY_MS;
+    const secondDelay = surface === 'one_time_public' ? ONE_TIME_PUBLIC_SECOND_NUDGE_DELAY_MS : HELPER_SECOND_NUDGE_DELAY_MS;
     publicAutoPromptTimer = setTimeout(() => {
       publicAutoPromptTimer = null;
       showPublicNudge('first');
       publicFollowupTimer = setTimeout(() => {
         publicFollowupTimer = null;
         showPublicNudge('second');
-      }, HELPER_SECOND_NUDGE_DELAY_MS);
-    }, HELPER_FIRST_NUDGE_DELAY_MS);
+      }, secondDelay);
+    }, firstDelay);
   }
 
   function setOpen(open, options = {}) {

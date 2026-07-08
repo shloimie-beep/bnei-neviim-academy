@@ -10,7 +10,7 @@ const actionRegistry = JSON.parse(fs.readFileSync('ops/action-registry.json', 'u
 const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));
 
 test('One Time landing mounts helper without BNA nav or language toggle chrome', () => {
-  assert.match(oneTime, /<html lang="en" data-app-select-surface="one-time">/);
+  assert.match(oneTime, /<html lang="en" data-app-select-surface="one-time" data-one-time-current-masechta="Maseches Berachos">/);
   assert.match(oneTime, /<script src="\/js\/bna-helper-knowledge\.js"><\/script>\s*<script src="\/js\/bna-bot-widget\.js"><\/script>\s*<script src="\/js\/app-select\.js"><\/script>/);
   assert.doesNotMatch(oneTime, /data-bna-site-nav/);
   assert.doesNotMatch(oneTime, /\/js\/bna-site-nav\.js/);
@@ -26,10 +26,12 @@ test('One Time public helper has separate surface, copy, actions, and black-yell
   assert.match(widget, /surface === 'one_time_public'/);
   assert.match(widget, /Rabbi Scheller digital assistant/);
   assert.match(widget, /Rabbi Scheller Assistant/);
-  assert.match(widget, /I only answer public OneTime questions and do not show private parent billing, attendance, student transcripts, access codes, raw class transcripts, or admin data/);
-  assert.match(widget, /Open Rabbi Scheller Assistant/);
+  assert.match(widget, /ONE_TIME_PUBLIC_FIRST_NUDGE_DELAY_MS = 10000/);
+  assert.match(widget, /ONE_TIME_PUBLIC_SECOND_NUDGE_DELAY_MS = 20000/);
+  assert.match(widget, /Do you want your son to love Torah/);
+  assert.match(widget, /We are up to \$\{oneTimeCurrentMasechta\(\)\} now\. It is a great time to join/);
   assert.match(widget, /Speak to Rabbi Scheller/);
-  assert.match(widget, /Start 30 days free/);
+  assert.match(widget, /Sign Up Now/);
   assert.match(widget, /bna-assistant-surface-one-time-public/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher/);
 
@@ -37,7 +39,10 @@ test('One Time public helper has separate surface, copy, actions, and black-yell
     widget.indexOf('function oneTimePublicHelperData()'),
     widget.indexOf('function fallbackPublicHelperData()')
   );
-  assert.match(oneTimePublicDataBlock, /Rabbi Scheller's digital assistant/);
+  assert.match(oneTimePublicDataBlock, /Do you want your son to love Torah/);
+  assert.match(oneTimePublicDataBlock, /oneTimeJoinMomentCopy\(\)/);
+  assert.doesNotMatch(oneTimePublicDataBlock, /I only answer public OneTime questions/);
+  assert.doesNotMatch(oneTimePublicDataBlock, /private parent billing, attendance, student transcripts, access codes, raw class transcripts, or admin data/);
   assert.doesNotMatch(oneTimePublicDataBlock, /Learn about BNA|How BNA works|BNA model path|Service-provider ecosystem path/);
 });
 
@@ -86,8 +91,10 @@ test('One Time public helper launcher is registered as a visible action', () => 
   assert.ok(action);
   assert.equal(action.route, '/one-time');
   assert.equal(action.label, 'Rabbi Scheller Assistant');
-  assert.match(action.expected_behavior, /schedule, program, 30-day trial, member login/);
-  assert.match(action.expected_behavior, /raw class transcripts/);
+  assert.match(action.expected_behavior, /concise parent-facing copy/);
+  assert.match(action.expected_behavior, /10 seconds/);
+  assert.match(action.expected_behavior, /20 seconds later/);
+  assert.match(action.expected_behavior, /masechta/);
 });
 
 test('One Time Rabbi public aliases are registry-covered and route to the focused landing', () => {

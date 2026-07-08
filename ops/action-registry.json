@@ -35,7 +35,7 @@
       "surface": "one_time_public_landing",
       "route": "/one-time",
       "selector_hint": "body.bna-assistant-surface-one-time-public .bna-bot-launcher",
-      "expected_behavior": "Opens Rabbi Scheller's OneTime-scoped public digital assistant for schedule, program, 30-day trial, member login, and public-safe speak-to-Rabbi lead capture; it does not show BNA Academy, school goals, Hebrew/English toggle behavior, private parent billing, attendance, student transcripts, raw class transcripts, access codes, or admin data.",
+      "expected_behavior": "Opens Rabbi Scheller's OneTime-scoped public digital assistant with concise parent-facing copy. The landing nudge asks whether the visitor wants his son to love Torah after 10 seconds, then says where the class is holding by masechta 20 seconds later. Internal scope guardrails remain OneTime-only and do not expose BNA Academy or private portal data.",
       "permission": "anonymous public visitor",
       "status": "active",
       "test": {
