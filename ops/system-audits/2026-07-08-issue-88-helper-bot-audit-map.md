@@ -165,8 +165,10 @@ Follow-up verification:
    `approval_gated_internal_state_change`.
 4. The 27 local wrappers are not full agent-mode autonomy yet. The first 18
    are committed/pushed/deployed/prompt-readback verified; the read-only batch
-   still needs commit/push/deploy/live smoke, and all 27 need saved Agent Mode
-   PASS/BLOCKED results.
+   is committed and pushed as `9e611cbd`, but deploy/live smoke is blocked
+   because the local worktree contains unrelated dirty `server.js`,
+   Operations shell/performance, Telegram readiness, and raw-input changes.
+   All 27 still need saved Agent Mode PASS/BLOCKED results.
 5. Scoped Operations deep links for Rabbi/One Time are conservative by default.
    Helper permissions allow project-scoped task/navigation tools, but the route
    destination resolver currently blocks `/operations` for non-super-admin

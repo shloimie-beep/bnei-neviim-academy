@@ -34754,9 +34754,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   tests (27/27), `node --test tests/watchdog-action-registry.test.js` (5/5),
   full `npm test` (1661/1661), `npm run watchdog:actions`, `npm run
   secrets:audit`, and `npm run watchdog:protocol-drift`.
-- Remaining autonomy blocker: the read-only batch still needs
-  commit/push/deploy/live smoke, and the full 163-contract probe still needs
-  saved Agent Mode PASS/BLOCKED evidence.
+- Commit/push: `9e611cbd` on
+  `codex/rabbi-helper-tool-scope-20260708`.
+- Remaining autonomy blocker: deploy/live smoke is blocked because the local
+  worktree contains unrelated dirty `server.js`, Operations shell/performance,
+  Telegram readiness, and raw-input changes; the full 163-contract probe still
+  needs saved Agent Mode PASS/BLOCKED evidence.
 
 ## 2026-07-08T22:24:00+03:00 - Rabbi Telegram communication alerts locally verified
 
