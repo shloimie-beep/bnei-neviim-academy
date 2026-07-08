@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "generated_at": "2026-07-08T08:29:29.971Z",
+  "baseUrl": "https://bneineviimacademy.org",
+  "deploymentId": "f40dc034-bd33-48cd-a9e4-fa10c550983f",
+  "commit": "13563239f3aea137b06551f1e680ad705a5d0b68",
+  "guardrails": {
+    "no_external_write": true,
+    "no_progress_post_without_access_code": true,
+    "no_vimeo_upload": true,
+    "no_drive_upload": true,
+    "no_public_publish": true
+  },
+  "readback": {
+    "status": 200,
+    "hasNewest": true,
+    "hasMaterials": true,
+    "hasWorksheets": true,
+    "hasActiveMediaItems": true,
+    "hasCardWidthCap": true,
+    "hasLazyIframe": true,
+    "oldRecentlyAddedAbsent": true
+  },
+  "before": {
+    "filters": true,
+    "iframes": 0,
+    "rawVimeoOpenLink": false,
+    "overflow": false,
+    "hasPlay": true,
+    "cardWidth": 398
+  },
+  "after": {
+    "iframes": 1,
+    "overflow": false,
+    "cardWidth": 398
+  },
+  "progressRequests": [],
+  "consoleMessages": [
+    {
+      "type": "warning",
+      "text": "Allow attribute will take precedence over 'allowfullscreen'."
+    }
+  ],
+  "screenshotPath": "C:\\Users\\User\\BNA v2.0\\ops\\live-smokes\\2026-07-08T08-29-27-722Z-one-time-member-library-lazy-media-live-smoke.png"
+}

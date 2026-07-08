@@ -33706,3 +33706,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   comment publication was performed.
 - Status: local verified, pending commit, push, deployment, and live readback/
   smoke before `REQ-20260708-021` and `REQ-20260708-022` can be terminal Done.
+
+## 2026-07-08T11:32:00+03:00 - One Time member library lag/filter fix deployed and live-smoked
+
+- Commit `13563239` was pushed to `origin/master`; Railway auto-deployed it to
+  production service `skillful-motivation`.
+- Railway deployment `f40dc034-bd33-48cd-a9e4-fa10c550983f` reached `SUCCESS`
+  on commit `13563239f3aea137b06551f1e680ad705a5d0b68`.
+- Production readback of `/member-library` confirmed the new `Newest`,
+  `Materials`, and `Worksheets` filters, lazy media code, desktop card-width
+  cap, and absence of the old `Recently Added` label.
+- Live synthetic browser smoke passed on production and wrote
+  `ops/live-smokes/2026-07-08T08-29-27-722Z-one-time-member-library-lazy-media-live-smoke.md`.
+  It confirmed zero member-library iframes before `Play Video`, one iframe
+  after, no raw Vimeo media link, no mobile overflow, and no progress POST
+  without an access code.
+- Guardrails held: no Drive upload, Vimeo upload/privacy mutation, external
+  send, payment/access/DNS/provider write, public publish, or unreviewed
+  comment publication was performed.
+- `REQ-20260708-021` and `REQ-20260708-022` are Done; the remaining class
+  materials, access-code UX, comment publication loop, updates/awards feed, and
+  Drive-to-Vimeo automation stay in their split packets.
