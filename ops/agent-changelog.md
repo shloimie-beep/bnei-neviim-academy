@@ -34427,3 +34427,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No parent invite email, WhatsApp/WAPI message, parent/member/student/access
   record mutation, checkout, payment, Zoom, Vimeo, Drive, DNS, or external
   provider write was performed by this smoke.
+
+## 2026-07-08T19:44:00+03:00 - OneTime signup Telegram reminder deployed
+
+- Registered `RAW-20260708-016` and `REQ-20260708-072` for Shloimie's request
+  to receive a Telegram bot reminder when someone signs up.
+- Added a non-blocking internal Telegram reminder after successful OneTime lead
+  creation on `/api/one-time/interest` and `/api/bna/product-leads`.
+- The reminder includes escaped lead details and an internal CRM follow-up
+  action while preserving the existing no parent email, no WhatsApp, no
+  checkout, no payment, and no access-grant signup guardrails.
+- Pushed runtime commit `fbabe124` and deployed it to OneTime Railway service
+  `one-time-web`; deployment `85b1f0f0-b3ae-49b1-8b00-9932a1cd7631` reached
+  `SUCCESS`.
+- Verification passed: `node --check server.js`, focused OneTime tests 18/18,
+  action watchdog, protocol-drift watchdog, secrets audit, `git diff --check`,
+  and live smoke against `https://join.onetimeonetime.com`.
+- Evidence:
+  `ops/watchdog-audits/2026-07-08-onetime-signup-telegram-reminder-live-smoke.md`.
+- No live signup form submit was performed during smoke testing, so no
+  production lead or Telegram reminder was intentionally triggered by the test.
