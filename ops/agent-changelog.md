@@ -34862,5 +34862,7 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification passed: generated JS syntax checks, Operations shell/people
   tests (9/9), One Time PWA/smoke tests (17/17), local deferred-renderer
   browser smoke, local performance audit, and `npm run watchdog:protocol-drift`.
+- Commit pushed: `5a670a8c` on
+  `codex/rabbi-helper-tool-scope-20260708`.
 - `npm run one-time:target:guard` live target readbacks passed, but release
   deploy remains blocked by the intentionally mixed dirty shared worktree.
