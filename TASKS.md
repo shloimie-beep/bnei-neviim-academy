@@ -2158,9 +2158,10 @@ not authorize active GHL runtime paths.
 - [x] Decide the final student portal auth model: superseded the 2026-06-15
   private-code-only decision. Parent-managed student username/password login is
   now the approved model, documented at
-  `ops/access/student-portal-auth-policy.md`; access-code fallback remains
-  available and audited with the earlier `bna_student_portal_auth_attempts`
-  guardrails. Active implementation/verification is tracked in
+  `ops/access/student-portal-auth-policy.md`; parent-facing access-code
+  fallback/recovery UI is no longer approved. Parents reset their own password
+  by email and reset child passwords from the parent portal. Active
+  implementation/verification is tracked in
   `tasks-pending/2026-06-16-full-ws-closeout-parent-student-login.md`.
 - [ ] Confirm AI Max pricing, payment, and delivery terms before enabling any checkout, paid automation, ad launch, or billing flow. Blocked pending owner decision; source: `tasks-pending/2026-06-15-one-time-product-payments-decisions.md`.
 - [x] Fix Torah/public content contamination from backend/task remarks: public content generation now applies shared source-separation guardrails, filters operational/admin/task/accountability lines before draft generation, persists the guardrails into saved public prompt rows on startup, refuses meta disclaimers like "technical/admin remarks were excluded," and routes corrupted Torah-section task notes to the Operations topic instead of Torah. Verified with `node --check server.js`, `node --check tests/public-content-contamination-guard.test.js`, focused content/routing tests 43/43, `npm test` 237/237, Railway deployment `d7f7fe38-207d-401b-b4ee-3ea9e49f34cb` SUCCESS, Railway doctor, live app smoke `ops/live-smokes/2026-06-11T08-12-52-256Z-live-app-smoke.md`, and live `/api/bna/content-prompts` readback confirming guardrails on all 6 public prompts.

@@ -6,16 +6,19 @@
   <title>One Time Mishnah Classroom</title>
   <style>
     :root {
-      --ink: #172033;
-      --muted: #607085;
-      --line: #d9e1e8;
-      --paper: #fbfcf8;
-      --panel: #ffffff;
-      --accent: #2f6f73;
-      --accent-2: #a66a24;
-      --soft: #edf5f1;
-      --warn: #f7efe3;
-      --shadow: 0 18px 45px rgba(28, 44, 60, 0.10);
+      color-scheme: dark;
+      --ink: #fff8d8;
+      --muted: #cabf98;
+      --line: rgba(255, 210, 0, 0.22);
+      --paper: #080808;
+      --panel: #141414;
+      --panel-2: #1d1a10;
+      --accent: #ffd200;
+      --accent-2: #ffe680;
+      --soft: rgba(255, 210, 0, 0.10);
+      --warn: rgba(255, 210, 0, 0.12);
+      --button-ink: #161000;
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
     }
 
     * { box-sizing: border-box; }
@@ -23,7 +26,10 @@
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ink);
-      background: var(--paper);
+      background:
+        radial-gradient(circle at 16% 0%, rgba(255, 210, 0, 0.16), transparent 28%),
+        linear-gradient(180deg, #050505 0%, #12100a 46%, #050505 100%),
+        var(--paper);
       line-height: 1.5;
       letter-spacing: 0;
     }
@@ -40,7 +46,7 @@
     }
     button.primary {
       background: var(--accent);
-      color: #fff;
+      color: var(--button-ink);
       border-color: var(--accent);
     }
     button:disabled { opacity: 0.55; cursor: wait; }
@@ -49,14 +55,14 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 10px 12px;
-      background: #fff;
+      background: #0b0b0b;
       color: var(--ink);
     }
     textarea { resize: vertical; min-height: 96px; }
     .shell { min-height: 100vh; display: flex; flex-direction: column; }
     header {
       border-bottom: 1px solid var(--line);
-      background: rgba(251, 252, 248, 0.94);
+      background: rgba(8, 8, 8, 0.94);
       position: sticky;
       top: 0;
       z-index: 4;
@@ -119,8 +125,8 @@
       align-content: start;
     }
     .access-panel.connected {
-      border-color: rgba(47, 111, 115, 0.28);
-      background: #eef7f2;
+      border-color: rgba(255, 210, 0, 0.34);
+      background: var(--panel-2);
     }
     .access-copy {
       display: grid;
@@ -142,32 +148,23 @@
       color: var(--muted);
       font-size: 14px;
     }
-    .access-fallback {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-    }
-    .access-fallback summary {
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .button-link {
       min-height: 42px;
-      padding: 0 12px;
-      color: var(--accent);
-      font-weight: 800;
-      list-style: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 210, 0, 0.38);
+      border-radius: 7px;
+      padding: 10px 13px;
+      color: var(--button-ink);
+      background: var(--accent);
+      font-weight: 900;
+      text-decoration: none;
     }
-    .access-fallback summary::-webkit-details-marker {
-      display: none;
-    }
-    .fallback-grid {
-      display: grid;
-      grid-template-columns: minmax(190px, 1fr) auto;
-      gap: 10px;
-      align-items: end;
-      padding: 0 12px 12px;
+    .button-link.secondary {
+      color: var(--accent-2);
+      background: transparent;
     }
     .status { color: var(--muted); font-size: 14px; min-height: 20px; }
     .grid {
@@ -202,7 +199,7 @@
       border-radius: 999px;
       padding: 5px 10px;
       font-size: 12px;
-      color: #2f555b;
+      color: var(--accent-2);
     }
     .video-focus {
       display: grid;
@@ -543,7 +540,6 @@
         min-width: 0;
       }
       .hero-copy { padding: 20px; }
-      .fallback-grid { grid-template-columns: 1fr; }
       .scoreboard-row { grid-template-columns: 34px minmax(0, 1fr); }
       .score-points { grid-column: 2; text-align: left; }
       .update-row { grid-template-columns: 1fr; }
@@ -791,14 +787,12 @@
           </div>
         </div>
         <div class="top-actions">
-          <a href="/one-time"><button type="button" data-one-time-action-state="navigate" data-button-state="working">One Time home</button></a>
           <a href="/rabbi-member"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Member home</button></a>
           <a href="/member-library"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Library</button></a>
           <a href="/one-time-classroom" aria-current="page"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Classroom</button></a>
           <button type="button" data-bna-assistant-open aria-controls="bnaBotPanel" data-one-time-action-state="preview" data-button-state="preview">Assistant/help</button>
           <a href="/rabbi-member#support"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Questions/support</button></a>
           <a href="/rabbi-member?logout=1" id="memberLogoutLink"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Account/logout</button></a>
-          <a href="/"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Return to public site</button></a>
         </div>
       </div>
     </header>
@@ -820,15 +814,13 @@
           <div class="access-copy">
             <span class="eyebrow">Current One Time access</span>
             <h2 id="accessTitle">Open your classroom</h2>
-            <p class="access-help" id="accessHelp">Use your secure classroom link or current browser access. Manual code entry is only for support or older links.</p>
+            <p class="access-help" id="accessHelp">Use your member login or the secure classroom link from your OneTime email. There is no separate classroom password.</p>
           </div>
-          <details class="access-fallback" id="accessFallbackDetails">
-            <summary>Use fallback access code</summary>
-            <div class="fallback-grid">
-              <input id="accessCode" autocomplete="one-time-code" placeholder="Fallback access code" aria-label="Fallback access code">
-              <button class="primary" type="submit" data-one-time-action-state="working" data-button-state="working">Open Classroom</button>
-            </div>
-          </details>
+          <input id="accessCode" type="hidden" autocomplete="one-time-code">
+          <div class="actions">
+            <a class="button-link" href="/rabbi-member">Log in</a>
+            <a class="button-link secondary" href="/one-time-parent">Forgot parent password?</a>
+          </div>
           <div class="status" id="statusText">Secure link/current access keeps this classroom private.</div>
         </form>
       </div>
@@ -919,7 +911,7 @@
   <script>
     const queryParams = new URLSearchParams(window.location.search);
     const reviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
-    const queryCode = new URLSearchParams(window.location.search).get('code') || '';
+    const queryCode = queryParams.get('code') || '';
     const reviewAccessCode = 'TEST-ONETIME-REVIEW-ACCESS';
     if (reviewMode) {
       document.body.classList.add('one-time-review-active', 'one-time-classroom-review-shell');
@@ -936,7 +928,6 @@
       status: document.getElementById('statusText'),
       accessTitle: document.getElementById('accessTitle'),
       accessHelp: document.getElementById('accessHelp'),
-      accessFallbackDetails: document.getElementById('accessFallbackDetails'),
       content: document.getElementById('classroomContent'),
       memberStatus: document.getElementById('memberStatus'),
       todayVideo: document.getElementById('todayVideo'),
@@ -955,6 +946,10 @@
       })[char]);
     }
 
+    function currentMemberSessionToken() {
+      return String(localStorage.getItem('rabbi_member_session') || '').trim();
+    }
+
     function fmtDate(value) {
       if (!value) return 'Not scheduled';
       const date = new Date(value);
@@ -965,23 +960,22 @@
     function setAccessPanelState(mode = 'idle', message = '') {
       const hasCurrentAccess = mode === 'loading' || mode === 'connected';
       els.form.classList.toggle('connected', mode === 'connected');
-      els.accessFallbackDetails.open = mode === 'needs_code' || mode === 'error';
       if (mode === 'loading') {
         els.accessTitle.textContent = 'Opening your One Time classroom';
         els.accessHelp.textContent = reviewMode
           ? 'Opening the internal review classroom with test-only fixture data.'
-          : 'Checking the secure classroom access from your invite link or this browser.';
+          : 'Checking your member login or secure classroom link.';
       } else if (mode === 'connected') {
         els.accessTitle.textContent = reviewMode ? 'Review classroom access' : 'Current One Time access';
         els.accessHelp.textContent = message || (reviewMode
           ? 'This is an internal review shell. No student-visible writes are performed.'
-          : 'Your secure link opened the classroom. Use fallback access code only if support asks you to.');
+          : 'Your secure link opened the classroom.');
       } else if (mode === 'error') {
         els.accessTitle.textContent = 'Access help';
-        els.accessHelp.textContent = message || 'This link or fallback code could not open the classroom. Try the latest invite link or contact support.';
+        els.accessHelp.textContent = message || 'Log in again or use Forgot parent password to get a fresh link by email.';
       } else {
         els.accessTitle.textContent = 'Open your classroom';
-        els.accessHelp.textContent = message || 'Use your secure classroom link or current browser access. Manual code entry is only for support or older links.';
+        els.accessHelp.textContent = message || 'Use your member login or the secure classroom link from your OneTime email. There is no separate classroom password.';
       }
       if (!hasCurrentAccess && mode !== 'error') els.form.classList.remove('connected');
     }
@@ -1293,22 +1287,25 @@
 
     async function loadClassroom(code) {
       const trimmed = String(code || '').trim();
-      if (!trimmed) {
+      const sessionToken = currentMemberSessionToken();
+      if (!trimmed && !sessionToken && !reviewMode) {
         setAccessPanelState('needs_code');
-        els.status.textContent = 'Use your secure classroom link, or open the fallback access code field if support gave you a code.';
+        els.status.textContent = 'Log in to your member area, use your secure invite link, or use Forgot parent password for a fresh email link.';
         return;
       }
       els.status.textContent = 'Opening classroom...';
       setAccessPanelState('loading');
       const path = reviewMode
         ? '/api/one-time-review/classroom'
-        : `/api/one-time-classroom?code=${encodeURIComponent(trimmed)}`;
-      const response = await fetch(path, { credentials: 'same-origin' });
+        : trimmed ? `/api/one-time-classroom?code=${encodeURIComponent(trimmed)}` : '/api/one-time-classroom';
+      const headers = {};
+      if (sessionToken) headers.Authorization = `Bearer ${sessionToken}`;
+      const response = await fetch(path, { credentials: 'same-origin', headers });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Could not open classroom');
       state.code = trimmed;
       state.classroom = data.classroom || {};
-      if (!reviewMode) localStorage.setItem('oneTimeClassroomCode', trimmed);
+      if (!reviewMode && trimmed) localStorage.setItem('oneTimeClassroomCode', trimmed);
       els.status.textContent = reviewMode ? 'TEST classroom review opened. No writes will be performed.' : 'Classroom opened.';
       setAccessPanelState('connected');
       renderAll();
@@ -1322,7 +1319,7 @@
         await loadClassroom(code);
       } catch (error) {
         els.status.textContent = error.message;
-        setAccessPanelState('error', 'This secure link or fallback code could not open the classroom. Try the latest invite link or contact support.');
+        setAccessPanelState('error', 'Log in again or use Forgot parent password to get a fresh link by email.');
       }
     });
 
@@ -1340,11 +1337,14 @@
           status.textContent = 'Preview submitted locally for UI review. No database write occurred.';
           return;
         }
+        const sessionToken = currentMemberSessionToken();
+        const headers = { 'Content-Type': 'application/json' };
+        if (sessionToken) headers.Authorization = `Bearer ${sessionToken}`;
         const response = await fetch(`/api/one-time-classroom/threads/${encodeURIComponent(form.dataset.threadId)}/responses`, {
           method: 'POST',
           credentials: 'same-origin',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code: state.code, body: form.elements.body.value }),
+          headers,
+          body: JSON.stringify({ ...(state.code ? { code: state.code } : {}), body: form.elements.body.value }),
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Could not submit response');
@@ -1367,7 +1367,12 @@
       els.code.value = state.code;
       loadClassroom(state.code).catch((error) => {
         els.status.textContent = error.message;
-        setAccessPanelState('error', 'This secure link or fallback code could not open the classroom. Try the latest invite link or contact support.');
+        setAccessPanelState('error', 'Log in again or use Forgot parent password to get a fresh link by email.');
+      });
+    } else if (currentMemberSessionToken()) {
+      loadClassroom('').catch((error) => {
+        els.status.textContent = error.message;
+        setAccessPanelState('error', 'Log in again or use Forgot parent password to get a fresh link by email.');
       });
     } else {
       setAccessPanelState('needs_code');

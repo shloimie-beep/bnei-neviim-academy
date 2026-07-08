@@ -26,13 +26,17 @@ test('One Time has one canonical public-to-member route flow', () => {
   assert.match(oneTime, /href="\/rabbi-member">Member Login/);
 });
 
-test('One Time member pages expose home, modules, support, logout, and public return', () => {
-  assert.match(rabbiMember, /One Time home[\s\S]*Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout[\s\S]*Return to public site/);
-  assert.match(memberLibrary, /One Time home[\s\S]*Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout[\s\S]*Return to public site/);
-  assert.match(classroom, /One Time home[\s\S]*Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout[\s\S]*Return to public site/);
+test('One Time member pages expose app modules without public-site escape links', () => {
+  assert.match(rabbiMember, /Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout/);
+  assert.match(memberLibrary, /Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout/);
+  assert.match(classroom, /Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout/);
   assert.doesNotMatch(classroom, /<body class="one-time-review-active/);
   assert.match(classroom, /document\.body\.classList\.add\('one-time-review-active', 'one-time-classroom-review-shell'\)/);
-  assert.match(participant, /One Time home[\s\S]*Provider login[\s\S]*Member home[\s\S]*Library[\s\S]*Account\/logout[\s\S]*Return to public site/);
+  assert.match(participant, /Provider login[\s\S]*Member home[\s\S]*Library[\s\S]*Account\/logout/);
+  for (const html of [rabbiMember, memberLibrary, classroom, participant]) {
+    assert.doesNotMatch(html, /One Time home|Return to public site|href="\/one-time(?:[?#"])/);
+    assert.doesNotMatch(html, /href="\/"/);
+  }
 });
 
 test('One Time logout clears shared member access state without external writes', () => {

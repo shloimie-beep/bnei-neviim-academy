@@ -6655,6 +6655,36 @@ function parentAccessEligible(records) {
   return Boolean(records?.students?.length || records?.signups?.length || records?.leads?.length);
 }
 
+async function oneTimeParentPasswordResetEligible(parentEmail, db = pool) {
+  const email = normalizeEmail(parentEmail);
+  if (!email) return false;
+  const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, db).catch(() => null);
+  const result = await db.query(
+    `SELECT 1
+     FROM one_time_member_access
+     WHERE lower(COALESCE(member_email, '')) = lower($1)
+       AND status = 'active'
+     UNION
+     SELECT 1
+     FROM bna_students
+     WHERE lower(COALESCE(parent_email, '')) = lower($1)
+       AND $2::int IS NOT NULL
+       AND project_id = $2::int
+       AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
+     UNION
+     SELECT 1
+     FROM bna_parent_leads
+     WHERE lower(COALESCE(parent_email, '')) = lower($1)
+       AND $2::int IS NOT NULL
+       AND project_id = $2::int
+       AND 'one-time-parent-trial' = ANY(COALESCE(tags, '{}'::text[]))
+       AND COALESCE(status, 'interested') <> 'archived'
+     LIMIT 1`,
+    [email, project?.id || null]
+  );
+  return Boolean(result.rows.length);
+}
+
 const NEXT_YEAR_LOGIN_PREPARE_CONFIRM = 'PREPARE_NEXT_YEAR_LOGINS';
 const PARENT_PASSWORD_SETUP_CONFIRM = 'SEND_PARENT_PASSWORD_SETUP';
 const ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM = 'SEND_ONE_TIME_PARENT_TRIAL_INVITE';
@@ -6909,6 +6939,64 @@ async function sendParentPasswordResetEmail({ parentEmail, url, req }) {
   }
 }
 
+async function sendOneTimeParentPasswordResetEmail({ parentEmail, url, req }) {
+  const subject = 'Reset your OneTimeOneTime parent password';
+  const text = [
+    'Hi,',
+    '',
+    'Use this secure link to set a new OneTimeOneTime parent password:',
+    url,
+    '',
+    'This link expires in 1 hour. If you did not request it, you can ignore this email.',
+    '',
+    'Rabbi Elie Scheller',
+    'OneTimeOneTime Mishnah',
+  ].join('\n');
+  try {
+    const result = await sendEmail({
+      workspace: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      to: parentEmail,
+      subject,
+      text,
+      html: text.replace(/\n/g, '<br>'),
+    });
+    await logEmail({
+      signupId: null,
+      emailType: 'one_time_parent_password_reset',
+      to: parentEmail,
+      subject,
+      text,
+      html: text.replace(/\n/g, '<br>'),
+      providerMessageId: result.data.id,
+      provider: result.provider,
+      metadata: {
+        requested_from: req?.ip || null,
+        workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+        project_key: ONE_TIME_PROJECT_KEY,
+      },
+    });
+    return { ok: true, id: result.data.id };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    await logEmail({
+      signupId: null,
+      emailType: 'one_time_parent_password_reset',
+      to: parentEmail,
+      subject,
+      text,
+      html: text.replace(/\n/g, '<br>'),
+      status: 'failed',
+      error: message,
+      metadata: {
+        requested_from: req?.ip || null,
+        workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+        project_key: ONE_TIME_PROJECT_KEY,
+      },
+    }).catch(() => {});
+    return { ok: false, error: message };
+  }
+}
+
 async function createParentMagicLink({ parentEmail, req, requestedBy = 'parent', metadata = {}, sendEmail = false }, db = pool) {
   const email = normalizeEmail(parentEmail);
   if (!email) {
@@ -6988,6 +7076,7 @@ async function createParentPasswordResetToken({
   metadata = {},
   sendEmail = true,
   emailSender = sendParentPasswordResetEmail,
+  urlBuilder = parentPortalPasswordResetUrl,
   ttlMs = PARENT_PASSWORD_RESET_TTL_MS,
 }, db = pool) {
   const email = normalizeEmail(parentEmail);
@@ -7027,7 +7116,7 @@ async function createParentPasswordResetToken({
     ]
   );
 
-  const url = parentPortalPasswordResetUrl(req, token);
+  const url = urlBuilder(req, token);
   const emailResult = sendEmail
     ? await emailSender({ parentEmail: email, url, req })
     : { ok: false, skipped: true };
@@ -29587,7 +29676,7 @@ async function logOneTimePublishEvent({
 async function getOneTimeMemberLibraryForAccessCode(accessCode = '', db = pool) {
   const code = String(accessCode || '').trim();
   if (!code) {
-    const error = new Error('Member library access code is required');
+    const error = new Error('Member login is required');
     error.statusCode = 400;
     throw error;
   }
@@ -29601,10 +29690,39 @@ async function getOneTimeMemberLibraryForAccessCode(accessCode = '', db = pool) 
     [code]
   )).rows[0];
   if (!access) {
-    const error = new Error('Invalid or inactive member library access code');
+    const error = new Error('Invalid or inactive member access');
     error.statusCode = 401;
     throw error;
   }
+  return getOneTimeMemberLibraryForAccess(access, db);
+}
+
+async function getOneTimeMemberLibraryForMemberEmail(memberEmail = '', db = pool) {
+  const email = normalizeEmail(memberEmail);
+  if (!email) {
+    const error = new Error('Member login is required');
+    error.statusCode = 401;
+    throw error;
+  }
+  const access = (await db.query(
+    `SELECT *
+     FROM one_time_member_access
+     WHERE lower(COALESCE(member_email, '')) = lower($1)
+       AND status = 'active'
+       AND (expires_at IS NULL OR expires_at > NOW())
+     ORDER BY updated_at DESC NULLS LAST, id DESC
+     LIMIT 1`,
+    [email]
+  )).rows[0];
+  if (!access) {
+    const error = new Error('No active OneTime member access was found for this login');
+    error.statusCode = 403;
+    throw error;
+  }
+  return getOneTimeMemberLibraryForAccess(access, db);
+}
+
+async function getOneTimeMemberLibraryForAccess(access = {}, db = pool) {
   const tier = normalizeOneTimeMemberTier(access.tier);
   const rows = (await db.query(
     `SELECT *
@@ -29643,7 +29761,7 @@ async function getOneTimeVisibleLibraryItemForAccess({ accessCode = '', itemId =
   const code = String(accessCode || '').trim();
   const id = Number(itemId || 0);
   if (!code) {
-    const error = new Error('Member library access code is required');
+    const error = new Error('Member login is required');
     error.statusCode = 400;
     throw error;
   }
@@ -29662,7 +29780,42 @@ async function getOneTimeVisibleLibraryItemForAccess({ accessCode = '', itemId =
     [code]
   )).rows[0];
   if (!access) {
-    const error = new Error('Invalid or inactive member library access code');
+    const error = new Error('Invalid or inactive member access');
+    error.statusCode = 401;
+    throw error;
+  }
+  return getOneTimeVisibleLibraryItemForAccessRow({ access, itemId: id, db });
+}
+
+async function getOneTimeVisibleLibraryItemForMemberEmail({ memberEmail = '', itemId = 0, db = pool } = {}) {
+  const email = normalizeEmail(memberEmail);
+  if (!email) {
+    const error = new Error('Member login is required');
+    error.statusCode = 401;
+    throw error;
+  }
+  const access = (await db.query(
+    `SELECT *
+     FROM one_time_member_access
+     WHERE lower(COALESCE(member_email, '')) = lower($1)
+       AND status = 'active'
+       AND (expires_at IS NULL OR expires_at > NOW())
+     ORDER BY updated_at DESC NULLS LAST, id DESC
+     LIMIT 1`,
+    [email]
+  )).rows[0];
+  if (!access) {
+    const error = new Error('No active OneTime member access was found for this login');
+    error.statusCode = 403;
+    throw error;
+  }
+  return getOneTimeVisibleLibraryItemForAccessRow({ access, itemId, db });
+}
+
+async function getOneTimeVisibleLibraryItemForAccessRow({ access = {}, itemId = 0, db = pool } = {}) {
+  const id = Number(itemId || 0);
+  if (!access?.id) {
+    const error = new Error('Member login is required');
     error.statusCode = 401;
     throw error;
   }
@@ -29685,6 +29838,15 @@ async function getOneTimeVisibleLibraryItemForAccess({ accessCode = '', itemId =
 
 async function recordOneTimeMemberWatchProgress({ accessCode = '', itemId = 0, eventType = 'progress', watchSeconds = 0, progressPercent = 0, req = null, metadata = {}, db = pool } = {}) {
   const { access, item } = await getOneTimeVisibleLibraryItemForAccess({ accessCode, itemId, db });
+  return recordOneTimeMemberWatchProgressForAccess({ access, item, eventType, watchSeconds, progressPercent, req, metadata, db });
+}
+
+async function recordOneTimeMemberWatchProgressForMemberEmail({ memberEmail = '', itemId = 0, eventType = 'progress', watchSeconds = 0, progressPercent = 0, req = null, metadata = {}, db = pool } = {}) {
+  const { access, item } = await getOneTimeVisibleLibraryItemForMemberEmail({ memberEmail, itemId, db });
+  return recordOneTimeMemberWatchProgressForAccess({ access, item, eventType, watchSeconds, progressPercent, req, metadata, db });
+}
+
+async function recordOneTimeMemberWatchProgressForAccess({ access = {}, item = {}, eventType = 'progress', watchSeconds = 0, progressPercent = 0, req = null, metadata = {}, db = pool } = {}) {
   const normalizedEventType = normalizeOneTimeWatchEventType(eventType);
   const seconds = clampOneTimeWatchSeconds(watchSeconds);
   const percent = normalizedEventType === 'mark_complete' ? 100 : clampOneTimeWatchPercent(progressPercent);
@@ -53918,6 +54080,38 @@ app.post('/api/parent-portal/password/request', async (req, res) => {
   res.json({ success: true, sent: true });
 });
 
+app.post('/api/one-time/parent-password/request', async (req, res) => {
+  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
+  if (!parentEmail) return res.status(400).json({ error: 'Parent email is required' });
+  try {
+    const eligible = await oneTimeParentPasswordResetEligible(parentEmail);
+    if (!eligible) {
+      await logRabbiEmailAttempt({
+        projectId: (await getRabbiProject()).id,
+        templateKey: 'parent_password_reset',
+        to: parentEmail,
+        context: { metadata: { one_time_parent_password_request_missing_member: true } },
+        status: 'skipped',
+        error: 'No OneTime parent/member access exists for this email.',
+      }).catch(() => {});
+      return res.json({ success: true, sent: true });
+    }
+    await createParentPasswordResetToken({
+      parentEmail,
+      req,
+      metadata: {
+        source: 'one_time_parent_password_request',
+        project_key: ONE_TIME_PROJECT_KEY,
+      },
+      emailSender: sendOneTimeParentPasswordResetEmail,
+      urlBuilder: (_req, token) => oneTimeParentPortalPasswordResetUrl(token),
+    });
+  } catch (error) {
+    if (error.statusCode === 400) return res.status(400).json({ error: error.message });
+  }
+  res.json({ success: true, sent: true });
+});
+
 app.post('/api/parent-portal/password/reset', async (req, res) => {
   const token = String((req.body || {}).token || '').trim();
   const password = String((req.body || {}).password || '');
@@ -75456,7 +75650,11 @@ app.post('/api/bna/one-time/classroom/messages/:id/review', requireAdmin, async 
 
 app.get('/api/member-library', async (req, res) => {
   try {
-    const library = await getOneTimeMemberLibraryForAccessCode(req.query.code || req.query.access_code || '');
+    const accessCode = String(req.query.code || req.query.access_code || '').trim();
+    const auth = accessCode ? null : await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const library = accessCode
+      ? await getOneTimeMemberLibraryForAccessCode(accessCode)
+      : await getOneTimeMemberLibraryForMemberEmail(auth.member.email);
     res.json({
       success: true,
       member_library: library,
@@ -75471,8 +75669,8 @@ app.get('/api/member-library', async (req, res) => {
 app.post('/api/member-library/items/:id/progress', async (req, res) => {
   const body = req.body || {};
   try {
-    const result = await recordOneTimeMemberWatchProgress({
-      accessCode: body.code || body.access_code || body.accessCode || req.query.code || req.query.access_code || '',
+    const accessCode = String(body.code || body.access_code || body.accessCode || req.query.code || req.query.access_code || '').trim();
+    const progressPayload = {
       itemId: req.params.id,
       eventType: body.event_type || body.eventType || 'progress',
       watchSeconds: body.watch_seconds ?? body.watchSeconds ?? body.seconds ?? 0,
@@ -75482,7 +75680,13 @@ app.post('/api/member-library/items/:id/progress', async (req, res) => {
         route: '/member-library',
         player: limitText(body.player || body.media_provider || body.mediaProvider || '', 80) || null,
       },
-    });
+    };
+    const result = accessCode
+      ? await recordOneTimeMemberWatchProgress({ accessCode, ...progressPayload })
+      : await recordOneTimeMemberWatchProgressForMemberEmail({
+        memberEmail: (await rabbiMemberFromSessionToken(bearerOrBodyToken(req))).member.email,
+        ...progressPayload,
+      });
     res.json({
       success: true,
       progress: result.progress,
@@ -75509,7 +75713,15 @@ app.get('/api/one-time-classroom', async (req, res) => {
         external_write_performed: false,
       });
     }
-    const classroom = await getOneTimeClassroomForAccessCode(accessCode);
+    const auth = accessCode ? null : await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const memberLibrary = accessCode
+      ? await getOneTimeMemberLibraryForAccessCode(accessCode)
+      : await getOneTimeMemberLibraryForMemberEmail(auth.member.email);
+    const classroom = {
+      access: memberLibrary.access,
+      member_library_items: memberLibrary.items,
+      ...(await getOneTimeClassroomData({ memberLibrary, memberSafe: true })),
+    };
     res.json({
       success: true,
       classroom,
@@ -75528,7 +75740,15 @@ app.post('/api/one-time-classroom/threads/:id/responses', async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const classroom = await getOneTimeClassroomForAccessCode(accessCode, client);
+    const auth = accessCode ? null : await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const memberLibrary = accessCode
+      ? await getOneTimeMemberLibraryForAccessCode(accessCode, client)
+      : await getOneTimeMemberLibraryForMemberEmail(auth.member.email, client);
+    const classroom = {
+      access: memberLibrary.access,
+      member_library_items: memberLibrary.items,
+      ...(await getOneTimeClassroomData({ db: client, memberLibrary, memberSafe: true })),
+    };
     const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, client);
     const thread = (await client.query(
       `SELECT *
@@ -78499,13 +78719,23 @@ app.post('/api/bna/rabbi/communications/send', requireAdmin, async (req, res) =>
 app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res) => {
   const body = req.body || {};
   const dryRun = body.dry_run === true || body.dryRun === true || /^(?:1|true|yes)$/i.test(String(body.dry_run || body.dryRun || ''));
+  const smokeMode = body.test_mode === true
+    || body.testMode === true
+    || body.smoke_mode === true
+    || body.smokeMode === true
+    || /^(?:1|true|yes|test|smoke)$/i.test(String(body.invite_mode || body.inviteMode || ''));
+  const inviteMode = smokeMode ? 'smoke_test' : 'production';
   const parentEmail = normalizeEmail(body.parent_email || body.parentEmail || body.email);
-  const parentName = limitText(body.parent_name || body.parentName || body.name || 'One Time Parent Trial', 160);
-  const studentName = limitText(body.student_name || body.studentName || body.child_name || body.childName || 'TEST One Time Student', 160);
+  const rawParentName = String(body.parent_name || body.parentName || body.name || '').trim();
+  const rawStudentName = String(body.student_name || body.studentName || body.child_name || body.childName || '').trim();
+  const parentName = limitText(rawParentName || (dryRun ? 'OneTimeOneTime Parent' : ''), 160);
+  const studentName = limitText(rawStudentName || (dryRun ? 'OneTime student' : ''), 160);
   const trialDays = Math.max(1, Math.min(Number(body.trial_days || body.trialDays || 30) || 30, 90));
   const rawLiveClassUrl = body.live_class_url || body.liveClassUrl || body.zoom_url || body.zoomUrl || '';
   const liveClassUrl = normalizeHttpsExternalUrl(rawLiveClassUrl);
   if (!parentEmail) return res.status(400).json({ error: 'parent_email is required' });
+  if (!dryRun && !parentName) return res.status(400).json({ error: 'parent_name is required for a launch-ready OneTime parent invite' });
+  if (!dryRun && !studentName) return res.status(400).json({ error: 'student_name is required for a launch-ready OneTime parent invite' });
   if (rawLiveClassUrl && !liveClassUrl) return res.status(400).json({ error: 'live_class_url/zoom_url must be a valid https URL' });
   try {
     const project = await assertRabbiAdminAccess(req);
@@ -78515,7 +78745,10 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
       parent_name: parentName,
       student_name: studentName,
       trial_days: trialDays,
-      subject: buildRabbiEmailTemplate('parent_trial_invite', { recipientName: parentName, programName: ONE_TIME_EMAIL_FROM_NAME }).subject,
+      invite_mode: inviteMode,
+      test_labeled: smokeMode,
+      launch_ready: !smokeMode,
+      subject: buildRabbiEmailTemplate('parent_trial_invite', { recipientName: parentName, studentName, programName: ONE_TIME_EMAIL_FROM_NAME }).subject,
       one_time_public_base_url: oneTimeBaseUrl,
       links_will_use: {
         parent_portal: scopedPublicUrl(oneTimeBaseUrl, '/one-time-parent'),
@@ -78545,7 +78778,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
     if (String(body.confirm || '').trim() !== ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM) {
       return res.status(400).json({
         error: `One Time parent trial invite emails require confirm: ${ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM}`,
-        hint: 'Use this only for an explicit per-parent test/trial invite. It creates scoped test/trial access but does not create a payment or checkout.',
+        hint: 'Use this only for an explicit per-parent OneTime invite. It creates scoped trial access but does not create a payment or checkout.',
         preview,
       });
     }
@@ -78554,8 +78787,16 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
     let committed = false;
     try {
       await client.query('BEGIN');
-      const tags = ['TEST', 'codex-test', 'one-time-trial', 'one-time-parent-trial'];
-      const studentNotes = 'TEST One Time parent trial student created from approved Codex parent-trial invite flow. Safe to archive after walkthrough.';
+      const tags = smokeMode
+        ? ['TEST', 'codex-test', 'one-time-trial', 'one-time-parent-trial']
+        : ['one-time-trial', 'one-time-parent-trial', 'one-time-live-invite'];
+      const tagsToRemove = smokeMode ? [] : ['test', 'codex-test'];
+      const studentNotes = smokeMode
+        ? 'TEST OneTimeOneTime parent trial student created from approved Codex smoke invite flow. Safe to archive after walkthrough.'
+        : 'OneTimeOneTime parent trial student created from approved launch-ready parent invite flow.';
+      const memberNotes = smokeMode
+        ? 'TEST OneTimeOneTime parent trial member access for operator walkthrough.'
+        : 'OneTimeOneTime parent trial member access created from approved launch-ready parent invite flow.';
       let student = (await client.query(
         `SELECT *
          FROM bna_students
@@ -78577,14 +78818,15 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
                    SELECT DISTINCT tag_value
                    FROM unnest(COALESCE(tags, '{}'::text[]) || $5::text[]) AS tag_values(tag_value)
                    WHERE trim(tag_value) <> ''
+                      AND NOT (lower(trim(tag_value)) = ANY($6::text[]))
                  )
                ),
-               notes = COALESCE(NULLIF(notes, ''), $6),
+               notes = $7,
                status = 'active',
                updated_at = NOW()
            WHERE id = $1
            RETURNING *`,
-          [student.id, studentName, parentName, parentEmail, tags, studentNotes]
+          [student.id, studentName, parentName, parentEmail, tags, tagsToRemove, studentNotes]
         )).rows[0];
       } else {
         student = (await client.query(
@@ -78614,7 +78856,9 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         student_id: student.id,
         no_payment_created: true,
         no_checkout_created: true,
-        test_labeled: true,
+        invite_mode: inviteMode,
+        test_labeled: smokeMode,
+        launch_ready: !smokeMode,
       };
       if (lead) {
         lead = (await client.query(
@@ -78633,13 +78877,15 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
                    SELECT DISTINCT tag_value
                    FROM unnest(COALESCE(tags, '{}'::text[]) || $5::text[]) AS tag_values(tag_value)
                    WHERE trim(tag_value) <> ''
+                     AND NOT (lower(trim(tag_value)) = ANY($7::text[]))
                  )
                ),
+               notes = $8,
                metadata = COALESCE(metadata, '{}'::jsonb) || $6::jsonb,
                updated_at = NOW()
            WHERE id = $1
            RETURNING *`,
-          [lead.id, parentName, parentEmail, studentName, tags, JSON.stringify(leadMetadata)]
+          [lead.id, parentName, parentEmail, studentName, tags, JSON.stringify(leadMetadata), tagsToRemove, studentNotes]
         )).rows[0];
       } else {
         lead = (await client.query(
@@ -78657,20 +78903,37 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         )).rows[0];
       }
 
-      const member = await ensureRabbiMember({
+      let member = await ensureRabbiMember({
         projectId: project.id,
         displayName: parentName,
         email: parentEmail,
-        notes: 'TEST One Time parent trial member access for operator walkthrough.',
+        notes: memberNotes,
         metadata: {
           source: 'one_time_parent_trial_invite',
           trial_days: trialDays,
           student_id: student.id,
           lead_id: lead.id,
-          test_labeled: true,
+          invite_mode: inviteMode,
+          test_labeled: smokeMode,
+          launch_ready: !smokeMode,
         },
         db: client,
       });
+      if (!smokeMode) {
+        member = (await client.query(
+          `UPDATE bna_members
+           SET notes = $2,
+               metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+               updated_at = NOW()
+           WHERE id = $1
+           RETURNING *`,
+          [
+            member.id,
+            memberNotes,
+            JSON.stringify({ invite_mode: inviteMode, test_labeled: false, launch_ready: true }),
+          ]
+        )).rows[0];
+      }
 
       const expiresAt = new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000);
       let memberAccess = (await client.query(
@@ -78698,8 +78961,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
             memberAccess.id,
             `${parentName} / ${studentName}`,
             expiresAt,
-            'TEST One Time parent trial access for operator walkthrough.',
-            JSON.stringify({ source: 'one_time_parent_trial_invite', student_id: student.id, member_id: member.id, trial_days: trialDays }),
+            memberNotes,
+            JSON.stringify({ source: 'one_time_parent_trial_invite', student_id: student.id, member_id: member.id, trial_days: trialDays, invite_mode: inviteMode, test_labeled: smokeMode, launch_ready: !smokeMode }),
           ]
         )).rows[0];
       } else {
@@ -78714,10 +78977,42 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
             `${parentName} / ${studentName}`,
             parentEmail,
             expiresAt,
-            'TEST One Time parent trial access for operator walkthrough.',
-            JSON.stringify({ source: 'one_time_parent_trial_invite', student_id: student.id, member_id: member.id, lead_id: lead.id, trial_days: trialDays, test_labeled: true }),
+            memberNotes,
+            JSON.stringify({ source: 'one_time_parent_trial_invite', student_id: student.id, member_id: member.id, lead_id: lead.id, trial_days: trialDays, invite_mode: inviteMode, test_labeled: smokeMode, launch_ready: !smokeMode }),
           ]
         )).rows[0];
+      }
+
+      let accessGrant = (await client.query(
+        `SELECT *
+         FROM bna_access_grants
+         WHERE project_id = $1
+           AND member_id = $2
+           AND tier_key = 'live_library'
+           AND status = 'active'
+           AND COALESCE(metadata->>'source', '') = 'one_time_parent_trial_invite'
+         ORDER BY updated_at DESC NULLS LAST, id DESC
+         LIMIT 1`,
+        [project.id, member.id]
+      )).rows[0] || null;
+      if (!accessGrant) {
+        accessGrant = await createRabbiAccessGrant({
+          projectId: project.id,
+          memberId: member.id,
+          tier: { tier_key: 'live_library' },
+          source: 'one_time_parent_trial_invite',
+          notes: memberNotes,
+          metadata: {
+            source: 'one_time_parent_trial_invite',
+            trial_days: trialDays,
+            student_id: student.id,
+            member_access_id: memberAccess.id,
+            invite_mode: inviteMode,
+            test_labeled: smokeMode,
+            launch_ready: !smokeMode,
+          },
+          db: client,
+        });
       }
 
       const reset = await createParentPasswordResetToken({
@@ -78731,6 +79026,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
           member_id: member.id,
           member_access_id: memberAccess.id,
           no_generic_email_sent: true,
+          invite_mode: inviteMode,
+          test_labeled: smokeMode,
         },
         sendEmail: false,
         ttlMs: ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS,
@@ -78796,6 +79093,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
           member_access_id: memberAccess.id,
           one_time_public_base_url: oneTimeBaseUrl,
           live_class_url_included: Boolean(liveClassUrl),
+          invite_mode: inviteMode,
+          test_labeled: smokeMode,
           no_payment_created: true,
           no_checkout_created: true,
         },
@@ -78828,6 +79127,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
             email_error: emailResult.error || null,
             one_time_public_base_url: oneTimeBaseUrl,
             live_class_url_included: Boolean(liveClassUrl),
+            invite_mode: inviteMode,
+            test_labeled: smokeMode,
             no_payment_created: true,
             no_checkout_created: true,
           }),
@@ -78843,6 +79144,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         parent_email: parentEmail,
         student_id: student.id,
         student_name: student.name,
+        invite_mode: inviteMode,
+        test_labeled: smokeMode,
         student_access_code_created: Boolean(studentAccessCode),
         lead_id: lead.id,
         member_id: member.id,

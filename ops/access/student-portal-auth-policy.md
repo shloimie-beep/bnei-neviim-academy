@@ -7,12 +7,13 @@ workspace and the guardrails implemented in the app.
 
 ## Decision
 
-Parent-managed student username/password login is the primary student portal auth model.
+Parent-managed student username/password login is the student portal auth model.
 
-The existing access-code link remains as a fallback and recovery path. Parents
-can open or reset the fallback access-code link from the parent portal. Student
-self-reset is out of scope until BNA separately approves the support process,
-age-appropriate UX, and recovery ownership.
+Parents reset a child's password from the parent portal. There is no
+parent-facing student/classroom/library access-code fallback, support recovery
+code, or separate classroom password. Student self-reset is out of scope until
+BNA separately approves the support process, age-appropriate UX, and recovery
+ownership.
 
 ## Runtime Policy
 
@@ -22,12 +23,12 @@ age-appropriate UX, and recovery ownership.
   after set/reset.
 - Student sessions are separate from parent and Operations sessions and use a
   distinct HttpOnly cookie.
-- Raw passwords, raw access codes, and raw IP addresses are never stored in
+- Raw passwords, legacy secure-link tokens, and raw IP addresses are never stored in
   logs, task titles, screenshots, or audit rows.
 - Username/password attempts are persistently audited with hashed IP, hashed
   username, route path, outcome, and non-secret metadata.
-- Access-code fallback attempts remain persistently audited with hashed IP and
-  hashed access-code identifiers.
+- Legacy secure-link attempts, where retained for old invite links, remain
+  persistently audited with hashed IP and hashed token identifiers.
 - Missing, invalid, expired, and disabled credentials return generic errors.
 - Failed attempts are rate-limited.
 - Parent-created student credentials are first-party BNA records, not GHL,
@@ -51,13 +52,14 @@ Implemented student endpoints:
 - `POST /api/student-portal/login`
 - `GET /api/student-portal/session`
 - `POST /api/student-portal/logout`
-- existing `GET /api/student-portal?code=...` access-code fallback
+- legacy `GET /api/student-portal?code=...` secure-link support for old links;
+  not a parent-facing recovery path
 
 ## Rollback
 
-Rollback: disable password-account creation and keep access-code links active.
-Existing access-code fallback behavior remains available during rollout, smoke
-testing, and any temporary password-login incident.
+Rollback: disable password-account creation only with an explicit operator
+decision. Do not reintroduce a parent-facing access-code fallback, support
+recovery code, or separate classroom password without a new approval.
 
 ## Guardrail
 

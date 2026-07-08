@@ -89,6 +89,26 @@
       ]
     },
     {
+      "action_id": "ACTION-ONETIME-PARENT-PASSWORD-REQUEST",
+      "label": "Email me a new password link",
+      "surface": "one_time_parent_password_setup",
+      "route": "/one-time-parent",
+      "selector_hint": "#forgotForm button[type=\"submit\"]",
+      "expected_behavior": "Requests a OneTimeOneTime-branded parent password reset email to the signup email without exposing whether the email exists.",
+      "permission": "parent_email_holder",
+      "status": "active",
+      "test": {
+        "type": "contract",
+        "expected_result": "tests/one-time-parent-trial-invite.test.js verifies /api/one-time/parent-password/request, OneTime reset copy, and scoped /one-time-parent reset URL."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-STUDENT-HELPER-OPEN",
       "label": "One Time Student Helper",
       "surface": "one_time_student_review",

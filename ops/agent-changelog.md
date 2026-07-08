@@ -33997,3 +33997,40 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `2026-07-15T11:48:30.964Z`.
 - Evidence:
   `ops/watchdog-audits/2026-07-08-onetime-parent-setup-fix-live-send-readback.md`.
+
+## 2026-07-08T16:11:19+03:00 - OneTime parent/student auth cleanup local verified
+
+- Captured the launch-readiness parent/student correction as
+  `raw-input/RAW-20260708-009-onetime-launch-ready-live-parent-student.md`
+  and registered requirements in
+  `tasks-pending/2026-07-08-onetime-launch-ready-parent-student-invite.md`.
+- Updated OneTime production parent trial invites so they require real
+  `parent_name` and `student_name`, default to production labels, reserve
+  `TEST`/`codex-test` labels for explicit smoke mode only, and create the
+  live/library access grant needed for the parent walkthrough.
+- Updated the OneTime parent invite template with warmer parent-facing copy,
+  a dedicated "Tonight's live shiur Zoom link" line, parent setup, classroom,
+  worksheets, library, and Rabbi signoff.
+- Added a OneTime-scoped parent forgot-password route and parent setup form:
+  parents reset their own password by email to the signup address.
+- Removed visible classroom/library recovery-code and fallback-code UX from
+  the normal OneTime member-library and classroom routes; authenticated member
+  sessions and secure invite links are now the normal path.
+- Updated the parent portal child login panel so parents have one visible
+  child password reset action and an open-child-portal link, without exposing
+  a separate student/classroom access-code recovery path.
+- Removed normal-path public return/home links and Academy/BNA bleed from the
+  OneTime parent/member/classroom/Rabbi-member/participant surfaces touched in
+  this batch, and replaced the unfit Rabbi portrait background on the
+  Rabbi-member launch surface with OneTime brand styling.
+- Verification passed: `node --check server.js`; focused OneTime/parent/
+  student/workspace tests 59/59; `node scripts\watchdog-workspace-scope-guardrails.mjs --json`
+  with no findings; `npm run pqc:validate` for the launch packet; and
+  `npm run watchdog:protocol-drift`.
+- Guardrails held: no live email was sent, no payment/checkout was created,
+  no Zoom/Drive/Vimeo/DNS mutation was performed, and no setup token, member
+  access code, full recipient address, or full Zoom URL was committed.
+- Status: local verified, pending commit, push, deployment, and live smoke.
+  Live resend remains blocked by `DEC-20260708-008` until the exact live
+  OneTime student display name is provided. Agent Mode autonomous prompt/
+  drop-off hardening remains open as `REQ-20260708-045`.

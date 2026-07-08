@@ -141,12 +141,16 @@ test('Operations UI exposes class package management without external upload or 
 test('Public member page uses the safe access-code API and does not expose admin fields', () => {
   assert.match(memberLibraryHtml, /One Time Member Library/);
   assert.match(memberLibraryHtml, /\/api\/member-library\?code=/);
+  assert.match(memberLibraryHtml, /\/api\/member-library'/);
+  assert.match(memberLibraryHtml, /currentMemberSessionToken/);
+  assert.match(memberLibraryHtml, /Authorization = `Bearer \$\{sessionToken\}`/);
   assert.match(memberLibraryHtml, /Current One Time access/);
-  assert.match(memberLibraryHtml, /Use fallback access code/);
-  assert.match(memberLibraryHtml, /Fallback access code/);
+  assert.match(memberLibraryHtml, /Forgot parent password\?/);
+  assert.match(memberLibraryHtml, /There is no separate classroom or library password/);
+  assert.doesNotMatch(memberLibraryHtml, /Use fallback access code|Fallback access code|support recovery code|Recovery-code/i);
   assert.match(memberLibraryHtml, /setAccessPanelState/);
   assert.match(memberLibraryHtml, /currentAccessCode\(\)/);
-  assert.match(memberLibraryHtml, /\/one-time-classroom\?code=\$\{encodeURIComponent\(currentAccessCode\(\)\)\}/);
+  assert.match(memberLibraryHtml, /currentAccessCode\(\) \? `\/one-time-classroom\?code=\$\{encodeURIComponent\(currentAccessCode\(\)\)\}` : '\/one-time-classroom'/);
   assert.match(memberLibraryHtml, /player\.vimeo\.com\/video/);
   assert.match(memberLibraryHtml, /filter-rail/);
   assert.match(memberLibraryHtml, /Newest/);

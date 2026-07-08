@@ -207,11 +207,12 @@ test('parent portal uses login, calendar navigation, help, and scoped visible st
   assert.match(parentHtml, /saveStudentLoginFor/);
   assert.match(parentHtml, /studentLoginSavedFor/);
   assert.match(parentHtml, /studentPasswordNeverShown/);
-  assert.match(parentHtml, /studentAccessFallback/);
-  assert.match(parentHtml, /data-student-open="\$\{studentId\}"/);
-  assert.match(parentHtml, /data-student-reset="\$\{studentId\}"/);
+  assert.match(parentHtml, /parents can reset|If your child forgets the password, set a new one here/);
+  assert.match(parentHtml, /href="\/student"/);
+  assert.doesNotMatch(parentHtml, /data-student-open="\$\{studentId\}"/);
+  assert.doesNotMatch(parentHtml, /data-student-reset="\$\{studentId\}"/);
   assert.match(parentHtml, /\/api\/parent-portal\/students\/\$\{encodeURIComponent\(studentId\)\}\/login-account/);
-  assert.match(parentHtml, /\/api\/parent-portal\/students\/\$\{encodeURIComponent\(studentId\)\}\/access-code/);
+  assert.doesNotMatch(parentHtml, /\/api\/parent-portal\/students\/\$\{encodeURIComponent\(studentId\)\}\/access-code/);
   assert.doesNotMatch(parentHtml, /Questions and sources/);
   assert.doesNotMatch(parentHtml, /source-list/);
 });
@@ -235,8 +236,8 @@ test('parent help and question actions are internally tagged for staff routing',
   assert.match(server, /created_by: 'parent_portal'/);
   assert.match(server, /PARENT_HELP_EMAIL/);
   assert.match(server, /sendGmailMessage/);
-  assert.match(server, /app\.post\('\/api\/parent-portal\/students\/:studentId\/access-code'/);
-  assert.match(server, /student_access_reset: regenerate/);
+  assert.match(server, /app\.post\('\/api\/parent-portal\/students\/:studentId\/login-account'/);
+  assert.match(server, /password_returned: false/);
 });
 
 test('parent portal uploads meeting recordings into accountability processing', () => {

@@ -6,14 +6,16 @@
   <title>One Time Member Library</title>
   <style>
     :root {
-      color-scheme: light;
-      --ink: #172033;
-      --muted: #667085;
-      --line: #d8dee9;
-      --paper: #f7f9fc;
-      --panel: #ffffff;
-      --accent: #116466;
-      --accent-2: #c94f4f;
+      color-scheme: dark;
+      --ink: #fff8d8;
+      --muted: #cabf98;
+      --line: rgba(255, 210, 0, 0.22);
+      --paper: #080808;
+      --panel: #141414;
+      --panel-2: #1d1a10;
+      --accent: #ffd200;
+      --accent-2: #ffe680;
+      --button-ink: #161000;
     }
 
     * {
@@ -25,12 +27,15 @@
       min-height: 100vh;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ink);
-      background: var(--paper);
+      background:
+        radial-gradient(circle at 15% 5%, rgba(255, 210, 0, 0.12), transparent 31rem),
+        linear-gradient(135deg, #050505 0%, #111 52%, #1f1b0b 100%);
     }
 
     header {
       border-bottom: 1px solid var(--line);
-      background: var(--panel);
+      background: rgba(8, 8, 8, 0.94);
+      backdrop-filter: blur(10px);
     }
 
     .topbar,
@@ -75,7 +80,7 @@
       border: 1px solid var(--line);
       border-radius: 6px;
       color: var(--accent);
-      background: #fff;
+      background: rgba(255, 210, 0, 0.07);
       text-decoration: none;
       font-size: 13px;
       font-weight: 800;
@@ -98,8 +103,8 @@
     }
 
     .access-panel.connected {
-      border-color: rgba(17, 100, 102, 0.28);
-      background: #eef7f2;
+      border-color: rgba(255, 210, 0, 0.34);
+      background: var(--panel-2);
     }
 
     .access-copy {
@@ -129,35 +134,29 @@
       max-width: 760px;
     }
 
-    .access-fallback {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-    }
-
-    .access-fallback summary {
-      cursor: pointer;
+    .actions {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-wrap: wrap;
       gap: 10px;
+    }
+
+    .button {
       min-height: 42px;
-      padding: 0 12px;
-      color: var(--accent);
-      font-weight: 800;
-      list-style: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 210, 0, 0.38);
+      border-radius: 7px;
+      padding: 10px 13px;
+      color: var(--button-ink);
+      background: var(--accent);
+      font-weight: 900;
+      text-decoration: none;
     }
 
-    .access-fallback summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .fallback-grid {
-      display: grid;
-      grid-template-columns: minmax(220px, 1fr) auto;
-      gap: 10px;
-      align-items: end;
-      padding: 0 12px 12px;
+    .button.secondary {
+      color: var(--accent-2);
+      background: transparent;
     }
 
     label {
@@ -181,12 +180,12 @@
       width: 100%;
       padding: 0 12px;
       color: var(--ink);
-      background: #fff;
+      background: #0b0b0b;
     }
 
     button {
       padding: 0 18px;
-      color: #fff;
+      color: var(--button-ink);
       background: var(--accent);
       border-color: var(--accent);
       cursor: pointer;
@@ -213,7 +212,7 @@
       padding: 14px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #eef7f2;
+      background: var(--panel-2);
     }
 
     .classroom-strip.visible {
@@ -232,7 +231,7 @@
       min-height: 38px;
       padding: 0 12px;
       border-radius: 6px;
-      color: #fff;
+      color: var(--button-ink);
       background: var(--accent);
       text-decoration: none;
       font-weight: 700;
@@ -524,10 +523,6 @@
         flex-direction: column;
       }
 
-      .fallback-grid {
-        grid-template-columns: 1fr;
-      }
-
       .library-toolbar.visible {
         grid-template-columns: 1fr;
       }
@@ -548,16 +543,14 @@
       <h1>One Time Member Library</h1>
       <div>
         <nav class="member-nav" aria-label="One Time member navigation">
-          <a href="/one-time">One Time home</a>
           <a href="/rabbi-member">Member home</a>
           <a href="/member-library" aria-current="page">Library</a>
           <a href="/one-time-classroom">Classroom</a>
           <a href="#bnaBotPanel" data-bna-assistant-open aria-controls="bnaBotPanel">Assistant/help</a>
           <a href="/rabbi-member#support">Questions/support</a>
           <a href="/rabbi-member?logout=1" id="memberLogoutLink">Account/logout</a>
-          <a href="/">Return to public site</a>
         </nav>
-        <div class="member-meta" id="memberMeta">Access code required</div>
+        <div class="member-meta" id="memberMeta">Login required</div>
       </div>
     </div>
   </header>
@@ -567,18 +560,13 @@
       <div class="access-copy">
         <span class="eyebrow">Current One Time access</span>
         <h2 id="accessTitle">Open your library</h2>
-        <p id="accessHelp">Use the secure invite link from your parent account or One Time email. Manual code entry is only for support or older links.</p>
+        <p id="accessHelp">Use your member login or the secure library link from your OneTime email. There is no separate classroom or library password.</p>
       </div>
-      <details class="access-fallback" id="accessFallbackDetails">
-        <summary>Use fallback access code</summary>
-        <div class="fallback-grid">
-          <label>
-            Fallback access code
-            <input id="accessCode" name="code" autocomplete="off" spellcheck="false">
-          </label>
-          <button type="submit" id="loadButton">Open Library</button>
-        </div>
-      </details>
+      <input id="accessCode" name="code" type="hidden" autocomplete="off">
+      <div class="actions">
+        <a class="button" href="/rabbi-member">Log in</a>
+        <a class="button secondary" href="/one-time-parent">Forgot parent password?</a>
+      </div>
     </form>
     <div class="status" id="status"></div>
     <section class="classroom-strip" id="classroomStrip" aria-live="polite"></section>
@@ -596,10 +584,8 @@
   <script>
     const form = document.getElementById('accessForm');
     const codeInput = document.getElementById('accessCode');
-    const loadButton = document.getElementById('loadButton');
     const accessTitle = document.getElementById('accessTitle');
     const accessHelp = document.getElementById('accessHelp');
-    const accessFallbackDetails = document.getElementById('accessFallbackDetails');
     const statusEl = document.getElementById('status');
     const grid = document.getElementById('libraryGrid');
     const memberMeta = document.getElementById('memberMeta');
@@ -615,6 +601,7 @@
     const progressSyncTimers = new Map();
     const vimeoPlayers = new Map();
     const activeMediaItems = new Set();
+    const params = new URLSearchParams(window.location.search);
 
     const filters = [
       ['all', 'All'],
@@ -699,22 +686,25 @@
       return String(codeInput.value || localStorage.getItem('one_time_member_library_code') || '').trim();
     }
 
+    function currentMemberSessionToken() {
+      return String(localStorage.getItem('rabbi_member_session') || '').trim();
+    }
+
     function setAccessPanelState(mode = 'idle', message = '') {
       const hasCurrentAccess = mode === 'loading' || mode === 'connected';
       form.classList.toggle('connected', mode === 'connected');
-      accessFallbackDetails.open = mode === 'needs_code' || mode === 'error';
       if (mode === 'loading') {
         accessTitle.textContent = 'Opening your One Time library';
-        accessHelp.textContent = 'Checking the secure access from your invite link or this browser.';
+        accessHelp.textContent = 'Checking your member login or secure invite link.';
       } else if (mode === 'connected') {
         accessTitle.textContent = 'Current One Time access';
-        accessHelp.textContent = message || 'Your secure link opened the member library. Use fallback access code only if support asks you to.';
+        accessHelp.textContent = message || 'Your secure link opened the member library.';
       } else if (mode === 'error') {
         accessTitle.textContent = 'Access help';
-        accessHelp.textContent = message || 'This link or fallback code could not open the library. Check the latest invite link or contact support.';
+        accessHelp.textContent = message || 'Log in again or use Forgot parent password to get a fresh link by email.';
       } else {
         accessTitle.textContent = 'Open your library';
-        accessHelp.textContent = message || 'Use the secure invite link from your parent account or One Time email. Manual code entry is only for support or older links.';
+        accessHelp.textContent = message || 'Use your member login or the secure library link from your OneTime email. There is no separate classroom or library password.';
       }
       if (!hasCurrentAccess && mode !== 'error') form.classList.remove('connected');
     }
@@ -727,13 +717,16 @@
       item.watch_progress_percent = Math.max(Number(item.watch_progress_percent || 0), normalizedPercent);
       item.watch_progress_seconds = Math.max(Number(item.watch_progress_seconds || 0), normalizedSeconds);
       const code = currentAccessCode();
-      if (!code) return null;
+      const sessionToken = currentMemberSessionToken();
+      if (!code && !sessionToken) return null;
+      const headers = { 'content-type': 'application/json' };
+      if (sessionToken) headers.Authorization = `Bearer ${sessionToken}`;
       try {
         const response = await fetch(`/api/member-library/items/${encodeURIComponent(item.id)}/progress`, {
           method: 'POST',
-          headers: { 'content-type': 'application/json' },
+          headers,
           body: JSON.stringify({
-            code,
+            ...(code ? { code } : {}),
             event_type: eventType,
             progress_percent: normalizedPercent,
             watch_seconds: normalizedSeconds,
@@ -1044,28 +1037,31 @@
       libraryToolbar.classList.add('visible');
       classroomStrip.innerHTML = `
         <p>Classroom: ${Number((classroom.calendar_items || []).length)} calendar item${Number((classroom.calendar_items || []).length) === 1 ? '' : 's'}, ${Number((classroom.threads || []).length)} Rabbi thread${Number((classroom.threads || []).length) === 1 ? '' : 's'}, ${Number((classroom.leaderboard || []).length)} leaderboard row${Number((classroom.leaderboard || []).length) === 1 ? '' : 's'}.</p>
-        <a href="/one-time-classroom?code=${encodeURIComponent(currentAccessCode())}">Open Classroom</a>
+        <a href="${currentAccessCode() ? `/one-time-classroom?code=${encodeURIComponent(currentAccessCode())}` : '/one-time-classroom'}">Open Classroom</a>
       `;
       renderLibraryItems();
     }
 
     async function loadLibrary(code) {
       const trimmed = String(code || '').trim();
-      if (!trimmed) {
+      const sessionToken = currentMemberSessionToken();
+      if (!trimmed && !sessionToken) {
         setAccessPanelState('needs_code');
-        statusEl.textContent = 'Use your secure invite link, or open the fallback access code field if support gave you a code.';
+        statusEl.textContent = 'Log in to your member area, use your secure invite link, or use Forgot parent password for a fresh email link.';
         statusEl.className = 'status error';
         return;
       }
-      loadButton.disabled = true;
       statusEl.textContent = 'Loading...';
       statusEl.className = 'status';
       setAccessPanelState('loading');
       try {
-        const response = await fetch(`/api/member-library?code=${encodeURIComponent(trimmed)}`, { credentials: 'same-origin' });
+        const headers = {};
+        if (sessionToken) headers.Authorization = `Bearer ${sessionToken}`;
+        const path = trimmed ? `/api/member-library?code=${encodeURIComponent(trimmed)}` : '/api/member-library';
+        const response = await fetch(path, { credentials: 'same-origin', headers });
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.error || 'Could not open library.');
-        localStorage.setItem('one_time_member_library_code', trimmed);
+        if (trimmed) localStorage.setItem('one_time_member_library_code', trimmed);
         statusEl.textContent = '';
         setAccessPanelState('connected');
         renderLibrary(payload);
@@ -1076,9 +1072,7 @@
         grid.innerHTML = '';
         statusEl.textContent = error.message || 'Could not open library.';
         statusEl.className = 'status error';
-        setAccessPanelState('error', 'This secure link or fallback code could not open the library. Try the latest invite link or contact support.');
-      } finally {
-        loadButton.disabled = false;
+        setAccessPanelState('error', 'Log in again or use Forgot parent password to get a fresh link by email.');
       }
     }
 
@@ -1099,9 +1093,8 @@
       localStorage.removeItem('rabbi_member_session');
     });
 
-    const params = new URLSearchParams(window.location.search);
     const initialCode = params.get('code') || localStorage.getItem('one_time_member_library_code') || '';
-    if (initialCode) {
+    if (initialCode || currentMemberSessionToken()) {
       codeInput.value = initialCode;
       loadLibrary(initialCode);
     } else {

@@ -246,6 +246,11 @@
   should show the child's name when setting or resetting a student's username
   and password, and the backend must keep using parent-session scoped student
   lookup before changing any student login.
+- Parent/student/classroom launch auth rule: parents reset their own password
+  by email to the signup address; parents reset a child's password from the
+  parent portal. Do not show a separate classroom password, support recovery
+  code, or parent-facing access-code fallback on OneTime/library/classroom
+  launch surfaces.
 - Content/research data must stay project-scoped: Operations content jobs,
   class sessions, project meetings, research views, and prompt-library data
   should load through the active workspace/project key. The BNA admin Prompt

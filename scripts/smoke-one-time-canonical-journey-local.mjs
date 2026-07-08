@@ -71,9 +71,11 @@ async function runViewport(browser, baseUrl, viewport) {
   await page.locator('a[href="/rabbi-member"]').first().click();
   await page.waitForURL(/\/rabbi-member(?:$|\?)/);
   await page.locator('nav[aria-label="One Time member navigation"]').waitFor();
-  for (const label of ['One Time home', 'Member home', 'Library', 'Classroom', 'Questions/support', 'Account/logout', 'Return to public site']) {
+  for (const label of ['Member home', 'Library', 'Classroom', 'Questions/support', 'Account/logout']) {
     await page.getByText(label, { exact: true }).first().waitFor();
   }
+  assert(!(await page.content()).includes('Return to public site'), 'logged-in One Time member home should not show public-return links');
+  assert(!(await page.content()).includes('One Time home'), 'logged-in One Time member home should not show public-home links');
   await snap('member-home');
 
   await page.goto(`${baseUrl}/one-time/member-login`, { waitUntil: 'domcontentloaded' });
@@ -122,7 +124,7 @@ function writeReport(report) {
     '## Checks',
     '- One Time landing links to `/rabbi-member` and not `/one-time/member-login`.',
     '- Legacy `/one-time/member-login` and `/member` redirect to `/rabbi-member`.',
-    '- Member home, library, and classroom expose module navigation, account/logout, and public return paths.',
+    '- Member home, library, and classroom expose module navigation and account/logout without public-return detours.',
     '- Account/logout clears local One Time member state.',
     '',
     '## Screenshots',

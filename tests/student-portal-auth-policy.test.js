@@ -8,13 +8,13 @@ const tasks = fs.readFileSync('TASKS.md', 'utf8');
 const parentHtml = fs.readFileSync('public/parent.html', 'utf8');
 const studentHtml = fs.readFileSync('public/student.html', 'utf8');
 
-test('student portal auth policy chooses parent-managed username/password with access-code fallback', () => {
-  assert.match(policy, /Parent-managed student username\/password login is the primary student portal auth model/);
-  assert.match(policy, /The existing access-code link remains as a fallback/);
+test('student portal auth policy chooses parent-managed username/password without parent-facing code fallback', () => {
+  assert.match(policy, /Parent-managed student username\/password login is the student portal auth model/);
+  assert.match(policy, /There is no\s+parent-facing student\/classroom\/library access-code fallback/);
   assert.match(policy, /Student\s+self-reset is out of scope/);
-  assert.match(policy, /Raw passwords, raw access codes, and raw IP addresses are never stored/);
+  assert.match(policy, /Raw passwords, legacy secure-link tokens, and raw IP addresses are never stored/);
   assert.match(policy, /Student sessions are separate from parent and Operations sessions/);
-  assert.match(policy, /Rollback: disable password-account creation and keep access-code links active/);
+  assert.match(policy, /Do not reintroduce a parent-facing access-code fallback/);
 });
 
 test('student password accounts and sessions use scrypt hashes and separate HttpOnly cookies', () => {
@@ -56,12 +56,13 @@ test('parent can create/reset a student login only for students in that parent s
   assert.match(parentHtml, /studentLoginSavedFor/);
   assert.match(parentHtml, /\/api\/parent-portal\/students\/\$\{encodeURIComponent\(studentId\)\}\/login-account/);
   assert.match(parentHtml, /studentPasswordNeverShown/);
-  assert.match(parentHtml, /studentAccessFallback/);
-  assert.match(parentHtml, /data-student-open/);
-  assert.match(parentHtml, /data-student-reset/);
+  assert.match(parentHtml, /href="\/student"/);
+  assert.doesNotMatch(parentHtml, /data-student-open/);
+  assert.doesNotMatch(parentHtml, /data-student-reset/);
+  assert.doesNotMatch(parentHtml, /\/api\/parent-portal\/students\/\$\{encodeURIComponent\(studentId\)\}\/access-code/);
 });
 
-test('student portal exposes username/password login and keeps access-code fallback', () => {
+test('student portal exposes username/password login while legacy secure links remain backend-only', () => {
   assert.match(server, /app\.post\('\/api\/student-portal\/login'/);
   assert.match(server, /app\.get\('\/api\/student-portal\/session'/);
   assert.match(server, /app\.post\('\/api\/student-portal\/logout'/);
@@ -110,5 +111,5 @@ test('student portal auth policy is reflected in the active task list', () => {
   assert.match(tasks, /\[x\] Decide the final student portal auth model/);
   assert.match(tasks, /ops\/access\/student-portal-auth-policy\.md/);
   assert.match(tasks, /Parent-managed student username\/password login is\s+now the approved model/);
-  assert.match(tasks, /access-code fallback remains\s+available/);
+  assert.match(tasks, /parent-facing access-code\s+fallback\/recovery UI is no longer approved/);
 });

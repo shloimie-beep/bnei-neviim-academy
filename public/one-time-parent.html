@@ -345,13 +345,13 @@
 <body>
   <main class="shell">
     <header class="topbar" aria-label="OneTimeOneTime parent setup">
-      <a class="brand" href="/one-time" aria-label="Open OneTimeOneTime home">
+      <div class="brand" aria-label="OneTimeOneTime parent setup">
         <span class="brand-mark" aria-hidden="true"><img src="/images/one-time/brand/onetimelogo.webp" alt=""></span>
         <span class="brand-text">
           <span class="brand-title">OneTimeOneTime Mishnah</span>
           <span class="brand-subtitle">Parent access setup</span>
         </span>
-      </a>
+      </div>
       <span class="route-pill">Private setup link</span>
     </header>
 
@@ -389,13 +389,22 @@
           </div>
         </form>
 
+        <form id="forgotForm" autocomplete="off" hidden>
+          <label>
+            Parent email
+            <input id="forgotEmail" name="email" type="email" autocomplete="email" required>
+          </label>
+          <div class="actions">
+            <button id="forgotButton" type="submit">Email me a new password link</button>
+          </div>
+        </form>
+
         <div id="nextLinks" class="next-links">
-          <a class="button" href="/one-time-classroom">Open classroom</a>
-          <a class="button secondary" href="/member-library">Open library</a>
-          <a class="button secondary" href="/one-time">OneTimeOneTime home</a>
+          <a class="button" href="/rabbi-member">Open member area</a>
+          <a class="button secondary" href="/one-time-parent">Send another password link</a>
         </div>
 
-        <p class="fine-print">If this link says expired or already used, open the newest invite email or reply to the OneTimeOneTime email and a fresh setup link can be sent.</p>
+        <p class="fine-print">If a parent forgets the password, use this page to send a new setup link to the signup email. Children do not need a separate classroom password; parents can reset a child's password from the parent area.</p>
       </aside>
     </section>
   </main>
@@ -404,6 +413,9 @@
     const params = new URLSearchParams(window.location.search);
     const resetToken = String(params.get('reset') || '').trim();
     const form = document.getElementById('passwordForm');
+    const forgotForm = document.getElementById('forgotForm');
+    const forgotEmail = document.getElementById('forgotEmail');
+    const forgotButton = document.getElementById('forgotButton');
     const password = document.getElementById('password');
     const confirmPassword = document.getElementById('confirmPassword');
     const statusBox = document.getElementById('status');
@@ -420,9 +432,16 @@
       submitButton.textContent = isBusy ? 'Saving...' : 'Save parent password';
     }
 
+    function setForgotBusy(isBusy) {
+      forgotButton.disabled = isBusy;
+      forgotButton.textContent = isBusy ? 'Sending...' : 'Email me a new password link';
+    }
+
     if (!resetToken) {
       form.hidden = true;
-      showStatus('error', 'This setup link is missing or has already been cleaned from the address bar. Please open the newest OneTimeOneTime invite email.');
+      forgotForm.hidden = false;
+      forgotEmail.value = String(params.get('email') || '').trim();
+      showStatus('ok', 'Enter the parent email used at signup and we will send a fresh OneTimeOneTime password link.');
     }
 
     form.addEventListener('submit', async (event) => {
@@ -453,9 +472,31 @@
         showStatus('ok', 'Your parent password is set. You can now open the classroom and library links from your invite email.');
         window.history.replaceState(null, '', '/one-time-parent?ready=1');
       } catch (error) {
-        showStatus('error', `${error.message || 'This setup link is invalid or expired.'} Use the newest invite email, or reply to the email for a fresh link.`);
+        forgotForm.hidden = false;
+        showStatus('error', `${error.message || 'This setup link is invalid or expired.'} Enter the signup email below to receive a fresh OneTimeOneTime password link.`);
       } finally {
         setBusy(false);
+      }
+    });
+
+    forgotForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = String(forgotEmail.value || '').trim();
+      if (!email) return;
+      setForgotBusy(true);
+      try {
+        const response = await fetch('/api/one-time/parent-password/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || 'Could not request a password link.');
+        showStatus('ok', 'If that email is registered for OneTimeOneTime, a new password link was sent.');
+      } catch (error) {
+        showStatus('error', error.message || 'Could not request a password link.');
+      } finally {
+        setForgotBusy(false);
       }
     });
   </script>

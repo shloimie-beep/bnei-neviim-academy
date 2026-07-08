@@ -1675,10 +1675,10 @@
             created: 'created',
             updated: 'updated',
             viewChild: 'View child',
-            resetStudentAccess: 'Reset student access',
+            resetStudentAccess: 'Reset student password',
             openChildPortal: 'Open child portal',
-            accessCodeReady: 'Student access link is ready.',
-            accessCodeReset: 'Student access code was reset.',
+            accessCodeReady: 'Student username/password access is ready.',
+            accessCodeReset: 'Student password was reset.',
             childAccess: 'Child access',
             studentLoginSettings: 'Student login settings',
             studentLoginStatus: 'Student login',
@@ -1696,8 +1696,8 @@
             studentLoginSaved: 'Student login saved.',
             studentLoginSavedFor: 'Student login saved for',
             studentLoginPasswordMismatch: 'Passwords do not match.',
-            studentPasswordNeverShown: 'Saved passwords are never displayed after set/reset.',
-            studentAccessFallback: 'Access-code fallback',
+            studentPasswordNeverShown: 'Saved passwords are never displayed after set/reset. If your child forgets the password, set a new one here.',
+            studentAccessFallback: 'Student password reset',
             helpTitle: 'Need help?',
             helpCopy: 'For technology or portal issues, send this form. For questions about your child, use WhatsApp Rabbi Shloimie.',
             helpCategory: 'Help topic',
@@ -2107,7 +2107,7 @@
             studentLoginSavedFor: 'כניסת תלמיד נשמרה עבור',
             studentLoginPasswordMismatch: 'הסיסמאות אינן תואמות.',
             studentPasswordNeverShown: 'סיסמאות שמורות אינן מוצגות לאחר הגדרה או איפוס.',
-            studentAccessFallback: 'גיבוי קוד גישה',
+            studentAccessFallback: 'איפוס סיסמת תלמיד',
         });
 
         function t(key) {
@@ -4358,13 +4358,11 @@
                         </label>
                         <div class="button-row">
                             <button class="btn primary" type="submit">${escapeHtml(t('saveStudentLoginFor'))} ${escapeHtml(studentName)}</button>
-                            <button class="btn" type="button" data-student-open="${studentId}">${escapeHtml(t('openChildPortal'))}</button>
-                            <button class="btn" type="button" data-student-reset="${studentId}">${escapeHtml(t('resetStudentAccess'))}</button>
+                            <a class="portal-topbar-link" href="/student" target="_blank" rel="noopener">${escapeHtml(t('openChildPortal'))}</a>
                             <span class="small" data-student-login-status aria-live="polite"></span>
                         </div>
                     </form>
                     <p class="small">${escapeHtml(t('studentPasswordNeverShown'))}</p>
-                    <p class="small"><strong>${escapeHtml(t('studentAccessFallback'))}:</strong> ${escapeHtml(t('accessCodeReady'))}</p>
                 </div>
             `;
         }
@@ -4386,7 +4384,7 @@
                         </div>
                         <div class="subsection">
                             <h3>${escapeHtml(t('childAccess'))}</h3>
-                            <p class="small">${escapeHtml(t('accessCodeReady'))}</p>
+                            <p class="small">${escapeHtml(t('studentLoginChildCopy'))}</p>
                         </div>
                     </div>
                     <div class="subsection stack">
@@ -4940,24 +4938,6 @@
             }
         }
 
-        async function openStudentPortal(studentId, { regenerate = false, button = null } = {}) {
-            if (button) button.disabled = true;
-            try {
-                const result = await api(`/api/parent-portal/students/${encodeURIComponent(studentId)}/access-code`, {
-                    method: 'POST',
-                    body: JSON.stringify({ regenerate }),
-                });
-                if (result.url) {
-                    window.open(result.url, '_blank', 'noopener');
-                }
-                if (regenerate) alert(t('accessCodeReset'));
-            } catch (error) {
-                alert(error.message || t('resetFailed'));
-            } finally {
-                if (button) button.disabled = false;
-            }
-        }
-
         async function saveStudentLogin(form) {
             const studentId = form.dataset.studentId;
             const status = form.querySelector('[data-student-login-status]');
@@ -5423,18 +5403,6 @@
             if (calendarCloseButton) {
                 selectedCalendarEventId = '';
                 if (portalData) renderPortal(portalData, { keepLanguage: true });
-                return;
-            }
-
-            const studentOpenButton = event.target.closest('[data-student-open]');
-            if (studentOpenButton) {
-                openStudentPortal(studentOpenButton.dataset.studentOpen, { button: studentOpenButton });
-                return;
-            }
-
-            const studentResetButton = event.target.closest('[data-student-reset]');
-            if (studentResetButton) {
-                openStudentPortal(studentResetButton.dataset.studentReset, { regenerate: true, button: studentResetButton });
                 return;
             }
 

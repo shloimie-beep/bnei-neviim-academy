@@ -22,6 +22,10 @@ const emailTemplates = read('src/lib/bna/rabbi-emails.js');
 const workspaceMemory = read('memory-topics/workspace-scope-isolation.md');
 const brandMemory = read('memory-topics/brand-kits.md');
 const oneTimeParentSetupPage = read('public/one-time-parent.html');
+const oneTimeMemberHomePage = read('public/rabbi-member.html');
+const oneTimeMemberLibraryPage = read('public/member-library.html');
+const oneTimeClassroomPage = read('public/one-time-classroom.html');
+const oneTimeParticipantPage = read('public/provider-participant.html');
 
 const parentInviteRoute = sliceBetween(
   server,
@@ -114,6 +118,25 @@ check(
 );
 
 check(
+  /student_name is required for a launch-ready OneTime parent invite/.test(parentInviteRoute)
+    && !/TEST One Time Student/.test(parentInviteRoute)
+    && /inviteMode = smokeMode \? 'smoke_test' : 'production'/.test(parentInviteRoute),
+  'WSG-ONETIME-NO-TEST-INVITE-DEFAULT',
+  'high',
+  'OneTime parent invites must be production/live by default and must not default to TEST student labels.'
+);
+
+check(
+  /app\.post\('\/api\/one-time\/parent-password\/request'/.test(server)
+    && /sendOneTimeParentPasswordResetEmail/.test(server)
+    && /oneTimeParentPasswordResetEligible/.test(server)
+    && /oneTimeParentPortalPasswordResetUrl\(token\)/.test(server),
+  'WSG-ONETIME-PARENT-FORGOT-PASSWORD',
+  'high',
+  'OneTime forgot-password must send a OneTime-branded /one-time-parent reset link only for OneTime-eligible parent/member records.'
+);
+
+check(
   /workspace:\s*'one_time_mishnah_class'/.test(parentInviteRoute),
   'WSG-ONETIME-MAIL-WORKSPACE',
   'high',
@@ -137,10 +160,35 @@ check(
 check(
   /OneTimeOneTime Parent Setup/.test(oneTimeParentSetupPage)
     && /\/api\/parent-portal\/password\/reset/.test(oneTimeParentSetupPage)
+    && /\/api\/one-time\/parent-password\/request/.test(oneTimeParentSetupPage)
     && !/\bBNA\b|Bnei Neviim|Academy|bneineviimacademy/i.test(oneTimeParentSetupPage),
   'WSG-ONETIME-PARENT-SETUP-NO-ACADEMY',
   'high',
   'OneTime parent setup page must be a OneTime-only password setup surface with no Academy branding.'
+);
+
+check(
+  [
+    oneTimeParentSetupPage,
+    oneTimeMemberHomePage,
+    oneTimeMemberLibraryPage,
+    oneTimeClassroomPage,
+    oneTimeParticipantPage,
+  ].every((source) => !/One Time home|Return to public site|href="\/one-time(?:[?#"])|href="\/"/.test(source)),
+  'WSG-ONETIME-NO-PUBLIC-RETURN-LINKS',
+  'medium',
+  'Logged-in OneTime launch surfaces must not show public-home/public-site detours.'
+);
+
+check(
+  !/Use fallback access code|Fallback access code|support recovery code|Recovery-code|Access code required/i.test(`${oneTimeMemberLibraryPage}\n${oneTimeClassroomPage}`)
+    && /There is no separate classroom or library password/.test(oneTimeMemberLibraryPage)
+    && /There is no separate classroom password/.test(oneTimeClassroomPage)
+    && /currentMemberSessionToken/.test(oneTimeMemberLibraryPage)
+    && /currentMemberSessionToken/.test(oneTimeClassroomPage),
+  'WSG-ONETIME-NO-CODE-FALLBACK-UX',
+  'high',
+  'OneTime library/classroom must load through member session or secure invite link without visible access-code fallback/recovery UI.'
 );
 
 check(
