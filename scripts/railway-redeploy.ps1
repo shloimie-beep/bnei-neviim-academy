@@ -88,7 +88,8 @@ function Get-RailwayTargetGuard {
 Write-Host "Checking Railway auth..." -ForegroundColor Cyan
 
 $tokenFile = Join-Path $repoRoot ".secrets\railway-token.txt"
-if (-not $env:RAILWAY_TOKEN -and -not $env:RAILWAY_API_TOKEN -and (Test-Path $tokenFile)) {
+$useAccountAuth = $env:BNA_RAILWAY_USE_ACCOUNT_AUTH -match '^(1|true|yes)$'
+if (-not $useAccountAuth -and -not $env:RAILWAY_TOKEN -and -not $env:RAILWAY_API_TOKEN -and (Test-Path $tokenFile)) {
   $env:RAILWAY_TOKEN = (Get-Content -LiteralPath $tokenFile -Raw).Trim()
 }
 
