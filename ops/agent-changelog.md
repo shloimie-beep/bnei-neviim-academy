@@ -35221,7 +35221,7 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `registered_fallback_only_blocker`, and 0 `tool_wrapper_missing`.
 - Focused verification passed 53/53 across helper tools, Rabbi scope map,
   Agent Review prompts, Rabbi Telegram notifications, and Codex progress
-  formatting.
+  formatting; full `npm test` passed 1671/1671.
 - Remaining blockers: deploy/live smoke for the 97 local-only wrappers, saved
   all-163 Agent Mode PASS/BLOCKED proof, external approval gates, and
   `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` for live Rabbi Telegram delivery.
