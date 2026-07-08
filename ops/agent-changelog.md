@@ -34475,3 +34475,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/ui-audits/2026-07-08-onetime-concise-helper/live-report.md`.
 - No signup form submit, email, WhatsApp, payment, access grant, Zoom, Vimeo,
   Drive, DNS, Stripe, or external CRM mutation was performed.
+
+## 2026-07-08T20:13:00+03:00 - OneTime local students current Zoom link sent
+
+- Registered `RAW-20260708-018` and `REQ-20260708-074` for the urgent request
+  to send the current OneTime Mishnayos class link to local-tagged students.
+- Live OneTime CRM in `rabbi_sheller_provider / one_time_mishnah_class`
+  resolved 3 local-tagged contacts. The operator said "two students" but also
+  explicitly named the CRM local-student tag segment, so the exact tag segment
+  was used.
+- Sent 3 individual OneTime Resend emails with the current Zoom link:
+  drafts #4-#6, provider message IDs stored only as fingerprints.
+- Logged CRM notes #9-#11 and verified 3 matching current-link threads in the
+  Rabbi provider mailbox.
+- Evidence:
+  `ops/live-smokes/2026-07-08T17-12-00-033Z-one-time-local-student-current-link-resend.md`.
+- Verification passed: `node --check scripts/send-onetime-local-class-link-update.mjs`,
+  `node --test tests/onetime-local-class-link-update-script.test.js`, live
+  resend runner, and scoped leak scan for raw Zoom password URL / raw Gmail
+  addresses.
+- No WhatsApp/WAPI send was attempted, because OneTime WAPI credentials remain
+  blocked. No payment/access, DNS, Zoom meeting creation, Vimeo, Drive, Stripe,
+  or external CRM mutation was performed.

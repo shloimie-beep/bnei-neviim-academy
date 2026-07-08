@@ -1,0 +1,186 @@
+{
+  "ok": true,
+  "started_at": "2026-07-08T17:12:00.033Z",
+  "app_url": "https://join.onetimeonetime.com",
+  "raw_id": "RAW-20260708-018",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "zoom_url_redacted": "[redacted zoom url]",
+  "expected_count": 3,
+  "resolved_count": 3,
+  "external_send_performed": true,
+  "contact_mutation_performed": true,
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "session established from railway"
+    },
+    {
+      "name": "Resolve scoped local-student recipients",
+      "ok": true,
+      "detail": [
+        {
+          "id": 4,
+          "email": "s***@g***.com",
+          "email_mask": "s***@g***.com",
+          "fingerprint": "sha256:568337a3e3098ac0",
+          "tags": [
+            "welcome_email_sent",
+            "zoom_mishnayos_class",
+            "local_class_attendee",
+            "one_time",
+            "needs_name"
+          ]
+        },
+        {
+          "id": 5,
+          "email": "b***@g***.com",
+          "email_mask": "b***@g***.com",
+          "fingerprint": "sha256:7e497ffd61328c3c",
+          "tags": [
+            "one_time",
+            "local_class_attendee",
+            "zoom_mishnayos_class",
+            "welcome_email_sent",
+            "needs_name"
+          ]
+        },
+        {
+          "id": 6,
+          "email": "e***@g***.com",
+          "email_mask": "e***@g***.com",
+          "fingerprint": "sha256:f91ab3e2862f48aa",
+          "tags": [
+            "one_time",
+            "local_class_attendee",
+            "zoom_mishnayos_class",
+            "welcome_email_sent",
+            "needs_name"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Create email draft s***@g***.com",
+      "ok": true,
+      "detail": "draft #4"
+    },
+    {
+      "name": "Send email s***@g***.com",
+      "ok": true,
+      "detail": "provider message sha256:a18cf076eaffb271"
+    },
+    {
+      "name": "Log CRM note s***@g***.com",
+      "ok": true,
+      "detail": "note #9"
+    },
+    {
+      "name": "Create email draft b***@g***.com",
+      "ok": true,
+      "detail": "draft #5"
+    },
+    {
+      "name": "Send email b***@g***.com",
+      "ok": true,
+      "detail": "provider message sha256:1fd7a4aebc446b22"
+    },
+    {
+      "name": "Log CRM note b***@g***.com",
+      "ok": true,
+      "detail": "note #10"
+    },
+    {
+      "name": "Create email draft e***@g***.com",
+      "ok": true,
+      "detail": "draft #6"
+    },
+    {
+      "name": "Send email e***@g***.com",
+      "ok": true,
+      "detail": "provider message sha256:5edb87561faa10a8"
+    },
+    {
+      "name": "Log CRM note e***@g***.com",
+      "ok": true,
+      "detail": "note #11"
+    },
+    {
+      "name": "Provider mailbox readback",
+      "ok": true,
+      "detail": "3 current-link threads visible"
+    }
+  ],
+  "recipients": [
+    {
+      "id": 4,
+      "email_mask": "s***@g***.com",
+      "fingerprint": "sha256:568337a3e3098ac0",
+      "tags": [
+        "welcome_email_sent",
+        "zoom_mishnayos_class",
+        "local_class_attendee",
+        "one_time",
+        "needs_name"
+      ]
+    },
+    {
+      "id": 5,
+      "email_mask": "b***@g***.com",
+      "fingerprint": "sha256:7e497ffd61328c3c",
+      "tags": [
+        "one_time",
+        "local_class_attendee",
+        "zoom_mishnayos_class",
+        "welcome_email_sent",
+        "needs_name"
+      ]
+    },
+    {
+      "id": 6,
+      "email_mask": "e***@g***.com",
+      "fingerprint": "sha256:f91ab3e2862f48aa",
+      "tags": [
+        "one_time",
+        "local_class_attendee",
+        "zoom_mishnayos_class",
+        "welcome_email_sent",
+        "needs_name"
+      ]
+    }
+  ],
+  "sends": [
+    {
+      "lead_id": 4,
+      "email_mask": "s***@g***.com",
+      "fingerprint": "sha256:568337a3e3098ac0",
+      "draft_id": 4,
+      "provider_message_id_fingerprint": "sha256:a18cf076eaffb271",
+      "note_id": 9
+    },
+    {
+      "lead_id": 5,
+      "email_mask": "b***@g***.com",
+      "fingerprint": "sha256:7e497ffd61328c3c",
+      "draft_id": 5,
+      "provider_message_id_fingerprint": "sha256:1fd7a4aebc446b22",
+      "note_id": 10
+    },
+    {
+      "lead_id": 6,
+      "email_mask": "e***@g***.com",
+      "fingerprint": "sha256:f91ab3e2862f48aa",
+      "draft_id": 6,
+      "provider_message_id_fingerprint": "sha256:5edb87561faa10a8",
+      "note_id": 11
+    }
+  ],
+  "provider_mailbox_readback": {
+    "search_subject": "Current Zoom link for today's Mishnayos class",
+    "matching_thread_count": 3,
+    "total_search_thread_count": 3,
+    "mailbox_inbox_address_present": true,
+    "warning": ""
+  }
+}

@@ -18,6 +18,7 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
 | REQ-20260708-071 | Deployed / live smoke passed | Make the OneTime public landing signup workflow and Agent Mode audit workflow launch-ready: black/yellow header with black-on-white logo, yellow bottom-of-hero email-only Sign Up Now strip, safe first-party lead capture, focused WhatsApp/readiness prompt, and copied prompt lane tracking. | Raw input: `raw-input/RAW-20260708-015-onetime-public-signup-agent-workflow.md`. PQC packet passed validation: `ops/prompt-packets/2026-07-08-onetime-public-signup-agent-workflow/00-onetime-public-signup-agent-workflow.product-quality.json`. Implemented in `public/one-time/index.html`, `src/lib/bna/agent-review-hub.js`, `public/agent-review.html`, generated `public/agent-review-prompts/*.md`, tests, action registry, and `.gitignore` security cleanup. Commit `7c0de2ad` was pushed and deployed to OneTime Railway deployment `b14edf6d-eb9f-42f8-aafe-aea74c91d294` (`SUCCESS`). Local Playwright smoke passed at 1440/1024/768/430/390 with no old form fields/no overflow, mocked no-send synthetic signup, and Agent Review prompt-copy lane move. Live OneTime smoke passed for `https://join.onetimeonetime.com`; rendered live Playwright smoke passed at 1440/1024/768/430/390 with one visible email input, no retired fields, no horizontal overflow, black/yellow header, black-on-white logo mark, and live prompt readback for `one-time-public-signup-whatsapp-workflow.md`. Evidence: `ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/local-report.md`; `ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/live-report.md`; live screenshots in the same folder. Verification passed: focused tests 30/30, `node --check server.js`, PQC validation, action watchdog, protocol-drift watchdog, secrets audit after removing tracked provider diagnostics JSON from git, `git diff --check`, and updated live smoke contract. No WhatsApp/email/payment/access/external send was performed. |
 | REQ-20260708-072 | Deployed / live smoke passed | Send Shloimie an internal Telegram bot reminder when someone signs up through the OneTime public signup form. | Raw input: `raw-input/RAW-20260708-016-onetime-signup-telegram-reminder.md`. Implemented in `server.js` for `/api/one-time/interest` and `/api/bna/product-leads` after the lead is saved. Runtime commit `fbabe124` pushed and deployed to OneTime Railway deployment `85b1f0f0-b3ae-49b1-8b00-9932a1cd7631` (`SUCCESS`). Production OneTime Railway variables now have `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID_BNA`, and `TELEGRAM_CHAT_ID_SHLOIMIE` present by key-readback only, and env-enabled redeploy `14e74ce9-cc29-49a3-aed1-21ab0dfe1af3` reached `SUCCESS`. Verification passed: `node --check server.js`, focused OneTime tests 18/18, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, `npm run secrets:audit`, `git diff --check`, and live OneTime smoke. Evidence: `ops/watchdog-audits/2026-07-08-onetime-signup-telegram-reminder-live-smoke.md`. No live signup was submitted during smoke testing, and no parent email, WhatsApp, checkout, payment, access, Zoom, Vimeo, Drive, DNS, Stripe, or external CRM mutation was performed. |
 | REQ-20260708-073 | Deployed / live timed smoke passed | Make the public OneTime landing helper concise and timed: first nudge after 10 seconds asks whether the visitor wants his son to love Torah; follow-up 20 seconds later says where the class is holding by masechta and that now is a great time to join. | Raw input: `raw-input/RAW-20260708-017-onetime-landing-helper-concise-timed.md`. Implemented for the OneTime public helper only in `public/js/bna-bot-widget.js` and `public/one-time/index.html`; internal action registry/tests updated. Runtime commit `27f55f6e` pushed and deployed to OneTime Railway deployment `76610b3c-3cfa-44d3-80f8-76a43f744a2b` (`SUCCESS`). Local and live Playwright timed smokes at `390x844` confirmed first nudge `Hi. Do you want your son to love Torah?` and second nudge `We are up to Maseches Berachos now. It is a great time to join.` Evidence: `ops/ui-audits/2026-07-08-onetime-concise-helper/local-report.md` and `ops/ui-audits/2026-07-08-onetime-concise-helper/live-report.md`. Verification passed: `node --check server.js`, focused tests 11/11, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, `npm run secrets:audit`, `git diff --check`, deployment success, standard live smoke, and live timed helper smoke. No signup/email/WhatsApp/payment/access/Zoom/Vimeo/Drive/DNS/Stripe/external CRM mutation was performed. |
+| REQ-20260708-074 | Done / Emails sent | Urgently send the current OneTime Mishnah live-class link to CRM contacts tagged as local students / local class attendees. | Raw input: `raw-input/RAW-20260708-018-onetime-local-student-current-link-resend.md`. Live OneTime CRM resolved 3 local-tagged contacts, not 2; because the operator named the tag segment explicitly, Codex sent to the exact local-tagged segment. Three individual OneTime Resend emails were sent with the current Zoom link, drafts #4-#6, provider messages fingerprinted, CRM notes #9-#11 created, and Rabbi provider mailbox readback found 3 matching current-link threads. Evidence: `ops/live-smokes/2026-07-08T17-12-00-033Z-one-time-local-student-current-link-resend.md`. Guardrails held: OneTime/Rabbi scope only, one-recipient drafts only, no raw recipient emails or raw Zoom password link in repo evidence, and no WAPI/WhatsApp/payment/access/DNS/Zoom meeting/Vimeo/Drive/external CRM mutation. |
 
 ## Decisions
 
@@ -161,6 +162,31 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
   - `ops/agent-changelog.md`
   - `ops/agent-task-ledger.jsonl`
 
+## Evidence - 2026-07-08 Local Student Current-Link Resend
+
+- Requirement: `REQ-20260708-074`.
+- Raw input: `raw-input/RAW-20260708-018-onetime-local-student-current-link-resend.md`.
+- Live recipient resolution:
+  - OneTime CRM scope: `rabbi_sheller_provider` / `one_time_mishnah_class`.
+  - Filter: `local_class_attendee`, `zoom_mishnayos_class`, `local_student`, or matching metadata flags.
+  - Result: 3 local-tagged contacts resolved. The operator said "two students" but also explicitly named the CRM local-student tag segment; Codex sent to the exact tag segment.
+- External send performed:
+  - 3 individual one-recipient OneTime Resend emails sent.
+  - Draft ids: #4, #5, #6.
+  - CRM notes: #9, #10, #11.
+  - Provider mailbox readback found 3 matching current-link threads.
+- Evidence:
+  - `ops/live-smokes/2026-07-08T17-12-00-033Z-one-time-local-student-current-link-resend.md`
+  - `ops/live-smokes/2026-07-08T17-12-00-033Z-one-time-local-student-current-link-resend.json`
+- Verification passed:
+  - `node --check scripts/send-onetime-local-class-link-update.mjs`
+  - `node --test tests/onetime-local-class-link-update-script.test.js`
+  - leak scan over scoped files found no raw Zoom password URL and no raw Gmail addresses
+- Guardrails:
+  - The report redacts recipient emails and the Zoom password URL.
+  - No WhatsApp/WAPI send was attempted because the live OneTime WAPI credentials remain blocked.
+  - No payment/access, DNS, Zoom meeting creation, Vimeo, Drive, Stripe, or external CRM mutation was performed.
+
 ## Suggested WhatsApp Draft
 
 Status: draft only, not sent.
@@ -188,3 +214,4 @@ Status: draft only, not sent.
 | B7 | Public signup strip and Agent Mode workflow prompt | `REQ-20260708-071` | Deployed/live smoke passed |
 | B8 | OneTime signup Telegram reminder | `REQ-20260708-072` | Deployed/live smoke passed |
 | B9 | Concise OneTime landing helper nudges | `REQ-20260708-073` | Deployed/live timed smoke passed |
+| B10 | Urgent local-student current class-link resend | `REQ-20260708-074` | Done / 3 individual emails sent |
