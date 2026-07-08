@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-08T06:20:00+03:00",
+  "updated_at": "2026-07-08T14:24:17+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -65,6 +65,26 @@
         "GOAL-CORE-002",
         "GOAL-CORE-006",
         "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PARENT-PASSWORD-SET",
+      "label": "Save parent password",
+      "surface": "one_time_parent_password_setup",
+      "route": "/one-time-parent",
+      "selector_hint": "#passwordForm button[type=\"submit\"]",
+      "expected_behavior": "Submits the one-time reset token and new password to the parent password reset API, then removes the reset token from the address bar and keeps the user on the OneTimeOneTime setup surface.",
+      "permission": "parent_setup_token_holder",
+      "status": "active",
+      "test": {
+        "type": "contract",
+        "expected_result": "tests/one-time-parent-trial-invite.test.js verifies the OneTime invite points to /one-time-parent and public/one-time-parent.html contains the scoped password reset form without Academy branding."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
         "GOAL-CORE-015"
       ]
     },

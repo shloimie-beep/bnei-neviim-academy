@@ -17,6 +17,8 @@ test('workspace scope guardrail is wired into watchdog closeout', () => {
 test('workspace scope guardrail covers OneTime parent email leak class', () => {
   assert.match(watchdog, /configuredOneTimePublicBaseUrl/);
   assert.match(watchdog, /oneTimeParentPortalPasswordResetUrl/);
+  assert.match(watchdog, /\/one-time-parent\\\?reset=/);
+  assert.match(watchdog, /WSG-ONETIME-PARENT-SETUP-NO-ACADEMY/);
   assert.match(watchdog, /requestBaseUrl\(req\)/);
   assert.match(watchdog, /Bnei Neviim Academy\|bneineviimacademy/);
   assert.ok(watchdog.includes("workspace:\\s*'one_time_mishnah_class'"));

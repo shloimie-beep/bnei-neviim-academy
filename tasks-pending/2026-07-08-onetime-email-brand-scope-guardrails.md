@@ -11,6 +11,9 @@ Raw input: `raw-input/RAW-20260708-007-onetime-email-brand-scope-guardrails.md`
 | REQ-20260708-034 | Done, deployed/dry-run verified | Parent invite copy is clean OneTime copy with no Academy/backend language and supports a validated live-shiur Zoom link. | `src/lib/bna/rabbi-emails.js`, `tests/one-time-parent-trial-invite.test.js`; live dry-run accepted a dummy HTTPS Zoom URL for preview validation. |
 | REQ-20260708-035 | Done, pushed | Shared-repo workspace-scope guardrail exists and is wired into watchdog closeout. | `scripts/watchdog-workspace-scope-guardrails.mjs`, `package.json`, `tests/workspace-scope-guardrails.test.js`; `npm run watchdog:all` passed. |
 | DEC-20260708-007 | Resolved | Live resend to the operator test Gmail requires verified exact Zoom join link and sender readiness. | Exact Zoom link was supplied in chat, sender readiness passed, and one approved parent invite was sent/read back. |
+| REQ-20260708-036 | Local verified, pending push/deploy/live smoke | OneTime parent password setup links must land on a OneTime-only setup page, not the generic Academy parent portal/reset surface. | `server.js` routes `/one-time-parent`; `public/one-time-parent.html`; `tests/one-time-parent-trial-invite.test.js`; `scripts/watchdog-workspace-scope-guardrails.mjs`. |
+| REQ-20260708-037 | Local verified, pending push/deploy/live send | OneTime parent trial invite setup tokens must be fresh and long-lived enough for a trial invite walkthrough. | `server.js` adds `ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS` capped at seven days and passes it to the trial invite reset token. |
+| REQ-20260708-038 | Pending deploy/live smoke | Resend the single approved OneTime parent invite after the setup route and expiry fix are deployed and verified. | Pending production smoke and safe communications readback. |
 
 ## Done Criteria
 
@@ -47,3 +50,21 @@ Raw input: `raw-input/RAW-20260708-007-onetime-email-brand-scope-guardrails.md`
   `ops/live-smokes/2026-07-08T10-34-17-754Z-one-time-shared-review-live-smoke.md`.
 - PASS live resend/readback:
   `ops/watchdog-audits/2026-07-08-onetime-parent-invite-live-send-readback.md`.
+
+## Follow-up Correction - 2026-07-08
+
+- Source: `raw-input/RAW-20260708-008-onetime-parent-setup-link-expiry.md`.
+- Finding: the first live invite used the OneTime domain, but the password setup
+  path still opened `/parent`, which is the Academy parent portal surface.
+- Finding: the first setup link used the generic one-hour password reset TTL,
+  which is too short for a parent trial walkthrough.
+- Local fix: `/one-time-parent` route and OneTime-only password setup page
+  added; OneTime trial setup token TTL extended through
+  `ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS`; invite preview and send path
+  now advertise `/one-time-parent`.
+- Local verification:
+  - PASS `node --check server.js`
+  - PASS `node --test tests/one-time-parent-trial-invite.test.js tests/workspace-scope-guardrails.test.js` (6/6)
+  - PASS `node scripts/watchdog-workspace-scope-guardrails.mjs --json`
+  - PASS route/action registry JSON parse
+  - PASS `git diff --check`

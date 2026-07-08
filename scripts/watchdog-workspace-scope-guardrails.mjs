@@ -21,6 +21,7 @@ const server = read('server.js');
 const emailTemplates = read('src/lib/bna/rabbi-emails.js');
 const workspaceMemory = read('memory-topics/workspace-scope-isolation.md');
 const brandMemory = read('memory-topics/brand-kits.md');
+const oneTimeParentSetupPage = read('public/one-time-parent.html');
 
 const parentInviteRoute = sliceBetween(
   server,
@@ -76,6 +77,21 @@ check(
 );
 
 check(
+  /\/one-time-parent\?reset=/.test(server),
+  'WSG-ONETIME-PASSWORD-SETUP-PATH',
+  'high',
+  'OneTime parent password setup links must land on /one-time-parent instead of the generic Academy parent portal.'
+);
+
+check(
+  /parent_portal:\s*scopedPublicUrl\(oneTimeBaseUrl,\s*'\/one-time-parent'\)/.test(parentInviteRoute)
+    && !/parent_portal:\s*scopedPublicUrl\(oneTimeBaseUrl,\s*'\/parent'\)/.test(parentInviteRoute),
+  'WSG-ONETIME-PREVIEW-PARENT-PORTAL-PATH',
+  'high',
+  'OneTime parent invite preview must advertise /one-time-parent, not /parent.'
+);
+
+check(
   !/requestBaseUrl\(req\)/.test(parentInviteRoute),
   'WSG-ONETIME-NO-REQUEST-HOST',
   'high',
@@ -116,6 +132,15 @@ check(
   'WSG-ONETIME-PARENT-ZOOM-COPY',
   'medium',
   'OneTime parent invite template should have a dedicated live-shiur link line.'
+);
+
+check(
+  /OneTimeOneTime Parent Setup/.test(oneTimeParentSetupPage)
+    && /\/api\/parent-portal\/password\/reset/.test(oneTimeParentSetupPage)
+    && !/\bBNA\b|Bnei Neviim|Academy|bneineviimacademy/i.test(oneTimeParentSetupPage),
+  'WSG-ONETIME-PARENT-SETUP-NO-ACADEMY',
+  'high',
+  'OneTime parent setup page must be a OneTime-only password setup surface with no Academy branding.'
 );
 
 check(

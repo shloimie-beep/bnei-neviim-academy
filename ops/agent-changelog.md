@@ -33954,3 +33954,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   server-visible changes. The live resend remains blocked by
   `DEC-20260708-007` until the exact Zoom link, sender readiness, and explicit
   send approval are verified.
+
+## 2026-07-08T14:24:17+03:00 - OneTime parent setup link and expiry correction local verified
+
+- Captured the follow-up parent setup complaint as
+  `raw-input/RAW-20260708-008-onetime-parent-setup-link-expiry.md`.
+- Added the dedicated `/one-time-parent` setup route and
+  `public/one-time-parent.html` so parent password setup opens a OneTime-only
+  surface with no Academy branding.
+- Updated OneTime parent trial invite link generation and preview output to use
+  `/one-time-parent?reset=...` instead of `/parent?reset=...`.
+- Added a OneTime parent trial setup TTL (`ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS`)
+  capped at seven days so trial walkthrough setup links are not using the
+  generic one-hour reset window.
+- Extended route/action registry and workspace-scope watchdog coverage for the
+  exact Academy parent reset leak class.
+- Verification passed: `node --check server.js`, targeted OneTime/workspace
+  tests 6/6, `node scripts/watchdog-workspace-scope-guardrails.mjs --json`,
+  route/action registry JSON parse, and `git diff --check`.
+- Status: local verified, pending commit, push, production deploy/live smoke,
+  and single approved resend.

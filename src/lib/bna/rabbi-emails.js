@@ -56,7 +56,7 @@ function rabbiTemplateBody(templateKey, context = {}) {
       context.memberLibraryUrl ? `Open the class library here: ${context.memberLibraryUrl}` : '',
       context.classroomUrl ? `Open the classroom here: ${context.classroomUrl}` : '',
       '',
-      'After you set your parent password, you can open the parent portal and set or reset the student login.',
+      'After you set your parent password, use the class and library links in this email. The parent area lets you set or reset the student login.',
       `If anything looks wrong, reply to this email and ${context.supportName || 'OneTimeOneTime'} will help.`,
     ],
     revoke_expiry: [

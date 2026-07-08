@@ -437,6 +437,7 @@ app.use((req, res, next) => {
   if (
     req.path === '/operations' ||
     req.path === '/operations-access' ||
+    req.path === '/one-time-parent' ||
     req.path.startsWith('/api/bna/') ||
     req.path.startsWith('/api/parent') ||
     req.path.startsWith('/api/parent-portal') ||
@@ -2981,6 +2982,13 @@ const PROVIDER_SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const PROVIDER_PASSWORD_SETUP_TTL_MS = 1000 * 60 * 60;
 const PARENT_MAGIC_LINK_TTL_MS = 1000 * 60 * 30;
 const PARENT_PASSWORD_RESET_TTL_MS = 1000 * 60 * 60;
+const PARENT_PASSWORD_RESET_MAX_TTL_MS = 1000 * 60 * 60 * 24 * 7;
+const ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS = (() => {
+  const fallback = 1000 * 60 * 60 * 24 * 7;
+  const configured = Number(process.env.ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS || fallback);
+  const value = Number.isFinite(configured) && configured > 0 ? configured : fallback;
+  return Math.max(PARENT_PASSWORD_RESET_TTL_MS, Math.min(value, PARENT_PASSWORD_RESET_MAX_TTL_MS));
+})();
 const PARENT_PASSWORD_MIN_LENGTH = Number(process.env.PARENT_PASSWORD_MIN_LENGTH || 8);
 const STUDENT_PASSWORD_SCRYPT_PARAMS = { N: 16384, r: 8, p: 1, keylen: 64 };
 const PARENT_HELP_EMAIL =
@@ -4240,7 +4248,7 @@ function scopedPublicUrl(baseUrl, pathValue = '') {
 
 function oneTimeParentPortalPasswordResetUrl(token) {
   if (!token) return '';
-  return scopedPublicUrl(configuredOneTimePublicBaseUrl(), `/parent?reset=${encodeURIComponent(token)}`);
+  return scopedPublicUrl(configuredOneTimePublicBaseUrl(), `/one-time-parent?reset=${encodeURIComponent(token)}`);
 }
 
 function normalizeHttpsExternalUrl(value) {
@@ -6974,7 +6982,14 @@ async function createParentMagicLink({ parentEmail, req, requestedBy = 'parent',
   };
 }
 
-async function createParentPasswordResetToken({ parentEmail, req, metadata = {}, sendEmail = true, emailSender = sendParentPasswordResetEmail }, db = pool) {
+async function createParentPasswordResetToken({
+  parentEmail,
+  req,
+  metadata = {},
+  sendEmail = true,
+  emailSender = sendParentPasswordResetEmail,
+  ttlMs = PARENT_PASSWORD_RESET_TTL_MS,
+}, db = pool) {
   const email = normalizeEmail(parentEmail);
   if (!email) {
     const error = new Error('A parent email is required');
@@ -6990,7 +7005,11 @@ async function createParentPasswordResetToken({ parentEmail, req, metadata = {},
 
   const token = generateSecureToken(32);
   const tokenHash = sha256Hex(token);
-  const expiresAt = new Date(Date.now() + PARENT_PASSWORD_RESET_TTL_MS);
+  const requestedTtlMs = Number(ttlMs || PARENT_PASSWORD_RESET_TTL_MS);
+  const normalizedTtlMs = Number.isFinite(requestedTtlMs) && requestedTtlMs > 0
+    ? Math.max(60 * 1000, Math.min(requestedTtlMs, PARENT_PASSWORD_RESET_MAX_TTL_MS))
+    : PARENT_PASSWORD_RESET_TTL_MS;
+  const expiresAt = new Date(Date.now() + normalizedTtlMs);
   await db.query(
     `INSERT INTO bna_parent_password_reset_tokens (
        parent_email, token_hash, expires_at, requested_ip, user_agent, metadata
@@ -7001,7 +7020,10 @@ async function createParentPasswordResetToken({ parentEmail, req, metadata = {},
       expiresAt,
       req?.ip || null,
       req?.headers?.['user-agent'] || null,
-      JSON.stringify(metadata || {}),
+      JSON.stringify({
+        ...(metadata || {}),
+        password_setup_ttl_minutes: Math.round(normalizedTtlMs / 60000),
+      }),
     ]
   );
 
@@ -78496,7 +78518,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
       subject: buildRabbiEmailTemplate('parent_trial_invite', { recipientName: parentName, programName: ONE_TIME_EMAIL_FROM_NAME }).subject,
       one_time_public_base_url: oneTimeBaseUrl,
       links_will_use: {
-        parent_portal: scopedPublicUrl(oneTimeBaseUrl, '/parent'),
+        parent_portal: scopedPublicUrl(oneTimeBaseUrl, '/one-time-parent'),
         member_library: scopedPublicUrl(oneTimeBaseUrl, '/member-library'),
         classroom: scopedPublicUrl(oneTimeBaseUrl, '/one-time-classroom'),
       },
@@ -78711,6 +78733,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
           no_generic_email_sent: true,
         },
         sendEmail: false,
+        ttlMs: ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS,
       }, client);
 
       const passwordSetupUrl = oneTimeParentPortalPasswordResetUrl(reset.token) || reset.url;
@@ -84786,6 +84809,11 @@ app.get(['/parent/login', '/parent-login'], (req, res) => {
 app.get('/parent', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'parent.html'));
+});
+
+app.get('/one-time-parent', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'one-time-parent.html'));
 });
 
 app.get(['/family', '/household'], (req, res) => {

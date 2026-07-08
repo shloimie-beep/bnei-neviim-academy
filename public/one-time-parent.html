@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>OneTimeOneTime Parent Setup</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080808;
+      --panel: #141414;
+      --panel-2: #1d1a10;
+      --text: #fff8d8;
+      --muted: #cabf98;
+      --line: rgba(255, 210, 0, 0.22);
+      --gold: #ffd200;
+      --gold-2: #ffe680;
+      --danger: #ff9a8a;
+      --ok: #89f3be;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 15% 5%, rgba(255, 210, 0, 0.16), transparent 31rem),
+        linear-gradient(135deg, #050505 0%, #111 48%, #1f1b0b 100%);
+      color: var(--text);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .shell {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0 26px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      overflow: hidden;
+      background: var(--gold);
+      box-shadow: 0 0 0 1px rgba(255, 210, 0, 0.35);
+    }
+
+    .brand-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-title {
+      display: block;
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .brand-subtitle {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.25;
+    }
+
+    .route-pill {
+      border: 1px solid var(--line);
+      color: var(--gold-2);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      background: rgba(255, 210, 0, 0.06);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 460px);
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .intro,
+    .card {
+      border: 1px solid var(--line);
+      background: rgba(13, 13, 13, 0.88);
+      box-shadow: var(--shadow);
+    }
+
+    .intro {
+      border-radius: 8px;
+      padding: clamp(24px, 5vw, 44px);
+      display: grid;
+      align-content: center;
+      min-height: 520px;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      margin: 14px 0 16px;
+      font-size: clamp(2rem, 5vw, 4.35rem);
+      line-height: 0.96;
+      letter-spacing: 0;
+      max-width: 680px;
+    }
+
+    .lead {
+      margin: 0;
+      max-width: 640px;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.6vw, 1.2rem);
+      line-height: 1.6;
+    }
+
+    .quick-list {
+      display: grid;
+      gap: 12px;
+      margin: 26px 0 0;
+      padding: 0;
+      list-style: none;
+      max-width: 620px;
+    }
+
+    .quick-list li {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+      color: #f5e9b5;
+      line-height: 1.45;
+    }
+
+    .check {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(255, 210, 0, 0.16);
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    .card {
+      border-radius: 8px;
+      padding: 24px;
+      display: grid;
+      align-content: start;
+      gap: 18px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.45rem;
+      letter-spacing: 0;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: #fff2bd;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      height: 46px;
+      border: 1px solid rgba(255, 210, 0, 0.28);
+      border-radius: 7px;
+      padding: 0 13px;
+      background: #0b0b0b;
+      color: var(--text);
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(255, 210, 0, 0.16);
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    button,
+    .button {
+      min-height: 46px;
+      border: 1px solid rgba(255, 210, 0, 0.4);
+      border-radius: 7px;
+      padding: 12px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--gold);
+      color: #161000;
+      font: inherit;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    button[disabled] {
+      cursor: wait;
+      opacity: 0.72;
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--gold-2);
+    }
+
+    .status {
+      display: none;
+      border-radius: 7px;
+      padding: 12px 13px;
+      line-height: 1.45;
+      font-size: 0.93rem;
+    }
+
+    .status.visible {
+      display: block;
+    }
+
+    .status.error {
+      border: 1px solid rgba(255, 154, 138, 0.38);
+      color: var(--danger);
+      background: rgba(255, 154, 138, 0.08);
+    }
+
+    .status.ok {
+      border: 1px solid rgba(137, 243, 190, 0.34);
+      color: var(--ok);
+      background: rgba(137, 243, 190, 0.08);
+    }
+
+    .next-links {
+      display: none;
+      gap: 10px;
+    }
+
+    .next-links.visible {
+      display: grid;
+    }
+
+    .fine-print {
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      font-size: 0.86rem;
+    }
+
+    @media (max-width: 860px) {
+      .shell {
+        width: min(100% - 24px, 680px);
+        padding-top: 14px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding-bottom: 16px;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .intro {
+        min-height: auto;
+        padding: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .route-pill {
+        white-space: normal;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar" aria-label="OneTimeOneTime parent setup">
+      <a class="brand" href="/one-time" aria-label="Open OneTimeOneTime home">
+        <span class="brand-mark" aria-hidden="true"><img src="/images/one-time/brand/onetimelogo.webp" alt=""></span>
+        <span class="brand-text">
+          <span class="brand-title">OneTimeOneTime Mishnah</span>
+          <span class="brand-subtitle">Parent access setup</span>
+        </span>
+      </a>
+      <span class="route-pill">Private setup link</span>
+    </header>
+
+    <section class="layout">
+      <div class="intro">
+        <span class="eyebrow">30-day parent trial</span>
+        <h1>Your OneTimeOneTime access starts here.</h1>
+        <p class="lead">Create your parent password, then use the class and library links from your invite email to open the live class, schedule, recordings, worksheets, and student access tools.</p>
+        <ul class="quick-list">
+          <li><span class="check">1</span><span>Set a parent password for this email address.</span></li>
+          <li><span class="check">2</span><span>Open the classroom and library links from the invite email.</span></li>
+          <li><span class="check">3</span><span>Use the parent area for student login setup, attendance, and billing-related updates.</span></li>
+        </ul>
+      </div>
+
+      <aside class="card" aria-live="polite">
+        <div>
+          <h2>Set parent password</h2>
+          <p id="setupCopy">Use the newest setup link from your OneTimeOneTime invite email. This link can only be used once.</p>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <form id="passwordForm" autocomplete="off">
+          <label>
+            New password
+            <input id="password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+          </label>
+          <label>
+            Confirm password
+            <input id="confirmPassword" name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required>
+          </label>
+          <div class="actions">
+            <button id="submitButton" type="submit">Save parent password</button>
+          </div>
+        </form>
+
+        <div id="nextLinks" class="next-links">
+          <a class="button" href="/one-time-classroom">Open classroom</a>
+          <a class="button secondary" href="/member-library">Open library</a>
+          <a class="button secondary" href="/one-time">OneTimeOneTime home</a>
+        </div>
+
+        <p class="fine-print">If this link says expired or already used, open the newest invite email or reply to the OneTimeOneTime email and a fresh setup link can be sent.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const resetToken = String(params.get('reset') || '').trim();
+    const form = document.getElementById('passwordForm');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const statusBox = document.getElementById('status');
+    const submitButton = document.getElementById('submitButton');
+    const nextLinks = document.getElementById('nextLinks');
+
+    function showStatus(kind, message) {
+      statusBox.className = `status visible ${kind}`;
+      statusBox.textContent = message;
+    }
+
+    function setBusy(isBusy) {
+      submitButton.disabled = isBusy;
+      submitButton.textContent = isBusy ? 'Saving...' : 'Save parent password';
+    }
+
+    if (!resetToken) {
+      form.hidden = true;
+      showStatus('error', 'This setup link is missing or has already been cleaned from the address bar. Please open the newest OneTimeOneTime invite email.');
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!resetToken) return;
+      const nextPassword = password.value || '';
+      if (nextPassword.length < 8) {
+        showStatus('error', 'Please use at least 8 characters.');
+        return;
+      }
+      if (nextPassword !== confirmPassword.value) {
+        showStatus('error', 'The password fields do not match.');
+        return;
+      }
+      setBusy(true);
+      try {
+        const response = await fetch('/api/parent-portal/password/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: resetToken, password: nextPassword }),
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(payload.error || 'This setup link is invalid or expired.');
+        }
+        form.hidden = true;
+        nextLinks.classList.add('visible');
+        showStatus('ok', 'Your parent password is set. You can now open the classroom and library links from your invite email.');
+        window.history.replaceState(null, '', '/one-time-parent?ready=1');
+      } catch (error) {
+        showStatus('error', `${error.message || 'This setup link is invalid or expired.'} Use the newest invite email, or reply to the email for a fresh link.`);
+      } finally {
+        setBusy(false);
+      }
+    });
+  </script>
+</body>
+</html>
