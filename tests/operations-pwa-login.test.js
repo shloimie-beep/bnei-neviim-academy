@@ -97,9 +97,9 @@ test('Operations shell falls back scoped Studio/task-only sessions to allowed vi
   assert.match(operationsHtml, /function isStudioTaskOnlySession/);
   assert.match(operationsHtml, /\['studio', 'tasks', 'dashboard'\]/);
   assert.match(operationsHtml, /one_time_ai_video_worker/);
-  assert.match(operationsHtml, /const needsPipelineData = !studioTaskOnlySession/);
-  assert.match(operationsHtml, /const needsAgentFleetData = !studioTaskOnlySession/);
-  assert.match(operationsHtml, /const needsQueueHealthData = !studioTaskOnlySession/);
+  assert.match(operationsHtml, /const needsPipelineData = !oneTimeProgramFastPass && !studioTaskOnlySession/);
+  assert.match(operationsHtml, /const needsAgentFleetData = !oneTimeProgramFastPass && !studioTaskOnlySession/);
+  assert.match(operationsHtml, /const needsQueueHealthData = !oneTimeProgramFastPass && !studioTaskOnlySession/);
   assert.doesNotMatch(operationsHtml, /if \(!viewAllowed\(currentView\)\) currentView = 'dashboard'/);
 });
 

@@ -34635,3 +34635,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No helper runtime behavior, external writes, sends, payments, DNS/account
   changes, credential writes, access grants, uploads, Drive/Vimeo/Zoom writes,
   production data mutation, or external CRM writes were performed.
+
+## 2026-07-08T21:55:10+03:00 - Operations shell split local verification
+
+- Registered `RAW-20260708-024` and `REQ-20260708-086` for the follow-up
+  Operations/helper performance batch.
+- Split authenticated `/operations` delivery into a 1,724 byte bootstrap plus
+  separately served `operations-shell.css` and `operations-shell.js` assets.
+- Added a Rabbi / One Time Program overview fast-pass so the first pass loads
+  provider/workspace branding data and queues the full launch/content/
+  communication hydration in the background.
+- Local before/after audit: `/operations` route payload dropped from
+  2,356,672 bytes to 1,724 bytes; API median dropped from 8ms to 2ms; browser
+  navigation dropped from 3,554ms to 3,053ms.
+- Verification passed: `node --check server.js`, `node --check
+  public/js/operations-shell.js`, `node --check
+  scripts/split-operations-shell.mjs`, focused Operations/helper tests, OneTime
+  PWA/smoke tests, and `npm run watchdog:protocol-drift`.
+- `npm run one-time:target:guard` live readbacks passed, but the deploy gate
+  correctly blocked while the worktree was still dirty during local
+  verification.
+- Remaining performance work: cold browser load still downloads/parses the
+  2.13MB external shell JS, so the next batch should split true view modules
+  from `operations-shell.js`.

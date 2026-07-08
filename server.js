@@ -10670,10 +10670,20 @@ function setOperationsShellCacheHeader(res) {
   res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
 }
 
+function sendOperationsShell(req, res) {
+  setOperationsShellCacheHeader(res);
+  res.sendFile(path.join(__dirname, 'public', 'operations-bootstrap.html'));
+}
+
 app.use(express.static('public', {
   setHeaders(res, filePath) {
     const normalizedPath = String(filePath || '').replace(/\\/g, '/');
-    if (normalizedPath.endsWith('/operations.html')) {
+    if (
+      normalizedPath.endsWith('/operations.html') ||
+      normalizedPath.endsWith('/operations-bootstrap.html') ||
+      normalizedPath.endsWith('/css/operations-shell.css') ||
+      normalizedPath.endsWith('/js/operations-shell.js')
+    ) {
       setOperationsShellCacheHeader(res);
       return;
     }
@@ -85879,10 +85889,7 @@ app.get('/agent-review/session', async (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'agent-review-session.html'));
 });
 
-app.get(['/operations', '/operations/agents/runs/:runKey'], requireAdmin, (req, res) => {
-  setOperationsShellCacheHeader(res);
-  res.sendFile(path.join(__dirname, 'public', 'operations.html'));
-});
+app.get(['/operations', '/operations/agents/runs/:runKey'], requireAdmin, sendOperationsShell);
 
 // Telegram webhook handler
 app.post('/api/bna/telegram', async (req, res) => {

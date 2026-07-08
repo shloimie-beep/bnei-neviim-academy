@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T18:59:06.261Z",
+  "generated_at": "2026-07-08T18:46:16.638Z",
   "base_url": "http://127.0.0.1:8097",
   "repeats": 2,
   "external_write_performed": false,
@@ -8,7 +8,7 @@
   "operations_login": {
     "ok": true,
     "status": 200,
-    "duration_ms": 1615,
+    "duration_ms": 1661,
     "blocker": "",
     "cookie_recorded": false
   },
@@ -20,7 +20,7 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 227,
+          "duration_ms": 225,
           "bytes": 107,
           "cache_control": "",
           "content_type": "application/json; charset=utf-8",
@@ -33,7 +33,7 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 221,
+          "duration_ms": 229,
           "bytes": 107,
           "cache_control": "",
           "content_type": "application/json; charset=utf-8",
@@ -46,10 +46,10 @@
       ],
       "summary": {
         "count": 2,
-        "min_ms": 221,
-        "median_ms": 221,
-        "p95_ms": 227,
-        "max_ms": 227
+        "min_ms": 225,
+        "median_ms": 225,
+        "p95_ms": 229,
+        "max_ms": 229
       }
     },
     {
@@ -122,8 +122,8 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 2,
-          "bytes": 1688,
+          "duration_ms": 14,
+          "bytes": 2356672,
           "cache_control": "private, no-cache, max-age=0, must-revalidate",
           "content_type": "text/html; charset=UTF-8",
           "json_keys": []
@@ -131,8 +131,8 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 2,
-          "bytes": 1688,
+          "duration_ms": 8,
+          "bytes": 2356672,
           "cache_control": "private, no-cache, max-age=0, must-revalidate",
           "content_type": "text/html; charset=UTF-8",
           "json_keys": []
@@ -140,10 +140,10 @@
       ],
       "summary": {
         "count": 2,
-        "min_ms": 2,
-        "median_ms": 2,
-        "p95_ms": 2,
-        "max_ms": 2
+        "min_ms": 8,
+        "median_ms": 8,
+        "p95_ms": 14,
+        "max_ms": 14
       }
     },
     {
@@ -188,7 +188,7 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 2,
+          "duration_ms": 4,
           "bytes": 3262,
           "cache_control": "",
           "content_type": "application/json; charset=utf-8",
@@ -220,8 +220,8 @@
         "count": 2,
         "min_ms": 2,
         "median_ms": 2,
-        "p95_ms": 2,
-        "max_ms": 2
+        "p95_ms": 4,
+        "max_ms": 4
       }
     },
     {
@@ -266,7 +266,7 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 229,
+          "duration_ms": 232,
           "bytes": 26615,
           "cache_control": "no-store",
           "content_type": "application/json; charset=utf-8",
@@ -290,7 +290,7 @@
         {
           "status": 200,
           "ok": true,
-          "duration_ms": 220,
+          "duration_ms": 225,
           "bytes": 26615,
           "cache_control": "no-store",
           "content_type": "application/json; charset=utf-8",
@@ -314,10 +314,10 @@
       ],
       "summary": {
         "count": 2,
-        "min_ms": 220,
-        "median_ms": 220,
-        "p95_ms": 229,
-        "max_ms": 229
+        "min_ms": 225,
+        "median_ms": 225,
+        "p95_ms": 232,
+        "max_ms": 232
       }
     }
   ],
@@ -326,7 +326,7 @@
       "name": "deterministic navigation",
       "status": 200,
       "ok": true,
-      "duration_ms": 901,
+      "duration_ms": 929,
       "planner": "deterministic",
       "helper_status": "planned",
       "action_count": 1,
@@ -337,7 +337,7 @@
       "name": "deterministic performance report",
       "status": 200,
       "ok": true,
-      "duration_ms": 919,
+      "duration_ms": 1006,
       "planner": "deterministic",
       "helper_status": "confirmation_required",
       "action_count": 1,
@@ -351,8 +351,8 @@
       "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
       "viewport": "1440x1000",
       "selector_found": true,
-      "navigation_ms": 3028,
-      "click_ms": 30,
+      "navigation_ms": 3554,
+      "click_ms": 26,
       "click_label": "switchView communications",
       "console_error_count": 0,
       "console_errors": [],
@@ -369,17 +369,17 @@
       "iframe_count": 0,
       "body_text_length": 2194,
       "horizontal_overflow": false,
-      "transfer_size": 2591796,
-      "resource_count": 13,
-      "dom_content_loaded_ms": 447,
-      "load_event_ms": 576
+      "transfer_size": 211498,
+      "resource_count": 8,
+      "dom_content_loaded_ms": 466,
+      "load_event_ms": 602
     },
     {
       "id": "provider-desktop",
       "path": "/provider.html?admin_provider=one-time&section=communications",
       "viewport": "1440x960",
       "selector_found": true,
-      "navigation_ms": 1269,
+      "navigation_ms": 1260,
       "click_ms": null,
       "click_label": "",
       "console_error_count": 1,
@@ -401,16 +401,16 @@
       "horizontal_overflow": false,
       "transfer_size": 148850,
       "resource_count": 5,
-      "dom_content_loaded_ms": 39,
-      "load_event_ms": 40
+      "dom_content_loaded_ms": 35,
+      "load_event_ms": 36
     },
     {
       "id": "member-library-mobile",
       "path": "/member-library",
       "viewport": "390x844",
       "selector_found": true,
-      "navigation_ms": 1353,
-      "click_ms": 9,
+      "navigation_ms": 1420,
+      "click_ms": 13,
       "click_label": "fallback drawer toggle",
       "console_error_count": 0,
       "console_errors": [],
@@ -429,16 +429,16 @@
       "horizontal_overflow": false,
       "transfer_size": 95240,
       "resource_count": 3,
-      "dom_content_loaded_ms": 122,
-      "load_event_ms": 122
+      "dom_content_loaded_ms": 199,
+      "load_event_ms": 199
     },
     {
       "id": "classroom-mobile",
       "path": "/one-time-classroom",
       "viewport": "390x844",
       "selector_found": true,
-      "navigation_ms": 1279,
-      "click_ms": 6,
+      "navigation_ms": 1269,
+      "click_ms": 13,
       "click_label": "fallback drawer toggle",
       "console_error_count": 0,
       "console_errors": [],
@@ -457,13 +457,13 @@
       "horizontal_overflow": false,
       "transfer_size": 146954,
       "resource_count": 4,
-      "dom_content_loaded_ms": 44,
-      "load_event_ms": 45
+      "dom_content_loaded_ms": 36,
+      "load_event_ms": 36
     }
   ],
   "first_fix_recommendation": {
     "target": "operations_initial_load",
-    "reason": "Operations initial browser load took 3028ms; inspect large inline Operations shell and first render work."
+    "reason": "Operations initial browser load took 3554ms; inspect large inline Operations shell and first render work."
   },
   "passed": true
 }

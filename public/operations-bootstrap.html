@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNA Operations</title>
+    <script>
+        const operationsSource = new URLSearchParams(window.location.search).get('source');
+        if (window.location.pathname === '/operations.html' && ['pwa', 'ops-pwa'].includes(operationsSource)) {
+            window.location.replace('/operations');
+        }
+    </script>
+    <meta name="theme-color" content="#1e3a5f">
+    <link rel="manifest" href="/operations-manifest.json">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/operations-shell.css">
+    <link rel="stylesheet" href="/css/bna-app-shell.css">
+    <link rel="stylesheet" href="/css/platform-ui/platform-ui.css">
+    <link rel="stylesheet" href="/css/one-time-operations.css">
+</head>
+<body class="bna-shell bna-ops-shell-page">
+    <div id="app">
+        <div class="loading"><h1>Loading BNA Operations...</h1></div>
+    </div>
+
+    <script src="/js/platform-ui/platform-ui-fixtures.js"></script>
+    <script src="/js/platform-ui/platform-ui.js"></script>
+    <script src="/js/operations-shell.js"></script>
+    <script src="/js/app-select.js"></script>
+</body>
+</html>

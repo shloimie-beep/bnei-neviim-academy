@@ -3,6 +3,9 @@ const fs = require('node:fs');
 const test = require('node:test');
 
 const operations = fs.readFileSync('public/operations.html', 'utf8');
+const operationsBootstrap = fs.readFileSync('public/operations-bootstrap.html', 'utf8');
+const operationsShellCss = fs.readFileSync('public/css/operations-shell.css', 'utf8');
+const operationsShellJs = fs.readFileSync('public/js/operations-shell.js', 'utf8');
 const server = fs.readFileSync('server.js', 'utf8');
 
 test('Operations shell exposes workspace selector, module sidebar, top filter rail, and mobile drawer', () => {
@@ -53,4 +56,20 @@ test('Operations topbar keeps concise status chips and one helper entry per head
   assert.doesNotMatch(operations, /class="bna-helper-launcher"/);
   assert.doesNotMatch(operations, /bna-bot-widget\.js/);
   assert.doesNotMatch(operations, /openTaskModal\(\)">New Task/);
+});
+
+test('Operations route uses a small split bootstrap with cacheable shell assets', () => {
+  assert.ok(Buffer.byteLength(operationsBootstrap, 'utf8') < 10000, 'split Operations bootstrap should stay small');
+  assert.match(operationsBootstrap, /<link rel="stylesheet" href="\/css\/operations-shell\.css">/);
+  assert.match(operationsBootstrap, /<script src="\/js\/operations-shell\.js"><\/script>/);
+  assert.doesNotMatch(operationsBootstrap, /\/\/ API Client/);
+  assert.doesNotMatch(operationsBootstrap, /function renderDashboard/);
+  assert.match(operationsShellCss, /\.ops-app-shell/);
+  assert.match(operationsShellJs, /async function loadData/);
+  assert.match(operationsShellJs, /function renderAppShell/);
+  assert.match(operationsShellJs, /const oneTimeProgramFastPass = !options\.background/);
+  assert.match(operationsShellJs, /window\.setTimeout\(\(\) => loadData\(\{ background: true \}\), 0\)/);
+  assert.match(server, /function sendOperationsShell[\s\S]*operations-bootstrap\.html/);
+  assert.match(server, /endsWith\('\/css\/operations-shell\.css'\)/);
+  assert.match(server, /endsWith\('\/js\/operations-shell\.js'\)/);
 });
