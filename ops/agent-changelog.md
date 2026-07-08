@@ -34497,3 +34497,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No WhatsApp/WAPI send was attempted, because OneTime WAPI credentials remain
   blocked. No payment/access, DNS, Zoom meeting creation, Vimeo, Drive, Stripe,
   or external CRM mutation was performed.
+
+## 2026-07-08T20:18:00+03:00 - OneTime direct Zoom-link-only email sent
+
+- Registered `RAW-20260708-019` and `REQ-20260708-075` for the request to
+  send only the Zoom link by email to one operator-specified Gmail recipient.
+- Sent one individual OneTime Resend email, draft #7. The email body contained
+  only minimal class context and the Zoom link.
+- Confirmed the body did not include portal, login, password reset, parent
+  setup, student setup, classroom-code, billing, or trial language.
+- Provider message ID is stored only as a fingerprint in evidence, and Rabbi
+  provider mailbox readback found 4 matching Zoom-link threads.
+- Evidence:
+  `ops/live-smokes/2026-07-08T17-17-31-400Z-one-time-direct-zoom-link-only-email.md`.
+- No WhatsApp/WAPI/SMS, payment/access, account grant, DNS, Zoom meeting
+  creation, Vimeo, Drive, Stripe, or external CRM mutation was performed.

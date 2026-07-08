@@ -19,6 +19,7 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
 | REQ-20260708-072 | Deployed / live smoke passed | Send Shloimie an internal Telegram bot reminder when someone signs up through the OneTime public signup form. | Raw input: `raw-input/RAW-20260708-016-onetime-signup-telegram-reminder.md`. Implemented in `server.js` for `/api/one-time/interest` and `/api/bna/product-leads` after the lead is saved. Runtime commit `fbabe124` pushed and deployed to OneTime Railway deployment `85b1f0f0-b3ae-49b1-8b00-9932a1cd7631` (`SUCCESS`). Production OneTime Railway variables now have `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID_BNA`, and `TELEGRAM_CHAT_ID_SHLOIMIE` present by key-readback only, and env-enabled redeploy `14e74ce9-cc29-49a3-aed1-21ab0dfe1af3` reached `SUCCESS`. Verification passed: `node --check server.js`, focused OneTime tests 18/18, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, `npm run secrets:audit`, `git diff --check`, and live OneTime smoke. Evidence: `ops/watchdog-audits/2026-07-08-onetime-signup-telegram-reminder-live-smoke.md`. No live signup was submitted during smoke testing, and no parent email, WhatsApp, checkout, payment, access, Zoom, Vimeo, Drive, DNS, Stripe, or external CRM mutation was performed. |
 | REQ-20260708-073 | Deployed / live timed smoke passed | Make the public OneTime landing helper concise and timed: first nudge after 10 seconds asks whether the visitor wants his son to love Torah; follow-up 20 seconds later says where the class is holding by masechta and that now is a great time to join. | Raw input: `raw-input/RAW-20260708-017-onetime-landing-helper-concise-timed.md`. Implemented for the OneTime public helper only in `public/js/bna-bot-widget.js` and `public/one-time/index.html`; internal action registry/tests updated. Runtime commit `27f55f6e` pushed and deployed to OneTime Railway deployment `76610b3c-3cfa-44d3-80f8-76a43f744a2b` (`SUCCESS`). Local and live Playwright timed smokes at `390x844` confirmed first nudge `Hi. Do you want your son to love Torah?` and second nudge `We are up to Maseches Berachos now. It is a great time to join.` Evidence: `ops/ui-audits/2026-07-08-onetime-concise-helper/local-report.md` and `ops/ui-audits/2026-07-08-onetime-concise-helper/live-report.md`. Verification passed: `node --check server.js`, focused tests 11/11, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, `npm run secrets:audit`, `git diff --check`, deployment success, standard live smoke, and live timed helper smoke. No signup/email/WhatsApp/payment/access/Zoom/Vimeo/Drive/DNS/Stripe/external CRM mutation was performed. |
 | REQ-20260708-074 | Done / Emails sent | Urgently send the current OneTime Mishnah live-class link to CRM contacts tagged as local students / local class attendees. | Raw input: `raw-input/RAW-20260708-018-onetime-local-student-current-link-resend.md`. Live OneTime CRM resolved 3 local-tagged contacts, not 2; because the operator named the tag segment explicitly, Codex sent to the exact local-tagged segment. Three individual OneTime Resend emails were sent with the current Zoom link, drafts #4-#6, provider messages fingerprinted, CRM notes #9-#11 created, and Rabbi provider mailbox readback found 3 matching current-link threads. Evidence: `ops/live-smokes/2026-07-08T17-12-00-033Z-one-time-local-student-current-link-resend.md`. Guardrails held: OneTime/Rabbi scope only, one-recipient drafts only, no raw recipient emails or raw Zoom password link in repo evidence, and no WAPI/WhatsApp/payment/access/DNS/Zoom meeting/Vimeo/Drive/external CRM mutation. |
+| REQ-20260708-075 | Done / Email sent | Send a one-off OneTime Mishnayos Zoom-link-only email to the operator-specified recipient, with no portal/login/setup links. | Raw input: `raw-input/RAW-20260708-019-onetime-direct-zoom-link-email.md`. Sent one individual OneTime Resend email, draft #7, with only minimal class context and the Zoom link in the email body. Provider message ID is stored only as a fingerprint and provider mailbox readback found 4 matching Zoom-link threads. Evidence: `ops/live-smokes/2026-07-08T17-17-31-400Z-one-time-direct-zoom-link-only-email.md`. Guardrails held: no parent/student portal, login, password reset, classroom code, billing, trial, WhatsApp/WAPI, payment/access, account grant, DNS, Zoom meeting creation, Vimeo, Drive, or external CRM mutation. Raw recipient email and raw Zoom URL are not committed. |
 
 ## Decisions
 
@@ -187,6 +188,24 @@ Raw input: `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md`
   - No WhatsApp/WAPI send was attempted because the live OneTime WAPI credentials remain blocked.
   - No payment/access, DNS, Zoom meeting creation, Vimeo, Drive, Stripe, or external CRM mutation was performed.
 
+## Evidence - 2026-07-08 Direct Zoom-Link-Only Email
+
+- Requirement: `REQ-20260708-075`.
+- Raw input: `raw-input/RAW-20260708-019-onetime-direct-zoom-link-email.md`.
+- External send performed:
+  - 1 individual OneTime Resend email sent.
+  - Draft id: #7.
+  - Provider message id stored only as a fingerprint in evidence.
+  - Provider mailbox readback found 4 matching Zoom-link threads.
+- Evidence:
+  - `ops/live-smokes/2026-07-08T17-17-31-400Z-one-time-direct-zoom-link-only-email.md`
+  - `ops/live-smokes/2026-07-08T17-17-31-400Z-one-time-direct-zoom-link-only-email.json`
+- Guardrails:
+  - The email body was Zoom-link-only with minimal class context.
+  - No portal, login, password reset, parent setup, student setup, classroom code, billing, or trial links were included.
+  - Repo evidence redacts the recipient email and the entire Zoom URL.
+  - No WhatsApp/WAPI, payment/access, account grant, DNS, Zoom meeting creation, Vimeo, Drive, Stripe, or external CRM mutation was performed.
+
 ## Suggested WhatsApp Draft
 
 Status: draft only, not sent.
@@ -215,3 +234,4 @@ Status: draft only, not sent.
 | B8 | OneTime signup Telegram reminder | `REQ-20260708-072` | Deployed/live smoke passed |
 | B9 | Concise OneTime landing helper nudges | `REQ-20260708-073` | Deployed/live timed smoke passed |
 | B10 | Urgent local-student current class-link resend | `REQ-20260708-074` | Done / 3 individual emails sent |
+| B11 | One-off Zoom-link-only email | `REQ-20260708-075` | Done / 1 individual email sent |
