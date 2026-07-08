@@ -10647,30 +10647,36 @@
         function currentSubnavConfig() {
             const providerWorkspace = isProviderWorkspace();
             const configs = {
-                dashboard: { tabs: DASHBOARD_SUBTABS, active: dashboardSection, countSource: dashboardSectionCounts(), label: 'Dashboard' },
-                watchdog: { tabs: [{ id: 'overview', label: 'Overview' }], active: 'overview', countSource: {}, label: 'Watchdog' },
-                pipelines: { tabs: PIPELINE_SUBTABS, active: pipelineSection, countSource: pipelineSubnavCounts(), label: 'Pipelines' },
-                tasks: { tabs: TASK_SUBTABS, active: taskFocus, countSource: taskViewState().tabCounts, label: 'Tasks' },
-                agents: { tabs: AGENT_RUN_TABS, active: agentRunsTab, countSource: agentRunSubnavCounts(), label: 'Agents' },
-                students: { tabs: STUDENT_SUBTABS, active: studentSection, countSource: studentViewState().tabCounts, label: 'Students' },
-                contacts: { tabs: providerWorkspace ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS, active: contactSection, countSource: contactSubnavCounts(), label: providerWorkspace ? 'Participants / Members' : 'Parents / Contacts' },
-                intake: { tabs: INTAKE_SUBTABS, active: intakeSection, countSource: intakeSubnavCounts(), label: 'Intake Review' },
-                community: { tabs: COMMUNITY_SUBTABS, active: communitySection, countSource: communitySubnavCounts(), label: 'Community' },
-                studio: { tabs: STUDIO_SUBTABS, active: studioSection, countSource: studioSubnavCounts(), label: 'Studio' },
-                content: { tabs: visibleContentSubtabs(), active: visibleContentSubtabs().some(tab => tab.id === contentSection) ? contentSection : defaultContentSection(), countSource: contentSubnavCounts(), label: currentWorkspaceIsOneTime() ? 'Classes & Content' : 'Content' },
-                live_classes: { tabs: LIVE_CLASS_SUBTABS, active: liveClassSection, countSource: {}, label: 'Live Classes' },
-                calendar: { tabs: providerWorkspace ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS, active: calendarSection, countSource: calendarSubnavCounts(), label: providerWorkspace ? 'Calendar / Schedule' : 'Calendar' },
-                service_providers: { tabs: providerWorkspace ? PROVIDER_PROGRAM_SUBTABS : SERVICE_PROVIDER_SUBTABS, active: serviceProviderSection, countSource: serviceProviderSubnavCounts(), label: providerWorkspace ? 'Program' : 'Service Providers' },
-                communications: { tabs: COMMUNICATIONS_SUBTABS, active: communicationsSection, countSource: communicationsSubnavCounts(), label: 'Communications' },
-                internal_dialogue: { tabs: INTERNAL_DIALOGUE_SUBTABS, active: dialogueSection, countSource: dialogueSubnavCounts(), label: 'Internal Dialogue' },
-                accounting: { tabs: ACCOUNTING_SUBTABS, active: accountingSection, countSource: accountingSubnavCounts(), label: 'Accounting' },
-                automations: { tabs: AUTOMATION_SUBTABS, active: automationSection, countSource: { center: automations.length }, label: 'Automations' },
-                api_usage: { tabs: API_USAGE_SUBTABS, active: apiUsageSection, countSource: apiUsageSubnavCounts(), label: 'API Usage' },
-                admin: { tabs: ADMIN_SUBTABS, active: adminSection, countSource: adminSubnavCounts(), label: 'Team / Admin' },
-                integrations: { tabs: visibleIntegrationsSubtabs(), active: visibleIntegrationsSubtabs().some(tab => tab.id === integrationsSection) ? integrationsSection : 'google', countSource: integrationsSubnavCounts(), label: 'Integrations' },
-                settings: { tabs: SETTINGS_CATEGORY_TABS, active: settingsActiveCategory(settingsSection), countSource: settingsSubnavCounts(), label: 'Settings' },
+                dashboard: () => ({ tabs: DASHBOARD_SUBTABS, active: dashboardSection, countSource: dashboardSectionCounts(), label: 'Dashboard' }),
+                watchdog: () => ({ tabs: [{ id: 'overview', label: 'Overview' }], active: 'overview', countSource: {}, label: 'Watchdog' }),
+                pipelines: () => ({ tabs: PIPELINE_SUBTABS, active: pipelineSection, countSource: pipelineSubnavCounts(), label: 'Pipelines' }),
+                tasks: () => ({ tabs: TASK_SUBTABS, active: taskFocus, countSource: taskViewState().tabCounts, label: 'Tasks' }),
+                agents: () => ({ tabs: AGENT_RUN_TABS, active: agentRunsTab, countSource: agentRunSubnavCounts(), label: 'Agents' }),
+                students: () => ({ tabs: STUDENT_SUBTABS, active: studentSection, countSource: studentViewState().tabCounts, label: 'Students' }),
+                contacts: () => ({ tabs: providerWorkspace ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS, active: contactSection, countSource: contactSubnavCounts(), label: providerWorkspace ? 'Participants / Members' : 'Parents / Contacts' }),
+                intake: () => ({ tabs: INTAKE_SUBTABS, active: intakeSection, countSource: intakeSubnavCounts(), label: 'Intake Review' }),
+                community: () => ({ tabs: COMMUNITY_SUBTABS, active: communitySection, countSource: communitySubnavCounts(), label: 'Community' }),
+                studio: () => ({ tabs: STUDIO_SUBTABS, active: studioSection, countSource: studioSubnavCounts(), label: 'Studio' }),
+                content: () => {
+                    const contentTabs = visibleContentSubtabs();
+                    return { tabs: contentTabs, active: contentTabs.some(tab => tab.id === contentSection) ? contentSection : defaultContentSection(), countSource: contentSubnavCounts(), label: currentWorkspaceIsOneTime() ? 'Classes & Content' : 'Content' };
+                },
+                live_classes: () => ({ tabs: LIVE_CLASS_SUBTABS, active: liveClassSection, countSource: {}, label: 'Live Classes' }),
+                calendar: () => ({ tabs: providerWorkspace ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS, active: calendarSection, countSource: calendarSubnavCounts(), label: providerWorkspace ? 'Calendar / Schedule' : 'Calendar' }),
+                service_providers: () => ({ tabs: providerWorkspace ? PROVIDER_PROGRAM_SUBTABS : SERVICE_PROVIDER_SUBTABS, active: serviceProviderSection, countSource: serviceProviderSubnavCounts(), label: providerWorkspace ? 'Program' : 'Service Providers' }),
+                communications: () => ({ tabs: COMMUNICATIONS_SUBTABS, active: communicationsSection, countSource: communicationsSubnavCounts(), label: 'Communications' }),
+                internal_dialogue: () => ({ tabs: INTERNAL_DIALOGUE_SUBTABS, active: dialogueSection, countSource: dialogueSubnavCounts(), label: 'Internal Dialogue' }),
+                accounting: () => ({ tabs: ACCOUNTING_SUBTABS, active: accountingSection, countSource: accountingSubnavCounts(), label: 'Accounting' }),
+                automations: () => ({ tabs: AUTOMATION_SUBTABS, active: automationSection, countSource: { center: automations.length }, label: 'Automations' }),
+                api_usage: () => ({ tabs: API_USAGE_SUBTABS, active: apiUsageSection, countSource: apiUsageSubnavCounts(), label: 'API Usage' }),
+                admin: () => ({ tabs: ADMIN_SUBTABS, active: adminSection, countSource: adminSubnavCounts(), label: 'Team / Admin' }),
+                integrations: () => {
+                    const integrationTabs = visibleIntegrationsSubtabs();
+                    return { tabs: integrationTabs, active: integrationTabs.some(tab => tab.id === integrationsSection) ? integrationsSection : 'google', countSource: integrationsSubnavCounts(), label: 'Integrations' };
+                },
+                settings: () => ({ tabs: SETTINGS_CATEGORY_TABS, active: settingsActiveCategory(settingsSection), countSource: settingsSubnavCounts(), label: 'Settings' }),
             };
-            return configs[currentView] || configs.dashboard;
+            return (configs[currentView] || configs.dashboard)();
         }
 
         function renderSidebarSubnav() {
@@ -11222,9 +11228,26 @@
         function contentSubnavCounts() {
             const scopedJobs = contentJobs.filter(job => !['archived'].includes(String(job.status || '').toLowerCase()) && !contentIsParserIntake(job));
             const visibleJobs = scopedJobs.filter(contentIsReusableContent);
+            const contentTabs = visibleContentSubtabs();
+            if (!window.__operationsDeferredRenderersLoaded || typeof contentSectionCount !== 'function' || typeof contentSessionHasResearchMaterial !== 'function') {
+                return contentTabs.reduce((counts, tab) => {
+                    counts[tab.id] = ({
+                        library: visibleJobs.length,
+                        one_time_library: visibleJobs.length + oneTimeQuestionQueue.length + oneTimeClasses.length,
+                        bundles: contentBundles.length,
+                        prompt_library: contentPrompts.length,
+                        research: classSessions.length,
+                        meeting_drops: projectMeetings.length,
+                        questions: oneTimeQuestionQueue.length,
+                        classes: oneTimeClasses.length,
+                        repurpose: visibleJobs.length,
+                    })[tab.id] || 0;
+                    return counts;
+                }, {});
+            }
             const researchSessions = classSessions.filter(contentSessionHasResearchMaterial);
             const meetingCandidates = scopedJobs.filter(contentJobLooksLikeOneTimeMeeting);
-            return visibleContentSubtabs().reduce((counts, tab) => {
+            return contentTabs.reduce((counts, tab) => {
                 counts[tab.id] = contentSectionCount(tab.id, {
                     visibleJobs,
                     selectedJobs: [...selectedContentJobIds],

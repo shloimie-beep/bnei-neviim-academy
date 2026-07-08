@@ -10683,7 +10683,8 @@ app.use(express.static('public', {
       normalizedPath.endsWith('/operations.html') ||
       normalizedPath.endsWith('/operations-bootstrap.html') ||
       normalizedPath.endsWith('/css/operations-shell.css') ||
-      normalizedPath.endsWith('/js/operations-shell.js')
+      normalizedPath.endsWith('/js/operations-shell.js') ||
+      normalizedPath.endsWith('/js/operations-deferred-renderers.js')
     ) {
       setOperationsShellCacheHeader(res);
       return;

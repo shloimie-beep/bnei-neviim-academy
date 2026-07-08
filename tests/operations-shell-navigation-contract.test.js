@@ -6,6 +6,7 @@ const operations = fs.readFileSync('public/operations.html', 'utf8');
 const operationsBootstrap = fs.readFileSync('public/operations-bootstrap.html', 'utf8');
 const operationsShellCss = fs.readFileSync('public/css/operations-shell.css', 'utf8');
 const operationsShellJs = fs.readFileSync('public/js/operations-shell.js', 'utf8');
+const operationsDeferredRenderersJs = fs.readFileSync('public/js/operations-deferred-renderers.js', 'utf8');
 const server = fs.readFileSync('server.js', 'utf8');
 
 test('Operations shell exposes workspace selector, module sidebar, top filter rail, and mobile drawer', () => {
@@ -67,9 +68,20 @@ test('Operations route uses a small split bootstrap with cacheable shell assets'
   assert.match(operationsShellCss, /\.ops-app-shell/);
   assert.match(operationsShellJs, /async function loadData/);
   assert.match(operationsShellJs, /function renderAppShell/);
+  assert.match(operationsShellJs, /OPERATIONS_DEFERRED_RENDER_CHUNK = '\/js\/operations-deferred-renderers\.js'/);
+  assert.match(operationsShellJs, /renderDeferredView\('content', 'renderContent'\)/);
+  assert.doesNotMatch(operationsShellJs, /function renderContent\(/);
+  assert.doesNotMatch(operationsShellJs, /function renderStudents\(/);
+  assert.doesNotMatch(operationsShellJs, /function renderLiveClasses\(/);
+  assert.ok(Buffer.byteLength(operationsShellJs, 'utf8') < 1200000, 'initial Operations JS should stay below 1.2MB');
+  assert.match(operationsDeferredRenderersJs, /function renderContent\(/);
+  assert.match(operationsDeferredRenderersJs, /function renderStudents\(/);
+  assert.match(operationsDeferredRenderersJs, /function renderLiveClasses\(/);
+  assert.match(operationsDeferredRenderersJs, /window\.__operationsDeferredRenderersLoaded = true/);
   assert.match(operationsShellJs, /const oneTimeProgramFastPass = !options\.background/);
   assert.match(operationsShellJs, /window\.setTimeout\(\(\) => loadData\(\{ background: true \}\), 0\)/);
   assert.match(server, /function sendOperationsShell[\s\S]*operations-bootstrap\.html/);
   assert.match(server, /endsWith\('\/css\/operations-shell\.css'\)/);
   assert.match(server, /endsWith\('\/js\/operations-shell\.js'\)/);
+  assert.match(server, /endsWith\('\/js\/operations-deferred-renderers\.js'\)/);
 });

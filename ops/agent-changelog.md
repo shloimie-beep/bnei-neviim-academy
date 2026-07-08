@@ -34840,3 +34840,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `tool_wrapper_missing` until scoped helper wrappers, planner intents,
   permission gates, scoped result cards, redacted audit writes, runtime negative
   tests, deploy/live prompt readback, and saved Agent Mode proof exist.
+
+## 2026-07-08T22:50:00+03:00 - Operations deferred renderers locally verified
+
+- Registered `RAW-20260708-030` and corrected the Operations performance batch
+  to `REQ-20260708-098` after detecting an unrelated shared-worktree ID
+  collision on `REQ-20260708-097`.
+- Updated the Operations split generator to emit
+  `/js/operations-deferred-renderers.js` for non-initial view renderers while
+  keeping boot-critical provider overview, workspace, command bot,
+  payment-summary, content-nav, and helper functions in the initial shell.
+- Changed `currentSubnavConfig()` to compute only the active module so the
+  Rabbi / One Time overview no longer touches deferred Student/Content helper
+  graphs during boot.
+- Local smoke passed: the One Time Program overview rendered 520 DOM nodes with
+  the deferred renderer chunk unloaded; switching to Content loaded the chunk
+  exactly once and exposed `renderContent`.
+- Local performance audit passed: `/operations` stayed a 1,688 byte bootstrap
+  with median 2ms response, Operations browser navigation was 3,112ms with 588
+  DOM nodes, zero console errors, and zero failed requests.
+- Verification passed: generated JS syntax checks, Operations shell/people
+  tests (9/9), One Time PWA/smoke tests (17/17), local deferred-renderer
+  browser smoke, local performance audit, and `npm run watchdog:protocol-drift`.
+- `npm run one-time:target:guard` live target readbacks passed, but release
+  deploy remains blocked by the intentionally mixed dirty shared worktree.
