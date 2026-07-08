@@ -17,6 +17,12 @@
   black/yellow opener, apply explicit/default trim points, and create Vimeo
   review sidecars, but real Vimeo upload, production DB writes, member
   visibility, and bot knowledge promotion remain approval-gated.
+- On 2026-07-08, the canonical shared One Time Drive folder was visible
+  through the Drive connector but not mounted under this desktop's
+  `G:\My Drive`; local smoke testing used
+  `G:\My Drive\OneTime Vimeo Studio Desktop Test`. V1 automatic trimming is
+  limited to leading/trailing black or silence edges and must not be described
+  as semantic class-start/class-end detection.
 - One Time transcript-derived bot knowledge must use only approved scoped
   class transcript/session context and must not leak BNA Academy, unrelated
   provider, private student, or raw transcript evidence into member/student

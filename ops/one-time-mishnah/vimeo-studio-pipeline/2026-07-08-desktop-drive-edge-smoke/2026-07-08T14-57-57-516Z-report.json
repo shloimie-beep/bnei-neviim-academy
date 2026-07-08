@@ -1,0 +1,119 @@
+{
+  "ok": true,
+  "generated_at": "2026-07-08T14:57:57.516Z",
+  "workflow": "one_time_vimeo_studio_pipeline",
+  "raw_id": "RAW-20260708-011",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "folder": "G:\\My Drive\\OneTime Vimeo Studio Desktop Test\\drop",
+  "folder_relative_to_repo": "G:\\My Drive\\OneTime Vimeo Studio Desktop Test\\drop",
+  "processed_folder": "G:\\My Drive\\OneTime Vimeo Studio Desktop Test\\processed",
+  "processed_folder_relative_to_repo": "G:\\My Drive\\OneTime Vimeo Studio Desktop Test\\processed",
+  "render_requested": true,
+  "external_write_performed": false,
+  "production_mutation_performed": false,
+  "member_visibility_performed": false,
+  "candidates": [
+    {
+      "id": "af330d009d5d6b88",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "title": "Desktop Drive Edge Trim Smoke",
+      "source_file": {
+        "relative_path": "edge-trim-smoke/edge-trim-smoke.mp4",
+        "name": "edge-trim-smoke.mp4",
+        "extension": ".mp4",
+        "size_bytes": 557469
+      },
+      "metadata_sources": [
+        "class.json"
+      ],
+      "safety": {
+        "synthetic_test": true,
+        "contains_sensitive_data": false,
+        "real_class_recording": false
+      },
+      "trim_plan": {
+        "source_duration_seconds": 9,
+        "trim_start_seconds": 2,
+        "trim_end_seconds": 2,
+        "content_end_seconds": 7,
+        "output_content_seconds": 5,
+        "opener_seconds": 1,
+        "strategy": "auto_detected_edges",
+        "edge_detection": {
+          "enabled": true,
+          "status": "ok",
+          "trim_start_seconds": 2,
+          "trim_end_seconds": 2,
+          "signals": {
+            "black": {
+              "trim_start_seconds": 2,
+              "trim_end_seconds": 2
+            },
+            "silence": {
+              "trim_start_seconds": 2,
+              "trim_end_seconds": 2
+            }
+          }
+        },
+        "note": "Automatic trim is based only on leading/trailing black or silence edges; semantic class-start/class-end detection remains a later approval packet."
+      },
+      "opener": {
+        "title": "One Time Mishnah",
+        "subtitle": "Desktop edge trim smoke",
+        "seconds": 1
+      },
+      "transcript": {
+        "present": false,
+        "status": "review",
+        "length": 0,
+        "sha256": ""
+      },
+      "output": {
+        "rendered": true,
+        "video_path": "G:\\My Drive\\OneTime Vimeo Studio Desktop Test\\processed\\af330d009d5d6b88-Desktop-Drive-Edge-Trim-Smoke\\Desktop-Drive-Edge-Trim-Smoke.edited.mp4",
+        "sidecar_path": "G:\\My Drive\\OneTime Vimeo Studio Desktop Test\\processed\\af330d009d5d6b88-Desktop-Drive-Edge-Trim-Smoke\\Desktop-Drive-Edge-Trim-Smoke.edited.json",
+        "video_exists": true,
+        "sidecar_exists": true
+      },
+      "blockers": [],
+      "vimeo_dry_run": {
+        "workflow": "one_time_vimeo_folder_library",
+        "dry_run": true,
+        "external_write_performed": false,
+        "production_mutation_performed": false,
+        "member_visibility_performed": false,
+        "summary": {
+          "candidate_count": 1,
+          "ready_for_review_count": 1,
+          "upload_blocked_count": 0,
+          "review_package_written_count": 0,
+          "published_count": 0,
+          "blockers_count": 0
+        },
+        "candidates": [
+          {
+            "id": "02e8b7f8edd50410",
+            "title": "Desktop Drive Edge Trim Smoke",
+            "upload_status": "not_requested",
+            "review_package_status": "not_requested",
+            "publish_status": "not_requested",
+            "publish_ready": false,
+            "blockers": []
+          }
+        ]
+      }
+    }
+  ],
+  "blockers": [],
+  "next_actions": [
+    "Real Vimeo upload, production DB review-package writes, member visibility, and bot knowledge promotion remain separate approval-gated packets."
+  ],
+  "summary": {
+    "candidate_count": 1,
+    "rendered_count": 1,
+    "sidecar_count": 1,
+    "blockers_count": 0
+  }
+}

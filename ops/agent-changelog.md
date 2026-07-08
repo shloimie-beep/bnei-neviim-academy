@@ -34210,3 +34210,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No WhatsApp was sent, no parent invite was resent, no class link or Zoom
   password was committed, and no payment/access/DNS/Zoom/Vimeo/Drive mutation
   was performed.
+
+## 2026-07-08T18:12:00+03:00 - OneTime Vimeo desktop workflow locally exercised
+
+- Continued `RAW-20260708-012` and completed the desktop/local no-write Vimeo
+  Studio batch for `REQ-20260708-061` through `REQ-20260708-064`.
+- Confirmed the canonical shared One Time Drive folder is visible through the
+  Drive connector, but not mounted under this desktop's `G:\My Drive`; created
+  `G:\My Drive\OneTime Vimeo Studio Desktop Test` for this computer's Drive
+  Desktop smoke testing.
+- Added optional black/silence edge trimming, BOM-safe sidecar JSON parsing,
+  explicit non-class media safety handling, optional OpenAI transcription smoke
+  support, and 30fps normalization for rendered trims.
+- Ran a Drive Desktop synthetic edge-trim smoke and a safe local OneTime promo
+  smoke. Both rendered a static opener plus trimmed MP4, wrote sidecars, and
+  passed the Vimeo dry-run handoff with no upload, no production DB mutation,
+  and no member visibility change.
+- Transcription was attempted only on non-private promo smoke media and is
+  blocked because the configured local OpenAI key returns 401. The saved report
+  redacts credential-shaped text and no transcript body was committed.
+- Verification passed: module/CLI syntax checks, focused Vimeo tests 17/17,
+  Product Quality Compiler validation 3/3 for packets 00/01/04, and protocol
+  drift watchdog with 0 findings.
+- Guardrails: no real Drive upload, no Vimeo upload, no production DB write, no
+  portal/latest-class publish, no bot knowledge promotion, and no raw media or
+  transcript body committed.

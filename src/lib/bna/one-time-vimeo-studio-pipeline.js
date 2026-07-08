@@ -18,6 +18,10 @@ const DEFAULT_TRIM_END_SECONDS = 15;
 const DEFAULT_OPENER_SECONDS = 3;
 const DEFAULT_WIDTH = 1920;
 const DEFAULT_HEIGHT = 1080;
+const DEFAULT_AUTO_TRIM_MAX_EDGE_SECONDS = 180;
+const DEFAULT_TRANSCRIPTION_MODEL = process.env.OPENAI_TRANSCRIPTION_MODEL || 'gpt-4o-mini-transcribe';
+const DEFAULT_OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
+const TRANSCRIPTION_MAX_BYTES = 24 * 1024 * 1024;
 
 function compactText(value, max = 240) {
   return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
@@ -79,8 +83,32 @@ function statHash(filePath, relativePath = filePath) {
 }
 
 function readJsonFile(filePath) {
-  const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, ''));
   return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+}
+
+function usableSecretValue(value = '') {
+  const text = String(value || '').trim();
+  if (!text || /^todo|placeholder|changeme|your_/i.test(text)) return '';
+  return text;
+}
+
+function redactCredentialText(value = '') {
+  return String(value || '')
+    .replace(/sk-[A-Za-z0-9_*.-]+/g, 'sk-[redacted]')
+    .replace(/Bearer\s+[A-Za-z0-9._~+/-]+/gi, 'Bearer [redacted]');
+}
+
+function readOpenAiApiKey(repoRoot = process.cwd(), options = {}) {
+  if (usableSecretValue(options.openaiApiKey)) return usableSecretValue(options.openaiApiKey);
+  if (usableSecretValue(process.env.OPENAI_API_KEY)) return usableSecretValue(process.env.OPENAI_API_KEY);
+  for (const fileName of ['openai-api-key.txt', 'openaiv2.txt']) {
+    const secretPath = path.join(repoRoot, '.secrets', fileName);
+    if (!fs.existsSync(secretPath)) continue;
+    const value = usableSecretValue(fs.readFileSync(secretPath, 'utf8'));
+    if (value) return value;
+  }
+  return '';
 }
 
 function sidecarPathsFor(videoPath, dropRoot) {
@@ -170,6 +198,26 @@ function parseDurationFromFfmpegOutput(output = '') {
   return Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]);
 }
 
+function runFfmpegCapture(args) {
+  if (!ffmpegPath) return { status: 1, output: '', error: 'ffmpeg-static unavailable' };
+  const result = spawnSync(ffmpegPath, args, { encoding: 'utf8' });
+  return {
+    status: result.status,
+    output: `${result.stdout || ''}\n${result.stderr || ''}`,
+    error: result.error ? result.error.message : '',
+  };
+}
+
+function mimeTypeForMedia(filePath = '') {
+  const extension = path.extname(filePath).toLowerCase();
+  if (extension === '.mp3') return 'audio/mpeg';
+  if (extension === '.m4a') return 'audio/mp4';
+  if (extension === '.wav') return 'audio/wav';
+  if (extension === '.webm') return 'video/webm';
+  if (extension === '.mov') return 'video/quicktime';
+  return 'video/mp4';
+}
+
 function probeVideo(filePath, fallback = {}) {
   const fallbackDuration = Number(fallback.duration_seconds || fallback.durationSeconds || 0) || 60;
   if (!ffmpegPath || !fs.existsSync(filePath)) {
@@ -204,7 +252,94 @@ function numericMetadata(metadata, keys, fallback = 0) {
   return fallback;
 }
 
-function buildTrimPlan(metadata = {}, probe = {}, options = {}) {
+function parseBlackSegments(output = '') {
+  const segments = [];
+  const pattern = /black_start:(-?\d+(?:\.\d+)?)\s+black_end:(-?\d+(?:\.\d+)?)\s+black_duration:(-?\d+(?:\.\d+)?)/g;
+  let match = pattern.exec(output);
+  while (match) {
+    segments.push({
+      start: Number(match[1]),
+      end: Number(match[2]),
+      duration: Number(match[3]),
+    });
+    match = pattern.exec(output);
+  }
+  return segments.filter((segment) => Number.isFinite(segment.start) && Number.isFinite(segment.end));
+}
+
+function parseSilenceSegments(output = '') {
+  const starts = [];
+  const segments = [];
+  for (const line of String(output || '').split(/\r?\n/)) {
+    const startMatch = line.match(/silence_start:\s*(-?\d+(?:\.\d+)?)/);
+    if (startMatch) starts.push(Number(startMatch[1]));
+    const endMatch = line.match(/silence_end:\s*(-?\d+(?:\.\d+)?)(?:\s+\|\s+silence_duration:\s*(-?\d+(?:\.\d+)?))?/);
+    if (endMatch) {
+      const end = Number(endMatch[1]);
+      const duration = Number(endMatch[2] || 0);
+      const start = starts.length ? starts.shift() : end - duration;
+      segments.push({ start, end, duration: duration || Math.max(0, end - start) });
+    }
+  }
+  return segments.filter((segment) => Number.isFinite(segment.start) && Number.isFinite(segment.end));
+}
+
+function edgeTrimFromSegments(segments = [], durationSeconds = 0, options = {}) {
+  const duration = Math.max(0, Number(durationSeconds || 0));
+  const maxEdge = Math.max(0, Number(options.autoTrimMaxEdgeSeconds ?? DEFAULT_AUTO_TRIM_MAX_EDGE_SECONDS) || 0);
+  const tolerance = Math.max(0.25, Number(options.autoTrimEdgeToleranceSeconds || 0.75) || 0.75);
+  let leading = 0;
+  let trailing = 0;
+  for (const segment of segments) {
+    if (segment.start <= tolerance && segment.end > leading) leading = segment.end;
+    if (duration && segment.end >= duration - tolerance) {
+      trailing = Math.max(trailing, duration - segment.start);
+    }
+  }
+  return {
+    trim_start_seconds: Number(Math.min(Math.max(0, leading), maxEdge || leading).toFixed(3)),
+    trim_end_seconds: Number(Math.min(Math.max(0, trailing), maxEdge || trailing).toFixed(3)),
+  };
+}
+
+function detectEdgeTrim(filePath, probe = {}, options = {}) {
+  if (!options.autoTrimEdges || !ffmpegPath || !fs.existsSync(filePath)) return null;
+  const durationSeconds = Math.max(0, Number(probe.duration_seconds || 0));
+  const black = runFfmpegCapture([
+    '-hide_banner',
+    '-nostats',
+    '-i', filePath,
+    '-vf', `blackdetect=d=${Number(options.blackDetectDuration || 0.4) || 0.4}:pic_th=${Number(options.blackDetectThreshold || 0.98) || 0.98}`,
+    '-an',
+    '-f', 'null',
+    '-',
+  ]);
+  const silence = runFfmpegCapture([
+    '-hide_banner',
+    '-nostats',
+    '-i', filePath,
+    '-af', `silencedetect=noise=${Number(options.silenceThresholdDb || -35) || -35}dB:d=${Number(options.silenceDetectDuration || 0.5) || 0.5}`,
+    '-vn',
+    '-f', 'null',
+    '-',
+  ]);
+  const blackTrim = edgeTrimFromSegments(parseBlackSegments(black.output), durationSeconds, options);
+  const silenceTrim = edgeTrimFromSegments(parseSilenceSegments(silence.output), durationSeconds, options);
+  const trimStart = Math.max(blackTrim.trim_start_seconds, silenceTrim.trim_start_seconds);
+  const trimEnd = Math.max(blackTrim.trim_end_seconds, silenceTrim.trim_end_seconds);
+  return {
+    enabled: true,
+    status: black.status === 0 || silence.status === 0 ? 'ok' : 'best_effort',
+    trim_start_seconds: Number(trimStart.toFixed(3)),
+    trim_end_seconds: Number(trimEnd.toFixed(3)),
+    signals: {
+      black: blackTrim,
+      silence: silenceTrim,
+    },
+  };
+}
+
+function buildTrimPlan(metadata = {}, probe = {}, options = {}, edgeTrim = null) {
   const durationSeconds = Math.max(1, Number(probe.duration_seconds || metadata.duration_seconds || 60) || 60);
   const defaultStart = Math.max(0, Number(options.defaultTrimStartSeconds ?? DEFAULT_TRIM_START_SECONDS) || 0);
   const defaultEnd = Math.max(0, Number(options.defaultTrimEndSeconds ?? DEFAULT_TRIM_END_SECONDS) || 0);
@@ -212,15 +347,19 @@ function buildTrimPlan(metadata = {}, probe = {}, options = {}) {
   const trimStart = metadataValue(metadata, 'trim_start_seconds', 'trimStartSeconds');
   const contentEnd = metadataValue(metadata, 'content_end_seconds', 'contentEndSeconds');
   const trimEnd = metadataValue(metadata, 'trim_end_seconds', 'trimEndSeconds');
+  const hasExplicitTrim = contentStart !== '' || trimStart !== '' || contentEnd !== '' || trimEnd !== '';
+  const hasEdgeTrim = !hasExplicitTrim && edgeTrim && (edgeTrim.trim_start_seconds > 0 || edgeTrim.trim_end_seconds > 0);
 
   const startSeconds = contentStart !== ''
     ? Number(contentStart)
     : trimStart !== ''
       ? Number(trimStart)
-      : defaultStart;
+      : hasEdgeTrim
+        ? edgeTrim.trim_start_seconds
+        : defaultStart;
   const endSeconds = contentEnd !== ''
     ? Number(contentEnd)
-    : durationSeconds - (trimEnd !== '' ? Number(trimEnd) : defaultEnd);
+    : durationSeconds - (trimEnd !== '' ? Number(trimEnd) : hasEdgeTrim ? edgeTrim.trim_end_seconds : defaultEnd);
   const safeStart = Math.max(0, Math.min(Number.isFinite(startSeconds) ? startSeconds : 0, Math.max(0, durationSeconds - 1)));
   const safeEnd = Math.max(safeStart + 1, Math.min(Number.isFinite(endSeconds) ? endSeconds : durationSeconds, durationSeconds));
   return {
@@ -230,10 +369,15 @@ function buildTrimPlan(metadata = {}, probe = {}, options = {}) {
     content_end_seconds: Number(safeEnd.toFixed(3)),
     output_content_seconds: Number((safeEnd - safeStart).toFixed(3)),
     opener_seconds: Math.max(0, Number(metadataValue(metadata, 'opener_seconds', 'openerSeconds') || options.openerSeconds || DEFAULT_OPENER_SECONDS) || 0),
-    strategy: contentStart !== '' || trimStart !== '' || contentEnd !== '' || trimEnd !== ''
+    strategy: hasExplicitTrim
       ? 'sidecar_or_manifest'
+      : hasEdgeTrim
+        ? 'auto_detected_edges'
       : 'configured_default',
-    note: 'V1 records deterministic trim points; automatic semantic class-start/class-end detection is a later approval packet.',
+    edge_detection: edgeTrim || { enabled: options.autoTrimEdges === true, status: 'not_used' },
+    note: hasEdgeTrim
+      ? 'Automatic trim is based only on leading/trailing black or silence edges; semantic class-start/class-end detection remains a later approval packet.'
+      : 'V1 records deterministic trim points; automatic semantic class-start/class-end detection is a later approval packet.',
   };
 }
 
@@ -276,7 +420,8 @@ function buildStudioCandidate(drop, folderRoot, processedRoot, options = {}) {
   const metadataRead = readDropMetadata(videoPath, dropRoot);
   const metadata = metadataRead.metadata;
   const probe = probeVideo(videoPath, metadata);
-  const trimPlan = buildTrimPlan(metadata, probe, options);
+  const edgeTrim = detectEdgeTrim(videoPath, probe, options);
+  const trimPlan = buildTrimPlan(metadata, probe, options, edgeTrim);
   const relativePath = safeRelative(folderRoot, videoPath) || path.basename(videoPath);
   const candidateId = statHash(videoPath, relativePath);
   const title = compactText(metadataValue(metadata, 'title', 'class_title', 'classTitle') || titleFromVideo(videoPath), 240);
@@ -286,11 +431,14 @@ function buildStudioCandidate(drop, folderRoot, processedRoot, options = {}) {
   const sidecarFile = outputFile.replace(/\.mp4$/i, '.json');
   const transcriptText = transcriptFromMetadata(metadata, dropRoot);
   const scopeBlockers = parseScopeBlockers(metadata);
+  const syntheticFlag = normalizeBoolean(metadataValue(metadata, 'synthetic_test', 'syntheticTest', 'synthetic'));
+  const explicitRealClassRecording = metadataValue(metadata, 'real_class_recording', 'realClassRecording');
   const safety = {
-    synthetic_test: normalizeBoolean(metadataValue(metadata, 'synthetic_test', 'syntheticTest', 'synthetic')),
+    synthetic_test: syntheticFlag,
     contains_sensitive_data: normalizeBoolean(metadataValue(metadata, 'contains_sensitive_data', 'containsSensitiveData')),
-    real_class_recording: normalizeBoolean(metadataValue(metadata, 'real_class_recording', 'realClassRecording'))
-      || !normalizeBoolean(metadataValue(metadata, 'synthetic_test', 'syntheticTest', 'synthetic')),
+    real_class_recording: explicitRealClassRecording !== ''
+      ? normalizeBoolean(explicitRealClassRecording)
+      : !syntheticFlag,
   };
   const blockers = [...metadataRead.errors, ...scopeBlockers];
   if (safety.contains_sensitive_data) blockers.push('Sidecar marks this file as containing sensitive data; Vimeo upload remains blocked.');
@@ -364,10 +512,72 @@ function buildVimeoSidecar(candidate, rendered = {}) {
       parent_raw_id: 'RAW-20260708-011',
       studio_candidate_id: candidate.id,
       trim_strategy: candidate.trim_plan.strategy,
+      edge_detection: candidate.trim_plan.edge_detection,
       opener_title: candidate.opener.title,
       opener_subtitle: candidate.opener.subtitle,
       processed_video_name: path.basename(candidate.output.video_path),
     },
+  };
+}
+
+function transcriptTextFromOpenAiResponse(response = {}) {
+  if (typeof response.text === 'string') return response.text.trim();
+  if (Array.isArray(response.segments)) {
+    return response.segments.map((segment) => segment.text || '').join(' ').trim();
+  }
+  return '';
+}
+
+async function transcribeRenderedOutput(candidate, rendered = {}, options = {}) {
+  const mediaPath = rendered.video_path || candidate.output.video_path;
+  if (!options.transcribeOpenAI || !mediaPath || !fs.existsSync(mediaPath)) return null;
+  const repoRoot = path.resolve(options.repoRoot || process.cwd());
+  const apiKey = readOpenAiApiKey(repoRoot, options);
+  if (!apiKey) {
+    return { status: 'blocked', error: 'OPENAI_API_KEY is not configured for transcription.' };
+  }
+  const stats = fs.statSync(mediaPath);
+  if (stats.size > TRANSCRIPTION_MAX_BYTES) {
+    return {
+      status: 'blocked',
+      error: `Edited output is ${stats.size} bytes; transcription smoke limit is ${TRANSCRIPTION_MAX_BYTES} bytes.`,
+    };
+  }
+  const form = new FormData();
+  const model = options.transcriptionModel || DEFAULT_TRANSCRIPTION_MODEL;
+  form.append('model', model);
+  form.append('file', new Blob([fs.readFileSync(mediaPath)], { type: mimeTypeForMedia(mediaPath) }), path.basename(mediaPath));
+  form.append('response_format', 'json');
+  form.append('prompt', 'This is a short One Time Mishnah workflow smoke or class recording. Preserve Hebrew and English words when clear. Do not invent content.');
+  const response = await fetch(`${String(options.openAiBaseUrl || DEFAULT_OPENAI_BASE_URL).replace(/\/+$/, '')}/audio/transcriptions`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}` },
+    body: form,
+    signal: AbortSignal.timeout(Math.max(1000, Number(options.openAiTimeoutMs || 120000) || 120000)),
+  });
+  const body = await response.text();
+  if (!response.ok) {
+    return { status: 'failed', error: redactCredentialText(`OpenAI transcription ${response.status}: ${body.slice(0, 300)}`) };
+  }
+  let parsed = {};
+  try {
+    parsed = JSON.parse(body);
+  } catch (error) {
+    return { status: 'failed', error: redactCredentialText(`OpenAI transcription JSON parse failed: ${error.message}`) };
+  }
+  const text = transcriptTextFromOpenAiResponse(parsed);
+  candidate.transcript.present = Boolean(text);
+  candidate.transcript.status = text ? 'review' : candidate.transcript.status;
+  candidate.transcript.length = text.length;
+  candidate.transcript.sha256 = text ? sha256(text).slice(0, 16) : '';
+  candidate.transcript.text = text;
+  return {
+    status: text ? 'transcribed' : 'empty',
+    provider: 'openai',
+    model,
+    transcript_present: Boolean(text),
+    transcript_length: text.length,
+    transcript_sha256: candidate.transcript.sha256,
   };
 }
 
@@ -440,7 +650,7 @@ function renderTrimmed(candidate, trimmedPath, options = {}) {
   const height = Number(options.height || DEFAULT_HEIGHT);
   const length = Math.max(0.1, Number(candidate.trim_plan.output_content_seconds || 1));
   const start = Math.max(0, Number(candidate.trim_plan.trim_start_seconds || 0));
-  const videoFilter = `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2,format=yuv420p`;
+  const videoFilter = `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2,fps=30,format=yuv420p`;
   const args = ['-y', '-ss', String(start), '-i', candidate.source_file.absolute_path];
   if (!candidate.probe.has_audio) {
     args.push('-f', 'lavfi', '-t', String(length), '-i', 'anullsrc=channel_layout=stereo:sample_rate=48000');
@@ -567,6 +777,8 @@ async function runStudioPipeline(options = {}) {
     processed_folder: reportPath(repoRoot, processedRoot),
     processed_folder_relative_to_repo: reportPath(repoRoot, processedRoot),
     render_requested: render,
+    transcription_requested: options.transcribeOpenAI === true,
+    external_ai_transcription_performed: false,
     external_write_performed: false,
     production_mutation_performed: false,
     member_visibility_performed: false,
@@ -598,6 +810,15 @@ async function runStudioPipeline(options = {}) {
     if (render) {
       try {
         rendered = renderCandidate(candidate, options);
+        if (options.transcribeOpenAI) {
+          const transcription = await transcribeRenderedOutput(candidate, rendered, { ...options, repoRoot });
+          if (transcription) {
+            rendered.transcription = transcription;
+            if (transcription.status === 'failed' || transcription.status === 'blocked') {
+              candidate.blockers.push(`Transcription ${transcription.status}: ${transcription.error}`);
+            }
+          }
+        }
         writeCandidateSidecar(candidate, rendered);
       } catch (error) {
         rendered = {
@@ -611,6 +832,12 @@ async function runStudioPipeline(options = {}) {
       }
     }
     const safe = safeCandidateReport(candidate, rendered, repoRoot);
+    if (rendered.transcription) {
+      safe.transcription_result = rendered.transcription;
+      if (rendered.transcription.provider === 'openai' && rendered.transcription.status === 'transcribed') {
+        report.external_ai_transcription_performed = true;
+      }
+    }
     if (render && rendered.render_performed && runVimeoDryRun) {
       const vimeoReport = await folderWorkflow.runFolderLibraryWorkflow({
         repoRoot,
@@ -655,6 +882,8 @@ function formatMarkdownReport(report = {}) {
     `- Folder: \`${report.folder_relative_to_repo || report.folder || ''}\``,
     `- Processed folder: \`${report.processed_folder_relative_to_repo || report.processed_folder || ''}\``,
     `- Render requested: \`${report.render_requested === true}\``,
+    `- Transcription requested: \`${report.transcription_requested === true}\``,
+    `- External AI transcription performed: \`${report.external_ai_transcription_performed === true}\``,
     `- External write performed: \`${report.external_write_performed === true}\``,
     `- Production mutation performed: \`${report.production_mutation_performed === true}\``,
     `- Member visibility performed: \`${report.member_visibility_performed === true}\``,
@@ -676,8 +905,14 @@ function formatMarkdownReport(report = {}) {
       lines.push(`- \`${candidate.id}\` ${candidate.title}`);
       lines.push(`  - Source: \`${candidate.source_file?.relative_path || candidate.source_file?.name || ''}\``);
       lines.push(`  - Trim: start ${candidate.trim_plan?.trim_start_seconds}s, remove tail ${candidate.trim_plan?.trim_end_seconds}s, strategy \`${candidate.trim_plan?.strategy || ''}\``);
+      if (candidate.trim_plan?.edge_detection?.enabled) {
+        lines.push(`  - Edge detection: \`${candidate.trim_plan.edge_detection.status || 'unknown'}\`, start ${candidate.trim_plan.edge_detection.trim_start_seconds || 0}s, tail ${candidate.trim_plan.edge_detection.trim_end_seconds || 0}s`);
+      }
       lines.push(`  - Opener: ${candidate.opener?.seconds || 0}s, \`${candidate.opener?.title || ''}\``);
       lines.push(`  - Transcript: \`${candidate.transcript?.present ? 'present' : 'missing'}\`, status \`${candidate.transcript?.status || ''}\`, length ${candidate.transcript?.length || 0}`);
+      if (candidate.transcription_result) {
+        lines.push(`  - Transcription result: \`${candidate.transcription_result.status || 'unknown'}\`, provider \`${candidate.transcription_result.provider || 'n/a'}\`, length ${candidate.transcription_result.transcript_length || 0}`);
+      }
       lines.push(`  - Output video exists: \`${candidate.output?.video_exists === true}\``);
       lines.push(`  - Sidecar exists: \`${candidate.output?.sidecar_exists === true}\``);
       if (candidate.vimeo_dry_run) {
@@ -713,6 +948,7 @@ module.exports = {
   DEFAULT_OPENER_SECONDS,
   DEFAULT_PROCESSED_FOLDER,
   DEFAULT_REPORT_DIR,
+  DEFAULT_AUTO_TRIM_MAX_EDGE_SECONDS,
   DEFAULT_TRIM_END_SECONDS,
   DEFAULT_TRIM_START_SECONDS,
   ONE_TIME_PROJECT_KEY,
@@ -721,9 +957,16 @@ module.exports = {
   buildStudioCandidate,
   buildTrimPlan,
   buildVimeoSidecar,
+  detectEdgeTrim,
   discoverStudioDrops,
+  edgeTrimFromSegments,
   formatMarkdownReport,
+  parseBlackSegments,
+  parseSilenceSegments,
   probeVideo,
+  readOpenAiApiKey,
+  redactCredentialText,
   runStudioPipeline,
+  transcriptTextFromOpenAiResponse,
   writeWorkflowReport,
 };

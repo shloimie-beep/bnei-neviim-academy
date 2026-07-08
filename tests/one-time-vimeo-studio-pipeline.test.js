@@ -64,6 +64,90 @@ test('studio pipeline discovers folder drops and builds deterministic trim plans
   assert.equal(candidate.output.sidecar_exists, false);
 });
 
+test('studio edge detection parser can drive an automatic trim plan', () => {
+  const black = pipeline.parseBlackSegments('[blackdetect @ 0] black_start:0 black_end:2.24 black_duration:2.24\n[blackdetect @ 0] black_start:57.1 black_end:60 black_duration:2.9');
+  const silence = pipeline.parseSilenceSegments('[silencedetect @ 0] silence_start: 0\n[silencedetect @ 0] silence_end: 1.8 | silence_duration: 1.8\n[silencedetect @ 0] silence_start: 58.2\n[silencedetect @ 0] silence_end: 60 | silence_duration: 1.8');
+  const blackTrim = pipeline.edgeTrimFromSegments(black, 60);
+  const silenceTrim = pipeline.edgeTrimFromSegments(silence, 60);
+  const edgeTrim = {
+    enabled: true,
+    status: 'ok',
+    trim_start_seconds: Math.max(blackTrim.trim_start_seconds, silenceTrim.trim_start_seconds),
+    trim_end_seconds: Math.max(blackTrim.trim_end_seconds, silenceTrim.trim_end_seconds),
+    signals: { black: blackTrim, silence: silenceTrim },
+  };
+  const plan = pipeline.buildTrimPlan(
+    {},
+    { duration_seconds: 60 },
+    { autoTrimEdges: true, defaultTrimStartSeconds: 0, defaultTrimEndSeconds: 0 },
+    edgeTrim,
+  );
+
+  assert.equal(plan.strategy, 'auto_detected_edges');
+  assert.equal(plan.trim_start_seconds, 2.24);
+  assert.equal(plan.trim_end_seconds, 2.9);
+  assert.equal(plan.edge_detection.enabled, true);
+});
+
+test('studio sidecar trim points override automatic edge detection', () => {
+  const plan = pipeline.buildTrimPlan(
+    { trim_start_seconds: 12, trim_end_seconds: 8 },
+    { duration_seconds: 100 },
+    { autoTrimEdges: true, defaultTrimStartSeconds: 0, defaultTrimEndSeconds: 0 },
+    { enabled: true, status: 'ok', trim_start_seconds: 2, trim_end_seconds: 3 },
+  );
+
+  assert.equal(plan.strategy, 'sidecar_or_manifest');
+  assert.equal(plan.trim_start_seconds, 12);
+  assert.equal(plan.trim_end_seconds, 8);
+});
+
+test('studio pipeline accepts BOM-prefixed Windows sidecar JSON', async () => {
+  const root = tempDir();
+  const drop = path.join(root, 'bom-sidecar');
+  fs.mkdirSync(drop, { recursive: true });
+  const videoPath = path.join(drop, 'bom.mp4');
+  fs.writeFileSync(videoPath, Buffer.from('synthetic video placeholder'));
+  fs.writeFileSync(path.join(drop, 'class.json'), `\uFEFF${JSON.stringify({
+    title: 'BOM Sidecar Class',
+    duration_seconds: 60,
+    trim_start_seconds: 4,
+    synthetic_test: true,
+    contains_sensitive_data: false,
+  })}`);
+
+  const report = await pipeline.runStudioPipeline({
+    folder: root,
+    processedFolder: path.join(root, 'processed'),
+    render: false,
+    runVimeoDryRun: false,
+  });
+  const candidate = report.candidates[0];
+
+  assert.equal(candidate.title, 'BOM Sidecar Class');
+  assert.equal(candidate.trim_plan.trim_start_seconds, 4);
+  assert.deepEqual(candidate.blockers, []);
+});
+
+test('studio pipeline respects explicit non-class media safety flag', async () => {
+  const root = tempDir();
+  const drop = path.join(root, 'promo-smoke');
+  writeFakeVideo(drop, 'promo.mp4', {
+    synthetic_test: false,
+    real_class_recording: false,
+  });
+
+  const report = await pipeline.runStudioPipeline({
+    folder: root,
+    processedFolder: path.join(root, 'processed'),
+    render: false,
+    runVimeoDryRun: false,
+  });
+
+  assert.equal(report.candidates[0].safety.synthetic_test, false);
+  assert.equal(report.candidates[0].safety.real_class_recording, false);
+});
+
 test('studio pipeline forces One Time scope and records wrong-scope sidecar blockers', async () => {
   const root = tempDir();
   const drop = path.join(root, 'wrong-scope');
@@ -134,8 +218,21 @@ test('studio reports redact transcript body from committed evidence', async () =
   assert.doesNotMatch(JSON.stringify(report), /This transcript body should not appear/);
 });
 
+test('studio OpenAI transcription helpers extract text without exposing keys', () => {
+  assert.equal(pipeline.transcriptTextFromOpenAiResponse({ text: '  hello transcript  ' }), 'hello transcript');
+  assert.equal(pipeline.transcriptTextFromOpenAiResponse({ segments: [{ text: 'one' }, { text: 'two' }] }), 'one two');
+  assert.equal(pipeline.readOpenAiApiKey(tempDir(), { openaiApiKey: 'sk-test-not-real' }), 'sk-test-not-real');
+  assert.equal(pipeline.readOpenAiApiKey(tempDir(), { openaiApiKey: 'TODO' }), '');
+  assert.doesNotMatch(pipeline.redactCredentialText('bad sk-proj-abc123XYZ'), /sk-proj-abc123XYZ/);
+});
+
 test('package script exposes the studio processor', () => {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   assert.match(pkg.scripts['one-time:vimeo-studio'], /one-time-vimeo-studio-pipeline\.mjs/);
 });
 
+test('studio processor CLI exposes opt-in transcription flag', () => {
+  const cli = fs.readFileSync('scripts/one-time-vimeo-studio-pipeline.mjs', 'utf8');
+  assert.match(cli, /--transcribe-openai/);
+  assert.match(cli, /transcribeOpenAI = true/);
+});

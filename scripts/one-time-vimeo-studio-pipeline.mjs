@@ -15,6 +15,12 @@ Plan-only scan:
 Synthetic/local render:
   node scripts/one-time-vimeo-studio-pipeline.mjs --folder media-inbox/one-time-vimeo-studio-drop --render --write-report
 
+Optional edge trim:
+  node scripts/one-time-vimeo-studio-pipeline.mjs --folder media-inbox/one-time-vimeo-studio-drop --render --auto-trim-edges --default-trim-start 0 --default-trim-end 0
+
+Optional local transcription smoke:
+  node scripts/one-time-vimeo-studio-pipeline.mjs --folder media-inbox/one-time-vimeo-studio-drop --render --transcribe-openai
+
 The v1 processor performs no real Vimeo upload, no production DB mutation, no member publish, and no bot knowledge promotion.`);
 }
 
@@ -34,6 +40,14 @@ function parseArgs(argv = []) {
     defaultTrimStartSeconds: pipeline.DEFAULT_TRIM_START_SECONDS,
     defaultTrimEndSeconds: pipeline.DEFAULT_TRIM_END_SECONDS,
     openerSeconds: pipeline.DEFAULT_OPENER_SECONDS,
+    autoTrimEdges: false,
+    autoTrimMaxEdgeSeconds: pipeline.DEFAULT_AUTO_TRIM_MAX_EDGE_SECONDS,
+    blackDetectThreshold: 0.98,
+    blackDetectDuration: 0.4,
+    silenceThresholdDb: -35,
+    silenceDetectDuration: 0.5,
+    transcribeOpenAI: false,
+    transcriptionModel: '',
     width: 1920,
     height: 1080,
     fontPath: '',
@@ -79,6 +93,28 @@ function parseArgs(argv = []) {
       index += 1;
     } else if (arg === '--opener-seconds') {
       args.openerSeconds = Number(argv[index + 1] || args.openerSeconds);
+      index += 1;
+    } else if (arg === '--auto-trim-edges') {
+      args.autoTrimEdges = true;
+    } else if (arg === '--auto-trim-max-edge') {
+      args.autoTrimMaxEdgeSeconds = Number(argv[index + 1] || args.autoTrimMaxEdgeSeconds);
+      index += 1;
+    } else if (arg === '--black-threshold') {
+      args.blackDetectThreshold = Number(argv[index + 1] || args.blackDetectThreshold);
+      index += 1;
+    } else if (arg === '--black-duration') {
+      args.blackDetectDuration = Number(argv[index + 1] || args.blackDetectDuration);
+      index += 1;
+    } else if (arg === '--silence-threshold-db') {
+      args.silenceThresholdDb = Number(argv[index + 1] || args.silenceThresholdDb);
+      index += 1;
+    } else if (arg === '--silence-duration') {
+      args.silenceDetectDuration = Number(argv[index + 1] || args.silenceDetectDuration);
+      index += 1;
+    } else if (arg === '--transcribe-openai') {
+      args.transcribeOpenAI = true;
+    } else if (arg === '--transcription-model') {
+      args.transcriptionModel = argv[index + 1] || '';
       index += 1;
     } else if (arg === '--width') {
       args.width = Number(argv[index + 1] || args.width);
@@ -133,4 +169,3 @@ main().catch((error) => {
   console.error(error.stack || error.message);
   process.exitCode = 1;
 });
-
