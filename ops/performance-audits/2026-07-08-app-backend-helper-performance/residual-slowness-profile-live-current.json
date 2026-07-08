@@ -2,48 +2,48 @@
   "base_url": "https://join.onetimeonetime.com",
   "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
   "out_suffix": "live-current",
-  "captured_at": "2026-07-08T20:40:39.240Z",
+  "captured_at": "2026-07-08T20:46:38.061Z",
   "credentials_source": "ONE_TIME_OPS",
   "login": {
     "ok": true,
     "status": 200,
-    "duration_ms": 1421,
+    "duration_ms": 512,
     "response_bytes": 469,
     "cookie": "present",
     "blocker": ""
   },
   "marks": {
-    "dom_content_loaded_ms": 1080,
-    "shell_visible_ms": 1929,
-    "overview_visible_ms": 1939,
-    "capture_complete_ms": 11942,
+    "dom_content_loaded_ms": 1018,
+    "shell_visible_ms": 1341,
+    "overview_visible_ms": 1348,
+    "capture_complete_ms": 11363,
     "page_marks": [
       {
         "name": "domcontentloaded",
-        "time_ms": 1078,
+        "time_ms": 1016,
         "detail": {}
       },
       {
         "name": "load",
-        "time_ms": 1079,
+        "time_ms": 1109,
         "detail": {}
       },
       {
         "name": "overview_visible",
-        "time_ms": 1939,
+        "time_ms": 1348,
         "detail": {}
       },
       {
         "name": "capture_complete",
-        "time_ms": 11941,
+        "time_ms": 11362,
         "detail": {}
       }
     ]
   },
   "navigation": {
-    "dom_content_loaded_ms": 1078,
-    "load_event_ms": 1079,
-    "duration_ms": 1079,
+    "dom_content_loaded_ms": 1017,
+    "load_event_ms": 1109,
+    "duration_ms": 1109,
     "transfer_size": 982,
     "encoded_body_size": 682
   },
@@ -51,18 +51,18 @@
     {
       "url": "/api/bna/auth/me",
       "method": "GET",
-      "start_ms": 1070,
-      "end_ms": 1438,
-      "duration_ms": 368,
+      "start_ms": 1008,
+      "end_ms": 1263,
+      "duration_ms": 255,
       "status": 200,
       "ok": true
     },
     {
       "url": "/api/bna/auth/me",
       "method": "GET",
-      "start_ms": 1484,
-      "end_ms": 1734,
-      "duration_ms": 250,
+      "start_ms": 1310,
+      "end_ms": 1553,
+      "duration_ms": 243,
       "status": 200,
       "ok": true
     }
@@ -71,23 +71,23 @@
     "count": 2,
     "before_overview_count": 2,
     "after_overview_count": 0,
-    "median_ms": 250,
-    "p95_ms": 368,
-    "max_ms": 368,
+    "median_ms": 243,
+    "p95_ms": 255,
+    "max_ms": 255,
     "top_slowest": [
       {
         "method": "GET",
         "path": "/api/bna/auth/me",
-        "start_ms": 1070,
-        "duration_ms": 368,
+        "start_ms": 1008,
+        "duration_ms": 255,
         "status": 200,
         "after_overview": false
       },
       {
         "method": "GET",
         "path": "/api/bna/auth/me",
-        "start_ms": 1484,
-        "duration_ms": 250,
+        "start_ms": 1310,
+        "duration_ms": 243,
         "status": 200,
         "after_overview": false
       }
@@ -96,12 +96,12 @@
       {
         "path": "/api/bna/auth/me",
         "count": 2,
-        "total_ms": 618,
-        "max_ms": 368,
+        "total_ms": 498,
+        "max_ms": 255,
         "statuses": [
           200
         ],
-        "avg_ms": 309
+        "avg_ms": 249
       }
     ]
   },
@@ -113,32 +113,32 @@
   },
   "resources": {
     "count": 12,
-    "transfer_size": 308212,
-    "encoded_body_size": 304612,
+    "transfer_size": 308181,
+    "encoded_body_size": 304581,
     "scripts": [
+      {
+        "path": "/js/platform-ui/platform-ui-fixtures.js",
+        "transfer_size": 4937,
+        "encoded_body_size": 4637,
+        "duration_ms": 256
+      },
+      {
+        "path": "/js/app-select.js",
+        "transfer_size": 4742,
+        "encoded_body_size": 4442,
+        "duration_ms": 246
+      },
       {
         "path": "/js/platform-ui/platform-ui.js",
         "transfer_size": 9861,
         "encoded_body_size": 9561,
-        "duration_ms": 375
-      },
-      {
-        "path": "/js/platform-ui/platform-ui-fixtures.js",
-        "transfer_size": 4938,
-        "encoded_body_size": 4638,
-        "duration_ms": 506
-      },
-      {
-        "path": "/js/app-select.js",
-        "transfer_size": 4743,
-        "encoded_body_size": 4443,
-        "duration_ms": 255
+        "duration_ms": 384
       },
       {
         "path": "/js/operations-shell.js",
-        "transfer_size": 208051,
-        "encoded_body_size": 207751,
-        "duration_ms": 597
+        "transfer_size": 208026,
+        "encoded_body_size": 207726,
+        "duration_ms": 568
       }
     ],
     "styles": [
@@ -146,31 +146,31 @@
         "path": "/css2",
         "transfer_size": 1042,
         "encoded_body_size": 742,
-        "duration_ms": 166
-      },
-      {
-        "path": "/css/operations-shell.css",
-        "transfer_size": 25381,
-        "encoded_body_size": 25081,
-        "duration_ms": 366
-      },
-      {
-        "path": "/css/bna-app-shell.css",
-        "transfer_size": 5606,
-        "encoded_body_size": 5306,
-        "duration_ms": 246
+        "duration_ms": 167
       },
       {
         "path": "/css/platform-ui/platform-ui.css",
         "transfer_size": 3688,
         "encoded_body_size": 3388,
-        "duration_ms": 256
+        "duration_ms": 247
+      },
+      {
+        "path": "/css/bna-app-shell.css",
+        "transfer_size": 5606,
+        "encoded_body_size": 5306,
+        "duration_ms": 266
+      },
+      {
+        "path": "/css/operations-shell.css",
+        "transfer_size": 25379,
+        "encoded_body_size": 25079,
+        "duration_ms": 521
       },
       {
         "path": "/css/one-time-operations.css",
-        "transfer_size": 6140,
-        "encoded_body_size": 5840,
-        "duration_ms": 315
+        "transfer_size": 6138,
+        "encoded_body_size": 5838,
+        "duration_ms": 387
       }
     ]
   },

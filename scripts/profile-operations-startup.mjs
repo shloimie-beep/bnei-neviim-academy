@@ -289,6 +289,8 @@ ${table(report.resources.scripts, [
 
 - Console errors: ${report.console_errors.length}
 - Failed requests: ${report.failed_requests.length}
+- Dashboard error banners: ${report.dom.error_banners.length}
+${report.dom.error_banners.length ? report.dom.error_banners.map((message) => `  - ${message}`).join('\n') : ''}
 `;
 }
 

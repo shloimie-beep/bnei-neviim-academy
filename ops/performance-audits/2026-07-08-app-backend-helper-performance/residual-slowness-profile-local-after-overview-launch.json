@@ -2,48 +2,48 @@
   "base_url": "http://127.0.0.1:8100",
   "path": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
   "out_suffix": "local-after-overview-launch",
-  "captured_at": "2026-07-08T20:39:20.673Z",
+  "captured_at": "2026-07-08T20:46:44.169Z",
   "credentials_source": "ONE_TIME_OPS",
   "login": {
     "ok": true,
     "status": 200,
-    "duration_ms": 1843,
+    "duration_ms": 2188,
     "response_bytes": 477,
     "cookie": "present",
     "blocker": ""
   },
   "marks": {
-    "dom_content_loaded_ms": 419,
-    "shell_visible_ms": 1758,
-    "overview_visible_ms": 1768,
-    "capture_complete_ms": 15783,
+    "dom_content_loaded_ms": 448,
+    "shell_visible_ms": 1810,
+    "overview_visible_ms": 1818,
+    "capture_complete_ms": 15836,
     "page_marks": [
       {
         "name": "domcontentloaded",
-        "time_ms": 416,
+        "time_ms": 444,
         "detail": {}
       },
       {
         "name": "load",
-        "time_ms": 557,
+        "time_ms": 593,
         "detail": {}
       },
       {
         "name": "overview_visible",
-        "time_ms": 1768,
+        "time_ms": 1817,
         "detail": {}
       },
       {
         "name": "capture_complete",
-        "time_ms": 15781,
+        "time_ms": 15834,
         "detail": {}
       }
     ]
   },
   "navigation": {
-    "dom_content_loaded_ms": 417,
-    "load_event_ms": 557,
-    "duration_ms": 557,
+    "dom_content_loaded_ms": 444,
+    "load_event_ms": 593,
+    "duration_ms": 593,
     "transfer_size": 1988,
     "encoded_body_size": 1688
   },
@@ -51,72 +51,72 @@
     {
       "url": "/api/bna/auth/me",
       "method": "GET",
-      "start_ms": 407,
-      "end_ms": 1300,
-      "duration_ms": 892,
+      "start_ms": 436,
+      "end_ms": 1356,
+      "duration_ms": 920,
       "status": 200,
       "ok": true
     },
     {
       "url": "/api/bna/service-providers?approved_only=false",
       "method": "GET",
-      "start_ms": 1315,
-      "end_ms": 2261,
-      "duration_ms": 946,
+      "start_ms": 1372,
+      "end_ms": 2470,
+      "duration_ms": 1098,
       "status": 200,
       "ok": true
     },
     {
       "url": "/api/bna/auth/me",
       "method": "GET",
-      "start_ms": 2265,
-      "end_ms": 3152,
-      "duration_ms": 887,
+      "start_ms": 2477,
+      "end_ms": 3424,
+      "duration_ms": 947,
       "status": 200,
       "ok": true
     },
     {
       "url": "/api/bna/rabbi/config",
       "method": "GET",
-      "start_ms": 3153,
-      "end_ms": 4264,
-      "duration_ms": 1111,
+      "start_ms": 3425,
+      "end_ms": 4585,
+      "duration_ms": 1160,
       "status": 200,
       "ok": true
     },
     {
       "url": "/api/bna/rabbi/tiers",
       "method": "GET",
-      "start_ms": 3153,
-      "end_ms": 3833,
-      "duration_ms": 680,
+      "start_ms": 3425,
+      "end_ms": 5467,
+      "duration_ms": 2042,
       "status": 200,
       "ok": true
     },
     {
       "url": "/api/bna/rabbi/checkouts",
       "method": "GET",
-      "start_ms": 3153,
-      "end_ms": 5184,
-      "duration_ms": 2031,
+      "start_ms": 3426,
+      "end_ms": 5552,
+      "duration_ms": 2127,
       "status": 200,
       "ok": true
     },
     {
       "url": "/api/bna/rabbi/members",
       "method": "GET",
-      "start_ms": 3153,
-      "end_ms": 5405,
-      "duration_ms": 2252,
+      "start_ms": 3426,
+      "end_ms": 5726,
+      "duration_ms": 2301,
       "status": 200,
       "ok": true
     },
     {
       "url": "/api/bna/rabbi/access-grants",
       "method": "GET",
-      "start_ms": 3154,
-      "end_ms": 5254,
-      "duration_ms": 2100,
+      "start_ms": 3426,
+      "end_ms": 5553,
+      "duration_ms": 2127,
       "status": 200,
       "ok": true
     }
@@ -125,145 +125,145 @@
     "count": 8,
     "before_overview_count": 2,
     "after_overview_count": 6,
-    "median_ms": 946,
-    "p95_ms": 2252,
-    "max_ms": 2252,
+    "median_ms": 1160,
+    "p95_ms": 2301,
+    "max_ms": 2301,
     "top_slowest": [
       {
         "method": "GET",
         "path": "/api/bna/rabbi/members",
-        "start_ms": 3153,
-        "duration_ms": 2252,
-        "status": 200,
-        "after_overview": true
-      },
-      {
-        "method": "GET",
-        "path": "/api/bna/rabbi/access-grants",
-        "start_ms": 3154,
-        "duration_ms": 2100,
+        "start_ms": 3426,
+        "duration_ms": 2301,
         "status": 200,
         "after_overview": true
       },
       {
         "method": "GET",
         "path": "/api/bna/rabbi/checkouts",
-        "start_ms": 3153,
-        "duration_ms": 2031,
+        "start_ms": 3426,
+        "duration_ms": 2127,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/rabbi/access-grants",
+        "start_ms": 3426,
+        "duration_ms": 2127,
+        "status": 200,
+        "after_overview": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/rabbi/tiers",
+        "start_ms": 3425,
+        "duration_ms": 2042,
         "status": 200,
         "after_overview": true
       },
       {
         "method": "GET",
         "path": "/api/bna/rabbi/config",
-        "start_ms": 3153,
-        "duration_ms": 1111,
+        "start_ms": 3425,
+        "duration_ms": 1160,
         "status": 200,
         "after_overview": true
       },
       {
         "method": "GET",
         "path": "/api/bna/service-providers?approved_only=false",
-        "start_ms": 1315,
-        "duration_ms": 946,
+        "start_ms": 1372,
+        "duration_ms": 1098,
         "status": 200,
         "after_overview": false
       },
       {
         "method": "GET",
         "path": "/api/bna/auth/me",
-        "start_ms": 407,
-        "duration_ms": 892,
+        "start_ms": 2477,
+        "duration_ms": 947,
         "status": 200,
-        "after_overview": false
+        "after_overview": true
       },
       {
         "method": "GET",
         "path": "/api/bna/auth/me",
-        "start_ms": 2265,
-        "duration_ms": 887,
+        "start_ms": 436,
+        "duration_ms": 920,
         "status": 200,
-        "after_overview": true
-      },
-      {
-        "method": "GET",
-        "path": "/api/bna/rabbi/tiers",
-        "start_ms": 3153,
-        "duration_ms": 680,
-        "status": 200,
-        "after_overview": true
+        "after_overview": false
       }
     ],
     "by_family": [
       {
         "path": "/api/bna/rabbi/members",
         "count": 1,
-        "total_ms": 2252,
-        "max_ms": 2252,
+        "total_ms": 2301,
+        "max_ms": 2301,
         "statuses": [
           200
         ],
-        "avg_ms": 2252
-      },
-      {
-        "path": "/api/bna/rabbi/access-grants",
-        "count": 1,
-        "total_ms": 2100,
-        "max_ms": 2100,
-        "statuses": [
-          200
-        ],
-        "avg_ms": 2100
+        "avg_ms": 2301
       },
       {
         "path": "/api/bna/rabbi/checkouts",
         "count": 1,
-        "total_ms": 2031,
-        "max_ms": 2031,
+        "total_ms": 2127,
+        "max_ms": 2127,
         "statuses": [
           200
         ],
-        "avg_ms": 2031
+        "avg_ms": 2127
       },
       {
-        "path": "/api/bna/auth/me",
-        "count": 2,
-        "total_ms": 1779,
-        "max_ms": 892,
-        "statuses": [
-          200
-        ],
-        "avg_ms": 890
-      },
-      {
-        "path": "/api/bna/rabbi/config",
+        "path": "/api/bna/rabbi/access-grants",
         "count": 1,
-        "total_ms": 1111,
-        "max_ms": 1111,
+        "total_ms": 2127,
+        "max_ms": 2127,
         "statuses": [
           200
         ],
-        "avg_ms": 1111
-      },
-      {
-        "path": "/api/bna/service-providers",
-        "count": 1,
-        "total_ms": 946,
-        "max_ms": 946,
-        "statuses": [
-          200
-        ],
-        "avg_ms": 946
+        "avg_ms": 2127
       },
       {
         "path": "/api/bna/rabbi/tiers",
         "count": 1,
-        "total_ms": 680,
-        "max_ms": 680,
+        "total_ms": 2042,
+        "max_ms": 2042,
         "statuses": [
           200
         ],
-        "avg_ms": 680
+        "avg_ms": 2042
+      },
+      {
+        "path": "/api/bna/auth/me",
+        "count": 2,
+        "total_ms": 1867,
+        "max_ms": 947,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 934
+      },
+      {
+        "path": "/api/bna/rabbi/config",
+        "count": 1,
+        "total_ms": 1160,
+        "max_ms": 1160,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1160
+      },
+      {
+        "path": "/api/bna/service-providers",
+        "count": 1,
+        "total_ms": 1098,
+        "max_ms": 1098,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1098
       }
     ]
   },
@@ -282,24 +282,24 @@
         "path": "/js/platform-ui/platform-ui-fixtures.js",
         "transfer_size": 18400,
         "encoded_body_size": 18100,
-        "duration_ms": 6
-      },
-      {
-        "path": "/js/app-select.js",
-        "transfer_size": 19763,
-        "encoded_body_size": 19463,
         "duration_ms": 7
       },
       {
         "path": "/js/platform-ui/platform-ui.js",
         "transfer_size": 46137,
         "encoded_body_size": 45837,
-        "duration_ms": 6
+        "duration_ms": 7
       },
       {
         "path": "/js/operations-shell.js",
         "transfer_size": 1186118,
         "encoded_body_size": 1185818,
+        "duration_ms": 11
+      },
+      {
+        "path": "/js/app-select.js",
+        "transfer_size": 19763,
+        "encoded_body_size": 19463,
         "duration_ms": 8
       }
     ],
@@ -308,19 +308,19 @@
         "path": "/css2",
         "transfer_size": 1042,
         "encoded_body_size": 742,
-        "duration_ms": 177
+        "duration_ms": 194
       },
       {
         "path": "/css/operations-shell.css",
         "transfer_size": 218822,
         "encoded_body_size": 218522,
-        "duration_ms": 4
+        "duration_ms": 5
       },
       {
         "path": "/css/bna-app-shell.css",
         "transfer_size": 35186,
         "encoded_body_size": 34886,
-        "duration_ms": 4
+        "duration_ms": 5
       },
       {
         "path": "/css/platform-ui/platform-ui.css",
@@ -332,7 +332,7 @@
         "path": "/css/one-time-operations.css",
         "transfer_size": 66816,
         "encoded_body_size": 66516,
-        "duration_ms": 5
+        "duration_ms": 6
       }
     ]
   },

@@ -70,3 +70,5 @@
 
 - Console errors: 0
 - Failed requests: 0
+- Dashboard error banners: 1
+  - Some dashboard data could not load: emailInboxFilters is not defined
