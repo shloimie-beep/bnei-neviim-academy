@@ -1,6 +1,6 @@
 # Agent Mode Prompt - One Time Parent Trial Journey
 
-Generated: 2026-07-08T14:39:17.216Z
+Generated: 2026-07-08T14:49:05.785Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001

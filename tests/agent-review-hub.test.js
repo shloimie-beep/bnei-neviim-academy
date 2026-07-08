@@ -126,6 +126,14 @@ test('Agent Mode prompt pack has exactly 15 generated mobile-copyable files', ()
   const rabbiText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', rabbiPrompt.file), 'utf8');
   assert.match(rabbiText, /Open Rabbi Provider Portal/);
   assert.match(rabbiText, /Now Viewing: Rabbi \/ One Time Inbox/);
+  assert.match(rabbiText, /Communications > WhatsApp/);
+  assert.match(rabbiText, /WAPI readiness/);
+  assert.match(rabbiText, /join\.onetimeonetime\.com\/parent\/login/);
+  assert.match(rabbiText, /join\.onetimeonetime\.com\/student\/login/);
+  assert.match(rabbiText, /join\.onetimeonetime\.com\/one-time-parent/);
+  assert.match(rabbiText, /BNA Academy reset\/login branding/);
+  assert.match(rabbiText, /classroom-code fallback/);
+  assert.match(rabbiText, /recovery-code fallback/);
   assert.match(rabbiText, /Student View, Parent\/Member View, Classroom, and Library/);
   assert.match(rabbiText, /Super Admin noise/);
 

@@ -1,6 +1,6 @@
 # Agent Mode Prompt - Helper Natural-Language Action Audit
 
-Generated: 2026-07-08T14:39:17.216Z
+Generated: 2026-07-08T14:49:05.785Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -52,7 +52,7 @@ Use takeover mode if an Operations login is required. Do not ask for or store pa
 - One Time Public Landing: role anonymous_public, workspace rabbi_sheller_provider, project one_time_mishnah_class, route /one-time, helper One Time public landing helper.
 - BNA Operations: role super_admin, workspace bna_platform, project bna_school_platform, route /operations?view=tasks, helper Operations helper.
 - Owner Task / Decision: role operator_with_agent_mode_assist, workspace bna_platform, project task_decision_queue, route /operations?view=tasks, helper Operations task or Decision card.
-- Rabbi Provider Admin: role workspace_owner, workspace rabbi_sheller_provider, project one_time_mishnah_class, route /provider.html?review=one-time, helper provider/Rabbi workspace helper.
+- Rabbi Provider Admin: role workspace_owner, workspace rabbi_sheller_provider, project one_time_mishnah_class, route /provider.html?admin_provider=one-time&section=mailbox, helper provider/Rabbi workspace helper.
 - Provider Staff: role provider_staff, workspace rabbi_sheller_provider, project one_time_mishnah_class, route /provider-participant.html?review=one-time, helper provider participant helper.
 - Parent QA: role parent, workspace bna, project bna_school_platform, route /parent?review=agent, helper parent helper.
 - Student QA: role student, workspace bna, project bna_school_platform, route /student?review=agent, helper student helper.
