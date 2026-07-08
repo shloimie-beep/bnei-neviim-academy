@@ -1,0 +1,20 @@
+{
+  "captured_at": "2026-07-08T20:51:20Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "operations_shell": {
+    "status": 200,
+    "length": 1204700,
+    "checks": {
+      "function dataRequestWithTimeout": true,
+      "function emailInboxFilters": true,
+      "const needsWorkspaceDirectoryData = !oneTimeProgramLightPass": true,
+      "loadRabbiLaunchData({ overviewOnly: oneTimeProgramBackgroundOverviewPass })": true
+    }
+  },
+  "operations_deferred_renderers": {
+    "status": 200,
+    "length": 935207,
+    "has_email_inbox_scopes_const": false
+  },
+  "external_write_performed": false
+}

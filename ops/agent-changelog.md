@@ -6,6 +6,24 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-08T23:51:59+03:00 - Operations residual slowness fix live-smoked
+
+- Diagnosed the remaining OneTime Operations slow/no-data feel as a
+  split-boundary hydration crash: production was showing
+  `emailInboxFilters is not defined` and stopped after two auth/session
+  requests.
+- Kept the email inbox and communications bundle helpers in the initial
+  Operations shell, kept the deferred renderer boundary from redeclaring those
+  helpers, and narrowed OneTime overview/background hydration.
+- Live profile after deploy: OneTime overview visible in 1,325ms, 8 fetches
+  total, 6 after overview, max fetch 330ms, 0 console errors, 0 failed
+  requests, and 0 dashboard error banners.
+- Verification passed: focused Operations tests, deferred-renderer smoke,
+  full `npm test` 1666/1666, secrets audit, protocol drift watchdog, OneTime
+  live smoke, live asset readback, and OneTime Railway target guard.
+- Remaining performance target: continue profiling after-overview Rabbi API
+  reads and view-switch waits.
+
 ## 2026-07-08T23:41:42+03:00 - Rabbi sidekick and Operations residual slowness locally verified
 
 - Expanded Rabbi Scheller's Telegram/helper contract so both surfaces are
