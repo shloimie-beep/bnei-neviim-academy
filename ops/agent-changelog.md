@@ -34186,3 +34186,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers: Rabbi WAPI folder/token, `ONE_TIME_WHATSAPP_CLASS_LINK`
   env/secret, final WhatsApp sender/copy approval, and exact live OneTime
   student display name for the parent invite resend.
+
+## 2026-07-08T17:53:58+03:00 - OneTime Agent Mode prompts and WAPI bot gate deployed
+
+- Pushed backend/prompt commit `8fc92f71` and Rabbi prompt correction commit
+  `86e050f3` to `origin/master`.
+- Deployed the OneTime service through account-authenticated Railway CLI to
+  `one-time-production / production / one-time-web`.
+- Deployment `b38765d5-7386-4f0d-ad9d-befe4005bee8` reached `SUCCESS` for the
+  WAPI auto-reply gate and prompt hardening batch.
+- Deployment `7a499173-cb63-4c62-a651-d9197ce6218f` reached `SUCCESS` for the
+  Rabbi prompt correction.
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
+  passed after deployment.
+- Live readback of
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-provider-admin.md`
+  returned 200 and confirmed `Communications > WhatsApp`, `WAPI readiness`,
+  live parent login, live student login, OneTime parent setup, and the
+  WhatsApp no-send guard.
+- The final `one-time:target:guard` route checks passed, but the release-gate
+  wrapper reported unrelated dirty files from another stream; those files were
+  not staged or deployed as part of this scope.
+- No WhatsApp was sent, no parent invite was resent, no class link or Zoom
+  password was committed, and no payment/access/DNS/Zoom/Vimeo/Drive mutation
+  was performed.
