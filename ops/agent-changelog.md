@@ -34034,3 +34034,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Live resend remains blocked by `DEC-20260708-008` until the exact live
   OneTime student display name is provided. Agent Mode autonomous prompt/
   drop-off hardening remains open as `REQ-20260708-045`.
+
+## 2026-07-08T16:16:00+03:00 - OneTime parent/student auth pushed; deploy blocked
+
+- Commit `b7ba8418` was pushed to `origin/master`.
+- The OneTime launch-ready parent/student auth cleanup is in GitHub but is not
+  proven live.
+- `npm run one-time:target:guard -- --json` could read the live OneTime site,
+  but strict release gating blocked because local Railway status resolved to
+  the BNA project context instead of `one-time-production / one-time-web /
+  join.onetimeonetime.com`.
+- `npm run railway:target:doctor` also blocked because no explicit Railway
+  project or service target is available in this shell.
+- Safe live readback against `https://join.onetimeonetime.com` showed the new
+  commit was stale/not deployed yet: live member-library and classroom still
+  had old fallback/public-return markers, and live Rabbi-member still had the
+  old portrait marker.
+- Existing live shared-review smoke passed:
+  `ops/live-smokes/2026-07-08T13-13-51-730Z-one-time-shared-review-live-smoke.md`.
+- Evidence:
+  `ops/watchdog-audits/2026-07-08-onetime-parent-student-auth-deploy-blocker.md`.
+- Status: pushed and locally verified, but deploy/live-smoke blocked. No live
+  email resend was performed.
