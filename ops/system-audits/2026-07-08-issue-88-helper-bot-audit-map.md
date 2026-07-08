@@ -50,6 +50,15 @@ Updated counts after the first Rabbi runtime alias batch:
 - `student_safe_only`: 9
 - `tool_needed`: 145
 
+Current counts after the parent/student summary and preview wrapper batches:
+
+- total records: 270
+- `tool_available`: 63
+- `requires_confirmation`: 60
+- `external_blocker`: 26
+- `student_safe_only`: 7
+- `tool_needed`: 114
+
 Meaningful stale items corrected:
 
 - `capture_raw_intake`, `run_watchdog_audit`, `show_goal_status`,
@@ -111,6 +120,27 @@ Follow-up Rabbi parent/student summary wrapper batch:
   current implementation statuses: 36 `tool_wrapper_available_local`, 12
   `registered_fallback_only_blocker`, and 115 `tool_wrapper_missing`.
 
+Follow-up Rabbi dry-run preview wrapper batch:
+
+- Added scoped dry-run preview wrappers for
+  `calendar_batch_launch_plan_preview`, `classroom_topic_material_preview`,
+  `google_drive_find_file_preview`, `google_drive_create_doc_preview`,
+  `google_drive_create_folder_preview`, `google_business_place_id_lookup`,
+  and `google_business_list_locations_preview`.
+- These wrappers call the action runner with `dry_run: true` and
+  `approved: false`, recompute/lock the Rabbi / One Time workspace/project
+  scope, and return redacted preview summaries instead of live external
+  provider mutations.
+- Preview result cards do not return raw Google/Drive/Classroom/Business
+  IDs, raw URLs, document body previews, private contact values, or secrets.
+- The scope-map generator now treats write-shaped missing tools as
+  write/draft/approval-gated instead of leaving them in the read-only bucket.
+- Refreshed `ops/helper-tool-parity-map.json`/`.md` so the preview wrappers
+  show as `tool_available` or `requires_confirmation`.
+- Kept the Rabbi scope map at the original 163-contract audit baseline, with
+  current implementation statuses: 49 `tool_wrapper_available_local`, 12
+  `registered_fallback_only_blocker`, and 102 `tool_wrapper_missing`.
+
 ## Negative Tests Added
 
 Added focused coverage in `tests/bna-helper-tools.test.js` for the packet's
@@ -133,6 +163,9 @@ scope/privacy implications:
   omits parent contact values, student access codes, private notes, worksheet
   bodies, raw instructions, private links, raw goal metadata, raw note
   metadata, and meeting URLs.
+- Rabbi preview wrapper execution rejects cross-workspace args and proves
+  preview-only behavior for Calendar, Classroom, Google Drive, and Google
+  Business actions without live external reads/writes or raw external IDs.
 
 ## Verification
 
@@ -156,10 +189,10 @@ Follow-up verification:
 - PASS `node --test tests/bna-helper-tools.test.js
   tests/rabbi-helper-tool-scope-map.test.js
   tests/one-time-rbac-negative-isolation.test.js
-  tests/workspace-rbac-negative-isolation.test.js` (28/28)
+  tests/workspace-rbac-negative-isolation.test.js` (30/30)
 - PASS `node --test tests/watchdog-action-registry.test.js` (5/5) after
   regenerating `ops/action-registry/one-time-action-coverage.*`
-- PASS full `npm test` (1661/1661)
+- PASS full `npm test` (1664/1664)
 - PASS `npm run watchdog:actions`
 - PASS `npm run secrets:audit`
 - PASS `npm run watchdog:protocol-drift`
@@ -170,30 +203,31 @@ Follow-up verification:
 - PASS live prompt readback
   `/agent-review-prompts/rabbi-helper-tool-scope-map.md` returned `200` with
   `REQ-20260708-093` and `RABBI-HELPER-SCOPE-163`
-- BROAD BLOCKED `npm test` currently passes 1658/1662 and fails four unrelated
-  Operations/action-coverage tests:
-  `operations-automation-center`,
-  `service-provider-studio-operations-ui`, and the two
-  `watchdog-action-registry` coverage hash tests.
+- PASS current focused helper/scope/action/UI verification and full
+  `npm test` after refreshing the generated action-coverage hashes and lazy
+  subnav test assertions required by the already-committed Operations shell
+  split.
 
 ## Remaining Agent-Mode Autonomy Gaps
 
 1. Query/filter/result-card tools are still not implemented for many natural
-   questions. The refreshed base parity map now has 127 `tool_needed` rows,
-   including parent/student progress reads, payments/accounting reads,
-   CRM/contact filters beyond the first read-only batch, content/class/session
-   reads, calendar drafts, and several prompt/goal lifecycle operations.
-2. The Rabbi 163-contract scope baseline has 36 local runtime wrappers so far.
-   Twelve contracts are fallback/setup blockers, and 115 contracts still show
+   questions. The refreshed base parity map now has 114 `tool_needed` rows,
+   including payments/accounting reads, CRM/contact filters beyond the first
+   read-only batch, content/class/session reads, calendar/state drafts, and
+   prompt/goal lifecycle operations.
+2. The Rabbi 163-contract scope baseline has 49 local runtime wrappers so far.
+   Twelve contracts are fallback/setup blockers, and 102 contracts still show
    `tool_wrapper_missing`.
-3. The exact missing-wrapper breakdown is 53 `internal_write`, 30 `read_only`,
-   28 `draft_only`, 2 `approval_gated_external_write`, and 2
-   `approval_gated_internal_state_change`.
-4. The 36 local wrappers are not full agent-mode autonomy yet. The first 27
+3. The exact missing-wrapper breakdown is 68 `internal_write`, 17
+   `draft_only`, 8 `approval_gated_external_write`, and 9
+   `approval_gated_internal_state_change`; no missing wrapper is still
+   classified as `read_only`.
+4. The 49 local wrappers are not full agent-mode autonomy yet. The first 27
    are committed/pushed/deployed/prompt-readback verified through deployment
-   `2107fae5-1a73-49ec-96e8-5a3a66bb8e43`; the new 9 parent/student summary
-   wrappers are local-verified and still need a clean deploy/live smoke path.
-   All 36 still need saved Agent Mode PASS/BLOCKED results.
+   `2107fae5-1a73-49ec-96e8-5a3a66bb8e43`; the 9 parent/student summary
+   wrappers and 13 dry-run preview contracts are local-verified and still need
+   a clean deploy/live smoke path. All 49 still need saved Agent Mode
+   PASS/BLOCKED results.
 5. Scoped Operations deep links for Rabbi/One Time are conservative by default.
    Helper permissions allow project-scoped task/navigation tools, but the route
    destination resolver currently blocks `/operations` for non-super-admin
@@ -207,8 +241,9 @@ Follow-up verification:
 7. Planner coverage is still partial. Deterministic planner coverage exists
    for navigation, tickets, task updates, performance reports, classroom
    drafts, automation drafts, the first Rabbi alias batch, the read-only batch,
-   and the parent/student summary batch, but most remaining inventory rows do
-   not have natural-language intent routing or safe missing-input prompts.
+   the parent/student summary batch, and the preview-action batch, but most
+   remaining inventory rows do not have natural-language intent routing or
+   safe missing-input prompts.
 8. Confirmation-gated execution exists, but agent-mode autonomy still needs a
    productized action console/timeline UI with visible plan, confirmation,
    execution, result links, errors, and audit readback across desktop/mobile.
@@ -219,7 +254,8 @@ Follow-up verification:
 10. Live deploy and prompt readback are complete for the first 27 wrappers, but
    Agent Review has not yet saved a PASS/BLOCKED result for the refreshed map,
    the first alias batch, the read-only batch, the parent/student summary
-   batch, and the scope/privacy negative tests in this scoped audit.
+   batch, the preview-action batch, and the scope/privacy negative tests in
+   this scoped audit.
 
 ## Guardrails Observed
 

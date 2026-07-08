@@ -129,6 +129,13 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
     'show_student_progress_for_parent',
     'show_child_calendar',
     'view_parent_visible_notes',
+    'calendar_batch_launch_plan_preview',
+    'classroom_topic_material_preview',
+    'google_drive_find_file_preview',
+    'google_drive_create_doc_preview',
+    'google_drive_create_folder_preview',
+    'google_business_place_id_lookup',
+    'google_business_list_locations_preview',
   ]) {
     assert.equal(registry.validate(toolName, {
       student_id: 11,
@@ -313,6 +320,13 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
     'show_student_progress_for_parent',
     'show_child_calendar',
     'view_parent_visible_notes',
+    'calendar_batch_launch_plan_preview',
+    'classroom_topic_material_preview',
+    'google_drive_find_file_preview',
+    'google_drive_create_doc_preview',
+    'google_drive_create_folder_preview',
+    'google_business_place_id_lookup',
+    'google_business_list_locations_preview',
   ]) {
     assert.equal(
       helperPermissionForTool(registry.get(toolName), context, {
@@ -369,6 +383,13 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
       student_id: 11,
       workspace_key: 'rabbi_sheller_provider',
       project_key: 'bna',
+    }).allowed,
+    false
+  );
+  assert.equal(
+    helperPermissionForTool(registry.get('google_drive_find_file_preview'), context, {
+      workspace_key: 'bna',
+      project_key: 'one_time_mishnah_class',
     }).allowed,
     false
   );
@@ -483,6 +504,13 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(deterministicPlan('show student progress for parent about student 11', registry, oneTimeContext).actions[0].tool, 'show_student_progress_for_parent');
   assert.equal(deterministicPlan('show child calendar for student 11', registry, oneTimeContext).actions[0].tool, 'show_child_calendar');
   assert.equal(deterministicPlan('view parent visible notes for student 11', registry, oneTimeContext).actions[0].tool, 'view_parent_visible_notes');
+  assert.equal(deterministicPlan('preview the 8 week launch calendar plan starting 2026-08-01', registry, oneTimeContext).actions[0].tool, 'calendar_batch_launch_plan_preview');
+  assert.equal(deterministicPlan('preview classroom topic material for topic Week 1', registry, oneTimeContext).actions[0].tool, 'classroom_topic_material_preview');
+  assert.equal(deterministicPlan('find Google Drive file "Mishnah Peah source file"', registry, oneTimeContext).actions[0].tool, 'google_drive_find_file_preview');
+  assert.equal(deterministicPlan('preview Google Drive doc "Class summary draft"', registry, oneTimeContext).actions[0].tool, 'google_drive_create_doc_preview');
+  assert.equal(deterministicPlan('preview Google Drive folder "One Time class summaries"', registry, oneTimeContext).actions[0].tool, 'google_drive_create_folder_preview');
+  assert.equal(deterministicPlan('lookup Google Business place id for Rabbi Scheller One Time', registry, oneTimeContext).actions[0].tool, 'google_business_place_id_lookup');
+  assert.equal(deterministicPlan('list Google Business locations for Rabbi Scheller One Time', registry, oneTimeContext).actions[0].tool, 'google_business_list_locations_preview');
 });
 
 test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reject cross-scope execution', async () => {
@@ -520,6 +548,17 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
   const db = {
     query: async (sql, params) => {
       executedQueries.push({ sql, params });
+      if (/INSERT INTO bna_bot_action_logs/i.test(sql)) {
+        return {
+          rows: [{
+            id: executedQueries.length,
+            workspace_key: params[0],
+            actor_role: params[1],
+            action_key: params[2],
+            status: params[5],
+          }],
+        };
+      }
       if (/INSERT INTO bna_support_tickets/i.test(sql)) {
         return {
           rows: [{
@@ -963,6 +1002,106 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
   assert.equal(Object.prototype.hasOwnProperty.call(parentVisibleNotes.data.notes[0], 'notes'), false);
   assert.equal(Object.prototype.hasOwnProperty.call(parentVisibleNotes.data.notes[0], 'metadata'), false);
 
+  const previewQueryStart = executedQueries.length;
+  const launchPreview = await registry.execute('calendar_batch_launch_plan_preview', {
+    program: 'One Time Mishnayos launch',
+    start_date: '2026-08-01',
+    weeks: 8,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(launchPreview.tool, 'calendar_batch_launch_plan_preview');
+  assert.equal(launchPreview.data.delegated_action_id, 'calendar_batch_launch_plan_preview');
+  assert.equal(launchPreview.data.preview.executed, false);
+  assert.equal(launchPreview.data.preview.dry_run_only, true);
+  assert.equal(launchPreview.data.preview.external_write_performed, false);
+  assert.equal(launchPreview.data.preview.google_calendar_write_performed, false);
+  assert.equal(launchPreview.data.preview.item_count > 0, true);
+
+  const classroomPreview = await registry.execute('classroom_topic_material_preview', {
+    course_name: 'One Time private class',
+    topic_name: 'Week 1',
+    material_title: 'Reviewed class material',
+    material_url: 'https://classroom.example/private-material',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(classroomPreview.data.preview.classroom_topic_material_preview_created, true);
+  assert.equal(classroomPreview.data.preview.classroom_read_performed, false);
+  assert.equal(classroomPreview.data.preview.classroom_write_performed, false);
+  assert.equal(classroomPreview.data.preview.raw_urls_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(classroomPreview.data.preview, 'material_url'), false);
+
+  const driveFindPreview = await registry.execute('google_drive_find_file_preview', {
+    query: 'Mishnah Peah recording',
+    folder_id: 'private-folder-id',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(driveFindPreview.data.preview.drive_action, 'find_or_list_files');
+  assert.equal(driveFindPreview.data.preview.external_read_performed, false);
+  assert.equal(driveFindPreview.data.preview.raw_external_ids_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(driveFindPreview.data.preview, 'folder_id'), false);
+
+  const driveDocPreview = await registry.execute('google_drive_create_doc_preview', {
+    title: 'Class summary draft',
+    body: 'Private body should not return',
+    folder_id: 'private-folder-id',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(driveDocPreview.data.preview.drive_action, 'create_google_doc');
+  assert.equal(driveDocPreview.data.preview.body_preview_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(driveDocPreview.data.preview, 'body_preview'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(driveDocPreview.data.preview, 'folder_id'), false);
+
+  const driveFolderPreview = await registry.execute('google_drive_create_folder_preview', {
+    folder_name: 'One Time class summaries',
+    parent_folder_id: 'private-parent-folder-id',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(driveFolderPreview.data.preview.drive_action, 'create_folder');
+  assert.equal(driveFolderPreview.data.preview.raw_external_ids_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(driveFolderPreview.data.preview, 'parent_folder_id'), false);
+
+  const businessPlacePreview = await registry.execute('google_business_place_id_lookup', {
+    query: 'Rabbi Scheller One Time',
+    google_maps_url: 'https://maps.google.com/?cid=private',
+    google_place_id: 'private-place-id',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(businessPlacePreview.data.preview.connector, 'google_business_profile');
+  assert.equal(businessPlacePreview.data.preview.live_google_api_used, false);
+  assert.equal(businessPlacePreview.data.preview.external_read_performed, false);
+  assert.equal(businessPlacePreview.data.preview.raw_external_ids_returned, false);
+  assert.equal(businessPlacePreview.data.preview.raw_urls_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(businessPlacePreview.data.preview, 'google_place_id'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(businessPlacePreview.data.preview, 'google_business_profile_url'), false);
+
+  const businessLocationsPreview = await registry.execute('google_business_list_locations_preview', {
+    provider_name: 'Rabbi Scheller / One Time',
+    account_id: 'private-account-id',
+    location_id: 'private-location-id',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+  }, context, db);
+  assert.equal(businessLocationsPreview.data.preview.connector, 'google_business_profile');
+  assert.equal(businessLocationsPreview.data.preview.live_google_api_used, false);
+  assert.equal(businessLocationsPreview.data.preview.external_read_performed, false);
+  assert.equal(businessLocationsPreview.data.preview.raw_external_ids_returned, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(businessLocationsPreview.data.preview, 'account_id'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(businessLocationsPreview.data.preview, 'location_id'), false);
+  assert.ok(
+    executedQueries.filter((query) => /INSERT INTO bna_bot_action_logs/i.test(query.sql)).length >= 7,
+    'preview wrappers should write local action audit rows only'
+  );
+  assert.ok(
+    executedQueries.slice(previewQueryStart).every((query) => !/google_|classroom|drive/i.test(query.sql) || /bna_bot_action_logs/i.test(query.sql)),
+    'preview wrappers must not query Google/Classroom/Drive tables in helper tests'
+  );
+
   await assert.rejects(
     () => registry.execute('create_rabbi_source_sheet_task', {
       title: 'Cross scope source sheet',
@@ -981,6 +1120,14 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
   );
   await assert.rejects(
     () => registry.execute('list_students', {
+      workspace_key: 'bna',
+      project_key: 'one_time_mishnah_class',
+    }, context, db),
+    /workspace scope mismatch/
+  );
+  await assert.rejects(
+    () => registry.execute('google_drive_find_file_preview', {
+      query: 'Cross-scope Drive search',
       workspace_key: 'bna',
       project_key: 'one_time_mishnah_class',
     }, context, db),

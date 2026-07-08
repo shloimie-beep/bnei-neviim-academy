@@ -9,6 +9,7 @@ const vimeoIntegration = require('../../integrations/vimeo');
 const { parseIntakeText } = require('../intake-parser');
 const { extractedItemCounts, normalizeSourceChannel } = require('../ramble-protocol');
 const { STANDING_GOALS, affectedGoalIdsForText } = require('../goal-registry');
+const { runAction } = require('../../actions/runner');
 
 const RABBI_WORKSPACE_KEY = 'rabbi_sheller_provider';
 const RABBI_PROJECT_KEY = 'one_time_mishnah_class';
@@ -47,6 +48,13 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'show_student_progress_for_parent',
   'show_child_calendar',
   'view_parent_visible_notes',
+  'calendar_batch_launch_plan_preview',
+  'classroom_topic_material_preview',
+  'google_drive_find_file_preview',
+  'google_drive_create_doc_preview',
+  'google_drive_create_folder_preview',
+  'google_business_place_id_lookup',
+  'google_business_list_locations_preview',
   'create_support_ticket',
   'create_report_problem_ticket',
   'create_ticket',
@@ -2669,6 +2677,171 @@ async function viewParentVisibleNotesTool(payload) {
   });
 }
 
+function compactList(value, limit = 8) {
+  return Array.isArray(value) ? value.slice(0, limit) : [];
+}
+
+function safePreviewSummary(actionId, preview = {}) {
+  const blockers = compactList([
+    ...(Array.isArray(preview.blockers) ? preview.blockers : []),
+    preview.blocker,
+  ].filter(Boolean), 8);
+  const base = {
+    action_id: actionId,
+    executed: false,
+    dry_run_only: true,
+    no_send: true,
+    connector: preview.connector || null,
+    connector_ready: Boolean(preview.connector_ready),
+    workspace_key: preview.workspace_key || RABBI_WORKSPACE_KEY,
+    external_write_performed: false,
+    external_read_performed: false,
+    google_calendar_write_performed: false,
+    google_classroom_write_performed: false,
+    google_business_profile_api_used: false,
+    live_google_api_used: false,
+    raw_external_ids_returned: false,
+    raw_urls_returned: false,
+    body_preview_returned: false,
+    blockers,
+    required_external_inputs: compactList(preview.required_external_inputs, 8),
+    next_confirmation: compactText(preview.next_confirmation || '', 360) || null,
+  };
+  if (actionId === 'calendar_batch_launch_plan_preview') {
+    return {
+      ...base,
+      calendar_batch_preview_created: Boolean(preview.calendar_batch_preview_created),
+      program: preview.program || null,
+      start_date: preview.start_date || null,
+      weeks: preview.weeks || null,
+      timezone: preview.timezone || null,
+      class_time: preview.class_time || null,
+      item_count: preview.item_count || 0,
+      items: compactList(preview.items, 20).map((item) => ({
+        week: item.week,
+        type: item.type || null,
+        title: item.title || null,
+        date: item.date || null,
+        start_at: item.start_at || null,
+        visibility: item.visibility || null,
+      })),
+    };
+  }
+  if (actionId === 'classroom_topic_material_preview') {
+    return {
+      ...base,
+      classroom_topic_material_preview_created: Boolean(preview.classroom_topic_material_preview_created),
+      classroom_read_performed: false,
+      classroom_write_performed: false,
+      course_name: preview.course_name || null,
+      topic_name: preview.topic_name || null,
+      material_title: preview.material_title || null,
+      source_type: preview.source_type || null,
+      planned_classroom_action: preview.planned_classroom_action || null,
+      topic_lookup_policy: preview.topic_lookup_policy || null,
+    };
+  }
+  if (actionId.startsWith('google_drive_')) {
+    return {
+      ...base,
+      drive_action: preview.drive_action || null,
+      query: preview.query || null,
+      title: preview.title || null,
+      folder_name: preview.folder_name || null,
+      missing_connection_task_needed: Boolean(preview.missing_connection_task_needed),
+      scope_policy: preview.scope_policy || null,
+      planned_result_fields: compactList(preview.planned_result_fields, 8),
+    };
+  }
+  if (actionId.startsWith('google_business_')) {
+    return {
+      ...base,
+      provider_name: preview.provider_name || null,
+      query: preview.query || null,
+      place_id_found_from_input: Boolean(preview.place_id_found_from_input),
+      place_id_needs_live_lookup: Boolean(preview.place_id_needs_live_lookup),
+      planned_external_adapter: preview.planned_external_adapter || null,
+      planned_google_business_action: preview.planned_google_business_action || null,
+      planned_result_fields: compactList(preview.planned_result_fields, 8),
+    };
+  }
+  return base;
+}
+
+async function runRabbiPreviewActionTool({ args, context, db, deps, tool }, actionId, label) {
+  const { projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const inputs = {
+    ...args,
+    workspace_key: workspaceKey,
+    project_key: projectKey,
+  };
+  const result = await runAction({
+    action_id: actionId,
+    inputs,
+    dry_run: true,
+    approved: false,
+    source: 'rabbi_helper_preview',
+    actor: {
+      user_id: context.userName || context.userId || 'rabbi_helper',
+      role: 'system',
+      workspace_id: workspaceKey,
+    },
+  }, {
+    db,
+    source: 'rabbi_helper_preview',
+    actor: {
+      user_id: context.userName || context.userId || 'rabbi_helper',
+      role: 'system',
+      workspace_id: workspaceKey,
+    },
+  });
+  const preview = safePreviewSummary(actionId, redactValue(result.preview || result.result || {}));
+  return helperResultCard({
+    tool: tool?.name || actionId,
+    recordType: 'helper_audit',
+    recordId: null,
+    label,
+    summary: `${label} created as a scoped dry-run preview. No external read, write, send, sync, upload, publish, credential, payment, or access change was performed.`,
+    url: `/operations?view=settings&section=google_workspace&workspace=${workspaceKey}`,
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      delegated_action_id: actionId,
+      action_success: Boolean(result.success),
+      approval_required: Boolean(result.approval_required),
+      action_audit_log_id: result.audit_log?.action_run_id || null,
+      preview,
+    },
+  });
+}
+
+async function calendarBatchLaunchPlanPreviewTool(payload) {
+  return runRabbiPreviewActionTool(payload, 'calendar_batch_launch_plan_preview', 'One Time launch calendar preview');
+}
+
+async function classroomTopicMaterialPreviewTool(payload) {
+  return runRabbiPreviewActionTool(payload, 'classroom_topic_material_preview', 'Classroom topic material preview');
+}
+
+async function googleDriveFindFilePreviewTool(payload) {
+  return runRabbiPreviewActionTool(payload, 'google_drive_find_file_preview', 'Google Drive file search preview');
+}
+
+async function googleDriveCreateDocPreviewTool(payload) {
+  return runRabbiPreviewActionTool(payload, 'google_drive_create_doc_preview', 'Google Drive doc creation preview');
+}
+
+async function googleDriveCreateFolderPreviewTool(payload) {
+  return runRabbiPreviewActionTool(payload, 'google_drive_create_folder_preview', 'Google Drive folder creation preview');
+}
+
+async function googleBusinessPlaceIdLookupTool(payload) {
+  return runRabbiPreviewActionTool(payload, 'google_business_place_id_lookup', 'Google Business Place ID preview');
+}
+
+async function googleBusinessListLocationsPreviewTool(payload) {
+  return runRabbiPreviewActionTool(payload, 'google_business_list_locations_preview', 'Google Business locations preview');
+}
+
 async function createStudentTool({ args, context, deps, db }) {
   const project = await deps.resolveProjectFromInput({ project_key: args.project_key || context.projectKey || 'bna' }, db);
   deps.assertProjectAccess(context.req, project);
@@ -3524,6 +3697,113 @@ function buildToolRegistry(deps = {}) {
         project_key: { type: 'string', maxLength: 120 },
       },
     }, viewParentVisibleNotesTool),
+    makeDefinition({
+      name: 'calendar_batch_launch_plan_preview',
+      description: 'Preview a scoped One Time launch calendar batch without creating internal events or writing to Google Calendar.',
+      category: 'calendar',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        program: { type: 'string', maxLength: 180 },
+        start_date: { type: 'string', maxLength: 40 },
+        start_at: { type: 'string', maxLength: 80 },
+        weeks: { type: 'integer', default: 8 },
+        class_time: { type: 'string', maxLength: 40 },
+        timezone: { type: 'string', maxLength: 120 },
+        notes: { type: 'string', maxLength: 2000 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, calendarBatchLaunchPlanPreviewTool),
+    makeDefinition({
+      name: 'classroom_topic_material_preview',
+      description: 'Preview a scoped Classroom topic/material payload without reading or writing Google Classroom.',
+      category: 'calendar',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        course_id: { type: 'string', maxLength: 120 },
+        course_name: { type: 'string', maxLength: 180 },
+        topic_id: { type: 'string', maxLength: 120 },
+        topic_name: { type: 'string', maxLength: 120 },
+        material_title: { type: 'string', maxLength: 180 },
+        material_url: { type: 'string', maxLength: 400 },
+        description: { type: 'string', maxLength: 2000 },
+        source_type: { type: 'string', maxLength: 80 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, classroomTopicMaterialPreviewTool),
+    makeDefinition({
+      name: 'google_drive_find_file_preview',
+      description: 'Preview a scoped Google Drive file search/import plan without reading or writing Drive data.',
+      category: 'content',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        query: { type: 'string', maxLength: 220 },
+        folder_id: { type: 'string', maxLength: 180 },
+        folder_name: { type: 'string', maxLength: 180 },
+        source_stage: { type: 'string', maxLength: 120 },
+        mime_type: { type: 'string', maxLength: 120 },
+        limit: { type: 'integer', default: 10 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, googleDriveFindFilePreviewTool),
+    makeDefinition({
+      name: 'google_drive_create_doc_preview',
+      description: 'Preview a scoped Google Drive document creation plan without writing to Drive or returning raw body text.',
+      category: 'content',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        title: { type: 'string', maxLength: 180 },
+        body: { type: 'string', maxLength: 4000 },
+        folder_id: { type: 'string', maxLength: 180 },
+        folder_name: { type: 'string', maxLength: 180 },
+        related_type: { type: 'string', maxLength: 80 },
+        related_id: { type: 'integer' },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, googleDriveCreateDocPreviewTool),
+    makeDefinition({
+      name: 'google_drive_create_folder_preview',
+      description: 'Preview a scoped Google Drive folder creation plan without writing to Drive or returning raw folder IDs.',
+      category: 'content',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        folder_name: { type: 'string', maxLength: 180 },
+        parent_folder_id: { type: 'string', maxLength: 180 },
+        provider_id: { type: 'integer' },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, googleDriveCreateFolderPreviewTool),
+    makeDefinition({
+      name: 'google_business_place_id_lookup',
+      description: 'Preview a scoped Google Business Place ID lookup plan without live Maps or Google Business reads.',
+      category: 'integrations',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        query: { type: 'string', maxLength: 220 },
+        provider_name: { type: 'string', maxLength: 180 },
+        google_maps_url: { type: 'string', maxLength: 400 },
+        google_place_id: { type: 'string', maxLength: 220 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, googleBusinessPlaceIdLookupTool),
+    makeDefinition({
+      name: 'google_business_list_locations_preview',
+      description: 'Preview a scoped Google Business locations read plan without live Google Business API reads or writes.',
+      category: 'integrations',
+      sideEffectLevel: 'draft_only',
+      schema: {
+        provider_name: { type: 'string', maxLength: 180 },
+        account_id: { type: 'string', maxLength: 180 },
+        location_id: { type: 'string', maxLength: 180 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, googleBusinessListLocationsPreviewTool),
     makeDefinition({
       name: 'create_support_ticket',
       description: 'Create a first-party Operations support ticket or problem report.',

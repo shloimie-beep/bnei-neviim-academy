@@ -1650,11 +1650,12 @@
     "helper_tool_name": "classroom_topic_material_preview",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action classroom_topic_material_preview has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action classroom_topic_material_preview maps to helper tool classroom_topic_material_preview."
   },
   {
     "surface": "operations",
@@ -1665,11 +1666,12 @@
     "helper_tool_name": "google_drive_create_doc_preview",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action google_drive_create_doc_preview has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action google_drive_create_doc_preview maps to helper tool google_drive_create_doc_preview."
   },
   {
     "surface": "operations",
@@ -1695,11 +1697,12 @@
     "helper_tool_name": "google_drive_find_file_preview",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action google_drive_find_file_preview has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action google_drive_find_file_preview maps to helper tool google_drive_find_file_preview."
   },
   {
     "surface": "operations",
@@ -1710,11 +1713,12 @@
     "helper_tool_name": "google_drive_create_folder_preview",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action google_drive_create_folder_preview has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action google_drive_create_folder_preview maps to helper tool google_drive_create_folder_preview."
   },
   {
     "surface": "operations",
@@ -1725,11 +1729,12 @@
     "helper_tool_name": "google_business_list_locations_preview",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:draft_only",
       "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action google_business_list_locations_preview has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action google_business_list_locations_preview maps to helper tool google_business_list_locations_preview."
   },
   {
     "surface": "operations",
@@ -1740,11 +1745,12 @@
     "helper_tool_name": "google_business_place_id_lookup",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:draft_only",
       "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action google_business_place_id_lookup has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action google_business_place_id_lookup maps to helper tool google_business_place_id_lookup."
   },
   {
     "surface": "operations",
@@ -1755,11 +1761,12 @@
     "helper_tool_name": "calendar_batch_launch_plan_preview",
     "scope_rules": [
       "admin/super_admin or scoped workspace login required",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action calendar_batch_launch_plan_preview has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action calendar_batch_launch_plan_preview maps to helper tool calendar_batch_launch_plan_preview."
   },
   {
     "surface": "operations",
@@ -3378,11 +3385,12 @@
     "helper_tool_name": "classroom_topic_material_preview",
     "scope_rules": [
       "provider workspace only; no other providers or BNA private student data",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action classroom_topic_material_preview has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action classroom_topic_material_preview maps to helper tool classroom_topic_material_preview."
   },
   {
     "surface": "provider",
@@ -3408,11 +3416,12 @@
     "helper_tool_name": "google_drive_find_file_preview",
     "scope_rules": [
       "provider workspace only; no other providers or BNA private student data",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": false,
-    "status": "tool_needed",
-    "notes": "Typed action google_drive_find_file_preview has no direct helper wrapper yet."
+    "status": "tool_available",
+    "notes": "Typed action google_drive_find_file_preview maps to helper tool google_drive_find_file_preview."
   },
   {
     "surface": "provider",
@@ -3423,11 +3432,12 @@
     "helper_tool_name": "google_drive_create_folder_preview",
     "scope_rules": [
       "provider workspace only; no other providers or BNA private student data",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action google_drive_create_folder_preview has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action google_drive_create_folder_preview maps to helper tool google_drive_create_folder_preview."
   },
   {
     "surface": "provider",
@@ -3438,11 +3448,12 @@
     "helper_tool_name": "google_business_list_locations_preview",
     "scope_rules": [
       "provider workspace only; no other providers or BNA private student data",
+      "side_effect:draft_only",
       "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action google_business_list_locations_preview has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action google_business_list_locations_preview maps to helper tool google_business_list_locations_preview."
   },
   {
     "surface": "provider",
@@ -3453,11 +3464,12 @@
     "helper_tool_name": "google_business_place_id_lookup",
     "scope_rules": [
       "provider workspace only; no other providers or BNA private student data",
+      "side_effect:draft_only",
       "roles:super_admin,admin,operator,provider_admin,provider_manager,system"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action google_business_place_id_lookup has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action google_business_place_id_lookup maps to helper tool google_business_place_id_lookup."
   },
   {
     "surface": "provider",
@@ -3468,11 +3480,12 @@
     "helper_tool_name": "calendar_batch_launch_plan_preview",
     "scope_rules": [
       "provider workspace only; no other providers or BNA private student data",
+      "side_effect:draft_only",
       "roles:super_admin,platform_manager,support_admin,technical_agent,admin,bna_admin"
     ],
     "confirmation_required": true,
-    "status": "tool_needed",
-    "notes": "Typed action calendar_batch_launch_plan_preview has no direct helper wrapper yet."
+    "status": "requires_confirmation",
+    "notes": "Typed action calendar_batch_launch_plan_preview maps to helper tool calendar_batch_launch_plan_preview."
   },
   {
     "surface": "provider",

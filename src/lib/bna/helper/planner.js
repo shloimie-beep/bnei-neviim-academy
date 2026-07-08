@@ -125,6 +125,22 @@ function studentSummaryArgs(text = '', context = {}) {
   return args;
 }
 
+function previewScopeArgs(text = '', context = {}) {
+  return {
+    workspace_key: context.workspaceKey || undefined,
+    project_key: context.projectKey || undefined,
+    notes: compactText(text, 2000),
+  };
+}
+
+function previewDate(text = '') {
+  return firstMatch(text, /\b(\d{4}-\d{2}-\d{2})\b/);
+}
+
+function previewQuotedText(text = '') {
+  return firstMatch(text, /["“]([^"”]{2,180})["”]/) || '';
+}
+
 function extractSubject(text = '') {
   return compactText(firstMatch(text, /\bsubject\s*[:\-]\s*([^,\n]+?)(?:\s*,?\s*\bbody\b|\s*$)/i), 240);
 }
@@ -520,6 +536,81 @@ function deterministicPlan(message = '', registry, context = {}) {
       label: 'Create integration setup task',
       args: { integration_type: integrationType, reason: text, project_key: context.projectKey || undefined },
       reason: 'Integration setup request',
+    });
+  } else if (isRabbiOneTimeContext(context) && (/\b(preview|plan)\b.*\b(launch calendar|calendar batch|8[-\s]?week|eight[-\s]?week)\b/i.test(text) || /\b(launch calendar|calendar batch)\b.*\b(preview|plan)\b/i.test(text))) {
+    const args = previewScopeArgs(text, context);
+    const startDate = previewDate(text);
+    if (startDate) args.start_date = startDate;
+    const weeks = extractClassCount(text);
+    if (weeks) args.weeks = weeks;
+    args.program = previewQuotedText(text) || 'One Time Mishnayos launch';
+    reply = 'I can preview the scoped One Time launch calendar without creating internal events or writing to Google Calendar.';
+    actions.push({
+      tool: 'calendar_batch_launch_plan_preview',
+      label: 'Preview launch calendar plan',
+      args,
+      reason: 'Rabbi / One Time launch calendar preview request',
+    });
+  } else if (isRabbiOneTimeContext(context) && (/\b(preview|plan)\b.*\bclassroom\b.*\b(topic|material|coursework)\b/i.test(text) || /\bclassroom\b.*\b(topic|material|coursework)\b.*\b(preview|plan)\b/i.test(text))) {
+    const args = previewScopeArgs(text, context);
+    args.topic_name = firstMatch(text, /\btopic\s*(?:named|called|:|-)?\s*([A-Za-z0-9 .'_-]{2,80})/i) || previewQuotedText(text) || undefined;
+    args.material_title = firstMatch(text, /\bmaterial\s*(?:named|called|:|-)?\s*([A-Za-z0-9 .'_-]{2,120})/i) || undefined;
+    reply = 'I can preview a scoped Classroom topic/material payload without reading or writing Google Classroom.';
+    actions.push({
+      tool: 'classroom_topic_material_preview',
+      label: 'Preview Classroom topic material',
+      args,
+      reason: 'Rabbi / One Time Classroom topic material preview request',
+    });
+  } else if (isRabbiOneTimeContext(context) && (/\b(google\s*)?drive\b.*\b(find|search|list)\b/i.test(text) || /\b(find|search|list)\b.*\b(google\s*)?drive\b/i.test(text))) {
+    const args = previewScopeArgs(text, context);
+    args.query = previewQuotedText(text) || textAfterIntent(text, /(?:find|search|list)(?:\s+(?:for|drive|google drive))*\s*([\s\S]+)$/i, 'latest Rabbi Scheller Mishnah video').slice(0, 220);
+    reply = 'I can preview a scoped Google Drive search plan without reading or writing Drive data.';
+    actions.push({
+      tool: 'google_drive_find_file_preview',
+      label: 'Preview Drive file search',
+      args,
+      reason: 'Rabbi / One Time Drive search preview request',
+    });
+  } else if (isRabbiOneTimeContext(context) && (/\b(google\s*)?drive\b.*\b(doc|document)\b.*\b(preview|create|draft)\b/i.test(text) || /\b(create|draft|preview)\b.*\b(google\s*)?drive\b.*\b(doc|document)\b/i.test(text))) {
+    const args = previewScopeArgs(text, context);
+    args.title = previewQuotedText(text) || textAfterIntent(text, /(?:doc|document)\s*(?:called|named|title|:|-)?\s*([\s\S]+)$/i, 'Class summary draft').slice(0, 180);
+    reply = 'I can preview a scoped Google Drive document plan without writing to Drive or returning raw body text.';
+    actions.push({
+      tool: 'google_drive_create_doc_preview',
+      label: 'Preview Drive doc creation',
+      args,
+      reason: 'Rabbi / One Time Drive doc preview request',
+    });
+  } else if (isRabbiOneTimeContext(context) && (/\b(google\s*)?drive\b.*\bfolder\b.*\b(preview|create|draft)\b/i.test(text) || /\b(create|draft|preview)\b.*\b(google\s*)?drive\b.*\bfolder\b/i.test(text))) {
+    const args = previewScopeArgs(text, context);
+    args.folder_name = previewQuotedText(text) || textAfterIntent(text, /folder\s*(?:called|named|:|-)?\s*([\s\S]+)$/i, 'Provider workspace folder').slice(0, 180);
+    reply = 'I can preview a scoped Google Drive folder plan without writing to Drive or returning raw folder IDs.';
+    actions.push({
+      tool: 'google_drive_create_folder_preview',
+      label: 'Preview Drive folder creation',
+      args,
+      reason: 'Rabbi / One Time Drive folder preview request',
+    });
+  } else if (isRabbiOneTimeContext(context) && (/\b(google business|gbp|maps?|place id)\b.*\b(place id|lookup|find)\b/i.test(text) || /\bplace id\b.*\b(google business|gbp|maps?)\b/i.test(text))) {
+    const args = previewScopeArgs(text, context);
+    args.query = previewQuotedText(text) || textAfterIntent(text, /(?:lookup|find|place id)(?:\s+(?:for|on|in))*\s*([\s\S]+)$/i, 'Rabbi Scheller One Time').slice(0, 220);
+    reply = 'I can preview a scoped Google Business Place ID lookup without live Maps or Google Business reads.';
+    actions.push({
+      tool: 'google_business_place_id_lookup',
+      label: 'Preview Google Business Place ID lookup',
+      args,
+      reason: 'Rabbi / One Time Google Business Place ID preview request',
+    });
+  } else if (isRabbiOneTimeContext(context) && (/\b(google business|gbp)\b.*\b(locations?|list)\b/i.test(text) || /\blist\b.*\b(google business|gbp)\b.*\blocations?\b/i.test(text))) {
+    const args = previewScopeArgs(text, context);
+    args.provider_name = previewQuotedText(text) || 'Rabbi Scheller / One Time';
+    reply = 'I can preview a scoped Google Business locations read plan without live Google Business API calls.';
+    actions.push({
+      tool: 'google_business_list_locations_preview',
+      label: 'Preview Google Business locations',
+      args,
+      reason: 'Rabbi / One Time Google Business locations preview request',
     });
   } else if (isRabbiOneTimeContext(context) && /\b(launch checklist|launch readiness|one time checklist|rabbi checklist|what still blocks launch)\b/i.test(text)) {
     reply = 'I can show the scoped One Time launch checklist without changing anything.';

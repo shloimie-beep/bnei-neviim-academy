@@ -34933,3 +34933,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - This deploy closed `REQ-20260708-086` and `REQ-20260708-098`; the later
   parent/student summary wrapper commit `17ff491b` remains a separate
   undeployed follow-up.
+
+## 2026-07-08T23:08:36+03:00 - Rabbi helper preview wrappers locally verified
+
+- Added Rabbi / OneTime dry-run preview helper wrappers for launch calendar,
+  Classroom topic/material, Google Drive file/doc/folder preview plans, and
+  Google Business Place ID/location preview plans.
+- Wired planner, permission, and provider-safe tool lists so those preview
+  requests stay scoped to `rabbi_sheller_provider` /
+  `one_time_mishnah_class`.
+- Tightened the Rabbi scope-map generator so write-shaped tools are not
+  mislabeled as read-only; the 163-contract map now shows 49 local
+  wrapper-backed contracts, 12 fallback blockers, and 102 missing wrappers.
+- Refreshed OneTime and universal action coverage artifacts and updated
+  Studio/Automation tests for the lazy subnav performance contract.
+- Verification passed: focused helper/scope/action/UI tests and full
+  `npm test` 1664/1664.
+- Remaining blockers: the 22 locally verified but undeployed wrapper contracts
+  still need clean deploy/live smoke, and all 49 wrapper-backed contracts still
+  need saved all-contract Agent Mode PASS/BLOCKED proof.

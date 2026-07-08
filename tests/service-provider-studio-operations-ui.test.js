@@ -15,7 +15,7 @@ function studioBlock() {
 test('Studio is a first-class Operations view for platform and provider workspaces', () => {
   assert.match(operations, /const STUDIO_SUBTABS = \[/);
   assert.match(operations, /let studioSection = currentView === 'studio'/);
-  assert.match(operations, /studio: \{ tabs: STUDIO_SUBTABS, active: studioSection, countSource: studioSubnavCounts\(\), label: 'Studio' \}/);
+  assert.match(operations, /studio: \(\) => \(\{ tabs: STUDIO_SUBTABS, active: studioSection, countSource: studioSubnavCounts\(\), label: 'Studio' \}\)/);
   assert.match(operations, /case 'studio': content = renderStudio\(\); break;/);
   assert.match(operations, /platform: \[[^\]]*'studio'[^\]]*\]/);
   assert.match(operations, /service_provider: \[[^\]]*'studio'[^\]]*\]/);

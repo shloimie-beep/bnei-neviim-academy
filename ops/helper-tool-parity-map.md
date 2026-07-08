@@ -5,10 +5,10 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 ## Summary
 
 - external_blocker: 26
-- requires_confirmation: 49
+- requires_confirmation: 60
 - student_safe_only: 7
-- tool_available: 61
-- tool_needed: 127
+- tool_available: 63
+- tool_needed: 114
 
 ## Surfaces
 
@@ -138,14 +138,14 @@ Generated from `src/lib/actions/registry.js`, `src/lib/bna/helper/tool-registry.
 | operations | Pause scheduled email | pause_scheduled_email | external_blocker | yes | public/operations.html |
 | operations | Post community message | post_community_message | tool_needed | no | public/operations.html |
 | operations | Preview campaign segment | preview_campaign_segment | tool_needed | yes | public/operations.html |
-| operations | Preview Classroom topic material | classroom_topic_material_preview | tool_needed | yes | public/operations.html |
-| operations | Preview Drive Doc creation | google_drive_create_doc_preview | tool_needed | yes | public/operations.html |
+| operations | Preview Classroom topic material | classroom_topic_material_preview | requires_confirmation | yes | public/operations.html |
+| operations | Preview Drive Doc creation | google_drive_create_doc_preview | requires_confirmation | yes | public/operations.html |
 | operations | Preview Drive file move | google_drive_move_file_preview | tool_needed | yes | public/operations.html |
-| operations | Preview Drive file search | google_drive_find_file_preview | tool_needed | no | public/operations.html |
-| operations | Preview Drive folder creation | google_drive_create_folder_preview | tool_needed | yes | public/operations.html |
-| operations | Preview Google Business locations | google_business_list_locations_preview | tool_needed | yes | public/operations.html |
-| operations | Preview Google Business Place ID lookup | google_business_place_id_lookup | tool_needed | yes | public/operations.html |
-| operations | Preview launch calendar plan | calendar_batch_launch_plan_preview | tool_needed | yes | public/operations.html |
+| operations | Preview Drive file search | google_drive_find_file_preview | tool_available | no | public/operations.html |
+| operations | Preview Drive folder creation | google_drive_create_folder_preview | requires_confirmation | yes | public/operations.html |
+| operations | Preview Google Business locations | google_business_list_locations_preview | requires_confirmation | yes | public/operations.html |
+| operations | Preview Google Business Place ID lookup | google_business_place_id_lookup | requires_confirmation | yes | public/operations.html |
+| operations | Preview launch calendar plan | calendar_batch_launch_plan_preview | requires_confirmation | yes | public/operations.html |
 | operations | Preview One Time member-library publish package | preview_one_time_member_library_publish_package | external_blocker | yes | public/operations.html |
 | operations | preview send | preview_send | external_blocker | yes | tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md |
 | operations | Preview social schedule package | preview_social_schedule_package | external_blocker | yes | public/operations.html |

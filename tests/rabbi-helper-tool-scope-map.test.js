@@ -102,6 +102,42 @@ test('Rabbi helper scope map keeps privacy, external writes, and student-parent 
   }
 });
 
+test('Rabbi helper scope map does not classify write-shaped missing wrappers as read-only', () => {
+  const expectedPolicies = new Map([
+    ['ask_for_help', 'internal_write'],
+    ['capture_provider_google_business_link', 'internal_write'],
+    ['distill_ramble', 'draft_only'],
+    ['generate_social_posts_from_newsletter', 'draft_only'],
+    ['generate_student_worksheet', 'draft_only'],
+    ['link_prompt_to_goal', 'internal_write'],
+    ['move_lead_stage', 'approval_gated_internal_state_change'],
+    ['move_task_workspace', 'approval_gated_internal_state_change'],
+    ['post_community_message', 'approval_gated_external_write'],
+    ['queue_telegram_report', 'approval_gated_external_write'],
+    ['record_agent_result', 'internal_write'],
+    ['request_provider_contact', 'internal_write'],
+    ['retitle_task_naturally', 'internal_write'],
+    ['review_moderated_question', 'approval_gated_internal_state_change'],
+    ['save_newsletter_revision', 'internal_write'],
+    ['submit_checkoff', 'internal_write'],
+    ['submit_question', 'internal_write'],
+    ['submit_student_question_for_moderation', 'internal_write'],
+    ['submit_worksheet_answer', 'internal_write'],
+    ['sync_google_calendar', 'approval_gated_external_write'],
+    ['sync_google_classroom', 'approval_gated_external_write'],
+    ['upload_provider_asset_reference', 'internal_write'],
+  ]);
+
+  for (const [toolName, expectedPolicy] of expectedPolicies.entries()) {
+    const contracts = scopeMap.contracts.filter((contract) => contract.source.helper_tool_name === toolName);
+    assert.ok(contracts.length > 0, `${toolName} should remain represented in the Rabbi scope map`);
+    for (const contract of contracts) {
+      assert.equal(contract.rabbi_contract.action_policy, expectedPolicy, `${toolName} should be ${expectedPolicy}`);
+      assert.notEqual(contract.rabbi_contract.action_policy, 'read_only', `${toolName} should not be read-only`);
+    }
+  }
+});
+
 test('Rabbi helper scope map includes natural-language and Agent Mode probes for every contract', () => {
   for (const contract of scopeMap.contracts) {
     const rabbi = contract.rabbi_contract;
@@ -159,7 +195,7 @@ test('Rabbi helper scope map marks the read-only runtime batch as locally wrappe
     assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
   }
 
-  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 36);
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 49);
 });
 
 test('Rabbi helper scope map marks parent and student summary wrappers as locally wrapper-backed', () => {
@@ -183,6 +219,30 @@ test('Rabbi helper scope map marks parent and student summary wrappers as locall
     assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
     assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
     assert.ok(contract.rabbi_contract.negative_tests.some((check) => /unrelated parent, family, student/i.test(check)));
+  }
+});
+
+test('Rabbi helper scope map marks Google and classroom preview wrappers as locally wrapper-backed', () => {
+  const previewNames = [
+    'calendar_batch_launch_plan_preview',
+    'classroom_topic_material_preview',
+    'google_drive_find_file_preview',
+    'google_drive_create_doc_preview',
+    'google_drive_create_folder_preview',
+    'google_business_place_id_lookup',
+    'google_business_list_locations_preview',
+  ];
+  const previewContracts = scopeMap.contracts.filter((contract) => previewNames.includes(contract.source.helper_tool_name));
+  assert.equal(previewContracts.length, 13);
+
+  for (const contract of previewContracts) {
+    assert.equal(contract.rabbi_contract.action_policy, 'draft_only');
+    assert.ok([
+      'safe_without_confirmation_after_scope_check',
+      'explicit_confirmation_required',
+    ].includes(contract.rabbi_contract.confirmation_policy));
+    assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
+    assert.match(contract.rabbi_contract.agent_mode_probe.expected_result, /draft|preview|no external/i);
   }
 });
 
