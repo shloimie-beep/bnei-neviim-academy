@@ -88,8 +88,9 @@ not authorize active GHL runtime paths.
   local mapping/validator batch passed focused verification; the remaining
   autonomy blocker is implementing the 163 scoped helper wrappers/planner
   paths/result cards and saving live Agent Mode proof after deploy.
-- [ ] `RAW-20260708-023` / `REQ-20260708-081` through
-  `REQ-20260708-085`: Rabbi Telegram bot, super-admin support ticket dings, and
+- [ ] `RAW-20260708-023`, `RAW-20260708-029`, `RAW-20260708-031` /
+  `REQ-20260708-081` through `REQ-20260708-085`, `REQ-20260708-096`, and
+  `REQ-20260708-097`: Rabbi Telegram bot, super-admin support ticket dings, and
   Agent Mode bot/helper smoke-test loop. Register:
   `tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md`. Current
   status: super-admin support-ticket ding hooks and the Rabbi Telegram/helper
@@ -100,7 +101,9 @@ not authorize active GHL runtime paths.
   no-secret Rabbi Telegram readiness proof. Rabbi live bot startup and Rabbi
   Telegram delivery remain blocked until
   `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is supplied or inferred. Full Rabbi
-  bot/helper agent parity remains open after runtime delivery is configured.
+  bot/helper agent parity remains open; the current follow-up batch is adding
+  scoped read-only contact/communications/calendar/content helper wrappers and
+  progress-ding/Agent Mode smoke requirements.
 - [x] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
   `RAW-20260626-008` / `RAW-20260628-002` / `REQ-20260626-116` through
   `REQ-20260626-133` plus `REQ-20260628-134` through `REQ-20260628-140`:
