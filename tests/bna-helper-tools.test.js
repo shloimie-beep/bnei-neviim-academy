@@ -21,6 +21,64 @@ const { redactValue } = require('../src/lib/bna/helper/redaction');
 const server = fs.readFileSync('server.js', 'utf8');
 const operations = fs.readFileSync('public/operations.html', 'utf8');
 
+const RABBI_LOCAL_SCOPE_PRIMITIVE_TOOLS = [
+  'ask_for_help',
+  'attach_drive_file',
+  'create_accountability_note',
+  'create_goal',
+  'create_lesson',
+  'link_prompt_to_goal',
+  'mark_attendance',
+  'mark_pending_received',
+  'mark_task_verified',
+  'parse_recording',
+  'reprocess_decision',
+  'submit_question',
+  'update_goal_progress',
+  'update_goal_status',
+  'create_class_session',
+  'create_assignment',
+  'create_student_goal',
+  'create_student_question',
+  'create_student_question_queue',
+  'create_worksheet_from_transcript',
+  'reset_student_login',
+  'submit_checkoff',
+  'submit_worksheet_answer',
+  'update_student',
+];
+
+const RABBI_LOCAL_SCOPE_PRIMITIVE_ARGS = {
+  title: 'Scoped One Time packet',
+  issue: 'Private issue body should not return raw.',
+  task_id: 44,
+  pending_id: 45,
+  student_id: 11,
+  assignment_id: 22,
+  goal_id: 33,
+  lesson_id: 34,
+  prompt_id: 35,
+  recording_id: 55,
+  class_session_id: 66,
+  drive_file_id: 'private-drive-id',
+  drive_url: 'https://drive.example/private',
+  topic: 'Mishnah Peah',
+  note: 'Private note should not return raw.',
+  notes: 'Private notes should not return raw.',
+  question_text: 'Private question body should not return raw.',
+  transcript_text: 'Private transcript should not return raw.',
+  body: 'Private worksheet answer should not return raw.',
+  attendance_status: 'present',
+  progress_percent: 80,
+  status: 'active',
+  checkoff_status: 'complete',
+  display_name: 'Student One',
+  grade: '7',
+  start_at: '2026-08-09T19:00:00+03:00',
+  workspace_key: 'rabbi_sheller_provider',
+  project_key: 'one_time_mishnah_class',
+};
+
 test('BNA Helper backend exposes HELPER-03 storage, redaction fields, and routes', () => {
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_helper_tool_audit_log/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_helper_plans/);
@@ -154,6 +212,7 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
     'select_weekly_update_hero',
     'update_provider_profile',
     'capture_provider_google_business_link',
+    ...RABBI_LOCAL_SCOPE_PRIMITIVE_TOOLS,
     'create_calendar_event_draft',
     'update_calendar_event_draft',
     'create_shoutout_draft',
@@ -189,6 +248,7 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
       goal: 'Draft parent campaign',
       segment_name: 'One Time parents',
       body: 'Draft body',
+      ...RABBI_LOCAL_SCOPE_PRIMITIVE_ARGS,
       student_id: 11,
       assignment_id: 22,
       workspace_key: 'rabbi_sheller_provider',
@@ -397,6 +457,7 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
     'select_weekly_update_hero',
     'update_provider_profile',
     'capture_provider_google_business_link',
+    ...RABBI_LOCAL_SCOPE_PRIMITIVE_TOOLS,
     'create_calendar_event_draft',
     'update_calendar_event_draft',
     'create_shoutout_draft',
@@ -433,6 +494,7 @@ test('BNA Helper permissions keep project-scoped users in task and decision tool
         goal: 'Draft parent campaign',
         segment_name: 'One Time parents',
         body: 'Draft body',
+        ...RABBI_LOCAL_SCOPE_PRIMITIVE_ARGS,
         student_id: 11,
         assignment_id: 22,
         workspace_key: 'rabbi_sheller_provider',
@@ -634,6 +696,38 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(deterministicPlan('select weekly update 8 as hero', registry, oneTimeContext).actions[0].tool, 'select_weekly_update_hero');
   assert.equal(deterministicPlan('update provider profile for provider 7 summary: private One Time class', registry, oneTimeContext).actions[0].tool, 'update_provider_profile');
   assert.equal(deterministicPlan('capture provider 7 Google Business link https://maps.google.com/?cid=12345', registry, oneTimeContext).actions[0].tool, 'capture_provider_google_business_link');
+  for (const [message, expectedTool] of [
+    ['ask for help with task 44 about source upload', 'ask_for_help'],
+    ['attach Drive file private-drive-id to task 44', 'attach_drive_file'],
+    ['create accountability note for student 11 about review effort', 'create_accountability_note'],
+    ['create goal Finish Peah review', 'create_goal'],
+    ['create lesson Peah review', 'create_lesson'],
+    ['link prompt 35 to goal 33', 'link_prompt_to_goal'],
+    ['mark attendance for student 11 present', 'mark_attendance'],
+    ['mark pending 45 received', 'mark_pending_received'],
+    ['mark task 44 verified', 'mark_task_verified'],
+    ['parse recording 55', 'parse_recording'],
+    ['reprocess decision task 44', 'reprocess_decision'],
+    ['submit question for student 11: why does the Mishnah start here', 'submit_question'],
+    ['update goal 33 progress 80', 'update_goal_progress'],
+    ['update goal 33 status active', 'update_goal_status'],
+    ['create Rabbi class session "Week 2" on 2026-08-09', 'create_class_session'],
+    ['create assignment for student 11 Review Peah', 'create_assignment'],
+    ['create student goal for student 11 Finish Peah', 'create_student_goal'],
+    ['create student question for student 11: what does Peah mean', 'create_student_question'],
+    ['create student question queue for student 11 topic Peah', 'create_student_question_queue'],
+    ['create worksheet from transcript for student 11 assignment 22', 'create_worksheet_from_transcript'],
+    ['reset student 11 login', 'reset_student_login'],
+    ['submit checkoff for student 11 assignment 22 complete', 'submit_checkoff'],
+    ['submit worksheet answer for student 11 assignment 22 answer: reviewed it', 'submit_worksheet_answer'],
+    ['update student 11 display name to Student One', 'update_student'],
+  ]) {
+    assert.equal(
+      deterministicPlan(message, registry, oneTimeContext).actions[0].tool,
+      expectedTool,
+      message
+    );
+  }
   assert.equal(deterministicPlan('draft calendar event "Week 1 Mishnah class" on 2026-08-01', registry, oneTimeContext).actions[0].tool, 'create_calendar_event_draft');
   assert.equal(deterministicPlan('update calendar event 44 draft to 2026-08-02', registry, oneTimeContext).actions[0].tool, 'update_calendar_event_draft');
   assert.equal(deterministicPlan('draft shoutout for student 11 about review effort', registry, oneTimeContext).actions[0].tool, 'create_shoutout_draft');
@@ -1675,6 +1769,51 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
   assert.equal(googleBusinessLink.data.preview.google_place_id_returned, false);
   assertScopedInternalPreview(googleBusinessLink);
 
+  const assertLocalScopedRequest = (result) => {
+    assert.equal(result.data.local_scope_request_only, true);
+    assert.equal(result.data.scope.workspace_key, 'rabbi_sheller_provider');
+    assert.equal(result.data.scope.project_key, 'one_time_mishnah_class');
+    assert.equal(result.data.preview.local_scope_request_created, true);
+    assert.equal(result.data.preview.workspace_key, 'rabbi_sheller_provider');
+    assert.equal(result.data.preview.project_key, 'one_time_mishnah_class');
+    assert.equal(result.data.preview.official_record_mutated, false);
+    assert.equal(result.data.preview.local_database_write_performed, false);
+    assert.equal(result.data.preview.external_read_performed, false);
+    assert.equal(result.data.preview.body_returned, false);
+    assert.equal(result.data.preview.note_returned, false);
+    assert.equal(result.data.preview.question_text_returned, false);
+    assert.equal(result.data.preview.transcript_text_returned, false);
+    assert.equal(result.data.preview.private_payload_returned, false);
+    assert.equal(result.data.preview.raw_machine_payload_returned, false);
+    assert.equal(result.data.preview.drive_file_id_returned, false);
+    assert.equal(result.data.preview.drive_url_returned, false);
+    assert.equal(result.data.preview.access_reset_performed, false);
+    assert.equal(result.data.preview.login_reset_performed, false);
+    assert.equal(result.data.preview.student_access_code_returned, false);
+    assert.equal(result.data.preview.parent_notification_sent, false);
+    assert.equal(result.data.preview.public_post_created, false);
+    assert.equal(result.data.preview.sent, false);
+    assert.equal(result.data.preview.published, false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.data.preview, 'body'), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.data.preview, 'note'), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.data.preview, 'question_text'), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.data.preview, 'transcript_text'), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.data.preview, 'drive_file_id'), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.data.preview, 'drive_url'), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.data.preview, 'student_access_code'), false);
+    assertScopedInternalPreview(result);
+  };
+
+  for (const toolName of RABBI_LOCAL_SCOPE_PRIMITIVE_TOOLS) {
+    const result = await registry.execute(toolName, RABBI_LOCAL_SCOPE_PRIMITIVE_ARGS, context, db);
+    assert.equal(result.tool, toolName);
+    assertLocalScopedRequest(result);
+    if (['reset_student_login', 'update_student'].includes(toolName)) {
+      assert.equal(result.data.approval_required, true);
+      assert.equal(result.data.preview.status, 'approval_required_before_internal_write');
+    }
+  }
+
   await assert.rejects(
     () => registry.execute('draft_email_campaign', {
       goal: 'Cross scope campaign',
@@ -1730,6 +1869,14 @@ test('Rabbi helper alias wrappers delegate to scoped runtime primitives and reje
       workspace_key: 'bna',
       project_key: 'one_time_mishnah_class',
       dry_run: true,
+    }, context, db),
+    /workspace scope mismatch/
+  );
+  await assert.rejects(
+    () => registry.execute('create_assignment', {
+      ...RABBI_LOCAL_SCOPE_PRIMITIVE_ARGS,
+      workspace_key: 'bna',
+      project_key: 'one_time_mishnah_class',
     }, context, db),
     /workspace scope mismatch/
   );

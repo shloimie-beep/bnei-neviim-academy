@@ -28,7 +28,7 @@ Generated from `ops/helper-tool-parity-map.json` for the Rabbi Scheller / One Ti
 | Action policy | {"internal_write":88,"approval_gated_external_write":9,"approval_gated_internal_state_change":9,"draft_only":35,"read_only":22} |
 | Side effect | {"internal_write":88,"external_write":9,"destructive_or_state_change":9,"draft_only":35,"read_only":22} |
 | Capability group | {"tasks":51,"communications":11,"operations":29,"calendar":14,"contacts_crm":9,"studio":17,"parents":25,"provider_setup":10,"students":29,"agent_ops":8,"provider":11} |
-| Implementation status | {"tool_wrapper_available_local":97,"tool_wrapper_missing":54,"registered_fallback_only_blocker":12} |
+| Implementation status | {"tool_wrapper_available_local":121,"tool_wrapper_missing":30,"registered_fallback_only_blocker":12} |
 
 ## Subaccount Template
 

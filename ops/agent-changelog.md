@@ -35127,3 +35127,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers: 54 missing wrappers, 12 fallback/setup blockers,
   deploy/live smoke for 31 local-only wrappers, and saved all-163 Agent Mode
   PASS/BLOCKED proof.
+
+## 2026-07-09T00:17:04+03:00 - Rabbi Helper Scoped Packet Wrappers Locally Verified
+
+- Registered 24 scoped Rabbi / OneTime local packet wrappers for help
+  requests, Drive attachment references, accountability notes, goals, lessons,
+  attendance, pending receipts, task verification, recording parse requests,
+  private questions, student questions, worksheet-from-transcript requests,
+  checkoffs, worksheet answers, student profile update packets, and
+  login-reset request packets.
+- These wrappers return scoped local request packets only. They recompute
+  `rabbi_sheller_provider` / `one_time_mishnah_class`, reject BNA workspace
+  substitution, and do not mutate official records, reset live logins, return
+  student access codes, read Drive, publish, send, sync, upload, charge, grant
+  access, write credentials, or call external providers during verification.
+- Refreshed the Rabbi scope map: 163 contracts, 121 local wrapper-backed
+  contracts, 30 missing wrappers, and 12 registered fallback/setup blockers.
+- Verification passed: `node --check` for the touched helper/generator files,
+  `node scripts/generate-rabbi-helper-tool-scope-map.mjs`, focused
+  helper/scope/Agent Review tests 39/39, and `git diff --check` with
+  line-ending warnings only.
+- Remaining blockers: 30 missing wrappers, 12 fallback/setup blockers,
+  deploy/live smoke for 55 local-only wrappers after the Railway failure path
+  is investigated, and saved all-163 Agent Mode PASS/BLOCKED proof.

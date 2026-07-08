@@ -374,9 +374,366 @@ function extractTaskUpdateArgs(text = '', context = {}) {
   return Object.keys(args).length > 1 ? args : null;
 }
 
+function extractGenericId(text = '', labels = []) {
+  for (const label of labels) {
+    const escaped = String(label).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const value = firstMatch(text, new RegExp(`\\b${escaped}\\s*#?\\s*(\\d+)\\b`, 'i'));
+    if (value) return Number(value);
+  }
+  const fallback = firstMatch(text, /\b#\s*(\d+)\b/i);
+  return fallback ? Number(fallback) : null;
+}
+
+function localPacketTitle(text = '', pattern, fallback = 'Scoped One Time helper packet') {
+  return previewQuotedText(text) || textAfterIntent(text, pattern, fallback);
+}
+
+function rabbiLocalScopePrimitivePlan(text = '', context = {}) {
+  if (!isRabbiOneTimeContext(context)) return null;
+  const lower = String(text || '').toLowerCase();
+  const scope = previewScopeArgs(text, context);
+  const taskId = extractTaskIdOrSelected(text, context) || undefined;
+  const studentId = extractStudentIdOrSelected(text, context) || undefined;
+  const assignmentId = extractGenericId(text, ['assignment']) || undefined;
+  const goalId = extractGenericId(text, ['goal']) || undefined;
+  const pendingId = extractGenericId(text, ['pending']) || undefined;
+  const promptId = extractGenericId(text, ['prompt']) || undefined;
+  const recordingId = extractGenericId(text, ['recording']) || undefined;
+  const lessonId = extractGenericId(text, ['lesson']) || undefined;
+  const classSessionId = extractGenericId(text, ['class session', 'session']) || undefined;
+  const status = firstMatch(text, /\bstatus\s*(?:to|=|:|-)?\s*(active|paused|done|complete|completed|blocked|archived|in_progress|in progress|open|closed)\b/i)
+    || firstMatch(text, /\b(active|paused|done|complete|completed|blocked|archived|in_progress|in progress|open|closed)\b$/i);
+  const progress = firstMatch(text, /\b(?:progress|percent)\s*(?:to|=|:|-)?\s*(\d{1,3})\b/i);
+
+  const makePlan = (tool, label, args, reason, reply) => ({
+    tool,
+    label,
+    args: {
+      ...scope,
+      ...Object.fromEntries(Object.entries(args).filter(([, value]) => value !== undefined && value !== null && value !== '')),
+    },
+    reason,
+    reply,
+  });
+
+  if (/\bask for help\b|\brequest help\b|\bhelp me with\b/i.test(text)) {
+    return makePlan(
+      'ask_for_help',
+      'Ask for help',
+      {
+        task_id: taskId,
+        title: localPacketTitle(text, /(?:ask for help|request help|help me with)\s*(?:task\s*#?\d+)?\s*(?:about|with|:|-)?\s*([\s\S]+)$/i, 'One Time help request'),
+        issue: text,
+      },
+      'Rabbi / One Time scoped help request packet',
+      'I can prepare a scoped One Time help packet without sending or escalating externally.'
+    );
+  }
+
+  if (/\battach\b.*\b(drive file|google drive|file)\b/i.test(text)) {
+    return makePlan(
+      'attach_drive_file',
+      'Attach Drive file',
+      {
+        task_id: taskId,
+        drive_file_id: firstMatch(text, /\b(?:drive file|file)\s*#?\s*([A-Za-z0-9_-]{6,})\b/i) || undefined,
+        drive_url: firstMatch(text, /(https?:\/\/[^\s]+)/i) || undefined,
+        title: previewQuotedText(text) || undefined,
+      },
+      'Rabbi / One Time scoped Drive attachment packet',
+      'I can prepare a scoped Drive attachment packet without reading Drive or returning raw Drive IDs.'
+    );
+  }
+
+  if (/\b(create|add|save)\b.*\baccountability note\b/i.test(text)) {
+    return makePlan(
+      'create_accountability_note',
+      'Create accountability note',
+      {
+        student_id: studentId,
+        title: previewQuotedText(text) || 'One Time accountability note',
+        note: textAfterIntent(text, /(?:accountability note)\s*(?:for)?\s*(?:student\s*#?\d+)?\s*(?:about|:|-)?\s*([\s\S]+)$/i, text),
+      },
+      'Rabbi / One Time scoped accountability note packet',
+      'I can prepare a scoped accountability note packet without exposing raw private notes.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\bgoal\b/i.test(text) && !/\bstudent goal\b/i.test(text)) {
+    return makePlan(
+      'create_goal',
+      'Create goal',
+      {
+        student_id: studentId,
+        title: localPacketTitle(text, /(?:goal)\s*(?:for)?\s*(?:student\s*#?\d+)?\s*(?:called|named|about|:|-)?\s*([\s\S]+)$/i, 'One Time goal'),
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped goal packet',
+      'I can prepare a scoped One Time goal packet without changing access or external systems.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\blesson\b/i.test(text)) {
+    return makePlan(
+      'create_lesson',
+      'Create lesson',
+      {
+        class_session_id: classSessionId,
+        title: localPacketTitle(text, /(?:lesson)\s*(?:for|about|called|named|:|-)?\s*([\s\S]+)$/i, 'One Time lesson'),
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped lesson packet',
+      'I can prepare a scoped lesson packet without publishing public content.'
+    );
+  }
+
+  if (/\blink\b.*\bprompt\b.*\bgoal\b|\bprompt\b.*\bgoal\b.*\blink\b/i.test(text)) {
+    return makePlan(
+      'link_prompt_to_goal',
+      'Link prompt to goal',
+      { prompt_id: promptId, goal_id: goalId },
+      'Rabbi / One Time scoped prompt-goal link packet',
+      'I can prepare a scoped prompt-to-goal link without copying raw prompt bodies.'
+    );
+  }
+
+  if (/\bmark\b.*\battendance\b/i.test(text)) {
+    return makePlan(
+      'mark_attendance',
+      'Mark attendance',
+      {
+        student_id: studentId,
+        class_session_id: classSessionId,
+        attendance_status: firstMatch(text, /\b(present|absent|late|excused)\b/i) || undefined,
+      },
+      'Rabbi / One Time scoped attendance packet',
+      'I can prepare a scoped attendance packet without notifying parents or exporting rosters.'
+    );
+  }
+
+  if (/\bmark\b.*\bpending\b.*\breceived\b/i.test(text)) {
+    return makePlan(
+      'mark_pending_received',
+      'Mark pending received',
+      { pending_id: pendingId, task_id: taskId },
+      'Rabbi / One Time scoped pending-item packet',
+      'I can prepare a scoped pending-item received packet without external writes.'
+    );
+  }
+
+  if (/\bmark\b.*\btask\b.*\bverified\b|\bverify\b.*\btask\b/i.test(text)) {
+    return makePlan(
+      'mark_task_verified',
+      'Mark task verified',
+      { task_id: taskId, verification_notes: text },
+      'Rabbi / One Time scoped task verification packet',
+      'I can prepare a scoped task verification packet without touching cross-workspace tasks.'
+    );
+  }
+
+  if (/\bparse\b.*\brecording\b/i.test(text)) {
+    return makePlan(
+      'parse_recording',
+      'Parse recording',
+      {
+        recording_id: recordingId,
+        title: previewQuotedText(text) || undefined,
+        media_url: firstMatch(text, /(https?:\/\/[^\s]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped recording parse packet',
+      'I can prepare a scoped recording parse packet without returning transcript text or media URLs.'
+    );
+  }
+
+  if (/\breprocess\b.*\bdecision\b/i.test(text)) {
+    return makePlan(
+      'reprocess_decision',
+      'Reprocess decision',
+      { task_id: taskId, reason: text },
+      'Rabbi / One Time scoped decision reprocess packet',
+      'I can prepare a scoped decision reprocess packet without creating an agent job.'
+    );
+  }
+
+  if (/\bsubmit\b.*\bquestion\b/i.test(text) && !/\bmoderation|moderate\b/i.test(text)) {
+    return makePlan(
+      'submit_question',
+      'Submit question',
+      {
+        student_id: studentId,
+        question_text: textAfterIntent(text, /(?:question)\s*(?:for)?\s*(?:student\s*#?\d+)?\s*(?:about|:|-)?\s*([\s\S]+)$/i, text),
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped private question packet',
+      'I can prepare a scoped private question packet without public posting or sending a response.'
+    );
+  }
+
+  if (/\bupdate\b.*\bgoal\b.*\bprogress\b|\bgoal\b.*\bprogress\b/i.test(text)) {
+    return makePlan(
+      'update_goal_progress',
+      'Update goal progress',
+      {
+        goal_id: goalId,
+        student_id: studentId,
+        progress_percent: progress ? Number(progress) : undefined,
+      },
+      'Rabbi / One Time scoped goal-progress packet',
+      'I can prepare a scoped goal-progress packet without exposing private goal notes.'
+    );
+  }
+
+  if (/\bupdate\b.*\bgoal\b.*\bstatus\b|\bgoal\b.*\bstatus\b/i.test(text)) {
+    return makePlan(
+      'update_goal_status',
+      'Update goal status',
+      { goal_id: goalId, status: status ? status.replace(/\s+/g, '_').toLowerCase() : undefined },
+      'Rabbi / One Time scoped goal-status packet',
+      'I can prepare a scoped goal-status packet without cross-workspace goal changes.'
+    );
+  }
+
+  if (/\b(create|add|new|schedule)\b.*\brabbi class session\b/i.test(text)) {
+    return makePlan(
+      'create_class_session',
+      'Create Rabbi class session',
+      {
+        title: localPacketTitle(text, /(?:rabbi class session)\s*(?:for|about|called|named|:|-)?\s*([\s\S]+)$/i, 'One Time Rabbi class session'),
+        start_at: previewDate(text) || undefined,
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped class-session packet',
+      'I can prepare a scoped Rabbi class-session packet without calendar sync.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\bassignment\b/i.test(text) && !(/\b(create|make)\b.*\bworksheet\b.*\btranscript\b|\bworksheet from transcript\b/i.test(text))) {
+    return makePlan(
+      'create_assignment',
+      'Create assignment',
+      {
+        student_id: studentId,
+        lesson_id: lessonId,
+        title: localPacketTitle(text, /(?:assignment)\s*(?:for)?\s*(?:student\s*#?\d+)?\s*(?:about|called|named|:|-)?\s*([\s\S]+)$/i, 'One Time assignment'),
+      },
+      'Rabbi / One Time scoped assignment packet',
+      'I can prepare a scoped student assignment packet without publishing worksheet bodies.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\bstudent goal\b/i.test(text)) {
+    return makePlan(
+      'create_student_goal',
+      'Create student goal',
+      {
+        student_id: studentId,
+        title: localPacketTitle(text, /(?:student goal)\s*(?:for)?\s*(?:student\s*#?\d+)?\s*(?:about|called|named|:|-)?\s*([\s\S]+)$/i, 'One Time student goal'),
+      },
+      'Rabbi / One Time scoped student goal packet',
+      'I can prepare a scoped student goal packet without exposing private notes.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\bstudent question\b/i.test(text) && !/\bmoderation|moderate|queue\b/i.test(text)) {
+    return makePlan(
+      'create_student_question',
+      'Create student question',
+      {
+        student_id: studentId,
+        question_text: textAfterIntent(text, /(?:student question)\s*(?:for)?\s*(?:student\s*#?\d+)?\s*(?:about|:|-)?\s*([\s\S]+)$/i, text),
+      },
+      'Rabbi / One Time scoped student question packet',
+      'I can prepare a scoped student question packet without public posting.'
+    );
+  }
+
+  if (/\b(create|add|make)\b.*\bstudent question queue\b|\bquestion queue\b/i.test(text)) {
+    return makePlan(
+      'create_student_question_queue',
+      'Create student question queue',
+      {
+        student_id: studentId,
+        title: previewQuotedText(text) || 'One Time question queue',
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped question-queue packet',
+      'I can prepare a scoped student question queue without exposing student identity broadly.'
+    );
+  }
+
+  if (/\b(create|make)\b.*\bworksheet\b.*\btranscript\b|\bworksheet from transcript\b/i.test(text)) {
+    return makePlan(
+      'create_worksheet_from_transcript',
+      'Create worksheet from transcript',
+      {
+        student_id: studentId,
+        assignment_id: assignmentId,
+        topic: firstMatch(text, /\btopic\s*[:=-]\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped worksheet-from-transcript packet',
+      'I can prepare a scoped worksheet-from-transcript packet without returning transcript or worksheet bodies.'
+    );
+  }
+
+  if (/\breset\b.*\bstudent\b.*\blogin\b|\bstudent\b.*\blogin\b.*\breset\b/i.test(text)) {
+    return makePlan(
+      'reset_student_login',
+      'Reset student login',
+      { student_id: studentId, reason: text },
+      'Rabbi / One Time scoped login reset packet',
+      'I can prepare a scoped login-reset packet, but it will not generate or return access codes.'
+    );
+  }
+
+  if (/\bsubmit\b.*\bcheckoff\b|\bcheckoff\b.*\bsubmit\b/i.test(text)) {
+    return makePlan(
+      'submit_checkoff',
+      'Submit checkoff',
+      {
+        student_id: studentId,
+        assignment_id: assignmentId,
+        checkoff_status: firstMatch(text, /\b(pass|passed|complete|completed|needs_review|needs review|redo)\b/i) || undefined,
+      },
+      'Rabbi / One Time scoped checkoff packet',
+      'I can prepare a scoped student checkoff packet without notifying parents automatically.'
+    );
+  }
+
+  if (/\bsubmit\b.*\bworksheet answer\b|\bworksheet answer\b.*\bsubmit\b/i.test(text)) {
+    return makePlan(
+      'submit_worksheet_answer',
+      'Submit worksheet answer',
+      {
+        student_id: studentId,
+        assignment_id: assignmentId,
+        body: textAfterIntent(text, /(?:worksheet answer)\s*(?:for)?\s*(?:student\s*#?\d+)?\s*(?:assignment\s*#?\d+)?\s*(?:answer|body|:|-)?\s*([\s\S]+)$/i, text),
+      },
+      'Rabbi / One Time scoped worksheet-answer packet',
+      'I can prepare a scoped worksheet-answer packet without returning raw answer bodies.'
+    );
+  }
+
+  if (/\bupdate\b.*\bstudent\b/i.test(text)) {
+    return makePlan(
+      'update_student',
+      'Update student',
+      {
+        student_id: studentId,
+        display_name: firstMatch(text, /\b(?:display name|name)\s*(?:to|=|:|-)\s*([^,\n]+)/i) || previewQuotedText(text) || undefined,
+        grade: firstMatch(text, /\bgrade\s*(?:to|=|:|-)?\s*([^,\n]+)/i) || undefined,
+      },
+      'Rabbi / One Time scoped student update packet',
+      'I can prepare a scoped student profile update packet without exposing parent contact or access codes.'
+    );
+  }
+
+  return null;
+}
+
 function deterministicPlan(message = '', registry, context = {}) {
   const text = compactText(redactText(message), 4000);
   const lower = text.toLowerCase();
+  const localScopePrimitivePlan = rabbiLocalScopePrimitivePlan(text, context);
   const actions = [];
   let reply = 'I can help with that.';
 
@@ -433,6 +790,14 @@ function deterministicPlan(message = '', registry, context = {}) {
         google_place_id: placeId || undefined,
       },
       reason: 'Rabbi / One Time provider Google Business metadata request',
+    });
+  } else if (localScopePrimitivePlan) {
+    reply = localScopePrimitivePlan.reply;
+    actions.push({
+      tool: localScopePrimitivePlan.tool,
+      label: localScopePrimitivePlan.label,
+      args: localScopePrimitivePlan.args,
+      reason: localScopePrimitivePlan.reason,
     });
   } else if (/\b(capture|save|remember|raw intake|ramble|transcript|recording|goal mode|set (it|this|that) as a goal|make (it|this|that) a goal|from now on|always|never|every time|do all those things|finish everything)\b/i.test(text)) {
     const tool = scopedTool(registry, context, 'capture_ramble', 'capture_raw_intake');

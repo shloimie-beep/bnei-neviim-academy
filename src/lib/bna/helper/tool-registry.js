@@ -73,6 +73,30 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'select_weekly_update_hero',
   'update_provider_profile',
   'capture_provider_google_business_link',
+  'ask_for_help',
+  'attach_drive_file',
+  'create_accountability_note',
+  'create_goal',
+  'create_lesson',
+  'link_prompt_to_goal',
+  'mark_attendance',
+  'mark_pending_received',
+  'mark_task_verified',
+  'parse_recording',
+  'reprocess_decision',
+  'submit_question',
+  'update_goal_progress',
+  'update_goal_status',
+  'create_class_session',
+  'create_assignment',
+  'create_student_goal',
+  'create_student_question',
+  'create_student_question_queue',
+  'create_worksheet_from_transcript',
+  'reset_student_login',
+  'submit_checkoff',
+  'submit_worksheet_answer',
+  'update_student',
   'create_calendar_event_draft',
   'update_calendar_event_draft',
   'create_shoutout_draft',
@@ -3913,6 +3937,137 @@ const RABBI_INTERNAL_ACTION_TOOL_DEFINITIONS = [
   },
 ];
 
+function safeLocalScopedToolPreview(spec = {}, inputs = {}, { workspaceKey, projectKey } = {}) {
+  const base = {
+    tool_name: spec.name,
+    local_scope_request_created: true,
+    workspace_key: workspaceKey || RABBI_WORKSPACE_KEY,
+    project_key: projectKey || RABBI_PROJECT_KEY,
+    status: spec.requiresConfirmation ? 'approval_required_before_internal_write' : 'scoped_local_request_prepared',
+    side_effect_level: spec.sideEffectLevel || 'internal_write',
+    ...noExternalWriteFlags(),
+    dry_run: true,
+    executed: false,
+    internal_write_performed: false,
+    official_record_mutated: false,
+    local_database_write_performed: false,
+    external_read_performed: false,
+    body_returned: false,
+    note_returned: false,
+    question_text_returned: false,
+    transcript_text_returned: false,
+    private_payload_returned: false,
+    raw_machine_payload_returned: false,
+    body_preview_returned: false,
+    message_preview_returned: false,
+    note_preview_returned: false,
+  };
+  const fieldMap = {
+    task_id: 'task_id',
+    pending_id: 'pending_id',
+    student_id: 'student_id',
+    assignment_id: 'assignment_id',
+    goal_id: 'goal_id',
+    lesson_id: 'lesson_id',
+    prompt_id: 'prompt_id',
+    recording_id: 'recording_id',
+    class_session_id: 'class_session_id',
+    drive_file_id: 'drive_file_id_present',
+    title: 'title',
+    topic: 'topic',
+    status: 'requested_status',
+    stage: 'stage',
+    attendance_status: 'attendance_status',
+    progress_percent: 'progress_percent',
+    checkoff_status: 'checkoff_status',
+    display_name: 'display_name',
+    grade: 'grade',
+  };
+  const preview = { ...base };
+  for (const [inputKey, outputKey] of Object.entries(fieldMap)) {
+    const value = inputs[inputKey];
+    if (value === undefined || value === null || value === '') continue;
+    if (outputKey.endsWith('_present')) preview[outputKey] = true;
+    else if (typeof value === 'number') preview[outputKey] = value;
+    else preview[outputKey] = compactText(value, 180);
+  }
+  if (!preview.drive_file_id_present) preview.drive_file_id_present = Boolean(inputs.drive_url || inputs.drive_file_url || inputs.url);
+  preview.drive_file_id_returned = false;
+  preview.drive_url_returned = false;
+  preview.access_reset_performed = false;
+  preview.login_reset_performed = false;
+  preview.student_access_code_returned = false;
+  preview.parent_notification_sent = false;
+  preview.public_post_created = false;
+  preview.sent = false;
+  preview.published = false;
+  preview.next_action = spec.nextAction || 'Review this scoped request in Operations before any live mutation.';
+  return preview;
+}
+
+async function runRabbiLocalScopedTool({ args, context, db, deps, tool }, spec) {
+  const { projectKey, workspaceKey } = await resolveRabbiProject({ args, context, deps, db });
+  const inputs = {
+    ...args,
+    workspace_key: workspaceKey,
+    project_key: projectKey,
+  };
+  const preview = safeLocalScopedToolPreview(spec, inputs, { workspaceKey, projectKey });
+  return helperResultCard({
+    tool: tool?.name || spec.name,
+    recordType: 'helper_audit',
+    recordId: null,
+    label: spec.label,
+    summary: `${spec.label} prepared as a scoped local helper request. No external send, publish, sync, upload, credential, payment, access, public post, or cross-workspace write was performed.`,
+    url: `/operations?view=tasks&workspace=${workspaceKey}`,
+    data: {
+      scope: { workspace_key: workspaceKey, project_key: projectKey },
+      local_scope_request_only: true,
+      approval_required: Boolean(spec.requiresConfirmation),
+      preview,
+    },
+  });
+}
+
+const RABBI_LOCAL_SCOPE_TOOL_DEFINITIONS = [
+  ['ask_for_help', 'Help request packet', 'Create a scoped One Time help-request packet without sending or escalating externally.', 'tasks', { title: { type: 'string', maxLength: 180 }, issue: { type: 'string', maxLength: 2000 }, task_id: { type: 'integer' } }],
+  ['attach_drive_file', 'Drive attachment packet', 'Prepare a scoped Drive attachment reference without reading Drive or returning raw Drive IDs.', 'tasks', { task_id: { type: 'integer' }, drive_file_id: { type: 'string', maxLength: 180 }, drive_url: { type: 'string', maxLength: 400 }, title: { type: 'string', maxLength: 180 } }],
+  ['create_accountability_note', 'Accountability note packet', 'Prepare a scoped One Time accountability note without exposing raw private notes.', 'students', { student_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, note: { type: 'string', maxLength: 2000 }, occurred_at: { type: 'string', maxLength: 80 } }],
+  ['create_goal', 'Goal packet', 'Prepare a scoped One Time goal request without changing student access or external systems.', 'tasks', { title: { type: 'string', required: true, maxLength: 180 }, student_id: { type: 'integer' }, goal_id: { type: 'integer' }, topic: { type: 'string', maxLength: 180 } }],
+  ['create_lesson', 'Lesson packet', 'Prepare a scoped One Time lesson request without publishing or creating public content.', 'studio', { title: { type: 'string', required: true, maxLength: 180 }, topic: { type: 'string', maxLength: 180 }, class_session_id: { type: 'integer' }, notes: { type: 'string', maxLength: 2000 } }],
+  ['link_prompt_to_goal', 'Prompt-goal link packet', 'Prepare a scoped prompt-to-goal link without copying raw prompt bodies.', 'tasks', { prompt_id: { type: 'integer', required: true }, goal_id: { type: 'integer', required: true }, notes: { type: 'string', maxLength: 1000 } }],
+  ['mark_attendance', 'Attendance packet', 'Prepare a scoped attendance update without notifying parents or exporting rosters.', 'students', { student_id: { type: 'integer', required: true }, class_session_id: { type: 'integer' }, attendance_status: { type: 'string', maxLength: 80 }, occurred_at: { type: 'string', maxLength: 80 } }],
+  ['mark_pending_received', 'Pending received packet', 'Prepare a scoped pending-item received update without external writes.', 'tasks', { pending_id: { type: 'integer' }, task_id: { type: 'integer' }, notes: { type: 'string', maxLength: 1000 } }],
+  ['mark_task_verified', 'Task verification packet', 'Prepare a scoped task verification packet without changing cross-workspace tasks.', 'tasks', { task_id: { type: 'integer', required: true }, verification_notes: { type: 'string', maxLength: 2000 } }],
+  ['parse_recording', 'Recording parse packet', 'Prepare a scoped recording parse request without returning transcript text or media URLs.', 'studio', { recording_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, media_url: { type: 'string', maxLength: 400 }, transcript_text: { type: 'string', maxLength: 12000 } }],
+  ['reprocess_decision', 'Decision reprocess packet', 'Prepare a scoped decision reprocess request without creating an agent job.', 'tasks', { task_id: { type: 'integer', required: true }, reason: { type: 'string', maxLength: 1000 } }],
+  ['submit_question', 'Question packet', 'Prepare a scoped private question request without public posting or sending a response.', 'students', { student_id: { type: 'integer' }, question_text: { type: 'string', required: true, maxLength: 4000 }, topic: { type: 'string', maxLength: 180 } }],
+  ['update_goal_progress', 'Goal progress packet', 'Prepare a scoped goal-progress update without exposing private goal notes.', 'students', { goal_id: { type: 'integer', required: true }, student_id: { type: 'integer' }, progress_percent: { type: 'integer' }, notes: { type: 'string', maxLength: 1000 } }],
+  ['update_goal_status', 'Goal status packet', 'Prepare a scoped goal-status update without cross-workspace goal changes.', 'tasks', { goal_id: { type: 'integer', required: true }, status: { type: 'string', required: true, maxLength: 80 }, notes: { type: 'string', maxLength: 1000 } }],
+  ['create_class_session', 'Rabbi class session packet', 'Prepare a scoped Rabbi class-session request without calendar sync.', 'tasks', { title: { type: 'string', required: true, maxLength: 180 }, start_at: { type: 'string', maxLength: 80 }, topic: { type: 'string', maxLength: 180 } }],
+  ['create_assignment', 'Assignment packet', 'Prepare a scoped student assignment request without publishing worksheet bodies.', 'students', { student_id: { type: 'integer' }, title: { type: 'string', required: true, maxLength: 180 }, lesson_id: { type: 'integer' }, due_at: { type: 'string', maxLength: 80 }, instructions: { type: 'string', maxLength: 4000 } }],
+  ['create_student_goal', 'Student goal packet', 'Prepare a scoped student goal request without exposing private notes.', 'students', { student_id: { type: 'integer', required: true }, title: { type: 'string', required: true, maxLength: 180 }, topic: { type: 'string', maxLength: 180 } }],
+  ['create_student_question', 'Student question packet', 'Prepare a scoped student question request without public posting.', 'students', { student_id: { type: 'integer' }, question_text: { type: 'string', required: true, maxLength: 4000 }, topic: { type: 'string', maxLength: 180 } }],
+  ['create_student_question_queue', 'Student question queue packet', 'Prepare a scoped private question queue without exposing student identity broadly.', 'students', { student_id: { type: 'integer' }, title: { type: 'string', maxLength: 180 }, topic: { type: 'string', maxLength: 180 } }],
+  ['create_worksheet_from_transcript', 'Worksheet-from-transcript packet', 'Prepare a scoped worksheet-from-transcript request without returning transcript or worksheet bodies.', 'students', { student_id: { type: 'integer' }, assignment_id: { type: 'integer' }, transcript_text: { type: 'string', maxLength: 12000 }, topic: { type: 'string', maxLength: 180 } }],
+  ['reset_student_login', 'Student login reset packet', 'Prepare a scoped student login reset request without generating or returning access codes.', 'students', { student_id: { type: 'integer', required: true }, reason: { type: 'string', maxLength: 1000 } }, true],
+  ['submit_checkoff', 'Student checkoff packet', 'Prepare a scoped student checkoff request without notifying parents automatically.', 'students', { student_id: { type: 'integer', required: true }, assignment_id: { type: 'integer' }, checkoff_status: { type: 'string', maxLength: 80 }, notes: { type: 'string', maxLength: 1000 } }],
+  ['submit_worksheet_answer', 'Worksheet answer packet', 'Prepare a scoped worksheet-answer request without returning raw answer bodies.', 'students', { student_id: { type: 'integer', required: true }, assignment_id: { type: 'integer', required: true }, body: { type: 'string', maxLength: 4000 } }],
+  ['update_student', 'Student update packet', 'Prepare a scoped student profile update without exposing parent contact or access codes.', 'students', { student_id: { type: 'integer', required: true }, display_name: { type: 'string', maxLength: 180 }, grade: { type: 'string', maxLength: 80 }, notes: { type: 'string', maxLength: 1000 } }, true],
+].map(([name, label, description, category, schema, requiresConfirmation = false]) => ({
+  name,
+  label,
+  description,
+  category,
+  sideEffectLevel: 'internal_write',
+  requiresConfirmation,
+  nextAction: 'Review and connect this local scoped request to the durable workflow before marking Agent Mode autonomous.',
+  schema: {
+    ...schema,
+    ...RABBI_INTERNAL_ACTION_SCOPE_SCHEMA,
+  },
+}));
+
 async function createStudentTool({ args, context, deps, db }) {
   const project = await deps.resolveProjectFromInput({ project_key: args.project_key || context.projectKey || 'bna' }, db);
   deps.assertProjectAccess(context.req, project);
@@ -4883,6 +5038,14 @@ function buildToolRegistry(deps = {}) {
       requiresConfirmation: Boolean(spec.requiresConfirmation),
       schema: spec.schema,
     }, (payload) => runRabbiInternalActionTool(payload, spec))),
+    ...RABBI_LOCAL_SCOPE_TOOL_DEFINITIONS.map((spec) => makeDefinition({
+      name: spec.name,
+      description: spec.description,
+      category: spec.category,
+      sideEffectLevel: spec.sideEffectLevel,
+      requiresConfirmation: Boolean(spec.requiresConfirmation),
+      schema: spec.schema,
+    }, (payload) => runRabbiLocalScopedTool(payload, spec))),
     makeDefinition({
       name: 'create_calendar_event_draft',
       description: 'Preview a scoped One Time calendar event without creating an internal event or syncing Google Calendar.',

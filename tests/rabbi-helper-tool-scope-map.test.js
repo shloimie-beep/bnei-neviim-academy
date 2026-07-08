@@ -105,17 +105,33 @@ test('Rabbi helper scope map keeps privacy, external writes, and student-parent 
 test('Rabbi helper scope map does not classify write-shaped missing wrappers as read-only', () => {
   const expectedPolicies = new Map([
     ['ask_for_help', 'internal_write'],
+    ['attach_drive_file', 'internal_write'],
     ['capture_provider_google_business_link', 'internal_write'],
+    ['create_accountability_note', 'internal_write'],
+    ['create_assignment', 'internal_write'],
+    ['create_class_session', 'internal_write'],
+    ['create_goal', 'internal_write'],
+    ['create_lesson', 'internal_write'],
+    ['create_student_goal', 'internal_write'],
+    ['create_student_question', 'internal_write'],
+    ['create_student_question_queue', 'internal_write'],
+    ['create_worksheet_from_transcript', 'internal_write'],
     ['distill_ramble', 'draft_only'],
     ['generate_social_posts_from_newsletter', 'draft_only'],
     ['generate_student_worksheet', 'draft_only'],
     ['link_prompt_to_goal', 'internal_write'],
+    ['mark_attendance', 'internal_write'],
+    ['mark_pending_received', 'internal_write'],
+    ['mark_task_verified', 'internal_write'],
     ['move_lead_stage', 'approval_gated_internal_state_change'],
     ['move_task_workspace', 'approval_gated_internal_state_change'],
+    ['parse_recording', 'internal_write'],
     ['post_community_message', 'approval_gated_external_write'],
     ['queue_telegram_report', 'approval_gated_external_write'],
     ['record_agent_result', 'internal_write'],
+    ['reprocess_decision', 'internal_write'],
     ['request_provider_contact', 'internal_write'],
+    ['reset_student_login', 'internal_write'],
     ['retitle_task_naturally', 'internal_write'],
     ['review_moderated_question', 'approval_gated_internal_state_change'],
     ['save_newsletter_revision', 'internal_write'],
@@ -125,6 +141,9 @@ test('Rabbi helper scope map does not classify write-shaped missing wrappers as 
     ['submit_worksheet_answer', 'internal_write'],
     ['sync_google_calendar', 'approval_gated_external_write'],
     ['sync_google_classroom', 'approval_gated_external_write'],
+    ['update_goal_progress', 'internal_write'],
+    ['update_goal_status', 'internal_write'],
+    ['update_student', 'internal_write'],
     ['upload_provider_asset_reference', 'internal_write'],
   ]);
 
@@ -195,7 +214,7 @@ test('Rabbi helper scope map marks the read-only runtime batch as locally wrappe
     assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
   }
 
-  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 97);
+  assert.equal(scopeMap.counts.by_implementation_status.tool_wrapper_available_local, 121);
 });
 
 test('Rabbi helper scope map marks parent and student summary wrappers as locally wrapper-backed', () => {
@@ -326,6 +345,46 @@ test('Rabbi helper scope map marks content and provider action wrappers as local
     assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
     assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
     assert.ok(contract.rabbi_contract.negative_tests.some((check) => /workspace_key=bna/i.test(check)));
+  }
+});
+
+test('Rabbi helper scope map marks local task and student primitive wrappers as locally wrapper-backed', () => {
+  const localPrimitiveNames = [
+    'ask_for_help',
+    'attach_drive_file',
+    'create_accountability_note',
+    'create_goal',
+    'create_lesson',
+    'link_prompt_to_goal',
+    'mark_attendance',
+    'mark_pending_received',
+    'mark_task_verified',
+    'parse_recording',
+    'reprocess_decision',
+    'submit_question',
+    'update_goal_progress',
+    'update_goal_status',
+    'create_class_session',
+    'create_assignment',
+    'create_student_goal',
+    'create_student_question',
+    'create_student_question_queue',
+    'create_worksheet_from_transcript',
+    'reset_student_login',
+    'submit_checkoff',
+    'submit_worksheet_answer',
+    'update_student',
+  ];
+  const localPrimitiveContracts = scopeMap.contracts.filter((contract) => localPrimitiveNames.includes(contract.source.helper_tool_name));
+  assert.equal(localPrimitiveContracts.length, 24);
+
+  for (const contract of localPrimitiveContracts) {
+    assert.equal(contract.rabbi_contract.action_policy, 'internal_write');
+    assert.equal(contract.rabbi_contract.implementation_gap.implementation_status, 'tool_wrapper_available_local');
+    assert.match(contract.rabbi_contract.implementation_gap.next_action, /Agent Mode PASS\/BLOCKED evidence/);
+    assert.ok(contract.rabbi_contract.forbidden_data.some((item) => /raw private message bodies/i.test(item)));
+    assert.ok(contract.rabbi_contract.negative_tests.some((check) => /workspace_key=bna/i.test(check)));
+    assert.match(contract.rabbi_contract.agent_mode_probe.expected_result, /scoped|workspace|no external/i);
   }
 });
 
