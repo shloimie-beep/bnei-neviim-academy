@@ -34383,3 +34383,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   provider write was performed.
 - Evidence:
   `ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/local-report.md`.
+
+## 2026-07-08T19:24:00+03:00 - OneTime public signup strip and Agent Review workflow deployed
+
+- Pushed commit `7c0de2ad` and deployed it to OneTime Railway service
+  `one-time-web`; deployment `b14edf6d-eb9f-42f8-aafe-aea74c91d294` reached
+  `SUCCESS`.
+- Updated the live OneTime smoke contract to assert the new email-only
+  `Sign Up Now` strip, `#signupEmail`, `/api/one-time/interest`, and absence
+  of retired name/phone/region/notes/classroom-code fields.
+- Live smoke passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`.
+- Rendered Playwright live smoke passed at 1440, 1024, 768, 430, and 390
+  widths. It confirmed the black/yellow header, black-on-white logo mark, one
+  visible email input, no retired fields, no horizontal overflow, and live
+  prompt readback for `one-time-public-signup-whatsapp-workflow.md`.
+- Live proof:
+  `ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/live-report.md`
+  plus the viewport screenshots in the same folder.
+- No live form submit, lead creation, email, WhatsApp, checkout, payment,
+  access grant, Zoom, Vimeo, Drive, or external provider write was performed.

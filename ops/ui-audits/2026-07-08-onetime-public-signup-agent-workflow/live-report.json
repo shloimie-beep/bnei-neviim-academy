@@ -1,0 +1,449 @@
+{
+  "ok": true,
+  "base": "https://join.onetimeonetime.com",
+  "deployment_id": "b14edf6d-eb9f-42f8-aafe-aea74c91d294",
+  "commit": "7c0de2ad",
+  "external_writes": "none: live smoke did not submit forms, send email, send WhatsApp, grant access, charge Stripe, upload files, or mutate external providers",
+  "checked_at": "2026-07-08T16:23:13.016Z",
+  "pages": [
+    {
+      "viewport": {
+        "name": "desktop-1440",
+        "width": 1440,
+        "height": 900
+      },
+      "url": "https://join.onetimeonetime.com/one-time",
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "body_has_bna": false,
+      "body_has_hebrew_toggle": false,
+      "body_has_recovery_code": false,
+      "header": {
+        "background": "rgba(8, 9, 16, 0.96)",
+        "borderBottomColor": "rgb(237, 229, 24)",
+        "borderBottomWidth": "2px"
+      },
+      "logoTile": {
+        "background": "rgb(255, 255, 255)"
+      },
+      "logoImg": {
+        "filter": "brightness(0) contrast(1.2)"
+      },
+      "form": {
+        "method": "",
+        "action": "",
+        "text": "SIGN UP NOW\nGet the 30-day start link and class updates.\nParent email\nSign Up Now\n\nNo spam. No charge today."
+      },
+      "email": {
+        "name": "email",
+        "type": "email",
+        "autocomplete": "email",
+        "required": true,
+        "visible": true
+      },
+      "visibleInputs": [
+        {
+          "id": "signupEmail",
+          "name": "email",
+          "type": "email",
+          "placeholder": "Parent email"
+        }
+      ],
+      "oldFields": [],
+      "buttons": [
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "BUTTON",
+          "href": null,
+          "type": "submit",
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        }
+      ],
+      "strip": {
+        "inHero": true,
+        "top": 764,
+        "bottom": 867,
+        "heroBottom": 867,
+        "width": 1440
+      },
+      "overflowX": false,
+      "screenshot": "live-desktop-1440-onetime-signup.png"
+    },
+    {
+      "viewport": {
+        "name": "tablet-1024",
+        "width": 1024,
+        "height": 900
+      },
+      "url": "https://join.onetimeonetime.com/one-time",
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "body_has_bna": false,
+      "body_has_hebrew_toggle": false,
+      "body_has_recovery_code": false,
+      "header": {
+        "background": "rgba(8, 9, 16, 0.96)",
+        "borderBottomColor": "rgb(237, 229, 24)",
+        "borderBottomWidth": "2px"
+      },
+      "logoTile": {
+        "background": "rgb(255, 255, 255)"
+      },
+      "logoImg": {
+        "filter": "brightness(0) contrast(1.2)"
+      },
+      "form": {
+        "method": "",
+        "action": "",
+        "text": "SIGN UP NOW\nGet the 30-day start link and class updates.\nParent email\nSign Up Now\n\nNo spam. No charge today."
+      },
+      "email": {
+        "name": "email",
+        "type": "email",
+        "autocomplete": "email",
+        "required": true,
+        "visible": true
+      },
+      "visibleInputs": [
+        {
+          "id": "signupEmail",
+          "name": "email",
+          "type": "email",
+          "placeholder": "Parent email"
+        }
+      ],
+      "oldFields": [],
+      "buttons": [
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "BUTTON",
+          "href": null,
+          "type": "submit",
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        }
+      ],
+      "strip": {
+        "inHero": true,
+        "top": 757,
+        "bottom": 860,
+        "heroBottom": 860,
+        "width": 1024
+      },
+      "overflowX": false,
+      "screenshot": "live-tablet-1024-onetime-signup.png"
+    },
+    {
+      "viewport": {
+        "name": "tablet-768",
+        "width": 768,
+        "height": 900
+      },
+      "url": "https://join.onetimeonetime.com/one-time",
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "body_has_bna": false,
+      "body_has_hebrew_toggle": false,
+      "body_has_recovery_code": false,
+      "header": {
+        "background": "rgba(8, 9, 16, 0.96)",
+        "borderBottomColor": "rgb(237, 229, 24)",
+        "borderBottomWidth": "2px"
+      },
+      "logoTile": {
+        "background": "rgb(255, 255, 255)"
+      },
+      "logoImg": {
+        "filter": "brightness(0) contrast(1.2)"
+      },
+      "form": {
+        "method": "",
+        "action": "",
+        "text": "SIGN UP NOW\nGet the 30-day start link and class updates.\nParent email\nSign Up Now\n\nNo spam. No charge today."
+      },
+      "email": {
+        "name": "email",
+        "type": "email",
+        "autocomplete": "email",
+        "required": true,
+        "visible": true
+      },
+      "visibleInputs": [
+        {
+          "id": "signupEmail",
+          "name": "email",
+          "type": "email",
+          "placeholder": "Parent email"
+        }
+      ],
+      "oldFields": [],
+      "buttons": [
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "BUTTON",
+          "href": null,
+          "type": "submit",
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        }
+      ],
+      "strip": {
+        "inHero": true,
+        "top": 757,
+        "bottom": 918,
+        "heroBottom": 918,
+        "width": 768
+      },
+      "overflowX": false,
+      "screenshot": "live-tablet-768-onetime-signup.png"
+    },
+    {
+      "viewport": {
+        "name": "mobile-430",
+        "width": 430,
+        "height": 932
+      },
+      "url": "https://join.onetimeonetime.com/one-time",
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "body_has_bna": false,
+      "body_has_hebrew_toggle": false,
+      "body_has_recovery_code": false,
+      "header": {
+        "background": "rgba(8, 9, 16, 0.96)",
+        "borderBottomColor": "rgb(237, 229, 24)",
+        "borderBottomWidth": "2px"
+      },
+      "logoTile": {
+        "background": "rgb(255, 255, 255)"
+      },
+      "logoImg": {
+        "filter": "brightness(0) contrast(1.2)"
+      },
+      "form": {
+        "method": "",
+        "action": "",
+        "text": "SIGN UP NOW\nGet the 30-day start link and class updates.\nParent email\nSign Up Now\n\nNo spam. No charge today."
+      },
+      "email": {
+        "name": "email",
+        "type": "email",
+        "autocomplete": "email",
+        "required": true,
+        "visible": true
+      },
+      "visibleInputs": [
+        {
+          "id": "signupEmail",
+          "name": "email",
+          "type": "email",
+          "placeholder": "Parent email"
+        }
+      ],
+      "oldFields": [],
+      "buttons": [
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "BUTTON",
+          "href": null,
+          "type": "submit",
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        }
+      ],
+      "strip": {
+        "inHero": true,
+        "top": 753,
+        "bottom": 993,
+        "heroBottom": 993,
+        "width": 430
+      },
+      "overflowX": false,
+      "screenshot": "live-mobile-430-onetime-signup.png"
+    },
+    {
+      "viewport": {
+        "name": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "url": "https://join.onetimeonetime.com/one-time",
+      "title": "Your Child Can Love Learning Mishnayos | OneTimeOneTime",
+      "body_has_bna": false,
+      "body_has_hebrew_toggle": false,
+      "body_has_recovery_code": false,
+      "header": {
+        "background": "rgba(8, 9, 16, 0.96)",
+        "borderBottomColor": "rgb(237, 229, 24)",
+        "borderBottomWidth": "2px"
+      },
+      "logoTile": {
+        "background": "rgb(255, 255, 255)"
+      },
+      "logoImg": {
+        "filter": "brightness(0) contrast(1.2)"
+      },
+      "form": {
+        "method": "",
+        "action": "",
+        "text": "SIGN UP NOW\nGet the 30-day start link and class updates.\nParent email\nSign Up Now\n\nNo spam. No charge today."
+      },
+      "email": {
+        "name": "email",
+        "type": "email",
+        "autocomplete": "email",
+        "required": true,
+        "visible": true
+      },
+      "visibleInputs": [
+        {
+          "id": "signupEmail",
+          "name": "email",
+          "type": "email",
+          "placeholder": "Parent email"
+        }
+      ],
+      "oldFields": [],
+      "buttons": [
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "BUTTON",
+          "href": null,
+          "type": "submit",
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        },
+        {
+          "tag": "A",
+          "href": "#start-free",
+          "type": null,
+          "text": "Sign Up Now"
+        }
+      ],
+      "strip": {
+        "inHero": true,
+        "top": 836,
+        "bottom": 1076,
+        "heroBottom": 1076,
+        "width": 390
+      },
+      "overflowX": false,
+      "screenshot": "live-mobile-390-onetime-signup.png"
+    }
+  ],
+  "prompt_readback": {
+    "status": 200,
+    "has_requirement": true,
+    "has_dropoff": true,
+    "has_live_safe_submit_rule": true,
+    "has_running_lane": true,
+    "has_signup_now": true
+  },
+  "failures": [],
+  "nav_click": {
+    "hash": "#start-free",
+    "activeElement": "BODY",
+    "emailTop": 66
+  }
+}
