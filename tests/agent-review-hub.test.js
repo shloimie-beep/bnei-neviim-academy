@@ -46,11 +46,11 @@ test('Agent Review context matrix covers Issue #24 role cards', () => {
   assert.equal(AGENT_REVIEW_CONTEXTS.some((item) => item.role === 'super_admin' && item.context_type.includes('live')), true);
 });
 
-test('Agent Mode prompt pack has exactly 17 generated mobile-copyable files', () => {
-  assert.equal(AGENT_MODE_PROMPTS.length, 17);
+test('Agent Mode prompt pack has exactly 18 generated mobile-copyable files', () => {
+  assert.equal(AGENT_MODE_PROMPTS.length, 18);
   assert.equal(packageJson.scripts['agent-review:prompts'], 'node scripts/generate-agent-review-prompts.cjs');
   const index = buildPromptIndex({ baseUrl: 'https://bneineviimacademy.org' });
-  assert.equal(index.length, 17);
+  assert.equal(index.length, 18);
 
   for (const prompt of index) {
     const filePath = path.join(root, 'public', 'agent-review-prompts', prompt.file);
@@ -100,6 +100,7 @@ test('Agent Mode prompt pack has exactly 17 generated mobile-copyable files', ()
     'one-time-brand-helper-toolbar-audit',
     'one-time-public-signup-whatsapp-workflow',
     'rabbi-telegram-helper-ticket-smoke',
+    'rabbi-helper-tool-scope-map',
   ]) {
     const prompt = index.find((item) => item.key === key);
     assert.ok(prompt, key);
@@ -145,6 +146,20 @@ test('Agent Mode prompt pack has exactly 17 generated mobile-copyable files', ()
   assert.match(rabbiTelegramText, /super-admin support ticket ding routing/);
   assert.match(rabbiTelegramText, /Do not send a WhatsApp message/);
   assert.match(rabbiTelegramText, /OPERATIONS_DROPOFF_FAILED/);
+
+  const rabbiToolScopePrompt = index.find((item) => item.key === 'rabbi-helper-tool-scope-map');
+  assert.ok(rabbiToolScopePrompt);
+  const rabbiToolScopeText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', rabbiToolScopePrompt.file), 'utf8');
+  assert.match(rabbiToolScopeText, /REQ-20260708-093/);
+  assert.match(rabbiToolScopeText, /rabbi-one-time-tool-scope-map\.json/);
+  assert.match(rabbiToolScopeText, /RABBI-HELPER-SCOPE-001/);
+  assert.match(rabbiToolScopeText, /RABBI-HELPER-SCOPE-163/);
+  assert.match(rabbiToolScopeText, /all 163 current helper parity tool-needed contracts/);
+  assert.match(rabbiToolScopeText, /Benny tasks\/studio template/);
+  assert.match(rabbiToolScopeText, /workspace_key=bna/);
+  assert.match(rabbiToolScopeText, /project_key=bna/);
+  assert.match(rabbiToolScopeText, /no live Telegram, email, WhatsApp, WAPI, Drive, payment, access grant, Zoom, Vimeo, Buffer, Stripe, DNS, credential, deployment, or public-publish mutation/);
+  assert.match(rabbiToolScopeText, /If you cannot complete all 163 contracts in one Agent Mode run, save BLOCKED/);
 
   const rabbiPrompt = index.find((item) => item.key === 'rabbi-provider-admin');
   assert.ok(rabbiPrompt);

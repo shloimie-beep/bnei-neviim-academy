@@ -81,6 +81,13 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260708-028` / `REQ-20260708-090` through
+  `REQ-20260708-095`: Rabbi / One Time helper 163-tool account scope map and
+  Agent Mode probe prompt. Register:
+  `tasks-pending/2026-07-08-rabbi-helper-tool-scope-goal.md`. Current status:
+  local mapping/validator batch passed focused verification; the remaining
+  autonomy blocker is implementing the 163 scoped helper wrappers/planner
+  paths/result cards and saving live Agent Mode proof after deploy.
 - [ ] `RAW-20260708-023` / `REQ-20260708-081` through
   `REQ-20260708-085`: Rabbi Telegram bot, super-admin support ticket dings, and
   Agent Mode bot/helper smoke-test loop. Register:

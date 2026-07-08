@@ -34658,3 +34658,36 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining performance work: cold browser load still downloads/parses the
   2.10MB external shell JS, so the next batch should split true view modules
   from `operations-shell.js`.
+
+## 2026-07-08T22:12:00+03:00 - Rabbi helper 163-tool scope map local verification
+
+- Registered `RAW-20260708-028` and `REQ-20260708-090` through
+  `REQ-20260708-095` for the goal to scope every current helper parity
+  `tool_needed` row for the Rabbi / One Time bot.
+- Generated `ops/helper-tool-scope/rabbi-one-time-tool-scope-map.json` and
+  `.md` with exactly 163 Rabbi account-scoped contracts from the 270-row helper
+  parity map: operations 96, parent 19, provider 31, rabbi 2, student 15.
+- Added `ops/helper-tool-scope/account-bot-scope-template.json` with a
+  reusable service-provider project bot template and a Benny tasks/studio-only
+  example that denies payments, contacts/CRM, integrations, settings,
+  communications sends, agent fleet, and super-admin diagnostics.
+- Registered Agent Review prompt key `rabbi-helper-tool-scope-map` and
+  generated `public/agent-review-prompts/rabbi-helper-tool-scope-map.md` with
+  a strict all-163-or-BLOCKED Agent Mode test protocol and standard drop-off
+  metadata.
+- Added validator coverage so the scope map must match current helper parity,
+  stay locked to `rabbi_sheller_provider` / `one_time_mishnah_class`, include
+  natural-language probes, preserve privacy/external-write gates, and keep the
+  Benny template narrow.
+- Verification passed: `node --check
+  scripts/generate-rabbi-helper-tool-scope-map.mjs`, `node
+  scripts/generate-rabbi-helper-tool-scope-map.mjs`, `npm run helper:parity`,
+  `node --check src/lib/bna/agent-review-hub.js`, `node --check
+  tests/rabbi-helper-tool-scope-map.test.js`, `node --check
+  tests/agent-review-hub.test.js`, and `node --test
+  tests/rabbi-helper-tool-scope-map.test.js tests/agent-review-hub.test.js`
+  (16/16).
+- Remaining autonomy blocker: all 163 mapped contracts are still
+  `tool_wrapper_missing` until scoped helper wrappers, planner intents,
+  permission gates, scoped result cards, redacted audit writes, runtime negative
+  tests, deploy/live prompt readback, and saved Agent Mode proof exist.
