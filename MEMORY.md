@@ -895,6 +895,17 @@
   item, Google/Drive write, video-host write, Buffer draft/publish action,
   WhatsApp/email send, access grant, or external CRM write should run
   automatically.
+- One Time class video drops should support a laptop/Desktop Google Drive
+  synced folder path as an operator input surface in addition to Drive API
+  folder IDs. The local v1 processor may scan a chosen folder, render a static
+  black/yellow opener plus deterministic trim plan, and hand off to Vimeo
+  review metadata, but real Vimeo uploads, production DB writes, member
+  visibility, and bot knowledge promotion still require explicit approval
+  gates.
+- One Time transcript-derived bot knowledge must stay scoped to
+  `rabbi_sheller_provider` / `one_time_mishnah_class` and use only approved
+  class transcript/session context. Raw transcript bodies should not be
+  committed as proof or exposed to members/students unless separately approved.
 - One Time partnership drafting pack lives at
   `ops/one-time-mishnah/partnership-drafting-pack.md`. It is the local
   draft-only handoff for Claude or another writing assistant to produce a

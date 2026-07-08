@@ -1,0 +1,103 @@
+{
+  "ok": true,
+  "generated_at": "2026-07-08T14:36:02.478Z",
+  "workflow": "one_time_vimeo_studio_pipeline",
+  "raw_id": "RAW-20260708-011",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "folder": "media-inbox/onetime-vimeo-studio-self-test",
+  "folder_relative_to_repo": "media-inbox/onetime-vimeo-studio-self-test",
+  "processed_folder": "media-inbox/onetime-vimeo-studio-self-test-processed",
+  "processed_folder_relative_to_repo": "media-inbox/onetime-vimeo-studio-self-test-processed",
+  "render_requested": true,
+  "external_write_performed": false,
+  "production_mutation_performed": false,
+  "member_visibility_performed": false,
+  "candidates": [
+    {
+      "id": "bffe536f587f9cf9",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "title": "Synthetic One Time Last Class Smoke",
+      "source_file": {
+        "relative_path": "last-class/synthetic-last-class.mp4",
+        "name": "synthetic-last-class.mp4",
+        "extension": ".mp4",
+        "size_bytes": 875743
+      },
+      "metadata_sources": [
+        "class.json"
+      ],
+      "safety": {
+        "synthetic_test": true,
+        "contains_sensitive_data": false,
+        "real_class_recording": false
+      },
+      "trim_plan": {
+        "source_duration_seconds": 8,
+        "trim_start_seconds": 1,
+        "trim_end_seconds": 1,
+        "content_end_seconds": 7,
+        "output_content_seconds": 6,
+        "opener_seconds": 1,
+        "strategy": "sidecar_or_manifest",
+        "note": "V1 records deterministic trim points; automatic semantic class-start/class-end detection is a later approval packet."
+      },
+      "opener": {
+        "title": "One Time Mishnah",
+        "subtitle": "Synthetic local smoke",
+        "seconds": 1
+      },
+      "transcript": {
+        "present": false,
+        "status": "review",
+        "length": 0,
+        "sha256": ""
+      },
+      "output": {
+        "rendered": true,
+        "video_path": "media-inbox/onetime-vimeo-studio-self-test-processed/bffe536f587f9cf9-Synthetic-One-Time-Last-Class-Smoke/Synthetic-One-Time-Last-Class-Smoke.edited.mp4",
+        "sidecar_path": "media-inbox/onetime-vimeo-studio-self-test-processed/bffe536f587f9cf9-Synthetic-One-Time-Last-Class-Smoke/Synthetic-One-Time-Last-Class-Smoke.edited.json",
+        "video_exists": true,
+        "sidecar_exists": true
+      },
+      "blockers": [],
+      "vimeo_dry_run": {
+        "workflow": "one_time_vimeo_folder_library",
+        "dry_run": true,
+        "external_write_performed": false,
+        "production_mutation_performed": false,
+        "member_visibility_performed": false,
+        "summary": {
+          "candidate_count": 1,
+          "ready_for_review_count": 1,
+          "upload_blocked_count": 0,
+          "review_package_written_count": 0,
+          "published_count": 0,
+          "blockers_count": 0
+        },
+        "candidates": [
+          {
+            "id": "238557b9b618d1fc",
+            "title": "Synthetic One Time Last Class Smoke",
+            "upload_status": "not_requested",
+            "review_package_status": "not_requested",
+            "publish_status": "not_requested",
+            "publish_ready": false,
+            "blockers": []
+          }
+        ]
+      }
+    }
+  ],
+  "blockers": [],
+  "next_actions": [
+    "Real Vimeo upload, production DB review-package writes, member visibility, and bot knowledge promotion remain separate approval-gated packets."
+  ],
+  "summary": {
+    "candidate_count": 1,
+    "rendered_count": 1,
+    "sidecar_count": 1,
+    "blockers_count": 0
+  }
+}

@@ -34135,3 +34135,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No WhatsApp was sent, no parent invite was resent, no payment/access/DNS/
   Zoom/Vimeo/Drive mutation was performed, and no weak Rabbi password or raw
   setup token was committed.
+
+## 2026-07-08T17:45:00+03:00 - OneTime Vimeo folder v1 local processor verified
+
+- Captured the Vimeo folder/Drive Desktop class-video ramble as
+  `RAW-20260708-011` and registered the scoped workflow in
+  `tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md`.
+- Added a no-write OneTime studio processor that scans a local or Drive-synced
+  folder, reads class sidecars, enforces the `rabbi_sheller_provider` /
+  `one_time_mishnah_class` scope, builds deterministic trim plans, renders a
+  black/yellow static opener plus trimmed video when `--render` is used, and
+  writes a Vimeo-library compatible sidecar.
+- Connected the processed output to the existing OneTime Vimeo library workflow
+  in dry-run mode, so the v1 test proves no Vimeo upload, no production DB
+  mutation, and no member visibility change.
+- Synthetic local self-test rendered a non-sensitive sample clip, produced a
+  processed video and sidecar, and wrote evidence under
+  `ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-synthetic-self-test/`.
+- Verification passed: `node --check` for the module and CLI, focused node
+  tests 11/11, Product Quality Compiler validation for the two Vimeo folder
+  packets, and `npm run watchdog:protocol-drift`.
+- Remaining approvals: exact laptop synced Drive folder path, transcript/bot
+  knowledge promotion policy, Vimeo private smoke/upload target, and member
+  publish gate. No real Drive, Vimeo, production database, member portal, or
+  bot knowledge mutation was performed.

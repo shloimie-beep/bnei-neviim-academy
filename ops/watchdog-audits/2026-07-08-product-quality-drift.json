@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T14:12:36.712Z",
+  "generated_at": "2026-07-08T14:36:59.059Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -326,6 +326,8 @@
     "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/03-media-security-slides-worksheets.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/05-moderated-comments-updates-awards.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-performance-media-classroom-workflow/06-access-code-session-ux.product-quality.json",
+    "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/00-vimeo-folder-v1-control.product-quality.json",
+    "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/01-vimeo-folder-v1-local-processor.product-quality.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",
@@ -548,6 +550,7 @@
     "tasks-pending/2026-07-08-onetime-launch-ready-parent-student-invite.md",
     "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
     "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+    "tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md",
     "tasks-pending/2026-07-08-parent-trial-email-vimeo-watch-continuation.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
