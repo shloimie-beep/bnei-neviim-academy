@@ -33657,3 +33657,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   was used.
 - Issue #24 is not complete from this sub-scope; the One Time helper/UI audit
   findings still need separate Agent Mode reruns and correction packets.
+
+## 2026-07-08T10:03:00+03:00 - One Time classroom rewards scoreboard deployed and live-smoked
+
+- Commit `8f3320a0` is pushed to `origin/master` and includes the approved-only
+  One Time classroom rewards scoreboard.
+- Railway deployment `d383bf5f-8b73-488e-9c73-d64547862773` for service
+  `skillful-motivation` reached `SUCCESS` on commit `8f3320a0`.
+- Live app smoke passed and wrote
+  `ops/live-smokes/2026-07-08T06-46-08-085Z-live-app-smoke.md`.
+- One Time shared review smoke passed across mobile, tablet, and desktop route
+  checks and wrote
+  `ops/live-smokes/2026-07-08T06-46-07-386Z-one-time-shared-review-live-smoke.md`.
+- The targeted classroom rewards smoke passed and wrote
+  `ops/live-smokes/2026-07-08T06-46-07-674Z-one-time-classroom-rewards-scoreboard-live-smoke.md`.
+  It confirmed the rewards section renders, the API returns a positive
+  approved-only leaderboard, reward labels are present, policy is positive-only,
+  and private/unreviewed events are not exposed.
+- Guardrails held: no external send, payment, prize, coupon, credit, access
+  grant, provider write, or unreviewed publication was performed.
