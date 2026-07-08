@@ -35245,3 +35245,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers: deploy/live smoke for 97 local-only wrappers after the
   Railway failure path is investigated, external approval gates, and saved
   all-163 Agent Mode PASS/BLOCKED proof.
+
+## 2026-07-09T00:50:00+03:00 - Rabbi Helper Deploy Blocker Recorded
+
+- Pushed helper scope commits `e5ac4827` and `7c9edf73` on
+  `codex/rabbi-helper-tool-scope-20260708`; current local scope map is 163
+  wrapper-backed contracts, 0 fallback blockers, and 0 missing wrappers.
+- Verification passed before deploy attempt: focused helper/Telegram/Agent
+  Review tests 53/53, full `npm test` 1671/1671, JSONL parse,
+  `npm run secrets:audit`, `npm run watchdog:protocol-drift`, OneTime target
+  guard, and OneTime Railway target guard.
+- Railway deployment `a23e4e82-2199-4fd9-9b17-482c385dabcc` failed after
+  build/image push with empty deployment logs. Active OneTime production stayed
+  on successful deployment `eb599c39-36f7-4f80-9d6d-2a8fc5c6406f`.
+- Post-failure live smoke passed against `https://join.onetimeonetime.com`.
+  Local OneTime boot also passed on port `8123` for health and instance config
+  with Rabbi / OneTime scope, then the temporary server was stopped.
+- Remaining blockers: Railway post-image deployment failure, missing
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` for live Rabbi Telegram delivery,
+  external approval gates, and saved all-163 Agent Mode PASS/BLOCKED proof.

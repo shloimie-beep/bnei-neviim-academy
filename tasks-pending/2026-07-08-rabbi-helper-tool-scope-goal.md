@@ -297,3 +297,32 @@ block full agent-mode autonomy:
 - Next action: commit/push this fallback replacement batch, investigate the
   Railway failure path, deploy/live-smoke the 97 local-only wrappers, and save
   all-163 Agent Mode PASS/BLOCKED proof.
+
+## Deploy Attempt - Fallback Replacement Wrapper Batch
+
+- Commits pushed on `codex/rabbi-helper-tool-scope-20260708`:
+  `e5ac4827` replaced the fallback wrappers and `7c9edf73` recorded the
+  verification evidence.
+- Full local verification passed before deploy attempt: full `npm test`
+  1671/1671, focused helper/Telegram/Agent Review tests 53/53, JSONL parse,
+  `npm run secrets:audit`, and `npm run watchdog:protocol-drift`.
+- Target guards passed for OneTime: `npm run one-time:target:guard -- --json`
+  and `npm run one-time:railway-target:guard` both confirmed the intended
+  `one-time-production` / `one-time-web` / `production` target.
+- Railway deployment `a23e4e82-2199-4fd9-9b17-482c385dabcc` was attempted
+  from account auth after the project-scoped token failed authorization. The
+  deployment failed after build/image push; build logs showed the image push
+  completed and deployment logs were empty.
+- Production safety check: active OneTime production remained on the previous
+  successful deployment `eb599c39-36f7-4f80-9d6d-2a8fc5c6406f`, and
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
+  passed after the failed deploy.
+- Local boot check passed with OneTime env on port `8123`: `/api/health` and
+  `/api/one-time/instance-config` returned 200 with
+  `rabbi_sheller_provider`, `one_time_mishnah_class`, `onetime`, and
+  `onetime` brand scope. The temporary local server was stopped and port
+  `8123` was released.
+- Current status: 163 helper contracts are local wrapper-backed and pushed, but
+  the newest 97 local-only wrapper-backed contracts are not claimed live until
+  the Railway post-image deployment failure is fixed and a successful deploy
+  plus live smoke/readback completes.

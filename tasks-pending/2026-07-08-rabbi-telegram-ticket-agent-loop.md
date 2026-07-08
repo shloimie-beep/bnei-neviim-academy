@@ -172,3 +172,29 @@
   `npm run telegram:codex-progress -- --send --json` returned `sent=true` and
   `message_id_present=true` for the deploy closeout update. No raw token or
   chat ID was printed.
+
+## Current Helper-Scope Deploy Blocker
+
+- Follow-up helper scope commits are pushed on
+  `codex/rabbi-helper-tool-scope-20260708`: `e5ac4827` replaced the last
+  fallback-only Rabbi helper wrappers and `7c9edf73` recorded full verification.
+- The current scope map reports 163 contracts, 163
+  `tool_wrapper_available_local`, 0 `registered_fallback_only_blocker`, and 0
+  `tool_wrapper_missing`.
+- Full local verification passed: full `npm test` 1671/1671, focused
+  helper/Telegram/Agent Review tests 53/53, JSONL parse,
+  `npm run secrets:audit`, `npm run watchdog:protocol-drift`,
+  `npm run one-time:target:guard -- --json`, and
+  `npm run one-time:railway-target:guard`.
+- Railway deployment `a23e4e82-2199-4fd9-9b17-482c385dabcc` failed after
+  build/image push with empty deployment logs. Active OneTime production stayed
+  on successful deployment `eb599c39-36f7-4f80-9d6d-2a8fc5c6406f`, and the live
+  OneTime smoke still passed after the failed rollout.
+- Local OneTime boot passed on port `8123` for `/api/health` and
+  `/api/one-time/instance-config` with the expected
+  `rabbi_sheller_provider` / `one_time_mishnah_class` / `onetime` scope; the
+  temporary local server was stopped.
+- Live Rabbi Telegram delivery remains blocked until
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured. Support-ticket dings
+  remain super-admin owned; Rabbi communications remain provider-scoped and
+  metadata-only until his target chat is verified.
