@@ -34451,3 +34451,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/watchdog-audits/2026-07-08-onetime-signup-telegram-reminder-live-smoke.md`.
 - No live signup form submit was performed during smoke testing, so no
   production lead or Telegram reminder was intentionally triggered by the test.
+
+## 2026-07-08T20:09:00+03:00 - OneTime landing helper concise timed nudges deployed
+
+- Registered `RAW-20260708-017` and `REQ-20260708-073` for making the public
+  OneTime landing helper more concise.
+- Replaced the long public OneTime helper intro/nudge copy with short
+  parent-facing language:
+  `Hi. Do you want your son to love Torah?`
+- Added OneTime-only nudge timing: first public landing nudge after 10 seconds,
+  second nudge 20 seconds later.
+- Added a page-level current masechta attribute, currently
+  `Maseches Berachos`, so the second nudge can say:
+  `We are up to Maseches Berachos now. It is a great time to join.`
+- Pushed runtime commit `27f55f6e` and deployed it to OneTime Railway service
+  `one-time-web`; deployment `76610b3c-3cfa-44d3-80f8-76a43f744a2b` reached
+  `SUCCESS`.
+- Verification passed: `node --check server.js`, focused tests 11/11, action
+  watchdog, protocol-drift watchdog, secrets audit, `git diff --check`,
+  standard live OneTime smoke, and local/live Playwright timed helper smokes.
+- Evidence:
+  `ops/ui-audits/2026-07-08-onetime-concise-helper/local-report.md` and
+  `ops/ui-audits/2026-07-08-onetime-concise-helper/live-report.md`.
+- No signup form submit, email, WhatsApp, payment, access grant, Zoom, Vimeo,
+  Drive, DNS, Stripe, or external CRM mutation was performed.
