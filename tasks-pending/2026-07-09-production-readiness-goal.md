@@ -83,6 +83,7 @@ production-ready when these classes are green or precisely blocked:
 | DEC-20260709-008 | Needs operator decision | Shloimie | Exact approved free Zoom URL/alias is missing for automated invite sends. | Provide the final URL/alias or keep follow-up manual/no-send. |
 | PERF-20260709-001 | Done, deployed/live-smoked | Codex | BNA Operations rendered with 0 console errors, but startup still performed 118 API reads, median 1064ms, P95 2855ms, max 3622ms. | Reduced dashboard startup fanout, removed support-ticket loading from dashboard first paint, bounded support-ticket list query, deployed BNA, and recorded live profile proof. |
 | PERF-20260709-002 | Follow-up, not launch-blocking | Codex | Final dashboard profile is usable but still shows a later refresh cycle around 33s and initial slowest dashboard reads near 3s. | If more performance polish is needed, inspect dashboard refresh scheduling and tune task/device/payment reads after screenshot-led UI work. |
+| DEPLOY-20260709-003 | Done | Codex | `npm run railway:doctor` loaded a stale project token even when BNA deploys used account auth, which made deploy-proof readback look blocked after successful deployments. | Updated `scripts/railway-doctor.ps1` to honor `BNA_RAILWAY_USE_ACCOUNT_AUTH` before loading `.secrets/railway-token.txt`; verified doctor passes against BNA production deployment `e1cef921-0e58-4fe7-aaf7-d9be65b06295`. |
 
 ## First audit command plan
 
@@ -182,9 +183,31 @@ Verification:
   `ops/live-smokes/2026-07-09T12-54-45-134Z-operations-workspace-taxonomy-live-smoke.md`.
 - PASS protected live support-ticket readback after hotfix:
   `/api/bna/support-tickets` returned HTTP 200, 23 tickets, about 2.9s.
-- NOTE `npm run railway:doctor` hit a local Railway token authorization
-  mismatch, but `railway status --json` using account auth confirmed latest app
-  deployment `73c4d440-e0b3-495d-91ec-add72229b304` reached `SUCCESS`.
+- FIXED `npm run railway:doctor` account-auth mismatch in
+  `DEPLOY-20260709-003`; rerun with explicit BNA account-auth target passed and
+  confirmed deployment `e1cef921-0e58-4fe7-aaf7-d9be65b06295` reached
+  `SUCCESS`.
+
+## DEPLOY-20260709-003 closeout
+
+Implemented:
+
+- Added the same `BNA_RAILWAY_USE_ACCOUNT_AUTH` check to
+  `scripts/railway-doctor.ps1` that already existed in
+  `scripts/railway-redeploy.ps1`.
+- Prevented doctor from loading `.secrets/railway-token.txt` when account auth
+  is explicitly requested.
+- Extended `tests/railway-target-guard.test.js` to assert auth-mode parity
+  between doctor and redeploy scripts.
+
+Verification:
+
+- PASS `node --test tests\railway-target-guard.test.js tests\one-time-deployment-readiness.test.js`
+  13/13.
+- PASS `npm run railway:doctor` with explicit BNA target/account auth.
+- PASS `npm run secrets:audit` with 7408 tracked paths and 0 secret-risk files.
+- PASS `npm run bna:run:validate` with expected 8 done / 2 blocked state.
+- PASS `git diff --check` with line-ending warnings only.
 
 Performance proof:
 

@@ -35937,3 +35937,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers are unchanged: full OneTime portal/payment/WAPI/campaign
   launch still needs the external Zoom, Stripe, WAPI, campaign, suppression,
   and seed approval values before it can be called production-complete.
+
+## 2026-07-09T16:03:02+03:00 - Railway Doctor Account Auth Fixed
+
+- Fixed the BNA deploy-proof tool path by making `scripts/railway-doctor.ps1`
+  honor `BNA_RAILWAY_USE_ACCOUNT_AUTH` before loading the local
+  `.secrets/railway-token.txt` project token.
+- Added a regression assertion in `tests/railway-target-guard.test.js` so
+  doctor and redeploy keep the same account-auth behavior.
+- Verification passed: focused Railway target/deployment readiness tests 13/13,
+  `npm run railway:doctor` with explicit BNA account auth, secrets audit, run
+  validation, and diff check.
+- Doctor now confirms BNA production deployment
+  `e1cef921-0e58-4fe7-aaf7-d9be65b06295` is `SUCCESS`.

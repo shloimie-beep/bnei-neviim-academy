@@ -144,5 +144,9 @@ test('Railway scripts no longer contain implicit skillful-motivation fallback', 
   assert.doesNotMatch(redeploy, /if \(-not \$railwayService\) \{ \$railwayService = "skillful-motivation" \}/);
   assert.match(doctor, /Railway target guard blocked this command/);
   assert.match(redeploy, /Railway target guard blocked this command/);
+  assert.match(doctor, /\$useAccountAuth = \$env:BNA_RAILWAY_USE_ACCOUNT_AUTH -match '\^\(1\|true\|yes\)\$'/);
+  assert.match(doctor, /-not \$useAccountAuth -and -not \$env:RAILWAY_TOKEN/);
+  assert.match(redeploy, /\$useAccountAuth = \$env:BNA_RAILWAY_USE_ACCOUNT_AUTH -match '\^\(1\|true\|yes\)\$'/);
+  assert.match(redeploy, /-not \$useAccountAuth -and -not \$env:RAILWAY_TOKEN/);
   assert.equal(packageJson.scripts['railway:target:doctor'], 'node scripts/railway-target-guard.mjs doctor');
 });
