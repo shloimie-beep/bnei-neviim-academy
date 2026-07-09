@@ -17,6 +17,7 @@
     "bna:run:stale-evidence": "node scripts/bna-execution-run.mjs stale-evidence",
     "production:readiness:snapshot": "node scripts/production-readiness-snapshot.mjs",
     "production:readiness:gate": "node scripts/production-readiness-gate.mjs",
+    "production:unblocker": "node scripts/production-unblocker.mjs",
     "pqc:validate": "node scripts/validate-product-quality-packets.mjs",
     "pqc:validate:fixtures": "node scripts/validate-product-quality-packets.mjs --fixtures",
     "pqc:evals": "node ops/product-quality-compiler/evals/run-product-quality-compiler-evals.mjs",

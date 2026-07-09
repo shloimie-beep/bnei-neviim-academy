@@ -15,6 +15,12 @@ Run the blocking release/readiness gate with:
 npm run production:readiness:gate
 ```
 
+Generate the operator-facing unblocker packet with:
+
+```bash
+npm run production:unblocker
+```
+
 The snapshot is read-only. It samples git state, the active execution run,
 agent fleet status, ChatGPT dropoff queue status, and the latest Rabbi Agent
 Review proof-readiness file. It also carries forward the agent-fleet
@@ -50,3 +56,7 @@ Files:
   tower.
 - `latest-production-readiness-snapshot.json`: structured state for future
   automation.
+- `latest-production-unblocker.md`: concise operator-facing list of the exact
+  external setup fields and Agent Mode proof saves still blocking production.
+- `latest-production-unblocker.json`: structured unblocker state for future
+  automation or UI display.

@@ -107,6 +107,7 @@ production-ready when these classes are green or precisely blocked:
 | PROOFSTATE-20260709-017 | Done / tracked latest proof pointer | Codex | Rabbi Agent Review proof readiness only wrote timestamped reports under ignored `ops/live-smokes`, making it too easy for future agents to use stale proof or miss the exact next Agent Mode prompts. | Updated `npm run app:smoke:rabbi-agent-review-proof-readiness` to also write tracked latest summaries under `ops/agent-review-proof-readiness/`. Latest readback confirms both Rabbi prompts/artifacts are live and the hub still has no terminal AGR result for either prompt. |
 | READINESS-20260709-022 | Done / no deploy performed | Codex | Agent fleet auto-deploy could run the configured deploy command after local verification without first consulting the production-readiness gate, creating a bypass around the production closeout blocker state. | Wired `scripts/agent-fleet-supervisor.mjs` to run `npm run production:readiness:gate -- --json` before any auto-deploy command and to block with `production_readiness_gate_blocked` when readiness is not proven. Refreshed `npm run agent:fleet:readiness` so future agents can see the enforced preflight proof. |
 | READINESS-20260709-023 | Done / no deploy performed | Codex | The production-readiness snapshot did not surface the newly enforced agent-fleet auto-deploy preflight, so future agents could miss that auto-deploy is gated even if they read the control tower first. | Updated `scripts/production-readiness-snapshot.mjs` and `ops/production-readiness/README.md` so the snapshot carries `production_deploy_preflight` from fleet readiness and renders the auto-deploy preflight command, blocked reason, and no-deploy proof. |
+| READINESS-20260709-024 | Done / no deploy performed | Codex | The remaining production blockers were accurate but split across the production snapshot, OneTime setup checklist, and Rabbi Agent Review proof report, making the exact next operator actions harder to hand off. | Added `npm run production:unblocker`, which generates `ops/production-readiness/latest-production-unblocker.*` with the three remaining external setup buckets, both Agent Mode proof drop-off URLs, active lanes to avoid, after-update commands, and no-deploy/no-send/no-secret guardrails. |
 
 ## First audit command plan
 
@@ -1166,6 +1167,61 @@ Remaining:
   Rabbi Agent Mode proofs, active collision lanes, and any queued dropoffs are
   clear.
 
+## READINESS-20260709-024 closeout
+
+Implemented:
+
+- Added `scripts/production-unblocker.mjs`.
+- Added `npm run production:unblocker`.
+- Generated:
+  - `ops/production-readiness/latest-production-unblocker.md`
+  - `ops/production-readiness/latest-production-unblocker.json`
+- The unblocker reads the latest production snapshot, OneTime operator setup
+  checklist, and Rabbi Agent Review proof-readiness report.
+- It consolidates:
+  - `SETUP-ONETIME-STRIPE-001`
+  - `SETUP-ONETIME-WHAPI-001`
+  - `SETUP-ONETIME-CAMPAIGN-001`
+  - `rabbi-telegram-helper-ticket-smoke`
+  - `rabbi-helper-tool-scope-map`
+  - active collision lanes to avoid
+  - exact after-update verification commands.
+
+Verification:
+
+- PASS `node --check scripts\production-unblocker.mjs`.
+- PASS `node --test tests\production-unblocker.test.js`.
+- PASS `npm run production:unblocker`.
+- Readback confirmed snapshot status `not_production_complete`, external
+  setup items `3`, Agent Mode proof items `2`, active collision lanes `2`,
+  ChatGPT queued packets `0`, setup IDs
+  `SETUP-ONETIME-STRIPE-001, SETUP-ONETIME-WHAPI-001,
+  SETUP-ONETIME-CAMPAIGN-001`, proof IDs
+  `rabbi-telegram-helper-ticket-smoke, rabbi-helper-tool-scope-map`, and next
+  unblocked executable batch `none`.
+
+Evidence:
+
+- `scripts/production-unblocker.mjs`
+- `tests/production-unblocker.test.js`
+- `package.json`
+- `ops/production-readiness/README.md`
+- `ops/production-readiness/latest-production-unblocker.md`
+- `ops/production-readiness/latest-production-unblocker.json`
+
+Guardrails:
+
+- Read-only unblocker/reporting only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- Production remains blocked until the generated unblocker items are satisfied
+  and re-verified through the listed commands.
+
 ## Final audit
 
 | ID | Status | Evidence | Verification | Remaining issue |
@@ -1175,4 +1231,4 @@ Remaining:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied / deployed / live-smoked | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register; `LEADCAP-20260709-009` closeout above. | Lead capture live-smoked in prior closeout; dry-run proof tests, full suite, deployment, and live smoke pass. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, `LAUNCHBLOCK-20260709-016`, `PROOFSTATE-20260709-017`, `READINESS-20260709-018`, `READINESS-20260709-019`, `READINESS-20260709-020`, `READINESS-20260709-021`, `READINESS-20260709-022`, and `READINESS-20260709-023` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. Rabbi Agent Review proof readiness now has a tracked latest summary and still confirms two missing terminal AGR proofs. The production readiness snapshot now gives a single tracked latest control-tower readback for blockers, active jobs, ChatGPT queue, proof state, next actions, and agent-fleet auto-deploy preflight, labels itself as sampled evidence rather than live telemetry, has a blocking gate command for release/readiness claims, is enforced by `bna:release-gate` deploy/live/final modes, and now blocks agent-fleet auto-deploy before any deploy command can run. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, `LAUNCHBLOCK-20260709-016`, `PROOFSTATE-20260709-017`, `READINESS-20260709-018`, `READINESS-20260709-019`, `READINESS-20260709-020`, `READINESS-20260709-021`, `READINESS-20260709-022`, `READINESS-20260709-023`, and `READINESS-20260709-024` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. Rabbi Agent Review proof readiness now has a tracked latest summary and still confirms two missing terminal AGR proofs. The production readiness snapshot now gives a single tracked latest control-tower readback for blockers, active jobs, ChatGPT queue, proof state, next actions, and agent-fleet auto-deploy preflight, labels itself as sampled evidence rather than live telemetry, has a blocking gate command for release/readiness claims, is enforced by `bna:release-gate` deploy/live/final modes, and now blocks agent-fleet auto-deploy before any deploy command can run. The production unblocker now gives one operator-facing packet for the remaining external setup fields, Agent Mode proof drop-offs, active lanes to avoid, and after-update verification commands. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |

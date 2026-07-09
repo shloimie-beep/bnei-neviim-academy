@@ -36499,3 +36499,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   execution, external send, payment/access mutation, provider/CRM/DNS/
   credential mutation, Agent Review result save, Kimi live inference, public
   publish, or production-data mutation.
+
+## 2026-07-09T19:06:00+03:00 - Production Operator Unblocker Added
+
+- Added `npm run production:unblocker`.
+- Generated `ops/production-readiness/latest-production-unblocker.md` and
+  `.json` from the current production snapshot, OneTime setup checklist, and
+  Rabbi Agent Review proof-readiness report.
+- Readback shows 3 external setup items, 2 Agent Mode proof items, 2 active
+  collision lanes, 0 queued ChatGPT packets, and no unblocked executable batch.
+- The packet names the remaining setup buckets
+  `SETUP-ONETIME-STRIPE-001`, `SETUP-ONETIME-WHAPI-001`, and
+  `SETUP-ONETIME-CAMPAIGN-001`, plus the two Rabbi proof prompt/drop-off URLs.
+- Guardrails held: read-only unblocker/reporting only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.
