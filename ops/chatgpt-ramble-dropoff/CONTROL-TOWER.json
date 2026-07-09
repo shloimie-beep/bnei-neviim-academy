@@ -1,123 +1,10 @@
 {
-  "generated_at": "2026-07-09T05:59:29.149Z",
+  "generated_at": "2026-07-09T06:01:17.915Z",
   "git": {
     "branch": "codex/rabbi-helper-tool-scope-20260708",
-    "dirty": true,
-    "dirty_files": [
-      {
-        "status": "M",
-        "path": "AGENTS.md"
-      },
-      {
-        "status": "M",
-        "path": "BNA-START-HERE.md"
-      },
-      {
-        "status": "M",
-        "path": "MEMORY.md"
-      },
-      {
-        "status": "M",
-        "path": "memory/2026-07-09.md"
-      },
-      {
-        "status": "M",
-        "path": "ops/agent-changelog.md"
-      },
-      {
-        "status": "M",
-        "path": "ops/agent-task-ledger.jsonl"
-      },
-      {
-        "status": "M",
-        "path": "ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md"
-      },
-      {
-        "status": "M",
-        "path": "ops/chatgpt-ramble-dropoff/README.md"
-      },
-      {
-        "status": "M",
-        "path": "ops/chatgpt-ramble-dropoff/templates/CODEX_PROMPT.md"
-      },
-      {
-        "status": "M",
-        "path": "ops/chatgpt-ramble-dropoff/templates/MANIFEST.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/chatgpt-ramble-dropoff/templates/PATCHES.md"
-      },
-      {
-        "status": "M",
-        "path": "ops/chatgpt-ramble-dropoff/templates/packet.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/chatgpt-ramble-dropoff/templates/status.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/watchdog-audits/2026-07-09-product-quality-drift.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/watchdog-audits/2026-07-09-product-quality-drift.md"
-      },
-      {
-        "status": "M",
-        "path": "package.json"
-      },
-      {
-        "status": "M",
-        "path": "raw-input/RAW-20260709-002-chatgpt-credit-routing-and-app-lag-advice.md"
-      },
-      {
-        "status": "M",
-        "path": "scripts/chatgpt-dropoff-ingestor.mjs"
-      },
-      {
-        "status": "M",
-        "path": "tasks-pending/2026-07-09-chatgpt-credit-routing-and-app-lag-advice.md"
-      },
-      {
-        "status": "M",
-        "path": "tests/chatgpt-dropoff-ingestor.test.js"
-      },
-      {
-        "status": "??",
-        "path": "ops/chatgpt-ramble-dropoff/CHATGPT-START-HERE.md"
-      },
-      {
-        "status": "??",
-        "path": "ops/performance-audits/2026-07-08-app-backend-helper-performance/operations-shell-live-readback-20260709-chatgpt-controltower.md"
-      },
-      {
-        "status": "??",
-        "path": "ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-20260709-chatgpt-controltower.json"
-      },
-      {
-        "status": "??",
-        "path": "ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-20260709-chatgpt-controltower.md"
-      },
-      {
-        "status": "??",
-        "path": "ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-bna-20260709-chatgpt-controltower.json"
-      },
-      {
-        "status": "??",
-        "path": "ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-bna-20260709-chatgpt-controltower.md"
-      },
-      {
-        "status": "??",
-        "path": "scripts/chatgpt-dropoff-control-tower.mjs"
-      },
-      {
-        "status": "??",
-        "path": "tests/chatgpt-dropoff-control-tower.test.js"
-      }
-    ],
-    "collision_warning": "Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files."
+    "dirty": false,
+    "dirty_files": [],
+    "collision_warning": ""
   },
   "packets": {
     "count": 2,
@@ -246,6 +133,26 @@
   ],
   "latest_comment_pickup_reports": [
     {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-00-23-603Z-4893651840.md",
+      "updated_at": "2026-07-09T06:00:23.604Z",
+      "size": 743
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-00-23-602Z-4893596622.md",
+      "updated_at": "2026-07-09T06:00:23.603Z",
+      "size": 743
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-00-23-601Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T06:00:23.602Z",
+      "size": 495
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-00-23-599Z-4893586910.md",
+      "updated_at": "2026-07-09T06:00:23.600Z",
+      "size": 743
+    },
+    {
       "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T05-59-00-860Z-4893651840.md",
       "updated_at": "2026-07-09T05:59:00.861Z",
       "size": 743
@@ -263,26 +170,6 @@
     {
       "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T05-59-00-856Z-4893586910.md",
       "updated_at": "2026-07-09T05:59:00.857Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T05-57-39-054Z-4893651840.md",
-      "updated_at": "2026-07-09T05:57:39.056Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T05-57-39-053Z-4893596622.md",
-      "updated_at": "2026-07-09T05:57:39.055Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T05-57-39-052Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T05:57:39.054Z",
-      "size": 495
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T05-57-39-050Z-4893586910.md",
-      "updated_at": "2026-07-09T05:57:39.052Z",
       "size": 743
     }
   ],
@@ -338,7 +225,6 @@
     "error": ""
   },
   "recommendations": [
-    "Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.",
     "No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.",
     "Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.",
     "GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it."

@@ -1,43 +1,14 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-09T05:59:29.149Z
+Generated: 2026-07-09T06:01:17.915Z
 
 ## Lane Safety
 
 - Branch: `codex/rabbi-helper-tool-scope-20260708`
-- Dirty worktree: yes
-- Collision warning: Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files.
+- Dirty worktree: no
 
-| Status | Path |
-| --- | --- |
-| M | AGENTS.md |
-| M | BNA-START-HERE.md |
-| M | MEMORY.md |
-| M | memory/2026-07-09.md |
-| M | ops/agent-changelog.md |
-| M | ops/agent-task-ledger.jsonl |
-| M | ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md |
-| M | ops/chatgpt-ramble-dropoff/README.md |
-| M | ops/chatgpt-ramble-dropoff/templates/CODEX_PROMPT.md |
-| M | ops/chatgpt-ramble-dropoff/templates/MANIFEST.json |
-| M | ops/chatgpt-ramble-dropoff/templates/PATCHES.md |
-| M | ops/chatgpt-ramble-dropoff/templates/packet.json |
-| M | ops/chatgpt-ramble-dropoff/templates/status.json |
-| M | ops/watchdog-audits/2026-07-09-product-quality-drift.json |
-| M | ops/watchdog-audits/2026-07-09-product-quality-drift.md |
-| M | package.json |
-| M | raw-input/RAW-20260709-002-chatgpt-credit-routing-and-app-lag-advice.md |
-| M | scripts/chatgpt-dropoff-ingestor.mjs |
-| M | tasks-pending/2026-07-09-chatgpt-credit-routing-and-app-lag-advice.md |
-| M | tests/chatgpt-dropoff-ingestor.test.js |
-| ?? | ops/chatgpt-ramble-dropoff/CHATGPT-START-HERE.md |
-| ?? | ops/performance-audits/2026-07-08-app-backend-helper-performance/operations-shell-live-readback-20260709-chatgpt-controltower.md |
-| ?? | ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-20260709-chatgpt-controltower.json |
-| ?? | ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-20260709-chatgpt-controltower.md |
-| ?? | ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-bna-20260709-chatgpt-controltower.json |
-| ?? | ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-bna-20260709-chatgpt-controltower.md |
-| ?? | scripts/chatgpt-dropoff-control-tower.mjs |
-| ?? | tests/chatgpt-dropoff-control-tower.test.js |
+
+_None._
 
 ## Packet Status
 
@@ -93,7 +64,6 @@ Generated: 2026-07-09T05:59:29.149Z
 
 ## Recommendations
 
-- Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.
 - No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.
 - Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.
 - GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it.
