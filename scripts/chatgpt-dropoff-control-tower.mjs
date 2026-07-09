@@ -155,15 +155,69 @@ function latestReports(dirName, limit = 8) {
     .slice(0, limit);
 }
 
+function processIsAlive(pid) {
+  const numericPid = Number(pid);
+  if (!Number.isFinite(numericPid) || numericPid <= 0) return false;
+  try {
+    process.kill(numericPid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function inspectTaskLock(taskId = '', sampledAt = new Date()) {
+  if (!taskId) return { health: 'not_inspected_no_task_id', evidence: 'local_lock=not_inspected_no_task_id' };
+  const lockPath = path.join(repoRoot, '.runtime', 'agent-fleet', `task-${taskId}.lock.json`);
+  const relativeLockPath = relative(lockPath);
+  if (!fs.existsSync(lockPath)) return { health: 'missing_lock', evidence: `local_lock=missing path=${relativeLockPath}` };
+  try {
+    const lock = JSON.parse(fs.readFileSync(lockPath, 'utf8'));
+    const pid = Number(lock.pid || 0);
+    const signalAt = lock.heartbeat_at || lock.started_at || lock.startedAt || '';
+    const signalMs = Date.parse(signalAt);
+    const ageHours = Number.isFinite(signalMs)
+      ? Number(((sampledAt.getTime() - signalMs) / 3600000).toFixed(2))
+      : null;
+    const pidRunning = processIsAlive(pid);
+    const health = pidRunning && typeof ageHours === 'number' && ageHours >= 0 && ageHours <= 2
+      ? 'fresh_running_lock'
+      : pidRunning
+        ? 'running_old_heartbeat'
+        : 'stale_lock_dead_pid';
+    const evidence = [
+      `local_lock=${health}`,
+      pid ? `pid=${pid}` : '',
+      signalAt ? `heartbeat=${signalAt}` : '',
+      typeof ageHours === 'number' ? `age_hours=${ageHours}` : '',
+      `path=${relativeLockPath}`,
+    ].filter(Boolean).join(' ');
+    return { health, evidence };
+  } catch (error) {
+    return {
+      health: 'unreadable_lock',
+      evidence: `local_lock=unreadable path=${relativeLockPath} error=${String(error?.message || error).slice(0, 120)}`,
+    };
+  }
+}
+
+function enrichAgentJobLine(line = '', sampledAt = new Date()) {
+  const taskId = line.match(/task #(\d+)/)?.[1] || '';
+  if (!taskId) return line;
+  const lock = inspectTaskLock(taskId, sampledAt);
+  return `${line} (${lock.evidence})`;
+}
+
 function agentFleetSummary(args = {}) {
   if (args.noAgentStatus) return { checked: false, raw: '', summary: [] };
   const result = run('node', ['scripts/agent-fleet-supervisor.mjs', '--status']);
   const lines = result.stdout.split(/\r?\n/).filter(Boolean);
+  const sampledAt = new Date();
   return {
     checked: true,
     ok: result.ok,
     summary: lines.filter((line) => /^- (Supervisor|Observable|Claimable|Active Codex|Ready to claim|Queue health|ChatGPT)/.test(line)),
-    not_claimable: lines.filter((line) => /^- job #/.test(line)).slice(0, 15),
+    not_claimable: lines.filter((line) => /^- job #/.test(line)).slice(0, 15).map((line) => enrichAgentJobLine(line, sampledAt)),
     raw_excerpt: lines.slice(0, 60),
     error: result.ok ? '' : result.stderr.trim(),
   };
@@ -301,7 +355,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
 export {
   buildReport,
   classifyPacket,
+  enrichAgentJobLine,
   gitSummary,
+  inspectTaskLock,
   markdown,
   packetSummary,
   recommendations,

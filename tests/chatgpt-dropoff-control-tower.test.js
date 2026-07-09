@@ -23,6 +23,9 @@ test('ChatGPT dropoff control tower package script and docs are wired', async ()
   assert.match(fs.readFileSync('scripts/chatgpt-dropoff-control-tower.mjs', 'utf8'), /controlTowerGeneratedPaths/);
   assert.equal(typeof tower.buildReport, 'function');
   assert.equal(tower.classifyPacket({ status: { status: 'done_verified' }, packet: {} }, { findings: [], ready: false }), 'terminal');
+  const enriched = tower.enrichAgentJobLine('- job #999 / task #999999 [running] Example stale lane');
+  assert.match(enriched, /local_lock=/);
+  assert.match(enriched, /task-999999\.lock\.json/);
 });
 
 test('ChatGPT dropoff templates include lane ownership and local-state warnings', () => {
