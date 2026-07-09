@@ -37331,3 +37331,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   restart/live Telegram smoke, external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, Drive write,
   or class backfill was performed.
+
+## 2026-07-10T00:00:11+03:00 - Completed Proven UI Collision Jobs
+
+- Reconciled additional failed observable job rows that were still blocking the
+  production gate as broad UI collision lanes even though supervisor evidence
+  already proved the work deployed and live-smoked.
+- Completed job `408` / task `2025` using the provider review navigation
+  repair evidence from
+  `tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md`.
+- Completed jobs `409` / task `2027` and `410` / task `2026` using the same
+  One Time route-role mapping and safe View-as navigation supervisor closeout.
+- Completed job `377` / task `1851` using the BNA brand-shell verification
+  register; this was the older failed duplicate of the already reconciled
+  brand-shell job `382`.
+- Verification readback: each `/api/bna/agent-jobs/:id/complete` call returned
+  `success:true` and `status:"completed"` for the targeted job; final
+  `npm run agent:fleet:status` showed stale observable job candidates `0`,
+  fallback task candidates `0`, and no remaining broad UI collision lane in the
+  production gate.
+- Remaining production blockers are now non-code or proof-gated: external
+  OneTime setup values/approvals, Rabbi Telegram hosted/live-smoke proof, two
+  Agent Mode terminal proofs, and the intentional Agent Review blocker job
+  `344`.
