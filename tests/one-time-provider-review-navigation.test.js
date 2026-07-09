@@ -241,9 +241,20 @@ test('signed One Time provider session uses production Rabbi workspace navigatio
 
     const crmText = await page.locator('[data-provider-section="crm"]').innerText();
     assert.match(crmText, /One Time CRM Inbox/);
+    assert.equal(await page.locator('[data-one-time-provider-crm-shell]').count(), 1);
+    assert.equal(await page.locator('.one-time-crm-workbench').count(), 1);
+    assert.equal(await page.locator('.one-time-crm-detail').count(), 1);
     assert.match(crmText, /Open Inbox/);
     assert.match(crmText, /Preview Email/);
+    assert.match(crmText, /Selected CRM view/);
+    assert.match(crmText, /Class access/);
     assert.doesNotMatch(crmText, /TEST Parent|TEST Student|test\.parent|configured|not configured|BNA Academy/i);
+
+    await page.locator('[data-one-time-provider-crm-shell] [data-provider-nav="mailbox"]').first().click();
+    await page.waitForSelector('[data-provider-nav="mailbox"].active');
+    assert.equal(await page.locator('[data-provider-section="mailbox"]').isVisible(), true);
+    await page.locator('#providerNav [data-provider-nav="crm"]').click();
+    await page.waitForSelector('[data-provider-nav="crm"].active');
 
     const bodyText = await page.locator('body').innerText();
     assert.match(bodyText, /RABBI ACCOUNT/);
@@ -262,6 +273,33 @@ test('signed One Time provider session uses production Rabbi workspace navigatio
     assert.match(whatsAppText, /No send/);
     assert.match(whatsAppText, /Save WhatsApp Setup/);
     assert.doesNotMatch(whatsAppText, /Send WhatsApp now|SEND_WHATSAPP/i);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+    assert.equal(mobileOverflow, false);
+  } finally {
+    await browser.close();
+    await local.close();
+  }
+});
+
+test('actual signed Rabbi provider login does not show Super Admin bridge chrome', async () => {
+  const local = createProviderReviewServer();
+  const baseUrl = await local.listen();
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1180, height: 840 } });
+    await page.goto(`${baseUrl}/provider.html?section=crm`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('[data-one-time-provider-crm-shell]');
+
+    const bodyText = await page.locator('body').innerText();
+    assert.match(bodyText, /RABBI ACCOUNT/);
+    assert.match(bodyText, /Sign Out/);
+    assert.doesNotMatch(bodyText, /Back to Super Admin|Return to Super Admin|Scoped Rabbi workspace|ADMIN ON RABBI ACCOUNT|opened by Super Admin/i);
+    assert.doesNotMatch(bodyText, /TEST Parent|TEST Student|test\.parent|BNA Academy/i);
+    assert.equal(await page.locator('#oneTimeAdminProviderBanner').count(), 0);
+    assert.equal(await page.locator('[data-one-time-provider-crm-shell]').count(), 1);
+    assert.equal(await page.locator('.one-time-crm-workbench').count(), 1);
 
     await page.setViewportSize({ width: 390, height: 844 });
     const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
@@ -355,10 +393,15 @@ test('One Time Rabbi CRM and mailbox review hide Super Admin setup diagnostics',
     await page.waitForSelector('[data-provider-nav="crm"].active');
     const crmText = await page.locator('[data-provider-section="crm"]').innerText();
     assert.match(crmText, /One Time CRM Inbox/);
+    assert.equal(await page.locator('[data-one-time-provider-crm-shell]').count(), 1);
+    assert.equal(await page.locator('.one-time-crm-workbench').count(), 1);
+    assert.equal(await page.locator('.one-time-crm-detail').count(), 1);
     assert.match(crmText, /Open Inbox/);
     assert.match(crmText, /Preview Email/);
     assert.match(crmText, /Draft Message/);
-    assert.match(crmText, /TEST Parent One Time/);
+    assert.match(crmText, /Selected CRM view/);
+    assert.match(crmText, /Parent records|Parent/);
+    assert.doesNotMatch(crmText, /TEST Parent One Time|TEST Student One Time|Message Actions/);
     assert.doesNotMatch(crmText, /configured|not configured|webhook|runtime config|Needs live policy|Needs sender decision|Bulk email locked|Access Checklist|Commercial Model|External Apps/i);
 
     await page.goto(`${baseUrl}/provider.html?review=one-time&section=mailbox`, { waitUntil: 'networkidle' });

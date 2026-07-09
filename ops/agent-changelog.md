@@ -35397,3 +35397,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   smoke, instance-config readback, Agent Review prompt readback for
   `rabbi-helper-tool-scope-map`, and `/one-time-parent` readback with
   parent-managed copy and no recovery/classroom-password fallback.
+
+## 2026-07-09T07:40:00+03:00 - OneTime Rabbi CRM Layout Locally Verified
+
+- Continued `REQ-20260709-005` and `REQ-20260709-006` for the Rabbi / OneTime
+  provider portal. The CRM view now uses a scoped workbench layout with one
+  contact list and one detail pane instead of duplicate service cards/message
+  action stacks.
+- Active signed Rabbi-provider login no longer shows the super-admin bridge
+  chrome, fixture/test display text is sanitized from Rabbi-facing CRM copy, and
+  the OneTime provider helper launcher is compact so it does not cover CRM
+  content.
+- Verification passed: focused provider/helper tests 18/18, local desktop/tablet
+  and mobile CRM layout smoke, full `npm test` 1675/1675,
+  `npm run secrets:audit`, `npm run watchdog:actions`,
+  `npm run watchdog:protocol-drift`, and `git diff --check` with line-ending
+  warnings only.
+- Evidence is recorded in
+  `ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/` and
+  `tasks-pending/2026-07-09-onetime-scope-ui-agent-contact-corrections.md`.
+- Remaining open work: deploy/live-smoke this CRM patch, then continue full
+  content/student portal UI polish, CRM persistence, WAPI/WhatsApp readiness,
+  safe contact tagging, and Rabbi Telegram live delivery after
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured.

@@ -1181,6 +1181,13 @@
             return text.length > limit ? `${text.slice(0, limit - 3)}...` : text;
         }
 
+        function oneTimeLaunchDisplay(value, fallback = '') {
+            const text = String(value || '').replace(/\s+/g, ' ').trim();
+            if (!text) return fallback;
+            if (/\bTEST\b|test\.|example\.test|TEST-/i.test(text)) return fallback;
+            return text;
+        }
+
         function isOneTimeReadOnlyViewAs() {
             return Boolean(oneTimeViewAsRabbiToken && (oneTimeViewAsRabbiSession?.read_only !== false));
         }
@@ -1306,13 +1313,13 @@
                 return;
             }
             document.body.classList.add('one-time-admin-provider-active');
-            document.title = 'Admin on Rabbi One Time Provider Account';
+            document.title = options.sessionRequired ? 'Admin on Rabbi One Time Provider Account' : 'OneTimeOneTime Rabbi Workspace';
             const title = document.querySelector('.brand-lockup > div > strong');
             const subtitle = document.querySelector('.brand-lockup > div > span');
             const chip = document.querySelector('.brand-chip');
             if (title) title.textContent = 'OneTimeOneTime';
-            if (subtitle) subtitle.textContent = 'Admin on Rabbi provider account';
-            if (chip) chip.textContent = 'ADMIN ON RABBI ACCOUNT';
+            if (subtitle) subtitle.textContent = options.sessionRequired ? 'Admin on Rabbi provider account' : 'Rabbi Eli Scheller workspace';
+            if (chip) chip.textContent = options.sessionRequired ? 'ADMIN ON RABBI ACCOUNT' : 'RABBI ACCOUNT';
             let banner = document.getElementById('oneTimeAdminProviderBanner');
             if (!banner) {
                 banner = document.createElement('div');
@@ -1321,16 +1328,22 @@
                 document.querySelector('.brand-topbar')?.after(banner);
             }
             const provider = bannerData?.provider || {};
-            banner.innerHTML = `
-                <strong>ADMIN ON RABBI ACCOUNT</strong>
-                <span>You are ${options.sessionRequired ? 'opening' : 'seeing'} the Rabbi / One Time provider portal as a scoped provider session. Super Admin tools are hidden here; actions stay inside rabbi_sheller_provider / one_time_mishnah_class.</span>
-                <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=platform&view=communications&section=email&inbox=rabbi">Return to Super Admin Inbox</a>
-            `;
+            banner.innerHTML = options.sessionRequired
+                ? `
+                    <strong>ADMIN ON RABBI ACCOUNT</strong>
+                    <span>Start from Operations to open the Rabbi / One Time workspace safely. This page never asks for Rabbi, student, or member passwords.</span>
+                    <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=platform&view=communications&section=email&inbox=rabbi">Return to Super Admin Inbox</a>
+                `
+                : `
+                    <strong>Scoped Rabbi workspace</strong>
+                    <span>Provider tools here stay inside rabbi_sheller_provider / one_time_mishnah_class. Platform diagnostics and Super Admin setup cards stay out of this view.</span>
+                    <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=platform&view=communications&section=email&inbox=rabbi">Back to Super Admin</a>
+                `;
             const providerName = provider.provider_name || provider.display_name || 'Rabbi Eli Scheller';
             const providerTitle = document.getElementById('providerTitle');
             const providerSubtitle = document.getElementById('providerSubtitle');
             if (providerTitle) providerTitle.textContent = providerName;
-            if (providerSubtitle) providerSubtitle.textContent = 'Rabbi / One Time provider account, opened by Super Admin.';
+            if (providerSubtitle) providerSubtitle.textContent = 'Rabbi Eli Scheller workspace for OneTimeOneTime Mishnayos.';
             if (options.sessionRequired) {
                 const loginHeading = document.querySelector('#loginPanel h1');
                 const loginIntro = document.querySelector('#loginPanel .small');
@@ -2547,7 +2560,7 @@
         function renderOneTimeProviderActionBar(data = {}) {
             const links = data.links || {};
             return `
-                <div class="button-row">
+                <div class="button-row one-time-crm-toolbar">
                     <button class="btn primary" type="button" data-action-id="ACTION-PROVIDER-SECTION-NAVIGATION" data-provider-nav="mailbox" data-one-time-action-state="navigate">Open Inbox</button>
                     <a class="btn" href="${oneTimeReviewHref(links.email_preview, '/one-time-email-review.html')}" data-one-time-action-state="navigate">Preview Email</a>
                     <button class="btn" type="button" data-action-id="ACTION-PROVIDER-SECTION-NAVIGATION" data-provider-nav="communications" data-one-time-action-state="navigate">Draft Message</button>
@@ -2563,68 +2576,121 @@
             const supportTicket = data.support_ticket || {};
             const privateQuestion = data.private_question || {};
             const records = data.crm_workspace?.current_records || {};
-            const fixtureFallback = Boolean(oneTimeReviewMode && !oneTimeViewAsRabbiToken);
-            const parentName = parent.name || (fixtureFallback ? 'TEST Parent One Time' : 'Parents');
-            const studentName = student.display_name || student.name || (fixtureFallback ? 'TEST Student One Time' : 'Students');
-            const parentBody = parent.name || student.display_name || student.name
-                ? `Parent account linked to ${student.display_name || student.name || (fixtureFallback ? 'TEST Student One Time' : 'student records')}.${parent.email ? ` Email: ${parent.email}.` : ''}`
-                : `${records.parents || 0} parent record${Number(records.parents || 0) === 1 ? '' : 's'} in the One Time CRM. Open the mailbox to review captured email threads.`;
-            const studentBody = student.display_name || student.name
-                ? 'Student record for class access, attendance, library progress, private questions, badges, and rewards.'
-                : `${records.students || 0} student record${Number(records.students || 0) === 1 ? '' : 's'} in the One Time CRM.`;
-            return [
-                `
-                    <article class="service-card">
-                        <div class="service-head">
-                            <div>
-                                <h3>One Time CRM Inbox</h3>
-                                <p class="small">Emails to info@onetimeonetime.com are stored in this One Time CRM mailbox and tied back to parents, students, support tickets, and private Rabbi questions.</p>
+            const parentCount = Number(records.parents || 0);
+            const studentCount = Number(records.students || 0);
+            const supportCount = Number(records.support_items || (supportTicket.title ? 1 : 0));
+            const parentName = oneTimeLaunchDisplay(parent.name || parent.display_name, 'Parent records');
+            const studentName = oneTimeLaunchDisplay(student.display_name || student.name, 'Student records');
+            const parentEmail = oneTimeLaunchDisplay(parent.email || parent.contact_email, '');
+            const studentLabel = oneTimeLaunchDisplay(student.display_name || student.name, 'linked student records');
+            const supportTitle = oneTimeLaunchDisplay(supportTicket.title, 'Support tickets');
+            const supportBody = oneTimeLaunchDisplay(supportTicket.latest_activity, 'Parent support requests, worksheet questions, login issues, and billing questions are tracked from the same contact record.');
+            const privateQuestionTitle = oneTimeLaunchDisplay(privateQuestion.title, 'Private Rabbi questions');
+            const privateQuestionBody = oneTimeLaunchDisplay(privateQuestion.body, 'Student questions can stay private for Rabbi review or be approved for the public classroom feed when appropriate.');
+            const crmRecords = [
+                {
+                    type: 'Parent',
+                    title: parentName,
+                    body: oneTimeLaunchDisplay(parent.name || parent.display_name, '') || parentEmail
+                        ? `Linked to ${studentLabel}. ${parentEmail ? `Email: ${parentEmail}.` : 'Email thread captured in the One Time inbox.'}`
+                        : `${parentCount} parent record${parentCount === 1 ? '' : 's'} in this workspace. Open the inbox to review captured email threads and follow-up notes.`,
+                    meta: [parentEmail || 'info@onetimeonetime.com', `${parentCount || 0} parent record${parentCount === 1 ? '' : 's'}`],
+                    action: 'Open Inbox',
+                    target: 'mailbox',
+                },
+                {
+                    type: 'Student',
+                    title: studentName,
+                    body: oneTimeLaunchDisplay(student.display_name || student.name, '')
+                        ? 'Class access, attendance, library progress, private questions, badges, and reward history stay connected here.'
+                        : `${studentCount} student record${studentCount === 1 ? '' : 's'} connected to parent accounts, attendance, library progress, questions, and rewards.`,
+                    meta: ['Attendance', 'Library', 'Questions'],
+                    action: 'Student View',
+                    target: 'student',
+                    href: oneTimeRoleLink(data.links || {}, 'student', '/student/login', '/student.html?review=one-time'),
+                },
+                {
+                    type: 'Support',
+                    title: supportTitle,
+                    body: supportBody,
+                    meta: [`${supportCount || 0} support item${supportCount === 1 ? '' : 's'}`, supportTicket.status || 'Needs follow-up'],
+                    action: 'Open Messages',
+                    target: 'communications',
+                },
+                {
+                    type: 'Private question',
+                    title: privateQuestionTitle,
+                    body: privateQuestionBody,
+                    meta: [privateQuestion.status || 'Rabbi review', 'Publish only after approval'],
+                    action: 'Classroom',
+                    href: oneTimeRoleLink(data.links || {}, 'classroom', '/one-time-classroom.html', '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS'),
+                },
+            ];
+            const recordHtml = crmRecords.map(record => `
+                <article class="one-time-crm-record" data-one-time-crm-record="${escapeHtml(record.type.toLowerCase().replace(/\s+/g, '-'))}">
+                    <div class="one-time-crm-record-top">
+                        <strong>${escapeHtml(record.title)}</strong>
+                        <span class="status-pill">${escapeHtml(record.type)}</span>
+                    </div>
+                    <p class="small">${escapeHtml(record.body)}</p>
+                    <div class="one-time-crm-record-meta">
+                        ${(record.meta || []).filter(Boolean).map(item => `<span class="status-pill">${escapeHtml(item)}</span>`).join('')}
+                    </div>
+                    ${record.href
+                        ? `<a class="btn" href="${escapeHtml(record.href)}" data-one-time-action-state="navigate">${escapeHtml(record.action)}</a>`
+                        : `<button class="btn" type="button" data-action-id="ACTION-PROVIDER-SECTION-NAVIGATION" data-provider-nav="${escapeHtml(record.target || 'crm')}" data-one-time-action-state="navigate">${escapeHtml(record.action)}</button>`}
+                </article>
+            `).join('');
+            return `
+                <section class="one-time-crm-shell" data-one-time-provider-crm-shell aria-label="One Time CRM workbench">
+                    <div class="one-time-crm-header">
+                        <div>
+                            <h3>One Time CRM Inbox</h3>
+                            <p class="small">Emails to info@onetimeonetime.com, parent/student records, notes, support tickets, and private Rabbi questions are connected here inside the Rabbi Sheller workspace.</p>
+                            <div class="one-time-crm-summary-grid">
+                                <span class="status-pill">${escapeHtml(String(parentCount || 0))} parent${parentCount === 1 ? '' : 's'}</span>
+                                <span class="status-pill">${escapeHtml(String(studentCount || 0))} student${studentCount === 1 ? '' : 's'}</span>
+                                <span class="status-pill">${escapeHtml(String(supportCount || 0))} support item${supportCount === 1 ? '' : 's'}</span>
                             </div>
-                            <span class="status-pill">Rabbi workspace</span>
-                        </div>
-                        <div class="service-meta">
-                            <span class="status-pill">${escapeHtml(String(records.parents || 1))} parent</span>
-                            <span class="status-pill">${escapeHtml(String(records.students || 1))} student</span>
-                            <span class="status-pill">${escapeHtml(String(records.support_items || 2))} support items</span>
                         </div>
                         ${renderOneTimeProviderActionBar(data)}
-                    </article>
-                `,
-                miniCardGrid([
-                    {
-                        title: parentName,
-                        body: parentBody,
-                        status: 'Parent'
-                    },
-                    {
-                        title: studentName,
-                        body: studentBody,
-                        status: 'Student'
-                    },
-                    {
-                        title: supportTicket.title || 'Worksheet link question',
-                        body: supportTicket.latest_activity || 'Parent support request stored in the One Time CRM.',
-                        status: 'Support'
-                    },
-                    {
-                        title: privateQuestion.title || 'Private Rabbi question',
-                        body: privateQuestion.body || 'Student private question waiting for Rabbi review.',
-                        status: 'Private question'
-                    }
-                ]),
-                `
-                    <article class="service-card">
-                        <div class="service-head">
-                            <div>
-                                <h3>Message Actions</h3>
-                                <p class="small">Use the inbox for email threads, Messages for parent/student portal messages, and Preview Email to review the current email templates before any live send is approved.</p>
+                    </div>
+                    <div class="one-time-crm-workbench">
+                        <div class="one-time-crm-list" aria-label="CRM records">
+                            <div class="one-time-crm-list-head">
+                                <span>Records</span>
+                                <span>Rabbi workspace</span>
                             </div>
-                            <span class="status-pill">Role actions</span>
+                            ${recordHtml}
                         </div>
-                        ${renderOneTimeProviderActionBar(data)}
-                    </article>
-                `
-            ].join('');
+                        <aside class="one-time-crm-detail" aria-label="Selected CRM record">
+                            <div>
+                                <h3>Selected CRM view</h3>
+                                <p class="small">Open a record from the list to work from the person, not from a loose card. The Rabbi sees contact context, conversation history, notes, class access, and pending actions in one place.</p>
+                            </div>
+                            <div class="one-time-crm-detail-grid">
+                                <div class="one-time-crm-summary">
+                                    <strong>Conversation</strong>
+                                    <p class="small">Inbox and WhatsApp context stay tied to the parent/student contact.</p>
+                                </div>
+                                <div class="one-time-crm-summary">
+                                    <strong>Notes</strong>
+                                    <p class="small">Rabbi notes stay scoped to rabbi_sheller_provider and do not expose platform setup diagnostics.</p>
+                                </div>
+                                <div class="one-time-crm-summary">
+                                    <strong>Class access</strong>
+                                    <p class="small">Parent and student portal links, schedule, library progress, and attendance are visible when attached.</p>
+                                </div>
+                                <div class="one-time-crm-summary">
+                                    <strong>Next action</strong>
+                                    <p class="small">Draft reply, open the mailbox, preview templates, or review the student/parent view from the same workspace.</p>
+                                </div>
+                            </div>
+                            ${renderOneTimeProviderActionBar(data)}
+                        </aside>
+                    </div>
+                </section>
+            `;
         }
 
         function renderOneTimeReviewMailbox(data = {}) {
@@ -2750,9 +2816,9 @@
                 reviewCard('Allowed modules', (viewAsSession.allowed_modules || data.admin_review?.modules || []).join(', '), 'Rabbi scope'),
             ] : [
                 reviewCard('CRM inbox', 'Emails to info@onetimeonetime.com live in the One Time mailbox and CRM thread list.', 'Open Mailbox'),
-                reviewCard('Parent and student', `${parent.name || 'TEST Parent One Time'} is linked to ${student.display_name || student.name || 'TEST Student One Time'}.`, 'One Time only'),
-                reviewCard('Live class', `${classSession.title || 'TEST Weekly Mishnah Live Class'} / ${classSession.masechta || ''} ${classSession.perek || ''}`, classSession.status || 'review ready'),
-                reviewCard('Support queue', data.support_ticket?.latest_activity || 'Parent support and private questions appear in CRM/Messages.', data.support_ticket?.status || 'open'),
+                reviewCard('Parent and student', `${oneTimeLaunchDisplay(parent.name || parent.display_name, 'Parent record')} is linked to ${oneTimeLaunchDisplay(student.display_name || student.name, 'student record')}.`, 'One Time only'),
+                reviewCard('Live class', `${oneTimeLaunchDisplay(classSession.title, 'Weekly Mishnah Live Class')} / ${classSession.masechta || ''} ${classSession.perek || ''}`, classSession.status || 'review ready'),
+                reviewCard('Support queue', oneTimeLaunchDisplay(data.support_ticket?.latest_activity, 'Parent support and private questions appear in CRM/Messages.'), data.support_ticket?.status || 'open'),
             ]).join('');
             if (usersPanel) {
                 const rabbiVisibleUsers = (data.workspace_users || []).filter(user => !/platform|support|shloimie/i.test(`${user.name || ''} ${user.role || ''} ${user.access_level || ''}`));
@@ -3227,7 +3293,13 @@
                 portalPanel.classList.remove('one-time-sidebar-open');
                 return;
             }
-            if (event.target.closest('[data-provider-nav]') && portalPanel.classList.contains('one-time-sidebar-open')) {
+            const providerNavButton = event.target.closest('[data-provider-nav]');
+            if (providerNavButton && !providerNavButton.closest('#providerNav')) {
+                setProviderSection(providerNavButton.dataset.providerNav, { updateUrl: true });
+                portalPanel.classList.remove('one-time-sidebar-open');
+                return;
+            }
+            if (providerNavButton && portalPanel.classList.contains('one-time-sidebar-open')) {
                 portalPanel.classList.remove('one-time-sidebar-open');
             }
 

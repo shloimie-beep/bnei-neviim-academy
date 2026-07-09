@@ -90,6 +90,7 @@ test('One Time parent and student review routes mount scoped helper copy', () =>
   assert.match(widget, /body\.bna-assistant-surface-one-time-parent \.bna-bot-launcher/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-student \.bna-bot-launcher/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-provider \.bna-bot-launcher/);
+  assert.match(widget, /@media \(max-width: 520px\)[\s\S]*body\.bna-assistant-surface-one-time-provider \.bna-bot-launcher[\s\S]*font-size: 0/);
   assert.match(widget, /Billing question/);
   assert.match(widget, /Attendance question/);
   assert.match(widget, /Library preview/);

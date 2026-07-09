@@ -1,0 +1,314 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-07-09T04:36:52.302Z",
+  "target": "/provider.html?admin_provider=one-time&section=crm",
+  "scope": "Local signed OneTime provider CRM layout smoke; no database, sends, payments, external accounts, or production writes.",
+  "results": [
+    {
+      "viewport": {
+        "id": "desktop-1440",
+        "width": 1440,
+        "height": 960
+      },
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "screenshot": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png",
+      "helperTitle": "Rabbi Scheller Admin Helper",
+      "helperLoaded": true,
+      "providerSurfaceClass": true,
+      "title": "OneTimeOneTime Rabbi Workspace",
+      "bodyHasBnaHelper": false,
+      "bodyHasFixtureLeak": false,
+      "bodyHasSetupDiagnostics": false,
+      "crmShellCount": 1,
+      "crmWorkbenchCount": 1,
+      "crmDetailCount": 1,
+      "activeCrmNav": true,
+      "visibleCrmSection": true,
+      "horizontalOverflow": false,
+      "crmTop": 398,
+      "crmWidth": 772,
+      "viewportWidth": 1440,
+      "buttonRects": [
+        {
+          "text": "Open Inbox",
+          "width": 120,
+          "height": 44
+        },
+        {
+          "text": "Preview Email",
+          "width": 139,
+          "height": 44
+        },
+        {
+          "text": "Draft Message",
+          "width": 143,
+          "height": 44
+        },
+        {
+          "text": "Parent View",
+          "width": 123,
+          "height": 44
+        },
+        {
+          "text": "Student View",
+          "width": 133,
+          "height": 44
+        },
+        {
+          "text": "Open Inbox",
+          "width": 292,
+          "height": 38
+        },
+        {
+          "text": "Student View",
+          "width": 292,
+          "height": 38
+        },
+        {
+          "text": "Open Messages",
+          "width": 292,
+          "height": 38
+        },
+        {
+          "text": "Classroom",
+          "width": 292,
+          "height": 38
+        },
+        {
+          "text": "Open Inbox",
+          "width": 120,
+          "height": 44
+        },
+        {
+          "text": "Preview Email",
+          "width": 139,
+          "height": 44
+        },
+        {
+          "text": "Draft Message",
+          "width": 143,
+          "height": 44
+        },
+        {
+          "text": "Parent View",
+          "width": 123,
+          "height": 44
+        },
+        {
+          "text": "Student View",
+          "width": 133,
+          "height": 44
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "passed": true
+    },
+    {
+      "viewport": {
+        "id": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "screenshot": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/tablet-768-crm.png",
+      "helperTitle": "Rabbi Scheller Admin Helper",
+      "helperLoaded": true,
+      "providerSurfaceClass": true,
+      "title": "OneTimeOneTime Rabbi Workspace",
+      "bodyHasBnaHelper": false,
+      "bodyHasFixtureLeak": false,
+      "bodyHasSetupDiagnostics": false,
+      "crmShellCount": 1,
+      "crmWorkbenchCount": 1,
+      "crmDetailCount": 1,
+      "activeCrmNav": true,
+      "visibleCrmSection": true,
+      "horizontalOverflow": false,
+      "crmTop": 486,
+      "crmWidth": 712,
+      "viewportWidth": 768,
+      "buttonRects": [
+        {
+          "text": "Open Inbox",
+          "width": 164,
+          "height": 44
+        },
+        {
+          "text": "Preview Email",
+          "width": 164,
+          "height": 44
+        },
+        {
+          "text": "Draft Message",
+          "width": 164,
+          "height": 44
+        },
+        {
+          "text": "Parent View",
+          "width": 164,
+          "height": 44
+        },
+        {
+          "text": "Student View",
+          "width": 678,
+          "height": 44
+        },
+        {
+          "text": "Open Inbox",
+          "width": 686,
+          "height": 38
+        },
+        {
+          "text": "Student View",
+          "width": 686,
+          "height": 38
+        },
+        {
+          "text": "Open Messages",
+          "width": 686,
+          "height": 38
+        },
+        {
+          "text": "Classroom",
+          "width": 686,
+          "height": 38
+        },
+        {
+          "text": "Open Inbox",
+          "width": 164,
+          "height": 44
+        },
+        {
+          "text": "Preview Email",
+          "width": 164,
+          "height": 44
+        },
+        {
+          "text": "Draft Message",
+          "width": 164,
+          "height": 44
+        },
+        {
+          "text": "Parent View",
+          "width": 164,
+          "height": 44
+        },
+        {
+          "text": "Student View",
+          "width": 678,
+          "height": 44
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "passed": true
+    },
+    {
+      "viewport": {
+        "id": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "screenshot": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png",
+      "helperTitle": "Rabbi Scheller Admin Helper",
+      "helperLoaded": true,
+      "providerSurfaceClass": true,
+      "title": "OneTimeOneTime Rabbi Workspace",
+      "bodyHasBnaHelper": false,
+      "bodyHasFixtureLeak": false,
+      "bodyHasSetupDiagnostics": false,
+      "crmShellCount": 1,
+      "crmWorkbenchCount": 1,
+      "crmDetailCount": 1,
+      "activeCrmNav": true,
+      "visibleCrmSection": true,
+      "horizontalOverflow": false,
+      "crmTop": 554,
+      "crmWidth": 334,
+      "viewportWidth": 390,
+      "buttonRects": [
+        {
+          "text": "Open Inbox",
+          "width": 146,
+          "height": 44
+        },
+        {
+          "text": "Preview Email",
+          "width": 146,
+          "height": 44
+        },
+        {
+          "text": "Draft Message",
+          "width": 146,
+          "height": 44
+        },
+        {
+          "text": "Parent View",
+          "width": 146,
+          "height": 44
+        },
+        {
+          "text": "Student View",
+          "width": 300,
+          "height": 44
+        },
+        {
+          "text": "Open Inbox",
+          "width": 308,
+          "height": 38
+        },
+        {
+          "text": "Student View",
+          "width": 308,
+          "height": 38
+        },
+        {
+          "text": "Open Messages",
+          "width": 308,
+          "height": 38
+        },
+        {
+          "text": "Classroom",
+          "width": 308,
+          "height": 38
+        },
+        {
+          "text": "Open Inbox",
+          "width": 146,
+          "height": 44
+        },
+        {
+          "text": "Preview Email",
+          "width": 146,
+          "height": 44
+        },
+        {
+          "text": "Draft Message",
+          "width": 146,
+          "height": 44
+        },
+        {
+          "text": "Parent View",
+          "width": 146,
+          "height": 44
+        },
+        {
+          "text": "Student View",
+          "width": 300,
+          "height": 44
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "passed": true
+    }
+  ]
+}

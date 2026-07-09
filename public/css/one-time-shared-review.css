@@ -167,8 +167,6 @@ body.one-time-review-active .upcoming-item,
 body.one-time-review-active .upcoming-card,
 body.one-time-review-active .item,
 body.one-time-review-active details,
-body.one-time-review-active article,
-body.one-time-review-active section,
 body.one-time-review-active .hero-copy,
 body.one-time-review-active .access-panel,
 body.one-time-review-active .empty {
@@ -490,6 +488,128 @@ body.one-time-review-active .one-time-mini-card a {
   font-weight: 900;
 }
 
+body.one-time-review-active .one-time-crm-shell {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+body.one-time-review-active .one-time-crm-header,
+body.one-time-review-active .one-time-crm-detail,
+body.one-time-review-active .one-time-crm-record,
+body.one-time-review-active .one-time-crm-summary {
+  border: 1px solid rgba(8, 19, 35, 0.12);
+  border-radius: 8px;
+  background: var(--one-time-white);
+  box-shadow: 0 12px 28px rgba(8, 19, 35, 0.07);
+}
+
+body.one-time-review-active .one-time-crm-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  padding: 16px;
+}
+
+body.one-time-review-active .one-time-crm-header h3,
+body.one-time-review-active .one-time-crm-detail h3 {
+  margin: 0;
+}
+
+body.one-time-review-active .one-time-crm-header .small {
+  max-width: 760px;
+  margin: 6px 0 0;
+}
+
+body.one-time-review-active .one-time-crm-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+  margin: 0;
+}
+
+body.one-time-review-active .one-time-crm-workbench {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.42fr) minmax(0, 0.58fr);
+  gap: 14px;
+  align-items: start;
+  min-width: 0;
+}
+
+body.one-time-review-active .one-time-crm-list,
+body.one-time-review-active .one-time-crm-detail {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+body.one-time-review-active .one-time-crm-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--one-time-navy);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+body.one-time-review-active .one-time-crm-record {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+body.one-time-review-active .one-time-crm-record strong,
+body.one-time-review-active .one-time-crm-detail strong,
+body.one-time-review-active .one-time-crm-summary strong {
+  color: var(--one-time-navy);
+}
+
+body.one-time-review-active .one-time-crm-record p,
+body.one-time-review-active .one-time-crm-detail p,
+body.one-time-review-active .one-time-crm-summary p {
+  margin: 0;
+}
+
+body.one-time-review-active .one-time-crm-record-top,
+body.one-time-review-active .one-time-crm-record-meta,
+body.one-time-review-active .one-time-crm-summary-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+
+body.one-time-review-active .one-time-crm-record-top {
+  justify-content: space-between;
+}
+
+body.one-time-review-active .one-time-crm-record .btn {
+  min-height: 38px;
+  padding: 8px 10px;
+}
+
+body.one-time-review-active .one-time-crm-detail {
+  padding: 16px;
+}
+
+body.one-time-review-active .one-time-crm-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+body.one-time-review-active .one-time-crm-summary {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
+  box-shadow: none;
+}
+
 body.one-time-review-active.one-time-student-review-active .hero {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -750,6 +870,21 @@ body.one-time-view-as-readonly .overview-metric {
 
   body.one-time-review-active #portalPanel.one-time-provider-workspace {
     display: block;
+  }
+
+  body.one-time-review-active .one-time-crm-header,
+  body.one-time-review-active .one-time-crm-workbench,
+  body.one-time-review-active .one-time-crm-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.one-time-review-active .one-time-crm-toolbar {
+    justify-content: stretch;
+  }
+
+  body.one-time-review-active .one-time-crm-toolbar .btn,
+  body.one-time-review-active .one-time-crm-toolbar button {
+    flex: 1 1 140px;
   }
 
   body.one-time-review-active .one-time-provider-menu-trigger {

@@ -749,6 +749,36 @@
       background: #ede518;
       color: #080910;
     }
+    body.bna-assistant-surface-one-time-provider .bna-bot-launcher {
+      right: 14px;
+      bottom: 14px;
+      width: 46px;
+      min-width: 46px;
+      min-height: 46px;
+      padding: 0;
+      justify-content: center;
+      font-size: 0;
+    }
+    body.bna-assistant-surface-one-time-provider .bna-bot-launcher-dot {
+      width: 12px;
+      height: 12px;
+    }
+    @media (max-width: 520px) {
+      body.bna-assistant-surface-one-time-provider .bna-bot-launcher {
+        right: 10px;
+        bottom: 10px;
+        width: 46px;
+        min-width: 46px;
+        min-height: 46px;
+        padding: 0;
+        justify-content: center;
+        font-size: 0;
+      }
+      body.bna-assistant-surface-one-time-provider .bna-bot-launcher-dot {
+        width: 12px;
+        height: 12px;
+      }
+    }
     body.bna-assistant-surface-one-time-public .bna-bot-nudge,
     body.bna-assistant-surface-one-time-public .bna-bot-nudge-close {
       border-color: rgba(237, 229, 24, 0.28);
