@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T17:31:39.472Z
+# Production Readiness Snapshot - 2026-07-09T17:41:42.756Z
 
 Result: not_production_complete
 Production ready: no
@@ -15,14 +15,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: 278dba4e
-- origin/master: 278dba4e
+- HEAD: a9419f8a
+- origin/master: a9419f8a
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 278dba4e
-- Sampled origin/master: 278dba4e
+- Sampled git head: a9419f8a
+- Sampled origin/master: a9419f8a
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -49,6 +49,16 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Missing now: whapi_wapi_instance_id, whapi_wapi_phone_number. Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
 - SETUP-ONETIME-CAMPAIGN-001: Campaign seed / real campaign (blocked_external_input). Missing now: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval. Required: final_campaign_copy, exact_recipient_segment_or_list_source, suppression_unsubscribe_proof, final_join_member_links, seed_recipient_sdratler_gmail, explicit_seed_packet_approval, separate_explicit_real_send_command_if_seed_passes
 
+## Public Launch No-Write Smoke
+- Path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
+- Status: passed
+- Ready: yes
+- Fresh for launch gate: yes (0.09h old, max 24h)
+- Commands passed: 4/4
+- External write performed: no
+- Production data mutation performed: no
+- Blocker: none
+
 ## Rabbi Telegram Runtime
 - Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
 - Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (available locally)
@@ -67,7 +77,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 15, stale 443, blocked 126, unknown 193, do-not-redo 878
+- Queue health: fresh 13, stale 447, blocked 126, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -118,6 +128,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - .runtime/rabbi-telegram-chat-id-candidates.json
 - ops/agent-fleet-hardening/latest-agent-fleet-readiness.json
 - ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
+- ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
 - ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md
 
 ## Guardrails
