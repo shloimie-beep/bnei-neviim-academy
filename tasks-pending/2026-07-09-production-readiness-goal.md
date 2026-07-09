@@ -1139,6 +1139,10 @@ Verification:
   blockers `2`, ChatGPT queued packets `0`, active collision lanes `2`,
   `production_deploy_preflight.ok true`,
   `enforced_before_auto_deploy true`, and `deploy_performed false`.
+- Pushed implementation commit `7297ebbc`, then regenerated the tracked
+  snapshot from a clean pushed tree. Final readback sampled head/origin
+  `7297ebbc`, clean `true`, external blockers `2`, queued packets `0`,
+  collision lanes `2`, preflight enforced `true`, and deploy performed `false`.
 
 Evidence:
 
@@ -1158,9 +1162,9 @@ Guardrails:
 
 Remaining:
 
-- After this scoped change is committed and pushed, regenerate the production
-  snapshot again from the clean pushed tree so the latest report samples the
-  pushed evidence commit.
+- Production remains blocked until external OneTime setup values, terminal
+  Rabbi Agent Mode proofs, active collision lanes, and any queued dropoffs are
+  clear.
 
 ## Final audit
 

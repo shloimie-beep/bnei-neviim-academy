@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T15:36:35.936Z
+# Production Readiness Snapshot - 2026-07-09T15:58:15.644Z
 
 Result: not_production_complete
 Production ready: no
@@ -13,14 +13,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: d19fc04d
-- origin/master: d19fc04d
+- HEAD: 7297ebbc
+- origin/master: 7297ebbc
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: d19fc04d
-- Sampled origin/master: d19fc04d
+- Sampled git head: 7297ebbc
+- Sampled origin/master: 7297ebbc
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -40,8 +40,12 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 13, stale 412, blocked 121, unknown 193, do-not-redo 878
+- Queue health: fresh 15, stale 417, blocked 121, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
+- Auto-deploy readiness preflight: enforced
+- Auto-deploy preflight command: npm run production:readiness:gate -- --json
+- Auto-deploy blocked reason: production_readiness_gate_blocked
+- Auto-deploy performed by readiness proof: no
 
 ## Active / Do Not Collide
 - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167
