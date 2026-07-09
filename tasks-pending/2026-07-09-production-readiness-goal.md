@@ -1016,6 +1016,17 @@ Verification:
 - Pending final verification in this batch: full active-run validation, secret
   audit, expected-blocked live release-gate readback from a clean tree, and
   push.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run secrets:audit`.
+- Pushed release-gate integration commit `e46fe795`.
+- EXPECTED BLOCKED `npm run bna:release-gate -- --deploy
+  --confirm-deploy DEPLOY_BNA_PRODUCTION_CLOSEOUT --json` from a clean tree:
+  exit `2`, `production_mutation_performed false`, `deploy_performed false`,
+  `head_pushed true`, dirty files `0`, and blockers include
+  `Production readiness gate blocked`.
+- EXPECTED BLOCKED `npm run production:readiness:gate -- --json`: exit `1`
+  with the same current production blockers.
+- PASS final `npm run chatgpt:dropoff:scan`: queued `0`.
 
 Evidence:
 
@@ -1035,6 +1046,9 @@ Remaining:
 
 - Commit and push this release-gate integration, then run a clean-tree
   release-gate readback to prove production readiness cannot be bypassed.
+- Next productive action remains clearing the external setup/proof/UI-lane
+  blockers and rerunning both `production:readiness:gate` and
+  `bna:release-gate`.
 
 ## Final audit
 

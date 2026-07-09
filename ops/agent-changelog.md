@@ -36424,3 +36424,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   release, app UI edit, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, public
   publish, or production-data mutation.
+
+## 2026-07-09T18:43:29+03:00 - Release Gate Clean-Tree Readback
+
+- Pushed release-gate integration as commit `e46fe795`.
+- Ran `npm run bna:release-gate -- --deploy --confirm-deploy
+  DEPLOY_BNA_PRODUCTION_CLOSEOUT --json` from a clean tree.
+- The release gate exited `2` as expected, kept
+  `production_mutation_performed false` and `deploy_performed false`, confirmed
+  `head_pushed true` and dirty files `0`, and included
+  `Production readiness gate blocked` entries.
+- Reran `npm run production:readiness:gate -- --json`; it remains blocked on
+  the same external setup, terminal Agent Mode proof, active collision lane,
+  and no-unblocked-batch blockers.
+- Final ChatGPT dropoff scan still showed 0 queued packets.
+- Guardrails held: read-only gate/reporting only; no deploy, merge, release,
+  app UI edit, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, public
+  publish, or production-data mutation.
