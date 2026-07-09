@@ -924,6 +924,59 @@ Remaining:
 
 - Commit and push the tracked freshness-enabled snapshot refresh.
 
+## READINESS-20260709-020 closeout
+
+Implemented:
+
+- Added `npm run production:readiness:gate` as the read-only blocking gate for
+  production-readiness claims.
+- Added `scripts/production-readiness-gate.mjs`.
+- Added tests in `tests/production-readiness-gate.test.js`.
+- Updated `scripts/production-readiness-snapshot.mjs` so `production_ready`
+  and `status` are computed from current blockers/reasons instead of being
+  hard-coded false forever.
+- Updated `ops/production-readiness/README.md` and `MEMORY.md` so future
+  agents know the gate is expected to fail until launch-critical blockers are
+  genuinely resolved.
+
+Verification:
+
+- PASS `node --check scripts\production-readiness-gate.mjs`.
+- PASS `node --check scripts\production-readiness-snapshot.mjs`.
+- PASS `node --test tests\production-readiness-gate.test.js`.
+- EXPECTED BLOCKED `npm run production:readiness:gate -- --json`: exit `1`
+  while current blockers remain. The gate reported `not_production_complete`,
+  external Stripe/WAPI/campaign blockers, two Rabbi Agent Review terminal proof
+  blockers, active UI/fallback agent collision lanes, dirty mid-change
+  worktree state, and no next unblocked active-run batch.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run secrets:audit`.
+- PASS `git diff --check`.
+
+Evidence:
+
+- `scripts/production-readiness-gate.mjs`
+- `scripts/production-readiness-snapshot.mjs`
+- `tests/production-readiness-gate.test.js`
+- `ops/production-readiness/README.md`
+- `MEMORY.md`
+
+Guardrails:
+
+- Read-only gate/reporting only.
+- No app UI edit, deploy, merge, release, external send, payment/access
+  mutation, CRM/provider/DNS/credential mutation, Agent Review result save,
+  public publish, or production-data mutation was performed.
+
+Remaining:
+
+- The gate should remain blocked until the external OneTime setup blockers,
+  terminal Rabbi Agent Mode proofs, active collision lanes, and any queued
+  dropoffs are clear.
+- Commit and push this gate batch, then regenerate the tracked latest snapshot
+  from the clean pushed tree so the latest report reflects the computed status
+  logic.
+
 ## Final audit
 
 | ID | Status | Evidence | Verification | Remaining issue |
@@ -933,4 +986,4 @@ Remaining:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied / deployed / live-smoked | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register; `LEADCAP-20260709-009` closeout above. | Lead capture live-smoked in prior closeout; dry-run proof tests, full suite, deployment, and live smoke pass. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, `LAUNCHBLOCK-20260709-016`, `PROOFSTATE-20260709-017`, `READINESS-20260709-018`, and `READINESS-20260709-019` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. Rabbi Agent Review proof readiness now has a tracked latest summary and still confirms two missing terminal AGR proofs. The production readiness snapshot now gives a single tracked latest control-tower readback for blockers, active jobs, ChatGPT queue, proof state, and next actions, and labels itself as sampled evidence rather than live telemetry. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, `LAUNCHBLOCK-20260709-016`, `PROOFSTATE-20260709-017`, `READINESS-20260709-018`, `READINESS-20260709-019`, and `READINESS-20260709-020` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. Rabbi Agent Review proof readiness now has a tracked latest summary and still confirms two missing terminal AGR proofs. The production readiness snapshot now gives a single tracked latest control-tower readback for blockers, active jobs, ChatGPT queue, proof state, and next actions, labels itself as sampled evidence rather than live telemetry, and has a blocking gate command for release/readiness claims. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |

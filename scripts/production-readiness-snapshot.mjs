@@ -242,17 +242,20 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof }) {
   const queuedDropoffs = Number(chatgpt?.queued_count || 0);
   const missingProofCount = Number(proof.remaining_blocker_count || 0);
   const hasExternalBlockers = blockers.length > 0;
-  const noNextBatch = /none/i.test(activeRun.next_unblocked_executable_batch || '');
+  const noNextBatch = activeRun.work_remains === true && /none/i.test(activeRun.next_unblocked_executable_batch || '');
+  const reason = [
+    hasExternalBlockers ? 'full OneTime launch has external Stripe/WAPI/campaign blockers' : '',
+    missingProofCount > 0 ? 'Rabbi Agent Review still needs terminal Agent Mode proof' : '',
+    activeUiLane ? 'broad UI lane is already active in another agent job' : '',
+    activeFallbackLane ? 'fallback/API lane is already active in another agent job' : '',
+    noNextBatch ? 'active execution run has no unblocked executable batch' : '',
+  ].filter(Boolean);
+  const productionReady = reason.length === 0;
 
   return {
-    production_ready: false,
-    status: 'not_production_complete',
-    reason: [
-      hasExternalBlockers ? 'full OneTime launch has external Stripe/WAPI/campaign blockers' : '',
-      missingProofCount > 0 ? 'Rabbi Agent Review still needs terminal Agent Mode proof' : '',
-      activeUiLane ? 'broad UI lane is already active in another agent job' : '',
-      noNextBatch ? 'active execution run has no unblocked executable batch' : '',
-    ].filter(Boolean),
+    production_ready: productionReady,
+    status: productionReady ? 'production_ready' : 'not_production_complete',
+    reason,
     immediate_lead_capture_free_class_lane: 'live_verified_from_existing_register',
     safe_current_scope: 'read-only production-readiness reporting, blocker reconciliation, and non-overlapping proof automation',
     avoid_colliding_with: [activeUiLane, activeFallbackLane].filter(Boolean),

@@ -16,6 +16,7 @@
     "bna:run:source-coverage": "node scripts/bna-execution-run.mjs source-coverage",
     "bna:run:stale-evidence": "node scripts/bna-execution-run.mjs stale-evidence",
     "production:readiness:snapshot": "node scripts/production-readiness-snapshot.mjs",
+    "production:readiness:gate": "node scripts/production-readiness-gate.mjs",
     "pqc:validate": "node scripts/validate-product-quality-packets.mjs",
     "pqc:validate:fixtures": "node scripts/validate-product-quality-packets.mjs --fixtures",
     "pqc:evals": "node ops/product-quality-compiler/evals/run-product-quality-compiler-evals.mjs",

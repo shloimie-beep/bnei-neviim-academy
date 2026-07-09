@@ -36365,3 +36365,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: read-only/status reporting only; no app UI edit, deploy,
   external send, payment/access mutation, provider/CRM/DNS/credential mutation,
   Agent Review result save, public publish, or production-data mutation.
+
+## 2026-07-09T18:33:00+03:00 - Production Readiness Gate Added
+
+- Added `npm run production:readiness:gate` as the read-only blocking gate for
+  production-readiness claims.
+- Added `scripts/production-readiness-gate.mjs` and focused tests.
+- Updated the snapshot status calculation so future fully clear snapshots can
+  report `production_ready` instead of being hard-coded false.
+- Updated production-readiness docs and memory so the gate is expected to fail
+  until external setup blockers, terminal Agent Mode proof, active collision
+  lanes, dirty worktree state, and queued ChatGPT packets are clear.
+- Guardrails held: read-only gate/reporting only; no app UI edit, deploy,
+  external send, payment/access mutation, provider/CRM/DNS/credential mutation,
+  Agent Review result save, public publish, or production-data mutation.
