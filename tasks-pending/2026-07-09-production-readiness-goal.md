@@ -113,6 +113,7 @@ production-ready when these classes are green or precisely blocked:
 | READINESS-20260709-027 | Done / no deploy performed | Codex | The operator unblocker could be generated from a stale committed production snapshot if agents forgot to refresh the control tower first. | Updated `npm run production:unblocker` to sample `node scripts/production-readiness-snapshot.mjs --no-write --json` by default, carry source snapshot metadata, and keep `--from-snapshot-file` for intentional file-based reads. |
 | READINESS-20260709-028 | Done / no deploy performed | Codex | GitHub-connected agents needed the tracked latest unblocker artifact refreshed after the fresh-snapshot default was pushed. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `c020293b`; the artifact records `live_no_write_command`, head/origin `c020293b`, worktree clean `true`, 3 external setup blockers, 2 Agent Mode proof blockers, 2 active collision lanes, 0 queued ChatGPT packets, and no executable batch. |
 | READINESS-20260709-029 | Done / no deploy performed | Codex | The control-tower launch assessment exposed the UI and fallback/API lanes as collision lanes but did not promote the active Agent Review result repair job, even though proof repair overlaps the missing terminal proof blocker. | Updated `scripts/production-readiness-snapshot.mjs` so active Agent Review/AGR repair jobs are included in `avoid_colliding_with` and next actions warn not to overlap proof/result repair while that job is running. |
+| READINESS-20260709-030 | Done / no deploy performed | Codex | GitHub-visible production readiness artifacts needed to reflect the new Agent Review repair collision lane after `READINESS-20260709-029` was pushed. | Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*` and `latest-production-unblocker.*`; the snapshot sampled clean pushed head `0b5cdd3e` and showed 3 collision lanes including job `344`. The unblocker also showed 3 lanes, but its source sample correctly marked dirty because the snapshot artifact was already modified before it ran; a clean-source unblocker refresh follows. |
 
 ## First audit command plan
 
@@ -1449,6 +1450,54 @@ Remaining:
 - After commit/push, regenerate the tracked production readiness snapshot and
   production unblocker from a clean pushed tree so GitHub-visible artifacts
   show the third Agent Review collision lane.
+
+## READINESS-20260709-030 closeout
+
+Implemented:
+
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.md`.
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.json`.
+- Regenerated `ops/production-readiness/latest-production-unblocker.md`.
+- Regenerated `ops/production-readiness/latest-production-unblocker.json`.
+
+Verification:
+
+- PASS `npm run production:readiness:snapshot` from clean pushed head
+  `0b5cdd3e`; snapshot readback showed head/origin `0b5cdd3e`, worktree clean
+  `true`, `not_production_complete`, 2 external active-run blockers, 0 queued
+  ChatGPT packets, and 3 collision lanes:
+  - job `382` / task `1859` running app-wide UI polish
+  - job `427` / task `2185` running fallback/API lane
+  - job `344` / task `1736` running Agent Review result repair
+- PASS `npm run production:unblocker`; unblocker readback showed
+  `snapshot_source_kind: live_no_write_command`, 3 external setup items, 2
+  Agent Mode proof items, 3 active collision lanes, 0 queued ChatGPT packets,
+  and no unblocked executable batch.
+- Note: the unblocker source sample marked `snapshot_worktree_clean: false`
+  because the snapshot artifact had just been regenerated and was dirty before
+  the unblocker sampled the live no-write snapshot. A final clean-source
+  unblocker refresh follows after this artifact commit.
+
+Evidence:
+
+- `ops/production-readiness/latest-production-readiness-snapshot.md`
+- `ops/production-readiness/latest-production-readiness-snapshot.json`
+- `ops/production-readiness/latest-production-unblocker.md`
+- `ops/production-readiness/latest-production-unblocker.json`
+
+Guardrails:
+
+- Read-only artifact refresh only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- After commit/push, regenerate `npm run production:unblocker` one more time
+  from the clean artifact head so the operator unblocker source sample also
+  records `snapshot_worktree_clean: true`.
 
 ## Final audit
 

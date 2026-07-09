@@ -1,15 +1,15 @@
-# Production Unblocker - 2026-07-09T16:16:36.786Z
+# Production Unblocker - 2026-07-09T16:21:08.355Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-09T16:16:30.579Z
-Snapshot git head: c020293b (origin/master: c020293b, worktree clean: yes)
+Source snapshot generated at: 2026-07-09T16:20:58.137Z
+Snapshot git head: 0b5cdd3e (origin/master: 0b5cdd3e, worktree clean: no)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 ## What Blocks Production
 - External setup items: 3
 - Agent Mode terminal proof items: 2
-- Active collision lanes: 2
+- Active collision lanes: 3
 - ChatGPT packets queued: 0
 ## External Setup To Provide
 ### SETUP-ONETIME-STRIPE-001 - Rabbi Stripe sandbox
@@ -78,6 +78,7 @@ Required result: save terminal PASS, FAIL, or BLOCKED proof for only this prompt
 ## Active Lanes To Avoid
 - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish
 - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using
+- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167
 ## After Operator Update
 - Do not paste raw secrets into chat or tracked repo files; provide aliases, status labels, or keyholder/provider-dashboard confirmation.
 - Rerun `npm run one-time:setup:check` after Stripe/WAPI/campaign setup changes.

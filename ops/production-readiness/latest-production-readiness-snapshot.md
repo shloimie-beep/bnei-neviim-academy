@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T15:58:15.644Z
+# Production Readiness Snapshot - 2026-07-09T16:20:45.113Z
 
 Result: not_production_complete
 Production ready: no
@@ -9,18 +9,19 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Rabbi Agent Review still needs terminal Agent Mode proof
 - broad UI lane is already active in another agent job
 - fallback/API lane is already active in another agent job
+- Agent Review repair lane is already active in another agent job
 - active execution run has no unblocked executable batch
 
 ## Git
 - Branch: master
-- HEAD: 7297ebbc
-- origin/master: 7297ebbc
+- HEAD: 0b5cdd3e
+- origin/master: 0b5cdd3e
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 7297ebbc
-- Sampled origin/master: 7297ebbc
+- Sampled git head: 0b5cdd3e
+- Sampled origin/master: 0b5cdd3e
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -40,7 +41,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 15, stale 417, blocked 121, unknown 193, do-not-redo 878
+- Queue health: fresh 19, stale 420, blocked 121, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -76,7 +77,8 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
 4. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
 5. Codex / agent fleet: Do not overlap broad UI file edits while job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish remains active; inspect its result packet before starting the next UI batch.
-6. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
+6. Codex / agent fleet: Do not overlap Agent Review proof/result repair work while job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 remains active; inspect its result packet before saving or reconciling Agent Review terminal proof.
+7. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
 
 ## Evidence
 - tasks-pending/2026-07-09-production-readiness-goal.md

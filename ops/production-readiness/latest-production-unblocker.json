@@ -1,21 +1,21 @@
 {
-  "generated_at": "2026-07-09T16:16:36.786Z",
+  "generated_at": "2026-07-09T16:21:08.355Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-09T16:16:30.579Z",
+  "source_snapshot_generated_at": "2026-07-09T16:20:58.137Z",
   "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
   "snapshot_source_kind": "live_no_write_command",
-  "snapshot_git_head": "c020293b",
-  "snapshot_origin_master": "c020293b",
-  "snapshot_worktree_clean": true,
+  "snapshot_git_head": "0b5cdd3e",
+  "snapshot_origin_master": "0b5cdd3e",
+  "snapshot_worktree_clean": false,
   "source_snapshot": {
     "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
     "kind": "live_no_write_command",
-    "generated_at": "2026-07-09T16:16:30.579Z",
-    "git_head": "c020293b",
-    "origin_master": "c020293b",
-    "worktree_clean": true,
+    "generated_at": "2026-07-09T16:20:58.137Z",
+    "git_head": "0b5cdd3e",
+    "origin_master": "0b5cdd3e",
+    "worktree_clean": false,
     "command_exit_code": 0,
     "load_error": ""
   },
@@ -26,7 +26,7 @@
   "summary": {
     "external_setup_item_count": 3,
     "agent_mode_proof_count": 2,
-    "active_collision_lane_count": 2,
+    "active_collision_lane_count": 3,
     "chatgpt_queued_count": 0,
     "next_unblocked_executable_batch": "none"
   },
@@ -153,6 +153,14 @@
       "status": "running",
       "title": "About the fall back I'm saying you should use the API that I'm using",
       "raw": "- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using"
+    },
+    {
+      "job_id": "344",
+      "task_id": "1736",
+      "ticket_id": "",
+      "status": "running",
+      "title": "Repair Agent Mode result AGR-19cfa47542407167",
+      "raw": "- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167"
     }
   ],
   "operator_actions": [
