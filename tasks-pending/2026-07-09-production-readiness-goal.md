@@ -572,8 +572,8 @@ Verification:
 
 Evidence:
 
-- `ops/agent-fleet-hardening/2026-07-09T14-44-35-543Z-agent-fleet-readiness.md`
-- `ops/agent-fleet-hardening/2026-07-09T14-44-35-543Z-agent-fleet-readiness.json`
+- `ops/agent-fleet-hardening/2026-07-09T14-47-43-350Z-agent-fleet-readiness.md`
+- `ops/agent-fleet-hardening/2026-07-09T14-47-43-350Z-agent-fleet-readiness.json`
 - `ops/agent-fleet-hardening/latest-agent-fleet-readiness.md`
 - `ops/agent-fleet-hardening/latest-agent-fleet-readiness.json`
 

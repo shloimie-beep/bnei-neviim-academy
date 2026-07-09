@@ -36192,6 +36192,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Latest readiness proof is OK: `kimi` resolves to
   `C:\Users\User\.local\bin\kimi.exe`, version is `kimi, version 1.44.0`,
   model is `kimi-k2.7-code-highspeed`, and mode is `quota_only`.
+- Refreshed clean-tree proof after the Kimi/control-tower commits:
+  `ops/agent-fleet-hardening/2026-07-09T14-47-43-350Z-agent-fleet-readiness.md`
+  records worktree preview commit `47c9c4cde922`.
 - Verification passed: `node --check scripts\agent-fleet-readiness.mjs`,
   `node --check scripts\agent-fleet-supervisor.mjs`,
   `node --test tests\agent-fleet-hardening.test.js`,
