@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T12:05:17.722Z",
+  "generated_at": "2026-07-09T12:10:07.581Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",

@@ -40,6 +40,17 @@ test('communications integration schema includes social, email draft, and DNS se
   assert.match(server, /truncated screenshot values were intentionally not stored/);
 });
 
+test('DNS task readback fails soft for integration setup errors', () => {
+  const dnsTasksRoute = server.slice(
+    server.indexOf("app.get('/api/bna/communications/dns-tasks'"),
+    server.indexOf("app.post('/api/bna/communications/dns-tasks'")
+  );
+  assert.match(dnsTasksRoute, /safeIntegrationError\(err, 'DNS setup task readback failed'\)/);
+  assert.match(dnsTasksRoute, /res\.status\(200\)\.json/);
+  assert.match(dnsTasksRoute, /read_blocked: true/);
+  assert.match(dnsTasksRoute, /dns_tasks: \[\]/);
+});
+
 test('Operations UI renders Communications integrations without exposing secret fields', () => {
   assert.match(operations, /data-communications-integrations/);
   assert.match(operations, /renderCommunicationsIntegrationPanel/);

@@ -45748,26 +45748,37 @@ app.post('/api/bna/communications/email/send', requireAdmin, sendResendEmailDraf
 app.post('/api/bna/integrations/resend/send', requireAdmin, sendResendEmailDraft);
 
 app.get('/api/bna/communications/dns-tasks', requireAdmin, async (req, res) => {
-  const conditions = [];
-  const params = [];
-  appendDnsWorkspaceScope(req, conditions, params);
-  if (req.query.provider) {
-    params.push(String(req.query.provider));
-    conditions.push(`provider = $${params.length}`);
+  try {
+    const conditions = [];
+    const params = [];
+    appendDnsWorkspaceScope(req, conditions, params);
+    if (req.query.provider) {
+      params.push(String(req.query.provider));
+      conditions.push(`provider = $${params.length}`);
+    }
+    if (req.query.domain) {
+      params.push(String(req.query.domain));
+      conditions.push(`domain = $${params.length}`);
+    }
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_dns_setup_tasks
+       ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
+       ORDER BY created_at DESC, id DESC
+       LIMIT 200`,
+      params
+    );
+    res.json({ success: true, dns_tasks: result.rows.map(dnsTaskView) });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'DNS setup task readback failed');
+    res.status(200).json({
+      success: false,
+      dns_tasks: [],
+      read_blocked: true,
+      blocker: safe.blocker,
+      error: safe.error,
+    });
   }
-  if (req.query.domain) {
-    params.push(String(req.query.domain));
-    conditions.push(`domain = $${params.length}`);
-  }
-  const result = await pool.query(
-    `SELECT *
-     FROM bna_dns_setup_tasks
-     ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
-     ORDER BY created_at DESC, id DESC
-     LIMIT 200`,
-    params
-  );
-  res.json({ success: true, dns_tasks: result.rows.map(dnsTaskView) });
 });
 
 app.post('/api/bna/communications/dns-tasks', requireAdmin, async (req, res) => {
