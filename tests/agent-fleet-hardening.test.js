@@ -328,6 +328,8 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
   assert.match(supervisor, /function runKimiFallback/);
   assert.match(supervisor, /Kimi coding fallback/);
   assert.match(supervisor, /Ready to claim: observable jobs .* fallback task candidates/);
+  assert.match(supervisor, /Stale observable job candidates:/);
+  assert.match(supervisor, /Observable jobs eligible for stale-sweep dry run:/);
   assert.match(supervisor, /Local task lock evidence for not-claimable jobs:/);
   assert.match(supervisor, /Fallback task candidates requiring lane inspection:/);
   assert.match(supervisor, /PRODUCTION_READINESS_GATE_COMMAND = 'npm run production:readiness:gate -- --json'/);

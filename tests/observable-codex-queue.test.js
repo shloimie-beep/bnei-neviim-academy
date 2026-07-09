@@ -34,6 +34,7 @@ test('server exposes idempotent bot capture and observable agent job lifecycle A
   assert.match(server, /source_message_id/);
   assert.match(server, /app\.post\('\/api\/bna\/bot\/capture'/);
   assert.match(server, /app\.get\('\/api\/bna\/codex-queue\/status'/);
+  assert.match(server, /app\.get\('\/api\/bna\/codex-queue\/stale-sweep', requireAdmin, staleSweepRoute\)/);
   assert.match(server, /app\.post\('\/api\/bna\/agent-jobs\/:id\/claim'/);
   assert.match(server, /app\.post\('\/api\/bna\/agent-jobs\/:id\/complete'/);
   assert.match(server, /app\.post\('\/api\/bna\/agent-jobs\/:id\/block'/);

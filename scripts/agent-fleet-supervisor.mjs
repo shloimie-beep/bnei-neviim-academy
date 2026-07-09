@@ -3518,6 +3518,9 @@ async function status(config) {
     observableQueue = { error: error instanceof Error ? error.message : String(error), queue: { jobs: [] } };
   }
   const observableJobs = Array.isArray(observableQueue?.queue?.jobs) ? observableQueue.queue.jobs : [];
+  const staleObservableJobs = Array.isArray(observableQueue?.queue?.stale_candidates)
+    ? observableQueue.queue.stale_candidates
+    : [];
   linkedTaskHydration = await hydrateObservableJobTasks(config, observableJobs, tasks);
   tasks = linkedTaskHydration.tasks;
   const queue = selectNextTasks(tasks, state, config, 12);
@@ -3533,6 +3536,7 @@ async function status(config) {
     `- Supervisor: ${lock?.pid && processIsAlive(lock.pid) ? `running PID ${lock.pid}` : 'not running'}`,
     `- Observable Codex jobs: ${observableJobs.length}`,
     `- Claimable observable jobs: ${claimableObservableJobs.length}`,
+    `- Stale observable job candidates: ${staleObservableJobs.length}`,
     `- Linked observable task lookup: fetched ${linkedTaskHydration.fetchedTasks.length}, missing ${linkedTaskHydration.errors.length}`,
     `- Active Codex task fallback: ${codex.length}`,
     `- Ready to claim: observable jobs ${claimableObservableJobs.length}, fallback task candidates ${queue.length}`,
@@ -3566,6 +3570,12 @@ async function status(config) {
     const sampledAt = new Date();
     for (const job of notClaimableJobs) {
       lines.push(observableJobTaskLockStatusLine(job, sampledAt));
+    }
+    if (staleObservableJobs.length) {
+      lines.push('', 'Observable jobs eligible for stale-sweep dry run:');
+      for (const job of staleObservableJobs.slice(0, 8)) {
+        lines.push(`- job #${job.id || job.job_id}${job.ticket_id ? ` / ticket #${job.ticket_id}` : ''}${job.task_id ? ` / task #${job.task_id}` : ''} [${job.status}] ${observableJobStatusTitle(job, tasks)} (${job.stale_reason || 'stale by queue thresholds'})`);
+      }
     }
     if (queue.length) {
       lines.push('', 'Fallback task candidates requiring lane inspection:');

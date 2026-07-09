@@ -66846,6 +66846,7 @@ app.get('/api/bna/codex-queue/status', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/codex-queue/stale-sweep', requireAdmin, staleSweepRoute);
 app.post('/api/bna/codex-queue/status', requireAdmin, staleSweepRoute);
 app.post('/api/bna/codex-queue/stale-sweep', requireAdmin, staleSweepRoute);
 
