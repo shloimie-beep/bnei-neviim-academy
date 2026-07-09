@@ -113,7 +113,18 @@ test('parent coordination audit supports active continuation run requirement IDs
 
 test('startup shortcut matrix exposes start stop restart status and open-log controls', () => {
   const actions = new Set(buildStartupShortcutMatrix().map((item) => item.action));
-  for (const action of ['start', 'stop', 'restart', 'status', 'open_log', 'watchdog_start', 'watchdog_stop', 'watchdog_status']) {
+  for (const action of [
+    'start',
+    'stop',
+    'restart',
+    'status',
+    'open_log',
+    'watchdog_start',
+    'watchdog_start_no_telegram',
+    'watchdog_restart_no_telegram',
+    'watchdog_stop',
+    'watchdog_status',
+  ]) {
     assert.equal(actions.has(action), true);
   }
 });
@@ -338,6 +349,14 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
     packageJson.scripts['chatgpt:dropoff:comments:apply'],
     'node scripts/chatgpt-dropoff-comment-collector.mjs --apply --json',
   );
+  assert.equal(
+    packageJson.scripts['watchdog:start:no-telegram'],
+    'powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1 -NoTelegram',
+  );
+  assert.equal(
+    packageJson.scripts['watchdog:restart:no-telegram'],
+    'powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1 -Restart -NoTelegram',
+  );
 
   for (const script of [fleetPs1, watchdogPs1]) {
     assert.match(script, /\[switch\]\$Stop/);
@@ -348,6 +367,10 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
     assert.match(script, /-WindowStyle Hidden/);
     assert.match(script, /Start-Process -FilePath "notepad\.exe"/);
   }
+  assert.match(watchdogPs1, /\[switch\]\$NoTelegram/);
+  assert.match(watchdogPs1, /telegram_notifications = if \(\$NoTelegram\)/);
+  assert.match(watchdogPs1, /\$arguments \+= "--no-telegram"/);
+  assert.match(watchdogPs1, /node @onceArguments/);
 });
 
 test('readiness script contains no-write synthetic GitHub and result bridge proof', () => {

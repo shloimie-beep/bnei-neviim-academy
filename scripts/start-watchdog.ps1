@@ -4,6 +4,7 @@ param(
   [switch]$Stop,
   [switch]$Status,
   [switch]$OpenLog,
+  [switch]$NoTelegram,
   [int]$MaxStartAttempts = 3
 )
 
@@ -45,15 +46,17 @@ function Test-PidAlive([int]$PidValue) {
   }
 }
 
-function Write-StartupMetadata([int]$PidValue, [int]$Attempt) {
+function Write-StartupMetadata([int]$PidValue, [int]$Attempt, [string[]]$ArgumentList) {
   $metadata = [ordered]@{
     script = "scripts/start-watchdog.ps1"
     pid = $PidValue
     mode = if ($Once) { "once" } else { "watchdog" }
+    telegram_notifications = if ($NoTelegram) { "disabled" } else { "enabled" }
     login_context = Get-CurrentLoginName
     machine = $env:COMPUTERNAME
     max_start_attempts = $MaxStartAttempts
     attempt = $Attempt
+    arguments = $ArgumentList
     started_at = (Get-Date).ToString("o")
     stdout_log = $OutLog
     stderr_log = $ErrLog
@@ -125,16 +128,23 @@ if ($existingPid -and (Test-PidAlive $existingPid)) {
 }
 
 if ($Once) {
+  $onceArguments = @("scripts/agent-fleet-supervisor.mjs", "--watchdog", "--once")
+  if ($NoTelegram) {
+    $onceArguments += "--no-telegram"
+  }
   Push-Location $Root
   try {
-    node scripts/agent-fleet-supervisor.mjs --watchdog --once
+    node @onceArguments
   } finally {
     Pop-Location
   }
   exit $LASTEXITCODE
 }
 
-$arguments = "scripts/agent-fleet-supervisor.mjs --watchdog --watch"
+$arguments = @("scripts/agent-fleet-supervisor.mjs", "--watchdog", "--watch")
+if ($NoTelegram) {
+  $arguments += "--no-telegram"
+}
 $attemptLimit = [Math]::Max(1, [Math]::Min($MaxStartAttempts, 10))
 for ($attempt = 1; $attempt -le $attemptLimit; $attempt++) {
   $process = Start-Process -FilePath "node" `
@@ -146,8 +156,11 @@ for ($attempt = 1; $attempt -le $attemptLimit; $attempt++) {
     -PassThru
   Start-Sleep -Seconds 2
   if (Test-PidAlive $process.Id) {
-    Write-StartupMetadata -PidValue $process.Id -Attempt $attempt
+    Write-StartupMetadata -PidValue $process.Id -Attempt $attempt -ArgumentList $arguments
     Write-Host "Started agent watchdog PID $($process.Id)"
+    if ($NoTelegram) {
+      Write-Host "Telegram notifications disabled for this watchdog process."
+    }
     Write-Host "Logs: $OutLog"
     exit 0
   }
