@@ -26,6 +26,33 @@ test('ChatGPT dropoff control tower package script and docs are wired', async ()
   const enriched = tower.enrichAgentJobLine('- job #999 / task #999999 [running] Example stale lane');
   assert.match(enriched, /local_lock=/);
   assert.match(enriched, /task-999999\.lock\.json/);
+  assert.deepEqual(
+    tower.collectStatusSectionLines(
+      [
+        'Fallback task candidates requiring lane inspection:',
+        '- #1736 [in_progress] Repair Agent Mode result (matching observable job #344 [running])',
+        'Recent Pickup Reports',
+      ],
+      /^Fallback task candidates requiring lane inspection:/,
+      /^- #\d+ /
+    ),
+    ['- #1736 [in_progress] Repair Agent Mode result (matching observable job #344 [running])'],
+  );
+  const markdown = tower.markdown({
+    generated_at: '2026-07-09T00:00:00.000Z',
+    git: { branch: 'master', dirty: false, dirty_files: [] },
+    packets: { count: 0, counts: {}, items: [] },
+    agent_fleet: {
+      checked: true,
+      summary: [],
+      not_claimable: [],
+      fallback_candidates: ['- #1736 [in_progress] Repair Agent Mode result (matching observable job #344 [running])'],
+    },
+    latest_pickup_reports: [],
+    recommendations: [],
+  });
+  assert.match(markdown, /Fallback Task Candidates/);
+  assert.match(markdown, /matching observable job #344/);
 });
 
 test('ChatGPT dropoff templates include lane ownership and local-state warnings', () => {

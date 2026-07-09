@@ -208,6 +208,21 @@ function enrichAgentJobLine(line = '', sampledAt = new Date()) {
   return `${line} (${lock.evidence})`;
 }
 
+function collectStatusSectionLines(lines = [], headerPattern, itemPattern) {
+  const collected = [];
+  let inSection = false;
+  for (const line of lines) {
+    if (headerPattern.test(line)) {
+      inSection = true;
+      continue;
+    }
+    if (!inSection) continue;
+    if (itemPattern.test(line)) collected.push(line);
+    else if (!line.startsWith('- ')) inSection = false;
+  }
+  return collected;
+}
+
 function agentFleetSummary(args = {}) {
   if (args.noAgentStatus) return { checked: false, raw: '', summary: [] };
   const result = run('node', ['scripts/agent-fleet-supervisor.mjs', '--status']);
@@ -218,6 +233,11 @@ function agentFleetSummary(args = {}) {
     ok: result.ok,
     summary: lines.filter((line) => /^- (Supervisor|Observable|Claimable|Active Codex|Ready to claim|Queue health|ChatGPT)/.test(line)),
     not_claimable: lines.filter((line) => /^- job #/.test(line)).slice(0, 15).map((line) => enrichAgentJobLine(line, sampledAt)),
+    fallback_candidates: collectStatusSectionLines(
+      lines,
+      /^Fallback task candidates requiring lane inspection:/,
+      /^- #\d+ /
+    ).slice(0, 15),
     raw_excerpt: lines.slice(0, 60),
     error: result.ok ? '' : result.stderr.trim(),
   };
@@ -312,6 +332,12 @@ ${report.agent_fleet.checked ? table(report.agent_fleet.not_claimable.map((line)
     { label: 'Job', value: (row) => row.line },
   ]) : '_Not checked._'}
 
+### Fallback Task Candidates
+
+${report.agent_fleet.checked ? table((report.agent_fleet.fallback_candidates || []).map((line) => ({ line })), [
+    { label: 'Task', value: (row) => row.line },
+  ]) : '_Not checked._'}
+
 ## Recent Pickup Reports
 
 ${table(report.latest_pickup_reports, [
@@ -355,6 +381,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
 export {
   buildReport,
   classifyPacket,
+  collectStatusSectionLines,
   enrichAgentJobLine,
   gitSummary,
   inspectTaskLock,
