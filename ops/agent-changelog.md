@@ -6,6 +6,34 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-09T13:58:00+03:00 - Agent Review public prompt mode deployed
+
+- Fixed the Agent Review prompt generator so Agent Mode starts from the public
+  prompt URL and treats protected Operations hub blank/401/sign-in failures as
+  `hub_unavailable_401` evidence instead of stopping before the audit begins.
+- Published read-only public Rabbi helper scope artifacts for browser-only
+  Agent Mode runs:
+  `/agent-review-artifacts/rabbi-one-time-tool-scope-map.json`,
+  `/agent-review-artifacts/rabbi-one-time-tool-scope-map.md`, and
+  `/agent-review-artifacts/account-bot-scope-template.json`.
+- Corrected the Rabbi helper scope prompt surface counts to the current map:
+  operations 97, parent 19, provider 30, rabbi 2, student 15.
+- Pushed commits `f9eb486d` and `f907a87e`, then deployed OneTime Railway
+  service `one-time-web`; deployment
+  `cc221c00-1cb3-4b66-b995-40ad78453096` reached `SUCCESS`.
+- Verification passed: `node --test tests/agent-review-hub.test.js`, full
+  `npm test` 1687/1687, `npm run secrets:audit`, `npm run
+  watchdog:protocol-drift`, `npm run audit:governance`, `npm run
+  one-time:target:guard`, `npm run app:smoke:onetime-separate-instance --
+  https://join.onetimeonetime.com`, `npm run
+  app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`, and
+  direct live readbacks of the prompt and all three artifacts.
+- Working Agent Mode entrypoint:
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`.
+- Remaining autonomy blockers: saved all-163 Agent Mode PASS/FAIL/BLOCKED
+  drop-off proof, `DEC-20260708-019` external/write approvals and credentials,
+  per-tool live audit readback evidence, and Rabbi chat ID setup.
+
 ## 2026-07-09T09:58:19+03:00 - Audit governance report and stale-audit control point
 
 - Registered `RAW-20260709-005` and requirement register
@@ -35783,3 +35811,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`.
 - Remaining blockers: all-163 Agent Mode proof, external-write approvals under
   `DEC-20260708-019`, and per-tool live audit readback evidence.
+
+## 2026-07-09T13:58:23+03:00 - Telegram Progress Sent
+
+- Sent the super-admin Telegram progress update for the helper scope and Agent
+  Review public prompt deployment.
+- Verification: `npm run telegram:codex-progress -- --send --json` returned
+  `sent=true`, `dry_run=false`, and `message_id_present=true`.
+- The message included the deployed fix, live verification, remaining
+  all-163 Agent Mode proof blocker, and the next public prompt URL.
