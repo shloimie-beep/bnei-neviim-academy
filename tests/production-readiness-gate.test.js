@@ -34,6 +34,12 @@ function readySnapshot(overrides = {}) {
       next_unblocked_executable_batch: 'none',
       blockers: [],
     },
+    one_time_setup: {
+      path: 'ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json',
+      available: true,
+      operator_blocker_count: 0,
+      operator_blocker_items: [],
+    },
     chatgpt_dropoff: { queued_count: 0 },
     rabbi_agent_review: { remaining_blocker_count: 0 },
     next_actions: [],
@@ -83,6 +89,16 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
         },
       ],
     },
+    one_time_setup: {
+      path: 'ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json',
+      available: true,
+      operator_blocker_count: 3,
+      operator_blocker_items: [
+        { id: 'SETUP-ONETIME-STRIPE-001', title: 'Rabbi Stripe sandbox' },
+        { id: 'SETUP-ONETIME-WHAPI-001', title: 'Whapi/WAPI provider details' },
+        { id: 'SETUP-ONETIME-CAMPAIGN-001', title: 'Campaign seed / real campaign' },
+      ],
+    },
     chatgpt_dropoff: { queued_count: 1 },
     rabbi_agent_review: { remaining_blocker_count: 2 },
   });
@@ -99,6 +115,7 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   assert.match(text, /ChatGPT dropoff queue has 1/);
   assert.match(text, /job #382/);
   assert.equal(report.snapshot_summary.active_run_blocker_count, 1);
+  assert.equal(report.snapshot_summary.external_setup_item_count, 3);
   assert.equal(report.snapshot_summary.blocker_group_count, 7);
   assert.deepEqual(report.blocker_groups.map((group) => group.id), [
     'snapshot_not_production_ready',
@@ -109,7 +126,12 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
     'chatgpt_dropoff_queue_ready',
     'active_agent_collision_lanes',
   ]);
-  assert.equal(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').count, 1);
+  assert.equal(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').count, 3);
+  assert.deepEqual(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').evidence, [
+    'SETUP-ONETIME-STRIPE-001',
+    'SETUP-ONETIME-WHAPI-001',
+    'SETUP-ONETIME-CAMPAIGN-001',
+  ]);
   assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 2);
   assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
   assert.match(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').next_action, /Stripe/);
@@ -137,6 +159,16 @@ test('production readiness snapshot surfaces agent-fleet auto-deploy preflight p
   assert.match(script, /skipped_reason_when_blocked/);
   assert.match(script, /Auto-deploy readiness preflight/);
   assert.match(script, /Auto-deploy performed by readiness proof/);
+});
+
+test('production readiness snapshot includes OneTime setup bucket summary', () => {
+  const script = fs.readFileSync(path.join(repoRoot, 'scripts', 'production-readiness-snapshot.mjs'), 'utf8');
+
+  assert.match(script, /one_time_setup/);
+  assert.match(script, /operator_blocker_items/);
+  assert.match(script, /OneTime Setup Buckets/);
+  assert.match(script, /one-time-mishnah\/launch-unblocker\/2026-07-02-operator-external-setup-checklist\.json/);
+  assert.match(script, /Operator blocker count/);
 });
 
 test('production readiness snapshot treats active Agent Review repair as a collision lane', () => {

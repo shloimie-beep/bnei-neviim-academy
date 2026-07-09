@@ -36726,3 +36726,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:47:00+03:00 - Readiness Gate Uses Concrete Setup Buckets
+
+- Added `one_time_setup` summary output to the production readiness snapshot.
+- Added a `OneTime Setup Buckets` section to the snapshot Markdown.
+- Updated the production readiness gate so `external_setup_blockers` groups by
+  the three concrete OneTime setup bucket IDs when available:
+  `SETUP-ONETIME-STRIPE-001`, `SETUP-ONETIME-WHAPI-001`, and
+  `SETUP-ONETIME-CAMPAIGN-001`.
+- Focused tests passed, and dirty-tree readback showed the gate's external
+  setup group count at `3` with the concrete setup IDs while preserving
+  detailed execution-run blocker messages.
+- Guardrails held: readiness reporting/gate hardening only; no app UI edit,
+  API feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

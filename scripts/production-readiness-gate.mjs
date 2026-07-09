@@ -102,6 +102,7 @@ function buildBlockerGroups({
   git = {},
   activeRun = {},
   runBlockers = [],
+  externalSetupItems = [],
   proofBlockers = 0,
   queuedDropoffs = 0,
   collisionLanes = [],
@@ -161,13 +162,16 @@ function buildBlockerGroups({
       next_action: 'Use the production unblocker to clear external/proof/collision blockers, then rerun `npm run bna:run:next`.',
     });
   }
-  if (runBlockers.length > 0) {
+  if (runBlockers.length > 0 || externalSetupItems.length > 0) {
+    const evidence = externalSetupItems.length
+      ? externalSetupItems.map((item) => item.id || item.title || 'setup blocker').filter(Boolean)
+      : runBlockers.map((item) => item.requirement_id || item.title || 'run blocker');
     add({
       id: 'external_setup_blockers',
       title: 'External OneTime setup values or approvals are missing',
       owner: 'Shloimie / provider account owners',
-      count: runBlockers.length,
-      evidence: runBlockers.map((item) => item.requirement_id || item.title || 'run blocker'),
+      count: evidence.length,
+      evidence,
       next_action: 'Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.',
     });
   }
@@ -211,10 +215,12 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
   const assessment = snapshot.assessment || {};
   const git = snapshot.git || {};
   const activeRun = snapshot.active_run || {};
+  const oneTimeSetup = snapshot.one_time_setup || {};
   const chatgpt = snapshot.chatgpt_dropoff || {};
   const proof = snapshot.rabbi_agent_review || {};
   const collisionLanes = Array.isArray(assessment.avoid_colliding_with) ? assessment.avoid_colliding_with : [];
   const runBlockers = Array.isArray(activeRun.blockers) ? activeRun.blockers : [];
+  const externalSetupItems = Array.isArray(oneTimeSetup.operator_blocker_items) ? oneTimeSetup.operator_blocker_items : [];
   const assessmentReasons = Array.isArray(assessment.reason) ? assessment.reason : [];
   const queuedDropoffs = Number(chatgpt.queued_count || assessment.chatgpt_dropoff_queue_ready_count || 0);
   const proofBlockers = Number(proof.remaining_blocker_count || 0);
@@ -238,6 +244,9 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
   for (const item of runBlockers) {
     blockers.push(`${item.requirement_id || 'REQ-unknown'} blocked: ${item.blocker || 'No blocker text.'} Next: ${item.next_action || 'No next action.'}`);
   }
+  if (runBlockers.length === 0 && externalSetupItems.length > 0) {
+    blockers.push(`OneTime setup checklist still has ${externalSetupItems.length} operator setup blocker(s): ${externalSetupItems.map((item) => item.id).filter(Boolean).join(', ')}.`);
+  }
   if (proofBlockers > 0) {
     blockers.push(`Rabbi Agent Review proof has ${proofBlockers} remaining terminal result blocker(s).`);
   }
@@ -253,6 +262,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
     git,
     activeRun,
     runBlockers,
+    externalSetupItems,
     proofBlockers,
     queuedDropoffs,
     collisionLanes,
@@ -278,6 +288,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
       active_run_path: activeRun.run_path || '',
       active_run_status_counts: activeRun.status_counts || {},
       active_run_blocker_count: runBlockers.length,
+      external_setup_item_count: externalSetupItems.length,
       rabbi_agent_review_remaining_blockers: proofBlockers,
       chatgpt_queued_count: queuedDropoffs,
       collision_lane_count: collisionLanes.length,

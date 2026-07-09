@@ -8,6 +8,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const outputDir = path.join(repoRoot, 'ops', 'production-readiness');
 const latestJsonPath = path.join(outputDir, 'latest-production-readiness-snapshot.json');
 const latestMdPath = path.join(outputDir, 'latest-production-readiness-snapshot.md');
+const oneTimeSetupChecklistPath = 'ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json';
 const args = new Set(process.argv.slice(2));
 const shouldWrite = !args.has('--no-write');
 const shouldPrintJson = args.has('--json');
@@ -244,7 +245,45 @@ function summarizeAgentFleetReadiness() {
   };
 }
 
-function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof }) {
+function summarizeOneTimeSetupChecklist() {
+  const checklist = readJsonIfExists(oneTimeSetupChecklistPath);
+  if (!checklist) {
+    return {
+      path: oneTimeSetupChecklistPath,
+      available: false,
+      workspace_key: '',
+      project_key: '',
+      setup_ready_count: '',
+      ready_items: [],
+      operator_blocker_count: null,
+      operator_blocker_items: [],
+    };
+  }
+  const operatorBlockerItems = (checklist.setup_items || [])
+    .filter((item) => item?.operator_blocker === true)
+    .sort((a, b) => Number(a.priority ?? 999) - Number(b.priority ?? 999))
+    .map((item) => ({
+      id: item.id || '',
+      title: item.title || '',
+      status: item.current_status || 'unknown',
+      priority: item.priority ?? null,
+      owner: 'Shloimie / provider account owners',
+      required_fields: item.required_fields || [],
+      forbidden: item.forbidden || [],
+    }));
+  return {
+    path: oneTimeSetupChecklistPath,
+    available: true,
+    workspace_key: checklist.workspace_key || '',
+    project_key: checklist.project_key || '',
+    setup_ready_count: checklist.current_state?.setup_ready_count || '',
+    ready_items: checklist.current_state?.ready_items || [],
+    operator_blocker_count: operatorBlockerItems.length,
+    operator_blocker_items: operatorBlockerItems,
+  };
+}
+
+function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, oneTimeSetup }) {
   const activeUiLane = fleet.active_policy_jobs.find((job) =>
     /app-wide BNA brand shell|million-dollar SaaS UI polish|One Time provider UI|route-role mapping|View-as navigation/i.test(job.title)
   );
@@ -252,7 +291,7 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof }) {
   const activeAgentReviewLane = fleet.active_policy_jobs.find((job) => /Agent Mode result|Agent Review|AGR-/i.test(job.title));
   const queuedDropoffs = Number(chatgpt?.queued_count || 0);
   const missingProofCount = Number(proof.remaining_blocker_count || 0);
-  const hasExternalBlockers = blockers.length > 0;
+  const hasExternalBlockers = blockers.length > 0 || Number(oneTimeSetup?.operator_blocker_count || 0) > 0;
   const noNextBatch = activeRun.work_remains === true && /none/i.test(activeRun.next_unblocked_executable_batch || '');
   const avoidCollidingWith = [];
   const seenCollisionKeys = new Set();
@@ -391,6 +430,17 @@ function renderMarkdown(report) {
       ? report.active_run.blockers.map((item) => `- ${item.requirement_id}: ${item.blocker} Owner: ${item.owner}. Next: ${item.next_action}`)
       : ['- None reported by `npm run bna:run:blockers`.']),
     '',
+    '## OneTime Setup Buckets',
+    `- Checklist: ${report.one_time_setup.path || 'unknown'}`,
+    `- Available: ${report.one_time_setup.available ? 'yes' : 'no'}`,
+    `- Setup ready count: ${report.one_time_setup.setup_ready_count || 'unknown'}`,
+    `- Operator blocker count: ${report.one_time_setup.operator_blocker_count ?? 'unknown'}`,
+    ...(report.one_time_setup.operator_blocker_items?.length
+      ? report.one_time_setup.operator_blocker_items.map((item) =>
+        `- ${item.id}: ${item.title} (${item.status}). Required: ${(item.required_fields || []).join(', ')}`
+      )
+      : ['- No setup checklist operator blockers reported.']),
+    '',
     '## Agent Fleet',
     `- Supervisor: ${report.agent_fleet.summary.supervisor || 'unknown'}`,
     `- Claimable observable jobs: ${report.agent_fleet.summary.claimable_observable_jobs || 'unknown'}`,
@@ -460,12 +510,14 @@ function main() {
   };
   const rabbiAgentReview = summarizeProofState();
   const agentFleetReadiness = summarizeAgentFleetReadiness();
+  const oneTimeSetup = summarizeOneTimeSetupChecklist();
   const assessment = buildLaunchAssessment({
     activeRun,
     blockers: activeRun.blockers,
     fleet: agentFleet,
     chatgpt: chatgptDropoff,
     proof: rabbiAgentReview,
+    oneTimeSetup,
   });
 
   const report = {
@@ -477,6 +529,7 @@ function main() {
     active_run: activeRun,
     agent_fleet: agentFleet,
     agent_fleet_readiness: agentFleetReadiness,
+    one_time_setup: oneTimeSetup,
     chatgpt_dropoff: chatgptDropoff,
     rabbi_agent_review: rabbiAgentReview,
     commands: {
@@ -491,6 +544,7 @@ function main() {
       'ops/production-readiness/latest-production-readiness-snapshot.json',
       rabbiAgentReview.path,
       agentFleetReadiness.path,
+      oneTimeSetup.path,
       'ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md',
     ].filter(Boolean),
     guardrails: [
@@ -521,6 +575,7 @@ function main() {
     }
     console.log(`Next unblocked executable batch: ${activeRun.next_unblocked_executable_batch || 'unknown'}`);
     console.log(`External blockers: ${activeRun.blockers.length}`);
+    console.log(`External setup buckets: ${oneTimeSetup.operator_blocker_count ?? 'unknown'}`);
     console.log(`ChatGPT queued packets: ${chatgptDropoff.queued_count ?? 'unknown'}`);
   }
 }
