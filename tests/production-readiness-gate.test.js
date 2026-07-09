@@ -377,10 +377,17 @@ Observable jobs not claimable by active-task policy:
   assert.equal(parsed.active_policy_jobs[1].ticket_id, '1593');
 });
 
-test('production readiness snapshot treats active Agent Review repair as a collision lane', () => {
+test('production readiness snapshot treats running Agent Review repair as a collision lane', async () => {
+  const mod = await loadSnapshot();
   const script = fs.readFileSync(path.join(repoRoot, 'scripts', 'production-readiness-snapshot.mjs'), 'utf8');
 
+  assert.equal(mod.isActiveCollisionPolicyJob({ status: 'running' }), true);
+  assert.equal(mod.isActiveCollisionPolicyJob({ status: 'queued' }), true);
+  assert.equal(mod.isActiveCollisionPolicyJob({ status: 'blocked_needs_human_decision' }), false);
+  assert.equal(mod.isActiveCollisionPolicyJob({ status: 'failed' }), false);
   assert.match(script, /activeAgentReviewLane/);
+  assert.match(script, /collisionPolicyJobs/);
+  assert.match(script, /filter\(isActiveCollisionPolicyJob\)/);
   assert.match(script, /Agent Mode result\|Agent Review\|AGR-/);
   assert.match(script, /Agent Review repair lane/);
   assert.match(script, /reported active in another agent job/);

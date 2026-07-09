@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T21:01:03.569Z
+# Production Readiness Snapshot - 2026-07-09T21:04:56.704Z
 
 Result: not_production_complete
 Production ready: no
@@ -8,20 +8,19 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - full OneTime launch has external Stripe/WAPI/campaign blockers
 - Rabbi Telegram runtime is local_runtime_ready_live_smoke_pending
 - Rabbi Agent Review still needs terminal Agent Mode proof
-- Agent Review repair lane is reported active in another agent job, but local lock health is stale_lock_dead_pid; reconcile before touching overlapping work
 - active execution run has no unblocked executable batch
 
 ## Git
 - Branch: master
-- HEAD: 0494c5f3
-- origin/master: 0494c5f3
-- Worktree clean when sampled: yes
+- HEAD: 2deacc67
+- origin/master: 2deacc67
+- Worktree clean when sampled: no
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 0494c5f3
-- Sampled origin/master: 0494c5f3
-- Sampled worktree clean: yes
+- Sampled git head: 2deacc67
+- Sampled origin/master: 2deacc67
+- Sampled worktree clean: no
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
 
@@ -51,7 +50,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
 - Status: passed
 - Ready: yes
-- Fresh for launch gate: yes (3.42h old, max 24h)
+- Fresh for launch gate: yes (3.48h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
@@ -75,7 +74,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: observable jobs 0, fallback task candidates 0
-- Queue health: fresh 9, stale 469, blocked 128, unknown 194, do-not-redo 880
+- Queue health: fresh 8, stale 470, blocked 128, unknown 194, do-not-redo 880
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -83,9 +82,10 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Auto-deploy performed by readiness proof: no
 
 ## Launch Collision Lanes
-- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.37 path=.runtime/agent-fleet/task-1736.lock.json)
+- No running launch collision lanes reported.
 
 ## Other Agent Policy Rows
+- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.43 path=.runtime/agent-fleet/task-1736.lock.json)
 - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)
 - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)
 - job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json)
@@ -113,8 +113,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
 4. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
 5. Codex / operator: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
-6. Codex / agent fleet: Do not overlap Agent Review proof/result repair work while job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 remains active; inspect its result packet before saving or reconciling Agent Review terminal proof. Local lock evidence: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.37 path=.runtime/agent-fleet/task-1736.lock.json.
-7. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
+6. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
 
 ## Evidence
 - tasks-pending/2026-07-09-production-readiness-goal.md

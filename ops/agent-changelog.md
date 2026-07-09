@@ -37354,3 +37354,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   OneTime setup values/approvals, Rabbi Telegram hosted/live-smoke proof, two
   Agent Mode terminal proofs, and the intentional Agent Review blocker job
   `344`.
+
+## 2026-07-10T00:05:21+03:00 - Readiness Gate Collision Filter Tightened
+
+- Updated the production readiness snapshot so launch collision lanes are only
+  selected from actually active agent-policy rows: `running`, `queued`,
+  `in_progress`, `claimed`, or `active`.
+- Blocked or failed rows such as job `344`
+  (`blocked_needs_human_decision`) remain visible under Other Agent Policy Rows
+  but no longer double-count as active collision blockers.
+- Refreshed the readiness snapshot; readback shows
+  `assessment.avoid_colliding_with: []` while the real Rabbi Agent Review proof
+  blocker remains.
+- Verification passed: `node --check scripts/production-readiness-snapshot.mjs`,
+  `node --check scripts/production-readiness-gate.mjs`, `node --check
+  scripts/production-unblocker.mjs`, and `node --test
+  tests/production-readiness-gate.test.js tests/production-unblocker.test.js`.
+- Guardrails: no deploy, hosted restart, live Telegram smoke, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Drive write, class backfill, or production-data mutation.

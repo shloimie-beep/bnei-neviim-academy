@@ -586,6 +586,10 @@ function laneHasStaleOrMissingLocalLock(lane = {}) {
   return lane.local_lock_health && lane.local_lock_health !== 'fresh_running_lock';
 }
 
+export function isActiveCollisionPolicyJob(job = {}) {
+  return /^(running|queued|in_progress|claimed|active)$/i.test(String(job.status || '').trim());
+}
+
 function collisionLaneReason(lane = {}, label = 'collision lane') {
   if (laneHasStaleOrMissingLocalLock(lane)) {
     return `${label} is reported active in another agent job, but local lock health is ${lane.local_lock_health}; reconcile before touching overlapping work`;
@@ -594,11 +598,12 @@ function collisionLaneReason(lane = {}, label = 'collision lane') {
 }
 
 function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, oneTimeSetup, rabbiTelegramRuntime, publicLaunchSmoke }) {
-  const activeUiLane = fleet.active_policy_jobs.find((job) =>
+  const collisionPolicyJobs = (fleet.active_policy_jobs || []).filter(isActiveCollisionPolicyJob);
+  const activeUiLane = collisionPolicyJobs.find((job) =>
     /app-wide BNA brand shell|million-dollar SaaS UI polish|One Time provider UI|route-role mapping|View-as navigation/i.test(job.title)
   );
-  const activeFallbackLane = fleet.active_policy_jobs.find((job) => /fall back|fallback|API/i.test(job.title));
-  const activeAgentReviewLane = fleet.active_policy_jobs.find((job) => /Agent Mode result|Agent Review|AGR-/i.test(job.title));
+  const activeFallbackLane = collisionPolicyJobs.find((job) => /fall back|fallback|API/i.test(job.title));
+  const activeAgentReviewLane = collisionPolicyJobs.find((job) => /Agent Mode result|Agent Review|AGR-/i.test(job.title));
   const queuedDropoffs = Number(chatgpt?.queued_count || 0);
   const missingProofCount = Number(proof.remaining_blocker_count || 0);
   const hasExternalBlockers = blockers.length > 0 || Number(oneTimeSetup?.operator_blocker_count || 0) > 0;
@@ -680,7 +685,8 @@ function buildNextActions({ blockers, proof, fleet, rabbiTelegramRuntime }) {
       source: 'rabbi_telegram_runtime',
     });
   }
-  const uiLane = fleet.active_policy_jobs.find((job) => /app-wide BNA brand shell|million-dollar SaaS UI polish/i.test(job.title));
+  const collisionPolicyJobs = (fleet.active_policy_jobs || []).filter(isActiveCollisionPolicyJob);
+  const uiLane = collisionPolicyJobs.find((job) => /app-wide BNA brand shell|million-dollar SaaS UI polish/i.test(job.title));
   if (uiLane) {
     const laneLabel = uiLane.raw.replace(/^- /, '');
     const lockNote = uiLane.local_lock_evidence ? ` Local lock evidence: ${uiLane.local_lock_evidence}.` : '';
@@ -690,7 +696,7 @@ function buildNextActions({ blockers, proof, fleet, rabbiTelegramRuntime }) {
       source: 'agent_fleet_active_policy',
     });
   }
-  const agentReviewLane = fleet.active_policy_jobs.find((job) => /Agent Mode result|Agent Review|AGR-/i.test(job.title));
+  const agentReviewLane = collisionPolicyJobs.find((job) => /Agent Mode result|Agent Review|AGR-/i.test(job.title));
   if (agentReviewLane) {
     const laneLabel = agentReviewLane.raw.replace(/^- /, '');
     const lockNote = agentReviewLane.local_lock_evidence ? ` Local lock evidence: ${agentReviewLane.local_lock_evidence}.` : '';
