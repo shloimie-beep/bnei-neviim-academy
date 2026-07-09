@@ -1,6 +1,6 @@
 # Universal Action Parity
 
-Generated at 2026-07-09T06:22:15.364Z.
+Generated at 2026-07-09T11:52:17.543Z.
 
 Requirement: REQ-20260623-013
 
@@ -60,7 +60,7 @@ Requirement: REQ-20260623-013
 | landing_page | covered_by_canonical_registry | ACTION-ONETIME-PUBLIC-HELPER-OPEN |
 | seo | covered_by_canonical_registry | capture_provider_google_business_link<br>google_business_list_locations_preview<br>google_business_place_id_lookup |
 | course | covered_by_canonical_registry | ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>classroom_topic_material_preview<br>create_provider_class_session<br>create_provider_classroom_draft<br>create_rabbi_shiur_idea |
-| class | covered_by_canonical_registry | ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-RETURN-HUB<br>ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED<br>ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN |
+| class | covered_by_canonical_registry | ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-RETURN-HUB<br>ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED<br>ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-ONETIME-JOIN-SHIR-CTA |
 | lesson | covered_by_canonical_registry | create_one_time_video_library_item<br>create_rabbi_shiur_idea |
 | video | covered_by_canonical_registry | ACTION-STUDIO-AI-VIDEO-WORKER-HANDOFF<br>create_one_time_video_library_item |
 | worksheet | covered_by_canonical_registry | generate_student_worksheet |
