@@ -98,6 +98,15 @@ function compactJob(job = {}) {
   return lockEvidence ? `${label} (${lockEvidence})` : label;
 }
 
+function collisionLanesNeedReconciliation(collisionLanes = []) {
+  return collisionLanes.some((lane) => {
+    const health = lane.local_lock_health || lane.task_lock?.lock_health || '';
+    const evidence = lane.local_lock_evidence || lane.task_lock?.local_lock_evidence || '';
+    if (!health && evidence) return !/local_lock=fresh_running_lock\b/.test(evidence);
+    return health && health !== 'fresh_running_lock';
+  });
+}
+
 function rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime = {}) {
   return rabbiTelegramRuntime.status === 'live_smoke_verified' || rabbiTelegramRuntime.production_verified === true;
 }
@@ -262,13 +271,16 @@ function buildBlockerGroups({
     });
   }
   if (collisionLanes.length > 0) {
+    const needsReconciliation = collisionLanesNeedReconciliation(collisionLanes);
     add({
       id: 'active_agent_collision_lanes',
       title: 'Active agent lanes must not be overlapped',
       owner: 'Codex / agent fleet',
       count: collisionLanes.length,
       evidence: collisionLanes.map((lane) => compactJob(lane)),
-      next_action: 'Wait for the active lane result packets or inspect them before touching overlapping UI/API/Agent Review proof work.',
+      next_action: needsReconciliation
+        ? 'Inspect or reconcile the stale/missing local task-lock state and result packets before touching overlapping UI/API/Agent Review proof work.'
+        : 'Wait for the active lane result packets or inspect them before touching overlapping UI/API/Agent Review proof work.',
     });
   }
 

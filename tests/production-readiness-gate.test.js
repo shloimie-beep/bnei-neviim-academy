@@ -220,6 +220,7 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   ]);
   assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
   assert.match(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').evidence.join('\n'), /stale_lock_dead_pid/);
+  assert.match(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').next_action, /reconcile/);
   assert.match(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').next_action, /whapi_wapi_instance_id/);
   assert.ok(report.next_actions.some((item) => /production:unblocker/.test(item.action)));
   assert.equal(report.operator_unblocker.json_path, 'ops/production-readiness/latest-production-unblocker.json');
