@@ -35326,3 +35326,60 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Rabbi provider CRM/layout polish, full logged-in student portal/classroom
   visual audit, WAPI setup/status, safe contact tagging, and Rabbi Telegram
   live delivery after `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured.
+
+## 2026-07-09T07:16:00+03:00 - Rabbi Helper 163-Contract Deployment Verified
+
+- Continued `REQ-20260708-095` for GitHub issue #88 / Rabbi helper tool scope:
+  the generated map still reports 163 contracts, 163 local wrappers, 0 fallback
+  blockers, and 0 missing wrappers.
+- Pre-deploy verification passed: `node --check` for helper registry/planner and
+  the scope-map generator, `node scripts/generate-rabbi-helper-tool-scope-map.mjs`,
+  focused helper/scope/Agent Review/OneTime reset tests 44/44, full `npm test`
+  1674/1674, `npm run secrets:audit`, `npm run watchdog:protocol-drift`,
+  OneTime target guard, and OneTime Railway target guard.
+- A generic deploy attempt failed closed before upload because the deploy guard
+  resolved `app=bna` against the linked OneTime Railway project. The retry used
+  explicit OneTime app/domain/service environment and deployed
+  `182c7db2-d019-45bc-84f0-a6a7dfe5fb86` to
+  `one-time-production / production / one-time-web`; Railway status reached
+  `SUCCESS`.
+- Live verification passed against `https://join.onetimeonetime.com`:
+  OneTime separate-instance smoke, Rabbi landing smoke, instance-config readback
+  for `rabbi_sheller_provider / one_time_mishnah_class`, and Agent Review prompt
+  readback for `rabbi-helper-tool-scope-map` with `REQ-20260708-093` and
+  `RABBI-HELPER-SCOPE-163`.
+- Remaining autonomy blockers are now exact: saved all-163 Agent Mode
+  PASS/FAIL/BLOCKED drop-off proof, `DEC-20260708-019` external/write approvals,
+  per-tool live audit readback evidence, automatic subaccount provisioning from
+  the scope template, and Rabbi Telegram live delivery after
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured.
+
+## 2026-07-09T07:17:54+03:00 - OneTime Parent Reset Flow Deployed And Live-Smoked
+
+- Completed the OneTime parent reset-flow follow-up under `REQ-20260709-003`:
+  parent password reset request links now use the seven-day trial setup TTL,
+  email copy states the actual active window, and the OneTime parent setup page
+  offers a fresh password-link resend path without recovery-code or classroom
+  password wording.
+- Pushed commits `b5db8cca` and `eee37dc6` on
+  `codex/rabbi-helper-tool-scope-20260708`, then deployed the OneTime Railway
+  service `one-time-web` to production deployment
+  `074b9153-e4a9-4e3b-890a-3383727ad626`.
+- Verification passed: focused OneTime reset/action-registry tests, full
+  `npm test` 1674/1674, `npm run secrets:audit`,
+  `npm run watchdog:protocol-drift`, `git diff --check`, live OneTime
+  separate-instance smoke, live Rabbi landing smoke, and live parent setup
+  readback for OneTime title, forgot-password endpoint, fresh-link copy, no
+  Academy bleed, and no recovery/classroom-password fallback.
+- Evidence is recorded in
+  `tasks-pending/2026-07-09-onetime-scope-ui-agent-contact-corrections.md`,
+  `ops/live-smokes/2026-07-09T04-16-39-085Z-rabbi-onetime-landing-smoke.md`,
+  and
+  `ops/live-smokes/2026-07-09T04-16-39-085Z-onetime-parent-reset-smoke.md`.
+- No email, WhatsApp/WAPI, payment, access grant, credential, DNS/account,
+  Drive/Vimeo/Zoom, public publish, production contact mutation, or external
+  connector write was performed during this batch.
+- Remaining open work: full Rabbi provider CRM/layout polish, full logged-in
+  student portal/classroom visual audit, WAPI setup/status, safe contact
+  tagging, and Rabbi Telegram live delivery after
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured.
