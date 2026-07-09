@@ -136,6 +136,7 @@ function agentReviewProofEvidence(proof = {}) {
     item.prompt_key || 'unknown_prompt',
     `status=${item.latest_result_status || item.workflow_state || item.status || 'missing_terminal_result'}`,
     item.public_url ? `prompt=${item.public_url}` : '',
+    item.dropoff_url ? `dropoff=${item.dropoff_url}` : '',
   ].filter(Boolean).join(' '));
   for (const promptUrl of nextPrompts) {
     if (evidence.some((item) => item.includes(promptUrl))) continue;

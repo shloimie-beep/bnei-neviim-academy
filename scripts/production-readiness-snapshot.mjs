@@ -312,6 +312,7 @@ function summarizeProofState() {
           latest_result_status: item.latest_result_status || null,
           terminal_saved_proof: Boolean(item.terminal_saved_proof),
           public_url: item.public_url || '',
+          dropoff_url: item.dropoff_url || '',
         }))
       : [],
   };
@@ -834,7 +835,7 @@ function renderMarkdown(report) {
     `- Status: ${report.rabbi_agent_review.status}`,
     `- Remaining blocker count: ${report.rabbi_agent_review.remaining_blocker_count ?? 'unknown'}`,
     ...(report.rabbi_agent_review.prompt_states || []).map((item) =>
-      `- ${item.prompt_key}: ${item.terminal_saved_proof ? 'terminal proof saved' : 'terminal proof missing'} (${item.public_url || 'no public URL'})`
+      `- ${item.prompt_key}: ${item.terminal_saved_proof ? 'terminal proof saved' : 'terminal proof missing'} (${item.public_url || 'no public URL'}${item.dropoff_url ? `; dropoff ${item.dropoff_url}` : ''})`
     ),
     '',
     '## Next Actions',

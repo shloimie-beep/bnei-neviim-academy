@@ -164,12 +164,14 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
           workflow_state: 'not_started',
           terminal_saved_proof: false,
           public_url: 'https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md',
+          dropoff_url: 'https://bneineviimacademy.org/operations/agent-review/dropoff?prompt_key=rabbi-telegram-helper-ticket-smoke',
         },
         {
           prompt_key: 'rabbi-helper-tool-scope-map',
           workflow_state: 'not_started',
           terminal_saved_proof: false,
           public_url: 'https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md',
+          dropoff_url: 'https://bneineviimacademy.org/operations/agent-review/dropoff?prompt_key=rabbi-helper-tool-scope-map',
         },
       ],
     },
@@ -188,6 +190,7 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   assert.match(text, /Rabbi Agent Review proof has 2/);
   assert.match(text, /rabbi-telegram-helper-ticket-smoke/);
   assert.match(text, /rabbi-helper-tool-scope-map/);
+  assert.match(text, /operations\/agent-review\/dropoff\?prompt_key=rabbi-telegram-helper-ticket-smoke/);
   assert.match(text, /ChatGPT dropoff queue has 1/);
   assert.match(text, /job #382/);
   assert.match(text, /local_lock=stale_lock_dead_pid/);
@@ -233,6 +236,7 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 2);
   assert.match(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').evidence.join('\n'), /rabbi-telegram-helper-ticket-smoke/);
   assert.match(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').evidence.join('\n'), /rabbi-helper-tool-scope-map/);
+  assert.match(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').evidence.join('\n'), /dropoff=https:\/\/bneineviimacademy\.org\/operations\/agent-review\/dropoff/);
   const rabbiRuntimeGroup = report.blocker_groups.find((group) => group.id === 'rabbi_telegram_runtime_configuration');
   assert.equal(rabbiRuntimeGroup.title, 'Rabbi Telegram runtime is not production-verified');
   assert.deepEqual(rabbiRuntimeGroup.evidence, [
@@ -340,6 +344,13 @@ test('production readiness snapshot includes redacted Rabbi Telegram runtime sum
   assert.match(script, /chat_id_masked/);
   assert.match(script, /maskSensitiveId/);
   assert.doesNotMatch(script, /chat_id:\s*candidate\.chat_id/);
+});
+
+test('production readiness snapshot preserves Agent Review proof drop-off URLs', () => {
+  const script = fs.readFileSync(path.join(repoRoot, 'scripts', 'production-readiness-snapshot.mjs'), 'utf8');
+
+  assert.match(script, /dropoff_url: item\.dropoff_url/);
+  assert.match(script, /dropoff \$\{item\.dropoff_url\}/);
 });
 
 test('production readiness snapshot parser keeps colon job titles out of summary keys', async () => {
