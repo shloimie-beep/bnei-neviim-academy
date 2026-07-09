@@ -21,24 +21,24 @@ without auditing.
 | ID | Requirement | Source IDs | Workspace/project | Owner | Category | Priority | Batch | Dependencies | Acceptance criteria | Implementation files | Deploy/live required | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | REQ-20260709-027 | Preserve the failed Agent Mode run as raw intake and a dated requirement register before implementation closeout. | RAW-20260709-006 | BNA operations / Rabbi One Time | Codex | protocol | P0 | 1 | none | Raw input file, memory entry, and this register exist with source provenance. | `raw-input/RAW-20260709-006-agent-review-public-prompt-blocker.md`, `memory/2026-07-09.md`, this file | no | Done / local verified |
-| REQ-20260709-028 | Update generated Agent Review prompts so Agent Mode starts from the public prompt URL and treats protected hub blank/401/sign-in failures as `hub_unavailable_401` evidence, not as a reason to stop before testing. | RAW-20260709-006 | BNA operations / Rabbi One Time | Codex | agent-review | P0 | 1 | REQ-20260709-027 | Generated prompts include public-first instructions, `hub_unavailable_401`, and result payload fields for hub auth state. | `src/lib/bna/agent-review-hub.js`, `public/agent-review-prompts/*.md`, `docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md` | yes | Done / local verified / deploy pending |
-| REQ-20260709-029 | Expose only the required read-only Rabbi helper scope artifacts publicly for Agent Mode runs without repo filesystem access. | RAW-20260709-006 | BNA operations / Rabbi One Time | Codex | agent-review | P0 | 1 | REQ-20260709-028 | Public artifact URLs exist for the generated scope map JSON/markdown and account-scope template; tests check existence and obvious secret-like strings. | `scripts/generate-agent-review-prompts.cjs`, `public/agent-review-artifacts/*` | yes | Done / local verified / deploy pending |
-| REQ-20260709-030 | Verify, push, deploy, and live-smoke the corrected public prompt path so Shloimie can paste the working URL into Agent Mode. | RAW-20260709-006 | BNA operations / Rabbi One Time | Codex | verification | P0 | 1 | REQ-20260709-028, REQ-20260709-029 | Focused tests pass, prompt/artifact URLs return 200 live, and the exact working Agent Mode link is reported. | tests, live curl/readback, changelog/ledger | yes | Open / local verified / deploy pending |
+| REQ-20260709-028 | Update generated Agent Review prompts so Agent Mode starts from the public prompt URL and treats protected hub blank/401/sign-in failures as `hub_unavailable_401` evidence, not as a reason to stop before testing. | RAW-20260709-006 | BNA operations / Rabbi One Time | Codex | agent-review | P0 | 1 | REQ-20260709-027 | Generated prompts include public-first instructions, `hub_unavailable_401`, and result payload fields for hub auth state. | `src/lib/bna/agent-review-hub.js`, `public/agent-review-prompts/*.md`, `docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md` | yes | Done / deployed / live readback verified |
+| REQ-20260709-029 | Expose only the required read-only Rabbi helper scope artifacts publicly for Agent Mode runs without repo filesystem access. | RAW-20260709-006 | BNA operations / Rabbi One Time | Codex | agent-review | P0 | 1 | REQ-20260709-028 | Public artifact URLs exist for the generated scope map JSON/markdown and account-scope template; tests check existence and obvious secret-like strings. | `scripts/generate-agent-review-prompts.cjs`, `public/agent-review-artifacts/*` | yes | Done / deployed / live readback verified |
+| REQ-20260709-030 | Verify, push, deploy, and live-smoke the corrected public prompt path so Shloimie can paste the working URL into Agent Mode. | RAW-20260709-006 | BNA operations / Rabbi One Time | Codex | verification | P0 | 1 | REQ-20260709-028, REQ-20260709-029 | Focused tests pass, prompt/artifact URLs return 200 live, and the exact working Agent Mode link is reported. | tests, live curl/readback, changelog/ledger | yes | Done / deployed / live readback verified |
 
 ## Parsed Tasks
 
 | ID | Canonical key | Task | Owner | Workspace/project | Source | Requirement | Next action | Visible lane | Status |
 |---|---|---|---|---|---|---|---|---|
-| TASK-20260709-008 | agent-review-public-prompt-mode | Fix Agent Review prompt launch path for browser-only Agent Mode | Codex | BNA operations / Rabbi One Time | RAW-20260709-006 | REQ-20260709-028, REQ-20260709-029, REQ-20260709-030 | Commit/push the local fix, deploy to OneTime Railway, live-readback the public prompt/artifact URLs, and provide the working public prompt link. | repo/process | Open / local verified / deploy pending |
+| TASK-20260709-008 | agent-review-public-prompt-mode | Fix Agent Review prompt launch path for browser-only Agent Mode | Codex | BNA operations / Rabbi One Time | RAW-20260709-006 | REQ-20260709-028, REQ-20260709-029, REQ-20260709-030 | Give Shloimie the public prompt link and run the all-163 Agent Mode audit from that public-first prompt. | repo/process | Done / deployed |
 
 ## Final Audit
 
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |
 |---|---|---|---|---|---|
 | REQ-20260709-027 | Done / local verified | Raw/register created and memory entry added. | `raw-input/RAW-20260709-006-agent-review-public-prompt-blocker.md`, `memory/2026-07-09.md`, this file | File readback completed. | none |
-| REQ-20260709-028 | Done / local verified / deploy pending | Generated prompts now open public prompt first, preserve `Click Start Audit / I started this agent mode`, include `hub_unavailable_401`, and include `hub_auth_state` in the result payload. | `src/lib/bna/agent-review-hub.js`, `docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md`, generated prompt files | PASS `npm run agent-review:prompts`; PASS `node --test tests/agent-review-hub.test.js`; PASS full `npm test` 1687/1687. | Deploy/live readback pending. |
-| REQ-20260709-029 | Done / local verified / deploy pending | Generated public artifacts exist for Rabbi scope map JSON/markdown and account-bot scope template. | `scripts/generate-agent-review-prompts.cjs`, `public/agent-review-artifacts/*`, `ops/route-registry.json` | PASS artifact secret-like scan for token/key/cookie/bearer patterns; PASS `npm run secrets:audit`. | Deploy/live readback pending. |
-| REQ-20260709-030 | Open / local verified / deploy pending | OneTime deployment `36874255-af07-47a8-a41a-0f8919af801b` succeeded for the prior account-scope batch before this prompt-fix batch; public prompt batch still needs its own push/deploy/readback. | tests, live curl/readback, changelog/ledger | PASS local tests and checks; live readback pending. | Commit/push/deploy/live smoke still required. |
+| REQ-20260709-028 | Done / deployed / live readback verified | Generated prompts now open public prompt first, preserve `Click Start Audit / I started this agent mode`, include `hub_unavailable_401`, and include `hub_auth_state` in the result payload. Live prompt readback returned 200 with all markers. | `src/lib/bna/agent-review-hub.js`, `docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md`, generated prompt files | PASS `npm run agent-review:prompts`; PASS `node --test tests/agent-review-hub.test.js`; PASS full `npm test` 1687/1687; PASS live readback for `/agent-review-prompts/rabbi-helper-tool-scope-map.md`. | none |
+| REQ-20260709-029 | Done / deployed / live readback verified | Generated public artifacts exist and live-read back for Rabbi scope map JSON/markdown and account-bot scope template. Scope JSON readback has 163 contracts. | `scripts/generate-agent-review-prompts.cjs`, `public/agent-review-artifacts/*`, `ops/route-registry.json` | PASS artifact secret-like scan for token/key/cookie/bearer patterns; PASS `npm run secrets:audit`; PASS live readback for all 3 public artifacts. | none |
+| REQ-20260709-030 | Done / deployed / live readback verified | Commits `f9eb486d` and `f907a87e` are pushed; OneTime Railway deployment `cc221c00-1cb3-4b66-b995-40ad78453096` reached `SUCCESS`; live smokes and direct prompt/artifact readbacks passed. | tests, live curl/readback, changelog/ledger | PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`; PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`; PASS `npm run one-time:target:guard -- --json`; PASS direct live prompt/artifact readbacks. | none |
 
 ## Local Verification
 
@@ -63,3 +63,29 @@ without auditing.
   `npm run secrets:audit`;
   `npm run watchdog:protocol-drift`;
   `git diff --check` with line-ending warnings only.
+
+## Deployment And Live Readback
+
+- Pushed commits:
+  `f9eb486d` (`Make agent review prompts public-first`) and `f907a87e`
+  (`Refresh audit governance after agent review prompt fix`).
+- OneTime Railway deployment
+  `cc221c00-1cb3-4b66-b995-40ad78453096` reached `SUCCESS` on
+  `one-time-production / one-time-web / production`.
+- Live smoke passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`.
+- Live Rabbi landing smoke passed:
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
+  Evidence:
+  `ops/live-smokes/2026-07-09T10-56-49-667Z-rabbi-onetime-landing-smoke.md`.
+- Live target guard passed:
+  `npm run one-time:target:guard -- --json`.
+- Direct live readback passed:
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`
+  includes `hub_unavailable_401`, `Public prompt URL:`, public artifact URLs,
+  and `Click Start Audit / I started this agent mode`.
+- Direct public artifact readback passed:
+  `rabbi-one-time-tool-scope-map.json` returned 200 with 163 contracts,
+  `rabbi-one-time-tool-scope-map.md` returned 200, and
+  `account-bot-scope-template.json` returned 200 with template key
+  `service_provider_project_bot_scope_v1`.

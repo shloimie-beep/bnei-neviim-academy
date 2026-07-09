@@ -35763,3 +35763,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   access grant, credential, DNS/account, Drive/Vimeo/Zoom, production data
   mutation, external connector write, deployment, or public publish was
   performed during local verification.
+
+## 2026-07-09T13:56:38+03:00 - Helper Scope And Agent Review Public Prompt Deployed
+
+- Deployed helper account-scope provisioning and the public-first Agent Review
+  prompt flow to the OneTime Railway service.
+- Browser-only Agent Mode now starts from the public prompt URL and records a
+  protected hub blank/401/sign-in blocker as `hub_unavailable_401` instead of
+  stopping before the audit.
+- Added public, read-only Agent Review artifacts for the Rabbi helper scope map
+  JSON/markdown and the account-bot scope template.
+- Pushed commits: `6a570345`, `f9eb486d`, and `f907a87e`.
+- Railway deployments: `36874255-af07-47a8-a41a-0f8919af801b` and final
+  deployment `791c60d5-094b-4125-9e0a-9d305cdf0577`, both `SUCCESS`.
+- Live verification passed: OneTime separate-instance smoke, Rabbi OneTime
+  landing smoke, OneTime target guard, public prompt readback, and all three
+  public artifact readbacks.
+- The next prompt to run in Agent Mode is:
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`.
+- Remaining blockers: all-163 Agent Mode proof, external-write approvals under
+  `DEC-20260708-019`, and per-tool live audit readback evidence.
