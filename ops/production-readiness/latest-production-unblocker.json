@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-07-09T16:28:10.079Z",
+  "generated_at": "2026-07-09T16:38:29.106Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-09T16:27:59.399Z",
+  "source_snapshot_generated_at": "2026-07-09T16:38:19.466Z",
   "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
   "snapshot_source_kind": "live_no_write_command",
-  "snapshot_git_head": "e5524567",
-  "snapshot_origin_master": "e5524567",
+  "snapshot_git_head": "c5ffc1a5",
+  "snapshot_origin_master": "c5ffc1a5",
   "snapshot_worktree_clean": true,
   "source_snapshot": {
     "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
     "kind": "live_no_write_command",
-    "generated_at": "2026-07-09T16:27:59.399Z",
-    "git_head": "e5524567",
-    "origin_master": "e5524567",
+    "generated_at": "2026-07-09T16:38:19.466Z",
+    "git_head": "c5ffc1a5",
+    "origin_master": "c5ffc1a5",
     "worktree_clean": true,
     "command_exit_code": 0,
     "load_error": ""
@@ -28,7 +28,8 @@
     "agent_mode_proof_count": 2,
     "active_collision_lane_count": 3,
     "chatgpt_queued_count": 0,
-    "next_unblocked_executable_batch": "none"
+    "next_unblocked_executable_batch": "none",
+    "blocker_group_count": 4
   },
   "run_blockers": [
     {
@@ -44,6 +45,54 @@
       "owner": "Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane",
       "blocker": "Full OneTime launch remains blocked by external setup values, not Railway target context. The immediate lead-capture/free-class lane is unblocked and tracked in RAW-20260709-008.",
       "next_action": "Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks."
+    }
+  ],
+  "blocker_groups": [
+    {
+      "id": "no_unblocked_executable_batch",
+      "title": "No unblocked executable batch is available",
+      "owner": "Codex / operator",
+      "count": 1,
+      "evidence": [
+        "REQ-20260702-108",
+        "REQ-20260702-110"
+      ],
+      "next_action": "Clear the external setup, terminal Agent Mode proof, and active collision-lane blockers; then rerun `npm run bna:run:next`."
+    },
+    {
+      "id": "external_setup_blockers",
+      "title": "External OneTime setup values or approvals are missing",
+      "owner": "Shloimie / provider account owners",
+      "count": 3,
+      "evidence": [
+        "SETUP-ONETIME-STRIPE-001",
+        "SETUP-ONETIME-WHAPI-001",
+        "SETUP-ONETIME-CAMPAIGN-001"
+      ],
+      "next_action": "Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval."
+    },
+    {
+      "id": "agent_mode_terminal_proof_missing",
+      "title": "Rabbi Agent Review terminal proof is missing",
+      "owner": "Shloimie / Agent Mode runner",
+      "count": 2,
+      "evidence": [
+        "rabbi-telegram-helper-ticket-smoke",
+        "rabbi-helper-tool-scope-map"
+      ],
+      "next_action": "Run each listed Agent Mode prompt and save terminal PASS, FAIL, or BLOCKED proof through the listed Operations drop-off URL."
+    },
+    {
+      "id": "active_agent_collision_lanes",
+      "title": "Active agent lanes must not be overlapped",
+      "owner": "Codex / agent fleet",
+      "count": 3,
+      "evidence": [
+        "job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
+        "job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using",
+        "job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167"
+      ],
+      "next_action": "Wait for these lane result packets or inspect them before touching overlapping UI/API/Agent Review proof work."
     }
   ],
   "setup_items": [

@@ -1,9 +1,9 @@
-# Production Unblocker - 2026-07-09T16:28:10.079Z
+# Production Unblocker - 2026-07-09T16:38:29.106Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-09T16:27:59.399Z
-Snapshot git head: e5524567 (origin/master: e5524567, worktree clean: yes)
+Source snapshot generated at: 2026-07-09T16:38:19.466Z
+Snapshot git head: c5ffc1a5 (origin/master: c5ffc1a5, worktree clean: yes)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 ## What Blocks Production
@@ -11,6 +11,38 @@ Next unblocked executable batch: none
 - Agent Mode terminal proof items: 2
 - Active collision lanes: 3
 - ChatGPT packets queued: 0
+- Blocker groups: 4
+## Owner Action Summary
+### no_unblocked_executable_batch - No unblocked executable batch is available
+Owner: Codex / operator
+Count: 1
+Evidence:
+  - REQ-20260702-108
+  - REQ-20260702-110
+Next action: Clear the external setup, terminal Agent Mode proof, and active collision-lane blockers; then rerun `npm run bna:run:next`.
+### external_setup_blockers - External OneTime setup values or approvals are missing
+Owner: Shloimie / provider account owners
+Count: 3
+Evidence:
+  - SETUP-ONETIME-STRIPE-001
+  - SETUP-ONETIME-WHAPI-001
+  - SETUP-ONETIME-CAMPAIGN-001
+Next action: Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.
+### agent_mode_terminal_proof_missing - Rabbi Agent Review terminal proof is missing
+Owner: Shloimie / Agent Mode runner
+Count: 2
+Evidence:
+  - rabbi-telegram-helper-ticket-smoke
+  - rabbi-helper-tool-scope-map
+Next action: Run each listed Agent Mode prompt and save terminal PASS, FAIL, or BLOCKED proof through the listed Operations drop-off URL.
+### active_agent_collision_lanes - Active agent lanes must not be overlapped
+Owner: Codex / agent fleet
+Count: 3
+Evidence:
+  - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish
+  - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using
+  - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167
+Next action: Wait for these lane result packets or inspect them before touching overlapping UI/API/Agent Review proof work.
 ## External Setup To Provide
 ### SETUP-ONETIME-STRIPE-001 - Rabbi Stripe sandbox
 Owner: Shloimie / provider account owners
