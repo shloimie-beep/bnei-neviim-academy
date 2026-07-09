@@ -582,6 +582,15 @@ function observableJobTaskLockStatusLine(job = {}, sampledAt = new Date()) {
   return `- task #${taskId || 'unknown'} for job #${job.id || job.job_id || 'unknown'}: ${lock.evidence}`;
 }
 
+function fallbackTaskCandidateStatusLine(task = {}, observableJobs = []) {
+  const taskId = Number(task.id || task.task_id || 0);
+  const matchingJob = observableJobs.find((job) => Number(job.task_id || job.taskId || 0) === taskId);
+  const matching = matchingJob
+    ? `matching observable job #${matchingJob.id || matchingJob.job_id || 'unknown'} [${matchingJob.status || 'unknown'}]`
+    : 'no matching observable job';
+  return `- ${taskStatusLine(task)} (${matching})`;
+}
+
 function acquireTaskLock(task, runId) {
   const stamp = nowIso();
   writeJson(taskLockPath(task.id), {
@@ -3510,7 +3519,7 @@ async function status(config) {
     `- Claimable observable jobs: ${claimableObservableJobs.length}`,
     `- Linked observable task lookup: fetched ${linkedTaskHydration.fetchedTasks.length}, missing ${linkedTaskHydration.errors.length}`,
     `- Active Codex task fallback: ${codex.length}`,
-    `- Ready to claim: observable jobs ${claimableObservableJobs.length}, fallback tasks ${queue.length}`,
+    `- Ready to claim: observable jobs ${claimableObservableJobs.length}, fallback task candidates ${queue.length}`,
     `- Queue health: fresh ${normalizedCounts.active_fresh}, stale ${normalizedCounts.active_stale}, blocked ${normalizedCounts.blocked}, unknown ${normalizedCounts.abandoned_unknown}, do-not-redo ${normalizedCounts.do_not_redo}`,
     `- Max retries: ${config.maxRetries}`,
     `- Baseline smoke: ${config.openAiSmoke ? 'enabled' : 'disabled'}`,
@@ -3541,6 +3550,10 @@ async function status(config) {
     const sampledAt = new Date();
     for (const job of notClaimableJobs) {
       lines.push(observableJobTaskLockStatusLine(job, sampledAt));
+    }
+    if (queue.length) {
+      lines.push('', 'Fallback task candidates requiring lane inspection:');
+      for (const task of queue.slice(0, 8)) lines.push(fallbackTaskCandidateStatusLine(task, observableJobs));
     }
   } else if (queue.length) {
     lines.push('', 'Next tasks:');
