@@ -35515,3 +35515,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   student-sensitive content, external family send, WhatsApp/WAPI message,
   payment, access grant, credential, DNS/account, Drive/Vimeo/Zoom mutation, or
   public publish was performed.
+
+## 2026-07-09T08:11:00+03:00 - OneTime WAPI Readiness Blocker Reported
+
+- Added a no-send OneTime WAPI readiness command:
+  `npm run one-time:wapi:readiness`.
+- The readiness report confirms outbound WAPI credentials are present with
+  OneTime scope, but provider setup and auto-reply are still blocked.
+- Current blockers: Whapi/WAPI instance id, WhatsApp sender phone metadata,
+  class-link alias, `ONE_TIME_WAPI_AUTO_REPLY_ENABLED`, and
+  `ONE_TIME_WAPI_AUTO_REPLY_CONFIRM`.
+- Sent a super-admin Telegram progress ding with that blocker list.
+- Verification passed: WAPI focused tests 13/13, full `npm test` 1676/1676,
+  `npm run secrets:audit`, `npm run watchdog:protocol-drift`, and Telegram
+  progress send returned `sent=true`, `dry_run=false`,
+  `message_id_present=true`.
+- Evidence is recorded in
+  `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`.
+- No WhatsApp/WAPI message, CRM mutation, contact/tag write, external family
+  send, payment, access grant, credential change, DNS/account change, Drive/
+  Vimeo/Zoom mutation, raw token print, raw chat ID print, raw phone print, or
+  raw class link print was performed.

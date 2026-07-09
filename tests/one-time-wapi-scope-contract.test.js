@@ -3,6 +3,8 @@ const fs = require('node:fs');
 const test = require('node:test');
 
 const server = fs.readFileSync('server.js', 'utf8');
+const packageJson = fs.readFileSync('package.json', 'utf8');
+const envExample = fs.readFileSync('.env.example', 'utf8');
 
 test('OneTime WhatsApp sends prefer Rabbi-scoped credentials and keep CRM project scope', () => {
   assert.match(server, /const ONE_TIME_WAPI_API_TOKEN/);
@@ -44,4 +46,51 @@ test('OneTime WAPI bot auto-reply is approval-gated and does not commit the clas
   assert.match(server, /auto_reply_readiness/);
   assert.match(server, /no_secret_link_in_source/);
   assert.doesNotMatch(server, /us06web\.zoom\.us\/j\/83339110316/);
+});
+
+test('OneTime WAPI readiness script reports blockers without sends or secrets', async () => {
+  const script = fs.readFileSync('scripts/check-onetime-wapi-readiness.mjs', 'utf8');
+  assert.match(packageJson, /"one-time:wapi:readiness": "node scripts\/check-onetime-wapi-readiness\.mjs --json --write-report"/);
+  assert.match(envExample, /ONE_TIME_WAPI_API_TOKEN=/);
+  assert.match(envExample, /RABBI_SHELLER_WAPI_API_TOKEN=/);
+  assert.match(envExample, /ONE_TIME_WAPI_AUTO_REPLY_CONFIRM=/);
+  assert.match(script, /whatsapp_send_performed: false/);
+  assert.match(script, /crm_mutation_performed: false/);
+  assert.match(script, /secret_values_printed: false/);
+  assert.match(script, /No secret values, chat IDs, raw class links, or phone numbers are printed/);
+  assert.doesNotMatch(script, /SEND_WHATSAPP|messages\/text|fetch\(/);
+
+  const { buildOneTimeWapiReadiness } = await import('../scripts/check-onetime-wapi-readiness.mjs');
+  const blocked = buildOneTimeWapiReadiness({
+    inspectKeyholder: false,
+    env: {
+      WAPI_API_TOKEN: 'global-token-only',
+      ONE_TIME_WAPI_AUTO_REPLY_ENABLED: 'true',
+      ONE_TIME_WAPI_AUTO_REPLY_CONFIRM: 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY',
+      ONE_TIME_WHATSAPP_CLASS_LINK: 'https://example.test/class-link',
+    },
+  });
+  assert.equal(blocked.outbound.configured, true);
+  assert.equal(blocked.outbound.credential_scope, 'default_fallback');
+  assert.equal(blocked.auto_reply.ready, false);
+  assert.ok(blocked.auto_reply.blockers.some((blocker) => /ONE_TIME_WAPI_API_TOKEN/.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(blocked), /example\.test\/class-link/);
+
+  const ready = buildOneTimeWapiReadiness({
+    inspectKeyholder: false,
+    env: {
+      ONE_TIME_WAPI_API_TOKEN: 'scoped-token',
+      ONE_TIME_WHAPI_INSTANCE_ID: 'instance-1',
+      ONE_TIME_WHAPI_PHONE: '+972501111111',
+      ONE_TIME_WAPI_AUTO_REPLY_ENABLED: 'live',
+      ONE_TIME_WAPI_AUTO_REPLY_CONFIRM: 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY',
+      ONE_TIME_WHATSAPP_CLASS_LINK: 'https://example.test/class-link',
+    },
+  });
+  assert.equal(ready.provider_setup.ready, true);
+  assert.equal(ready.auto_reply.ready, true);
+  assert.equal(ready.outbound.credential_scope, 'one_time_scoped');
+  assert.equal(ready.whatsapp_send_performed, false);
+  assert.equal(ready.crm_mutation_performed, false);
+  assert.doesNotMatch(JSON.stringify(ready), /scoped-token|\+972501111111|example\.test\/class-link/);
 });

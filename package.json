@@ -99,6 +99,7 @@
     "one-time:smoke:resend-vimeo-stripe": "node scripts/smoke-one-time-resend-vimeo-stripe-safe.mjs",
     "one-time:vimeo-library": "node scripts/one-time-vimeo-folder-library.mjs --json --write-report",
     "one-time:vimeo-studio": "node scripts/one-time-vimeo-studio-pipeline.mjs --json --write-report",
+    "one-time:wapi:readiness": "node scripts/check-onetime-wapi-readiness.mjs --json --write-report",
     "stripe:sandbox-smoke": "node scripts/smoke-stripe-sandbox-billing.mjs",
     "one-time:separate-instance-package": "node scripts/generate-onetime-separate-instance-package.mjs",
     "one-time:railway-target:guard": "node scripts/check-onetime-external-setup-readiness.mjs --json --railway-only",

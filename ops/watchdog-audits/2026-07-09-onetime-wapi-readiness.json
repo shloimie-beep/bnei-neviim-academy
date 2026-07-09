@@ -1,0 +1,59 @@
+{
+  "success": true,
+  "checked_at": "2026-07-09T05:10:39.521Z",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "external_write_performed": false,
+  "whatsapp_send_performed": false,
+  "crm_mutation_performed": false,
+  "secret_values_printed": false,
+  "mode": "readiness_no_send",
+  "outbound": {
+    "configured": true,
+    "credential_scope": "one_time_scoped",
+    "one_time_token_present": true,
+    "default_token_present": true,
+    "one_time_token_source": ".secrets",
+    "default_token_source": ".secrets",
+    "base_url_configured": true,
+    "base_url_source": "default"
+  },
+  "provider_setup": {
+    "ready": false,
+    "instance_id_present": false,
+    "instance_id_source": "not configured",
+    "phone_metadata_present": false,
+    "phone_metadata_source": "not configured",
+    "blockers": [
+      "Whapi/WAPI instance id missing",
+      "WhatsApp sender phone metadata missing"
+    ]
+  },
+  "auto_reply": {
+    "ready": false,
+    "enabled": false,
+    "approved": false,
+    "class_link_configured": false,
+    "class_link_source": "not configured",
+    "credential_scope": "one_time_scoped",
+    "blockers": [
+      "ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled",
+      "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY",
+      "ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing"
+    ],
+    "copy_version": "2026-07-08-r1"
+  },
+  "required_next_actions": [
+    "Whapi/WAPI instance id missing",
+    "WhatsApp sender phone metadata missing",
+    "ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled",
+    "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY",
+    "ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing"
+  ],
+  "guardrails": [
+    "Readiness check only; no WhatsApp message is sent.",
+    "No CRM contact, tag, lead, or communication row is created or updated.",
+    "No secret values, chat IDs, raw class links, or phone numbers are printed.",
+    "OneTime auto-reply requires OneTime-scoped WAPI credentials, an approved flag, and a configured class link."
+  ]
+}
