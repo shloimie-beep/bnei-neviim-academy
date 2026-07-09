@@ -83311,7 +83311,8 @@ app.get('/api/bna/support-tickets', requireAdmin, async (req, res) => {
       `WITH filtered_ticket_ids AS (
          SELECT st.id,
                 CASE st.status WHEN 'open' THEN 1 WHEN 'triage' THEN 2 WHEN 'in_progress' THEN 3 WHEN 'resolved' THEN 4 ELSE 5 END AS support_status_order,
-                CASE st.severity WHEN 'blocking' THEN 1 WHEN 'high' THEN 2 WHEN 'normal' THEN 3 ELSE 4 END AS support_severity_order
+                CASE st.severity WHEN 'blocking' THEN 1 WHEN 'high' THEN 2 WHEN 'normal' THEN 3 ELSE 4 END AS support_severity_order,
+                st.created_at AS support_created_at
          FROM bna_support_tickets st
          ${whereClause}
          ORDER BY support_status_order, support_severity_order, st.created_at DESC
@@ -83331,7 +83332,7 @@ app.get('/api/bna/support-tickets', requireAdmin, async (req, res) => {
          WHERE ticket_id IN (SELECT id FROM filtered_ticket_ids)
          GROUP BY ticket_id
        ) comment_counts ON comment_counts.ticket_id = ft.id
-       ORDER BY ft.support_status_order, ft.support_severity_order, ft.created_at DESC`,
+       ORDER BY ft.support_status_order, ft.support_severity_order, ft.support_created_at DESC`,
       params
     );
     res.json({ tickets: result.rows.map(supportTicketView) });

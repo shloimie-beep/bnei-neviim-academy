@@ -79,6 +79,8 @@ test('support tickets are persisted separately from project tasks with comments 
   assert.match(serverJs, /app\.post\('\/api\/bna\/support-tickets'/);
   assert.match(serverJs, /app\.patch\('\/api\/bna\/support-tickets\/:id'/);
   assert.ok(serverJs.includes("ticket_number: id ? (row.ticket_number || `OT-SUP-"), 'support ticket view should expose OT-SUP ticket numbers');
+  assert.match(serverJs, /support_created_at/);
+  assert.doesNotMatch(serverJs, /ORDER BY ft\.support_status_order, ft\.support_severity_order, ft\.created_at DESC/);
   assert.match(serverJs, /maybeCreateTaskForSupportTicket/);
   assert.match(serverJs, /Support ticket #\$\{ticket\.id\}/);
 });
