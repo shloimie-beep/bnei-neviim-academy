@@ -13,6 +13,8 @@ worker service split is documented in
 
 - Local foreground check: `npm run telegram:rabbi`
 - Hidden background start: `npm run telegram:rabbi:start`
+- Safe chat-ID readback after the intended account/group messages the bot:
+  `npm run telegram:rabbi:chat-id`
 
 The Rabbi profile uses separate runtime files from the academy bot:
 
@@ -163,3 +165,15 @@ The generated backend map lives at
   `BNA_RAILWAY_PROCESS=telegram-rabbi` to run `npm run telegram:rabbi`.
 - Hosted worker runbook:
   `ops/one-time-mishnah-class/rabbi-telegram-worker.md`.
+
+## 2026-07-09 Chat-ID Readback Helper
+
+- Shloimie provided a BotFather token packet for `t.me/onetimeaios_bot`; the
+  token is treated as a secret and must not be copied into tracked files.
+- The local ignored Rabbi token file is already configured.
+- `npm run telegram:rabbi:chat-id` safely calls Telegram `getMe` and
+  `getUpdates`, sends no messages, prints only masked chat IDs, and writes full
+  candidate IDs only to ignored `.runtime/rabbi-telegram-chat-id-candidates.json`.
+- Use that command only after the intended Rabbi account or group sends
+  `/start` or any message to `t.me/onetimeaios_bot`; verify the candidate is
+  the intended chat before setting `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`.

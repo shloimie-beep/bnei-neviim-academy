@@ -11,6 +11,8 @@
   `raw-input/RAW-20260708-033-rabbi-telegram-agent-loop-expansion.md`
 - Communications sidekick expansion intake:
   `raw-input/RAW-20260708-034-rabbi-telegram-sidekick-comms-scope.md`
+- Redacted BotFather token intake:
+  `raw-input/RAW-20260709-007-onetimeaios-bot-token-redacted.md`
 - Source channel: `codex_chat`
 - Workspace: `rabbi_sheller_provider`
 - Project: `one_time_mishnah_class`
@@ -172,6 +174,29 @@
   `npm run telegram:codex-progress -- --send --json` returned `sent=true` and
   `message_id_present=true` for the deploy closeout update. No raw token or
   chat ID was printed.
+
+## 2026-07-09 Bot Token Intake / Readiness Recheck
+
+- Shloimie provided the BotFather credential packet for `t.me/onetimeaios_bot`.
+  The live token was treated as a secret and redacted from tracked repo files.
+- Local ignored secret storage already contained the Rabbi bot token, so no
+  tracked file needed the credential.
+- `npm run telegram:rabbi:readiness` ran as a no-write check on 2026-07-09 and
+  reports Rabbi token configured, scoped One Time Operations username/password
+  configured, and `external_write_performed=false`.
+- The active blocker is unchanged: `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is
+  missing. Live Rabbi Telegram startup, Rabbi communications dings, and the
+  full scoped live smoke remain blocked until the intended Rabbi account/group
+  messages `t.me/onetimeaios_bot` and the allowed chat ID is configured.
+- Added `npm run telegram:rabbi:chat-id` as the no-send readback command for
+  that exact moment. It calls Telegram `getMe`/`getUpdates`, masks chat IDs in
+  console output, and writes full candidate IDs only to ignored `.runtime`.
+- Live read-only smoke of `npm run telegram:rabbi:chat-id` on 2026-07-09
+  resolved the bot as `onetimeaios_bot`, sent no message, printed no token,
+  and found 0 pending chat candidates.
+- Do not ask Agent Mode or ChatGPT to handle the raw token. Agent Mode may test
+  only readiness, public prompts, and blocked-state evidence until the chat ID
+  is configured by Codex/operator through secret-safe runtime config.
 
 ## Current Helper-Scope Deploy Blocker
 

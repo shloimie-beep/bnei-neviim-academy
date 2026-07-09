@@ -35821,3 +35821,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `sent=true`, `dry_run=false`, and `message_id_present=true`.
 - The message included the deployed fix, live verification, remaining
   all-163 Agent Mode proof blocker, and the next public prompt URL.
+
+## 2026-07-09T14:12:00+03:00 - OneTimeAIOS Bot Token Intake Registered
+
+- Registered Shloimie's BotFather packet for `t.me/onetimeaios_bot` as a
+  redacted credential intake; the live token was not copied into tracked files.
+- Added `npm run telegram:rabbi:chat-id`, a no-send Telegram readback command
+  for use after the intended Rabbi account/group messages the bot. It masks
+  chat IDs in console output and writes full candidates only to ignored
+  `.runtime`.
+- Verified with `npm run telegram:rabbi:readiness` that the Rabbi token and
+  scoped One Time Operations credentials are configured, no external write was
+  performed, and the remaining blocker is
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`.
+- Live read-only smoke of `npm run telegram:rabbi:chat-id` resolved
+  `onetimeaios_bot`, sent no message, printed no token, and found 0 pending
+  chat candidates.
+- Live Rabbi Telegram runtime, communication dings, and scoped smoke remain
+  blocked until the intended Rabbi account/group messages the bot and the
+  allowed chat ID is configured through secret-safe runtime config.
