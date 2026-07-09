@@ -1,6 +1,6 @@
 {
-  "started_at": "2026-07-05T12:41:23.321Z",
-  "base_url": "http://127.0.0.1:63968",
+  "started_at": "2026-07-09T05:25:25.695Z",
+  "base_url": "http://127.0.0.1:57482",
   "ok": true,
   "viewports": [
     {
@@ -25,9 +25,6 @@
     }
   ],
   "server_log_tail": [
-    "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",
-    "ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.",
-    "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
-    "BNA Server running on 127.0.0.1:63968"
+    "BNA Server running on 127.0.0.1:57482"
   ]
 }

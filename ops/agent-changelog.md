@@ -35536,3 +35536,31 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   send, payment, access grant, credential change, DNS/account change, Drive/
   Vimeo/Zoom mutation, raw token print, raw chat ID print, raw phone print, or
   raw class link print was performed.
+
+## 2026-07-09T08:27:00+03:00 - OneTime Classroom/Member Nav UI Locally Verified
+
+- Continued `REQ-20260709-007` for logged-in OneTime classroom/member polish.
+- Fixed classroom card contrast so member-visible materials, messages, empty
+  states, questions, rewards, and Rabbi threads use the OneTime dark/yellow
+  surface instead of light cards inheriting light text.
+- Tightened the classroom header: tablet/mobile actions now use one horizontal
+  rail, the subtitle truncates cleanly, and desktop nav uses compact visible
+  labels (`Home`, `Library`, `Classroom`, `Helper`, `Support`, `Logout`) with
+  full ARIA labels preserved.
+- Applied the same compact navigation labels to member home, member library,
+  and provider participant surfaces.
+- Verification passed: final local toolbar/filter audit with 35 screenshots
+  and 0 findings, local canonical journey smoke, focused UI tests 20/20, full
+  `npm test` 1676/1676, `npm run watchdog:actions`, `npm run
+  watchdog:protocol-drift`, `npm run secrets:audit`, and `git diff --check`
+  with line-ending warnings only.
+- Evidence is recorded in
+  `ops/ui-audits/2026-07-09-onetime-member-classroom-nav-ui-local-final/report.md`
+  and
+  `ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/report.md`.
+- No external email, WhatsApp/WAPI, Telegram recipient message, payment, access
+  grant, credential, DNS/account, Drive/Vimeo/Zoom, production contact/tag
+  mutation, or public publish was performed.
+- Remaining open work: commit/push, deploy/live-smoke this slice, then
+  continue broader student portal IA, backend CRM persistence, WAPI setup,
+  safe contact tagging, and Rabbi Telegram chat ID setup.

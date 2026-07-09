@@ -1,14 +1,14 @@
 # One Time Canonical Journey Local Smoke
 
-Started: 2026-07-05T12:41:23.321Z
-Base URL: http://127.0.0.1:63968
+Started: 2026-07-09T05:25:25.695Z
+Base URL: http://127.0.0.1:57482
 Result: passed
 
 ## Checks
 - One Time landing links to `/rabbi-member` and not `/one-time/member-login`.
 - Legacy `/one-time/member-login` and `/member` redirect to `/rabbi-member`.
-- Member home, library, and classroom expose module navigation, account/logout, and public return paths.
-- Account/logout clears local One Time member state.
+- Home, library, classroom, support, and logout expose module navigation without public-return detours.
+- Logout clears local One Time member state.
 
 ## Screenshots
 - ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/desktop-one-time-landing.png

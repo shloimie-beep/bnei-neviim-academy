@@ -71,7 +71,7 @@ async function runViewport(browser, baseUrl, viewport) {
   await page.locator('a[href="/rabbi-member"]').first().click();
   await page.waitForURL(/\/rabbi-member(?:$|\?)/);
   await page.locator('nav[aria-label="One Time member navigation"]').waitFor();
-  for (const label of ['Member home', 'Library', 'Classroom', 'Questions/support', 'Account/logout']) {
+  for (const label of ['Home', 'Library', 'Classroom', 'Support', 'Logout']) {
     await page.getByText(label, { exact: true }).first().waitFor();
   }
   assert(!(await page.content()).includes('Return to public site'), 'logged-in One Time member home should not show public-return links');
@@ -85,24 +85,24 @@ async function runViewport(browser, baseUrl, viewport) {
   assert(page.url().includes('/rabbi-member'), 'legacy /member should redirect to /rabbi-member');
 
   await page.goto(`${baseUrl}/member-library`, { waitUntil: 'domcontentloaded' });
-  await page.getByText('Account/logout', { exact: true }).first().waitFor();
+  await page.getByText('Logout', { exact: true }).first().waitFor();
   await snap('member-library');
   await page.evaluate(() => {
     localStorage.setItem('rabbi_member_session', 'test-session');
     localStorage.setItem('one_time_member_library_code', 'test-code');
     localStorage.setItem('oneTimeClassroomCode', 'test-classroom');
   });
-  await page.getByText('Account/logout', { exact: true }).first().click();
+  await page.getByText('Logout', { exact: true }).first().click();
   await page.waitForURL(/\/rabbi-member/);
   const cleared = await page.evaluate(() => ({
     session: localStorage.getItem('rabbi_member_session'),
     library: localStorage.getItem('one_time_member_library_code'),
     classroom: localStorage.getItem('oneTimeClassroomCode'),
   }));
-  assert(!cleared.session && !cleared.library && !cleared.classroom, 'Account/logout should clear One Time member local state');
+  assert(!cleared.session && !cleared.library && !cleared.classroom, 'Logout should clear One Time member local state');
 
   await page.goto(`${baseUrl}/one-time-classroom`, { waitUntil: 'domcontentloaded' });
-  await page.getByText('Account/logout', { exact: true }).first().waitFor();
+  await page.getByText('Logout', { exact: true }).first().waitFor();
   await snap('classroom');
 
   await context.close();
@@ -124,8 +124,8 @@ function writeReport(report) {
     '## Checks',
     '- One Time landing links to `/rabbi-member` and not `/one-time/member-login`.',
     '- Legacy `/one-time/member-login` and `/member` redirect to `/rabbi-member`.',
-    '- Member home, library, and classroom expose module navigation and account/logout without public-return detours.',
-    '- Account/logout clears local One Time member state.',
+    '- Home, library, classroom, support, and logout expose module navigation without public-return detours.',
+    '- Logout clears local One Time member state.',
     '',
     '## Screenshots',
     ...report.viewports.flatMap((viewport) => viewport.screenshots.map((shot) => `- ${shot}`)),

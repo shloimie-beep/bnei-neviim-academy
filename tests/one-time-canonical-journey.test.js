@@ -27,12 +27,12 @@ test('One Time has one canonical public-to-member route flow', () => {
 });
 
 test('One Time member pages expose app modules without public-site escape links', () => {
-  assert.match(rabbiMember, /Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout/);
-  assert.match(memberLibrary, /Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout/);
-  assert.match(classroom, /Member home[\s\S]*Library[\s\S]*Classroom[\s\S]*Questions\/support[\s\S]*Account\/logout/);
+  assert.match(rabbiMember, /aria-label="Member home"[\s\S]*>Home<[\s\S]*Library[\s\S]*Classroom[\s\S]*aria-label="Questions\/support"[\s\S]*>Support<[\s\S]*aria-label="Account\/logout"[\s\S]*>Logout</);
+  assert.match(memberLibrary, /aria-label="Member home"[\s\S]*>Home<[\s\S]*Library[\s\S]*Classroom[\s\S]*aria-label="Questions\/support"[\s\S]*>Support<[\s\S]*aria-label="Account\/logout"[\s\S]*>Logout</);
+  assert.match(classroom, /aria-label="Member home"[\s\S]*>Home<[\s\S]*Library[\s\S]*Classroom[\s\S]*aria-label="Questions\/support"[\s\S]*>Support<[\s\S]*aria-label="Account\/logout"[\s\S]*>Logout</);
   assert.doesNotMatch(classroom, /<body class="one-time-review-active/);
   assert.match(classroom, /document\.body\.classList\.add\('one-time-review-active', 'one-time-classroom-review-shell'\)/);
-  assert.match(participant, /Provider login[\s\S]*Member home[\s\S]*Library[\s\S]*Account\/logout/);
+  assert.match(participant, /Provider login[\s\S]*aria-label="Member home"[\s\S]*>Home<[\s\S]*Library[\s\S]*aria-label="Account\/logout"[\s\S]*>Logout</);
   for (const html of [rabbiMember, memberLibrary, classroom, participant]) {
     assert.doesNotMatch(html, /One Time home|Return to public site|href="\/one-time(?:[?#"])/);
     assert.doesNotMatch(html, /href="\/"/);

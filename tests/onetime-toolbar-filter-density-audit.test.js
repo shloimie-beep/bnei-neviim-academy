@@ -21,6 +21,7 @@ test('One Time toolbar density audit covers required route and viewport matrix',
     '/provider.html?review=one-time',
     '/parent.html?review=one-time',
     '/student.html?review=one-time',
+    '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS',
     '/rabbi-member',
   ]) {
     assert.match(script, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
@@ -34,7 +35,9 @@ test('One Time toolbar density audit covers required route and viewport matrix',
 test('One Time toolbar density audit measures top controls and writes stable reports', () => {
   for (const selector of [
     '.brand-topbar',
+    '.topbar',
     '.portal-topbar-actions',
+    '.top-actions',
     '[data-top-filter-rail]',
     '.ops-filter-track',
     '.ops-filter-tab',
@@ -52,6 +55,7 @@ test('One Time toolbar density audit measures top controls and writes stable rep
     'topControlCutoff',
     'buttonHeightSpread',
     'tinyMobileControls',
+    'hiddenByClippedAncestor',
     'clippedTopControls',
     'overlapPairs',
     'report.json',

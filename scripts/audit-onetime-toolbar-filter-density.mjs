@@ -56,6 +56,13 @@ const ROUTES = [
     auth: 'none',
   },
   {
+    id: 'classroom-review',
+    route: '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS',
+    surface: 'One Time classroom review route',
+    viewClass: 'MEMBER_PARENT_PORTAL',
+    auth: 'none',
+  },
+  {
     id: 'member-review',
     route: '/rabbi-member',
     surface: 'One Time member/class review route',
@@ -66,7 +73,9 @@ const ROUTES = [
 
 const TOOLBAR_CONTAINER_SELECTORS = [
   '.brand-topbar',
+  '.topbar',
   '.portal-topbar-actions',
+  '.top-actions',
   '.board-toolbar',
   '.top-filter-row',
   '.filter-tabs',
@@ -141,12 +150,26 @@ function findingSeverity(code) {
 
 async function collectMetrics(page, viewport) {
   return page.evaluate(({ containerSelectors, controlSelectors, viewportWidth }) => {
+    const hiddenByClippedAncestor = (el) => {
+      for (let node = el.parentElement; node && node !== document.body; node = node.parentElement) {
+        const style = window.getComputedStyle(node);
+        const rect = node.getBoundingClientRect();
+        const opacity = Number(style.opacity || 1);
+        if (style.visibility === 'hidden' || style.display === 'none' || opacity === 0) return true;
+        const clipped = style.clipPath && style.clipPath !== 'none';
+        const overflowHidden = style.overflow === 'hidden' || style.overflowX === 'hidden' || style.overflowY === 'hidden';
+        if (rect.width <= 2 && rect.height <= 2 && (clipped || overflowHidden)) return true;
+      }
+      return false;
+    };
+
     const visible = (el) => {
       const style = window.getComputedStyle(el);
       const rect = el.getBoundingClientRect();
       return style.visibility !== 'hidden'
         && style.display !== 'none'
         && Number(style.opacity || 1) !== 0
+        && !hiddenByClippedAncestor(el)
         && rect.right > 0
         && rect.left < window.innerWidth
         && rect.width > 0
