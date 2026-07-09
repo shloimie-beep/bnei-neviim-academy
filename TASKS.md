@@ -81,6 +81,16 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
+  follow-up. Register:
+  `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current
+  status: no-write live lag audit captured 18/18 samples needing attention,
+  direct TTFB readback shows slow and variable first-byte responses on HTML,
+  static JS/CSS, and small APIs, and visual UI defects remain separately
+  tracked in the OneTime frontend audit. Next action after active app/UI/API
+  lanes clear: inspect runtime/hosting response variability and cache/static
+  delivery policy first, then resume UI chrome polish; app-visible fixes still
+  need commit, deploy, and live smoke.
 - [ ] `RAW-20260708-028` / `REQ-20260708-090` through
   `REQ-20260708-095`: Rabbi / One Time helper 163-tool account scope map and
   Agent Mode probe prompt. Register:

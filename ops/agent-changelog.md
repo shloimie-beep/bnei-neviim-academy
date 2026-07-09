@@ -37000,3 +37000,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   hosted restart, live Telegram smoke, external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, Kimi live
   fallback action, or production-data mutation.
+
+## 2026-07-09T21:55:00+03:00 - OneTime Live Lag Audit Captured
+
+- Registered Shloimie's app lag/UI follow-up as `RAW-20260709-013` and
+  `REQ-20260709-070` in the OneTime frontend audit register.
+- Added `scripts/audit-onetime-live-performance.mjs` and captured a no-write
+  live lag audit at
+  `ops/performance-audits/2026-07-09-onetime-live-lag-audit/report.md`.
+- Direct TTFB readback is saved at
+  `ops/performance-audits/2026-07-09-onetime-live-lag-audit/ttfb-readback.md`;
+  it shows slow and variable first-byte timing on HTML, static JS/CSS, and
+  small APIs.
+- Added and validated Product Quality Compiler packet `PKT-20260709-133` at
+  `ops/prompt-packets/2026-07-09-onetime-live-lag-performance/05-live-lag-performance-fix.product-quality.json`.
+- Current classification: performance lag is not primarily heavy DOM or obvious
+  main-thread jank; inspect runtime/hosting responsiveness and cache/static
+  delivery policy before component-level UI tweaks.
+- Guardrails held: audit/readback only; no app/server implementation edit,
+  deploy, external send, payment/access mutation, provider/DNS/credential
+  mutation, or production-data mutation.
