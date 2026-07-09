@@ -4,6 +4,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
+import { runRailwayVariablesReadback } from './check-onetime-external-setup-readiness.mjs';
 
 const require = createRequire(import.meta.url);
 const {
@@ -112,6 +113,12 @@ export function buildOneTimeWapiReadiness(options = {}) {
     ...process.env,
   };
   const inspectKeyholder = options.inspectKeyholder ?? !options.env;
+  const inspectRailway = options.inspectRailway ?? !options.env;
+  const railwayVariables = options.railwayVariables || (inspectRailway ? runRailwayVariablesReadback({
+    repoRoot: root,
+    env,
+    runner: options.railwayRunner,
+  }) : null);
 
   const oneTimeToken = loadCandidateSecret({
     env,
@@ -160,6 +167,12 @@ export function buildOneTimeWapiReadiness(options = {}) {
     'ONE_TIME_CURRENT_CLASS_LINK',
     'ONETIME_CLASS_LINK',
   ]);
+  const classLinkConfigured = classLink.configured || railwayVariables?.one_time_class_link_present === true;
+  const classLinkSource = classLink.configured
+    ? classLink.source
+    : railwayVariables?.one_time_class_link_present === true
+      ? `${railwayVariables.source}:one_time_class_link_present`
+      : classLink.source;
   const instance = configuredValue(env, [
     'ONE_TIME_WHAPI_INSTANCE_ID',
     'ONE_TIME_WAPI_INSTANCE_ID',
@@ -173,6 +186,18 @@ export function buildOneTimeWapiReadiness(options = {}) {
     'WAPI_PHONE',
     'BNA_WHATSAPP_NUMBER',
   ]);
+  const instanceConfigured = instance.configured || railwayVariables?.one_time_whapi_instance_present === true;
+  const instanceSource = instance.configured
+    ? instance.source
+    : railwayVariables?.one_time_whapi_instance_present === true
+      ? `${railwayVariables.source}:one_time_whapi_instance_present`
+      : instance.source;
+  const phoneConfigured = phone.configured || railwayVariables?.one_time_whapi_phone_present === true;
+  const phoneSource = phone.configured
+    ? phone.source
+    : railwayVariables?.one_time_whapi_phone_present === true
+      ? `${railwayVariables.source}:one_time_whapi_phone_present`
+      : phone.source;
 
   const credentialScope = summarizeCredential(oneTimeToken, defaultToken);
   const autoReplyEnabled = truthy(env.ONE_TIME_WAPI_AUTO_REPLY_ENABLED);
@@ -183,13 +208,13 @@ export function buildOneTimeWapiReadiness(options = {}) {
   if (defaultToken.configured && !oneTimeToken.configured) autoReplyBlockers.push('OneTime auto-reply cannot use default/global WAPI credentials');
   if (!autoReplyEnabled) autoReplyBlockers.push('ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled');
   if (!autoReplyApproved) autoReplyBlockers.push('ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY');
-  if (!classLink.configured) autoReplyBlockers.push('ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing');
+  if (!classLinkConfigured) autoReplyBlockers.push('ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing');
 
   const setupBlockers = [];
   if (!outboundConfigured) setupBlockers.push('WAPI/Whapi token missing');
   if (!oneTimeToken.configured) setupBlockers.push('OneTime-scoped WAPI token missing');
-  if (!instance.configured) setupBlockers.push('Whapi/WAPI instance id missing');
-  if (!phone.configured) setupBlockers.push('WhatsApp sender phone metadata missing');
+  if (!instanceConfigured) setupBlockers.push('Whapi/WAPI instance id missing');
+  if (!phoneConfigured) setupBlockers.push('WhatsApp sender phone metadata missing');
 
   const autoReplyReady = autoReplyBlockers.length === 0;
   const providerSetupReady = setupBlockers.length === 0;
@@ -213,21 +238,32 @@ export function buildOneTimeWapiReadiness(options = {}) {
       default_token_source: defaultToken.source,
       base_url_configured: Boolean(baseUrl.configured || DEFAULT_WAPI_BASE_URL),
       base_url_source: baseUrl.configured ? baseUrl.source : 'default',
+      railway_readback: railwayVariables
+        ? {
+          attempted: railwayVariables.attempted,
+          ok: railwayVariables.ok,
+          source: railwayVariables.source,
+          key_count: railwayVariables.key_count,
+          class_link_present: railwayVariables.one_time_class_link_present === true,
+          instance_id_present: railwayVariables.one_time_whapi_instance_present === true,
+          phone_metadata_present: railwayVariables.one_time_whapi_phone_present === true,
+        }
+        : null,
     },
     provider_setup: {
       ready: providerSetupReady,
-      instance_id_present: instance.configured,
-      instance_id_source: instance.source,
-      phone_metadata_present: phone.configured,
-      phone_metadata_source: phone.source,
+      instance_id_present: instanceConfigured,
+      instance_id_source: instanceSource,
+      phone_metadata_present: phoneConfigured,
+      phone_metadata_source: phoneSource,
       blockers: setupBlockers,
     },
     auto_reply: {
       ready: autoReplyReady,
       enabled: autoReplyEnabled,
       approved: autoReplyApproved,
-      class_link_configured: classLink.configured,
-      class_link_source: classLink.source,
+      class_link_configured: classLinkConfigured,
+      class_link_source: classLinkSource,
       credential_scope: credentialScope,
       blockers: autoReplyBlockers,
       copy_version: '2026-07-08-r1',

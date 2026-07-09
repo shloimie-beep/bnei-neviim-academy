@@ -35854,9 +35854,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Reworded public copy and the OneTime helper handoff around free-class/free
   Zoom follow-up without promising portal/member access.
 - Resolved the stale Railway target-context blocker: `one-time-web` /
-  `production` is visible, `DATABASE_URL` is usable, and full setup is now
-  blocked only by Zoom alias, Stripe sandbox/price alias, Whapi/WAPI details,
-  and campaign approvals.
+  `production` is visible, `DATABASE_URL` is usable. At this checkpoint, full
+  setup still had a Zoom/class-link item, Stripe sandbox/price alias,
+  Whapi/WAPI details, and campaign approvals open; later 16:30 readiness
+  evidence superseded the Zoom/class-link blocker.
 - Pushed commit `2931b1cc` and deployed OneTime Railway deployment
   `02db803b-8c6b-45fd-89d8-54af8f12f6c9`, which reached `SUCCESS`.
 - Verification passed: focused OneTime tests, `node --check server.js`,
@@ -35891,11 +35892,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   final startup profile with 0 console errors and 0 failed requests, OneTime
   separate-instance smoke, Rabbi OneTime landing smoke, and final OneTime target
   guard after proof push.
-- Remaining blockers: full portal/payment/WAPI/campaign launch still needs the
-  Zoom alias, Stripe sandbox/price aliases, WAPI details, campaign copy,
-  recipient segment, suppression/unsubscribe proof, and explicit seed approval.
-  BNA Operations is no longer blank/erroring, but still needs a performance lane
-  to reduce 118 startup API reads.
+- Remaining blockers at that checkpoint: full portal/payment/WAPI/campaign
+  launch still needed a Zoom/class-link item, Stripe sandbox/price aliases, WAPI
+  details, campaign copy, recipient segment, suppression/unsubscribe proof, and
+  explicit seed approval. Later 16:30 readiness evidence superseded the
+  Zoom/class-link blocker. BNA Operations was no longer blank/erroring, but
+  still needed a performance lane to reduce 118 startup API reads.
 
 ## 2026-07-09T15:30:00+03:00 - Production Readiness Goal Registered
 
@@ -35909,10 +35911,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - First readiness audit passed repo validation, secrets, action/security/raw/
   workspace watchdogs, BNA live app/helper/taxonomy/privacy smokes, OneTime
   separate-instance smoke, and Rabbi OneTime landing smoke.
-- Expected blockers remain: OneTime full setup ready 4/8 only, WAPI provider
-  setup/auto-reply not ready, missing Zoom alias, Stripe sandbox/price alias,
-  WAPI instance/phone, campaign copy/list/suppression/seed approval, and BNA
-  Operations performance fanout.
+- Expected blockers at first audit: OneTime full setup had 4 of 8 ready,
+  WAPI provider setup/auto-reply was not ready, and BNA Operations still had
+  performance fanout. Later closeouts cleared the Operations performance
+  launch issue and superseded the Zoom/class-link blocker.
 
 ## 2026-07-09T15:57:07+03:00 - Operations Dashboard Performance Batch Deployed
 
@@ -35985,7 +35987,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   tests\one-time-external-setup-readiness.test.js` 7/7,
   `npm run one-time:railway-target:guard`, and expected-blocked
   `npm run one-time:setup:check -- --write-report`.
-- Current setup status is 4/8 ready. Ready: Railway target, separate database
-  reference, join domain, and Vimeo/Drive. Still blocked: Zoom alias, Stripe
-  sandbox/price alias, Whapi/WAPI instance and phone, campaign
-  copy/list/suppression proof, and explicit seed approval.
+- At that checkpoint, setup status was 4/8 ready before hosted class-link
+  proof was added to the readiness contract. That historical blocker is
+  superseded by the 16:30 closeout below.
+
+## 2026-07-09T16:30:38+03:00 - OneTime Hosted Class Link Readiness Cleared
+
+- Fixed `SETUPCHECK-20260709-006`: setup and WAPI readiness now consume
+  redacted hosted OneTime Railway presence flags for Zoom/class-link state
+  without writing the raw class link to tracked evidence.
+- `npm run one-time:setup:check -- --write-report` is now expected-blocked
+  5/8 ready. Ready: Railway target, separate database reference, join domain,
+  hosted Zoom/class link, and Vimeo/Drive.
+- `npm run one-time:wapi:readiness` now confirms the class link is configured
+  by redacted Railway readback. It remains blocked by Whapi/WAPI instance id,
+  WhatsApp sender phone metadata, auto-reply enable, and explicit approval.
+- Regression coverage passed for setup readiness and WAPI scope contracts,
+  including checks that raw URLs, tokens, database URLs, and phone values are
+  not written to reports.
+- Remaining full-launch blockers are narrowed to Stripe sandbox/price aliases,
+  Whapi/WAPI instance and phone metadata, and campaign copy/list/suppression/
+  seed approval.

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T13:20:28.219Z",
+  "generated_at": "2026-07-09T13:32:53.274Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -232,10 +232,15 @@
     "default_workspace_matches": true,
     "default_project_matches": true,
     "one_time_drive_drop_folder_present": true,
+    "one_time_zoom_session_present": true,
+    "one_time_class_link_present": true,
+    "one_time_wapi_token_present": false,
+    "one_time_whapi_instance_present": false,
+    "one_time_whapi_phone_present": false,
     "vimeo_access_token_present": false,
     "vimeo_private_smoke_target_present": false
   },
-  "ready_count": 4,
+  "ready_count": 5,
   "total_count": 8,
   "all_required_external_setup_ready": false,
   "post_setup_execution_packet": "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md",
@@ -295,12 +300,11 @@
       "clears_requirements": [
         "REQ-20260701-708"
       ],
-      "ready": false,
-      "missing_fields": [
-        "ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias"
-      ],
+      "ready": true,
+      "missing_fields": [],
       "warnings": [
-        "Zoom account/client credentials are present by safe keyholder alias; class session/join details are still a separate setup item."
+        "Zoom/class link is present by redacted OneTime Railway readback; raw link is not written to evidence.",
+        "Zoom account/client credentials are present by safe keyholder alias."
       ],
       "verification_after_setup": [
         "member-gated class-link smoke; no public raw Zoom link"
@@ -375,16 +379,6 @@
     }
   ],
   "blockers": [
-    {
-      "id": "SETUP-ONETIME-ZOOM-001",
-      "title": "Zoom session details",
-      "missing_fields": [
-        "ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias"
-      ],
-      "warnings": [
-        "Zoom account/client credentials are present by safe keyholder alias; class session/join details are still a separate setup item."
-      ]
-    },
     {
       "id": "SETUP-ONETIME-STRIPE-001",
       "title": "Rabbi Stripe sandbox",

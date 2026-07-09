@@ -93,4 +93,28 @@ test('OneTime WAPI readiness script reports blockers without sends or secrets', 
   assert.equal(ready.whatsapp_send_performed, false);
   assert.equal(ready.crm_mutation_performed, false);
   assert.doesNotMatch(JSON.stringify(ready), /scoped-token|\+972501111111|example\.test\/class-link/);
+
+  const railwayClassLink = buildOneTimeWapiReadiness({
+    inspectKeyholder: false,
+    env: {
+      ONE_TIME_WAPI_API_TOKEN: 'scoped-token',
+      ONE_TIME_WAPI_AUTO_REPLY_ENABLED: 'live',
+      ONE_TIME_WAPI_AUTO_REPLY_CONFIRM: 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY',
+    },
+    railwayVariables: {
+      attempted: true,
+      ok: true,
+      source: 'railway_temp_link_account_auth',
+      key_count: 52,
+      one_time_class_link_present: true,
+      one_time_whapi_instance_present: false,
+      one_time_whapi_phone_present: false,
+    },
+  });
+  assert.equal(railwayClassLink.auto_reply.class_link_configured, true);
+  assert.doesNotMatch(railwayClassLink.required_next_actions.join('\n'), /class link alias missing/);
+  assert.equal(railwayClassLink.provider_setup.ready, false);
+  assert.ok(railwayClassLink.required_next_actions.some((item) => /instance id missing/.test(item)));
+  assert.equal(railwayClassLink.outbound.railway_readback.class_link_present, true);
+  assert.doesNotMatch(JSON.stringify(railwayClassLink), /scoped-token|zoom\.us|example\.test/);
 });

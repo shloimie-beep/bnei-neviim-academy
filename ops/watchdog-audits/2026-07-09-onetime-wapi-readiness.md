@@ -1,6 +1,6 @@
 # OneTime WAPI / WhatsApp Readiness
 
-Checked at: 2026-07-09T13:08:53.518Z
+Checked at: 2026-07-09T13:33:04.093Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: readiness_no_send
@@ -17,7 +17,7 @@ Secret values printed: false
 - Auto-reply ready: false
 - Auto-reply enabled: false
 - Auto-reply approved: false
-- Class link configured: false
+- Class link configured: true
 
 ## Blockers / Next Actions
 
@@ -25,7 +25,6 @@ Secret values printed: false
 - WhatsApp sender phone metadata missing
 - ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled
 - ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY
-- ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing
 
 ## Guardrails
 

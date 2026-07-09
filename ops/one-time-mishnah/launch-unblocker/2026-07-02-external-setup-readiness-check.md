@@ -1,12 +1,12 @@
 # One Time External Setup Readiness Check
 
-Generated: 2026-07-09T13:20:28.219Z
+Generated: 2026-07-09T13:32:53.274Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: full_setup
 External write performed: false
 Secret values printed: false
-Ready items: 4/8
+Ready items: 5/8
 All external setup ready: false
 
 ## Items
@@ -34,10 +34,10 @@ Warnings: Railway custom domain and GoDaddy DNS are verified from ops\domain-rea
 
 ### SETUP-ONETIME-ZOOM-001 - Zoom session details
 
-Ready: false
+Ready: true
 Clears: REQ-20260701-708
-Missing: ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias
-Warnings: Zoom account/client credentials are present by safe keyholder alias; class session/join details are still a separate setup item.
+Missing: none
+Warnings: Zoom/class link is present by redacted OneTime Railway readback; raw link is not written to evidence. Zoom account/client credentials are present by safe keyholder alias.
 
 ### SETUP-ONETIME-VIMEO-001 - Vimeo / Drive / OBS media setup
 

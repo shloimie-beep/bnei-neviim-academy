@@ -1,6 +1,6 @@
 {
   "success": true,
-  "checked_at": "2026-07-09T13:08:53.518Z",
+  "checked_at": "2026-07-09T13:33:04.093Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -16,7 +16,16 @@
     "one_time_token_source": ".secrets",
     "default_token_source": ".secrets",
     "base_url_configured": true,
-    "base_url_source": "default"
+    "base_url_source": "default",
+    "railway_readback": {
+      "attempted": true,
+      "ok": true,
+      "source": "railway_temp_link_account_auth",
+      "key_count": 52,
+      "class_link_present": true,
+      "instance_id_present": false,
+      "phone_metadata_present": false
+    }
   },
   "provider_setup": {
     "ready": false,
@@ -33,13 +42,12 @@
     "ready": false,
     "enabled": false,
     "approved": false,
-    "class_link_configured": false,
-    "class_link_source": "not configured",
+    "class_link_configured": true,
+    "class_link_source": "railway_temp_link_account_auth:one_time_class_link_present",
     "credential_scope": "one_time_scoped",
     "blockers": [
       "ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled",
-      "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY",
-      "ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing"
+      "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY"
     ],
     "copy_version": "2026-07-08-r1"
   },
@@ -47,8 +55,7 @@
     "Whapi/WAPI instance id missing",
     "WhatsApp sender phone metadata missing",
     "ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled",
-    "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY",
-    "ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing"
+    "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY"
   ],
   "guardrails": [
     "Readiness check only; no WhatsApp message is sent.",

@@ -206,6 +206,39 @@ function redactedVariableSummary(variables = {}, { source, service, environment,
       variables.ONE_TIME_DRIVE_DROP_FOLDER_ID ||
       variables.DRIVE_DROP_FOLDER_ID,
     )),
+    one_time_zoom_session_present: Boolean(normalizeValue(
+      variables.ONE_TIME_ZOOM_SESSION_ALIAS ||
+      variables.ONE_TIME_ZOOM_DETAILS_ALIAS ||
+      variables.ONE_TIME_ZOOM_JOIN_URL ||
+      variables.ZOOM_MEETING_ID,
+    )),
+    one_time_class_link_present: Boolean(normalizeValue(
+      variables.ONE_TIME_WHATSAPP_CLASS_LINK ||
+      variables.ONE_TIME_LIVE_CLASS_URL ||
+      variables.ONE_TIME_ZOOM_JOIN_URL ||
+      variables.ONE_TIME_TONIGHT_CLASS_LINK ||
+      variables.ONE_TIME_CURRENT_CLASS_LINK ||
+      variables.ONETIME_CLASS_LINK,
+    )),
+    one_time_wapi_token_present: Boolean(normalizeValue(
+      variables.ONE_TIME_WAPI_API_TOKEN ||
+      variables.ONETIME_WAPI_API_TOKEN ||
+      variables.RABBI_SHELLER_WAPI_API_TOKEN ||
+      variables.RABBI_SCHELLER_WAPI_API_TOKEN,
+    )),
+    one_time_whapi_instance_present: Boolean(normalizeValue(
+      variables.ONE_TIME_WHAPI_INSTANCE_ID ||
+      variables.ONE_TIME_WAPI_INSTANCE_ID ||
+      variables.WHAPI_INSTANCE_ID ||
+      variables.WAPI_INSTANCE_ID,
+    )),
+    one_time_whapi_phone_present: Boolean(normalizeValue(
+      variables.ONE_TIME_WHAPI_PHONE ||
+      variables.ONE_TIME_WAPI_PHONE ||
+      variables.WHAPI_PHONE ||
+      variables.WAPI_PHONE ||
+      variables.BNA_WHATSAPP_NUMBER,
+    )),
     vimeo_access_token_present: Boolean(normalizeValue(
       variables.VIMEO_ACCESS_TOKEN ||
       variables.ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS,
@@ -573,6 +606,10 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
     repoRoot,
     inspectKeyholder,
   );
+  const zoomSessionConfigured =
+    zoomSession.configured ||
+    railway.current_variables?.one_time_zoom_session_present === true ||
+    railway.current_variables?.one_time_class_link_present === true;
   const driveDropFolderConfigured =
     driveDropFolder.configured ||
     railway.current_variables?.one_time_drive_drop_folder_present === true;
@@ -729,13 +766,18 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
       id: 'SETUP-ONETIME-ZOOM-001',
       title: 'Zoom session details',
       clears: ['REQ-20260701-708'],
-      ready: zoomSession.configured,
-      missing: zoomSession.configured
+      ready: zoomSessionConfigured,
+      missing: zoomSessionConfigured
         ? []
         : ['ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias'],
       warnings: [
+        !zoomSession.configured && zoomSessionConfigured
+          ? 'Zoom/class link is present by redacted OneTime Railway readback; raw link is not written to evidence.'
+          : '',
         zoomCredentialsReady
-          ? 'Zoom account/client credentials are present by safe keyholder alias; class session/join details are still a separate setup item.'
+          ? zoomSessionConfigured
+            ? 'Zoom account/client credentials are present by safe keyholder alias.'
+            : 'Zoom account/client credentials are present by safe keyholder alias; class session/join details are still a separate setup item.'
           : 'Zoom account/client credential aliases were not all found.',
       ],
       verification: ['member-gated class-link smoke; no public raw Zoom link'],

@@ -73,8 +73,9 @@ production-ready when these classes are green or precisely blocked:
   join domain; local Railway CLI link mismatches are now warnings, not public
   target blockers.
 - OneTime full setup checker now reads `one-time-production` /
-  `one-time-web` through an isolated temporary Railway link and reports 4/8
-  ready without printing secret values.
+  `one-time-web` through an isolated temporary Railway link and reports 5/8
+  ready without printing secret values; the hosted class link is present by
+  redacted readback.
 - Active execution run validates with 8 done and 2 blocked full-launch setup
   requirements.
 - Immediate public lead capture/free-class follow-up lane is deployed and
@@ -84,14 +85,15 @@ production-ready when these classes are green or precisely blocked:
 
 | ID | Status | Owner | Blocker | Recommended next action |
 |---|---|---|---|---|
-| REQ-20260702-108 | Blocked | Shloimie / external setup, Codex to verify | Full provider/campaign setup lacks Zoom alias, Stripe sandbox/price alias, WAPI/Whapi instance/phone, final campaign copy, recipient segment/list, suppression/unsubscribe proof, and seed approval. | Provide or label the exact setup values, then rerun `npm run one-time:setup:check`. |
+| REQ-20260702-108 | Blocked | Shloimie / external setup, Codex to verify | Full provider/campaign setup lacks Stripe sandbox/price alias, WAPI/Whapi instance/phone, final campaign copy, recipient segment/list, suppression/unsubscribe proof, and seed approval. Hosted class link is present by redacted readback. | Provide or label the remaining setup values, then rerun `npm run one-time:setup:check`. |
 | REQ-20260702-110 | Blocked | Shloimie / external setup, Codex to verify | Full setup bootstrap blocked until the same external values exist. | Keep immediate lead capture live; do not enable payment/access/campaign automation until setup values pass. |
-| DEC-20260709-008 | Needs operator decision | Shloimie | Exact approved free Zoom URL/alias is missing for automated invite sends. | Provide the final URL/alias or keep follow-up manual/no-send. |
+| DEC-20260709-008 | Superseded for link value; approvals still blocked | Shloimie / Codex to verify | Hosted free-class/class-link value is present by redacted OneTime Railway readback; automated sends remain blocked by WAPI instance/phone metadata and explicit auto-reply approval. | Keep follow-up manual/no-send until WAPI metadata and approval flags are intentionally configured. |
 | PERF-20260709-001 | Done, deployed/live-smoked | Codex | BNA Operations rendered with 0 console errors, but startup still performed 118 API reads, median 1064ms, P95 2855ms, max 3622ms. | Reduced dashboard startup fanout, removed support-ticket loading from dashboard first paint, bounded support-ticket list query, deployed BNA, and recorded live profile proof. |
 | PERF-20260709-002 | Follow-up, not launch-blocking | Codex | Final dashboard profile is usable but still shows a later refresh cycle around 33s and initial slowest dashboard reads near 3s. | If more performance polish is needed, inspect dashboard refresh scheduling and tune task/device/payment reads after screenshot-led UI work. |
 | DEPLOY-20260709-003 | Done | Codex | `npm run railway:doctor` loaded a stale project token even when BNA deploys used account auth, which made deploy-proof readback look blocked after successful deployments. | Updated `scripts/railway-doctor.ps1` to honor `BNA_RAILWAY_USE_ACCOUNT_AUTH` before loading `.secrets/railway-token.txt`; verified doctor passes against BNA production deployment `e1cef921-0e58-4fe7-aaf7-d9be65b06295`. |
 | TARGET-20260709-004 | Done | Codex | `npm run one-time:target:guard` hard-blocked the public OneTime target when the local Railway CLI was linked to BNA, even though the canonical OneTime domain and instance config passed. | Reclassified local Railway status mismatch as a warning in `scripts/release-captain.mjs`, added regression coverage, and kept `npm run one-time:railway-target:guard` as the dedicated Railway instance proof. |
-| SETUPCHECK-20260709-005 | Done | Codex | `npm run one-time:setup:check` could fall back into the BNA project-token/local-link context and report OneTime Railway target/auth as missing even when OneTime was live. | Updated `scripts/check-onetime-external-setup-readiness.mjs` to honor account-auth mode and use an isolated temp Railway link for redacted OneTime variable readback; latest setup report is 4/8 ready with Railway, DB, join domain, and Vimeo/Drive ready. |
+| SETUPCHECK-20260709-005 | Done | Codex | `npm run one-time:setup:check` could fall back into the BNA project-token/local-link context and report OneTime Railway target/auth as missing even when OneTime was live. | Updated `scripts/check-onetime-external-setup-readiness.mjs` to honor account-auth mode and use an isolated temp Railway link for redacted OneTime variable readback. |
+| SETUPCHECK-20260709-006 | Done | Codex | Readiness reports were still treating the hosted free-class/class-link value as missing even though OneTime Railway had enough redacted proof to clear that setup item. | Updated setup and WAPI readiness checks to consume only redacted hosted presence flags. Latest setup report is 5/8 ready: Railway, DB, join domain, Zoom/class link, and Vimeo/Drive are ready. |
 
 ## First audit command plan
 
@@ -132,8 +134,8 @@ Run these before selecting the next implementation batch:
 | OneTime target guard | Target checks passed; strict release gate expected-dirty before commit | Canonical `/`, `/one-time/`, and `/api/one-time/instance-config` checks pass. `TARGET-20260709-004` fixed the false hard blocker from a BNA-linked local Railway CLI status. |
 | OneTime separate-instance smoke | PASS | Health/config/root/public/OneTime/member/classroom routes returned 200. |
 | Rabbi OneTime landing smoke | PASS | `ops/live-smokes/2026-07-09T12-28-55-415Z-rabbi-onetime-landing-smoke.md`. |
-| `npm run one-time:setup:check` | EXPECTED BLOCKED | Ready 4/8 in `ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md`. Blocks: Zoom alias, Stripe sandbox/price alias, WAPI instance/phone, campaign copy/list/suppression/seed approval. Railway target/auth, DB, join domain, and Vimeo/Drive are not blockers. |
-| `npm run one-time:wapi:readiness` | EXPECTED BLOCKED | `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`; outbound token configured, but instance ID, phone metadata, auto-reply approval, and class link are missing. |
+| `npm run one-time:setup:check` | EXPECTED BLOCKED | Ready 5/8 in `ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md`. Blocks: Stripe sandbox/price alias, WAPI instance/phone, campaign copy/list/suppression/seed approval. Railway target/auth, DB, join domain, Zoom/class link, and Vimeo/Drive are not blockers. |
+| `npm run one-time:wapi:readiness` | EXPECTED BLOCKED | `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`; outbound token configured and class link present, but instance ID, phone metadata, auto-reply enable, and explicit approval are missing. |
 
 ## Next unblocked engineering batch
 
@@ -241,8 +243,9 @@ Verification:
   still blocked deployment state because this scoped fix and current WAPI
   readiness reports were uncommitted.
 - EXPECTED BLOCKED `npm run one-time:wapi:readiness`: latest report remains
-  blocked only by missing WAPI instance ID, sender phone metadata, auto-reply
-  enable/approval, and class link alias.
+  blocked only by missing WAPI instance ID, sender phone metadata, and
+  auto-reply enable/approval. Hosted class link is present by redacted
+  OneTime Railway readback.
 
 ## SETUPCHECK-20260709-005 closeout
 
@@ -268,10 +271,40 @@ Verification:
 - PASS `npm run one-time:railway-target:guard`: 1/1 ready, source
   `railway_temp_link_account_auth`, 52 OneTime Railway variables read by
   redacted summary only.
-- EXPECTED BLOCKED `npm run one-time:setup:check -- --write-report`: 4/8
+- EXPECTED BLOCKED `npm run one-time:setup:check -- --write-report`: this
+  original closeout was 4/8 ready before hosted class-link presence was added
+  to the readiness contract.
+
+## SETUPCHECK-20260709-006 closeout
+
+Implemented:
+
+- Added redacted hosted presence flags for OneTime Zoom/class-link and WAPI
+  metadata to the Railway variable summary.
+- Updated the setup checker so `SETUP-ONETIME-ZOOM-001` can clear from a
+  redacted hosted class-link/Zoom-session readback without writing the raw URL.
+- Updated the WAPI readiness checker so the auto-reply class-link prerequisite
+  can clear from redacted OneTime Railway readback while WAPI instance, phone,
+  and explicit approval remain blocked.
+- Added regression coverage proving token, URL, database, and phone values are
+  not written to reports.
+
+Verification:
+
+- PASS `node --check scripts\check-onetime-external-setup-readiness.mjs`.
+- PASS `node --check scripts\check-onetime-wapi-readiness.mjs`.
+- PASS `node --test tests\one-time-external-setup-readiness.test.js` 8/8.
+- PASS `node --test tests\one-time-wapi-scope-contract.test.js` 3/3.
+- PASS `npm run one-time:railway-target:guard`: 1/1 ready, source
+  `railway_temp_link_account_auth`, 52 OneTime Railway variables summarized by
+  redacted presence flags only.
+- EXPECTED BLOCKED `npm run one-time:setup:check -- --write-report`: 5/8
   ready. Ready: Railway target, separate database reference, join domain,
-  Vimeo/Drive. Blocked: Zoom session alias, Stripe sandbox/price alias,
+  Zoom/class link, and Vimeo/Drive. Blocked: Stripe sandbox/price alias,
   Whapi/WAPI instance and phone, campaign copy/list/suppression/seed approval.
+- EXPECTED BLOCKED `npm run one-time:wapi:readiness`: outbound credential and
+  class link are present; blocked only by Whapi/WAPI instance id, sender phone
+  metadata, `ONE_TIME_WAPI_AUTO_REPLY_ENABLED`, and explicit approval flag.
 
 Performance proof:
 
@@ -286,7 +319,7 @@ Performance proof:
 |---|---|---|---|---|
 | REQ-20260709-047 | Done | Raw/register/standing goal/memory note created. | Static file readback; ledger/changelog pending closeout commit. | None |
 | REQ-20260709-048 | Done | Current baseline recorded above. | Baseline reconciled against launch catch-up register and active execution run. | None |
-| REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004` and `SETUPCHECK-20260709-005`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target or Railway setup readback; full setup/WAPI remains externally blocked. |
+| REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register. | Lead capture live-smoked in prior closeout. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, and `SETUPCHECK-20260709-005` closeouts above; commits `43b1ce9e`, `a2f15c31`, `7e69aece`, `ee10b24`, `f23a72b3`. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup regression checks. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup still externally blocked. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI regression checks. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup still externally blocked. |
