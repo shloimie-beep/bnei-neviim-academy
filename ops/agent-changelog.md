@@ -6,6 +6,25 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-09T09:51:05+03:00 - Process cleanup and queue blocker readback
+
+- Pushed process commit `059ef9e2` for ChatGPT multi-window prompt generation
+  and bounded Kimi fallback, then restarted the local agent-fleet supervisor.
+- `npm run agent:fleet:restart` started supervisor PID `36560`; status readback
+  shows Kimi coding fallback `quota_only / kimi-k2.7-code-highspeed`.
+- `npm run chatgpt:dropoff:scan` reported `queued_count: 0`.
+- `npm run bna:run:status` and `npm run bna:run:next` validated the active
+  execution run and found no next unblocked executable batch.
+- `npm run bna:run:blockers` confirmed the remaining run blockers are external:
+  missing One Time setup/provider values and missing Railway auth/target context
+  for `one-time-production / one-time-web / production`.
+- `npm run ops:audit-queue` refreshed queue status; `npm run task:reconcile`
+  wrote `ops/system-audits/2026-07-09T06-50-04-815Z-task-queue-reconciler.md`
+  and found `Actions: 0`, so there was no safe automatic requeue to apply.
+- No external send, production data mutation, provider account write, payment,
+  DNS/account change, Drive/Vimeo/Zoom mutation, public publish, or app deploy
+  was performed in this cleanup pass.
+
 ## 2026-07-09T09:28:07+03:00 - OneTime parent/student review UI deployed and live-smoked
 
 - Pushed commits `634e7ed1`, `641645b3`, and `94bcd656` on
