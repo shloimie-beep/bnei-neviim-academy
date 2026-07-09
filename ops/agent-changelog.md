@@ -36238,3 +36238,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: no external send, payment/access mutation, provider/DNS/
   credential mutation, Agent Review result save, production-data mutation, or
   public publish.
+
+## 2026-07-09T18:04:42+03:00 - Queue Hygiene Readback Found No Safe Auto-Action
+
+- Ran read-only queue hygiene before picking up any stale historical work.
+- `npm run task:reconcile` was dry-run only, loaded live tasks, found 30 active
+  machine tasks, and proposed 0 actions.
+- The reconciler kept only task `#1839` and task `#1945` as true external
+  blockers.
+- `npm run agent:fleet:status` showed supervisor PID `36560`, 0 claimable jobs,
+  active UI/fallback lanes still running, and Kimi fallback configured as
+  `quota_only / kimi-k2.7-code-highspeed`.
+- Process-scoped live-url `npm run ops:audit-queue -- --json --no-write`
+  reported `warnings: []` and `requeue_candidates: []`.
+- Restored the noisy low-confidence rewrite of `ops/queue-audits/latest.json`;
+  kept focused evidence in
+  `ops/system-audits/2026-07-09T15-00-43-713Z-task-queue-reconciler.md`.
+- Guardrails held: no task/job status mutation, queue apply, Telegram send,
+  external send, DB mutation, production-data mutation, deploy, or app code edit
+  was performed.
