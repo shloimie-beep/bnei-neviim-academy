@@ -126,6 +126,12 @@
 ## Tooling Preferences
 
 - **Codex**: Primary coding, development, and visible machine-work owner
+- Agent fleet auto-deploy is not a shortcut around production release gates.
+  As of 2026-07-09, if `AGENT_FLEET_AUTO_DEPLOY=1` and deployable files are
+  present, `scripts/agent-fleet-supervisor.mjs` must pass
+  `npm run production:readiness:gate -- --json` before running the configured
+  deploy command. A blocked gate must leave the job unclosed with
+  `production_readiness_gate_blocked`.
 - **OpenAI API**: Normal preferred Telegram/content hosted AI provider for
   ordinary conversation, content/tone refinement, brainstorming, and normal
   system running when configured and healthy

@@ -40,6 +40,7 @@ const SECRET_SCAN_PATTERNS = [
   /\b\d{7,12}:[A-Za-z0-9_-]{30,}\b/g,
   /\brailway_[A-Za-z0-9_-]{20,}\b/gi,
 ];
+const PRODUCTION_READINESS_GATE_COMMAND = 'npm run production:readiness:gate -- --json';
 
 const LEGACY_DOC_FILES = [
   'README.md',
@@ -1212,6 +1213,18 @@ function parseFileList(output) {
     .filter(Boolean);
 }
 
+function parseJsonObjectFromText(text = '') {
+  const source = String(text || '');
+  const start = source.indexOf('{');
+  const end = source.lastIndexOf('}');
+  if (start < 0 || end < start) return null;
+  try {
+    return JSON.parse(source.slice(start, end + 1));
+  } catch {
+    return null;
+  }
+}
+
 function isDeployableFile(file) {
   const normalized = normalizeRepoFile(file);
   return [
@@ -1260,6 +1273,32 @@ function deploymentFingerprint(files) {
   return hash.digest('hex');
 }
 
+function summarizeProductionReadinessGateResult(commandResult = {}) {
+  const report = parseJsonObjectFromText(`${commandResult.stdout || ''}\n${commandResult.stderr || ''}`);
+  const blockers = Array.isArray(report?.blockers) ? report.blockers : [];
+  const warnings = Array.isArray(report?.warnings) ? report.warnings : [];
+  return {
+    command: commandResult.command || PRODUCTION_READINESS_GATE_COMMAND,
+    ok: Boolean(commandResult.ok && report?.ok === true),
+    status: report?.status || (commandResult.timedOut ? 'timed_out' : 'failed'),
+    code: commandResult.code ?? null,
+    timed_out: Boolean(commandResult.timedOut),
+    blocker_count: blockers.length,
+    blockers: blockers.slice(0, 12).map((blocker) => cleanProcessText(blocker).slice(0, 500)),
+    warning_count: warnings.length,
+    warnings: warnings.slice(0, 8).map((warning) => cleanProcessText(warning).slice(0, 500)),
+    snapshot_summary: report?.snapshot_summary || {},
+    parse_error: report ? '' : 'No JSON object found in production readiness gate output.',
+    guardrails: report?.guardrails || ['Read-only gate only.'],
+  };
+}
+
+async function runProductionReadinessPreflight(config) {
+  const timeoutMs = Math.min(Number(config.verifyTimeoutMs || 120000), 120000);
+  const commandResult = await runShellCommand(PRODUCTION_READINESS_GATE_COMMAND, timeoutMs);
+  return summarizeProductionReadinessGateResult(commandResult);
+}
+
 async function runDeploymentIfNeeded(config, options) {
   const inspectionTimeoutMs = Math.min(config.verifyTimeoutMs, 60 * 1000);
   const changed = await collectChangedFiles(inspectionTimeoutMs);
@@ -1273,6 +1312,7 @@ async function runDeploymentIfNeeded(config, options) {
     deployable_files: deployableFiles,
     inspection_results: changed.inspection_results,
     deployment_results: [],
+    production_readiness_gate: null,
     permission_gate: {
       deploy_command: classifyAgentFleetCommand(config.deployCommand),
       doctor_command: classifyAgentFleetCommand(config.deployDoctorCommand),
@@ -1305,6 +1345,13 @@ async function runDeploymentIfNeeded(config, options) {
   if (!config.autoDeploy || options.noDeploy) {
     result.ok = false;
     result.skipped_reason = 'auto_deploy_disabled';
+    return result;
+  }
+
+  result.production_readiness_gate = await runProductionReadinessPreflight(config);
+  if (!result.production_readiness_gate.ok) {
+    result.ok = false;
+    result.skipped_reason = 'production_readiness_gate_blocked';
     return result;
   }
 
@@ -1348,6 +1395,16 @@ function summarizeDeployment(deployment) {
   }
   lines.push(`- Deployable files: ${fileSummary}`);
   if (deployment.skipped_reason) lines.push(`- Note: ${deployment.skipped_reason}`);
+  if (deployment.production_readiness_gate) {
+    const gate = deployment.production_readiness_gate;
+    lines.push(`- ${gate.ok ? 'PASS' : 'FAIL'} Production readiness preflight: ${gate.status || 'unknown'}.`);
+    if (gate.blocker_count) {
+      for (const blocker of (gate.blockers || []).slice(0, 4)) {
+        lines.push(`- Production readiness blocker: ${blocker}`);
+      }
+      if (gate.blocker_count > 4) lines.push(`- Production readiness blockers omitted: ${gate.blocker_count - 4}`);
+    }
+  }
   for (const commandResult of deployment.deployment_results || []) {
     const status = commandResult.ok ? 'PASS' : 'FAIL';
     const detail = commandResult.timedOut ? ' timed out' : commandResult.code !== 0 ? ` exit ${commandResult.code}` : '';
@@ -3636,6 +3693,13 @@ async function main() {
           ok: outcome.deployment_result.ok,
           needed: outcome.deployment_result.needed,
           skipped_reason: outcome.deployment_result.skipped_reason || '',
+          production_readiness_gate: outcome.deployment_result.production_readiness_gate
+            ? {
+              ok: outcome.deployment_result.production_readiness_gate.ok,
+              status: outcome.deployment_result.production_readiness_gate.status,
+              blocker_count: outcome.deployment_result.production_readiness_gate.blocker_count,
+            }
+            : null,
         }
         : null,
     })),
@@ -3668,6 +3732,7 @@ export {
   selectWatchdogImprovementFindingsForCreation,
   shouldRunKimiFallback,
   sortObservableJobsForClaim,
+  summarizeProductionReadinessGateResult,
   watchdogIncidentSignature,
   watchdogImprovementShouldRun,
   watchdogNotificationSignature,

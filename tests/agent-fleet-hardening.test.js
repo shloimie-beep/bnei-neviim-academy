@@ -184,6 +184,47 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
     false,
   );
   assert.deepEqual(
+    supervisorModule.summarizeProductionReadinessGateResult({
+      command: 'npm run production:readiness:gate -- --json',
+      code: 1,
+      ok: false,
+      timedOut: false,
+      stdout: JSON.stringify({
+        ok: false,
+        status: 'blocked',
+        blockers: ['Active agent collision lane remains: job #382.'],
+        warnings: ['sample warning'],
+        snapshot_summary: { collision_lane_count: 1 },
+      }),
+      stderr: '',
+    }),
+    {
+      command: 'npm run production:readiness:gate -- --json',
+      ok: false,
+      status: 'blocked',
+      code: 1,
+      timed_out: false,
+      blocker_count: 1,
+      blockers: ['Active agent collision lane remains: job #382.'],
+      warning_count: 1,
+      warnings: ['sample warning'],
+      snapshot_summary: { collision_lane_count: 1 },
+      parse_error: '',
+      guardrails: ['Read-only gate only.'],
+    },
+  );
+  assert.equal(
+    supervisorModule.summarizeProductionReadinessGateResult({
+      command: 'npm run production:readiness:gate -- --json',
+      code: 0,
+      ok: true,
+      timedOut: false,
+      stdout: JSON.stringify({ ok: true, status: 'production_ready', blockers: [] }),
+      stderr: '',
+    }).ok,
+    true,
+  );
+  assert.deepEqual(
     supervisorModule.filterObservableJobsForClaim(
       [
         { id: 10, task_id: 501, status: 'queued' },
@@ -269,6 +310,10 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
   assert.match(supervisor, /function shouldRunKimiFallback/);
   assert.match(supervisor, /function runKimiFallback/);
   assert.match(supervisor, /Kimi coding fallback/);
+  assert.match(supervisor, /PRODUCTION_READINESS_GATE_COMMAND = 'npm run production:readiness:gate -- --json'/);
+  assert.match(supervisor, /function summarizeProductionReadinessGateResult/);
+  assert.match(supervisor, /runProductionReadinessPreflight\(config\)/);
+  assert.match(supervisor, /production_readiness_gate_blocked/);
   assert.match(fleetStartupPs1, /\$createArgs = @\("\/Create"/);
   assert.match(fleetStartupPs1, /schtasks\.exe @createArgs/);
   assert.match(fleetStartupPs1, /"\/SC", "ONLOGON"/);
@@ -315,4 +360,9 @@ test('readiness script contains no-write synthetic GitHub and result bridge proo
   assert.match(script, /live_inference_performed/);
   assert.match(script, /Kimi Fallback Readiness/);
   assert.match(script, /shouldRunKimiFallback/);
+  assert.match(script, /productionReadinessGateCommand/);
+  assert.match(script, /buildProductionDeployPreflight/);
+  assert.match(script, /Production Deploy Preflight/);
+  assert.match(script, /production_deploy_preflight/);
+  assert.match(script, /production_readiness_gate_blocked/);
 });

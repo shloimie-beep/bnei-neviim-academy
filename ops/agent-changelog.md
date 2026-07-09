@@ -36442,3 +36442,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   app UI edit, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, public
   publish, or production-data mutation.
+
+## 2026-07-09T18:50:00+03:00 - Agent Fleet Auto-Deploy Requires Production Readiness
+
+- Wired `scripts/agent-fleet-supervisor.mjs` so `AGENT_FLEET_AUTO_DEPLOY`
+  must pass `npm run production:readiness:gate -- --json` before any configured
+  deploy command can run.
+- Blocked readiness now leaves the fleet deployment gate failed with
+  `production_readiness_gate_blocked` and surfaces blocker counts in run output.
+- Updated `npm run agent:fleet:readiness` to include a Production Deploy
+  Preflight proof section; latest report confirms enforcement, no live gate run,
+  no deploy, and no Kimi live inference.
+- Guardrails held: agent-fleet/release guard hardening only; no app UI edit,
+  API feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, public
+  publish, Kimi live inference, or production-data mutation.

@@ -28,6 +28,7 @@ const envLocalPath = path.join(repoRoot, '.env.local');
 const secretsDir = path.join(repoRoot, '.secrets');
 const defaultRunRelativePath = 'ops/execution-runs/2026-06-24-issue-20-parent-run';
 const defaultAgentFleetRequirementId = 'REQ-20260624-045';
+const productionReadinessGateCommand = 'npm run production:readiness:gate -- --json';
 
 function nowIso() {
   return new Date().toISOString();
@@ -274,6 +275,28 @@ function buildKimiFallbackReadiness() {
     decision_preview,
     live_inference_performed: false,
     warnings,
+  };
+}
+
+function buildProductionDeployPreflight() {
+  const supervisorPath = path.join(repoRoot, 'scripts', 'agent-fleet-supervisor.mjs');
+  const supervisorText = fs.existsSync(supervisorPath) ? fs.readFileSync(supervisorPath, 'utf8') : '';
+  const enforced = [
+    'PRODUCTION_READINESS_GATE_COMMAND',
+    productionReadinessGateCommand,
+    'runProductionReadinessPreflight(config)',
+    'production_readiness_gate_blocked',
+  ].every((needle) => supervisorText.includes(needle));
+  return {
+    ok: enforced,
+    command: productionReadinessGateCommand,
+    enforced_before_auto_deploy: enforced,
+    auto_deploy_env: 'AGENT_FLEET_AUTO_DEPLOY',
+    deploy_command_env: 'AGENT_FLEET_DEPLOY_COMMAND',
+    skipped_reason_when_blocked: 'production_readiness_gate_blocked',
+    live_gate_run_performed: false,
+    deploy_performed: false,
+    behavior: 'If AGENT_FLEET_AUTO_DEPLOY is enabled and deployable files are present, the supervisor must pass the read-only production readiness gate before it can run the deploy command.',
   };
 }
 
@@ -531,12 +554,13 @@ async function buildReport() {
     rawId: run.raw_id,
   });
   const kimiFallbackReadiness = buildKimiFallbackReadiness();
+  const productionDeployPreflight = buildProductionDeployPreflight();
   return {
     generated_at: nowIso(),
     active_run_path: activeRunPath,
     requirement_id: agentFleetRequirementId,
     report_version: 'bna-agent-fleet-readiness-v2',
-    ok: parentAudit.ok && syntheticProof.external_write_performed === false && kimiFallbackReadiness.ok,
+    ok: parentAudit.ok && syntheticProof.external_write_performed === false && kimiFallbackReadiness.ok && productionDeployPreflight.ok,
     permission_tiers: AGENT_FLEET_PERMISSION_TIERS,
     permission_lines: permissionTierLines(),
     permission_checks: permissionChecks,
@@ -544,6 +568,7 @@ async function buildReport() {
     parent_coordination_audit: parentAudit,
     synthetic_proof: syntheticProof,
     kimi_fallback_readiness: kimiFallbackReadiness,
+    production_deploy_preflight: productionDeployPreflight,
     guardrails: [
       'No second agent fleet created.',
       'No production mutation.',
@@ -622,6 +647,18 @@ function renderMarkdown(report) {
     ...(report.kimi_fallback_readiness.warnings.length
       ? report.kimi_fallback_readiness.warnings.map((warning) => `- Warning: ${warning}`)
       : ['- Warnings: none']),
+    '',
+    '## Production Deploy Preflight',
+    '',
+    `- OK: ${report.production_deploy_preflight.ok}`,
+    `- Command: \`${report.production_deploy_preflight.command}\``,
+    `- Enforced before auto-deploy: ${report.production_deploy_preflight.enforced_before_auto_deploy}`,
+    `- Auto-deploy env: \`${report.production_deploy_preflight.auto_deploy_env}\``,
+    `- Deploy command env: \`${report.production_deploy_preflight.deploy_command_env}\``,
+    `- Blocked skip reason: \`${report.production_deploy_preflight.skipped_reason_when_blocked}\``,
+    `- Live gate run performed: ${report.production_deploy_preflight.live_gate_run_performed}`,
+    `- Deploy performed: ${report.production_deploy_preflight.deploy_performed}`,
+    `- Behavior: ${report.production_deploy_preflight.behavior}`,
     '',
     '## Guardrails',
     '',
