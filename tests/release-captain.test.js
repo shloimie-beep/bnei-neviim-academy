@@ -142,3 +142,47 @@ test('one-time public target gate verifies join domain routes and instance confi
     'https://join.onetimeonetime.com/api/one-time/instance-config',
   ]);
 });
+
+test('one-time public target gate treats mismatched local Railway link as a warning after live checks pass', async () => {
+  const mod = await loadReleaseCaptain();
+  const landingHtml = '<!doctype html><title>Your Child Can Love Learning Mishnayos | OneTimeOneTime</title><body>OneTimeOneTime Mishnah Sign Up Now</body>';
+  const fetchFn = async (url) => {
+    if (url.endsWith('/api/one-time/instance-config')) {
+      return {
+        status: 200,
+        url,
+        text: async () => JSON.stringify({
+          app_instance: 'onetime',
+          workspace_key: 'rabbi_sheller_provider',
+          project_key: 'one_time_mishnah_class',
+        }),
+      };
+    }
+    return {
+      status: 200,
+      url,
+      text: async () => landingHtml,
+    };
+  };
+  const runner = (command, args) => {
+    if (command === 'railway' && args.join(' ') === 'status --json') {
+      return {
+        ok: true,
+        stdout: JSON.stringify({
+          id: 'bna-project-id',
+          name: 'skillful-motivation',
+          services: { edges: [{ node: { name: 'bna-web' } }] },
+        }),
+      };
+    }
+    return { ok: true, stdout: '' };
+  };
+
+  const report = await mod.buildOneTimePublicTargetGate({ targetBaseUrl: 'https://join.onetimeonetime.com' }, { fetchFn, runner });
+
+  assert.equal(report.ok, true, report.blockers.join('\n'));
+  assert.deepEqual(report.blockers, []);
+  assert.equal(report.railway_status.matches_expected, false);
+  assert.match(report.warnings.join('\n'), /Railway status is not currently linked to the One Time service/);
+  assert.match(report.warnings.join('\n'), /one-time:railway-target:guard/);
+});

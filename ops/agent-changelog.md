@@ -35950,3 +35950,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   validation, and diff check.
 - Doctor now confirms BNA production deployment
   `e1cef921-0e58-4fe7-aaf7-d9be65b06295` is `SUCCESS`.
+
+## 2026-07-09T16:11:10+03:00 - OneTime Public Target Guard False Blocker Fixed
+
+- Fixed `TARGET-20260709-004`: the OneTime public target guard no longer
+  hard-blocks when the local Railway CLI is linked to BNA after the canonical
+  OneTime routes and instance config pass.
+- `scripts/release-captain.mjs` now records local Railway target mismatches as
+  warnings with `railway_status.matches_expected=false` and points agents to
+  `npm run one-time:railway-target:guard` for dedicated Railway instance proof.
+- Added regression coverage in `tests/release-captain.test.js` for the
+  BNA-linked local Railway status case.
+- Verification passed: `node --check scripts\release-captain.mjs`,
+  `node --test tests\release-captain.test.js` 6/6, and live OneTime public
+  target checks for `/`, `/one-time/`, and
+  `/api/one-time/instance-config`.
+- Remaining blockers are unchanged: full OneTime WAPI/payment/campaign launch
+  still needs the external setup values and approvals.

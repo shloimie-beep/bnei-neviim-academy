@@ -1,6 +1,6 @@
 # OneTime WAPI / WhatsApp Readiness
 
-Checked at: 2026-07-09T12:28:55.443Z
+Checked at: 2026-07-09T13:08:53.518Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: readiness_no_send

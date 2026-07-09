@@ -248,10 +248,17 @@ export async function buildOneTimePublicTargetGate(options = {}, context = {}) {
         project_name_present: summary.project_name_present,
         service_name_present: summary.service_name_present,
         domain_present: summary.domain_present,
+        matches_expected: summary.project_name_present && summary.service_name_present && summary.domain_present,
       };
-      if (!summary.project_name_present) report.blockers.push('Railway status did not show project one-time-production.');
-      if (!summary.service_name_present) report.blockers.push('Railway status did not show service one-time-web.');
-      if (!summary.domain_present) report.blockers.push('Railway status did not show domain join.onetimeonetime.com.');
+      const missingSignals = [];
+      if (!summary.project_name_present) missingSignals.push('project one-time-production');
+      if (!summary.service_name_present) missingSignals.push('service one-time-web');
+      if (!summary.domain_present) missingSignals.push('domain join.onetimeonetime.com');
+      if (missingSignals.length) {
+        report.warnings.push(
+          `Railway status is not currently linked to the One Time service (${missingSignals.join(', ')} missing); live HTTP and instance-config checks remain authoritative for this public target guard. Run npm run one-time:railway-target:guard for Railway instance proof.`,
+        );
+      }
     } catch (error) {
       report.warnings.push(`Railway status JSON could not be parsed: ${error.message}.`);
     }
