@@ -36983,3 +36983,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   hosted restart, live Telegram smoke, external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, Kimi live
   fallback action, or production-data mutation.
+
+## 2026-07-09T20:52:00+03:00 - Production Snapshot And Unblocker Refreshed To Current Head
+
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*`
+  from clean pushed head `674b6896`; the snapshot now carries current public
+  smoke proof, collision lanes, setup blockers, and ChatGPT queue state.
+- Pushed that snapshot refresh as `12802c7e`, then regenerated
+  `ops/production-readiness/latest-production-unblocker.*` from clean pushed
+  head `12802c7e`.
+- Readbacks confirm production remains `not_production_complete`, public
+  no-write smoke is still `passed` and ready, ChatGPT queued packets are `0`,
+  there are `3` setup buckets, `2` Agent Mode proof blockers, `3` active
+  collision lanes, and next executable batch is `none`.
+- Guardrails held: read-only artifact refresh only; no app UI/API edit, deploy,
+  hosted restart, live Telegram smoke, external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, Kimi live
+  fallback action, or production-data mutation.
