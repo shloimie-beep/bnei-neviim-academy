@@ -34,6 +34,19 @@ test('production unblocker builds operator actions from setup and proof blockers
         ],
       },
       chatgpt_dropoff: { queued_count: 0 },
+      public_launch_smoke: {
+        path: 'ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json',
+        status: 'passed',
+        recorded_at: '2026-07-09T17:36:05.000Z',
+        command_count: 4,
+        passed_command_count: 4,
+        external_write_performed: false,
+        production_data_mutation_performed: false,
+        age_hours: 0.25,
+        max_age_hours: 24,
+        fresh_for_launch_gate: true,
+        ready: true,
+      },
       rabbi_telegram_runtime: {
         status: 'candidate_available_config_required',
         local_ready: false,
@@ -146,6 +159,10 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.equal(report.summary.external_setup_item_count, 2);
   assert.equal(report.summary.setup_readiness_ready_count, 5);
   assert.equal(report.source_setup_readiness.command_exit_code, 1);
+  assert.equal(report.summary.public_launch_smoke_status, 'passed');
+  assert.equal(report.summary.public_launch_smoke_ready, true);
+  assert.equal(report.summary.public_launch_smoke_fresh, true);
+  assert.equal(report.summary.public_launch_smoke_path, 'ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json');
   assert.equal(report.summary.rabbi_telegram_runtime_status, 'candidate_available_config_required');
   assert.equal(report.summary.rabbi_telegram_candidate_count, 4);
   assert.equal(report.summary.agent_mode_proof_count, 1);
@@ -162,6 +179,8 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.equal(report.blocker_groups.find((group) => group.id === 'rabbi_telegram_runtime_configuration').evidence.includes('masked_candidate=******4810'), true);
   assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 1);
   assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
+  assert.equal(report.blocker_groups.some((group) => group.id === 'public_launch_no_write_smoke'), false);
+  assert.equal(report.sources.includes('ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json'), true);
   assert.deepEqual(report.setup_items.map((item) => item.id), ['SETUP-ONETIME-STRIPE-001', 'SETUP-ONETIME-WHAPI-001']);
   assert.deepEqual(report.setup_items[0].current_missing_fields, [
     'rabbi_stripe_test_secret_key_alias_or_test_key_status',
@@ -171,6 +190,10 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.match(report.operator_actions[0].action, /rabbi_stripe_test_secret_key_alias_or_test_key_status/);
   assert.match(markdown, /Owner Action Summary/);
   assert.match(markdown, /OneTime setup check: 5\/8 ready/);
+  assert.match(markdown, /Public launch no-write smoke: passed \(ready\)/);
+  assert.match(markdown, /Public Launch No-Write Smoke/);
+  assert.match(markdown, /Commands passed: 4\/4/);
+  assert.match(markdown, /Evidence path: ops\/production-readiness\/2026-07-09-no-write-live-smoke-readback\.json/);
   assert.match(markdown, /Current missing fields from setup check/);
   assert.match(markdown, /67_month_product_price_id_or_alias/);
   assert.match(markdown, /Live Stripe key appears configured/);
@@ -186,6 +209,51 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.match(markdown, /Source snapshot: node scripts\/production-readiness-snapshot\.mjs --no-write --json/);
   assert.match(markdown, /Snapshot git head: 60f1e599/);
   assert.match(markdown, /No deploy/);
+});
+
+test('production unblocker blocks missing or failed public launch smoke proof', async () => {
+  const mod = await loadUnblocker();
+  const report = mod.buildProductionUnblocker({
+    snapshot: {
+      assessment: {
+        production_ready: false,
+        status: 'not_production_complete',
+        avoid_colliding_with: [],
+      },
+      active_run: {
+        next_unblocked_executable_batch: 'REQ-20260709-999',
+        blockers: [],
+      },
+      chatgpt_dropoff: { queued_count: 0 },
+      public_launch_smoke: {
+        path: 'ops/production-readiness/failed-no-write-live-smoke-readback.json',
+        status: 'failed',
+        command_count: 4,
+        passed_command_count: 3,
+        external_write_performed: false,
+        production_data_mutation_performed: false,
+        fresh_for_launch_gate: true,
+        ready: false,
+        blocker: 'one public smoke command failed',
+      },
+    },
+    setupChecklist: { setup_items: [] },
+    setupReadiness: { ready_count: 8, total_count: 8, all_required_external_setup_ready: true, items: [], blockers: [] },
+    proofReadiness: { remaining_blockers: [], hub_prompt_state: [] },
+  });
+  const markdown = mod.renderMarkdown(report);
+
+  assert.equal(report.summary.public_launch_smoke_status, 'failed');
+  assert.equal(report.summary.public_launch_smoke_ready, false);
+  assert.equal(report.summary.public_launch_smoke_fresh, true);
+  assert.deepEqual(report.blocker_groups.map((group) => group.id), ['public_launch_no_write_smoke']);
+  assert.deepEqual(report.operator_actions.map((action) => action.source), ['public_launch_smoke']);
+  assert.match(report.blocker_groups[0].evidence.join('\n'), /commands=3\/4/);
+  assert.match(report.blocker_groups[0].evidence.join('\n'), /blocker=one public smoke command failed/);
+  assert.match(report.operator_actions[0].forbidden.join('\n'), /creates\/deletes a live task/);
+  assert.match(markdown, /public_launch_no_write_smoke - Public launch no-write smoke proof is missing, failed, stale, or unsafe/);
+  assert.match(markdown, /Public launch no-write smoke: failed \(not ready\)/);
+  assert.match(markdown, /Blocker: one public smoke command failed/);
 });
 
 test('production unblocker parses args and command JSON for fresh snapshot loading', async () => {
@@ -219,6 +287,8 @@ test('production unblocker package script and output paths are wired', () => {
   assert.match(script, /defaultProofPath/);
   assert.match(script, /production-readiness-snapshot\.mjs/);
   assert.match(script, /check-onetime-external-setup-readiness\.mjs/);
+  assert.match(script, /public_launch_smoke/);
+  assert.match(script, /public_launch_no_write_smoke/);
   assert.match(script, /--no-write/);
   assert.match(script, /--json/);
   assert.match(script, /--from-snapshot-file/);

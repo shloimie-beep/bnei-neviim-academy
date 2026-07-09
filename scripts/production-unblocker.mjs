@@ -208,8 +208,26 @@ function rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime = {}) {
   return rabbiTelegramRuntime.status === 'live_smoke_verified' || rabbiTelegramRuntime.production_verified === true;
 }
 
+function publicLaunchSmokeReady(publicLaunchSmoke = {}) {
+  return publicLaunchSmoke.ready === true && publicLaunchSmoke.fresh_for_launch_gate === true;
+}
+
+function publicLaunchSmokeEvidence(publicLaunchSmoke = {}) {
+  return [
+    `path=${publicLaunchSmoke.path || 'unknown'}`,
+    `status=${publicLaunchSmoke.status || 'unknown'}`,
+    `ready=${publicLaunchSmoke.ready === true}`,
+    `fresh_for_launch_gate=${publicLaunchSmoke.fresh_for_launch_gate === true}`,
+    `commands=${publicLaunchSmoke.passed_command_count ?? 0}/${publicLaunchSmoke.command_count ?? 0}`,
+    `external_write_performed=${publicLaunchSmoke.external_write_performed === true}`,
+    `production_data_mutation_performed=${publicLaunchSmoke.production_data_mutation_performed === true}`,
+    publicLaunchSmoke.blocker ? `blocker=${publicLaunchSmoke.blocker}` : '',
+  ].filter(Boolean);
+}
+
 function buildBlockerGroups({
   setup_items = [],
+  public_launch_smoke = {},
   rabbi_telegram_runtime = {},
   agent_mode_proofs = [],
   active_collision_lanes = [],
@@ -236,6 +254,15 @@ function buildBlockerGroups({
       owner: 'Codex / operator',
       evidence: run_blockers.map((item) => item.id || item.title).filter(Boolean),
       next_action: 'Clear the external setup, terminal Agent Mode proof, and active collision-lane blockers; then rerun `npm run bna:run:next`.',
+    });
+  }
+  if (!publicLaunchSmokeReady(public_launch_smoke)) {
+    add({
+      id: 'public_launch_no_write_smoke',
+      title: 'Public launch no-write smoke proof is missing, failed, stale, or unsafe',
+      owner: 'Codex',
+      evidence: publicLaunchSmokeEvidence(public_launch_smoke),
+      next_action: public_launch_smoke.blocker || 'Run the no-write public/lead-capture live smoke sweep and record tracked production-readiness evidence.',
     });
   }
   if (setup_items.length) {
@@ -326,6 +353,7 @@ export function buildProductionUnblocker({
   const run_blockers = externalRunBlockers(snapshot);
   const active_collision_lanes = collisionLanes(snapshot);
   const rabbi_telegram_runtime = snapshot.rabbi_telegram_runtime || {};
+  const public_launch_smoke = snapshot.public_launch_smoke || {};
   const chatgpt_queued_count = Number(snapshot.chatgpt_dropoff?.queued_count || 0);
   const next_unblocked_executable_batch = snapshot.active_run?.next_unblocked_executable_batch || '';
   const snapshot_git_head = snapshot.freshness?.sampled_git_head || snapshot.git?.head || '';
@@ -344,6 +372,18 @@ export function buildProductionUnblocker({
       forbidden: item.forbidden,
       source: item.current_missing_fields?.length ? 'one_time_setup_check_current_missing_fields' : 'one_time_setup_checklist',
     })),
+    ...(!publicLaunchSmokeReady(public_launch_smoke)
+      ? [{
+        id: 'public_launch_no_write_smoke',
+        owner: 'Codex',
+        action: 'Run the no-write public/lead-capture live smoke sweep and record tracked production-readiness evidence.',
+        forbidden: [
+          'Do not run generic `npm run app:smoke` when a no-write proof is required because it creates/deletes a live task.',
+          'Do not submit live lead forms, send messages, charge cards, grant access, mutate CRM/provider state, or deploy from this packet.',
+        ],
+        source: 'public_launch_smoke',
+      }]
+      : []),
     ...(rabbi_telegram_runtime.status && !rabbiTelegramRuntimeProductionReady(rabbi_telegram_runtime)
       ? [{
         id: 'rabbi_telegram_runtime',
@@ -363,6 +403,7 @@ export function buildProductionUnblocker({
   ];
   const blocker_groups = buildBlockerGroups({
     setup_items,
+    public_launch_smoke,
     rabbi_telegram_runtime,
     agent_mode_proofs,
     active_collision_lanes,
@@ -412,6 +453,11 @@ export function buildProductionUnblocker({
       setup_readiness_ready_count: setupReadiness.ready_count ?? null,
       setup_readiness_total_count: setupReadiness.total_count ?? null,
       setup_readiness_blocker_count: Array.isArray(setupReadiness.blockers) ? setupReadiness.blockers.length : null,
+      public_launch_smoke_status: public_launch_smoke.status || 'unknown',
+      public_launch_smoke_ready: publicLaunchSmokeReady(public_launch_smoke),
+      public_launch_smoke_fresh: public_launch_smoke.fresh_for_launch_gate === true,
+      public_launch_smoke_age_hours: public_launch_smoke.age_hours ?? null,
+      public_launch_smoke_path: public_launch_smoke.path || '',
       rabbi_telegram_runtime_status: rabbi_telegram_runtime.status || 'unknown',
       rabbi_telegram_runtime_local_ready: rabbi_telegram_runtime.local_ready === true,
       rabbi_telegram_chat_id_configured: rabbi_telegram_runtime.chat_id_configured === true,
@@ -425,6 +471,7 @@ export function buildProductionUnblocker({
     run_blockers,
     blocker_groups,
     setup_items,
+    public_launch_smoke,
     rabbi_telegram_runtime,
     agent_mode_proofs,
     active_collision_lanes,
@@ -445,6 +492,7 @@ export function buildProductionUnblocker({
     ],
     sources: [
       snapshotSource,
+      public_launch_smoke.path,
       setupReadinessSource,
       rabbi_telegram_runtime.readiness_path,
       rabbi_telegram_runtime.runtime_report_available ? rabbi_telegram_runtime.chat_id_report_path : '',
@@ -480,6 +528,7 @@ export function renderMarkdown(report = {}) {
     '## What Blocks Production',
     '',
     `- External setup items: ${report.summary.external_setup_item_count}`,
+    `- Public launch no-write smoke: ${report.summary.public_launch_smoke_status || 'unknown'} (${report.summary.public_launch_smoke_ready ? 'ready' : 'not ready'})`,
     `- Rabbi Telegram runtime: ${report.summary.rabbi_telegram_runtime_status || 'unknown'}`,
     `- Agent Mode terminal proof items: ${report.summary.agent_mode_proof_count}`,
     `- Active collision lanes: ${report.summary.active_collision_lane_count}`,
@@ -525,6 +574,21 @@ export function renderMarkdown(report = {}) {
       '',
     );
   }
+
+  lines.push('## Public Launch No-Write Smoke', '');
+  const publicSmoke = report.public_launch_smoke || {};
+  lines.push(
+    `Status: ${publicSmoke.status || 'unknown'}`,
+    `Ready: ${publicLaunchSmokeReady(publicSmoke) ? 'yes' : 'no'}`,
+    `Fresh for launch gate: ${publicSmoke.fresh_for_launch_gate ? 'yes' : 'no'}`,
+    `Age hours: ${publicSmoke.age_hours ?? 'unknown'}`,
+    `Commands passed: ${publicSmoke.passed_command_count ?? 0}/${publicSmoke.command_count ?? 0}`,
+    `External write performed: ${publicSmoke.external_write_performed ? 'yes' : 'no'}`,
+    `Production data mutation performed: ${publicSmoke.production_data_mutation_performed ? 'yes' : 'no'}`,
+    `Evidence path: ${publicSmoke.path || 'unknown'}`,
+    `Blocker: ${publicSmoke.blocker || 'none'}`,
+    '',
+  );
 
   lines.push('## Rabbi Telegram Runtime', '');
   const rabbiRuntime = report.rabbi_telegram_runtime || {};
