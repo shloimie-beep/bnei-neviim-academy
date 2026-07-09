@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-07-09T20:13:01.644Z",
+  "generated_at": "2026-07-09T20:42:32.949Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-09T20:12:47.327Z",
+  "source_snapshot_generated_at": "2026-07-09T20:42:21.140Z",
   "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
   "snapshot_source_kind": "live_no_write_command",
-  "snapshot_git_head": "641f2bfa",
-  "snapshot_origin_master": "641f2bfa",
+  "snapshot_git_head": "2385e0fe",
+  "snapshot_origin_master": "2385e0fe",
   "snapshot_worktree_clean": true,
   "source_snapshot": {
     "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
     "kind": "live_no_write_command",
-    "generated_at": "2026-07-09T20:12:47.327Z",
-    "git_head": "641f2bfa",
-    "origin_master": "641f2bfa",
+    "generated_at": "2026-07-09T20:42:21.140Z",
+    "git_head": "2385e0fe",
+    "origin_master": "2385e0fe",
     "worktree_clean": true,
     "command_exit_code": 0,
     "load_error": ""
@@ -26,7 +26,7 @@
   "source_setup_readiness": {
     "source": "node scripts/check-onetime-external-setup-readiness.mjs --json",
     "kind": "live_no_write_command_expected_blocked",
-    "generated_at": "2026-07-09T20:13:01.634Z",
+    "generated_at": "2026-07-09T20:42:32.940Z",
     "command_exit_code": 1,
     "load_error": "",
     "ready_count": 5,
@@ -42,7 +42,7 @@
     "public_launch_smoke_status": "passed",
     "public_launch_smoke_ready": true,
     "public_launch_smoke_fresh": true,
-    "public_launch_smoke_age_hours": 2.61,
+    "public_launch_smoke_age_hours": 3.1,
     "public_launch_smoke_path": "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
     "rabbi_telegram_runtime_status": "local_runtime_ready_live_smoke_pending",
     "rabbi_telegram_runtime_local_ready": true,
@@ -125,9 +125,9 @@
       "owner": "Codex / agent fleet",
       "count": 3,
       "evidence": [
-        "job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.87 path=.runtime/agent-fleet/task-1859.lock.json)",
+        "job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=98.36 path=.runtime/agent-fleet/task-1859.lock.json)",
         "job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json)",
-        "job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.56 path=.runtime/agent-fleet/task-1736.lock.json)"
+        "job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.06 path=.runtime/agent-fleet/task-1736.lock.json)"
       ],
       "next_action": "Inspect or reconcile the stale/missing local task-lock state and result packets before touching overlapping UI/API/Agent Review proof work."
     }
@@ -268,7 +268,7 @@
     ],
     "external_write_performed": false,
     "production_data_mutation_performed": false,
-    "age_hours": 2.61,
+    "age_hours": 3.1,
     "max_age_hours": 24,
     "fresh_for_launch_gate": true,
     "ready": true,
@@ -330,7 +330,7 @@
       "title": "Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
       "raw": "- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
       "local_lock_health": "stale_lock_dead_pid",
-      "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.87 path=.runtime/agent-fleet/task-1859.lock.json",
+      "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=98.36 path=.runtime/agent-fleet/task-1859.lock.json",
       "task_lock": {
         "lock_path": ".runtime/agent-fleet/task-1859.lock.json",
         "lock_exists": true,
@@ -338,10 +338,10 @@
         "lock_pid_running": false,
         "lock_started_at": "2026-07-05T18:19:20.280Z",
         "lock_heartbeat_at": "2026-07-05T18:20:51.072Z",
-        "lock_age_hours": 97.87,
+        "lock_age_hours": 98.36,
         "lock_fresh_max_hours": 2,
         "lock_health": "stale_lock_dead_pid",
-        "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.87 path=.runtime/agent-fleet/task-1859.lock.json"
+        "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=98.36 path=.runtime/agent-fleet/task-1859.lock.json"
       }
     },
     {
@@ -368,7 +368,7 @@
       "title": "Repair Agent Mode result AGR-19cfa47542407167",
       "raw": "- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167",
       "local_lock_health": "stale_lock_dead_pid",
-      "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.56 path=.runtime/agent-fleet/task-1736.lock.json",
+      "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.06 path=.runtime/agent-fleet/task-1736.lock.json",
       "task_lock": {
         "lock_path": ".runtime/agent-fleet/task-1736.lock.json",
         "lock_exists": true,
@@ -376,10 +376,10 @@
         "lock_pid_running": false,
         "lock_started_at": "2026-07-02T12:36:41.079Z",
         "lock_heartbeat_at": "2026-07-02T12:39:01.959Z",
-        "lock_age_hours": 175.56,
+        "lock_age_hours": 176.06,
         "lock_fresh_max_hours": 2,
         "lock_health": "stale_lock_dead_pid",
-        "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.56 path=.runtime/agent-fleet/task-1736.lock.json"
+        "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.06 path=.runtime/agent-fleet/task-1736.lock.json"
       }
     }
   ],
