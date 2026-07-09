@@ -1,6 +1,6 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-09T20:10:13.595Z
+Generated: 2026-07-09T20:40:25.972Z
 
 ## Lane Safety
 
@@ -32,7 +32,7 @@ _None._
 | - Claimable observable jobs: 0 |
 | - Active Codex task fallback: 34 |
 | - Ready to claim: observable jobs 0, fallback task candidates 3 |
-| - Queue health: fresh 7, stale 464, blocked 126, unknown 193, do-not-redo 878 |
+| - Queue health: fresh 11, stale 465, blocked 126, unknown 193, do-not-redo 878 |
 | - ChatGPT dropoff ingest: enabled |
 | - ChatGPT comment collect: enabled |
 
@@ -40,14 +40,18 @@ _None._
 
 | Job |
 | --- |
-| - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.52 path=.runtime/agent-fleet/task-1736.lock.json) |
-| - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.83 path=.runtime/agent-fleet/task-1859.lock.json) |
+| - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.03 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=98.33 path=.runtime/agent-fleet/task-1859.lock.json) |
 | - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json) |
 | - job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
 | - job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile (local_lock=missing path=.runtime/agent-fleet/task-2025.lock.json) |
 | - job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes (local_lock=missing path=.runtime/agent-fleet/task-2027.lock.json) |
 | - job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives (local_lock=missing path=.runtime/agent-fleet/task-2026.lock.json) |
 | - job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=missing path=.runtime/agent-fleet/task-1851.lock.json) |
+| - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (Codex job in progress without a fresh heartbeat) (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.03 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (Codex job in progress without a fresh heartbeat) (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=98.33 path=.runtime/agent-fleet/task-1859.lock.json) |
+| - job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there? (Queued for Codex without claim heartbeat) (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
+| - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (Codex job in progress without a fresh heartbeat) (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json) |
 
 ### Fallback Task Candidates
 
