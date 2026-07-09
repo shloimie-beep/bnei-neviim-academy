@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T16:20:45.113Z
+# Production Readiness Snapshot - 2026-07-09T16:26:46.257Z
 
 Result: not_production_complete
 Production ready: no
@@ -14,14 +14,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: 0b5cdd3e
-- origin/master: 0b5cdd3e
+- HEAD: f3d10f8b
+- origin/master: f3d10f8b
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 0b5cdd3e
-- Sampled origin/master: 0b5cdd3e
+- Sampled git head: f3d10f8b
+- Sampled origin/master: f3d10f8b
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -41,17 +41,19 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 19, stale 420, blocked 121, unknown 193, do-not-redo 878
+- Queue health: fresh 20, stale 422, blocked 123, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
 - Auto-deploy blocked reason: production_readiness_gate_blocked
 - Auto-deploy performed by readiness proof: no
 
-## Active / Do Not Collide
-- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167
+## Launch Collision Lanes
 - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish
 - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using
+- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167
+
+## Other Agent Policy Rows
 - job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there?
 - job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile
 - job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes

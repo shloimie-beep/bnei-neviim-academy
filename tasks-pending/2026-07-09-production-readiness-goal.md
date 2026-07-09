@@ -116,6 +116,7 @@ production-ready when these classes are green or precisely blocked:
 | READINESS-20260709-030 | Done / no deploy performed | Codex | GitHub-visible production readiness artifacts needed to reflect the new Agent Review repair collision lane after `READINESS-20260709-029` was pushed. | Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*` and `latest-production-unblocker.*`; the snapshot sampled clean pushed head `0b5cdd3e` and showed 3 collision lanes including job `344`. The unblocker also showed 3 lanes, but its source sample correctly marked dirty because the snapshot artifact was already modified before it ran; a clean-source unblocker refresh follows. |
 | READINESS-20260709-031 | Done / no deploy performed | Codex | The operator-facing unblocker needed one final refresh from a clean artifact head after `READINESS-20260709-030`. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `08a8d61e`; the packet records `live_no_write_command`, head/origin `08a8d61e`, worktree clean `true`, 3 external setup blockers, 2 Agent Mode proof blockers, 3 active collision lanes including Agent Review repair job `344`, 0 queued ChatGPT packets, and no executable batch. |
 | READINESS-20260709-032 | Done / no deploy performed | Codex | The production snapshot Markdown still mixed true running launch collision lanes with queued/failed policy rows under one `Active / Do Not Collide` heading, which made simultaneous-agent status harder to read. | Updated `scripts/production-readiness-snapshot.mjs` to render separate `Launch Collision Lanes` and `Other Agent Policy Rows` sections, with tests preventing the old mixed heading from returning. |
+| READINESS-20260709-033 | Done / no deploy performed | Codex | GitHub-visible production snapshot artifacts needed to show the separated collision/policy-row sections after `READINESS-20260709-032` was pushed. | Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*` from clean pushed head `f3d10f8b`; Markdown now lists jobs `382`, `427`, and `344` under `Launch Collision Lanes`, and queued/failed rows under `Other Agent Policy Rows`. |
 
 ## First audit command plan
 
@@ -1583,6 +1584,43 @@ Remaining:
 - After commit/push, regenerate the tracked production readiness snapshot from
   a clean pushed tree so GitHub-visible Markdown shows the separated collision
   and policy-row sections.
+
+## READINESS-20260709-033 closeout
+
+Implemented:
+
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.md`.
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.json`.
+
+Verification:
+
+- PASS `npm run production:readiness:snapshot` from clean pushed head
+  `f3d10f8b`.
+- Markdown readback confirmed:
+  - `Launch Collision Lanes` contains running jobs `382`, `427`, and `344`.
+  - `Other Agent Policy Rows` contains queued job `426` and failed jobs `408`,
+    `409`, `410`, and `377`.
+- JSON readback confirmed head/origin `f3d10f8b`, worktree clean `true`,
+  `not_production_complete`, 3 launch collision lanes, 8 total fleet policy
+  rows, and 0 queued ChatGPT packets.
+
+Evidence:
+
+- `ops/production-readiness/latest-production-readiness-snapshot.md`
+- `ops/production-readiness/latest-production-readiness-snapshot.json`
+
+Guardrails:
+
+- Read-only artifact refresh only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- After commit/push, refresh `npm run production:unblocker` from a clean tree
+  so the operator packet samples the newest snapshot logic and head.
 
 ## Final audit
 

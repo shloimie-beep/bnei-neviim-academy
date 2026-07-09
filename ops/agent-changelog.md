@@ -36628,3 +36628,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:30:00+03:00 - Production Snapshot Artifact Shows Split Agent Rows
+
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.md`
+  and `.json` from clean pushed head `f3d10f8b`.
+- Markdown now separates:
+  - `Launch Collision Lanes`: running jobs #382, #427, and #344.
+  - `Other Agent Policy Rows`: queued job #426 and failed jobs #408, #409,
+    #410, and #377.
+- JSON readback confirms head/origin `f3d10f8b`, worktree clean `true`, status
+  `not_production_complete`, 3 launch collision lanes, 8 total fleet policy
+  rows, and 0 queued ChatGPT packets.
+- Guardrails held: read-only artifact refresh only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.
