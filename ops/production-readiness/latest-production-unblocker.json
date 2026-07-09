@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-07-09T17:32:20.353Z",
+  "generated_at": "2026-07-09T17:46:28.171Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-09T17:32:05.902Z",
+  "source_snapshot_generated_at": "2026-07-09T17:46:12.609Z",
   "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
   "snapshot_source_kind": "live_no_write_command",
-  "snapshot_git_head": "575092cb",
-  "snapshot_origin_master": "575092cb",
+  "snapshot_git_head": "f51917a3",
+  "snapshot_origin_master": "f51917a3",
   "snapshot_worktree_clean": true,
   "source_snapshot": {
     "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
     "kind": "live_no_write_command",
-    "generated_at": "2026-07-09T17:32:05.902Z",
-    "git_head": "575092cb",
-    "origin_master": "575092cb",
+    "generated_at": "2026-07-09T17:46:12.609Z",
+    "git_head": "f51917a3",
+    "origin_master": "f51917a3",
     "worktree_clean": true,
     "command_exit_code": 0,
     "load_error": ""
@@ -26,7 +26,7 @@
   "source_setup_readiness": {
     "source": "node scripts/check-onetime-external-setup-readiness.mjs --json",
     "kind": "live_no_write_command_expected_blocked",
-    "generated_at": "2026-07-09T17:32:20.344Z",
+    "generated_at": "2026-07-09T17:46:28.161Z",
     "command_exit_code": 1,
     "load_error": "",
     "ready_count": 5,
@@ -39,6 +39,11 @@
     "setup_readiness_ready_count": 5,
     "setup_readiness_total_count": 8,
     "setup_readiness_blocker_count": 3,
+    "public_launch_smoke_status": "passed",
+    "public_launch_smoke_ready": true,
+    "public_launch_smoke_fresh": true,
+    "public_launch_smoke_age_hours": 0.17,
+    "public_launch_smoke_path": "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
     "rabbi_telegram_runtime_status": "local_runtime_ready_live_smoke_pending",
     "rabbi_telegram_runtime_local_ready": true,
     "rabbi_telegram_chat_id_configured": true,
@@ -222,6 +227,52 @@
       ]
     }
   ],
+  "public_launch_smoke": {
+    "path": "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
+    "available": true,
+    "status": "passed",
+    "recorded_at": "2026-07-09T17:36:20Z",
+    "report_version": "bna-no-write-live-smoke-readback-v1",
+    "command_count": 4,
+    "passed_command_count": 4,
+    "commands": [
+      {
+        "command": "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com",
+        "status": "passed",
+        "base_url": "https://join.onetimeonetime.com",
+        "report_path": "",
+        "writes_report_file": false
+      },
+      {
+        "command": "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com",
+        "status": "passed",
+        "base_url": "https://join.onetimeonetime.com",
+        "report_path": "ops/live-smokes/2026-07-09T17-35-51-421Z-rabbi-onetime-landing-smoke.md",
+        "writes_report_file": false
+      },
+      {
+        "command": "npm run app:smoke:one-time-interest-dry-run",
+        "status": "passed",
+        "base_url": "https://join.onetimeonetime.com",
+        "report_path": "ops/live-smokes/2026-07-09T17-35-51-513Z-one-time-interest-dry-run-live-smoke.md",
+        "writes_report_file": false
+      },
+      {
+        "command": "npm run app:smoke:public-privacy",
+        "status": "passed",
+        "base_url": "https://bneineviimacademy.org",
+        "report_path": "ops/live-smokes/2026-07-09T17-36-04-080Z-public-route-privacy-smoke.md",
+        "writes_report_file": false
+      }
+    ],
+    "external_write_performed": false,
+    "production_data_mutation_performed": false,
+    "age_hours": 0.17,
+    "max_age_hours": 24,
+    "fresh_for_launch_gate": true,
+    "ready": true,
+    "blocker": ""
+  },
   "rabbi_telegram_runtime": {
     "readiness_path": "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",
     "chat_id_report_path": ".runtime/rabbi-telegram-chat-id-candidates.json",
@@ -372,6 +423,7 @@
   ],
   "sources": [
     "node scripts/production-readiness-snapshot.mjs --no-write --json",
+    "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
     "node scripts/check-onetime-external-setup-readiness.mjs --json",
     "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",
     ".runtime/rabbi-telegram-chat-id-candidates.json",

@@ -36963,3 +36963,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   email, WhatsApp/WAPI, social post, upload, charge, DNS write, external
   connector write, provider mutation, credential mutation, live task
   create/delete, or production data mutation.
+
+## 2026-07-09T20:47:00+03:00 - Production Unblocker Shows Public No-Write Smoke Gate
+
+- Updated the operator-facing production unblocker to surface the tracked
+  public launch no-write smoke proof from the production snapshot.
+- Added a `public_launch_no_write_smoke` blocker group and operator action for
+  missing, failed, stale, or unsafe smoke proof; fresh passing proof remains
+  informational and does not add a false blocker.
+- Regenerated `ops/production-readiness/latest-production-unblocker.*` from
+  clean pushed head `f51917a3`.
+- Verification passed: `node --check scripts/production-unblocker.mjs`,
+  `node --test tests/production-unblocker.test.js`, `node --test
+  tests/production-readiness-gate.test.js`, no-write unblocker JSON readback,
+  and clean-head `npm run production:unblocker`.
+- Readback confirms public smoke `passed`, ready `true`, fresh `true`, commands
+  `4/4`, blocker `none`, head/origin `f51917a3`, and worktree clean `true`.
+- Guardrails held: reporting/artifact refresh only; no app UI/API edit, deploy,
+  hosted restart, live Telegram smoke, external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, Kimi live
+  fallback action, or production-data mutation.
