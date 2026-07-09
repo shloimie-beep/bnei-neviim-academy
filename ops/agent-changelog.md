@@ -35742,3 +35742,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   access grant, credential, DNS/account, Drive/Vimeo/Zoom, production data
   mutation, external connector write, deployment, or public publish was
   performed.
+
+## 2026-07-09T13:43:47+03:00 - Rabbi Helper Account Scope Provisioning Verified
+
+- Added `src/lib/bna/helper/account-scope-provisioning.js`, a pure provisioner
+  that turns the account-bot scope template into concrete helper
+  `allowed_tool_ids` and `forbidden_tool_ids`.
+- Wired runtime helper permissions so a provisioned account scope narrows tools
+  before broad admin/provider role shortcuts are allowed.
+- Verified the Benny tasks/studio example allows task/studio tools and denies
+  contact/CRM, provider setup, agent-ops, communications, and approval-gated
+  external-write helper tools.
+- Verification passed: syntax checks for the provisioner and permissions,
+  focused scope tests 18/18, RBAC tests 6/6, helper backend tests 14/14, and
+  full `npm test` 1687/1687.
+- Remaining blockers are not local code gaps: the all-163 Agent Mode proof,
+  external-write approvals under `DEC-20260708-019`, per-tool live audit
+  readback evidence, and deploy/live smoke of this latest server-visible batch.
+- No external email, WhatsApp/WAPI, Telegram recipient message, payment,
+  access grant, credential, DNS/account, Drive/Vimeo/Zoom, production data
+  mutation, external connector write, deployment, or public publish was
+  performed during local verification.

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T06:44:46.224Z",
+  "generated_at": "2026-07-09T10:44:32.246Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -561,9 +561,11 @@
     "tasks-pending/2026-07-08-parent-trial-email-vimeo-watch-continuation.md",
     "tasks-pending/2026-07-08-rabbi-helper-tool-scope-goal.md",
     "tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md",
+    "tasks-pending/2026-07-09-audit-governance-and-stale-audit-tasking.md",
     "tasks-pending/2026-07-09-chatgpt-credit-routing-and-app-lag-advice.md",
     "tasks-pending/2026-07-09-chatgpt-multi-window-and-kimi-fallback.md",
     "tasks-pending/2026-07-09-onetime-scope-ui-agent-contact-corrections.md",
+    "tasks-pending/2026-07-09-process-cleanup-deploy-pending.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
   ],

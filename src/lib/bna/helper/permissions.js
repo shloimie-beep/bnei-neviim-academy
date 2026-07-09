@@ -1,3 +1,5 @@
+const { helperAccountScopePermission } = require('./account-scope-provisioning');
+
 const TASK_SCOPE_TOOLS = new Set([
   'create_task',
   'create_rabbi_shiur_idea',
@@ -237,6 +239,10 @@ function helperPermissionForTool(tool, context = {}, args = {}) {
   const scope = identity.scope || {};
   const scopeType = String(context.helperScope?.scopeType || context.scopeType || scope.type || '').toLowerCase();
   if (!tool) return { allowed: false, reason: 'tool_not_found' };
+  const accountScopePermission = helperAccountScopePermission(tool, context);
+  if (accountScopePermission.applies && !accountScopePermission.allowed) {
+    return { allowed: false, reason: accountScopePermission.reason };
+  }
   if (role === 'super_admin' || role === 'admin' || scope.type === 'all') {
     return { allowed: true };
   }

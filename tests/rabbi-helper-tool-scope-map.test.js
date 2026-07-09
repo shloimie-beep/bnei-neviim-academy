@@ -2,6 +2,10 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const test = require('node:test');
 
+const { helperPermissionForTool } = require('../src/lib/bna/helper/permissions');
+const { provisionTemplateExample } = require('../src/lib/bna/helper/account-scope-provisioning');
+const { buildToolRegistry } = require('../src/lib/bna/helper/tool-registry');
+
 const parityRows = JSON.parse(fs.readFileSync('ops/helper-tool-parity-map.json', 'utf8'));
 const scopeMap = JSON.parse(fs.readFileSync('ops/helper-tool-scope/rabbi-one-time-tool-scope-map.json', 'utf8'));
 const accountTemplate = JSON.parse(fs.readFileSync('ops/helper-tool-scope/account-bot-scope-template.json', 'utf8'));
@@ -509,4 +513,81 @@ test('account bot scope template supports narrower subaccounts like Benny tasks 
   assert.ok(benny.forbidden_surface_groups.includes('contacts_crm'));
   assert.ok(benny.forbidden_surface_groups.includes('integrations'));
   assert.match(benny.natural_language_rule, /plain language/i);
+});
+
+test('account bot scope provisioner materializes template examples into runtime allow and deny lists', () => {
+  const provisioned = provisionTemplateExample({
+    template: accountTemplate,
+    scopeMap,
+    accountKey: 'benny_studio_tasks_bot',
+    generatedAt: '2026-07-09T00:00:00.000Z',
+  });
+
+  assert.equal(provisioned.template_key, 'service_provider_project_bot_scope_v1');
+  assert.equal(provisioned.account_key, 'benny_studio_tasks_bot');
+  assert.equal(provisioned.scope_lock.workspace_key, 'rabbi_sheller_provider');
+  assert.equal(provisioned.scope_lock.project_key, 'one_time_mishnah_class');
+  assert.equal(provisioned.scope_lock.server_recomputes_scope, true);
+  assert.equal(provisioned.scope_lock.client_scope_trusted, false);
+  assert.equal(provisioned.scope_lock.cross_workspace_allowed, false);
+  assert.deepEqual(provisioned.missing_required_fields, []);
+
+  for (const toolId of [
+    'create_rabbi_source_sheet_task',
+    'create_one_time_video_library_item',
+    'create_worksheet',
+    'generate_worksheet',
+    'transcribe_video',
+  ]) {
+    assert.ok(provisioned.allowed_tool_ids.includes(toolId), `${toolId} should be allowed for a tasks/studio bot`);
+  }
+
+  for (const toolId of [
+    'approve_email',
+    'create_contact',
+    'create_provider_lead',
+    'create_provider_profile',
+    'record_agent_result',
+    'show_contact_communication_history',
+    'sync_google_calendar',
+  ]) {
+    assert.ok(provisioned.forbidden_tool_ids.includes(toolId), `${toolId} should be denied for a tasks/studio bot`);
+  }
+
+  assert.ok(provisioned.denied_contracts.some((contract) => {
+    return contract.tool_id === 'create_provider_lead' && contract.reasons.some((reason) => reason.includes('forbidden_surface_group:contacts_crm'));
+  }));
+  assert.ok(provisioned.denied_contracts.some((contract) => {
+    return contract.tool_id === 'queue_telegram_report' && contract.reasons.some((reason) => reason.includes('action_policy_not_allowed'));
+  }));
+});
+
+test('provisioned account bot scope narrows helper permissions at runtime', () => {
+  const registry = buildToolRegistry();
+  const accountBotScope = provisionTemplateExample({
+    template: accountTemplate,
+    scopeMap,
+    accountKey: 'benny_studio_tasks_bot',
+    generatedAt: '2026-07-09T00:00:00.000Z',
+  });
+  const context = {
+    userRole: 'provider',
+    providerId: 'rabbi_sheller_provider',
+    accountBotScope,
+    identity: {
+      role: 'provider',
+      scope: { type: 'provider', providerId: 'rabbi_sheller_provider' },
+    },
+  };
+
+  assert.equal(helperPermissionForTool(registry.get('generate_worksheet'), context, {}).allowed, true);
+  assert.equal(helperPermissionForTool(registry.get('create_one_time_video_library_item'), context, {}).allowed, true);
+
+  const deniedContact = helperPermissionForTool(registry.get('create_contact'), context, {});
+  assert.equal(deniedContact.allowed, false);
+  assert.match(deniedContact.reason, /account scope forbids tool/);
+
+  const deniedUnknownForScope = helperPermissionForTool(registry.get('test_wapi_connection'), context, {});
+  assert.equal(deniedUnknownForScope.allowed, false);
+  assert.match(deniedUnknownForScope.reason, /account scope does not allow tool/);
 });
