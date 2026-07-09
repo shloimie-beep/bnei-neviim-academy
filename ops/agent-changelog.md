@@ -36758,3 +36758,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:50:00+03:00 - Production Unblocker Refreshed After Setup Buckets
+
+- Regenerated `ops/production-readiness/latest-production-unblocker.md` and
+  `.json` from clean pushed head `01eb2537`.
+- JSON readback confirms head/origin `01eb2537`, worktree clean `true`, status
+  `not_production_complete`, 4 blocker groups, 3 external setup buckets, 2
+  Agent Mode proof blockers, 3 active collision lanes, 0 queued ChatGPT
+  packets, and no unblocked executable batch.
+- Markdown readback confirms the `Owner Action Summary` still lists the three
+  concrete setup bucket IDs under `external_setup_blockers`.
+- Guardrails held: read-only artifact refresh only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.
