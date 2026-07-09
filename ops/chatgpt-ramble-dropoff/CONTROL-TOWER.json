@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T14:54:45.271Z",
+  "generated_at": "2026-07-09T19:21:36.620Z",
   "git": {
     "branch": "master",
     "dirty": false,
@@ -133,43 +133,43 @@
   ],
   "latest_comment_pickup_reports": [
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T14-54-32-364Z-4893651840.md",
-      "updated_at": "2026-07-09T14:54:32.365Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T19-20-16-510Z-4893651840.md",
+      "updated_at": "2026-07-09T19:20:16.511Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T14-54-32-362Z-4893596622.md",
-      "updated_at": "2026-07-09T14:54:32.364Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T19-20-16-509Z-4893596622.md",
+      "updated_at": "2026-07-09T19:20:16.510Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T14-54-32-361Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T14:54:32.362Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T19-20-16-508Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T19:20:16.509Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T14-54-32-359Z-4893586910.md",
-      "updated_at": "2026-07-09T14:54:32.360Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T19-20-16-506Z-4893586910.md",
+      "updated_at": "2026-07-09T19:20:16.507Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T14-53-08-012Z-4893651840.md",
-      "updated_at": "2026-07-09T14:53:08.012Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T19-18-41-718Z-4893651840.md",
+      "updated_at": "2026-07-09T19:18:41.720Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T14-53-08-010Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T14:53:08.011Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T19-18-41-714Z-4893596622.md",
+      "updated_at": "2026-07-09T19:18:41.718Z",
+      "size": 743
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T19-18-41-713Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T19:18:41.715Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T14-53-08-011Z-4893596622.md",
-      "updated_at": "2026-07-09T14:53:08.011Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T14-53-08-008Z-4893586910.md",
-      "updated_at": "2026-07-09T14:53:08.009Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T19-18-41-709Z-4893586910.md",
+      "updated_at": "2026-07-09T19:18:41.712Z",
       "size": 743
     }
   ],
@@ -182,7 +182,7 @@
       "- Claimable observable jobs: 0",
       "- Active Codex task fallback: 34",
       "- Ready to claim: 3",
-      "- Queue health: fresh 9, stale 407, blocked 121, unknown 193, do-not-redo 878",
+      "- Queue health: fresh 2, stale 462, blocked 126, unknown 193, do-not-redo 878",
       "- ChatGPT dropoff ingest: enabled",
       "- ChatGPT comment collect: enabled"
     ],
@@ -204,7 +204,7 @@
       "- Linked observable task lookup: fetched 4, missing 0",
       "- Active Codex task fallback: 34",
       "- Ready to claim: 3",
-      "- Queue health: fresh 9, stale 407, blocked 121, unknown 193, do-not-redo 878",
+      "- Queue health: fresh 2, stale 462, blocked 126, unknown 193, do-not-redo 878",
       "- Max retries: 2",
       "- Baseline smoke: enabled",
       "- Auto deploy gate: disabled",

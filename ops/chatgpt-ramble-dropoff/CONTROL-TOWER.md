@@ -1,6 +1,6 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-09T14:54:45.271Z
+Generated: 2026-07-09T19:21:36.620Z
 
 ## Lane Safety
 
@@ -32,7 +32,7 @@ _None._
 | - Claimable observable jobs: 0 |
 | - Active Codex task fallback: 34 |
 | - Ready to claim: 3 |
-| - Queue health: fresh 9, stale 407, blocked 121, unknown 193, do-not-redo 878 |
+| - Queue health: fresh 2, stale 462, blocked 126, unknown 193, do-not-redo 878 |
 | - ChatGPT dropoff ingest: enabled |
 | - ChatGPT comment collect: enabled |
 
