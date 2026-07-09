@@ -1,27 +1,10 @@
 {
-  "generated_at": "2026-07-09T19:31:04.955Z",
+  "generated_at": "2026-07-09T19:32:10.020Z",
   "git": {
     "branch": "master",
-    "dirty": true,
-    "dirty_files": [
-      {
-        "status": "M",
-        "path": "scripts/production-readiness-gate.mjs"
-      },
-      {
-        "status": "M",
-        "path": "scripts/production-readiness-snapshot.mjs"
-      },
-      {
-        "status": "M",
-        "path": "scripts/production-unblocker.mjs"
-      },
-      {
-        "status": "M",
-        "path": "tests/production-unblocker.test.js"
-      }
-    ],
-    "collision_warning": "Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files."
+    "dirty": false,
+    "dirty_files": [],
+    "collision_warning": ""
   },
   "packets": {
     "count": 2,
@@ -243,7 +226,6 @@
     "error": ""
   },
   "recommendations": [
-    "Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.",
     "No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.",
     "Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.",
     "GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it."

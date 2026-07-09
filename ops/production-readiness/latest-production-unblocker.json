@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-07-09T19:24:53.478Z",
+  "generated_at": "2026-07-09T19:32:41.481Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-09T19:24:41.039Z",
+  "source_snapshot_generated_at": "2026-07-09T19:32:10.188Z",
   "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
   "snapshot_source_kind": "live_no_write_command",
-  "snapshot_git_head": "ddbdee64",
-  "snapshot_origin_master": "ddbdee64",
+  "snapshot_git_head": "f8849322",
+  "snapshot_origin_master": "95ed1247",
   "snapshot_worktree_clean": true,
   "source_snapshot": {
     "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
     "kind": "live_no_write_command",
-    "generated_at": "2026-07-09T19:24:41.039Z",
-    "git_head": "ddbdee64",
-    "origin_master": "ddbdee64",
+    "generated_at": "2026-07-09T19:32:10.188Z",
+    "git_head": "f8849322",
+    "origin_master": "95ed1247",
     "worktree_clean": true,
     "command_exit_code": 0,
     "load_error": ""
@@ -26,7 +26,7 @@
   "source_setup_readiness": {
     "source": "node scripts/check-onetime-external-setup-readiness.mjs --json",
     "kind": "live_no_write_command_expected_blocked",
-    "generated_at": "2026-07-09T19:24:53.467Z",
+    "generated_at": "2026-07-09T19:32:41.469Z",
     "command_exit_code": 1,
     "load_error": "",
     "ready_count": 5,
@@ -42,7 +42,7 @@
     "public_launch_smoke_status": "passed",
     "public_launch_smoke_ready": true,
     "public_launch_smoke_fresh": true,
-    "public_launch_smoke_age_hours": 1.81,
+    "public_launch_smoke_age_hours": 1.94,
     "public_launch_smoke_path": "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
     "rabbi_telegram_runtime_status": "local_runtime_ready_live_smoke_pending",
     "rabbi_telegram_runtime_local_ready": true,
@@ -50,6 +50,7 @@
     "rabbi_telegram_candidate_count": 0,
     "agent_mode_proof_count": 2,
     "active_collision_lane_count": 3,
+    "active_collision_stale_or_missing_lock_count": 3,
     "chatgpt_queued_count": 0,
     "next_unblocked_executable_batch": "none",
     "blocker_group_count": 5
@@ -124,11 +125,11 @@
       "owner": "Codex / agent fleet",
       "count": 3,
       "evidence": [
-        "job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
-        "job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using",
-        "job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167"
+        "job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.19 path=.runtime/agent-fleet/task-1859.lock.json)",
+        "job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json)",
+        "job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=174.89 path=.runtime/agent-fleet/task-1736.lock.json)"
       ],
-      "next_action": "Wait for these lane result packets or inspect them before touching overlapping UI/API/Agent Review proof work."
+      "next_action": "Inspect or reconcile the stale/missing local task-lock state and result packets before touching overlapping UI/API/Agent Review proof work."
     }
   ],
   "setup_items": [
@@ -267,7 +268,7 @@
     ],
     "external_write_performed": false,
     "production_data_mutation_performed": false,
-    "age_hours": 1.81,
+    "age_hours": 1.94,
     "max_age_hours": 24,
     "fresh_for_launch_gate": true,
     "ready": true,
@@ -327,7 +328,21 @@
       "ticket_id": "",
       "status": "running",
       "title": "Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
-      "raw": "- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish"
+      "raw": "- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
+      "local_lock_health": "stale_lock_dead_pid",
+      "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.19 path=.runtime/agent-fleet/task-1859.lock.json",
+      "task_lock": {
+        "lock_path": ".runtime/agent-fleet/task-1859.lock.json",
+        "lock_exists": true,
+        "lock_pid": 25788,
+        "lock_pid_running": false,
+        "lock_started_at": "2026-07-05T18:19:20.280Z",
+        "lock_heartbeat_at": "2026-07-05T18:20:51.072Z",
+        "lock_age_hours": 97.19,
+        "lock_fresh_max_hours": 2,
+        "lock_health": "stale_lock_dead_pid",
+        "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.19 path=.runtime/agent-fleet/task-1859.lock.json"
+      }
     },
     {
       "job_id": "427",
@@ -335,7 +350,15 @@
       "ticket_id": "1593",
       "status": "running",
       "title": "About the fall back I'm saying you should use the API that I'm using",
-      "raw": "- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using"
+      "raw": "- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using",
+      "local_lock_health": "missing_lock",
+      "local_lock_evidence": "local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json",
+      "task_lock": {
+        "lock_path": ".runtime/agent-fleet/task-2185.lock.json",
+        "lock_exists": false,
+        "lock_health": "missing_lock",
+        "local_lock_evidence": "local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json"
+      }
     },
     {
       "job_id": "344",
@@ -343,7 +366,21 @@
       "ticket_id": "",
       "status": "running",
       "title": "Repair Agent Mode result AGR-19cfa47542407167",
-      "raw": "- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167"
+      "raw": "- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167",
+      "local_lock_health": "stale_lock_dead_pid",
+      "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=174.89 path=.runtime/agent-fleet/task-1736.lock.json",
+      "task_lock": {
+        "lock_path": ".runtime/agent-fleet/task-1736.lock.json",
+        "lock_exists": true,
+        "lock_pid": 105512,
+        "lock_pid_running": false,
+        "lock_started_at": "2026-07-02T12:36:41.079Z",
+        "lock_heartbeat_at": "2026-07-02T12:39:01.959Z",
+        "lock_age_hours": 174.89,
+        "lock_fresh_max_hours": 2,
+        "lock_health": "stale_lock_dead_pid",
+        "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=174.89 path=.runtime/agent-fleet/task-1736.lock.json"
+      }
     }
   ],
   "operator_actions": [

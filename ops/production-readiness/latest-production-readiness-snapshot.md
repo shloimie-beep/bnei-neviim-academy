@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T19:23:38.414Z
+# Production Readiness Snapshot - 2026-07-09T19:32:10.057Z
 
 Result: not_production_complete
 Production ready: no
@@ -8,21 +8,21 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - full OneTime launch has external Stripe/WAPI/campaign blockers
 - Rabbi Telegram runtime is local_runtime_ready_live_smoke_pending
 - Rabbi Agent Review still needs terminal Agent Mode proof
-- broad UI lane is already active in another agent job
-- fallback/API lane is already active in another agent job
-- Agent Review repair lane is already active in another agent job
+- broad UI lane is reported active in another agent job, but local lock health is stale_lock_dead_pid; reconcile before touching overlapping work
+- fallback/API lane is reported active in another agent job, but local lock health is missing_lock; reconcile before touching overlapping work
+- Agent Review repair lane is reported active in another agent job, but local lock health is stale_lock_dead_pid; reconcile before touching overlapping work
 - active execution run has no unblocked executable batch
 
 ## Git
 - Branch: master
-- HEAD: 2b3b6fce
-- origin/master: 2b3b6fce
+- HEAD: f8849322
+- origin/master: 95ed1247
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 2b3b6fce
-- Sampled origin/master: 2b3b6fce
+- Sampled git head: f8849322
+- Sampled origin/master: 95ed1247
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -53,7 +53,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
 - Status: passed
 - Ready: yes
-- Fresh for launch gate: yes (1.79h old, max 24h)
+- Fresh for launch gate: yes (1.94h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
@@ -85,16 +85,16 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Auto-deploy performed by readiness proof: no
 
 ## Launch Collision Lanes
-- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish
-- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using
-- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167
+- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.19 path=.runtime/agent-fleet/task-1859.lock.json)
+- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json)
+- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=174.89 path=.runtime/agent-fleet/task-1736.lock.json)
 
 ## Other Agent Policy Rows
-- job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there?
-- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile
-- job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes
-- job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives
-- job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish
+- job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)
+- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile (local_lock=missing path=.runtime/agent-fleet/task-2025.lock.json)
+- job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes (local_lock=missing path=.runtime/agent-fleet/task-2027.lock.json)
+- job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives (local_lock=missing path=.runtime/agent-fleet/task-2026.lock.json)
+- job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=missing path=.runtime/agent-fleet/task-1851.lock.json)
 
 ## ChatGPT Dropoff
 - Packet count: 2
@@ -115,8 +115,8 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
 4. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
 5. Codex / operator: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
-6. Codex / agent fleet: Do not overlap broad UI file edits while job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish remains active; inspect its result packet before starting the next UI batch.
-7. Codex / agent fleet: Do not overlap Agent Review proof/result repair work while job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 remains active; inspect its result packet before saving or reconciling Agent Review terminal proof.
+6. Codex / agent fleet: Do not overlap broad UI file edits while job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish remains active; inspect its result packet before starting the next UI batch. Local lock evidence: local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.19 path=.runtime/agent-fleet/task-1859.lock.json.
+7. Codex / agent fleet: Do not overlap Agent Review proof/result repair work while job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 remains active; inspect its result packet before saving or reconciling Agent Review terminal proof. Local lock evidence: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=174.89 path=.runtime/agent-fleet/task-1736.lock.json.
 8. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
 
 ## Evidence
