@@ -1,11 +1,12 @@
-# Production Unblocker - 2026-07-09T17:13:10.048Z
+# Production Unblocker - 2026-07-09T17:24:06.974Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-09T17:13:01.267Z
-Snapshot git head: 94f76e09 (origin/master: 94f76e09, worktree clean: no)
+Source snapshot generated at: 2026-07-09T17:23:55.368Z
+Snapshot git head: c5a92f1f (origin/master: c5a92f1f, worktree clean: yes)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
+OneTime setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
 ## What Blocks Production
 - External setup items: 3
 - Rabbi Telegram runtime: local_runtime_ready_live_smoke_pending
@@ -25,10 +26,10 @@ Next action: Clear the external setup, terminal Agent Mode proof, and active col
 Owner: Shloimie / provider account owners
 Count: 3
 Evidence:
-  - SETUP-ONETIME-STRIPE-001
-  - SETUP-ONETIME-WHAPI-001
-  - SETUP-ONETIME-CAMPAIGN-001
-Next action: Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.
+  - SETUP-ONETIME-STRIPE-001: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias
+  - SETUP-ONETIME-WHAPI-001: whapi_wapi_instance_id, whapi_wapi_phone_number
+  - SETUP-ONETIME-CAMPAIGN-001: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval
+Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
 ### rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not production-verified
 Owner: Codex / operator
 Count: 1
@@ -57,7 +58,13 @@ Next action: Wait for these lane result packets or inspect them before touching 
 ### SETUP-ONETIME-STRIPE-001 - Rabbi Stripe sandbox
 Owner: Shloimie / provider account owners
 Status: blocked_external_input
-Provide aliases/status, not raw secrets:
+Setup check ready: no
+Current missing fields from setup check:
+  - rabbi_stripe_test_secret_key_alias_or_test_key_status
+  - 67_month_product_price_id_or_alias
+Setup check warnings:
+  - Live Stripe key appears configured; sandbox-only smoke must not use it.
+Static checklist fields:
   - rabbi_stripe_test_secret_key_alias
   - stripe_publishable_key_alias_if_needed
   - stripe_webhook_secret_alias_if_needed
@@ -68,6 +75,7 @@ Forbidden in this packet:
   - live_payment
   - invented_refund_or_legal_policy
 Verification after setup:
+  - sandbox Stripe smoke only; no live payment
   - sandbox_checkout_subscription_access_smoke
   - webhook_readback_smoke_if_configured
   - TEST_prefixed_reversible_access_grant_or_extension
@@ -75,7 +83,13 @@ Verification after setup:
 Owner: Shloimie / provider account owners
 Status: blocked_external_input
 Current evidence: OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.
-Provide aliases/status, not raw secrets:
+Setup check ready: no
+Current missing fields from setup check:
+  - whapi_wapi_instance_id
+  - whapi_wapi_phone_number
+Setup check warnings:
+  - none
+Static checklist fields:
   - provider_account
   - phone_number
   - instance_id_or_alias
@@ -86,11 +100,19 @@ Provide aliases/status, not raw secrets:
 Forbidden in this packet:
   - real_whatsapp_send_without_later_exact_packet
 Verification after setup:
-  - Rerun the relevant readiness command.
+  - safe test send only in later exact packet
 ### SETUP-ONETIME-CAMPAIGN-001 - Campaign seed / real campaign
 Owner: Shloimie / provider account owners
 Status: blocked_external_input
-Provide aliases/status, not raw secrets:
+Setup check ready: no
+Current missing fields from setup check:
+  - final_campaign_copy
+  - exact_recipient_segment_or_list
+  - suppression_unsubscribe_proof
+  - explicit_seed_packet_approval
+Setup check warnings:
+  - none
+Static checklist fields:
   - final_campaign_copy
   - exact_recipient_segment_or_list_source
   - suppression_unsubscribe_proof
@@ -101,7 +123,7 @@ Provide aliases/status, not raw secrets:
 Forbidden in this packet:
   - real_campaign_send_from_this_checklist
 Verification after setup:
-  - Rerun the relevant readiness command.
+  - seed packet to sdratler@gmail.com after live link only
 ## Rabbi Telegram Runtime
 Status: local_runtime_ready_live_smoke_pending
 Local ready: yes
@@ -147,6 +169,7 @@ Required result: save terminal PASS, FAIL, or BLOCKED proof for only this prompt
 - Immediate lead capture/free-class lane remains live; full payment/access/campaign automation remains blocked until these items are cleared and verified.
 ## Sources
 - node scripts/production-readiness-snapshot.mjs --no-write --json
+- node scripts/check-onetime-external-setup-readiness.mjs --json
 - ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
 - .runtime/rabbi-telegram-chat-id-candidates.json
 - ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json

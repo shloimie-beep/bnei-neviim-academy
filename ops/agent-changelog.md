@@ -36893,3 +36893,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: no deploy, hosted restart, live Telegram send/smoke, raw
   chat ID/token/full phone commit, payment/access mutation, DNS/provider/CRM
   mutation, Agent Review result save, or production-data mutation.
+
+## 2026-07-09T20:28:00+03:00 - Production Unblocker Uses Live OneTime Setup Evidence
+
+- Wired the read-only `one-time:setup:check` JSON into the production
+  readiness snapshot and operator unblocker, including expected-blocked exit
+  `1` as valid no-write evidence.
+- The tracked snapshot now records setup `5/8` and dynamic missing fields for
+  Stripe sandbox/price, WAPI instance/phone, and campaign copy/list/suppression
+  seed approval.
+- The operator unblocker now asks for the exact current fields:
+  `rabbi_stripe_test_secret_key_alias_or_test_key_status`,
+  `67_month_product_price_id_or_alias`, `whapi_wapi_instance_id`,
+  `whapi_wapi_phone_number`, `final_campaign_copy`,
+  `exact_recipient_segment_or_list`, `suppression_unsubscribe_proof`, and
+  `explicit_seed_packet_approval`.
+- Verification passed: syntax checks for the changed readiness scripts,
+  focused production readiness/unblocker tests, expected-blocked
+  `npm run one-time:setup:check`, clean-head production snapshot refresh, and
+  clean-head production unblocker refresh.
+- Guardrails held: no app UI/API edit, deploy, hosted restart, live Telegram
+  smoke, external send, payment/access mutation, CRM/provider/DNS/credential
+  mutation, Agent Review result save, Kimi live coding fallback action, or
+  production-data mutation.
