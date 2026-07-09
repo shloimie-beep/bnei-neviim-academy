@@ -35443,3 +35443,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   persistence, WAPI/WhatsApp readiness, safe contact tagging, and Rabbi
   Telegram live delivery after `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is
   configured.
+
+## 2026-07-09T07:49:00+03:00 - Super-Admin Telegram Progress Ding Sent
+
+- Sent a concise super-admin Telegram progress update for the deployed OneTime
+  Rabbi CRM layout slice.
+- The message summarized the fixed CRM workbench, removed Rabbi-facing
+  super-admin/test chrome, compact helper button, deployment
+  `190cd07c-e191-4347-bb2f-6c336cd824f9`, live-smoke proof, and next work.
+- Verification: `npm run telegram:codex-progress -- --send --json` returned
+  `sent=true`, `dry_run=false`, and `message_id_present=true`.
+- No raw token, chat ID, private contact data, raw ticket body, student-sensitive
+  content, external send to families, WhatsApp/WAPI message, payment, or access
+  grant was performed.
