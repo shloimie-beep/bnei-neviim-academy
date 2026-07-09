@@ -1,6 +1,6 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-09T19:55:37.806Z
+Generated: 2026-07-09T20:02:36.958Z
 
 ## Lane Safety
 
@@ -31,8 +31,8 @@ _None._
 | - Observable Codex jobs: 34 |
 | - Claimable observable jobs: 0 |
 | - Active Codex task fallback: 34 |
-| - Ready to claim: observable jobs 0, fallback tasks 3 |
-| - Queue health: fresh 5, stale 463, blocked 126, unknown 193, do-not-redo 878 |
+| - Ready to claim: observable jobs 0, fallback task candidates 3 |
+| - Queue health: fresh 5, stale 464, blocked 126, unknown 193, do-not-redo 878 |
 | - ChatGPT dropoff ingest: enabled |
 | - ChatGPT comment collect: enabled |
 
@@ -40,8 +40,8 @@ _None._
 
 | Job |
 | --- |
-| - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.28 path=.runtime/agent-fleet/task-1736.lock.json) |
-| - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.58 path=.runtime/agent-fleet/task-1859.lock.json) |
+| - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.4 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.7 path=.runtime/agent-fleet/task-1859.lock.json) |
 | - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json) |
 | - job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
 | - job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile (local_lock=missing path=.runtime/agent-fleet/task-2025.lock.json) |
