@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T17:41:42.756Z
+# Production Readiness Snapshot - 2026-07-09T17:50:56.162Z
 
 Result: not_production_complete
 Production ready: no
@@ -15,14 +15,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: a9419f8a
-- origin/master: a9419f8a
+- HEAD: 674b6896
+- origin/master: 674b6896
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: a9419f8a
-- Sampled origin/master: a9419f8a
+- Sampled git head: 674b6896
+- Sampled origin/master: 674b6896
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -53,7 +53,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
 - Status: passed
 - Ready: yes
-- Fresh for launch gate: yes (0.09h old, max 24h)
+- Fresh for launch gate: yes (0.25h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
@@ -77,7 +77,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 13, stale 447, blocked 126, unknown 193, do-not-redo 878
+- Queue health: fresh 10, stale 451, blocked 126, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
