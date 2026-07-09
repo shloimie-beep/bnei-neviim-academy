@@ -1078,6 +1078,8 @@ Verification:
 - PASS `npm run agent:fleet:readiness -- --json`; latest report OK true,
   `production_deploy_preflight.enforced_before_auto_deploy true`,
   `live_gate_run_performed false`, and `deploy_performed false`.
+- PASS pushed-head refresh of `npm run agent:fleet:readiness -- --json`;
+  latest proof previews worktree commit `84dc3b8f5ce5`.
 
 Evidence:
 
@@ -1089,6 +1091,8 @@ Evidence:
 - `ops/agent-fleet-hardening/latest-agent-fleet-readiness.json`
 - `ops/agent-fleet-hardening/2026-07-09T15-49-58-531Z-agent-fleet-readiness.md`
 - `ops/agent-fleet-hardening/2026-07-09T15-49-58-531Z-agent-fleet-readiness.json`
+- `ops/agent-fleet-hardening/2026-07-09T15-52-00-037Z-agent-fleet-readiness.md`
+- `ops/agent-fleet-hardening/2026-07-09T15-52-00-037Z-agent-fleet-readiness.json`
 
 Guardrails:
 

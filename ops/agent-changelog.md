@@ -36457,3 +36457,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   API feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, public
   publish, Kimi live inference, or production-data mutation.
+
+## 2026-07-09T18:52:00+03:00 - Agent Fleet Preflight Proof Refreshed From Pushed Head
+
+- Pushed the agent-fleet auto-deploy guard as commit `84dc3b8f`.
+- Regenerated `npm run agent:fleet:readiness -- --json` from clean pushed
+  `master`; latest proof now previews worktree commit `84dc3b8f5ce5`.
+- Readback confirms `production_deploy_preflight.ok true`,
+  `enforced_before_auto_deploy true`, `deploy_performed false`, and
+  `live_gate_run_performed false`.
+- Guardrails held: evidence refresh only; no deploy, live gate execution, Kimi
+  live inference, external send, payment/access mutation, provider/CRM/DNS/
+  credential mutation, Agent Review result save, public publish, or
+  production-data mutation.
