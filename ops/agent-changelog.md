@@ -6,6 +6,24 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-09T09:58:19+03:00 - Audit governance report and stale-audit control point
+
+- Registered `RAW-20260709-005` and requirement register
+  `tasks-pending/2026-07-09-audit-governance-and-stale-audit-tasking.md`.
+- Added durable audit-artifact governance rules to `AGENTS.md` and a canonical
+  report home at `ops/audit-governance/`.
+- Added `npm run audit:governance` and `npm run audit:governance:strict`,
+  backed by `scripts/audit-artifact-governance.mjs` and classification tests.
+- First grouped inventory: 343 audit packages total; 22 implemented/proven, 61
+  active-linked, 149 blocked/decision-gated, 71 needing task mapping, 32 archive
+  candidates, 8 unclear/manual-review, and 0 untracked audit packages after
+  staging.
+- Evidence: `ops/audit-governance/latest.md` and
+  `ops/audit-governance/latest.json`.
+- Remaining gap: `DEC-20260709-006` controls whether/how to bulk-convert the
+  71 unmapped historical audit packages into scoped live requirements/tasks
+  versus archive them as provenance.
+
 ## 2026-07-09T09:51:05+03:00 - Process cleanup and queue blocker readback
 
 - Pushed process commit `059ef9e2` for ChatGPT multi-window prompt generation

@@ -84,6 +84,8 @@
     "secrets:audit": "node scripts/audit-secrets.mjs",
     "integrations:audit": "node scripts/integrations-audit.mjs",
     "prompts:audit": "node scripts/prompts-audit.mjs",
+    "audit:governance": "node scripts/audit-artifact-governance.mjs --write-report",
+    "audit:governance:strict": "node scripts/audit-artifact-governance.mjs --write-report --strict",
     "ramble:intake-contract": "node scripts/ramble-intake-contract.mjs",
     "bna:intake:postgres": "node scripts/canonical-intake-postgres.mjs",
     "bna:release-gate": "node scripts/bna-production-closeout-gate.mjs",

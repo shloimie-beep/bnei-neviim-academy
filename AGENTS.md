@@ -571,6 +571,26 @@ When a watchdog finds a violation:
 5. Do not mark the original work done until the watchdog passes, is superseded,
    or has a precise blocker.
 
+## Audit Artifact Governance
+
+Audit outputs are evidence, not terminal work. Any audit package under
+`ops/audits/`, `ops/system-audits/`, `ops/watchdog-audits/`,
+`ops/ui-audits/`, `docs/audits/`, `docs/owner-review/`, or an audit-scoped
+`tasks-pending/` file must end in one of these states:
+
+- implemented/proven with linked verification evidence;
+- active with a linked `REQ-*`, `TASK-*`, `DEC-*`, or `WATCH-*`;
+- blocked or needs-operator-decision with an owner and exact next action;
+- archive/provenance-only with no remaining actionable gap;
+- stale/unmapped, which must be converted into a scoped requirement/task or
+  explicitly archived before the related work is called done.
+
+Use `npm run audit:governance` before closeout on audit-heavy work. The
+canonical report lives in `ops/audit-governance/latest.md` and
+`ops/audit-governance/latest.json`. If the report flags an audit with obvious
+gaps and no task/requirement/decision/watchdog mapping, create the mapping or
+record a precise blocker; do not leave the audit as the only artifact.
+
 ## Action Registry Requirement
 
 Every visible action, button, helper action, automation draft, form submit,
