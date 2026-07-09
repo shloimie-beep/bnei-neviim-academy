@@ -347,3 +347,38 @@ Verification so far:
 
 Deployment/live-smoke remains required before terminal Done for this
 provider-review/Operations parity slice.
+
+## 2026-07-10 provider-review and Operations parity deployment closeout
+
+Deployment/live-smoke completed:
+
+- Committed and pushed provider/Operations parity implementation `acd35fa7`.
+- Deployed to OneTime Railway target `one-time-production / one-time-web`;
+  deployment `bdae36da-b7e1-439b-ad1a-26eee321d2bf` reached `SUCCESS`.
+- Live smokes passed:
+  `npm run app:smoke:onetime-separate-instance --
+  https://join.onetimeonetime.com`,
+  `npm run app:smoke:rabbi-onetime-landing --
+  https://join.onetimeonetime.com`,
+  `npm run app:smoke:one-time-interest-dry-run`, and
+  `npm run app:smoke:public-privacy`.
+- Live visual audit passed with authenticated Operations readback:
+  `ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md`.
+  Production readback shows status `captured`, Operations auth `railway`,
+  0 skipped checks, 0 findings total, 0 provider findings, and 0 Operations
+  findings across the audited 1440, 1024, 768, 430, and 390px viewports.
+
+Evidence:
+
+- `ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md`
+- `ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.json`
+- `ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/manifest.json`
+- `ops/live-smokes/2026-07-09T22-43-48-850Z-rabbi-onetime-landing-smoke.md`
+- `ops/live-smokes/2026-07-09T22-43-48-840Z-one-time-interest-dry-run-live-smoke.md`
+- `ops/live-smokes/2026-07-09T22-43-48-840Z-one-time-interest-dry-run-live-smoke.json`
+- `ops/live-smokes/2026-07-09T22-43-59-264Z-public-route-privacy-smoke.md`
+
+The provider-review/Operations parity slice is now Done for
+`REQ-20260709-064`. Full production still remains blocked by external setup,
+terminal Agent Mode proof, no unblocked execution batch, and Rabbi Telegram
+hosted/live-smoke proof.

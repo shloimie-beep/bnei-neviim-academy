@@ -37556,3 +37556,31 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
   smoke, Drive write, class backfill, or production-data mutation.
+
+## 2026-07-10T01:48:03+03:00 - OneTime Provider/Operations Parity Deployed
+
+- Deployed commit `acd35fa7` to OneTime Railway service
+  `one-time-production / one-time-web`.
+- Railway deployment `bdae36da-b7e1-439b-ad1a-26eee321d2bf` reached
+  `SUCCESS`.
+- Live smokes passed: `app:smoke:onetime-separate-instance`,
+  `app:smoke:rabbi-onetime-landing`, `app:smoke:one-time-interest-dry-run`,
+  and `app:smoke:public-privacy`.
+- Authenticated live visual audit captured production evidence at
+  `ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/`.
+  It reports Operations auth `railway`, 0 skipped checks, 0 findings total,
+  0 provider findings, and 0 Operations findings across the full route and
+  viewport matrix.
+- Evidence:
+  `ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/`;
+  `ops/live-smokes/2026-07-09T22-43-48-850Z-rabbi-onetime-landing-smoke.md`;
+  `ops/live-smokes/2026-07-09T22-43-48-840Z-one-time-interest-dry-run-live-smoke.md`;
+  `ops/live-smokes/2026-07-09T22-43-48-840Z-one-time-interest-dry-run-live-smoke.json`;
+  `ops/live-smokes/2026-07-09T22-43-59-264Z-public-route-privacy-smoke.md`.
+- `REQ-20260709-064` provider-review/Operations parity is Done. Full
+  production remains blocked by external setup fields, two Agent Mode terminal
+  proofs, no unblocked execution batch, and Rabbi Telegram hosted/live-smoke
+  proof.
+- Guardrails: no external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
+  smoke, Drive write, class backfill, or production-data mutation.
