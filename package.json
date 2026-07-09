@@ -32,6 +32,7 @@
     "chatgpt:dropoff:watch": "node scripts/chatgpt-dropoff-ingestor.mjs --apply --watch",
     "chatgpt:dropoff:tower": "node scripts/chatgpt-dropoff-control-tower.mjs --write",
     "chatgpt:dropoff:tower:json": "node scripts/chatgpt-dropoff-control-tower.mjs --json",
+    "chatgpt:packet-prompts": "node scripts/chatgpt-packet-prompt-splitter.mjs --write",
     "chatgpt:dropoff:comments:scan": "node scripts/chatgpt-dropoff-comment-collector.mjs --json",
     "chatgpt:dropoff:comments:apply": "node scripts/chatgpt-dropoff-comment-collector.mjs --apply --json",
     "setup:local": "node scripts/local-setup.mjs",

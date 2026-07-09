@@ -170,7 +170,7 @@ function loadConfig() {
       repoRoot,
     }) || readSecret('KIMI_API_KEY', env),
     kimiBaseUrl: (env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1').replace(/\/+$/, ''),
-    kimiModel: env.KIMI_MODEL || 'kimi-k2.6',
+    kimiModel: env.KIMI_MODEL || 'kimi-k2.7-code-highspeed',
     env,
   };
 }

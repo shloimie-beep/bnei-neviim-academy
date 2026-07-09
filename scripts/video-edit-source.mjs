@@ -138,7 +138,7 @@ function getProviders() {
       name: 'kimi',
       apiKey: process.env.KIMI_API_KEY,
       baseUrl: trimTrailingSlash(process.env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1'),
-      model: process.env.KIMI_MODEL || 'kimi-k2.6',
+      model: process.env.KIMI_MODEL || 'kimi-k2.7-code-highspeed',
     });
   }
   if (process.env.OPENAI_API_KEY) {

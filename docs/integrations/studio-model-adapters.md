@@ -20,7 +20,7 @@ It requires no credentials and performs no network calls.
 
 - `mock / deterministic-v1`
 - `openai / gpt-4.1-mini`
-- `kimi / kimi-k2.6`
+- `kimi / kimi-k2.7-code-highspeed`
 
 OpenAI/Kimi rows are catalog placeholders for future adapters. They are not active live generation paths in this implementation.
 

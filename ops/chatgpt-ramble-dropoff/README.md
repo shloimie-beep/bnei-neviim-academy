@@ -40,18 +40,39 @@ npm run chatgpt:dropoff:tower
 This writes `CONTROL-TOWER.md` and `CONTROL-TOWER.json` with packet statuses,
 dirty-file collision warnings, recent pickup reports, and agent-fleet state.
 
-2. Give ChatGPT one of the prompts in `ops/prompt-packets/`, or tell it to
+2. For a broad ramble that should become several ChatGPT windows, generate the
+   child prompts:
+
+```bash
+npm run chatgpt:packet-prompts -- --raw-file raw-input/RAW-YYYYMMDD-###.md --title "short title" --parent-raw-id RAW-YYYYMMDD-###
+```
+
+This writes:
+
+```text
+ops/chatgpt-ramble-dropoff/outgoing/<batch-id>/README.md
+ops/chatgpt-ramble-dropoff/outgoing/<batch-id>/manifest.json
+ops/chatgpt-ramble-dropoff/outgoing/<batch-id>/prompts/01-*.md
+...
+ops/chatgpt-ramble-dropoff/outgoing/<batch-id>/prompts/05-*.md
+```
+
+Paste one generated prompt into one ChatGPT window. Each prompt has its own
+packet ID, owner, lane key, scope, and out-of-scope rules.
+
+3. Give ChatGPT one of the prompts in `ops/prompt-packets/` or
+   `ops/chatgpt-ramble-dropoff/outgoing/<batch-id>/prompts/`, or tell it to
    create a `memory_candidate` / `preference_update` packet for sidekick memory
    work.
-3. Give ChatGPT `CHATGPT-START-HERE.md` and `CHATGPT-DIRECTIVE.md`.
-4. Tell ChatGPT to return exactly one packet using the files in `templates/`.
-5. Put the packet under:
+4. Give ChatGPT `CHATGPT-START-HERE.md` and `CHATGPT-DIRECTIVE.md`.
+5. Tell ChatGPT to return exactly one packet using the files in `templates/`.
+6. Put the packet under:
 
 ```text
 ops/chatgpt-ramble-dropoff/incoming/<packet-id>/
 ```
 
-6. The packet must include:
+7. The packet must include:
 
 ```text
 packet.json
@@ -61,14 +82,14 @@ MANIFEST.json
 status.json
 ```
 
-7. Optional packet files can include:
+8. Optional packet files can include:
 
 ```text
 PATCHES.md
 attachments/
 ```
 
-8. Codex pickup audits first, applies second, verifies third, then records
+9. Codex pickup audits first, applies second, verifies third, then records
    evidence and publishes scoped repo changes when required by the Definition
    of Done.
 
@@ -96,6 +117,7 @@ Manual commands:
 
 ```bash
 npm run chatgpt:dropoff:tower
+npm run chatgpt:packet-prompts -- --raw-file raw-input/RAW-YYYYMMDD-###.md --title "short title" --parent-raw-id RAW-YYYYMMDD-###
 npm run chatgpt:dropoff:comments:scan
 npm run chatgpt:dropoff:comments:apply
 npm run chatgpt:dropoff:scan

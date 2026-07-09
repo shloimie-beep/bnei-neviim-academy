@@ -347,6 +347,10 @@ Parallel ChatGPT/Codex work rules:
 
 - One window owns one `packet_id` / `lane_key`.
 - One packet covers one scoped slice, not a whole super-ramble.
+- When a broad ramble needs multiple ChatGPT windows, generate child prompts
+  with `npm run chatgpt:packet-prompts -- --raw-file <raw-input-path>
+  --title "<short title>" --parent-raw-id <RAW-ID>` instead of expecting the
+  operator to remember standard prompt wording.
 - `status.json` must show owner, lane, status, next action, blockers, evidence,
   and whether Agent Mode audit is ready.
 - Repo-connected ChatGPT sees committed/pushed GitHub state only. Local dirty
@@ -377,6 +381,29 @@ Required workflow:
 10. If the packet contains generated code, Codex should apply it carefully,
     inspect conflicts, and adapt it to actual repo files rather than
     re-planning from scratch.
+
+## Kimi Fallback Policy
+
+Kimi can be used as a bounded fallback for chat/API replies and, when
+configured, for agent-fleet local coding work after Codex fails with a
+quota/credit/rate-limit/capacity-like error. This is a fallback lane, not a
+replacement for Codex proof.
+
+Rules:
+
+- Default Kimi coding model is `kimi-k2.7-code-highspeed` unless runtime env
+  overrides it.
+- Agent-fleet Kimi coding fallback is controlled by
+  `AGENT_FLEET_KIMI_FALLBACK_ENABLED` and
+  `AGENT_FLEET_KIMI_FALLBACK_MODE` (`quota_only` by default).
+- Kimi fallback may do Tier 1 local code/docs/tests only for the same claimed
+  task.
+- Kimi fallback must inspect dirty files and stop on lane collisions.
+- Kimi fallback must not deploy, send, charge/refund, change DNS/accounts,
+  mutate credentials, mutate production data, write Drive files, publish, or
+  grant access.
+- The agent fleet still runs verification, records evidence, and applies the
+  release/deploy gate before any Done status.
 
 Stable ID formats:
 

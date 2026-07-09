@@ -46,6 +46,17 @@ ops/chatgpt-ramble-dropoff/incoming/<packet-id>/
 - If blocked, set `status.json` to `blocked_needs_operator_decision` and write
   the exact blocker and next action.
 
+For a broad ramble that should use several ChatGPT windows, use generated
+prompts instead of improvised operator wording:
+
+```bash
+npm run chatgpt:packet-prompts -- --raw-file raw-input/RAW-YYYYMMDD-###.md --title "short title" --parent-raw-id RAW-YYYYMMDD-###
+```
+
+This creates `ops/chatgpt-ramble-dropoff/outgoing/<batch-id>/prompts/`.
+Paste one generated prompt into one ChatGPT window. Each window creates only
+its assigned packet folder and must not solve the whole parent ramble.
+
 ## Local-State Reality
 
 GitHub-connected ChatGPT sees committed/pushed GitHub state only. You cannot

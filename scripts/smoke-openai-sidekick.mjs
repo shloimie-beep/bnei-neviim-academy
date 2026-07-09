@@ -161,7 +161,7 @@ function selectAiSmokeProvider(env) {
       label: 'Kimi',
       apiKey: kimiApiKey,
       baseUrl: env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1',
-      model: env.KIMI_MODEL || 'kimi-k2.6',
+      model: env.KIMI_MODEL || 'kimi-k2.7-code-highspeed',
     };
   }
   if (openaiApiKey) {
@@ -179,7 +179,7 @@ function selectAiSmokeProvider(env) {
       label: 'Kimi',
       apiKey: kimiApiKey,
       baseUrl: env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1',
-      model: env.KIMI_MODEL || 'kimi-k2.6',
+      model: env.KIMI_MODEL || 'kimi-k2.7-code-highspeed',
     };
   }
   return {
@@ -187,7 +187,7 @@ function selectAiSmokeProvider(env) {
     label: preferred === 'kimi' ? 'Kimi' : 'OpenAI',
     apiKey: '',
     baseUrl: preferred === 'kimi' ? (env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1') : (env.OPENAI_BASE_URL || 'https://api.openai.com/v1'),
-    model: preferred === 'kimi' ? (env.KIMI_MODEL || 'kimi-k2.6') : (env.OPENAI_MODEL || 'gpt-4.1-mini'),
+    model: preferred === 'kimi' ? (env.KIMI_MODEL || 'kimi-k2.7-code-highspeed') : (env.OPENAI_MODEL || 'gpt-4.1-mini'),
   };
 }
 

@@ -143,6 +143,10 @@ function defaultCodexCommand(env = process.env) {
   return 'codex';
 }
 
+function defaultKimiCommand() {
+  return 'kimi';
+}
+
 function readJson(filePath, fallback = null) {
   if (!fs.existsSync(filePath)) return fallback;
   try {
@@ -203,6 +207,12 @@ function loadConfig() {
     opsPassword: env.OPS_PASSWORD || '',
     codexCommand: env.CODEX_CLI_COMMAND || defaultCodexCommand(env),
     codexModel: env.CODEX_CLI_MODEL || '',
+    kimiFallbackEnabled: String(env.AGENT_FLEET_KIMI_FALLBACK_ENABLED || '1') !== '0',
+    kimiFallbackMode: String(env.AGENT_FLEET_KIMI_FALLBACK_MODE || 'quota_only').trim().toLowerCase(),
+    kimiCommand: env.KIMI_CLI_COMMAND_PATH || env.KIMI_COMMAND || defaultKimiCommand(env),
+    kimiModel: env.AGENT_FLEET_KIMI_MODEL || env.KIMI_CLI_MODEL || env.KIMI_MODEL || 'kimi-k2.7-code-highspeed',
+    kimiMaxSteps: Number(env.AGENT_FLEET_KIMI_MAX_STEPS || 20),
+    kimiTimeoutMs: Number(env.AGENT_FLEET_KIMI_TIMEOUT_MS || env.KIMI_BRIDGE_TIMEOUT_MS || env.CODEX_BRIDGE_TIMEOUT_MS || 30 * 60 * 1000),
     taskTimeoutMs: Number(env.AGENT_FLEET_TASK_TIMEOUT_MS || env.CODEX_BRIDGE_TIMEOUT_MS || 30 * 60 * 1000),
     verifyTimeoutMs: Number(env.AGENT_FLEET_VERIFY_TIMEOUT_MS || 8 * 60 * 1000),
     pollMs: Number(env.AGENT_FLEET_POLL_MS || 60 * 1000),
@@ -891,6 +901,44 @@ function summarizeAgentError(error, maxChars = 900) {
   return preferred.length > maxChars ? `${preferred.slice(0, maxChars - 3).trim()}...` : preferred;
 }
 
+function isLikelyCodexCapacityError(error) {
+  const text = cleanProcessText(error instanceof Error ? error.message : String(error || ''));
+  return /\b(429|quota|insufficient_quota|credit|credits|rate.?limit|too many requests|usage limit|billing|capacity|temporarily unavailable|monthly limit|spending limit)\b/i.test(text);
+}
+
+function shouldRunKimiFallback(config = {}, error) {
+  if (!config.kimiFallbackEnabled) return false;
+  const mode = String(config.kimiFallbackMode || 'quota_only').toLowerCase();
+  if (mode === 'always') return true;
+  if (['off', 'disabled', 'never'].includes(mode)) return false;
+  return isLikelyCodexCapacityError(error);
+}
+
+function buildKimiFallbackPrompt(taskPrompt, error, task, attempt) {
+  return [
+    'You are Kimi running as a bounded fallback coding agent for the BNA agent fleet.',
+    '',
+    'Codex failed before completing this same task, likely because of capacity, quota, credits, billing, or rate limits.',
+    `Codex failure summary: ${summarizeAgentError(error, 1000)}`,
+    '',
+    'Fallback rules:',
+    '- Follow AGENTS.md, MEMORY.md, and the task prompt below.',
+    '- Before editing, inspect `git status -sb` and avoid unrelated dirty files or another active lane.',
+    '- Do only Tier 1 local code/docs/tests work for this task.',
+    '- Do not deploy, send messages, charge/refund, alter DNS/accounts, change credentials, mutate production data, write Drive files, publish, or grant access.',
+    '- Do not claim final production Done. The agent fleet will run verification and release gates after you return.',
+    '- If the repo is dirty in files you would need to edit, stop and report BLOCKED with exact collision paths.',
+    '',
+    `Task ID: ${task.id}`,
+    `Attempt: ${attempt}`,
+    '',
+    'Original task prompt:',
+    '```text',
+    String(taskPrompt || '').slice(0, 18000),
+    '```',
+  ].join('\n');
+}
+
 function runCodex(prompt, config, taskId) {
   ensureDir(runtimeDir);
   const lastMessagePath = path.join(runtimeDir, `task-${taskId}-${nowIso().replace(/[:.]/g, '-')}.last-message.txt`);
@@ -967,6 +1015,83 @@ function runCodex(prompt, config, taskId) {
     });
     child.stdin.write(prompt);
     child.stdin.end();
+  });
+}
+
+function runKimiFallback(prompt, config, taskId) {
+  ensureDir(runtimeDir);
+  const stamp = nowIso().replace(/[:.]/g, '-');
+  const logPath = path.join(runtimeDir, `task-${taskId}-${stamp}.kimi.log`);
+  const args = [
+    '--quiet',
+    '--work-dir',
+    repoRoot,
+    '--model',
+    config.kimiModel || 'kimi-k2.7-code-highspeed',
+    '--max-steps-per-turn',
+    String(Math.max(Number(config.kimiMaxSteps || 20), 1)),
+    '--prompt',
+    prompt,
+  ];
+
+  return new Promise((resolve, reject) => {
+    const child = spawn(config.kimiCommand || 'kimi', args, {
+      cwd: repoRoot,
+      windowsHide: true,
+      shell: false,
+      env: {
+        ...process.env,
+        PYTHONUTF8: '1',
+        PYTHONIOENCODING: 'utf-8',
+        LANG: 'C.UTF-8',
+      },
+    });
+
+    let stdout = '';
+    let stderr = '';
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      child.kill();
+      reject(new Error(`Kimi fallback timed out after ${config.kimiTimeoutMs}ms`));
+    }, config.kimiTimeoutMs);
+
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk.toString();
+      fs.appendFileSync(logPath, chunk);
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString();
+      fs.appendFileSync(logPath, chunk);
+    });
+    child.on('error', (error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      reject(error);
+    });
+    child.on('close', (code) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      const result = {
+        code,
+        stdout: cleanProcessText(stdout),
+        stderr: cleanProcessText(stderr),
+        lastMessage: cleanProcessText(stdout),
+        lastMessagePath: '',
+        logPath,
+        fallback_provider: 'kimi_cli',
+      };
+      if (code === 0) {
+        resolve(result);
+        return;
+      }
+      const error = new Error(cleanProcessText(stderr || stdout || `Kimi fallback exited ${code}`));
+      error.result = result;
+      reject(error);
+    });
   });
 }
 
@@ -1239,7 +1364,10 @@ function reportMarkdown(task, outcome) {
     `Outcome: ${outcome.ok ? 'PASS' : 'FAIL'}`,
     `Task: ${taskReportTitle(task)}`,
     '',
-    '## Codex Result',
+    '## Agent Result',
+    '',
+    `Provider: ${outcome.agent_provider || 'codex_cli'}`,
+    outcome.codex_fallback_reason ? `Fallback reason: ${outcome.codex_fallback_reason}` : '',
     '',
     '```text',
     String(outcome.codex_final || outcome.codex_error || '[none]').slice(0, 5000),
@@ -1281,10 +1409,12 @@ function appendChangelog(task, outcome, reportPaths) {
     `## ${localStamp()} - ${title}`,
     '',
     outcome.ok
-      ? 'The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.'
-      : 'The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.',
+      ? `The agent fleet claimed this Codex-owned task, ran ${outcome.agent_provider === 'kimi_cli_fallback' ? 'Kimi CLI fallback after Codex capacity failure' : 'Codex CLI'}, ran verification, then passed the deployment gate before marking the task done.`
+      : 'The agent fleet claimed this Codex-owned task but did not mark it complete because the coding agent, verification, or the deployment gate failed.',
     '',
-    'Codex result:',
+    'Agent result:',
+    `Provider: ${outcome.agent_provider || 'codex_cli'}`,
+    outcome.codex_fallback_reason ? `Fallback reason: ${outcome.codex_fallback_reason}` : '',
     String(outcome.codex_final || outcome.codex_error || '[none]').slice(0, 1400),
     '',
     'Verification:',
@@ -1397,7 +1527,16 @@ async function processTask(config, task, state, options) {
     } catch (error) {
       console.error(`Could not load task comments for #${task.id}: ${error instanceof Error ? error.message : String(error)}`);
     }
-    codexResult = await runCodex(buildTaskPrompt(task, record.attempts, taskComments), config, task.id);
+    const taskPrompt = buildTaskPrompt(task, record.attempts, taskComments);
+    try {
+      codexResult = await runCodex(taskPrompt, config, task.id);
+    } catch (error) {
+      if (!shouldRunKimiFallback(config, error)) throw error;
+      console.error(`Codex failed with a capacity-like error; trying Kimi fallback for task #${task.id}: ${summarizeAgentError(error, 500)}`);
+      codexResult = await runKimiFallback(buildKimiFallbackPrompt(taskPrompt, error, task, record.attempts), config, task.id);
+      codexResult.fallback_from = 'codex_cli';
+      codexResult.fallback_reason = summarizeAgentError(error, 1000);
+    }
     verificationResults = await runVerification(config, options);
   } catch (error) {
     codexError = error;
@@ -1428,6 +1567,8 @@ async function processTask(config, task, state, options) {
     task_id: task.id,
     run_id: runId,
     ok,
+    agent_provider: codexResult?.fallback_provider ? 'kimi_cli_fallback' : 'codex_cli',
+    codex_fallback_reason: codexResult?.fallback_reason || '',
     codex_exit_code: codexResult?.code ?? null,
     codex_final: codexResult?.lastMessage || codexResult?.stdout || '',
     codex_error: codexError ? summarizeAgentError(codexError, 1500) : '',
@@ -3277,6 +3418,7 @@ async function status(config) {
     `- Auto deploy gate: ${config.autoDeploy ? 'enabled' : 'disabled'}`,
     `- ChatGPT dropoff ingest: ${config.chatGptDropoffIngest ? 'enabled' : 'disabled'}`,
     `- ChatGPT comment collect: ${config.chatGptDropoffCommentCollect ? 'enabled' : 'disabled'}`,
+    `- Kimi coding fallback: ${config.kimiFallbackEnabled ? `${config.kimiFallbackMode || 'quota_only'} / ${config.kimiModel || 'default'}` : 'disabled'}`,
     `- Permission tiers: ${permissionTierLines().join(' | ')}`,
     `- Startup shortcuts: ${buildStartupShortcutMatrix().map((item) => item.action).join(', ')}`,
   ];

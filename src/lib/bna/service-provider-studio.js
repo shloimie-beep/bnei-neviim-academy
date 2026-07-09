@@ -59,7 +59,7 @@ const DEFAULT_STUDIO_PRICE_CATALOG = {
     },
   },
   kimi: {
-    'kimi-k2.6': {
+    'kimi-k2.7-code-highspeed': {
       input_per_1m: 0.6,
       output_per_1m: 2.5,
       media_second: 0,

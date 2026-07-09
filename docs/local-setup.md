@@ -84,7 +84,8 @@ OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=gpt-4.1-mini
 KIMI_API_KEY=
 KIMI_BASE_URL=https://api.moonshot.ai/v1
-KIMI_MODEL=kimi-k2.6
+KIMI_MODEL=kimi-k2.7-code-highspeed
+KIMI_CLI_MODEL=kimi-k2.7-code-highspeed
 ```
 
 Optional Google/Gmail/Drive:

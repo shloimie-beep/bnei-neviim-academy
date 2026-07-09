@@ -416,6 +416,13 @@
   active, blocked, or terminal. Memory and preference updates should be
   packetized as `memory_candidate` or `preference_update`; Codex audits and
   promotes them before they become durable memory.
+- As of 2026-07-09, broad rambles that should use several ChatGPT windows
+  should generate child prompts with `npm run chatgpt:packet-prompts` rather
+  than relying on Shloimie to remember packet wording. Each generated prompt is
+  one ChatGPT window, one packet ID, one lane key, one scope. Kimi defaults for
+  coding/fallback paths use `kimi-k2.7-code-highspeed`; agent-fleet Kimi
+  fallback is bounded to Tier-1 local code/docs/tests after Codex quota-like
+  failures and must still pass normal verification/release gates.
 - As of 2026-06-30, BNA daily Torah participation grading defaults to
   present/100% for active BNA school students when no explicit operator,
   recording, or Telegram override exists. Explicit latest corrections win:
@@ -1281,9 +1288,11 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 ### Kimi Runtime Note
 
-- Local Kimi Code CLI is configured to use `kimi-k2.6`
-- App-side AI config had been left on `kimi-k2.5`, which created confusing
-  behavior across tools; keep repo-side Kimi settings aligned where possible
+- Local Kimi Code CLI and repo defaults are configured to use
+  `kimi-k2.7-code-highspeed`
+- App-side AI config had previously drifted across Kimi model versions, which
+  created confusing behavior across tools; keep repo-side Kimi settings aligned
+  where possible
 
 ### Domain
 - bneineviimacademy.org is the live production domain.

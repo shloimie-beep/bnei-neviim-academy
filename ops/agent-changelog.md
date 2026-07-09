@@ -35677,3 +35677,31 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blocker: BNA loading fix requires a clean scoped BNA deploy lane
   with explicit Railway target guard, then deploy/live-smoke/readback of the
   already-split Operations shell.
+
+## 2026-07-09T09:37:00+03:00 - ChatGPT Multi-Window Prompts And Kimi Fallback Wired
+
+- Added `npm run chatgpt:packet-prompts`, a five-lane ChatGPT prompt splitter,
+  and an outgoing prompt batch for `RAW-20260709-003` so the operator can paste
+  one generated prompt into each ChatGPT window and get one repo-visible packet
+  per window.
+- Updated ChatGPT dropoff docs, `AGENTS.md`, and `MEMORY.md` so agents use the
+  generated prompt workflow instead of relying on the operator to remember the
+  exact packet instructions.
+- Updated active Kimi defaults to `kimi-k2.7-code-highspeed` and documented the
+  official Kimi coding-model recommendation checked on 2026-07-09.
+- Added agent-fleet Kimi fallback for Codex quota/capacity-style failures:
+  when enabled in `quota_only` mode, the fleet can invoke Kimi CLI on the same
+  scoped task, record provider/fallback evidence, and continue normal
+  verification. The fallback is bounded to local Tier-1 work and does not
+  authorize deploys, sends, charges, DNS/account changes, credentials,
+  production data mutations, Drive writes, access grants, or public publishing.
+- Verification passed: syntax checks for the prompt splitter, fleet supervisor,
+  Telegram Kimi bridge, and active Kimi helper scripts; focused packet/control
+  tower/fleet/provider tests 15/15; `npm run agent:fleet:status` showed
+  `Kimi coding fallback: quota_only / kimi-k2.7-code-highspeed`; `kimi
+  --version` returned 1.44.0; `npm run secrets:audit`; and
+  `npm run watchdog:protocol-drift` with 0 findings.
+- No external email, WhatsApp/WAPI, Telegram recipient message, payment,
+  access grant, credential, DNS/account, Drive/Vimeo/Zoom, production data
+  mutation, external connector write, deployment, or public publish was
+  performed.

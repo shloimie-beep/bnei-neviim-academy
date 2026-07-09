@@ -234,6 +234,11 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
   assert.match(supervisor, /redactAgentFleetText/);
   assert.match(supervisor, /runChatGptDropoffCommentCollectBeforeClaim/);
   assert.match(supervisor, /AGENT_FLEET_CHATGPT_COMMENT_COLLECT/);
+  assert.match(supervisor, /AGENT_FLEET_KIMI_FALLBACK_ENABLED/);
+  assert.match(supervisor, /kimi-k2\.7-code-highspeed/);
+  assert.match(supervisor, /function shouldRunKimiFallback/);
+  assert.match(supervisor, /function runKimiFallback/);
+  assert.match(supervisor, /Kimi coding fallback/);
   assert.match(fleetStartupPs1, /\$createArgs = @\("\/Create"/);
   assert.match(fleetStartupPs1, /schtasks\.exe @createArgs/);
   assert.match(fleetStartupPs1, /"\/SC", "ONLOGON"/);

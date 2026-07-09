@@ -1,10 +1,35 @@
 {
-  "generated_at": "2026-07-09T06:01:17.915Z",
+  "generated_at": "2026-07-09T06:22:57.399Z",
   "git": {
     "branch": "codex/rabbi-helper-tool-scope-20260708",
-    "dirty": false,
-    "dirty_files": [],
-    "collision_warning": ""
+    "dirty": true,
+    "dirty_files": [
+      {
+        "status": "M",
+        "path": "ops/action-registry/universal-action-parity.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/action-registry/universal-action-parity.md"
+      },
+      {
+        "status": "M",
+        "path": "public/css/one-time-shared-review.css"
+      },
+      {
+        "status": "M",
+        "path": "public/parent.html"
+      },
+      {
+        "status": "M",
+        "path": "public/student.html"
+      },
+      {
+        "status": "??",
+        "path": "ops/ui-audits/2026-07-09-onetime-student-review-polish-live-final/"
+      }
+    ],
+    "collision_warning": "Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files."
   },
   "packets": {
     "count": 2,
@@ -133,100 +158,54 @@
   ],
   "latest_comment_pickup_reports": [
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-00-23-603Z-4893651840.md",
-      "updated_at": "2026-07-09T06:00:23.604Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-22-37-725Z-4893651840.md",
+      "updated_at": "2026-07-09T06:22:37.726Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-00-23-602Z-4893596622.md",
-      "updated_at": "2026-07-09T06:00:23.603Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-22-37-723Z-4893596622.md",
+      "updated_at": "2026-07-09T06:22:37.723Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-00-23-601Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T06:00:23.602Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-22-37-721Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T06:22:37.722Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-00-23-599Z-4893586910.md",
-      "updated_at": "2026-07-09T06:00:23.600Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-22-37-707Z-4893586910.md",
+      "updated_at": "2026-07-09T06:22:37.719Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T05-59-00-860Z-4893651840.md",
-      "updated_at": "2026-07-09T05:59:00.861Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-21-12-295Z-4893651840.md",
+      "updated_at": "2026-07-09T06:21:12.296Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T05-59-00-859Z-4893596622.md",
-      "updated_at": "2026-07-09T05:59:00.860Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T05-59-00-858Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T05:59:00.859Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-21-12-294Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T06:21:12.295Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T05-59-00-856Z-4893586910.md",
-      "updated_at": "2026-07-09T05:59:00.857Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-21-12-295Z-4893596622.md",
+      "updated_at": "2026-07-09T06:21:12.295Z",
+      "size": 743
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-21-12-292Z-4893586910.md",
+      "updated_at": "2026-07-09T06:21:12.293Z",
       "size": 743
     }
   ],
   "agent_fleet": {
-    "checked": true,
-    "ok": true,
-    "summary": [
-      "- Supervisor: running PID 13544",
-      "- Observable Codex jobs: 32",
-      "- Claimable observable jobs: 0",
-      "- Active Codex task fallback: 32",
-      "- Ready to claim: 2",
-      "- Queue health: fresh 8, stale 380, blocked 120, unknown 192, do-not-redo 875",
-      "- ChatGPT dropoff ingest: enabled",
-      "- ChatGPT comment collect: enabled"
-    ],
-    "not_claimable": [
-      "- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167",
-      "- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
-      "- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile",
-      "- job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes",
-      "- job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives",
-      "- job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
-      "- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess.",
-      "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess."
-    ],
-    "raw_excerpt": [
-      "Agent fleet status:",
-      "- Supervisor: running PID 13544",
-      "- Observable Codex jobs: 32",
-      "- Claimable observable jobs: 0",
-      "- Linked observable task lookup: fetched 2, missing 0",
-      "- Active Codex task fallback: 32",
-      "- Ready to claim: 2",
-      "- Queue health: fresh 8, stale 380, blocked 120, unknown 192, do-not-redo 875",
-      "- Max retries: 2",
-      "- Baseline smoke: enabled",
-      "- Auto deploy gate: disabled",
-      "- ChatGPT dropoff ingest: enabled",
-      "- ChatGPT comment collect: enabled",
-      "- Permission tiers: - Tier 0: Read-only audit, local status, local tests, dry-run previews, reports, and evidence capture. | - Tier 1: Local code edits, local tests, isolated worktrees/branches, commits, pushes, and draft PR preparation after lane ownership is declared. | - Tier 2: Merge, deploy, Railway doctor, and live-smoke release work only after parent release gates authorize it. | - Tier 3: Sends, charges, refunds, DNS, public publishing, account permission changes, credential changes, production data mutation, Drive writes, and class backfill.",
-      "- Startup shortcuts: start, stop, restart, status, open_log, watchdog_start, watchdog_stop, watchdog_status",
-      "Observable jobs not claimable by active-task policy:",
-      "- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167",
-      "- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
-      "- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile",
-      "- job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes",
-      "- job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives",
-      "- job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
-      "- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess.",
-      "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess."
-    ],
-    "error": ""
+    "checked": false,
+    "raw": "",
+    "summary": []
   },
   "recommendations": [
+    "Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.",
     "No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.",
-    "Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.",
     "GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it."
   ]
 }

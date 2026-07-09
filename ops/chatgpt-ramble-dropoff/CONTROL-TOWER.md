@@ -1,14 +1,21 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-09T06:01:17.915Z
+Generated: 2026-07-09T06:22:57.399Z
 
 ## Lane Safety
 
 - Branch: `codex/rabbi-helper-tool-scope-20260708`
-- Dirty worktree: no
+- Dirty worktree: yes
+- Collision warning: Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files.
 
-
-_None._
+| Status | Path |
+| --- | --- |
+| M | ops/action-registry/universal-action-parity.json |
+| M | ops/action-registry/universal-action-parity.md |
+| M | public/css/one-time-shared-review.css |
+| M | public/parent.html |
+| M | public/student.html |
+| ?? | ops/ui-audits/2026-07-09-onetime-student-review-polish-live-final/ |
 
 ## Packet Status
 
@@ -25,29 +32,11 @@ _None._
 
 ## Agent Fleet
 
-| Status Line |
-| --- |
-| - Supervisor: running PID 13544 |
-| - Observable Codex jobs: 32 |
-| - Claimable observable jobs: 0 |
-| - Active Codex task fallback: 32 |
-| - Ready to claim: 2 |
-| - Queue health: fresh 8, stale 380, blocked 120, unknown 192, do-not-redo 875 |
-| - ChatGPT dropoff ingest: enabled |
-| - ChatGPT comment collect: enabled |
+_Not checked._
 
 ### Not Claimable / Needs Cleanup
 
-| Job |
-| --- |
-| - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 |
-| - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish |
-| - job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile |
-| - job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes |
-| - job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives |
-| - job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish |
-| - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. |
-| - job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. |
+_Not checked._
 
 ## Recent Pickup Reports
 
@@ -64,6 +53,6 @@ _None._
 
 ## Recommendations
 
+- Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.
 - No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.
-- Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.
 - GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it.
