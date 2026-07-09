@@ -104,6 +104,7 @@ test('One Time parent setup page is isolated from Academy parent portal branding
   assert.match(setupPage, /parents can reset a child's password/);
   assert.match(setupPage, /replaceState\(null, '', '\/one-time-parent\?ready=1'\)/);
   assert.doesNotMatch(setupPage, /\bBNA\b|Bnei Neviim|Academy|bneineviimacademy/i);
+  assert.doesNotMatch(setupPage, /recovery code|classroom password/i);
   assert.doesNotMatch(setupPage, /href="\/"/);
   assert.doesNotMatch(setupPage, /href="\/one-time(?:[?#"])/);
 
