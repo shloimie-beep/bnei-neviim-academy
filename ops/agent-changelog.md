@@ -35802,8 +35802,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Added public, read-only Agent Review artifacts for the Rabbi helper scope map
   JSON/markdown and the account-bot scope template.
 - Pushed commits: `6a570345`, `f9eb486d`, and `f907a87e`.
-- Railway deployments: `36874255-af07-47a8-a41a-0f8919af801b` and final
-  deployment `791c60d5-094b-4125-9e0a-9d305cdf0577`, both `SUCCESS`.
+- Railway deployments: `36874255-af07-47a8-a41a-0f8919af801b`,
+  `791c60d5-094b-4125-9e0a-9d305cdf0577`, and current deployment
+  `cc221c00-1cb3-4b66-b995-40ad78453096`, all `SUCCESS`.
 - Live verification passed: OneTime separate-instance smoke, Rabbi OneTime
   landing smoke, OneTime target guard, public prompt readback, and all three
   public artifact readbacks.

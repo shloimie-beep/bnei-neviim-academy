@@ -99,15 +99,16 @@ block full agent-mode autonomy:
 2. Current action-policy breakdown: 88 `internal_write`, 35 `draft_only`, 9
    `approval_gated_external_write`, 9
    `approval_gated_internal_state_change`, and 22 `read_only`.
-3. All 163 wrapper-backed contracts are now deployed through current Railway
-   deployment `c4548c39-b215-4f45-ab3d-27185c2a86ba` on
+3. All 163 wrapper-backed contracts and account-scope provisioning are now
+   deployed through current Railway deployment
+   `cc221c00-1cb3-4b66-b995-40ad78453096` on
    `one-time-production / one-time-web / production`. The earlier failed
    deployments `d970e263-1726-41c1-a694-10c1659503ee`,
    `75d6f181-e7c6-41a3-9e70-efcc4c61fea1`, and
    `a23e4e82-2199-4fd9-9b17-482c385dabcc` are no longer the active blocker.
    Post-deploy `app:smoke:onetime-separate-instance`,
-   `app:smoke:rabbi-onetime-landing`, instance-config readback, and live prompt
-   readback all passed.
+   `app:smoke:rabbi-onetime-landing`, instance-config readback, live prompt
+   readback, and all three public scope artifact readbacks passed.
 4. Natural-language planner coverage is wired for all 163 contracts, including
    the final fallback-replacement wrappers for contact, parent, course,
    worksheet, library item, provider profile, setup flow, class-video ingest,
