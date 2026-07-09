@@ -36742,3 +36742,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   API feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:49:00+03:00 - Production Snapshot Setup Buckets Refreshed
+
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.md`
+  and `.json` from clean pushed head `60f4592d`.
+- JSON readback confirms head/origin `60f4592d`, worktree clean `true`,
+  status `not_production_complete`, 2 active-run blockers, 3 concrete OneTime
+  setup buckets, 2 Agent Mode proof blockers, 3 active collision lanes, 0
+  queued ChatGPT packets, and no unblocked executable batch.
+- Markdown readback confirms `OneTime Setup Buckets`, `Operator blocker
+  count: 3`, and the setup IDs `SETUP-ONETIME-STRIPE-001`,
+  `SETUP-ONETIME-WHAPI-001`, and `SETUP-ONETIME-CAMPAIGN-001`.
+- Guardrails held: read-only artifact refresh only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

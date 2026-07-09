@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T16:26:46.257Z
+# Production Readiness Snapshot - 2026-07-09T16:44:18.003Z
 
 Result: not_production_complete
 Production ready: no
@@ -14,14 +14,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: f3d10f8b
-- origin/master: f3d10f8b
+- HEAD: 60f4592d
+- origin/master: 60f4592d
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: f3d10f8b
-- Sampled origin/master: f3d10f8b
+- Sampled git head: 60f4592d
+- Sampled origin/master: 60f4592d
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -37,11 +37,20 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - REQ-20260702-108: Full provider/campaign setup remains incomplete in current read-only setup check; Railway target context is resolved. Owner: Shloimie / provider account owners. Next: Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, WAPI auto-reply enable/approval flags if auto-reply is intended, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet.
 - REQ-20260702-110: Full OneTime launch remains blocked by external setup values, not Railway target context. The immediate lead-capture/free-class lane is unblocked and tracked in RAW-20260709-008. Owner: Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane. Next: Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks.
 
+## OneTime Setup Buckets
+- Checklist: ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
+- Available: yes
+- Setup ready count: 5/8
+- Operator blocker count: 3
+- SETUP-ONETIME-STRIPE-001: Rabbi Stripe sandbox (blocked_external_input). Required: rabbi_stripe_test_secret_key_alias, stripe_publishable_key_alias_if_needed, stripe_webhook_secret_alias_if_needed, 67_month_product_price_ids_or_sandbox_create_permission, confirm_sandbox_only
+- SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
+- SETUP-ONETIME-CAMPAIGN-001: Campaign seed / real campaign (blocked_external_input). Required: final_campaign_copy, exact_recipient_segment_or_list_source, suppression_unsubscribe_proof, final_join_member_links, seed_recipient_sdratler_gmail, explicit_seed_packet_approval, separate_explicit_real_send_command_if_seed_passes
+
 ## Agent Fleet
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 20, stale 422, blocked 123, unknown 193, do-not-redo 878
+- Queue health: fresh 20, stale 429, blocked 124, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -88,6 +97,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - ops/production-readiness/latest-production-readiness-snapshot.json
 - ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json
 - ops/agent-fleet-hardening/latest-agent-fleet-readiness.json
+- ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
 - ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md
 
 ## Guardrails
