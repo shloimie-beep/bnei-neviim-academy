@@ -540,6 +540,48 @@ function taskLockIsFresh(taskId, maxAgeMs) {
   return Number.isFinite(ageMs) && ageMs >= 0 && ageMs < maxAgeMs;
 }
 
+function inspectTaskLockForStatus(taskId = '', sampledAt = new Date()) {
+  const numericTaskId = Number(taskId || 0);
+  if (!Number.isFinite(numericTaskId) || numericTaskId <= 0) {
+    return { health: 'not_inspected_no_task_id', evidence: 'local_lock=not_inspected_no_task_id' };
+  }
+  const lockPath = taskLockPath(numericTaskId);
+  const relativeLockPath = relative(lockPath);
+  if (!fs.existsSync(lockPath)) {
+    return { health: 'missing_lock', evidence: `local_lock=missing path=${relativeLockPath}` };
+  }
+  const lock = readJson(lockPath, null);
+  if (!lock) {
+    return { health: 'unreadable_lock', evidence: `local_lock=unreadable path=${relativeLockPath}` };
+  }
+  const pid = Number(lock.pid || 0);
+  const signalAt = lock.heartbeat_at || lock.started_at || lock.startedAt || '';
+  const signalMs = Date.parse(signalAt);
+  const ageHours = Number.isFinite(signalMs)
+    ? Number(((sampledAt.getTime() - signalMs) / 3600000).toFixed(2))
+    : null;
+  const pidRunning = processIsAlive(pid);
+  const health = pidRunning && typeof ageHours === 'number' && ageHours >= 0 && ageHours <= 2
+    ? 'fresh_running_lock'
+    : pidRunning
+      ? 'running_old_heartbeat'
+      : 'stale_lock_dead_pid';
+  const evidence = [
+    `local_lock=${health}`,
+    pid ? `pid=${pid}` : '',
+    signalAt ? `heartbeat=${signalAt}` : '',
+    typeof ageHours === 'number' ? `age_hours=${ageHours}` : '',
+    `path=${relativeLockPath}`,
+  ].filter(Boolean).join(' ');
+  return { health, evidence };
+}
+
+function observableJobTaskLockStatusLine(job = {}, sampledAt = new Date()) {
+  const taskId = job.task_id || job.taskId || '';
+  const lock = inspectTaskLockForStatus(taskId, sampledAt);
+  return `- task #${taskId || 'unknown'} for job #${job.id || job.job_id || 'unknown'}: ${lock.evidence}`;
+}
+
 function acquireTaskLock(task, runId) {
   const stamp = nowIso();
   writeJson(taskLockPath(task.id), {
@@ -3468,7 +3510,7 @@ async function status(config) {
     `- Claimable observable jobs: ${claimableObservableJobs.length}`,
     `- Linked observable task lookup: fetched ${linkedTaskHydration.fetchedTasks.length}, missing ${linkedTaskHydration.errors.length}`,
     `- Active Codex task fallback: ${codex.length}`,
-    `- Ready to claim: ${claimableObservableJobs.length || queue.length}`,
+    `- Ready to claim: observable jobs ${claimableObservableJobs.length}, fallback tasks ${queue.length}`,
     `- Queue health: fresh ${normalizedCounts.active_fresh}, stale ${normalizedCounts.active_stale}, blocked ${normalizedCounts.blocked}, unknown ${normalizedCounts.abandoned_unknown}, do-not-redo ${normalizedCounts.do_not_redo}`,
     `- Max retries: ${config.maxRetries}`,
     `- Baseline smoke: ${config.openAiSmoke ? 'enabled' : 'disabled'}`,
@@ -3491,8 +3533,14 @@ async function status(config) {
     }
   } else if (observableJobs.length) {
     lines.push('', 'Observable jobs not claimable by active-task policy:');
-    for (const job of observableJobs.slice(0, 8)) {
+    const notClaimableJobs = observableJobs.slice(0, 8);
+    for (const job of notClaimableJobs) {
       lines.push(`- job #${job.id || job.job_id}${job.ticket_id ? ` / ticket #${job.ticket_id}` : ''}${job.task_id ? ` / task #${job.task_id}` : ''} [${job.status}] ${observableJobStatusTitle(job, tasks)}`);
+    }
+    lines.push('', 'Local task lock evidence for not-claimable jobs:');
+    const sampledAt = new Date();
+    for (const job of notClaimableJobs) {
+      lines.push(observableJobTaskLockStatusLine(job, sampledAt));
     }
   } else if (queue.length) {
     lines.push('', 'Next tasks:');
@@ -3719,6 +3767,7 @@ export {
   collectSecretEvidenceFromText,
   collectWatchdogImprovementFindings,
   filterObservableJobsForClaim,
+  inspectTaskLockForStatus,
   inspectTelegramBridgeLock,
   isLikelyCodexCapacityError,
   isAllowlistedSecretScanLine,

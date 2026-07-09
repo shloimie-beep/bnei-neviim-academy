@@ -155,6 +155,10 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
   );
   assert.equal(supervisorModule.isLikelyCodexCapacityError(new Error('429 quota exceeded')), true);
   assert.equal(supervisorModule.isLikelyCodexCapacityError(new Error('local test assertion failed')), false);
+  assert.equal(supervisorModule.inspectTaskLockForStatus('').health, 'not_inspected_no_task_id');
+  const missingTaskLock = supervisorModule.inspectTaskLockForStatus(987654321);
+  assert.equal(missingTaskLock.health, 'missing_lock');
+  assert.match(missingTaskLock.evidence, /local_lock=missing/);
   assert.equal(
     supervisorModule.shouldRunKimiFallback(
       { kimiFallbackEnabled: true, kimiFallbackMode: 'quota_only' },
@@ -310,6 +314,8 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
   assert.match(supervisor, /function shouldRunKimiFallback/);
   assert.match(supervisor, /function runKimiFallback/);
   assert.match(supervisor, /Kimi coding fallback/);
+  assert.match(supervisor, /Ready to claim: observable jobs/);
+  assert.match(supervisor, /Local task lock evidence for not-claimable jobs:/);
   assert.match(supervisor, /PRODUCTION_READINESS_GATE_COMMAND = 'npm run production:readiness:gate -- --json'/);
   assert.match(supervisor, /function summarizeProductionReadinessGateResult/);
   assert.match(supervisor, /runProductionReadinessPreflight\(config\)/);
