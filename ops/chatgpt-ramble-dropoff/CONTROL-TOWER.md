@@ -1,14 +1,19 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-09T19:21:36.620Z
+Generated: 2026-07-09T19:31:04.955Z
 
 ## Lane Safety
 
 - Branch: `master`
-- Dirty worktree: no
+- Dirty worktree: yes
+- Collision warning: Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files.
 
-
-_None._
+| Status | Path |
+| --- | --- |
+| M | scripts/production-readiness-gate.mjs |
+| M | scripts/production-readiness-snapshot.mjs |
+| M | scripts/production-unblocker.mjs |
+| M | tests/production-unblocker.test.js |
 
 ## Packet Status
 
@@ -64,6 +69,7 @@ _None._
 
 ## Recommendations
 
+- Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.
 - No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.
 - Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.
 - GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it.
