@@ -83301,26 +83301,37 @@ app.get('/api/bna/support-tickets', requireAdmin, async (req, res) => {
     conditions.push(`st.category = $${params.length}`);
   }
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  const requestedLimit = Number.parseInt(String(req.query.limit || ''), 10);
+  const ticketLimit = Number.isFinite(requestedLimit) ? Math.min(Math.max(requestedLimit, 1), 500) : 200;
+  params.push(ticketLimit);
+  const limitParam = params.length;
   try {
     await ensureDefaultProjects();
     const result = await pool.query(
-      `SELECT st.*,
+      `WITH filtered_ticket_ids AS (
+         SELECT st.id,
+                CASE st.status WHEN 'open' THEN 1 WHEN 'triage' THEN 2 WHEN 'in_progress' THEN 3 WHEN 'resolved' THEN 4 ELSE 5 END AS support_status_order,
+                CASE st.severity WHEN 'blocking' THEN 1 WHEN 'high' THEN 2 WHEN 'normal' THEN 3 ELSE 4 END AS support_severity_order
+         FROM bna_support_tickets st
+         ${whereClause}
+         ORDER BY support_status_order, support_severity_order, st.created_at DESC
+         LIMIT $${limitParam}
+       )
+       SELECT st.*,
               p.project_key,
               p.name AS project_name,
               p.short_name AS project_short_name,
               COALESCE(comment_counts.comment_count, 0)::int AS comment_count
-       FROM bna_support_tickets st
+       FROM filtered_ticket_ids ft
+       JOIN bna_support_tickets st ON st.id = ft.id
        LEFT JOIN bna_projects p ON p.id = st.project_id
        LEFT JOIN (
          SELECT ticket_id, COUNT(*) AS comment_count
          FROM bna_support_ticket_comments
+         WHERE ticket_id IN (SELECT id FROM filtered_ticket_ids)
          GROUP BY ticket_id
-       ) comment_counts ON comment_counts.ticket_id = st.id
-       ${whereClause}
-       ORDER BY
-         CASE st.status WHEN 'open' THEN 1 WHEN 'triage' THEN 2 WHEN 'in_progress' THEN 3 WHEN 'resolved' THEN 4 ELSE 5 END,
-         CASE st.severity WHEN 'blocking' THEN 1 WHEN 'high' THEN 2 WHEN 'normal' THEN 3 ELSE 4 END,
-         st.created_at DESC`,
+       ) comment_counts ON comment_counts.ticket_id = ft.id
+       ORDER BY ft.support_status_order, ft.support_severity_order, ft.created_at DESC`,
       params
     );
     res.json({ tickets: result.rows.map(supportTicketView) });
