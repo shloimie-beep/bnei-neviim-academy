@@ -36675,3 +36675,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:37:00+03:00 - Grouped Production Gates Clean-Head Readback
+
+- Reran production readiness and release/deploy gates from clean pushed head
+  `868e5a8b`.
+- `production:readiness:gate -- --json` remains blocked with 14 detailed
+  blockers and 5 grouped categories: snapshot status, no unblocked execution
+  batch, external setup, Agent Mode proof, and active collision lanes.
+- `bna:release-gate -- --deploy --confirm-deploy
+  DEPLOY_BNA_PRODUCTION_CLOSEOUT --json` preserved the same grouped
+  `production_readiness_gate.blocker_groups`, with deploy blocked,
+  `deploy_performed false`, and `production_mutation_performed false`.
+- `production:unblocker -- --no-write --json` stayed clean on head
+  `868e5a8b` with 3 external setup items, 2 proof items, 3 collision lanes, 0
+  queued ChatGPT packets, and no unblocked executable batch.
+- Guardrails held: clean readback/evidence only; no app UI edit, API feature
+  edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

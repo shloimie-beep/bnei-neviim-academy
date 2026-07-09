@@ -119,6 +119,7 @@ production-ready when these classes are green or precisely blocked:
 | READINESS-20260709-033 | Done / no deploy performed | Codex | GitHub-visible production snapshot artifacts needed to show the separated collision/policy-row sections after `READINESS-20260709-032` was pushed. | Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*` from clean pushed head `f3d10f8b`; Markdown now lists jobs `382`, `427`, and `344` under `Launch Collision Lanes`, and queued/failed rows under `Other Agent Policy Rows`. |
 | READINESS-20260709-034 | Done / no deploy performed | Codex | The operator-facing unblocker needed a clean-source refresh after the separated-row production snapshot artifact was pushed. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `e5524567`; the packet records `live_no_write_command`, head/origin `e5524567`, worktree clean `true`, 3 external setup blockers, 2 Agent Mode proof blockers, 3 active collision lanes, 0 queued ChatGPT packets, and no executable batch. |
 | READINESS-20260709-035 | Done / no deploy performed | Codex | The production-readiness gate was truthful but noisy: 14 individual blocker lines represented a smaller set of actionable blocker categories, and deploy-gate output did not preserve grouped blocker context. | Added `blocker_groups` to `scripts/production-readiness-gate.mjs` and preserved it in `scripts/bna-production-closeout-gate.mjs`, grouping snapshot status, dirty tree, no unblocked batch, external setup, Agent Mode proof, ChatGPT queue, and active collision lanes while keeping the existing blocker list intact. |
+| READINESS-20260709-036 | Done / no deploy performed | Codex | The grouped production gate needed clean-head proof after `READINESS-20260709-035` was pushed. | Reran readiness, release/deploy, unblocker, and run-next checks from clean pushed head `868e5a8b`; readiness and release gates preserved 5 real blocker groups without dirty-worktree noise, deploy remained blocked, and no production mutation occurred. |
 
 ## First audit command plan
 
@@ -1717,6 +1718,58 @@ Remaining:
 
 - After commit/push, rerun readiness and deploy gates from a clean pushed tree
   to confirm grouped blocker output without the temporary dirty-worktree group.
+
+## READINESS-20260709-036 closeout
+
+Implemented:
+
+- No code changes beyond clean-head readback and evidence recording.
+
+Verification:
+
+- PASS clean git readback: head/origin `868e5a8b`, worktree clean.
+- EXPECTED BLOCKED `npm run production:readiness:gate -- --json` from clean
+  head; readback showed:
+  - 14 detailed blockers
+  - 5 blocker groups:
+    - `snapshot_not_production_ready` count `6`
+    - `no_unblocked_executable_batch` count `1`
+    - `external_setup_blockers` count `2`
+    - `agent_mode_terminal_proof_missing` count `2`
+    - `active_agent_collision_lanes` count `3`
+  - sampled head/origin `868e5a8b`
+  - sampled worktree clean `true`
+- EXPECTED BLOCKED `npm run bna:release-gate -- --deploy --confirm-deploy
+  DEPLOY_BNA_PRODUCTION_CLOSEOUT --json`; readback preserved the same 5
+  `production_readiness_gate.blocker_groups`, with `deploy_performed: false`,
+  `production_mutation_performed: false`, and `head_pushed: true`.
+- PASS `npm run production:unblocker -- --no-write --json`; readback showed
+  clean head `868e5a8b`, 3 external setup items, 2 Agent Mode proof items, 3
+  collision lanes, 0 queued ChatGPT packets, and no unblocked executable batch.
+- PASS `npm run bna:run:next`; validation passed and next unblocked
+  executable batch remained `none`.
+
+Evidence:
+
+- clean command readbacks in this closeout
+- `scripts/production-readiness-gate.mjs`
+- `scripts/bna-production-closeout-gate.mjs`
+- `tests/production-readiness-gate.test.js`
+- `tests/bna-production-closeout-gate.test.js`
+
+Guardrails:
+
+- Clean readback/evidence only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- Production remains blocked by external setup, missing terminal Agent Mode
+  proof, active UI/API/Agent Review collision lanes, and no unblocked
+  executable batch.
 
 ## Final audit
 
