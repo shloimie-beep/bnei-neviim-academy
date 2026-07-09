@@ -37153,3 +37153,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers are unchanged: exact external setup fields, Rabbi Telegram
   hosted restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
   execution batch, and active collision-lane reconciliation.
+
+## 2026-07-09T23:06:32+03:00 - Control Tower Shows Fallback Task Candidates
+
+- Updated the ChatGPT/Codex control tower parser and markdown renderer to carry
+  the `Fallback Task Candidates` section from `npm run agent:fleet:status`.
+- Regenerated `CONTROL-TOWER.*` from a clean pushed tree; it now shows fallback
+  candidates `1736`, `1859`, and `2185` with matching active observable jobs
+  `344`, `382`, and `427`.
+- Verification passed: `node --check scripts/chatgpt-dropoff-control-tower.mjs`,
+  `node --test tests/chatgpt-dropoff-control-tower.test.js`, and
+  `npm run chatgpt:dropoff:tower`.
+- Guardrails held: reporting/evidence only; no app UI/API edit, deploy,
+  hosted restart, live Telegram smoke, external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, lock deletion,
+  live task/job mutation, or production-data mutation.
+- Remaining blockers are unchanged: exact external setup fields, Rabbi Telegram
+  hosted restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
+  execution batch, and active collision-lane reconciliation.
