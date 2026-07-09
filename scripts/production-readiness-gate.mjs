@@ -86,7 +86,7 @@ function loadSnapshot(options = {}) {
 }
 
 function compactJob(job = {}) {
-  return [
+  const label = [
     job.job_id ? `job #${job.job_id}` : '',
     job.task_id ? `task #${job.task_id}` : '',
     job.status ? `[${job.status}]` : '',
@@ -94,6 +94,8 @@ function compactJob(job = {}) {
   ]
     .filter(Boolean)
     .join(' ');
+  const lockEvidence = job.local_lock_evidence || job.task_lock?.local_lock_evidence || '';
+  return lockEvidence ? `${label} (${lockEvidence})` : label;
 }
 
 function rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime = {}) {

@@ -201,6 +201,9 @@ function collisionLanes(snapshot = {}) {
     status: item.status || '',
     title: item.title || '',
     raw: item.raw || '',
+    local_lock_health: item.local_lock_health || item.task_lock?.lock_health || '',
+    local_lock_evidence: item.local_lock_evidence || item.task_lock?.local_lock_evidence || '',
+    task_lock: item.task_lock || null,
   }));
 }
 
@@ -223,6 +226,18 @@ function publicLaunchSmokeEvidence(publicLaunchSmoke = {}) {
     `production_data_mutation_performed=${publicLaunchSmoke.production_data_mutation_performed === true}`,
     publicLaunchSmoke.blocker ? `blocker=${publicLaunchSmoke.blocker}` : '',
   ].filter(Boolean);
+}
+
+function collisionLaneEvidence(lane = {}) {
+  const label = (lane.raw || `job #${lane.job_id} / task #${lane.task_id} [${lane.status}] ${lane.title}`).replace(/^- /, '');
+  return lane.local_lock_evidence ? `${label} (${lane.local_lock_evidence})` : label;
+}
+
+function collisionLanesNeedReconciliation(activeCollisionLanes = []) {
+  return activeCollisionLanes.some((lane) => {
+    const health = lane.local_lock_health || lane.task_lock?.lock_health || '';
+    return health && health !== 'fresh_running_lock';
+  });
 }
 
 function buildBlockerGroups({
@@ -311,13 +326,16 @@ function buildBlockerGroups({
     });
   }
   if (active_collision_lanes.length) {
+    const needsReconciliation = collisionLanesNeedReconciliation(active_collision_lanes);
     add({
       id: 'active_agent_collision_lanes',
       title: 'Active agent lanes must not be overlapped',
       owner: 'Codex / agent fleet',
       count: active_collision_lanes.length,
-      evidence: active_collision_lanes.map((lane) => (lane.raw || `job #${lane.job_id} / task #${lane.task_id} [${lane.status}] ${lane.title}`).replace(/^- /, '')),
-      next_action: 'Wait for these lane result packets or inspect them before touching overlapping UI/API/Agent Review proof work.',
+      evidence: active_collision_lanes.map(collisionLaneEvidence),
+      next_action: needsReconciliation
+        ? 'Inspect or reconcile the stale/missing local task-lock state and result packets before touching overlapping UI/API/Agent Review proof work.'
+        : 'Wait for these lane result packets or inspect them before touching overlapping UI/API/Agent Review proof work.',
     });
   }
   if (chatgpt_queued_count > 0) {
@@ -464,6 +482,10 @@ export function buildProductionUnblocker({
       rabbi_telegram_candidate_count: rabbi_telegram_runtime.candidate_count ?? null,
       agent_mode_proof_count: agent_mode_proofs.length,
       active_collision_lane_count: active_collision_lanes.length,
+      active_collision_stale_or_missing_lock_count: active_collision_lanes.filter((lane) => {
+        const health = lane.local_lock_health || lane.task_lock?.lock_health || '';
+        return health && health !== 'fresh_running_lock';
+      }).length,
       chatgpt_queued_count,
       next_unblocked_executable_batch,
       blocker_group_count: blocker_groups.length,
@@ -531,7 +553,7 @@ export function renderMarkdown(report = {}) {
     `- Public launch no-write smoke: ${report.summary.public_launch_smoke_status || 'unknown'} (${report.summary.public_launch_smoke_ready ? 'ready' : 'not ready'})`,
     `- Rabbi Telegram runtime: ${report.summary.rabbi_telegram_runtime_status || 'unknown'}`,
     `- Agent Mode terminal proof items: ${report.summary.agent_mode_proof_count}`,
-    `- Active collision lanes: ${report.summary.active_collision_lane_count}`,
+    `- Active collision lanes: ${report.summary.active_collision_lane_count} (stale/missing local locks: ${report.summary.active_collision_stale_or_missing_lock_count ?? 0})`,
     `- ChatGPT packets queued: ${report.summary.chatgpt_queued_count}`,
     `- Blocker groups: ${report.summary.blocker_group_count}`,
     '',
@@ -633,8 +655,7 @@ export function renderMarkdown(report = {}) {
   lines.push('## Active Lanes To Avoid', '');
   if (report.active_collision_lanes?.length) {
     for (const lane of report.active_collision_lanes) {
-      const label = (lane.raw || `job #${lane.job_id} / task #${lane.task_id} [${lane.status}] ${lane.title}`).replace(/^- /, '');
-      lines.push(`- ${label}`);
+      lines.push(`- ${collisionLaneEvidence(lane)}`);
     }
   } else {
     lines.push('- None reported.');

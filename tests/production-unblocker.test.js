@@ -18,7 +18,15 @@ test('production unblocker builds operator actions from setup and proof blockers
         production_ready: false,
         status: 'not_production_complete',
         avoid_colliding_with: [
-          { job_id: '382', task_id: '1859', status: 'running', title: 'Apply app-wide BNA brand shell', raw: '- job #382 / task #1859 [running] Apply app-wide BNA brand shell' },
+          {
+            job_id: '382',
+            task_id: '1859',
+            status: 'running',
+            title: 'Apply app-wide BNA brand shell',
+            raw: '- job #382 / task #1859 [running] Apply app-wide BNA brand shell',
+            local_lock_health: 'stale_lock_dead_pid',
+            local_lock_evidence: 'local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.14 path=.runtime/agent-fleet/task-1859.lock.json',
+          },
         ],
       },
       active_run: {
@@ -167,6 +175,7 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.equal(report.summary.rabbi_telegram_candidate_count, 4);
   assert.equal(report.summary.agent_mode_proof_count, 1);
   assert.equal(report.summary.active_collision_lane_count, 1);
+  assert.equal(report.summary.active_collision_stale_or_missing_lock_count, 1);
   assert.equal(report.summary.blocker_group_count, 5);
   assert.deepEqual(report.blocker_groups.map((group) => group.id), [
     'no_unblocked_executable_batch',
@@ -179,6 +188,8 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.equal(report.blocker_groups.find((group) => group.id === 'rabbi_telegram_runtime_configuration').evidence.includes('masked_candidate=******4810'), true);
   assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 1);
   assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
+  assert.match(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').evidence.join('\n'), /stale_lock_dead_pid/);
+  assert.match(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').next_action, /reconcile/);
   assert.equal(report.blocker_groups.some((group) => group.id === 'public_launch_no_write_smoke'), false);
   assert.equal(report.sources.includes('ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json'), true);
   assert.deepEqual(report.setup_items.map((item) => item.id), ['SETUP-ONETIME-STRIPE-001', 'SETUP-ONETIME-WHAPI-001']);
@@ -208,6 +219,8 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.match(markdown, /operations\/agent-review\/dropoff/);
   assert.match(markdown, /Source snapshot: node scripts\/production-readiness-snapshot\.mjs --no-write --json/);
   assert.match(markdown, /Snapshot git head: 60f1e599/);
+  assert.match(markdown, /stale\/missing local locks: 1/);
+  assert.match(markdown, /local_lock=stale_lock_dead_pid/);
   assert.match(markdown, /No deploy/);
 });
 

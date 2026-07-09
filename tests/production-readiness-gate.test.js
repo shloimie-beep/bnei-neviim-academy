@@ -95,7 +95,13 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
       status: 'not_production_complete',
       reason: ['full OneTime launch has external Stripe/WAPI/campaign blockers'],
       avoid_colliding_with: [
-        { job_id: '382', task_id: '1859', status: 'running', title: 'Apply app-wide BNA brand shell and million-dollar SaaS UI polish' },
+        {
+          job_id: '382',
+          task_id: '1859',
+          status: 'running',
+          title: 'Apply app-wide BNA brand shell and million-dollar SaaS UI polish',
+          local_lock_evidence: 'local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.14 path=.runtime/agent-fleet/task-1859.lock.json',
+        },
       ],
       chatgpt_dropoff_queue_ready_count: 1,
     },
@@ -162,6 +168,7 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   assert.match(text, /Rabbi Agent Review proof has 2/);
   assert.match(text, /ChatGPT dropoff queue has 1/);
   assert.match(text, /job #382/);
+  assert.match(text, /local_lock=stale_lock_dead_pid/);
   assert.equal(report.snapshot_summary.active_run_blocker_count, 1);
   assert.equal(report.snapshot_summary.external_setup_item_count, 3);
   assert.equal(report.snapshot_summary.public_launch_smoke_ready, true);
@@ -212,6 +219,7 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
     'masked_candidate=******4810',
   ]);
   assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
+  assert.match(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').evidence.join('\n'), /stale_lock_dead_pid/);
   assert.match(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').next_action, /whapi_wapi_instance_id/);
   assert.ok(report.next_actions.some((item) => /production:unblocker/.test(item.action)));
   assert.equal(report.operator_unblocker.json_path, 'ops/production-readiness/latest-production-unblocker.json');
@@ -338,9 +346,21 @@ test('production readiness snapshot treats active Agent Review repair as a colli
 
   assert.match(script, /activeAgentReviewLane/);
   assert.match(script, /Agent Mode result\|Agent Review\|AGR-/);
-  assert.match(script, /Agent Review repair lane is already active/);
+  assert.match(script, /Agent Review repair lane/);
+  assert.match(script, /reported active in another agent job/);
   assert.match(script, /Do not overlap Agent Review proof\/result repair work/);
   assert.match(script, /avoidCollidingWith/);
+});
+
+test('production readiness snapshot enriches collision lanes with local task-lock health', () => {
+  const script = fs.readFileSync(path.join(repoRoot, 'scripts', 'production-readiness-snapshot.mjs'), 'utf8');
+
+  assert.match(script, /function inspectTaskLock/);
+  assert.match(script, /enrichFleetStatusWithTaskLocks/);
+  assert.match(script, /local_lock_health/);
+  assert.match(script, /stale_lock_dead_pid/);
+  assert.match(script, /missing_lock/);
+  assert.match(script, /agentFleetCollisionLockFreshHours/);
 });
 
 test('production readiness snapshot separates launch collisions from other policy rows', () => {

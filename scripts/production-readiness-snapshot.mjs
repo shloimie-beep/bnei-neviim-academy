@@ -11,6 +11,7 @@ const latestMdPath = path.join(outputDir, 'latest-production-readiness-snapshot.
 const oneTimeSetupChecklistPath = 'ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json';
 const oneTimeSetupCheckCommandArgs = ['scripts/check-onetime-external-setup-readiness.mjs', '--json'];
 const publicLaunchSmokeMaxAgeHours = 24;
+const agentFleetCollisionLockFreshHours = 2;
 const rabbiTelegramReadinessPath = 'ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json';
 const rabbiChatIdRuntimeReportPath = '.runtime/rabbi-telegram-chat-id-candidates.json';
 const args = new Set(process.argv.slice(2));
@@ -175,6 +176,93 @@ function readJsonIfExists(relativePath) {
   } catch {
     return null;
   }
+}
+
+function processIsAlive(pid) {
+  const numericPid = Number(pid);
+  if (!Number.isFinite(numericPid) || numericPid <= 0) return false;
+  try {
+    process.kill(numericPid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function taskLockRelativePath(taskId = '') {
+  return taskId ? `.runtime/agent-fleet/task-${taskId}.lock.json` : '';
+}
+
+function inspectTaskLock(taskId = '', sampledAt = new Date()) {
+  const lockPath = taskLockRelativePath(taskId);
+  if (!taskId) {
+    return {
+      lock_path: '',
+      lock_exists: false,
+      lock_health: 'not_inspected_no_task_id',
+      local_lock_evidence: 'local_lock=not_inspected_no_task_id',
+    };
+  }
+
+  const lock = readJsonIfExists(lockPath);
+  if (!lock) {
+    return {
+      lock_path: lockPath,
+      lock_exists: false,
+      lock_health: 'missing_lock',
+      local_lock_evidence: `local_lock=missing path=${lockPath}`,
+    };
+  }
+
+  const pid = Number(lock.pid || 0);
+  const signalAt = lock.heartbeat_at || lock.started_at || lock.startedAt || '';
+  const signalMs = Date.parse(signalAt);
+  const ageHours = Number.isFinite(signalMs)
+    ? Number(((sampledAt.getTime() - signalMs) / 3600000).toFixed(2))
+    : null;
+  const pidRunning = processIsAlive(pid);
+  let lockHealth = 'stale_lock_dead_pid';
+  if (pidRunning && typeof ageHours === 'number' && ageHours >= 0 && ageHours <= agentFleetCollisionLockFreshHours) {
+    lockHealth = 'fresh_running_lock';
+  } else if (pidRunning) {
+    lockHealth = 'running_old_heartbeat';
+  }
+
+  const evidence = [
+    `local_lock=${lockHealth}`,
+    pid ? `pid=${pid}` : '',
+    signalAt ? `heartbeat=${signalAt}` : '',
+    typeof ageHours === 'number' ? `age_hours=${ageHours}` : '',
+    `path=${lockPath}`,
+  ].filter(Boolean).join(' ');
+
+  return {
+    lock_path: lockPath,
+    lock_exists: true,
+    lock_pid: pid || null,
+    lock_pid_running: pidRunning,
+    lock_started_at: lock.started_at || lock.startedAt || '',
+    lock_heartbeat_at: lock.heartbeat_at || '',
+    lock_age_hours: ageHours,
+    lock_fresh_max_hours: agentFleetCollisionLockFreshHours,
+    lock_health: lockHealth,
+    local_lock_evidence: evidence,
+  };
+}
+
+function enrichFleetStatusWithTaskLocks(fleet = {}, sampledAt = new Date()) {
+  return {
+    ...fleet,
+    active_policy_jobs: (fleet.active_policy_jobs || []).map((job) => {
+      const task_lock = inspectTaskLock(job.task_id, sampledAt);
+      return {
+        ...job,
+        task_lock,
+        local_lock_health: task_lock.lock_health,
+        local_lock_evidence: task_lock.local_lock_evidence,
+      };
+    }),
+  };
 }
 
 function latestMatchingFile(relativeDir, pattern) {
@@ -493,6 +581,17 @@ function rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime = {}) {
   return rabbiTelegramRuntime.status === 'live_smoke_verified' || rabbiTelegramRuntime.production_verified === true;
 }
 
+function laneHasStaleOrMissingLocalLock(lane = {}) {
+  return lane.local_lock_health && lane.local_lock_health !== 'fresh_running_lock';
+}
+
+function collisionLaneReason(lane = {}, label = 'collision lane') {
+  if (laneHasStaleOrMissingLocalLock(lane)) {
+    return `${label} is reported active in another agent job, but local lock health is ${lane.local_lock_health}; reconcile before touching overlapping work`;
+  }
+  return `${label} is already active in another agent job`;
+}
+
 function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, oneTimeSetup, rabbiTelegramRuntime, publicLaunchSmoke }) {
   const activeUiLane = fleet.active_policy_jobs.find((job) =>
     /app-wide BNA brand shell|million-dollar SaaS UI polish|One Time provider UI|route-role mapping|View-as navigation/i.test(job.title)
@@ -518,9 +617,9 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, one
     publicLaunchSmokeBlocked ? `public launch no-write smoke is ${publicLaunchSmoke?.status || 'missing'}` : '',
     rabbiTelegramRuntimeBlocked ? `Rabbi Telegram runtime is ${rabbiTelegramRuntime.status}` : '',
     missingProofCount > 0 ? 'Rabbi Agent Review still needs terminal Agent Mode proof' : '',
-    activeUiLane ? 'broad UI lane is already active in another agent job' : '',
-    activeFallbackLane ? 'fallback/API lane is already active in another agent job' : '',
-    activeAgentReviewLane ? 'Agent Review repair lane is already active in another agent job' : '',
+    activeUiLane ? collisionLaneReason(activeUiLane, 'broad UI lane') : '',
+    activeFallbackLane ? collisionLaneReason(activeFallbackLane, 'fallback/API lane') : '',
+    activeAgentReviewLane ? collisionLaneReason(activeAgentReviewLane, 'Agent Review repair lane') : '',
     noNextBatch ? 'active execution run has no unblocked executable batch' : '',
   ].filter(Boolean);
   const productionReady = reason.length === 0;
@@ -583,18 +682,20 @@ function buildNextActions({ blockers, proof, fleet, rabbiTelegramRuntime }) {
   const uiLane = fleet.active_policy_jobs.find((job) => /app-wide BNA brand shell|million-dollar SaaS UI polish/i.test(job.title));
   if (uiLane) {
     const laneLabel = uiLane.raw.replace(/^- /, '');
+    const lockNote = uiLane.local_lock_evidence ? ` Local lock evidence: ${uiLane.local_lock_evidence}.` : '';
     actions.push({
       owner: 'Codex / agent fleet',
-      action: `Do not overlap broad UI file edits while ${laneLabel} remains active; inspect its result packet before starting the next UI batch.`,
+      action: `Do not overlap broad UI file edits while ${laneLabel} remains active; inspect its result packet before starting the next UI batch.${lockNote}`,
       source: 'agent_fleet_active_policy',
     });
   }
   const agentReviewLane = fleet.active_policy_jobs.find((job) => /Agent Mode result|Agent Review|AGR-/i.test(job.title));
   if (agentReviewLane) {
     const laneLabel = agentReviewLane.raw.replace(/^- /, '');
+    const lockNote = agentReviewLane.local_lock_evidence ? ` Local lock evidence: ${agentReviewLane.local_lock_evidence}.` : '';
     actions.push({
       owner: 'Codex / agent fleet',
-      action: `Do not overlap Agent Review proof/result repair work while ${laneLabel} remains active; inspect its result packet before saving or reconciling Agent Review terminal proof.`,
+      action: `Do not overlap Agent Review proof/result repair work while ${laneLabel} remains active; inspect its result packet before saving or reconciling Agent Review terminal proof.${lockNote}`,
       source: 'agent_fleet_active_policy',
     });
   }
@@ -611,9 +712,10 @@ function jobKey(job = {}) {
 }
 
 function jobLabel(job = {}) {
-  return (job.raw || `job #${job.job_id || 'unknown'} / task #${job.task_id || 'unknown'} [${job.status || 'unknown'}] ${job.title || ''}`)
+  const label = (job.raw || `job #${job.job_id || 'unknown'} / task #${job.task_id || 'unknown'} [${job.status || 'unknown'}] ${job.title || ''}`)
     .replace(/^- /, '')
     .trim();
+  return job.local_lock_evidence ? `${label} (${job.local_lock_evidence})` : label;
 }
 
 function renderMarkdown(report) {
@@ -760,7 +862,7 @@ function main() {
     ...parseActiveRun(runNextCommand.stdout),
     blockers: parseRunBlockers(runBlockersCommand.stdout),
   };
-  const agentFleet = parseFleetStatus(fleetCommand.stdout);
+  const agentFleet = enrichFleetStatusWithTaskLocks(parseFleetStatus(fleetCommand.stdout), new Date(generatedAt));
   const chatgptDropoff = parseJsonFromOutput(chatgptCommand.stdout) || {
     packet_count: null,
     queued_count: null,
