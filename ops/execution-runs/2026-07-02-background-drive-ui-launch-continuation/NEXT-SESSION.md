@@ -47,7 +47,8 @@ Top provider/operator task:
 
 1. Provide or label the remaining exact aliases:
    - Rabbi Stripe sandbox/test key and $67/month product/price aliases;
-   - Whapi/WAPI instance and phone aliases.
+   - Whapi/WAPI instance and phone aliases;
+   - WAPI auto-reply enable/approval flags if auto-reply is intended;
    - final campaign copy, exact recipient segment/list, suppression/
      unsubscribe proof, and explicit seed approval.
 
@@ -65,18 +66,21 @@ Still blocked:
 
 1. `REQ-20260702-108` - provider setup remains blocked on Rabbi Stripe
    sandbox/test key status and `$67/month` product/price alias, Whapi/WAPI
-   instance/phone, campaign copy/list/suppression proof, and explicit seed
-   approval packet. Railway target context, database readback, join-domain,
-   hosted Zoom/class link, and Drive/Vimeo readiness are no longer the blocker.
-   No send/payment/provider mutation should run until the remaining values and
+   instance/phone, WAPI auto-reply enable/approval flags if auto-reply is
+   intended, campaign copy/list/suppression proof, and explicit seed approval
+   packet. Railway target context, database readback, join-domain, hosted
+   Zoom/class link, and Drive/Vimeo readiness are no longer the blocker. No
+   send/payment/provider mutation should run until the remaining values and
    scope are explicit.
 2. `REQ-20260702-110` - final full-launch bootstrap/live smoke remains blocked
    by the remaining external setup items above, not by Railway target context.
    2026-07-09 `npm run one-time:railway-target:guard` passed for
    `one-time-web`; `npm run one-time:setup:check` now reports ready 5/8 and
    blocks only Stripe sandbox/price alias, Whapi/WAPI instance and phone, and
-   campaign approval data. Hosted Zoom/class link is present by redacted
-   readback. For the immediate public capture funnel, use the new
-   RAW-20260709-008 register instead of waiting on full setup.
+   campaign approval data. `npm run one-time:wapi:readiness` also blocks on
+   auto-reply enable/approval flags if auto-reply is intended. Hosted
+   Zoom/class link is present by redacted readback. For the immediate public
+   capture funnel, use the new RAW-20260709-008 register instead of waiting on
+   full setup.
 3. Campaign send remains blocked on final copy, exact segment/list,
    suppression/unsubscribe proof, seed pass, and exact real-send packet.

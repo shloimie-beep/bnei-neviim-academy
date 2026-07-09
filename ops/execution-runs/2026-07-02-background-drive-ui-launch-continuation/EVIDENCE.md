@@ -32,7 +32,8 @@
   `npm run one-time:setup:check -- --write-report` still exits 1 as expected,
   but now reports ready 5/8: Railway target, DB, join domain, hosted
   Zoom/class link, and Vimeo/Drive are ready. Full launch is blocked only by
-  Stripe sandbox/price alias, Whapi/WAPI details, and campaign approvals.
+  Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply
+  approval flags if auto-reply is intended, and campaign approvals.
 - 2026-07-09 WAPI readiness:
   `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md` confirms the
   class link is configured and blocks only Whapi/WAPI instance ID, sender phone

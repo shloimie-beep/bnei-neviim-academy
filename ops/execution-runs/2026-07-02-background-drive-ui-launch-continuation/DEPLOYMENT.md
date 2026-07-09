@@ -23,7 +23,8 @@ Current production-readiness closeout:
 Full-launch deploy/live smoke remains blocked only for flows that require:
 
 1. Rabbi Stripe sandbox/test key status and `$67/month` product/price alias.
-2. Whapi/WAPI instance ID and sender phone metadata.
+2. Whapi/WAPI instance ID, sender phone metadata, and auto-reply enable/
+   approval flags if auto-reply is intended.
 3. Final campaign copy, exact segment/list, suppression/unsubscribe proof, and
    explicit seed approval.
 

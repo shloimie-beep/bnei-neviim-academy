@@ -27,12 +27,15 @@ evidence.
   verification for `join.onetimeonetime.com` are complete.
 - `REQ-20260702-108`: blocked. Current read-only setup check still needs Rabbi
   Stripe sandbox/test key status plus `$67/month` product/price alias,
-  Whapi/WAPI instance/phone, campaign copy/list/suppression proof, and seed
+  Whapi/WAPI instance/phone, WAPI auto-reply enable/approval flags if
+  auto-reply is intended, campaign copy/list/suppression proof, and seed
   approval packet. Railway target context, separate database readback,
   join-domain, hosted Zoom/class link, and Drive/Vimeo setup are no longer the
   blocker. No provider mutation or send occurred.
-- `REQ-20260702-109`: done. Top visible task is now GoDaddy DNS for
-  `join.onetimeonetime.com`.
+- `REQ-20260702-109`: done. Top visible task is now narrowed to the remaining
+  Stripe, WAPI, and campaign external values; solved Railway/DB/domain/
+  Zoom/Vimeo/Drive items must not be reopened without fresh contradicting
+  readback.
 - `REQ-20260702-110`: blocked for full launch only. Current closeout work is
   pushed to `master`, BNA production deploy/live smoke passed, and One Time
   setup tooling now blocks stale historical provisioning proof. 2026-07-09
@@ -43,10 +46,11 @@ evidence.
   matching `join.onetimeonetime.com`, `rabbi_sheller_provider`, and
   `one_time_mishnah_class`. `npm run one-time:setup:check` now reports ready
   5/8: Railway target, DB, join domain, hosted Zoom/class link, and Vimeo/Drive
-  are ready. Stripe sandbox/price alias, Whapi/WAPI details, and campaign
-  approval data are still missing. Immediate public lead capture is now tracked
-  in `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`
-  and does not wait on portal/payment/broadcast setup.
+  are ready. Stripe sandbox/price alias, Whapi/WAPI instance/phone plus
+  auto-reply approval flags if auto-reply is intended, and campaign approval
+  data are still missing. Immediate public lead capture is now tracked in
+  `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md` and
+  does not wait on portal/payment/broadcast setup.
 
 PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/64
 

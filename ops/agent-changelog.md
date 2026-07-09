@@ -36279,3 +36279,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   payment/checkout/charge, access grant, CRM mutation, provider mutation,
   credential change, DNS change, deploy, production-data mutation, or app/UI
   file edit was performed.
+
+## 2026-07-09T18:15:00+03:00 - Active Run Blocker Wording Tightened
+
+- Reconciled the active execution-run handoff files so `bna:run:blockers`
+  exposes the same exact current OneTime full-launch blockers as the operator
+  setup packet.
+- `REQ-20260702-108` and `REQ-20260702-110` now name WAPI auto-reply
+  enable/approval flags when auto-reply is intended, instead of only saying
+  `WAPI details`.
+- Updated stale run summaries that still said the top visible task was GoDaddy
+  DNS or showed old `not_started` statuses.
+- Verification passed: `requirements.json` parse, `npm run bna:run:validate`,
+  and `npm run bna:run:blockers`.
+- Guardrails held: docs/evidence only; no app code, deploy, send, payment,
+  credential, provider, DNS, or production-data mutation.

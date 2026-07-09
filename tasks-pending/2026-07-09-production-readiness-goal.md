@@ -740,6 +740,9 @@ Implemented:
 - Updated the prepared Rabbi WhatsApp setup message so it reflects the current
   WAPI state: OneTime-scoped token and class link configured; instance, phone,
   and approval flags still missing.
+- Reconciled the active execution-run handoff files so `npm run
+  bna:run:blockers` also names the WAPI auto-reply enable/approval flags
+  instead of the vaguer `WAPI details` wording.
 
 Verification:
 
@@ -750,6 +753,9 @@ Verification:
 - EXPECTED BLOCKED `npm run one-time:wapi:readiness`: outbound token and class
   link configured; instance ID, sender phone metadata, auto-reply enable flag,
   and explicit approval flag missing.
+- PASS `npm run bna:run:blockers`: blocker output names Stripe sandbox/price
+  alias, Whapi/WAPI instance/phone, WAPI auto-reply enable/approval flags if
+  auto-reply is intended, and campaign approvals.
 
 Evidence:
 
@@ -760,6 +766,9 @@ Evidence:
 - `ops/one-time-mishnah/launch-unblocker/2026-07-02-rabbi-whatsapp-setup-message.md`
 - `ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md`
 - `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`
+- `ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation/requirements.json`
+- `ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation/NEXT-SESSION.md`
+- `ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation/STATUS.md`
 
 Guardrails:
 
