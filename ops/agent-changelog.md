@@ -36657,3 +36657,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:35:00+03:00 - Production Gates Emit Blocker Groups
+
+- Added `blocker_groups` to `npm run production:readiness:gate -- --json` so
+  the gate keeps detailed blockers while also exposing grouped categories with
+  owner, count, evidence, and next action.
+- Preserved `production_readiness_gate.blocker_groups` in
+  `npm run bna:release-gate` deploy/live/final output.
+- Focused tests passed for readiness-gate grouping and closeout-gate
+  preservation.
+- Dirty-tree readback while editing showed grouped categories for snapshot
+  status, dirty tree, no unblocked batch, external setup, Agent Mode proof,
+  and active collision lanes; deploy gate still performed no deploy and no
+  production mutation.
+- Guardrails held: gate/reporting hardening only; no app UI edit, API feature
+  edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

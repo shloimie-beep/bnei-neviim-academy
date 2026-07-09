@@ -118,6 +118,7 @@ production-ready when these classes are green or precisely blocked:
 | READINESS-20260709-032 | Done / no deploy performed | Codex | The production snapshot Markdown still mixed true running launch collision lanes with queued/failed policy rows under one `Active / Do Not Collide` heading, which made simultaneous-agent status harder to read. | Updated `scripts/production-readiness-snapshot.mjs` to render separate `Launch Collision Lanes` and `Other Agent Policy Rows` sections, with tests preventing the old mixed heading from returning. |
 | READINESS-20260709-033 | Done / no deploy performed | Codex | GitHub-visible production snapshot artifacts needed to show the separated collision/policy-row sections after `READINESS-20260709-032` was pushed. | Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*` from clean pushed head `f3d10f8b`; Markdown now lists jobs `382`, `427`, and `344` under `Launch Collision Lanes`, and queued/failed rows under `Other Agent Policy Rows`. |
 | READINESS-20260709-034 | Done / no deploy performed | Codex | The operator-facing unblocker needed a clean-source refresh after the separated-row production snapshot artifact was pushed. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `e5524567`; the packet records `live_no_write_command`, head/origin `e5524567`, worktree clean `true`, 3 external setup blockers, 2 Agent Mode proof blockers, 3 active collision lanes, 0 queued ChatGPT packets, and no executable batch. |
+| READINESS-20260709-035 | Done / no deploy performed | Codex | The production-readiness gate was truthful but noisy: 14 individual blocker lines represented a smaller set of actionable blocker categories, and deploy-gate output did not preserve grouped blocker context. | Added `blocker_groups` to `scripts/production-readiness-gate.mjs` and preserved it in `scripts/bna-production-closeout-gate.mjs`, grouping snapshot status, dirty tree, no unblocked batch, external setup, Agent Mode proof, ChatGPT queue, and active collision lanes while keeping the existing blocker list intact. |
 
 ## First audit command plan
 
@@ -1663,6 +1664,59 @@ Remaining:
 - Production remains blocked by explicit external setup, missing terminal Agent
   Mode proof, active UI/API/Agent Review collision lanes, and no unblocked
   executable batch.
+
+## READINESS-20260709-035 closeout
+
+Implemented:
+
+- Added `blocker_groups` to `scripts/production-readiness-gate.mjs`.
+- Groups include category ID, title, owner, severity, count, evidence, and
+  next action.
+- Kept the existing `blockers` array intact for compatibility.
+- Added `snapshot_summary.blocker_group_count`.
+- Updated text output to print group summaries before the detailed blocker
+  list.
+- Updated `scripts/bna-production-closeout-gate.mjs` so deploy/live/final
+  closeout summaries preserve `production_readiness_gate.blocker_groups`.
+- Added regression coverage in:
+  - `tests/production-readiness-gate.test.js`
+  - `tests/bna-production-closeout-gate.test.js`
+
+Verification:
+
+- PASS `node --check scripts\production-readiness-gate.mjs`.
+- PASS `node --check scripts\bna-production-closeout-gate.mjs`.
+- PASS `node --test tests\production-readiness-gate.test.js
+  tests\bna-production-closeout-gate.test.js`.
+- EXPECTED BLOCKED `npm run production:readiness:gate -- --json` while dirty;
+  readback preserved 15 detailed blockers and 6 grouped categories:
+  `snapshot_not_production_ready`, `dirty_worktree`,
+  `no_unblocked_executable_batch`, `external_setup_blockers`,
+  `agent_mode_terminal_proof_missing`, and `active_agent_collision_lanes`.
+- EXPECTED BLOCKED `npm run bna:release-gate -- --deploy --confirm-deploy
+  DEPLOY_BNA_PRODUCTION_CLOSEOUT --json` while dirty; readback preserved the
+  same grouped categories under `production_readiness_gate.blocker_groups`,
+  with `deploy_performed: false` and `production_mutation_performed: false`.
+
+Evidence:
+
+- `scripts/production-readiness-gate.mjs`
+- `scripts/bna-production-closeout-gate.mjs`
+- `tests/production-readiness-gate.test.js`
+- `tests/bna-production-closeout-gate.test.js`
+
+Guardrails:
+
+- Gate/reporting hardening only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- After commit/push, rerun readiness and deploy gates from a clean pushed tree
+  to confirm grouped blocker output without the temporary dirty-worktree group.
 
 ## Final audit
 

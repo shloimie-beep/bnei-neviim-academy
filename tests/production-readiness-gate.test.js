@@ -48,7 +48,9 @@ test('production readiness gate passes a clean fully ready snapshot', async () =
   assert.equal(report.ok, true);
   assert.equal(report.status, 'production_ready');
   assert.deepEqual(report.blockers, []);
+  assert.deepEqual(report.blocker_groups, []);
   assert.equal(report.snapshot_summary.production_ready, true);
+  assert.equal(report.snapshot_summary.blocker_group_count, 0);
   assert.equal(report.operator_unblocker.markdown_path, 'ops/production-readiness/latest-production-unblocker.md');
   assert.equal(report.operator_unblocker.refresh_command, 'npm run production:unblocker');
   assert.equal(report.guardrails.some((item) => /Read-only/.test(item)), true);
@@ -97,6 +99,20 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   assert.match(text, /ChatGPT dropoff queue has 1/);
   assert.match(text, /job #382/);
   assert.equal(report.snapshot_summary.active_run_blocker_count, 1);
+  assert.equal(report.snapshot_summary.blocker_group_count, 7);
+  assert.deepEqual(report.blocker_groups.map((group) => group.id), [
+    'snapshot_not_production_ready',
+    'dirty_worktree',
+    'no_unblocked_executable_batch',
+    'external_setup_blockers',
+    'agent_mode_terminal_proof_missing',
+    'chatgpt_dropoff_queue_ready',
+    'active_agent_collision_lanes',
+  ]);
+  assert.equal(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').count, 1);
+  assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 2);
+  assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
+  assert.match(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').next_action, /Stripe/);
   assert.ok(report.next_actions.some((item) => /production:unblocker/.test(item.action)));
   assert.equal(report.operator_unblocker.json_path, 'ops/production-readiness/latest-production-unblocker.json');
 });
@@ -110,6 +126,7 @@ test('production readiness gate can warn instead of block on dirty state when ex
   assert.equal(report.ok, true);
   assert.equal(report.warnings.length, 1);
   assert.match(report.warnings[0], /allow-dirty/);
+  assert.deepEqual(report.blocker_groups, []);
 });
 
 test('production readiness snapshot surfaces agent-fleet auto-deploy preflight proof', () => {

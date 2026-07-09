@@ -96,6 +96,115 @@ function compactJob(job = {}) {
     .join(' ');
 }
 
+function buildBlockerGroups({
+  assessment = {},
+  assessmentReasons = [],
+  git = {},
+  activeRun = {},
+  runBlockers = [],
+  proofBlockers = 0,
+  queuedDropoffs = 0,
+  collisionLanes = [],
+  nextBatch = '',
+  allowDirty = false,
+} = {}) {
+  const groups = [];
+  const add = (group) => {
+    groups.push({
+      id: group.id,
+      title: group.title,
+      owner: group.owner || 'Codex / operator',
+      severity: group.severity || 'blocking',
+      count: Number(group.count || 1),
+      evidence: group.evidence || [],
+      next_action: group.next_action || '',
+    });
+  };
+
+  if (assessment.production_ready !== true || assessment.status !== 'production_ready') {
+    add({
+      id: 'snapshot_not_production_ready',
+      title: 'Production readiness snapshot is not green',
+      owner: 'Codex',
+      count: Math.max(1, assessmentReasons.length),
+      evidence: [
+        `snapshot_status=${assessment.status || 'unknown'}`,
+        ...assessmentReasons.map((reason) => `reason=${reason}`),
+      ],
+      next_action: 'Clear or document every category below, then rerun `npm run production:readiness:gate -- --json`.',
+    });
+  }
+  if (git.clean !== true && allowDirty !== true) {
+    add({
+      id: 'dirty_worktree',
+      title: 'Production readiness was sampled from a dirty tree',
+      owner: 'Codex',
+      evidence: [git.status_short || 'git.clean=false'],
+      next_action: 'Commit, stash, or intentionally exclude local changes, then rerun the readiness gate from a clean tree.',
+    });
+  }
+  if (activeRun.validation_passed !== true) {
+    add({
+      id: 'execution_run_validation',
+      title: 'Active execution run validation did not pass',
+      owner: 'Codex',
+      evidence: [activeRun.run_path || 'active run path missing'],
+      next_action: 'Run the execution-run validator and repair the run record before production closeout.',
+    });
+  }
+  if (activeRun.work_remains === true && /^none$/i.test(nextBatch)) {
+    add({
+      id: 'no_unblocked_executable_batch',
+      title: 'Active execution run has work remaining but no unblocked executable batch',
+      owner: 'Codex / operator',
+      evidence: [activeRun.run_path || 'active run path missing'],
+      next_action: 'Use the production unblocker to clear external/proof/collision blockers, then rerun `npm run bna:run:next`.',
+    });
+  }
+  if (runBlockers.length > 0) {
+    add({
+      id: 'external_setup_blockers',
+      title: 'External OneTime setup values or approvals are missing',
+      owner: 'Shloimie / provider account owners',
+      count: runBlockers.length,
+      evidence: runBlockers.map((item) => item.requirement_id || item.title || 'run blocker'),
+      next_action: 'Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.',
+    });
+  }
+  if (proofBlockers > 0) {
+    add({
+      id: 'agent_mode_terminal_proof_missing',
+      title: 'Rabbi Agent Review terminal proof is missing',
+      owner: 'Shloimie / Agent Mode runner',
+      count: proofBlockers,
+      evidence: [`remaining_blocker_count=${proofBlockers}`],
+      next_action: 'Run the listed Agent Mode prompts and save terminal PASS, FAIL, or BLOCKED proof through the Operations drop-off.',
+    });
+  }
+  if (queuedDropoffs > 0) {
+    add({
+      id: 'chatgpt_dropoff_queue_ready',
+      title: 'ChatGPT dropoff packets are ready for Codex pickup',
+      owner: 'Codex / agent fleet',
+      count: queuedDropoffs,
+      evidence: [`queued_count=${queuedDropoffs}`],
+      next_action: 'Run the dropoff ingestor and audit/pick up eligible packets before production closeout.',
+    });
+  }
+  if (collisionLanes.length > 0) {
+    add({
+      id: 'active_agent_collision_lanes',
+      title: 'Active agent lanes must not be overlapped',
+      owner: 'Codex / agent fleet',
+      count: collisionLanes.length,
+      evidence: collisionLanes.map((lane) => compactJob(lane)),
+      next_action: 'Wait for the active lane result packets or inspect them before touching overlapping UI/API/Agent Review proof work.',
+    });
+  }
+
+  return groups;
+}
+
 export function buildProductionReadinessGate(snapshot = {}, options = {}) {
   const blockers = [];
   const warnings = [];
@@ -138,6 +247,18 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
   for (const lane of collisionLanes) {
     blockers.push(`Active agent collision lane remains: ${compactJob(lane)}.`);
   }
+  const blockerGroups = buildBlockerGroups({
+    assessment,
+    assessmentReasons,
+    git,
+    activeRun,
+    runBlockers,
+    proofBlockers,
+    queuedDropoffs,
+    collisionLanes,
+    nextBatch,
+    allowDirty: options.allowDirty === true,
+  });
 
   return {
     generated_at: new Date().toISOString(),
@@ -145,6 +266,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
     ok: blockers.length === 0,
     status: blockers.length === 0 ? 'production_ready' : 'blocked',
     blockers,
+    blocker_groups: blockerGroups,
     warnings,
     snapshot_summary: {
       generated_at: snapshot.generated_at || '',
@@ -159,6 +281,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
       rabbi_agent_review_remaining_blockers: proofBlockers,
       chatgpt_queued_count: queuedDropoffs,
       collision_lane_count: collisionLanes.length,
+      blocker_group_count: blockerGroups.length,
     },
     operator_unblocker: {
       markdown_path: OPERATOR_UNBLOCKER_MD,
@@ -186,6 +309,13 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
 function printText(report) {
   console.log(`Production readiness gate: ${report.ok ? 'PASS' : 'BLOCKED'}`);
   console.log(`Snapshot status: ${report.snapshot_summary.status}`);
+  if (report.blocker_groups?.length) {
+    console.log('Blocker groups:');
+    report.blocker_groups.forEach((group) => {
+      console.log(`- ${group.id}: ${group.title} (${group.count})`);
+      if (group.next_action) console.log(`  next: ${group.next_action}`);
+    });
+  }
   if (report.blockers.length) {
     console.log('Blockers:');
     report.blockers.forEach((blocker) => console.log(`- ${blocker}`));

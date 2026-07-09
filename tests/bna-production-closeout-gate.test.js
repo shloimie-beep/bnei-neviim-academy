@@ -247,6 +247,14 @@ test('production closeout gate requires production readiness before approved dep
     ok: false,
     status: 'blocked',
     blockers: ['Production readiness snapshot status is not_production_complete, not production_ready.'],
+    blocker_groups: [
+      {
+        id: 'external_setup_blockers',
+        title: 'External OneTime setup values or approvals are missing',
+        count: 2,
+        next_action: 'Provide aliases/status only.',
+      },
+    ],
     warnings: [],
     snapshot_summary: { status: 'not_production_complete', production_ready: false },
     operator_unblocker: {
@@ -284,6 +292,8 @@ test('production closeout gate requires production readiness before approved dep
 
   assert.equal(report.ok, false);
   assert.equal(report.production_readiness_gate.ok, false);
+  assert.equal(report.production_readiness_gate.blocker_groups[0].id, 'external_setup_blockers');
+  assert.equal(report.production_readiness_gate.blocker_groups[0].count, 2);
   assert.equal(report.production_readiness_gate.operator_unblocker.markdown_path, 'ops/production-readiness/latest-production-unblocker.md');
   assert.ok(report.production_readiness_gate.next_actions.some((item) => /production:unblocker/.test(item.action)));
   assert.ok(report.blockers.some((blocker) => /Production readiness gate blocked/.test(blocker)));
