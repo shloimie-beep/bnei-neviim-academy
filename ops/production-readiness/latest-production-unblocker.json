@@ -1,21 +1,21 @@
 {
-  "generated_at": "2026-07-09T16:46:38.933Z",
+  "generated_at": "2026-07-09T17:07:42.396Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-09T16:46:32.139Z",
+  "source_snapshot_generated_at": "2026-07-09T17:07:32.972Z",
   "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
   "snapshot_source_kind": "live_no_write_command",
-  "snapshot_git_head": "01eb2537",
-  "snapshot_origin_master": "01eb2537",
-  "snapshot_worktree_clean": true,
+  "snapshot_git_head": "50a2cfa0",
+  "snapshot_origin_master": "50a2cfa0",
+  "snapshot_worktree_clean": false,
   "source_snapshot": {
     "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
     "kind": "live_no_write_command",
-    "generated_at": "2026-07-09T16:46:32.139Z",
-    "git_head": "01eb2537",
-    "origin_master": "01eb2537",
-    "worktree_clean": true,
+    "generated_at": "2026-07-09T17:07:32.972Z",
+    "git_head": "50a2cfa0",
+    "origin_master": "50a2cfa0",
+    "worktree_clean": false,
     "command_exit_code": 0,
     "load_error": ""
   },
@@ -25,6 +25,10 @@
   },
   "summary": {
     "external_setup_item_count": 3,
+    "rabbi_telegram_runtime_status": "local_runtime_ready",
+    "rabbi_telegram_runtime_local_ready": true,
+    "rabbi_telegram_chat_id_configured": true,
+    "rabbi_telegram_candidate_count": 4,
     "agent_mode_proof_count": 2,
     "active_collision_lane_count": 3,
     "chatgpt_queued_count": 0,
@@ -164,6 +168,58 @@
       "verification_after_setup": []
     }
   ],
+  "rabbi_telegram_runtime": {
+    "readiness_path": "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",
+    "chat_id_report_path": ".runtime/rabbi-telegram-chat-id-candidates.json",
+    "readiness_available": true,
+    "runtime_report_available": true,
+    "checked_at": "2026-07-09T17:03:08.412Z",
+    "chat_id_checked_at": "2026-07-09T17:02:53.033Z",
+    "status": "local_runtime_ready",
+    "local_ready": true,
+    "readiness_status": "ready",
+    "readiness_blockers": [],
+    "token_configured": true,
+    "chat_id_configured": true,
+    "ops_username_configured": true,
+    "ops_password_configured": true,
+    "bot_username": "onetimeaios_bot",
+    "candidate_count": 4,
+    "unique_chat_count": 1,
+    "start_command_count": 3,
+    "masked_candidates": [
+      {
+        "chat_id_masked": "******4810",
+        "chat_type": "private",
+        "source": "message",
+        "text_kind": "start_command",
+        "message_date": "2026-07-09T16:57:05.000Z"
+      },
+      {
+        "chat_id_masked": "******4810",
+        "chat_type": "private",
+        "source": "message",
+        "text_kind": "text",
+        "message_date": "2026-07-09T16:57:24.000Z"
+      },
+      {
+        "chat_id_masked": "******4810",
+        "chat_type": "private",
+        "source": "message",
+        "text_kind": "start_command",
+        "message_date": "2026-07-09T16:57:41.000Z"
+      },
+      {
+        "chat_id_masked": "******4810",
+        "chat_type": "private",
+        "source": "message",
+        "text_kind": "start_command",
+        "message_date": "2026-07-09T16:57:44.000Z"
+      }
+    ],
+    "live_delivery_smoke": "not_exercised_by_readiness_report",
+    "next_action": "Do not send a live Telegram smoke automatically. When release gates are otherwise clear and exact live-send scope is approved, run the scoped Rabbi Telegram smoke/worker and record proof."
+  },
   "agent_mode_proofs": [
     {
       "id": "rabbi-telegram-helper-ticket-smoke",
@@ -267,6 +323,7 @@
     "Do not paste raw secrets into chat or tracked repo files; provide aliases, status labels, or keyholder/provider-dashboard confirmation.",
     "Rerun `npm run one-time:setup:check` after Stripe/WAPI/campaign setup changes.",
     "Rerun `npm run one-time:wapi:readiness` after WAPI/Whapi changes.",
+    "Rerun `npm run telegram:rabbi:readiness` and `npm run telegram:rabbi:chat-id` after Rabbi Telegram runtime changes.",
     "Rerun `npm run app:smoke:rabbi-agent-review-proof-readiness` after Agent Mode proof is saved.",
     "Rerun `npm run production:readiness:snapshot` and `npm run production:readiness:gate` after any blocker changes."
   ],
@@ -278,6 +335,8 @@
   ],
   "sources": [
     "node scripts/production-readiness-snapshot.mjs --no-write --json",
+    "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",
+    ".runtime/rabbi-telegram-chat-id-candidates.json",
     "ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json",
     "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json"
   ]

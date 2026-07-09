@@ -153,6 +153,7 @@ function collisionLanes(snapshot = {}) {
 
 function buildBlockerGroups({
   setup_items = [],
+  rabbi_telegram_runtime = {},
   agent_mode_proofs = [],
   active_collision_lanes = [],
   chatgpt_queued_count = 0,
@@ -188,6 +189,24 @@ function buildBlockerGroups({
       count: setup_items.length,
       evidence: setup_items.map((item) => item.id),
       next_action: 'Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.',
+    });
+  }
+  if (rabbi_telegram_runtime.status && rabbi_telegram_runtime.status !== 'local_runtime_ready') {
+    const maskedCandidates = (rabbi_telegram_runtime.masked_candidates || [])
+      .map((candidate) => candidate.chat_id_masked)
+      .filter(Boolean);
+    add({
+      id: 'rabbi_telegram_runtime_configuration',
+      title: 'Rabbi Telegram runtime is not ready',
+      owner: 'Codex / operator',
+      evidence: [
+        `status=${rabbi_telegram_runtime.status}`,
+        `chat_id_configured=${rabbi_telegram_runtime.chat_id_configured === true}`,
+        `candidate_count=${rabbi_telegram_runtime.candidate_count ?? 0}`,
+        `unique_chat_count=${rabbi_telegram_runtime.unique_chat_count ?? 0}`,
+        ...[...new Set(maskedCandidates)].map((candidate) => `masked_candidate=${candidate}`),
+      ],
+      next_action: rabbi_telegram_runtime.next_action || 'Rerun `npm run telegram:rabbi:readiness` and `npm run telegram:rabbi:chat-id`, then update the production readiness snapshot.',
     });
   }
   if (agent_mode_proofs.length) {
@@ -237,6 +256,7 @@ export function buildProductionUnblocker({
   const agent_mode_proofs = proofItemsFromReadiness(proofReadiness);
   const run_blockers = externalRunBlockers(snapshot);
   const active_collision_lanes = collisionLanes(snapshot);
+  const rabbi_telegram_runtime = snapshot.rabbi_telegram_runtime || {};
   const chatgpt_queued_count = Number(snapshot.chatgpt_dropoff?.queued_count || 0);
   const next_unblocked_executable_batch = snapshot.active_run?.next_unblocked_executable_batch || '';
   const snapshot_git_head = snapshot.freshness?.sampled_git_head || snapshot.git?.head || '';
@@ -255,6 +275,15 @@ export function buildProductionUnblocker({
       forbidden: item.forbidden,
       source: 'one_time_setup_checklist',
     })),
+    ...(rabbi_telegram_runtime.status && rabbi_telegram_runtime.status !== 'local_runtime_ready'
+      ? [{
+        id: 'rabbi_telegram_runtime',
+        owner: 'Codex / operator',
+        action: rabbi_telegram_runtime.next_action || 'Finish Rabbi Telegram runtime configuration and rerun readiness.',
+        forbidden: ['Do not paste raw chat IDs, tokens, phone numbers, or private messages into tracked files or chat.', 'Do not send a live Telegram smoke without exact approval.'],
+        source: 'rabbi_telegram_runtime',
+      }]
+      : []),
     ...agent_mode_proofs.map((item) => ({
       id: item.id,
       owner: item.owner,
@@ -265,6 +294,7 @@ export function buildProductionUnblocker({
   ];
   const blocker_groups = buildBlockerGroups({
     setup_items,
+    rabbi_telegram_runtime,
     agent_mode_proofs,
     active_collision_lanes,
     chatgpt_queued_count,
@@ -299,6 +329,10 @@ export function buildProductionUnblocker({
     },
     summary: {
       external_setup_item_count: setup_items.length,
+      rabbi_telegram_runtime_status: rabbi_telegram_runtime.status || 'unknown',
+      rabbi_telegram_runtime_local_ready: rabbi_telegram_runtime.local_ready === true,
+      rabbi_telegram_chat_id_configured: rabbi_telegram_runtime.chat_id_configured === true,
+      rabbi_telegram_candidate_count: rabbi_telegram_runtime.candidate_count ?? null,
       agent_mode_proof_count: agent_mode_proofs.length,
       active_collision_lane_count: active_collision_lanes.length,
       chatgpt_queued_count,
@@ -308,6 +342,7 @@ export function buildProductionUnblocker({
     run_blockers,
     blocker_groups,
     setup_items,
+    rabbi_telegram_runtime,
     agent_mode_proofs,
     active_collision_lanes,
     operator_actions,
@@ -315,6 +350,7 @@ export function buildProductionUnblocker({
       'Do not paste raw secrets into chat or tracked repo files; provide aliases, status labels, or keyholder/provider-dashboard confirmation.',
       'Rerun `npm run one-time:setup:check` after Stripe/WAPI/campaign setup changes.',
       'Rerun `npm run one-time:wapi:readiness` after WAPI/Whapi changes.',
+      'Rerun `npm run telegram:rabbi:readiness` and `npm run telegram:rabbi:chat-id` after Rabbi Telegram runtime changes.',
       'Rerun `npm run app:smoke:rabbi-agent-review-proof-readiness` after Agent Mode proof is saved.',
       'Rerun `npm run production:readiness:snapshot` and `npm run production:readiness:gate` after any blocker changes.',
     ],
@@ -326,9 +362,11 @@ export function buildProductionUnblocker({
     ],
     sources: [
       snapshotSource,
+      rabbi_telegram_runtime.readiness_path,
+      rabbi_telegram_runtime.runtime_report_available ? rabbi_telegram_runtime.chat_id_report_path : '',
       defaultSetupChecklistPath,
       defaultProofPath,
-    ],
+    ].filter(Boolean),
   };
 }
 
@@ -356,6 +394,7 @@ export function renderMarkdown(report = {}) {
     '## What Blocks Production',
     '',
     `- External setup items: ${report.summary.external_setup_item_count}`,
+    `- Rabbi Telegram runtime: ${report.summary.rabbi_telegram_runtime_status || 'unknown'}`,
     `- Agent Mode terminal proof items: ${report.summary.agent_mode_proof_count}`,
     `- Active collision lanes: ${report.summary.active_collision_lane_count}`,
     `- ChatGPT packets queued: ${report.summary.chatgpt_queued_count}`,
@@ -395,6 +434,31 @@ export function renderMarkdown(report = {}) {
       '',
     );
   }
+
+  lines.push('## Rabbi Telegram Runtime', '');
+  const rabbiRuntime = report.rabbi_telegram_runtime || {};
+  lines.push(
+    `Status: ${rabbiRuntime.status || 'unknown'}`,
+    `Local ready: ${rabbiRuntime.local_ready ? 'yes' : 'no'}`,
+    `Readiness report: ${rabbiRuntime.readiness_path || 'unknown'}`,
+    `Chat ID readback report: ${rabbiRuntime.chat_id_report_path || 'unknown'} (${rabbiRuntime.runtime_report_available ? 'available locally' : 'missing locally'})`,
+    `Chat ID configured: ${rabbiRuntime.chat_id_configured ? 'yes' : 'no'}`,
+    `Candidate count: ${rabbiRuntime.candidate_count ?? 'unknown'}`,
+    `Unique masked chat count: ${rabbiRuntime.unique_chat_count ?? 'unknown'}`,
+  );
+  if (rabbiRuntime.masked_candidates?.length) {
+    lines.push('Masked candidates:');
+    for (const candidate of rabbiRuntime.masked_candidates) {
+      lines.push(`  - ${candidate.chat_id_masked} (${candidate.chat_type || 'unknown'}, ${candidate.text_kind || 'unknown'}, ${candidate.message_date || 'no date'})`);
+    }
+  } else {
+    lines.push('Masked candidates:', '  - none');
+  }
+  lines.push(
+    `Live delivery smoke: ${rabbiRuntime.live_delivery_smoke || 'unknown'}`,
+    `Next action: ${rabbiRuntime.next_action || 'No next action recorded.'}`,
+    '',
+  );
 
   lines.push('## Agent Mode Proof To Save', '');
   for (const item of report.agent_mode_proofs || []) {

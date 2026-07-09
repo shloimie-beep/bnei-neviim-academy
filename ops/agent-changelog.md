@@ -36820,3 +36820,43 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
     flag.
 - No WhatsApp, Telegram, WAPI, CRM, provider, credential, Agent Review, or
   production-data mutation was performed.
+
+## 2026-07-09T20:02:00+03:00 - Production Artifacts Refreshed After Blocked Send Record
+
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*`
+  and `ops/production-readiness/latest-production-unblocker.*` from clean
+  pushed head `50a2cfa0`.
+- Snapshot readback confirms status `not_production_complete`, 3 concrete
+  OneTime setup buckets, 0 queued ChatGPT packets, and no bogus `job_*`
+  summary keys.
+- Unblocker readback confirms head/origin `50a2cfa0`, worktree clean `true`, 3
+  external setup buckets, 2 Agent Mode proof blockers, 3 active collision
+  lanes, 0 queued ChatGPT packets, and no unblocked executable batch.
+- Guardrails held: read-only artifact refresh only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.
+
+## 2026-07-09T20:06:00+03:00 - Rabbi Telegram Runtime Reconciled In Readiness Reports
+
+- Reconciled the later approved Rabbi WhatsApp instruction send with the
+  production-readiness register. The earlier no-send block record is preserved
+  as history and superseded by `READINESS-20260709-046`.
+- Updated `REQ-20260709-069`: one WhatsApp instruction send is recorded with
+  redacted evidence, communication row `#2909`, provider status `200`, and
+  message id fingerprint `6497d51fc20f`.
+- Safe readbacks now show no-send Rabbi runtime readiness is local-ready:
+  `npm run telegram:rabbi:readiness` reports Rabbi token, chat ID, and OneTime
+  Operations credentials configured; `npm run telegram:rabbi:chat-id` reports
+  `candidate_count=4`, `unique_chat_count=1`, and masked candidate
+  `******4810`.
+- Added redacted `rabbi_telegram_runtime` output to the production snapshot,
+  gate, and operator unblocker. The gate blocks only if the Rabbi runtime is
+  not locally ready; current blocker groups remain external setup, Agent Mode
+  proof, active collision lanes, and no unblocked executable batch.
+- Focused syntax/tests passed, no-write snapshot privacy readback confirmed
+  raw chat ID did not leak, and no live Telegram message/smoke was performed.
+- Guardrails held: no additional WhatsApp/WAPI message, Telegram send, app UI
+  edit, API feature edit, deploy, merge, external send, payment/access
+  mutation, CRM/provider/DNS/credential mutation, Agent Review result save,
+  Kimi live inference, public publish, or production-data mutation.

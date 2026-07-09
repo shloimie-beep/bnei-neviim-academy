@@ -34,6 +34,19 @@ test('production unblocker builds operator actions from setup and proof blockers
         ],
       },
       chatgpt_dropoff: { queued_count: 0 },
+      rabbi_telegram_runtime: {
+        status: 'candidate_available_config_required',
+        local_ready: false,
+        chat_id_configured: false,
+        candidate_count: 4,
+        unique_chat_count: 1,
+        masked_candidates: [{ chat_id_masked: '******4810', chat_type: 'private', text_kind: 'start_command', message_date: '2026-07-09T16:57:05.000Z' }],
+        readiness_path: 'ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json',
+        chat_id_report_path: '.runtime/rabbi-telegram-chat-id-candidates.json',
+        runtime_report_available: true,
+        live_delivery_smoke: 'not_exercised_by_readiness_report',
+        next_action: 'Verify the intended Rabbi account/group, then configure the chat ID.',
+      },
       generated_at: '2026-07-09T16:13:28.475Z',
       git: { head: '60f1e599', origin_master: '60f1e599', clean: true },
       freshness: {
@@ -97,21 +110,28 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.equal(report.source_snapshot.git_head, '60f1e599');
   assert.equal(report.source_snapshot.worktree_clean, true);
   assert.equal(report.summary.external_setup_item_count, 2);
+  assert.equal(report.summary.rabbi_telegram_runtime_status, 'candidate_available_config_required');
+  assert.equal(report.summary.rabbi_telegram_candidate_count, 4);
   assert.equal(report.summary.agent_mode_proof_count, 1);
   assert.equal(report.summary.active_collision_lane_count, 1);
-  assert.equal(report.summary.blocker_group_count, 4);
+  assert.equal(report.summary.blocker_group_count, 5);
   assert.deepEqual(report.blocker_groups.map((group) => group.id), [
     'no_unblocked_executable_batch',
     'external_setup_blockers',
+    'rabbi_telegram_runtime_configuration',
     'agent_mode_terminal_proof_missing',
     'active_agent_collision_lanes',
   ]);
   assert.equal(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').count, 2);
+  assert.equal(report.blocker_groups.find((group) => group.id === 'rabbi_telegram_runtime_configuration').evidence.includes('masked_candidate=******4810'), true);
   assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 1);
   assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
   assert.deepEqual(report.setup_items.map((item) => item.id), ['SETUP-ONETIME-STRIPE-001', 'SETUP-ONETIME-WHAPI-001']);
   assert.match(markdown, /Owner Action Summary/);
   assert.match(markdown, /external_setup_blockers - External OneTime setup values or approvals are missing/);
+  assert.match(markdown, /rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not ready/);
+  assert.match(markdown, /Rabbi Telegram Runtime/);
+  assert.match(markdown, /\*\*\*\*\*\*4810/);
   assert.match(markdown, /agent_mode_terminal_proof_missing - Rabbi Agent Review terminal proof is missing/);
   assert.match(markdown, /Rabbi Stripe sandbox/);
   assert.match(markdown, /Whapi\/WAPI provider details/);

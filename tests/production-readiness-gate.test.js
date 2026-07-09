@@ -44,6 +44,14 @@ function readySnapshot(overrides = {}) {
       operator_blocker_count: 0,
       operator_blocker_items: [],
     },
+    rabbi_telegram_runtime: {
+      status: 'local_runtime_ready',
+      local_ready: true,
+      chat_id_configured: true,
+      candidate_count: 1,
+      unique_chat_count: 1,
+      masked_candidates: [{ chat_id_masked: '******4810', chat_type: 'private', text_kind: 'start_command' }],
+    },
     chatgpt_dropoff: { queued_count: 0 },
     rabbi_agent_review: { remaining_blocker_count: 0 },
     next_actions: [],
@@ -103,6 +111,15 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
         { id: 'SETUP-ONETIME-CAMPAIGN-001', title: 'Campaign seed / real campaign' },
       ],
     },
+    rabbi_telegram_runtime: {
+      status: 'candidate_available_config_required',
+      local_ready: false,
+      chat_id_configured: false,
+      candidate_count: 4,
+      unique_chat_count: 1,
+      masked_candidates: [{ chat_id_masked: '******4810', chat_type: 'private', text_kind: 'start_command' }],
+      next_action: 'Verify the intended Rabbi account/group, then configure the chat ID.',
+    },
     chatgpt_dropoff: { queued_count: 1 },
     rabbi_agent_review: { remaining_blocker_count: 2 },
   });
@@ -115,17 +132,22 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   assert.match(text, /Stripe\/WAPI\/campaign/);
   assert.match(text, /dirty/);
   assert.match(text, /REQ-20260702-108/);
+  assert.match(text, /Rabbi Telegram runtime is candidate_available_config_required/);
   assert.match(text, /Rabbi Agent Review proof has 2/);
   assert.match(text, /ChatGPT dropoff queue has 1/);
   assert.match(text, /job #382/);
   assert.equal(report.snapshot_summary.active_run_blocker_count, 1);
   assert.equal(report.snapshot_summary.external_setup_item_count, 3);
-  assert.equal(report.snapshot_summary.blocker_group_count, 7);
+  assert.equal(report.snapshot_summary.blocker_group_count, 8);
+  assert.equal(report.snapshot_summary.rabbi_telegram_runtime_status, 'candidate_available_config_required');
+  assert.equal(report.snapshot_summary.rabbi_telegram_chat_id_configured, false);
+  assert.equal(report.snapshot_summary.rabbi_telegram_candidate_count, 4);
   assert.deepEqual(report.blocker_groups.map((group) => group.id), [
     'snapshot_not_production_ready',
     'dirty_worktree',
     'no_unblocked_executable_batch',
     'external_setup_blockers',
+    'rabbi_telegram_runtime_configuration',
     'agent_mode_terminal_proof_missing',
     'chatgpt_dropoff_queue_ready',
     'active_agent_collision_lanes',
@@ -137,6 +159,13 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
     'SETUP-ONETIME-CAMPAIGN-001',
   ]);
   assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 2);
+  assert.deepEqual(report.blocker_groups.find((group) => group.id === 'rabbi_telegram_runtime_configuration').evidence, [
+    'status=candidate_available_config_required',
+    'chat_id_configured=false',
+    'candidate_count=4',
+    'unique_chat_count=1',
+    'masked_candidate=******4810',
+  ]);
   assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
   assert.match(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').next_action, /Stripe/);
   assert.ok(report.next_actions.some((item) => /production:unblocker/.test(item.action)));
@@ -173,6 +202,17 @@ test('production readiness snapshot includes OneTime setup bucket summary', () =
   assert.match(script, /OneTime Setup Buckets/);
   assert.match(script, /one-time-mishnah\/launch-unblocker\/2026-07-02-operator-external-setup-checklist\.json/);
   assert.match(script, /Operator blocker count/);
+});
+
+test('production readiness snapshot includes redacted Rabbi Telegram runtime summary', () => {
+  const script = fs.readFileSync(path.join(repoRoot, 'scripts', 'production-readiness-snapshot.mjs'), 'utf8');
+
+  assert.match(script, /rabbi_telegram_runtime/);
+  assert.match(script, /Rabbi Telegram Runtime/);
+  assert.match(script, /rabbi-telegram-chat-id-candidates\.json/);
+  assert.match(script, /chat_id_masked/);
+  assert.match(script, /maskSensitiveId/);
+  assert.doesNotMatch(script, /chat_id:\s*candidate\.chat_id/);
 });
 
 test('production readiness snapshot parser keeps colon job titles out of summary keys', async () => {

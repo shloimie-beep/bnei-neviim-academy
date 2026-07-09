@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T16:50:39.400Z
+# Production Readiness Snapshot - 2026-07-09T17:07:32.829Z
 
 Result: not_production_complete
 Production ready: no
@@ -14,15 +14,15 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: ece52fe4
-- origin/master: ece52fe4
-- Worktree clean when sampled: yes
+- HEAD: 50a2cfa0
+- origin/master: 50a2cfa0
+- Worktree clean when sampled: no
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: ece52fe4
-- Sampled origin/master: ece52fe4
-- Sampled worktree clean: yes
+- Sampled git head: 50a2cfa0
+- Sampled origin/master: 50a2cfa0
+- Sampled worktree clean: no
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
 
@@ -46,11 +46,28 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
 - SETUP-ONETIME-CAMPAIGN-001: Campaign seed / real campaign (blocked_external_input). Required: final_campaign_copy, exact_recipient_segment_or_list_source, suppression_unsubscribe_proof, final_join_member_links, seed_recipient_sdratler_gmail, explicit_seed_packet_approval, separate_explicit_real_send_command_if_seed_passes
 
+## Rabbi Telegram Runtime
+- Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
+- Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (available locally)
+- Status: local_runtime_ready
+- Local ready: yes
+- Token configured: yes
+- Chat ID configured: yes
+- Ops credentials configured: yes
+- Candidate count: 4
+- Unique masked chat count: 1
+- Candidate: ******4810 (private, start_command, 2026-07-09T16:57:05.000Z)
+- Candidate: ******4810 (private, text, 2026-07-09T16:57:24.000Z)
+- Candidate: ******4810 (private, start_command, 2026-07-09T16:57:41.000Z)
+- Candidate: ******4810 (private, start_command, 2026-07-09T16:57:44.000Z)
+- Live delivery smoke: not_exercised_by_readiness_report
+- Next: Do not send a live Telegram smoke automatically. When release gates are otherwise clear and exact live-send scope is approved, run the scoped Rabbi Telegram smoke/worker and record proof.
+
 ## Agent Fleet
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 22, stale 430, blocked 124, unknown 193, do-not-redo 878
+- Queue health: fresh 20, stale 434, blocked 126, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -87,15 +104,18 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 2. Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane: Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks.
 3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
 4. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
-5. Codex / agent fleet: Do not overlap broad UI file edits while job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish remains active; inspect its result packet before starting the next UI batch.
-6. Codex / agent fleet: Do not overlap Agent Review proof/result repair work while job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 remains active; inspect its result packet before saving or reconciling Agent Review terminal proof.
-7. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
+5. Codex / operator: Rabbi Telegram local runtime is ready by no-send check; defer any live-send smoke until release gates are otherwise clear and exact send scope is approved.
+6. Codex / agent fleet: Do not overlap broad UI file edits while job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish remains active; inspect its result packet before starting the next UI batch.
+7. Codex / agent fleet: Do not overlap Agent Review proof/result repair work while job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 remains active; inspect its result packet before saving or reconciling Agent Review terminal proof.
+8. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
 
 ## Evidence
 - tasks-pending/2026-07-09-production-readiness-goal.md
 - ops/production-readiness/latest-production-readiness-snapshot.md
 - ops/production-readiness/latest-production-readiness-snapshot.json
 - ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json
+- ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
+- .runtime/rabbi-telegram-chat-id-candidates.json
 - ops/agent-fleet-hardening/latest-agent-fleet-readiness.json
 - ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
 - ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md

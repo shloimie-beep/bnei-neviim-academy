@@ -127,7 +127,9 @@ production-ready when these classes are green or precisely blocked:
 | READINESS-20260709-041 | Done / no deploy performed | Codex | GitHub-visible production unblocker artifacts needed to align with the current snapshot/gate head after setup bucket reporting landed. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `01eb2537`; readback shows status `not_production_complete`, 4 blocker groups, 3 external setup buckets, 2 Agent Mode proof blockers, 3 active collision lanes, 0 queued ChatGPT packets, and no executable batch. |
 | READINESS-20260709-042 | Done / no deploy performed | Codex | The production readiness snapshot parser could misclassify active policy job rows with colons in their titles as summary keys, adding noisy bogus fields such as a failed UI job title under `agent_fleet.summary`. | Exported and tightened `parseFleetStatus` so summary parsing stops after the active-policy section begins and job rows are parsed only as jobs; added a regression test using a failed UI job with a colon in the title. |
 | READINESS-20260709-043 | Done / no deploy performed | Codex | GitHub-visible production snapshot artifacts needed to reflect the hardened fleet parser after `READINESS-20260709-042` was pushed. | Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*` from clean pushed head `ece52fe4`; JSON readback shows no bogus `job_408...` summary key, 8 active policy jobs, 3 concrete setup buckets, 3 launch collision lanes, 0 queued ChatGPT packets, and no executable batch. |
-| READINESS-20260709-044 | Blocked / no external send performed | Codex | A new contact-private intake asks to WhatsApp Rabbi Elie the OneTime Telegram bot instructions so his Telegram chat ID can be captured. | Registered the request redacted as `REQ-20260709-069`, reran no-send Telegram/WAPI preflights, and kept the WhatsApp send blocked because OneTime WAPI sender instance/phone metadata and approval flags are not auditable and the Telegram bot still has 0 chat candidates. |
+| READINESS-20260709-044 | Superseded by `READINESS-20260709-046` | Codex | A new contact-private intake asks to WhatsApp Rabbi Elie the OneTime Telegram bot instructions so his Telegram chat ID can be captured. | Historical preflight record at `50a2cfa0`: the request was registered redacted as `REQ-20260709-069`, no-send Telegram/WAPI preflights ran, and the send was kept blocked at that moment because WAPI sender metadata/approval was not auditable and the Telegram bot had 0 candidates. A later lane performed the approved WhatsApp send and local no-send readiness now reports the Rabbi runtime ready; use `READINESS-20260709-046` for current state. |
+| READINESS-20260709-045 | Done / no deploy performed | Codex | GitHub-visible production snapshot and unblocker artifacts needed to align with the latest redacted blocked-send record at `50a2cfa0`. | Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*` and `latest-production-unblocker.*` from clean pushed head `50a2cfa0`; readback shows status `not_production_complete`, 3 concrete setup buckets, 2 Agent Mode proof blockers, 3 active collision lanes, 0 queued ChatGPT packets, no executable batch, and no bogus fleet summary keys. |
+| READINESS-20260709-046 | Done / no deploy performed / live send gated | Codex | The production-readiness tooling and registers needed to reflect the current Rabbi Telegram state after the approved WhatsApp instruction send and post-send bot readback. | Added redacted `rabbi_telegram_runtime` output to the production snapshot/gate/unblocker, updated tests, reconciled `REQ-20260709-069`, and recorded that no-send readiness is now local-runtime-ready with masked candidate `******4810`; live Rabbi Telegram send/smoke remains gated until release gates are otherwise clear and exact live-send scope is approved. |
 
 ## First audit command plan
 
@@ -2104,6 +2106,14 @@ Remaining:
 
 ## READINESS-20260709-044 closeout
 
+Supersession note:
+
+- This was the correct no-send state at the time of commit `50a2cfa0`.
+- It is superseded for current launch decisions by
+  `READINESS-20260709-046`, because a later lane performed the approved
+  WhatsApp instruction send and no-send Rabbi runtime readiness now reports
+  local ready.
+
 Implemented:
 
 - Inspected contact-private local intake `RAW-20260709-012` without committing
@@ -2142,9 +2152,130 @@ Guardrails:
 
 Remaining:
 
-- To clear this item, either Rabbi/the intended Telegram group must message
-  `t.me/onetimeaios_bot`, or the OneTime WAPI sender metadata/approval must be
-  made auditable before a single approved WhatsApp instruction can be sent.
+- Use `READINESS-20260709-046` for current state.
+
+## READINESS-20260709-045 closeout
+
+Implemented:
+
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.md`.
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.json`.
+- Regenerated `ops/production-readiness/latest-production-unblocker.md`.
+- Regenerated `ops/production-readiness/latest-production-unblocker.json`.
+
+Verification:
+
+- PASS `npm run production:readiness:snapshot` from clean pushed head
+  `50a2cfa0`.
+- PASS `npm run production:unblocker` from clean pushed head `50a2cfa0`.
+- Snapshot JSON readback showed:
+  - `sampled_git_head: 50a2cfa0`
+  - `sampled_origin_master: 50a2cfa0`
+  - `sampled_worktree_clean: true`
+  - status `not_production_complete`
+  - 3 concrete OneTime setup buckets
+  - 0 queued ChatGPT packets
+  - no bogus `job_*` summary keys
+- Unblocker JSON readback showed:
+  - `snapshot_git_head: 50a2cfa0`
+  - `snapshot_origin_master: 50a2cfa0`
+  - `snapshot_worktree_clean: true`
+  - 3 external setup buckets
+  - 2 Agent Mode proof blockers
+  - 3 active collision lanes
+  - 0 queued ChatGPT packets
+  - no unblocked executable batch
+
+Evidence:
+
+- `ops/production-readiness/latest-production-readiness-snapshot.md`
+- `ops/production-readiness/latest-production-readiness-snapshot.json`
+- `ops/production-readiness/latest-production-unblocker.md`
+- `ops/production-readiness/latest-production-unblocker.json`
+
+Guardrails:
+
+- Read-only artifact refresh only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- Production remains blocked by external setup, missing terminal Agent Mode
+  proof, active UI/API/Agent Review collision lanes, and no unblocked
+  executable batch.
+
+## READINESS-20260709-046 closeout
+
+Implemented:
+
+- Added redacted `rabbi_telegram_runtime` summary output to
+  `scripts/production-readiness-snapshot.mjs`.
+- Updated `scripts/production-readiness-gate.mjs` so Rabbi runtime is a
+  blocker only when it is not locally ready.
+- Updated `scripts/production-unblocker.mjs` so the operator packet shows the
+  Rabbi runtime state and only creates an operator action when configuration is
+  still needed.
+- Reconciled `REQ-20260709-069` in
+  `tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md`.
+- Updated redacted evidence in memory/raw/access records for
+  `RAW-20260709-012`.
+
+Verification:
+
+- PASS `node --check scripts/production-readiness-snapshot.mjs`.
+- PASS `node --check scripts/production-readiness-gate.mjs`.
+- PASS `node --check scripts/production-unblocker.mjs`.
+- PASS `node --test tests/production-readiness-gate.test.js tests/production-unblocker.test.js`.
+- PASS `npm run telegram:rabbi:readiness`; no external write performed,
+  Rabbi runtime status `ready`, token/chat ID/OneTime Operations credentials
+  configured.
+- PASS `npm run telegram:rabbi:chat-id`; no Telegram message sent, no token
+  printed, bot resolves as `onetimeaios_bot`, `candidate_count=4`,
+  `unique_chat_count=1`, masked candidate `******4810`.
+- PASS no-write production snapshot privacy readback: `raw_chat_id_leaked:
+  false`, `rabbi_runtime_status: local_runtime_ready`,
+  `chat_id_configured: true`, `candidate_count: 4`.
+- EXPECTED BLOCKED `node scripts/production-readiness-gate.mjs --allow-dirty
+  --json`: no Rabbi runtime blocker; still blocked by external setup, two
+  Agent Mode proof blockers, three active collision lanes, and no executable
+  batch.
+- PASS `node scripts/production-unblocker.mjs --no-write --json`: no Rabbi
+  runtime operator-action blocker; summary shows
+  `rabbi_telegram_runtime_status: local_runtime_ready`.
+
+Evidence:
+
+- `scripts/production-readiness-snapshot.mjs`
+- `scripts/production-readiness-gate.mjs`
+- `scripts/production-unblocker.mjs`
+- `tests/production-readiness-gate.test.js`
+- `tests/production-unblocker.test.js`
+- `tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md`
+- `raw-input/RAW-20260709-012-rabbi-telegram-bot-whatsapp-instructions.md`
+- `ops/access/2026-07-09-rabbi-telegram-bot-whatsapp-instructions.md`
+- `ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md`
+
+Guardrails:
+
+- No live Telegram message or live Telegram smoke was performed.
+- No additional WhatsApp/WAPI message was sent by this reconciliation.
+- No raw chat ID, token, full phone number, private message body, payment data,
+  or access link was committed.
+- No app UI edit, API feature edit, deploy, merge, release, payment/access
+  mutation, CRM/provider/DNS/credential mutation, Agent Review result save,
+  Kimi live inference, public publish, or production-data mutation was
+  performed.
+
+Remaining:
+
+- Live Rabbi Telegram delivery/smoke remains gated until release gates are
+  otherwise clear and exact live-send scope is approved.
+- Production remains blocked by external Stripe/WAPI/campaign setup, missing
+  terminal Agent Mode proof, active UI/API/Agent Review collision lanes, and no
+  unblocked executable batch.
 
 ## Final audit
 
@@ -2155,4 +2286,4 @@ Remaining:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied / deployed / live-smoked | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register; `LEADCAP-20260709-009` closeout above. | Lead capture live-smoked in prior closeout; dry-run proof tests, full suite, deployment, and live smoke pass. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, `LAUNCHBLOCK-20260709-016`, `PROOFSTATE-20260709-017`, and `READINESS-20260709-018` through `READINESS-20260709-044` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. Rabbi Agent Review proof readiness now has a tracked latest summary and still confirms two missing terminal AGR proofs. The production readiness snapshot now gives a single tracked latest control-tower readback for blockers, active jobs, ChatGPT queue, proof state, next actions, agent-fleet auto-deploy preflight, and concrete OneTime setup buckets. It labels itself as sampled evidence rather than live telemetry, has a blocking gate command for release/readiness claims, is enforced by `bna:release-gate` deploy/live/final modes, and now blocks agent-fleet auto-deploy before any deploy command can run. The production gates and unblocker now expose grouped owner/action blocker categories while preserving detailed blocker evidence, tracked artifacts show the three concrete OneTime setup bucket IDs from clean pushed heads, the tracked snapshot artifact no longer lets colon-title job rows pollute `agent_fleet.summary`, and the new contact-private Rabbi WhatsApp instruction request is blocked with no-send proof until WAPI sender metadata/approval is auditable. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, `LAUNCHBLOCK-20260709-016`, `PROOFSTATE-20260709-017`, and `READINESS-20260709-018` through `READINESS-20260709-046` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. Rabbi Agent Review proof readiness now has a tracked latest summary and still confirms two missing terminal AGR proofs. The production readiness snapshot now gives a single tracked latest control-tower readback for blockers, active jobs, ChatGPT queue, proof state, next actions, agent-fleet auto-deploy preflight, concrete OneTime setup buckets, and redacted Rabbi Telegram runtime state. It labels itself as sampled evidence rather than live telemetry, has a blocking gate command for release/readiness claims, is enforced by `bna:release-gate` deploy/live/final modes, and now blocks agent-fleet auto-deploy before any deploy command can run. The production gates and unblocker now expose grouped owner/action blocker categories while preserving detailed blocker evidence, tracked artifacts show the three concrete OneTime setup bucket IDs from clean pushed heads, the tracked snapshot artifact no longer lets colon-title job rows pollute `agent_fleet.summary`, and the Rabbi WhatsApp instruction lane now shows one approved WhatsApp sent, masked Telegram candidate available, and local no-send Rabbi runtime ready without exposing raw chat ID. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime external setup, terminal Agent Mode saved proof, currently running app-wide UI/API/Agent Review lanes, and live Rabbi Telegram send/smoke approval remain the active non-code/autonomy blockers. |

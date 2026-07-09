@@ -1,13 +1,14 @@
-# Production Unblocker - 2026-07-09T16:46:38.933Z
+# Production Unblocker - 2026-07-09T17:07:42.396Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-09T16:46:32.139Z
-Snapshot git head: 01eb2537 (origin/master: 01eb2537, worktree clean: yes)
+Source snapshot generated at: 2026-07-09T17:07:32.972Z
+Snapshot git head: 50a2cfa0 (origin/master: 50a2cfa0, worktree clean: no)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 ## What Blocks Production
 - External setup items: 3
+- Rabbi Telegram runtime: local_runtime_ready
 - Agent Mode terminal proof items: 2
 - Active collision lanes: 3
 - ChatGPT packets queued: 0
@@ -92,6 +93,21 @@ Forbidden in this packet:
   - real_campaign_send_from_this_checklist
 Verification after setup:
   - Rerun the relevant readiness command.
+## Rabbi Telegram Runtime
+Status: local_runtime_ready
+Local ready: yes
+Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
+Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (available locally)
+Chat ID configured: yes
+Candidate count: 4
+Unique masked chat count: 1
+Masked candidates:
+  - ******4810 (private, start_command, 2026-07-09T16:57:05.000Z)
+  - ******4810 (private, text, 2026-07-09T16:57:24.000Z)
+  - ******4810 (private, start_command, 2026-07-09T16:57:41.000Z)
+  - ******4810 (private, start_command, 2026-07-09T16:57:44.000Z)
+Live delivery smoke: not_exercised_by_readiness_report
+Next action: Do not send a live Telegram smoke automatically. When release gates are otherwise clear and exact live-send scope is approved, run the scoped Rabbi Telegram smoke/worker and record proof.
 ## Agent Mode Proof To Save
 ### rabbi-telegram-helper-ticket-smoke
 Owner: Shloimie / Agent Mode runner
@@ -115,6 +131,7 @@ Required result: save terminal PASS, FAIL, or BLOCKED proof for only this prompt
 - Do not paste raw secrets into chat or tracked repo files; provide aliases, status labels, or keyholder/provider-dashboard confirmation.
 - Rerun `npm run one-time:setup:check` after Stripe/WAPI/campaign setup changes.
 - Rerun `npm run one-time:wapi:readiness` after WAPI/Whapi changes.
+- Rerun `npm run telegram:rabbi:readiness` and `npm run telegram:rabbi:chat-id` after Rabbi Telegram runtime changes.
 - Rerun `npm run app:smoke:rabbi-agent-review-proof-readiness` after Agent Mode proof is saved.
 - Rerun `npm run production:readiness:snapshot` and `npm run production:readiness:gate` after any blocker changes.
 ## Guardrails
@@ -124,5 +141,7 @@ Required result: save terminal PASS, FAIL, or BLOCKED proof for only this prompt
 - Immediate lead capture/free-class lane remains live; full payment/access/campaign automation remains blocked until these items are cleared and verified.
 ## Sources
 - node scripts/production-readiness-snapshot.mjs --no-write --json
+- ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
+- .runtime/rabbi-telegram-chat-id-candidates.json
 - ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
 - ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json

@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-07-09T16:53:38.889Z",
+  "checked_at": "2026-07-09T17:03:08.412Z",
   "external_write_performed": false,
   "notification_config": {
     "ticket_alerts_enabled": false,
@@ -14,18 +14,16 @@
       "workspace_key": "rabbi_sheller_provider",
       "project_key": "one_time_mishnah_class",
       "token_configured": true,
-      "chat_id_configured": false,
+      "chat_id_configured": true,
       "ops_username_configured": true,
       "ops_password_configured": true,
-      "ready": false
+      "ready": true
     }
   },
   "rabbi_telegram": {
-    "ready": false,
-    "status": "blocked_missing_runtime_config",
-    "blockers": [
-      "TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER is not configured."
-    ],
+    "ready": true,
+    "status": "ready",
+    "blockers": [],
     "expected_profile": "rabbi-elie-scheller",
     "expected_command": "npm run telegram:rabbi",
     "expected_workspace_key": "rabbi_sheller_provider",
@@ -35,10 +33,10 @@
       "workspace_key": "rabbi_sheller_provider",
       "project_key": "one_time_mishnah_class",
       "token_configured": true,
-      "chat_id_configured": false,
+      "chat_id_configured": true,
       "ops_username_configured": true,
       "ops_password_configured": true,
-      "ready": false
+      "ready": true
     }
   },
   "ticket_alert_dry_run": {
@@ -60,10 +58,10 @@
         "workspace_key": "rabbi_sheller_provider",
         "project_key": "one_time_mishnah_class",
         "token_configured": true,
-        "chat_id_configured": false,
+        "chat_id_configured": true,
         "ops_username_configured": true,
         "ops_password_configured": true,
-        "ready": false
+        "ready": true
       }
     }
   },
@@ -86,10 +84,10 @@
         "workspace_key": "rabbi_sheller_provider",
         "project_key": "one_time_mishnah_class",
         "token_configured": true,
-        "chat_id_configured": false,
+        "chat_id_configured": true,
         "ops_username_configured": true,
         "ops_password_configured": true,
-        "ready": false
+        "ready": true
       }
     }
   }

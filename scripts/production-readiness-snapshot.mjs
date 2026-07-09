@@ -9,6 +9,8 @@ const outputDir = path.join(repoRoot, 'ops', 'production-readiness');
 const latestJsonPath = path.join(outputDir, 'latest-production-readiness-snapshot.json');
 const latestMdPath = path.join(outputDir, 'latest-production-readiness-snapshot.md');
 const oneTimeSetupChecklistPath = 'ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json';
+const rabbiTelegramReadinessPath = 'ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json';
+const rabbiChatIdRuntimeReportPath = '.runtime/rabbi-telegram-chat-id-candidates.json';
 const args = new Set(process.argv.slice(2));
 const shouldWrite = !args.has('--no-write');
 const shouldPrintJson = args.has('--json');
@@ -286,7 +288,83 @@ function summarizeOneTimeSetupChecklist() {
   };
 }
 
-function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, oneTimeSetup }) {
+function maskSensitiveId(value = '') {
+  const normalized = String(value || '').trim();
+  if (!normalized) return '';
+  const lastFour = normalized.slice(-4);
+  return `${'*'.repeat(Math.max(0, normalized.length - 4))}${lastFour}`;
+}
+
+function summarizeRabbiTelegramRuntime() {
+  const readiness = readJsonIfExists(rabbiTelegramReadinessPath);
+  const runtimeReport = readJsonIfExists(rabbiChatIdRuntimeReportPath);
+  const config = readiness?.rabbi_telegram?.config || readiness?.notification_config?.rabbi_elie_scheller || {};
+  const tokenConfigured = config.token_configured === true;
+  const chatIdConfigured = config.chat_id_configured === true;
+  const opsUsernameConfigured = config.ops_username_configured === true;
+  const opsPasswordConfigured = config.ops_password_configured === true;
+  const localReady = readiness?.rabbi_telegram?.ready === true || (
+    tokenConfigured &&
+    chatIdConfigured &&
+    opsUsernameConfigured &&
+    opsPasswordConfigured
+  );
+  const candidates = Array.isArray(runtimeReport?.candidates)
+    ? runtimeReport.candidates.map((candidate) => ({
+      chat_id_masked: candidate.chat_id_masked || maskSensitiveId(candidate.chat_id),
+      chat_type: candidate.chat?.type || candidate.chat_type || '',
+      source: candidate.source || '',
+      text_kind: candidate.text_kind || '',
+      message_date: candidate.message_date || '',
+    })).filter((candidate) => candidate.chat_id_masked)
+    : [];
+  const uniqueMasked = [...new Set(candidates.map((candidate) => candidate.chat_id_masked).filter(Boolean))];
+  const candidateCount = Number(runtimeReport?.candidate_count ?? candidates.length ?? 0);
+  const uniqueChatCount = Number(runtimeReport?.unique_chat_count ?? uniqueMasked.length ?? 0);
+  const startCommandCount = Number(runtimeReport?.start_command_count ?? candidates.filter((candidate) => candidate.text_kind === 'start_command').length ?? 0);
+  let status = 'unknown';
+  let nextAction = 'Run `npm run telegram:rabbi:readiness` and `npm run telegram:rabbi:chat-id` before making a launch claim.';
+
+  if (localReady) {
+    status = 'local_runtime_ready';
+    nextAction = 'Do not send a live Telegram smoke automatically. When release gates are otherwise clear and exact live-send scope is approved, run the scoped Rabbi Telegram smoke/worker and record proof.';
+  } else if (candidateCount > 0 || uniqueChatCount > 0) {
+    status = 'candidate_available_config_required';
+    nextAction = 'Verify the intended Rabbi account/group in the ignored runtime report, set `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` in local/hosted runtime config, rerun readiness, then live-smoke only with explicit send approval.';
+  } else if (!tokenConfigured) {
+    status = 'blocked_missing_bot_token';
+    nextAction = 'Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.';
+  } else if (!chatIdConfigured) {
+    status = 'blocked_missing_chat_id';
+    nextAction = 'Ask the intended Rabbi account/group to message `t.me/onetimeaios_bot`, rerun `npm run telegram:rabbi:chat-id`, then configure the verified chat ID through secret-safe runtime config.';
+  }
+
+  return {
+    readiness_path: rabbiTelegramReadinessPath,
+    chat_id_report_path: rabbiChatIdRuntimeReportPath,
+    readiness_available: Boolean(readiness),
+    runtime_report_available: Boolean(runtimeReport),
+    checked_at: readiness?.checked_at || '',
+    chat_id_checked_at: runtimeReport?.checked_at || '',
+    status,
+    local_ready: localReady,
+    readiness_status: readiness?.rabbi_telegram?.status || 'unknown',
+    readiness_blockers: Array.isArray(readiness?.rabbi_telegram?.blockers) ? readiness.rabbi_telegram.blockers : [],
+    token_configured: tokenConfigured,
+    chat_id_configured: chatIdConfigured,
+    ops_username_configured: opsUsernameConfigured,
+    ops_password_configured: opsPasswordConfigured,
+    bot_username: runtimeReport?.bot?.username || '',
+    candidate_count: candidateCount,
+    unique_chat_count: uniqueChatCount,
+    start_command_count: startCommandCount,
+    masked_candidates: candidates,
+    live_delivery_smoke: 'not_exercised_by_readiness_report',
+    next_action: nextAction,
+  };
+}
+
+function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, oneTimeSetup, rabbiTelegramRuntime }) {
   const activeUiLane = fleet.active_policy_jobs.find((job) =>
     /app-wide BNA brand shell|million-dollar SaaS UI polish|One Time provider UI|route-role mapping|View-as navigation/i.test(job.title)
   );
@@ -295,6 +373,7 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, one
   const queuedDropoffs = Number(chatgpt?.queued_count || 0);
   const missingProofCount = Number(proof.remaining_blocker_count || 0);
   const hasExternalBlockers = blockers.length > 0 || Number(oneTimeSetup?.operator_blocker_count || 0) > 0;
+  const rabbiTelegramRuntimeBlocked = rabbiTelegramRuntime?.status && rabbiTelegramRuntime.status !== 'local_runtime_ready';
   const noNextBatch = activeRun.work_remains === true && /none/i.test(activeRun.next_unblocked_executable_batch || '');
   const avoidCollidingWith = [];
   const seenCollisionKeys = new Set();
@@ -306,6 +385,7 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, one
   }
   const reason = [
     hasExternalBlockers ? 'full OneTime launch has external Stripe/WAPI/campaign blockers' : '',
+    rabbiTelegramRuntimeBlocked ? `Rabbi Telegram runtime is ${rabbiTelegramRuntime.status}` : '',
     missingProofCount > 0 ? 'Rabbi Agent Review still needs terminal Agent Mode proof' : '',
     activeUiLane ? 'broad UI lane is already active in another agent job' : '',
     activeFallbackLane ? 'fallback/API lane is already active in another agent job' : '',
@@ -339,7 +419,7 @@ function buildFreshness(git) {
   };
 }
 
-function buildNextActions({ blockers, proof, fleet }) {
+function buildNextActions({ blockers, proof, fleet, rabbiTelegramRuntime }) {
   const actions = [];
   for (const blocker of blockers) {
     actions.push({
@@ -353,6 +433,19 @@ function buildNextActions({ blockers, proof, fleet }) {
       owner: 'Shloimie / Agent Mode runner',
       action: `Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: ${promptUrl}`,
       source: 'rabbi_agent_review_proof',
+    });
+  }
+  if (rabbiTelegramRuntime?.status && rabbiTelegramRuntime.status !== 'local_runtime_ready') {
+    actions.push({
+      owner: 'Codex / operator',
+      action: rabbiTelegramRuntime.next_action,
+      source: 'rabbi_telegram_runtime',
+    });
+  } else if (rabbiTelegramRuntime?.status === 'local_runtime_ready') {
+    actions.push({
+      owner: 'Codex / operator',
+      action: 'Rabbi Telegram local runtime is ready by no-send check; defer any live-send smoke until release gates are otherwise clear and exact send scope is approved.',
+      source: 'rabbi_telegram_runtime',
     });
   }
   const uiLane = fleet.active_policy_jobs.find((job) => /app-wide BNA brand shell|million-dollar SaaS UI polish/i.test(job.title));
@@ -444,6 +537,24 @@ function renderMarkdown(report) {
       )
       : ['- No setup checklist operator blockers reported.']),
     '',
+    '## Rabbi Telegram Runtime',
+    `- Readiness report: ${report.rabbi_telegram_runtime.readiness_path || 'unknown'}`,
+    `- Chat ID readback report: ${report.rabbi_telegram_runtime.chat_id_report_path || 'unknown'} (${report.rabbi_telegram_runtime.runtime_report_available ? 'available locally' : 'missing locally'})`,
+    `- Status: ${report.rabbi_telegram_runtime.status || 'unknown'}`,
+    `- Local ready: ${report.rabbi_telegram_runtime.local_ready ? 'yes' : 'no'}`,
+    `- Token configured: ${report.rabbi_telegram_runtime.token_configured ? 'yes' : 'no'}`,
+    `- Chat ID configured: ${report.rabbi_telegram_runtime.chat_id_configured ? 'yes' : 'no'}`,
+    `- Ops credentials configured: ${report.rabbi_telegram_runtime.ops_username_configured && report.rabbi_telegram_runtime.ops_password_configured ? 'yes' : 'no'}`,
+    `- Candidate count: ${report.rabbi_telegram_runtime.candidate_count ?? 'unknown'}`,
+    `- Unique masked chat count: ${report.rabbi_telegram_runtime.unique_chat_count ?? 'unknown'}`,
+    ...(report.rabbi_telegram_runtime.masked_candidates?.length
+      ? report.rabbi_telegram_runtime.masked_candidates.map((candidate) =>
+        `- Candidate: ${candidate.chat_id_masked} (${candidate.chat_type || 'unknown'}, ${candidate.text_kind || 'unknown'}, ${candidate.message_date || 'no date'})`
+      )
+      : ['- No masked chat candidates reported.']),
+    `- Live delivery smoke: ${report.rabbi_telegram_runtime.live_delivery_smoke || 'unknown'}`,
+    `- Next: ${report.rabbi_telegram_runtime.next_action || 'unknown'}`,
+    '',
     '## Agent Fleet',
     `- Supervisor: ${report.agent_fleet.summary.supervisor || 'unknown'}`,
     `- Claimable observable jobs: ${report.agent_fleet.summary.claimable_observable_jobs || 'unknown'}`,
@@ -514,6 +625,7 @@ function main() {
   const rabbiAgentReview = summarizeProofState();
   const agentFleetReadiness = summarizeAgentFleetReadiness();
   const oneTimeSetup = summarizeOneTimeSetupChecklist();
+  const rabbiTelegramRuntime = summarizeRabbiTelegramRuntime();
   const assessment = buildLaunchAssessment({
     activeRun,
     blockers: activeRun.blockers,
@@ -521,6 +633,7 @@ function main() {
     chatgpt: chatgptDropoff,
     proof: rabbiAgentReview,
     oneTimeSetup,
+    rabbiTelegramRuntime,
   });
 
   const report = {
@@ -533,6 +646,7 @@ function main() {
     agent_fleet: agentFleet,
     agent_fleet_readiness: agentFleetReadiness,
     one_time_setup: oneTimeSetup,
+    rabbi_telegram_runtime: rabbiTelegramRuntime,
     chatgpt_dropoff: chatgptDropoff,
     rabbi_agent_review: rabbiAgentReview,
     commands: {
@@ -546,6 +660,8 @@ function main() {
       'ops/production-readiness/latest-production-readiness-snapshot.md',
       'ops/production-readiness/latest-production-readiness-snapshot.json',
       rabbiAgentReview.path,
+      rabbiTelegramRuntime.readiness_path,
+      rabbiTelegramRuntime.runtime_report_available ? rabbiTelegramRuntime.chat_id_report_path : '',
       agentFleetReadiness.path,
       oneTimeSetup.path,
       'ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md',
@@ -560,6 +676,7 @@ function main() {
     blockers: activeRun.blockers,
     proof: rabbiAgentReview,
     fleet: agentFleet,
+    rabbiTelegramRuntime,
   });
 
   if (shouldWrite) {
