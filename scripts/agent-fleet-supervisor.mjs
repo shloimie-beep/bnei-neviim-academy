@@ -32,6 +32,7 @@ const watchdogRuntimeDir = path.join(repoRoot, '.runtime', 'watchdog');
 const watchdogLockPath = path.join(watchdogRuntimeDir, 'watchdog.lock.json');
 const watchdogStatePath = path.join(watchdogRuntimeDir, 'state.json');
 const systemAuditsDir = path.join(repoRoot, 'ops', 'system-audits');
+const queueAuditsDir = path.join(repoRoot, 'ops', 'queue-audits');
 const WATCHDOG_IMPROVEMENT_AUDIT_VERSION = 'watchdog-improvement-v1';
 const SECRET_SCAN_ALLOWLIST_MARKER = 'watchdog-secret-scan: allow-placeholder';
 const SECRET_SCAN_PATTERNS = [
@@ -167,12 +168,23 @@ function appendJsonl(filePath, value) {
   fs.appendFileSync(filePath, `${JSON.stringify(value)}\n`);
 }
 
+function parsePositiveIdList(value) {
+  return String(value || '')
+    .split(',')
+    .map((item) => Number(item.trim()))
+    .filter((item) => Number.isFinite(item) && item > 0);
+}
+
 function parseArgs(argv) {
   const args = {
     watch: false,
     once: false,
     status: false,
     watchdog: false,
+    staleSweep: false,
+    staleSweepApply: false,
+    staleSweepConfirmApply: false,
+    staleSweepJobIds: [],
     dryRun: false,
     maxTasks: null,
     noSmoke: false,
@@ -188,6 +200,15 @@ function parseArgs(argv) {
     else if (arg === '--once') args.once = true;
     else if (arg === '--status') args.status = true;
     else if (arg === '--watchdog') args.watchdog = true;
+    else if (arg === '--stale-sweep') args.staleSweep = true;
+    else if (arg === '--stale-sweep-apply') {
+      args.staleSweep = true;
+      args.staleSweepApply = true;
+    }
+    else if (arg === '--confirm-stale-sweep-apply') args.staleSweepConfirmApply = true;
+    else if (arg === '--job-id') args.staleSweepJobIds.push(...parsePositiveIdList(argv[++index] || ''));
+    else if (arg.startsWith('--job-id=')) args.staleSweepJobIds.push(...parsePositiveIdList(arg.split('=').slice(1).join('=')));
+    else if (arg.startsWith('--job-ids=')) args.staleSweepJobIds.push(...parsePositiveIdList(arg.split('=').slice(1).join('=')));
     else if (arg === '--dry-run') args.dryRun = true;
     else if (arg === '--no-smoke') args.noSmoke = true;
     else if (arg === '--no-deploy') args.noDeploy = true;
@@ -540,6 +561,143 @@ function taskLockIsFresh(taskId, maxAgeMs) {
   const ageMs = Date.now() - Date.parse(signalAt);
   if (lock.pid && processIsAlive(lock.pid) && Number.isFinite(ageMs) && ageMs >= 0 && ageMs < maxAgeMs) return true;
   return Number.isFinite(ageMs) && ageMs >= 0 && ageMs < maxAgeMs;
+}
+
+function staleSweepReportMarkdown(report) {
+  const lines = [
+    `# Observable Codex Stale Sweep ${report.dry_run ? 'Dry Run' : 'Apply'} - ${report.generated_at}`,
+    '',
+    `- Dry run: ${report.dry_run ? 'yes' : 'no'}`,
+    `- Updated: ${report.updated}`,
+    `- Candidate count: ${report.candidate_count}`,
+    `- Selected count: ${report.selected_count}`,
+    `- Selected job IDs: ${report.selected_job_ids.length ? report.selected_job_ids.join(', ') : 'none'}`,
+    `- Endpoint: \`${report.endpoint}\``,
+    report.apply_endpoint ? `- Apply endpoint: \`${report.apply_endpoint}\`` : '- Apply endpoint: none',
+    '',
+    '## Candidates',
+  ];
+  if (!report.stale_jobs.length) {
+    lines.push('', '- None.');
+  } else {
+    lines.push('', '| Job | Status | Task | Ticket | Reason | Title |');
+    lines.push('|---|---|---|---|---|---|');
+    for (const job of report.stale_jobs) {
+      lines.push([
+        `#${job.id || job.job_id || ''}`,
+        job.status || '',
+        job.task_id ? `#${job.task_id}` : '',
+        job.ticket_id ? `#${job.ticket_id}` : '',
+        String(job.stale_reason || job.current_blocker || '').replace(/\|/g, '/'),
+        String(job.task_title || job.title || job.ticket_title || '').replace(/\|/g, '/').slice(0, 140),
+      ].join(' | ').replace(/^/, '| ').replace(/$/, ' |'));
+    }
+  }
+  lines.push(
+    '',
+    '## Guardrails',
+    '',
+    report.dry_run
+      ? '- Read-only dry-run report; no live task/job/ticket status was changed.'
+      : '- Targeted live stale-sweep apply was requested explicitly with `--stale-sweep-apply`, `--confirm-stale-sweep-apply`, and one or more `--job-id` values.',
+  );
+  if (report.apply_errors.length) {
+    lines.push('', '## Apply Errors', '');
+    for (const error of report.apply_errors) {
+      lines.push(`- Job #${error.job_id}: ${error.error}`);
+    }
+  }
+  return `${lines.join('\n')}\n`;
+}
+
+async function runObservableStaleSweep(config, args) {
+  const dryRun = !args.staleSweepApply;
+  const endpoint = '/api/bna/codex-queue/stale-sweep';
+  const requestedIds = [...new Set(args.staleSweepJobIds.map(Number).filter((item) => Number.isFinite(item) && item > 0))];
+  if (!dryRun) {
+    if (!args.staleSweepConfirmApply) {
+      throw new Error('Refusing live stale-sweep apply without --confirm-stale-sweep-apply.');
+    }
+    if (!requestedIds.length) {
+      throw new Error('Refusing live stale-sweep apply without at least one --job-id value.');
+    }
+  }
+  const data = await appRequest(config, 'GET', endpoint);
+  const staleJobs = Array.isArray(data.stale_jobs) ? data.stale_jobs : [];
+  const staleJobById = new Map(staleJobs.map((job) => [Number(job.id || job.job_id), job]));
+  let selectedJobs = staleJobs;
+  const updatedJobs = [];
+  const applyErrors = [];
+  if (!dryRun) {
+    const missingIds = requestedIds.filter((jobId) => !staleJobById.has(jobId));
+    if (missingIds.length) {
+      throw new Error(`Refusing live stale-sweep apply because these job IDs are not current stale candidates: ${missingIds.join(', ')}`);
+    }
+    selectedJobs = requestedIds.map((jobId) => staleJobById.get(jobId));
+    for (const job of selectedJobs) {
+      const jobId = Number(job.id || job.job_id);
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const result = await appRequest(config, 'POST', `/api/bna/agent-jobs/${encodeURIComponent(String(jobId))}/block`, {
+          status: 'blocked_needs_human_decision',
+          blocker: `Targeted stale-sweep apply: ${job.stale_reason || 'Codex job went stale without a fresh heartbeat.'}`,
+          summary: `Targeted stale-sweep apply for stale Codex job #${jobId}.`,
+          result_payload: {
+            stale_sweep: true,
+            stale_reason: job.stale_reason || null,
+            previous_status: job.status || null,
+            task_id: job.task_id || null,
+            ticket_id: job.ticket_id || null,
+          },
+        });
+        updatedJobs.push({
+          job_id: jobId,
+          status: result.job?.status || null,
+          task_id: result.job?.task_id || job.task_id || null,
+          ticket_id: result.job?.ticket_id || job.ticket_id || null,
+        });
+      } catch (error) {
+        applyErrors.push({ job_id: jobId, error: error instanceof Error ? error.message : String(error) });
+      }
+    }
+    if (applyErrors.length) {
+      throw new Error(`Targeted stale-sweep apply failed for ${applyErrors.length} job(s): ${applyErrors.map((item) => `#${item.job_id}`).join(', ')}`);
+    }
+  } else if (requestedIds.length) {
+    selectedJobs = staleJobs.filter((job) => requestedIds.includes(Number(job.id || job.job_id)));
+  }
+  const generatedAt = nowIso();
+  const stamp = generatedAt.replace(/[:.]/g, '-');
+  const report = {
+    generated_at: generatedAt,
+    dry_run: dryRun,
+    endpoint,
+    apply_endpoint: dryRun ? null : '/api/bna/agent-jobs/:id/block',
+    updated: dryRun ? 0 : updatedJobs.length,
+    candidate_count: staleJobs.length,
+    selected_count: selectedJobs.length,
+    selected_job_ids: selectedJobs.map((job) => Number(job.id || job.job_id)),
+    all_stale_job_ids: staleJobs.map((job) => Number(job.id || job.job_id)),
+    stale_jobs: selectedJobs,
+    updated_jobs: updatedJobs,
+    apply_errors: applyErrors,
+    success: Boolean(data.success),
+    guardrails: dryRun
+      ? ['Read-only stale-sweep dry run only.']
+      : ['Targeted live stale-sweep apply requested explicitly with confirmation and job IDs.'],
+  };
+  ensureDir(queueAuditsDir);
+  const jsonPath = path.join(queueAuditsDir, `${stamp}-observable-stale-sweep${dryRun ? '-dry-run' : '-apply'}.json`);
+  const mdPath = path.join(queueAuditsDir, `${stamp}-observable-stale-sweep${dryRun ? '-dry-run' : '-apply'}.md`);
+  writeJson(jsonPath, report);
+  fs.writeFileSync(mdPath, staleSweepReportMarkdown(report));
+  return {
+    ...report,
+    report: {
+      json: relative(jsonPath),
+      md: relative(mdPath),
+    },
+  };
 }
 
 function inspectTaskLockForStatus(taskId = '', sampledAt = new Date()) {
@@ -3746,6 +3904,20 @@ async function main() {
         : null,
       finding_count: result.audit.findings.length,
     }, null, 2));
+    return;
+  }
+
+  if (args.staleSweep) {
+    try {
+      const result = await runObservableStaleSweep(config, args);
+      console.log(JSON.stringify(result, null, 2));
+    } catch (error) {
+      console.error(JSON.stringify({
+        ok: false,
+        error: error instanceof Error ? error.message : String(error),
+      }, null, 2));
+      process.exitCode = 1;
+    }
     return;
   }
 

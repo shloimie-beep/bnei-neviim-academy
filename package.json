@@ -172,6 +172,8 @@
     "agent:fleet:stop": "powershell -ExecutionPolicy Bypass -File scripts/start-agent-fleet.ps1 -Stop",
     "agent:fleet:once": "node scripts/agent-fleet-supervisor.mjs --once --max-tasks 1",
     "agent:fleet:status": "node scripts/agent-fleet-supervisor.mjs --status",
+    "agent:fleet:stale-sweep": "node scripts/agent-fleet-supervisor.mjs --stale-sweep",
+    "agent:fleet:stale-sweep:apply": "node scripts/agent-fleet-supervisor.mjs --stale-sweep-apply",
     "agent:fleet:readiness": "node scripts/agent-fleet-readiness.mjs",
     "agent:fleet:register-startup": "powershell -ExecutionPolicy Bypass -File scripts/register-agent-fleet-startup.ps1",
     "agent:fleet:open-log": "powershell -ExecutionPolicy Bypass -File scripts/start-agent-fleet.ps1 -OpenLog",

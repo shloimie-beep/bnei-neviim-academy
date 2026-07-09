@@ -37302,3 +37302,32 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   smoke, no external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, lock deletion,
   or production-data mutation.
+
+## 2026-07-09T23:53:45+03:00 - Targeted Stale Job Reconciliation
+
+- Added `npm run agent:fleet:stale-sweep` and
+  `npm run agent:fleet:stale-sweep:apply` as a guarded CLI/report path for the
+  observable Codex stale-sweep API.
+- The dry-run command writes local ignored reports under `ops/queue-audits/`;
+  live apply refuses to run unless `--confirm-stale-sweep-apply` and one or
+  more `--job-id` values are provided.
+- Tightened apply behavior so the CLI does not use the broad stale-sweep POST;
+  it validates selected job IDs against the current dry-run candidates and then
+  blocks only those exact jobs through `/api/bna/agent-jobs/:id/block`.
+- Reconciled stale queue rows after dry-run proof: job `344` was blocked as the
+  existing Agent Mode human-decision blocker; job `382` was completed as
+  already satisfied by the task `1851`/historical task `402` BNA brand-shell
+  verification; job `427` was completed as already satisfied by
+  `RAW-20260709-003` Kimi fallback work; job `426` was blocked as a One Time
+  content/question item misrouted to Codex implementation.
+- Verification passed: `node --check scripts/agent-fleet-supervisor.mjs`,
+  `node --test tests/agent-fleet-hardening.test.js
+  tests/observable-codex-queue.test.js`, guarded apply refusal readback,
+  targeted dry-run readback for job `344`, targeted live reconciliation
+  readbacks for jobs `344`, `382`, `427`, and `426`, and final
+  `npm run agent:fleet:status` showing stale observable job candidates `0` and
+  fallback task candidates `0`.
+- Guardrails: no broad stale sweep was applied; no app UI edit, deploy, hosted
+  restart/live Telegram smoke, external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, Drive write,
+  or class backfill was performed.

@@ -330,6 +330,13 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
   assert.match(supervisor, /Ready to claim: observable jobs .* fallback task candidates/);
   assert.match(supervisor, /Stale observable job candidates:/);
   assert.match(supervisor, /Observable jobs eligible for stale-sweep dry run:/);
+  assert.match(supervisor, /runObservableStaleSweep/);
+  assert.match(supervisor, /--stale-sweep/);
+  assert.match(supervisor, /--stale-sweep-apply/);
+  assert.match(supervisor, /--confirm-stale-sweep-apply/);
+  assert.match(supervisor, /Refusing live stale-sweep apply without at least one --job-id value/);
+  assert.match(supervisor, /\/api\/bna\/agent-jobs\/\$\{encodeURIComponent\(String\(jobId\)\)\}\/block/);
+  assert.match(supervisor, /observable-stale-sweep/);
   assert.match(supervisor, /Local task lock evidence for not-claimable jobs:/);
   assert.match(supervisor, /Fallback task candidates requiring lane inspection:/);
   assert.match(supervisor, /PRODUCTION_READINESS_GATE_COMMAND = 'npm run production:readiness:gate -- --json'/);
@@ -348,6 +355,14 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
   assert.equal(
     packageJson.scripts['agent:fleet:register-startup'],
     'powershell -ExecutionPolicy Bypass -File scripts/register-agent-fleet-startup.ps1',
+  );
+  assert.equal(
+    packageJson.scripts['agent:fleet:stale-sweep'],
+    'node scripts/agent-fleet-supervisor.mjs --stale-sweep',
+  );
+  assert.equal(
+    packageJson.scripts['agent:fleet:stale-sweep:apply'],
+    'node scripts/agent-fleet-supervisor.mjs --stale-sweep-apply',
   );
   assert.equal(
     packageJson.scripts['chatgpt:dropoff:comments:apply'],
