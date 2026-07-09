@@ -6,6 +6,24 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-09T16:52:16+03:00 - Rabbi Agent Review proof readiness smoke
+
+- Added `npm run app:smoke:rabbi-agent-review-proof-readiness`, backed by
+  `scripts/smoke-rabbi-agent-review-proof-readiness-live.mjs`.
+- The smoke is read-only and verifies the live Rabbi Telegram/helper prompt,
+  the all-163 Rabbi helper scope prompt, all three public helper-scope
+  artifacts, and the protected Agent Review hub's latest result state.
+- Latest live run passed and wrote
+  `ops/live-smokes/2026-07-09T13-51-52-167Z-rabbi-agent-review-proof-readiness-live.md`.
+- Current hub proof state is intentionally still open: both
+  `rabbi-telegram-helper-ticket-smoke` and `rabbi-helper-tool-scope-map` are
+  `not_started` with no terminal AGR result. Next Agent Mode windows should
+  open the two public prompt URLs and save PASS/FAIL/BLOCKED through the
+  Operations drop-off.
+- Guardrail: no Agent Review result was saved by the smoke, and no Telegram,
+  email, WhatsApp/WAPI, payment, access, Drive, Vimeo, Zoom, DNS, credential,
+  public publish, or external provider mutation was performed.
+
 ## 2026-07-09T13:58:00+03:00 - Agent Review public prompt mode deployed
 
 - Fixed the Agent Review prompt generator so Agent Mode starts from the public

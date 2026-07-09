@@ -404,3 +404,27 @@ block full agent-mode autonomy:
 - Direct live readback of
   `https://join.onetimeonetime.com/agent-review-artifacts/account-bot-scope-template.json`
   returned 200 with template key `service_provider_project_bot_scope_v1`.
+
+## 2026-07-09 Agent Review Proof Readiness Smoke
+
+- Added `npm run app:smoke:rabbi-agent-review-proof-readiness` as the
+  reusable read-only command for this lane.
+- Latest run passed on 2026-07-09 and wrote
+  `ops/live-smokes/2026-07-09T13-51-52-167Z-rabbi-agent-review-proof-readiness-live.md`.
+- Live readback proved:
+  - `rabbi-helper-tool-scope-map` public prompt is live on
+    `join.onetimeonetime.com`.
+  - `rabbi-one-time-tool-scope-map.json` is live with 163 contracts, surface
+    counts operations 97 / parent 19 / provider 30 / rabbi 2 / student 15,
+    first ID `RABBI-HELPER-SCOPE-001`, last ID
+    `RABBI-HELPER-SCOPE-163`, and 163
+    `tool_wrapper_available_local`.
+  - `rabbi-one-time-tool-scope-map.md` and
+    `account-bot-scope-template.json` are live and current.
+  - The protected Agent Review hub currently reports
+    `rabbi-helper-tool-scope-map` as `not_started` with no terminal AGR result.
+- This does not complete `REQ-20260708-095`; it makes the blocker explicit.
+  Full autonomy still requires the Agent Mode window to open
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`,
+  test only that prompt scope, and save PASS/FAIL/BLOCKED through the
+  Operations drop-off/readback path.

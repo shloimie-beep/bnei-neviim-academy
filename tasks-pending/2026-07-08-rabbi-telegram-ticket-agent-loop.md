@@ -230,3 +230,25 @@
   `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured. Support-ticket dings
   remain super-admin owned; Rabbi communications remain provider-scoped and
   metadata-only until his target chat is verified.
+
+## 2026-07-09 Agent Review Proof Readiness Smoke
+
+- Added `npm run app:smoke:rabbi-agent-review-proof-readiness` as the
+  reusable no-send readback for the Rabbi Telegram/helper Agent Review proof
+  lane.
+- Latest run passed on 2026-07-09 and wrote
+  `ops/live-smokes/2026-07-09T13-51-52-167Z-rabbi-agent-review-proof-readiness-live.md`.
+- Live readback proved the
+  `rabbi-telegram-helper-ticket-smoke` public prompt is available on
+  `join.onetimeonetime.com` with the OneTime contact/message scope,
+  staff-owned ticket routing, chat-ID blocker, no-WhatsApp-send guard, and
+  required `OPERATIONS_DROPOFF_SAVED` / `OPERATIONS_DROPOFF_FAILED` contract.
+- The protected Agent Review hub currently reports
+  `rabbi-telegram-helper-ticket-smoke` as `not_started` with no terminal AGR
+  result.
+- This does not complete the Rabbi Telegram/helper Agent Mode proof. The next
+  Agent Mode window should open
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md`,
+  test only that prompt scope, and save PASS/FAIL/BLOCKED through the
+  Operations drop-off/readback path. Live Rabbi Telegram delivery remains
+  blocked until `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured.

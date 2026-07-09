@@ -95,6 +95,7 @@ production-ready when these classes are green or precisely blocked:
 | SETUPCHECK-20260709-005 | Done | Codex | `npm run one-time:setup:check` could fall back into the BNA project-token/local-link context and report OneTime Railway target/auth as missing even when OneTime was live. | Updated `scripts/check-onetime-external-setup-readiness.mjs` to honor account-auth mode and use an isolated temp Railway link for redacted OneTime variable readback. |
 | SETUPCHECK-20260709-006 | Done | Codex | Readiness reports were still treating the hosted free-class/class-link value as missing even though OneTime Railway had enough redacted proof to clear that setup item. | Updated setup and WAPI readiness checks to consume only redacted hosted presence flags. Latest setup report is 5/8 ready: Railway, DB, join domain, Zoom/class link, and Vimeo/Drive are ready. |
 | HELPER-20260709-007 | Done | Codex | Rabbi helper/Telegram handoff still listed a stale OneTime deploy-pending blocker even though the prompt/artifacts are live. | Live-readback verified the Rabbi Telegram/helper prompt, 163-contract helper-scope prompt/artifact, and OneTime instance config; remaining blocker is Agent Mode saved proof plus Rabbi chat ID/external approval gates. |
+| HELPER-20260709-008 | Done / proof still pending | Codex | Future agents needed a one-command live readback of the Rabbi Agent Review proof state before opening new Agent Mode windows. | Added `npm run app:smoke:rabbi-agent-review-proof-readiness`. Latest run verified both Rabbi prompts and all public artifacts are live/current, then read the Agent Review hub state as `not_started` for both proof prompts. Next Agent Mode URLs are `https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md` and `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`. |
 
 ## First audit command plan
 
@@ -346,6 +347,37 @@ Remaining blockers:
 - External-write/helper autonomy remains gated by exact approvals and
   credentials.
 
+## HELPER-20260709-008 closeout
+
+Implemented:
+
+- Added `scripts/smoke-rabbi-agent-review-proof-readiness-live.mjs` and npm
+  alias `app:smoke:rabbi-agent-review-proof-readiness`.
+- The smoke verifies the public Rabbi Agent Review prompts, the 163-contract
+  helper scope artifact, the scope-map markdown, the account-bot template, and
+  the protected Agent Review hub's latest proof state.
+- The script is read-only and does not save Agent Review results, create
+  tickets, send Telegram/email/WhatsApp/WAPI messages, charge, grant access,
+  upload, mutate Drive/Vimeo/Zoom/DNS/credentials, or publish.
+
+Verification:
+
+- PASS `node --check scripts\smoke-rabbi-agent-review-proof-readiness-live.mjs`.
+- PASS `npm run app:smoke:rabbi-agent-review-proof-readiness`.
+- PASS generated report secret scan for cookie values, bearer tokens, API keys,
+  OPS password markers, and Stripe secret-key patterns.
+- Evidence:
+  `ops/live-smokes/2026-07-09T13-51-52-167Z-rabbi-agent-review-proof-readiness-live.md`.
+
+Current proof state from the live hub:
+
+- `rabbi-telegram-helper-ticket-smoke`: `not_started`, no terminal AGR result.
+- `rabbi-helper-tool-scope-map`: `not_started`, no terminal AGR result.
+- Next Agent Mode windows should start from:
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md`
+  and
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`.
+
 Performance proof:
 
 | Profile | Shell visible | Fetches under 10s | Support-ticket dashboard fetches | Slowest fetch | Console errors | Failed requests | Evidence |
@@ -362,4 +394,4 @@ Performance proof:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register. | Lead capture live-smoked in prior closeout. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, and `HELPER-20260709-007` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback checks. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, and Agent Mode saved proof remain blocked. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, and `HELPER-20260709-008` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, and terminal Agent Mode saved proof remain blocked. |

@@ -146,6 +146,7 @@
     "app:smoke:one-time-authenticated-support": "node scripts/smoke-one-time-authenticated-support-live.mjs",
     "app:smoke:one-time-test-identities": "node scripts/smoke-one-time-test-identities-live.mjs",
     "app:smoke:one-time-agent-mode-acceptance": "node scripts/smoke-one-time-agent-mode-acceptance-live.mjs",
+    "app:smoke:rabbi-agent-review-proof-readiness": "node scripts/smoke-rabbi-agent-review-proof-readiness-live.mjs",
     "app:smoke:one-time-transcript-privacy": "node scripts/smoke-one-time-transcript-privacy-live.mjs",
     "app:smoke:one-time-gamification": "node scripts/smoke-one-time-gamification-live.mjs",
     "app:smoke:one-time-community": "node scripts/smoke-one-time-community-live.mjs",

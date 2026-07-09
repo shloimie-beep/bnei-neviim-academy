@@ -88,7 +88,11 @@ not authorize active GHL runtime paths.
   all 163 scoped helper contracts are wrapper-backed, pushed, deployed, and
   live-smoked; the remaining autonomy blocker is saved all-163 Agent Mode
   PASS/BLOCKED/FAIL proof, per-tool live audit readback, and external approval
-  gates.
+  gates. Latest proof-readiness smoke
+  `npm run app:smoke:rabbi-agent-review-proof-readiness` passed and reports
+  the `rabbi-helper-tool-scope-map` hub proof state as `not_started`; next
+  Agent Mode URL:
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`.
 - [ ] `RAW-20260708-023`, `RAW-20260708-029`, `RAW-20260708-031` /
   `REQ-20260708-081` through `REQ-20260708-085`, `REQ-20260708-096`, and
   `REQ-20260708-097`: Rabbi Telegram bot, super-admin support ticket dings, and
@@ -102,7 +106,11 @@ not authorize active GHL runtime paths.
   remain blocked until `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is supplied or
   inferred. Full Rabbi bot/helper agent parity remains open only for saved
   Agent Mode PASS/BLOCKED/FAIL proof, per-tool live audit readback, and the
-  external approval gates.
+  external approval gates. Latest proof-readiness smoke
+  `npm run app:smoke:rabbi-agent-review-proof-readiness` passed and reports
+  the `rabbi-telegram-helper-ticket-smoke` hub proof state as `not_started`;
+  next Agent Mode URL:
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md`.
 - [x] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
   `RAW-20260626-008` / `RAW-20260628-002` / `REQ-20260626-116` through
   `REQ-20260626-133` plus `REQ-20260628-134` through `REQ-20260628-140`:
