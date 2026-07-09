@@ -37262,3 +37262,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   unblocked execution batch, active collision-lane reconciliation, Railway
   doctor authorization, stale runtime locks, raw-looking visible task titles,
   and misrouted watchdog cleanup tasks.
+
+## 2026-07-09T23:39:28+03:00 - Stale Observable Job Candidates Surfaced
+
+- Added read-only GET routing for `/api/bna/codex-queue/stale-sweep`, using the
+  existing stale-sweep dry-run behavior.
+- Updated `npm run agent:fleet:status` to show the stale observable job count
+  and list stale-sweep dry-run candidates without applying queue changes.
+- Current readback shows four stale observable candidates: running jobs `344`,
+  `382`, and `427`, plus queued job `426`.
+- Verification passed: `node --check scripts/agent-fleet-supervisor.mjs`,
+  `node --check server.js`, `node --test tests/agent-fleet-hardening.test.js
+  tests/observable-codex-queue.test.js`, and `npm run agent:fleet:status`.
+- Guardrails held: read-only status/API visibility only; no stale sweep apply,
+  no live task/job mutation, no app UI edit, no deploy, no hosted restart/live
+  Telegram smoke, no external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, or
+  production-data mutation.
+- Remaining blockers are unchanged until a deliberate stale-sweep/apply or
+  operator-owned proof/setup action is approved and recorded.
