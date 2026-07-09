@@ -35869,3 +35869,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   with Playwright request interception.
 - Remaining blockers: exact approved free Zoom URL/alias before automated Zoom
   invite sends; full portal/payment/WAPI/campaign launch remains a later lane.
+
+## 2026-07-09T15:23:05+03:00 - Launch Catch-Up Merged And Deployed
+
+- Fast-forwarded the launch branch to `master`, pushed the caught-up master,
+  and deployed both public services.
+- Pushed commits: `504f6a44`, `2db33d74`, `0418cfd8`, and `19290f2f`.
+- BNA final Railway deployment:
+  `e468f43f-810e-49cf-b2a2-03e76281e8f9` on `skillful-motivation`, status
+  `SUCCESS`.
+- OneTime final Railway deployment:
+  `5c47678a-3a05-4d52-8e03-db86fa1959ab` on `one-time-web`, status `SUCCESS`.
+- Fixed launch blockers found during live smoke:
+  stale action report hashes, the BNA Operations blank dashboard from split
+  shell missing fallbacks, split-shell taxonomy smoke coverage, and
+  `/api/bna/communications/dns-tasks` returning 500 because the generic
+  communications detail route intercepted `dns-tasks`.
+- Verification passed: `npm test` 1693/1693, secrets audit, action watchdog,
+  protocol drift watchdog, execution-run validation, `git diff --check`, BNA
+  live app/helper/taxonomy smokes, direct DNS endpoint readback HTTP 200, BNA
+  final startup profile with 0 console errors and 0 failed requests, OneTime
+  separate-instance smoke, and Rabbi OneTime landing smoke.
+- Remaining blockers: full portal/payment/WAPI/campaign launch still needs the
+  Zoom alias, Stripe sandbox/price aliases, WAPI details, campaign copy,
+  recipient segment, suppression/unsubscribe proof, and explicit seed approval.
+  BNA Operations is no longer blank/erroring, but still needs a performance lane
+  to reduce 118 startup API reads.
