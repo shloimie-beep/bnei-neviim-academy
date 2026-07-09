@@ -1,6 +1,6 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-09T19:33:39.316Z
+Generated: 2026-07-09T19:45:32.061Z
 
 ## Lane Safety
 
@@ -32,7 +32,7 @@ _None._
 | - Claimable observable jobs: 0 |
 | - Active Codex task fallback: 34 |
 | - Ready to claim: 3 |
-| - Queue health: fresh 2, stale 462, blocked 126, unknown 193, do-not-redo 878 |
+| - Queue health: fresh 4, stale 462, blocked 126, unknown 193, do-not-redo 878 |
 | - ChatGPT dropoff ingest: enabled |
 | - ChatGPT comment collect: enabled |
 
@@ -40,14 +40,14 @@ _None._
 
 | Job |
 | --- |
-| - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 |
-| - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish |
-| - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using |
-| - job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there? |
-| - job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile |
-| - job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes |
-| - job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives |
-| - job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish |
+| - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.11 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.41 path=.runtime/agent-fleet/task-1859.lock.json) |
+| - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json) |
+| - job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
+| - job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile (local_lock=missing path=.runtime/agent-fleet/task-2025.lock.json) |
+| - job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes (local_lock=missing path=.runtime/agent-fleet/task-2027.lock.json) |
+| - job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives (local_lock=missing path=.runtime/agent-fleet/task-2026.lock.json) |
+| - job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=missing path=.runtime/agent-fleet/task-1851.lock.json) |
 
 ## Recent Pickup Reports
 
