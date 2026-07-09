@@ -35297,3 +35297,32 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   expired-link resend flow, full Rabbi provider CRM/layout polish, full logged-in
   student portal/classroom visual audit, WAPI setup/status, and safe contact
   tagging.
+
+## 2026-07-09T07:06:35+03:00 - OneTime Scoped Shells Deployed And Live-Smoked
+
+- Pushed OneTime scope commits `7c42bcc8` and `fc65713e` on
+  `codex/rabbi-helper-tool-scope-20260708`, then deployed the OneTime Railway
+  service `one-time-web` to production deployment
+  `ddeb24b9-7ec9-4afb-8bd8-b74da23d92cd`.
+- Server-side OneTime shells now prevent first-paint BNA/default Academy bleed
+  for `/student/login`, `/student`, `/student.html?one_time_login=1`,
+  `/provider`, and `/provider.html?review=one-time&section=crm`.
+- The OneTime student login no longer shows the HE toggle, classroom
+  access-code fallback, BNA helper label, or default Student Goal Board copy in
+  local rendered smoke or live source readback.
+- The OneTime provider helper now resolves as `Rabbi Scheller Admin Helper`
+  with OneTime black/yellow helper styling and provider-scoped copy.
+- Verification passed: `npm test` 1674/1674, `npm run secrets:audit`,
+  `npm run watchdog:protocol-drift`, `npm run one-time:target:guard -- --json`,
+  `npm run one-time:railway-target:guard`,
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`,
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`,
+  and live raw readback for parent/student/provider routes.
+- Evidence is recorded in
+  `tasks-pending/2026-07-09-onetime-scope-ui-agent-contact-corrections.md`,
+  `ops/ui-audits/2026-07-09-onetime-source-shell-local/`, and
+  `ops/live-smokes/2026-07-09T04-06-16-052Z-rabbi-onetime-landing-smoke.md`.
+- Remaining open work: password-reset TTL and expired-link resend flow, full
+  Rabbi provider CRM/layout polish, full logged-in student portal/classroom
+  visual audit, WAPI setup/status, safe contact tagging, and Rabbi Telegram
+  live delivery after `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured.
