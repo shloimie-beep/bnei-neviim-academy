@@ -35420,3 +35420,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   content/student portal UI polish, CRM persistence, WAPI/WhatsApp readiness,
   safe contact tagging, and Rabbi Telegram live delivery after
   `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured.
+
+## 2026-07-09T07:47:00+03:00 - OneTime Rabbi CRM Layout Deployed And Live-Smoked
+
+- Pushed commit `f9cff051` on
+  `codex/rabbi-helper-tool-scope-20260708`, then deployed the OneTime Railway
+  service `one-time-web` to production deployment
+  `190cd07c-e191-4347-bb2f-6c336cd824f9`.
+- Live verification passed: OneTime separate-instance smoke, Rabbi OneTime
+  landing smoke, and provider CRM asset readback for the deployed workbench,
+  sanitizer, CRM CSS, compact helper CSS, Rabbi helper identity, and
+  `rabbi_sheller_provider / one_time_mishnah_class` scope.
+- Evidence is recorded in
+  `ops/live-smokes/2026-07-09T04-44-17-294Z-rabbi-onetime-landing-smoke.md`
+  and
+  `ops/live-smokes/2026-07-09T04-44-17-294Z-onetime-provider-crm-readback.md`.
+- No external email, WhatsApp/WAPI, Telegram recipient message, payment, access
+  grant, credential, DNS/account, Drive/Vimeo/Zoom, public publish, production
+  contact mutation, or external connector write was performed during this
+  deploy batch.
+- Remaining open work: full content/student portal UI polish, backend CRM
+  persistence, WAPI/WhatsApp readiness, safe contact tagging, and Rabbi
+  Telegram live delivery after `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is
+  configured.
