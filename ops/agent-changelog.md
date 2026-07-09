@@ -36599,3 +36599,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:26:00+03:00 - Production Unblocker Clean-Source Refresh
+
+- Regenerated `ops/production-readiness/latest-production-unblocker.md` and
+  `.json` from clean pushed head `08a8d61e`.
+- Readback confirms source kind `live_no_write_command`, head/origin
+  `08a8d61e`, worktree clean `true`, 3 external setup items, 2 Agent Mode
+  proof items, 3 active collision lanes, 0 queued ChatGPT packets, and no
+  unblocked executable batch.
+- The operator-facing packet now explicitly includes the active Agent Review
+  repair job alongside the UI and fallback/API lanes.
+- Guardrails held: read-only artifact refresh only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

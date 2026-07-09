@@ -114,6 +114,7 @@ production-ready when these classes are green or precisely blocked:
 | READINESS-20260709-028 | Done / no deploy performed | Codex | GitHub-connected agents needed the tracked latest unblocker artifact refreshed after the fresh-snapshot default was pushed. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `c020293b`; the artifact records `live_no_write_command`, head/origin `c020293b`, worktree clean `true`, 3 external setup blockers, 2 Agent Mode proof blockers, 2 active collision lanes, 0 queued ChatGPT packets, and no executable batch. |
 | READINESS-20260709-029 | Done / no deploy performed | Codex | The control-tower launch assessment exposed the UI and fallback/API lanes as collision lanes but did not promote the active Agent Review result repair job, even though proof repair overlaps the missing terminal proof blocker. | Updated `scripts/production-readiness-snapshot.mjs` so active Agent Review/AGR repair jobs are included in `avoid_colliding_with` and next actions warn not to overlap proof/result repair while that job is running. |
 | READINESS-20260709-030 | Done / no deploy performed | Codex | GitHub-visible production readiness artifacts needed to reflect the new Agent Review repair collision lane after `READINESS-20260709-029` was pushed. | Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*` and `latest-production-unblocker.*`; the snapshot sampled clean pushed head `0b5cdd3e` and showed 3 collision lanes including job `344`. The unblocker also showed 3 lanes, but its source sample correctly marked dirty because the snapshot artifact was already modified before it ran; a clean-source unblocker refresh follows. |
+| READINESS-20260709-031 | Done / no deploy performed | Codex | The operator-facing unblocker needed one final refresh from a clean artifact head after `READINESS-20260709-030`. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `08a8d61e`; the packet records `live_no_write_command`, head/origin `08a8d61e`, worktree clean `true`, 3 external setup blockers, 2 Agent Mode proof blockers, 3 active collision lanes including Agent Review repair job `344`, 0 queued ChatGPT packets, and no executable batch. |
 
 ## First audit command plan
 
@@ -1498,6 +1499,50 @@ Remaining:
 - After commit/push, regenerate `npm run production:unblocker` one more time
   from the clean artifact head so the operator unblocker source sample also
   records `snapshot_worktree_clean: true`.
+
+## READINESS-20260709-031 closeout
+
+Implemented:
+
+- Regenerated `ops/production-readiness/latest-production-unblocker.md`.
+- Regenerated `ops/production-readiness/latest-production-unblocker.json`.
+
+Verification:
+
+- PASS `npm run production:unblocker` from clean pushed head `08a8d61e`.
+- Readback from `ops/production-readiness/latest-production-unblocker.json`:
+  - `snapshot_source_kind: live_no_write_command`
+  - `snapshot_git_head: 08a8d61e`
+  - `snapshot_origin_master: 08a8d61e`
+  - `snapshot_worktree_clean: true`
+  - `snapshot_status: not_production_complete`
+  - 3 external setup items
+  - 2 Agent Mode proof items
+  - 3 active collision lanes:
+    - job `382` / task `1859` running app-wide UI polish
+    - job `427` / task `2185` running fallback/API lane
+    - job `344` / task `1736` running Agent Review result repair
+  - 0 queued ChatGPT packets
+  - next unblocked executable batch `none`
+
+Evidence:
+
+- `ops/production-readiness/latest-production-unblocker.md`
+- `ops/production-readiness/latest-production-unblocker.json`
+
+Guardrails:
+
+- Read-only artifact refresh only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- Production remains blocked by explicit external setup, missing terminal Agent
+  Mode proof, active UI/API/Agent Review collision lanes, and no unblocked
+  executable batch.
 
 ## Final audit
 
