@@ -960,6 +960,14 @@ Verification:
 - EXPECTED BLOCKED `npm run production:readiness:gate -- --json` after the
   latest snapshot refresh: exit `1`, with real blockers plus dirty worktree
   only because the tracked latest snapshot evidence was awaiting commit.
+- Pushed tracked latest snapshot evidence commit `60cb5fde`.
+- EXPECTED BLOCKED `npm run production:readiness:gate -- --json` from a clean
+  tree: exit `1`, sampled head/origin `60cb5fde`, clean `true`, no dirty
+  worktree blocker, and remaining blockers only for full OneTime external
+  setup, Rabbi Agent Review terminal proof, active UI/fallback collision lanes,
+  and no next unblocked active-run batch.
+- PASS final `npm run chatgpt:dropoff:scan`: queued `0`.
+- PASS final `npm run bna:run:blockers`: same 2 external blockers.
 
 Evidence:
 
@@ -981,8 +989,8 @@ Remaining:
 - The gate should remain blocked until the external OneTime setup blockers,
   terminal Rabbi Agent Mode proofs, active collision lanes, and any queued
   dropoffs are clear.
-- Commit and push this tracked latest snapshot evidence refresh, then rerun the
-  gate from a clean tree.
+- Next productive action remains resolving the external setup/proof/UI-lane
+  blockers, then rerunning `npm run production:readiness:gate`.
 
 ## Final audit
 

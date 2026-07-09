@@ -36394,3 +36394,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: read-only gate/reporting only; no app UI edit, deploy,
   external send, payment/access mutation, provider/CRM/DNS/credential mutation,
   Agent Review result save, public publish, or production-data mutation.
+
+## 2026-07-09T18:38:14+03:00 - Clean-Tree Production Gate Readback
+
+- Pushed the tracked latest snapshot evidence as commit `60cb5fde`.
+- Reran `npm run production:readiness:gate -- --json` from a clean tree.
+- The gate correctly exited `1` without a dirty-worktree blocker, sampled
+  head/origin `60cb5fde`, and blocked only on real remaining launch blockers:
+  full OneTime external setup, Rabbi Agent Review terminal proof, active
+  UI/fallback collision lanes, and no next unblocked active-run batch.
+- Final `chatgpt:dropoff:scan` showed 0 queued packets.
+- Final `bna:run:blockers` still showed exactly the 2 external OneTime
+  blockers.
+- Guardrails held: read-only gate/reporting only; no app UI edit, deploy,
+  external send, payment/access mutation, provider/CRM/DNS/credential mutation,
+  Agent Review result save, public publish, or production-data mutation.
