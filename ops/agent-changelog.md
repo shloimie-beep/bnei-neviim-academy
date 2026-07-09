@@ -36219,3 +36219,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: no WhatsApp send, CRM mutation, payment/access mutation,
   provider mutation, credential change, DNS/account mutation, deploy, raw
   class-link exposure, phone exposure, or production-data mutation.
+
+## 2026-07-09T17:57:11+03:00 - Fresh Live Production Readiness Sweep Passed
+
+- Ran a fresh live/read-only production-readiness sweep from clean `master`
+  after blocker, Kimi, and control-tower reconciliation.
+- BNA checks passed: app smoke, Operations helper, public route privacy,
+  action watchdog, security-route watchdog, workspace-scope guardrail, and raw
+  intake drift watchdog.
+- OneTime checks passed: separate-instance smoke, canonical public target
+  guard, Rabbi landing smoke, and one-time interest dry-run smoke with no
+  lead/contact/reminder writes.
+- Rabbi Agent Review proof-readiness smoke passed its live prompt/artifact/hub
+  readbacks and remains `proof_blocked_or_pending` only because the two Rabbi
+  Agent Mode prompts still need saved terminal PASS/BLOCKED/FAIL results.
+- Evidence was captured under `ops/live-smokes/2026-07-09T14-56-*` and
+  `ops/watchdog-audits/2026-07-09T14-56-*`.
+- Guardrails held: no external send, payment/access mutation, provider/DNS/
+  credential mutation, Agent Review result save, production-data mutation, or
+  public publish.

@@ -1,0 +1,33 @@
+{
+  "started_at": "2026-07-09T14:56:09.795Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "status": "passed",
+  "steps": [
+    {
+      "name": "public OneTime landing form points to interest endpoint",
+      "ok": true,
+      "duration_ms": 1616,
+      "details": {
+        "status": 200
+      }
+    },
+    {
+      "name": "public dry-run validates lead capture mapping without writes",
+      "ok": true,
+      "duration_ms": 1024,
+      "details": {
+        "dry_run": true,
+        "project_key": "one_time_mishnah_class",
+        "product_preview": "one_time_mishnah_class",
+        "crm_preview": "bna_parent_leads",
+        "no_database_write_performed": true
+      }
+    }
+  ],
+  "guardrails": [
+    "Dry-run only; no product lead is inserted.",
+    "No CRM lead is created or updated.",
+    "No internal communication note is created.",
+    "No Telegram, email, WhatsApp/WAPI, checkout, access grant, Zoom meeting, or external write is performed."
+  ]
+}

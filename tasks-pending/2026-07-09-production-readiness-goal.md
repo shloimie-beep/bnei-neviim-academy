@@ -101,6 +101,7 @@ production-ready when these classes are green or precisely blocked:
 | TARGET-20260709-011 | Done | Codex | Generic `npm run railway:target:doctor` still depended on command-scoped env or `.secrets` target files; a clean shell could block BNA deploy proof even though the non-secret target labels are stable. | Added repo-visible non-secret BNA and OneTime Railway target profiles, selected by `BNA_DEPLOY_APP` / `BNA_RAILWAY_TARGET_PROFILE`, and prevented `railway status` from leaking environment/domain data across projects. BNA and OneTime target doctors now pass from the committed profile config without printing secrets. |
 | FLEET-20260709-012 | Done / live inference not run | Codex | Kimi fallback was visible in the fleet status line but not backed by a durable readiness artifact proving the configured command, model, version, and quota-only fallback routing. | Added Kimi fallback readiness to `npm run agent:fleet:readiness`: command lookup found `C:\Users\User\.local\bin\kimi.exe`, version readback is `kimi, version 1.44.0`, model is `kimi-k2.7-code-highspeed`, mode is `quota_only`, and helper assertions prove fallback triggers for Codex quota/capacity errors but skips ordinary coding errors. Live Kimi inference remains intentionally unrun. |
 | RUNSTATE-20260709-013 | Done | Codex | The active execution-run blocker output still told the operator to provide a Zoom/class alias even though later redacted setup proof showed the hosted Zoom/class link was present. | Re-ran current setup and WAPI readiness checks, then reconciled the active run JSON and handoff docs so the remaining full-launch blockers are only Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags, and campaign copy/list/suppression/seed approval. |
+| LIVECHECK-20260709-014 | Done / proof pending for Agent Mode only | Codex | Production-readiness proof needed a fresh live regression snapshot after the blocker and Kimi/control-tower reconciliations. | Live-smoked BNA public/app/Operations helper/privacy, OneTime separate instance/public target/Rabbi landing/dry-run interest capture, Rabbi Agent Review proof readiness, and action/security/workspace/raw watchdogs. All runnable checks passed; Rabbi Agent Review remains open only for two saved terminal Agent Mode proofs. |
 
 ## First audit command plan
 
@@ -628,6 +629,55 @@ Guardrails:
   mutation, DNS/account mutation, credential change, deploy, raw class-link
   exposure, phone-number exposure, or production-data mutation was performed.
 
+## LIVECHECK-20260709-014 closeout
+
+Implemented:
+
+- Ran a fresh read-only/live-smoke production readiness sweep from clean
+  `master`.
+- Covered BNA public health, Operations login/session/protected API reads,
+  public route privacy, Operations helper planning, OneTime canonical public
+  funnel, OneTime single-tenant instance config, Rabbi OneTime landing, and
+  OneTime interest dry-run lead capture.
+- Covered Rabbi Agent Review proof readiness and current watchdog guardrails
+  for actions, security routes, workspace scope, and raw intake drift.
+
+Verification:
+
+- PASS `npm run app:smoke -- --skip-tests`.
+- PASS `npm run app:smoke:operations-helper -- https://bneineviimacademy.org`.
+- PASS `npm run app:smoke:public-privacy -- https://bneineviimacademy.org`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`.
+- PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
+- PASS `npm run app:smoke:one-time-interest-dry-run`.
+- PASS `npm run one-time:target:guard -- --json`.
+- PASS `npm run app:smoke:rabbi-agent-review-proof-readiness`; status is
+  `proof_blocked_or_pending` because both Rabbi Agent Mode prompts are live
+  but still have no saved terminal PASS/BLOCKED/FAIL result.
+- PASS `npm run watchdog:actions`, 0 findings.
+- PASS `npm run watchdog:security`, 0 findings.
+- PASS `npm run watchdog:workspace-scope`.
+- PASS `npm run watchdog:raw`, 0 findings.
+
+Evidence:
+
+- `ops/live-smokes/2026-07-09T14-56-10-880Z-live-app-smoke.md`
+- `ops/live-smokes/2026-07-09T14-56-09-773Z-operations-helper-live-smoke.md`
+- `ops/live-smokes/2026-07-09T14-56-24-134Z-public-route-privacy-smoke.md`
+- `ops/live-smokes/2026-07-09T14-56-09-792Z-rabbi-onetime-landing-smoke.md`
+- `ops/live-smokes/2026-07-09T14-56-09-795Z-one-time-interest-dry-run-live-smoke.md`
+- `ops/live-smokes/2026-07-09T14-56-38-372Z-rabbi-agent-review-proof-readiness-live.md`
+- `ops/watchdog-audits/2026-07-09T14-56-watchdog-action-audit.md`
+- `ops/watchdog-audits/2026-07-09T14-56-watchdog-security-routes.md`
+- `ops/watchdog-audits/2026-07-09T14-56-raw-intake-drift.md`
+
+Guardrails:
+
+- No email, WhatsApp/WAPI, Telegram, payment, checkout, charge/refund, access
+  grant, Zoom/Drive/Vimeo write, DNS/account/provider mutation, credential
+  change, Agent Review result save, production-data mutation, external CRM
+  write, or public publish was performed.
+
 ## Final audit
 
 | ID | Status | Evidence | Verification | Remaining issue |
@@ -637,4 +687,4 @@ Guardrails:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied / deployed / live-smoked | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register; `LEADCAP-20260709-009` closeout above. | Lead capture live-smoked in prior closeout; dry-run proof tests, full suite, deployment, and live smoke pass. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, and `RUNSTATE-20260709-013` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, and `LIVECHECK-20260709-014` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |
