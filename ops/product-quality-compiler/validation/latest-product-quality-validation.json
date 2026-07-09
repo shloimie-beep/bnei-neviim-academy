@@ -1,15 +1,43 @@
 {
-  "generated_at": "2026-07-08T17:50:50.799Z",
+  "generated_at": "2026-07-09T14:26:28.907Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-08-app-backend-helper-performance/00-current-state-performance-audit.product-quality.json"
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/00-control-tower.product-quality.json",
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/01-current-state-visual-audit.product-quality.json",
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/02-static-chrome-implementation.product-quality.json",
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/03-public-landing-reframe.product-quality.json",
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/04-provider-operations-layout-parity-audit.product-quality.json"
   ],
-  "total": 1,
-  "passed": 1,
+  "total": 5,
+  "passed": 5,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-08-app-backend-helper-performance/00-current-state-performance-audit.product-quality.json",
+      "file": "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/00-control-tower.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/01-current-state-visual-audit.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/02-static-chrome-implementation.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/03-public-landing-reframe.product-quality.json",
+      "passed": true,
+      "error_codes": [],
+      "errors": []
+    },
+    {
+      "file": "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/04-provider-operations-layout-parity-audit.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []

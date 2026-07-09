@@ -1,0 +1,81 @@
+OneTimeOneTime
+Eli Scheller program workspace
+One Time
+Parent
+Student
+Member
+Classroom
+Email Review
+TEST review mode
+Eli Scheller Workspace
+
+Scoped OneTimeOneTime CRM, inbox, content, users, messages, class, and support.
+
+Close Preview
+OneTimeOneTime Mishnah
+rabbi_sheller_provider
+one_time_mishnah_class
+Scoped provider workspace
+Rabbi Eli Scheller
+Login: ELISHELLER
+whatsapp_handoff_pending
+Landing
+Open
+Parent View
+Open
+Student View
+Open
+Member View
+Open
+Classroom
+Open
+WORKSPACE
+Dashboard
+CRM
+Mailbox
+Messages
+PROGRAM
+Content
+Live Class
+Library
+Badges
+ADMIN
+Users
+Support
+Overview
+
+Your provider workspace summary. Public profile and service changes stay pending review until BNA approves them.
+
+One Time
+Branded review workspace
+[redacted-email]
+CRM inbox
+4
+Workspace users
+2
+CRM/support items
+39/45
+Attendance minutes
+21
+Email previews
+CRM inbox
+
+Emails to [redacted-email] live in the One Time mailbox and CRM thread list.
+
+Open Mailbox
+Parent and student
+
+Parent record is linked to student record.
+
+One Time only
+Live class
+
+Weekly Mishnah Live Class / Pesachim Perek 10
+
+review_ready
+Support queue
+
+Parent support and private questions appear in CRM/Messages.
+
+open_for_review
+Rabbi Scheller Admin Helper

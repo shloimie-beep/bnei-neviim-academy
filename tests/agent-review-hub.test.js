@@ -48,11 +48,11 @@ test('Agent Review context matrix covers Issue #24 role cards', () => {
   assert.equal(AGENT_REVIEW_CONTEXTS.some((item) => item.role === 'super_admin' && item.context_type.includes('live')), true);
 });
 
-test('Agent Mode prompt pack has exactly 18 generated mobile-copyable files', () => {
-  assert.equal(AGENT_MODE_PROMPTS.length, 18);
+test('Agent Mode prompt pack has exactly 26 generated mobile-copyable files', () => {
+  assert.equal(AGENT_MODE_PROMPTS.length, 26);
   assert.equal(packageJson.scripts['agent-review:prompts'], 'node scripts/generate-agent-review-prompts.cjs');
   const index = buildPromptIndex({ baseUrl: 'https://bneineviimacademy.org' });
-  assert.equal(index.length, 18);
+  assert.equal(index.length, 26);
 
   for (const prompt of index) {
     const filePath = path.join(root, 'public', 'agent-review-prompts', prompt.file);

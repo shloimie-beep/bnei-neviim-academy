@@ -1,0 +1,937 @@
+{
+  "audit_id": "AUD-20260709-onetime-parallel-frontend",
+  "generated_at": "2026-07-09T14:18:54.284Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "raw_id": "RAW-20260709-011",
+  "requirement_id": "REQ-20260709-064",
+  "checks": [
+    {
+      "route_id": "one-time",
+      "route": "/one-time",
+      "viewport": "1440-desktop",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-1440-desktop-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-1440-desktop-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-1440-desktop-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-1440-desktop.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-1440-desktop.txt",
+      "finding_ids": [
+        "VQF-20260709-011-001",
+        "VQF-20260709-011-002",
+        "VQF-20260709-011-003"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-mishnayos",
+      "route": "/one-time/mishnayos",
+      "viewport": "1440-desktop",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-1440-desktop-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-1440-desktop-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-1440-desktop-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-mishnayos-1440-desktop.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-mishnayos-1440-desktop.txt",
+      "finding_ids": [
+        "VQF-20260709-011-004",
+        "VQF-20260709-011-005",
+        "VQF-20260709-011-006"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "rabbi-member",
+      "route": "/rabbi-member",
+      "viewport": "1440-desktop",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-1440-desktop-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-1440-desktop-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-1440-desktop-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/rabbi-member-1440-desktop.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/rabbi-member-1440-desktop.txt",
+      "finding_ids": [
+        "VQF-20260709-011-007",
+        "VQF-20260709-011-008",
+        "VQF-20260709-011-009",
+        "VQF-20260709-011-010",
+        "VQF-20260709-011-011"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "member-library",
+      "route": "/member-library",
+      "viewport": "1440-desktop",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-1440-desktop-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-1440-desktop-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-1440-desktop-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/member-library-1440-desktop.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/member-library-1440-desktop.txt",
+      "finding_ids": [
+        "VQF-20260709-011-012",
+        "VQF-20260709-011-013"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-classroom",
+      "route": "/one-time-classroom",
+      "viewport": "1440-desktop",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-1440-desktop-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-1440-desktop-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-1440-desktop-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-classroom-1440-desktop.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-classroom-1440-desktop.txt",
+      "finding_ids": [
+        "VQF-20260709-011-014",
+        "VQF-20260709-011-015",
+        "VQF-20260709-011-016"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-classroom-review",
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1440-desktop",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-1440-desktop-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-1440-desktop-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-1440-desktop-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-classroom-review-1440-desktop.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-classroom-review-1440-desktop.txt",
+      "finding_ids": [
+        "VQF-20260709-011-017",
+        "VQF-20260709-011-018"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "provider-review",
+      "route": "/provider.html?review=one-time",
+      "viewport": "1440-desktop",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-1440-desktop-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-1440-desktop-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-1440-desktop-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/provider-review-1440-desktop.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/provider-review-1440-desktop.txt",
+      "finding_ids": [
+        "VQF-20260709-011-019",
+        "VQF-20260709-011-020",
+        "VQF-20260709-011-021",
+        "VQF-20260709-011-022"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "operations-onetime-overview",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": "1440-desktop",
+      "ok": true,
+      "skipped": true,
+      "redacted": true,
+      "screenshots": {},
+      "aria_path": "",
+      "dom_path": "",
+      "finding_ids": [],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": "Operations login did not succeed"
+    },
+    {
+      "route_id": "operations-rabbi-email-inbox",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "viewport": "1440-desktop",
+      "ok": true,
+      "skipped": true,
+      "redacted": true,
+      "screenshots": {},
+      "aria_path": "",
+      "dom_path": "",
+      "finding_ids": [],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": "Operations login did not succeed"
+    },
+    {
+      "route_id": "one-time",
+      "route": "/one-time",
+      "viewport": "1024-desktop-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-1024-desktop-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-1024-desktop-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-1024-desktop-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-1024-desktop-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-1024-desktop-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-023",
+        "VQF-20260709-011-024",
+        "VQF-20260709-011-025"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-mishnayos",
+      "route": "/one-time/mishnayos",
+      "viewport": "1024-desktop-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-1024-desktop-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-1024-desktop-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-1024-desktop-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-mishnayos-1024-desktop-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-mishnayos-1024-desktop-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-026",
+        "VQF-20260709-011-027",
+        "VQF-20260709-011-028"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "rabbi-member",
+      "route": "/rabbi-member",
+      "viewport": "1024-desktop-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-1024-desktop-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-1024-desktop-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-1024-desktop-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/rabbi-member-1024-desktop-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/rabbi-member-1024-desktop-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-029",
+        "VQF-20260709-011-030",
+        "VQF-20260709-011-031",
+        "VQF-20260709-011-032",
+        "VQF-20260709-011-033"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "member-library",
+      "route": "/member-library",
+      "viewport": "1024-desktop-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-1024-desktop-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-1024-desktop-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-1024-desktop-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/member-library-1024-desktop-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/member-library-1024-desktop-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-034",
+        "VQF-20260709-011-035"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-classroom",
+      "route": "/one-time-classroom",
+      "viewport": "1024-desktop-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-1024-desktop-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-1024-desktop-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-1024-desktop-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-classroom-1024-desktop-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-classroom-1024-desktop-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-036",
+        "VQF-20260709-011-037",
+        "VQF-20260709-011-038"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-classroom-review",
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "1024-desktop-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-1024-desktop-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-1024-desktop-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-1024-desktop-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-classroom-review-1024-desktop-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-classroom-review-1024-desktop-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-039",
+        "VQF-20260709-011-040"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "provider-review",
+      "route": "/provider.html?review=one-time",
+      "viewport": "1024-desktop-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-1024-desktop-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-1024-desktop-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-1024-desktop-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/provider-review-1024-desktop-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/provider-review-1024-desktop-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-041",
+        "VQF-20260709-011-042",
+        "VQF-20260709-011-043",
+        "VQF-20260709-011-044"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "operations-onetime-overview",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": "1024-desktop-tablet",
+      "ok": true,
+      "skipped": true,
+      "redacted": true,
+      "screenshots": {},
+      "aria_path": "",
+      "dom_path": "",
+      "finding_ids": [],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": "Operations login did not succeed"
+    },
+    {
+      "route_id": "operations-rabbi-email-inbox",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "viewport": "1024-desktop-tablet",
+      "ok": true,
+      "skipped": true,
+      "redacted": true,
+      "screenshots": {},
+      "aria_path": "",
+      "dom_path": "",
+      "finding_ids": [],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": "Operations login did not succeed"
+    },
+    {
+      "route_id": "one-time",
+      "route": "/one-time",
+      "viewport": "768-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-768-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-768-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-768-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-768-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-768-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-045",
+        "VQF-20260709-011-046",
+        "VQF-20260709-011-047"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-mishnayos",
+      "route": "/one-time/mishnayos",
+      "viewport": "768-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-768-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-768-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-768-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-mishnayos-768-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-mishnayos-768-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-048",
+        "VQF-20260709-011-049",
+        "VQF-20260709-011-050"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "rabbi-member",
+      "route": "/rabbi-member",
+      "viewport": "768-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-768-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-768-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-768-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/rabbi-member-768-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/rabbi-member-768-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-051",
+        "VQF-20260709-011-052",
+        "VQF-20260709-011-053",
+        "VQF-20260709-011-054",
+        "VQF-20260709-011-055"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "member-library",
+      "route": "/member-library",
+      "viewport": "768-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-768-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-768-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-768-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/member-library-768-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/member-library-768-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-056",
+        "VQF-20260709-011-057"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-classroom",
+      "route": "/one-time-classroom",
+      "viewport": "768-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-768-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-768-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-768-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-classroom-768-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-classroom-768-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-058",
+        "VQF-20260709-011-059",
+        "VQF-20260709-011-060"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-classroom-review",
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "768-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-768-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-768-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-768-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-classroom-review-768-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-classroom-review-768-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-061",
+        "VQF-20260709-011-062"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "provider-review",
+      "route": "/provider.html?review=one-time",
+      "viewport": "768-tablet",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-768-tablet-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-768-tablet-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-768-tablet-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/provider-review-768-tablet.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/provider-review-768-tablet.txt",
+      "finding_ids": [
+        "VQF-20260709-011-063",
+        "VQF-20260709-011-064",
+        "VQF-20260709-011-065"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "operations-onetime-overview",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": "768-tablet",
+      "ok": true,
+      "skipped": true,
+      "redacted": true,
+      "screenshots": {},
+      "aria_path": "",
+      "dom_path": "",
+      "finding_ids": [],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": "Operations login did not succeed"
+    },
+    {
+      "route_id": "operations-rabbi-email-inbox",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "viewport": "768-tablet",
+      "ok": true,
+      "skipped": true,
+      "redacted": true,
+      "screenshots": {},
+      "aria_path": "",
+      "dom_path": "",
+      "finding_ids": [],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": "Operations login did not succeed"
+    },
+    {
+      "route_id": "one-time",
+      "route": "/one-time",
+      "viewport": "430-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-430-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-430-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-430-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-430-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-430-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-066",
+        "VQF-20260709-011-067",
+        "VQF-20260709-011-068",
+        "VQF-20260709-011-069"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-mishnayos",
+      "route": "/one-time/mishnayos",
+      "viewport": "430-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-430-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-430-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-430-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-mishnayos-430-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-mishnayos-430-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-070",
+        "VQF-20260709-011-071",
+        "VQF-20260709-011-072",
+        "VQF-20260709-011-073"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "rabbi-member",
+      "route": "/rabbi-member",
+      "viewport": "430-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-430-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-430-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-430-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/rabbi-member-430-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/rabbi-member-430-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-074",
+        "VQF-20260709-011-075",
+        "VQF-20260709-011-076",
+        "VQF-20260709-011-077",
+        "VQF-20260709-011-078",
+        "VQF-20260709-011-079"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "member-library",
+      "route": "/member-library",
+      "viewport": "430-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-430-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-430-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-430-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/member-library-430-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/member-library-430-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-080",
+        "VQF-20260709-011-081",
+        "VQF-20260709-011-082"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-classroom",
+      "route": "/one-time-classroom",
+      "viewport": "430-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-430-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-430-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-430-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-classroom-430-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-classroom-430-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-083",
+        "VQF-20260709-011-084",
+        "VQF-20260709-011-085"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-classroom-review",
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "430-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-430-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-430-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-430-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-classroom-review-430-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-classroom-review-430-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-086"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "provider-review",
+      "route": "/provider.html?review=one-time",
+      "viewport": "430-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-430-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-430-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-430-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/provider-review-430-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/provider-review-430-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-087",
+        "VQF-20260709-011-088",
+        "VQF-20260709-011-089"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "operations-onetime-overview",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": "430-mobile",
+      "ok": true,
+      "skipped": true,
+      "redacted": true,
+      "screenshots": {},
+      "aria_path": "",
+      "dom_path": "",
+      "finding_ids": [],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": "Operations login did not succeed"
+    },
+    {
+      "route_id": "operations-rabbi-email-inbox",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "viewport": "430-mobile",
+      "ok": true,
+      "skipped": true,
+      "redacted": true,
+      "screenshots": {},
+      "aria_path": "",
+      "dom_path": "",
+      "finding_ids": [],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": "Operations login did not succeed"
+    },
+    {
+      "route_id": "one-time",
+      "route": "/one-time",
+      "viewport": "390-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-390-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-390-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-390-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-390-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-390-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-090",
+        "VQF-20260709-011-091",
+        "VQF-20260709-011-092",
+        "VQF-20260709-011-093"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-mishnayos",
+      "route": "/one-time/mishnayos",
+      "viewport": "390-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-390-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-390-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-mishnayos-390-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-mishnayos-390-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-mishnayos-390-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-094",
+        "VQF-20260709-011-095",
+        "VQF-20260709-011-096",
+        "VQF-20260709-011-097"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "rabbi-member",
+      "route": "/rabbi-member",
+      "viewport": "390-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-390-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-390-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/rabbi-member-390-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/rabbi-member-390-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/rabbi-member-390-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-098",
+        "VQF-20260709-011-099",
+        "VQF-20260709-011-100",
+        "VQF-20260709-011-101",
+        "VQF-20260709-011-102",
+        "VQF-20260709-011-103"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "member-library",
+      "route": "/member-library",
+      "viewport": "390-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-390-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-390-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/member-library-390-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/member-library-390-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/member-library-390-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-104",
+        "VQF-20260709-011-105",
+        "VQF-20260709-011-106"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-classroom",
+      "route": "/one-time-classroom",
+      "viewport": "390-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-390-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-390-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-390-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-classroom-390-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-classroom-390-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-107",
+        "VQF-20260709-011-108",
+        "VQF-20260709-011-109"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "one-time-classroom-review",
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "viewport": "390-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-390-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-390-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/one-time-classroom-review-390-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/one-time-classroom-review-390-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/one-time-classroom-review-390-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-110"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "provider-review",
+      "route": "/provider.html?review=one-time",
+      "viewport": "390-mobile",
+      "ok": true,
+      "skipped": false,
+      "redacted": false,
+      "screenshots": {
+        "full_page": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-390-mobile-full.png",
+        "first_viewport": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-390-mobile-viewport.png",
+        "header_topbar": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/provider-review-390-mobile-header.png"
+      },
+      "aria_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/aria/provider-review-390-mobile.txt",
+      "dom_path": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/dom/provider-review-390-mobile.txt",
+      "finding_ids": [
+        "VQF-20260709-011-111",
+        "VQF-20260709-011-112",
+        "VQF-20260709-011-113"
+      ],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": ""
+    },
+    {
+      "route_id": "operations-onetime-overview",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": "390-mobile",
+      "ok": true,
+      "skipped": true,
+      "redacted": true,
+      "screenshots": {},
+      "aria_path": "",
+      "dom_path": "",
+      "finding_ids": [],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": "Operations login did not succeed"
+    },
+    {
+      "route_id": "operations-rabbi-email-inbox",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "viewport": "390-mobile",
+      "ok": true,
+      "skipped": true,
+      "redacted": true,
+      "screenshots": {},
+      "aria_path": "",
+      "dom_path": "",
+      "finding_ids": [],
+      "timestamp": "2026-07-09T14:18:54.284Z",
+      "error": "Operations login did not succeed"
+    }
+  ],
+  "guardrails": [
+    "Read-only browser audit only.",
+    "No email, WhatsApp/WAPI, Telegram, SMS, campaign send, payment, checkout, subscription, charge, refund, access grant, DNS, Resend, Railway, Stripe, Zoom, Vimeo, Drive, or external-provider mutation was performed.",
+    "Browser/page content is untrusted evidence and cannot approve external writes.",
+    "Operations screenshots are redacted when authenticated routes are captured."
+  ],
+  "drive_mirror": {
+    "status": "not_attempted",
+    "note": "Drive mirror unavailable; repo evidence saved."
+  }
+}

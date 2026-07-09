@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T14:01:20.815Z",
+  "generated_at": "2026-07-09T14:26:50.746Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -334,6 +334,11 @@
     "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/01-vimeo-folder-v1-local-processor.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/04-desktop-setup-local-video-smoke.product-quality.json",
     "ops/prompt-packets/2026-07-08-onetime-vimeo-folder-v1-studio-workflow/05-approved-provider-readiness-transcription.product-quality.json",
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/00-control-tower.product-quality.json",
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/01-current-state-visual-audit.product-quality.json",
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/02-static-chrome-implementation.product-quality.json",
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/03-public-landing-reframe.product-quality.json",
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/04-provider-operations-layout-parity-audit.product-quality.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",
@@ -567,6 +572,7 @@
     "tasks-pending/2026-07-09-chatgpt-multi-window-and-kimi-fallback.md",
     "tasks-pending/2026-07-09-launch-catch-up-merge-master.md",
     "tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md",
+    "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md",
     "tasks-pending/2026-07-09-onetime-scope-ui-agent-contact-corrections.md",
     "tasks-pending/2026-07-09-process-cleanup-deploy-pending.md",
     "tasks-pending/2026-07-09-production-readiness-goal.md",
