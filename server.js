@@ -3892,6 +3892,19 @@ function validateParentPassword(password) {
   return raw;
 }
 
+function formatDurationForEmail(ttlMs) {
+  const totalMinutes = Math.max(1, Math.round(Number(ttlMs || 0) / 60000));
+  if (totalMinutes % (60 * 24) === 0) {
+    const days = totalMinutes / (60 * 24);
+    return `${days} ${days === 1 ? 'day' : 'days'}`;
+  }
+  if (totalMinutes % 60 === 0) {
+    const hours = totalMinutes / 60;
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+  }
+  return `${totalMinutes} minutes`;
+}
+
 function parentPortalPasswordResetUrl(req, token) {
   if (!token) return '';
   return `${requestBaseUrl(req)}/parent?reset=${encodeURIComponent(token)}`;
@@ -6997,7 +7010,8 @@ async function sendParentMagicLinkEmail({ parentEmail, url, req }) {
   }
 }
 
-async function sendParentPasswordResetEmail({ parentEmail, url, req }) {
+async function sendParentPasswordResetEmail({ parentEmail, url, req, ttlMs = PARENT_PASSWORD_RESET_TTL_MS }) {
+  const expiresIn = formatDurationForEmail(ttlMs);
   const subject = 'Set or reset your Bnei Neviim Academy parent portal password';
   const text = [
     'Hi,',
@@ -7005,7 +7019,7 @@ async function sendParentPasswordResetEmail({ parentEmail, url, req }) {
     'Use this secure link to set or reset your Bnei Neviim Academy parent portal password:',
     url,
     '',
-    'This link expires in 1 hour. If you did not request it, you can ignore this email.',
+    `This link expires in ${expiresIn}. If you did not request it, you can ignore this email.`,
     '',
     'Bnei Neviim Academy Office',
   ].join('\n');
@@ -7045,7 +7059,8 @@ async function sendParentPasswordResetEmail({ parentEmail, url, req }) {
   }
 }
 
-async function sendOneTimeParentPasswordResetEmail({ parentEmail, url, req }) {
+async function sendOneTimeParentPasswordResetEmail({ parentEmail, url, req, ttlMs = ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS }) {
+  const expiresIn = formatDurationForEmail(ttlMs);
   const subject = 'Reset your OneTimeOneTime parent password';
   const text = [
     'Hi,',
@@ -7053,7 +7068,8 @@ async function sendOneTimeParentPasswordResetEmail({ parentEmail, url, req }) {
     'Use this secure link to set a new OneTimeOneTime parent password:',
     url,
     '',
-    'This link expires in 1 hour. If you did not request it, you can ignore this email.',
+    `This link stays active for ${expiresIn}. If it expires, use the parent setup page to email yourself a fresh link.`,
+    'If you did not request it, you can ignore this email.',
     '',
     'Rabbi Elie Scheller',
     'OneTimeOneTime Mishnah',
@@ -7224,7 +7240,7 @@ async function createParentPasswordResetToken({
 
   const url = urlBuilder(req, token);
   const emailResult = sendEmail
-    ? await emailSender({ parentEmail: email, url, req })
+    ? await emailSender({ parentEmail: email, url, req, ttlMs: normalizedTtlMs })
     : { ok: false, skipped: true };
   await db.query(
     `INSERT INTO bna_contact_communications (
@@ -54450,6 +54466,7 @@ app.post('/api/one-time/parent-password/request', async (req, res) => {
       },
       emailSender: sendOneTimeParentPasswordResetEmail,
       urlBuilder: (_req, token) => oneTimeParentPortalPasswordResetUrl(token),
+      ttlMs: ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS,
     });
   } catch (error) {
     if (error.statusCode === 400) return res.status(400).json({ error: error.message });

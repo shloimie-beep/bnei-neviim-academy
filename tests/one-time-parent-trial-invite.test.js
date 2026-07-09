@@ -76,6 +76,8 @@ test('admin parent trial invite route is launch-ready by default and smoke-label
   assert.doesNotMatch(route, /TEST One Time Student/);
   assert.doesNotMatch(route, /Bnei Neviim Academy|bneineviimacademy\.org/);
   assert.match(server, /function oneTimeParentPortalPasswordResetUrl\(token\)[\s\S]*\/one-time-parent\?reset=/);
+  assert.match(server, /function formatDurationForEmail\(ttlMs\)/);
+  assert.match(server, /This link stays active for \$\{expiresIn\}/);
   assert.doesNotMatch(server, /scopedPublicUrl\(configuredOneTimePublicBaseUrl\(\), `\/parent\?reset=/);
   assert.match(server, /app\.get\('\/one-time-parent'/);
   assert.match(server, /one_time_member_access/);
@@ -84,6 +86,7 @@ test('admin parent trial invite route is launch-ready by default and smoke-label
   assert.match(server, /app\.post\('\/api\/one-time\/parent-password\/request'/);
   assert.match(server, /sendOneTimeParentPasswordResetEmail/);
   assert.match(server, /oneTimeParentPasswordResetEligible/);
+  assert.match(server, /one_time_parent_password_request[\s\S]*ttlMs: ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS/);
   assert.doesNotMatch(server, /parent_trial_invite[\s\S]{0,2000}createStripeCheckout/);
 });
 
