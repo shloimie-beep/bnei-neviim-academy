@@ -37396,3 +37396,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
   smoke, Drive write, class backfill, or production-data mutation.
+
+## 2026-07-10T00:22:00+03:00 - OneTime Static Cache Policy Deployed And Live-Smoked
+
+- Deployed commit `4908c905` to OneTime Railway service
+  `one-time-production / one-time-web`.
+- Railway deployment `50533728-970f-4936-bc14-bbe439992f6e` reached `SUCCESS`.
+- Live header readback confirmed:
+  `/js/bna-bot-widget.js` and `/css/one-time-shared-review.css` return
+  `Cache-Control: public, max-age=300, must-revalidate`;
+  `/images/one-time/brand/onetimelogo.webp` returns
+  `public, max-age=86400, stale-while-revalidate=604800`;
+  `/one-time/`, `sw.js`, `manifest.json`, `operations-shell.js`, and
+  `operations-deferred-renderers.js` remain no-store/no-cache.
+- Live smokes passed: `app:smoke:onetime-separate-instance`,
+  `app:smoke:rabbi-onetime-landing`, and
+  `app:smoke:one-time-interest-dry-run`.
+- Fresh no-write lag audit now reports 1/18 samples needing attention, down
+  from 18/18 before the cache policy. The residual finding is parent-review
+  desktop `slow_dom_content_loaded`.
+- Evidence:
+  `ops/performance-audits/2026-07-10-onetime-cache-policy-live-readback/`.
+- Guardrails: no external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
+  smoke, Drive write, class backfill, or production-data mutation.

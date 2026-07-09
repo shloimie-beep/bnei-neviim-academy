@@ -90,7 +90,7 @@ production-ready when these classes are green or precisely blocked:
 | DEC-20260709-008 | Superseded for link value; approvals still blocked | Shloimie / Codex to verify | Hosted free-class/class-link value is present by redacted OneTime Railway readback; automated sends remain blocked by WAPI instance/phone metadata and explicit auto-reply approval. | Keep follow-up manual/no-send until WAPI metadata and approval flags are intentionally configured. |
 | PERF-20260709-001 | Done, deployed/live-smoked | Codex | BNA Operations rendered with 0 console errors, but startup still performed 118 API reads, median 1064ms, P95 2855ms, max 3622ms. | Reduced dashboard startup fanout, removed support-ticket loading from dashboard first paint, bounded support-ticket list query, deployed BNA, and recorded live profile proof. |
 | PERF-20260709-002 | Follow-up, not launch-blocking | Codex | Final dashboard profile is usable but still shows a later refresh cycle around 33s and initial slowest dashboard reads near 3s. | If more performance polish is needed, inspect dashboard refresh scheduling and tune task/device/payment reads after screenshot-led UI work. |
-| PERF-20260710-001 | In progress / deploy pending | Codex | OneTime live lag audit classified the strongest signal as slow/variable first-byte response plus static/cache delivery policy; static assets were returning default `max-age=0`. | Implemented a conservative static cache policy for public JS/CSS/media while preserving no-store/no-cache for HTML, APIs, service worker, manifests, and Operations shell assets. Commit, deploy to OneTime, and live-read headers before terminal Done. |
+| PERF-20260710-001 | Done / deployed / live-smoked | Codex | OneTime live lag audit classified the strongest signal as slow/variable first-byte response plus static/cache delivery policy; static assets were returning default `max-age=0`. | Implemented and deployed a conservative static cache policy for public JS/CSS/media while preserving no-store/no-cache for HTML, APIs, service worker, manifests, and Operations shell assets. Live readback shows correct headers and fresh lag audit improved from 18/18 samples needing attention to 1/18. |
 | DEPLOY-20260709-003 | Done | Codex | `npm run railway:doctor` loaded a stale project token even when BNA deploys used account auth, which made deploy-proof readback look blocked after successful deployments. | Updated `scripts/railway-doctor.ps1` to honor `BNA_RAILWAY_USE_ACCOUNT_AUTH` before loading `.secrets/railway-token.txt`; verified doctor passes against BNA production deployment `e1cef921-0e58-4fe7-aaf7-d9be65b06295`. |
 | TARGET-20260709-004 | Done | Codex | `npm run one-time:target:guard` hard-blocked the public OneTime target when the local Railway CLI was linked to BNA, even though the canonical OneTime domain and instance config passed. | Reclassified local Railway status mismatch as a warning in `scripts/release-captain.mjs`, added regression coverage, and kept `npm run one-time:railway-target:guard` as the dedicated Railway instance proof. |
 | SETUPCHECK-20260709-005 | Done | Codex | `npm run one-time:setup:check` could fall back into the BNA project-token/local-link context and report OneTime Railway target/auth as missing even when OneTime was live. | Updated `scripts/check-onetime-external-setup-readiness.mjs` to honor account-auth mode and use an isolated temp Railway link for redacted OneTime variable readback. |
@@ -2664,7 +2664,7 @@ Remaining:
 
 ## PERF-20260710-001 closeout
 
-Implemented locally:
+Implemented:
 
 - Opened the `REQ-20260709-070` performance implementation lane after
   `npm run chatgpt:dropoff:tower` showed a clean worktree at sample time, no
@@ -2678,6 +2678,13 @@ Implemented locally:
 - Added source and behavioral regression coverage so the fake-Express static
   middleware readback checks public JS/CSS/media headers and private shell
   no-cache exclusions.
+- Committed and pushed `4908c905`.
+- Deployed to the OneTime Railway target `one-time-production / one-time-web`;
+  deployment `50533728-970f-4936-bc14-bbe439992f6e` reached `SUCCESS`.
+- Live-read `Cache-Control` headers on public JS/CSS/media plus HTML, service
+  worker, manifests, and Operations shell assets.
+- Re-ran scoped no-write OneTime live lag audit; samples needing attention
+  dropped from 18/18 to 1/18.
 
 Verification:
 
@@ -2688,6 +2695,18 @@ Verification:
   BNA target profile.
 - PASS `node scripts/railway-target-guard.mjs deploy --json` for the default
   BNA target profile.
+- PASS OneTime `npm run railway:doctor`.
+- PASS OneTime `npm run railway:redeploy`.
+- PASS post-deploy OneTime `npm run railway:doctor` showing deployment
+  `50533728-970f-4936-bc14-bbe439992f6e` status `SUCCESS`.
+- PASS `npm run app:smoke:onetime-separate-instance --
+  https://join.onetimeonetime.com`.
+- PASS `npm run app:smoke:rabbi-onetime-landing --
+  https://join.onetimeonetime.com`.
+- PASS `npm run app:smoke:one-time-interest-dry-run`.
+- PASS `node scripts/audit-onetime-live-performance.mjs --base-url
+  https://join.onetimeonetime.com --out-dir
+  ops/performance-audits/2026-07-10-onetime-cache-policy-live-readback`.
 
 Evidence:
 
@@ -2695,18 +2714,21 @@ Evidence:
 - `tests/bna-helper-tools.test.js`
 - `tests/one-time-intake-api-readback.test.js`
 - `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`
+- `ops/performance-audits/2026-07-10-onetime-cache-policy-live-readback/header-readback.md`
+- `ops/performance-audits/2026-07-10-onetime-cache-policy-live-readback/header-readback.json`
+- `ops/performance-audits/2026-07-10-onetime-cache-policy-live-readback/report.md`
+- `ops/performance-audits/2026-07-10-onetime-cache-policy-live-readback/report.json`
 
 Guardrails:
 
 - No external send, payment/access mutation, CRM/provider/DNS/credential
   mutation, Agent Review result save, live Telegram smoke, Drive write, class
   backfill, or production-data mutation.
-- This is not terminal Done until the change is committed, pushed, deployed to
-  OneTime, and live header/lag readback is recorded.
 
 Remaining:
 
-- Deploy/live-smoke the cache policy fix on `join.onetimeonetime.com`.
+- One residual parent-review desktop sample crossed `slow_dom_content_loaded`;
+  continue runtime/parent-review follow-up only if repeated samples stay slow.
 - Full OneTime external setup, terminal Agent Mode saved proof, and Rabbi
   Telegram hosted restart/live-smoke proof remain separate blockers.
 

@@ -1,0 +1,74 @@
+{
+  "generated_at": "2026-07-09T21:21:52.186Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "deployment_id": "50533728-970f-4936-bc14-bbe439992f6e",
+  "commit": "4908c905",
+  "external_write_performed": false,
+  "production_data_mutation_performed": false,
+  "results": [
+    {
+      "path": "/js/bna-bot-widget.js",
+      "status": 200,
+      "cache_control": "public, max-age=300, must-revalidate",
+      "content_type": "application/javascript; charset=UTF-8",
+      "server": "railway-hikari",
+      "railway_edge": "ams1"
+    },
+    {
+      "path": "/css/one-time-shared-review.css",
+      "status": 200,
+      "cache_control": "public, max-age=300, must-revalidate",
+      "content_type": "text/css; charset=UTF-8",
+      "server": "railway-hikari",
+      "railway_edge": "ams1"
+    },
+    {
+      "path": "/images/one-time/brand/onetimelogo.webp",
+      "status": 200,
+      "cache_control": "public, max-age=86400, stale-while-revalidate=604800",
+      "content_type": "image/webp",
+      "server": "railway-hikari",
+      "railway_edge": "ams1"
+    },
+    {
+      "path": "/one-time/",
+      "status": 200,
+      "cache_control": "no-store",
+      "content_type": "text/html; charset=UTF-8",
+      "server": "railway-hikari",
+      "railway_edge": "ams1"
+    },
+    {
+      "path": "/sw.js",
+      "status": 200,
+      "cache_control": "no-store",
+      "content_type": "application/javascript; charset=UTF-8",
+      "server": "railway-hikari",
+      "railway_edge": "ams1"
+    },
+    {
+      "path": "/manifest.json",
+      "status": 200,
+      "cache_control": "no-store",
+      "content_type": "application/json; charset=UTF-8",
+      "server": "railway-hikari",
+      "railway_edge": "ams1"
+    },
+    {
+      "path": "/js/operations-shell.js",
+      "status": 200,
+      "cache_control": "private, no-cache, max-age=0, must-revalidate",
+      "content_type": "application/javascript; charset=UTF-8",
+      "server": "railway-hikari",
+      "railway_edge": "ams1"
+    },
+    {
+      "path": "/js/operations-deferred-renderers.js",
+      "status": 200,
+      "cache_control": "private, no-cache, max-age=0, must-revalidate",
+      "content_type": "application/javascript; charset=UTF-8",
+      "server": "railway-hikari",
+      "railway_edge": "ams1"
+    }
+  ]
+}
