@@ -37281,3 +37281,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   production-data mutation.
 - Remaining blockers are unchanged until a deliberate stale-sweep/apply or
   operator-owned proof/setup action is approved and recorded.
+
+## 2026-07-09T23:43:01+03:00 - Stale Job Readiness Artifacts Refreshed
+
+- Regenerated the production readiness snapshot and ChatGPT/Codex control tower
+  from clean pushed head `5a634ec8`; both now include stale observable job
+  candidate visibility.
+- Pushed that artifact refresh, then regenerated the production unblocker from
+  clean pushed head `2385e0fe`; the unblocker now records
+  `snapshot_worktree_clean:true`.
+- Current artifact evidence shows stale candidates `344`, `382`, `426`, and
+  `427`; collision lanes remain active until a deliberate queue reconciliation
+  action is approved/applied.
+- Verification passed: `npm run production:readiness:snapshot`, `npm run
+  chatgpt:dropoff:tower`, `npm run production:unblocker`, and readback of
+  `snapshot_git_head=2385e0fe`, `snapshot_origin_master=2385e0fe`,
+  `snapshot_worktree_clean=true`.
+- Guardrails held: artifact/report refresh only; no stale sweep apply, no live
+  task/job mutation, no app UI edit, no deploy, no hosted restart/live Telegram
+  smoke, no external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, lock deletion,
+  or production-data mutation.
