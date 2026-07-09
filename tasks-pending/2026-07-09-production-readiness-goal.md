@@ -952,6 +952,14 @@ Verification:
 - PASS `npm run bna:run:validate`.
 - PASS `npm run secrets:audit`.
 - PASS `git diff --check`.
+- Pushed gate implementation commit `d19fc04d`.
+- PASS `npm run production:readiness:snapshot` from a clean pushed tree.
+- PASS latest tracked JSON readback:
+  `head d19fc04d`, `origin d19fc04d`, `clean true`,
+  `status not_production_complete`, `ready false`, `blockers 2`, `queued 0`.
+- EXPECTED BLOCKED `npm run production:readiness:gate -- --json` after the
+  latest snapshot refresh: exit `1`, with real blockers plus dirty worktree
+  only because the tracked latest snapshot evidence was awaiting commit.
 
 Evidence:
 
@@ -973,9 +981,8 @@ Remaining:
 - The gate should remain blocked until the external OneTime setup blockers,
   terminal Rabbi Agent Mode proofs, active collision lanes, and any queued
   dropoffs are clear.
-- Commit and push this gate batch, then regenerate the tracked latest snapshot
-  from the clean pushed tree so the latest report reflects the computed status
-  logic.
+- Commit and push this tracked latest snapshot evidence refresh, then rerun the
+  gate from a clean tree.
 
 ## Final audit
 

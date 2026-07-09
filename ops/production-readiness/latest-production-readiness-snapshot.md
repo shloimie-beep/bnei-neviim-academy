@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T15:29:38.543Z
+# Production Readiness Snapshot - 2026-07-09T15:36:35.936Z
 
 Result: not_production_complete
 Production ready: no
@@ -8,18 +8,19 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - full OneTime launch has external Stripe/WAPI/campaign blockers
 - Rabbi Agent Review still needs terminal Agent Mode proof
 - broad UI lane is already active in another agent job
+- fallback/API lane is already active in another agent job
 - active execution run has no unblocked executable batch
 
 ## Git
 - Branch: master
-- HEAD: 188684f9
-- origin/master: 188684f9
+- HEAD: d19fc04d
+- origin/master: d19fc04d
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 188684f9
-- Sampled origin/master: 188684f9
+- Sampled git head: d19fc04d
+- Sampled origin/master: d19fc04d
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -39,7 +40,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 12, stale 411, blocked 121, unknown 193, do-not-redo 878
+- Queue health: fresh 13, stale 412, blocked 121, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 
 ## Active / Do Not Collide

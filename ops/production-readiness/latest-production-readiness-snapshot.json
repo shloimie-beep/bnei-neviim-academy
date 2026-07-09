@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T15:29:38.543Z",
+  "generated_at": "2026-07-09T15:36:35.936Z",
   "report_version": "bna-production-readiness-snapshot-v1",
   "assessment": {
     "production_ready": false,
@@ -8,6 +8,7 @@
       "full OneTime launch has external Stripe/WAPI/campaign blockers",
       "Rabbi Agent Review still needs terminal Agent Mode proof",
       "broad UI lane is already active in another agent job",
+      "fallback/API lane is already active in another agent job",
       "active execution run has no unblocked executable batch"
     ],
     "immediate_lead_capture_free_class_lane": "live_verified_from_existing_register",
@@ -34,15 +35,15 @@
   },
   "git": {
     "branch": "master",
-    "head": "188684f9",
-    "origin_master": "188684f9",
+    "head": "d19fc04d",
+    "origin_master": "d19fc04d",
     "status_short": "## master...origin/master",
     "clean": true
   },
   "freshness": {
     "kind": "sampled_control_tower_report",
-    "sampled_git_head": "188684f9",
-    "sampled_origin_master": "188684f9",
+    "sampled_git_head": "d19fc04d",
+    "sampled_origin_master": "d19fc04d",
     "sampled_worktree_clean": true,
     "note": "This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.",
     "refresh_command": "npm run production:readiness:snapshot",
@@ -83,7 +84,7 @@
       "linked_observable_task_lookup": "fetched 4, missing 0",
       "active_codex_task_fallback": "34",
       "ready_to_claim": "3",
-      "queue_health": "fresh 12, stale 411, blocked 121, unknown 193, do-not-redo 878",
+      "queue_health": "fresh 13, stale 412, blocked 121, unknown 193, do-not-redo 878",
       "max_retries": "2",
       "baseline_smoke": "enabled",
       "auto_deploy_gate": "disabled",
@@ -175,13 +176,13 @@
     }
   },
   "chatgpt_dropoff": {
-    "generated_at": "2026-07-09T15:29:44.746Z",
+    "generated_at": "2026-07-09T15:36:42.003Z",
     "apply": false,
     "packet_count": 2,
     "queued_count": 0,
     "results": [
       {
-        "generated_at": "2026-07-09T15:29:44.744Z",
+        "generated_at": "2026-07-09T15:36:42.001Z",
         "packet_id": "chatgpt-dropoff-smoke-test-20260705-001",
         "packet_path": "ops/chatgpt-ramble-dropoff/incoming/chatgpt-dropoff-smoke-test-20260705-001",
         "fingerprint": "173f1fe0403cef97389bc02acb2eb7480acc9493e771d5e31b74e01409dc8d93",
@@ -199,7 +200,7 @@
         "error": ""
       },
       {
-        "generated_at": "2026-07-09T15:29:44.746Z",
+        "generated_at": "2026-07-09T15:36:42.003Z",
         "packet_id": "onetime-agent-prompt-series-20260706-911",
         "packet_path": "ops/chatgpt-ramble-dropoff/incoming/onetime-agent-prompt-series-20260706-911",
         "fingerprint": "7bb6a861cdd155e71ebe08aca81587925e0f5b5e5f6e3d362ba5c8b7079b43b9",
@@ -257,7 +258,7 @@
       "command": "npm run bna:run:blockers",
       "exit_code": 0,
       "ok": true,
-      "duration_ms": 91,
+      "duration_ms": 49,
       "stdout": "Execution run: ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation\nRequirement status counts:\n- blocked: 2\n- done: 8\nWork remains: yes\nValidation passed.\n\nRemaining external blockers:\n- REQ-20260702-108: Verify provider setup panels/tasks\n  owner: Shloimie / provider account owners\n  blocker: Full provider/campaign setup remains incomplete in current read-only setup check; Railway target context is resolved.\n  next_action: Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, WAPI auto-reply enable/approval flags if auto-reply is intended, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet.\n- REQ-20260702-110: Validate, push PR, and close out blockers\n  owner: Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane\n  blocker: Full OneTime launch remains blocked by external setup values, not Railway target context. The immediate lead-capture/free-class lane is unblocked and tracked in RAW-20260709-008.\n  next_action: Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks.",
       "stderr": ""
     },
@@ -265,16 +266,16 @@
       "command": "npm run agent:fleet:status",
       "exit_code": 0,
       "ok": true,
-      "duration_ms": 5873,
-      "stdout": "Agent fleet status:\n- Supervisor: running PID 36560\n- Observable Codex jobs: 34\n- Claimable observable jobs: 0\n- Linked observable task lookup: fetched 4, missing 0\n- Active Codex task fallback: 34\n- Ready to claim: 3\n- Queue health: fresh 12, stale 411, blocked 121, unknown 193, do-not-redo 878\n- Max retries: 2\n- Baseline smoke: enabled\n- Auto deploy gate: disabled\n- ChatGPT dropoff ingest: enabled\n- ChatGPT comment collect: enabled\n- Kimi coding fallback: quota_only / kimi-k2.7-code-highspeed\n- Permission tiers: - Tier 0: Read-only audit, local status, local tests, dry-run previews, reports, and evidence capture. | - Tier 1: Local code edits, local tests, isolated worktrees/branches, commits, pushes, and draft PR preparation after lane ownership is declared. | - Tier 2: Merge, deploy, Railway doctor, and live-smoke release work only after parent release gates authorize it. | - Tier 3: Sends, charges, refunds, DNS, public publishing, account permission changes, credential changes, production data mutation, Drive writes, and class backfill.\n- Startup shortcuts: start, stop, restart, status, open_log, watchdog_start, watchdog_stop, watchdog_status\n\nObservable jobs not claimable by active-task policy:\n- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167\n- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish\n- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using\n- job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there?\n- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile\n- job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes\n- job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives\n- job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
+      "duration_ms": 5734,
+      "stdout": "Agent fleet status:\n- Supervisor: running PID 36560\n- Observable Codex jobs: 34\n- Claimable observable jobs: 0\n- Linked observable task lookup: fetched 4, missing 0\n- Active Codex task fallback: 34\n- Ready to claim: 3\n- Queue health: fresh 13, stale 412, blocked 121, unknown 193, do-not-redo 878\n- Max retries: 2\n- Baseline smoke: enabled\n- Auto deploy gate: disabled\n- ChatGPT dropoff ingest: enabled\n- ChatGPT comment collect: enabled\n- Kimi coding fallback: quota_only / kimi-k2.7-code-highspeed\n- Permission tiers: - Tier 0: Read-only audit, local status, local tests, dry-run previews, reports, and evidence capture. | - Tier 1: Local code edits, local tests, isolated worktrees/branches, commits, pushes, and draft PR preparation after lane ownership is declared. | - Tier 2: Merge, deploy, Railway doctor, and live-smoke release work only after parent release gates authorize it. | - Tier 3: Sends, charges, refunds, DNS, public publishing, account permission changes, credential changes, production data mutation, Drive writes, and class backfill.\n- Startup shortcuts: start, stop, restart, status, open_log, watchdog_start, watchdog_stop, watchdog_status\n\nObservable jobs not claimable by active-task policy:\n- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167\n- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish\n- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using\n- job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there?\n- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile\n- job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes\n- job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives\n- job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
       "stderr": ""
     },
     "chatgpt_dropoff_scan": {
       "command": "npm run chatgpt:dropoff:scan",
       "exit_code": 0,
       "ok": true,
-      "duration_ms": 51,
-      "stdout": "{\n  \"generated_at\": \"2026-07-09T15:29:44.746Z\",\n  \"apply\": false,\n  \"packet_count\": 2,\n  \"queued_count\": 0,\n  \"results\": [\n    {\n      \"generated_at\": \"2026-07-09T15:29:44.744Z\",\n      \"packet_id\": \"chatgpt-dropoff-smoke-test-20260705-001\",\n      \"packet_path\": \"ops/chatgpt-ramble-dropoff/incoming/chatgpt-dropoff-smoke-test-20260705-001\",\n      \"fingerprint\": \"173f1fe0403cef97389bc02acb2eb7480acc9493e771d5e31b74e01409dc8d93\",\n      \"status\": \"skipped\",\n      \"queued\": false,\n      \"task_id\": null,\n      \"agent_job_id\": null,\n      \"findings\": [\n        {\n          \"severity\": \"skip\",\n          \"code\": \"terminal_status\",\n          \"message\": \"Packet is already terminal: done_verified\"\n        }\n      ],\n      \"error\": \"\"\n    },\n    {\n      \"generated_at\": \"2026-07-09T15:29:44.746Z\",\n      \"packet_id\": \"onetime-agent-prompt-series-20260706-911\",\n      \"packet_path\": \"ops/chatgpt-ramble-dropoff/incoming/onetime-agent-prompt-series-20260706-911\",\n      \"fingerprint\": \"7bb6a861cdd155e71ebe08aca81587925e0f5b5e5f6e3d362ba5c8b7079b43b9\",\n      \"status\": \"skipped\",\n      \"queued\": false,\n      \"task_id\": null,\n      \"agent_job_id\": null,\n      \"findings\": [\n        {\n          \"severity\": \"skip\",\n          \"code\": \"terminal_status\",\n          \"message\": \"Packet is already terminal: done_verified\"\n        }\n      ],\n      \"error\": \"\"\n    }\n  ]\n}",
+      "duration_ms": 53,
+      "stdout": "{\n  \"generated_at\": \"2026-07-09T15:36:42.003Z\",\n  \"apply\": false,\n  \"packet_count\": 2,\n  \"queued_count\": 0,\n  \"results\": [\n    {\n      \"generated_at\": \"2026-07-09T15:36:42.001Z\",\n      \"packet_id\": \"chatgpt-dropoff-smoke-test-20260705-001\",\n      \"packet_path\": \"ops/chatgpt-ramble-dropoff/incoming/chatgpt-dropoff-smoke-test-20260705-001\",\n      \"fingerprint\": \"173f1fe0403cef97389bc02acb2eb7480acc9493e771d5e31b74e01409dc8d93\",\n      \"status\": \"skipped\",\n      \"queued\": false,\n      \"task_id\": null,\n      \"agent_job_id\": null,\n      \"findings\": [\n        {\n          \"severity\": \"skip\",\n          \"code\": \"terminal_status\",\n          \"message\": \"Packet is already terminal: done_verified\"\n        }\n      ],\n      \"error\": \"\"\n    },\n    {\n      \"generated_at\": \"2026-07-09T15:36:42.003Z\",\n      \"packet_id\": \"onetime-agent-prompt-series-20260706-911\",\n      \"packet_path\": \"ops/chatgpt-ramble-dropoff/incoming/onetime-agent-prompt-series-20260706-911\",\n      \"fingerprint\": \"7bb6a861cdd155e71ebe08aca81587925e0f5b5e5f6e3d362ba5c8b7079b43b9\",\n      \"status\": \"skipped\",\n      \"queued\": false,\n      \"task_id\": null,\n      \"agent_job_id\": null,\n      \"findings\": [\n        {\n          \"severity\": \"skip\",\n          \"code\": \"terminal_status\",\n          \"message\": \"Packet is already terminal: done_verified\"\n        }\n      ],\n      \"error\": \"\"\n    }\n  ]\n}",
       "stderr": ""
     }
   },
