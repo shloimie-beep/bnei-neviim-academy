@@ -1,17 +1,14 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-09T20:05:06.567Z
+Generated: 2026-07-09T20:05:54.907Z
 
 ## Lane Safety
 
 - Branch: `master`
-- Dirty worktree: yes
-- Collision warning: Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files.
+- Dirty worktree: no
 
-| Status | Path |
-| --- | --- |
-| M | scripts/chatgpt-dropoff-control-tower.mjs |
-| M | tests/chatgpt-dropoff-control-tower.test.js |
+
+_None._
 
 ## Packet Status
 
@@ -43,8 +40,8 @@ Generated: 2026-07-09T20:05:06.567Z
 
 | Job |
 | --- |
-| - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.44 path=.runtime/agent-fleet/task-1736.lock.json) |
-| - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.74 path=.runtime/agent-fleet/task-1859.lock.json) |
+| - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.45 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.75 path=.runtime/agent-fleet/task-1859.lock.json) |
 | - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json) |
 | - job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
 | - job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile (local_lock=missing path=.runtime/agent-fleet/task-2025.lock.json) |
@@ -75,7 +72,6 @@ Generated: 2026-07-09T20:05:06.567Z
 
 ## Recommendations
 
-- Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.
 - No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.
 - Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.
 - GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it.
