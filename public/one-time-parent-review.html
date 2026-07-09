@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneTimeOneTime Parent Review</title>
+  <meta name="theme-color" content="#080910">
+  <style>
+    :root {
+      --black: #080910;
+      --ink: #181a20;
+      --muted: #5c6470;
+      --line: rgba(8, 9, 16, 0.14);
+      --paper: #fffdf2;
+      --panel: #ffffff;
+      --cyan: #0b9fc9;
+      --yellow: #ede518;
+      --shadow: 0 18px 56px rgba(8, 9, 16, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Trebuchet MS", Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      padding-bottom: 96px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px max(16px, calc((100vw - 1120px) / 2));
+      border-bottom: 1px solid rgba(237, 229, 24, 0.36);
+      background: rgba(8, 9, 16, 0.96);
+      color: #ffffff;
+    }
+
+    .brand {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: #ffffff;
+      object-fit: contain;
+    }
+
+    .brand strong,
+    .brand span {
+      display: block;
+      white-space: nowrap;
+    }
+
+    .brand strong {
+      font-size: 16px;
+    }
+
+    .brand span {
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .nav a,
+    .chip {
+      flex: 0 0 auto;
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 8px;
+      padding: 8px 11px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .chip {
+      border-color: rgba(237, 229, 24, 0.56);
+      color: var(--yellow);
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 26px 0 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .hero-main,
+    .summary-panel,
+    .panel,
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      min-height: 260px;
+      padding: clamp(22px, 4vw, 42px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
+      background:
+        linear-gradient(135deg, rgba(8, 9, 16, 0.94), rgba(20, 23, 33, 0.94)),
+        var(--black);
+      color: #ffffff;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin-bottom: 12px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 6px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    p {
+      line-height: 1.55;
+    }
+
+    .lead {
+      max-width: 680px;
+      margin-bottom: 0;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 17px;
+    }
+
+    .hero-actions,
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn,
+    button {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      border: 1px solid rgba(8, 9, 16, 0.16);
+      padding: 10px 13px;
+      background: var(--yellow);
+      color: var(--black);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn.secondary,
+    button.secondary {
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    .summary-panel {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      min-height: 94px;
+      padding: 14px;
+      box-shadow: none;
+    }
+
+    .metric span,
+    .small {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 5px;
+      color: var(--ink);
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .panel {
+      min-height: 190px;
+      padding: 18px;
+      box-shadow: none;
+    }
+
+    .panel.wide {
+      grid-column: span 2;
+    }
+
+    .notice {
+      margin-top: 12px;
+      border-left: 4px solid var(--cyan);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(11, 159, 201, 0.1);
+      color: #213241;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      margin-top: 8px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(237, 229, 24, 0.36);
+      color: var(--black);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .progress-track {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(8, 9, 16, 0.12);
+    }
+
+    .progress-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--yellow), var(--cyan));
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 96px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      color: var(--ink);
+      background: #ffffff;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .status {
+      min-height: 20px;
+      color: #176b42;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .loading,
+    .error {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: #ffffff;
+      color: var(--muted);
+    }
+
+    .error {
+      color: #9b2f2f;
+    }
+
+    @media (max-width: 860px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        width: 100%;
+      }
+
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel.wide {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 520px) {
+      main {
+        width: min(100% - 20px, 1120px);
+        padding-top: 14px;
+      }
+
+      .hero-main {
+        min-height: 0;
+        padding: 22px;
+      }
+
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .brand strong,
+      .brand span {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body class="one-time-review-active bna-portal-page bna-parent-page" data-one-time-rabbi-dashboard="parent-review" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
+  <header class="topbar">
+    <a class="brand" href="/one-time" aria-label="OneTimeOneTime home">
+      <img src="/images/one-time/brand/onetimelogo.webp" alt="">
+      <span>
+        <strong>OneTimeOneTime</strong>
+        <span>Parent review portal</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="One Time review navigation">
+      <a href="/one-time">One Time</a>
+      <a href="/student.html?review=one-time">Student</a>
+      <a href="/one-time-classroom.html?review=one-time&amp;code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
+      <a href="/rabbi-member?review=one-time">Library</a>
+      <span class="chip">Linked child only</span>
+    </nav>
+  </header>
+
+  <main id="app">
+    <div class="loading">Loading OneTimeOneTime parent review...</div>
+  </main>
+
+  <script>
+    const app = document.getElementById('app');
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function reviewText(value, fallback = 'Not available') {
+      const text = String(value || fallback || '')
+        .replace(/\bTEST[-_\s]+/gi, '')
+        .replace(/\breview fixture\b/gi, 'preview')
+        .replace(/_/g, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+      return text || fallback;
+    }
+
+    function metric(label, value) {
+      return `<article class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></article>`;
+    }
+
+    function clampPercent(value) {
+      const number = Number(value || 0);
+      if (!Number.isFinite(number)) return 0;
+      return Math.max(0, Math.min(100, number));
+    }
+
+    function render(data) {
+      const student = data.student || {};
+      const classSession = data.class_session || {};
+      const attendance = data.attendance || {};
+      const payment = data.payment || {};
+      const parentName = reviewText(data.parent?.name, 'One Time parent');
+      const studentName = reviewText(student.display_name || student.name, 'One Time student');
+      const classTitle = reviewText(classSession.title, 'Weekly Mishnah Live Class');
+      const progress = clampPercent(data.course?.progress_percent);
+      const classroomHref = data.links?.classroom || '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS';
+      const worksheetHref = data.worksheet?.url || classroomHref;
+      app.innerHTML = `
+        <section class="hero">
+          <div class="hero-main">
+            <div>
+              <p class="eyebrow">One Time parent review</p>
+              <h1>Parent Review Portal</h1>
+              <p class="lead">${escapeHtml(parentName)} sees only ${escapeHtml(studentName)}, class progress, library access, payment/trial state, and support context for Rabbi Scheller's One Time Mishnayos program.</p>
+            </div>
+            <div class="hero-actions">
+              <a class="btn" href="${escapeHtml(classroomHref)}">Open classroom/library</a>
+              <a class="btn secondary" href="/student.html?review=one-time">Student view</a>
+            </div>
+          </div>
+          <aside class="summary-panel">
+            <p class="eyebrow">Preview only</p>
+            <h2>Linked family scope</h2>
+            <div class="metric-grid">
+              ${metric('Linked student', studentName)}
+              ${metric('Next class', classTitle)}
+              ${metric('Attendance', `${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0} minutes (${attendance.percentage || 0}%)`)}
+              ${metric('Access', reviewText(payment.access_state))}
+            </div>
+            <div class="notice">No database write, external send, charge, access grant, Zoom meeting, or provider mutation can be triggered from this review page.</div>
+          </aside>
+        </section>
+
+        <section class="grid" aria-label="One Time parent review details">
+          <article class="panel">
+            <p class="eyebrow">Class</p>
+            <h2>Class and Zoom</h2>
+            <p><strong>${escapeHtml(reviewText(classSession.masechta))} ${escapeHtml(reviewText(classSession.perek, ''))}</strong></p>
+            <p class="small">${escapeHtml(reviewText(classSession.mishnah_range, ''))} / ${escapeHtml(reviewText(classSession.timezone, ''))}</p>
+            <div class="notice">${escapeHtml(reviewText(data.zoom?.student_visible_note, 'Zoom readiness is shown without creating a real meeting.'))}</div>
+          </article>
+
+          <article class="panel">
+            <p class="eyebrow">Progress</p>
+            <h2>Course progress</h2>
+            <p><strong>${escapeHtml(reviewText(data.course?.title))}</strong></p>
+            <p class="small">${escapeHtml(reviewText(data.module?.title))} / ${escapeHtml(reviewText(data.lesson?.title))}</p>
+            <div class="progress-track" aria-label="Course progress"><span class="progress-fill" style="width:${progress}%"></span></div>
+          </article>
+
+          <article class="panel">
+            <p class="eyebrow">Library</p>
+            <h2>Library and worksheet</h2>
+            <p><strong>${escapeHtml(reviewText(data.video?.title))}</strong></p>
+            <p class="small">${escapeHtml(data.video?.media_provider || '')}</p>
+            <div class="button-row">
+              <a class="btn secondary" href="${escapeHtml(classroomHref)}">Open library</a>
+              <a class="btn secondary" href="${escapeHtml(worksheetHref)}">Open worksheet</a>
+            </div>
+          </article>
+
+          <article class="panel">
+            <p class="eyebrow">Billing</p>
+            <h2>Payment / trial</h2>
+            <p><strong>${escapeHtml(payment.offer || '')}</strong></p>
+            <p class="small">${escapeHtml(reviewText(payment.trial))} / ${escapeHtml(reviewText(payment.status))}</p>
+            <div class="notice">Preview mode only. No real charge or payment link is created from this review.</div>
+          </article>
+
+          <article class="panel">
+            <p class="eyebrow">Rewards</p>
+            <h2>Milestones and rewards</h2>
+            <p><strong>${escapeHtml(reviewText(data.milestone?.title))}</strong></p>
+            <p class="small">${escapeHtml(reviewText(data.achievement?.title))}: ${escapeHtml(reviewText(data.achievement?.parent_safe_explanation))}</p>
+            <span class="status-pill">${escapeHtml(reviewText(data.reward?.status))}</span>
+          </article>
+
+          <article class="panel">
+            <p class="eyebrow">Helper</p>
+            <h2>One Time Parent Helper</h2>
+            <p class="small">The helper stays scoped to class schedule, child access, attendance questions, billing-support next steps, and Rabbi Scheller class questions.</p>
+            <div class="notice">It does not show private billing records, other families, student transcripts, access codes, or admin data.</div>
+          </article>
+
+          <article class="panel wide">
+            <p class="eyebrow">Question</p>
+            <h2>Private question</h2>
+            <p><strong>${escapeHtml(data.private_question?.title || '')}</strong></p>
+            <p class="small">${escapeHtml(data.private_question?.body || '')}</p>
+            <span class="status-pill">${escapeHtml(reviewText(data.private_question?.status))}</span>
+          </article>
+
+          <article class="panel">
+            <p class="eyebrow">Support</p>
+            <h2>Support ticket</h2>
+            <p><strong>${escapeHtml(data.support_ticket?.title || '')}</strong></p>
+            <p class="small">${escapeHtml(reviewText(data.support_ticket?.latest_activity))}</p>
+            <form data-one-time-parent-review-form>
+              <label>Ask support / Rabbi<textarea name="body" placeholder="Type a review-only parent question"></textarea></label>
+              <div class="button-row">
+                <button type="submit" data-one-time-action-state="preview" data-button-state="preview">Submit preview</button>
+              </div>
+              <div class="status" aria-live="polite"></div>
+            </form>
+          </article>
+        </section>
+      `;
+
+      app.querySelectorAll('[data-one-time-parent-review-form]').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const status = form.querySelector('.status');
+          if (status) status.textContent = 'Preview submitted locally for UI review. No database write or email send occurred.';
+          form.reset();
+        });
+      });
+    }
+
+    async function loadReview() {
+      try {
+        const response = await fetch('/api/one-time-review/parent', { headers: { accept: 'application/json' } });
+        if (!response.ok) throw new Error(`Review API returned ${response.status}`);
+        render(await response.json());
+      } catch (error) {
+        app.innerHTML = `<div class="error">${escapeHtml(error.message || 'Could not load One Time parent review.')}</div>`;
+      }
+    }
+
+    loadReview();
+  </script>
+  <script src="/js/bna-bot-widget.js" defer></script>
+</body>
+</html>

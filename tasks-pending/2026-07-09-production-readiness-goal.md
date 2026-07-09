@@ -2777,6 +2777,37 @@ Remaining:
 - Full OneTime external setup, terminal Agent Mode saved proof, and Rabbi
   Telegram hosted restart/live-smoke proof remain separate blockers.
 
+## PERF-20260710-003 local parent-review lag fix
+
+Implemented locally:
+
+- Added a lightweight OneTime parent review shell at
+  `public/one-time-parent-review.html`.
+- Added a pre-static server intercept for `/parent.html?review=one-time` so the
+  canonical review route keeps working without serving the full 284 KB BNA
+  parent portal shell.
+- Left normal `/parent.html` and `/parent` behavior on the full BNA parent
+  portal.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --test tests/one-time-review-only-server.test.js
+  tests/one-time-shared-review-branding.test.js
+  tests/one-time-brand-helper-isolation.test.js`.
+- PASS local no-write lag audit at
+  `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-local/`
+  with `needs_attention_count: 0`.
+- Parent-review desktop local sample: 25ms DCL, 32ms FCP, 531ms network idle,
+  4 requests, 147 DOM nodes, no blockers.
+
+Deployment status:
+
+- Commit/push/deploy/live-smoke pending. Do not mark this residual
+  parent-review performance fix terminal Done until OneTime production and, if
+  applicable, the main BNA service serve the new shell and a no-write live lag
+  audit passes.
+
 ## Final audit
 
 | ID | Status | Evidence | Verification | Remaining issue |

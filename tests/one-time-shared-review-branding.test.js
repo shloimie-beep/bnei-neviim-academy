@@ -72,6 +72,7 @@ test('shared One Time review pages include review branding assets', () => {
     'public/one-time/index.html',
     'public/provider.html',
     'public/parent.html',
+    'public/one-time-parent-review.html',
     'public/student.html',
     'public/one-time-classroom.html',
     'public/one-time-email-review.html',
@@ -96,6 +97,11 @@ test('shared One Time review pages include review branding assets', () => {
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /Badges and Rewards/);
   assert.match(fs.readFileSync('public/parent.html', 'utf8'), /\/images\/one-time\/brand\/onetimelogo\.webp/);
   assert.match(fs.readFileSync('public/parent.html', 'utf8'), /OneTimeOneTime Parent Review/);
+  const parentReviewHtml = fs.readFileSync('public/one-time-parent-review.html', 'utf8');
+  assert.match(parentReviewHtml, /OneTimeOneTime Parent Review/);
+  assert.match(parentReviewHtml, /\/api\/one-time-review\/parent/);
+  assert.match(parentReviewHtml, /One Time Parent Helper/);
+  assert.doesNotMatch(parentReviewHtml, /data-parent-onboarding-form/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /No bot \/ no BNA goals/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /Live Mishnayos, review videos, worksheets, attendance, questions, badges, and rewards/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /oneTimeStudentBot = 'disabled'/);

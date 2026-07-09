@@ -65,6 +65,12 @@ test('One Time review-only server serves fixture routes without database secrets
     assert.match(response.headers.get('content-type') || '', /html/i, route);
   }
 
+  const parentReview = await (await fetch(`${baseUrl}/parent.html?review=one-time`)).text();
+  assert.match(parentReview, /OneTimeOneTime Parent Review/);
+  assert.match(parentReview, /\/api\/one-time-review\/parent/);
+  assert.match(parentReview, /One Time Parent Helper/);
+  assert.doesNotMatch(parentReview, /data-parent-onboarding-form/);
+
   const apiRoutes = [
     '/api/one-time-review/parent',
     '/api/one-time-review/student',

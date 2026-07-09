@@ -142,3 +142,34 @@ Deployment/live-smoke completed:
   `ops/performance-audits/2026-07-10-onetime-cache-policy-live-readback/report.md`.
   Samples needing attention dropped from 18/18 to 1/18; the remaining finding is
   parent-review desktop `slow_dom_content_loaded`.
+
+## 2026-07-10 parent-review lightweight shell update
+
+The remaining parent-review desktop lag sample was traced to the broad
+`public/parent.html` shell used by `/parent.html?review=one-time`. That file is
+about 284 KB and loads the full BNA parent portal before switching into the
+OneTime review fixture.
+
+Implemented locally:
+
+- Added `public/one-time-parent-review.html`, a dedicated lightweight OneTime
+  parent review shell.
+- Added a pre-static `server.js` intercept for `/parent.html?review=one-time`
+  so the canonical route URL remains unchanged while normal `/parent.html` and
+  `/parent` behavior remain on the full BNA parent portal.
+- Preserved One Time parent helper scope, review-only local form submits, logo,
+  parent/student/class/payment/support content, and no-write guardrail copy.
+
+Verification so far:
+
+- PASS `node --check server.js`.
+- PASS `node --test tests/one-time-review-only-server.test.js
+  tests/one-time-shared-review-branding.test.js
+  tests/one-time-brand-helper-isolation.test.js`.
+- PASS local no-write lag audit:
+  `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-local/report.md`.
+- Local parent-review desktop improved to 25ms DCL, 32ms FCP, 531ms network
+  idle, 4 requests, 147 DOM nodes, and no blockers.
+
+Deployment/live-smoke remains required before terminal Done for this residual
+parent-review performance fix.

@@ -10822,6 +10822,21 @@ function sendOperationsShell(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'operations-bootstrap.html'));
 }
 
+function wantsOneTimeReviewQuery(req) {
+  const value = String(req.query?.review || '').toLowerCase();
+  return ['one-time', 'onetime', '1', 'true'].includes(value);
+}
+
+function sendOneTimeParentReviewShell(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'one-time-parent-review.html'));
+}
+
+app.get('/parent.html', (req, res, next) => {
+  if (!wantsOneTimeReviewQuery(req)) return next();
+  return sendOneTimeParentReviewShell(req, res);
+});
+
 app.use(express.static('public', {
   setHeaders(res, filePath) {
     const normalizedPath = String(filePath || '').replace(/\\/g, '/');
@@ -86315,6 +86330,7 @@ app.get(['/parent/login', '/parent-login'], (req, res) => {
 
 app.get('/parent', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
+  if (wantsOneTimeReviewQuery(req)) return sendOneTimeParentReviewShell(req, res);
   res.sendFile(path.join(__dirname, 'public', 'parent.html'));
 });
 

@@ -37437,3 +37437,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
   smoke, Drive write, class backfill, or production-data mutation.
+
+## 2026-07-10T00:40:00+03:00 - OneTime Parent Review Lightweight Shell Verified Locally
+
+- Added `public/one-time-parent-review.html` as a dedicated lightweight shell
+  for `/parent.html?review=one-time`.
+- Added a pre-static `server.js` intercept so only the OneTime review query
+  receives the lightweight shell; normal BNA parent portal routes stay on
+  `public/parent.html`.
+- Kept the One Time parent helper scope, review-only local support form, logo,
+  class/progress/library/payment/support content, and no-write guardrails.
+- Verification passed: `node --check server.js`; `node --test
+  tests/one-time-review-only-server.test.js
+  tests/one-time-shared-review-branding.test.js
+  tests/one-time-brand-helper-isolation.test.js`.
+- Local no-write lag audit passed with 0/18 samples needing attention. The
+  parent-review desktop sample improved to 25ms DCL, 32ms FCP, 531ms network
+  idle, 4 requests, 147 DOM nodes, and no blockers.
+- Evidence:
+  `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-local/`.
+- Deployment/live-smoke remains pending before terminal Done for this residual
+  parent-review performance fix.
