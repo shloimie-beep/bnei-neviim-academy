@@ -37106,3 +37106,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers are unchanged: exact external setup fields, Rabbi Telegram
   hosted restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
   execution batch, and active collision-lane reconciliation.
+
+## 2026-07-09T22:58:33+03:00 - Fleet Status Shows Local Lock Evidence
+
+- Updated `npm run agent:fleet:status` so non-claimable observable jobs include
+  a dedicated local task-lock evidence section with stale dead PID, heartbeat
+  age, missing-lock path, and job/task mapping.
+- Clarified the status summary line from a single ambiguous ready count to
+  `Ready to claim: observable jobs 0, fallback tasks 3` for the current
+  sampled state.
+- Regenerated ChatGPT control-tower, production snapshot, and production
+  unblocker artifacts so GitHub-visible coordination state carries the new
+  status output and clean-sampled readiness evidence.
+- Verification passed: `node --check scripts/agent-fleet-supervisor.mjs`,
+  `node --test tests/agent-fleet-hardening.test.js`,
+  `npm run agent:fleet:status`, `npm run chatgpt:dropoff:tower`,
+  `npm run production:readiness:snapshot`, `npm run production:unblocker`,
+  and clean-head `npm run production:readiness:gate -- --json`
+  expected-blocked without dirty-worktree blockers.
+- Guardrails held: reporting/evidence only; no app UI/API edit, deploy,
+  hosted restart, live Telegram smoke, external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, lock deletion,
+  live task/job mutation, or production-data mutation.
+- Remaining blockers are unchanged: exact external setup fields, Rabbi Telegram
+  hosted restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
+  execution batch, and active collision-lane reconciliation.
