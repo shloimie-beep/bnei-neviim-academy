@@ -35383,3 +35383,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   student portal/classroom visual audit, WAPI setup/status, safe contact
   tagging, and Rabbi Telegram live delivery after
   `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is configured.
+
+## 2026-07-09T07:20:00+03:00 - OneTime Current Tip Redeployed
+
+- Redeployed the clean, pushed branch tip `3c3ed03c` on
+  `codex/rabbi-helper-tool-scope-20260708` after the Rabbi helper evidence and
+  OneTime parent reset closeout commits were both on origin.
+- Railway deployment `c4548c39-b215-4f45-ab3d-27185c2a86ba` reached `SUCCESS`
+  on `one-time-production / production / one-time-web`, superseding the
+  intermediate successful deployments `182c7db2-d019-45bc-84f0-a6a7dfe5fb86`
+  and `074b9153-e4a9-4e3b-890a-3383727ad626`.
+- Live verification passed: OneTime separate-instance smoke, Rabbi landing
+  smoke, instance-config readback, Agent Review prompt readback for
+  `rabbi-helper-tool-scope-map`, and `/one-time-parent` readback with
+  parent-managed copy and no recovery/classroom-password fallback.
