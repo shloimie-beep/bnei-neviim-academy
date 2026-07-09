@@ -28,6 +28,7 @@ const REQUIRED_PACKAGE_SCRIPTS = [
   'bna:run:validate',
   'bna:run:source-coverage',
   'bna:intake:postgres',
+  'production:readiness:gate',
   'app:smoke',
   'railway:doctor',
   'watchdog:raw',
@@ -253,6 +254,7 @@ function commandPlan() {
   return [
     'npm test',
     'npm run bna:run:validate',
+    'npm run production:readiness:gate -- --json',
     'npm run bna:run:source-coverage',
     'npm run bna:run:stale-evidence',
     'npm run watchdog:actions',
@@ -266,6 +268,50 @@ function commandPlan() {
     `npm run bna:release-gate -- --deploy --confirm-deploy ${DEPLOY_CONFIRM_PHRASE} --defer-optional-integrations --defer-external-readback`,
     `npm run bna:release-gate -- --live-verify --confirm-live ${LIVE_VERIFY_CONFIRM_PHRASE}`,
   ];
+}
+
+function parseJsonObject(text = '') {
+  const start = String(text || '').indexOf('{');
+  const end = String(text || '').lastIndexOf('}');
+  if (start < 0 || end < start) throw new Error('No JSON object found.');
+  return JSON.parse(String(text).slice(start, end + 1));
+}
+
+function buildProductionReadinessGateSummary(repoRoot, runCommand) {
+  const result = runCommand(process.execPath, ['scripts/production-readiness-gate.mjs', '--json'], {
+    cwd: repoRoot,
+    maxBuffer: 1024 * 1024 * 8,
+  });
+  try {
+    const parsed = parseJsonObject(result.stdout || result.stderr || '');
+    return {
+      ok: parsed.ok === true,
+      status: parsed.status || 'unknown',
+      blockers: Array.isArray(parsed.blockers) ? parsed.blockers : [],
+      warnings: Array.isArray(parsed.warnings) ? parsed.warnings : [],
+      snapshot_summary: parsed.snapshot_summary || {},
+      production_mutation_performed: false,
+      external_write_performed: false,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: 'failed',
+      blockers: [`Production readiness gate could not be parsed: ${error.message}`],
+      warnings: [],
+      snapshot_summary: {},
+      production_mutation_performed: false,
+      external_write_performed: false,
+    };
+  }
+}
+
+function productionReadinessGateBlockers(report = {}) {
+  if (report.ok === true) return [];
+  const blockers = Array.isArray(report.blockers) && report.blockers.length
+    ? report.blockers
+    : [`Production readiness gate status is ${report.status || 'unknown'}.`];
+  return blockers.map((blocker) => `Production readiness gate blocked: ${blocker}`);
 }
 
 export async function buildProductionCloseoutGateReport(options = {}, context = {}) {
@@ -290,6 +336,22 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     }),
   );
   const externalReadbackBlockers = externalReadbackGateBlockers(externalReadbackGate);
+  const requiresProductionReadinessGate = Boolean(options.deploy || options.liveVerify || options.finalCloseout);
+  const productionReadinessGate = context.productionReadinessGate
+    || (requiresProductionReadinessGate
+      ? buildProductionReadinessGateSummary(repoRoot, runCommand)
+      : {
+          ok: null,
+          status: 'not_required_for_dry_run',
+          blockers: [],
+          warnings: [],
+          snapshot_summary: {},
+          production_mutation_performed: false,
+          external_write_performed: false,
+        });
+  const productionReadinessBlockers = requiresProductionReadinessGate
+    ? productionReadinessGateBlockers(productionReadinessGate)
+    : [];
   const blockers = [];
 
   if (git.branch === '(detached)' && !options.allowDetached) {
@@ -322,6 +384,7 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     }
     if (!optionalIntegrationsDeferred) blockers.push(...integrationBlockers);
     if (!externalReadbackDeferred) blockers.push(...externalReadbackBlockers);
+    blockers.push(...productionReadinessBlockers);
   }
   if (options.liveVerify) {
     if (options.confirmLive !== LIVE_VERIFY_CONFIRM_PHRASE) {
@@ -332,6 +395,7 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     }
     blockers.push(...integrationBlockers);
     blockers.push(...externalReadbackBlockers);
+    blockers.push(...productionReadinessBlockers);
   }
   if (options.finalCloseout && run.open_requirements.length) {
     blockers.push(`Final closeout still has open requirements: ${run.open_requirements.map((item) => item.id).join(', ')}.`);
@@ -339,6 +403,7 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
   if (options.finalCloseout) {
     blockers.push(...integrationBlockers);
     blockers.push(...externalReadbackBlockers);
+    blockers.push(...productionReadinessBlockers);
   }
 
   return {
@@ -353,6 +418,7 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     git,
     run,
     external_readback_gate: externalReadbackGate,
+    production_readiness_gate: productionReadinessGate,
     integration_readiness: integrationReadiness,
     deferred_readiness: {
       integration: optionalIntegrationsDeferred ? integrationBlockers : [],

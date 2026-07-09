@@ -1935,6 +1935,9 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   claiming the system is production-ready. It should fail with exact blockers
   while external setup values, terminal Agent Mode proof, active collision
   lanes, dirty worktree state, or queued ChatGPT packets remain.
+- `npm run bna:release-gate` enforces the production-readiness gate for deploy,
+  live-verify, and final-closeout modes. Do not treat release-gate approval as
+  production-ready if `production_readiness_gate.ok` is false or missing.
 - WS11 gamification/parent progress is production-migrated and live-smoked as
   of Railway deployment `7c8c7010-497c-41c7-a127-6370cca049eb`. Startup must
   run `createWs11CommunityGamificationSQL` before

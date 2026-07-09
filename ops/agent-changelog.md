@@ -36409,3 +36409,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: read-only gate/reporting only; no app UI edit, deploy,
   external send, payment/access mutation, provider/CRM/DNS/credential mutation,
   Agent Review result save, public publish, or production-data mutation.
+
+## 2026-07-09T18:41:52+03:00 - Release Gate Requires Production Readiness
+
+- Wired `scripts/bna-production-closeout-gate.mjs` to require the production
+  readiness gate for deploy, live-verify, and final-closeout modes.
+- Added `production:readiness:gate` to the release gate required scripts and
+  next command plan.
+- Plain dry-run release checks remain status-only and report
+  `production_readiness_gate.status: not_required_for_dry_run`.
+- Added regression coverage proving an otherwise approved deploy/live closeout
+  remains blocked when `production_readiness_gate.ok` is false.
+- Guardrails held: release gate/reporting hardening only; no deploy, merge,
+  release, app UI edit, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, public
+  publish, or production-data mutation.

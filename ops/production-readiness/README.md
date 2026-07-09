@@ -35,6 +35,11 @@ actually ready. A nonzero gate with exact blockers is the correct state while
 external setup values, terminal Agent Mode proof, active collision lanes, dirty
 worktree state, or queued ChatGPT packets remain.
 
+`npm run bna:release-gate` also enforces this gate for deploy, live-verify, and
+final-closeout modes. Plain dry-run release checks remain useful for status
+readback, but no production closeout path should be considered clear while
+`production_readiness_gate.ok` is false.
+
 Files:
 
 - `latest-production-readiness-snapshot.md`: operator/agent-readable control

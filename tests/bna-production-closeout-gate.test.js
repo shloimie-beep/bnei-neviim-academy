@@ -64,6 +64,22 @@ const readyExternalReadbackGate = {
   next_command_plan: [],
 };
 
+const readyProductionReadinessGate = {
+  ok: true,
+  status: 'production_ready',
+  blockers: [],
+  warnings: [],
+  snapshot_summary: {
+    status: 'production_ready',
+    production_ready: true,
+    sampled_git_head: 'abc123',
+    sampled_origin_master: 'abc123',
+    sampled_worktree_clean: true,
+  },
+  production_mutation_performed: false,
+  external_write_performed: false,
+};
+
 test('production closeout gate passes a clean pushed dry-run without external actions', async () => {
   const mod = await loadGate();
   const report = await mod.buildProductionCloseoutGateReport({
@@ -99,6 +115,8 @@ test('production closeout gate passes a clean pushed dry-run without external ac
     assert.ok(Number(report.run.status_counts?.done || 0) > 0);
   }
   assert.ok(report.run.open_requirements.every((requirement) => /^REQ-\d{8}-\d{3}$/.test(requirement.id)));
+  assert.equal(report.production_readiness_gate.status, 'not_required_for_dry_run');
+  assert.ok(report.next_command_plan.some((command) => /production:readiness:gate/.test(command)));
   assert.ok(report.next_command_plan.some((command) => /bna:release-gate/.test(command)));
   assert.ok(report.next_command_plan.some((command) => /bna:external-readback-gate/.test(command)));
   assert.doesNotMatch(JSON.stringify(report.external_readback_gate), /DATABASE_URL|RAILWAY_TOKEN|GOOGLE_PRIVATE_KEY|secret-value|postgres:\/\//);
@@ -188,6 +206,7 @@ test('production closeout gate requires explicit deploy and live verification ap
   }, {
     repoRoot,
     runCommand: fakeGitRunner(),
+    productionReadinessGate: readyProductionReadinessGate,
     env: {},
   });
 
@@ -208,6 +227,7 @@ test('production closeout gate requires explicit deploy and live verification ap
     runCommand: fakeGitRunner(),
     integrationReadiness: readyIntegrationReadiness,
     externalReadbackGate: readyExternalReadbackGate,
+    productionReadinessGate: readyProductionReadinessGate,
     env: {
       [mod.DEPLOY_APPROVAL_ENV]: 'approved',
       [mod.LIVE_VERIFY_APPROVAL_ENV]: 'approved',
@@ -217,7 +237,45 @@ test('production closeout gate requires explicit deploy and live verification ap
   assert.equal(approved.ok, true);
   assert.equal(approved.approval_gates.deploy.approved, true);
   assert.equal(approved.approval_gates.live_verify.approved, true);
+  assert.equal(approved.production_readiness_gate.ok, true);
   assert.equal(approved.production_mutation_performed, false);
+});
+
+test('production closeout gate requires production readiness before approved deploy or live verification', async () => {
+  const mod = await loadGate();
+  const blockedReadiness = {
+    ok: false,
+    status: 'blocked',
+    blockers: ['Production readiness snapshot status is not_production_complete, not production_ready.'],
+    warnings: [],
+    snapshot_summary: { status: 'not_production_complete', production_ready: false },
+    production_mutation_performed: false,
+    external_write_performed: false,
+  };
+  const report = await mod.buildProductionCloseoutGateReport({
+    deploy: true,
+    liveVerify: true,
+    confirmDeploy: mod.DEPLOY_CONFIRM_PHRASE,
+    confirmLive: mod.LIVE_VERIFY_CONFIRM_PHRASE,
+    expectedBranch: 'codex/issue-8-complete-system-reconciliation',
+  }, {
+    repoRoot,
+    runCommand: fakeGitRunner(),
+    integrationReadiness: readyIntegrationReadiness,
+    externalReadbackGate: readyExternalReadbackGate,
+    productionReadinessGate: blockedReadiness,
+    env: {
+      [mod.DEPLOY_APPROVAL_ENV]: 'approved',
+      [mod.LIVE_VERIFY_APPROVAL_ENV]: 'approved',
+    },
+  });
+
+  assert.equal(report.ok, false);
+  assert.equal(report.production_readiness_gate.ok, false);
+  assert.ok(report.blockers.some((blocker) => /Production readiness gate blocked/.test(blocker)));
+  assert.equal(report.production_mutation_performed, false);
+  assert.equal(report.deploy_performed, false);
+  assert.equal(report.live_verification_performed, false);
 });
 
 test('production closeout gate blocks live verification on missing integration readiness', async () => {
@@ -233,6 +291,7 @@ test('production closeout gate blocks live verification on missing integration r
       [mod.LIVE_VERIFY_APPROVAL_ENV]: 'approved',
     },
     externalReadbackGate: readyExternalReadbackGate,
+    productionReadinessGate: readyProductionReadinessGate,
     integrationReadiness: integrationReadiness([
       {
         integration: 'vimeo',
@@ -266,6 +325,7 @@ test('production closeout gate blocks deploy on missing integration readiness', 
       [mod.DEPLOY_APPROVAL_ENV]: 'approved',
     },
     externalReadbackGate: readyExternalReadbackGate,
+    productionReadinessGate: readyProductionReadinessGate,
     integrationReadiness: integrationReadiness([
       {
         integration: 'vimeo',
@@ -356,6 +416,7 @@ test('production closeout gate can defer unrelated integrations and external rea
         'drive readback gate is not ready; required configured state is missing.',
       ],
     },
+    productionReadinessGate: readyProductionReadinessGate,
   });
 
   assert.equal(report.ok, true);
@@ -403,6 +464,7 @@ test('production closeout gate requires deploy approval before performing deploy
       ],
       blockers: ['database readback gate is not ready; required configured state is missing.'],
     },
+    productionReadinessGate: readyProductionReadinessGate,
   });
 
   assert.equal(report.ok, false);
@@ -440,6 +502,7 @@ test('production closeout gate blocks live verification on missing external read
         'drive readback gate is not ready; required configured state is missing.',
       ],
     },
+    productionReadinessGate: readyProductionReadinessGate,
   });
 
   assert.equal(report.ok, false);
@@ -529,6 +592,7 @@ test('production closeout gate blocks deploy on missing external readback readin
         'railway readback gate is not ready; required configured state is missing.',
       ],
     },
+    productionReadinessGate: readyProductionReadinessGate,
   });
 
   assert.equal(report.ok, false);
