@@ -847,8 +847,7 @@ body.one-time-review-active .one-time-review-hero-card {
   color: var(--one-time-white);
   border-color: rgba(237, 229, 24, 0.3) !important;
   background:
-    linear-gradient(90deg, rgba(8, 9, 16, 0.96) 0%, rgba(8, 19, 35, 0.9) 48%, rgba(16, 38, 52, 0.72) 100%),
-    url("/images/one-time/brand/onetime-hero-vertical.webp") right center / auto 122% no-repeat,
+    linear-gradient(90deg, rgba(8, 9, 16, 0.96) 0%, rgba(8, 19, 35, 0.92) 55%, rgba(16, 38, 52, 0.86) 100%),
     var(--one-time-black) !important;
   box-shadow: 0 24px 60px rgba(8, 9, 16, 0.22);
 }
@@ -1177,8 +1176,7 @@ body.one-time-view-as-readonly .overview-metric {
 
   body.one-time-review-active .one-time-review-hero-card {
     background:
-      linear-gradient(180deg, rgba(8, 9, 16, 0.96), rgba(8, 19, 35, 0.88)),
-      url("/images/one-time/brand/onetime-hero-vertical.webp") right bottom / auto 105% no-repeat,
+      linear-gradient(180deg, rgba(8, 9, 16, 0.96), rgba(8, 19, 35, 0.9)),
       var(--one-time-black) !important;
   }
 

@@ -4642,6 +4642,16 @@
             `;
         }
 
+        function reviewDisplayText(value, fallback = '') {
+            const text = String(value || fallback || '')
+                .replace(/\bTEST[-\s]+/gi, '')
+                .replace(/\breview fixture\b/gi, 'preview')
+                .replace(/_/g, ' ')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+            return text || fallback;
+        }
+
         function applyOneTimeReviewBrand() {
             document.body.classList.add('one-time-review-active');
             document.title = 'OneTimeOneTime Parent Review';
@@ -4652,7 +4662,7 @@
             const languageToggle = document.querySelector('[data-language-toggle]');
             if (heroEyebrow) heroEyebrow.textContent = 'OneTimeOneTime Mishnah';
             if (heroTitle) heroTitle.textContent = 'Parent Review Portal';
-            if (heroCopy) heroCopy.textContent = "Parent dashboard for Rabbi Scheller's One Time Mishnayos program, using TEST-only family, class, library, payment/trial, and support data.";
+            if (heroCopy) heroCopy.textContent = "Parent dashboard for Rabbi Scheller's One Time Mishnayos program, with family, class, library, payment/trial, and support data kept inside One Time.";
             if (languageToggle) languageToggle.classList.add('hidden');
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
@@ -4672,7 +4682,7 @@
                     <a class="portal-topbar-link" href="/one-time">One Time</a>
                     <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
                     <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
-                    <span class="brand-chip">Linked TEST child only</span>
+                    <span class="brand-chip">Linked child only</span>
                 `;
             }
         }
@@ -4684,6 +4694,9 @@
             const classSession = data.class_session || {};
             const attendance = data.attendance || {};
             const payment = data.payment || {};
+            const parentName = reviewDisplayText(data.parent?.name, 'One Time parent');
+            const studentName = reviewDisplayText(student.display_name || student.name, 'One Time student');
+            const classTitle = reviewDisplayText(classSession.title, 'Weekly Mishnah Live Class');
             els.loginPanel.classList.add('hidden');
             els.parentOnboardingPanel.classList.add('hidden');
             els.portalMenuToggle.classList.add('hidden');
@@ -4698,14 +4711,14 @@
                         <div>
                             <img class="one-time-page-logo" src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
                             <span class="eyebrow">One Time parent review</span>
-                            <h1>${escapeHtml(data.parent?.name || 'TEST Parent')}</h1>
-                            <p class="small">Parent-facing view for Rabbi Scheller's One Time workspace. TEST-only data is limited to one linked student, class progress, library access, and support context.</p>
+                            <h1>${escapeHtml(parentName)}</h1>
+                            <p class="small">Parent-facing view for Rabbi Scheller's One Time workspace. Data is limited to one linked student, class progress, library access, and support context.</p>
                         </div>
                         <span class="status-pill">Preview only</span>
                     </div>
                     <div class="overview-grid">
-                        ${reviewField('Linked student', student.display_name || student.name)}
-                        ${reviewField('Next class', classSession.title)}
+                        ${reviewField('Linked student', studentName)}
+                        ${reviewField('Next class', classTitle)}
                         ${reviewField('Attendance', `${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0} minutes (${attendance.percentage || 0}%)`)}
                         ${reviewField('Access', payment.access_state)}
                     </div>
@@ -4715,49 +4728,49 @@
                         <h2>Class and Zoom</h2>
                         <p><strong>${escapeHtml(classSession.masechta || '')} ${escapeHtml(classSession.perek || '')}</strong></p>
                         <p class="small">${escapeHtml(classSession.mishnah_range || '')} / ${escapeHtml(classSession.timezone || '')}</p>
-                        <div class="notice">${escapeHtml(data.zoom?.student_visible_note || 'Zoom readiness is shown without creating a real meeting.')}</div>
+                        <div class="notice">${escapeHtml(reviewDisplayText(data.zoom?.student_visible_note, 'Zoom readiness is shown without creating a real meeting.'))}</div>
                     </article>
                     <article class="panel">
                         <h2>Course progress</h2>
-                        <p><strong>${escapeHtml(data.course?.title || '')}</strong></p>
-                        <p class="small">${escapeHtml(data.module?.title || '')} / ${escapeHtml(data.lesson?.title || '')}</p>
+                        <p><strong>${escapeHtml(reviewDisplayText(data.course?.title))}</strong></p>
+                        <p class="small">${escapeHtml(reviewDisplayText(data.module?.title))} / ${escapeHtml(reviewDisplayText(data.lesson?.title))}</p>
                         <div class="progress"><span style="width:${Math.max(0, Math.min(100, Number(data.course?.progress_percent || 0)))}%"></span></div>
                     </article>
                     <article class="panel">
                         <h2>Library and worksheet</h2>
-                        <p><strong>${escapeHtml(data.video?.title || '')}</strong></p>
+                        <p><strong>${escapeHtml(reviewDisplayText(data.video?.title))}</strong></p>
                         <p class="small">${escapeHtml(data.video?.media_provider || '')}</p>
                         <p><a class="btn" href="${escapeHtml(data.links?.classroom || '/one-time-classroom.html?review=one-time')}" target="_blank" rel="noopener">Open classroom/library</a></p>
                         <p><a class="btn" href="${escapeHtml(data.worksheet?.url || '#')}" target="_blank" rel="noopener">Open worksheet/resource</a></p>
                     </article>
                     <article class="panel">
                         <h2>Announcement</h2>
-                        <p><strong>${escapeHtml(data.announcement?.title || '')}</strong></p>
-                        <p class="small">${escapeHtml(data.announcement?.body || '')}</p>
+                        <p><strong>${escapeHtml(reviewDisplayText(data.announcement?.title))}</strong></p>
+                        <p class="small">${escapeHtml(reviewDisplayText(data.announcement?.body))}</p>
                     </article>
                     <article class="panel">
                         <h2>Payment / trial</h2>
                         <p><strong>${escapeHtml(payment.offer || '')}</strong></p>
-                        <p class="small">${escapeHtml(payment.trial || '')} / ${escapeHtml(payment.status || '')}</p>
-                        <div class="notice">TEST mode only. No real charge or payment link is created from this review.</div>
+                        <p class="small">${escapeHtml(reviewDisplayText(payment.trial))} / ${escapeHtml(reviewDisplayText(payment.status))}</p>
+                        <div class="notice">Preview mode only. No real charge or payment link is created from this review.</div>
                     </article>
                     <article class="panel">
                         <h2>Milestones and rewards</h2>
-                        <p><strong>${escapeHtml(data.milestone?.title || '')}</strong></p>
-                        <p class="small">${escapeHtml(data.achievement?.title || '')}: ${escapeHtml(data.achievement?.parent_safe_explanation || '')}</p>
-                        <p class="small">${escapeHtml(data.reward?.title || '')} / ${escapeHtml(data.reward?.status || '')}</p>
+                        <p><strong>${escapeHtml(reviewDisplayText(data.milestone?.title))}</strong></p>
+                        <p class="small">${escapeHtml(reviewDisplayText(data.achievement?.title))}: ${escapeHtml(reviewDisplayText(data.achievement?.parent_safe_explanation))}</p>
+                        <p class="small">${escapeHtml(reviewDisplayText(data.reward?.title))} / ${escapeHtml(reviewDisplayText(data.reward?.status))}</p>
                     </article>
                     <article class="panel">
                         <h2>Private question</h2>
                         <p><strong>${escapeHtml(data.private_question?.title || '')}</strong></p>
                         <p class="small">${escapeHtml(data.private_question?.body || '')}</p>
-                        <span class="status-pill">${escapeHtml(data.private_question?.status || '')}</span>
+                        <span class="status-pill">${escapeHtml(reviewDisplayText(data.private_question?.status))}</span>
                     </article>
                     <article class="panel">
                         <h2>Support ticket</h2>
                         <p><strong>${escapeHtml(data.support_ticket?.title || '')}</strong></p>
-                        <p class="small">${escapeHtml(data.support_ticket?.latest_activity || '')}</p>
-                        <span class="status-pill">${escapeHtml(data.support_ticket?.status || '')}</span>
+                        <p class="small">${escapeHtml(reviewDisplayText(data.support_ticket?.latest_activity))}</p>
+                        <span class="status-pill">${escapeHtml(reviewDisplayText(data.support_ticket?.status))}</span>
                         <form data-one-time-parent-review-form>
                             <label>Ask support / Rabbi<textarea name="body" placeholder="Type a review-only parent question"></textarea></label>
                             <div class="button-row"><button type="submit" data-one-time-action-state="preview" data-button-state="preview">Submit preview</button></div>

@@ -3790,6 +3790,16 @@
             `;
         }
 
+        function reviewDisplayText(value, fallback = '') {
+            const text = String(value || fallback || '')
+                .replace(/\bTEST[-\s]+/gi, '')
+                .replace(/\breview fixture\b/gi, 'preview')
+                .replace(/_/g, ' ')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+            return text || fallback;
+        }
+
         function applyOneTimeReviewBrand() {
             document.body.classList.add('one-time-review-active');
             document.body.classList.add('one-time-student-review-active');
@@ -3831,14 +3841,16 @@
             const classSession = data.class_session || {};
             const attendance = data.attendance || {};
             const payment = data.payment || {};
+            const studentName = reviewDisplayText(student.display_name || student.name, 'One Time student');
+            const classTitle = reviewDisplayText(classSession.title, 'Weekly Mishnah Live Class');
             els.loginPanel.classList.add('hidden');
             els.portalLayout.classList.remove('hidden');
             els.portalMenuToggle.classList.remove('hidden');
             els.studentHelperDock.classList.add('hidden');
-            els.pageTitle.textContent = student.display_name || student.name || 'TEST One Time student';
+            els.pageTitle.textContent = studentName;
             els.pageIntro.textContent = 'Live Mishnayos, review videos, worksheets, attendance, questions, badges, and rewards in one clean OneTime classroom view.';
-            els.portalSidebarName.textContent = student.display_name || student.name || 'TEST student';
-            els.portalSidebarMeeting.textContent = classSession.title || 'One Time Mishnah class';
+            els.portalSidebarName.textContent = studentName;
+            els.portalSidebarMeeting.textContent = classTitle;
             els.portalSideStats.innerHTML = `
                 ${reviewMetric('Attendance', `${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0} min`)}
                 ${reviewMetric('Progress', `${data.course?.progress_percent || 0}%`)}
@@ -3846,7 +3858,7 @@
             `;
             els.portalUpcomingList.innerHTML = `
                 <article class="upcoming-card">
-                    <strong>${escapeHtml(classSession.title || 'Next class')}</strong>
+                    <strong>${escapeHtml(classTitle || 'Next class')}</strong>
                     <span>${escapeHtml(classSession.masechta || '')} ${escapeHtml(classSession.perek || '')} ${escapeHtml(classSession.mishnah_range || '')}</span>
                 </article>
             `;
@@ -3865,13 +3877,13 @@
                     <div>
                         <img class="one-time-page-logo" src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
                         <p class="eyebrow">One Time student review</p>
-                        <h2>${escapeHtml(student.display_name || student.name || 'TEST student')}</h2>
-                        <p class="small">This view focuses the student on live class, review video, worksheet, badges, attendance, and reward progress using only this TEST student's One Time records.</p>
+                        <h2>${escapeHtml(studentName)}</h2>
+                        <p class="small">This view focuses the student on live class, review video, worksheet, badges, attendance, and reward progress using only this student's One Time records.</p>
                         <div class="metric-grid">
                             ${reviewMetric('Course progress', `${data.course?.progress_percent || 0}%`)}
                             ${reviewMetric('Attendance', `${attendance.percentage || 0}%`)}
-                            ${reviewMetric('Achievement', data.achievement?.title)}
-                            ${reviewMetric('Reward', data.reward?.status)}
+                            ${reviewMetric('Achievement', reviewDisplayText(data.achievement?.title))}
+                            ${reviewMetric('Reward', reviewDisplayText(data.reward?.status))}
                         </div>
                     </div>
                 </section>
@@ -3890,28 +3902,28 @@
                     <div class="section-title one-time-review-section-title">
                         <div>
                             <span class="eyebrow">Live class</span>
-                            <h2>${escapeHtml(classSession.title || '')}</h2>
+                            <h2>${escapeHtml(classTitle)}</h2>
                             <p class="small">${escapeHtml(classSession.masechta || '')} / ${escapeHtml(classSession.perek || '')} / ${escapeHtml(classSession.mishnah_range || '')}</p>
                         </div>
                         <span class="status-pill">${escapeHtml(data.zoom?.state || 'readiness')}</span>
                     </div>
-                    <div class="one-time-scope-note">${escapeHtml(data.zoom?.student_visible_note || 'Zoom readiness is shown without a real meeting.')}</div>
+                    <div class="one-time-scope-note">${escapeHtml(reviewDisplayText(data.zoom?.student_visible_note, 'Zoom readiness is shown without a real meeting.'))}</div>
                 </section>
                 <section class="grid" id="reviewLibrary">
                     <article class="panel">
                         <h2>Lesson</h2>
-                        <p><strong>${escapeHtml(data.lesson?.title || '')}</strong></p>
-                        <p class="small">${escapeHtml(data.module?.title || '')}</p>
+                        <p><strong>${escapeHtml(reviewDisplayText(data.lesson?.title))}</strong></p>
+                        <p class="small">${escapeHtml(reviewDisplayText(data.module?.title))}</p>
                     </article>
                     <article class="panel">
                         <h2>Video/library</h2>
-                        <p><strong>${escapeHtml(data.video?.title || '')}</strong></p>
+                        <p><strong>${escapeHtml(reviewDisplayText(data.video?.title))}</strong></p>
                         <p class="small">${escapeHtml(data.video?.media_provider || '')}</p>
                         <p><a class="btn one-time-review-action" href="${escapeHtml(data.links?.classroom || '/one-time-classroom.html?review=one-time')}" target="_blank" rel="noopener">Open classroom/library</a></p>
                     </article>
                     <article class="panel">
                         <h2>Worksheet/resource</h2>
-                        <p><strong>${escapeHtml(data.worksheet?.title || '')}</strong></p>
+                        <p><strong>${escapeHtml(reviewDisplayText(data.worksheet?.title))}</strong></p>
                         <p><a class="btn one-time-review-action" href="${escapeHtml(data.worksheet?.url || '#')}" target="_blank" rel="noopener">Open resource</a></p>
                     </article>
                 </section>
@@ -3919,17 +3931,17 @@
                     <article class="panel">
                         <h2>Attendance</h2>
                         <p><strong>${escapeHtml(`${attendance.exact_minutes || 0} exact minutes`)}</strong></p>
-                        <p class="small">${escapeHtml(attendance.status || '')} / ${escapeHtml(attendance.on_time_state || '')}</p>
+                        <p class="small">${escapeHtml(reviewDisplayText(attendance.status))} / ${escapeHtml(reviewDisplayText(attendance.on_time_state))}</p>
                     </article>
                     <article class="panel">
                         <h2>Announcement</h2>
-                        <p><strong>${escapeHtml(data.announcement?.title || '')}</strong></p>
-                        <p class="small">${escapeHtml(data.announcement?.body || '')}</p>
+                        <p><strong>${escapeHtml(reviewDisplayText(data.announcement?.title))}</strong></p>
+                        <p class="small">${escapeHtml(reviewDisplayText(data.announcement?.body))}</p>
                     </article>
                     <article class="panel">
                         <h2>Achievement and reward</h2>
-                        <p><strong>${escapeHtml(data.achievement?.title || '')}</strong></p>
-                        <p class="small">${escapeHtml(data.reward?.title || '')} / ${escapeHtml(data.reward?.status || '')}</p>
+                        <p><strong>${escapeHtml(reviewDisplayText(data.achievement?.title))}</strong></p>
+                        <p class="small">${escapeHtml(reviewDisplayText(data.reward?.title))} / ${escapeHtml(reviewDisplayText(data.reward?.status))}</p>
                     </article>
                 </section>
                 <section class="grid" id="reviewQuestions">
@@ -3946,8 +3958,8 @@
                     <article class="panel">
                         <h2>Support ticket</h2>
                         <p><strong>${escapeHtml(data.support_ticket?.title || '')}</strong></p>
-                        <p class="small">${escapeHtml(data.support_ticket?.latest_activity || '')}</p>
-                        <span class="status-pill">${escapeHtml(data.support_ticket?.status || '')}</span>
+                        <p class="small">${escapeHtml(reviewDisplayText(data.support_ticket?.latest_activity))}</p>
+                        <span class="status-pill">${escapeHtml(reviewDisplayText(data.support_ticket?.status))}</span>
                     </article>
                     <article class="panel">
                         <h2>Not shown</h2>
