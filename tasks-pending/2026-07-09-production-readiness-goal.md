@@ -63,11 +63,11 @@ production-ready when these classes are green or precisely blocked:
 - `master`: pushed and clean through `f23a72b3` before this setup-checker
   closeout batch.
 - BNA live URL: `https://bneineviimacademy.org`.
-- BNA latest runtime fix deploy: Railway `skillful-motivation`,
-  deployment `a38dfa0c-18c2-499f-aff9-4b86f7c53f68`, `SUCCESS`.
+- BNA latest runtime deploy: Railway `skillful-motivation`,
+  deployment `78b8b3a8-4608-4067-a82e-f57985bb3b61`, `SUCCESS`.
 - OneTime live URL: `https://join.onetimeonetime.com`.
 - OneTime latest runtime deploy: Railway `one-time-production` /
-  `one-time-web`, deployment `0c1eec63-aa58-4a65-8bc0-0262ba626401`,
+  `one-time-web`, deployment `0fa8fd0b-052c-4f66-b1c9-f9bed7b65e86`,
   `SUCCESS`.
 - OneTime public target routes and instance-config pass against the canonical
   join domain; local Railway CLI link mismatches are now warnings, not public
@@ -97,7 +97,7 @@ production-ready when these classes are green or precisely blocked:
 | HELPER-20260709-007 | Done | Codex | Rabbi helper/Telegram handoff still listed a stale OneTime deploy-pending blocker even though the prompt/artifacts are live. | Live-readback verified the Rabbi Telegram/helper prompt, 163-contract helper-scope prompt/artifact, and OneTime instance config; remaining blocker is Agent Mode saved proof plus Rabbi chat ID/external approval gates. |
 | HELPER-20260709-008 | Done / proof still pending | Codex | Future agents needed a one-command live readback of the Rabbi Agent Review proof state before opening new Agent Mode windows. | Added `npm run app:smoke:rabbi-agent-review-proof-readiness`. Latest run verified both Rabbi prompts and all public artifacts are live/current, then read the Agent Review hub state as `not_started` for both proof prompts. Next Agent Mode URLs are `https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md` and `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`. |
 | LEADCAP-20260709-009 | Done / deployed / live-smoked | Codex | The OneTime public interest endpoint had live read-only page proof but no safe production POST proof, because a real POST creates first-party CRM state and can trigger the internal Telegram reminder. | Added a `dry_run=true` preview path and `npm run app:smoke:one-time-interest-dry-run` so the live endpoint proves OneTime project/program/CRM/internal-note mapping without product lead, CRM lead, internal note, Telegram, email, WhatsApp/WAPI, checkout, access, Zoom, or external writes. Railway deployment `0c1eec63-aa58-4a65-8bc0-0262ba626401` reached `SUCCESS`; live dry-run smoke passed. |
-| DEPLOY-20260709-010 | Local verified / pending commit-deploy | Codex | OneTime Railway had prior build failures and the deploy context was larger and less deterministic than it should be for production releases. | Harden the shared Railway Docker build by moving to `node:24-alpine`, using `npm ci`, setting runtime `NODE_ENV=production`, adding `.dockerignore` to exclude secrets/local/generated evidence/raw intake/bulky media from Docker context, and copying `.dockerignore` into manual Railway deploy bundles. |
+| DEPLOY-20260709-010 | Done / deployed / live-smoked | Codex | OneTime Railway had prior build failures and the deploy context was larger and less deterministic than it should be for production releases. | Hardened the shared Railway Docker build by moving to `node:24-alpine`, using `npm ci`, setting runtime `NODE_ENV=production`, adding `.dockerignore` to exclude secrets/local/generated evidence/raw intake/bulky media from Docker context, and copying `.dockerignore` into manual Railway deploy bundles. Deployed from clean worktree commit `cdbaacf9` to OneTime and BNA; both reached `SUCCESS` and live smokes passed. |
 
 ## First audit command plan
 
@@ -484,7 +484,26 @@ Verification before deploy:
 
 Deployment status:
 
-- Pending scoped commit/push, explicit deploy, and live smoke.
+- Commit `cdbaacf9` pushed to `origin/master`.
+- Deployed from clean detached worktree
+  `C:\Users\User\AppData\Local\Temp\bna-deploy-cdbaacf9` so unrelated dirty
+  frontend-audit files could not enter the deploy bundle.
+- OneTime deploy: Railway `one-time-production / one-time-web / production`,
+  deployment `0fa8fd0b-052c-4f66-b1c9-f9bed7b65e86`, `SUCCESS`.
+- BNA deploy: Railway `skillful-motivation / skillful-motivation /
+  production`, deployment `78b8b3a8-4608-4067-a82e-f57985bb3b61`, `SUCCESS`.
+- PASS `npm run app:smoke:onetime-separate-instance --
+  https://join.onetimeonetime.com`.
+- PASS `npm run app:smoke:one-time-interest-dry-run`, evidence
+  `ops/live-smokes/2026-07-09T14-19-30-216Z-one-time-interest-dry-run-live-smoke.md`.
+- PASS `npm run app:smoke:rabbi-onetime-landing --
+  https://join.onetimeonetime.com`, evidence
+  `ops/live-smokes/2026-07-09T14-19-30-217Z-rabbi-onetime-landing-smoke.md`.
+- PASS `npm run app:smoke -- --skip-tests`, evidence
+  `ops/live-smokes/2026-07-09T14-22-23-463Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:operations-helper --
+  https://bneineviimacademy.org`, evidence
+  `ops/live-smokes/2026-07-09T14-22-22-608Z-operations-helper-live-smoke.md`.
 
 ## Final audit
 
@@ -495,4 +514,4 @@ Deployment status:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied / deployed / live-smoked | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register; `LEADCAP-20260709-009` closeout above. | Lead capture live-smoked in prior closeout; dry-run proof tests, full suite, deployment, and live smoke pass. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done; current deploy hardening pending release | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, and `DEPLOY-20260709-010` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Current Docker/build-context hardening needs fresh verification, commit/push, deploy, and live smoke. | Complete DEPLOY-20260709-010 release. Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, and terminal Agent Mode saved proof remain blocked. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, and `DEPLOY-20260709-010` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, and terminal Agent Mode saved proof remain blocked. |

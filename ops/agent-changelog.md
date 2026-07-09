@@ -36068,7 +36068,7 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Telegram/helper smoke and all-163 helper-scope probe, and keep external-write
   helper autonomy gated by exact approvals and credentials.
 
-## 2026-07-09 - OneTime Railway Build Context Hardening
+## 2026-07-09 - Railway Docker build context hardening deployed
 
 - Investigated the three July 8 `one-time-production` / `one-time-web`
   failures: deployment IDs `d970e263-1726-41c1-a694-10c1659503ee`,
@@ -36087,15 +36087,54 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Updated `scripts/railway-redeploy.ps1` to include `.dockerignore` in manual
   deploy bundles and added regression coverage in
   `tests/one-time-deployment-readiness.test.js`.
-- Verification passed: `node --check server.js`,
-  `npm ci --dry-run --ignore-scripts`, PowerShell parser check for
-  `scripts/railway-redeploy.ps1`,
+- Verification passed: `npm ci --dry-run --ignore-scripts`, PowerShell parser
+  check for `scripts/railway-redeploy.ps1`,
   `node --test tests/one-time-deployment-readiness.test.js
   tests/railway-target-guard.test.js tests/one-time-product-system.test.js`,
   `npm run one-time:railway-target:guard`,
   `npm run app:smoke:onetime-separate-instance --
   https://join.onetimeonetime.com`, and
   `npm run app:smoke:one-time-interest-dry-run`.
-- Remaining blocker: this Docker/build-context hardening is local-only until it
-  can be committed/pushed/deployed through a clean lane; the current worktree
-  contains unrelated parallel OneTime/frontend/evidence changes.
+- Pushed commit `cdbaacf9`, then deployed from clean detached worktree
+  `C:\Users\User\AppData\Local\Temp\bna-deploy-cdbaacf9` so unrelated dirty
+  frontend-audit files could not enter the deploy bundles.
+- OneTime Railway deployment
+  `0fa8fd0b-052c-4f66-b1c9-f9bed7b65e86` reached `SUCCESS`; live smokes passed
+  including
+  `ops/live-smokes/2026-07-09T14-19-30-216Z-one-time-interest-dry-run-live-smoke.md`
+  and
+  `ops/live-smokes/2026-07-09T14-19-30-217Z-rabbi-onetime-landing-smoke.md`.
+- BNA Railway deployment `78b8b3a8-4608-4067-a82e-f57985bb3b61` reached
+  `SUCCESS`; live smokes passed:
+  `ops/live-smokes/2026-07-09T14-22-23-463Z-live-app-smoke.md` and
+  `ops/live-smokes/2026-07-09T14-22-22-608Z-operations-helper-live-smoke.md`.
+
+## 2026-07-09T17:20:38+03:00 - OneTime Issue #128 Parallel Frontend Audit Captured
+
+- Registered `RAW-20260709-011` and
+  `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md` for GitHub
+  issue #128 in parallel-safe audit mode first.
+- Created and validated five Product Quality Compiler packets under
+  `ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/`:
+  control tower, current-state visual audit, blocked static chrome
+  implementation, public landing reframe, and provider Operations parity audit.
+- Added `scripts/audit-onetime-parallel-frontend.mjs` and captured a live
+  read-only audit against `https://join.onetimeonetime.com`. The report wrote
+  105 screenshots, 113 findings, and 10 Operations auth skips under
+  `ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/`.
+- Added eight One Time Agent Mode prompt definitions and regenerated the
+  Agent Review prompt pack. `npm run agent-review:prompts` produced 26 prompt
+  files/public artifacts, and `node --test tests/agent-review-hub.test.js`
+  passed.
+- Verification passed: `npm run pqc:validate` for the five packets,
+  `node --check scripts/audit-onetime-parallel-frontend.mjs`, live audit status
+  `captured`, prompt generation, focused Agent Review tests, and
+  `npm run audit:governance` report generation.
+- Guardrails held: no email, WhatsApp/WAPI, Telegram, payment, checkout,
+  access grant, DNS, Railway, Drive, Vimeo, Zoom, Stripe, GHL/LeadConnector,
+  credential, provider-account, or production-data mutation was performed.
+- Blockers: static chrome implementation and public prompt publish/deploy stay
+  blocked by the active dirty app-visible lane; Operations parity screenshots
+  need an authenticated redaction-safe session; audit governance still reports
+  historical unmapped audit debt plus the new untracked evidence package before
+  staging.
