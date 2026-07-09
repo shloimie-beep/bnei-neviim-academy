@@ -6,6 +6,23 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-09T17:12:00+03:00 - OneTime interest dry-run proof deployed
+
+- Added `dry_run=true` support to `/api/one-time/interest` so the live route
+  can prove product lead, first-party CRM lead, and internal-note mapping
+  without creating rows or sending reminders.
+- Added `npm run app:smoke:one-time-interest-dry-run`, backed by
+  `scripts/smoke-one-time-interest-dry-run-live.mjs`.
+- Pushed commit `45b332b6`, deployed OneTime Railway service
+  `one-time-production / one-time-web`; deployment
+  `0c1eec63-aa58-4a65-8bc0-0262ba626401` reached `SUCCESS`.
+- Live proof passed:
+  `ops/live-smokes/2026-07-09T14-10-19-816Z-one-time-interest-dry-run-live-smoke.md`.
+- Guardrail: no product lead, CRM lead, internal communication note, Telegram
+  reminder, email, WhatsApp/WAPI message, checkout, access grant, Zoom meeting,
+  external connector write, DNS/account/provider mutation, or credential
+  change was performed by the dry-run proof.
+
 ## 2026-07-09T16:52:16+03:00 - Rabbi Agent Review proof readiness smoke
 
 - Added `npm run app:smoke:rabbi-agent-review-proof-readiness`, backed by

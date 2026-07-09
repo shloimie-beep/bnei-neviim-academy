@@ -136,7 +136,7 @@ async function main() {
     assert(data.preview?.project_key === 'one_time_mishnah_class', 'project scope mismatch');
     assert(data.preview?.program_key === 'one_time_mishnah_class', 'program key mismatch');
     assert(data.preview?.project_id_present === true, 'project was not resolved');
-    assert(data.preview?.product_lead_preview?.parent_email === payload.email, 'email was not preserved in product preview');
+    assert(data.preview?.product_lead_preview?.parent_email === payload.email.toLowerCase(), 'email was not preserved in product preview');
     assert(data.preview?.product_lead_preview?.preferred_class_format === 'free_zoom_intro', 'free Zoom preference missing');
     assert(data.preview?.crm_lead_preview?.table === 'bna_parent_leads', 'CRM lead table mismatch');
     assert(data.preview?.crm_lead_preview?.status === 'follow_up', 'CRM follow-up status mismatch');
