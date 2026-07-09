@@ -37067,3 +37067,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers: exact external setup fields, Rabbi Telegram hosted
   restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
   execution batch, and active collision-lane reconciliation.
+
+## 2026-07-09T22:46:09+03:00 - Control Tower Shows Agent Task-Lock Evidence
+
+- Updated the ChatGPT/Codex drop-off control tower so not-claimable agent jobs
+  are enriched with local task-lock health, PID/heartbeat age, and missing-lock
+  evidence.
+- Regenerated `ops/chatgpt-ramble-dropoff/CONTROL-TOWER.*`; the control tower
+  now shows stale dead PID evidence for tasks `1736` and `1859`, and missing
+  lock evidence for task `2185`.
+- Verification passed: `node --check scripts/chatgpt-dropoff-control-tower.mjs`,
+  `node --test tests/chatgpt-dropoff-control-tower.test.js`, and
+  `npm run chatgpt:dropoff:tower`.
+- Guardrails held: coordination/reporting only; no app UI/API edit, deploy,
+  hosted restart, live Telegram smoke, external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, lock deletion,
+  live task/job mutation, or production-data mutation.
+- Remaining blockers are unchanged: exact external setup fields, Rabbi Telegram
+  hosted restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
+  execution batch, and active collision-lane reconciliation.
