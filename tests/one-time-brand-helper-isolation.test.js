@@ -32,7 +32,9 @@ test('One Time public helper has separate surface, copy, actions, and black-yell
   assert.match(widget, /Do you want your son to love Torah/);
   assert.match(widget, /We are up to \$\{oneTimeCurrentMasechta\(\)\} now\. It is a great time to join/);
   assert.match(widget, /Speak to Rabbi Scheller/);
-  assert.match(widget, /Sign Up Now/);
+  assert.match(widget, /Join the Free Class/);
+  assert.match(widget, /free OneTime Mishnayos class follow-up/);
+  assert.match(widget, /approved free Zoom class details/);
   assert.match(widget, /bna-assistant-surface-one-time-public/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher/);
 

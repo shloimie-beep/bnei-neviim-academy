@@ -9,6 +9,11 @@ Current state:
      `railway-verify=73e92e55cb07e5a0abdb0a72f204d437d915c3134e844af12f419407632a97d6`
 3. Separate One Time Railway target exists and `one-time-web` has a non-empty
    `DATABASE_URL` service reference.
+   - 2026-07-09 target-context recheck passed:
+     `npm run one-time:railway-target:guard` read `one-time-web` /
+     `production`, found 52 Railway variables, found usable `DATABASE_URL`,
+     and verified `ONE_TIME_PUBLIC_DOMAIN`,
+     `DEFAULT_WORKSPACE_KEY`, and `DEFAULT_PROJECT_KEY`.
 4. Safe provider env values for Resend, Zoom credentials, and Vimeo client
    credentials were pushed to `one-time-web` with deploy skipped and verified
    by fingerprint.
@@ -23,9 +28,11 @@ Current state:
 
 Top Codex task:
 
-1. Validate, commit, push, mark PR #64 ready/merge if policy allows, deploy
-   `one-time-web`, then run live smoke for
-   `https://join.onetimeonetime.com/`.
+1. For the immediate launch lane, finish and release the public OneTime
+   lead-capture/free-class follow-up path from
+   `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`.
+   Full portal/payment/broadcast launch remains lower priority until the
+   operator supplies the remaining setup values.
 
 Deployment caveat:
 
@@ -55,21 +62,18 @@ Recently resolved:
 Still blocked:
 
 1. `REQ-20260702-108` - provider setup remains blocked on exact Zoom session
-   alias, One Time Drive drop-folder alias, Rabbi Stripe sandbox/test key
-   status and `$67/month` product/price alias, Whapi/WAPI instance/phone,
-   campaign copy/list/suppression proof, and explicit seed approval packet.
-   No send/payment/provider mutation should run until those values and scope
-   are explicit.
-2. `REQ-20260702-110` - final app bootstrap/live smoke remains blocked because
-   the current Railway token/env is reading BNA production, not the separate
-   One Time target. The setup checker now reports project
-   `skillful-motivation` with visible services `Postgres`,
-   `academy-telegram-worker`, `rabbi-telegram-worker`, and
-   `skillful-motivation`; target service `one-time-web` is not visible.
-   Reconcile Railway auth/target context so current CLI/token can see
-   `one-time-production` / `one-time-web` / `production`, then rerun
-   `npm run one-time:railway-target:guard`,
-   `npm run one-time:setup:check`, `npm run one-time:db:bootstrap`, and only
-   then the post-setup deploy/live-smoke packet.
+   alias, Rabbi Stripe sandbox/test key status and `$67/month` product/price
+   alias, Whapi/WAPI instance/phone, campaign copy/list/suppression proof, and
+   explicit seed approval packet. Railway target context, database readback,
+   join-domain, and Drive/Vimeo readiness are no longer the blocker.
+   No send/payment/provider mutation should run until the remaining values and
+   scope are explicit.
+2. `REQ-20260702-110` - final full-launch bootstrap/live smoke remains blocked
+   by the remaining external setup items above, not by Railway target context.
+   2026-07-09 `npm run one-time:railway-target:guard` passed for
+   `one-time-web`; `npm run one-time:setup:check` still reports ready 4/8 and
+   blocks only Zoom alias, Stripe sandbox/price alias, Whapi/WAPI instance and
+   phone, and campaign approval data. For the immediate public capture funnel,
+   use the new RAW-20260709-008 register instead of waiting on full setup.
 3. Campaign send remains blocked on final copy, exact segment/list,
    suppression/unsubscribe proof, seed pass, and exact real-send packet.

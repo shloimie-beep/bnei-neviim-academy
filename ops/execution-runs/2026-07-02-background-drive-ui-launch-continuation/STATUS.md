@@ -26,18 +26,25 @@ evidence.
 - `REQ-20260702-107`: done. Railway custom domain attachment and GoDaddy DNS
   verification for `join.onetimeonetime.com` are complete.
 - `REQ-20260702-108`: blocked. Current read-only setup check still needs the
-  Zoom session/join alias, One Time Drive drop-folder alias, Rabbi Stripe
-  sandbox/test key status plus `$67/month` product/price alias, Whapi/WAPI
-  instance/phone, campaign copy/list/suppression proof, and seed approval
-  packet. No provider mutation or send occurred.
+  Zoom session/join alias, Rabbi Stripe sandbox/test key status plus
+  `$67/month` product/price alias, Whapi/WAPI instance/phone, campaign
+  copy/list/suppression proof, and seed approval packet. Railway target
+  context, separate database readback, join-domain, and Drive/Vimeo setup are
+  no longer the blocker. No provider mutation or send occurred.
 - `REQ-20260702-109`: done. Top visible task is now GoDaddy DNS for
   `join.onetimeonetime.com`.
-- `REQ-20260702-110`: blocked. Current closeout work is pushed to `master`,
-  BNA production deploy/live smoke passed, and One Time setup tooling now
-  blocks stale historical provisioning proof. Current Railway auth reads BNA
-  project `skillful-motivation` and cannot see target service `one-time-web`.
-  Deploy, DB bootstrap, and live smoke remain blocked until Railway auth/target
-  context can see `one-time-production` / `one-time-web` / `production`.
+- `REQ-20260702-110`: blocked for full launch only. Current closeout work is
+  pushed to `master`, BNA production deploy/live smoke passed, and One Time
+  setup tooling now blocks stale historical provisioning proof. 2026-07-09
+  readback resolved the old Railway target-context blocker:
+  `npm run one-time:railway-target:guard` saw `one-time-web` / `production`,
+  52 Railway variables, usable `DATABASE_URL`, matching
+  `join.onetimeonetime.com`, `rabbi_sheller_provider`, and
+  `one_time_mishnah_class`. `npm run one-time:setup:check` still reports ready
+  4/8 because Zoom alias, Stripe sandbox/price alias, Whapi/WAPI details, and
+  campaign approval data are missing. Immediate public lead capture is now
+  tracked in `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`
+  and does not wait on portal/payment/broadcast setup.
 
 PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/64
 

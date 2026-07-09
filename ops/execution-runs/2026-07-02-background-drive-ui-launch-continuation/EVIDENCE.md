@@ -25,6 +25,14 @@
   `ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.md`
 - Current Railway auth diagnostic readback:
   `ops/one-time-mishnah/launch-unblocker/2026-07-07-railway-auth-diagnostic-readback.md`
+- 2026-07-09 target-context correction:
+  `npm run one-time:railway-target:guard` passed with `one-time-web` /
+  `production`, 52 Railway variables, usable `DATABASE_URL`, and matching
+  OneTime domain/workspace/project. `npm run one-time:setup:check` still
+  exits 1 with ready 4/8 because full launch is blocked by Zoom alias, Stripe
+  sandbox/price alias, Whapi/WAPI details, and campaign approvals.
+- Immediate lead-capture/free-class lane:
+  `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`
 - Domain/DNS task:
   `ops/domain-readbacks/2026-07-02-join-onetimeonetime-domain-task.md`
 - Provider setup status:

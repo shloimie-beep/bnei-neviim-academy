@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T10:51:18.599Z",
+  "generated_at": "2026-07-09T11:38:03.241Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -565,6 +565,7 @@
     "tasks-pending/2026-07-09-audit-governance-and-stale-audit-tasking.md",
     "tasks-pending/2026-07-09-chatgpt-credit-routing-and-app-lag-advice.md",
     "tasks-pending/2026-07-09-chatgpt-multi-window-and-kimi-fallback.md",
+    "tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md",
     "tasks-pending/2026-07-09-onetime-scope-ui-agent-contact-corrections.md",
     "tasks-pending/2026-07-09-process-cleanup-deploy-pending.md",
     "tasks-pending/_template-goal-mode-correction-output.md",

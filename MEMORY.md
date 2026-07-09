@@ -1602,6 +1602,12 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   stay disabled with setup-blocked copy until explicit provider credentials or
   payment links are configured. Do not claim live payment links exist until
   that blocker is resolved.
+- As of 2026-07-09, the immediate One Time launch priority is public lead
+  capture and free-class/free-Zoom follow-up. Agents should capture parent
+  contact details into first-party One Time CRM records and internal follow-up
+  evidence first. Portal/member access, Stripe/payment, WAPI/broadcast sends,
+  and full campaign setup remain later lanes until explicit setup values and
+  approvals are present.
 - One Time billing must use exactly one provider of record per live product/
   plan. As of 2026-06-15 the provider is still undecided, with Green Invoice,
   Stripe, and a short manual bridge documented as options in

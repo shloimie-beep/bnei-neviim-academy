@@ -64,12 +64,12 @@
     "eyebrow": "Worldwide Live Mishnayos",
     "headline": "Your Child Can Love Learning Mishnayos",
     "subhead": "Join the daily live Mishnayos class built for kids - exciting, clear, accountable, and connected to Rabbi Eli Scheller.",
-    "primary_cta": "Start 30 Days Free",
+    "primary_cta": "Join the Free Class",
     "secondary_cta": "See How It Works",
     "member_cta": "Member Login",
-    "offer": "$67 USD per month after a 30-day free trial",
+    "offer": "Free class follow-up before portal, payment, or member access setup",
     "campaign_contract": "ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY control the non-resetting countdown.",
-    "no_send_note": "Signup interest starts a follow-up conversation before membership is completed."
+    "no_send_note": "Signup interest creates a first-party OneTime CRM follow-up only. No portal account, checkout, payment, access grant, WhatsApp send, or Zoom meeting is created by the public form."
   },
   "nav": [
     {
@@ -89,7 +89,7 @@
       "href": "#faq"
     },
     {
-      "label": "Start Free",
+      "label": "Join Free Class",
       "href": "#start-free"
     },
     {

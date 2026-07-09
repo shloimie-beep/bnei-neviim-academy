@@ -302,9 +302,9 @@
       border-top: 1px solid rgba(8,9,16,0.32);
     }
     .signup-strip-inner {
-      min-height: 70px;
+      min-height: 82px;
       display: grid;
-      grid-template-columns: minmax(220px, 1fr) minmax(240px, 360px) auto minmax(120px, 0.35fr);
+      grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.55fr) auto;
       align-items: center;
       gap: 12px;
       padding: 12px 0;
@@ -325,6 +325,12 @@
       color: rgba(8,9,16,0.72);
       font-size: 0.86rem;
       font-weight: 760;
+    }
+    .signup-strip-fields {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 8px;
     }
     .signup-strip input {
       min-height: 46px;
@@ -347,7 +353,11 @@
       font-size: 0.78rem;
       font-weight: 850;
     }
+    .signup-strip-note {
+      grid-column: 2 / -1;
+    }
     .signup-strip .form-status {
+      grid-column: 2 / -1;
       min-height: 20px;
       overflow-wrap: anywhere;
     }
@@ -604,12 +614,15 @@
       }
       .nav { justify-content: flex-start; }
       .signup-strip-inner {
-        grid-template-columns: minmax(0, 1fr) minmax(220px, 0.8fr);
+        grid-template-columns: minmax(0, 1fr);
       }
       .signup-strip .strip-button,
       .signup-strip-note,
       .signup-strip .form-status {
         grid-column: auto;
+      }
+      .signup-strip-fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
       .press-logos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .grid.three,
@@ -642,6 +655,9 @@
         grid-template-columns: 1fr;
         align-items: stretch;
         padding: 14px 0;
+      }
+      .signup-strip-fields {
+        grid-template-columns: 1fr;
       }
       .signup-strip .strip-button,
       .signup-strip-note,
@@ -693,26 +709,35 @@
             <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
             <a class="button secondary" href="#how-it-works" data-action-id="ACTION-ONETIME-WATCH-RABBI-CTA">See How It Works</a>
           </div>
-          <p class="microcopy">No pressure. Try the class, worksheets, portal, and parent tracking for 30 days.</p>
+          <p class="microcopy">No pressure. Start with the free live-class follow-up. No charge and no portal setup today.</p>
           <div class="hero-badges" id="watch" aria-label="Program highlights">
             <span>Live class</span>
             <span>Clear review</span>
             <span>Worksheets</span>
-            <span>Parent tracking</span>
+            <span>Free Zoom follow-up</span>
           </div>
         </div>
         <form id="interestForm" class="signup-strip" aria-label="Sign up for OneTimeOneTime Mishnayos updates">
           <div class="wrap signup-strip-inner" id="start-free">
             <div class="signup-strip-copy">
-              <strong>Sign Up Now</strong>
-              <span>Get the 30-day start link and class updates.</span>
+              <strong>Join the Free Class</strong>
+              <span>Tell us who to contact and we will follow up with the approved Zoom details.</span>
             </div>
-            <label class="visually-hidden" for="signupEmail">Parent email</label>
-            <input id="signupEmail" name="email" type="email" autocomplete="email" placeholder="Parent email" required>
+            <div class="signup-strip-fields">
+              <label class="visually-hidden" for="signupParentName">Parent name</label>
+              <input id="signupParentName" name="parent_name" type="text" autocomplete="name" placeholder="Parent name" required>
+              <label class="visually-hidden" for="signupEmail">Parent email</label>
+              <input id="signupEmail" name="email" type="email" autocomplete="email" placeholder="Parent email" required>
+              <label class="visually-hidden" for="signupStudentName">Student name</label>
+              <input id="signupStudentName" name="student_name" type="text" autocomplete="off" placeholder="Student name">
+              <label class="visually-hidden" for="signupPhone">Phone / WhatsApp</label>
+              <input id="signupPhone" name="phone" type="tel" autocomplete="tel" placeholder="Phone / WhatsApp">
+            </div>
             <input name="consent" type="hidden" value="yes">
             <input name="source_landing_page" type="hidden" value="/one-time#start-free">
-            <button class="button strip-button" type="submit" data-action-id="ACTION-ONETIME-INTEREST-FORM" data-one-time-action-state="working">Sign Up Now</button>
-            <p class="signup-strip-note">No spam. No charge today.</p>
+            <input name="preferred_class_format" type="hidden" value="free_zoom_intro">
+            <button class="button strip-button" type="submit" data-action-id="ACTION-ONETIME-INTEREST-FORM" data-one-time-action-state="working">Save My Spot</button>
+            <p class="signup-strip-note">No spam, no charge, and no portal account is opened by this form.</p>
             <p class="form-status" id="interestStatus" aria-live="polite"></p>
           </div>
         </form>
@@ -772,7 +797,7 @@
         <div>
           <p class="eyebrow">WHO IT'S FOR</p>
           <h2>Built for kids who need Mishnayos to feel alive.</h2>
-          <p>This is for families who want more than another recording. The class gives kids a live rebbi, a real schedule, a portal, accountability, and a worldwide group of students learning together.</p>
+          <p>This is for families who want more than another recording. The class gives kids a live rebbi, a real schedule, accountability, and a worldwide group of students learning together.</p>
         </div>
         <ul class="check-list">
           <li>Kids who learn better with energy and interaction</li>
@@ -791,7 +816,7 @@
         </div>
         <div class="grid four">
           <div class="receive-item">Daily live Mishnayos shiur</div>
-          <div class="receive-item">Access link through the student portal</div>
+          <div class="receive-item">Clear live-class join details</div>
           <div class="receive-item">Worksheets and review materials</div>
           <div class="receive-item">Attendance tracking for parents</div>
           <div class="receive-item">Progress path toward finishing Mishnayos</div>
@@ -830,11 +855,11 @@
           </details>
           <details>
             <summary>Can parents track attendance?</summary>
-            <p>Yes. Parents get visibility into attendance and progress so they can help their child stay on track.</p>
+            <p>The immediate free-class signup captures your contact details for follow-up. Parent tracking is a later member experience and is not opened by this form.</p>
           </details>
           <details>
             <summary>Can students contact the rabbi?</summary>
-            <p>Yes. Students can communicate through the student portal.</p>
+            <p>Questions can be routed through the safe class follow-up process. A student portal account is not opened by the public signup.</p>
           </details>
           <details>
             <summary>How long does it take to finish Mishnayos?</summary>
@@ -852,17 +877,17 @@
       <div class="wrap funnel">
         <div>
           <p class="eyebrow">START FREE</p>
-          <h2>Start with one email.</h2>
-          <p>Put in your email and we will send the OneTimeOneTime start link, class details, and parent access next steps.</p>
+          <h2>Start with the free class.</h2>
+          <p>Send your contact details and we will follow up with the approved OneTimeOneTime free Zoom class details.</p>
           <div class="button-row" style="justify-content: flex-start;">
             <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
             <a class="button dark" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
           </div>
         </div>
         <ul class="check-list">
-          <li>30-day start link</li>
-          <li>Tonight's class details when available</li>
-          <li>Parent portal setup instructions</li>
+          <li>Free-class interest captured in the OneTime CRM</li>
+          <li>Zoom details sent only after the approved class link is ready</li>
+          <li>No portal, checkout, payment, or access grant from this form</li>
         </ul>
       </div>
     </section>
@@ -910,7 +935,7 @@
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Could not save your request');
-        status.textContent = data.message || "You're on the list. We will email the OneTimeOneTime start link.";
+        status.textContent = data.message || "You're on the list. We will follow up with the approved OneTimeOneTime Zoom details.";
         form.reset();
       } catch (error) {
         status.textContent = error.message || 'Could not save your request.';

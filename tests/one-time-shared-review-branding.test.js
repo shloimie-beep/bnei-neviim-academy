@@ -171,7 +171,7 @@ test('One Time brand kit and service-provider site config are present', () => {
   assert.equal(site.status, 'shared_review');
   assert.equal(site.external_write_performed, false);
   assert.equal(site.copy.headline, 'Your Child Can Love Learning Mishnayos');
-  assert.equal(site.copy.primary_cta, 'Start 30 Days Free');
+  assert.equal(site.copy.primary_cta, 'Join the Free Class');
   assert.equal(site.copy.secondary_cta, 'See How It Works');
   assert.equal(site.assets.social_og, '/images/one-time/social/one-time-og-20260622.jpg');
   assert.ok(site.blocked_live_actions.includes('live_email_send'));

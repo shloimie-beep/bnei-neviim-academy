@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-08T19:36:00+03:00",
+  "updated_at": "2026-07-09T14:42:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -35,7 +35,7 @@
       "surface": "one_time_public_landing",
       "route": "/one-time",
       "selector_hint": "body.bna-assistant-surface-one-time-public .bna-bot-launcher",
-      "expected_behavior": "Opens Rabbi Scheller's OneTime-scoped public digital assistant with concise parent-facing copy. The landing nudge asks whether the visitor wants his son to love Torah after 10 seconds, then says where the class is holding by masechta 20 seconds later. Internal scope guardrails remain OneTime-only and do not expose BNA Academy or private portal data.",
+      "expected_behavior": "Opens Rabbi Scheller's OneTime-scoped public digital assistant with concise parent-facing copy. The landing nudge asks whether the visitor wants his son to love Torah after 10 seconds, then says where the class is holding by masechta 20 seconds later and points to the free-class lead form. Internal scope guardrails remain OneTime-only and do not expose BNA Academy or private portal data.",
       "permission": "anonymous public visitor",
       "status": "active",
       "test": {
@@ -342,11 +342,11 @@
     },
     {
       "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
-      "label": "Start 30 Days Free",
+      "label": "Join the Free Class",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "a[href=\"#start-free\"].button.primary",
-      "expected_behavior": "Scrolls to the first-party interest form for a 30-day-free trial request; does not create checkout, send messages, create a Zoom meeting, or grant access.",
+      "expected_behavior": "Scrolls to the first-party interest form for free-class/free-Zoom follow-up; does not create checkout, send messages, create a Zoom meeting, open a portal account, or grant access.",
       "permission": "public",
       "status": "active",
       "test": {
@@ -400,16 +400,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-INTEREST-FORM",
-      "label": "Sign Up Now",
+      "label": "Save My Spot",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "#interestForm button[type=\"submit\"]",
-      "expected_behavior": "Creates a first-party OneTime interest lead from the email-only public signup strip with hidden explicit consent/source metadata; no checkout, external send, live charge, or access grant.",
+      "expected_behavior": "Creates a first-party OneTime product lead and CRM lead from the public free-class signup form with parent name, email, optional student name, optional phone/WhatsApp, hidden consent, and source metadata; no checkout, external send, live charge, portal account, Zoom meeting creation, or access grant.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "api_guarded",
-        "expected_result": "Posts only email, hidden consent, and source metadata to /api/one-time/interest and returns a no-checkout/no-send/no-access-grant confirmation."
+        "expected_result": "Posts parent name, email, optional student name, optional phone/WhatsApp, hidden consent, and source metadata to /api/one-time/interest and returns a CRM-recorded no-checkout/no-send/no-access-grant confirmation."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

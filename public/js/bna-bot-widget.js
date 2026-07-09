@@ -389,9 +389,9 @@
   function oneTimePublicHelperData() {
     return {
       intro:
-        "Hi. Do you want your son to love Torah? I can help you join Rabbi Scheller's OneTime Mishnayos class.",
+        "Hi. Do you want your son to love Torah? I can help you request the free OneTime Mishnayos class follow-up.",
       choices: [
-        { id: 'trial', label: 'Sign Up Now' },
+        { id: 'trial', label: 'Join the Free Class' },
         { id: 'schedule', label: 'Class schedule' },
         { id: 'program', label: 'About the class' },
         { id: 'member_access', label: 'Member login help' },
@@ -401,14 +401,14 @@
         first: {
           body: 'Hi. Do you want your son to love Torah?',
           actions: [
-            { type: 'scroll', target: '#start-free', label: 'Sign Up Now' },
+            { type: 'scroll', target: '#start-free', label: 'Join the free class' },
             { type: 'open', label: 'Ask a question' },
           ],
         },
         second: {
           body: oneTimeJoinMomentCopy(),
           actions: [
-            { type: 'scroll', target: '#start-free', label: 'Join now' },
+            { type: 'scroll', target: '#start-free', label: 'Save my spot' },
             { type: 'path', path: 'schedule', label: 'Schedule' },
           ],
         },
@@ -418,7 +418,7 @@
           body: `${oneTimeJoinMomentCopy()} Ask your schedule question and we will help you get started.`,
           actions: [
             { type: 'prefill', label: 'Ask schedule question', prompt: 'I have a schedule question about the OneTime Mishnayos class: ' },
-            { type: 'scroll', target: '#start-free', label: 'Start free' },
+            { type: 'scroll', target: '#start-free', label: 'Free class form' },
           ],
         },
         program: {
@@ -428,9 +428,9 @@
           ],
         },
         trial: {
-          body: 'Start with one email. We will send the class details and parent setup next steps.',
+          body: 'Tell us who to contact and we will follow up with the approved free Zoom class details. This does not open a portal account or checkout.',
           actions: [
-            { type: 'scroll', target: '#start-free', label: 'Start 30 days free' },
+            { type: 'scroll', target: '#start-free', label: 'Open free class form' },
           ],
         },
         member_access: {

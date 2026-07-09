@@ -77815,54 +77815,229 @@ async function oneTimeCalendarRows({ projectId, view = 'week', audience = 'admin
 
 async function createOneTimeProductLead(input = {}, db = pool) {
   const lead = validateOneTimeLead(input);
-  const project = await getRabbiProject(db);
-  const program = await getOneTimeProductProgram(project.id, db);
-  const row = (await db.query(
-    `INSERT INTO bna_product_leads (
-       project_id, program_id, program_key, product_key, region, audience,
-       interested_tiers, parent_name, parent_email, parent_phone,
-       parent_whatsapp, student_name, student_age, student_grade,
-       timezone, preferred_class_format, source_landing_page, consent,
-       notes, status, no_send, external_write_performed, metadata, updated_at
-     ) VALUES (
-       $1, $2, $3, $4, $5, $6,
-       $7::text[], $8, $9, $10,
-       $11, $12, $13, $14,
-       $15, $16, $17, $18,
-       $19, $20, TRUE, FALSE, $21::jsonb, NOW()
-     )
-     RETURNING *`,
-    [
-      project.id,
-      program?.id || null,
-      ONE_TIME_PRODUCT_PROGRAM_KEY,
-      ONE_TIME_PRODUCT_PROGRAM_KEY,
-      lead.region,
-      lead.audience,
-      lead.interested_tiers,
-      limitText(lead.parent_name, 180),
-      normalizeEmail(lead.email || '') || null,
-      limitText(lead.phone || '', 80) || null,
-      limitText(lead.whatsapp || '', 80) || null,
-      limitText(lead.student_name || '', 180) || null,
-      lead.student_age === null || lead.student_age === undefined ? null : limitText(String(lead.student_age), 40),
-      limitText(lead.student_grade || '', 80) || null,
-      limitText(lead.timezone || '', 100) || null,
-      limitText(lead.preferred_class_format || '', 120) || null,
-      limitText(lead.source_landing_page || '/one-time', 220),
-      lead.consent,
-      limitText(lead.notes || '', 2000) || null,
-      lead.status,
-      JSON.stringify({
-        ...lead.metadata,
-        source: 'one_time_product_interest',
-        no_checkout: true,
-        no_access_granted: true,
-        external_write_performed: false,
-      }),
-    ]
-  )).rows[0];
-  return oneTimeProductLeadView(row);
+  const client = db.connect ? await db.connect() : null;
+  const runner = client || db;
+  try {
+    if (client) await client.query('BEGIN');
+    const project = await getRabbiProject(runner);
+    const program = await getOneTimeProductProgram(project.id, runner);
+    const parentEmail = normalizeEmail(lead.email || '') || null;
+    const parentPhone = limitText(lead.phone || lead.whatsapp || '', 80) || null;
+    const parentPhoneDigits = String(parentPhone || '').replace(/\D+/g, '');
+    const studentAgeNumber = Number.parseInt(String(lead.student_age || ''), 10);
+    const crmStudentAge = Number.isInteger(studentAgeNumber) && studentAgeNumber > 0 && studentAgeNumber < 120
+      ? studentAgeNumber
+      : null;
+    const leadTags = [
+      'one-time',
+      'one-time-public-signup',
+      'free-class-interest',
+      'free-zoom-follow-up',
+    ];
+    const productMetadata = {
+      ...lead.metadata,
+      source: 'one_time_product_interest',
+      crm_capture: true,
+      free_class_follow_up: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_external_send: true,
+      external_write_performed: false,
+    };
+    const productRow = (await runner.query(
+      `INSERT INTO bna_product_leads (
+         project_id, program_id, program_key, product_key, region, audience,
+         interested_tiers, parent_name, parent_email, parent_phone,
+         parent_whatsapp, student_name, student_age, student_grade,
+         timezone, preferred_class_format, source_landing_page, consent,
+         notes, status, no_send, external_write_performed, metadata, updated_at
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6,
+         $7::text[], $8, $9, $10,
+         $11, $12, $13, $14,
+         $15, $16, $17, $18,
+         $19, $20, TRUE, FALSE, $21::jsonb, NOW()
+       )
+       RETURNING *`,
+      [
+        project.id,
+        program?.id || null,
+        ONE_TIME_PRODUCT_PROGRAM_KEY,
+        ONE_TIME_PRODUCT_PROGRAM_KEY,
+        lead.region,
+        lead.audience,
+        lead.interested_tiers,
+        limitText(lead.parent_name, 180),
+        parentEmail,
+        limitText(lead.phone || '', 80) || null,
+        limitText(lead.whatsapp || '', 80) || null,
+        limitText(lead.student_name || '', 180) || null,
+        lead.student_age === null || lead.student_age === undefined ? null : limitText(String(lead.student_age), 40),
+        limitText(lead.student_grade || '', 80) || null,
+        limitText(lead.timezone || '', 100) || null,
+        limitText(lead.preferred_class_format || 'free_zoom_intro', 120) || null,
+        limitText(lead.source_landing_page || '/one-time', 220),
+        lead.consent,
+        limitText(lead.notes || '', 2000) || null,
+        lead.status,
+        JSON.stringify(productMetadata),
+      ]
+    )).rows[0];
+
+    const crmMetadata = {
+      source: 'one_time_public_interest_form',
+      product_lead_id: productRow.id,
+      program_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+      source_landing_page: productRow.source_landing_page || '/one-time',
+      region: productRow.region || 'worldwide',
+      preferred_class_format: lead.preferred_class_format || 'free_zoom_intro',
+      interested_tiers: lead.interested_tiers,
+      free_class_follow_up: true,
+      free_zoom_follow_up: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_external_send: true,
+      external_write_performed: false,
+    };
+    let crmLead = null;
+    if (parentEmail) {
+      crmLead = (await runner.query(
+        `SELECT *
+         FROM bna_parent_leads
+         WHERE project_id = $1
+           AND lower(COALESCE(parent_email, '')) = lower($2)
+           AND COALESCE(status, 'interested') <> 'archived'
+         ORDER BY updated_at DESC NULLS LAST, created_at DESC NULLS LAST, id DESC
+         LIMIT 1`,
+        [project.id, parentEmail]
+      )).rows[0] || null;
+    }
+    if (!crmLead && parentPhone && parentPhoneDigits) {
+      crmLead = (await runner.query(
+        `SELECT *
+         FROM bna_parent_leads
+         WHERE project_id = $1
+           AND COALESCE(status, 'interested') <> 'archived'
+           AND (
+             regexp_replace(COALESCE(parent_phone, ''), '[^0-9]+', '', 'g') = regexp_replace($2, '[^0-9]+', '', 'g')
+             OR $2 = ANY(COALESCE(other_phones, '{}'::text[]))
+           )
+         ORDER BY updated_at DESC NULLS LAST, created_at DESC NULLS LAST, id DESC
+         LIMIT 1`,
+        [project.id, parentPhone]
+      )).rows[0] || null;
+    }
+    if (crmLead) {
+      crmLead = (await runner.query(
+        `UPDATE bna_parent_leads
+         SET parent_name = COALESCE(NULLIF($2, ''), parent_name),
+             parent_phone = COALESCE(NULLIF($3, ''), parent_phone),
+             parent_email = COALESCE($4, parent_email),
+             student_name = COALESCE(NULLIF($5, ''), student_name),
+             student_age = COALESCE($6, student_age),
+             student_grade = COALESCE(NULLIF($7, ''), student_grade),
+             lead_type = 'group_member',
+             status = 'follow_up',
+             interest_level = 'warm',
+             source = 'website_form',
+             source_detail = 'OneTime public free-class interest form',
+             next_follow_up_date = COALESCE(next_follow_up_date, CURRENT_DATE),
+             owner = 'Shloimie',
+             tags = (
+               SELECT ARRAY(
+                 SELECT DISTINCT tag_value
+                 FROM unnest(COALESCE(tags, '{}'::text[]) || $8::text[]) AS tag_values(tag_value)
+                 WHERE trim(tag_value) <> ''
+               )
+             ),
+             notes = COALESCE(NULLIF($9, ''), notes),
+             metadata = COALESCE(metadata, '{}'::jsonb) || $10::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [
+          crmLead.id,
+          limitText(lead.parent_name, 180),
+          parentPhone,
+          parentEmail,
+          limitText(lead.student_name || '', 180),
+          crmStudentAge,
+          limitText(lead.student_grade || '', 80),
+          leadTags,
+          limitText(lead.notes || 'Public OneTime free-class interest form submitted. Follow up with approved free Zoom details.', 2000),
+          JSON.stringify(crmMetadata),
+        ]
+      )).rows[0];
+    } else {
+      crmLead = (await runner.query(
+        `INSERT INTO bna_parent_leads (
+           project_id, parent_name, parent_phone, parent_email, student_name,
+           student_age, student_grade, lead_type, status, interest_level,
+           source, source_detail, next_follow_up_date, owner, tags, notes, metadata
+         ) VALUES (
+           $1, $2, $3, $4, $5,
+           $6, $7, 'group_member', 'follow_up', 'warm',
+           'website_form', 'OneTime public free-class interest form', CURRENT_DATE, 'Shloimie', $8::text[], $9, $10::jsonb
+         )
+         RETURNING *`,
+        [
+          project.id,
+          limitText(lead.parent_name, 180),
+          parentPhone,
+          parentEmail,
+          limitText(lead.student_name || '', 180) || null,
+          crmStudentAge,
+          limitText(lead.student_grade || '', 80) || null,
+          leadTags,
+          limitText(lead.notes || 'Public OneTime free-class interest form submitted. Follow up with approved free Zoom details.', 2000),
+          JSON.stringify(crmMetadata),
+        ]
+      )).rows[0];
+    }
+
+    await runner.query(
+      `INSERT INTO bna_contact_communications (
+         project_id, contact_type, lead_id, channel, direction,
+         summary, body, follow_up_required, occurred_at, created_by, source,
+         source_context, metadata
+       ) VALUES (
+         $1, 'lead', $2, 'internal_note', 'inbound',
+         'OneTime free-class public signup captured', $3, TRUE, NOW(), 'public_one_time_form', 'web_assistant',
+         $4::jsonb, $5::jsonb
+       )`,
+      [
+        project.id,
+        crmLead.id,
+        limitText(`Public OneTime signup captured for ${lead.parent_name}. Follow up with approved free Zoom class details. No checkout, access grant, external send, Zoom meeting creation, Vimeo, Drive, or portal action was triggered.`, 2000),
+        JSON.stringify({
+          raw_intake_id: 'RAW-20260709-008',
+          product_lead_id: productRow.id,
+          source_landing_page: productRow.source_landing_page || '/one-time',
+          free_zoom_alias_required_before_automated_send: true,
+        }),
+        JSON.stringify({
+          ...crmMetadata,
+          internal_follow_up_required: true,
+        }),
+      ]
+    );
+    if (client) await client.query('COMMIT');
+    return {
+      ...oneTimeProductLeadView(productRow),
+      crm_lead_id: crmLead.id ? Number(crmLead.id) : null,
+      crm_source_table: 'bna_parent_leads',
+      internal_crm_recorded: true,
+      internal_follow_up_required: true,
+    };
+  } catch (error) {
+    if (client) {
+      try { await client.query('ROLLBACK'); } catch {}
+    }
+    throw error;
+  } finally {
+    if (client) client.release();
+  }
 }
 
 const ONE_TIME_CRM_IMPORT_INVENTORY_SUMMARY = Object.freeze({
@@ -78501,8 +78676,11 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       no_send: true,
       no_checkout: true,
       no_access_granted: true,
+      internal_crm_recorded: lead.internal_crm_recorded === true,
+      crm_lead_id: lead.crm_lead_id || null,
+      internal_follow_up_required: lead.internal_follow_up_required === true,
       external_write_performed: false,
-      message: 'Interest saved for internal OneTime review.',
+      message: 'Your free-class request was saved. We will follow up with the approved OneTime Zoom details.',
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message });
