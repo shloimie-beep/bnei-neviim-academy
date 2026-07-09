@@ -1,35 +1,10 @@
 {
-  "generated_at": "2026-07-09T06:22:57.399Z",
+  "generated_at": "2026-07-09T11:19:25.326Z",
   "git": {
     "branch": "codex/rabbi-helper-tool-scope-20260708",
-    "dirty": true,
-    "dirty_files": [
-      {
-        "status": "M",
-        "path": "ops/action-registry/universal-action-parity.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/action-registry/universal-action-parity.md"
-      },
-      {
-        "status": "M",
-        "path": "public/css/one-time-shared-review.css"
-      },
-      {
-        "status": "M",
-        "path": "public/parent.html"
-      },
-      {
-        "status": "M",
-        "path": "public/student.html"
-      },
-      {
-        "status": "??",
-        "path": "ops/ui-audits/2026-07-09-onetime-student-review-polish-live-final/"
-      }
-    ],
-    "collision_warning": "Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files."
+    "dirty": false,
+    "dirty_files": [],
+    "collision_warning": ""
   },
   "packets": {
     "count": 2,
@@ -158,43 +133,43 @@
   ],
   "latest_comment_pickup_reports": [
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-22-37-725Z-4893651840.md",
-      "updated_at": "2026-07-09T06:22:37.726Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T11-18-53-937Z-4893651840.md",
+      "updated_at": "2026-07-09T11:18:53.938Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-22-37-723Z-4893596622.md",
-      "updated_at": "2026-07-09T06:22:37.723Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T11-18-53-936Z-4893596622.md",
+      "updated_at": "2026-07-09T11:18:53.937Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-22-37-721Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T06:22:37.722Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T11-18-53-935Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T11:18:53.936Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-22-37-707Z-4893586910.md",
-      "updated_at": "2026-07-09T06:22:37.719Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T11-18-53-933Z-4893586910.md",
+      "updated_at": "2026-07-09T11:18:53.935Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-21-12-295Z-4893651840.md",
-      "updated_at": "2026-07-09T06:21:12.296Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T11-17-28-214Z-4893651840.md",
+      "updated_at": "2026-07-09T11:17:28.215Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-21-12-294Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T06:21:12.295Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T11-17-28-213Z-4893596622.md",
+      "updated_at": "2026-07-09T11:17:28.214Z",
+      "size": 743
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T11-17-28-212Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T11:17:28.213Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-21-12-295Z-4893596622.md",
-      "updated_at": "2026-07-09T06:21:12.295Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T06-21-12-292Z-4893586910.md",
-      "updated_at": "2026-07-09T06:21:12.293Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T11-17-28-210Z-4893586910.md",
+      "updated_at": "2026-07-09T11:17:28.211Z",
       "size": 743
     }
   ],
@@ -204,7 +179,6 @@
     "summary": []
   },
   "recommendations": [
-    "Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.",
     "No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.",
     "GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it."
   ]
