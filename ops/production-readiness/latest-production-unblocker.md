@@ -1,9 +1,9 @@
-# Production Unblocker - 2026-07-09T17:24:06.974Z
+# Production Unblocker - 2026-07-09T17:32:20.353Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-09T17:23:55.368Z
-Snapshot git head: c5a92f1f (origin/master: c5a92f1f, worktree clean: yes)
+Source snapshot generated at: 2026-07-09T17:32:05.902Z
+Snapshot git head: 575092cb (origin/master: 575092cb, worktree clean: yes)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 OneTime setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
