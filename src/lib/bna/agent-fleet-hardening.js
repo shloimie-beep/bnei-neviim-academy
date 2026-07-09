@@ -145,7 +145,9 @@ function buildStartupShortcutMatrix({
     { action: 'open_log', command: `${prefix}powershell -ExecutionPolicy Bypass -File ${script} -OpenLog`, expected: 'opens local output/error logs without printing secrets into chat' },
     { action: 'watchdog_start', command: `${prefix}npm run watchdog:start`, expected: 'starts watchdog mode on the existing supervisor script' },
     { action: 'watchdog_start_no_telegram', command: `${prefix}npm run watchdog:start:no-telegram`, expected: 'starts watchdog mode without sending Telegram notifications during runtime audits' },
+    { action: 'watchdog_start_audit_only', command: `${prefix}npm run watchdog:start:audit-only`, expected: 'starts local-report-only watchdog mode with Telegram notifications, soft repairs, and runtime status writes disabled' },
     { action: 'watchdog_restart_no_telegram', command: `${prefix}npm run watchdog:restart:no-telegram`, expected: 'restarts watchdog mode without sending Telegram notifications during runtime audits' },
+    { action: 'watchdog_restart_audit_only', command: `${prefix}npm run watchdog:restart:audit-only`, expected: 'restarts local-report-only watchdog mode with Telegram notifications, soft repairs, and runtime status writes disabled' },
     { action: 'watchdog_stop', command: `${prefix}powershell -ExecutionPolicy Bypass -File ${watchdogScript} -Stop`, expected: 'stops only the watchdog PID recorded in its lock' },
     { action: 'watchdog_status', command: `${prefix}npm run watchdog:status`, expected: 'reads watchdog lock plus API runtime status when credentials are available' },
   ];

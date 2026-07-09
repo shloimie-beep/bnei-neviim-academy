@@ -121,7 +121,9 @@ test('startup shortcut matrix exposes start stop restart status and open-log con
     'open_log',
     'watchdog_start',
     'watchdog_start_no_telegram',
+    'watchdog_start_audit_only',
     'watchdog_restart_no_telegram',
+    'watchdog_restart_audit_only',
     'watchdog_stop',
     'watchdog_status',
   ]) {
@@ -354,8 +356,16 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
     'powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1 -NoTelegram',
   );
   assert.equal(
+    packageJson.scripts['watchdog:start:audit-only'],
+    'powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1 -NoTelegram -NoRepair -DryRun',
+  );
+  assert.equal(
     packageJson.scripts['watchdog:restart:no-telegram'],
     'powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1 -Restart -NoTelegram',
+  );
+  assert.equal(
+    packageJson.scripts['watchdog:restart:audit-only'],
+    'powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1 -Restart -NoTelegram -NoRepair -DryRun',
   );
 
   for (const script of [fleetPs1, watchdogPs1]) {
@@ -368,9 +378,18 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
     assert.match(script, /Start-Process -FilePath "notepad\.exe"/);
   }
   assert.match(watchdogPs1, /\[switch\]\$NoTelegram/);
+  assert.match(watchdogPs1, /\[switch\]\$NoRepair/);
+  assert.match(watchdogPs1, /\[switch\]\$DryRun/);
   assert.match(watchdogPs1, /telegram_notifications = if \(\$NoTelegram\)/);
+  assert.match(watchdogPs1, /soft_repairs = if \(\$DryRun -or \$NoRepair\)/);
   assert.match(watchdogPs1, /\$arguments \+= "--no-telegram"/);
+  assert.match(watchdogPs1, /\$arguments \+= "--no-repair"/);
+  assert.match(watchdogPs1, /\$arguments \+= "--dry-run"/);
   assert.match(watchdogPs1, /node @onceArguments/);
+  assert.match(supervisor, /else if \(arg === '--no-repair'\) args\.noRepair = true/);
+  assert.match(supervisor, /if \(args\.dryRun \|\| args\.noRepair \|\| !config\.watchdogRepair\) return repairs/);
+  assert.match(supervisor, /if \(args\.dryRun\) return;\s+try \{/);
+  assert.match(supervisor, /repair_enabled: !args\.noRepair && Boolean\(config\.watchdogRepair\)/);
 });
 
 test('readiness script contains no-write synthetic GitHub and result bridge proof', () => {

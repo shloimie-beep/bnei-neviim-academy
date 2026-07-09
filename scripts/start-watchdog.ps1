@@ -5,6 +5,8 @@ param(
   [switch]$Status,
   [switch]$OpenLog,
   [switch]$NoTelegram,
+  [switch]$NoRepair,
+  [switch]$DryRun,
   [int]$MaxStartAttempts = 3
 )
 
@@ -52,6 +54,8 @@ function Write-StartupMetadata([int]$PidValue, [int]$Attempt, [string[]]$Argumen
     pid = $PidValue
     mode = if ($Once) { "once" } else { "watchdog" }
     telegram_notifications = if ($NoTelegram) { "disabled" } else { "enabled" }
+    soft_repairs = if ($DryRun -or $NoRepair) { "disabled" } else { "enabled" }
+    dry_run = [bool]$DryRun
     login_context = Get-CurrentLoginName
     machine = $env:COMPUTERNAME
     max_start_attempts = $MaxStartAttempts
@@ -132,6 +136,12 @@ if ($Once) {
   if ($NoTelegram) {
     $onceArguments += "--no-telegram"
   }
+  if ($NoRepair) {
+    $onceArguments += "--no-repair"
+  }
+  if ($DryRun) {
+    $onceArguments += "--dry-run"
+  }
   Push-Location $Root
   try {
     node @onceArguments
@@ -144,6 +154,12 @@ if ($Once) {
 $arguments = @("scripts/agent-fleet-supervisor.mjs", "--watchdog", "--watch")
 if ($NoTelegram) {
   $arguments += "--no-telegram"
+}
+if ($NoRepair) {
+  $arguments += "--no-repair"
+}
+if ($DryRun) {
+  $arguments += "--dry-run"
 }
 $attemptLimit = [Math]::Max(1, [Math]::Min($MaxStartAttempts, 10))
 for ($attempt = 1; $attempt -le $attemptLimit; $attempt++) {
@@ -160,6 +176,9 @@ for ($attempt = 1; $attempt -le $attemptLimit; $attempt++) {
     Write-Host "Started agent watchdog PID $($process.Id)"
     if ($NoTelegram) {
       Write-Host "Telegram notifications disabled for this watchdog process."
+    }
+    if ($DryRun -or $NoRepair) {
+      Write-Host "Watchdog soft repairs disabled for this process."
     }
     Write-Host "Logs: $OutLog"
     exit 0

@@ -178,6 +178,7 @@ function parseArgs(argv) {
     noSmoke: false,
     noDeploy: false,
     noTelegram: false,
+    noRepair: false,
     noReconcile: false,
     noChatGptDropoff: false,
   };
@@ -191,6 +192,7 @@ function parseArgs(argv) {
     else if (arg === '--no-smoke') args.noSmoke = true;
     else if (arg === '--no-deploy') args.noDeploy = true;
     else if (arg === '--no-telegram') args.noTelegram = true;
+    else if (arg === '--no-repair') args.noRepair = true;
     else if (arg === '--no-reconcile') args.noReconcile = true;
     else if (arg === '--no-chatgpt-dropoff') args.noChatGptDropoff = true;
     else if (arg === '--max-tasks') args.maxTasks = Number(argv[++index] || 0);
@@ -3050,7 +3052,7 @@ async function buildWatchdogAudit(config, args) {
 
 async function applyWatchdogSoftRepairs(config, audit, args) {
   const repairs = [];
-  if (args.dryRun || !config.watchdogRepair) return repairs;
+  if (args.dryRun || args.noRepair || !config.watchdogRepair) return repairs;
   const state = loadWatchdogState();
 
   const repairedTaskIds = new Set();
@@ -3195,6 +3197,7 @@ function writeWatchdogReport(audit, repairs) {
 }
 
 async function reportWatchdogRuntimeStatus(config, audit, repairs, reportPaths, args, improvements = null) {
+  if (args.dryRun) return;
   try {
     const activeMachine = Number(audit.queue?.machine_tasks || 0);
     const warningCount = audit.findings.filter((finding) => finding.severity !== 'ok').length;
@@ -3214,6 +3217,7 @@ async function reportWatchdogRuntimeStatus(config, audit, repairs, reportPaths, 
         watchdog: true,
         severity: audit.severity,
         last_audit_at: audit.audit_finished_at,
+        repair_enabled: !args.noRepair && Boolean(config.watchdogRepair),
         telegram_bridge: {
           running: audit.locks.telegram_bridge.running,
           stale_lock: audit.locks.telegram_bridge.stale_lock,
@@ -3716,6 +3720,7 @@ async function main() {
       ok: result.audit.ok,
       severity: result.audit.severity,
       dry_run: args.dryRun,
+      repair_enabled: !args.dryRun && !args.noRepair && Boolean(config.watchdogRepair),
       repairs: result.repairs,
       report: {
         md: relative(result.reportPaths.mdPath),
