@@ -1,8 +1,10 @@
-# One Time Operator External Setup Checklist - 2026-07-02
+# One Time Operator External Setup Checklist - Current
+
+Last reconciled: 2026-07-09T18:12:00+03:00
 
 Scope: `rabbi_sheller_provider` / `one_time_mishnah_class`
 
-Purpose: clear the remaining external blockers for the One Time launch run
+Purpose: clear the remaining external blockers for the full One Time launch
 without exposing secrets or authorizing forbidden live actions.
 
 Do not paste secrets into chat, tracked files, screenshots, task titles, or
@@ -12,197 +14,156 @@ redacted readback.
 
 ## Current Launch Status
 
-Safe local work is already verified for:
+Immediate launch lane is live:
 
-- 30-day no-card free signup/access;
-- scoped member/contact access contracts;
-- member/admin workspace and basic parent/student portal contracts;
-- click-tracked attendance v1;
-- draft-only email/campaign controls;
-- Whapi/WAPI and Buffer setup panels with no-send/no-provider-write guardrails;
-- read-only existing paying-users migration packet;
-- local deployment/readiness checks.
+- `https://join.onetimeonetime.com` is live and scoped to One Time.
+- Public lead capture/free-class follow-up is deployed and live-smoked.
+- The live interest dry-run proves One Time project/program/CRM/internal-note
+  mapping without creating a real lead/contact/reminder.
+- Portal/payment/WAPI/campaign automations remain intentionally blocked until
+  the external setup items below are supplied and verified.
 
-`npm run bna:run:next` reports no unblocked executable batch. The next runnable
-Codex batch starts after one of the external setup items below is complete.
+Full setup readiness is currently 5/8:
 
-## Priority 1 - Separate One Time Railway Target
+- Ready: Railway target, separate DB reference, join domain, hosted class link,
+  Vimeo/Drive media setup.
+- Blocked: Rabbi Stripe sandbox/price alias, Whapi/WAPI instance and phone,
+  campaign copy/list/suppression/seed approval.
 
-Clears: `REQ-20260701-701`, unlocks deploy/live smoke requirements.
+Current evidence:
 
-Provide or configure:
+- `ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md`
+- `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`
+- `tasks-pending/2026-07-09-production-readiness-goal.md`
 
-- Railway project label for One Time;
-- Railway service label for One Time;
-- Railway environment label for One Time;
-- confirmation that this is separate from the BNA production service;
-- confirmation that Codex may run the no-write guard again after setup.
+`npm run bna:run:next` reports no unblocked active-run batch. The next Codex
+batch starts after one of the external setup items below is complete, or after
+the separate active UI lane clears.
 
-Required One Time service env values:
+## Completed / Not Current Human Blockers
 
-- `PUBLIC_SITE_MODE=one_time`
-- `DEFAULT_WORKSPACE_KEY=rabbi_sheller_provider`
-- `DEFAULT_PROJECT_KEY=one_time_mishnah_class`
-- `ONE_TIME_PUBLIC_DOMAIN=join.onetimeonetime.com`
+These items must not be re-opened by future agents unless fresh readback
+contradicts the current evidence:
 
-Do not authorize or configure:
+- Separate One Time Railway target: ready.
+- Separate One Time database reference: ready by Railway service-reference
+  readback.
+- `join.onetimeonetime.com` domain: ready.
+- Hosted Zoom/free-class/class link: present by redacted OneTime Railway
+  readback; do not write the raw link to tracked files.
+- Vimeo/Drive media setup: ready enough for launch-readiness; private upload
+  testing remains a later explicitly approved provider action.
 
-- apex/root `onetimeonetime.com` cutover;
-- live payment;
-- real campaign send;
-- real WhatsApp send;
-- hard delete or production data merge.
+## Priority 1 - Rabbi Stripe Sandbox / Price Alias
 
-Codex verification after setup:
-
-- `npm run one-time:railway-target:guard`
-- `npm run one-time:railway-provision:check -- --write-report`
-- `npm run railway:doctor`
-
-## Priority 2 - Separate One Time Database
-
-Clears: `REQ-20260701-701`, unlocks real database bootstrap/readback.
-
-Provide or configure:
-
-- keyholder/Railway alias for `ONE_TIME_DATABASE_URL` or
-  `DATABASE_URL_ONE_TIME`;
-- confirmation that this DB is separate from the main BNA database;
-- confirmation that Codex may run bootstrap/readback scripts in the approved
-  target after no-write checks pass.
-
-Do not paste the database URL.
-
-Codex verification after setup:
-
-- `npm run one-time:db:bootstrap`
-- `npm run bna:run:validate`
-- focused One Time signup/access readback smoke after deploy.
-
-## Priority 3 - Join Domain Only
-
-Clears: `REQ-20260701-702`, unlocks `REQ-20260701-703`, `704`, and `717`.
-
-Provide or configure:
-
-- `join.onetimeonetime.com` custom-domain attachment to the separate One Time
-  Railway service;
-- DNS record required by Railway for that subdomain only;
-- confirmation that apex/root `onetimeonetime.com` remains untouched.
-
-Codex verification after setup:
-
-- live smoke for `https://join.onetimeonetime.com/`;
-- live smoke for member login/member access;
-- compatibility smoke for `/one-time` and `/rabbi`;
-- separation smoke proving BNA root remains separate.
-
-## Priority 4 - Zoom Session Details
-
-Clears: `REQ-20260701-708`, supports `REQ-20260701-706` and `707`.
-
-Provide through private/keyholder setup:
-
-- class/session date and time;
-- private Zoom link or meeting details;
-- whether the link is reusable or should be rotated;
-- display label for members;
-- fallback message if a session is not scheduled yet.
-
-Do not put the raw Zoom link in tracked repo files. Public pages must never show
-the raw Zoom link. Member access must be gated and click-tracked.
-
-## Priority 5 - Vimeo / Drive / OBS Media Setup
-
-Clears: `REQ-20260701-713`.
+Clears: `REQ-20260701-714` and the payment/access part of
+`REQ-20260702-108`.
 
 Provide or confirm:
 
-- `VIMEO_ACCESS_TOKEN` keyholder alias/path;
-- Vimeo account owner;
-- Vimeo plan/scope supports the intended uploads/playback;
-- private test folder/project decision;
-- approved safe test-upload file or explicit no-upload decision;
-- Drive intake/drop folder path or alias;
-- whether OBS saves into a synced Drive folder.
+- Rabbi Stripe test secret key alias/path, or explicit confirmation that only a
+  live key exists and sandbox smoke is not yet possible.
+- Publishable key alias/path if checkout-page smoke needs it.
+- Webhook secret alias/path if webhook smoke is in scope.
+- `$67/month` One Time membership product/price ID or non-secret alias.
+- Permission to create sandbox-only equivalents if no test product exists.
+- Confirmation that sandbox/test-mode only is authorized.
+
+Forbidden:
+
+- Do not use real card details.
+- Do not run live payments.
+- Do not create live checkout links.
+- Do not invent refund, legal, tax, or access policy copy.
 
 Codex verification after setup:
 
-- token/status readback by fingerprint only;
-- safe test upload only if explicitly approved;
-- upload failure creates internal task and alert path for
-  `sdratler@gmail.com`.
+- `npm run one-time:setup:check`
+- sandbox checkout/subscription/access smoke only if a test key and test price
+  are configured;
+- webhook/readback smoke only if configured;
+- reversible TEST-prefixed access proof only.
 
-## Priority 6 - Rabbi Stripe Sandbox
+## Priority 2 - Whapi/WAPI Provider Details
 
-Clears: `REQ-20260701-714`.
+Clears the WAPI/WhatsApp part of `REQ-20260702-108`. Real sends are still
+blocked until a later exact approval packet exists.
+
+Current WAPI readiness:
+
+- Outbound token is configured and OneTime-scoped.
+- Class link is configured.
+- Provider setup is not ready because instance ID and sender phone metadata are
+  missing.
+- Auto-reply is not ready because the enable and approval flags are missing.
 
 Provide or confirm:
 
-- Rabbi Stripe test secret key alias/path;
-- publishable key alias/path if needed;
-- webhook secret alias/path if webhook smoke is in scope;
-- `$67/month` One Time membership product/price IDs or permission to create
-  sandbox-only equivalents;
-- confirmation that sandbox/test-mode only is authorized.
+- Rabbi/One Time Whapi/WAPI provider account.
+- Whapi/WAPI instance ID or alias.
+- WhatsApp sender phone number metadata.
+- Webhook URL/status, if webhook validation is in scope.
+- Safe test recipient, if a later packet should test send.
+- `ONE_TIME_WAPI_AUTO_REPLY_ENABLED=true`, only when auto-reply is actually
+  intended.
+- `ONE_TIME_WAPI_AUTO_REPLY_CONFIRM=APPROVE_ONE_TIME_WAPI_AUTO_REPLY`, only
+  after the reply copy, recipient scope, sender, and class-link behavior are
+  explicitly approved.
 
-Do not use real card details. Do not run live payments. Do not invent refund or
-legal policy copy.
+Forbidden:
+
+- No WhatsApp broadcast.
+- No send to imported leads or contacts.
+- No raw phonebook/contact export in tracked files.
+- No GHL/LeadConnector runtime.
+- No secret/token exposure.
+- No cross-workspace contact merge.
 
 Codex verification after setup:
 
-- sandbox checkout/subscription/access smoke;
-- webhook/readback smoke if configured;
-- access grant/extension proof using reversible TEST-prefixed records only.
+- `npm run one-time:wapi:readiness`
+- `npm run one-time:setup:check`
+- no-send WAPI scope/readiness tests.
 
-## Priority 7 - Whapi/WAPI Provider Details
+## Priority 3 - Campaign Seed / Real Campaign
 
-Supports real WhatsApp test-send later; no real send is authorized now.
+Clears: `REQ-20260701-709`, `REQ-20260701-710`, and the campaign part of
+`REQ-20260702-108`.
 
-Provide or confirm:
+Provide:
 
-- Rabbi/One Time Whapi/WAPI provider account;
-- phone number;
-- token alias/path;
-- instance ID/alias;
-- webhook URL/status;
-- safe test recipient, if a later packet should test send.
+- Final campaign copy.
+- Exact recipient segment/list source.
+- Suppression/unsubscribe proof.
+- Final join/member links to use.
+- Seed recipient: `sdratler@gmail.com`.
+- Explicit seed packet approval.
+- Separate explicit real-send command later, if the seed passes.
 
-Do not send real WhatsApp messages to contacts without an exact later packet
-and explicit safe-test/send approval.
+Forbidden:
 
-## Priority 8 - Campaign Seed / Real Campaign
+- No real campaign send from this checklist.
+- No real send without exact recipient source, copy, sender, suppression proof,
+  and approval.
+- No external CRM/GHL runtime.
 
-Clears: `REQ-20260701-709` and `REQ-20260701-710` only after live link exists.
+Codex verification after setup:
 
-Provide after `join.onetimeonetime.com` is live:
-
-- final campaign copy;
-- exact recipient segment/list source;
-- suppression/unsubscribe proof;
-- final join/member links;
-- seed recipient: `sdratler@gmail.com`;
-- explicit seed packet approval;
-- separate explicit real-send command later, if seed passes.
-
-No real campaign send is authorized by this checklist.
+- campaign preview/seed packet validation;
+- seed-only send only after exact approval;
+- separate real-send approval gate after seed proof.
 
 ## Next Codex Run After Setup
-
-Post-setup execution packet:
-
-- `ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md`
-- manifest:
-  `ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/manifest.json`
 
 Run:
 
 1. `npm run bna:run:next`
 2. `npm run one-time:setup:check`
-3. `npm run one-time:railway-target:guard`
-4. `npm run one-time:railway-provision:check -- --write-report`
-5. `npm run one-time:db:bootstrap`
-6. deploy/live smoke for `join.onetimeonetime.com`
+3. `npm run one-time:wapi:readiness`
+4. relevant sandbox/no-send/seed-only smoke for the setup item that changed
+5. deploy/live smoke only if app-visible or server-visible code/config changed
 
 If a setup item is still missing, Codex should update this checklist with the
 exact missing field and continue any independent no-write verification.
+
+External write authorized by this checklist: false.

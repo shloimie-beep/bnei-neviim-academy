@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T14:50:31.696Z",
+  "generated_at": "2026-07-09T15:09:19.193Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -21,8 +21,10 @@
     "setup_items": [
       {
         "id": "SETUP-ONETIME-RAILWAY-001",
-        "priority": 1,
+        "priority": 0,
         "title": "Separate One Time Railway target",
+        "current_status": "ready",
+        "operator_blocker": false,
         "clears_requirements": [
           "REQ-20260701-701"
         ],
@@ -55,8 +57,10 @@
       },
       {
         "id": "SETUP-ONETIME-DB-001",
-        "priority": 2,
+        "priority": 0,
         "title": "Separate One Time database",
+        "current_status": "ready",
+        "operator_blocker": false,
         "clears_requirements": [
           "REQ-20260701-701"
         ],
@@ -77,8 +81,10 @@
       },
       {
         "id": "SETUP-ONETIME-JOIN-DOMAIN-001",
-        "priority": 3,
+        "priority": 0,
         "title": "Join subdomain only",
+        "current_status": "ready",
+        "operator_blocker": false,
         "clears_requirements": [
           "REQ-20260701-702",
           "REQ-20260701-703",
@@ -104,8 +110,11 @@
       },
       {
         "id": "SETUP-ONETIME-ZOOM-001",
-        "priority": 4,
+        "priority": 0,
         "title": "Zoom session details",
+        "current_status": "ready",
+        "operator_blocker": false,
+        "current_evidence": "Hosted Zoom/free-class/class link is present by redacted OneTime Railway readback; raw link must not be written to tracked files.",
         "clears_requirements": [
           "REQ-20260701-708"
         ],
@@ -123,8 +132,11 @@
       },
       {
         "id": "SETUP-ONETIME-VIMEO-001",
-        "priority": 5,
+        "priority": 0,
         "title": "Vimeo / Drive / OBS media setup",
+        "current_status": "ready",
+        "operator_blocker": false,
+        "current_evidence": "Vimeo/Drive media setup is ready enough for current launch readiness; private upload testing remains a later explicitly approved provider action.",
         "clears_requirements": [
           "REQ-20260701-713"
         ],
@@ -149,8 +161,10 @@
       },
       {
         "id": "SETUP-ONETIME-STRIPE-001",
-        "priority": 6,
+        "priority": 1,
         "title": "Rabbi Stripe sandbox",
+        "current_status": "blocked_external_input",
+        "operator_blocker": true,
         "clears_requirements": [
           "REQ-20260701-714"
         ],
@@ -174,15 +188,19 @@
       },
       {
         "id": "SETUP-ONETIME-WHAPI-001",
-        "priority": 7,
+        "priority": 2,
         "title": "Whapi/WAPI provider details",
+        "current_status": "blocked_external_input",
+        "operator_blocker": true,
+        "current_evidence": "OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.",
         "required_fields": [
           "provider_account",
           "phone_number",
-          "token_keyholder_alias",
           "instance_id_or_alias",
           "webhook_url_status",
-          "safe_test_recipient_for_later_packet"
+          "safe_test_recipient_for_later_packet",
+          "ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended",
+          "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval"
         ],
         "forbidden": [
           "real_whatsapp_send_without_later_exact_packet"
@@ -190,13 +208,16 @@
       },
       {
         "id": "SETUP-ONETIME-CAMPAIGN-001",
-        "priority": 8,
+        "priority": 3,
         "title": "Campaign seed / real campaign",
+        "current_status": "blocked_external_input",
+        "operator_blocker": true,
         "clears_requirements": [
           "REQ-20260701-709",
           "REQ-20260701-710"
         ],
-        "precondition": "join.onetimeonetime.com live link exists",
+        "precondition": "join.onetimeonetime.com live link exists and has passed live smoke",
+        "precondition_status": "met",
         "required_fields": [
           "final_campaign_copy",
           "exact_recipient_segment_or_list_source",

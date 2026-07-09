@@ -1,5 +1,6 @@
 {
   "generated_at": "2026-07-02T10:05:00+03:00",
+  "last_reconciled_at": "2026-07-09T18:12:00+03:00",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "source_raw_ids": ["RAW-20260701-007", "RAW-20260702-002"],
@@ -11,14 +12,30 @@
   },
   "current_state": {
     "safe_local_work_verified": true,
+    "immediate_lead_capture_lane_live": true,
     "next_unblocked_batch": false,
-    "blocked_status": "external_setup_required"
+    "blocked_status": "external_setup_required",
+    "setup_ready_count": "5/8",
+    "ready_items": [
+      "SETUP-ONETIME-RAILWAY-001",
+      "SETUP-ONETIME-DB-001",
+      "SETUP-ONETIME-JOIN-DOMAIN-001",
+      "SETUP-ONETIME-ZOOM-001",
+      "SETUP-ONETIME-VIMEO-001"
+    ],
+    "remaining_external_items": [
+      "SETUP-ONETIME-STRIPE-001",
+      "SETUP-ONETIME-WHAPI-001",
+      "SETUP-ONETIME-CAMPAIGN-001"
+    ]
   },
   "setup_items": [
     {
       "id": "SETUP-ONETIME-RAILWAY-001",
-      "priority": 1,
+      "priority": 0,
       "title": "Separate One Time Railway target",
+      "current_status": "ready",
+      "operator_blocker": false,
       "clears_requirements": ["REQ-20260701-701"],
       "required_fields": [
         "railway_project_label",
@@ -42,8 +59,10 @@
     },
     {
       "id": "SETUP-ONETIME-DB-001",
-      "priority": 2,
+      "priority": 0,
       "title": "Separate One Time database",
+      "current_status": "ready",
+      "operator_blocker": false,
       "clears_requirements": ["REQ-20260701-701"],
       "required_fields": [
         "ONE_TIME_DATABASE_URL_or_DATABASE_URL_ONE_TIME_keyholder_alias",
@@ -58,8 +77,10 @@
     },
     {
       "id": "SETUP-ONETIME-JOIN-DOMAIN-001",
-      "priority": 3,
+      "priority": 0,
       "title": "Join subdomain only",
+      "current_status": "ready",
+      "operator_blocker": false,
       "clears_requirements": ["REQ-20260701-702", "REQ-20260701-703", "REQ-20260701-704", "REQ-20260701-717"],
       "required_fields": [
         "join_onetimeonetime_com_custom_domain_attached",
@@ -78,8 +99,11 @@
     },
     {
       "id": "SETUP-ONETIME-ZOOM-001",
-      "priority": 4,
+      "priority": 0,
       "title": "Zoom session details",
+      "current_status": "ready",
+      "operator_blocker": false,
+      "current_evidence": "Hosted Zoom/free-class/class link is present by redacted OneTime Railway readback; raw link must not be written to tracked files.",
       "clears_requirements": ["REQ-20260701-708"],
       "required_fields": [
         "class_session_date_time",
@@ -92,8 +116,11 @@
     },
     {
       "id": "SETUP-ONETIME-VIMEO-001",
-      "priority": 5,
+      "priority": 0,
       "title": "Vimeo / Drive / OBS media setup",
+      "current_status": "ready",
+      "operator_blocker": false,
+      "current_evidence": "Vimeo/Drive media setup is ready enough for current launch readiness; private upload testing remains a later explicitly approved provider action.",
       "clears_requirements": ["REQ-20260701-713"],
       "required_fields": [
         "VIMEO_ACCESS_TOKEN_keyholder_alias",
@@ -113,8 +140,10 @@
     },
     {
       "id": "SETUP-ONETIME-STRIPE-001",
-      "priority": 6,
+      "priority": 1,
       "title": "Rabbi Stripe sandbox",
+      "current_status": "blocked_external_input",
+      "operator_blocker": true,
       "clears_requirements": ["REQ-20260701-714"],
       "required_fields": [
         "rabbi_stripe_test_secret_key_alias",
@@ -132,24 +161,31 @@
     },
     {
       "id": "SETUP-ONETIME-WHAPI-001",
-      "priority": 7,
+      "priority": 2,
       "title": "Whapi/WAPI provider details",
+      "current_status": "blocked_external_input",
+      "operator_blocker": true,
+      "current_evidence": "OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.",
       "required_fields": [
         "provider_account",
         "phone_number",
-        "token_keyholder_alias",
         "instance_id_or_alias",
         "webhook_url_status",
-        "safe_test_recipient_for_later_packet"
+        "safe_test_recipient_for_later_packet",
+        "ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended",
+        "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval"
       ],
       "forbidden": ["real_whatsapp_send_without_later_exact_packet"]
     },
     {
       "id": "SETUP-ONETIME-CAMPAIGN-001",
-      "priority": 8,
+      "priority": 3,
       "title": "Campaign seed / real campaign",
+      "current_status": "blocked_external_input",
+      "operator_blocker": true,
       "clears_requirements": ["REQ-20260701-709", "REQ-20260701-710"],
-      "precondition": "join.onetimeonetime.com live link exists",
+      "precondition": "join.onetimeonetime.com live link exists and has passed live smoke",
+      "precondition_status": "met",
       "required_fields": [
         "final_campaign_copy",
         "exact_recipient_segment_or_list_source",
@@ -165,9 +201,8 @@
   "next_codex_commands_after_setup": [
     "npm run bna:run:next",
     "npm run one-time:setup:check",
-    "npm run one-time:railway-target:guard",
-    "npm run one-time:railway-provision:check -- --write-report",
-    "npm run one-time:db:bootstrap"
+    "npm run one-time:wapi:readiness",
+    "relevant sandbox/no-send/seed-only smoke for the setup item that changed"
   ],
   "post_setup_execution_packet": "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/00-railway-db-join-domain-deploy-live-smoke.md",
   "post_setup_execution_manifest": "ops/prompt-packets/2026-07-02-one-time-post-setup-live-closeout/manifest.json",

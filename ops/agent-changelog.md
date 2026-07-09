@@ -36257,3 +36257,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: no task/job status mutation, queue apply, Telegram send,
   external send, DB mutation, production-data mutation, deploy, or app code edit
   was performed.
+
+## 2026-07-09T18:09:28+03:00 - OneTime External Setup Packet Reconciled
+
+- Reconciled the canonical OneTime operator external setup checklist and
+  top-visible operator task packet to the current 5/8 setup state.
+- Marked Railway target, separate DB reference, join domain, hosted
+  Zoom/class link, and Vimeo/Drive setup as ready/not-current human blockers.
+- Narrowed the current operator asks to Rabbi Stripe sandbox/price alias,
+  Whapi/WAPI instance/phone plus optional auto-reply approval flags, and
+  campaign copy/list/suppression/seed approval.
+- Updated the prepared Rabbi WhatsApp setup message so it no longer says the
+  WAPI token/provider is wholly unavailable; it now reflects that the
+  OneTime-scoped token and class link are configured while instance/phone and
+  approval flags remain missing.
+- Verification passed: checklist/task JSON parsed; expected-blocked
+  `npm run one-time:setup:check` remains 5/8 ready; expected-blocked
+  `npm run one-time:wapi:readiness` reports token/class link configured and
+  instance/phone/approval blockers remaining.
+- Guardrails held: no WhatsApp/WAPI send, campaign send, email send,
+  payment/checkout/charge, access grant, CRM mutation, provider mutation,
+  credential change, DNS change, deploy, production-data mutation, or app/UI
+  file edit was performed.

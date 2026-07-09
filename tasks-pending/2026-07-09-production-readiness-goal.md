@@ -103,6 +103,7 @@ production-ready when these classes are green or precisely blocked:
 | RUNSTATE-20260709-013 | Done | Codex | The active execution-run blocker output still told the operator to provide a Zoom/class alias even though later redacted setup proof showed the hosted Zoom/class link was present. | Re-ran current setup and WAPI readiness checks, then reconciled the active run JSON and handoff docs so the remaining full-launch blockers are only Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags, and campaign copy/list/suppression/seed approval. |
 | LIVECHECK-20260709-014 | Done / proof pending for Agent Mode only | Codex | Production-readiness proof needed a fresh live regression snapshot after the blocker and Kimi/control-tower reconciliations. | Live-smoked BNA public/app/Operations helper/privacy, OneTime separate instance/public target/Rabbi landing/dry-run interest capture, Rabbi Agent Review proof readiness, and action/security/workspace/raw watchdogs. All runnable checks passed; Rabbi Agent Review remains open only for two saved terminal Agent Mode proofs. |
 | QUEUE-20260709-015 | Done / no safe auto-action | Codex | Production-readiness queue hygiene needed a fresh no-mutation readback so stale historical jobs are not mistaken for launch-ready work. | `npm run task:reconcile` dry-run found 30 active machine tasks and 0 actions, with only task `#1839` and task `#1945` kept as true external blockers. `npm run agent:fleet:status` showed supervisor PID `36560`, 0 claimable jobs, and the active UI/fallback lanes still running. Process-scoped live-url `npm run ops:audit-queue -- --json --no-write` reported `warnings: []` and `requeue_candidates: []`. Stale/do-not-redo counts remain audit evidence, not permission to auto-run old prompts. |
+| LAUNCHBLOCK-20260709-016 | Done / blocker packet current | Codex | The canonical OneTime operator setup checklist and visible operator task packet still treated solved Railway/DB/domain/Zoom/Vimeo/Drive items as current human blockers. | Reconciled the checklist, top-visible operator task packet, and prepared WhatsApp setup message to the current 5/8 setup state. Future agents should ask only for Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags, and campaign copy/list/suppression/seed approval unless fresh readback contradicts the current evidence. |
 
 ## First audit command plan
 
@@ -718,6 +719,60 @@ Remaining:
 - Current active UI/Agent Mode work remains owned outside this batch; avoid
   overlapping UI file edits until that lane is clear.
 
+## LAUNCHBLOCK-20260709-016 closeout
+
+Implemented:
+
+- Updated the canonical OneTime operator external setup checklist at
+  `ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.md`
+  and `.json` to match the current full setup state.
+- Marked Railway target, separate DB reference, join domain, hosted
+  Zoom/class link, and Vimeo/Drive setup as ready/not-current human blockers.
+- Narrowed the remaining full-launch operator asks to:
+  - Rabbi Stripe sandbox/test key status plus `$67/month` product/price alias.
+  - Whapi/WAPI instance ID and WhatsApp sender phone metadata.
+  - Optional auto-reply enable/approval flags after copy, sender, recipient,
+    and class-link behavior are approved.
+  - Final campaign copy, recipient segment/list, suppression/unsubscribe proof,
+    and seed approval.
+- Updated the top-visible operator tasks packet so it no longer asks for
+  Zoom/Vimeo/Drive as missing fields.
+- Updated the prepared Rabbi WhatsApp setup message so it reflects the current
+  WAPI state: OneTime-scoped token and class link configured; instance, phone,
+  and approval flags still missing.
+
+Verification:
+
+- PASS JSON parse for the checklist and top-visible task packets.
+- EXPECTED BLOCKED `npm run one-time:setup:check`: setup remains 5/8 ready,
+  with blockers only for Stripe sandbox/price alias, Whapi/WAPI instance/phone,
+  and campaign copy/list/suppression/seed approval.
+- EXPECTED BLOCKED `npm run one-time:wapi:readiness`: outbound token and class
+  link configured; instance ID, sender phone metadata, auto-reply enable flag,
+  and explicit approval flag missing.
+
+Evidence:
+
+- `ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.md`
+- `ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json`
+- `ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md`
+- `ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.json`
+- `ops/one-time-mishnah/launch-unblocker/2026-07-02-rabbi-whatsapp-setup-message.md`
+- `ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md`
+- `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`
+
+Guardrails:
+
+- No WhatsApp/WAPI send, campaign send, email send, payment/checkout/charge,
+  access grant, CRM mutation, provider mutation, credential change, DNS change,
+  deploy, production-data mutation, or app/UI file edit was performed.
+
+Remaining:
+
+- Full OneTime launch remains externally blocked by Stripe sandbox/price alias,
+  Whapi/WAPI instance/phone and approval flags, and campaign
+  copy/list/suppression/seed approval.
+
 ## Final audit
 
 | ID | Status | Evidence | Verification | Remaining issue |
@@ -727,4 +782,4 @@ Remaining:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied / deployed / live-smoked | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register; `LEADCAP-20260709-009` closeout above. | Lead capture live-smoked in prior closeout; dry-run proof tests, full suite, deployment, and live smoke pass. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, and `QUEUE-20260709-015` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, and `LAUNCHBLOCK-20260709-016` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |

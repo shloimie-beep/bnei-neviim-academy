@@ -1,5 +1,6 @@
 {
   "generated_at": "2026-07-02T15:42:42+03:00",
+  "last_reconciled_at": "2026-07-09T18:12:00+03:00",
   "source_raw_id": "RAW-20260702-007",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -9,8 +10,20 @@
     "railway_target": "done_by_codex_guarded_apply",
     "separate_database_service": "done_service_reference_ready_non_empty",
     "join_dns_verified": true,
-    "provider_env_railway_matched": "8/8 safe values",
-    "ready_count": "3/8"
+    "provider_env_railway_matched": "current redacted readback passes launch-critical values",
+    "ready_count": "5/8",
+    "ready_items": [
+      "railway_target",
+      "separate_database_service",
+      "join_dns",
+      "hosted_class_link",
+      "vimeo_drive_media_setup"
+    ],
+    "remaining_items": [
+      "rabbi_stripe_sandbox_price_alias",
+      "whapi_wapi_instance_and_phone",
+      "campaign_copy_list_suppression_seed_approval"
+    ]
   },
   "tasks": [
     {
@@ -58,13 +71,17 @@
       "owner": "Shloimie / provider account owners",
       "status": "pending_external_input",
       "missing_fields": [
-        "ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias",
-        "VIMEO_ACCESS_TOKEN_alias_or_keyholder_path",
-        "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS",
         "rabbi_stripe_test_secret_key_alias_or_test_key_status",
         "67_month_product_price_id_or_alias",
         "whapi_wapi_instance_id",
-        "whapi_wapi_phone_number"
+        "whapi_wapi_phone_number",
+        "ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended",
+        "ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval"
+      ],
+      "ready_fields_not_to_reopen_without_fresh_contradicting_readback": [
+        "ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias",
+        "VIMEO_ACCESS_TOKEN_alias_or_keyholder_path",
+        "ONE_TIME_DRIVE_DROP_FOLDER_ALIAS"
       ],
       "forbidden": [
         "raw_zoom_link_in_tracked_files",
@@ -78,7 +95,8 @@
       "title": "Prepare campaign seed requirements",
       "priority": 5,
       "owner": "Shloimie",
-      "status": "blocked_until_join_live_smoke_passes",
+      "status": "pending_external_input",
+      "precondition_status": "join link and signup lane have passed live smoke",
       "missing_fields": [
         "final_campaign_copy",
         "exact_recipient_segment_or_list",

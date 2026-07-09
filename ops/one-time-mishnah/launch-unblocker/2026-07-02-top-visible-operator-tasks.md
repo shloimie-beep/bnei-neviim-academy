@@ -21,9 +21,10 @@ upload, Zoom mutation, production data delete, or campaign send occurred.
 
 ## Current Next Task
 
-The next top provider/operator task is `TASK-20260702-004`: provide or label
-the remaining One Time provider aliases needed for live class/media/payment/
-WhatsApp readiness.
+The next top provider/operator task is still `TASK-20260702-004`, but it is
+now narrowed. Agents must not ask again for Railway, DB, join-domain,
+Zoom/class-link, or Vimeo/Drive setup unless fresh readback contradicts the
+current readiness report.
 
 ## TASK-20260702-001 - Separate One Time Railway Target
 
@@ -59,11 +60,17 @@ Visible lane: Pending
 
 Needed:
 
-- One Time Zoom session/join alias
-- `VIMEO_ACCESS_TOKEN`
-- `ONE_TIME_DRIVE_DROP_FOLDER_ALIAS`
 - Rabbi Stripe sandbox/test key and `$67/month` product/price aliases
 - Whapi/WAPI instance and phone aliases
+
+No longer needed as operator blockers:
+
+- One Time Zoom session/join alias: hosted class link is present by redacted
+  OneTime Railway readback.
+- `VIMEO_ACCESS_TOKEN`: media setup is ready enough for current launch
+  readiness; private upload testing remains a later explicit provider action.
+- `ONE_TIME_DRIVE_DROP_FOLDER_ALIAS`: configured by current readiness
+  readback.
 
 ## TASK-20260702-005 - Prepare Campaign Seed Requirements
 
@@ -71,7 +78,6 @@ Priority: 2
 Owner: Shloimie
 Visible lane: Pending
 
-After the deployed landing/signup link passes live smoke, provide final
-campaign copy, exact recipient segment/list source, suppression/unsubscribe
-proof, and seed approval for `sdratler@gmail.com`. No real campaign send is
-approved here.
+The deployed landing/signup link has passed live smoke. Provide final campaign
+copy, exact recipient segment/list source, suppression/unsubscribe proof, and
+seed approval for `sdratler@gmail.com`. No real campaign send is approved here.
