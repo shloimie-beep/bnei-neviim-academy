@@ -34,6 +34,13 @@ test('production unblocker builds operator actions from setup and proof blockers
         ],
       },
       chatgpt_dropoff: { queued_count: 0 },
+      generated_at: '2026-07-09T16:13:28.475Z',
+      git: { head: '60f1e599', origin_master: '60f1e599', clean: true },
+      freshness: {
+        sampled_git_head: '60f1e599',
+        sampled_origin_master: '60f1e599',
+        sampled_worktree_clean: true,
+      },
     },
     setupChecklist: {
       workspace_key: 'rabbi_sheller_provider',
@@ -78,10 +85,17 @@ test('production unblocker builds operator actions from setup and proof blockers
         },
       ],
     },
+    snapshotSource: 'node scripts/production-readiness-snapshot.mjs --no-write --json',
+    snapshotSourceKind: 'live_no_write_command',
+    snapshotCommandExitCode: 0,
   });
   const markdown = mod.renderMarkdown(report);
 
   assert.equal(report.production_ready, false);
+  assert.equal(report.source_snapshot.generated_at, '2026-07-09T16:13:28.475Z');
+  assert.equal(report.source_snapshot.kind, 'live_no_write_command');
+  assert.equal(report.source_snapshot.git_head, '60f1e599');
+  assert.equal(report.source_snapshot.worktree_clean, true);
   assert.equal(report.summary.external_setup_item_count, 2);
   assert.equal(report.summary.agent_mode_proof_count, 1);
   assert.equal(report.summary.active_collision_lane_count, 1);
@@ -90,7 +104,29 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.match(markdown, /Whapi\/WAPI provider details/);
   assert.match(markdown, /rabbi-helper-tool-scope-map\.md/);
   assert.match(markdown, /operations\/agent-review\/dropoff/);
+  assert.match(markdown, /Source snapshot: node scripts\/production-readiness-snapshot\.mjs --no-write --json/);
+  assert.match(markdown, /Snapshot git head: 60f1e599/);
   assert.match(markdown, /No deploy/);
+});
+
+test('production unblocker parses args and command JSON for fresh snapshot loading', async () => {
+  const mod = await loadUnblocker();
+
+  assert.deepEqual(mod.parseArgs(['--json', '--no-write']), {
+    json: true,
+    noWrite: true,
+    useSnapshotFile: false,
+  });
+  assert.deepEqual(mod.parseArgs(['--from-snapshot-file']), {
+    json: false,
+    noWrite: false,
+    useSnapshotFile: true,
+  });
+  assert.deepEqual(
+    mod.parseJsonFromCommandOutput('npm log before\n{"assessment":{"status":"not_production_complete"}}\nmore text'),
+    { assessment: { status: 'not_production_complete' } },
+  );
+  assert.equal(mod.parseJsonFromCommandOutput('no json here'), null);
 });
 
 test('production unblocker package script and output paths are wired', () => {
@@ -102,4 +138,8 @@ test('production unblocker package script and output paths are wired', () => {
   assert.match(script, /latest-production-unblocker\.json/);
   assert.match(script, /defaultSetupChecklistPath/);
   assert.match(script, /defaultProofPath/);
+  assert.match(script, /production-readiness-snapshot\.mjs/);
+  assert.match(script, /--no-write/);
+  assert.match(script, /--json/);
+  assert.match(script, /--from-snapshot-file/);
 });

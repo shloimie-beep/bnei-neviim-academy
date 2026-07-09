@@ -110,6 +110,7 @@ production-ready when these classes are green or precisely blocked:
 | READINESS-20260709-024 | Done / no deploy performed | Codex | The remaining production blockers were accurate but split across the production snapshot, OneTime setup checklist, and Rabbi Agent Review proof report, making the exact next operator actions harder to hand off. | Added `npm run production:unblocker`, which generates `ops/production-readiness/latest-production-unblocker.*` with the three remaining external setup buckets, both Agent Mode proof drop-off URLs, active lanes to avoid, after-update commands, and no-deploy/no-send/no-secret guardrails. |
 | READINESS-20260709-025 | Done / no deploy performed | Codex | The production-readiness gate blocked correctly but did not itself point blocked agents/operators to the generated production unblocker packet. | Added `operator_unblocker` and an unblocker next action to `npm run production:readiness:gate -- --json`, so blocked gate output points at `npm run production:unblocker` and `ops/production-readiness/latest-production-unblocker.md`. |
 | READINESS-20260709-026 | Done / no deploy performed | Codex | The release/deploy closeout gate embedded a reduced production-readiness summary, so deploy-gate output still did not expose the unblocker path even after the readiness gate did. | Preserved `operator_unblocker` and `next_actions` inside `scripts/bna-production-closeout-gate.mjs` production-readiness summaries, so blocked release/deploy output carries the unblocker pointer too. |
+| READINESS-20260709-027 | Done / no deploy performed | Codex | The operator unblocker could be generated from a stale committed production snapshot if agents forgot to refresh the control tower first. | Updated `npm run production:unblocker` to sample `node scripts/production-readiness-snapshot.mjs --no-write --json` by default, carry source snapshot metadata, and keep `--from-snapshot-file` for intentional file-based reads. |
 
 ## First audit command plan
 
@@ -1310,6 +1311,56 @@ Remaining:
 
 - After commit/push, rerun deploy-mode release gate from a clean tree and
   confirm the same unblocker pointer appears with dirty `0`.
+
+## READINESS-20260709-027 closeout
+
+Implemented:
+
+- Updated `scripts/production-unblocker.mjs` so `npm run
+  production:unblocker` samples a fresh read-only production snapshot by
+  default via `node scripts/production-readiness-snapshot.mjs --no-write
+  --json`.
+- Kept an explicit `--from-snapshot-file` / `--use-latest-snapshot` fallback
+  for intentional committed-file reads.
+- Added source snapshot metadata to the unblocker JSON/Markdown: source
+  command/path, source kind, source snapshot generated time, sampled git
+  head/origin, sampled worktree cleanliness, and fallback warning text if live
+  no-write sampling cannot be parsed.
+- Updated `ops/production-readiness/README.md` to document the fresh default
+  and file-snapshot fallback.
+- Added regression coverage for argument parsing, command-output JSON parsing,
+  source snapshot metadata, and the fresh no-write snapshot command wiring.
+
+Verification:
+
+- PASS `node --check scripts\production-unblocker.mjs`.
+- PASS `node --test tests\production-unblocker.test.js`.
+- PASS `npm run production:unblocker -- --no-write --json`; readback used
+  `snapshot_source_kind: live_no_write_command`, source command `node
+  scripts/production-readiness-snapshot.mjs --no-write --json`, sampled
+  head/origin `60f1e599`, `not_production_complete`, 3 external setup items, 2
+  Agent Mode proof items, 2 active collision lanes, 0 queued ChatGPT packets,
+  and no unblocked executable batch. Worktree cleanliness was correctly
+  `false` during the edit.
+
+Evidence:
+
+- `scripts/production-unblocker.mjs`
+- `tests/production-unblocker.test.js`
+- `ops/production-readiness/README.md`
+
+Guardrails:
+
+- Unblocker/reporting hardening only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- After commit/push, regenerate `npm run production:unblocker` from a clean
+  pushed tree and commit the refreshed tracked latest unblocker artifact.
 
 ## Final audit
 

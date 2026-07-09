@@ -36540,3 +36540,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:17:00+03:00 - Production Unblocker Uses Fresh Snapshot
+
+- Updated `npm run production:unblocker` so the default path samples `node
+  scripts/production-readiness-snapshot.mjs --no-write --json` before building
+  the operator-facing unblocker.
+- Added source snapshot metadata to the unblocker JSON/Markdown: command/path,
+  source kind, source snapshot time, sampled git head/origin, worktree
+  cleanliness, and fallback warning text.
+- Kept `--from-snapshot-file` / `--use-latest-snapshot` for intentional
+  committed-file reads.
+- Guardrails held: unblocker/reporting hardening only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

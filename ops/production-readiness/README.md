@@ -21,6 +21,14 @@ Generate the operator-facing unblocker packet with:
 npm run production:unblocker
 ```
 
+By default, `production:unblocker` first runs the production snapshot in
+read-only no-write JSON mode, then builds the packet from that fresh sample.
+Use this only when a committed file sample is intentionally required:
+
+```bash
+npm run production:unblocker -- --from-snapshot-file
+```
+
 The snapshot is read-only. It samples git state, the active execution run,
 agent fleet status, ChatGPT dropoff queue status, and the latest Rabbi Agent
 Review proof-readiness file. It also carries forward the agent-fleet

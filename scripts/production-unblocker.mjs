@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -11,6 +12,8 @@ const outputMdPath = path.join(outputDir, 'latest-production-unblocker.md');
 const defaultSnapshotPath = 'ops/production-readiness/latest-production-readiness-snapshot.json';
 const defaultSetupChecklistPath = 'ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json';
 const defaultProofPath = 'ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json';
+const liveSnapshotCommandArgs = ['scripts/production-readiness-snapshot.mjs', '--no-write', '--json'];
+const liveSnapshotCommand = `node ${liveSnapshotCommandArgs.join(' ')}`;
 
 function nowIso() {
   return new Date().toISOString();
@@ -28,6 +31,63 @@ function readJson(relativePath, fallback = null) {
   const filePath = repoPath(relativePath);
   if (!fs.existsSync(filePath)) return fallback;
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function redact(text = '') {
+  return String(text || '')
+    .replace(/Bearer\s+[A-Za-z0-9._~+/=-]{16,}/g, 'Bearer [REDACTED]')
+    .replace(/\b(sk|pk|rk|whsec|xox[baprs]|gh[pousr])_[A-Za-z0-9._-]{12,}\b/g, '[REDACTED_SECRET]')
+    .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, '[REDACTED_EMAIL]');
+}
+
+export function parseJsonFromCommandOutput(output = '') {
+  const start = output.indexOf('{');
+  const end = output.lastIndexOf('}');
+  if (start < 0 || end < start) return null;
+  try {
+    return JSON.parse(output.slice(start, end + 1));
+  } catch {
+    return null;
+  }
+}
+
+function snapshotFromFile(sourceKind = 'latest_file') {
+  return {
+    snapshot: readJson(defaultSnapshotPath, {}),
+    snapshotSource: defaultSnapshotPath,
+    snapshotSourceKind: sourceKind,
+    snapshotCommandExitCode: null,
+    snapshotLoadError: '',
+  };
+}
+
+export function loadSnapshotForUnblocker({ useSnapshotFile = false } = {}) {
+  if (useSnapshotFile) return snapshotFromFile('latest_file_requested');
+
+  const result = spawnSync(process.execPath, liveSnapshotCommandArgs, {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    shell: false,
+    timeout: 120000,
+    windowsHide: true,
+  });
+  const parsed = result.status === 0 ? parseJsonFromCommandOutput(result.stdout || '') : null;
+
+  if (parsed) {
+    return {
+      snapshot: parsed,
+      snapshotSource: liveSnapshotCommand,
+      snapshotSourceKind: 'live_no_write_command',
+      snapshotCommandExitCode: result.status,
+      snapshotLoadError: '',
+    };
+  }
+
+  return {
+    ...snapshotFromFile('fallback_latest_file'),
+    snapshotCommandExitCode: typeof result.status === 'number' ? result.status : 1,
+    snapshotLoadError: redact(result.stderr || result.error?.message || 'Could not parse live production-readiness snapshot JSON.'),
+  };
 }
 
 function sortByPriority(items = []) {
@@ -95,11 +155,23 @@ export function buildProductionUnblocker({
   snapshot = {},
   setupChecklist = {},
   proofReadiness = {},
+  snapshotSource = defaultSnapshotPath,
+  snapshotSourceKind = 'latest_file',
+  snapshotCommandExitCode = null,
+  snapshotLoadError = '',
 } = {}) {
   const setup_items = setupItemsFromChecklist(setupChecklist);
   const agent_mode_proofs = proofItemsFromReadiness(proofReadiness);
   const run_blockers = externalRunBlockers(snapshot);
   const active_collision_lanes = collisionLanes(snapshot);
+  const snapshot_git_head = snapshot.freshness?.sampled_git_head || snapshot.git?.head || '';
+  const snapshot_origin_master = snapshot.freshness?.sampled_origin_master || snapshot.git?.origin_master || '';
+  const snapshot_worktree_clean =
+    typeof snapshot.freshness?.sampled_worktree_clean === 'boolean'
+      ? snapshot.freshness.sampled_worktree_clean
+      : typeof snapshot.git?.clean === 'boolean'
+        ? snapshot.git.clean
+        : null;
   const operator_actions = [
     ...setup_items.map((item) => ({
       id: item.id,
@@ -123,6 +195,21 @@ export function buildProductionUnblocker({
     production_ready: snapshot.assessment?.production_ready === true,
     snapshot_status: snapshot.assessment?.status || 'unknown',
     source_snapshot_generated_at: snapshot.generated_at || '',
+    snapshot_source: snapshotSource,
+    snapshot_source_kind: snapshotSourceKind,
+    snapshot_git_head,
+    snapshot_origin_master,
+    snapshot_worktree_clean,
+    source_snapshot: {
+      source: snapshotSource,
+      kind: snapshotSourceKind,
+      generated_at: snapshot.generated_at || '',
+      git_head: snapshot_git_head,
+      origin_master: snapshot_origin_master,
+      worktree_clean: snapshot_worktree_clean,
+      command_exit_code: snapshotCommandExitCode,
+      load_error: snapshotLoadError,
+    },
     workspace_project: {
       workspace_key: setupChecklist.workspace_key || 'rabbi_sheller_provider',
       project_key: setupChecklist.project_key || 'one_time_mishnah_class',
@@ -153,7 +240,7 @@ export function buildProductionUnblocker({
       'Immediate lead capture/free-class lane remains live; full payment/access/campaign automation remains blocked until these items are cleared and verified.',
     ],
     sources: [
-      defaultSnapshotPath,
+      snapshotSource,
       defaultSetupChecklistPath,
       defaultProofPath,
     ],
@@ -165,11 +252,19 @@ function formatList(items = [], fallback = 'none') {
 }
 
 export function renderMarkdown(report = {}) {
+  const cleanLabel =
+    typeof report.snapshot_worktree_clean === 'boolean'
+      ? (report.snapshot_worktree_clean ? 'yes' : 'no')
+      : 'unknown';
   const lines = [
     `# Production Unblocker - ${report.generated_at}`,
     '',
     `Snapshot status: ${report.snapshot_status}`,
     `Production ready: ${report.production_ready ? 'yes' : 'no'}`,
+    `Source snapshot: ${report.snapshot_source || 'unknown'} (${report.snapshot_source_kind || 'unknown'})`,
+    `Source snapshot generated at: ${report.source_snapshot_generated_at || 'unknown'}`,
+    `Snapshot git head: ${report.snapshot_git_head || 'unknown'} (origin/master: ${report.snapshot_origin_master || 'unknown'}, worktree clean: ${cleanLabel})`,
+    report.source_snapshot?.load_error ? `Source snapshot warning: ${report.source_snapshot.load_error}` : '',
     `Workspace/project: ${report.workspace_project.workspace_key} / ${report.workspace_project.project_key}`,
     `Next unblocked executable batch: ${report.summary.next_unblocked_executable_batch || 'none'}`,
     '',
@@ -233,19 +328,25 @@ export function renderMarkdown(report = {}) {
   return `${lines.filter((line) => line !== '').join('\n')}\n`;
 }
 
-function parseArgs(argv = process.argv.slice(2)) {
+export function parseArgs(argv = process.argv.slice(2)) {
   return {
     json: argv.includes('--json'),
     noWrite: argv.includes('--no-write'),
+    useSnapshotFile: argv.includes('--from-snapshot-file') || argv.includes('--use-latest-snapshot'),
   };
 }
 
 function main() {
   const args = parseArgs();
+  const snapshotLoad = loadSnapshotForUnblocker({ useSnapshotFile: args.useSnapshotFile });
   const report = buildProductionUnblocker({
-    snapshot: readJson(defaultSnapshotPath, {}),
+    snapshot: snapshotLoad.snapshot,
     setupChecklist: readJson(defaultSetupChecklistPath, {}),
     proofReadiness: readJson(defaultProofPath, {}),
+    snapshotSource: snapshotLoad.snapshotSource,
+    snapshotSourceKind: snapshotLoad.snapshotSourceKind,
+    snapshotCommandExitCode: snapshotLoad.snapshotCommandExitCode,
+    snapshotLoadError: snapshotLoad.snapshotLoadError,
   });
 
   if (!args.noWrite) {
