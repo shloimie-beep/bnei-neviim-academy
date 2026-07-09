@@ -49,6 +49,8 @@ test('production readiness gate passes a clean fully ready snapshot', async () =
   assert.equal(report.status, 'production_ready');
   assert.deepEqual(report.blockers, []);
   assert.equal(report.snapshot_summary.production_ready, true);
+  assert.equal(report.operator_unblocker.markdown_path, 'ops/production-readiness/latest-production-unblocker.md');
+  assert.equal(report.operator_unblocker.refresh_command, 'npm run production:unblocker');
   assert.equal(report.guardrails.some((item) => /Read-only/.test(item)), true);
 });
 
@@ -95,6 +97,8 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   assert.match(text, /ChatGPT dropoff queue has 1/);
   assert.match(text, /job #382/);
   assert.equal(report.snapshot_summary.active_run_blocker_count, 1);
+  assert.ok(report.next_actions.some((item) => /production:unblocker/.test(item.action)));
+  assert.equal(report.operator_unblocker.json_path, 'ops/production-readiness/latest-production-unblocker.json');
 });
 
 test('production readiness gate can warn instead of block on dirty state when explicitly allowed', async () => {

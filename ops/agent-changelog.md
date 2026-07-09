@@ -36515,3 +36515,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:11:00+03:00 - Production Gate Points To Unblocker
+
+- Updated `npm run production:readiness:gate -- --json` so blocked gate output
+  includes `operator_unblocker` metadata.
+- The gate now points to `npm run production:unblocker`,
+  `ops/production-readiness/latest-production-unblocker.md`, and
+  `ops/production-readiness/latest-production-unblocker.json`.
+- Added a blocked-state next action sourced from `production_readiness_gate`.
+- Guardrails held: gate/reporting hardening only; no app UI edit, API feature
+  edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

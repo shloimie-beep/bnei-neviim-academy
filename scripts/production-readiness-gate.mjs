@@ -5,6 +5,9 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const OPERATOR_UNBLOCKER_MD = 'ops/production-readiness/latest-production-unblocker.md';
+const OPERATOR_UNBLOCKER_JSON = 'ops/production-readiness/latest-production-unblocker.json';
+const OPERATOR_UNBLOCKER_COMMAND = 'npm run production:unblocker';
 
 function readNext(argv, index, name) {
   const value = argv[index + 1];
@@ -157,7 +160,22 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
       chatgpt_queued_count: queuedDropoffs,
       collision_lane_count: collisionLanes.length,
     },
-    next_actions: Array.isArray(snapshot.next_actions) ? snapshot.next_actions : [],
+    operator_unblocker: {
+      markdown_path: OPERATOR_UNBLOCKER_MD,
+      json_path: OPERATOR_UNBLOCKER_JSON,
+      refresh_command: OPERATOR_UNBLOCKER_COMMAND,
+      purpose: 'Operator-facing packet with the exact external setup fields, Agent Mode proof saves, active lanes to avoid, and after-update verification commands still blocking production readiness.',
+    },
+    next_actions: [
+      ...(Array.isArray(snapshot.next_actions) ? snapshot.next_actions : []),
+      ...(blockers.length
+        ? [{
+          owner: 'Codex / operator',
+          action: `Refresh and read the production unblocker packet: ${OPERATOR_UNBLOCKER_COMMAND} (${OPERATOR_UNBLOCKER_MD}).`,
+          source: 'production_readiness_gate',
+        }]
+        : []),
+    ],
     guardrails: [
       'Read-only gate only.',
       'No deploy, merge, release, Railway mutation, external send, payment, access grant, CRM write, provider write, DNS change, credential change, Agent Review result save, or production-data mutation is performed.',

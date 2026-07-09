@@ -50,6 +50,11 @@ final-closeout modes. Plain dry-run release checks remain useful for status
 readback, but no production closeout path should be considered clear while
 `production_readiness_gate.ok` is false.
 
+When the gate is blocked, its JSON includes `operator_unblocker` plus a
+`production:unblocker` next action. Refresh that packet and use it as the
+single operator-facing list of what still has to be provided or saved before
+rerunning readiness/release gates.
+
 Files:
 
 - `latest-production-readiness-snapshot.md`: operator/agent-readable control
