@@ -35896,3 +35896,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   recipient segment, suppression/unsubscribe proof, and explicit seed approval.
   BNA Operations is no longer blank/erroring, but still needs a performance lane
   to reduce 118 startup API reads.
+
+## 2026-07-09T15:30:00+03:00 - Production Readiness Goal Registered
+
+- Promoted Shloimie's production-readiness instruction to standing goal
+  `GOAL-PROD-001` and created
+  `tasks-pending/2026-07-09-production-readiness-goal.md`.
+- Recorded the production-ready definition: launch-critical public,
+  Operations, portal, helper, privacy, deploy, performance, lead-capture/CRM,
+  communications, payment/access, and provider setup gates must pass or have an
+  exact owner/blocker/next action.
+- First readiness audit passed repo validation, secrets, action/security/raw/
+  workspace watchdogs, BNA live app/helper/taxonomy/privacy smokes, OneTime
+  separate-instance smoke, and Rabbi OneTime landing smoke.
+- Expected blockers remain: OneTime full setup ready 4/8 only, WAPI provider
+  setup/auto-reply not ready, missing Zoom alias, Stripe sandbox/price alias,
+  WAPI instance/phone, campaign copy/list/suppression/seed approval, and BNA
+  Operations performance fanout.

@@ -1916,6 +1916,14 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 ## Live Closeout Proofs
 
+- The standing umbrella goal is production readiness: get the entire BNA and
+  OneTime system production-ready. Production-ready means launch-critical
+  public, Operations, portal, helper, privacy, deploy, performance, lead
+  capture, communications, payment/access, and provider setup gates are either
+  passing with current evidence or blocked with exact owner and next action.
+  Use `GOAL-PROD-001` and
+  `tasks-pending/2026-07-09-production-readiness-goal.md` as the current
+  production-readiness control register.
 - WS11 gamification/parent progress is production-migrated and live-smoked as
   of Railway deployment `7c8c7010-497c-41c7-a127-6370cca049eb`. Startup must
   run `createWs11CommunityGamificationSQL` before
