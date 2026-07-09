@@ -37020,3 +37020,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: audit/readback only; no app/server implementation edit,
   deploy, external send, payment/access mutation, provider/DNS/credential
   mutation, or production-data mutation.
+
+## 2026-07-09T22:36:43+03:00 - Production Readiness Reports Surface Stale Agent Locks
+
+- Hardened the production readiness snapshot, gate, and operator unblocker so
+  active collision lanes include local task-lock health, PID/heartbeat age, and
+  missing-lock evidence.
+- Regenerated clean ChatGPT control tower, production snapshot, and production
+  unblocker artifacts; pushed `master` through `f4c8cc5d`.
+- Readback confirms three collision lanes need reconciliation before overlap:
+  task `1859` stale dead PID `25788`, task `2185` missing local lock, and task
+  `1736` stale dead PID `105512`.
+- Verification passed: `node --check scripts/production-readiness-gate.mjs`,
+  `node --test tests/production-readiness-gate.test.js
+  tests/production-unblocker.test.js`, clean-head
+  `npm run production:readiness:gate -- --json` expected-blocked without dirty
+  worktree blockers.
+- Guardrails held: reporting/evidence only; no app UI/API edit, deploy, hosted
+  restart, live Telegram smoke, external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, lock deletion,
+  live task/job mutation, or production-data mutation.
+- Remaining blockers: external OneTime Stripe/WAPI/campaign setup fields,
+  Rabbi Telegram hosted restart/live-smoke proof, two Agent Mode terminal
+  proofs, no unblocked execution batch, and stale/missing active collision-lane
+  reconciliation.
