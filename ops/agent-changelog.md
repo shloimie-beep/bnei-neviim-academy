@@ -37209,3 +37209,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   deploy, hosted restart, live Telegram smoke, external send,
   payment/access mutation, CRM/provider/DNS/credential mutation, lock deletion,
   live task/job mutation, Agent Review result save, or production-data mutation.
+
+## 2026-07-09T23:30:45+03:00 - Watchdog No-Telegram Launcher Mode Added
+
+- Added a `-NoTelegram` switch to `scripts/start-watchdog.ps1` and passed it
+  through foreground once mode and background watch mode.
+- Added `watchdog:start:no-telegram` and `watchdog:restart:no-telegram` npm
+  aliases, plus startup metadata showing whether watchdog Telegram
+  notifications are enabled or disabled.
+- Updated the agent-fleet startup shortcut matrix and regenerated
+  `ops/agent-fleet-hardening/latest-agent-fleet-readiness.*` with the new
+  no-notification watchdog commands.
+- Verification passed: `node --check src/lib/bna/agent-fleet-hardening.js`,
+  `node --check scripts/agent-fleet-supervisor.mjs`,
+  PowerShell parser check for `scripts/start-watchdog.ps1`,
+  `node --test tests/agent-fleet-hardening.test.js`, `npm run
+  watchdog:once -- --dry-run --no-telegram`, and `npm run
+  watchdog:agent-fleet`.
+- Guardrails held: no background watchdog restart, no app UI/API edit, no
+  deploy, no hosted restart/live Telegram smoke, no external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, lock deletion,
+  live task/job mutation, Agent Review result save, or production-data mutation.
+- Remaining blockers: exact external setup fields, Rabbi Telegram hosted
+  restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
+  execution batch, active collision-lane reconciliation, Railway doctor
+  authorization, stale runtime locks, raw-looking visible task titles, and
+  misrouted watchdog cleanup tasks.
