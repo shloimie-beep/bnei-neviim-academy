@@ -35889,7 +35889,8 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   protocol drift watchdog, execution-run validation, `git diff --check`, BNA
   live app/helper/taxonomy smokes, direct DNS endpoint readback HTTP 200, BNA
   final startup profile with 0 console errors and 0 failed requests, OneTime
-  separate-instance smoke, and Rabbi OneTime landing smoke.
+  separate-instance smoke, Rabbi OneTime landing smoke, and final OneTime target
+  guard after proof push.
 - Remaining blockers: full portal/payment/WAPI/campaign launch still needs the
   Zoom alias, Stripe sandbox/price aliases, WAPI details, campaign copy,
   recipient segment, suppression/unsubscribe proof, and explicit seed approval.
