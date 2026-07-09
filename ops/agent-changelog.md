@@ -37420,3 +37420,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
   smoke, Drive write, class backfill, or production-data mutation.
+
+## 2026-07-10T00:28:00+03:00 - BNA Static Cache Policy Live-Smoked
+
+- Confirmed the pushed static cache policy is live on the main BNA Railway
+  service.
+- Railway doctor showed BNA service `skillful-motivation` deployment
+  `b9cd16e1-ac80-4310-9c42-c87541a0343c` reached `SUCCESS`.
+- Live header readback on `https://bneineviimacademy.org` confirmed the same
+  cache split: public JS/CSS short public cache, public media longer cache,
+  and HTML/service worker/manifests/Operations shell assets no-store/no-cache.
+- `npm run app:smoke:public-privacy` passed, and `/api/health` returned OK
+  with database connected.
+- Evidence:
+  `ops/performance-audits/2026-07-10-bna-cache-policy-live-readback/`.
+- Guardrails: no external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
+  smoke, Drive write, class backfill, or production-data mutation.

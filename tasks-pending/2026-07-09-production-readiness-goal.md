@@ -91,6 +91,7 @@ production-ready when these classes are green or precisely blocked:
 | PERF-20260709-001 | Done, deployed/live-smoked | Codex | BNA Operations rendered with 0 console errors, but startup still performed 118 API reads, median 1064ms, P95 2855ms, max 3622ms. | Reduced dashboard startup fanout, removed support-ticket loading from dashboard first paint, bounded support-ticket list query, deployed BNA, and recorded live profile proof. |
 | PERF-20260709-002 | Follow-up, not launch-blocking | Codex | Final dashboard profile is usable but still shows a later refresh cycle around 33s and initial slowest dashboard reads near 3s. | If more performance polish is needed, inspect dashboard refresh scheduling and tune task/device/payment reads after screenshot-led UI work. |
 | PERF-20260710-001 | Done / deployed / live-smoked | Codex | OneTime live lag audit classified the strongest signal as slow/variable first-byte response plus static/cache delivery policy; static assets were returning default `max-age=0`. | Implemented and deployed a conservative static cache policy for public JS/CSS/media while preserving no-store/no-cache for HTML, APIs, service worker, manifests, and Operations shell assets. Live readback shows correct headers and fresh lag audit improved from 18/18 samples needing attention to 1/18. |
+| DEPLOY-20260710-002 | Done / deployed / live-smoked | Codex | The same static cache policy also needed to be live on the main BNA Railway service, not only OneTime. | BNA Railway deployment `b9cd16e1-ac80-4310-9c42-c87541a0343c` reached `SUCCESS`; live header readback on `bneineviimacademy.org` confirmed the same public/private cache split, `/api/health` returned OK, and `npm run app:smoke:public-privacy` passed. |
 | DEPLOY-20260709-003 | Done | Codex | `npm run railway:doctor` loaded a stale project token even when BNA deploys used account auth, which made deploy-proof readback look blocked after successful deployments. | Updated `scripts/railway-doctor.ps1` to honor `BNA_RAILWAY_USE_ACCOUNT_AUTH` before loading `.secrets/railway-token.txt`; verified doctor passes against BNA production deployment `e1cef921-0e58-4fe7-aaf7-d9be65b06295`. |
 | TARGET-20260709-004 | Done | Codex | `npm run one-time:target:guard` hard-blocked the public OneTime target when the local Railway CLI was linked to BNA, even though the canonical OneTime domain and instance config passed. | Reclassified local Railway status mismatch as a warning in `scripts/release-captain.mjs`, added regression coverage, and kept `npm run one-time:railway-target:guard` as the dedicated Railway instance proof. |
 | SETUPCHECK-20260709-005 | Done | Codex | `npm run one-time:setup:check` could fall back into the BNA project-token/local-link context and report OneTime Railway target/auth as missing even when OneTime was live. | Updated `scripts/check-onetime-external-setup-readiness.mjs` to honor account-auth mode and use an isolated temp Railway link for redacted OneTime variable readback. |
@@ -2729,6 +2730,50 @@ Remaining:
 
 - One residual parent-review desktop sample crossed `slow_dom_content_loaded`;
   continue runtime/parent-review follow-up only if repeated samples stay slow.
+- Full OneTime external setup, terminal Agent Mode saved proof, and Rabbi
+  Telegram hosted restart/live-smoke proof remain separate blockers.
+
+## DEPLOY-20260710-002 closeout
+
+Implemented:
+
+- Confirmed clean pushed source `f791a5db`.
+- Let the main BNA Railway deployment settle instead of stacking another
+  upload while the service was already building.
+- Railway doctor for the BNA target showed service `skillful-motivation` in
+  production and deployment `b9cd16e1-ac80-4310-9c42-c87541a0343c` reached
+  `SUCCESS`.
+- Live-read BNA headers for public JS/CSS/media and private shell assets.
+- Ran no-write BNA public/privacy smoke and direct `/api/health` readback.
+
+Verification:
+
+- PASS BNA `npm run railway:doctor`.
+- PASS `npm run app:smoke:public-privacy`.
+- PASS live `curl`/header readback for
+  `https://bneineviimacademy.org/js/bna-bot-widget.js`,
+  `/css/one-time-shared-review.css`,
+  `/images/one-time/brand/onetimelogo.webp`, `/`, `sw.js`,
+  `manifest.json`, `operations-shell.js`, and
+  `operations-deferred-renderers.js`.
+- PASS `https://bneineviimacademy.org/api/health` returned
+  `{"status":"ok","database":"connected","social_post_provider":"buffer"}`.
+
+Evidence:
+
+- `ops/performance-audits/2026-07-10-bna-cache-policy-live-readback/header-readback.md`
+- `ops/performance-audits/2026-07-10-bna-cache-policy-live-readback/header-readback.json`
+- Local ignored smoke report:
+  `ops/live-smokes/2026-07-09T21-27-24-464Z-public-route-privacy-smoke.md`
+
+Guardrails:
+
+- No external send, payment/access mutation, CRM/provider/DNS/credential
+  mutation, Agent Review result save, live Telegram smoke, Drive write, class
+  backfill, or production-data mutation.
+
+Remaining:
+
 - Full OneTime external setup, terminal Agent Mode saved proof, and Rabbi
   Telegram hosted restart/live-smoke proof remain separate blockers.
 
