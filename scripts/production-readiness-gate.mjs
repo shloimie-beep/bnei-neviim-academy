@@ -100,6 +100,19 @@ function rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime = {}) {
   return rabbiTelegramRuntime.status === 'live_smoke_verified' || rabbiTelegramRuntime.production_verified === true;
 }
 
+function externalSetupMissingFields(externalSetupItems = []) {
+  return [...new Set(externalSetupItems
+    .flatMap((item) => Array.isArray(item.current_missing_fields) ? item.current_missing_fields : [])
+    .filter(Boolean))];
+}
+
+function formatExternalSetupEvidence(item = {}) {
+  const label = item.id || item.title || 'setup blocker';
+  return item.current_missing_fields?.length
+    ? `${label}: ${item.current_missing_fields.join(', ')}`
+    : label;
+}
+
 function buildBlockerGroups({
   assessment = {},
   assessmentReasons = [],
@@ -123,6 +136,7 @@ function buildBlockerGroups({
       severity: group.severity || 'blocking',
       count: Number(group.count || 1),
       evidence: group.evidence || [],
+      missing_fields: group.missing_fields || [],
       next_action: group.next_action || '',
     });
   };
@@ -168,8 +182,9 @@ function buildBlockerGroups({
     });
   }
   if (runBlockers.length > 0 || externalSetupItems.length > 0) {
+    const missingFields = externalSetupMissingFields(externalSetupItems);
     const evidence = externalSetupItems.length
-      ? externalSetupItems.map((item) => item.id || item.title || 'setup blocker').filter(Boolean)
+      ? externalSetupItems.map(formatExternalSetupEvidence).filter(Boolean)
       : runBlockers.map((item) => item.requirement_id || item.title || 'run blocker');
     add({
       id: 'external_setup_blockers',
@@ -177,7 +192,10 @@ function buildBlockerGroups({
       owner: 'Shloimie / provider account owners',
       count: evidence.length,
       evidence,
-      next_action: 'Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.',
+      missing_fields: missingFields,
+      next_action: missingFields.length
+        ? `Provide aliases/status only, not raw secrets, for current setup-check fields: ${missingFields.join(', ')}.`
+        : 'Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.',
     });
   }
   if (rabbiTelegramRuntime.status && !rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime)) {
@@ -249,6 +267,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
   const queuedDropoffs = Number(chatgpt.queued_count || assessment.chatgpt_dropoff_queue_ready_count || 0);
   const proofBlockers = Number(proof.remaining_blocker_count || 0);
   const nextBatch = String(activeRun.next_unblocked_executable_batch || '');
+  const externalSetupFields = externalSetupMissingFields(externalSetupItems);
 
   if (assessment.production_ready !== true || assessment.status !== 'production_ready') {
     blockers.push(`Production readiness snapshot status is ${assessment.status || 'unknown'}, not production_ready.`);
@@ -268,8 +287,9 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
   for (const item of runBlockers) {
     blockers.push(`${item.requirement_id || 'REQ-unknown'} blocked: ${item.blocker || 'No blocker text.'} Next: ${item.next_action || 'No next action.'}`);
   }
-  if (runBlockers.length === 0 && externalSetupItems.length > 0) {
-    blockers.push(`OneTime setup checklist still has ${externalSetupItems.length} operator setup blocker(s): ${externalSetupItems.map((item) => item.id).filter(Boolean).join(', ')}.`);
+  if (externalSetupItems.length > 0) {
+    const setupEvidence = externalSetupItems.map(formatExternalSetupEvidence).filter(Boolean).join('; ');
+    blockers.push(`OneTime setup checklist still has ${externalSetupItems.length} operator setup blocker(s): ${setupEvidence}.`);
   }
   if (rabbiTelegramRuntime.status && !rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime)) {
     blockers.push(`Rabbi Telegram runtime is ${rabbiTelegramRuntime.status}; chat_id_configured=${rabbiTelegramRuntime.chat_id_configured === true}; candidate_count=${rabbiTelegramRuntime.candidate_count ?? 0}.`);
@@ -317,6 +337,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
       active_run_status_counts: activeRun.status_counts || {},
       active_run_blocker_count: runBlockers.length,
       external_setup_item_count: externalSetupItems.length,
+      external_setup_missing_fields: externalSetupFields,
       rabbi_telegram_runtime_status: rabbiTelegramRuntime.status || 'unknown',
       rabbi_telegram_chat_id_configured: rabbiTelegramRuntime.chat_id_configured === true,
       rabbi_telegram_candidate_count: rabbiTelegramRuntime.candidate_count ?? null,

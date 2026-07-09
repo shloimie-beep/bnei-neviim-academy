@@ -36916,3 +36916,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   smoke, external send, payment/access mutation, CRM/provider/DNS/credential
   mutation, Agent Review result save, Kimi live coding fallback action, or
   production-data mutation.
+
+## 2026-07-09T20:33:00+03:00 - Production Gate External Setup Evidence Sharpened
+
+- Updated `scripts/production-readiness-gate.mjs` so the blocking gate JSON
+  carries dynamic OneTime setup missing fields in `external_setup_blockers`
+  evidence, `missing_fields`, and `snapshot_summary.external_setup_missing_fields`.
+- Focused gate tests now prove Stripe sandbox/price, WAPI instance/phone, and
+  campaign approval fields survive into the gate output.
+- Verification passed: `node --check scripts/production-readiness-gate.mjs`,
+  `node --test tests/production-readiness-gate.test.js`, and expected-blocked
+  live no-write gate readback with the exact setup fields.
+- Guardrails held: reporting/gate hardening only; no app UI/API edit, deploy,
+  hosted restart, live Telegram smoke, external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, Kimi live
+  fallback action, or production-data mutation.

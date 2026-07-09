@@ -107,9 +107,21 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
       available: true,
       operator_blocker_count: 3,
       operator_blocker_items: [
-        { id: 'SETUP-ONETIME-STRIPE-001', title: 'Rabbi Stripe sandbox' },
-        { id: 'SETUP-ONETIME-WHAPI-001', title: 'Whapi/WAPI provider details' },
-        { id: 'SETUP-ONETIME-CAMPAIGN-001', title: 'Campaign seed / real campaign' },
+        {
+          id: 'SETUP-ONETIME-STRIPE-001',
+          title: 'Rabbi Stripe sandbox',
+          current_missing_fields: ['rabbi_stripe_test_secret_key_alias_or_test_key_status', '67_month_product_price_id_or_alias'],
+        },
+        {
+          id: 'SETUP-ONETIME-WHAPI-001',
+          title: 'Whapi/WAPI provider details',
+          current_missing_fields: ['whapi_wapi_instance_id', 'whapi_wapi_phone_number'],
+        },
+        {
+          id: 'SETUP-ONETIME-CAMPAIGN-001',
+          title: 'Campaign seed / real campaign',
+          current_missing_fields: ['final_campaign_copy', 'explicit_seed_packet_approval'],
+        },
       ],
     },
     rabbi_telegram_runtime: {
@@ -133,12 +145,21 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   assert.match(text, /Stripe\/WAPI\/campaign/);
   assert.match(text, /dirty/);
   assert.match(text, /REQ-20260702-108/);
+  assert.match(text, /rabbi_stripe_test_secret_key_alias_or_test_key_status/);
   assert.match(text, /Rabbi Telegram runtime is candidate_available_config_required/);
   assert.match(text, /Rabbi Agent Review proof has 2/);
   assert.match(text, /ChatGPT dropoff queue has 1/);
   assert.match(text, /job #382/);
   assert.equal(report.snapshot_summary.active_run_blocker_count, 1);
   assert.equal(report.snapshot_summary.external_setup_item_count, 3);
+  assert.deepEqual(report.snapshot_summary.external_setup_missing_fields, [
+    'rabbi_stripe_test_secret_key_alias_or_test_key_status',
+    '67_month_product_price_id_or_alias',
+    'whapi_wapi_instance_id',
+    'whapi_wapi_phone_number',
+    'final_campaign_copy',
+    'explicit_seed_packet_approval',
+  ]);
   assert.equal(report.snapshot_summary.blocker_group_count, 8);
   assert.equal(report.snapshot_summary.rabbi_telegram_runtime_status, 'candidate_available_config_required');
   assert.equal(report.snapshot_summary.rabbi_telegram_chat_id_configured, false);
@@ -155,9 +176,17 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   ]);
   assert.equal(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').count, 3);
   assert.deepEqual(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').evidence, [
-    'SETUP-ONETIME-STRIPE-001',
-    'SETUP-ONETIME-WHAPI-001',
-    'SETUP-ONETIME-CAMPAIGN-001',
+    'SETUP-ONETIME-STRIPE-001: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias',
+    'SETUP-ONETIME-WHAPI-001: whapi_wapi_instance_id, whapi_wapi_phone_number',
+    'SETUP-ONETIME-CAMPAIGN-001: final_campaign_copy, explicit_seed_packet_approval',
+  ]);
+  assert.deepEqual(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').missing_fields, [
+    'rabbi_stripe_test_secret_key_alias_or_test_key_status',
+    '67_month_product_price_id_or_alias',
+    'whapi_wapi_instance_id',
+    'whapi_wapi_phone_number',
+    'final_campaign_copy',
+    'explicit_seed_packet_approval',
   ]);
   assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 2);
   const rabbiRuntimeGroup = report.blocker_groups.find((group) => group.id === 'rabbi_telegram_runtime_configuration');
@@ -170,7 +199,7 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
     'masked_candidate=******4810',
   ]);
   assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
-  assert.match(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').next_action, /Stripe/);
+  assert.match(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').next_action, /whapi_wapi_instance_id/);
   assert.ok(report.next_actions.some((item) => /production:unblocker/.test(item.action)));
   assert.equal(report.operator_unblocker.json_path, 'ops/production-readiness/latest-production-unblocker.json');
 });
