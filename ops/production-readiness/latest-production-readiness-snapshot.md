@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T22:24:43.010Z
+# Production Readiness Snapshot - 2026-07-09T22:50:25.764Z
 
 Result: not_production_complete
 Production ready: no
@@ -12,14 +12,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: f397a84a
-- origin/master: f397a84a
+- HEAD: c85b1a48
+- origin/master: c85b1a48
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: f397a84a
-- Sampled origin/master: f397a84a
+- Sampled git head: c85b1a48
+- Sampled origin/master: c85b1a48
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -50,7 +50,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
 - Status: passed
 - Ready: yes
-- Fresh for launch gate: yes (4.81h old, max 24h)
+- Fresh for launch gate: yes (5.24h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
@@ -74,7 +74,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: observable jobs 0, fallback task candidates 0
-- Queue health: fresh 5, stale 481, blocked 128, unknown 194, do-not-redo 880
+- Queue health: fresh 4, stale 484, blocked 128, unknown 194, do-not-redo 880
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -85,7 +85,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - No running launch collision lanes reported.
 
 ## Other Agent Policy Rows
-- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=177.76 path=.runtime/agent-fleet/task-1736.lock.json)
+- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=178.19 path=.runtime/agent-fleet/task-1736.lock.json)
 - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)
 - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)
 - job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json)
