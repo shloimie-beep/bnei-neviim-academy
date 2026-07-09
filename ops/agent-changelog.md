@@ -6,6 +6,24 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-09T17:40:00+03:00 - Railway target profiles hardened
+
+- Added `config/railway-targets.json` with non-secret BNA and OneTime Railway
+  target profiles so deploy/readback commands no longer depend on remembered
+  project/service env vars.
+- Updated `scripts/railway-target-guard.mjs` to load committed profiles after
+  env and `.secrets` overrides, normalize `one_time` / `one-time`, and avoid
+  borrowing `railway status` environment/domain data from a different project
+  than the selected target.
+- Verification passed: `node --test tests\railway-target-guard.test.js`,
+  `node --test tests\one-time-deployment-readiness.test.js
+  tests\railway-target-guard.test.js`, `npm run railway:target:doctor`,
+  `BNA_DEPLOY_APP=one_time npm run railway:target:doctor`,
+  `npm run one-time:railway-target:guard`, and `npm run bna:run:validate`.
+- Guardrail: no deploy/upload, DNS change, credential change, Railway variable
+  write, provider mutation, payment/access mutation, or external send was
+  performed.
+
 ## 2026-07-09T17:35:00+03:00 - OneTime frontend audit prompts deployed
 
 - Pushed commit `84b73e2e` with `RAW-20260709-011`, five Product Quality

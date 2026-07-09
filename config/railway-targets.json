@@ -1,0 +1,30 @@
+{
+  "schema_version": "railway-targets.v1",
+  "default_profile": "bna",
+  "profiles": {
+    "bna": {
+      "app": "bna",
+      "deployment_mode": "cli",
+      "expected_domain": "bneineviimacademy.org",
+      "project_id": "bd5b6d78-5e83-4e83-89b2-cd5f52ed7889",
+      "project_name": "skillful-motivation",
+      "environment_name": "production",
+      "service_name": "skillful-motivation",
+      "custom_domain": "bneineviimacademy.org",
+      "github_repo": "shloimie-beep/bnei-neviim-academy",
+      "github_branch": "master"
+    },
+    "one-time": {
+      "app": "one-time",
+      "deployment_mode": "cli",
+      "expected_domain": "join.onetimeonetime.com",
+      "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+      "project_name": "one-time-production",
+      "environment_name": "production",
+      "service_name": "one-time-web",
+      "custom_domain": "join.onetimeonetime.com",
+      "github_repo": "shloimie-beep/bnei-neviim-academy",
+      "github_branch": "master"
+    }
+  }
+}

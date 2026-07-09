@@ -43,6 +43,38 @@ function readJsonFile(filePath, context = {}) {
   return JSON.parse(readFileSync(filePath, 'utf8'));
 }
 
+function normalizeProfileKey(value = '') {
+  return lower(value).replace(/_/g, '-');
+}
+
+function selectTargetProfile(config = {}, context = {}) {
+  if (!config || typeof config !== 'object') return {};
+  const env = context.env || process.env;
+  const profiles = config.profiles || config.targets || null;
+  if (!profiles || typeof profiles !== 'object') return config;
+
+  const requestedProfile = normalizeProfileKey(firstValue(
+    env.BNA_RAILWAY_TARGET_PROFILE,
+    env.BNA_DEPLOY_APP,
+    config.default_profile,
+    config.defaultProfile,
+    'bna'
+  ));
+  const profileEntry = Object.entries(profiles).find(([key]) => normalizeProfileKey(key) === requestedProfile);
+  if (!profileEntry) {
+    return {
+      app: requestedProfile,
+      _profile_missing: requestedProfile,
+    };
+  }
+  const [profileKey, profile] = profileEntry;
+  return {
+    ...profile,
+    app: firstValue(profile.app, requestedProfile),
+    profile: profileKey,
+  };
+}
+
 export function loadLocalRailwayTargetConfig(context = {}) {
   const env = context.env || process.env;
   const repoRoot = context.repoRoot || process.cwd();
@@ -50,14 +82,17 @@ export function loadLocalRailwayTargetConfig(context = {}) {
     clean(env.BNA_RAILWAY_TARGET_CONFIG),
     path.join(repoRoot, '.secrets', 'bna-railway-target.json'),
     path.join(repoRoot, '.secrets', 'railway-target.json'),
+    path.join(repoRoot, 'config', 'railway-targets.json'),
   ].filter(Boolean);
 
   for (const filePath of candidates) {
     const parsed = readJsonFile(filePath, context);
     if (parsed && typeof parsed === 'object') {
+      const selected = selectTargetProfile(parsed, context);
       return {
-        ...parsed,
+        ...selected,
         source: filePath.includes(`${path.sep}.secrets${path.sep}`) ? '.secrets' : 'configured-file',
+        source_path: filePath,
       };
     }
   }
@@ -115,6 +150,16 @@ function domainsFromStatus(status = {}, target = {}) {
   return [...customDomains, ...serviceDomains];
 }
 
+function statusMatchesTargetProject(status = {}, target = {}) {
+  const statusProject = projectFromStatus(status);
+  const preferredId = lower(target.project_id || target.projectId);
+  const preferredName = lower(target.project_name || target.projectName);
+  if (!preferredId && !preferredName) return true;
+  if (preferredId && lower(statusProject.id) === preferredId) return true;
+  if (preferredName && lower(statusProject.name) === preferredName) return true;
+  return false;
+}
+
 export function buildRailwayTarget(context = {}) {
   const env = context.env || process.env;
   const localConfig = context.localConfig || loadLocalRailwayTargetConfig(context);
@@ -124,10 +169,16 @@ export function buildRailwayTarget(context = {}) {
     id: firstValue(env.BNA_RAILWAY_PROJECT_ID, env.RAILWAY_PROJECT_ID, localConfig.project_id, localConfig.projectId),
     name: firstValue(env.BNA_RAILWAY_PROJECT_NAME, env.RAILWAY_PROJECT_NAME, localConfig.project_name, localConfig.projectName),
   };
-  const envNode = environmentFromStatus(status, localConfig);
-  const service = serviceFromStatus(status, localConfig);
+  const statusTargetHint = {
+    ...localConfig,
+    project_id: configProject.id,
+    project_name: configProject.name,
+  };
+  const canUseStatusForTarget = statusMatchesTargetProject(status, statusTargetHint);
+  const envNode = canUseStatusForTarget ? environmentFromStatus(status, localConfig) : {};
+  const service = canUseStatusForTarget ? serviceFromStatus(status, localConfig) : {};
   return {
-    app: lower(firstValue(env.BNA_DEPLOY_APP, localConfig.app, 'bna')),
+    app: normalizeProfileKey(firstValue(env.BNA_DEPLOY_APP, localConfig.app, 'bna')),
     deployment_mode: lower(firstValue(env.BNA_RAILWAY_DEPLOY_MODE, env.RAILWAY_DEPLOY_MODE, localConfig.deployment_mode, localConfig.deploymentMode, 'cli')),
     expected_domain: lower(firstValue(env.BNA_EXPECTED_DOMAIN, localConfig.expected_domain, localConfig.expectedDomain, DEFAULT_BNA_DOMAIN)),
     project_id: firstValue(configProject.id, statusProject.id),
@@ -136,7 +187,7 @@ export function buildRailwayTarget(context = {}) {
     environment_name: firstValue(env.BNA_RAILWAY_ENVIRONMENT_NAME, env.RAILWAY_ENVIRONMENT_NAME, env.RAILWAY_ENVIRONMENT, localConfig.environment_name, localConfig.environmentName, envNode.name, 'production'),
     service_id: firstValue(env.BNA_RAILWAY_SERVICE_ID, env.RAILWAY_SERVICE_ID, localConfig.service_id, localConfig.serviceId, service.id),
     service_name: firstValue(env.BNA_RAILWAY_SERVICE_NAME, env.RAILWAY_SERVICE_NAME, localConfig.service_name, localConfig.serviceName, service.name),
-    custom_domains: splitDomains(firstValue(env.BNA_RAILWAY_CUSTOM_DOMAIN, localConfig.custom_domain, localConfig.customDomain)).concat(domainsFromStatus(status, localConfig)),
+    custom_domains: splitDomains(firstValue(env.BNA_RAILWAY_CUSTOM_DOMAIN, localConfig.custom_domain, localConfig.customDomain)).concat(canUseStatusForTarget ? domainsFromStatus(status, localConfig) : []),
     github_repo: firstValue(env.BNA_RAILWAY_GITHUB_REPO, localConfig.github_repo, localConfig.githubRepo, DEFAULT_BNA_REPO),
     github_branch: firstValue(env.BNA_RAILWAY_GITHUB_BRANCH, localConfig.github_branch, localConfig.githubBranch, 'master'),
     auto_deploy_verified: truthy(firstValue(env.BNA_RAILWAY_AUTO_DEPLOY_VERIFIED, localConfig.auto_deploy_verified, localConfig.autoDeployVerified)),
@@ -251,8 +302,10 @@ function usage() {
   node scripts/railway-target-guard.mjs deploy [--json] [--status-json-file path]
 
 Provide an explicit BNA Railway target through environment variables or
-.secrets/bna-railway-target.json. This command is read-only and never prints
-tokens or secret values.`;
+.secrets/bna-railway-target.json. Non-secret defaults may live in
+config/railway-targets.json and can be selected with BNA_DEPLOY_APP or
+BNA_RAILWAY_TARGET_PROFILE. This command is read-only and never prints tokens
+or secret values.`;
 }
 
 function loadStatusJson(filePath) {

@@ -1,5 +1,6 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const path = require('node:path');
 const test = require('node:test');
 
 async function guardModule() {
@@ -115,6 +116,117 @@ test('Railway target guard accepts explicit BNA CLI target from env and status',
   assert.equal(report.target.project_name, 'skillful-motivation');
   assert.equal(report.target.service_name, 'skillful-motivation');
   assert.equal(report.target.environment_name, 'production');
+});
+
+test('Railway target guard uses committed non-secret BNA target profile by default', async () => {
+  const { buildRailwayTarget, loadLocalRailwayTargetConfig, validateRailwayTarget } = await guardModule();
+  const targetConfig = {
+    default_profile: 'bna',
+    profiles: {
+      bna: {
+        app: 'bna',
+        deployment_mode: 'cli',
+        expected_domain: 'bneineviimacademy.org',
+        project_id: 'bd5b6d78-5e83-4e83-89b2-cd5f52ed7889',
+        project_name: 'skillful-motivation',
+        environment_name: 'production',
+        service_name: 'skillful-motivation',
+        custom_domain: 'bneineviimacademy.org',
+      },
+    },
+  };
+  const localConfig = loadLocalRailwayTargetConfig({
+    env: {},
+    repoRoot: 'C:\\repo',
+    existsSync: (filePath) => filePath.endsWith(`${path.sep}config${path.sep}railway-targets.json`),
+    readFileSync: () => JSON.stringify(targetConfig),
+  });
+  const target = buildRailwayTarget({
+    env: {},
+    status: {},
+    localConfig,
+  });
+  const report = validateRailwayTarget({ target });
+
+  assert.equal(report.ok, true);
+  assert.equal(report.target.app, 'bna');
+  assert.equal(report.target.project_id, 'bd5b6d78-5e83-4e83-89b2-cd5f52ed7889');
+  assert.equal(report.target.service_name, 'skillful-motivation');
+  assert.deepEqual(report.target.custom_domains, ['bneineviimacademy.org']);
+});
+
+test('Railway target guard selects committed One Time profile from deploy app', async () => {
+  const { buildRailwayTarget, loadLocalRailwayTargetConfig, validateRailwayTarget } = await guardModule();
+  const targetConfig = {
+    default_profile: 'bna',
+    profiles: {
+      bna: {
+        app: 'bna',
+        project_name: 'skillful-motivation',
+        service_name: 'skillful-motivation',
+      },
+      'one-time': {
+        app: 'one-time',
+        deployment_mode: 'cli',
+        expected_domain: 'join.onetimeonetime.com',
+        project_id: 'ce55ef20-1418-4ad3-aafa-f877fb992dc8',
+        project_name: 'one-time-production',
+        environment_name: 'production',
+        service_name: 'one-time-web',
+        custom_domain: 'join.onetimeonetime.com',
+      },
+    },
+  };
+  const localConfig = loadLocalRailwayTargetConfig({
+    env: { BNA_DEPLOY_APP: 'one_time' },
+    repoRoot: 'C:\\repo',
+    existsSync: (filePath) => filePath.endsWith(`${path.sep}config${path.sep}railway-targets.json`),
+    readFileSync: () => JSON.stringify(targetConfig),
+  });
+  const target = buildRailwayTarget({
+    env: { BNA_DEPLOY_APP: 'one_time' },
+    status: {},
+    localConfig,
+  });
+  const report = validateRailwayTarget({ target });
+
+  assert.equal(report.ok, true);
+  assert.equal(report.target.app, 'one-time');
+  assert.equal(report.target.project_name, 'one-time-production');
+  assert.equal(report.target.service_name, 'one-time-web');
+  assert.deepEqual(report.target.custom_domains, ['join.onetimeonetime.com']);
+});
+
+test('Railway target guard does not borrow status values from the wrong project', async () => {
+  const { buildRailwayTarget, validateRailwayTarget } = await guardModule();
+  const target = buildRailwayTarget({
+    env: {},
+    localConfig: {
+      app: 'bna',
+      deployment_mode: 'cli',
+      expected_domain: 'bneineviimacademy.org',
+      project_id: 'bd5b6d78-5e83-4e83-89b2-cd5f52ed7889',
+      project_name: 'skillful-motivation',
+      environment_name: 'production',
+      service_name: 'skillful-motivation',
+      custom_domain: 'bneineviimacademy.org',
+    },
+    status: statusFixture({
+      projectId: 'ce55ef20-1418-4ad3-aafa-f877fb992dc8',
+      projectName: 'one-time-production',
+      environmentId: 'f911acfc-e206-44df-a569-9d69d709b94b',
+      serviceId: 'd175ad94-5e3c-41c2-8cbc-daa1a299077d',
+      serviceName: 'one-time-web',
+      domain: 'join.onetimeonetime.com',
+    }),
+  });
+  const report = validateRailwayTarget({ target });
+
+  assert.equal(report.ok, true);
+  assert.equal(report.target.project_name, 'skillful-motivation');
+  assert.equal(report.target.environment_id, '');
+  assert.equal(report.target.service_id, '');
+  assert.deepEqual(report.target.custom_domains, ['bneineviimacademy.org']);
 });
 
 test('Railway target guard accepts verified GitHub auto-deploy mode without CLI service', async () => {
