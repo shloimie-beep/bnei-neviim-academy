@@ -164,6 +164,9 @@ if (Test-Path (Join-Path $repoRoot "package-lock.json")) {
   Copy-Item -LiteralPath (Join-Path $repoRoot "package-lock.json") -Destination $deployRoot
 }
 Copy-Item -LiteralPath (Join-Path $repoRoot "railway.json") -Destination $deployRoot
+if (Test-Path (Join-Path $repoRoot ".dockerignore")) {
+  Copy-Item -LiteralPath (Join-Path $repoRoot ".dockerignore") -Destination $deployRoot
+}
 foreach ($topLevelDoc in @("AGENTS.md", "TASKS.md", "SYSTEM-STATE.md", "PROJECT-NOTES.md", "MEMORY.md")) {
   $docPath = Join-Path $repoRoot $topLevelDoc
   if (Test-Path $docPath) {

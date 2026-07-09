@@ -36067,3 +36067,35 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   chat ID, run/save Agent Mode PASS/BLOCKED/FAIL proof for the Rabbi
   Telegram/helper smoke and all-163 helper-scope probe, and keep external-write
   helper autonomy gated by exact approvals and credentials.
+
+## 2026-07-09 - OneTime Railway Build Context Hardening
+
+- Investigated the three July 8 `one-time-production` / `one-time-web`
+  failures: deployment IDs `d970e263-1726-41c1-a694-10c1659503ee`,
+  `75d6f181-e7c6-41a3-9e70-efcc4c61fea1`, and
+  `a23e4e82-2199-4fd9-9b17-482c385dabcc`. Their build logs reached Docker
+  image export and image-push completion, with no npm/Docker syntax failure and
+  no startup logs.
+- Confirmed a later OneTime deployment
+  `0c1eec63-aa58-4a65-8bc0-0262ba626401` reached `SUCCESS`; live
+  `https://join.onetimeonetime.com` separate-instance and interest dry-run
+  smokes passed with no writes.
+- Hardened the Railway build surface by moving the Docker image from
+  `node:18-alpine` to `node:24-alpine`, using deterministic `npm ci`, and
+  adding `.dockerignore` coverage for secrets, local dependencies, raw intake,
+  generated evidence, archives, and bulky video/audit artifacts.
+- Updated `scripts/railway-redeploy.ps1` to include `.dockerignore` in manual
+  deploy bundles and added regression coverage in
+  `tests/one-time-deployment-readiness.test.js`.
+- Verification passed: `node --check server.js`,
+  `npm ci --dry-run --ignore-scripts`, PowerShell parser check for
+  `scripts/railway-redeploy.ps1`,
+  `node --test tests/one-time-deployment-readiness.test.js
+  tests/railway-target-guard.test.js tests/one-time-product-system.test.js`,
+  `npm run one-time:railway-target:guard`,
+  `npm run app:smoke:onetime-separate-instance --
+  https://join.onetimeonetime.com`, and
+  `npm run app:smoke:one-time-interest-dry-run`.
+- Remaining blocker: this Docker/build-context hardening is local-only until it
+  can be committed/pushed/deployed through a clean lane; the current worktree
+  contains unrelated parallel OneTime/frontend/evidence changes.

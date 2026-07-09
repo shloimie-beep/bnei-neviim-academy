@@ -8,6 +8,9 @@ const currentStateAudit = fs.readFileSync('docs/audits/one-time-one-time/2026-06
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const railwayJson = JSON.parse(fs.readFileSync('railway.json', 'utf8'));
 const railwayStart = fs.readFileSync('scripts/railway-start.mjs', 'utf8');
+const dockerfile = fs.readFileSync('Dockerfile', 'utf8');
+const dockerignore = fs.readFileSync('.dockerignore', 'utf8');
+const railwayRedeploy = fs.readFileSync('scripts/railway-redeploy.ps1', 'utf8');
 const oneTimeBrand = JSON.parse(fs.readFileSync('config/brands/one-time.json', 'utf8'));
 const oneTimeInstance = require('../src/platform/instances/one-time');
 
@@ -121,6 +124,19 @@ test('local Railway and smoke inventory is declared without performing live depl
   assert.match(railwayStart, /rabbi-telegram-worker/);
   assert.equal(readiness.deploy_performed, false);
   assert.equal(readiness.live_smoke_performed, false);
+});
+
+test('Railway Docker build uses current Node and bounded deploy context', () => {
+  assert.match(dockerfile, /^FROM node:24-alpine/m);
+  assert.match(dockerfile, /^RUN npm ci$/m);
+  assert.match(dockerfile, /^ENV NODE_ENV=production$/m);
+  assert.match(dockerignore, /^\.secrets$/m);
+  assert.match(dockerignore, /^node_modules$/m);
+  assert.match(dockerignore, /^raw-input$/m);
+  assert.match(dockerignore, /^ops\/ui-audits$/m);
+  assert.match(dockerignore, /^public\/video-edit-assets$/m);
+  assert.match(railwayRedeploy, /Join-Path \$repoRoot "\.dockerignore"/);
+  assert.match(railwayRedeploy, /Copy-Item -LiteralPath \(Join-Path \$repoRoot "\.dockerignore"\) -Destination \$deployRoot/);
 });
 
 test('current-state audit recommends Option B and documents unresolved deployment blockers', () => {
