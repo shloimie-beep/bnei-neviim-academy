@@ -1,6 +1,6 @@
 # Agent Mode Prompt - One Time Brand Helper Toolbar Audit
 
-Generated: 2026-07-09T03:48:29.573Z
+Generated: 2026-07-09T10:50:12.121Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -14,7 +14,7 @@ Reusable protocol/template: docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md
 
 ## Required Workflow State
 
-First open the Agent Review Hub. Confirm this prompt key. Click Start Audit / I started this agent mode if not already started. Open the drop-off page and keep it available. Then run the audit. If any context, route, login, helper, link, viewport, action, or save path fails, immediately save a BLOCKED result through the drop-off page with exact route attempted, what failed, partial findings, and smallest repair suggestion. Do not end in chat until the Agent Review Hub or readback API shows the AGR result for this prompt key and idempotency key. Final answer must start with OPERATIONS_DROPOFF_SAVED: AGR-... or OPERATIONS_DROPOFF_FAILED: ...
+First open this public prompt URL: https://join.onetimeonetime.com/agent-review-prompts/one-time-brand-helper-toolbar-audit.md. Then try the Agent Review Hub. Confirm this prompt key. When the protected Agent Review Hub is available, Click Start Audit / I started this agent mode if not already started, open the drop-off page, and keep it available. If the protected Agent Review Hub is blank, 401, or sign-in blocked, record hub_unavailable_401 in evidence and continue the audit from this public prompt and its public artifact URLs. Do not stop before testing reachable public/review routes just because the hub requires an Operations session. If any context, route, login, helper, link, viewport, action, artifact, or save path fails, immediately save a BLOCKED result when a save path is available with exact route attempted, what failed, partial findings, and smallest repair suggestion. Do not end in chat until the Agent Review Hub or readback API shows the AGR result for this prompt key and idempotency key, unless every save path is also auth-blocked or failed. Final answer must start with OPERATIONS_DROPOFF_SAVED: AGR-... or OPERATIONS_DROPOFF_FAILED: ...
 
 - Do not treat a partial audit as pass.
 - Do not say a JSON handoff is prepared.
@@ -34,6 +34,8 @@ First open the Agent Review Hub. Confirm this prompt key. Click Start Audit / I 
   "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
   "prompt_key": "one-time-brand-helper-toolbar-audit",
   "context_key": null,
+  "public_prompt_url": "https://join.onetimeonetime.com/agent-review-prompts/one-time-brand-helper-toolbar-audit.md",
+  "public_artifacts": [],
   "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=one-time-brand-helper-toolbar-audit",
   "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-brand-helper-toolbar-audit&requirement_id=REQ-20260707-136&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-brand-helper-toolbar-audit&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-brand-helper-toolbar-audit%3Aall-contexts&autosave=1",
   "requirement_id": "REQ-20260707-136",
@@ -43,9 +45,17 @@ First open the Agent Review Hub. Confirm this prompt key. Click Start Audit / I 
 
 ## Start
 
-Open the Agent Review Hub: https://bneineviimacademy.org/operations/agent-review
+Open this public prompt first: https://join.onetimeonetime.com/agent-review-prompts/one-time-brand-helper-toolbar-audit.md
+Then try the Agent Review Hub: https://bneineviimacademy.org/operations/agent-review
+
+If the Agent Review Hub opens, use it for Start Audit, context cards, drop-off, and readback. If it is blank, 401, or sign-in blocked, continue from this public prompt, include hub_unavailable_401 in the result payload, and use direct URLs from the prompt/artifacts where available.
 
 Use takeover mode if an Operations login is required. Do not ask for or store passwords, cookies, API keys, refresh tokens, screenshots with private data, or reusable access secrets. External services such as Google, Railway, Stripe, Vimeo, DNS, Buffer, WhatsApp, and email remain separate logins and are out of scope unless the hub says otherwise.
+
+## Public Prompt And Artifacts
+
+Public prompt URL: https://join.onetimeonetime.com/agent-review-prompts/one-time-brand-helper-toolbar-audit.md
+- No separate public artifacts are required for this prompt.
 
 ## Review Contexts
 
@@ -89,7 +99,7 @@ Focus: One Time black/yellow brand isolation, English-only public scope, helper 
 - Rank fixes by P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.
 - End only with OPERATIONS_DROPOFF_SAVED after a saved AGR readback, or OPERATIONS_DROPOFF_FAILED with the full redacted payload if every save path fails.
 
-1. Open each listed review context from the hub.
+1. Open each listed review context from the hub when available. If hub auth blocks the run, open the listed routes directly and record hub_unavailable_401 instead of stopping at a blank protected page.
 2. Confirm the visible "Reviewing as" banner, role, workspace/project, expiry, and Exit control.
 3. Converse naturally with the scoped helper using paraphrases, typos, follow-ups, and corrections.
 4. Follow every internal link returned by the helper and verify route, section/tab, role, workspace, project, expected landmark, authorization result, and safe fallback.
@@ -117,6 +127,9 @@ Emergency fallback: open the drop-off page and use "Emergency paste JSON and sav
   "prompt_key": "one-time-brand-helper-toolbar-audit",
   "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=one-time-brand-helper-toolbar-audit",
   "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-brand-helper-toolbar-audit&requirement_id=REQ-20260707-136&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-brand-helper-toolbar-audit&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-brand-helper-toolbar-audit%3Aall-contexts&autosave=1",
+  "public_prompt_url": "https://join.onetimeonetime.com/agent-review-prompts/one-time-brand-helper-toolbar-audit.md",
+  "public_artifacts": [],
+  "hub_auth_state": "available|hub_unavailable_401|sign_in_required|unknown",
   "status": "pass|fail|blocked",
   "role_workspace": "role/workspace tested",
   "conversation_summary": "brief summary, no private transcript body",

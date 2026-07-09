@@ -1962,6 +1962,42 @@
       ]
     },
     {
+      "route": "/agent-review-prompts/*.md",
+      "surface": "agent_review_public_prompt_pack",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "serve_public_agent_mode_prompt_markdown_without_private_records_or_secrets",
+      "expected_logged_in_behavior": "serve_the_same_public_prompt_markdown",
+      "privacy_risk": "medium",
+      "security_expectation": "Prompt markdown may describe audit steps and public/review routes but must not include credentials, raw private message bodies, contact exports, reusable session tokens, or private data screenshots.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/agent-review-artifacts/*",
+      "surface": "agent_review_public_artifacts",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "serve_generated_read_only_agent_review_artifacts_without_private_records_or_secrets",
+      "expected_logged_in_behavior": "serve_the_same_public_read_only_artifacts",
+      "privacy_risk": "medium",
+      "security_expectation": "Artifacts are generated contract/scope metadata only; they must not include credentials, raw private message bodies, contact exports, reusable session tokens, or private data screenshots.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/bna/agent-review/contexts",
       "surface": "agent_review_contexts_api",
       "access": "private",

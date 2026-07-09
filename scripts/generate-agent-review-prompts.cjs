@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const {
+  AGENT_REVIEW_PUBLIC_ARTIFACTS_BY_PROMPT,
   AGENT_MODE_PROMPTS,
   buildPromptIndex,
   promptFileName,
@@ -12,6 +13,26 @@ const {
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const OUT_DIR = path.join(REPO_ROOT, 'public', 'agent-review-prompts');
+const PUBLIC_ROOT = path.join(REPO_ROOT, 'public');
+
+function copyPublicArtifacts() {
+  const copied = new Set();
+  for (const artifacts of Object.values(AGENT_REVIEW_PUBLIC_ARTIFACTS_BY_PROMPT)) {
+    for (const artifact of artifacts) {
+      if (!artifact.source_path || !artifact.public_path) continue;
+      const sourcePath = path.join(REPO_ROOT, artifact.source_path);
+      const destinationPath = path.join(PUBLIC_ROOT, artifact.public_path.replace(/^\/+/, ''));
+      if (copied.has(destinationPath)) continue;
+      if (!fs.existsSync(sourcePath)) {
+        throw new Error(`Missing Agent Review public artifact source: ${artifact.source_path}`);
+      }
+      fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
+      fs.copyFileSync(sourcePath, destinationPath);
+      copied.add(destinationPath);
+    }
+  }
+  return copied.size;
+}
 
 function parseArgs(argv) {
   const args = {
@@ -32,6 +53,7 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   fs.mkdirSync(args.outDir, { recursive: true });
   const generatedAt = new Date().toISOString();
+  const artifactCount = copyPublicArtifacts();
   for (const prompt of AGENT_MODE_PROMPTS) {
     fs.writeFileSync(
       path.join(args.outDir, promptFileName(prompt)),
@@ -46,7 +68,7 @@ function main() {
       prompts: buildPromptIndex({ baseUrl: args.baseUrl }),
     }, null, 2)}\n`
   );
-  process.stdout.write(`Generated ${AGENT_MODE_PROMPTS.length} Agent Review prompt files in ${args.outDir}\n`);
+  process.stdout.write(`Generated ${AGENT_MODE_PROMPTS.length} Agent Review prompt files and ${artifactCount} public artifacts in ${args.outDir}\n`);
 }
 
 main();

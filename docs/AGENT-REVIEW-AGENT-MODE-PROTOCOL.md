@@ -22,16 +22,24 @@ Agent Review prompt can be represented by `AGENT_MODE_PROMPTS`.
 
 Every Agent Mode review prompt must require this sequence:
 
-1. Open the Agent Review Hub.
-2. Confirm the prompt key.
-3. Click `Start Audit` / `I started this agent mode`.
-4. Click `Copy Agent Prompt`.
-5. Open the review context.
-6. Keep or open the exact drop-off URL.
-7. Run the audit.
-8. Save `PASS`, `FAIL`, or `BLOCKED` through Agent Review drop-off.
-9. Verify the AGR readback.
-10. Only then answer in chat.
+1. Open the public prompt URL first.
+2. Try the Agent Review Hub.
+3. Confirm the prompt key.
+4. Click `Start Audit` / `I started this agent mode` when the hub is
+   authenticated and available.
+5. Click `Copy Agent Prompt` when the hub is authenticated and available.
+6. Open the review context.
+7. Keep or open the exact drop-off URL.
+8. Run the audit.
+9. Save `PASS`, `FAIL`, or `BLOCKED` through Agent Review drop-off.
+10. Verify the AGR readback.
+11. Only then answer in chat.
+
+If the protected Agent Review Hub is blank, returns 401, or is sign-in blocked,
+the agent must record `hub_unavailable_401` and continue from the public prompt
+and public artifact URLs instead of stopping before the audit begins. A protected
+hub blocker is evidence for the result payload; it is not a reason to skip
+reachable public/review route checks.
 
 Blocked and failed runs are still autonomous closeouts. The browser agent must
 not ask the operator whether to submit, seal, or report the result after it has
@@ -51,6 +59,9 @@ exact drop-off URL, emergency paste save, and API fallback have all failed.
 
 Every generated Agent Mode prompt must include:
 
+- `Open this public prompt first`
+- `Public prompt URL:`
+- `hub_unavailable_401`
 - `Click Start Audit / I started this agent mode`
 - `Do not treat a partial audit as pass`
 - `If blocked midway, save BLOCKED immediately`

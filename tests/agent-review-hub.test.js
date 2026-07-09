@@ -6,12 +6,14 @@ const vm = require('node:vm');
 
 const {
   AGENT_REVIEW_RUN,
+  AGENT_REVIEW_PUBLIC_BASE_URL,
   AGENT_MODE_PROMPTS,
   AGENT_REVIEW_CONTEXTS,
   AGENT_REVIEW_SESSION_TTL_MINUTES,
   buildAgentReviewRepairItem,
   buildPromptIndex,
   normalizeAgentReviewResultStatus,
+  promptPublicArtifacts,
   renderRerunPrompt,
 } = require('../src/lib/bna/agent-review-hub');
 
@@ -68,6 +70,12 @@ test('Agent Mode prompt pack has exactly 18 generated mobile-copyable files', ()
     assert.match(text, /autosave=1/);
     assert.match(text, /API fallback: https:\/\/bneineviimacademy\.org\/api\/bna\/agent-review\/results/);
     assert.match(text, /## Required Workflow State/);
+    assert.match(text, /Public prompt URL:/);
+    assert.match(text, /Open this public prompt first:/);
+    assert.match(text, /If the protected Agent Review Hub is blank, 401, or sign-in blocked/);
+    assert.match(text, /continue the audit from this public prompt/);
+    assert.match(text, /hub_unavailable_401/);
+    assert.match(text, /hub_auth_state/);
     assert.match(text, /Click Start Audit \/ I started this agent mode/);
     assert.match(text, /Do not treat a partial audit as pass/);
     assert.match(text, /If blocked midway, save BLOCKED immediately/);
@@ -162,15 +170,28 @@ test('Agent Mode prompt pack has exactly 18 generated mobile-copyable files', ()
   assert.ok(rabbiToolScopePrompt);
   const rabbiToolScopeText = fs.readFileSync(path.join(root, 'public', 'agent-review-prompts', rabbiToolScopePrompt.file), 'utf8');
   assert.match(rabbiToolScopeText, /REQ-20260708-093/);
+  assert.match(rabbiToolScopeText, /https:\/\/join\.onetimeonetime\.com\/agent-review-prompts\/rabbi-helper-tool-scope-map\.md/);
+  assert.match(rabbiToolScopeText, /https:\/\/join\.onetimeonetime\.com\/agent-review-artifacts\/rabbi-one-time-tool-scope-map\.json/);
+  assert.match(rabbiToolScopeText, /https:\/\/join\.onetimeonetime\.com\/agent-review-artifacts\/rabbi-one-time-tool-scope-map\.md/);
+  assert.match(rabbiToolScopeText, /https:\/\/join\.onetimeonetime\.com\/agent-review-artifacts\/account-bot-scope-template\.json/);
+  assert.match(rabbiToolScopeText, /repo files are unavailable/);
   assert.match(rabbiToolScopeText, /rabbi-one-time-tool-scope-map\.json/);
   assert.match(rabbiToolScopeText, /RABBI-HELPER-SCOPE-001/);
   assert.match(rabbiToolScopeText, /RABBI-HELPER-SCOPE-163/);
   assert.match(rabbiToolScopeText, /all 163 current helper parity tool-needed contracts/);
+  assert.match(rabbiToolScopeText, /operations 97, parent 19, provider 30, rabbi 2, student 15/);
   assert.match(rabbiToolScopeText, /Benny tasks\/studio template/);
   assert.match(rabbiToolScopeText, /workspace_key=bna/);
   assert.match(rabbiToolScopeText, /project_key=bna/);
   assert.match(rabbiToolScopeText, /no live Telegram, email, WhatsApp, WAPI, Drive, payment, access grant, Zoom, Vimeo, Buffer, Stripe, DNS, credential, deployment, or public-publish mutation/);
   assert.match(rabbiToolScopeText, /If you cannot complete all 163 contracts in one Agent Mode run, save BLOCKED/);
+  assert.equal(AGENT_REVIEW_PUBLIC_BASE_URL, 'https://join.onetimeonetime.com');
+  for (const artifact of promptPublicArtifacts(rabbiToolScopePrompt)) {
+    const artifactPath = path.join(root, 'public', artifact.public_path.replace(/^\/+/, ''));
+    assert.equal(fs.existsSync(artifactPath), true, artifact.public_path);
+    const artifactText = fs.readFileSync(artifactPath, 'utf8');
+    assert.doesNotMatch(artifactText, /OPS_PASSWORD|API_KEY=|COOKIE=|Bearer\s+[A-Za-z0-9._-]{20,}|sk-[A-Za-z0-9._-]{20,}/);
+  }
 
   const rabbiPrompt = index.find((item) => item.key === 'rabbi-provider-admin');
   assert.ok(rabbiPrompt);
@@ -215,6 +236,9 @@ test('Agent Mode protocol template locks reusable Start Audit drop-off sequence'
     'public/agent-review-prompts/*.md',
     'npm run agent-review:prompts',
     'tests/agent-review-hub.test.js',
+    'Open this public prompt first',
+    'Public prompt URL:',
+    'hub_unavailable_401',
     'Click Start Audit / I started this agent mode',
     'Do not treat a partial audit as pass',
     'If blocked midway, save BLOCKED immediately',
@@ -453,6 +477,8 @@ test('route and action registries cover Agent Review Hub surface', () => {
     '/operations/agent-review',
     '/agent-review/session',
     '/operations/agent-review/dropoff',
+    '/agent-review-prompts/*.md',
+    '/agent-review-artifacts/*',
     '/api/bna/agent-review/contexts',
     '/api/bna/agent-review/prompts/start',
     '/api/bna/agent-review/dropoff-context',
