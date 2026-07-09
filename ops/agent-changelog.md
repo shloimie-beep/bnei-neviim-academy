@@ -6,6 +6,28 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-09T09:28:07+03:00 - OneTime parent/student review UI deployed and live-smoked
+
+- Pushed commits `634e7ed1`, `641645b3`, and `94bcd656` on
+  `codex/rabbi-helper-tool-scope-20260708` for the parent/student review UI
+  polish slice.
+- Repaired `/student.html?review=one-time` spacing and alignment with a wider
+  desktop shell, compact sidebar stats, responsive card grids, quiet scope
+  notes, yellow OneTime review actions, and no floating bot launcher on the
+  review-only student route.
+- Cleaned parent/student review presentation: removed the Rabbi portrait hero
+  image, scrubbed visible test/fixture/internal underscore statuses, made the
+  parent hero readable, and styled parent classroom/resource links as yellow
+  OneTime buttons.
+- Deployed to Railway `one-time-production` / `one-time-web`; final deployment
+  `278e6f68-eee0-4d33-853d-326d92ed8438` reached `SUCCESS`.
+- Verification passed: focused review/action tests, full `npm test` 1678/1678,
+  `watchdog:actions`, `watchdog:protocol-drift`, `secrets:audit`, OneTime live
+  separate-instance smoke, Rabbi landing smoke, direct live Playwright readback,
+  and final live toolbar/filter density audit with 25 public/review screenshots
+  and 0 findings.
+- Evidence: `ops/playwright-smokes/2026-07-09-onetime-review-final-live-readback.md`.
+
 ## 2026-07-08T23:51:59+03:00 - Operations residual slowness fix live-smoked
 
 - Diagnosed the remaining OneTime Operations slow/no-data feel as a
