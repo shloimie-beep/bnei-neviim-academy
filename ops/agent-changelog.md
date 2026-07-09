@@ -6,6 +6,31 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-07-09T17:35:00+03:00 - OneTime frontend audit prompts deployed
+
+- Pushed commit `84b73e2e` with `RAW-20260709-011`, five Product Quality
+  packets, the OneTime parallel frontend audit report/screenshots, the
+  read-only Playwright audit harness, and eight new Agent Review prompt files.
+- Deployed Railway `one-time-production / one-time-web`; deployment
+  `b54e6e9d-3447-454d-88a9-4a6d0a67dbb5` reached `SUCCESS`.
+- Live verification passed on `https://join.onetimeonetime.com`:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`,
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`,
+  `npm run app:smoke:one-time-interest-dry-run`, and direct readback of the
+  new Agent Review prompt index and representative OneTime prompt files.
+- Evidence:
+  `ops/live-smokes/2026-07-09T14-31-36-900Z-onetime-agent-prompts-live-readback.md`,
+  `ops/live-smokes/2026-07-09T14-31-36-388Z-rabbi-onetime-landing-smoke.md`,
+  and
+  `ops/live-smokes/2026-07-09T14-31-36-364Z-one-time-interest-dry-run-live-smoke.md`.
+- Guardrail: no Agent Review result was submitted and no email, WhatsApp/WAPI,
+  Telegram, payment, checkout, access grant, Zoom, Vimeo, Drive, DNS,
+  credential, provider-account, GHL, LeadConnector, or production-data mutation
+  was performed.
+- Remaining production work: static OneTime UI/chrome fixes from
+  `ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/report.md` still
+  need their own implementation packet and post-deploy visual regression pass.
+
 ## 2026-07-09T17:12:00+03:00 - OneTime interest dry-run proof deployed
 
 - Added `dry_run=true` support to `/api/one-time/interest` so the live route
