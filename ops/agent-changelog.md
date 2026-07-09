@@ -37131,3 +37131,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers are unchanged: exact external setup fields, Rabbi Telegram
   hosted restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
   execution batch, and active collision-lane reconciliation.
+
+## 2026-07-09T23:03:38+03:00 - Fleet Status Marks Fallback Tasks As Candidates
+
+- Tightened `npm run agent:fleet:status` wording so fallback task rows are
+  shown as candidates requiring lane inspection, not as safe ready claims.
+- Added matching observable job IDs/statuses beside each fallback candidate;
+  the current readback shows tasks `1736`, `1859`, and `2185` all map to active
+  observable jobs `344`, `382`, and `427`.
+- Refreshed production readiness and ChatGPT control-tower artifacts so the
+  GitHub-visible state uses `fallback task candidates` wording.
+- Verification passed: `node --check scripts/agent-fleet-supervisor.mjs`,
+  `node --test tests/agent-fleet-hardening.test.js`,
+  `npm run agent:fleet:status`, `npm run production:readiness:snapshot`,
+  `npm run production:unblocker`, `npm run chatgpt:dropoff:tower`, and
+  clean-head `npm run production:readiness:gate -- --json` expected-blocked.
+- Guardrails held: reporting/evidence only; no app UI/API edit, deploy,
+  hosted restart, live Telegram smoke, external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, lock deletion,
+  live task/job mutation, or production-data mutation.
+- Remaining blockers are unchanged: exact external setup fields, Rabbi Telegram
+  hosted restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
+  execution batch, and active collision-lane reconciliation.
