@@ -36773,3 +36773,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:52:00+03:00 - Production Snapshot Fleet Parser Hardened
+
+- Tightened `parseFleetStatus` in `scripts/production-readiness-snapshot.mjs`
+  so active policy job rows are not parsed as summary key/value rows after the
+  `Observable jobs not claimable by active-task policy` section begins.
+- Added a regression test for a failed UI job whose title contains a colon,
+  preserving the title under `active_policy_jobs` without creating a bogus
+  `agent_fleet.summary` key.
+- Focused syntax/tests passed, and a no-write snapshot readback confirmed job
+  `#408` stays in `active_policy_jobs` while the bogus summary key is gone.
+- Guardrails held: readiness reporting/parser hardening only; no app UI edit,
+  API feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

@@ -121,30 +121,33 @@ function parseRunBlockers(output = '') {
   return blockers;
 }
 
-function parseFleetStatus(output = '') {
+export function parseFleetStatus(output = '') {
   const summary = {};
   const active_policy_jobs = [];
   let inActivePolicySection = false;
   for (const line of output.split(/\r?\n/)) {
     const trimmed = line.trim();
+    if (/^Observable jobs not claimable by active-task policy:/i.test(trimmed)) {
+      inActivePolicySection = true;
+      continue;
+    }
+    if (inActivePolicySection) {
+      if (!trimmed.startsWith('- job #')) continue;
+      active_policy_jobs.push({
+        job_id: trimmed.match(/job #(\d+)/)?.[1] || '',
+        task_id: trimmed.match(/task #(\d+)/)?.[1] || '',
+        ticket_id: trimmed.match(/ticket #(\d+)/)?.[1] || '',
+        status: trimmed.match(/\[([^\]]+)\]/)?.[1] || '',
+        title: trimmed.replace(/^- job #[^\]]+\]\s*/, '').trim(),
+        raw: trimmed,
+      });
+      continue;
+    }
     const keyValue = trimmed.match(/^- ([^:]+):\s*(.+)$/);
     if (keyValue) {
       const key = keyValue[1].toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
       summary[key] = keyValue[2].trim();
     }
-    if (/^Observable jobs not claimable by active-task policy:/i.test(trimmed)) {
-      inActivePolicySection = true;
-      continue;
-    }
-    if (!inActivePolicySection || !trimmed.startsWith('- job #')) continue;
-    active_policy_jobs.push({
-      job_id: trimmed.match(/job #(\d+)/)?.[1] || '',
-      task_id: trimmed.match(/task #(\d+)/)?.[1] || '',
-      ticket_id: trimmed.match(/ticket #(\d+)/)?.[1] || '',
-      status: trimmed.match(/\[([^\]]+)\]/)?.[1] || '',
-      title: trimmed.replace(/^- job #[^\]]+\]\s*/, '').trim(),
-      raw: trimmed,
-    });
   }
   return { summary, active_policy_jobs };
 }
@@ -580,4 +583,6 @@ function main() {
   }
 }
 
-main();
+if (fileURLToPath(import.meta.url) === path.resolve(process.argv[1] || '')) {
+  main();
+}

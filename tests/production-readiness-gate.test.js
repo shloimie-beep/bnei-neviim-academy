@@ -10,6 +10,10 @@ async function loadGate() {
   return import(pathToFileURL(path.join(repoRoot, 'scripts', 'production-readiness-gate.mjs')).href);
 }
 
+async function loadSnapshot() {
+  return import(pathToFileURL(path.join(repoRoot, 'scripts', 'production-readiness-snapshot.mjs')).href);
+}
+
 function readySnapshot(overrides = {}) {
   return {
     generated_at: '2026-07-09T00:00:00.000Z',
@@ -169,6 +173,30 @@ test('production readiness snapshot includes OneTime setup bucket summary', () =
   assert.match(script, /OneTime Setup Buckets/);
   assert.match(script, /one-time-mishnah\/launch-unblocker\/2026-07-02-operator-external-setup-checklist\.json/);
   assert.match(script, /Operator blocker count/);
+});
+
+test('production readiness snapshot parser keeps colon job titles out of summary keys', async () => {
+  const mod = await loadSnapshot();
+  const parsed = mod.parseFleetStatus(`Agent fleet status:
+- Supervisor: running PID 36560
+- Observable Codex jobs: 34
+- Claimable observable jobs: 0
+
+Observable jobs not claimable by active-task policy:
+- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile
+- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using
+`);
+
+  assert.equal(parsed.summary.supervisor, 'running PID 36560');
+  assert.equal(parsed.summary.observable_codex_jobs, '34');
+  assert.equal(parsed.summary.claimable_observable_jobs, '0');
+  assert.equal(parsed.summary.job_408_task_2025_failed_fix_one_time_provider_ui_consistency, undefined);
+  assert.equal(parsed.active_policy_jobs.length, 2);
+  assert.equal(parsed.active_policy_jobs[0].job_id, '408');
+  assert.equal(parsed.active_policy_jobs[0].task_id, '2025');
+  assert.equal(parsed.active_policy_jobs[0].status, 'failed');
+  assert.equal(parsed.active_policy_jobs[0].title, 'Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile');
+  assert.equal(parsed.active_policy_jobs[1].ticket_id, '1593');
 });
 
 test('production readiness snapshot treats active Agent Review repair as a collision lane', () => {
