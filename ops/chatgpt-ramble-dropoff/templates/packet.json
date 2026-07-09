@@ -3,6 +3,10 @@
   "schema_version": "bna.chatgpt_dropoff.v1",
   "created_at": "YYYY-MM-DDTHH:mm:ssZ",
   "source": "chatgpt",
+  "packet_type": "implementation_bundle",
+  "packet_role": "code_prep",
+  "lane_key": "workspace-project-short-lane",
+  "owner": "ChatGPT",
   "source_thread": "ChatGPT thread title or link if available",
   "operator_raw_id": "RAW-YYYYMMDD-###",
   "workspace": "app_wide",
@@ -10,9 +14,14 @@
   "status": "ready_for_codex_audit",
   "priority": "normal",
   "scope_summary": "",
+  "next_action": "",
   "out_of_scope": [],
+  "source_statements_covered": [],
   "expected_outputs": [],
   "acceptance_criteria": [],
+  "tests_expected": [],
+  "known_blockers": [],
+  "local_state_warning": "GitHub-connected ChatGPT only sees committed/pushed GitHub state; check CONTROL-TOWER.md for local dirty/claimed lanes.",
   "files_included": [
     "packet.json",
     "RAW.md",
@@ -22,5 +31,7 @@
   ],
   "requires_operator_decision": false,
   "external_write_required": false,
-  "secrets_included": false
+  "external_writes_performed": false,
+  "secrets_included": false,
+  "private_data_included": false
 }

@@ -36,3 +36,17 @@ on deploy.
 The operator asked for a broad practical explanation and advice based on the
 current BNA setup.
 
+## Follow-up raw intake - 2026-07-09T08:54:00+03:00
+
+The operator asked to implement the next step: fix up the ChatGPT drop-off
+packet workflow so ChatGPT connected to the repo is already in the zone, knows
+what is going on, and can write useful code packets for Codex/agent pickup.
+
+The operator also asked to fix the loading issue.
+
+The operator then emphasized that Codex should not interfere with another
+agent that might already be working on the same thing. He asked whether there
+is a way to know which agent owns which work, avoid accidentally submitting the
+same ramble again, and support simultaneous work safely. He also noted that
+rambling to ChatGPT is hard when ChatGPT only sees deployed or committed repo
+state, while Codex may have local unpublished changes.

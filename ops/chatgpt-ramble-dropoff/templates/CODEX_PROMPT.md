@@ -21,10 +21,25 @@ against the current repo before applying anything.
 7. Run the relevant tests, smokes, watchdogs, or record the precise blocker.
 8. Update the requirement register, `ops/agent-task-ledger.jsonl`, and
    `ops/agent-changelog.md` with evidence.
+9. Check `ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md` when present to avoid
+   duplicating another agent lane or overwriting dirty local work.
 
 ## Requested Result
 
 Describe the exact result Codex should produce.
+
+## Packet Lane
+
+- Packet ID:
+- Parent raw ID:
+- Workspace/project:
+- Owner:
+- Lane key:
+- Packet role:
+- In scope:
+- Out of scope:
+- Next action:
+- Blockers:
 
 ## Suggested Files To Inspect
 

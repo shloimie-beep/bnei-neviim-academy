@@ -16,3 +16,5 @@ Paste proposed diff here.
 - Explain why each change is needed.
 - Name tests to run.
 - Name likely compatibility risks.
+- Name files that may conflict with another active agent lane.
+- State whether this patch was written from GitHub-pushed state only.

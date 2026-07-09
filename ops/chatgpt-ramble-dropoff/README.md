@@ -17,7 +17,9 @@ For GitHub-connected ChatGPT/Codex sessions, the order is:
 2. `AGENTS.md`
 3. `docs/BNA-RAMBLE-TO-DONE.md`
 4. This folder's `CHATGPT-DIRECTIVE.md`
-5. This README and the packet templates
+5. `CHATGPT-START-HERE.md`
+6. This README and the packet templates
+7. `CONTROL-TOWER.md`, when present, before claiming a packet lane
 
 Ordinary ChatGPT sessions cannot see local repo files unless the operator
 pastes the directive, connects the repo, or gives ChatGPT a GitHub/PR/file
@@ -29,18 +31,27 @@ will not automatically know about it.
 
 ## Recommended Workflow
 
-1. Give ChatGPT one of the prompts in `ops/prompt-packets/`, or tell it to
+1. Run or read the control tower first:
+
+```bash
+npm run chatgpt:dropoff:tower
+```
+
+This writes `CONTROL-TOWER.md` and `CONTROL-TOWER.json` with packet statuses,
+dirty-file collision warnings, recent pickup reports, and agent-fleet state.
+
+2. Give ChatGPT one of the prompts in `ops/prompt-packets/`, or tell it to
    create a `memory_candidate` / `preference_update` packet for sidekick memory
    work.
-2. Give ChatGPT `CHATGPT-DIRECTIVE.md`.
-3. Tell ChatGPT to return a packet using the files in `templates/`.
-4. Put the packet under:
+3. Give ChatGPT `CHATGPT-START-HERE.md` and `CHATGPT-DIRECTIVE.md`.
+4. Tell ChatGPT to return exactly one packet using the files in `templates/`.
+5. Put the packet under:
 
 ```text
 ops/chatgpt-ramble-dropoff/incoming/<packet-id>/
 ```
 
-5. The packet must include:
+6. The packet must include:
 
 ```text
 packet.json
@@ -50,14 +61,14 @@ MANIFEST.json
 status.json
 ```
 
-6. Optional packet files can include:
+7. Optional packet files can include:
 
 ```text
 PATCHES.md
 attachments/
 ```
 
-7. Codex pickup audits first, applies second, verifies third, then records
+8. Codex pickup audits first, applies second, verifies third, then records
    evidence and publishes scoped repo changes when required by the Definition
    of Done.
 
@@ -84,6 +95,7 @@ Codex verification lifecycle.
 Manual commands:
 
 ```bash
+npm run chatgpt:dropoff:tower
 npm run chatgpt:dropoff:comments:scan
 npm run chatgpt:dropoff:comments:apply
 npm run chatgpt:dropoff:scan
@@ -157,6 +169,21 @@ Codex must not blindly apply generated code. Pickup requires:
 - code matches the actual repo structure;
 - tests or smokes run where relevant;
 - ledger/changelog/register evidence is recorded before Done.
+
+## Parallel Work Rule
+
+Multiple ChatGPT and Codex windows are allowed only when each window owns a
+clear lane:
+
+- one packet ID;
+- one owner;
+- one branch/worktree or non-overlapping file set;
+- one status in `status.json`;
+- one next action or blocker.
+
+If the control tower shows dirty files, an active job, or a blocked packet in
+the same lane, do not start a duplicate packet. Update that packet or create a
+small follow-up packet that explicitly depends on it.
 
 ## Packet Statuses
 

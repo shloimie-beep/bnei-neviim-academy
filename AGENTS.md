@@ -24,6 +24,10 @@ Use these files consistently:
 - `ops/agent-changelog.md`: completed agent work and verified changes
 - `ops/chatgpt-ramble-dropoff/README.md`: canonical no-paste ChatGPT-to-Codex
   dropoff workflow
+- `ops/chatgpt-ramble-dropoff/CHATGPT-START-HERE.md`: concise repo-connected
+  ChatGPT quickstart and packet lane rules
+- `ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md`: generated packet/job/dirty
+  worktree status for avoiding duplicate or overlapping agent work
 - `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md`: directive to give
   GitHub-connected ChatGPT when it should create a repo-visible packet
 - `ops/chatgpt-ramble-dropoff/github-comment-template.md`: exact marked
@@ -49,6 +53,7 @@ Read order for GitHub-connected BNA agent sessions:
 5. The newest relevant `tasks-pending/*.md`, `TASKS.md`, `MEMORY.md`, and
    `memory-topics/*.md`
 6. For ChatGPT-generated implementation or audit work:
+   `ops/chatgpt-ramble-dropoff/CHATGPT-START-HERE.md`,
    `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md`, then
    `ops/chatgpt-ramble-dropoff/README.md`
 
@@ -296,6 +301,19 @@ When Shloimie uses ChatGPT for a broad ramble, correction packet, architecture
 request, or implementation request, ChatGPT is the first audit/code-prep
 surface.
 
+Before creating or picking up ChatGPT packets, run or read the control tower:
+
+```bash
+npm run chatgpt:dropoff:tower
+```
+
+The control tower is the first coordination surface for parallel work. It
+shows packet status, dirty files, recent pickup reports, active/blocked agent
+jobs, collision warnings, and whether GitHub-connected ChatGPT is missing
+local-only context. If it shows dirty files or an active packet in the same
+lane, the next agent must claim a non-overlapping lane, update the existing
+packet, or wait.
+
 Canonical automatic workflow:
 
 - Repo-file packet mode is preferred. When ChatGPT can write repo files or open
@@ -324,6 +342,18 @@ Canonical automatic workflow:
   when the scope is clear and the normal audit/proof workflow still applies.
 - Codex still audits, adapts, tests, records evidence, and updates
   `status.json`; ChatGPT-generated code is never proof by itself.
+
+Parallel ChatGPT/Codex work rules:
+
+- One window owns one `packet_id` / `lane_key`.
+- One packet covers one scoped slice, not a whole super-ramble.
+- `status.json` must show owner, lane, status, next action, blockers, evidence,
+  and whether Agent Mode audit is ready.
+- Repo-connected ChatGPT sees committed/pushed GitHub state only. Local dirty
+  work is invisible to ChatGPT until Codex commits/pushes it or records it in a
+  packet/control-tower report.
+- Do not create a duplicate packet when the control tower already shows that
+  lane as ready, queued, auditing, blocked, or done.
 
 Required workflow:
 

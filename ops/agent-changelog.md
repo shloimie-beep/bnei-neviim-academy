@@ -35627,3 +35627,31 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   mutation, or public publish was performed.
 - Remaining open work for this slice: full checks, commit/push, deploy, live
   smoke/readback, and super-admin Telegram progress ding.
+
+## 2026-07-09T08:58:00+03:00 - ChatGPT Dropoff Control Tower Implemented
+
+- Added a repo-connected ChatGPT quickstart, a generated ChatGPT/Codex dropoff
+  control tower, and package scripts for markdown/JSON status reports.
+- Updated dropoff docs/templates so every ChatGPT packet declares one owner,
+  one `lane_key`, next action, blockers, expected tests, external-write status,
+  and the local-state warning that GitHub-connected ChatGPT sees only
+  committed/pushed files.
+- Reduced pickup-report noise: routine terminal `skipped` / `already_queued`
+  scans no longer write new pickup reports unless `--write-skip-reports` is
+  requested.
+- Live performance evidence found OneTime Operations is already on the split
+  shell, while BNA `/operations?view=tasks` is still serving the older heavy
+  inline shell. BNA loaded about 15.7MB of resources with 12,593 DOM nodes and
+  577ms of long tasks; authenticated HTML readback showed no
+  `/js/operations-shell.js` on BNA and confirmed the split assets on OneTime.
+- Verification passed: syntax checks for both dropoff scripts, focused
+  dropoff/control-tower tests 8/8, `npm run chatgpt:dropoff:scan`,
+  `npm run chatgpt:dropoff:tower -- --json`, OneTime/BNA live profiles, and
+  authenticated shell marker readback.
+- No external email, WhatsApp/WAPI, Telegram recipient message, payment,
+  access grant, credential, DNS/account, Drive/Vimeo/Zoom, production data
+  mutation, external connector write, BNA deploy, or public publish was
+  performed.
+- Remaining blocker: BNA loading fix requires a clean scoped BNA deploy lane
+  with explicit Railway target guard, then deploy/live-smoke/readback of the
+  already-split Operations shell.

@@ -9,7 +9,9 @@ If you are a GitHub-connected ChatGPT session with repo access, first read:
 BNA-START-HERE.md
 AGENTS.md
 MEMORY.md
+ops/chatgpt-ramble-dropoff/CHATGPT-START-HERE.md
 ops/chatgpt-ramble-dropoff/README.md
+ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md, if present
 ```
 
 This directive is the canonical handoff instruction for no-paste
@@ -49,6 +51,21 @@ Set `status.json` to:
 
 ready_for_codex_audit
 
+Fill these lane fields when known:
+
+- `packet_type`
+- `packet_role`
+- `lane_key`
+- `owner`
+- `workspace`
+- `project`
+- `scope_summary`
+- `out_of_scope`
+- `acceptance_criteria`
+- `tests_expected`
+- `known_blockers`
+- `next_action`
+
 Put generated code or diffs in PATCHES.md. Codex will inspect the actual repo,
 adapt the code, apply it if valid, run tests, and record proof.
 
@@ -57,6 +74,10 @@ unredacted private screenshots, payment data, or raw private message bodies.
 
 If opening a PR, the PR should contain only the dropoff packet folder unless
 Codex explicitly asked for a different branch shape.
+
+Do not create a duplicate packet if `CONTROL-TOWER.md` already shows the same
+lane as ready, queued, auditing, blocked, or done. Update the existing packet or
+create a dependent follow-up packet.
 ```
 
 ## Sidekick Memory / Preference Mode

@@ -4,6 +4,9 @@
   "generated_by": "chatgpt",
   "target_repo": "BNA v2.0",
   "target_branch": "",
+  "packet_type": "implementation_bundle",
+  "packet_role": "code_prep",
+  "lane_key": "workspace-project-short-lane",
   "files": [
     {
       "path": "RAW.md",
@@ -22,5 +25,11 @@
   "tests_expected": [],
   "known_blockers": [],
   "risk_notes": [],
+  "handoff_rules": [
+    "Do not solve a whole parent ramble in one packet.",
+    "Codex audits before applying code.",
+    "Generated code in PATCHES.md is input, not proof.",
+    "Do not touch secrets, external sends, payments, DNS, access grants, or provider mutations."
+  ],
   "handback_required": true
 }

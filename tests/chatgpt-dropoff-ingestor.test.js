@@ -199,6 +199,7 @@ test('ChatGPT dropoff package scripts and agent fleet hook are wired', async () 
 
   assert.equal(packageJson.scripts['chatgpt:dropoff:scan'], 'node scripts/chatgpt-dropoff-ingestor.mjs --json');
   assert.equal(packageJson.scripts['chatgpt:dropoff:apply'], 'node scripts/chatgpt-dropoff-ingestor.mjs --apply --json');
+  assert.equal(packageJson.scripts['chatgpt:dropoff:tower'], 'node scripts/chatgpt-dropoff-control-tower.mjs --write');
   assert.match(supervisor, /runChatGptDropoffIngestBeforeClaim/);
   assert.match(supervisor, /AGENT_FLEET_CHATGPT_DROPOFF_INGEST/);
   assert.match(envExample, /AGENT_FLEET_CHATGPT_DROPOFF_INGEST=1/);

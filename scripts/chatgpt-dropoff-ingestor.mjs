@@ -109,6 +109,7 @@ function parseArgs(argv = process.argv.slice(2)) {
     dryRun: false,
     force: false,
     noLive: false,
+    writeSkipReports: false,
     limit: 20,
     packet: '',
     pollMs: null,
@@ -121,6 +122,7 @@ function parseArgs(argv = process.argv.slice(2)) {
     else if (arg === '--dry-run') args.dryRun = true;
     else if (arg === '--force') args.force = true;
     else if (arg === '--no-live') args.noLive = true;
+    else if (arg === '--write-skip-reports') args.writeSkipReports = true;
     else if (arg === '--packet') args.packet = argv[++index] || '';
     else if (arg.startsWith('--packet=')) args.packet = arg.split('=').slice(1).join('=');
     else if (arg === '--limit') args.limit = Number(argv[++index] || 0);
@@ -535,7 +537,11 @@ async function processPacket(packetDir, { config = loadConfig(), args = parseArg
     }
   }
 
-  result.report = writePickupReport(result);
+  const shouldWriteReport = args.writeSkipReports
+    || !['skipped', 'already_queued'].includes(result.status)
+    || result.queued
+    || Boolean(result.error);
+  if (shouldWriteReport) result.report = writePickupReport(result);
   return result;
 }
 

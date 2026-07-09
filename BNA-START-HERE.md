@@ -27,8 +27,10 @@ Verified baseline:
 
 1. Read `AGENTS.md`, then `docs/BNA-RAMBLE-TO-DONE.md`.
    For GitHub-connected ChatGPT sessions that are preparing work for Codex,
-   also read `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md` and
-   `ops/chatgpt-ramble-dropoff/README.md`.
+   also read `ops/chatgpt-ramble-dropoff/CHATGPT-START-HERE.md`,
+   `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md`,
+   `ops/chatgpt-ramble-dropoff/README.md`, and
+   `ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md` when present.
 2. Inspect the active execution run:
    - `ops/execution-runs/latest.json`
    - the run folder it points to
@@ -62,6 +64,9 @@ Verified baseline:
     complete packet file contents; the comment collector can convert trusted
     marked comments into packet folders. Drive files still need a separate
     watcher/connector.
+    Before creating or picking up packets, run/read
+    `npm run chatgpt:dropoff:tower` so agents can see packet state, dirty
+    files, active jobs, and collision warnings.
 12. GitHub-connected ChatGPT sees committed/pushed GitHub state, not Codex's
     local dirty worktree. If a directive, prompt packet, memory rule, or
     workflow change is meant for ChatGPT to read through GitHub, Codex must

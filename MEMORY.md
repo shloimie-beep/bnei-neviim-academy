@@ -407,11 +407,15 @@
 - GitHub-connected ChatGPT reads committed/pushed GitHub state, not Codex local
   changes. For no-paste sidekick work, ChatGPT should read
   `BNA-START-HERE.md`, `AGENTS.md`, and
-  `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md`, then create repo-visible
-  packet files or a marked `BNA_CHATGPT_DROPOFF_PACKET` GitHub comment. Memory
-  and preference updates should be packetized as `memory_candidate` or
-  `preference_update`; Codex audits and promotes them before they become
-  durable memory.
+  `ops/chatgpt-ramble-dropoff/CHATGPT-START-HERE.md`, check
+  `ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md` when present, then use
+  `ops/chatgpt-ramble-dropoff/CHATGPT-DIRECTIVE.md` to create repo-visible
+  packet files or a marked `BNA_CHATGPT_DROPOFF_PACKET` GitHub comment. Each
+  parallel ChatGPT/Codex window should own one `packet_id` / `lane_key`, check
+  the control tower before editing, and avoid duplicate packets for work already
+  active, blocked, or terminal. Memory and preference updates should be
+  packetized as `memory_candidate` or `preference_update`; Codex audits and
+  promotes them before they become durable memory.
 - As of 2026-06-30, BNA daily Torah participation grading defaults to
   present/100% for active BNA school students when no explicit operator,
   recording, or Telegram override exists. Explicit latest corrections win:
