@@ -117,6 +117,7 @@ production-ready when these classes are green or precisely blocked:
 | READINESS-20260709-031 | Done / no deploy performed | Codex | The operator-facing unblocker needed one final refresh from a clean artifact head after `READINESS-20260709-030`. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `08a8d61e`; the packet records `live_no_write_command`, head/origin `08a8d61e`, worktree clean `true`, 3 external setup blockers, 2 Agent Mode proof blockers, 3 active collision lanes including Agent Review repair job `344`, 0 queued ChatGPT packets, and no executable batch. |
 | READINESS-20260709-032 | Done / no deploy performed | Codex | The production snapshot Markdown still mixed true running launch collision lanes with queued/failed policy rows under one `Active / Do Not Collide` heading, which made simultaneous-agent status harder to read. | Updated `scripts/production-readiness-snapshot.mjs` to render separate `Launch Collision Lanes` and `Other Agent Policy Rows` sections, with tests preventing the old mixed heading from returning. |
 | READINESS-20260709-033 | Done / no deploy performed | Codex | GitHub-visible production snapshot artifacts needed to show the separated collision/policy-row sections after `READINESS-20260709-032` was pushed. | Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*` from clean pushed head `f3d10f8b`; Markdown now lists jobs `382`, `427`, and `344` under `Launch Collision Lanes`, and queued/failed rows under `Other Agent Policy Rows`. |
+| READINESS-20260709-034 | Done / no deploy performed | Codex | The operator-facing unblocker needed a clean-source refresh after the separated-row production snapshot artifact was pushed. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `e5524567`; the packet records `live_no_write_command`, head/origin `e5524567`, worktree clean `true`, 3 external setup blockers, 2 Agent Mode proof blockers, 3 active collision lanes, 0 queued ChatGPT packets, and no executable batch. |
 
 ## First audit command plan
 
@@ -1621,6 +1622,47 @@ Remaining:
 
 - After commit/push, refresh `npm run production:unblocker` from a clean tree
   so the operator packet samples the newest snapshot logic and head.
+
+## READINESS-20260709-034 closeout
+
+Implemented:
+
+- Regenerated `ops/production-readiness/latest-production-unblocker.md`.
+- Regenerated `ops/production-readiness/latest-production-unblocker.json`.
+
+Verification:
+
+- PASS `npm run production:unblocker` from clean pushed head `e5524567`.
+- Readback from `ops/production-readiness/latest-production-unblocker.json`:
+  - `snapshot_source_kind: live_no_write_command`
+  - `snapshot_git_head: e5524567`
+  - `snapshot_origin_master: e5524567`
+  - `snapshot_worktree_clean: true`
+  - `snapshot_status: not_production_complete`
+  - 3 external setup items
+  - 2 Agent Mode proof items
+  - 3 active collision lanes
+  - 0 queued ChatGPT packets
+  - next unblocked executable batch `none`
+
+Evidence:
+
+- `ops/production-readiness/latest-production-unblocker.md`
+- `ops/production-readiness/latest-production-unblocker.json`
+
+Guardrails:
+
+- Read-only artifact refresh only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- Production remains blocked by explicit external setup, missing terminal Agent
+  Mode proof, active UI/API/Agent Review collision lanes, and no unblocked
+  executable batch.
 
 ## Final audit
 
