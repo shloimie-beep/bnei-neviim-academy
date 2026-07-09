@@ -37235,3 +37235,30 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   execution batch, active collision-lane reconciliation, Railway doctor
   authorization, stale runtime locks, raw-looking visible task titles, and
   misrouted watchdog cleanup tasks.
+
+## 2026-07-09T23:35:33+03:00 - Watchdog Audit-Only Launcher Mode Added
+
+- Added watchdog `--no-repair` support so a watchdog process can run without
+  applying live task soft repairs.
+- Tightened watchdog dry-run behavior so it skips runtime status reporting and
+  returns `repair_enabled:false` in the foreground JSON readback.
+- Added `-NoRepair` and `-DryRun` to `scripts/start-watchdog.ps1`, plus
+  `watchdog:start:audit-only` and `watchdog:restart:audit-only` aliases that
+  combine `-NoTelegram -NoRepair -DryRun`.
+- Regenerated agent-fleet readiness evidence so operator-facing startup
+  shortcuts show the audit-only watchdog mode.
+- Verification passed: `node --check scripts/agent-fleet-supervisor.mjs`,
+  `node --check src/lib/bna/agent-fleet-hardening.js`, PowerShell parser check
+  for `scripts/start-watchdog.ps1`, `node --test
+  tests/agent-fleet-hardening.test.js tests/watchdog-soft-repair.test.js`,
+  `npm run watchdog:once -- --dry-run --no-telegram --no-repair`, `npm run
+  watchdog:agent-fleet`, and `npm run agent:fleet:status`.
+- Guardrails held: no background watchdog restart, no live task repair, no app
+  UI/API edit, no deploy, no hosted restart/live Telegram smoke, no external
+  send, payment/access mutation, CRM/provider/DNS/credential mutation, lock
+  deletion, Agent Review result save, or production-data mutation.
+- Remaining blockers are unchanged: exact external setup fields, Rabbi
+  Telegram hosted restart/live-smoke proof, two Agent Mode terminal proofs, no
+  unblocked execution batch, active collision-lane reconciliation, Railway
+  doctor authorization, stale runtime locks, raw-looking visible task titles,
+  and misrouted watchdog cleanup tasks.
