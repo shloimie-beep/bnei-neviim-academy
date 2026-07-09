@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T22:22:34.048Z",
+  "generated_at": "2026-07-09T22:25:04.580Z",
   "git": {
     "branch": "master",
     "dirty": false,
@@ -133,6 +133,26 @@
   ],
   "latest_comment_pickup_reports": [
     {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T22-23-54-995Z-4893651840.md",
+      "updated_at": "2026-07-09T22:23:54.995Z",
+      "size": 743
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T22-23-54-993Z-4893596622.md",
+      "updated_at": "2026-07-09T22:23:54.994Z",
+      "size": 743
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T22-23-54-993Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T22:23:54.993Z",
+      "size": 495
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T22-23-54-991Z-4893586910.md",
+      "updated_at": "2026-07-09T22:23:54.992Z",
+      "size": 743
+    },
+    {
       "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T22-22-30-671Z-4893651840.md",
       "updated_at": "2026-07-09T22:22:30.672Z",
       "size": 743
@@ -151,26 +171,6 @@
       "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T22-22-30-667Z-4893586910.md",
       "updated_at": "2026-07-09T22:22:30.669Z",
       "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T22-21-05-987Z-4893651840.md",
-      "updated_at": "2026-07-09T22:21:05.988Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T22-21-05-985Z-4893596622.md",
-      "updated_at": "2026-07-09T22:21:05.987Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T22-21-05-984Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T22:21:05.985Z",
-      "size": 495
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T22-21-05-982Z-4893586910.md",
-      "updated_at": "2026-07-09T22:21:05.984Z",
-      "size": 743
     }
   ],
   "agent_fleet": {
@@ -187,7 +187,7 @@
       "- ChatGPT comment collect: enabled"
     ],
     "not_claimable": [
-      "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=177.73 path=.runtime/agent-fleet/task-1736.lock.json)",
+      "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=177.77 path=.runtime/agent-fleet/task-1736.lock.json)",
       "- job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)",
       "- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)",
       "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json)",
@@ -225,7 +225,7 @@
       "- job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy",
       "- job #297 / task #1441 [failed] Why don't you verify the domain with GoDaddy and do it again and replace it with...",
       "Local task lock evidence for not-claimable jobs:",
-      "- task #1736 for job #344: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=177.73 path=.runtime/agent-fleet/task-1736.lock.json",
+      "- task #1736 for job #344: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=177.77 path=.runtime/agent-fleet/task-1736.lock.json",
       "- task #2181 for job #426: local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json",
       "- task #1130 for job #236: local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json",
       "- task #1136 for job #237: local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json",
