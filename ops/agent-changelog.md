@@ -36931,3 +36931,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   hosted restart, live Telegram smoke, external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, Kimi live
   fallback action, or production-data mutation.
+
+## 2026-07-09T20:39:00+03:00 - Production Artifacts Refreshed To Current Gate Head
+
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.*`
+  after the production-gate missing-field hardening, then committed/pushed it
+  as `575092cb`.
+- Regenerated `ops/production-readiness/latest-production-unblocker.*` from
+  that clean pushed snapshot head, then committed/pushed it as `f52cbd48`.
+- Readbacks confirm the snapshot samples clean head/origin `278dba4e`, the
+  unblocker samples clean head/origin `575092cb`, status remains
+  `not_production_complete`, setup remains `5/8`, and exact Stripe/WAPI/campaign
+  missing fields remain visible.
+- Guardrails held: read-only artifact refresh only; no app UI/API edit, deploy,
+  hosted restart, live Telegram smoke, external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, Kimi live
+  fallback action, or production-data mutation.
