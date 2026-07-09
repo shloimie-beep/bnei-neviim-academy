@@ -56,7 +56,7 @@ production-ready when these classes are green or precisely blocked:
 | REQ-20260709-049 | Run a first production readiness audit from the current live state. | RAW-20260709-010 | BNA + OneTime | Codex | verification | P0 | 1 | REQ-20260709-048 | Representative release, security, action, route, helper, public, and OneTime setup checks pass or produce exact blockers. | smoke/watchdog outputs | maybe | Done |
 | REQ-20260709-050 | Keep immediate lead-capture/free-class lane production-live while blocking unapproved full-launch automations. | RAW-20260709-010 | rabbi_sheller_provider / one_time_mishnah_class | Codex | launch-scope | P0 | 2 | REQ-20260709-049 | Public lead capture remains live and verified; full portal/payment/WAPI/campaign launch remains blocked until external values exist. | server.js; public/one-time; launch registers | yes if code changes | Already satisfied |
 | REQ-20260709-051 | Convert remaining production blockers into owner/action records. | RAW-20260709-010 | BNA + OneTime + agent_ops | Codex | blockers | P0 | 2 | REQ-20260709-049 | External blockers and engineering blockers have stable IDs, owner, recommended next action, and evidence. | tasks-pending; ops ledgers; active execution run | no | Done |
-| REQ-20260709-052 | Execute the next unblocked engineering readiness batch. | RAW-20260709-010 | BNA + OneTime | Codex | implementation | P0 | 3 | REQ-20260709-051 | Next batch is selected from audit evidence, implemented, verified, pushed, deployed/live-smoked when app-visible, or blocked precisely. | TBD | yes if app-visible | Pending |
+| REQ-20260709-052 | Execute the next unblocked engineering readiness batch. | RAW-20260709-010 | BNA + OneTime | Codex | implementation | P0 | 3 | REQ-20260709-051 | Next batch is selected from audit evidence, implemented, verified, pushed, deployed/live-smoked when app-visible, or blocked precisely. | public/js/operations-shell.js; server.js; tests/one-time-external-user-portal.test.js | yes | Done |
 
 ## Current baseline from latest closeout
 
@@ -81,7 +81,8 @@ production-ready when these classes are green or precisely blocked:
 | REQ-20260702-108 | Blocked | Shloimie / external setup, Codex to verify | Full provider/campaign setup lacks Zoom alias, Stripe sandbox/price alias, WAPI/Whapi instance/phone, final campaign copy, recipient segment/list, suppression/unsubscribe proof, and seed approval. | Provide or label the exact setup values, then rerun `npm run one-time:setup:check`. |
 | REQ-20260702-110 | Blocked | Shloimie / external setup, Codex to verify | Full setup bootstrap blocked until the same external values exist. | Keep immediate lead capture live; do not enable payment/access/campaign automation until setup values pass. |
 | DEC-20260709-008 | Needs operator decision | Shloimie | Exact approved free Zoom URL/alias is missing for automated invite sends. | Provide the final URL/alias or keep follow-up manual/no-send. |
-| PERF-20260709-001 | Open engineering blocker | Codex | BNA Operations renders with 0 console errors, but startup still performs 118 API reads, median 1064ms, P95 2855ms, max 3622ms. | Profile and reduce startup fetch fanout; lazy-load non-current modules; cache repeated support/student reads; inspect indexes only after fanout is reduced. |
+| PERF-20260709-001 | Done, deployed/live-smoked | Codex | BNA Operations rendered with 0 console errors, but startup still performed 118 API reads, median 1064ms, P95 2855ms, max 3622ms. | Reduced dashboard startup fanout, removed support-ticket loading from dashboard first paint, bounded support-ticket list query, deployed BNA, and recorded live profile proof. |
+| PERF-20260709-002 | Follow-up, not launch-blocking | Codex | Final dashboard profile is usable but still shows a later refresh cycle around 33s and initial slowest dashboard reads near 3s. | If more performance polish is needed, inspect dashboard refresh scheduling and tune task/device/payment reads after screenshot-led UI work. |
 
 ## First audit command plan
 
@@ -127,12 +128,70 @@ Run these before selecting the next implementation batch:
 
 ## Next unblocked engineering batch
 
-`PERF-20260709-001` is the next unblocked production-readiness engineering
-batch: reduce BNA Operations startup fanout. It does not require external
-account access, sends, payment, DNS, or credentials. The next session should
-profile which startup calls are actually needed for the current dashboard,
-defer non-current module loads, and preserve the existing live-smoke/profile
-proof loop.
+`PERF-20260709-001` was selected and completed as the first unblocked
+production-readiness engineering batch. It did not require external account
+access, sends, payment, DNS, or credentials.
+
+## PERF-20260709-001 closeout
+
+Implemented:
+
+- Reduced BNA Operations dashboard startup fanout in
+  `public/js/operations-shell.js` by using a dashboard light pass instead of
+  loading broad module datasets on the dashboard.
+- Removed `/api/bna/support-tickets` from dashboard first paint; support/API
+  views still load support tickets when those views need them.
+- Bounded `/api/bna/support-tickets` in `server.js` to a default max of 200
+  tickets, max 500 when requested, and computed comment counts only for the
+  returned ticket IDs.
+- Added a regression assertion in
+  `tests/one-time-external-user-portal.test.js` so the private support-ticket
+  sort CTE does not regress to an invalid `ft.created_at` outer reference.
+
+Commits pushed:
+
+- `43b1ce9e` - `Reduce Operations dashboard startup fanout`
+- `a2f15c31` - `Speed up Operations support data loading`
+- `7e69aece` - `Fix support ticket query ordering`
+
+BNA deployments:
+
+- `daf5609f-5d79-41bb-9418-fa9390f30436` - first dashboard light-pass deploy,
+  `SUCCESS`.
+- `2bf06b69-b76f-499a-a932-07b5a39e2071` - support loading/query deploy,
+  `SUCCESS`.
+- `73c4d440-e0b3-495d-91ec-add72229b304` - support query ordering hotfix,
+  `SUCCESS`.
+
+Verification:
+
+- PASS `node --check public/js/operations-shell.js`
+- PASS `node --check server.js`
+- PASS focused Operations/support/action tests.
+- PASS `npm test` 1693/1693 after each final backend patch.
+- PASS `npm run secrets:audit` with 7404 tracked paths and 0 secret-risk files.
+- PASS `npm run watchdog:actions` with 0 findings.
+- PASS `npm run watchdog:protocol-drift` with 0 findings.
+- PASS `npm run bna:run:validate` with the expected 8 done / 2 blocked
+  external setup state.
+- PASS BNA live app smoke:
+  `ops/live-smokes/2026-07-09T12-54-46-066Z-live-app-smoke.md`.
+- PASS BNA Operations helper smoke:
+  `ops/live-smokes/2026-07-09T12-54-45-114Z-operations-helper-live-smoke.md`.
+- PASS BNA workspace taxonomy smoke:
+  `ops/live-smokes/2026-07-09T12-54-45-134Z-operations-workspace-taxonomy-live-smoke.md`.
+- PASS protected live support-ticket readback after hotfix:
+  `/api/bna/support-tickets` returned HTTP 200, 23 tickets, about 2.9s.
+- NOTE `npm run railway:doctor` hit a local Railway token authorization
+  mismatch, but `railway status --json` using account auth confirmed latest app
+  deployment `73c4d440-e0b3-495d-91ec-add72229b304` reached `SUCCESS`.
+
+Performance proof:
+
+| Profile | Shell visible | Fetches under 10s | Support-ticket dashboard fetches | Slowest fetch | Console errors | Failed requests | Evidence |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Before dashboard/support fix | 8574ms | 17 | 1 | 35859ms | 0 | 0 | `ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-bna-platform-after-dashboard-light-pass.md` |
+| After hotfix | 3186ms | 16 | 0 | 2979ms | 0 | 0 | `ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-bna-platform-after-support-ticket-hotfix.md` |
 
 ## Final audit
 
@@ -143,4 +202,4 @@ proof loop.
 | REQ-20260709-049 | Done | First audit results table above. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | OneTime target guard needs clean-tree rerun after this commit. |
 | REQ-20260709-050 | Already satisfied | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register. | Lead capture live-smoked in prior closeout. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Pending | Next batch selected: `PERF-20260709-001`. | Pending implementation. | BNA Operations startup still has too many initial API calls. |
+| REQ-20260709-052 | Done | `PERF-20260709-001` closeout above; commits `43b1ce9e`, `a2f15c31`, `7e69aece`; BNA deployment `73c4d440-e0b3-495d-91ec-add72229b304`. | PASS tests/gates/live smokes/support readback/profile. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup still externally blocked. |

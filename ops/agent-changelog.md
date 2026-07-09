@@ -35913,3 +35913,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   setup/auto-reply not ready, missing Zoom alias, Stripe sandbox/price alias,
   WAPI instance/phone, campaign copy/list/suppression/seed approval, and BNA
   Operations performance fanout.
+
+## 2026-07-09T15:57:07+03:00 - Operations Dashboard Performance Batch Deployed
+
+- Completed `PERF-20260709-001` / `REQ-20260709-052` by reducing BNA
+  Operations dashboard startup fanout and removing support tickets from
+  dashboard first paint.
+- Bounded `/api/bna/support-tickets` to a default max of 200 tickets, counted
+  comments only for returned ticket IDs, and added a regression assertion for
+  the support-ticket sort CTE.
+- Pushed commits `43b1ce9e`, `a2f15c31`, and hotfix `7e69aece`.
+- BNA Railway deployments reached `SUCCESS`, with final live app deployment
+  `73c4d440-e0b3-495d-91ec-add72229b304`.
+- Verification passed: `npm test` 1693/1693, secrets audit, action watchdog,
+  protocol drift watchdog, execution-run validation, BNA live app/helper/
+  workspace taxonomy smokes, protected support-ticket readback HTTP 200 with
+  23 tickets, and final dashboard profile with 0 console errors and 0 failed
+  requests.
+- Performance profile improved from shell visible 8574ms, 17 initial fetches,
+  1 support-ticket dashboard fetch, and 35859ms slowest fetch to shell visible
+  3186ms, 16 initial fetches, 0 support-ticket dashboard fetches, and 2979ms
+  slowest fetch.
+- Remaining blockers are unchanged: full OneTime portal/payment/WAPI/campaign
+  launch still needs the external Zoom, Stripe, WAPI, campaign, suppression,
+  and seed approval values before it can be called production-complete.
