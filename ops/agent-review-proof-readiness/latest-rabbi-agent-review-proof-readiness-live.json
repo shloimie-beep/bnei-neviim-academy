@@ -1,0 +1,156 @@
+{
+  "started_at": "2026-07-09T15:16:50.860Z",
+  "app_url": "https://bneineviimacademy.org",
+  "one_time_url": "https://join.onetimeonetime.com",
+  "status": "proof_blocked_or_pending",
+  "steps": [
+    {
+      "name": "public Rabbi Agent Review prompts are live",
+      "ok": true,
+      "duration_ms": 1179,
+      "details": [
+        {
+          "prompt_key": "rabbi-telegram-helper-ticket-smoke",
+          "requirement_id": "REQ-20260708-101",
+          "url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+          "status": 200,
+          "marker_count": 8
+        },
+        {
+          "prompt_key": "rabbi-helper-tool-scope-map",
+          "requirement_id": "REQ-20260708-093",
+          "url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md",
+          "status": 200,
+          "marker_count": 8
+        }
+      ]
+    },
+    {
+      "name": "public Rabbi helper scope artifacts are live and current",
+      "ok": true,
+      "duration_ms": 1365,
+      "details": {
+        "artifact_count": 3
+      }
+    },
+    {
+      "name": "owner login for Agent Review hub readback",
+      "ok": true,
+      "duration_ms": 563,
+      "details": {
+        "cookie_name": "bna_ops_session",
+        "source": "env"
+      }
+    },
+    {
+      "name": "Agent Review hub exposes current Rabbi proof state",
+      "ok": true,
+      "duration_ms": 1042,
+      "details": {
+        "prompt_count": 26,
+        "checked": [
+          {
+            "prompt_key": "rabbi-telegram-helper-ticket-smoke",
+            "status": "not_started",
+            "workflow_state": "not_started",
+            "latest_result_status": null,
+            "last_result_ref": null,
+            "last_result_url": null,
+            "public_url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+            "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-telegram-helper-ticket-smoke&requirement_id=REQ-20260708-084&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-telegram-helper-ticket-smoke&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-telegram-helper-ticket-smoke%3Aall-contexts&autosave=1",
+            "terminal_saved_proof": false
+          },
+          {
+            "prompt_key": "rabbi-helper-tool-scope-map",
+            "status": "not_started",
+            "workflow_state": "not_started",
+            "latest_result_status": null,
+            "last_result_ref": null,
+            "last_result_url": null,
+            "public_url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md",
+            "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-helper-tool-scope-map&requirement_id=REQ-20260708-093&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-helper-tool-scope-map&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-helper-tool-scope-map%3Aall-contexts&autosave=1",
+            "terminal_saved_proof": false
+          }
+        ]
+      }
+    }
+  ],
+  "prompt_readbacks": [
+    {
+      "prompt_key": "rabbi-telegram-helper-ticket-smoke",
+      "requirement_id": "REQ-20260708-101",
+      "url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+      "status": 200,
+      "marker_count": 8
+    },
+    {
+      "prompt_key": "rabbi-helper-tool-scope-map",
+      "requirement_id": "REQ-20260708-093",
+      "url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md",
+      "status": 200,
+      "marker_count": 8
+    }
+  ],
+  "artifact_readbacks": [
+    {
+      "path": "/agent-review-artifacts/rabbi-one-time-tool-scope-map.json",
+      "url": "https://join.onetimeonetime.com/agent-review-artifacts/rabbi-one-time-tool-scope-map.json",
+      "status": 200
+    },
+    {
+      "path": "/agent-review-artifacts/rabbi-one-time-tool-scope-map.md",
+      "url": "https://join.onetimeonetime.com/agent-review-artifacts/rabbi-one-time-tool-scope-map.md",
+      "status": 200
+    },
+    {
+      "path": "/agent-review-artifacts/account-bot-scope-template.json",
+      "url": "https://join.onetimeonetime.com/agent-review-artifacts/account-bot-scope-template.json",
+      "status": 200
+    }
+  ],
+  "hub_prompt_state": [
+    {
+      "prompt_key": "rabbi-telegram-helper-ticket-smoke",
+      "status": "not_started",
+      "workflow_state": "not_started",
+      "latest_result_status": null,
+      "last_result_ref": null,
+      "last_result_url": null,
+      "public_url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-telegram-helper-ticket-smoke&requirement_id=REQ-20260708-084&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-telegram-helper-ticket-smoke&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-telegram-helper-ticket-smoke%3Aall-contexts&autosave=1",
+      "terminal_saved_proof": false
+    },
+    {
+      "prompt_key": "rabbi-helper-tool-scope-map",
+      "status": "not_started",
+      "workflow_state": "not_started",
+      "latest_result_status": null,
+      "last_result_ref": null,
+      "last_result_url": null,
+      "public_url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-helper-tool-scope-map&requirement_id=REQ-20260708-093&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-helper-tool-scope-map&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-helper-tool-scope-map%3Aall-contexts&autosave=1",
+      "terminal_saved_proof": false
+    }
+  ],
+  "remaining_blockers": [
+    {
+      "prompt_key": "rabbi-telegram-helper-ticket-smoke",
+      "blocker": "No saved terminal Agent Review result is visible for this prompt yet.",
+      "next_action": "Open https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md in Agent Mode, run only that prompt scope, and save PASS/FAIL/BLOCKED through https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-telegram-helper-ticket-smoke&requirement_id=REQ-20260708-084&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-telegram-helper-ticket-smoke&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-telegram-helper-ticket-smoke%3Aall-contexts&autosave=1."
+    },
+    {
+      "prompt_key": "rabbi-helper-tool-scope-map",
+      "blocker": "No saved terminal Agent Review result is visible for this prompt yet.",
+      "next_action": "Open https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md in Agent Mode, run only that prompt scope, and save PASS/FAIL/BLOCKED through https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-helper-tool-scope-map&requirement_id=REQ-20260708-093&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-helper-tool-scope-map&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-helper-tool-scope-map%3Aall-contexts&autosave=1."
+    }
+  ],
+  "next_agent_mode_prompts": [
+    "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+    "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md"
+  ],
+  "guardrails": [
+    "Read-only smoke only.",
+    "No Agent Review result is saved by this script.",
+    "No Telegram, email, WhatsApp/WAPI, payment, access, Drive, Vimeo, Zoom, DNS, credential, public publish, or external provider mutation is performed."
+  ]
+}

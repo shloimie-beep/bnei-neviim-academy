@@ -36294,3 +36294,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   and `npm run bna:run:blockers`.
 - Guardrails held: docs/evidence only; no app code, deploy, send, payment,
   credential, provider, DNS, or production-data mutation.
+
+## 2026-07-09T18:17:07+03:00 - Rabbi Agent Review Latest Proof Pointer Added
+
+- Updated `npm run app:smoke:rabbi-agent-review-proof-readiness` so the
+  timestamped ignored live-smoke report is also copied into tracked latest
+  files under `ops/agent-review-proof-readiness/`.
+- Latest tracked proof confirms both Rabbi Agent Review prompt URLs and helper
+  artifacts are live/current.
+- Latest tracked proof also confirms both Rabbi proof prompts are still
+  `not_started` with no terminal AGR result.
+- Verification passed: `node --check
+  scripts\smoke-rabbi-agent-review-proof-readiness-live.mjs` and
+  `npm run app:smoke:rabbi-agent-review-proof-readiness`.
+- Guardrails held: no Agent Review result save, Telegram/email/WhatsApp send,
+  payment/access mutation, provider write, credential change, DNS change,
+  production-data mutation, app UI edit, or deploy was performed.

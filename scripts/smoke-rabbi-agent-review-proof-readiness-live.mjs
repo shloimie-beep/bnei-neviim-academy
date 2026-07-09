@@ -6,6 +6,7 @@ import { loadSmokeEnv, loginOperations } from './lib/live-smoke-auth.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const reportDir = path.join(repoRoot, 'ops', 'live-smokes');
+const latestReportDir = path.join(repoRoot, 'ops', 'agent-review-proof-readiness');
 const env = loadSmokeEnv({ root: repoRoot });
 const appUrl = String(process.env.BNA_APP_URL || env.BNA_APP_URL || 'https://bneineviimacademy.org').replace(/\/+$/, '');
 const oneTimeUrl = String(
@@ -214,9 +215,14 @@ async function assertHubPromptState(cookie) {
 
 function writeReports() {
   fs.mkdirSync(reportDir, { recursive: true });
+  fs.mkdirSync(latestReportDir, { recursive: true });
   const jsonPath = reportPath('json');
   const mdPath = reportPath('md');
-  fs.writeFileSync(jsonPath, `${JSON.stringify(report, null, 2)}\n`);
+  const latestJsonPath = path.join(latestReportDir, 'latest-rabbi-agent-review-proof-readiness-live.json');
+  const latestMdPath = path.join(latestReportDir, 'latest-rabbi-agent-review-proof-readiness-live.md');
+  const jsonText = `${JSON.stringify(report, null, 2)}\n`;
+  fs.writeFileSync(jsonPath, jsonText);
+  fs.writeFileSync(latestJsonPath, jsonText);
   const lines = [
     `# Rabbi Agent Review Proof Readiness Live Smoke - ${report.started_at}`,
     '',
@@ -244,8 +250,10 @@ function writeReports() {
     '## Steps',
     ...report.steps.map((item) => `- ${item.ok ? 'PASS' : 'FAIL'} ${item.name} (${item.duration_ms}ms)${item.error ? ` - ${item.error}` : ''}`),
   ];
-  fs.writeFileSync(mdPath, `${lines.join('\n')}\n`);
-  return { jsonPath, mdPath };
+  const mdText = `${lines.join('\n')}\n`;
+  fs.writeFileSync(mdPath, mdText);
+  fs.writeFileSync(latestMdPath, mdText);
+  return { jsonPath, mdPath, latestJsonPath, latestMdPath };
 }
 
 async function main() {
@@ -285,6 +293,7 @@ async function main() {
     ok: true,
     status: report.status,
     report: relative(paths.mdPath),
+    latest_report: relative(paths.latestMdPath),
     missing_terminal_prompt_count: missingTerminal.length,
     next_agent_mode_prompts: report.next_agent_mode_prompts,
   }, null, 2));

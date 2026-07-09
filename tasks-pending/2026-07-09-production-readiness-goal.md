@@ -104,6 +104,7 @@ production-ready when these classes are green or precisely blocked:
 | LIVECHECK-20260709-014 | Done / proof pending for Agent Mode only | Codex | Production-readiness proof needed a fresh live regression snapshot after the blocker and Kimi/control-tower reconciliations. | Live-smoked BNA public/app/Operations helper/privacy, OneTime separate instance/public target/Rabbi landing/dry-run interest capture, Rabbi Agent Review proof readiness, and action/security/workspace/raw watchdogs. All runnable checks passed; Rabbi Agent Review remains open only for two saved terminal Agent Mode proofs. |
 | QUEUE-20260709-015 | Done / no safe auto-action | Codex | Production-readiness queue hygiene needed a fresh no-mutation readback so stale historical jobs are not mistaken for launch-ready work. | `npm run task:reconcile` dry-run found 30 active machine tasks and 0 actions, with only task `#1839` and task `#1945` kept as true external blockers. `npm run agent:fleet:status` showed supervisor PID `36560`, 0 claimable jobs, and the active UI/fallback lanes still running. Process-scoped live-url `npm run ops:audit-queue -- --json --no-write` reported `warnings: []` and `requeue_candidates: []`. Stale/do-not-redo counts remain audit evidence, not permission to auto-run old prompts. |
 | LAUNCHBLOCK-20260709-016 | Done / blocker packet current | Codex | The canonical OneTime operator setup checklist and visible operator task packet still treated solved Railway/DB/domain/Zoom/Vimeo/Drive items as current human blockers. | Reconciled the checklist, top-visible operator task packet, and prepared WhatsApp setup message to the current 5/8 setup state. Future agents should ask only for Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags, and campaign copy/list/suppression/seed approval unless fresh readback contradicts the current evidence. |
+| PROOFSTATE-20260709-017 | Done / tracked latest proof pointer | Codex | Rabbi Agent Review proof readiness only wrote timestamped reports under ignored `ops/live-smokes`, making it too easy for future agents to use stale proof or miss the exact next Agent Mode prompts. | Updated `npm run app:smoke:rabbi-agent-review-proof-readiness` to also write tracked latest summaries under `ops/agent-review-proof-readiness/`. Latest readback confirms both Rabbi prompts/artifacts are live and the hub still has no terminal AGR result for either prompt. |
 
 ## First audit command plan
 
@@ -782,6 +783,49 @@ Remaining:
   Whapi/WAPI instance/phone and approval flags, and campaign
   copy/list/suppression/seed approval.
 
+## PROOFSTATE-20260709-017 closeout
+
+Implemented:
+
+- Added tracked latest-report output to
+  `scripts/smoke-rabbi-agent-review-proof-readiness-live.mjs`.
+- Created `ops/agent-review-proof-readiness/README.md`.
+- Generated tracked latest proof summaries:
+  - `ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md`
+  - `ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json`
+
+Verification:
+
+- PASS `node --check scripts\smoke-rabbi-agent-review-proof-readiness-live.mjs`.
+- PASS `npm run app:smoke:rabbi-agent-review-proof-readiness`.
+- Latest status remains `proof_blocked_or_pending`.
+- Public prompt/artifact readbacks passed for both Rabbi Agent Mode prompts.
+- Protected Agent Review hub readback passed and shows both prompts as
+  `not_started` with no terminal AGR result.
+
+Evidence:
+
+- `ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md`
+- `ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json`
+- Timestamped ignored smoke report:
+  `ops/live-smokes/2026-07-09T15-16-50-859Z-rabbi-agent-review-proof-readiness-live.md`
+
+Guardrails:
+
+- No Agent Review result save, Telegram send, email send, WhatsApp/WAPI send,
+  payment/checkout/charge, access grant, Drive/Vimeo/Zoom write, DNS change,
+  credential change, provider mutation, public publish, production-data
+  mutation, app UI edit, or deploy was performed.
+
+Remaining:
+
+- Open `https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md`
+  in Agent Mode, run only that prompt scope, and save PASS/FAIL/BLOCKED through
+  its Operations drop-off URL.
+- Open `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`
+  in Agent Mode, run only that prompt scope, and save PASS/FAIL/BLOCKED through
+  its Operations drop-off URL.
+
 ## Final audit
 
 | ID | Status | Evidence | Verification | Remaining issue |
@@ -791,4 +835,4 @@ Remaining:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied / deployed / live-smoked | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register; `LEADCAP-20260709-009` closeout above. | Lead capture live-smoked in prior closeout; dry-run proof tests, full suite, deployment, and live smoke pass. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, and `LAUNCHBLOCK-20260709-016` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, `LAUNCHBLOCK-20260709-016`, and `PROOFSTATE-20260709-017` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. Rabbi Agent Review proof readiness now has a tracked latest summary and still confirms two missing terminal AGR proofs. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |
