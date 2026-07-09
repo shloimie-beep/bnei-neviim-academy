@@ -19,6 +19,8 @@ function parseArgs(argv) {
       index += 1;
     } else if (arg === '--no-report') {
       options.reportDir = '';
+    } else if (/^https?:\/\//i.test(arg)) {
+      options.baseUrl = arg;
     }
   }
   options.baseUrl = String(options.baseUrl || DEFAULT_BASE_URL).replace(/\/+$/, '');
@@ -45,6 +47,10 @@ function expectIncludes(text, expected, label) {
   for (const item of expected) {
     assert(text.includes(item), `${label} missing ${item}`);
   }
+}
+
+function expectNotMatches(text, pattern, label) {
+  assert(!pattern.test(text), `${label} unexpectedly matched ${pattern}`);
 }
 
 function writeReport(options, startedAt, checks, result) {
@@ -89,41 +95,27 @@ async function main() {
     const page = await fetchText(options.baseUrl, '/rabbi');
     assert(page.response.status === 200, `/rabbi expected 200, got ${page.response.status}`);
     expectIncludes(page.text, [
-      'OneTimeOneTime - Rabbi Eli Scheller',
-      '--yellow: #ffd400',
-      'Preview mode only. The BNA homepage is not replaced.',
-      'The public prices stay at $67 and $149',
-      'Payment setup',
-      'No live charge',
-      '/js/rabbi-launch.js',
+      'Your Child Can Love Learning Mishnayos',
+      'OneTimeOneTime',
+      'Rabbi Eli Scheller',
+      'Sign Up Now',
+      '/js/bna-bot-widget.js',
     ], '/rabbi');
-    pass('/rabbi has OneTime branding, price copy, and safe setup language');
+    expectNotMatches(page.text, /Bnei Neviim Academy|BNA Academy|Hebrew|data-language-toggle/i, '/rabbi');
+    pass('/rabbi has focused OneTime branding and no Academy chrome');
 
-    const js = await fetchText(options.baseUrl, '/js/rabbi-launch.js', 'application/javascript,*/*;q=0.8');
-    assert(js.response.status === 200, `/js/rabbi-launch.js expected 200, got ${js.response.status}`);
-    expectIncludes(js.text, [
-      '/api/rabbi/tiers',
-      '/api/rabbi/checkout',
-      'Payment setup blocked: add a Stripe or Green Invoice link in Operations',
-      'stripeReady',
-      'greenReady',
-    ], 'rabbi-launch.js');
-    pass('Rabbi launch script keeps blocked payment-link state explicit');
-
-    const tiersResponse = await fetch(`${options.baseUrl}/api/rabbi/tiers`, {
+    const configResponse = await fetch(`${options.baseUrl}/api/one-time/instance-config`, {
       headers: {
         accept: 'application/json',
         'cache-control': 'no-cache',
       },
     });
-    const tiersPayload = await tiersResponse.json();
-    assert(tiersResponse.status === 200, `/api/rabbi/tiers expected 200, got ${tiersResponse.status}`);
-    const tiers = Array.isArray(tiersPayload.tiers) ? tiersPayload.tiers : [];
-    const library = tiers.find((tier) => tier.tier_key === 'library_only');
-    const live = tiers.find((tier) => tier.tier_key === 'live_library');
-    assert(library && Number(library.price_amount_cents) === 6700, 'library_only tier did not expose 6700 cents');
-    assert(live && Number(live.price_amount_cents) === 14900, 'live_library tier did not expose 14900 cents');
-    pass('public Rabbi tiers expose $67 and $149 pricing');
+    const config = await configResponse.json();
+    assert(configResponse.status === 200, `/api/one-time/instance-config expected 200, got ${configResponse.status}`);
+    assert(config.app_instance === 'onetime', `expected app_instance onetime, got ${config.app_instance}`);
+    assert(config.workspace_key === 'rabbi_sheller_provider', `expected rabbi_sheller_provider, got ${config.workspace_key}`);
+    assert(config.project_key === 'one_time_mishnah_class', `expected one_time_mishnah_class, got ${config.project_key}`);
+    pass('OneTime instance config is scoped to Rabbi Scheller provider');
   } catch (error) {
     fail('Rabbi OneTime landing smoke', error instanceof Error ? error.message : String(error));
     process.exitCode = 1;

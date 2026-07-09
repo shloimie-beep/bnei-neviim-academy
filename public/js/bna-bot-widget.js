@@ -11,7 +11,22 @@
     || document.documentElement?.dataset?.appSelectSurface === 'one-time';
   const isOneTimeParentReview = isOneTimeReview && isParent;
   const isOneTimeStudentReview = (isOneTimeReview || isOneTimeLoginMode || isOneTimeHostDocument) && isStudent;
-  if (isOneTimeReview && !isOneTimeParentReview && !isOneTimeStudentReview) return;
+  const isProvider = [
+    '/provider',
+    '/provider/',
+    '/provider.html',
+    '/provider/login',
+    '/provider-dashboard',
+  ].includes(path);
+  const isOneTimeProviderReview = isProvider && (
+    isOneTimeReview
+      || isOneTimeHostDocument
+      || ['one-time', 'onetime'].includes(String(query.get('admin_provider') || query.get('adminProvider') || '').toLowerCase())
+      || query.has('view_as_rabbi')
+      || query.has('viewAsRabbi')
+      || document.body?.dataset?.oneTimeWorkspace === 'rabbi_sheller_provider'
+  );
+  if (isOneTimeReview && !isOneTimeParentReview && !isOneTimeStudentReview && !isOneTimeProviderReview) return;
   try {
     if (!isStudent) localStorage.removeItem('bnaStudentAccessCode');
   } catch {}
@@ -27,16 +42,10 @@
     )
     && !isParent
     && !isStudent
+    && !isProvider
     && !/^(?:\/rabbi-member)(?:\/|$|\.html$)/.test(path);
   const isOneTimeMember = /^(?:\/rabbi-member|\/member-library|\/one-time-classroom|\/provider-participant)(?:\/|$|\.html$)/.test(path)
     || ['/member', '/member.html', '/member-portal', '/one-time/member-login'].includes(path);
-  const isProvider = [
-    '/provider',
-    '/provider/',
-    '/provider.html',
-    '/provider/login',
-    '/provider-dashboard',
-  ].includes(path);
   const isOperations = /^\/operations/.test(path);
   const isSignup = /^\/signup(?:\/|$|-|\.html$)/.test(path);
   const surface = isOperations
@@ -47,6 +56,8 @@
         ? 'one_time_parent'
         : isOneTimeStudentReview
           ? 'one_time_student'
+          : isOneTimeProviderReview
+            ? 'one_time_provider'
       : isParent
       ? 'parent_portal'
       : isStudent
@@ -283,6 +294,24 @@
           'I cannot open the member library.',
           'Where is the latest Mishnah class recording?',
           'Help me ask Rabbi Scheller a question.',
+        ],
+      };
+    }
+    if (surface === 'one_time_provider') {
+      return {
+        ...base,
+        helperTitle: 'Rabbi Scheller Admin Helper',
+        surfaceLabel: 'One Time provider workspace',
+        intro: "Hi Rabbi Scheller. I can help with OneTimeOneTime contacts, CRM follow-up, class content, student questions, parent questions, emails, WhatsApp status, tickets, and class workflow. I will keep this workspace scoped to the OneTime Mishnayos class.",
+        cards: [
+          ['CRM and inbox', 'Review contacts, conversations, follow-up notes, email drafts, WhatsApp status, and support tickets for this class.'],
+          ['Class content', 'Work on recordings, transcripts, worksheets, slides, library organization, and class-question review.'],
+          ['Student activity', 'Check student questions, attendance signals, leaderboard items, and parent-facing updates without exposing platform diagnostics.'],
+        ],
+        prompts: [
+          'Show contacts that need follow-up.',
+          'Draft a reply to a parent question.',
+          'What class content still needs review?',
         ],
       };
     }
@@ -631,7 +660,8 @@
     body.bna-assistant-surface-one-time-public .bna-bot-launcher,
     body.bna-assistant-surface-one-time-parent .bna-bot-launcher,
     body.bna-assistant-surface-one-time-student .bna-bot-launcher,
-    body.bna-assistant-surface-one-time-member .bna-bot-launcher {
+    body.bna-assistant-surface-one-time-member .bna-bot-launcher,
+    body.bna-assistant-surface-one-time-provider .bna-bot-launcher {
       border: 1px solid rgba(237, 229, 24, 0.48);
       background: #080910;
       color: #ffffff;
@@ -640,14 +670,16 @@
     body.bna-assistant-surface-one-time-public .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-parent .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-student .bna-bot-launcher-dot,
-    body.bna-assistant-surface-one-time-member .bna-bot-launcher-dot {
+    body.bna-assistant-surface-one-time-member .bna-bot-launcher-dot,
+    body.bna-assistant-surface-one-time-provider .bna-bot-launcher-dot {
       background: #ede518;
       box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.22);
     }
     body.bna-assistant-surface-one-time-public .bna-bot-head,
     body.bna-assistant-surface-one-time-parent .bna-bot-head,
     body.bna-assistant-surface-one-time-student .bna-bot-head,
-    body.bna-assistant-surface-one-time-member .bna-bot-head {
+    body.bna-assistant-surface-one-time-member .bna-bot-head,
+    body.bna-assistant-surface-one-time-provider .bna-bot-head {
       border-bottom: 1px solid rgba(237, 229, 24, 0.36);
       background: #080910;
       color: #ffffff;
@@ -655,13 +687,15 @@
     body.bna-assistant-surface-one-time-public .bna-bot-head span,
     body.bna-assistant-surface-one-time-parent .bna-bot-head span,
     body.bna-assistant-surface-one-time-student .bna-bot-head span,
-    body.bna-assistant-surface-one-time-member .bna-bot-head span {
+    body.bna-assistant-surface-one-time-member .bna-bot-head span,
+    body.bna-assistant-surface-one-time-provider .bna-bot-head span {
       color: rgba(255, 255, 255, 0.74);
     }
     body.bna-assistant-surface-one-time-public .bna-bot-panel,
     body.bna-assistant-surface-one-time-parent .bna-bot-panel,
     body.bna-assistant-surface-one-time-student .bna-bot-panel,
-    body.bna-assistant-surface-one-time-member .bna-bot-panel {
+    body.bna-assistant-surface-one-time-member .bna-bot-panel,
+    body.bna-assistant-surface-one-time-provider .bna-bot-panel {
       border-color: rgba(237, 229, 24, 0.28);
       background: #15171d;
       color: #ffffff;
@@ -670,10 +704,12 @@
     body.bna-assistant-surface-one-time-parent .bna-bot-form,
     body.bna-assistant-surface-one-time-student .bna-bot-form,
     body.bna-assistant-surface-one-time-member .bna-bot-form,
+    body.bna-assistant-surface-one-time-provider .bna-bot-form,
     body.bna-assistant-surface-one-time-public .bna-bot-history,
     body.bna-assistant-surface-one-time-parent .bna-bot-history,
     body.bna-assistant-surface-one-time-student .bna-bot-history,
-    body.bna-assistant-surface-one-time-member .bna-bot-history {
+    body.bna-assistant-surface-one-time-member .bna-bot-history,
+    body.bna-assistant-surface-one-time-provider .bna-bot-history {
       background: #0f1117;
       border-color: rgba(237, 229, 24, 0.18);
     }
@@ -681,10 +717,12 @@
     body.bna-assistant-surface-one-time-parent .bna-bot-message.assistant,
     body.bna-assistant-surface-one-time-student .bna-bot-message.assistant,
     body.bna-assistant-surface-one-time-member .bna-bot-message.assistant,
+    body.bna-assistant-surface-one-time-provider .bna-bot-message.assistant,
     body.bna-assistant-surface-one-time-public .bna-bot-history-state,
     body.bna-assistant-surface-one-time-parent .bna-bot-history-state,
     body.bna-assistant-surface-one-time-student .bna-bot-history-state,
-    body.bna-assistant-surface-one-time-member .bna-bot-history-state {
+    body.bna-assistant-surface-one-time-member .bna-bot-history-state,
+    body.bna-assistant-surface-one-time-provider .bna-bot-history-state {
       border-color: rgba(237, 229, 24, 0.18);
       background: #080910;
       color: #ffffff;
@@ -693,10 +731,12 @@
     body.bna-assistant-surface-one-time-parent .bna-bot-message.user,
     body.bna-assistant-surface-one-time-student .bna-bot-message.user,
     body.bna-assistant-surface-one-time-member .bna-bot-message.user,
+    body.bna-assistant-surface-one-time-provider .bna-bot-message.user,
     body.bna-assistant-surface-one-time-public .bna-helper-action,
     body.bna-assistant-surface-one-time-parent .bna-helper-action,
     body.bna-assistant-surface-one-time-student .bna-helper-action,
-    body.bna-assistant-surface-one-time-member .bna-helper-action {
+    body.bna-assistant-surface-one-time-member .bna-helper-action,
+    body.bna-assistant-surface-one-time-provider .bna-helper-action {
       border-color: rgba(237, 229, 24, 0.6);
       background: #ede518;
       color: #080910;
@@ -704,7 +744,8 @@
     body.bna-assistant-surface-one-time-public .bna-bot-send,
     body.bna-assistant-surface-one-time-parent .bna-bot-send,
     body.bna-assistant-surface-one-time-student .bna-bot-send,
-    body.bna-assistant-surface-one-time-member .bna-bot-send {
+    body.bna-assistant-surface-one-time-member .bna-bot-send,
+    body.bna-assistant-surface-one-time-provider .bna-bot-send {
       background: #ede518;
       color: #080910;
     }

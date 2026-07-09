@@ -10671,6 +10671,7 @@ function wantsOneTimeProviderShell(req) {
 
 function oneTimeProviderShellHtml(html = '') {
   return String(html || '')
+    .replace(/<title>[\s\S]*?<\/title>/, '<title>OneTimeOneTime Rabbi Provider Portal</title>')
     .replace(
       '<body class="bna-shell bna-portal-page bna-provider-page"',
       '<body class="bna-shell bna-portal-page bna-provider-page one-time-review-active"'
@@ -10685,7 +10686,12 @@ function oneTimeProviderShellHtml(html = '') {
     .replace('<a class="portal-topbar-link" href="/service-providers">Directory</a>', '<a class="portal-topbar-link secondary-link" href="/one-time-parent">Parent access</a>')
     .replace('<a class="portal-topbar-link" href="/provider">Provider home</a>', '<a class="portal-topbar-link secondary-link" href="/student/login">Student login</a>')
     .replace('<a class="portal-topbar-link" href="/providers/join?onboard=provider">Join</a>', '<a class="portal-topbar-link secondary-link" href="/one-time-classroom.html">Classroom</a>')
-    .replace('<span class="brand-chip">Scoped Provider Workspace</span>', '<span class="brand-chip">One Time provider</span>');
+    .replace('<span class="brand-chip">Scoped Provider Workspace</span>', '<span class="brand-chip">One Time provider</span>')
+    .replace(/Bnei Neviim Academy/g, 'OneTimeOneTime')
+    .replace(/BNA Academy/g, 'OneTimeOneTime')
+    .replace(/BNA Provider Portal/g, 'OneTimeOneTime Rabbi Provider Portal')
+    .replace(/BNA Helper/g, 'Rabbi Scheller Helper')
+    .replace(/Ask BNA Helper/g, 'Ask Rabbi Scheller Helper');
 }
 
 function sendOneTimeProviderShell(req, res) {
@@ -10693,6 +10699,64 @@ function sendOneTimeProviderShell(req, res) {
   fs.readFile(path.join(__dirname, 'public', 'provider.html'), 'utf8', (error, html) => {
     if (error) return res.status(500).send('One Time provider shell could not load.');
     res.type('html').send(oneTimeProviderShellHtml(html));
+  });
+}
+
+function wantsOneTimeStudentShell(req) {
+  const query = req?.query || {};
+  return isOneTimeSingleTenantRuntime()
+    || ['one-time', 'onetime', '1', 'true'].includes(String(query.review || '').toLowerCase())
+    || ['one-time', 'onetime', '1', 'true'].includes(String(query.one_time_login || query.oneTimeLogin || '').toLowerCase());
+}
+
+function oneTimeStudentShellHtml(html = '') {
+  return String(html || '')
+    .replace(/<title>[\s\S]*?<\/title>/, '<title>OneTimeOneTime Student Login</title>')
+    .replace(
+      '<body class="bna-shell bna-portal-page bna-student-page"',
+      '<body class="bna-shell bna-portal-page bna-student-page one-time-student-login-active"'
+    )
+    .replace(
+      '<span class="brand-mark" aria-hidden="true">BNA</span>',
+      '<span class="brand-mark" aria-hidden="true"><img src="/images/one-time/brand/onetimelogo.webp" alt=""></span>'
+    )
+    .replace(/Bnei Neviim Academy/g, 'OneTimeOneTime')
+    .replace(/BNA Academy/g, 'OneTimeOneTime')
+    .replace(/BNA Student Goal Board/g, 'OneTimeOneTime Student Login')
+    .replace(/Student goal board/g, 'Student login')
+    .replace('<span>Student login</span>', '<span>One Time student access</span>')
+    .replace('<a class="portal-topbar-link" href="/" data-student-topbar-public>Public site</a>', '<a class="portal-topbar-link" href="/one-time" data-student-topbar-public>One Time</a>')
+    .replace('<a class="portal-topbar-link" href="/parents" data-student-topbar-families>Families</a>', '<a class="portal-topbar-link secondary-link" href="/one-time-parent" data-student-topbar-families>Parent access</a>')
+    .replace('<a class="portal-topbar-link" href="/student" data-student-topbar-home>Student home</a>', '<a class="portal-topbar-link secondary-link" href="/student/login" data-student-topbar-home>Student login</a>')
+    .replace('<a class="portal-topbar-link" href="#bnaBotPanel" data-bna-assistant-open data-student-topbar-assistant aria-controls="bnaBotPanel">Assistant/help</a>', '<a class="portal-topbar-link secondary-link" href="#bnaBotPanel" data-bna-assistant-open data-student-topbar-assistant aria-controls="bnaBotPanel">Helper</a>')
+    .replace('<a class="portal-topbar-link" href="/parent/login" data-student-topbar-parent-login>Parent login</a>', '<a class="portal-topbar-link secondary-link" href="/one-time-parent" data-student-topbar-parent-login>Parent login</a>')
+    .replace('<span class="brand-chip" data-student-topbar-accountability>Daily accountability</span>', '<span class="brand-chip" data-student-topbar-accountability>One Time Mishnah</span>')
+    .replace('<h1 id="pageTitle">Student Goal Board</h1>', '<h1 id="pageTitle">Student Login</h1>')
+    .replace(
+      '<p class="hero-text" id="pageIntro">Open your private link, review your Torah progress, and work through your goals honestly.</p>',
+      '<p class="hero-text" id="pageIntro">Sign in with the username and password your parent set for the OneTimeOneTime Mishnah class.</p>'
+    )
+    .replace('<div class="language-toggle" aria-label="Language">', '<div class="language-toggle hidden" aria-label="Language" aria-hidden="true" style="display:none">')
+    .replace('<button id="langHeButton" type="button" data-lang="he">HE</button>', '<button id="langHeButton" type="button" data-lang="he"></button>')
+    .replace('<button class="secondary hidden" id="clearCodeButton" type="button">Enter access code again</button>', '<button class="secondary hidden" id="clearCodeButton" type="button"></button>')
+    .replace('<div class="login-divider">', '<div class="login-divider hidden" aria-hidden="true" style="display:none">')
+    .replace('<p class="small" id="accessFallbackCopy">During rollout, your private access-code link still works.</p>', '<p class="small" id="accessFallbackCopy"></p>')
+    .replace('<form id="codeForm">', '<form id="codeForm" class="hidden" aria-hidden="true" style="display:none">')
+    .replace('<label for="accessCode">Access code</label>', '<label for="accessCode"></label>')
+    .replace('<input id="accessCode" autocomplete="off" placeholder="Paste code here">', '<input id="accessCode" autocomplete="off" placeholder="">')
+    .replace('<button id="openGoalsButton" type="submit">Open My Goals</button>', '<button id="openGoalsButton" type="submit"></button>')
+    .replace(/accessFallback: 'During rollout, your private access-code link still works\.'/g, "accessFallback: ''")
+    .replace(/accessCode: 'Access code'/g, "accessCode: ''")
+    .replace(/codePlaceholder: 'Paste code here'/g, "codePlaceholder: ''")
+    .replace(/clearCode: 'Use a different code'/g, "clearCode: ''")
+    .replace(/Ask BNA Helper/g, 'Ask One Time Helper');
+}
+
+function sendOneTimeStudentShell(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
+  fs.readFile(path.join(__dirname, 'public', 'student.html'), 'utf8', (error, html) => {
+    if (error) return res.status(500).send('One Time student shell could not load.');
+    res.type('html').send(oneTimeStudentShellHtml(html));
   });
 }
 
@@ -10706,6 +10770,11 @@ app.get(['/rabbi.html'], sendOneTimePublicLanding);
 app.get('/provider.html', (req, res, next) => {
   if (!wantsOneTimeProviderShell(req)) return next();
   return sendOneTimeProviderShell(req, res);
+});
+
+app.get('/student.html', (req, res, next) => {
+  if (!wantsOneTimeStudentShell(req)) return next();
+  return sendOneTimeStudentShell(req, res);
 });
 
 function setOperationsShellCacheHeader(res) {
@@ -85873,7 +85942,7 @@ app.get(['/blog/:slug', '/he/blog/:slug'], (req, res) => {
 
 app.get(['/student', '/student/login'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
-  if (isOneTimeSingleTenantRuntime() && req.path === '/student/login') {
+  if (isOneTimeSingleTenantRuntime()) {
     return res.redirect(302, '/student.html?one_time_login=1');
   }
   res.sendFile(path.join(__dirname, 'public', 'student.html'));
@@ -85907,6 +85976,9 @@ app.get(['/family', '/household'], (req, res) => {
 
 app.get(['/provider', '/provider/login', '/provider-dashboard'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
+  if (wantsOneTimeProviderShell(req)) {
+    return sendOneTimeProviderShell(req, res);
+  }
   res.sendFile(path.join(__dirname, 'public', 'provider.html'));
 });
 

@@ -101,6 +101,8 @@ test('One Time provider.html requests are intercepted before static BNA shell ma
   assert.match(serverJs, /one-time-review-active/);
   assert.match(serverJs, /OneTimeOneTime<\/strong>/);
   assert.match(serverJs, /Rabbi provider account<\/span>/);
+  assert.match(serverJs, /\.replace\(\/Bnei Neviim Academy\/g, 'OneTimeOneTime'\)/);
+  assert.match(serverJs, /\.replace\(\/BNA Academy\/g, 'OneTimeOneTime'\)/);
   assert.match(serverJs, /app\.get\('\/provider\.html', \(req, res, next\) => \{/);
   assert.match(serverJs, /return sendOneTimeProviderShell\(req, res\)/);
 });
@@ -118,6 +120,12 @@ test('student login is a real student login and student preview is clearly TEST-
   assert.match(studentHtml, /OneTimeOneTime Student Login/);
   assert.match(studentHtml, /one-time-student-login-active/);
   assert.match(studentHtml, /Use the student username and password managed by your parent/);
+  assert.match(serverJs, /function wantsOneTimeStudentShell\(req\)/);
+  assert.match(serverJs, /function oneTimeStudentShellHtml\(html = ''\)/);
+  assert.match(serverJs, /app\.get\('\/student\.html', \(req, res, next\) => \{/);
+  assert.match(serverJs, /return sendOneTimeStudentShell\(req, res\)/);
+  assert.match(serverJs, /<form id="codeForm" class="hidden" aria-hidden="true" style="display:none">/);
+  assert.match(serverJs, /<div class="language-toggle hidden" aria-label="Language" aria-hidden="true" style="display:none">/);
   assert.match(studentHtml, /renderOneTimeStudentReview/);
   assert.match(studentHtml, /Student dashboard for live Mishnayos[\s\S]*TEST-only class data and excludes BNA school accountability goals/);
   assert.match(studentHtml, /BNA school accountability goals, checkoffs, consequences, device controls, and other household\/student records stay out/);
