@@ -36788,3 +36788,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   API feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:54:00+03:00 - Production Snapshot Parser Artifact Refreshed
+
+- Regenerated `ops/production-readiness/latest-production-readiness-snapshot.md`
+  and `.json` from clean pushed head `ece52fe4`.
+- JSON readback confirms head/origin `ece52fe4`, worktree clean `true`, status
+  `not_production_complete`, 3 concrete OneTime setup buckets, 8 active policy
+  jobs, 3 launch collision lanes, 0 queued ChatGPT packets, and no
+  `job_408...` key under `agent_fleet.summary`.
+- Markdown readback confirms failed job `#408` remains visible under `Other
+  Agent Policy Rows` with its colon-title text.
+- Guardrails held: read-only artifact refresh only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.
