@@ -37086,3 +37086,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers are unchanged: exact external setup fields, Rabbi Telegram
   hosted restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
   execution batch, and active collision-lane reconciliation.
+
+## 2026-07-09T22:50:19+03:00 - Agent Review Drop-Off Links Preserved In Readiness Evidence
+
+- Updated the production readiness snapshot and gate to preserve Agent Review
+  proof `dropoff_url` values alongside public prompt URLs.
+- Regenerated the production snapshot and operator unblocker; both proof items
+  now expose the exact prompt URL and Operations drop-off URL needed to save a
+  terminal PASS, FAIL, or BLOCKED result.
+- Verification passed: `node --check scripts/production-readiness-snapshot.mjs`,
+  `node --check scripts/production-readiness-gate.mjs`, `node --test
+  tests/production-readiness-gate.test.js tests/production-unblocker.test.js`,
+  and clean-head `npm run production:readiness:gate -- --json` expected-blocked
+  with `dropoff=` evidence for both missing Agent Review proofs.
+- Guardrails held: reporting/evidence only; no Agent Review result save, app
+  UI/API edit, deploy, hosted restart, live Telegram smoke, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, or
+  production-data mutation.
+- Remaining blockers are unchanged: exact external setup fields, Rabbi Telegram
+  hosted restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
+  execution batch, and active collision-lane reconciliation.
