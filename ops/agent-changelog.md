@@ -36470,3 +36470,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   live inference, external send, payment/access mutation, provider/CRM/DNS/
   credential mutation, Agent Review result save, public publish, or
   production-data mutation.
+
+## 2026-07-09T18:58:00+03:00 - Production Snapshot Carries Fleet Deploy Preflight
+
+- Updated `scripts/production-readiness-snapshot.mjs` so the tracked
+  production control-tower snapshot carries the agent-fleet
+  `production_deploy_preflight` proof.
+- The Markdown snapshot now displays the auto-deploy preflight command,
+  blocked skip reason, enforcement status, and proof that the readiness report
+  did not deploy.
+- Added static regression coverage and refreshed the sampled snapshot; final
+  clean-tree refresh follows after commit/push.
+- Guardrails held: control-tower/reporting hardening only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

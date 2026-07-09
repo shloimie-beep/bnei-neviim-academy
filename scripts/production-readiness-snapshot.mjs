@@ -219,6 +219,7 @@ function summarizeAgentFleetReadiness() {
     return { path: readinessPath, available: false };
   }
   const kimi = readiness.kimi_fallback_readiness || {};
+  const deployPreflight = readiness.production_deploy_preflight || {};
   return {
     path: readinessPath,
     available: true,
@@ -230,6 +231,15 @@ function summarizeAgentFleetReadiness() {
       configured_model: kimi.configured_model || '',
       command_found: kimi.command_probe?.found === true,
       version: kimi.version_probe?.version || '',
+    },
+    production_deploy_preflight: {
+      ok: deployPreflight.ok === true,
+      command: deployPreflight.command || '',
+      enforced_before_auto_deploy: deployPreflight.enforced_before_auto_deploy === true,
+      skipped_reason_when_blocked: deployPreflight.skipped_reason_when_blocked || '',
+      deploy_performed: deployPreflight.deploy_performed === true,
+      live_gate_run_performed: deployPreflight.live_gate_run_performed === true,
+      behavior: deployPreflight.behavior || '',
     },
   };
 }
@@ -353,6 +363,10 @@ function renderMarkdown(report) {
     `- Ready to claim: ${report.agent_fleet.summary.ready_to_claim || 'unknown'}`,
     `- Queue health: ${report.agent_fleet.summary.queue_health || 'unknown'}`,
     `- Kimi fallback: ${report.agent_fleet.summary.kimi_coding_fallback || report.agent_fleet_readiness.kimi_fallback_readiness?.configured_model || 'unknown'}`,
+    `- Auto-deploy readiness preflight: ${report.agent_fleet_readiness.production_deploy_preflight?.enforced_before_auto_deploy ? 'enforced' : 'not proven'}`,
+    `- Auto-deploy preflight command: ${report.agent_fleet_readiness.production_deploy_preflight?.command || 'unknown'}`,
+    `- Auto-deploy blocked reason: ${report.agent_fleet_readiness.production_deploy_preflight?.skipped_reason_when_blocked || 'unknown'}`,
+    `- Auto-deploy performed by readiness proof: ${report.agent_fleet_readiness.production_deploy_preflight?.deploy_performed ? 'yes' : 'no'}`,
     '',
     '## Active / Do Not Collide',
     ...(report.agent_fleet.active_policy_jobs.length

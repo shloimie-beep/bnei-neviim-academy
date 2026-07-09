@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
 const { pathToFileURL } = require('node:url');
@@ -105,4 +106,14 @@ test('production readiness gate can warn instead of block on dirty state when ex
   assert.equal(report.ok, true);
   assert.equal(report.warnings.length, 1);
   assert.match(report.warnings[0], /allow-dirty/);
+});
+
+test('production readiness snapshot surfaces agent-fleet auto-deploy preflight proof', () => {
+  const script = fs.readFileSync(path.join(repoRoot, 'scripts', 'production-readiness-snapshot.mjs'), 'utf8');
+
+  assert.match(script, /production_deploy_preflight/);
+  assert.match(script, /enforced_before_auto_deploy/);
+  assert.match(script, /skipped_reason_when_blocked/);
+  assert.match(script, /Auto-deploy readiness preflight/);
+  assert.match(script, /Auto-deploy performed by readiness proof/);
 });
