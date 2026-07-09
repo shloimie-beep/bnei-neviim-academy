@@ -96,6 +96,10 @@ function compactJob(job = {}) {
     .join(' ');
 }
 
+function rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime = {}) {
+  return rabbiTelegramRuntime.status === 'live_smoke_verified' || rabbiTelegramRuntime.production_verified === true;
+}
+
 function buildBlockerGroups({
   assessment = {},
   assessmentReasons = [],
@@ -176,13 +180,13 @@ function buildBlockerGroups({
       next_action: 'Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.',
     });
   }
-  if (rabbiTelegramRuntime.status && rabbiTelegramRuntime.status !== 'local_runtime_ready') {
+  if (rabbiTelegramRuntime.status && !rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime)) {
     const maskedCandidates = (rabbiTelegramRuntime.masked_candidates || [])
       .map((candidate) => candidate.chat_id_masked)
       .filter(Boolean);
     add({
       id: 'rabbi_telegram_runtime_configuration',
-      title: 'Rabbi Telegram runtime is not ready',
+      title: 'Rabbi Telegram runtime is not production-verified',
       owner: 'Codex / operator',
       evidence: [
         `status=${rabbiTelegramRuntime.status}`,
@@ -267,7 +271,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
   if (runBlockers.length === 0 && externalSetupItems.length > 0) {
     blockers.push(`OneTime setup checklist still has ${externalSetupItems.length} operator setup blocker(s): ${externalSetupItems.map((item) => item.id).filter(Boolean).join(', ')}.`);
   }
-  if (rabbiTelegramRuntime.status && rabbiTelegramRuntime.status !== 'local_runtime_ready') {
+  if (rabbiTelegramRuntime.status && !rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime)) {
     blockers.push(`Rabbi Telegram runtime is ${rabbiTelegramRuntime.status}; chat_id_configured=${rabbiTelegramRuntime.chat_id_configured === true}; candidate_count=${rabbiTelegramRuntime.candidate_count ?? 0}.`);
   }
   if (proofBlockers > 0) {

@@ -36860,3 +36860,36 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   edit, API feature edit, deploy, merge, external send, payment/access
   mutation, CRM/provider/DNS/credential mutation, Agent Review result save,
   Kimi live inference, public publish, or production-data mutation.
+
+## 2026-07-09T20:08:00+03:00 - Rabbi Telegram Bot Response Received And Configured
+
+- After the approved WhatsApp instruction send, Rabbi messaged
+  `t.me/onetimeaios_bot`.
+- Safe chat-ID readback found 4 updates from 1 unique private chat masked
+  `******4810`; no token or raw chat ID was printed into tracked evidence.
+- Configured the verified chat ID in ignored local runtime config and set the
+  OneTime Railway production variable keys with values hidden and
+  `--skip-deploys`.
+- Restarted the local Rabbi bridge; status readback shows it running.
+- Patched Kimi thinking-mode compatibility for `kimi-k2.7-code-highspeed` and
+  verified Kimi API smoke returns `ok`.
+- Guardrails held: one approved WhatsApp send only; no raw token/chat ID/phone
+  committed; no WAPI auto-reply, payment/access, DNS, Drive, Vimeo, Zoom, or
+  production-data mutation; no deploy triggered.
+
+## 2026-07-09T20:13:00+03:00 - Rabbi Telegram Production Gate Requires Live-Smoke Proof
+
+- Tightened `rabbi_telegram_runtime` production readiness: local chat-ID
+  configuration now reports `local_runtime_ready_live_smoke_pending`, not
+  production verified.
+- Updated the readiness gate and operator unblocker so Rabbi Telegram remains
+  blocked until a hosted restart/deploy window and scoped live-smoke proof are
+  recorded.
+- Regenerated production readiness artifacts from the main workspace so active
+  agent collision lanes remain visible.
+- Verification passed: focused readiness/unblocker/Telegram masking tests,
+  syntax checks for Kimi/Rabbi bridge scripts, no-send Rabbi readiness, local
+  Rabbi bridge status, JSONL parse, and secret audit.
+- Guardrails held: no deploy, hosted restart, live Telegram send/smoke, raw
+  chat ID/token/full phone commit, payment/access mutation, DNS/provider/CRM
+  mutation, Agent Review result save, or production-data mutation.

@@ -45,8 +45,9 @@ function readySnapshot(overrides = {}) {
       operator_blocker_items: [],
     },
     rabbi_telegram_runtime: {
-      status: 'local_runtime_ready',
+      status: 'live_smoke_verified',
       local_ready: true,
+      production_verified: true,
       chat_id_configured: true,
       candidate_count: 1,
       unique_chat_count: 1,
@@ -159,7 +160,9 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
     'SETUP-ONETIME-CAMPAIGN-001',
   ]);
   assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 2);
-  assert.deepEqual(report.blocker_groups.find((group) => group.id === 'rabbi_telegram_runtime_configuration').evidence, [
+  const rabbiRuntimeGroup = report.blocker_groups.find((group) => group.id === 'rabbi_telegram_runtime_configuration');
+  assert.equal(rabbiRuntimeGroup.title, 'Rabbi Telegram runtime is not production-verified');
+  assert.deepEqual(rabbiRuntimeGroup.evidence, [
     'status=candidate_available_config_required',
     'chat_id_configured=false',
     'candidate_count=4',

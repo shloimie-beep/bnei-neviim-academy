@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T17:07:32.829Z
+# Production Readiness Snapshot - 2026-07-09T17:13:01.034Z
 
 Result: not_production_complete
 Production ready: no
@@ -6,6 +6,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Why Not Done Yet
 - full OneTime launch has external Stripe/WAPI/campaign blockers
+- Rabbi Telegram runtime is local_runtime_ready_live_smoke_pending
 - Rabbi Agent Review still needs terminal Agent Mode proof
 - broad UI lane is already active in another agent job
 - fallback/API lane is already active in another agent job
@@ -14,14 +15,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: 50a2cfa0
-- origin/master: 50a2cfa0
+- HEAD: 94f76e09
+- origin/master: 94f76e09
 - Worktree clean when sampled: no
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 50a2cfa0
-- Sampled origin/master: 50a2cfa0
+- Sampled git head: 94f76e09
+- Sampled origin/master: 94f76e09
 - Sampled worktree clean: no
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -49,25 +50,22 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 ## Rabbi Telegram Runtime
 - Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
 - Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (available locally)
-- Status: local_runtime_ready
+- Status: local_runtime_ready_live_smoke_pending
 - Local ready: yes
 - Token configured: yes
 - Chat ID configured: yes
 - Ops credentials configured: yes
-- Candidate count: 4
-- Unique masked chat count: 1
-- Candidate: ******4810 (private, start_command, 2026-07-09T16:57:05.000Z)
-- Candidate: ******4810 (private, text, 2026-07-09T16:57:24.000Z)
-- Candidate: ******4810 (private, start_command, 2026-07-09T16:57:41.000Z)
-- Candidate: ******4810 (private, start_command, 2026-07-09T16:57:44.000Z)
+- Candidate count: 0
+- Unique masked chat count: 0
+- No masked chat candidates reported.
 - Live delivery smoke: not_exercised_by_readiness_report
-- Next: Do not send a live Telegram smoke automatically. When release gates are otherwise clear and exact live-send scope is approved, run the scoped Rabbi Telegram smoke/worker and record proof.
+- Next: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
 
 ## Agent Fleet
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 20, stale 434, blocked 126, unknown 193, do-not-redo 878
+- Queue health: fresh 20, stale 435, blocked 126, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -104,7 +102,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 2. Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane: Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks.
 3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
 4. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
-5. Codex / operator: Rabbi Telegram local runtime is ready by no-send check; defer any live-send smoke until release gates are otherwise clear and exact send scope is approved.
+5. Codex / operator: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
 6. Codex / agent fleet: Do not overlap broad UI file edits while job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish remains active; inspect its result packet before starting the next UI batch.
 7. Codex / agent fleet: Do not overlap Agent Review proof/result repair work while job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 remains active; inspect its result packet before saving or reconciling Agent Review terminal proof.
 8. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.

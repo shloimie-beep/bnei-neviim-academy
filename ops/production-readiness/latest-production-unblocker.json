@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-07-09T17:07:42.396Z",
+  "generated_at": "2026-07-09T17:13:10.048Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-09T17:07:32.972Z",
+  "source_snapshot_generated_at": "2026-07-09T17:13:01.267Z",
   "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
   "snapshot_source_kind": "live_no_write_command",
-  "snapshot_git_head": "50a2cfa0",
-  "snapshot_origin_master": "50a2cfa0",
+  "snapshot_git_head": "94f76e09",
+  "snapshot_origin_master": "94f76e09",
   "snapshot_worktree_clean": false,
   "source_snapshot": {
     "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
     "kind": "live_no_write_command",
-    "generated_at": "2026-07-09T17:07:32.972Z",
-    "git_head": "50a2cfa0",
-    "origin_master": "50a2cfa0",
+    "generated_at": "2026-07-09T17:13:01.267Z",
+    "git_head": "94f76e09",
+    "origin_master": "94f76e09",
     "worktree_clean": false,
     "command_exit_code": 0,
     "load_error": ""
@@ -25,15 +25,15 @@
   },
   "summary": {
     "external_setup_item_count": 3,
-    "rabbi_telegram_runtime_status": "local_runtime_ready",
+    "rabbi_telegram_runtime_status": "local_runtime_ready_live_smoke_pending",
     "rabbi_telegram_runtime_local_ready": true,
     "rabbi_telegram_chat_id_configured": true,
-    "rabbi_telegram_candidate_count": 4,
+    "rabbi_telegram_candidate_count": 0,
     "agent_mode_proof_count": 2,
     "active_collision_lane_count": 3,
     "chatgpt_queued_count": 0,
     "next_unblocked_executable_batch": "none",
-    "blocker_group_count": 4
+    "blocker_group_count": 5
   },
   "run_blockers": [
     {
@@ -74,6 +74,19 @@
         "SETUP-ONETIME-CAMPAIGN-001"
       ],
       "next_action": "Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval."
+    },
+    {
+      "id": "rabbi_telegram_runtime_configuration",
+      "title": "Rabbi Telegram runtime is not production-verified",
+      "owner": "Codex / operator",
+      "count": 1,
+      "evidence": [
+        "status=local_runtime_ready_live_smoke_pending",
+        "chat_id_configured=true",
+        "candidate_count=0",
+        "unique_chat_count=0"
+      ],
+      "next_action": "Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof."
     },
     {
       "id": "agent_mode_terminal_proof_missing",
@@ -173,10 +186,12 @@
     "chat_id_report_path": ".runtime/rabbi-telegram-chat-id-candidates.json",
     "readiness_available": true,
     "runtime_report_available": true,
-    "checked_at": "2026-07-09T17:03:08.412Z",
-    "chat_id_checked_at": "2026-07-09T17:02:53.033Z",
-    "status": "local_runtime_ready",
+    "checked_at": "2026-07-09T17:11:50.935Z",
+    "chat_id_checked_at": "2026-07-09T17:11:18.586Z",
+    "status": "local_runtime_ready_live_smoke_pending",
     "local_ready": true,
+    "configuration_ready": true,
+    "production_verified": false,
     "readiness_status": "ready",
     "readiness_blockers": [],
     "token_configured": true,
@@ -184,41 +199,12 @@
     "ops_username_configured": true,
     "ops_password_configured": true,
     "bot_username": "onetimeaios_bot",
-    "candidate_count": 4,
-    "unique_chat_count": 1,
-    "start_command_count": 3,
-    "masked_candidates": [
-      {
-        "chat_id_masked": "******4810",
-        "chat_type": "private",
-        "source": "message",
-        "text_kind": "start_command",
-        "message_date": "2026-07-09T16:57:05.000Z"
-      },
-      {
-        "chat_id_masked": "******4810",
-        "chat_type": "private",
-        "source": "message",
-        "text_kind": "text",
-        "message_date": "2026-07-09T16:57:24.000Z"
-      },
-      {
-        "chat_id_masked": "******4810",
-        "chat_type": "private",
-        "source": "message",
-        "text_kind": "start_command",
-        "message_date": "2026-07-09T16:57:41.000Z"
-      },
-      {
-        "chat_id_masked": "******4810",
-        "chat_type": "private",
-        "source": "message",
-        "text_kind": "start_command",
-        "message_date": "2026-07-09T16:57:44.000Z"
-      }
-    ],
+    "candidate_count": 0,
+    "unique_chat_count": 0,
+    "start_command_count": 0,
+    "masked_candidates": [],
     "live_delivery_smoke": "not_exercised_by_readiness_report",
-    "next_action": "Do not send a live Telegram smoke automatically. When release gates are otherwise clear and exact live-send scope is approved, run the scoped Rabbi Telegram smoke/worker and record proof."
+    "next_action": "Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof."
   },
   "agent_mode_proofs": [
     {
@@ -297,6 +283,16 @@
         "real_campaign_send_from_this_checklist"
       ],
       "source": "one_time_setup_checklist"
+    },
+    {
+      "id": "rabbi_telegram_runtime",
+      "owner": "Codex / operator",
+      "action": "Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.",
+      "forbidden": [
+        "Do not paste raw chat IDs, tokens, phone numbers, or private messages into tracked files or chat.",
+        "Do not send a live Telegram smoke without exact approval."
+      ],
+      "source": "rabbi_telegram_runtime"
     },
     {
       "id": "rabbi-telegram-helper-ticket-smoke",

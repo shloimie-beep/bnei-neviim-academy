@@ -129,7 +129,7 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.deepEqual(report.setup_items.map((item) => item.id), ['SETUP-ONETIME-STRIPE-001', 'SETUP-ONETIME-WHAPI-001']);
   assert.match(markdown, /Owner Action Summary/);
   assert.match(markdown, /external_setup_blockers - External OneTime setup values or approvals are missing/);
-  assert.match(markdown, /rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not ready/);
+  assert.match(markdown, /rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not production-verified/);
   assert.match(markdown, /Rabbi Telegram Runtime/);
   assert.match(markdown, /\*\*\*\*\*\*4810/);
   assert.match(markdown, /agent_mode_terminal_proof_missing - Rabbi Agent Review terminal proof is missing/);

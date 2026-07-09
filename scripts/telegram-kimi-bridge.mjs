@@ -62,6 +62,9 @@ const {
   hasTelegramNoteToCrmIntent,
   parseTelegramNoteToCrm,
 } = require('../src/lib/bna/telegram-note-to-crm');
+const {
+  maskIdentifier,
+} = require('../src/lib/bna/telegram-chat-id-readback');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -667,12 +670,18 @@ function buildPlatformMemoryContext(outputType) {
 function appendMemoryEntry(role, text, metadata = {}) {
   const memoryPath = todayMemoryPath();
   const timestamp = new Date().toISOString();
+  const safeMetadata = Object.fromEntries(
+    Object.entries(metadata || {}).map(([key, value]) => [
+      key,
+      /(^|_)chat_id$/i.test(key) ? maskIdentifier(value) : value,
+    ])
+  );
   const lines = [
     '',
     `### ${role} ${timestamp}`,
     '',
-    ...Object.entries(metadata).map(([key, value]) => `- ${key}: ${value}`),
-    metadata && Object.keys(metadata).length > 0 ? '' : null,
+    ...Object.entries(safeMetadata).map(([key, value]) => `- ${key}: ${value}`),
+    Object.keys(safeMetadata).length > 0 ? '' : null,
     text.trim(),
     '',
   ].filter(Boolean);
@@ -3014,6 +3023,18 @@ function startAgentFleet(timeoutMs = 60000) {
   });
 }
 
+function kimiThinkingPayload(model = '') {
+  const override = String(process.env.KIMI_THINKING_TYPE || '').trim().toLowerCase();
+  if (override === 'enabled' || override === 'disabled') {
+    return { thinking: { type: override } };
+  }
+  const normalizedModel = String(model || '').toLowerCase();
+  if (/kimi-k2\.7|k2\.7-code|code-highspeed/.test(normalizedModel)) {
+    return { thinking: { type: 'enabled' } };
+  }
+  return { thinking: { type: 'disabled' } };
+}
+
 async function runKimiApiFallback(config, messageText, chatId, messageId) {
   if (!config.kimiApiKey) {
     throw new Error('No KIMI_API_KEY configured for API fallback');
@@ -3064,7 +3085,7 @@ async function runKimiApiFallback(config, messageText, chatId, messageId) {
     body: JSON.stringify({
       model: config.kimiApiModel,
       max_tokens: 900,
-      thinking: { type: 'disabled' },
+      ...kimiThinkingPayload(config.kimiApiModel),
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: user },
@@ -3101,7 +3122,7 @@ async function runChatApiProvider(provider, messages, options = {}) {
       model: provider.model,
       max_tokens: maxTokens,
       ...(temperature === null ? {} : { temperature }),
-      ...(provider.kind === 'kimi' ? { thinking: { type: 'disabled' } } : {}),
+      ...(provider.kind === 'kimi' ? kimiThinkingPayload(provider.model) : {}),
       messages,
     }),
   });

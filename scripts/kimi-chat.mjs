@@ -30,6 +30,12 @@ async function callKimi(messages) {
     throw new Error('KIMI_API_KEY is missing');
   }
 
+  const thinkingType = (() => {
+    const override = String(process.env.KIMI_THINKING_TYPE || '').trim().toLowerCase();
+    if (override === 'enabled' || override === 'disabled') return override;
+    return /kimi-k2\.7|k2\.7-code|code-highspeed/i.test(model) ? 'enabled' : 'disabled';
+  })();
+
   const response = await fetch(`${baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
@@ -39,7 +45,7 @@ async function callKimi(messages) {
     body: JSON.stringify({
       model,
       max_tokens: 1200,
-      thinking: { type: 'disabled' },
+      thinking: { type: thinkingType },
       messages,
     }),
   });

@@ -1,18 +1,18 @@
-# Production Unblocker - 2026-07-09T17:07:42.396Z
+# Production Unblocker - 2026-07-09T17:13:10.048Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-09T17:07:32.972Z
-Snapshot git head: 50a2cfa0 (origin/master: 50a2cfa0, worktree clean: no)
+Source snapshot generated at: 2026-07-09T17:13:01.267Z
+Snapshot git head: 94f76e09 (origin/master: 94f76e09, worktree clean: no)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 ## What Blocks Production
 - External setup items: 3
-- Rabbi Telegram runtime: local_runtime_ready
+- Rabbi Telegram runtime: local_runtime_ready_live_smoke_pending
 - Agent Mode terminal proof items: 2
 - Active collision lanes: 3
 - ChatGPT packets queued: 0
-- Blocker groups: 4
+- Blocker groups: 5
 ## Owner Action Summary
 ### no_unblocked_executable_batch - No unblocked executable batch is available
 Owner: Codex / operator
@@ -29,6 +29,15 @@ Evidence:
   - SETUP-ONETIME-WHAPI-001
   - SETUP-ONETIME-CAMPAIGN-001
 Next action: Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.
+### rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not production-verified
+Owner: Codex / operator
+Count: 1
+Evidence:
+  - status=local_runtime_ready_live_smoke_pending
+  - chat_id_configured=true
+  - candidate_count=0
+  - unique_chat_count=0
+Next action: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
 ### agent_mode_terminal_proof_missing - Rabbi Agent Review terminal proof is missing
 Owner: Shloimie / Agent Mode runner
 Count: 2
@@ -94,20 +103,17 @@ Forbidden in this packet:
 Verification after setup:
   - Rerun the relevant readiness command.
 ## Rabbi Telegram Runtime
-Status: local_runtime_ready
+Status: local_runtime_ready_live_smoke_pending
 Local ready: yes
 Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
 Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (available locally)
 Chat ID configured: yes
-Candidate count: 4
-Unique masked chat count: 1
+Candidate count: 0
+Unique masked chat count: 0
 Masked candidates:
-  - ******4810 (private, start_command, 2026-07-09T16:57:05.000Z)
-  - ******4810 (private, text, 2026-07-09T16:57:24.000Z)
-  - ******4810 (private, start_command, 2026-07-09T16:57:41.000Z)
-  - ******4810 (private, start_command, 2026-07-09T16:57:44.000Z)
+  - none
 Live delivery smoke: not_exercised_by_readiness_report
-Next action: Do not send a live Telegram smoke automatically. When release gates are otherwise clear and exact live-send scope is approved, run the scoped Rabbi Telegram smoke/worker and record proof.
+Next action: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
 ## Agent Mode Proof To Save
 ### rabbi-telegram-helper-ticket-smoke
 Owner: Shloimie / Agent Mode runner
