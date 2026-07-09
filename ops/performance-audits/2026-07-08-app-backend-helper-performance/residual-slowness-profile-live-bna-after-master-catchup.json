@@ -1,0 +1,1628 @@
+{
+  "base_url": "https://bneineviimacademy.org",
+  "path": "/operations?workspace=platform&view=dashboard&section=overview",
+  "out_suffix": "live-bna-after-master-catchup",
+  "captured_at": "2026-07-09T12:01:42.275Z",
+  "credentials_source": "OPS",
+  "login": {
+    "ok": true,
+    "status": 200,
+    "duration_ms": 591,
+    "response_bytes": 458,
+    "cookie": "present",
+    "blocker": ""
+  },
+  "marks": {
+    "dom_content_loaded_ms": 2201,
+    "shell_visible_ms": null,
+    "overview_visible_ms": null,
+    "capture_complete_ms": 68237,
+    "page_marks": [
+      {
+        "name": "domcontentloaded",
+        "time_ms": 2199,
+        "detail": {}
+      },
+      {
+        "name": "load",
+        "time_ms": 2199,
+        "detail": {}
+      },
+      {
+        "name": "capture_complete",
+        "time_ms": 68236,
+        "detail": {}
+      }
+    ]
+  },
+  "navigation": {
+    "dom_content_loaded_ms": 2199,
+    "load_event_ms": 2199,
+    "duration_ms": 2199,
+    "transfer_size": 2024,
+    "encoded_body_size": 1724
+  },
+  "fetches": [
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 2191,
+      "end_ms": 2457,
+      "duration_ms": 266,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 32211,
+      "end_ms": 32620,
+      "duration_ms": 409,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-directory?workspace=platform",
+      "method": "GET",
+      "start_ms": 32620,
+      "end_ms": 32877,
+      "duration_ms": 257,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-platform",
+      "method": "GET",
+      "start_ms": 32620,
+      "end_ms": 34124,
+      "duration_ms": 1504,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-settings/platform/branding",
+      "method": "GET",
+      "start_ms": 32620,
+      "end_ms": 33224,
+      "duration_ms": 604,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/calendar-events",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 33490,
+      "duration_ms": 870,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/pipeline-cards",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 33490,
+      "duration_ms": 870,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/internal-dialogue",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 34444,
+      "duration_ms": 1824,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/projects",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 33479,
+      "duration_ms": 858,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/people",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 33509,
+      "duration_ms": 888,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-users?status=all",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 33548,
+      "duration_ms": 927,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-users/role-audit?limit=40",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 33210,
+      "duration_ms": 589,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/tasks",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 34124,
+      "duration_ms": 1503,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/agent-fleet/status",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 34444,
+      "duration_ms": 1823,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/ops/queue-health",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 33889,
+      "duration_ms": 1268,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/support-tickets",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 36324,
+      "duration_ms": 3703,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/signups?",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 33210,
+      "duration_ms": 589,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/parent-leads?",
+      "method": "GET",
+      "start_ms": 32621,
+      "end_ms": 33408,
+      "duration_ms": 786,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/service-providers?approved_only=false",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 33548,
+      "duration_ms": 927,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/contact-communications?",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 33587,
+      "duration_ms": 965,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/parent-announcements?limit=20",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 33210,
+      "duration_ms": 588,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/payments?",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 33201,
+      "duration_ms": 579,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/payment-intake?",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 33198,
+      "duration_ms": 576,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/payment-reminders/due",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 33201,
+      "duration_ms": 579,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/content-jobs?",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 33478,
+      "duration_ms": 856,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/class-sessions",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 34125,
+      "duration_ms": 1503,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/project-meetings?project=one_time_mishnah_class",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 33258,
+      "duration_ms": 636,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/one-time/classes?limit=120",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 34444,
+      "duration_ms": 1822,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/one-time/classroom",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 34444,
+      "duration_ms": 1822,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/one-time/question-moderation?limit=80",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 34124,
+      "duration_ms": 1502,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/members",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 33301,
+      "duration_ms": 679,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/live-sessions",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 34124,
+      "duration_ms": 1501,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/content-prompts",
+      "method": "GET",
+      "start_ms": 32622,
+      "end_ms": 34787,
+      "duration_ms": 2165,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/content-bundles",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33506,
+      "duration_ms": 883,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/students",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 35198,
+      "duration_ms": 2575,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/assignments",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33224,
+      "duration_ms": 602,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/assignment-prompts",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 34444,
+      "duration_ms": 1821,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/devices",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33926,
+      "duration_ms": 1304,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/device-access-rules",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33240,
+      "duration_ms": 617,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/torah-learning",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 34981,
+      "duration_ms": 2359,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/accountability?",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33368,
+      "duration_ms": 745,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/group-goals",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 34125,
+      "duration_ms": 1502,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/courses",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 35198,
+      "duration_ms": 2575,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/worksheets",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33240,
+      "duration_ms": 617,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/course-questions",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33490,
+      "duration_ms": 867,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/gamification-events",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33301,
+      "duration_ms": 678,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/shoutouts",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33348,
+      "duration_ms": 725,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/notifications?status=all&limit=100",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33246,
+      "duration_ms": 623,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/notification-preferences",
+      "method": "GET",
+      "start_ms": 32623,
+      "end_ms": 33225,
+      "duration_ms": 602,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/integrations/buffer/health",
+      "method": "GET",
+      "start_ms": 32624,
+      "end_ms": 34444,
+      "duration_ms": 1820,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/integrations/buffer/channels",
+      "method": "GET",
+      "start_ms": 32624,
+      "end_ms": 34124,
+      "duration_ms": 1500,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/integrations/resend/health",
+      "method": "GET",
+      "start_ms": 32624,
+      "end_ms": 33561,
+      "duration_ms": 937,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/integrations/resend/domains",
+      "method": "GET",
+      "start_ms": 32624,
+      "end_ms": 33560,
+      "duration_ms": 936,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/integrations/resend/events",
+      "method": "GET",
+      "start_ms": 32624,
+      "end_ms": 33348,
+      "duration_ms": 724,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/communications/social/drafts",
+      "method": "GET",
+      "start_ms": 32624,
+      "end_ms": 33348,
+      "duration_ms": 724,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/communications/email/drafts",
+      "method": "GET",
+      "start_ms": 32624,
+      "end_ms": 33349,
+      "duration_ms": 725,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/communications/dns-tasks?provider=resend",
+      "method": "GET",
+      "start_ms": 32624,
+      "end_ms": 33535,
+      "duration_ms": 911,
+      "status": 500,
+      "ok": false
+    },
+    {
+      "url": "/api/bna/integrations/status",
+      "method": "GET",
+      "start_ms": 32624,
+      "end_ms": 34896,
+      "duration_ms": 2272,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/providers?status=all",
+      "method": "GET",
+      "start_ms": 44974,
+      "end_ms": 45384,
+      "duration_ms": 411,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/provider-categories",
+      "method": "GET",
+      "start_ms": 44974,
+      "end_ms": 45221,
+      "duration_ms": 247,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/provider-leads?status=all",
+      "method": "GET",
+      "start_ms": 44974,
+      "end_ms": 45417,
+      "duration_ms": 443,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/communications?limit=200",
+      "method": "GET",
+      "start_ms": 45699,
+      "end_ms": 45954,
+      "duration_ms": 255,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/auth/me",
+      "method": "GET",
+      "start_ms": 62205,
+      "end_ms": 62646,
+      "duration_ms": 441,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-directory?workspace=platform",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 62907,
+      "duration_ms": 260,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-platform",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 64860,
+      "duration_ms": 2212,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-settings/platform/branding",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 63559,
+      "duration_ms": 911,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/calendar-events",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 63752,
+      "duration_ms": 1104,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/pipeline-cards",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 63752,
+      "duration_ms": 1104,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/internal-dialogue",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 64361,
+      "duration_ms": 1713,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/projects",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 63752,
+      "duration_ms": 1104,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/people",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 63752,
+      "duration_ms": 1104,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-users?status=all",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 63752,
+      "duration_ms": 1104,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/workspace-users/role-audit?limit=40",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 63752,
+      "duration_ms": 1103,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/tasks",
+      "method": "GET",
+      "start_ms": 62648,
+      "end_ms": 64363,
+      "duration_ms": 1715,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/agent-fleet/status",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 64790,
+      "duration_ms": 2142,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/ops/queue-health",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 63438,
+      "duration_ms": 789,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/support-tickets",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 67994,
+      "duration_ms": 5345,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/signups?",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 63560,
+      "duration_ms": 912,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/parent-leads?",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 63751,
+      "duration_ms": 1103,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/service-providers?approved_only=false",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 63563,
+      "duration_ms": 914,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/contact-communications?",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 63892,
+      "duration_ms": 1243,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/parent-announcements?limit=20",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 63559,
+      "duration_ms": 910,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/payments?",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 63561,
+      "duration_ms": 912,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/payment-intake?",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 63560,
+      "duration_ms": 911,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/payment-reminders/due",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 63561,
+      "duration_ms": 912,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/content-jobs?",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 64638,
+      "duration_ms": 1989,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/class-sessions",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 64254,
+      "duration_ms": 1604,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/project-meetings?project=one_time_mishnah_class",
+      "method": "GET",
+      "start_ms": 62649,
+      "end_ms": 63752,
+      "duration_ms": 1102,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/one-time/classes?limit=120",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 64743,
+      "duration_ms": 2094,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/one-time/classroom",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 64850,
+      "duration_ms": 2200,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/one-time/question-moderation?limit=80",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 64363,
+      "duration_ms": 1714,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/members",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 63562,
+      "duration_ms": 912,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/live-sessions",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 63754,
+      "duration_ms": 1104,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/content-prompts",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 65781,
+      "duration_ms": 3131,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/content-bundles",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 63751,
+      "duration_ms": 1101,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/students",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 67299,
+      "duration_ms": 4649,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/assignments",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 63750,
+      "duration_ms": 1100,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/assignment-prompts",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 64652,
+      "duration_ms": 2001,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/devices",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 63754,
+      "duration_ms": 1103,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/device-access-rules",
+      "method": "GET",
+      "start_ms": 62650,
+      "end_ms": 63752,
+      "duration_ms": 1101,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/torah-learning",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 66922,
+      "duration_ms": 4271,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/accountability?",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 63753,
+      "duration_ms": 1103,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/group-goals",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 64364,
+      "duration_ms": 1713,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/courses",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 67503,
+      "duration_ms": 4852,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/worksheets",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 63752,
+      "duration_ms": 1101,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/course-questions",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 63752,
+      "duration_ms": 1101,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/gamification-events",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 63752,
+      "duration_ms": 1101,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/shoutouts",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 63753,
+      "duration_ms": 1102,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/notifications?status=all&limit=100",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 63753,
+      "duration_ms": 1102,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/notification-preferences",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 63752,
+      "duration_ms": 1101,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/integrations/buffer/health",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 64850,
+      "duration_ms": 2199,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/integrations/buffer/channels",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 66143,
+      "duration_ms": 3491,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/integrations/resend/health",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 63754,
+      "duration_ms": 1102,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/integrations/resend/domains",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 64651,
+      "duration_ms": 2000,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/integrations/resend/events",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 63753,
+      "duration_ms": 1101,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/communications/social/drafts",
+      "method": "GET",
+      "start_ms": 62651,
+      "end_ms": 63752,
+      "duration_ms": 1101,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/communications/email/drafts",
+      "method": "GET",
+      "start_ms": 62652,
+      "end_ms": 63753,
+      "duration_ms": 1101,
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/bna/communications/dns-tasks?provider=resend",
+      "method": "GET",
+      "start_ms": 62652,
+      "end_ms": 63753,
+      "duration_ms": 1101,
+      "status": 500,
+      "ok": false
+    },
+    {
+      "url": "/api/bna/integrations/status",
+      "method": "GET",
+      "start_ms": 62652,
+      "end_ms": 67513,
+      "duration_ms": 4861,
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "fetch_summary": {
+    "count": 119,
+    "before_overview_count": 119,
+    "after_overview_count": 0,
+    "median_ms": 1101,
+    "p95_ms": 3703,
+    "max_ms": 5345,
+    "top_slowest": [
+      {
+        "method": "GET",
+        "path": "/api/bna/support-tickets",
+        "start_ms": 62649,
+        "duration_ms": 5345,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/integrations/status",
+        "start_ms": 62652,
+        "duration_ms": 4861,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/courses",
+        "start_ms": 62651,
+        "duration_ms": 4852,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/students",
+        "start_ms": 62650,
+        "duration_ms": 4649,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/torah-learning",
+        "start_ms": 62651,
+        "duration_ms": 4271,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/support-tickets",
+        "start_ms": 32621,
+        "duration_ms": 3703,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/integrations/buffer/channels",
+        "start_ms": 62651,
+        "duration_ms": 3491,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/content-prompts",
+        "start_ms": 62650,
+        "duration_ms": 3131,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/students",
+        "start_ms": 32623,
+        "duration_ms": 2575,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/courses",
+        "start_ms": 32623,
+        "duration_ms": 2575,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/torah-learning",
+        "start_ms": 32623,
+        "duration_ms": 2359,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/integrations/status",
+        "start_ms": 32624,
+        "duration_ms": 2272,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/workspace-platform",
+        "start_ms": 62648,
+        "duration_ms": 2212,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/one-time/classroom",
+        "start_ms": 62650,
+        "duration_ms": 2200,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/integrations/buffer/health",
+        "start_ms": 62651,
+        "duration_ms": 2199,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/content-prompts",
+        "start_ms": 32622,
+        "duration_ms": 2165,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/agent-fleet/status",
+        "start_ms": 62649,
+        "duration_ms": 2142,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/one-time/classes?limit=120",
+        "start_ms": 62650,
+        "duration_ms": 2094,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/assignment-prompts",
+        "start_ms": 62650,
+        "duration_ms": 2001,
+        "status": 200,
+        "after_overview": null
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/integrations/resend/domains",
+        "start_ms": 62651,
+        "duration_ms": 2000,
+        "status": 200,
+        "after_overview": null
+      }
+    ],
+    "by_family": [
+      {
+        "path": "/api/bna/support-tickets",
+        "count": 2,
+        "total_ms": 9048,
+        "max_ms": 5345,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 4524
+      },
+      {
+        "path": "/api/bna/courses",
+        "count": 2,
+        "total_ms": 7427,
+        "max_ms": 4852,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 3714
+      },
+      {
+        "path": "/api/bna/students",
+        "count": 2,
+        "total_ms": 7224,
+        "max_ms": 4649,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 3612
+      },
+      {
+        "path": "/api/bna/integrations/status",
+        "count": 2,
+        "total_ms": 7133,
+        "max_ms": 4861,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 3567
+      },
+      {
+        "path": "/api/bna/torah-learning",
+        "count": 2,
+        "total_ms": 6630,
+        "max_ms": 4271,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 3315
+      },
+      {
+        "path": "/api/bna/content-prompts",
+        "count": 2,
+        "total_ms": 5296,
+        "max_ms": 3131,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 2648
+      },
+      {
+        "path": "/api/bna/integrations/buffer/channels",
+        "count": 2,
+        "total_ms": 4991,
+        "max_ms": 3491,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 2496
+      },
+      {
+        "path": "/api/bna/one-time/classroom",
+        "count": 2,
+        "total_ms": 4022,
+        "max_ms": 2200,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 2011
+      },
+      {
+        "path": "/api/bna/integrations/buffer/health",
+        "count": 2,
+        "total_ms": 4019,
+        "max_ms": 2199,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 2010
+      },
+      {
+        "path": "/api/bna/agent-fleet/status",
+        "count": 2,
+        "total_ms": 3965,
+        "max_ms": 2142,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1983
+      },
+      {
+        "path": "/api/bna/one-time/classes",
+        "count": 2,
+        "total_ms": 3916,
+        "max_ms": 2094,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1958
+      },
+      {
+        "path": "/api/bna/assignment-prompts",
+        "count": 2,
+        "total_ms": 3822,
+        "max_ms": 2001,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1911
+      },
+      {
+        "path": "/api/bna/workspace-platform",
+        "count": 2,
+        "total_ms": 3716,
+        "max_ms": 2212,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1858
+      },
+      {
+        "path": "/api/bna/internal-dialogue",
+        "count": 2,
+        "total_ms": 3537,
+        "max_ms": 1824,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1769
+      },
+      {
+        "path": "/api/bna/tasks",
+        "count": 2,
+        "total_ms": 3218,
+        "max_ms": 1715,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1609
+      },
+      {
+        "path": "/api/bna/one-time/question-moderation",
+        "count": 2,
+        "total_ms": 3216,
+        "max_ms": 1714,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1608
+      },
+      {
+        "path": "/api/bna/group-goals",
+        "count": 2,
+        "total_ms": 3215,
+        "max_ms": 1713,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1608
+      },
+      {
+        "path": "/api/bna/class-sessions",
+        "count": 2,
+        "total_ms": 3107,
+        "max_ms": 1604,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1554
+      },
+      {
+        "path": "/api/bna/integrations/resend/domains",
+        "count": 2,
+        "total_ms": 2936,
+        "max_ms": 2000,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1468
+      },
+      {
+        "path": "/api/bna/content-jobs",
+        "count": 2,
+        "total_ms": 2845,
+        "max_ms": 1989,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1423
+      },
+      {
+        "path": "/api/bna/live-sessions",
+        "count": 2,
+        "total_ms": 2605,
+        "max_ms": 1501,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1303
+      },
+      {
+        "path": "/api/bna/devices",
+        "count": 2,
+        "total_ms": 2407,
+        "max_ms": 1304,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1204
+      },
+      {
+        "path": "/api/bna/contact-communications",
+        "count": 2,
+        "total_ms": 2208,
+        "max_ms": 1243,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1104
+      },
+      {
+        "path": "/api/bna/ops/queue-health",
+        "count": 2,
+        "total_ms": 2057,
+        "max_ms": 1268,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1029
+      },
+      {
+        "path": "/api/bna/integrations/resend/health",
+        "count": 2,
+        "total_ms": 2039,
+        "max_ms": 1102,
+        "statuses": [
+          200
+        ],
+        "avg_ms": 1020
+      }
+    ]
+  },
+  "long_tasks": {
+    "count": 0,
+    "total_ms": 0,
+    "max_ms": 0,
+    "top": []
+  },
+  "resources": {
+    "count": 114,
+    "transfer_size": 37560967,
+    "encoded_body_size": 37526767,
+    "scripts": [
+      {
+        "path": "/js/platform-ui/platform-ui-fixtures.js",
+        "transfer_size": 18400,
+        "encoded_body_size": 18100,
+        "duration_ms": 684
+      },
+      {
+        "path": "/js/app-select.js",
+        "transfer_size": 19763,
+        "encoded_body_size": 19463,
+        "duration_ms": 698
+      },
+      {
+        "path": "/js/platform-ui/platform-ui.js",
+        "transfer_size": 46137,
+        "encoded_body_size": 45837,
+        "duration_ms": 781
+      },
+      {
+        "path": "/js/operations-shell.js",
+        "transfer_size": 1205494,
+        "encoded_body_size": 1205194,
+        "duration_ms": 1609
+      }
+    ],
+    "styles": [
+      {
+        "path": "/css2",
+        "transfer_size": 1042,
+        "encoded_body_size": 742,
+        "duration_ms": 188
+      },
+      {
+        "path": "/css/operations-shell.css",
+        "transfer_size": 227138,
+        "encoded_body_size": 226838,
+        "duration_ms": 883
+      },
+      {
+        "path": "/css/bna-app-shell.css",
+        "transfer_size": 35186,
+        "encoded_body_size": 34886,
+        "duration_ms": 658
+      },
+      {
+        "path": "/css/platform-ui/platform-ui.css",
+        "transfer_size": 17186,
+        "encoded_body_size": 16886,
+        "duration_ms": 658
+      },
+      {
+        "path": "/css/one-time-operations.css",
+        "transfer_size": 66816,
+        "encoded_body_size": 66516,
+        "duration_ms": 781
+      }
+    ]
+  },
+  "dom": {
+    "dom_nodes": 27,
+    "button_count": 0,
+    "link_count": 0,
+    "script_count": 5,
+    "stylesheet_count": 6,
+    "body_text_length": 25,
+    "body_text_preview": "Loading BNA Operations...",
+    "error_banners": [],
+    "one_time_route": "",
+    "title": "BNA Operations"
+  },
+  "console_errors": [
+    "renderCommunicationTopNewsPanel is not defined",
+    "Failed to load resource: the server responded with a status of 500 ()",
+    "studentAccountabilitySnapshot is not defined",
+    "Failed to load resource: the server responded with a status of 500 ()"
+  ],
+  "failed_requests": []
+}

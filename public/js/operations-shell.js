@@ -3370,11 +3370,11 @@
                                 ${alerts.map(item => renderMetricButton(item.label, item.value, item.note, item.target)).join('')}
                             </div>
                         </section>
-                        ${renderCommunicationTopNewsPanel(communicationTopNewsItems(6), true)}
+                        ${renderDashboardTopNewsPanel(6)}
                         ${renderNotificationCenter(24)}
                     ` : ''}
                     ${section === 'overview' ? renderNotificationCenter(5) : ''}
-                    ${section === 'overview' ? renderCommunicationTopNewsPanel(communicationTopNewsItems(4), true) : ''}
+                    ${section === 'overview' ? renderDashboardTopNewsPanel(4) : ''}
                     ${section === 'today' || section === 'overview' ? `
                         <section class="focus-panel" aria-label="Today">
                             <div class="task-section-header"><h3>Today's Work</h3><span>${recentTasks.length} tasks</span></div>
@@ -3622,6 +3622,71 @@
         function limitTextClient(value, max = 180) {
             const text = String(value || '').replace(/\s+/g, ' ').trim();
             return text.length > max ? `${text.slice(0, max - 1).trim()}...` : text;
+        }
+
+        function renderDashboardTopNewsPanel(limit = 4) {
+            const topNews = [...contactCommunications]
+                .filter(item => item.follow_up_required || /urgent|high|failed|payment|reply|accountability/i.test(`${item.priority || ''} ${item.summary || ''} ${item.body || ''}`))
+                .sort((a, b) => Date.parse(b.occurred_at || b.created_at || 0) - Date.parse(a.occurred_at || a.created_at || 0))
+                .slice(0, limit);
+            return `
+                <section class="focus-panel" data-communication-top-news>
+                    <div class="task-section-header"><h3>Top News</h3><span>${topNews.length} events</span></div>
+                    ${topNews.length ? `<div class="communication-top-news-grid">
+                        ${topNews.map(item => `
+                            <article class="communication-top-news-card">
+                                <div class="task-card-meta">
+                                    <span class="badge badge-urgency-${escapeHtml(String(item.priority || '').toLowerCase() === 'urgent' ? 'urgent' : 'today')}">${escapeHtml(item.priority || (item.follow_up_required ? 'high' : 'normal'))}</span>
+                                    <span class="badge">${escapeHtml(communicationChannelLabel(item.channel))}</span>
+                                    <span class="badge">${escapeHtml(communicationDirectionLabel(item.direction))}</span>
+                                </div>
+                                <div class="task-title">${escapeHtml(item.subject || item.title || item.summary || communicationContactName(item) || 'Contact update')}</div>
+                                <p class="task-notes">${escapeHtml(limitTextClient(item.body || item.summary || '', 160))}</p>
+                            </article>
+                        `).join('')}
+                    </div>` : '<div class="empty-state">No high-priority communication events are loaded.</div>'}
+                </section>
+            `;
+        }
+
+        function shellDeviceAccessState(value = '') {
+            const status = String(value || '').toLowerCase();
+            if (/approved|open|active|manual/.test(status)) return status.includes('manual') ? 'manual_override' : 'approved_access';
+            if (/lock/.test(status)) return 'locked';
+            if (/accountability/.test(status)) return 'accountability_only';
+            if (/expired/.test(status)) return 'expired';
+            if (/pending|review/.test(status)) return 'needs_review';
+            return status || 'not_configured';
+        }
+
+        function shellDeviceAccessLabel(state = '') {
+            return contactStatusLabel(String(state || 'not_configured').replace(/_/g, ' '));
+        }
+
+        function studentAccountabilitySnapshot(student = {}) {
+            const studentId = String(student.id || student.student_id || '');
+            const relatedEvents = (accountabilityEvents || []).filter(event => String(event.student_id || event.student?.id || '') === studentId);
+            const device = (devices || [])
+                .filter(item => String(item.student_id || item.student?.id || '') === studentId)
+                .sort((a, b) => Date.parse(b.updated_at || b.created_at || 0) - Date.parse(a.updated_at || a.created_at || 0))[0] || null;
+            const eventText = relatedEvents.map(event => `${event.status || ''} ${event.stage || ''} ${event.outcome || ''}`).join(' ').toLowerCase();
+            const deviceState = shellDeviceAccessState(device?.status);
+            let status = 'due_today';
+            if (!relatedEvents.length && !device) status = 'needs_setup';
+            else if (/review|pending/.test(eventText) || deviceState === 'needs_review') status = 'needs_review';
+            else if (/missed|overdue|late/.test(eventText)) status = 'missed';
+            else if (['approved_access', 'manual_override'].includes(deviceState)) status = 'access_open';
+            else if (/done|complete|completed|checked/.test(eventText)) status = 'checked_off';
+            else if (['locked', 'accountability_only', 'expired'].includes(deviceState)) status = 'locked';
+            return {
+                status,
+                goal: relatedEvents[0] || null,
+                metadata: {},
+                device,
+                deviceState,
+                deviceLabel: shellDeviceAccessLabel(deviceState),
+                accessWindow: device?.active_session ? 'Active session' : '',
+            };
         }
 
         function operationsCommandMetrics() {

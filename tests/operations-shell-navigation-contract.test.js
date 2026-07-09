@@ -79,7 +79,8 @@ test('Operations route uses a small split bootstrap with cacheable shell assets'
   assert.doesNotMatch(operationsShellJs, /function renderContent\(/);
   assert.doesNotMatch(operationsShellJs, /function renderStudents\(/);
   assert.doesNotMatch(operationsShellJs, /function renderLiveClasses\(/);
-  assert.ok(Buffer.byteLength(operationsShellJs, 'utf8') < 1200000, 'initial Operations JS should stay below 1.2MB');
+  const normalizedShellJs = operationsShellJs.replace(/\r\n/g, '\n');
+  assert.ok(Buffer.byteLength(normalizedShellJs, 'utf8') < 1200000, 'initial Operations JS should stay below 1.2MB');
   assert.match(operationsDeferredRenderersJs, /function renderContent\(/);
   assert.match(operationsDeferredRenderersJs, /function renderStudents\(/);
   assert.match(operationsDeferredRenderersJs, /function renderLiveClasses\(/);

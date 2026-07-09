@@ -53,6 +53,24 @@ async function requestJson(url, options = {}) {
   return { response, data };
 }
 
+function resolveAssetUrl(appUrl, assetPath) {
+  try {
+    return new URL(assetPath, `${appUrl}/`).toString();
+  } catch {
+    return `${appUrl}/${String(assetPath || '').replace(/^\/+/, '')}`;
+  }
+}
+
+function scriptSources(html = '') {
+  const sources = [];
+  const pattern = /<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi;
+  let match;
+  while ((match = pattern.exec(html))) {
+    sources.push(match[1]);
+  }
+  return sources;
+}
+
 function writeReports(report) {
   fs.mkdirSync(reportDir, { recursive: true });
   const stamp = report.started_at.replace(/[:.]/g, '-');
@@ -190,14 +208,28 @@ async function main() {
       const { text } = await requestText(`${appUrl}/operations?workspace=platform&view=admin&section=workspaces`, {
         headers: { Authorization: auth },
       });
+      const assetSources = scriptSources(text)
+        .filter((source) => /\/js\/operations-(shell|deferred-renderers)\.js(?:\?|$)/.test(source));
+      const assetTexts = [];
+      for (const source of assetSources) {
+        const { text: assetText } = await requestText(resolveAssetUrl(appUrl, source), {
+          headers: { Authorization: auth },
+        });
+        assetTexts.push({ source, text: assetText });
+      }
+      const servedSurface = [text, ...assetTexts.map((asset) => asset.text)].join('\n');
       const expectedTerms = ['Workspace type selector', 'Specific workspace', 'Dratler Family'];
       for (const expected of expectedTerms) {
-        assert(text.includes(expected), `Operations HTML missing ${expected}`);
+        assert(servedSurface.includes(expected), `Operations shell surface missing ${expected}`);
       }
       for (const stale of ['Family App / Home Accountability', 'Family Accountability', 'Family Directory']) {
-        assert(!text.includes(stale), `Operations HTML still exposes ${stale}`);
+        assert(!servedSurface.includes(stale), `Operations shell surface still exposes ${stale}`);
       }
-      return { checked_terms: expectedTerms };
+      return {
+        checked_terms: expectedTerms,
+        checked_sources: ['operations bootstrap', ...assetTexts.map((asset) => asset.source)],
+        split_shell: assetSources.some((source) => source.includes('/js/operations-shell.js')),
+      };
     });
   } finally {
     const paths = writeReports(report);
