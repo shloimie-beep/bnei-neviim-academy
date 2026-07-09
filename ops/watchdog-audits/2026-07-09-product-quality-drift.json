@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T12:12:16.122Z",
+  "generated_at": "2026-07-09T12:34:14.198Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -569,6 +569,7 @@
     "tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md",
     "tasks-pending/2026-07-09-onetime-scope-ui-agent-contact-corrections.md",
     "tasks-pending/2026-07-09-process-cleanup-deploy-pending.md",
+    "tasks-pending/2026-07-09-production-readiness-goal.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
   ],

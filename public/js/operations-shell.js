@@ -15271,36 +15271,42 @@
                 const studioTaskOnlySession = isStudioTaskOnlySession();
                 const needsLocalClassroomData = activeView === 'students' || (activeView === 'content' && activeContentSection === 'one_time_library');
                 const needsDashboardData = activeView === 'dashboard';
-                const needsPlatformData = !oneTimeProgramLightPass && (needsDashboardData || ['watchdog', 'pipelines', 'calendar', 'communications', 'internal_dialogue', 'service_providers', 'api_usage', 'admin', 'integrations', 'settings'].includes(activeView));
-                const needsCalendarData = !oneTimeProgramLightPass && (needsDashboardData || activeView === 'calendar' || (activeView === 'integrations' && ['google', 'connectors'].includes(activeIntegrationsSection)) || (activeView === 'settings' && ['calendar', 'calendar_classroom', 'google_classroom', 'integrations', 'google_workspace'].includes(activeSettingsSection)));
+                const dashboardLightPass = needsDashboardData && !oneTimeProgramLightPass;
+                const needsBroadDashboardData = needsDashboardData && !dashboardLightPass;
+                const needsPlatformData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['watchdog', 'pipelines', 'calendar', 'communications', 'internal_dialogue', 'service_providers', 'api_usage', 'admin', 'integrations', 'settings'].includes(activeView));
+                const needsCalendarData = !oneTimeProgramLightPass && (needsBroadDashboardData || activeView === 'calendar' || (activeView === 'integrations' && ['google', 'connectors'].includes(activeIntegrationsSection)) || (activeView === 'settings' && ['calendar', 'calendar_classroom', 'google_classroom', 'integrations', 'google_workspace'].includes(activeSettingsSection)));
                 const needsGoogleIntegrationData = !oneTimeProgramLightPass && ((activeView === 'integrations' && activeIntegrationsSection === 'google') || (activeView === 'settings' && ['google_workspace', 'google_calendar', 'google_classroom', 'integrations', 'integrations_core', 'calendar_classroom'].includes(activeSettingsSection)));
-                const needsPipelineData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'pipelines', 'tasks', 'service_providers'].includes(activeView));
-                const needsDialogueData = !oneTimeProgramLightPass && (needsDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection)));
-                const needsProjectData = !oneTimeProgramLightPass && (needsDashboardData || ['pipelines', 'service_providers', 'studio', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection)));
+                const needsPipelineData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsBroadDashboardData || ['watchdog', 'pipelines', 'tasks', 'service_providers'].includes(activeView));
+                const needsDialogueData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection)));
+                const needsProjectData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['pipelines', 'service_providers', 'studio', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection)));
                 const needsTaskData = !oneTimeProgramLightPass && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'pipelines', 'internal_dialogue'].includes(activeView));
                 const needsAgentFleetData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView));
                 const needsQueueHealthData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView));
                 const canUseAgentControl = opsMe?.scope?.type === 'all';
                 const needsAgentRunData = !oneTimeProgramLightPass && canUseAgentControl && ['agents', 'tasks'].includes(activeView);
-                const needsPeopleData = !oneTimeProgramLightPass && (needsDashboardData || ['contacts', 'admin'].includes(activeView) || (activeView === 'settings' && ['users_roles', 'users_access'].includes(activeSettingsSection)));
-                const needsContactData = !oneTimeProgramLightPass && (needsDashboardData || ['contacts', 'communications', 'service_providers', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal', 'communications'].includes(activeSettingsSection)));
+                const needsPeopleData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['contacts', 'admin'].includes(activeView) || (activeView === 'settings' && ['users_roles', 'users_access'].includes(activeSettingsSection)));
+                const needsContactData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['contacts', 'communications', 'service_providers', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal', 'communications'].includes(activeSettingsSection)));
+                const needsCommunicationActivityData = !oneTimeProgramLightPass && (needsDashboardData || needsContactData);
                 const needsWapiPhonebookData = activeView === 'communications' && communicationsSection === 'whatsapp';
-                const needsAnnouncementData = !oneTimeProgramLightPass && (needsDashboardData || activeView === 'communications' || (activeView === 'settings' && activeSettingsSection === 'communications'));
-                const needsSignupData = needsContactData || activeView === 'students' || activeView === 'accounting' || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection));
+                const needsAnnouncementData = !oneTimeProgramLightPass && (needsBroadDashboardData || activeView === 'communications' || (activeView === 'settings' && activeSettingsSection === 'communications'));
+                const needsSignupData = needsDashboardData || needsContactData || activeView === 'students' || activeView === 'accounting' || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection));
                 const needsAccountingData = !oneTimeProgramLightPass && (needsDashboardData || ['accounting', 'api_usage'].includes(activeView) || (activeView === 'settings' && ['billing_payments', 'billing', 'payment_links', 'api_limits'].includes(activeSettingsSection)));
-                const needsContentData = !oneTimeProgramLightPass && (needsDashboardData || ['content', 'service_providers', 'calendar'].includes(activeView));
+                const needsContentData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['content', 'service_providers', 'calendar'].includes(activeView));
+                const needsContentJobData = !oneTimeProgramLightPass && (needsDashboardData || needsContentData);
                 const needsStudioData = !oneTimeProgramLightPass && ['studio', 'api_usage'].includes(activeView);
-                const needsCommunityData = !oneTimeProgramLightPass && (needsDashboardData || activeView === 'community');
-                const needsLiveClassData = !oneTimeProgramLightPass && (needsDashboardData || ['live_classes', 'contacts', 'students'].includes(activeView));
+                const needsCommunityData = !oneTimeProgramLightPass && (needsBroadDashboardData || activeView === 'community');
+                const needsLiveClassData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['live_classes', 'contacts', 'students'].includes(activeView));
                 const needsStudentRosterData = !oneTimeProgramLightPass && (needsDashboardData || needsLocalClassroomData || needsCommunityData || ['contacts', 'api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection)));
-                const needsStudentData = !oneTimeProgramLightPass && (needsDashboardData || needsLocalClassroomData || ['api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'student_portal'].includes(activeSettingsSection)));
-                const needsProviderData = needsDashboardData || ['service_providers', 'contacts', 'communications', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'external_apps') || (activeView === 'settings' && ['provider_index', 'provider_portal', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models', 'payment_links', 'external_apps'].includes(activeSettingsSection));
+                const needsStudentData = !oneTimeProgramLightPass && (needsBroadDashboardData || needsLocalClassroomData || ['api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'student_portal'].includes(activeSettingsSection)));
+                const needsStudentAttentionData = !oneTimeProgramLightPass && (needsDashboardData || needsStudentData);
+                const needsProviderData = needsBroadDashboardData || ['service_providers', 'contacts', 'communications', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'external_apps') || (activeView === 'settings' && ['provider_index', 'provider_portal', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models', 'payment_links', 'external_apps'].includes(activeSettingsSection));
                 const needsRabbiLaunchData = !oneTimeProgramFastPass && needsProviderData && isProviderWorkspace();
                 const needsSupportData = !oneTimeProgramLightPass && (needsDashboardData || ['admin', 'communications', 'api_usage', 'internal_dialogue', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'api_limits', 'bot_permissions'].includes(activeSettingsSection)));
                 const needsNotificationData = !oneTimeProgramLightPass && (needsDashboardData || ['admin', 'communications', 'content', 'contacts', 'service_providers', 'api_usage'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'bot_permissions'].includes(activeSettingsSection)));
-                const needsCommunicationsIntegrationData = !oneTimeProgramLightPass && (needsDashboardData || (activeView === 'integrations' && activeIntegrationsSection === 'communications') || (activeView === 'communications' && ['overview', 'email', 'settings'].includes(communicationsSection)) || (activeView === 'settings' && ['communications', 'communications_core', 'email_identities', 'social_accounts', 'integrations', 'integrations_core'].includes(activeSettingsSection)));
+                const needsNotificationPreferencesData = needsNotificationData && !dashboardLightPass;
+                const needsCommunicationsIntegrationData = !oneTimeProgramLightPass && (needsBroadDashboardData || (activeView === 'integrations' && activeIntegrationsSection === 'communications') || (activeView === 'communications' && ['overview', 'email', 'settings'].includes(communicationsSection)) || (activeView === 'settings' && ['communications', 'communications_core', 'email_identities', 'social_accounts', 'integrations', 'integrations_core'].includes(activeSettingsSection)));
                 const needsIntegrationsReadinessData = currentWorkspaceIsGlobal() && (
-                    needsDashboardData ||
+                    needsBroadDashboardData ||
                     activeView === 'watchdog' ||
                     (activeView === 'integrations' && activeIntegrationsSection === 'readiness') ||
                     (activeView === 'settings' && ['integrations', 'integrations_core'].includes(activeSettingsSection))
@@ -15340,13 +15346,13 @@
                     needsSignupData || needsAccountingData ? api.getSignups() : Promise.resolve({ signups: [] }),
                     needsContactData ? api.getParentLeads(workspaceDataFilters) : Promise.resolve({ leads: [] }),
                     shouldLoadServiceProvidersData ? dataRequestWithTimeout(api.getServiceProviders({ approved_only: false }), { providers: serviceProviders }, 'service providers', oneTimeProgramFastPass ? 3200 : 6000) : Promise.resolve({ providers: serviceProviders }),
-                    needsContactData ? api.getContactCommunications(workspaceDataFilters) : Promise.resolve({ communications: [] }),
+                    needsCommunicationActivityData ? api.getContactCommunications(workspaceDataFilters) : Promise.resolve({ communications: [] }),
                     needsWapiPhonebookData ? api.getWapiPhonebookReport(100, { workspace: currentWorkspaceKey() }) : Promise.resolve(null),
                     needsAnnouncementData ? api.getParentAnnouncements(workspaceFilter ? { workspace: workspaceFilter, limit: 20 } : { limit: 20 }) : Promise.resolve({ announcements: [] }),
                     needsAccountingData ? api.getPayments() : Promise.resolve({ payments: [] }),
                     needsAccountingData ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
                     needsAccountingData ? api.getPaymentReminderDue() : Promise.resolve(null),
-                    needsContentData ? api.getContentJobs(contentFilters) : Promise.resolve({ jobs: [] }),
+                    needsContentJobData ? api.getContentJobs(contentFilters) : Promise.resolve({ jobs: [] }),
                     needsContentData ? api.getClassSessions(contentFilters) : Promise.resolve({ sessions: [] }),
                     needsContentData ? api.getProjectMeetings({ project: contentFilters.project_key || 'one_time_mishnah_class' }) : Promise.resolve({ meetings: [] }),
                     shouldLoadOneTimeContentData ? api.getOneTimeClasses({ limit: 120 }) : Promise.resolve({ classes: [] }),
@@ -15359,10 +15365,10 @@
                     needsStudentRosterData ? api.getStudents(workspaceDataFilters) : Promise.resolve({ students: [] }),
                     needsStudentData ? api.getAssignments(selectedStudentFilters) : Promise.resolve({ assignments: [] }),
                     needsStudentData ? api.getAssignmentPrompts() : Promise.resolve({ prompts: [] }),
-                    needsStudentData ? api.getDevices(selectedStudentFilters) : Promise.resolve({ devices: [] }),
+                    needsStudentAttentionData ? api.getDevices(selectedStudentFilters) : Promise.resolve({ devices: [] }),
                     needsStudentData ? api.getDeviceAccessRules(selectedStudentFilters) : Promise.resolve({ rules: [] }),
                     needsStudentData ? api.getTorahLearning(workspaceDataFilters) : Promise.resolve(null),
-                    needsStudentData ? api.getAccountability(selectedStudentFilters) : Promise.resolve({ events: [] }),
+                    needsStudentAttentionData ? api.getAccountability(selectedStudentFilters) : Promise.resolve({ events: [] }),
                     needsStudentData ? api.getGroupGoals(workspaceDataFilters) : Promise.resolve({ goals: [] }),
                     needsCommunityData ? api.getWs11Courses(communityFilters) : Promise.resolve({ courses: [] }),
                     needsCommunityData ? api.getWs11Worksheets(communityFilters) : Promise.resolve({ worksheets: [] }),
@@ -15371,7 +15377,7 @@
                     needsCommunityData ? api.getWs11Shoutouts(communityFilters) : Promise.resolve({ shoutouts: [] }),
                     needsGoogleIntegrationData ? api.getGoogleIntegrationStatus() : Promise.resolve(null),
                     needsNotificationData ? api.getNotifications({ status: 'all', limit: 100, ...(workspaceFilter ? { workspace: workspaceFilter } : {}) }) : Promise.resolve({ notifications: [], summary: null }),
-                    needsNotificationData ? api.getNotificationPreferences(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ preferences: [] }),
+                    needsNotificationPreferencesData ? api.getNotificationPreferences(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ preferences: [] }),
                     needsCommunicationsIntegrationData ? fetchCommunicationsIntegrationBundle(communicationsIntegrationFilters) : Promise.resolve(null),
                     needsAutomationData ? api.getAutomations(workspaceDataFilters) : Promise.resolve({ automations: [], filters: automationFiltersMeta }),
                     needsIntegrationsReadinessData ? api.getIntegrationStatus(workspaceDataFilters) : Promise.resolve(null)
@@ -15428,7 +15434,7 @@
                     if (providerErrors.length) providerIndexNotice = providerErrors.join('; ');
                 }
                 if (contactCommunicationsRes.status === 'fulfilled' && contactCommunicationsRes.value?.communications) contactCommunications = contactCommunicationsRes.value.communications;
-                if (needsContactData) {
+                if (needsContactData && !dashboardLightPass) {
                     try {
                         const unifiedCommunicationsRes = await api.getCommunications({ ...communicationDataFilters, limit: 200 });
                         contactCommunications = mergeContactAndUnifiedCommunications(contactCommunications, unifiedCommunicationsRes?.communications || []);
