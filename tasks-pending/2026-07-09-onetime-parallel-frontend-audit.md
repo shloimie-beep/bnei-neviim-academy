@@ -310,3 +310,40 @@ Evidence:
 Provider-review/Operations parity remains a separate packet. Full production
 still remains blocked by external setup, terminal Agent Mode proof, no
 unblocked execution batch, and Rabbi Telegram hosted/live-smoke proof.
+
+## 2026-07-10 provider-review and Operations parity local implementation update
+
+Codex resumed the provider-review/Operations parity slice after the scoped
+static chrome lane was deployed and the remaining visual findings were isolated
+to `/provider.html?review=one-time` and the two scoped Operations routes.
+
+Implemented locally:
+
+- Added a Provider active topbar state to the OneTime provider review and
+  signed Rabbi workspace chrome.
+- Added provider-specific logo sizing for provider review/session states across
+  desktop, tablet, and phone viewports.
+- Prevented the visual audit harness from treating the provider workspace
+  sidebar as top chrome.
+- Tightened scoped OneTime Operations chrome: larger OneTime logo, yellow/black
+  active section tabs, compact top chrome, 44px mobile buttons/selects/inputs,
+  and no clipped top-rail text.
+- Added focused Playwright coverage for provider review logo/nav state.
+
+Verification so far:
+
+- PASS `node --check scripts/audit-onetime-parallel-frontend.mjs`.
+- PASS `node --test tests/one-time-provider-review-navigation.test.js
+  tests/one-time-shared-review-branding.test.js
+  tests/one-time-brand-helper-isolation.test.js` with 25/25 passing.
+- PASS `npm run pqc:validate --
+  ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/04-provider-operations-layout-parity-audit.product-quality.json`.
+- PASS `npm run watchdog:protocol-drift`.
+- PASS local visual audit:
+  `ops/ui-audits/2026-07-10-onetime-provider-parity-local/report.md`.
+  Final readback: status `captured`, 0 findings total, 0 provider findings,
+  and 0 Operations findings across the audited 1440, 1024, 768, 430, and 390px
+  viewports.
+
+Deployment/live-smoke remains required before terminal Done for this
+provider-review/Operations parity slice.

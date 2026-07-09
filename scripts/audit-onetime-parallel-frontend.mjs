@@ -257,6 +257,7 @@ async function collectMetrics(page, viewport) {
     const body = document.body;
     const scrollWidth = Math.max(doc?.scrollWidth || 0, body?.scrollWidth || 0);
     const topbarEls = uniqueVisible(topbarSelectors).filter((el) => {
+      if (el.matches('#portalPanel.one-time-provider-workspace > .workspace-nav')) return false;
       const rect = el.getBoundingClientRect();
       return rect.top < (viewportWidth <= 430 ? 300 : 260);
     });

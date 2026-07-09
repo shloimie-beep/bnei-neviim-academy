@@ -37531,3 +37531,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
   smoke, Drive write, class backfill, or production-data mutation.
+
+## 2026-07-10T01:40:51+03:00 - OneTime Provider/Operations Parity Verified Locally
+
+- Resumed the remaining provider-review/Operations visual parity slice after
+  static chrome live proof isolated the remaining findings to that packet.
+- Updated provider review/session chrome with a Provider active topbar state
+  and larger OneTime logo sizing.
+- Updated scoped OneTime Operations chrome with larger brand marks,
+  yellow/black active section tabs, compact top chrome, no clipped rail text,
+  and 44px mobile buttons/selects/inputs.
+- Updated the OneTime frontend audit harness so provider side navigation is
+  not counted as top chrome.
+- Verification passed: `node --check scripts/audit-onetime-parallel-frontend.mjs`;
+  `node --test tests/one-time-provider-review-navigation.test.js
+  tests/one-time-shared-review-branding.test.js
+  tests/one-time-brand-helper-isolation.test.js`; `npm run pqc:validate --
+  ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/04-provider-operations-layout-parity-audit.product-quality.json`;
+  `npm run watchdog:protocol-drift`.
+- Local visual audit at
+  `ops/ui-audits/2026-07-10-onetime-provider-parity-local/` reports status
+  `captured`, 0 findings total, 0 provider findings, and 0 Operations findings.
+- Deployment/live-smoke remains pending before terminal Done.
+- Guardrails: no external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
+  smoke, Drive write, class backfill, or production-data mutation.

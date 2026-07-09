@@ -2477,7 +2477,7 @@
         }
 
         function applyOneTimeReviewBrand(viewAsSession = null) {
-            document.body.classList.add('one-time-review-active');
+            document.body.classList.add('one-time-review-active', 'one-time-provider-review-active');
             if (viewAsSession) {
                 document.body.classList.add('one-time-view-as-readonly');
                 document.title = 'Viewing One Time as Rabbi Eli Scheller';
@@ -2501,7 +2501,8 @@
             if (actions) {
                 actions.innerHTML = viewAsSession
                     ? `
-                        <a class="portal-topbar-link" href="/one-time">One Time</a>
+                        <a class="portal-topbar-link active" aria-current="page" href="/provider.html?review=one-time">Provider</a>
+                        <a class="portal-topbar-link secondary-link" href="/one-time">One Time</a>
                         <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
                         <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
                         <a class="portal-topbar-link secondary-link" href="/rabbi-member?review=one-time">Member</a>
@@ -2510,7 +2511,8 @@
                         <span class="brand-chip">VIEWING AS RABBI - READ ONLY</span>
                     `
                     : `
-                        <a class="portal-topbar-link" href="/one-time">One Time</a>
+                        <a class="portal-topbar-link active" aria-current="page" href="/provider.html?review=one-time">Provider</a>
+                        <a class="portal-topbar-link secondary-link" href="/one-time">One Time</a>
                         <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
                         <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
                         <a class="portal-topbar-link secondary-link" href="/rabbi-member?review=one-time">Member</a>
@@ -2522,7 +2524,7 @@
         }
 
         function applyOneTimeProviderSessionBrand(data = portalState) {
-            document.body.classList.add('one-time-review-active', 'one-time-admin-provider-active');
+            document.body.classList.add('one-time-review-active', 'one-time-provider-review-active', 'one-time-admin-provider-active');
             document.body.classList.remove('one-time-view-as-readonly');
             document.title = 'OneTimeOneTime Rabbi Workspace';
             const mark = document.querySelector('.brand-mark');
@@ -2543,7 +2545,8 @@
             if (actions) {
                 const links = data.links || {};
                 actions.innerHTML = `
-                    <a class="portal-topbar-link" href="${escapeHtml(oneTimeRoleLink(links, 'one_time_home', '/one-time', '/one-time'))}">One Time</a>
+                    <a class="portal-topbar-link active" aria-current="page" href="/provider.html?admin_provider=one-time">Provider</a>
+                    <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'one_time_home', '/one-time', '/one-time'))}">One Time</a>
                     <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'parent', '/parent/login', '/parent.html?review=one-time'))}">Parent</a>
                     <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'student', '/student/login', '/student.html?review=one-time'))}">Student</a>
                     <a class="portal-topbar-link secondary-link" href="${escapeHtml(oneTimeRoleLink(links, 'member', '/rabbi-member', '/rabbi-member?review=one-time'))}">Member</a>

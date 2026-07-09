@@ -282,7 +282,7 @@ body.one-time-operations-active .one-time-ops-mobile-button-row a,
 [data-one-time-rabbi-module] .one-time-ops-mobile-button-row .task-action,
 [data-one-time-rabbi-module] .one-time-ops-mobile-button-row button,
 [data-one-time-rabbi-module] .one-time-ops-mobile-button-row a {
-  min-height: 38px;
+  min-height: 44px;
   border-radius: var(--ot-ops-radius);
 }
 
@@ -486,14 +486,14 @@ body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-c
 
 @media (min-width: 721px) {
   body.bna-ops-shell-page.one-time-operations-active .ops-brand-topbar {
-    min-height: 56px;
+    min-height: 76px;
     gap: 10px;
     padding: 8px clamp(12px, 1.4vw, 18px);
   }
 
   body.bna-ops-shell-page.one-time-operations-active .ops-brand-mark {
-    width: 34px;
-    height: 34px;
+    width: 60px;
+    height: 60px;
   }
 
   body.bna-ops-shell-page.one-time-operations-active .ops-brand-lockup {
@@ -510,7 +510,6 @@ body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-c
     font-size: 14px;
   }
 
-  body.bna-ops-shell-page.one-time-operations-active .ops-topbar-center,
   body.bna-ops-shell-page.one-time-operations-active .ops-brand-actions > .ops-brand-chip:first-child {
     position: absolute;
     inline-size: 1px;
@@ -524,6 +523,10 @@ body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-c
     pointer-events: none;
   }
 
+  body.bna-ops-shell-page.one-time-operations-active .ops-topbar-center {
+    display: none !important;
+  }
+
   body.bna-ops-shell-page.one-time-operations-active .ops-brand-actions {
     flex: 0 0 auto;
     flex-wrap: nowrap;
@@ -532,12 +535,12 @@ body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-c
 
   body.bna-ops-shell-page.one-time-operations-active .ops-brand-chip,
   body.bna-ops-shell-page.one-time-operations-active button.ops-brand-chip {
-    min-height: 38px;
+    min-height: 44px;
     padding: 6px 10px;
   }
 
   body.bna-ops-shell-page.one-time-operations-active .ops-filter-rail {
-    top: 56px;
+    top: 76px;
     padding: 6px clamp(12px, 1.4vw, 18px);
   }
 
@@ -571,26 +574,77 @@ body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-c
 
   body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-tab,
   body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-tab {
-    flex: 0 0 clamp(92px, 9.8vw, 124px);
-    min-width: 92px;
-    min-height: 38px;
+    flex: 0 0 clamp(108px, 10.5vw, 136px);
+    min-width: 108px;
+    min-height: 44px;
     padding: 6px 8px;
     scroll-snap-align: start;
-    white-space: nowrap;
+    white-space: normal;
   }
 
   body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-tab span:first-child,
   body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-tab span:first-child {
     min-width: 0;
     line-height: 1.1;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+    text-overflow: clip;
   }
 
   body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="service_providers"] .ops-filter-count,
   body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-current-module="communications"] .ops-filter-count {
     min-width: 20px;
     padding: 2px 5px;
+  }
+}
+
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab.active,
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab[aria-current="page"],
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab[aria-selected="true"] {
+  border-color: rgba(237, 229, 24, 0.82) !important;
+  background: var(--ot-ops-warning-gated) !important;
+  color: #101010 !important;
+  box-shadow: none !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab.active .ops-filter-count,
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab[aria-current="page"] .ops-filter-count,
+body.bna-ops-shell-page.one-time-operations-active .ops-filter-tab[aria-selected="true"] .ops-filter-count {
+  background: rgba(16, 16, 16, 0.14) !important;
+  color: #101010 !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .ops-mobile-mark {
+  width: 56px;
+  height: 56px;
+}
+
+body.bna-ops-shell-page.one-time-operations-active select,
+body.bna-ops-shell-page.one-time-operations-active .app-select__button {
+  min-height: 44px !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .app-select__option {
+  min-height: 44px !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .app-select__button {
+  border-color: rgba(237, 229, 24, 0.34) !important;
+  background: rgba(250, 249, 244, 0.96) !important;
+  color: #101010 !important;
+  font-weight: 800 !important;
+}
+
+body.bna-ops-shell-page.one-time-operations-active .one-time-perspective-actions .task-action,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] input,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] select,
+body.bna-ops-shell-page.one-time-operations-active [data-one-time-communications-route="email"] textarea {
+  min-height: 44px !important;
+}
+
+@media (max-width: 520px) {
+  body.bna-ops-shell-page.one-time-operations-active .ops-mobile-mark {
+    width: 48px;
+    height: 48px;
   }
 }
 

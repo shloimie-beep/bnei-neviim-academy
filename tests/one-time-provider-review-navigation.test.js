@@ -422,6 +422,41 @@ test('One Time Rabbi CRM and mailbox review hide Super Admin setup diagnostics',
   }
 });
 
+test('One Time provider review has premium topbar logo and active provider nav state', async () => {
+  const local = createProviderReviewServer();
+  const baseUrl = await local.listen();
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1180, height: 840 } });
+    await page.goto(`${baseUrl}/provider.html?review=one-time&section=crm`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('.portal-topbar-link.active[aria-current="page"]');
+
+    const activeText = await page.locator('.portal-topbar-link.active[aria-current="page"]').first().innerText();
+    assert.equal(activeText.trim(), 'Provider');
+
+    const activeColors = await page.locator('.portal-topbar-link.active[aria-current="page"]').first().evaluate((el) => {
+      const style = window.getComputedStyle(el);
+      return { backgroundColor: style.backgroundColor, color: style.color };
+    });
+    assert.match(activeColors.backgroundColor, /rgb\(237,\s*229,\s*24\)/);
+    assert.match(activeColors.color, /rgb\(8,\s*9,\s*16\)|rgb\(17,\s*17,\s*17\)/);
+
+    const logoBox = await page.locator('.brand-mark').boundingBox();
+    assert.ok(logoBox, 'expected brand mark');
+    assert.ok(logoBox.width >= 56, `expected desktop logo width >= 56, got ${logoBox.width}`);
+    assert.ok(logoBox.height >= 56, `expected desktop logo height >= 56, got ${logoBox.height}`);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const mobileLogoBox = await page.locator('.brand-mark').boundingBox();
+    assert.ok(mobileLogoBox, 'expected mobile brand mark');
+    assert.ok(mobileLogoBox.width >= 44, `expected mobile logo width >= 44, got ${mobileLogoBox.width}`);
+    assert.ok(mobileLogoBox.height >= 44, `expected mobile logo height >= 44, got ${mobileLogoBox.height}`);
+  } finally {
+    await browser.close();
+    await local.close();
+  }
+});
+
 test('One Time Rabbi review refuses old setup-only sections', async () => {
   const local = createProviderReviewServer();
   const baseUrl = await local.listen();

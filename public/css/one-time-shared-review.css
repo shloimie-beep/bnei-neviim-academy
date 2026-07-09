@@ -88,6 +88,12 @@ body.one-time-review-active .brand-mark img,
   object-fit: contain;
 }
 
+body.one-time-review-active.one-time-provider-review-active .brand-mark,
+body.one-time-review-active.one-time-admin-provider-active .brand-mark {
+  width: 60px;
+  height: 60px;
+}
+
 body.one-time-review-active .brand-chip {
   color: var(--one-time-black);
   border-color: rgba(237, 229, 24, 0.72);
@@ -114,6 +120,13 @@ body.one-time-review-active .portal-topbar-link:not(.secondary-link) {
   color: var(--one-time-black);
   border-color: rgba(237, 229, 24, 0.7);
   background: var(--one-time-yellow);
+}
+
+body.one-time-review-active .portal-topbar-link.active,
+body.one-time-review-active .portal-topbar-link[aria-current="page"] {
+  color: var(--one-time-black) !important;
+  border-color: rgba(237, 229, 24, 0.82) !important;
+  background: var(--one-time-yellow) !important;
 }
 
 body.one-time-review-active.one-time-student-login-active .hero {
@@ -995,6 +1008,12 @@ body.one-time-view-as-readonly .overview-metric {
     height: 34px;
   }
 
+  body.one-time-review-active.one-time-provider-review-active .brand-mark,
+  body.one-time-review-active.one-time-admin-provider-active .brand-mark {
+    width: 56px;
+    height: 56px;
+  }
+
   body.one-time-review-active .portal-topbar-actions,
   body.one-time-review-active .top-actions,
   body.one-time-review-active header .nav {
@@ -1123,6 +1142,12 @@ body.one-time-view-as-readonly .overview-metric {
     flex: 0 0 auto;
     max-width: none;
     gap: 0;
+  }
+
+  body.one-time-review-active.one-time-provider-review-active .brand-mark,
+  body.one-time-review-active.one-time-admin-provider-active .brand-mark {
+    width: 48px;
+    height: 48px;
   }
 
   body.one-time-review-active .brand-lockup > div,
