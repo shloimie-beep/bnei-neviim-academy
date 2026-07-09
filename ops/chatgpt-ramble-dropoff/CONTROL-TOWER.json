@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T20:56:02.497Z",
+  "generated_at": "2026-07-09T21:01:21.038Z",
   "git": {
     "branch": "master",
     "dirty": true,
@@ -142,43 +142,43 @@
   ],
   "latest_comment_pickup_reports": [
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-54-56-228Z-4893651840.md",
-      "updated_at": "2026-07-09T20:54:56.229Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-00-37-952Z-4893651840.md",
+      "updated_at": "2026-07-09T21:00:37.954Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-54-56-224Z-4893596622.md",
-      "updated_at": "2026-07-09T20:54:56.228Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-00-37-951Z-4893596622.md",
+      "updated_at": "2026-07-09T21:00:37.952Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-54-56-220Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T20:54:56.224Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-00-37-947Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T21:00:37.951Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-54-56-218Z-4893586910.md",
-      "updated_at": "2026-07-09T20:54:56.219Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-00-37-945Z-4893586910.md",
+      "updated_at": "2026-07-09T21:00:37.946Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-53-30-694Z-4893651840.md",
-      "updated_at": "2026-07-09T20:53:30.695Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-59-10-055Z-4893651840.md",
+      "updated_at": "2026-07-09T20:59:10.055Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-53-30-690Z-4893596622.md",
-      "updated_at": "2026-07-09T20:53:30.694Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-53-30-689Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T20:53:30.690Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-59-10-053Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T20:59:10.054Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-53-30-687Z-4893586910.md",
-      "updated_at": "2026-07-09T20:53:30.689Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-59-10-054Z-4893596622.md",
+      "updated_at": "2026-07-09T20:59:10.054Z",
+      "size": 743
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-59-10-051Z-4893586910.md",
+      "updated_at": "2026-07-09T20:59:10.052Z",
       "size": 743
     }
   ],
@@ -187,35 +187,35 @@
     "ok": true,
     "summary": [
       "- Supervisor: running PID 36560",
-      "- Observable Codex jobs: 32",
+      "- Observable Codex jobs: 28",
       "- Claimable observable jobs: 0",
-      "- Active Codex task fallback: 32",
+      "- Active Codex task fallback: 28",
       "- Ready to claim: observable jobs 0, fallback task candidates 0",
-      "- Queue health: fresh 10, stale 468, blocked 128, unknown 191, do-not-redo 878",
+      "- Queue health: fresh 9, stale 469, blocked 128, unknown 194, do-not-redo 880",
       "- ChatGPT dropoff ingest: enabled",
       "- ChatGPT comment collect: enabled"
     ],
     "not_claimable": [
-      "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.29 path=.runtime/agent-fleet/task-1736.lock.json)",
+      "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.37 path=.runtime/agent-fleet/task-1736.lock.json)",
       "- job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)",
-      "- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile (local_lock=missing path=.runtime/agent-fleet/task-2025.lock.json)",
-      "- job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes (local_lock=missing path=.runtime/agent-fleet/task-2027.lock.json)",
-      "- job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives (local_lock=missing path=.runtime/agent-fleet/task-2026.lock.json)",
-      "- job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=missing path=.runtime/agent-fleet/task-1851.lock.json)",
       "- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)",
-      "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json)"
+      "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json)",
+      "- job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json)",
+      "- job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json)",
+      "- job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json)",
+      "- job #296 / task #1436 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1436.lock.json)"
     ],
     "fallback_candidates": [],
     "raw_excerpt": [
       "Agent fleet status:",
       "- Supervisor: running PID 36560",
-      "- Observable Codex jobs: 32",
+      "- Observable Codex jobs: 28",
       "- Claimable observable jobs: 0",
       "- Stale observable job candidates: 0",
       "- Linked observable task lookup: fetched 0, missing 0",
-      "- Active Codex task fallback: 32",
+      "- Active Codex task fallback: 28",
       "- Ready to claim: observable jobs 0, fallback task candidates 0",
-      "- Queue health: fresh 10, stale 468, blocked 128, unknown 191, do-not-redo 878",
+      "- Queue health: fresh 9, stale 469, blocked 128, unknown 194, do-not-redo 880",
       "- Max retries: 2",
       "- Baseline smoke: enabled",
       "- Auto deploy gate: disabled",
@@ -227,21 +227,21 @@
       "Observable jobs not claimable by active-task policy:",
       "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167",
       "- job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there?",
-      "- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile",
-      "- job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes",
-      "- job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives",
-      "- job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
       "- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess.",
       "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess.",
+      "- job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess.",
+      "- job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy",
+      "- job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy",
+      "- job #296 / task #1436 [failed] Repair follow-up after Drive transcription reprocess.",
       "Local task lock evidence for not-claimable jobs:",
-      "- task #1736 for job #344: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.29 path=.runtime/agent-fleet/task-1736.lock.json",
+      "- task #1736 for job #344: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.37 path=.runtime/agent-fleet/task-1736.lock.json",
       "- task #2181 for job #426: local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json",
-      "- task #2025 for job #408: local_lock=missing path=.runtime/agent-fleet/task-2025.lock.json",
-      "- task #2027 for job #409: local_lock=missing path=.runtime/agent-fleet/task-2027.lock.json",
-      "- task #2026 for job #410: local_lock=missing path=.runtime/agent-fleet/task-2026.lock.json",
-      "- task #1851 for job #377: local_lock=missing path=.runtime/agent-fleet/task-1851.lock.json",
       "- task #1130 for job #236: local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json",
-      "- task #1136 for job #237: local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json"
+      "- task #1136 for job #237: local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json",
+      "- task #1141 for job #238: local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json",
+      "- task #1392 for job #289: local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json",
+      "- task #1393 for job #290: local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json",
+      "- task #1436 for job #296: local_lock=missing path=.runtime/agent-fleet/task-1436.lock.json"
     ],
     "error": ""
   },
