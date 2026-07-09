@@ -173,3 +173,44 @@ Verification so far:
 
 Deployment/live-smoke remains required before terminal Done for this residual
 parent-review performance fix.
+
+## 2026-07-10 parent-review lightweight shell deployment closeout
+
+Deployment/live-smoke completed:
+
+- Committed and pushed parent-review shell fix `9350c43a`.
+- Deployed to OneTime Railway target `one-time-production / one-time-web`;
+  deployment `a447201e-f28a-4111-ab59-f6c65ee64e58` reached `SUCCESS`.
+- Live-read `/parent.html?review=one-time` on both
+  `https://join.onetimeonetime.com` and `https://bneineviimacademy.org`.
+  Both returned 200, `Cache-Control: no-store`, body length 16886, the
+  lightweight OneTime shell markers, and no old `data-parent-onboarding-form`
+  or `BNA Parent Portal` shell title.
+- Re-ran the no-write live lag audit:
+  `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/report.md`.
+  It passed with 0/18 samples needing attention.
+- Parent-review desktop live sample after deploy: 829ms DCL, 488ms FCP,
+  1325ms network idle, 4 requests, 147 DOM nodes, no blockers.
+
+Verification:
+
+- PASS OneTime `npm run railway:doctor` after deploy.
+- PASS live route readback on OneTime and BNA domains.
+- PASS `npm run app:smoke:onetime-separate-instance --
+  https://join.onetimeonetime.com`.
+- PASS `npm run app:smoke:rabbi-onetime-landing --
+  https://join.onetimeonetime.com`.
+- PASS `npm run app:smoke:one-time-interest-dry-run`.
+- PASS `npm run app:smoke:public-privacy`.
+
+Evidence:
+
+- `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/report.md`
+- `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/report.json`
+- `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/live-route-readback.md`
+- `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/live-route-readback.json`
+
+`REQ-20260709-070` is now Done for the cache/static-delivery and
+parent-review lag work. The separate OneTime visual chrome polish packet
+(`REQ-20260709-067`) and production blockers for external setup, Agent Mode
+terminal proof, and Rabbi Telegram hosted/live-smoke proof remain separate.

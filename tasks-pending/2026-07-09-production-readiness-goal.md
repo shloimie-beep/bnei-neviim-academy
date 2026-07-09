@@ -2808,6 +2808,41 @@ Deployment status:
   applicable, the main BNA service serve the new shell and a no-write live lag
   audit passes.
 
+## PERF-20260710-003 deployed/live-smoked
+
+Closeout:
+
+- Commit `9350c43a` was pushed to `origin/master`.
+- OneTime deployment `a447201e-f28a-4111-ab59-f6c65ee64e58` reached `SUCCESS`.
+- The main BNA service readback also serves the lightweight route from
+  deployment `105fabb5-63f1-4f6d-9e5f-0221c90fae65`.
+- Both `https://join.onetimeonetime.com/parent.html?review=one-time` and
+  `https://bneineviimacademy.org/parent.html?review=one-time` returned the
+  lightweight shell, `Cache-Control: no-store`, body length 16886, no old
+  onboarding form, and no full BNA parent title.
+- The live no-write lag audit now reports `needs_attention_count: 0`.
+
+Verification:
+
+- PASS OneTime `npm run railway:doctor`.
+- PASS `npm run app:smoke:onetime-separate-instance --
+  https://join.onetimeonetime.com`.
+- PASS `npm run app:smoke:rabbi-onetime-landing --
+  https://join.onetimeonetime.com`.
+- PASS `npm run app:smoke:one-time-interest-dry-run`.
+- PASS `npm run app:smoke:public-privacy`.
+
+Evidence:
+
+- `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/report.md`
+- `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/report.json`
+- `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/live-route-readback.md`
+- `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/live-route-readback.json`
+
+Status: Done for the residual parent-review performance fix. Production remains
+blocked only by separate external setup, Agent Mode terminal proof, and Rabbi
+Telegram hosted/live-smoke proof lanes.
+
 ## Final audit
 
 | ID | Status | Evidence | Verification | Remaining issue |

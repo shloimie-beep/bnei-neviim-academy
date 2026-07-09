@@ -37458,3 +37458,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-local/`.
 - Deployment/live-smoke remains pending before terminal Done for this residual
   parent-review performance fix.
+
+## 2026-07-10T00:45:00+03:00 - OneTime Parent Review Lightweight Shell Deployed
+
+- Deployed commit `9350c43a` to OneTime Railway service
+  `one-time-production / one-time-web`.
+- Railway deployment `a447201e-f28a-4111-ab59-f6c65ee64e58` reached `SUCCESS`.
+- Live-read `/parent.html?review=one-time` on both
+  `https://join.onetimeonetime.com` and `https://bneineviimacademy.org`; both
+  served the 16886-byte lightweight shell with `Cache-Control: no-store`, One
+  Time parent review markers, and no old BNA parent onboarding/full portal
+  shell.
+- Fresh no-write live lag audit passed with 0/18 samples needing attention.
+  Parent-review desktop readback: 829ms DCL, 488ms FCP, 1325ms network idle,
+  4 requests, 147 DOM nodes, no blockers.
+- Live smokes passed: `app:smoke:onetime-separate-instance`,
+  `app:smoke:rabbi-onetime-landing`, `app:smoke:one-time-interest-dry-run`,
+  and `app:smoke:public-privacy`.
+- Evidence:
+  `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/`.
+- Guardrails: no external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
+  smoke, Drive write, class backfill, or production-data mutation.
