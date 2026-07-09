@@ -37188,3 +37188,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining blockers: exact external setup fields, Rabbi Telegram hosted
   restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
   execution batch, and active collision-lane reconciliation.
+
+## 2026-07-09T23:24:50+03:00 - Watchdog Secret Scan False Positives Reduced
+
+- Tightened watchdog secret scanning so human-readable `railway_*` snake_case
+  field/source identifiers are not treated as Railway token leaks.
+- Marked intentional fake secret fixtures in tests with the existing
+  `watchdog-secret-scan: allow-placeholder` marker and removed duplicate
+  token-shaped assertion literals.
+- Verification passed: `node --check scripts/agent-fleet-supervisor.mjs`,
+  focused test run across watchdog/model/helper/Telegram/keyholder/Vimeo suites
+  with 54/54 passing, and clean-head `npm run watchdog:once -- --dry-run
+  --no-telegram`.
+- The latest watchdog improvement dry-run now reports `Findings: 0`; the prior
+  possible tracked secret material finding is cleared.
+- Remaining watchdog criticals are runtime/state blockers: Railway doctor
+  unauthorized, stale watchdog lock, stale Academy Telegram bridge lock,
+  raw-looking visible task titles, and misrouted watchdog cleanup tasks.
+- Guardrails held: dry-run/reporting/code-test only; no app UI/API edit,
+  deploy, hosted restart, live Telegram smoke, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, lock deletion,
+  live task/job mutation, Agent Review result save, or production-data mutation.
