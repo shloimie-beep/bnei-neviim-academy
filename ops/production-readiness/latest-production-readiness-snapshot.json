@@ -1,0 +1,316 @@
+{
+  "generated_at": "2026-07-09T15:24:42.929Z",
+  "report_version": "bna-production-readiness-snapshot-v1",
+  "assessment": {
+    "production_ready": false,
+    "status": "not_production_complete",
+    "reason": [
+      "full OneTime launch has external Stripe/WAPI/campaign blockers",
+      "Rabbi Agent Review still needs terminal Agent Mode proof",
+      "broad UI lane is already active in another agent job",
+      "active execution run has no unblocked executable batch"
+    ],
+    "immediate_lead_capture_free_class_lane": "live_verified_from_existing_register",
+    "safe_current_scope": "read-only production-readiness reporting, blocker reconciliation, and non-overlapping proof automation",
+    "avoid_colliding_with": [
+      {
+        "job_id": "382",
+        "task_id": "1859",
+        "ticket_id": "",
+        "status": "running",
+        "title": "Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
+        "raw": "- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish"
+      },
+      {
+        "job_id": "427",
+        "task_id": "2185",
+        "ticket_id": "1593",
+        "status": "running",
+        "title": "About the fall back I'm saying you should use the API that I'm using",
+        "raw": "- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using"
+      }
+    ],
+    "chatgpt_dropoff_queue_ready_count": 0
+  },
+  "git": {
+    "branch": "master",
+    "head": "80e3c2d8",
+    "origin_master": "80e3c2d8",
+    "status_short": "## master...origin/master\n M MEMORY.md\n M ops/agent-changelog.md\n M ops/agent-task-ledger.jsonl\n M package.json\n M tasks-pending/2026-07-09-production-readiness-goal.md\n?? ops/production-readiness/\n?? scripts/production-readiness-snapshot.mjs",
+    "clean": false
+  },
+  "active_run": {
+    "run_path": "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation",
+    "status_counts": {
+      "blocked": 2,
+      "done": 8
+    },
+    "work_remains": true,
+    "validation_passed": true,
+    "next_unblocked_executable_batch": "none",
+    "blockers": [
+      {
+        "requirement_id": "REQ-20260702-108",
+        "title": "Verify provider setup panels/tasks",
+        "owner": "Shloimie / provider account owners",
+        "blocker": "Full provider/campaign setup remains incomplete in current read-only setup check; Railway target context is resolved.",
+        "next_action": "Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, WAPI auto-reply enable/approval flags if auto-reply is intended, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet."
+      },
+      {
+        "requirement_id": "REQ-20260702-110",
+        "title": "Validate, push PR, and close out blockers",
+        "owner": "Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane",
+        "blocker": "Full OneTime launch remains blocked by external setup values, not Railway target context. The immediate lead-capture/free-class lane is unblocked and tracked in RAW-20260709-008.",
+        "next_action": "Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks."
+      }
+    ]
+  },
+  "agent_fleet": {
+    "summary": {
+      "supervisor": "running PID 36560",
+      "observable_codex_jobs": "34",
+      "claimable_observable_jobs": "0",
+      "linked_observable_task_lookup": "fetched 4, missing 0",
+      "active_codex_task_fallback": "34",
+      "ready_to_claim": "3",
+      "queue_health": "fresh 10, stale 411, blocked 121, unknown 193, do-not-redo 878",
+      "max_retries": "2",
+      "baseline_smoke": "enabled",
+      "auto_deploy_gate": "disabled",
+      "chatgpt_dropoff_ingest": "enabled",
+      "chatgpt_comment_collect": "enabled",
+      "kimi_coding_fallback": "quota_only / kimi-k2.7-code-highspeed",
+      "permission_tiers": "- Tier 0: Read-only audit, local status, local tests, dry-run previews, reports, and evidence capture. | - Tier 1: Local code edits, local tests, isolated worktrees/branches, commits, pushes, and draft PR preparation after lane ownership is declared. | - Tier 2: Merge, deploy, Railway doctor, and live-smoke release work only after parent release gates authorize it. | - Tier 3: Sends, charges, refunds, DNS, public publishing, account permission changes, credential changes, production data mutation, Drive writes, and class backfill.",
+      "startup_shortcuts": "start, stop, restart, status, open_log, watchdog_start, watchdog_stop, watchdog_status",
+      "job_408_task_2025_failed_fix_one_time_provider_ui_consistency": "header, duplicate nav, filters, buttons, mobile"
+    },
+    "active_policy_jobs": [
+      {
+        "job_id": "344",
+        "task_id": "1736",
+        "ticket_id": "",
+        "status": "running",
+        "title": "Repair Agent Mode result AGR-19cfa47542407167",
+        "raw": "- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167"
+      },
+      {
+        "job_id": "382",
+        "task_id": "1859",
+        "ticket_id": "",
+        "status": "running",
+        "title": "Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
+        "raw": "- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish"
+      },
+      {
+        "job_id": "427",
+        "task_id": "2185",
+        "ticket_id": "1593",
+        "status": "running",
+        "title": "About the fall back I'm saying you should use the API that I'm using",
+        "raw": "- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using"
+      },
+      {
+        "job_id": "426",
+        "task_id": "2181",
+        "ticket_id": "",
+        "status": "queued",
+        "title": "Is that why Pharaoh wanted them to build it there?",
+        "raw": "- job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there?"
+      },
+      {
+        "job_id": "408",
+        "task_id": "2025",
+        "ticket_id": "",
+        "status": "failed",
+        "title": "Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile",
+        "raw": "- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile"
+      },
+      {
+        "job_id": "409",
+        "task_id": "2027",
+        "ticket_id": "",
+        "status": "failed",
+        "title": "Fix One Time route-role mapping for provider, member, student, and public join routes",
+        "raw": "- job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes"
+      },
+      {
+        "job_id": "410",
+        "task_id": "2026",
+        "ticket_id": "",
+        "status": "failed",
+        "title": "Fix safe View-as navigation for Rabbi/provider/student/member perspectives",
+        "raw": "- job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives"
+      },
+      {
+        "job_id": "377",
+        "task_id": "1851",
+        "ticket_id": "",
+        "status": "failed",
+        "title": "Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
+        "raw": "- job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish"
+      }
+    ]
+  },
+  "agent_fleet_readiness": {
+    "path": "ops/agent-fleet-hardening/latest-agent-fleet-readiness.json",
+    "available": true,
+    "ok": true,
+    "kimi_fallback_readiness": {
+      "ok": true,
+      "fallback_enabled": true,
+      "fallback_mode": "quota_only",
+      "configured_model": "kimi-k2.7-code-highspeed",
+      "command_found": true,
+      "version": ""
+    }
+  },
+  "chatgpt_dropoff": {
+    "generated_at": "2026-07-09T15:24:49.234Z",
+    "apply": false,
+    "packet_count": 2,
+    "queued_count": 0,
+    "results": [
+      {
+        "generated_at": "2026-07-09T15:24:49.231Z",
+        "packet_id": "chatgpt-dropoff-smoke-test-20260705-001",
+        "packet_path": "ops/chatgpt-ramble-dropoff/incoming/chatgpt-dropoff-smoke-test-20260705-001",
+        "fingerprint": "173f1fe0403cef97389bc02acb2eb7480acc9493e771d5e31b74e01409dc8d93",
+        "status": "skipped",
+        "queued": false,
+        "task_id": null,
+        "agent_job_id": null,
+        "findings": [
+          {
+            "severity": "skip",
+            "code": "terminal_status",
+            "message": "Packet is already terminal: done_verified"
+          }
+        ],
+        "error": ""
+      },
+      {
+        "generated_at": "2026-07-09T15:24:49.234Z",
+        "packet_id": "onetime-agent-prompt-series-20260706-911",
+        "packet_path": "ops/chatgpt-ramble-dropoff/incoming/onetime-agent-prompt-series-20260706-911",
+        "fingerprint": "7bb6a861cdd155e71ebe08aca81587925e0f5b5e5f6e3d362ba5c8b7079b43b9",
+        "status": "skipped",
+        "queued": false,
+        "task_id": null,
+        "agent_job_id": null,
+        "findings": [
+          {
+            "severity": "skip",
+            "code": "terminal_status",
+            "message": "Packet is already terminal: done_verified"
+          }
+        ],
+        "error": ""
+      }
+    ]
+  },
+  "rabbi_agent_review": {
+    "path": "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json",
+    "available": true,
+    "status": "proof_blocked_or_pending",
+    "remaining_blocker_count": 2,
+    "next_agent_mode_prompts": [
+      "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+      "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md"
+    ],
+    "prompt_states": [
+      {
+        "prompt_key": "rabbi-telegram-helper-ticket-smoke",
+        "workflow_state": "not_started",
+        "latest_result_status": null,
+        "terminal_saved_proof": false,
+        "public_url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md"
+      },
+      {
+        "prompt_key": "rabbi-helper-tool-scope-map",
+        "workflow_state": "not_started",
+        "latest_result_status": null,
+        "terminal_saved_proof": false,
+        "public_url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md"
+      }
+    ]
+  },
+  "commands": {
+    "bna_run_next": {
+      "command": "npm run bna:run:next",
+      "exit_code": 0,
+      "ok": true,
+      "duration_ms": 50,
+      "stdout": "Execution run: ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation\nRequirement status counts:\n- blocked: 2\n- done: 8\nWork remains: yes\nValidation passed.\n\nNext unblocked executable batch: none",
+      "stderr": ""
+    },
+    "bna_run_blockers": {
+      "command": "npm run bna:run:blockers",
+      "exit_code": 0,
+      "ok": true,
+      "duration_ms": 51,
+      "stdout": "Execution run: ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation\nRequirement status counts:\n- blocked: 2\n- done: 8\nWork remains: yes\nValidation passed.\n\nRemaining external blockers:\n- REQ-20260702-108: Verify provider setup panels/tasks\n  owner: Shloimie / provider account owners\n  blocker: Full provider/campaign setup remains incomplete in current read-only setup check; Railway target context is resolved.\n  next_action: Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, WAPI auto-reply enable/approval flags if auto-reply is intended, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet.\n- REQ-20260702-110: Validate, push PR, and close out blockers\n  owner: Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane\n  blocker: Full OneTime launch remains blocked by external setup values, not Railway target context. The immediate lead-capture/free-class lane is unblocked and tracked in RAW-20260709-008.\n  next_action: Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks.",
+      "stderr": ""
+    },
+    "agent_fleet_status": {
+      "command": "npm run agent:fleet:status",
+      "exit_code": 0,
+      "ok": true,
+      "duration_ms": 5961,
+      "stdout": "Agent fleet status:\n- Supervisor: running PID 36560\n- Observable Codex jobs: 34\n- Claimable observable jobs: 0\n- Linked observable task lookup: fetched 4, missing 0\n- Active Codex task fallback: 34\n- Ready to claim: 3\n- Queue health: fresh 10, stale 411, blocked 121, unknown 193, do-not-redo 878\n- Max retries: 2\n- Baseline smoke: enabled\n- Auto deploy gate: disabled\n- ChatGPT dropoff ingest: enabled\n- ChatGPT comment collect: enabled\n- Kimi coding fallback: quota_only / kimi-k2.7-code-highspeed\n- Permission tiers: - Tier 0: Read-only audit, local status, local tests, dry-run previews, reports, and evidence capture. | - Tier 1: Local code edits, local tests, isolated worktrees/branches, commits, pushes, and draft PR preparation after lane ownership is declared. | - Tier 2: Merge, deploy, Railway doctor, and live-smoke release work only after parent release gates authorize it. | - Tier 3: Sends, charges, refunds, DNS, public publishing, account permission changes, credential changes, production data mutation, Drive writes, and class backfill.\n- Startup shortcuts: start, stop, restart, status, open_log, watchdog_start, watchdog_stop, watchdog_status\n\nObservable jobs not claimable by active-task policy:\n- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167\n- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish\n- job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using\n- job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there?\n- job #408 / task #2025 [failed] Fix One Time provider UI consistency: header, duplicate nav, filters, buttons, mobile\n- job #409 / task #2027 [failed] Fix One Time route-role mapping for provider, member, student, and public join routes\n- job #410 / task #2026 [failed] Fix safe View-as navigation for Rabbi/provider/student/member perspectives\n- job #377 / task #1851 [failed] Apply app-wide BNA brand shell and million-dollar SaaS UI polish",
+      "stderr": ""
+    },
+    "chatgpt_dropoff_scan": {
+      "command": "npm run chatgpt:dropoff:scan",
+      "exit_code": 0,
+      "ok": true,
+      "duration_ms": 56,
+      "stdout": "{\n  \"generated_at\": \"2026-07-09T15:24:49.234Z\",\n  \"apply\": false,\n  \"packet_count\": 2,\n  \"queued_count\": 0,\n  \"results\": [\n    {\n      \"generated_at\": \"2026-07-09T15:24:49.231Z\",\n      \"packet_id\": \"chatgpt-dropoff-smoke-test-20260705-001\",\n      \"packet_path\": \"ops/chatgpt-ramble-dropoff/incoming/chatgpt-dropoff-smoke-test-20260705-001\",\n      \"fingerprint\": \"173f1fe0403cef97389bc02acb2eb7480acc9493e771d5e31b74e01409dc8d93\",\n      \"status\": \"skipped\",\n      \"queued\": false,\n      \"task_id\": null,\n      \"agent_job_id\": null,\n      \"findings\": [\n        {\n          \"severity\": \"skip\",\n          \"code\": \"terminal_status\",\n          \"message\": \"Packet is already terminal: done_verified\"\n        }\n      ],\n      \"error\": \"\"\n    },\n    {\n      \"generated_at\": \"2026-07-09T15:24:49.234Z\",\n      \"packet_id\": \"onetime-agent-prompt-series-20260706-911\",\n      \"packet_path\": \"ops/chatgpt-ramble-dropoff/incoming/onetime-agent-prompt-series-20260706-911\",\n      \"fingerprint\": \"7bb6a861cdd155e71ebe08aca81587925e0f5b5e5f6e3d362ba5c8b7079b43b9\",\n      \"status\": \"skipped\",\n      \"queued\": false,\n      \"task_id\": null,\n      \"agent_job_id\": null,\n      \"findings\": [\n        {\n          \"severity\": \"skip\",\n          \"code\": \"terminal_status\",\n          \"message\": \"Packet is already terminal: done_verified\"\n        }\n      ],\n      \"error\": \"\"\n    }\n  ]\n}",
+      "stderr": ""
+    }
+  },
+  "evidence": [
+    "tasks-pending/2026-07-09-production-readiness-goal.md",
+    "ops/production-readiness/latest-production-readiness-snapshot.md",
+    "ops/production-readiness/latest-production-readiness-snapshot.json",
+    "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json",
+    "ops/agent-fleet-hardening/latest-agent-fleet-readiness.json",
+    "ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md"
+  ],
+  "guardrails": [
+    "Read-only snapshot only.",
+    "No deploy, merge, release, Railway mutation, external send, payment, access grant, CRM write, provider write, DNS change, credential change, Agent Review result save, or production-data mutation is performed.",
+    "Generated command output is redacted for obvious token/email patterns before being written."
+  ],
+  "next_actions": [
+    {
+      "owner": "Shloimie / provider account owners",
+      "action": "Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, WAPI auto-reply enable/approval flags if auto-reply is intended, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet.",
+      "source": "REQ-20260702-108"
+    },
+    {
+      "owner": "Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane",
+      "action": "Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks.",
+      "source": "REQ-20260702-110"
+    },
+    {
+      "owner": "Shloimie / Agent Mode runner",
+      "action": "Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+      "source": "rabbi_agent_review_proof"
+    },
+    {
+      "owner": "Shloimie / Agent Mode runner",
+      "action": "Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md",
+      "source": "rabbi_agent_review_proof"
+    },
+    {
+      "owner": "Codex / agent fleet",
+      "action": "Do not overlap broad UI file edits while job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish remains active; inspect its result packet before starting the next UI batch.",
+      "source": "agent_fleet_active_policy"
+    },
+    {
+      "owner": "Codex",
+      "action": "Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.",
+      "source": "production_readiness_snapshot"
+    }
+  ]
+}

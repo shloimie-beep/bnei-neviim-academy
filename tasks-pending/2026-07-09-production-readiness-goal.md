@@ -826,6 +826,53 @@ Remaining:
   in Agent Mode, run only that prompt scope, and save PASS/FAIL/BLOCKED through
   its Operations drop-off URL.
 
+## READINESS-20260709-018 closeout
+
+Implemented:
+
+- Added `npm run production:readiness:snapshot` as a reusable read-only
+  production-readiness control-tower command.
+- Created `ops/production-readiness/README.md`.
+- Generated tracked latest production-readiness summaries:
+  - `ops/production-readiness/latest-production-readiness-snapshot.md`
+  - `ops/production-readiness/latest-production-readiness-snapshot.json`
+- The latest snapshot consolidates:
+  - current git branch/head/origin status;
+  - active execution-run status and exact blockers;
+  - agent-fleet supervisor, Kimi fallback, and active do-not-collide jobs;
+  - ChatGPT dropoff packet queue state;
+  - Rabbi Agent Review proof-readiness state and next prompt URLs.
+
+Verification:
+
+- PASS `node --check scripts\production-readiness-snapshot.mjs`.
+- PASS `npm run production:readiness:snapshot`.
+- PASS latest tracked JSON parse/readback:
+  `status not_production_complete`, `blockers 2`, `next none`,
+  `queued 0`, `active_jobs 8`, `proof proof_blocked_or_pending`.
+
+Evidence:
+
+- `scripts/production-readiness-snapshot.mjs`
+- `ops/production-readiness/README.md`
+- `ops/production-readiness/latest-production-readiness-snapshot.md`
+- `ops/production-readiness/latest-production-readiness-snapshot.json`
+
+Guardrails:
+
+- Read-only/status reporting only.
+- No deploy, merge, release, Railway mutation, external send,
+  payment/checkout/charge, access grant, CRM write, provider write, DNS change,
+  credential change, Agent Review result save, public publish, or
+  production-data mutation was performed.
+
+Remaining:
+
+- Production is still not complete because the snapshot now clearly shows the
+  remaining external Stripe/WAPI/campaign blockers, two missing Rabbi Agent
+  Mode terminal proofs, no next unblocked active-run batch, and a broad UI lane
+  already active in another agent job.
+
 ## Final audit
 
 | ID | Status | Evidence | Verification | Remaining issue |
@@ -835,4 +882,4 @@ Remaining:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied / deployed / live-smoked | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register; `LEADCAP-20260709-009` closeout above. | Lead capture live-smoked in prior closeout; dry-run proof tests, full suite, deployment, and live smoke pass. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, `LAUNCHBLOCK-20260709-016`, and `PROOFSTATE-20260709-017` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. Rabbi Agent Review proof readiness now has a tracked latest summary and still confirms two missing terminal AGR proofs. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, `FLEET-20260709-012`, `RUNSTATE-20260709-013`, `LIVECHECK-20260709-014`, `QUEUE-20260709-015`, `LAUNCHBLOCK-20260709-016`, `PROOFSTATE-20260709-017`, and `READINESS-20260709-018` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. Active-run blockers now match current setup evidence and no longer ask for a solved Zoom/class alias. Fresh BNA/OneTime live regression sweep and watchdogs passed at `2026-07-09T14:56Z`. Queue hygiene found no safe automatic stale-job action and no live-url requeue candidates. The current external setup packet now asks only for the remaining Stripe/WAPI/campaign blockers. Rabbi Agent Review proof readiness now has a tracked latest summary and still confirms two missing terminal AGR proofs. The production readiness snapshot now gives a single tracked latest control-tower readback for blockers, active jobs, ChatGPT queue, proof state, and next actions. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |

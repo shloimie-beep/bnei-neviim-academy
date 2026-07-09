@@ -1924,6 +1924,11 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   Use `GOAL-PROD-001` and
   `tasks-pending/2026-07-09-production-readiness-goal.md` as the current
   production-readiness control register.
+- Use `npm run production:readiness:snapshot` to refresh the tracked latest
+  production-readiness control tower at
+  `ops/production-readiness/latest-production-readiness-snapshot.md/json`.
+  It is the quick readback for current blockers, active agent lanes,
+  ChatGPT dropoff queue state, and Rabbi Agent Review proof status.
 - WS11 gamification/parent progress is production-migrated and live-smoked as
   of Railway deployment `7c8c7010-497c-41c7-a127-6370cca049eb`. Startup must
   run `createWs11CommunityGamificationSQL` before

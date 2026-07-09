@@ -36310,3 +36310,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: no Agent Review result save, Telegram/email/WhatsApp send,
   payment/access mutation, provider write, credential change, DNS change,
   production-data mutation, app UI edit, or deploy was performed.
+
+## 2026-07-09T18:23:58+03:00 - Production Readiness Snapshot Added
+
+- Added `npm run production:readiness:snapshot` as a reusable read-only control
+  tower for the active production-readiness goal.
+- Generated tracked latest files under `ops/production-readiness/` that show
+  the current active run, exact external blockers, agent-fleet collision lanes,
+  Kimi fallback status, ChatGPT dropoff queue state, Rabbi Agent Review proof
+  state, and next actions.
+- Verification passed: `node --check
+  scripts\production-readiness-snapshot.mjs`, `npm run
+  production:readiness:snapshot`, and JSON readback of status/blocker/queue/job
+  counts.
+- Guardrails held: read-only/status reporting only; no deploy, send,
+  payment/access, CRM/provider/DNS/credential mutation, Agent Review result
+  save, public publish, or production-data mutation.
