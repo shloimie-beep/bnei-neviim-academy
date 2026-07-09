@@ -260,6 +260,20 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof }) {
   };
 }
 
+function buildFreshness(git) {
+  return {
+    kind: 'sampled_control_tower_report',
+    sampled_git_head: git.head || '',
+    sampled_origin_master: git.origin_master || '',
+    sampled_worktree_clean: git.clean === true,
+    note:
+      'This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.',
+    refresh_command: 'npm run production:readiness:snapshot',
+    json_refresh_command: 'npm run production:readiness:snapshot -- --json',
+    no_write_json_command: 'node scripts/production-readiness-snapshot.mjs --no-write --json',
+  };
+}
+
 function buildNextActions({ blockers, proof, fleet }) {
   const actions = [];
   for (const blocker of blockers) {
@@ -309,6 +323,14 @@ function renderMarkdown(report) {
     `- HEAD: ${report.git.head || 'unknown'}`,
     `- origin/master: ${report.git.origin_master || 'unknown'}`,
     `- Worktree clean when sampled: ${report.git.clean ? 'yes' : 'no'}`,
+    '',
+    '## Snapshot Freshness',
+    `- Kind: ${report.freshness.kind}`,
+    `- Sampled git head: ${report.freshness.sampled_git_head || 'unknown'}`,
+    `- Sampled origin/master: ${report.freshness.sampled_origin_master || 'unknown'}`,
+    `- Sampled worktree clean: ${report.freshness.sampled_worktree_clean ? 'yes' : 'no'}`,
+    `- Refresh command: \`${report.freshness.refresh_command}\``,
+    `- Note: ${report.freshness.note}`,
     '',
     '## Active Execution Run',
     `- Run: ${report.active_run.run_path || 'unknown'}`,
@@ -395,6 +417,7 @@ function main() {
     report_version: 'bna-production-readiness-snapshot-v1',
     assessment,
     git,
+    freshness: buildFreshness(git),
     active_run: activeRun,
     agent_fleet: agentFleet,
     agent_fleet_readiness: agentFleetReadiness,

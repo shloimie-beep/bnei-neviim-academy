@@ -1928,7 +1928,9 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   production-readiness control tower at
   `ops/production-readiness/latest-production-readiness-snapshot.md/json`.
   It is the quick readback for current blockers, active agent lanes,
-  ChatGPT dropoff queue state, and Rabbi Agent Review proof status.
+  ChatGPT dropoff queue state, and Rabbi Agent Review proof status. Treat the
+  committed latest files as sampled reports, not live telemetry; local agents
+  should rerun the command before acting on launch-critical state.
 - WS11 gamification/parent progress is production-migrated and live-smoked as
   of Railway deployment `7c8c7010-497c-41c7-a127-6370cca049eb`. Startup must
   run `createWs11CommunityGamificationSQL` before

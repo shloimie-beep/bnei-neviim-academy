@@ -36340,3 +36340,16 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: read-only/status reporting only; no deploy, send,
   payment/access, CRM/provider/DNS/credential mutation, Agent Review result
   save, public publish, or production-data mutation.
+
+## 2026-07-09T18:29:00+03:00 - Production Snapshot Freshness Semantics Hardened
+
+- Hardened `npm run production:readiness:snapshot` so reports explicitly label
+  themselves as sampled control-tower reports instead of live telemetry.
+- Added freshness metadata and Markdown guidance with the exact refresh and
+  no-write JSON commands.
+- Updated durable memory and the production-readiness register so future
+  agents rerun the snapshot before acting on launch-critical state.
+- Guardrails held: reporting/documentation semantics only; no app UI edit,
+  deploy, external send, payment/access mutation, provider/CRM/DNS/credential
+  mutation, Agent Review result save, public publish, or production-data
+  mutation.
