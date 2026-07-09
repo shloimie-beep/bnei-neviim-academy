@@ -131,3 +131,13 @@ test('production readiness snapshot treats active Agent Review repair as a colli
   assert.match(script, /Do not overlap Agent Review proof\/result repair work/);
   assert.match(script, /avoidCollidingWith/);
 });
+
+test('production readiness snapshot separates launch collisions from other policy rows', () => {
+  const script = fs.readFileSync(path.join(repoRoot, 'scripts', 'production-readiness-snapshot.mjs'), 'utf8');
+
+  assert.match(script, /Launch Collision Lanes/);
+  assert.match(script, /Other Agent Policy Rows/);
+  assert.match(script, /collisionJobs/);
+  assert.match(script, /otherPolicyJobs/);
+  assert.doesNotMatch(script, /## Active \/ Do Not Collide/);
+});

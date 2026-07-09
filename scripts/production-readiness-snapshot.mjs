@@ -339,7 +339,22 @@ function buildNextActions({ blockers, proof, fleet }) {
   return actions;
 }
 
+function jobKey(job = {}) {
+  return `${job.job_id || ''}:${job.task_id || ''}:${job.ticket_id || ''}:${job.title || job.raw || ''}`;
+}
+
+function jobLabel(job = {}) {
+  return (job.raw || `job #${job.job_id || 'unknown'} / task #${job.task_id || 'unknown'} [${job.status || 'unknown'}] ${job.title || ''}`)
+    .replace(/^- /, '')
+    .trim();
+}
+
 function renderMarkdown(report) {
+  const collisionJobs = Array.isArray(report.assessment?.avoid_colliding_with)
+    ? report.assessment.avoid_colliding_with
+    : [];
+  const collisionKeys = new Set(collisionJobs.map(jobKey));
+  const otherPolicyJobs = (report.agent_fleet.active_policy_jobs || []).filter((job) => !collisionKeys.has(jobKey(job)));
   const lines = [
     `# Production Readiness Snapshot - ${report.generated_at}`,
     '',
@@ -387,10 +402,15 @@ function renderMarkdown(report) {
     `- Auto-deploy blocked reason: ${report.agent_fleet_readiness.production_deploy_preflight?.skipped_reason_when_blocked || 'unknown'}`,
     `- Auto-deploy performed by readiness proof: ${report.agent_fleet_readiness.production_deploy_preflight?.deploy_performed ? 'yes' : 'no'}`,
     '',
-    '## Active / Do Not Collide',
-    ...(report.agent_fleet.active_policy_jobs.length
-      ? report.agent_fleet.active_policy_jobs.map((job) => `- ${job.raw.replace(/^- /, '')}`)
-      : ['- No active-policy collision rows reported.']),
+    '## Launch Collision Lanes',
+    ...(collisionJobs.length
+      ? collisionJobs.map((job) => `- ${jobLabel(job)}`)
+      : ['- No running launch collision lanes reported.']),
+    '',
+    '## Other Agent Policy Rows',
+    ...(otherPolicyJobs.length
+      ? otherPolicyJobs.map((job) => `- ${jobLabel(job)}`)
+      : ['- No queued, failed, or non-collision policy rows reported.']),
     '',
     '## ChatGPT Dropoff',
     `- Packet count: ${report.chatgpt_dropoff.packet_count ?? 'unknown'}`,

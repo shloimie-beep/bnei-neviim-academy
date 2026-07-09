@@ -36614,3 +36614,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:28:00+03:00 - Production Snapshot Separates Collision Rows
+
+- Updated production readiness snapshot Markdown so true launch collision lanes
+  render separately from queued, failed, and other agent policy rows.
+- `Launch Collision Lanes` now uses `assessment.avoid_colliding_with`.
+- `Other Agent Policy Rows` preserves the rest of the fleet policy readback
+  without making those rows look like active running collisions.
+- Focused no-write readback still reports collision jobs #382, #427, and #344
+  with 8 total policy rows.
+- Guardrails held: control-tower/reporting hardening only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.
