@@ -46,10 +46,16 @@ try {
     assertText(route, result.text, /Your Child Can Love Learning Mishnayos/i, 'canonical launch funnel headline missing');
     assertText(route, result.text, /OneTimeOneTime Mishnah/i, 'One Time focused brand missing');
     assertText(route, result.text, /Sign Up Now/i, 'signup CTA missing');
-    assertText(route, result.text, /signup-strip/i, 'email signup strip missing');
+    assertText(route, result.text, /signup-strip/i, 'free-class signup strip missing');
+    assertText(route, result.text, /id="signupParentName"/i, 'signup parent name input missing');
     assertText(route, result.text, /id="signupEmail"/i, 'signup email input missing');
+    assertText(route, result.text, /id="signupStudentName"/i, 'signup student name input missing');
+    assertText(route, result.text, /id="signupPhone"/i, 'signup phone input missing');
+    assertText(route, result.text, /name="preferred_class_format"\s+type="hidden"\s+value="free_zoom_intro"/i, 'free Zoom preferred class marker missing');
+    assertText(route, result.text, /No spam, no charge, and no portal account is opened by this form/i, 'no-portal free-class guardrail copy missing');
     assertText(route, result.text, /\/api\/one-time\/interest/i, 'signup form does not target One Time interest endpoint');
-    assertNoText(route, result.text, /name="parentName"|name="phone"|name="region"|name="notes"/i, 'retired multi-field lead capture is still visible');
+    assertNoText(route, result.text, /name="parentName"|name="region"|name="notes"/i, 'retired lead-capture field naming is still visible');
+    assertNoText(route, result.text, /parent access next steps|Parent portal setup instructions/i, 'old portal-access promise leaked into public funnel');
     assertNoText(route, result.text, /classroom code|recovery code|fallback classroom password/i, 'retired classroom/recovery-code copy leaked into public funnel');
     assertNoText(route, result.text, /Learn Mishnayos Live with Rabbi Eli Scheller/i, 'stale Rabbi preview page is still being served');
     assertNoText(route, result.text, /Bnei Nevi'?im Academy|Torah Learning for Boys/i, 'BNA public homepage leaked into One Time target');

@@ -35840,3 +35840,32 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live Rabbi Telegram runtime, communication dings, and scoped smoke remain
   blocked until the intended Rabbi account/group messages the bot and the
   allowed chat ID is configured through secret-safe runtime config.
+
+## 2026-07-09T14:48:00+03:00 - OneTime Free-Class Lead Capture Deployed
+
+- Implemented the immediate OneTime public lead-capture lane from
+  `RAW-20260709-008`: the public form now captures parent name, email,
+  optional student name, optional phone/WhatsApp, hidden consent/source, and
+  `free_zoom_intro`.
+- Updated `/api/one-time/interest` so public submissions create a product lead,
+  upsert a first-party `bna_parent_leads` CRM row, log an internal
+  `bna_contact_communications` follow-up note, and return CRM/no-send/
+  no-checkout/no-access guardrails.
+- Reworded public copy and the OneTime helper handoff around free-class/free
+  Zoom follow-up without promising portal/member access.
+- Resolved the stale Railway target-context blocker: `one-time-web` /
+  `production` is visible, `DATABASE_URL` is usable, and full setup is now
+  blocked only by Zoom alias, Stripe sandbox/price alias, Whapi/WAPI details,
+  and campaign approvals.
+- Pushed commit `2931b1cc` and deployed OneTime Railway deployment
+  `02db803b-8c6b-45fd-89d8-54af8f12f6c9`, which reached `SUCCESS`.
+- Verification passed: focused OneTime tests, `node --check server.js`,
+  action watchdog, protocol drift watchdog, secrets audit, execution-run
+  validation, OneTime target guard, live OneTime separate-instance smoke, live
+  Rabbi landing smoke, and live Playwright readback at 1440x900 and 390x844
+  with 0px horizontal overflow.
+- Production POST was not run because it would create a real CRM lead and
+  trigger the internal Telegram reminder. The POST payload was proven locally
+  with Playwright request interception.
+- Remaining blockers: exact approved free Zoom URL/alias before automated Zoom
+  invite sends; full portal/payment/WAPI/campaign launch remains a later lane.
