@@ -35477,3 +35477,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   logged-in student portal/classroom polish, backend CRM persistence,
   WAPI/WhatsApp readiness, safe contact tagging, and Rabbi Telegram chat ID
   setup.
+
+## 2026-07-09T08:03:00+03:00 - OneTime Parent/Student Review UI Deployed
+
+- Pushed commit `02796728` on
+  `codex/rabbi-helper-tool-scope-20260708`, then deployed the OneTime Railway
+  service `one-time-web` to production deployment
+  `3901fc18-f98c-4efc-af4d-9d886aa19895`.
+- Live verification passed: OneTime separate-instance smoke, Rabbi OneTime
+  landing smoke, live parent/student visual audit with 20 screenshots and 0
+  findings, and direct readback for the OneTime parent setup headline, mobile
+  topbar CSS, compact helper CSS, and shortened student topbar label.
+- Evidence is recorded in
+  `ops/ui-audits/2026-07-09-parent-student-login-ui-polish-live-after-deploy/report.md`,
+  `ops/live-smokes/2026-07-09T05-02-01-529Z-rabbi-onetime-landing-smoke.md`,
+  and
+  `ops/live-smokes/2026-07-09T05-02-40-onetime-parent-student-ui-readback.md`.
+- No external email, WhatsApp/WAPI, Telegram recipient message, payment, access
+  grant, credential, DNS/account, Drive/Vimeo/Zoom, public publish, production
+  contact mutation, or external connector write was performed during this
+  deploy batch.
+- Remaining open work: full logged-in student portal/classroom polish, backend
+  CRM persistence, WAPI/WhatsApp readiness, safe contact tagging, and Rabbi
+  Telegram chat ID setup.
