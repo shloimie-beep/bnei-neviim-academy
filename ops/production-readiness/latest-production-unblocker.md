@@ -1,6 +1,9 @@
-# Production Unblocker - 2026-07-09T16:02:39.679Z
+# Production Unblocker - 2026-07-09T16:16:36.786Z
 Snapshot status: not_production_complete
 Production ready: no
+Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
+Source snapshot generated at: 2026-07-09T16:16:30.579Z
+Snapshot git head: c020293b (origin/master: c020293b, worktree clean: yes)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 ## What Blocks Production
@@ -87,6 +90,6 @@ Required result: save terminal PASS, FAIL, or BLOCKED proof for only this prompt
 - Raw secrets, raw phone/contact exports, payment data, and private message bodies must not be committed.
 - Immediate lead capture/free-class lane remains live; full payment/access/campaign automation remains blocked until these items are cleared and verified.
 ## Sources
-- ops/production-readiness/latest-production-readiness-snapshot.json
+- node scripts/production-readiness-snapshot.mjs --no-write --json
 - ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
 - ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json

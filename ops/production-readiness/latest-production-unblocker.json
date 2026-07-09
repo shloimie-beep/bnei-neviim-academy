@@ -1,9 +1,24 @@
 {
-  "generated_at": "2026-07-09T16:02:39.679Z",
+  "generated_at": "2026-07-09T16:16:36.786Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-09T15:58:15.644Z",
+  "source_snapshot_generated_at": "2026-07-09T16:16:30.579Z",
+  "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
+  "snapshot_source_kind": "live_no_write_command",
+  "snapshot_git_head": "c020293b",
+  "snapshot_origin_master": "c020293b",
+  "snapshot_worktree_clean": true,
+  "source_snapshot": {
+    "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
+    "kind": "live_no_write_command",
+    "generated_at": "2026-07-09T16:16:30.579Z",
+    "git_head": "c020293b",
+    "origin_master": "c020293b",
+    "worktree_clean": true,
+    "command_exit_code": 0,
+    "load_error": ""
+  },
   "workspace_project": {
     "workspace_key": "rabbi_sheller_provider",
     "project_key": "one_time_mishnah_class"
@@ -205,7 +220,7 @@
     "Immediate lead capture/free-class lane remains live; full payment/access/campaign automation remains blocked until these items are cleared and verified."
   ],
   "sources": [
-    "ops/production-readiness/latest-production-readiness-snapshot.json",
+    "node scripts/production-readiness-snapshot.mjs --no-write --json",
     "ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json",
     "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json"
   ]
