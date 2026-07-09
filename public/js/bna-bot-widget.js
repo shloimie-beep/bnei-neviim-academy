@@ -10,7 +10,8 @@
   const isOneTimeHostDocument = /(^|\.)onetimeonetime\.com$/i.test(window.location.hostname || '')
     || document.documentElement?.dataset?.appSelectSurface === 'one-time';
   const isOneTimeParentReview = isOneTimeReview && isParent;
-  const isOneTimeStudentReview = (isOneTimeReview || isOneTimeLoginMode || isOneTimeHostDocument) && isStudent;
+  const isOneTimeStudentReviewOnly = isOneTimeReview && isStudent;
+  const isOneTimeStudentReview = !isOneTimeStudentReviewOnly && (isOneTimeLoginMode || isOneTimeHostDocument) && isStudent;
   const isProvider = [
     '/provider',
     '/provider/',

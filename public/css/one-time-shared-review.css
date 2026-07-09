@@ -641,6 +641,153 @@ body.one-time-review-active.one-time-student-review-active .hero .hero-text {
   color: rgba(255, 255, 255, 0.82) !important;
 }
 
+body.one-time-review-active.one-time-student-review-active .shell {
+  width: min(1180px, calc(100% - 28px));
+  padding-top: 22px;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-layout {
+  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+  gap: 18px;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-sidebar {
+  top: 84px;
+  gap: 12px;
+  padding: 14px;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-sidebar-header strong {
+  line-height: 1.15;
+}
+
+body.one-time-review-active.one-time-student-review-active .side-stat-grid {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-sidebar .one-time-review-metric {
+  min-height: 62px;
+  justify-items: start;
+  padding: 10px 12px;
+  text-align: start;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-sidebar .one-time-review-metric strong {
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-sidebar .one-time-review-metric small {
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-nav {
+  gap: 7px;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-nav-button {
+  justify-content: flex-start;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-content {
+  display: grid;
+  gap: 12px;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-content > .grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-content > .panel,
+body.one-time-review-active.one-time-student-review-active .portal-content > .grid > .panel {
+  padding: 18px;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-content > .grid > .panel {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 180px;
+}
+
+body.one-time-review-active.one-time-student-review-active #reviewQuestions {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+}
+
+body.one-time-review-active.one-time-student-review-active #reviewQuestions > .panel:last-child {
+  grid-column: 1 / -1;
+  min-height: 112px;
+}
+
+body.one-time-review-active.one-time-student-review-active .portal-content > .top-card {
+  margin: 0;
+  padding: 20px;
+}
+
+body.one-time-review-active.one-time-student-review-active .one-time-review-section-title {
+  align-items: flex-start;
+  gap: 14px;
+  margin: 0 0 12px;
+}
+
+body.one-time-review-active.one-time-student-review-active .one-time-review-section-title > div {
+  min-width: 0;
+}
+
+body.one-time-review-active.one-time-student-review-active .one-time-review-section-title h2 {
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+body.one-time-review-active.one-time-student-review-active .one-time-review-section-title .status-pill {
+  flex: 0 0 auto;
+  max-width: 220px;
+  white-space: normal;
+}
+
+body.one-time-review-active.one-time-student-review-active .one-time-scope-note {
+  border: 1px solid rgba(8, 119, 156, 0.16);
+  border-radius: 8px;
+  color: #354456;
+  background: rgba(8, 119, 156, 0.07);
+  padding: 10px 12px;
+  font: 800 13px/1.4 "Trebuchet MS", Verdana, sans-serif;
+}
+
+body.one-time-review-active.one-time-student-review-active .btn,
+body.one-time-review-active.one-time-student-review-active .button-link,
+body.one-time-review-active.one-time-student-review-active .one-time-review-action {
+  text-decoration: none;
+  font-weight: 900;
+}
+
+body.one-time-review-active.one-time-student-review-active .one-time-review-action {
+  min-height: 40px;
+  justify-self: start;
+  color: var(--one-time-black) !important;
+  border-color: var(--one-time-yellow) !important;
+  background: var(--one-time-yellow) !important;
+  padding: 10px 12px;
+}
+
+body.one-time-review-active.one-time-student-review-active label {
+  display: grid;
+  gap: 8px;
+}
+
+body.one-time-review-active.one-time-student-review-active textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
 body.one-time-review-active .one-time-review-metric {
   width: 100%;
   min-width: 0;
@@ -956,10 +1103,11 @@ body.one-time-view-as-readonly .overview-metric {
   body.one-time-review-active.one-time-student-review-active .hero {
     grid-template-columns: 1fr;
     padding: 14px;
+    margin-bottom: 10px;
   }
 
   body.one-time-review-active.one-time-student-review-active .hero h1 {
-    font-size: 32px;
+    font-size: 30px;
   }
 
   body.one-time-review-active.one-time-student-review-active .hero-actions {
@@ -969,6 +1117,45 @@ body.one-time-view-as-readonly .overview-metric {
   body.one-time-review-active .one-time-review-metric {
     min-height: 94px;
     padding: 12px 10px;
+  }
+
+  body.one-time-review-active.one-time-student-review-active .portal-menu-toggle {
+    margin-bottom: 10px;
+  }
+
+  body.one-time-review-active.one-time-student-review-active .portal-layout {
+    display: block;
+  }
+
+  body.one-time-review-active.one-time-student-review-active .portal-content {
+    gap: 10px;
+  }
+
+  body.one-time-review-active.one-time-student-review-active .portal-content > .grid,
+  body.one-time-review-active.one-time-student-review-active #reviewQuestions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.one-time-review-active.one-time-student-review-active .portal-content > .panel,
+  body.one-time-review-active.one-time-student-review-active .portal-content > .grid > .panel,
+  body.one-time-review-active.one-time-student-review-active .portal-content > .top-card {
+    padding: 14px;
+  }
+
+  body.one-time-review-active.one-time-student-review-active .portal-content > .grid > .panel,
+  body.one-time-review-active.one-time-student-review-active #reviewQuestions > .panel:last-child {
+    grid-column: auto;
+    min-height: 0;
+  }
+
+  body.one-time-review-active.one-time-student-review-active .one-time-review-section-title {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.one-time-review-active.one-time-student-review-active .one-time-review-section-title .status-pill {
+    justify-self: start;
+    max-width: 100%;
   }
 
   body.one-time-review-active .one-time-review-metric strong {
@@ -981,6 +1168,7 @@ body.one-time-view-as-readonly .overview-metric {
 
   body.one-time-review-active.one-time-student-review-active .one-time-review-hero-card .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .one-time-review-hero-card {

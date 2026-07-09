@@ -97,7 +97,8 @@ test('shared One Time review pages include review branding assets', () => {
   assert.match(fs.readFileSync('public/parent.html', 'utf8'), /\/images\/one-time\/brand\/onetimelogo\.webp/);
   assert.match(fs.readFileSync('public/parent.html', 'utf8'), /OneTimeOneTime Parent Review/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /No bot \/ no BNA goals/);
-  assert.match(fs.readFileSync('public/student.html', 'utf8'), /excludes BNA school accountability goals/);
+  assert.match(fs.readFileSync('public/student.html', 'utf8'), /Live Mishnayos, review videos, worksheets, attendance, questions, badges, and rewards/);
+  assert.match(fs.readFileSync('public/student.html', 'utf8'), /oneTimeStudentBot = 'disabled'/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /OneTimeOneTime Student Review/);
   const classroomHtml = fs.readFileSync('public/one-time-classroom.html', 'utf8');
   assert.match(classroomHtml, /Current One Time access/);
@@ -120,6 +121,8 @@ test('shared One Time review pages include review branding assets', () => {
   assert.match(sharedReviewCss, /body\.one-time-review-active \.portal-sidebar/);
   assert.match(sharedReviewCss, /body\.one-time-review-active \.one-time-review-hero-card/);
   assert.match(sharedReviewCss, /body\.one-time-review-active \.progress-fill/);
+  assert.match(sharedReviewCss, /body\.one-time-review-active\.one-time-student-review-active \.portal-content > \.grid/);
+  assert.match(sharedReviewCss, /body\.one-time-review-active\.one-time-student-review-active \.one-time-scope-note/);
 });
 
 test('committed One Time review assets and manifest exist', () => {

@@ -127,8 +127,9 @@ test('student login is a real student login and student preview is clearly TEST-
   assert.match(serverJs, /<form id="codeForm" class="hidden" aria-hidden="true" style="display:none">/);
   assert.match(serverJs, /<div class="language-toggle hidden" aria-label="Language" aria-hidden="true" style="display:none">/);
   assert.match(studentHtml, /renderOneTimeStudentReview/);
-  assert.match(studentHtml, /Student dashboard for live Mishnayos[\s\S]*TEST-only class data and excludes BNA school accountability goals/);
-  assert.match(studentHtml, /BNA school accountability goals, checkoffs, consequences, device controls, and other household\/student records stay out/);
+  assert.match(studentHtml, /Live Mishnayos, review videos, worksheets, attendance, questions, badges, and rewards in one clean OneTime classroom view/);
+  assert.match(studentHtml, /This view stays inside the Rabbi Scheller OneTime workspace/);
+  assert.doesNotMatch(studentHtml, /BNA school accountability goals, checkoffs, consequences, device controls, and other household\/student records stay out/);
 });
 
 test('One Time single-tenant parent login redirects to OneTime parent setup instead of Academy login', () => {

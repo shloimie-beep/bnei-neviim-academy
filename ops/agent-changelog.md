@@ -35604,3 +35604,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   student-sensitive content, external family send, WhatsApp/WAPI message,
   payment, access grant, credential, DNS/account, Drive/Vimeo/Zoom mutation, or
   public publish was performed.
+
+## 2026-07-09T08:47:00+03:00 - OneTime Student Review Portal UI Locally Verified
+
+- Continued `REQ-20260709-007` for `/student.html?review=one-time`.
+- Repaired the student review portal layout so desktop uses aligned card grids
+  instead of a long pile of sparse cards, mobile keeps a clean one-column flow,
+  sidebar stats are compact, and action links render as OneTime yellow buttons.
+- Replaced noisy review warning strips with quiet scope notes and suppressed
+  the floating bot launcher on the review-only student route where the fixture
+  says the student bot is disabled.
+- Verification passed: local toolbar/filter audit with 35 screenshots and 0
+  findings, manual desktop/mobile screenshot review, direct Playwright check
+  showing `launcher=0`, focused OneTime tests 30/30, full `npm test`
+  1676/1676, `npm run watchdog:actions`, `npm run
+  watchdog:protocol-drift`, `npm run secrets:audit`, and `git diff --check`
+  with line-ending warnings only.
+- Evidence is recorded in
+  `ops/ui-audits/2026-07-09-onetime-student-review-polish-local-2/report.md`.
+- No external email, WhatsApp/WAPI, Telegram recipient message, payment, access
+  grant, credential, DNS/account, Drive/Vimeo/Zoom, production contact/tag
+  mutation, or public publish was performed.
+- Remaining open work for this slice: full checks, commit/push, deploy, live
+  smoke/readback, and super-admin Telegram progress ding.

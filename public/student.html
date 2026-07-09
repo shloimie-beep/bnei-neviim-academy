@@ -3793,6 +3793,7 @@
         function applyOneTimeReviewBrand() {
             document.body.classList.add('one-time-review-active');
             document.body.classList.add('one-time-student-review-active');
+            document.body.dataset.oneTimeStudentBot = 'disabled';
             document.title = 'OneTimeOneTime Student Review';
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
@@ -3835,7 +3836,7 @@
             els.portalMenuToggle.classList.remove('hidden');
             els.studentHelperDock.classList.add('hidden');
             els.pageTitle.textContent = student.display_name || student.name || 'TEST One Time student';
-            els.pageIntro.textContent = 'Student dashboard for live Mishnayos, video review, worksheets, badges, and progress. This review uses TEST-only class data and excludes BNA school accountability goals.';
+            els.pageIntro.textContent = 'Live Mishnayos, review videos, worksheets, attendance, questions, badges, and rewards in one clean OneTime classroom view.';
             els.portalSidebarName.textContent = student.display_name || student.name || 'TEST student';
             els.portalSidebarMeeting.textContent = classSession.title || 'One Time Mishnah class';
             els.portalSideStats.innerHTML = `
@@ -3875,7 +3876,7 @@
                     </div>
                 </section>
                 <section class="panel" id="reviewScope">
-                    <div class="section-title">
+                    <div class="section-title one-time-review-section-title">
                         <div>
                             <span class="eyebrow">Portal boundary</span>
                             <h2>One Time only</h2>
@@ -3883,10 +3884,10 @@
                         </div>
                         <span class="status-pill">No bot / no BNA goals</span>
                     </div>
-                    <div class="notice">BNA school accountability goals, checkoffs, consequences, device controls, and other household/student records stay out of the One Time Rabbi Scheller workspace.</div>
+                    <div class="one-time-scope-note">This view stays inside the Rabbi Scheller OneTime workspace.</div>
                 </section>
                 <section class="panel" id="reviewClass">
-                    <div class="section-title">
+                    <div class="section-title one-time-review-section-title">
                         <div>
                             <span class="eyebrow">Live class</span>
                             <h2>${escapeHtml(classSession.title || '')}</h2>
@@ -3894,7 +3895,7 @@
                         </div>
                         <span class="status-pill">${escapeHtml(data.zoom?.state || 'readiness')}</span>
                     </div>
-                    <div class="notice">${escapeHtml(data.zoom?.student_visible_note || 'Zoom readiness is shown without a real meeting.')}</div>
+                    <div class="one-time-scope-note">${escapeHtml(data.zoom?.student_visible_note || 'Zoom readiness is shown without a real meeting.')}</div>
                 </section>
                 <section class="grid" id="reviewLibrary">
                     <article class="panel">
@@ -3906,12 +3907,12 @@
                         <h2>Video/library</h2>
                         <p><strong>${escapeHtml(data.video?.title || '')}</strong></p>
                         <p class="small">${escapeHtml(data.video?.media_provider || '')}</p>
-                        <p><a class="btn" href="${escapeHtml(data.links?.classroom || '/one-time-classroom.html?review=one-time')}" target="_blank" rel="noopener">Open classroom/library</a></p>
+                        <p><a class="btn one-time-review-action" href="${escapeHtml(data.links?.classroom || '/one-time-classroom.html?review=one-time')}" target="_blank" rel="noopener">Open classroom/library</a></p>
                     </article>
                     <article class="panel">
                         <h2>Worksheet/resource</h2>
                         <p><strong>${escapeHtml(data.worksheet?.title || '')}</strong></p>
-                        <p><a class="btn" href="${escapeHtml(data.worksheet?.url || '#')}" target="_blank" rel="noopener">Open resource</a></p>
+                        <p><a class="btn one-time-review-action" href="${escapeHtml(data.worksheet?.url || '#')}" target="_blank" rel="noopener">Open resource</a></p>
                     </article>
                 </section>
                 <section class="grid" id="reviewProgress">
