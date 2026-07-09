@@ -36203,3 +36203,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails held: no Kimi live inference, no second fleet, no deploy, no
   external send, no credential change, no payment/access mutation, no
   DNS/account/provider mutation, and no production-data mutation.
+
+## 2026-07-09T17:53:19+03:00 - Active Run Full-Launch Blockers Reconciled
+
+- Re-ran current OneTime setup and WAPI readiness checks. Setup remains
+  expected-blocked at 5/8 ready: Railway target, DB, join domain, hosted
+  Zoom/class link, and Vimeo/Drive are ready.
+- Reconciled the active execution-run JSON and handoff docs so
+  `npm run bna:run:blockers` no longer asks for the solved Zoom/class alias.
+- Remaining full-launch blockers are now only Rabbi Stripe sandbox/price alias,
+  Whapi/WAPI instance/phone plus approval flags, and campaign
+  copy/list/suppression/seed approval.
+- Verification passed: expected-blocked setup check, expected-blocked WAPI
+  readiness, `npm run bna:run:blockers`, and `npm run bna:run:validate`.
+- Guardrails held: no WhatsApp send, CRM mutation, payment/access mutation,
+  provider mutation, credential change, DNS/account mutation, deploy, raw
+  class-link exposure, phone exposure, or production-data mutation.

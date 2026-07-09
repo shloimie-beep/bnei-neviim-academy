@@ -17,10 +17,10 @@ Current state:
 4. Safe provider env values for Resend, Zoom credentials, and Vimeo client
    credentials were pushed to `one-time-web` with deploy skipped and verified
    by fingerprint.
-5. Agent fleet readiness drift was cleared on 2026-07-07: the supervisor is
-   running as PID 13544, `npm run agent:fleet:readiness` returned Overall OK,
-   and `npm run agent:fleet:once` correctly refused to start a duplicate
-   supervisor while that lock is active.
+5. Agent fleet readiness is current as of 2026-07-09: the supervisor is
+   running as PID 36560, `npm run agent:fleet:readiness -- --no-write --json`
+   returned OK on current `master`, and Kimi fallback is configured as
+   `quota_only / kimi-k2.7-code-highspeed`.
 6. Newest Drive recording/content job `101` trace is reconciled: parser
    dry-run and repair/rerun are done, scoped private Drive transcript docs were
    created/updated under the recorded approval phrase, Drive connector
@@ -28,11 +28,14 @@ Current state:
 
 Top Codex task:
 
-1. For the immediate launch lane, finish and release the public OneTime
-   lead-capture/free-class follow-up path from
-   `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`.
-   Full portal/payment/broadcast launch remains lower priority until the
+1. No active-run batch is currently unblocked: `npm run bna:run:next` reports
+   8 done / 2 blocked and no next executable batch. Keep the deployed public
+   OneTime lead-capture/free-class lane live and use
+   `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md` as
+   evidence; full portal/payment/broadcast launch remains blocked until the
    operator supplies the remaining setup values.
+2. UI implementation should not be picked up from this run while the fleet
+   still shows active UI job `#382` / task `#1859`.
 
 Deployment caveat:
 
@@ -43,11 +46,10 @@ Deployment caveat:
 Top provider/operator task:
 
 1. Provide or label the remaining exact aliases:
-   - One Time Zoom session/join alias;
-   - `VIMEO_ACCESS_TOKEN`;
-   - `ONE_TIME_DRIVE_DROP_FOLDER_ALIAS`;
    - Rabbi Stripe sandbox/test key and $67/month product/price aliases;
    - Whapi/WAPI instance and phone aliases.
+   - final campaign copy, exact recipient segment/list, suppression/
+     unsubscribe proof, and explicit seed approval.
 
 Recently resolved:
 
@@ -61,19 +63,20 @@ Recently resolved:
 
 Still blocked:
 
-1. `REQ-20260702-108` - provider setup remains blocked on exact Zoom session
-   alias, Rabbi Stripe sandbox/test key status and `$67/month` product/price
-   alias, Whapi/WAPI instance/phone, campaign copy/list/suppression proof, and
-   explicit seed approval packet. Railway target context, database readback,
-   join-domain, and Drive/Vimeo readiness are no longer the blocker.
+1. `REQ-20260702-108` - provider setup remains blocked on Rabbi Stripe
+   sandbox/test key status and `$67/month` product/price alias, Whapi/WAPI
+   instance/phone, campaign copy/list/suppression proof, and explicit seed
+   approval packet. Railway target context, database readback, join-domain,
+   hosted Zoom/class link, and Drive/Vimeo readiness are no longer the blocker.
    No send/payment/provider mutation should run until the remaining values and
    scope are explicit.
 2. `REQ-20260702-110` - final full-launch bootstrap/live smoke remains blocked
    by the remaining external setup items above, not by Railway target context.
    2026-07-09 `npm run one-time:railway-target:guard` passed for
-   `one-time-web`; `npm run one-time:setup:check` still reports ready 4/8 and
-   blocks only Zoom alias, Stripe sandbox/price alias, Whapi/WAPI instance and
-   phone, and campaign approval data. For the immediate public capture funnel,
-   use the new RAW-20260709-008 register instead of waiting on full setup.
+   `one-time-web`; `npm run one-time:setup:check` now reports ready 5/8 and
+   blocks only Stripe sandbox/price alias, Whapi/WAPI instance and phone, and
+   campaign approval data. Hosted Zoom/class link is present by redacted
+   readback. For the immediate public capture funnel, use the new
+   RAW-20260709-008 register instead of waiting on full setup.
 3. Campaign send remains blocked on final copy, exact segment/list,
    suppression/unsubscribe proof, seed pass, and exact real-send packet.

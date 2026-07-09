@@ -28,9 +28,16 @@
 - 2026-07-09 target-context correction:
   `npm run one-time:railway-target:guard` passed with `one-time-web` /
   `production`, 52 Railway variables, usable `DATABASE_URL`, and matching
-  OneTime domain/workspace/project. `npm run one-time:setup:check` still
-  exits 1 with ready 4/8 because full launch is blocked by Zoom alias, Stripe
-  sandbox/price alias, Whapi/WAPI details, and campaign approvals.
+  OneTime domain/workspace/project. Current
+  `npm run one-time:setup:check -- --write-report` still exits 1 as expected,
+  but now reports ready 5/8: Railway target, DB, join domain, hosted
+  Zoom/class link, and Vimeo/Drive are ready. Full launch is blocked only by
+  Stripe sandbox/price alias, Whapi/WAPI details, and campaign approvals.
+- 2026-07-09 WAPI readiness:
+  `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md` confirms the
+  class link is configured and blocks only Whapi/WAPI instance ID, sender phone
+  metadata, auto-reply enable flag, and explicit approval flag. No WhatsApp,
+  CRM, secret, raw class-link, or phone value was written.
 - Immediate lead-capture/free-class lane:
   `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`
 - Domain/DNS task:

@@ -497,9 +497,9 @@
       "depends_on": [
         "REQ-20260702-101"
       ],
-      "implementation_status": "Current read-only setup check confirms full provider/campaign setup is still incomplete, but the old Railway target-context blocker is resolved. Railway target, database readback, join-domain, Drive, and Vimeo readiness are true. Remaining full-setup blockers are Zoom session/join alias, Rabbi Stripe sandbox/test key status plus $67/month product/price alias, Whapi/WAPI instance ID and phone number, and campaign copy/list/suppression/seed approval. No provider mutation or external send occurred.",
+      "implementation_status": "Current read-only setup check confirms full provider/campaign setup is still incomplete, but the old Railway target-context blocker is resolved and the hosted Zoom/class link is present by redacted Railway readback. Railway target, database readback, join-domain, hosted Zoom/class link, Drive, and Vimeo readiness are true. Remaining full-setup blockers are Rabbi Stripe sandbox/test key status plus $67/month product/price alias, Whapi/WAPI instance ID and phone number, and campaign copy/list/suppression/seed approval. No provider mutation or external send occurred.",
       "can_continue_without_operator": true,
-      "next_action": "For full launch only, provide or label the exact missing setup values: One Time Zoom session/join alias, Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet. For immediate lead capture/free-class follow-up, continue RAW-20260709-008.",
+      "next_action": "For full launch only, provide or label the exact missing setup values: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet. For immediate lead capture/free-class follow-up, continue RAW-20260709-008.",
       "acceptance_criteria": [
         "No real broadcast",
         "No live payment",
@@ -515,7 +515,11 @@
         "ops/qa-runs/2026-07-02T15-39-35-269Z-provider-env-railway-audit.md",
         "ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.md",
         "ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.json",
-        "tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md"
+        "tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.json",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json"
       ],
       "verification": [
         "PASS npm run keyholder:diagnose -- --json",
@@ -523,19 +527,20 @@
         "PASS provider env propagation pushed 8/8 safe variables to one-time-web with deploy skipped",
         "PASS provider env Railway audit matched 8/8 required values",
         "PASS npm run one-time:railway-target:guard on 2026-07-09: one-time-web / production visible, usable DATABASE_URL, matching OneTime domain/workspace/project",
-        "BLOCKED npm run one-time:setup:check on 2026-07-09: ready 4/8; blocks only Zoom alias, Stripe sandbox/price alias, Whapi/WAPI instance/phone, campaign approvals",
+        "BLOCKED npm run one-time:setup:check on 2026-07-09T14:50Z: ready 5/8; Zoom/class link is present; blocks only Stripe sandbox/price alias, Whapi/WAPI instance/phone, and campaign approvals",
         "BLOCKED npm run one-time:setup:check exited 1 with provider/campaign missing fields and no external writes",
-        "PASS read-only guardrails: no provider mutation, DNS mutation, email/WhatsApp send, live payment, credential change, Drive/Vimeo upload, or database mutation"
+        "PASS read-only guardrails: no provider mutation, DNS mutation, email/WhatsApp send, live payment, credential change, Drive/Vimeo upload, or database mutation",
+        "BLOCKED npm run one-time:wapi:readiness on 2026-07-09T14:50Z: class link configured; blocks only Whapi/WAPI instance id, sender phone metadata, auto-reply enable flag, and explicit approval flag"
       ],
       "implementation_files": [
         "ops/provider-config-readbacks/2026-07-02-one-time-provider-setup-status.md",
         "ops/provider-config-readbacks/2026-07-02-one-time-provider-setup-status.json"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-09T14:36:19+03:00",
+      "updated_at": "2026-07-09T17:50:31+03:00",
       "blocker": "Full provider/campaign setup remains incomplete in current read-only setup check; Railway target context is resolved.",
       "blocker_owner": "Shloimie / provider account owners",
-      "blocker_next_action": "Provide or label the exact missing setup values for full launch: One Time Zoom session/join alias, Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet."
+      "blocker_next_action": "Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet."
     },
     {
       "id": "REQ-20260702-109",
@@ -607,7 +612,7 @@
         "REQ-20260702-108",
         "REQ-20260702-109"
       ],
-      "implementation_status": "Current repo closeout is pushed, BNA production deploy/live smoke passed, and 2026-07-09 target-context readback resolved the stale Railway blocker. One Time setup tooling now sees one-time-web / production with a usable DATABASE_URL and matching OneTime domain/workspace/project. Full launch remains blocked only by external setup values: Zoom alias, Stripe sandbox/price alias, Whapi/WAPI details, and campaign approval data. Immediate public lead capture/free-class follow-up is tracked separately in RAW-20260709-008.",
+      "implementation_status": "Current repo closeout is pushed, BNA and OneTime production deploy/live smokes passed in the production-readiness closeouts, and 2026-07-09 target-context readback resolved the stale Railway blocker. One Time setup tooling sees one-time-web / production with a usable DATABASE_URL and matching OneTime domain/workspace/project. Full launch remains blocked only by external setup values: Stripe sandbox/price alias, Whapi/WAPI details, and campaign approval data. Hosted Zoom/class link is present by redacted readback. Immediate public lead capture/free-class follow-up is tracked separately in RAW-20260709-008.",
       "can_continue_without_operator": true,
       "next_action": "For full launch, provide the remaining external setup values and then rerun npm run one-time:setup:check and npm run one-time:db:bootstrap. For immediate lead capture/free-class follow-up, continue tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md and deploy/smoke that scoped lane if gates pass.",
       "acceptance_criteria": [
@@ -622,28 +627,34 @@
         "ops/one-time-mishnah/launch-unblocker/2026-07-07-readiness-readback.json",
         "ops/one-time-mishnah/launch-unblocker/2026-07-07-railway-auth-diagnostic-readback.md",
         "ops/one-time-mishnah/launch-unblocker/2026-07-07-railway-auth-diagnostic-readback.json",
-        "tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md"
+        "tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-external-setup-readiness-check.json",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json",
+        "tasks-pending/2026-07-09-production-readiness-goal.md"
       ],
       "verification": [
         "PASS npm run one-time:railway-target:guard on 2026-07-09: one-time-web / production visible, 52 Railway variables, usable DATABASE_URL, matching join.onetimeonetime.com / rabbi_sheller_provider / one_time_mishnah_class",
-        "BLOCKED npm run one-time:setup:check on 2026-07-09: ready 4/8; blocks only Zoom alias, Stripe sandbox/price alias, Whapi/WAPI details, and campaign approvals",
+        "BLOCKED npm run one-time:setup:check on 2026-07-09T14:50Z: ready 5/8; blocks only Stripe sandbox/price alias, Whapi/WAPI details, and campaign approvals; Zoom/class link is present by redacted readback",
         "BLOCKED npm run one-time:setup:check exited 1: Service one-time-web not found; ready count 2/8",
         "PASS npm run one-time:railway-target:guard exited 0 for historical provisioning report but repeated current one-time-web readback failure",
         "PASS npm run one-time:db:bootstrap dry-run exited 0 with mutation_performed false and confirmation required BOOTSTRAP_ONE_TIME_DATABASE",
         "PASS node --check scripts/check-onetime-external-setup-readiness.mjs",
         "PASS node --test tests/one-time-external-setup-readiness.test.js (5/5)",
         "BLOCKED npm run one-time:setup:check now reports current project skillful-motivation and visible services, with one-time-web not visible",
-        "BLOCKED npm run one-time:railway-target:guard now returns ready_count 0/1 instead of accepting stale provisioning proof"
+        "BLOCKED npm run one-time:railway-target:guard now returns ready_count 0/1 instead of accepting stale provisioning proof",
+        "BLOCKED npm run one-time:wapi:readiness on 2026-07-09T14:50Z: class link configured; blocks only Whapi/WAPI instance id, sender phone metadata, auto-reply enable flag, and explicit approval flag"
       ],
       "implementation_files": [
         "scripts/check-onetime-external-setup-readiness.mjs",
         "tests/one-time-external-setup-readiness.test.js"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-09T14:36:19+03:00",
+      "updated_at": "2026-07-09T17:50:31+03:00",
       "blocker": "Full OneTime launch remains blocked by external setup values, not Railway target context. The immediate lead-capture/free-class lane is unblocked and tracked in RAW-20260709-008.",
       "blocker_owner": "Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane",
-      "blocker_next_action": "Continue the immediate lead-capture/free-class lane. For full launch, provide Zoom alias, Stripe sandbox/price alias, Whapi/WAPI details, and campaign approvals, then rerun setup and bootstrap checks.",
+      "blocker_next_action": "Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI details, and campaign approvals, then rerun setup and bootstrap checks.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/64",
       "implementation_commit": "edec1133",
       "pushed_commit": "edec1133"
