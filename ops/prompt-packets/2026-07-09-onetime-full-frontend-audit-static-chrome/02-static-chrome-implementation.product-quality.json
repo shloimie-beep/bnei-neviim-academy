@@ -32,12 +32,12 @@
       "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md"
     ],
     "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/02-static-chrome-implementation.product-quality.json",
-    "terminal_condition": "Implementation remains blocked by active dirty deploy lane; when unblocked, patch only public/member/classroom static chrome and verify live.",
+    "terminal_condition": "Static chrome implementation is locally complete with 0 scoped static-route findings; terminal Done still requires commit, push, OneTime deploy, and live smoke/readback.",
     "handoff_target": "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md"
   },
   "stage": "STAGE_3_CODEX_IMPLEMENTATION",
   "packet_role": "IMPLEMENTATION_PACKET",
-  "status": "blocked",
+  "status": "needs_verification",
   "title": "One Time Static Chrome Implementation Packet",
   "created_at": "2026-07-09T13:15:00+03:00",
   "workspace_key": "platform",
@@ -101,8 +101,8 @@
   "decisions_captured": [
     {
       "id": "DEC-20260709-009",
-      "decision": "Static chrome implementation is blocked by active dirty deploy lane until collision clears.",
-      "status": "active_blocker"
+      "decision": "Static chrome implementation was blocked by an active dirty deploy lane, then reopened after a fresh no-collision coordination sample.",
+      "status": "resolved_for_local_implementation_deploy_pending"
     },
     {
       "id": "DEC-20260709-010",
@@ -126,29 +126,37 @@
   ],
   "affected_routes": [
     "/one-time",
+    "/one-time/mishnayos",
     "/rabbi-member",
-    "/one-time-classroom"
+    "/member-library",
+    "/one-time-classroom",
+    "/one-time-classroom.html?review=one-time"
   ],
   "affected_files": [
-    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/02-static-chrome-implementation.product-quality.json",
+    "public/one-time/index.html",
+    "public/rabbi-member.html",
+    "public/member-library.html",
+    "public/one-time-classroom.html",
+    "public/js/bna-bot-widget.js",
     "scripts/audit-onetime-parallel-frontend.mjs",
-    "src/lib/bna/agent-review-hub.js",
-    "tests/agent-review-hub.test.js",
-    "public/agent-review-prompts/*.md",
-    "public/agent-review-prompts/index.json",
+    "tests/one-time-shared-review-branding.test.js",
+    "tests/one-time-brand-helper-isolation.test.js",
     "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md",
     "ops/agent-task-ledger.jsonl",
-    "ops/agent-changelog.md"
+    "ops/agent-changelog.md",
+    "memory/2026-07-10.md"
   ],
   "current_state": {
     "inspection_targets": [
       "Control tower reports branch master with dirty worktree and overlapping active app-visible lanes.",
       "GitHub issue #128 is open and contains owner decisions for countdown, $67 copy, first-party CRM/tracking, and scoped Rabbi Operations layout.",
       "Existing One Time brand memory requires black/yellow and workspace isolation from BNA cream/navy/teal surfaces.",
-      "The new audit harness and Agent Mode prompts are safe audit/report artifacts and do not mutate external providers."
+      "The new audit harness and Agent Mode prompts are safe audit/report artifacts and do not mutate external providers.",
+      "Local static chrome audit on 2026-07-10 shows the scoped public/member/classroom routes pass across 1440, 1024, 768, 430, and 390px viewports with 0 static-route findings."
     ],
     "known_blockers": [
-      "Active dirty deploy lane blocks static shared app implementation and commit/push/deploy closeout for this batch.",
+      "Commit/push, OneTime deployment, and live smoke/readback are still required before terminal Done for app-visible static chrome changes.",
+      "Provider-review/Operations parity findings remain a separate packet and are not part of the scoped static chrome implementation proof.",
       "Authenticated Operations checks may be skipped or redacted when no safe session exists."
     ]
   },
@@ -205,17 +213,18 @@
     {
       "id": "REQ-20260709-067",
       "statement": "One Time Static Chrome Implementation Packet",
-      "expected_result": "Validated packet, current-state evidence, safe Agent Mode instructions, and a terminal blocker or verification path for the scoped One Time surface.",
+      "expected_result": "The scoped OneTime static public/member/classroom chrome is locally implemented and verified, with terminal Done gated on commit, push, deployment, and live smoke/readback.",
       "acceptance_criteria": [
-        "Routes, viewports, screenshots, redaction, and PASS/FAIL/BLOCKED reporting are explicit.",
+        "Control tower/dirty-worktree coordination proves no overlapping active lane before implementation.",
+        "Public/member/classroom static routes have canonical OneTime footer coverage, larger logos, active yellow nav, compact helper behavior, mobile-safe tap targets, and no BNA brand bleed.",
+        "Local visual audit shows 0 scoped static-route findings across 1440, 1024, 768, 430, and 390px viewports.",
         "The packet forbids external sends, payments, access grants, credentials, provider mutations, private-data commits, GHL, and LeadConnector.",
-        "Implementation is blocked unless the control tower and dirty worktree prove the lane is collision-free.",
         "App-visible Done requires commit, push, deploy, and live smoke/readback evidence."
       ]
     }
   ],
   "definition_of_ready": {
-    "status": "blocked",
+    "status": "ready",
     "criteria": [
       "Raw intake and requirement register exist.",
       "Control tower and dirty branch status were checked.",
@@ -519,13 +528,13 @@
         "route": "/one-time",
         "viewport": 430,
         "screenshot_before": "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/screenshots/pending-before-audit.png",
-        "screenshot_after_or_blocker": "Current-state visual audit must run before implementation; static implementation remains blocked by active deploy lane until collision clears.",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-10-onetime-static-chrome-local-server/report.md shows 0 scoped static-route findings after local implementation; deploy/live smoke remains pending.",
         "defect_codes": [
           "VQ-LAYOUT-007"
         ],
         "severity": "P1",
         "user_impact": "Broad One Time frontend quality cannot be called done without screenshot evidence by route and viewport.",
-        "expected_fix": "Run the audit, classify findings, split any implementation into narrow packets, and verify with screenshots/live smoke where app-visible.",
+        "expected_fix": "Static chrome local fixes are implemented and verified; complete OneTime deploy/live smoke before terminal Done.",
         "requirement_id": "REQ-20260709-067"
       }
     ]
@@ -628,9 +637,9 @@
         "REQ-20260709-067"
       ],
       "instructions": [
-        "Run or consume the current-state visual audit before app code edits.",
-        "If implementation is safe, touch only the named routes/files and keep unrelated dirty work untouched.",
-        "Record screenshot/readback evidence and classify every remaining item as Done, Already satisfied, Blocked, Needs operator decision, Failed, or Archived.",
+        "Consume the current-state visual audit before app code edits.",
+        "Touch only the scoped OneTime public/member/classroom static chrome files and local audit/test files; keep unrelated dirty work untouched.",
+        "Record screenshot/readback evidence and classify remaining provider/Operations parity findings outside this packet.",
         "For app-visible code, require push/deploy/live smoke before Done."
       ],
       "out_of_scope": [
@@ -657,13 +666,17 @@
     "files_allowed_to_edit": [
       "public/one-time/index.html",
       "public/rabbi-member.html",
+      "public/member-library.html",
       "public/one-time-classroom.html",
-      "public/css/one-time-shared-review.css"
+      "public/js/bna-bot-widget.js",
+      "scripts/audit-onetime-parallel-frontend.mjs",
+      "tests/one-time-shared-review-branding.test.js",
+      "tests/one-time-brand-helper-isolation.test.js"
     ],
-    "max_files_to_edit": 4,
+    "max_files_to_edit": 8,
     "max_routes_to_touch": 3,
     "max_major_surfaces": 1,
-    "split_threshold_reason": "Issue #128 spans too many routes and surfaces for one implementation pass, so audit/report/prompt work is separated from static chrome and landing/provider packets.",
+    "split_threshold_reason": "Implementation remains scoped to three route classes: public landing/alias, member/library, and classroom/review. Extra URLs are readback aliases, not additional implementation surfaces.",
     "split_if_exceeds": true,
     "context_risk_level": "high"
   },
@@ -671,9 +684,10 @@
     "required": [
       "npm run pqc:validate -- ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/02-static-chrome-implementation.product-quality.json",
       "node --check scripts/audit-onetime-parallel-frontend.mjs",
-      "node scripts/audit-onetime-parallel-frontend.mjs --base-url https://join.onetimeonetime.com --out-dir ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit",
-      "npm run agent-review:prompts",
-      "node --test tests/agent-review-hub.test.js"
+      "node --check public/js/bna-bot-widget.js",
+      "node --test tests/one-time-shared-review-branding.test.js tests/one-time-brand-helper-isolation.test.js",
+      "node scripts/audit-onetime-parallel-frontend.mjs --base-url http://127.0.0.1:8080 --out-dir ops/ui-audits/2026-07-10-onetime-static-chrome-local-server",
+      "node scripts/audit-onetime-parallel-frontend.mjs --base-url https://join.onetimeonetime.com --out-dir ops/ui-audits/2026-07-10-onetime-static-chrome-live-readback"
     ],
     "live_smoke_required": true,
     "manual_browser_check": [
@@ -684,16 +698,18 @@
   "evidence": {
     "required_paths": [
       "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
-      "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/report.md",
-      "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/manifest.json",
+      "ops/ui-audits/2026-07-10-onetime-static-chrome-local-server/report.md",
+      "ops/ui-audits/2026-07-10-onetime-static-chrome-local-server/report.json",
+      "ops/ui-audits/2026-07-10-onetime-static-chrome-local-server/manifest.json",
       "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md",
       "ops/agent-task-ledger.jsonl",
-      "ops/agent-changelog.md"
+      "ops/agent-changelog.md",
+      "memory/2026-07-10.md"
     ],
     "screenshot_evidence_required": true,
     "deploy_evidence_required": true
   },
-  "deployment_gate": "BLOCKED_WITH_REASON",
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
   "definition_of_done": {
     "criteria": [
       "PQC packet validates.",
@@ -708,10 +724,12 @@
     "compiled_packet_path": "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/02-static-chrome-implementation.product-quality.json",
     "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
     "tool_actions_expected": [
-      "Read control tower and GitHub issue #128",
+      "Read control tower and dirty-worktree status",
       "Validate packet",
-      "Run audit/prompt/test commands where safe",
-      "Record evidence and blockers"
+      "Run local syntax, unit, and static chrome audit commands",
+      "Commit/push scoped implementation",
+      "Deploy OneTime and run live smoke/readback",
+      "Record evidence and remaining blockers"
     ],
     "skipped_actions_policy": "Skip only authenticated/private/external-provider actions and record owner, reason, consequence, and next action.",
     "blocker_decisions": [
@@ -720,8 +738,9 @@
       "DEC-20260709-011"
     ],
     "evidence_paths": [
-      "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/report.md",
-      "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/manifest.json",
+      "ops/ui-audits/2026-07-10-onetime-static-chrome-local-server/report.md",
+      "ops/ui-audits/2026-07-10-onetime-static-chrome-local-server/report.json",
+      "ops/ui-audits/2026-07-10-onetime-static-chrome-local-server/manifest.json",
       "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md"
     ],
     "final_status_path": "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md#final-audit",

@@ -36,9 +36,9 @@
       line-height: 1.55;
     }
 
-    header {
-      min-height: clamp(220px, 24vh, 300px);
-      padding: 28px clamp(18px, 5vw, 68px);
+    .member-hero {
+      min-height: 0;
+      padding: 10px clamp(18px, 5vw, 68px);
       display: grid;
       align-items: end;
       border-bottom: 1px solid rgba(237, 229, 24, 0.28);
@@ -49,17 +49,17 @@
       color: #fff;
     }
 
-    header h1 {
+    .member-hero h1 {
       margin: 0;
-      font-size: clamp(34px, 6vw, 64px);
-      line-height: 1;
+      font-size: clamp(26px, 4vw, 36px);
+      line-height: 1.02;
       letter-spacing: 0;
     }
 
-    header p {
+    .member-hero p {
       max-width: 640px;
-      margin: 14px 0 0;
-      font-size: 18px;
+      margin: 5px 0 0;
+      font-size: 14px;
       color: rgba(255, 255, 255, 0.82);
     }
 
@@ -110,7 +110,7 @@
     input,
     select,
     textarea {
-      min-height: 42px;
+      min-height: 44px;
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 10px 12px;
@@ -126,6 +126,7 @@
 
     button,
     a {
+      min-height: 44px;
       border: 0;
       border-radius: 8px;
       background: var(--green);
@@ -195,8 +196,8 @@
     }
 
     .member-brand-lockup img {
-      width: 40px;
-      height: 40px;
+      width: 56px;
+      height: 56px;
       border-radius: 8px;
       background: var(--yellow);
       object-fit: contain;
@@ -212,10 +213,10 @@
     }
 
     .member-hero-logo {
-      width: 76px;
-      height: 76px;
-      display: block;
-      margin-bottom: 14px;
+      width: 0;
+      height: 0;
+      display: none;
+      margin-bottom: 0;
       border-radius: 12px;
       background: var(--yellow);
       object-fit: contain;
@@ -286,6 +287,54 @@
       background: var(--panel-strong);
     }
 
+    .one-time-site-footer {
+      border-top: 1px solid var(--line);
+      background: #050609;
+      padding: 24px clamp(18px, 5vw, 68px) 30px;
+    }
+
+    .one-time-site-footer .footer-row {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .one-time-site-footer strong {
+      color: #ffffff;
+    }
+
+    .one-time-site-footer p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .footer-links a {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 9px 11px;
+    }
+
+    .footer-links a[aria-current="page"],
+    .footer-links a:hover,
+    .footer-links a:focus-visible {
+      color: var(--black);
+      background: var(--yellow);
+      outline: 0;
+    }
+
     @media (max-width: 820px) {
       main { grid-template-columns: 1fr; }
       .split-fields { grid-template-columns: 1fr; }
@@ -296,9 +345,13 @@
       .member-brand-lockup {
         min-width: 178px;
       }
-      header {
-        min-height: 220px;
-        padding: 24px 16px;
+      .member-brand-lockup img {
+        width: 48px;
+        height: 48px;
+      }
+      .member-hero {
+        min-height: 0;
+        padding: 10px 16px;
         background:
           radial-gradient(circle at 84% 8%, rgba(237, 229, 24, 0.16), transparent 36%),
           linear-gradient(180deg, rgba(8, 9, 16, 0.96), rgba(8, 9, 16, 0.98)),
@@ -307,23 +360,31 @@
     }
 
     @media (max-width: 460px) {
-      header {
-        min-height: 190px;
+      .member-hero {
+        min-height: 0;
       }
 
-      header h1 {
+      .member-hero h1 {
         font-size: 30px;
       }
 
-      header p {
+      .member-hero p {
         margin-top: 8px;
         font-size: 15px;
       }
 
       .member-hero-logo {
-        width: 58px;
-        height: 58px;
-        margin-bottom: 10px;
+        width: 52px;
+        height: 52px;
+        margin-bottom: 6px;
+      }
+
+      .one-time-site-footer .footer-row {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-links {
+        justify-content: flex-start;
       }
     }
   </style>
@@ -342,14 +403,14 @@
     <a href="#support" aria-label="Questions/support">Support</a>
     <a href="/rabbi-member?logout=1" aria-label="Account/logout">Logout</a>
   </nav>
-  <header>
+  <section class="member-hero" aria-labelledby="memberAreaTitle">
     <div>
       <img class="member-hero-logo" src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
       <span class="eyebrow">Member Area</span>
-      <h1>One Time Mishnayos</h1>
+      <h1 id="memberAreaTitle">One Time Mishnayos</h1>
       <p>Library and live class access are shown only when an active grant exists.</p>
     </div>
-  </header>
+  </section>
 
   <main>
     <aside class="panel" id="member-access">
@@ -417,6 +478,21 @@
       </div>
     </section>
   </main>
+
+  <footer class="one-time-site-footer" data-one-time-canonical-footer>
+    <div class="footer-row">
+      <div>
+        <strong>OneTimeOneTime Mishnayos</strong>
+        <p>Copyright 2026 OneTimeOneTime Mishnayos. Member access is scoped to the One Time Mishnayos workspace.</p>
+      </div>
+      <nav class="footer-links" aria-label="One Time footer navigation">
+        <a href="/one-time">One Time</a>
+        <a href="/one-time/privacy.html">Privacy</a>
+        <a href="/one-time/terms.html">Terms</a>
+        <a href="/rabbi-member" aria-current="page">Member Login</a>
+      </nav>
+    </div>
+  </footer>
 
   <script src="/js/app-select.js"></script>
   <script src="/js/rabbi-member.js"></script>

@@ -44,7 +44,7 @@
     && !isParent
     && !isStudent
     && !isProvider
-    && !/^(?:\/rabbi-member)(?:\/|$|\.html$)/.test(path);
+    && !/^(?:\/rabbi-member|\/member-library|\/one-time-classroom|\/provider-participant)(?:\/|$|\.html$)/.test(path);
   const isOneTimeMember = /^(?:\/rabbi-member|\/member-library|\/one-time-classroom|\/provider-participant)(?:\/|$|\.html$)/.test(path)
     || ['/member', '/member.html', '/member-portal', '/one-time/member-login'].includes(path);
   const isOperations = /^\/operations/.test(path);
@@ -750,6 +750,7 @@
       background: #ede518;
       color: #080910;
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher,
     body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-launcher,
     body.one-time-review-active.bna-assistant-surface-one-time-student .bna-bot-launcher,
     body.one-time-review-active.bna-assistant-surface-one-time-member .bna-bot-launcher,
@@ -763,6 +764,15 @@
       justify-content: center;
       font-size: 0;
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher {
+      top: 96px;
+      bottom: auto;
+    }
+    body.bna-assistant-surface-one-time-member .bna-bot-launcher,
+    body.bna-assistant-surface-one-time-member .bna-bot-nudge {
+      display: none;
+    }
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher-dot,
     body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-launcher-dot,
     body.one-time-review-active.bna-assistant-surface-one-time-student .bna-bot-launcher-dot,
     body.one-time-review-active.bna-assistant-surface-one-time-member .bna-bot-launcher-dot,
@@ -771,6 +781,7 @@
       height: 12px;
     }
     @media (max-width: 520px) {
+      body.bna-assistant-surface-one-time-public .bna-bot-launcher,
       body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-launcher,
       body.one-time-review-active.bna-assistant-surface-one-time-student .bna-bot-launcher,
       body.one-time-review-active.bna-assistant-surface-one-time-member .bna-bot-launcher,
@@ -784,6 +795,15 @@
         justify-content: center;
         font-size: 0;
       }
+      body.bna-assistant-surface-one-time-public .bna-bot-launcher {
+        top: 140px;
+        bottom: auto;
+      }
+      body.bna-assistant-surface-one-time-member .bna-bot-launcher,
+      body.bna-assistant-surface-one-time-member .bna-bot-nudge {
+        display: none;
+      }
+      body.bna-assistant-surface-one-time-public .bna-bot-launcher-dot,
       body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-launcher-dot,
       body.one-time-review-active.bna-assistant-surface-one-time-student .bna-bot-launcher-dot,
       body.one-time-review-active.bna-assistant-surface-one-time-member .bna-bot-launcher-dot,

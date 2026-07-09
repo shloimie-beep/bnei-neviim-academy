@@ -112,8 +112,8 @@
       text-decoration: none;
     }
     .brand-mark {
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       display: grid;
       place-items: center;
       overflow: hidden;
@@ -147,7 +147,7 @@
       scrollbar-width: none;
     }
     .nav a {
-      min-height: 38px;
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
       border: 1px solid transparent;
@@ -165,6 +165,7 @@
       border-color: var(--ot-line);
       outline: none;
     }
+    .nav a[aria-current="page"],
     .nav .nav-cta {
       color: #101010;
       border-color: var(--ot-yellow);
@@ -586,7 +587,7 @@
       gap: 8px 14px;
     }
     .footer-links a {
-      min-height: 36px;
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
       border-radius: 8px;
@@ -643,12 +644,12 @@
         gap: 10px;
       }
       .brand span span { display: none; }
-      .brand-mark { width: 44px; height: 44px; }
+      .brand-mark { width: 50px; height: 50px; }
       .nav {
         width: 100%;
         justify-content: flex-start;
       }
-      .nav a { padding: 7px 8px; font-size: 0.8rem; }
+      .nav a { padding: 8px 10px; font-size: 0.82rem; }
       .hero { min-height: auto; }
       .hero-content { padding-top: 62px; }
       .signup-strip-inner {
@@ -685,6 +686,7 @@
         </span>
       </a>
       <nav class="nav" aria-label="One Time navigation">
+        <a href="/one-time" aria-current="page">One Time</a>
         <a href="#watch">Watch</a>
         <a href="#program">Program</a>
         <a href="#how-it-works">How It Works</a>
@@ -893,7 +895,7 @@
     </section>
   </main>
 
-  <footer>
+  <footer class="one-time-site-footer" data-one-time-canonical-footer>
     <div class="wrap footer-row">
       <div>
         <strong>OneTimeOneTime Mishnayos</strong>

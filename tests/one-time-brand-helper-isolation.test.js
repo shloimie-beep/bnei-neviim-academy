@@ -22,7 +22,7 @@ test('One Time public helper has separate surface, copy, actions, and black-yell
   assert.match(widget, /const isOneTimePublicDocument = /);
   assert.match(widget, /\['\/rabbi-preview', '\/one-time-mishnayos'\]\.includes\(path\)/);
   assert.match(widget, /document\.documentElement\?\.dataset\?\.appSelectSurface === 'one-time'/);
-  assert.match(widget, /&& !isParent\s+&& !isStudent\s+&& !isProvider\s+&& !\/\^\(\?:\\\/rabbi-member\)/);
+  assert.match(widget, /&& !isParent\s+&& !isStudent\s+&& !isProvider\s+&& !\/\^\(\?:\\\/rabbi-member\|\\\/member-library\|\\\/one-time-classroom/);
   assert.match(widget, /\? 'one_time_public'/);
   assert.match(widget, /surface === 'one_time_public'/);
   assert.match(widget, /Rabbi Scheller digital assistant/);

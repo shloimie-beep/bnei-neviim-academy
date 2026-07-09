@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-09T19:04:38.932Z",
+  "generated_at": "2026-07-09T22:13:50.457Z",
   "mode": "default",
   "files_scanned": [
-    "ops/prompt-packets/2026-07-09-onetime-live-lag-performance/05-live-lag-performance-fix.product-quality.json"
+    "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/02-static-chrome-implementation.product-quality.json"
   ],
   "total": 1,
   "passed": 1,
   "failed": 0,
   "results": [
     {
-      "file": "ops/prompt-packets/2026-07-09-onetime-live-lag-performance/05-live-lag-performance-fix.product-quality.json",
+      "file": "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/02-static-chrome-implementation.product-quality.json",
       "passed": true,
       "error_codes": [],
       "errors": []

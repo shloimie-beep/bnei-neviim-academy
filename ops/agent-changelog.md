@@ -37480,3 +37480,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
   smoke, Drive write, class backfill, or production-data mutation.
+
+## 2026-07-10T01:11:00+03:00 - OneTime Static Chrome Verified Locally
+
+- Resumed `REQ-20260709-067` after a fresh coordination/status sample showed no
+  overlapping active static chrome deploy/edit lane.
+- Implemented canonical OneTime footer coverage, larger logo treatment, active
+  yellow/black nav states, mobile-safe tap targets, compact public helper
+  placement, and member/classroom helper isolation across the scoped static
+  public/member/classroom surfaces.
+- Updated the OneTime frontend audit harness so footer, helper overlay, form
+  target, and yellow active-nav checks match the implemented UI.
+- Verification passed: `node --check scripts/audit-onetime-parallel-frontend.mjs`;
+  `node --check public/js/bna-bot-widget.js`; `node --test
+  tests/one-time-shared-review-branding.test.js
+  tests/one-time-brand-helper-isolation.test.js`.
+- Local static chrome audit passed for `/one-time`, `/one-time/mishnayos`,
+  `/rabbi-member`, `/member-library`, `/one-time-classroom`, and the classroom
+  review route across 1440, 1024, 768, 430, and 390px viewports. The remaining
+  34 findings are provider-review/Operations parity scope only.
+- Evidence:
+  `ops/ui-audits/2026-07-10-onetime-static-chrome-local-server/`.
+- Deployment/live-smoke remains pending before terminal Done for
+  `REQ-20260709-067`.
+- Guardrails: no external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
+  smoke, Drive write, class backfill, or production-data mutation.

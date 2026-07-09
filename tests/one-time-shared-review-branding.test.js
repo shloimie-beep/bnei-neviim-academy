@@ -164,6 +164,48 @@ test('committed One Time review assets and manifest exist', () => {
   assert.ok(manifest.not_found.some((item) => item.label === 'Naki Radio logo'));
 });
 
+test('One Time static chrome keeps footer, active nav, and compact helper coverage', () => {
+  const chromePages = [
+    ['public/one-time/index.html', /<nav class="nav"[^>]*>[\s\S]*href="\/one-time" aria-current="page"/],
+    ['public/rabbi-member.html', /<nav class="member-topbar"[^>]*>[\s\S]*href="\/rabbi-member"[^>]*aria-current="page"/],
+    ['public/member-library.html', /<nav class="member-nav"[^>]*>[\s\S]*href="\/member-library" aria-current="page"/],
+    ['public/one-time-classroom.html', /<div class="top-actions">[\s\S]*href="\/one-time-classroom" aria-current="page"/],
+  ];
+
+  for (const [page, activePattern] of chromePages) {
+    const html = fs.readFileSync(page, 'utf8');
+    assert.match(html, /<footer class="one-time-site-footer" data-one-time-canonical-footer>/, `${page} needs canonical One Time footer`);
+    assert.match(html, /OneTimeOneTime Mishnayos/, `${page} should keep One Time footer brand`);
+    assert.match(html, /href="\/one-time\/privacy\.html"/, `${page} should link privacy from footer`);
+    assert.match(html, /href="\/one-time\/terms\.html"/, `${page} should link terms from footer`);
+    assert.match(html, /href="\/rabbi-member"/, `${page} should link member login from footer`);
+    assert.match(html, activePattern, `${page} should expose an active nav item`);
+  }
+
+  const landing = fs.readFileSync('public/one-time/index.html', 'utf8');
+  assert.match(landing, /\.brand-mark \{\s*width: 60px;\s*height: 60px;/);
+  assert.match(landing, /\.nav a \{\s*min-height: 44px;/);
+  assert.match(landing, /\.nav a\[aria-current="page"\],\s*\.nav \.nav-cta/);
+
+  const member = fs.readFileSync('public/rabbi-member.html', 'utf8');
+  assert.match(member, /\.member-brand-lockup img \{\s*width: 56px;\s*height: 56px;/);
+  assert.match(member, /\.member-topbar a \{[\s\S]*min-height: 44px;/);
+
+  const library = fs.readFileSync('public/member-library.html', 'utf8');
+  assert.match(library, /class="one-time-member-shell"/);
+  assert.match(library, /\.member-nav a \{[\s\S]*min-height: 44px;/);
+
+  const classroom = fs.readFileSync('public/one-time-classroom.html', 'utf8');
+  assert.match(classroom, /\.one-time-page-logo \{\s*width: 56px;\s*height: 56px;/);
+  assert.match(classroom, /\.top-actions a\[aria-current="page"\]/);
+
+  const helper = fs.readFileSync('public/js/bna-bot-widget.js', 'utf8');
+  assert.match(helper, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher/);
+
+  const audit = fs.readFileSync('scripts/audit-onetime-parallel-frontend.mjs', 'utf8');
+  assert.match(audit, /document\.querySelectorAll\('footer'\)[\s\S]*rect\.height > 0/);
+});
+
 test('One Time brand kit and service-provider site config are present', () => {
   const brand = JSON.parse(fs.readFileSync('config/brands/one-time.json', 'utf8'));
   assert.equal(brand.palette.black, '#080910');

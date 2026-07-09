@@ -9,12 +9,12 @@
       color-scheme: dark;
       --ink: #fff8d8;
       --muted: #cabf98;
-      --line: rgba(255, 210, 0, 0.22);
+      --line: rgba(237, 229, 24, 0.22);
       --paper: #080808;
       --panel: #141414;
       --panel-2: #1d1a10;
-      --accent: #ffd200;
-      --accent-2: #ffe680;
+      --accent: #ede518;
+      --accent-2: #fff35a;
       --button-ink: #161000;
     }
 
@@ -52,6 +52,29 @@
       min-height: 72px;
     }
 
+    .member-brand-lockup {
+      min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .member-brand-lockup img {
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      background: #ffffff;
+      object-fit: contain;
+      padding: 4px;
+    }
+
+    .member-brand-lockup span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
     h1 {
       margin: 0;
       font-size: 24px;
@@ -75,8 +98,8 @@
     .member-nav a {
       display: inline-flex;
       align-items: center;
-      min-height: 34px;
-      padding: 0 10px;
+      min-height: 44px;
+      padding: 0 12px;
       border: 1px solid var(--line);
       border-radius: 6px;
       color: var(--accent);
@@ -85,6 +108,15 @@
       font-size: 13px;
       font-weight: 800;
       white-space: nowrap;
+    }
+
+    .member-nav a[aria-current="page"],
+    .member-nav a:hover,
+    .member-nav a:focus-visible {
+      color: var(--button-ink);
+      border-color: var(--accent);
+      background: var(--accent);
+      outline: 0;
     }
 
     main {
@@ -141,7 +173,7 @@
     }
 
     .button {
-      min-height: 42px;
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -170,7 +202,7 @@
 
     input,
     button {
-      min-height: 42px;
+      min-height: 44px;
       border: 1px solid var(--line);
       border-radius: 6px;
       font: inherit;
@@ -228,7 +260,7 @@
     .classroom-strip a {
       display: inline-flex;
       align-items: center;
-      min-height: 38px;
+      min-height: 44px;
       padding: 0 12px;
       border-radius: 6px;
       color: var(--button-ink);
@@ -503,19 +535,98 @@
       color: var(--accent-2);
     }
 
+    .one-time-site-footer {
+      border-top: 1px solid var(--line);
+      background: #050609;
+      padding: 24px 0 30px;
+    }
+
+    .one-time-site-footer .footer-row {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .one-time-site-footer strong {
+      color: #ffffff;
+    }
+
+    .one-time-site-footer p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .footer-links a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 9px 11px;
+      text-decoration: none;
+      font-weight: 850;
+    }
+
+    .footer-links a[aria-current="page"],
+    .footer-links a:hover,
+    .footer-links a:focus-visible {
+      color: var(--button-ink);
+      background: var(--accent);
+      outline: 0;
+    }
+
     @media (max-width: 680px) {
       .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-        padding: 16px 0;
+        align-items: center;
+        flex-direction: row;
+        padding: 10px 0;
       }
 
       .member-meta {
+        display: none;
         text-align: left;
       }
 
       .member-nav {
+        flex-wrap: nowrap;
         justify-content: flex-start;
+        max-width: calc(100vw - 172px);
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .member-brand-lockup img {
+        width: 44px;
+        height: 44px;
+      }
+
+      .member-brand-lockup {
+        gap: 8px;
+        max-width: 148px;
+      }
+
+      .member-brand-lockup h1 {
+        font-size: 18px;
+        line-height: 1.08;
+      }
+
+      .member-brand-lockup span {
+        display: none;
       }
 
       .classroom-strip {
@@ -534,13 +645,27 @@
       .filter-rail {
         padding-bottom: 10px;
       }
+
+      .one-time-site-footer .footer-row {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-links {
+        justify-content: flex-start;
+      }
     }
   </style>
 </head>
-<body>
+<body class="one-time-member-shell" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
   <header>
     <div class="topbar">
-      <h1>One Time Member Library</h1>
+      <div class="member-brand-lockup">
+        <img src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
+        <div>
+          <h1>One Time Member Library</h1>
+          <span>Recorded classes, worksheets, and review progress</span>
+        </div>
+      </div>
       <div>
         <nav class="member-nav" aria-label="One Time member navigation">
           <a href="/rabbi-member" aria-label="Member home">Home</a>
@@ -579,6 +704,21 @@
     </section>
     <section class="library-grid" id="libraryGrid" aria-live="polite"></section>
   </main>
+
+  <footer class="one-time-site-footer" data-one-time-canonical-footer>
+    <div class="footer-row">
+      <div>
+        <strong>OneTimeOneTime Mishnayos</strong>
+        <p>Copyright 2026 OneTimeOneTime Mishnayos. Library access is private and workspace-scoped.</p>
+      </div>
+      <nav class="footer-links" aria-label="One Time footer navigation">
+        <a href="/one-time">One Time</a>
+        <a href="/one-time/privacy.html">Privacy</a>
+        <a href="/one-time/terms.html">Terms</a>
+        <a href="/rabbi-member">Member Login</a>
+      </nav>
+    </div>
+  </footer>
 
   <script src="https://player.vimeo.com/api/player.js"></script>
   <script>

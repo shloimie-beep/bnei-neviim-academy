@@ -295,13 +295,24 @@ async function collectMetrics(page, viewport) {
       .filter(Boolean);
     const duplicateLabels = [...new Set(navTexts.filter((text, index) => navTexts.indexOf(text) !== index))].slice(0, 12);
 
-    const footer = Array.from(document.querySelectorAll('footer')).filter(visible).map(rectSummary)[0] || null;
-    const helper = Array.from(document.querySelectorAll('[class*="bot"], [class*="helper"], [aria-label*="helper" i], [aria-label*="assistant" i]'))
+    const footer = Array.from(document.querySelectorAll('footer'))
+      .filter((el) => {
+        const style = window.getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        return style.display !== 'none'
+          && style.visibility !== 'hidden'
+          && Number(style.opacity || 1) > 0
+          && rect.width > 0
+          && rect.height > 0;
+      })
+      .map(rectSummary)[0] || null;
+    const helper = Array.from(document.querySelectorAll('.bna-bot-launcher, .bna-bot-panel.is-open, .bna-bot-nudge.is-visible'))
       .filter(visible)
       .map(rectSummary)
       .filter((item) => item.width > 30 && item.height > 30)
       .slice(0, 8);
     const ctaOrForm = Array.from(document.querySelectorAll('form, [href="#start-free"], #start-free, button, input[type="submit"]'))
+      .filter((el) => !el.closest('.bna-bot-launcher, .bna-bot-panel, .bna-bot-nudge'))
       .filter(visible)
       .map(rectSummary)
       .filter((item) => item.y < window.innerHeight + 200);
@@ -481,7 +492,7 @@ function buildFindings(routeInfo, viewport, metrics, screenshot) {
       'Use a cleaner larger logo target: 56-64px desktop, 44-52px mobile, without crowding nav labels.'
     ));
   }
-  if (!metrics.activeNavCandidates.some((item) => /rgb\(255|yellow|#f|gold|245|217|0/i.test(`${item.backgroundColor} ${item.color}`))) {
+  if (!metrics.activeNavCandidates.some((item) => /rgb\(\s*(255|245|237|217)\s*,|#(fff35a|ede518|ffd200)|yellow|gold/i.test(`${item.backgroundColor} ${item.color}`))) {
     findings.push(finding(
       routeInfo,
       viewport,
