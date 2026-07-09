@@ -894,9 +894,16 @@ Implemented:
 
 Verification:
 
-- Pending final verification in this batch: script syntax, no-write JSON
-  readback, normal snapshot generation from a clean pushed tree after commit,
-  active-run validation, secret audit, and diff checks.
+- PASS `node --check scripts\production-readiness-snapshot.mjs`.
+- PASS `node scripts/production-readiness-snapshot.mjs --no-write --json`.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run secrets:audit`.
+- Pushed freshness-semantics commit `188684f9`.
+- PASS `npm run production:readiness:snapshot` from a clean pushed tree.
+- PASS latest tracked JSON readback:
+  `head 188684f9`, `origin 188684f9`, `clean true`,
+  `freshness sampled_control_tower_report`, `status not_production_complete`,
+  `blockers 2`, `next none`, `queued 0`.
 
 Evidence:
 
@@ -915,8 +922,7 @@ Guardrails:
 
 Remaining:
 
-- Regenerate the latest snapshot after this code lands so the tracked
-  report includes the freshness section.
+- Commit and push the tracked freshness-enabled snapshot refresh.
 
 ## Final audit
 

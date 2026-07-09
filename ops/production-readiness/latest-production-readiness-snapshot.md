@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T15:25:38.929Z
+# Production Readiness Snapshot - 2026-07-09T15:29:38.543Z
 
 Result: not_production_complete
 Production ready: no
@@ -12,9 +12,17 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: 993bb095
-- origin/master: 993bb095
+- HEAD: 188684f9
+- origin/master: 188684f9
 - Worktree clean when sampled: yes
+
+## Snapshot Freshness
+- Kind: sampled_control_tower_report
+- Sampled git head: 188684f9
+- Sampled origin/master: 188684f9
+- Sampled worktree clean: yes
+- Refresh command: `npm run production:readiness:snapshot`
+- Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
 
 ## Active Execution Run
 - Run: ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation
@@ -31,7 +39,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 10, stale 411, blocked 121, unknown 193, do-not-redo 878
+- Queue health: fresh 12, stale 411, blocked 121, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 
 ## Active / Do Not Collide
