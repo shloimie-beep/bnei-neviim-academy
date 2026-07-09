@@ -36528,3 +36528,15 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:14:00+03:00 - Release Gate Preserves Unblocker Pointer
+
+- Updated `scripts/bna-production-closeout-gate.mjs` so deploy/live/final
+  closeout reports preserve `production_readiness_gate.operator_unblocker` and
+  `production_readiness_gate.next_actions`.
+- Blocked release/deploy output now carries the same `npm run
+  production:unblocker` pointer as the readiness gate.
+- Guardrails held: release-gate/reporting hardening only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

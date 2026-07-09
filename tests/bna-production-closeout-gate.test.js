@@ -249,6 +249,18 @@ test('production closeout gate requires production readiness before approved dep
     blockers: ['Production readiness snapshot status is not_production_complete, not production_ready.'],
     warnings: [],
     snapshot_summary: { status: 'not_production_complete', production_ready: false },
+    operator_unblocker: {
+      markdown_path: 'ops/production-readiness/latest-production-unblocker.md',
+      json_path: 'ops/production-readiness/latest-production-unblocker.json',
+      refresh_command: 'npm run production:unblocker',
+    },
+    next_actions: [
+      {
+        owner: 'Codex / operator',
+        source: 'production_readiness_gate',
+        action: 'Refresh and read the production unblocker packet: npm run production:unblocker.',
+      },
+    ],
     production_mutation_performed: false,
     external_write_performed: false,
   };
@@ -272,6 +284,8 @@ test('production closeout gate requires production readiness before approved dep
 
   assert.equal(report.ok, false);
   assert.equal(report.production_readiness_gate.ok, false);
+  assert.equal(report.production_readiness_gate.operator_unblocker.markdown_path, 'ops/production-readiness/latest-production-unblocker.md');
+  assert.ok(report.production_readiness_gate.next_actions.some((item) => /production:unblocker/.test(item.action)));
   assert.ok(report.blockers.some((blocker) => /Production readiness gate blocked/.test(blocker)));
   assert.equal(report.production_mutation_performed, false);
   assert.equal(report.deploy_performed, false);

@@ -290,6 +290,8 @@ function buildProductionReadinessGateSummary(repoRoot, runCommand) {
       blockers: Array.isArray(parsed.blockers) ? parsed.blockers : [],
       warnings: Array.isArray(parsed.warnings) ? parsed.warnings : [],
       snapshot_summary: parsed.snapshot_summary || {},
+      operator_unblocker: parsed.operator_unblocker || null,
+      next_actions: Array.isArray(parsed.next_actions) ? parsed.next_actions : [],
       production_mutation_performed: false,
       external_write_performed: false,
     };
@@ -300,6 +302,8 @@ function buildProductionReadinessGateSummary(repoRoot, runCommand) {
       blockers: [`Production readiness gate could not be parsed: ${error.message}`],
       warnings: [],
       snapshot_summary: {},
+      operator_unblocker: null,
+      next_actions: [],
       production_mutation_performed: false,
       external_write_performed: false,
     };
