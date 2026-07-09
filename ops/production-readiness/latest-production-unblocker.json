@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-07-09T21:02:03.860Z",
+  "generated_at": "2026-07-09T21:08:32.109Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-09T21:01:51.757Z",
+  "source_snapshot_generated_at": "2026-07-09T21:08:20.396Z",
   "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
   "snapshot_source_kind": "live_no_write_command",
-  "snapshot_git_head": "37c63b78",
-  "snapshot_origin_master": "37c63b78",
+  "snapshot_git_head": "6b850a70",
+  "snapshot_origin_master": "6b850a70",
   "snapshot_worktree_clean": true,
   "source_snapshot": {
     "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
     "kind": "live_no_write_command",
-    "generated_at": "2026-07-09T21:01:51.757Z",
-    "git_head": "37c63b78",
-    "origin_master": "37c63b78",
+    "generated_at": "2026-07-09T21:08:20.396Z",
+    "git_head": "6b850a70",
+    "origin_master": "6b850a70",
     "worktree_clean": true,
     "command_exit_code": 0,
     "load_error": ""
@@ -26,7 +26,7 @@
   "source_setup_readiness": {
     "source": "node scripts/check-onetime-external-setup-readiness.mjs --json",
     "kind": "live_no_write_command_expected_blocked",
-    "generated_at": "2026-07-09T21:02:03.851Z",
+    "generated_at": "2026-07-09T21:08:32.100Z",
     "command_exit_code": 1,
     "load_error": "",
     "ready_count": 5,
@@ -42,18 +42,18 @@
     "public_launch_smoke_status": "passed",
     "public_launch_smoke_ready": true,
     "public_launch_smoke_fresh": true,
-    "public_launch_smoke_age_hours": 3.43,
+    "public_launch_smoke_age_hours": 3.54,
     "public_launch_smoke_path": "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
     "rabbi_telegram_runtime_status": "local_runtime_ready_live_smoke_pending",
     "rabbi_telegram_runtime_local_ready": true,
     "rabbi_telegram_chat_id_configured": true,
     "rabbi_telegram_candidate_count": 0,
     "agent_mode_proof_count": 2,
-    "active_collision_lane_count": 1,
-    "active_collision_stale_or_missing_lock_count": 1,
+    "active_collision_lane_count": 0,
+    "active_collision_stale_or_missing_lock_count": 0,
     "chatgpt_queued_count": 0,
     "next_unblocked_executable_batch": "none",
-    "blocker_group_count": 5
+    "blocker_group_count": 4
   },
   "run_blockers": [
     {
@@ -118,16 +118,6 @@
         "rabbi-helper-tool-scope-map"
       ],
       "next_action": "Run each listed Agent Mode prompt and save terminal PASS, FAIL, or BLOCKED proof through the listed Operations drop-off URL."
-    },
-    {
-      "id": "active_agent_collision_lanes",
-      "title": "Active agent lanes must not be overlapped",
-      "owner": "Codex / agent fleet",
-      "count": 1,
-      "evidence": [
-        "job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.38 path=.runtime/agent-fleet/task-1736.lock.json)"
-      ],
-      "next_action": "Inspect or reconcile the stale/missing local task-lock state and result packets before touching overlapping UI/API/Agent Review proof work."
     }
   ],
   "setup_items": [
@@ -266,7 +256,7 @@
     ],
     "external_write_performed": false,
     "production_data_mutation_performed": false,
-    "age_hours": 3.43,
+    "age_hours": 3.54,
     "max_age_hours": 24,
     "fresh_for_launch_gate": true,
     "ready": true,
@@ -319,30 +309,7 @@
       "terminal_saved_proof": false
     }
   ],
-  "active_collision_lanes": [
-    {
-      "job_id": "344",
-      "task_id": "1736",
-      "ticket_id": "",
-      "status": "blocked_needs_human_decision",
-      "title": "Repair Agent Mode result AGR-19cfa47542407167",
-      "raw": "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167",
-      "local_lock_health": "stale_lock_dead_pid",
-      "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.38 path=.runtime/agent-fleet/task-1736.lock.json",
-      "task_lock": {
-        "lock_path": ".runtime/agent-fleet/task-1736.lock.json",
-        "lock_exists": true,
-        "lock_pid": 105512,
-        "lock_pid_running": false,
-        "lock_started_at": "2026-07-02T12:36:41.079Z",
-        "lock_heartbeat_at": "2026-07-02T12:39:01.959Z",
-        "lock_age_hours": 176.38,
-        "lock_fresh_max_hours": 2,
-        "lock_health": "stale_lock_dead_pid",
-        "local_lock_evidence": "local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.38 path=.runtime/agent-fleet/task-1736.lock.json"
-      }
-    }
-  ],
+  "active_collision_lanes": [],
   "operator_actions": [
     {
       "id": "SETUP-ONETIME-STRIPE-001",
