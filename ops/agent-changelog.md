@@ -36694,3 +36694,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:40:00+03:00 - Production Unblocker Adds Owner Action Groups
+
+- Added `blocker_groups` to `npm run production:unblocker` output.
+- Added an `Owner Action Summary` Markdown section before the detailed setup,
+  Agent Mode proof, and active-lane sections.
+- Grouped unblocker actions now show owner, count, evidence, and next action
+  for no unblocked batch, external setup, Agent Mode proof, active collision
+  lanes, and queued ChatGPT packets when present.
+- Focused tests passed, and a no-write sample showed 4 current unblocker
+  groups: no unblocked batch, external setup, Agent Mode proof, and active
+  collision lanes.
+- Guardrails held: unblocker/reporting hardening only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

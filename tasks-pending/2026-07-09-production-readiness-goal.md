@@ -120,6 +120,7 @@ production-ready when these classes are green or precisely blocked:
 | READINESS-20260709-034 | Done / no deploy performed | Codex | The operator-facing unblocker needed a clean-source refresh after the separated-row production snapshot artifact was pushed. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `e5524567`; the packet records `live_no_write_command`, head/origin `e5524567`, worktree clean `true`, 3 external setup blockers, 2 Agent Mode proof blockers, 3 active collision lanes, 0 queued ChatGPT packets, and no executable batch. |
 | READINESS-20260709-035 | Done / no deploy performed | Codex | The production-readiness gate was truthful but noisy: 14 individual blocker lines represented a smaller set of actionable blocker categories, and deploy-gate output did not preserve grouped blocker context. | Added `blocker_groups` to `scripts/production-readiness-gate.mjs` and preserved it in `scripts/bna-production-closeout-gate.mjs`, grouping snapshot status, dirty tree, no unblocked batch, external setup, Agent Mode proof, ChatGPT queue, and active collision lanes while keeping the existing blocker list intact. |
 | READINESS-20260709-036 | Done / no deploy performed | Codex | The grouped production gate needed clean-head proof after `READINESS-20260709-035` was pushed. | Reran readiness, release/deploy, unblocker, and run-next checks from clean pushed head `868e5a8b`; readiness and release gates preserved 5 real blocker groups without dirty-worktree noise, deploy remained blocked, and no production mutation occurred. |
+| READINESS-20260709-037 | Done / no deploy performed | Codex | The operator-facing unblocker still had detailed sections but lacked the same owner/action grouping that the production gate now exposes. | Added `blocker_groups` and an `Owner Action Summary` section to `scripts/production-unblocker.mjs`, grouping no unblocked batch, external setup, Agent Mode proof, active collision lanes, and queued ChatGPT packets when present while preserving all detailed setup/proof/lane sections. |
 
 ## First audit command plan
 
@@ -1770,6 +1771,57 @@ Remaining:
 - Production remains blocked by external setup, missing terminal Agent Mode
   proof, active UI/API/Agent Review collision lanes, and no unblocked
   executable batch.
+
+## READINESS-20260709-037 closeout
+
+Implemented:
+
+- Added `blocker_groups` to `scripts/production-unblocker.mjs`.
+- Added `summary.blocker_group_count`.
+- Added an `Owner Action Summary` section to the Markdown packet before the
+  detailed setup/proof/lane sections.
+- Kept all existing detailed sections intact:
+  - External Setup To Provide
+  - Agent Mode Proof To Save
+  - Active Lanes To Avoid
+  - After Operator Update
+  - Guardrails
+- Added regression coverage in `tests/production-unblocker.test.js`.
+
+Verification:
+
+- PASS `node --check scripts\production-unblocker.mjs`.
+- PASS `node --test tests\production-unblocker.test.js`.
+- PASS `npm run production:unblocker -- --no-write --json` while dirty;
+  readback showed:
+  - status `not_production_complete`
+  - source head `31b4a052`
+  - 3 external setup items
+  - 2 Agent Mode proof items
+  - 3 active collision lanes
+  - 0 queued ChatGPT packets
+  - no unblocked executable batch
+  - 4 blocker groups: `no_unblocked_executable_batch`,
+    `external_setup_blockers`, `agent_mode_terminal_proof_missing`, and
+    `active_agent_collision_lanes`
+
+Evidence:
+
+- `scripts/production-unblocker.mjs`
+- `tests/production-unblocker.test.js`
+
+Guardrails:
+
+- Unblocker/reporting hardening only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- After commit/push, regenerate the tracked production unblocker from a clean
+  pushed tree so GitHub-visible artifacts include the new owner-action summary.
 
 ## Final audit
 

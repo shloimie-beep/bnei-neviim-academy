@@ -99,7 +99,20 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.equal(report.summary.external_setup_item_count, 2);
   assert.equal(report.summary.agent_mode_proof_count, 1);
   assert.equal(report.summary.active_collision_lane_count, 1);
+  assert.equal(report.summary.blocker_group_count, 4);
+  assert.deepEqual(report.blocker_groups.map((group) => group.id), [
+    'no_unblocked_executable_batch',
+    'external_setup_blockers',
+    'agent_mode_terminal_proof_missing',
+    'active_agent_collision_lanes',
+  ]);
+  assert.equal(report.blocker_groups.find((group) => group.id === 'external_setup_blockers').count, 2);
+  assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 1);
+  assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
   assert.deepEqual(report.setup_items.map((item) => item.id), ['SETUP-ONETIME-STRIPE-001', 'SETUP-ONETIME-WHAPI-001']);
+  assert.match(markdown, /Owner Action Summary/);
+  assert.match(markdown, /external_setup_blockers - External OneTime setup values or approvals are missing/);
+  assert.match(markdown, /agent_mode_terminal_proof_missing - Rabbi Agent Review terminal proof is missing/);
   assert.match(markdown, /Rabbi Stripe sandbox/);
   assert.match(markdown, /Whapi\/WAPI provider details/);
   assert.match(markdown, /rabbi-helper-tool-scope-map\.md/);

@@ -151,6 +151,79 @@ function collisionLanes(snapshot = {}) {
   }));
 }
 
+function buildBlockerGroups({
+  setup_items = [],
+  agent_mode_proofs = [],
+  active_collision_lanes = [],
+  chatgpt_queued_count = 0,
+  next_unblocked_executable_batch = '',
+  run_blockers = [],
+} = {}) {
+  const groups = [];
+  const add = (group) => {
+    groups.push({
+      id: group.id,
+      title: group.title,
+      owner: group.owner,
+      count: Number(group.count || 1),
+      evidence: group.evidence || [],
+      next_action: group.next_action || '',
+    });
+  };
+
+  if (!next_unblocked_executable_batch || /^none$/i.test(String(next_unblocked_executable_batch))) {
+    add({
+      id: 'no_unblocked_executable_batch',
+      title: 'No unblocked executable batch is available',
+      owner: 'Codex / operator',
+      evidence: run_blockers.map((item) => item.id || item.title).filter(Boolean),
+      next_action: 'Clear the external setup, terminal Agent Mode proof, and active collision-lane blockers; then rerun `npm run bna:run:next`.',
+    });
+  }
+  if (setup_items.length) {
+    add({
+      id: 'external_setup_blockers',
+      title: 'External OneTime setup values or approvals are missing',
+      owner: 'Shloimie / provider account owners',
+      count: setup_items.length,
+      evidence: setup_items.map((item) => item.id),
+      next_action: 'Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.',
+    });
+  }
+  if (agent_mode_proofs.length) {
+    add({
+      id: 'agent_mode_terminal_proof_missing',
+      title: 'Rabbi Agent Review terminal proof is missing',
+      owner: 'Shloimie / Agent Mode runner',
+      count: agent_mode_proofs.length,
+      evidence: agent_mode_proofs.map((item) => item.id),
+      next_action: 'Run each listed Agent Mode prompt and save terminal PASS, FAIL, or BLOCKED proof through the listed Operations drop-off URL.',
+    });
+  }
+  if (active_collision_lanes.length) {
+    add({
+      id: 'active_agent_collision_lanes',
+      title: 'Active agent lanes must not be overlapped',
+      owner: 'Codex / agent fleet',
+      count: active_collision_lanes.length,
+      evidence: active_collision_lanes.map((lane) => (lane.raw || `job #${lane.job_id} / task #${lane.task_id} [${lane.status}] ${lane.title}`).replace(/^- /, '')),
+      next_action: 'Wait for these lane result packets or inspect them before touching overlapping UI/API/Agent Review proof work.',
+    });
+  }
+  if (chatgpt_queued_count > 0) {
+    add({
+      id: 'chatgpt_dropoff_queue_ready',
+      title: 'ChatGPT dropoff packets are ready for Codex pickup',
+      owner: 'Codex / agent fleet',
+      count: chatgpt_queued_count,
+      evidence: [`queued_count=${chatgpt_queued_count}`],
+      next_action: 'Run the dropoff ingestor and audit/pick up eligible packets before production closeout.',
+    });
+  }
+
+  return groups;
+}
+
 export function buildProductionUnblocker({
   snapshot = {},
   setupChecklist = {},
@@ -164,6 +237,8 @@ export function buildProductionUnblocker({
   const agent_mode_proofs = proofItemsFromReadiness(proofReadiness);
   const run_blockers = externalRunBlockers(snapshot);
   const active_collision_lanes = collisionLanes(snapshot);
+  const chatgpt_queued_count = Number(snapshot.chatgpt_dropoff?.queued_count || 0);
+  const next_unblocked_executable_batch = snapshot.active_run?.next_unblocked_executable_batch || '';
   const snapshot_git_head = snapshot.freshness?.sampled_git_head || snapshot.git?.head || '';
   const snapshot_origin_master = snapshot.freshness?.sampled_origin_master || snapshot.git?.origin_master || '';
   const snapshot_worktree_clean =
@@ -188,6 +263,14 @@ export function buildProductionUnblocker({
       source: 'rabbi_agent_review_proof',
     })),
   ];
+  const blocker_groups = buildBlockerGroups({
+    setup_items,
+    agent_mode_proofs,
+    active_collision_lanes,
+    chatgpt_queued_count,
+    next_unblocked_executable_batch,
+    run_blockers,
+  });
 
   return {
     generated_at: nowIso(),
@@ -218,10 +301,12 @@ export function buildProductionUnblocker({
       external_setup_item_count: setup_items.length,
       agent_mode_proof_count: agent_mode_proofs.length,
       active_collision_lane_count: active_collision_lanes.length,
-      chatgpt_queued_count: Number(snapshot.chatgpt_dropoff?.queued_count || 0),
-      next_unblocked_executable_batch: snapshot.active_run?.next_unblocked_executable_batch || '',
+      chatgpt_queued_count,
+      next_unblocked_executable_batch,
+      blocker_group_count: blocker_groups.length,
     },
     run_blockers,
+    blocker_groups,
     setup_items,
     agent_mode_proofs,
     active_collision_lanes,
@@ -274,7 +359,22 @@ export function renderMarkdown(report = {}) {
     `- Agent Mode terminal proof items: ${report.summary.agent_mode_proof_count}`,
     `- Active collision lanes: ${report.summary.active_collision_lane_count}`,
     `- ChatGPT packets queued: ${report.summary.chatgpt_queued_count}`,
+    `- Blocker groups: ${report.summary.blocker_group_count}`,
     '',
+    '## Owner Action Summary',
+    '',
+    ...(report.blocker_groups?.length
+      ? report.blocker_groups.flatMap((group) => [
+        `### ${group.id} - ${group.title}`,
+        '',
+        `Owner: ${group.owner}`,
+        `Count: ${group.count}`,
+        'Evidence:',
+        formatList(group.evidence),
+        `Next action: ${group.next_action || 'No next action recorded.'}`,
+        '',
+      ])
+      : ['- None reported.', '']),
     '## External Setup To Provide',
     '',
   ];
