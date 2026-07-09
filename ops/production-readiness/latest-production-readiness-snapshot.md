@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T19:33:54.505Z
+# Production Readiness Snapshot - 2026-07-09T19:40:41.473Z
 
 Result: not_production_complete
 Production ready: no
@@ -15,14 +15,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: 1f5e25b3
-- origin/master: 95ed1247
+- HEAD: 83fbe1b1
+- origin/master: 88c56ddb
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 1f5e25b3
-- Sampled origin/master: 95ed1247
+- Sampled git head: 83fbe1b1
+- Sampled origin/master: 88c56ddb
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -53,7 +53,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
 - Status: passed
 - Ready: yes
-- Fresh for launch gate: yes (1.96h old, max 24h)
+- Fresh for launch gate: yes (2.08h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
@@ -77,7 +77,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 2, stale 462, blocked 126, unknown 193, do-not-redo 878
+- Queue health: fresh 3, stale 462, blocked 126, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -85,9 +85,9 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Auto-deploy performed by readiness proof: no
 
 ## Launch Collision Lanes
-- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.22 path=.runtime/agent-fleet/task-1859.lock.json)
+- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.33 path=.runtime/agent-fleet/task-1859.lock.json)
 - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json)
-- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=174.91 path=.runtime/agent-fleet/task-1736.lock.json)
+- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.03 path=.runtime/agent-fleet/task-1736.lock.json)
 
 ## Other Agent Policy Rows
 - job #426 / task #2181 [queued] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)
@@ -115,8 +115,8 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
 4. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
 5. Codex / operator: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
-6. Codex / agent fleet: Do not overlap broad UI file edits while job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish remains active; inspect its result packet before starting the next UI batch. Local lock evidence: local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.22 path=.runtime/agent-fleet/task-1859.lock.json.
-7. Codex / agent fleet: Do not overlap Agent Review proof/result repair work while job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 remains active; inspect its result packet before saving or reconciling Agent Review terminal proof. Local lock evidence: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=174.91 path=.runtime/agent-fleet/task-1736.lock.json.
+6. Codex / agent fleet: Do not overlap broad UI file edits while job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish remains active; inspect its result packet before starting the next UI batch. Local lock evidence: local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.33 path=.runtime/agent-fleet/task-1859.lock.json.
+7. Codex / agent fleet: Do not overlap Agent Review proof/result repair work while job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 remains active; inspect its result packet before saving or reconciling Agent Review terminal proof. Local lock evidence: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.03 path=.runtime/agent-fleet/task-1736.lock.json.
 8. Codex: Regenerate this snapshot after any external setup value, Agent Mode proof, UI result packet, deploy, or live-smoke change.
 
 ## Evidence
