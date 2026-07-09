@@ -43881,7 +43881,8 @@ app.get('/api/bna/communications', requireAdmin, async (req, res) => {
   }
 });
 
-app.get('/api/bna/communications/:id', requireAdmin, async (req, res) => {
+app.get('/api/bna/communications/:id', requireAdmin, async (req, res, next) => {
+  if (!/^\d+$/.test(String(req.params.id || ''))) return next();
   try {
     const conditions = ['id = $1'];
     const params = [req.params.id];

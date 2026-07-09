@@ -51,6 +51,16 @@ test('DNS task readback fails soft for integration setup errors', () => {
   assert.match(dnsTasksRoute, /dns_tasks: \[\]/);
 });
 
+test('communications detail route does not intercept named communications subroutes', () => {
+  const detailRoute = server.slice(
+    server.indexOf("app.get('/api/bna/communications/:id'"),
+    server.indexOf("app.get('/api/bna/contacts/:id/communications'")
+  );
+  assert.match(detailRoute, /async \(req, res, next\)/);
+  assert.match(detailRoute, /\/\^\\d\+\$\/\.test/);
+  assert.match(detailRoute, /return next\(\)/);
+});
+
 test('Operations UI renders Communications integrations without exposing secret fields', () => {
   assert.match(operations, /data-communications-integrations/);
   assert.match(operations, /renderCommunicationsIntegrationPanel/);
