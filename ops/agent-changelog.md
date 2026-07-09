@@ -35564,3 +35564,43 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining open work: commit/push, deploy/live-smoke this slice, then
   continue broader student portal IA, backend CRM persistence, WAPI setup,
   safe contact tagging, and Rabbi Telegram chat ID setup.
+
+## 2026-07-09T08:34:00+03:00 - OneTime Classroom/Member Nav UI Deployed
+
+- Pushed commit `4d506640` on
+  `codex/rabbi-helper-tool-scope-20260708`, then deployed the OneTime Railway
+  service `one-time-web` to production deployment
+  `c0ae67c4-7d47-49ad-83d4-0a7e55398461`.
+- Live route smokes passed for the separate OneTime instance and Rabbi
+  OneTime landing.
+- Live toolbar/filter density audit passed on public/review surfaces with 25
+  screenshots and 0 findings; Operations checks were skipped because live
+  Operations login did not succeed, while the authenticated local audit covered
+  those routes.
+- Live readback passed for classroom, member home, member library, and provider
+  participant pages: compact visible nav labels are deployed, full ARIA labels
+  remain, and classroom contrast/action-rail CSS is present.
+- Evidence is recorded in
+  `ops/ui-audits/2026-07-09-onetime-member-classroom-nav-ui-live-final/report.md`,
+  `ops/live-smokes/2026-07-09T05-31-13-066Z-rabbi-onetime-landing-smoke.md`,
+  and
+  `ops/live-smokes/2026-07-09T05-32-30-onetime-member-classroom-nav-readback.md`.
+- No external email, WhatsApp/WAPI, Telegram recipient message, payment, access
+  grant, credential, DNS/account, Drive/Vimeo/Zoom, production contact/tag
+  mutation, or public publish was performed.
+- Remaining open work: broader student portal IA, backend CRM persistence,
+  WAPI setup, safe contact tagging, and Rabbi Telegram chat ID setup.
+
+## 2026-07-09T08:35:00+03:00 - Super-Admin Telegram Classroom/Member UI Ding Sent
+
+- Sent a concise super-admin Telegram progress update for the deployed
+  OneTime classroom/member UI polish slice.
+- The message summarized the compact nav labels, darker readable classroom
+  cards, mobile/tablet action rail, deployment `c0ae67c4`, live route smokes,
+  live toolbar audit with 0 findings, and live compact-label/ARIA readback.
+- Verification: `npm run telegram:codex-progress -- --send --json` returned
+  `sent=true`, `dry_run=false`, and `message_id_present=true`.
+- No raw token, chat ID, private contact data, raw ticket body,
+  student-sensitive content, external family send, WhatsApp/WAPI message,
+  payment, access grant, credential, DNS/account, Drive/Vimeo/Zoom mutation, or
+  public publish was performed.
