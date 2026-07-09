@@ -128,6 +128,22 @@ function formatExternalSetupEvidence(item = {}) {
     : label;
 }
 
+function agentReviewProofEvidence(proof = {}) {
+  const states = Array.isArray(proof.prompt_states) ? proof.prompt_states : [];
+  const nextPrompts = Array.isArray(proof.next_agent_mode_prompts) ? proof.next_agent_mode_prompts : [];
+  const missingStates = states.filter((item) => item.terminal_saved_proof !== true);
+  const evidence = missingStates.map((item) => [
+    item.prompt_key || 'unknown_prompt',
+    `status=${item.latest_result_status || item.workflow_state || item.status || 'missing_terminal_result'}`,
+    item.public_url ? `prompt=${item.public_url}` : '',
+  ].filter(Boolean).join(' '));
+  for (const promptUrl of nextPrompts) {
+    if (evidence.some((item) => item.includes(promptUrl))) continue;
+    evidence.push(`prompt=${promptUrl}`);
+  }
+  return evidence;
+}
+
 function buildBlockerGroups({
   assessment = {},
   assessmentReasons = [],
@@ -138,6 +154,7 @@ function buildBlockerGroups({
   publicLaunchSmoke = {},
   rabbiTelegramRuntime = {},
   proofBlockers = 0,
+  proofEvidence = [],
   queuedDropoffs = 0,
   collisionLanes = [],
   nextBatch = '',
@@ -256,7 +273,7 @@ function buildBlockerGroups({
       title: 'Rabbi Agent Review terminal proof is missing',
       owner: 'Shloimie / Agent Mode runner',
       count: proofBlockers,
-      evidence: [`remaining_blocker_count=${proofBlockers}`],
+      evidence: proofEvidence.length ? proofEvidence : [`remaining_blocker_count=${proofBlockers}`],
       next_action: 'Run the listed Agent Mode prompts and save terminal PASS, FAIL, or BLOCKED proof through the Operations drop-off.',
     });
   }
@@ -304,6 +321,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
   const assessmentReasons = Array.isArray(assessment.reason) ? assessment.reason : [];
   const queuedDropoffs = Number(chatgpt.queued_count || assessment.chatgpt_dropoff_queue_ready_count || 0);
   const proofBlockers = Number(proof.remaining_blocker_count || 0);
+  const proofEvidence = agentReviewProofEvidence(proof);
   const nextBatch = String(activeRun.next_unblocked_executable_batch || '');
   const externalSetupFields = externalSetupMissingFields(externalSetupItems);
 
@@ -336,7 +354,8 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
     blockers.push(`Rabbi Telegram runtime is ${rabbiTelegramRuntime.status}; chat_id_configured=${rabbiTelegramRuntime.chat_id_configured === true}; candidate_count=${rabbiTelegramRuntime.candidate_count ?? 0}.`);
   }
   if (proofBlockers > 0) {
-    blockers.push(`Rabbi Agent Review proof has ${proofBlockers} remaining terminal result blocker(s).`);
+    const evidence = proofEvidence.length ? `: ${proofEvidence.join('; ')}` : '';
+    blockers.push(`Rabbi Agent Review proof has ${proofBlockers} remaining terminal result blocker(s)${evidence}.`);
   }
   if (queuedDropoffs > 0) {
     blockers.push(`ChatGPT dropoff queue has ${queuedDropoffs} packet(s) ready for Codex pickup.`);
@@ -354,6 +373,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
     publicLaunchSmoke,
     rabbiTelegramRuntime,
     proofBlockers,
+    proofEvidence,
     queuedDropoffs,
     collisionLanes,
     nextBatch,
