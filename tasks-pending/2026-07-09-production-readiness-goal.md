@@ -850,6 +850,10 @@ Verification:
 - PASS latest tracked JSON parse/readback:
   `status not_production_complete`, `blockers 2`, `next none`,
   `queued 0`, `active_jobs 8`, `proof proof_blocked_or_pending`.
+- Pushed implementation commit `993bb095`, then regenerated the snapshot from a
+  clean pushed tree. The refreshed latest JSON shows `head 993bb095`,
+  `origin 993bb095`, `clean true`, `status not_production_complete`,
+  `blockers 2`, `next none`, and `queued 0`.
 
 Evidence:
 
@@ -872,6 +876,7 @@ Remaining:
   remaining external Stripe/WAPI/campaign blockers, two missing Rabbi Agent
   Mode terminal proofs, no next unblocked active-run batch, and a broad UI lane
   already active in another agent job.
+- Commit and push the clean-tree evidence refresh.
 
 ## Final audit
 
