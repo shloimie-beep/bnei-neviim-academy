@@ -153,6 +153,36 @@ test('supervisor and Windows launchers wire the hardening controls', async () =>
     supervisorModule.buildChatGptDropoffCommentCollectCommand({ dryRun: true }, { chatGptDropoffCommentLimit: 5 }),
     'node scripts/chatgpt-dropoff-comment-collector.mjs --json --limit 5',
   );
+  assert.equal(supervisorModule.isLikelyCodexCapacityError(new Error('429 quota exceeded')), true);
+  assert.equal(supervisorModule.isLikelyCodexCapacityError(new Error('local test assertion failed')), false);
+  assert.equal(
+    supervisorModule.shouldRunKimiFallback(
+      { kimiFallbackEnabled: true, kimiFallbackMode: 'quota_only' },
+      new Error('429 quota exceeded'),
+    ),
+    true,
+  );
+  assert.equal(
+    supervisorModule.shouldRunKimiFallback(
+      { kimiFallbackEnabled: true, kimiFallbackMode: 'quota_only' },
+      new Error('local syntax error'),
+    ),
+    false,
+  );
+  assert.equal(
+    supervisorModule.shouldRunKimiFallback(
+      { kimiFallbackEnabled: true, kimiFallbackMode: 'always' },
+      new Error('local syntax error'),
+    ),
+    true,
+  );
+  assert.equal(
+    supervisorModule.shouldRunKimiFallback(
+      { kimiFallbackEnabled: false, kimiFallbackMode: 'quota_only' },
+      new Error('429 quota exceeded'),
+    ),
+    false,
+  );
   assert.deepEqual(
     supervisorModule.filterObservableJobsForClaim(
       [
@@ -280,4 +310,9 @@ test('readiness script contains no-write synthetic GitHub and result bridge proo
   assert.match(script, /synthesizeLaneManifest/);
   assert.match(script, /upstream_missing/);
   assert.match(script, /stdio: \['ignore', 'pipe', 'pipe'\]/);
+  assert.match(script, /kimi_fallback_readiness/);
+  assert.match(script, /kimi-k2\.7-code-highspeed/);
+  assert.match(script, /live_inference_performed/);
+  assert.match(script, /Kimi Fallback Readiness/);
+  assert.match(script, /shouldRunKimiFallback/);
 });

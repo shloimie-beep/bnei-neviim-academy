@@ -1,14 +1,26 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-09T14:34:33.531Z
+Generated: 2026-07-09T14:46:04.676Z
 
 ## Lane Safety
 
 - Branch: `master`
-- Dirty worktree: no
+- Dirty worktree: yes
+- Collision warning: Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files.
 
-
-_None._
+| Status | Path |
+| --- | --- |
+| M | memory/2026-07-09.md |
+| M | ops/agent-changelog.md |
+| M | ops/agent-fleet-hardening/latest-agent-fleet-readiness.json |
+| M | ops/agent-fleet-hardening/latest-agent-fleet-readiness.md |
+| M | ops/agent-task-ledger.jsonl |
+| M | scripts/agent-fleet-readiness.mjs |
+| M | scripts/agent-fleet-supervisor.mjs |
+| M | tasks-pending/2026-07-09-production-readiness-goal.md |
+| M | tests/agent-fleet-hardening.test.js |
+| ?? | ops/agent-fleet-hardening/2026-07-09T14-44-35-543Z-agent-fleet-readiness.json |
+| ?? | ops/agent-fleet-hardening/2026-07-09T14-44-35-543Z-agent-fleet-readiness.md |
 
 ## Packet Status
 
@@ -32,7 +44,7 @@ _None._
 | - Claimable observable jobs: 0 |
 | - Active Codex task fallback: 34 |
 | - Ready to claim: 3 |
-| - Queue health: fresh 7, stale 405, blocked 121, unknown 193, do-not-redo 878 |
+| - Queue health: fresh 8, stale 406, blocked 121, unknown 193, do-not-redo 878 |
 | - ChatGPT dropoff ingest: enabled |
 | - ChatGPT comment collect: enabled |
 
@@ -64,6 +76,7 @@ _None._
 
 ## Recommendations
 
+- Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.
 - No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.
 - Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.
 - GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it.

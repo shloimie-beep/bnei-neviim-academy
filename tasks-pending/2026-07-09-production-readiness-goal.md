@@ -99,6 +99,7 @@ production-ready when these classes are green or precisely blocked:
 | LEADCAP-20260709-009 | Done / deployed / live-smoked | Codex | The OneTime public interest endpoint had live read-only page proof but no safe production POST proof, because a real POST creates first-party CRM state and can trigger the internal Telegram reminder. | Added a `dry_run=true` preview path and `npm run app:smoke:one-time-interest-dry-run` so the live endpoint proves OneTime project/program/CRM/internal-note mapping without product lead, CRM lead, internal note, Telegram, email, WhatsApp/WAPI, checkout, access, Zoom, or external writes. Railway deployment `0c1eec63-aa58-4a65-8bc0-0262ba626401` reached `SUCCESS`; live dry-run smoke passed. |
 | DEPLOY-20260709-010 | Done / deployed / live-smoked | Codex | OneTime Railway had prior build failures and the deploy context was larger and less deterministic than it should be for production releases. | Hardened the shared Railway Docker build by moving to `node:24-alpine`, using `npm ci`, setting runtime `NODE_ENV=production`, adding `.dockerignore` to exclude secrets/local/generated evidence/raw intake/bulky media from Docker context, and copying `.dockerignore` into manual Railway deploy bundles. Deployed from clean worktree commit `cdbaacf9` to OneTime and BNA; both reached `SUCCESS` and live smokes passed. |
 | TARGET-20260709-011 | Done | Codex | Generic `npm run railway:target:doctor` still depended on command-scoped env or `.secrets` target files; a clean shell could block BNA deploy proof even though the non-secret target labels are stable. | Added repo-visible non-secret BNA and OneTime Railway target profiles, selected by `BNA_DEPLOY_APP` / `BNA_RAILWAY_TARGET_PROFILE`, and prevented `railway status` from leaking environment/domain data across projects. BNA and OneTime target doctors now pass from the committed profile config without printing secrets. |
+| FLEET-20260709-012 | Done / live inference not run | Codex | Kimi fallback was visible in the fleet status line but not backed by a durable readiness artifact proving the configured command, model, version, and quota-only fallback routing. | Added Kimi fallback readiness to `npm run agent:fleet:readiness`: command lookup found `C:\Users\User\.local\bin\kimi.exe`, version readback is `kimi, version 1.44.0`, model is `kimi-k2.7-code-highspeed`, mode is `quota_only`, and helper assertions prove fallback triggers for Codex quota/capacity errors but skips ordinary coding errors. Live Kimi inference remains intentionally unrun. |
 
 ## First audit command plan
 
@@ -546,6 +547,44 @@ Guardrails:
 - The committed config contains Railway project/service/domain labels only, not
   tokens, database URLs, credentials, or private variable values.
 
+## FLEET-20260709-012 closeout
+
+Implemented:
+
+- Exported the real Kimi fallback decision helpers from
+  `scripts/agent-fleet-supervisor.mjs` so readiness/tests use the same logic
+  as the running fleet.
+- Added a `kimi_fallback_readiness` section to
+  `scripts/agent-fleet-readiness.mjs` with command lookup, version readback,
+  configured model/mode, redacted credential-source booleans, and fallback
+  decision preview.
+- Kept the fallback mode as `quota_only`, which matches the production goal:
+  Kimi takes over only when Codex fails from quota, credits, rate limit,
+  billing, capacity, or similar provider limits.
+
+Verification:
+
+- PASS `node --check scripts\agent-fleet-readiness.mjs`.
+- PASS `node --check scripts\agent-fleet-supervisor.mjs`.
+- PASS `node --test tests\agent-fleet-hardening.test.js` 7/7.
+- PASS `npm run agent:fleet:readiness -- --json`.
+- PASS `npm run bna:run:validate`, expected 8 done / 2 blocked state.
+
+Evidence:
+
+- `ops/agent-fleet-hardening/2026-07-09T14-44-35-543Z-agent-fleet-readiness.md`
+- `ops/agent-fleet-hardening/2026-07-09T14-44-35-543Z-agent-fleet-readiness.json`
+- `ops/agent-fleet-hardening/latest-agent-fleet-readiness.md`
+- `ops/agent-fleet-hardening/latest-agent-fleet-readiness.json`
+
+Guardrails:
+
+- No Kimi live inference request was sent.
+- No second agent fleet was started.
+- No deploy, GitHub status comment, credential change, external send,
+  payment/access mutation, DNS/account/provider mutation, Drive write,
+  production-data mutation, or public publish was performed.
+
 ## Final audit
 
 | ID | Status | Evidence | Verification | Remaining issue |
@@ -555,4 +594,4 @@ Guardrails:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied / deployed / live-smoked | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register; `LEADCAP-20260709-009` closeout above. | Lead capture live-smoked in prior closeout; dry-run proof tests, full suite, deployment, and live smoke pass. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, and `TARGET-20260709-011` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, `LEADCAP-20260709-009`, `DEPLOY-20260709-010`, `TARGET-20260709-011`, and `FLEET-20260709-012` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; dry-run proof passes local/full-suite verification, explicit OneTime deploy, and live smoke. Docker/build-context hardening deployed to OneTime and BNA from a clean worktree and live-smoked. BNA and OneTime Railway target doctors now pass from committed non-secret profiles. Kimi fallback readiness now proves local CLI version, model, mode, and quota-only routing without running live inference. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, terminal Agent Mode saved proof, and currently running app-wide UI lane remain the active non-code/autonomy blockers. |

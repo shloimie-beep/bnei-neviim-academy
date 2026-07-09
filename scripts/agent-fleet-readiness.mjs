@@ -7,6 +7,7 @@ import hardening from '../src/lib/bna/agent-fleet-hardening.js';
 import resultPacket from '../src/lib/bna/agent-result-packet.js';
 import actionRunner from '../src/lib/actions/runner.js';
 import { buildGitHubIntakePreview, buildGitHubStatusPreview } from './intake-github.mjs';
+import { isLikelyCodexCapacityError, shouldRunKimiFallback } from './agent-fleet-supervisor.mjs';
 
 const {
   AGENT_FLEET_PERMISSION_TIERS,
@@ -23,6 +24,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
 const evidenceDir = path.join(repoRoot, 'ops', 'agent-fleet-hardening');
+const envLocalPath = path.join(repoRoot, '.env.local');
+const secretsDir = path.join(repoRoot, '.secrets');
 const defaultRunRelativePath = 'ops/execution-runs/2026-06-24-issue-20-parent-run';
 const defaultAgentFleetRequirementId = 'REQ-20260624-045';
 
@@ -42,6 +45,27 @@ function readJson(relativePath, fallback = {}) {
   const filePath = path.join(repoRoot, relativePath);
   if (!fs.existsSync(filePath)) return fallback;
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function parseEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) return {};
+  const parsed = {};
+  for (const rawLine of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) continue;
+    const separator = line.indexOf('=');
+    if (separator <= 0) continue;
+    const key = line.slice(0, separator).trim();
+    let value = line.slice(separator + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    parsed[key] = value;
+  }
+  return parsed;
 }
 
 function gitValue(args = []) {
@@ -79,6 +103,178 @@ function gitOptionalValue(args = []) {
 
 function normalizeRelativePath(value = '') {
   return String(value || '').replace(/\\/g, '/').replace(/^\.?\//, '').replace(/\/+$/, '');
+}
+
+function normalizeCommand(value = '') {
+  const command = String(value || '').trim();
+  if (
+    (command.startsWith('"') && command.endsWith('"')) ||
+    (command.startsWith("'") && command.endsWith("'"))
+  ) {
+    return command.slice(1, -1).trim();
+  }
+  return command;
+}
+
+function firstLine(value = '') {
+  return String(value || '')
+    .replace(/\r/g, '')
+    .split('\n')
+    .map((line) => line.trim())
+    .find(Boolean) || '';
+}
+
+function commandLooksPath(command = '') {
+  return path.isAbsolute(command) || /[\\/]/.test(command);
+}
+
+function resolveCommand(command = '') {
+  const normalized = normalizeCommand(command);
+  if (!normalized) {
+    return {
+      command: '',
+      lookup: 'missing',
+      found: false,
+      paths: [],
+      error: 'No command configured.',
+    };
+  }
+
+  if (commandLooksPath(normalized)) {
+    const resolved = path.isAbsolute(normalized) ? normalized : path.resolve(repoRoot, normalized);
+    return {
+      command: normalized,
+      lookup: 'path',
+      found: fs.existsSync(resolved),
+      paths: fs.existsSync(resolved) ? [resolved] : [],
+      error: fs.existsSync(resolved) ? '' : 'Configured command path does not exist.',
+    };
+  }
+
+  const lookupCommand = process.platform === 'win32' ? 'where.exe' : 'which';
+  try {
+    const output = execFileSync(lookupCommand, [normalized], {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      timeout: 5000,
+    });
+    const paths = output.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    return {
+      command: normalized,
+      lookup: lookupCommand,
+      found: paths.length > 0,
+      paths,
+      error: '',
+    };
+  } catch (error) {
+    return {
+      command: normalized,
+      lookup: lookupCommand,
+      found: false,
+      paths: [],
+      error: firstLine(error?.stderr || error?.message).slice(0, 240),
+    };
+  }
+}
+
+function readCommandVersion(command = '') {
+  const normalized = normalizeCommand(command);
+  if (!normalized) {
+    return { ok: false, first_line: '', error: 'No command configured.' };
+  }
+  try {
+    const output = execFileSync(normalized, ['--version'], {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      timeout: 5000,
+    });
+    return {
+      ok: true,
+      first_line: firstLine(output),
+      error: '',
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      first_line: '',
+      error: firstLine(error?.stderr || error?.message).slice(0, 240),
+    };
+  }
+}
+
+function buildKimiFallbackReadiness() {
+  const env = { ...parseEnvFile(envLocalPath), ...process.env };
+  const fallbackEnabled = String(env.AGENT_FLEET_KIMI_FALLBACK_ENABLED || '1') !== '0';
+  const fallbackMode = String(env.AGENT_FLEET_KIMI_FALLBACK_MODE || 'quota_only').trim().toLowerCase();
+  const command = normalizeCommand(env.KIMI_CLI_COMMAND_PATH || env.KIMI_COMMAND || 'kimi');
+  const model = String(env.AGENT_FLEET_KIMI_MODEL || env.KIMI_CLI_MODEL || env.KIMI_MODEL || 'kimi-k2.7-code-highspeed').trim();
+  const config = {
+    kimiFallbackEnabled: fallbackEnabled,
+    kimiFallbackMode: fallbackMode,
+    kimiCommand: command,
+    kimiModel: model,
+    kimiMaxSteps: Number(env.AGENT_FLEET_KIMI_MAX_STEPS || 20),
+    kimiTimeoutMs: Number(env.AGENT_FLEET_KIMI_TIMEOUT_MS || env.KIMI_BRIDGE_TIMEOUT_MS || env.CODEX_BRIDGE_TIMEOUT_MS || 30 * 60 * 1000),
+  };
+  const command_probe = resolveCommand(command);
+  const version_probe = readCommandVersion(command);
+  const capacityError = new Error('Codex failed with 429 quota exceeded / usage limit.');
+  const ordinaryError = new Error('Codex failed because a local unit test assertion failed.');
+  const decision_preview = {
+    capacity_error_detected: isLikelyCodexCapacityError(capacityError),
+    quota_only_capacity_error_triggers_fallback: shouldRunKimiFallback({
+      kimiFallbackEnabled: true,
+      kimiFallbackMode: 'quota_only',
+    }, capacityError),
+    quota_only_ordinary_error_skips_fallback: shouldRunKimiFallback({
+      kimiFallbackEnabled: true,
+      kimiFallbackMode: 'quota_only',
+    }, ordinaryError) === false,
+    always_mode_triggers_fallback: shouldRunKimiFallback({
+      kimiFallbackEnabled: true,
+      kimiFallbackMode: 'always',
+    }, ordinaryError),
+    disabled_mode_skips_fallback: shouldRunKimiFallback({
+      kimiFallbackEnabled: false,
+      kimiFallbackMode: 'quota_only',
+    }, capacityError) === false,
+  };
+  const decisionOk = Object.values(decision_preview).every(Boolean);
+  const credential_sources = {
+    env_kimi_api_key_present: Boolean(env.KIMI_API_KEY),
+    env_moonshot_api_key_present: Boolean(env.MOONSHOT_API_KEY),
+    env_kimi_cli_api_key_present: Boolean(env.KIMI_CLI_API_KEY),
+    secret_file_kimi_api_key_present: fs.existsSync(path.join(secretsDir, 'kimi-api-key.txt')),
+  };
+  const explicitCredentialPresent = Object.values(credential_sources).some(Boolean);
+  const modeUsable = !['off', 'disabled', 'never'].includes(fallbackMode);
+  const modelIsHighestConfigured = /^kimi-k2\.7-code-highspeed$/i.test(model);
+  const warnings = [];
+  if (!explicitCredentialPresent) {
+    warnings.push('No explicit Kimi API key source was detected; the CLI may rely on persisted local auth.');
+  }
+  warnings.push('Kimi live inference smoke was not run; this report only verifies CLI availability, model configuration, and fallback routing logic.');
+
+  return {
+    ok: fallbackEnabled && modeUsable && modelIsHighestConfigured && command_probe.found && version_probe.ok && decisionOk,
+    fallback_enabled: fallbackEnabled,
+    fallback_mode: fallbackMode,
+    fallback_mode_behavior: fallbackMode === 'always' ? 'fallback_after_any_codex_failure' : 'fallback_after_codex_capacity_or_quota_failure_only',
+    configured_command: command,
+    configured_model: model,
+    model_is_highest_configured: modelIsHighestConfigured,
+    max_steps: config.kimiMaxSteps,
+    timeout_ms: config.kimiTimeoutMs,
+    command_probe,
+    version_probe,
+    credential_sources,
+    explicit_credential_present: explicitCredentialPresent,
+    decision_preview,
+    live_inference_performed: false,
+    warnings,
+  };
 }
 
 function relativePathExists(relativePath = '') {
@@ -334,23 +530,26 @@ async function buildReport() {
     requirementId: agentFleetRequirementId,
     rawId: run.raw_id,
   });
+  const kimiFallbackReadiness = buildKimiFallbackReadiness();
   return {
     generated_at: nowIso(),
     active_run_path: activeRunPath,
     requirement_id: agentFleetRequirementId,
-    report_version: 'bna-agent-fleet-readiness-v1',
-    ok: parentAudit.ok && syntheticProof.external_write_performed === false,
+    report_version: 'bna-agent-fleet-readiness-v2',
+    ok: parentAudit.ok && syntheticProof.external_write_performed === false && kimiFallbackReadiness.ok,
     permission_tiers: AGENT_FLEET_PERMISSION_TIERS,
     permission_lines: permissionTierLines(),
     permission_checks: permissionChecks,
     startup_shortcuts: shortcutMatrix,
     parent_coordination_audit: parentAudit,
     synthetic_proof: syntheticProof,
+    kimi_fallback_readiness: kimiFallbackReadiness,
     guardrails: [
       'No second agent fleet created.',
       'No production mutation.',
       'No deploy/live smoke.',
       'No GitHub status comment posted.',
+      'No Kimi live inference request sent.',
       'No send, charge, DNS, credential, Drive write, account-permission, public-publish, or class-backfill action.',
     ],
   };
@@ -401,6 +600,28 @@ function renderMarkdown(report) {
     `- GitHub status would create comment: ${report.synthetic_proof.stages.github_status_preview.would_create_comment}`,
     `- GitHub status external write performed: ${report.synthetic_proof.stages.github_status_preview.external_write_performed}`,
     `- Parent run not marked complete: ${report.synthetic_proof.stages.parent_closeout_preview.parent_run_not_marked_complete}`,
+    '',
+    '## Kimi Fallback Readiness',
+    '',
+    `- OK: ${report.kimi_fallback_readiness.ok}`,
+    `- Enabled: ${report.kimi_fallback_readiness.fallback_enabled}`,
+    `- Mode: ${report.kimi_fallback_readiness.fallback_mode} (${report.kimi_fallback_readiness.fallback_mode_behavior})`,
+    `- Command: \`${String(report.kimi_fallback_readiness.configured_command || '').replace(/`/g, '\\`')}\``,
+    `- Command found: ${report.kimi_fallback_readiness.command_probe.found}`,
+    `- Command path: ${report.kimi_fallback_readiness.command_probe.paths[0] || '[not found]'}`,
+    `- Version readback: ${report.kimi_fallback_readiness.version_probe.ok ? report.kimi_fallback_readiness.version_probe.first_line : report.kimi_fallback_readiness.version_probe.error}`,
+    `- Model: ${report.kimi_fallback_readiness.configured_model}`,
+    `- Model is highest configured: ${report.kimi_fallback_readiness.model_is_highest_configured}`,
+    `- Explicit credential source present: ${report.kimi_fallback_readiness.explicit_credential_present}`,
+    `- Capacity error detected: ${report.kimi_fallback_readiness.decision_preview.capacity_error_detected}`,
+    `- Quota-only capacity fallback: ${report.kimi_fallback_readiness.decision_preview.quota_only_capacity_error_triggers_fallback}`,
+    `- Quota-only ordinary error skips fallback: ${report.kimi_fallback_readiness.decision_preview.quota_only_ordinary_error_skips_fallback}`,
+    `- Always mode fallback: ${report.kimi_fallback_readiness.decision_preview.always_mode_triggers_fallback}`,
+    `- Disabled fallback skip: ${report.kimi_fallback_readiness.decision_preview.disabled_mode_skips_fallback}`,
+    `- Live inference performed: ${report.kimi_fallback_readiness.live_inference_performed}`,
+    ...(report.kimi_fallback_readiness.warnings.length
+      ? report.kimi_fallback_readiness.warnings.map((warning) => `- Warning: ${warning}`)
+      : ['- Warnings: none']),
     '',
     '## Guardrails',
     '',

@@ -36181,3 +36181,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   need an authenticated redaction-safe session; audit governance still reports
   historical unmapped audit debt plus the new untracked evidence package before
   staging.
+
+## 2026-07-09T17:44:59+03:00 - Agent Fleet Kimi Fallback Readiness Hardened
+
+- Added `kimi_fallback_readiness` to `npm run agent:fleet:readiness`, proving
+  Kimi command lookup, version readback, configured model/mode, redacted
+  credential-source presence, and fallback routing decisions.
+- Exported the real supervisor fallback decision helpers so readiness/tests use
+  the same quota-only behavior as the running fleet.
+- Latest readiness proof is OK: `kimi` resolves to
+  `C:\Users\User\.local\bin\kimi.exe`, version is `kimi, version 1.44.0`,
+  model is `kimi-k2.7-code-highspeed`, and mode is `quota_only`.
+- Verification passed: `node --check scripts\agent-fleet-readiness.mjs`,
+  `node --check scripts\agent-fleet-supervisor.mjs`,
+  `node --test tests\agent-fleet-hardening.test.js`,
+  `npm run agent:fleet:readiness -- --json`, and
+  `npm run bna:run:validate`.
+- Guardrails held: no Kimi live inference, no second fleet, no deploy, no
+  external send, no credential change, no payment/access mutation, no
+  DNS/account/provider mutation, and no production-data mutation.
