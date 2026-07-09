@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-09T17:13:01.034Z
+# Production Readiness Snapshot - 2026-07-09T17:22:42.990Z
 
 Result: not_production_complete
 Production ready: no
@@ -15,15 +15,15 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: master
-- HEAD: 94f76e09
-- origin/master: 94f76e09
-- Worktree clean when sampled: no
+- HEAD: 565fddb6
+- origin/master: 565fddb6
+- Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 94f76e09
-- Sampled origin/master: 94f76e09
-- Sampled worktree clean: no
+- Sampled git head: 565fddb6
+- Sampled origin/master: 565fddb6
+- Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
 
@@ -41,11 +41,13 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 ## OneTime Setup Buckets
 - Checklist: ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
 - Available: yes
+- Current setup check: 5/8 ready (exit 1)
+
 - Setup ready count: 5/8
 - Operator blocker count: 3
-- SETUP-ONETIME-STRIPE-001: Rabbi Stripe sandbox (blocked_external_input). Required: rabbi_stripe_test_secret_key_alias, stripe_publishable_key_alias_if_needed, stripe_webhook_secret_alias_if_needed, 67_month_product_price_ids_or_sandbox_create_permission, confirm_sandbox_only
-- SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
-- SETUP-ONETIME-CAMPAIGN-001: Campaign seed / real campaign (blocked_external_input). Required: final_campaign_copy, exact_recipient_segment_or_list_source, suppression_unsubscribe_proof, final_join_member_links, seed_recipient_sdratler_gmail, explicit_seed_packet_approval, separate_explicit_real_send_command_if_seed_passes
+- SETUP-ONETIME-STRIPE-001: Rabbi Stripe sandbox (blocked_external_input). Missing now: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias. Required: rabbi_stripe_test_secret_key_alias, stripe_publishable_key_alias_if_needed, stripe_webhook_secret_alias_if_needed, 67_month_product_price_ids_or_sandbox_create_permission, confirm_sandbox_only
+- SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Missing now: whapi_wapi_instance_id, whapi_wapi_phone_number. Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
+- SETUP-ONETIME-CAMPAIGN-001: Campaign seed / real campaign (blocked_external_input). Missing now: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval. Required: final_campaign_copy, exact_recipient_segment_or_list_source, suppression_unsubscribe_proof, final_join_member_links, seed_recipient_sdratler_gmail, explicit_seed_packet_approval, separate_explicit_real_send_command_if_seed_passes
 
 ## Rabbi Telegram Runtime
 - Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
@@ -65,7 +67,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: 3
-- Queue health: fresh 20, stale 435, blocked 126, unknown 193, do-not-redo 878
+- Queue health: fresh 17, stale 439, blocked 126, unknown 193, do-not-redo 878
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
