@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T14:26:50.746Z",
+  "generated_at": "2026-07-09T22:21:35.120Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -339,6 +339,7 @@
     "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/02-static-chrome-implementation.product-quality.json",
     "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/03-public-landing-reframe.product-quality.json",
     "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/04-provider-operations-layout-parity-audit.product-quality.json",
+    "ops/prompt-packets/2026-07-09-onetime-live-lag-performance/05-live-lag-performance-fix.product-quality.json",
     "ops/prompt-packets/README.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/00-control-tower.sample.md",
     "ops/prompt-packets/examples/rabbi-onetime-ui-cleanup/01-current-state-visual-audit.sample.md",

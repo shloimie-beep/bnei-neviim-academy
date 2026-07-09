@@ -37506,3 +37506,28 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
   smoke, Drive write, class backfill, or production-data mutation.
+
+## 2026-07-10T01:18:00+03:00 - OneTime Static Chrome Deployed
+
+- Deployed commit `befe65c8` to OneTime Railway service
+  `one-time-production / one-time-web`.
+- Railway deployment `942b602c-150c-4587-a85f-07f7b80e21f3` reached `SUCCESS`.
+- Live smokes passed: `app:smoke:onetime-separate-instance`,
+  `app:smoke:rabbi-onetime-landing`, `app:smoke:one-time-interest-dry-run`,
+  and `app:smoke:public-privacy`.
+- Live visual audit captured production chrome evidence at
+  `ops/ui-audits/2026-07-10-onetime-static-chrome-live-readback/`.
+  It reports 0 scoped static-route findings across the public/member/library/
+  classroom route matrix; the 10 remaining findings are only
+  `/provider.html?review=one-time` provider parity scope.
+- Evidence:
+  `ops/ui-audits/2026-07-10-onetime-static-chrome-live-readback/`;
+  `ops/live-smokes/2026-07-09T22-16-10-046Z-rabbi-onetime-landing-smoke.md`;
+  `ops/live-smokes/2026-07-09T22-16-10-048Z-one-time-interest-dry-run-live-smoke.md`;
+  `ops/live-smokes/2026-07-09T22-16-23-225Z-public-route-privacy-smoke.md`.
+- `REQ-20260709-067` is Done for scoped static chrome. Provider-review/
+  Operations parity, external setup, terminal Agent Mode proof, no unblocked
+  execution batch, and Rabbi Telegram hosted/live-smoke proof remain separate.
+- Guardrails: no external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
+  smoke, Drive write, class backfill, or production-data mutation.
