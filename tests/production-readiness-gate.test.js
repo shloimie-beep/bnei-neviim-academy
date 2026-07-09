@@ -44,6 +44,17 @@ function readySnapshot(overrides = {}) {
       operator_blocker_count: 0,
       operator_blocker_items: [],
     },
+    public_launch_smoke: {
+      path: 'ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json',
+      status: 'passed',
+      ready: true,
+      fresh_for_launch_gate: true,
+      command_count: 4,
+      passed_command_count: 4,
+      external_write_performed: false,
+      production_data_mutation_performed: false,
+      age_hours: 0.5,
+    },
     rabbi_telegram_runtime: {
       status: 'live_smoke_verified',
       local_ready: true,
@@ -69,6 +80,7 @@ test('production readiness gate passes a clean fully ready snapshot', async () =
   assert.deepEqual(report.blockers, []);
   assert.deepEqual(report.blocker_groups, []);
   assert.equal(report.snapshot_summary.production_ready, true);
+  assert.equal(report.snapshot_summary.public_launch_smoke_ready, true);
   assert.equal(report.snapshot_summary.blocker_group_count, 0);
   assert.equal(report.operator_unblocker.markdown_path, 'ops/production-readiness/latest-production-unblocker.md');
   assert.equal(report.operator_unblocker.refresh_command, 'npm run production:unblocker');
@@ -152,6 +164,7 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   assert.match(text, /job #382/);
   assert.equal(report.snapshot_summary.active_run_blocker_count, 1);
   assert.equal(report.snapshot_summary.external_setup_item_count, 3);
+  assert.equal(report.snapshot_summary.public_launch_smoke_ready, true);
   assert.deepEqual(report.snapshot_summary.external_setup_missing_fields, [
     'rabbi_stripe_test_secret_key_alias_or_test_key_status',
     '67_month_product_price_id_or_alias',
@@ -204,6 +217,49 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
   assert.equal(report.operator_unblocker.json_path, 'ops/production-readiness/latest-production-unblocker.json');
 });
 
+test('production readiness gate blocks when no-write public launch smoke proof is missing or unsafe', async () => {
+  const mod = await loadGate();
+  const report = mod.buildProductionReadinessGate(readySnapshot({
+    assessment: {
+      production_ready: false,
+      status: 'not_production_complete',
+      reason: ['public launch no-write smoke is failed'],
+      avoid_colliding_with: [],
+      chatgpt_dropoff_queue_ready_count: 0,
+    },
+    public_launch_smoke: {
+      path: 'ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json',
+      status: 'failed',
+      ready: false,
+      fresh_for_launch_gate: true,
+      command_count: 4,
+      passed_command_count: 3,
+      external_write_performed: false,
+      production_data_mutation_performed: false,
+      age_hours: 0.5,
+      blocker: 'passed_commands=3/4',
+    },
+  }));
+
+  assert.equal(report.ok, false);
+  assert.equal(report.snapshot_summary.public_launch_smoke_status, 'failed');
+  assert.equal(report.snapshot_summary.public_launch_smoke_ready, false);
+  const group = report.blocker_groups.find((item) => item.id === 'public_launch_no_write_smoke');
+  assert.ok(group);
+  assert.equal(group.title, 'Public launch no-write smoke proof is missing, failed, stale, or unsafe');
+  assert.deepEqual(group.evidence, [
+    'path=ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json',
+    'status=failed',
+    'ready=false',
+    'fresh_for_launch_gate=true',
+    'commands=3/4',
+    'external_write_performed=false',
+    'production_data_mutation_performed=false',
+    'blocker=passed_commands=3/4',
+  ]);
+  assert.match(report.blockers.join('\n'), /Public launch no-write smoke proof is not launch-ready/);
+});
+
 test('production readiness gate can warn instead of block on dirty state when explicitly allowed', async () => {
   const mod = await loadGate();
   const report = mod.buildProductionReadinessGate(readySnapshot({
@@ -232,6 +288,9 @@ test('production readiness snapshot includes OneTime setup bucket summary', () =
   assert.match(script, /one_time_setup/);
   assert.match(script, /operator_blocker_items/);
   assert.match(script, /OneTime Setup Buckets/);
+  assert.match(script, /public_launch_smoke/);
+  assert.match(script, /No-Write Smoke/);
+  assert.match(script, /no-write-live-smoke-readback\.json/);
   assert.match(script, /one-time-mishnah\/launch-unblocker\/2026-07-02-operator-external-setup-checklist\.json/);
   assert.match(script, /check-onetime-external-setup-readiness\.mjs/);
   assert.match(script, /current_missing_fields/);

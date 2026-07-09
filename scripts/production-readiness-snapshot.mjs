@@ -10,6 +10,7 @@ const latestJsonPath = path.join(outputDir, 'latest-production-readiness-snapsho
 const latestMdPath = path.join(outputDir, 'latest-production-readiness-snapshot.md');
 const oneTimeSetupChecklistPath = 'ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json';
 const oneTimeSetupCheckCommandArgs = ['scripts/check-onetime-external-setup-readiness.mjs', '--json'];
+const publicLaunchSmokeMaxAgeHours = 24;
 const rabbiTelegramReadinessPath = 'ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json';
 const rabbiChatIdRuntimeReportPath = '.runtime/rabbi-telegram-chat-id-candidates.json';
 const args = new Set(process.argv.slice(2));
@@ -174,6 +175,15 @@ function readJsonIfExists(relativePath) {
   } catch {
     return null;
   }
+}
+
+function latestMatchingFile(relativeDir, pattern) {
+  const dirPath = path.join(repoRoot, relativeDir);
+  if (!fs.existsSync(dirPath)) return '';
+  return fs.readdirSync(dirPath)
+    .filter((name) => pattern.test(name))
+    .sort()
+    .at(-1) || '';
 }
 
 function buildGitSnapshot() {
@@ -409,11 +419,81 @@ function summarizeRabbiTelegramRuntime() {
   };
 }
 
+function summarizePublicLaunchSmokeReadback() {
+  const fileName = latestMatchingFile('ops/production-readiness', /no-write-live-smoke-readback\.json$/);
+  const relativePath = fileName ? `ops/production-readiness/${fileName}` : '';
+  const readback = relativePath ? readJsonIfExists(relativePath) : null;
+  if (!readback) {
+    return {
+      path: relativePath || 'ops/production-readiness/*no-write-live-smoke-readback.json',
+      available: false,
+      status: 'missing',
+      command_count: 0,
+      passed_command_count: 0,
+      external_write_performed: null,
+      production_data_mutation_performed: null,
+      age_hours: null,
+      fresh_for_launch_gate: false,
+      ready: false,
+      blocker: 'No tracked no-write public/lead-capture live smoke readback is available.',
+    };
+  }
+
+  const recordedAtMs = Date.parse(readback.recorded_at || '');
+  const ageHours = Number.isFinite(recordedAtMs)
+    ? Math.max(0, (Date.now() - recordedAtMs) / (60 * 60 * 1000))
+    : null;
+  const commandCount = Array.isArray(readback.commands) ? readback.commands.length : 0;
+  const passedCommandCount = Array.isArray(readback.commands)
+    ? readback.commands.filter((command) => command.status === 'passed').length
+    : 0;
+  const fresh = ageHours !== null && ageHours <= publicLaunchSmokeMaxAgeHours;
+  const ready =
+    readback.status === 'passed' &&
+    commandCount > 0 &&
+    passedCommandCount === commandCount &&
+    readback.external_write_performed === false &&
+    readback.production_data_mutation_performed === false &&
+    fresh;
+  const blockers = [
+    readback.status === 'passed' ? '' : `status=${readback.status || 'unknown'}`,
+    commandCount > 0 ? '' : 'no_commands_recorded',
+    passedCommandCount === commandCount ? '' : `passed_commands=${passedCommandCount}/${commandCount}`,
+    readback.external_write_performed === false ? '' : 'external_write_performed_not_false',
+    readback.production_data_mutation_performed === false ? '' : 'production_data_mutation_performed_not_false',
+    fresh ? '' : `stale_or_unparseable_age_hours=${ageHours === null ? 'unknown' : ageHours.toFixed(2)}`,
+  ].filter(Boolean);
+
+  return {
+    path: relativePath,
+    available: true,
+    status: readback.status || 'unknown',
+    recorded_at: readback.recorded_at || '',
+    report_version: readback.report_version || '',
+    command_count: commandCount,
+    passed_command_count: passedCommandCount,
+    commands: (readback.commands || []).map((command) => ({
+      command: command.command || '',
+      status: command.status || 'unknown',
+      base_url: command.base_url || '',
+      report_path: command.report_path || '',
+      writes_report_file: command.writes_report_file === true,
+    })),
+    external_write_performed: readback.external_write_performed === true,
+    production_data_mutation_performed: readback.production_data_mutation_performed === true,
+    age_hours: ageHours === null ? null : Number(ageHours.toFixed(2)),
+    max_age_hours: publicLaunchSmokeMaxAgeHours,
+    fresh_for_launch_gate: fresh,
+    ready,
+    blocker: blockers.length ? blockers.join('; ') : '',
+  };
+}
+
 function rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime = {}) {
   return rabbiTelegramRuntime.status === 'live_smoke_verified' || rabbiTelegramRuntime.production_verified === true;
 }
 
-function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, oneTimeSetup, rabbiTelegramRuntime }) {
+function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, oneTimeSetup, rabbiTelegramRuntime, publicLaunchSmoke }) {
   const activeUiLane = fleet.active_policy_jobs.find((job) =>
     /app-wide BNA brand shell|million-dollar SaaS UI polish|One Time provider UI|route-role mapping|View-as navigation/i.test(job.title)
   );
@@ -422,6 +502,7 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, one
   const queuedDropoffs = Number(chatgpt?.queued_count || 0);
   const missingProofCount = Number(proof.remaining_blocker_count || 0);
   const hasExternalBlockers = blockers.length > 0 || Number(oneTimeSetup?.operator_blocker_count || 0) > 0;
+  const publicLaunchSmokeBlocked = publicLaunchSmoke?.ready !== true;
   const rabbiTelegramRuntimeBlocked = rabbiTelegramRuntime?.status && !rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime);
   const noNextBatch = activeRun.work_remains === true && /none/i.test(activeRun.next_unblocked_executable_batch || '');
   const avoidCollidingWith = [];
@@ -434,6 +515,7 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, one
   }
   const reason = [
     hasExternalBlockers ? 'full OneTime launch has external Stripe/WAPI/campaign blockers' : '',
+    publicLaunchSmokeBlocked ? `public launch no-write smoke is ${publicLaunchSmoke?.status || 'missing'}` : '',
     rabbiTelegramRuntimeBlocked ? `Rabbi Telegram runtime is ${rabbiTelegramRuntime.status}` : '',
     missingProofCount > 0 ? 'Rabbi Agent Review still needs terminal Agent Mode proof' : '',
     activeUiLane ? 'broad UI lane is already active in another agent job' : '',
@@ -451,6 +533,7 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, one
     safe_current_scope: 'read-only production-readiness reporting, blocker reconciliation, and non-overlapping proof automation',
     avoid_colliding_with: avoidCollidingWith,
     chatgpt_dropoff_queue_ready_count: queuedDropoffs,
+    public_launch_smoke_ready: publicLaunchSmoke?.ready === true,
   };
 }
 
@@ -588,6 +671,16 @@ function renderMarkdown(report) {
       )
       : ['- No setup checklist operator blockers reported.']),
     '',
+    '## Public Launch No-Write Smoke',
+    `- Path: ${report.public_launch_smoke.path || 'unknown'}`,
+    `- Status: ${report.public_launch_smoke.status || 'unknown'}`,
+    `- Ready: ${report.public_launch_smoke.ready ? 'yes' : 'no'}`,
+    `- Fresh for launch gate: ${report.public_launch_smoke.fresh_for_launch_gate ? 'yes' : 'no'} (${report.public_launch_smoke.age_hours ?? 'unknown'}h old, max ${report.public_launch_smoke.max_age_hours ?? 'unknown'}h)`,
+    `- Commands passed: ${report.public_launch_smoke.passed_command_count ?? 'unknown'}/${report.public_launch_smoke.command_count ?? 'unknown'}`,
+    `- External write performed: ${report.public_launch_smoke.external_write_performed ? 'yes' : 'no'}`,
+    `- Production data mutation performed: ${report.public_launch_smoke.production_data_mutation_performed ? 'yes' : 'no'}`,
+    report.public_launch_smoke.blocker ? `- Blocker: ${report.public_launch_smoke.blocker}` : '- Blocker: none',
+    '',
     '## Rabbi Telegram Runtime',
     `- Readiness report: ${report.rabbi_telegram_runtime.readiness_path || 'unknown'}`,
     `- Chat ID readback report: ${report.rabbi_telegram_runtime.chat_id_report_path || 'unknown'} (${report.rabbi_telegram_runtime.runtime_report_available ? 'available locally' : 'missing locally'})`,
@@ -677,6 +770,7 @@ function main() {
   const rabbiAgentReview = summarizeProofState();
   const agentFleetReadiness = summarizeAgentFleetReadiness();
   const oneTimeSetup = summarizeOneTimeSetupChecklist(oneTimeSetupCheckCommand);
+  const publicLaunchSmoke = summarizePublicLaunchSmokeReadback();
   const rabbiTelegramRuntime = summarizeRabbiTelegramRuntime();
   const assessment = buildLaunchAssessment({
     activeRun,
@@ -686,6 +780,7 @@ function main() {
     proof: rabbiAgentReview,
     oneTimeSetup,
     rabbiTelegramRuntime,
+    publicLaunchSmoke,
   });
 
   const report = {
@@ -698,6 +793,7 @@ function main() {
     agent_fleet: agentFleet,
     agent_fleet_readiness: agentFleetReadiness,
     one_time_setup: oneTimeSetup,
+    public_launch_smoke: publicLaunchSmoke,
     rabbi_telegram_runtime: rabbiTelegramRuntime,
     chatgpt_dropoff: chatgptDropoff,
     rabbi_agent_review: rabbiAgentReview,
@@ -717,6 +813,7 @@ function main() {
       rabbiTelegramRuntime.runtime_report_available ? rabbiTelegramRuntime.chat_id_report_path : '',
       agentFleetReadiness.path,
       oneTimeSetup.path,
+      publicLaunchSmoke.path,
       'ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md',
     ].filter(Boolean),
     guardrails: [

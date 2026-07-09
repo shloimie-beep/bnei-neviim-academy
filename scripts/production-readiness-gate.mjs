@@ -100,6 +100,10 @@ function rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime = {}) {
   return rabbiTelegramRuntime.status === 'live_smoke_verified' || rabbiTelegramRuntime.production_verified === true;
 }
 
+function publicLaunchSmokeReady(publicLaunchSmoke = {}) {
+  return publicLaunchSmoke.ready === true && publicLaunchSmoke.fresh_for_launch_gate === true;
+}
+
 function externalSetupMissingFields(externalSetupItems = []) {
   return [...new Set(externalSetupItems
     .flatMap((item) => Array.isArray(item.current_missing_fields) ? item.current_missing_fields : [])
@@ -120,6 +124,7 @@ function buildBlockerGroups({
   activeRun = {},
   runBlockers = [],
   externalSetupItems = [],
+  publicLaunchSmoke = {},
   rabbiTelegramRuntime = {},
   proofBlockers = 0,
   queuedDropoffs = 0,
@@ -198,6 +203,24 @@ function buildBlockerGroups({
         : 'Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.',
     });
   }
+  if (!publicLaunchSmokeReady(publicLaunchSmoke)) {
+    add({
+      id: 'public_launch_no_write_smoke',
+      title: 'Public launch no-write smoke proof is missing, failed, stale, or unsafe',
+      owner: 'Codex',
+      evidence: [
+        `path=${publicLaunchSmoke.path || 'unknown'}`,
+        `status=${publicLaunchSmoke.status || 'unknown'}`,
+        `ready=${publicLaunchSmoke.ready === true}`,
+        `fresh_for_launch_gate=${publicLaunchSmoke.fresh_for_launch_gate === true}`,
+        `commands=${publicLaunchSmoke.passed_command_count ?? 'unknown'}/${publicLaunchSmoke.command_count ?? 'unknown'}`,
+        `external_write_performed=${publicLaunchSmoke.external_write_performed === true}`,
+        `production_data_mutation_performed=${publicLaunchSmoke.production_data_mutation_performed === true}`,
+        publicLaunchSmoke.blocker ? `blocker=${publicLaunchSmoke.blocker}` : '',
+      ].filter(Boolean),
+      next_action: 'Run the no-write public/lead-capture live smoke sweep and record tracked production-readiness evidence before claiming launch readiness.',
+    });
+  }
   if (rabbiTelegramRuntime.status && !rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime)) {
     const maskedCandidates = (rabbiTelegramRuntime.masked_candidates || [])
       .map((candidate) => candidate.chat_id_masked)
@@ -257,6 +280,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
   const git = snapshot.git || {};
   const activeRun = snapshot.active_run || {};
   const oneTimeSetup = snapshot.one_time_setup || {};
+  const publicLaunchSmoke = snapshot.public_launch_smoke || {};
   const rabbiTelegramRuntime = snapshot.rabbi_telegram_runtime || {};
   const chatgpt = snapshot.chatgpt_dropoff || {};
   const proof = snapshot.rabbi_agent_review || {};
@@ -291,6 +315,9 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
     const setupEvidence = externalSetupItems.map(formatExternalSetupEvidence).filter(Boolean).join('; ');
     blockers.push(`OneTime setup checklist still has ${externalSetupItems.length} operator setup blocker(s): ${setupEvidence}.`);
   }
+  if (!publicLaunchSmokeReady(publicLaunchSmoke)) {
+    blockers.push(`Public launch no-write smoke proof is not launch-ready: status=${publicLaunchSmoke.status || 'missing'}; ready=${publicLaunchSmoke.ready === true}; fresh=${publicLaunchSmoke.fresh_for_launch_gate === true}; blocker=${publicLaunchSmoke.blocker || 'No tracked ready smoke proof.'}`);
+  }
   if (rabbiTelegramRuntime.status && !rabbiTelegramRuntimeProductionReady(rabbiTelegramRuntime)) {
     blockers.push(`Rabbi Telegram runtime is ${rabbiTelegramRuntime.status}; chat_id_configured=${rabbiTelegramRuntime.chat_id_configured === true}; candidate_count=${rabbiTelegramRuntime.candidate_count ?? 0}.`);
   }
@@ -310,6 +337,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
     activeRun,
     runBlockers,
     externalSetupItems,
+    publicLaunchSmoke,
     rabbiTelegramRuntime,
     proofBlockers,
     queuedDropoffs,
@@ -338,6 +366,10 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
       active_run_blocker_count: runBlockers.length,
       external_setup_item_count: externalSetupItems.length,
       external_setup_missing_fields: externalSetupFields,
+      public_launch_smoke_status: publicLaunchSmoke.status || 'missing',
+      public_launch_smoke_ready: publicLaunchSmokeReady(publicLaunchSmoke),
+      public_launch_smoke_path: publicLaunchSmoke.path || '',
+      public_launch_smoke_age_hours: publicLaunchSmoke.age_hours ?? null,
       rabbi_telegram_runtime_status: rabbiTelegramRuntime.status || 'unknown',
       rabbi_telegram_chat_id_configured: rabbiTelegramRuntime.chat_id_configured === true,
       rabbi_telegram_candidate_count: rabbiTelegramRuntime.candidate_count ?? null,
