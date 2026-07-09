@@ -223,6 +223,12 @@ test('BNA Helper backend exposes HELPER-03 storage, redaction fields, and routes
   assert.match(server, /insertHelperAudit/);
   assert.match(server, /Cache-Control', 'no-store'/);
   assert.match(server, /function setOperationsShellCacheHeader[\s\S]*private, no-cache, max-age=0, must-revalidate/);
+  assert.match(server, /function setPublicStaticAssetCacheHeader/);
+  assert.match(server, /STATIC_CODE_CACHE_SECONDS = 300/);
+  assert.match(server, /public, max-age=\$\{STATIC_CODE_CACHE_SECONDS\}, must-revalidate/);
+  assert.match(server, /STATIC_MEDIA_CACHE_SECONDS = 86400/);
+  assert.match(server, /stale-while-revalidate=\$\{STATIC_MEDIA_STALE_SECONDS\}/);
+  assert.match(server, /setPublicStaticAssetCacheHeader\(res, normalizedPath\)/);
   assert.match(server, /function sendOperationsShell[\s\S]*setOperationsShellCacheHeader\(res\)[\s\S]*operations-bootstrap\.html/);
   assert.match(server, /app\.get\(\['\/operations', '\/operations\/agents\/runs\/:runKey'\], requireAdmin, sendOperationsShell\)/);
   assert.match(server, /confirmation_text[\s\S]*CONFIRM/);

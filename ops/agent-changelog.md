@@ -37373,3 +37373,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no deploy, hosted restart, live Telegram smoke, external send,
   payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
   result save, Drive write, class backfill, or production-data mutation.
+
+## 2026-07-10T00:15:00+03:00 - OneTime Static Cache Policy Implemented Locally
+
+- Opened the OneTime lag/performance lane after the control tower showed no
+  dirty worktree at sample time, no ready ChatGPT packets, no claimable jobs,
+  and no active UI collision lane.
+- Added a conservative static cache policy in `server.js`: public JS/CSS uses
+  `public, max-age=300, must-revalidate`; public media/fonts use
+  `public, max-age=86400, stale-while-revalidate=604800`.
+- Preserved no-store/no-cache behavior for HTML, `sw.js`, manifests, API/
+  private routes, and Operations shell assets.
+- Added source and behavioral regression coverage in
+  `tests/bna-helper-tools.test.js` and
+  `tests/one-time-intake-api-readback.test.js`.
+- Verification passed: `node --check server.js`; `node --test
+  tests/one-time-intake-api-readback.test.js tests/bna-helper-tools.test.js`
+  with 18/18 passing; Railway target guard doctor/deploy JSON checks for the
+  default BNA profile passed.
+- Deployment status: local implementation only so far; OneTime deploy and live
+  header/lag readback remain required before terminal Done.
+- Guardrails: no external send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram
+  smoke, Drive write, class backfill, or production-data mutation.

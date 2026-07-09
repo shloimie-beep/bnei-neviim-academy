@@ -23,6 +23,7 @@ function parseJson(value, fallback = {}) {
 
 function createFakeExpress() {
   const routes = [];
+  const staticCalls = [];
   const app = {
     routes,
     disable() {},
@@ -45,8 +46,11 @@ function createFakeExpress() {
   express.json = middleware;
   express.urlencoded = middleware;
   express.raw = middleware;
-  express.static = middleware;
-  return { express, routes };
+  express.static = (root, options = {}) => {
+    staticCalls.push({ root, options });
+    return middleware();
+  };
+  return { express, routes, staticCalls };
 }
 
 function routeMatches(routePath, expected) {
@@ -249,7 +253,7 @@ function createFakePostgres() {
 
 function loadServerWithFakes() {
   const fakeDb = createFakePostgres();
-  const { express, routes } = createFakeExpress();
+  const { express, routes, staticCalls } = createFakeExpress();
   const serverRequire = Module.createRequire(SERVER_PATH);
   const fakeProcess = Object.create(process);
   fakeProcess.env = {
@@ -304,7 +308,7 @@ function loadServerWithFakes() {
     filename: SERVER_PATH,
     displayErrors: true,
   });
-  return { fakeDb, routes };
+  return { fakeDb, routes, staticCalls };
 }
 
 function findRoute(routes, method, routePath) {
@@ -474,4 +478,29 @@ test('scoped One Time intake parse rejects attempts to override into BNA workspa
   assert.match(res.body.error, /scoped provider workspace|One Time Mishnah Class/);
   assert.equal(fakeDb.rawIntakes.length, 0);
   assert.equal(fakeDb.parseRuns.length, 0);
+});
+
+test('public static cache policy caches public assets without caching private shells', async () => {
+  const { staticCalls } = loadServerWithFakes();
+  const publicStatic = staticCalls.find((call) => call.root === 'public');
+  assert.ok(publicStatic, 'public static middleware should be registered');
+  assert.equal(typeof publicStatic.options.setHeaders, 'function');
+
+  function cacheFor(relativePath) {
+    const res = jsonResponse();
+    publicStatic.options.setHeaders(res, path.join(WORKSPACE_ROOT, relativePath));
+    return res.headers['cache-control'] || '';
+  }
+
+  assert.equal(cacheFor('public/js/bna-bot-widget.js'), 'public, max-age=300, must-revalidate');
+  assert.equal(cacheFor('public/css/one-time-shared-review.css'), 'public, max-age=300, must-revalidate');
+  assert.equal(
+    cacheFor('public/images/one-time/brand/onetimelogo.webp'),
+    'public, max-age=86400, stale-while-revalidate=604800'
+  );
+  assert.equal(cacheFor('public/one-time/index.html'), 'no-store');
+  assert.equal(cacheFor('public/sw.js'), 'no-store');
+  assert.equal(cacheFor('public/manifest.json'), 'no-store');
+  assert.equal(cacheFor('public/js/operations-shell.js'), 'private, no-cache, max-age=0, must-revalidate');
+  assert.equal(cacheFor('public/js/operations-deferred-renderers.js'), 'private, no-cache, max-age=0, must-revalidate');
 });

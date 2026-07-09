@@ -90,6 +90,7 @@ production-ready when these classes are green or precisely blocked:
 | DEC-20260709-008 | Superseded for link value; approvals still blocked | Shloimie / Codex to verify | Hosted free-class/class-link value is present by redacted OneTime Railway readback; automated sends remain blocked by WAPI instance/phone metadata and explicit auto-reply approval. | Keep follow-up manual/no-send until WAPI metadata and approval flags are intentionally configured. |
 | PERF-20260709-001 | Done, deployed/live-smoked | Codex | BNA Operations rendered with 0 console errors, but startup still performed 118 API reads, median 1064ms, P95 2855ms, max 3622ms. | Reduced dashboard startup fanout, removed support-ticket loading from dashboard first paint, bounded support-ticket list query, deployed BNA, and recorded live profile proof. |
 | PERF-20260709-002 | Follow-up, not launch-blocking | Codex | Final dashboard profile is usable but still shows a later refresh cycle around 33s and initial slowest dashboard reads near 3s. | If more performance polish is needed, inspect dashboard refresh scheduling and tune task/device/payment reads after screenshot-led UI work. |
+| PERF-20260710-001 | In progress / deploy pending | Codex | OneTime live lag audit classified the strongest signal as slow/variable first-byte response plus static/cache delivery policy; static assets were returning default `max-age=0`. | Implemented a conservative static cache policy for public JS/CSS/media while preserving no-store/no-cache for HTML, APIs, service worker, manifests, and Operations shell assets. Commit, deploy to OneTime, and live-read headers before terminal Done. |
 | DEPLOY-20260709-003 | Done | Codex | `npm run railway:doctor` loaded a stale project token even when BNA deploys used account auth, which made deploy-proof readback look blocked after successful deployments. | Updated `scripts/railway-doctor.ps1` to honor `BNA_RAILWAY_USE_ACCOUNT_AUTH` before loading `.secrets/railway-token.txt`; verified doctor passes against BNA production deployment `e1cef921-0e58-4fe7-aaf7-d9be65b06295`. |
 | TARGET-20260709-004 | Done | Codex | `npm run one-time:target:guard` hard-blocked the public OneTime target when the local Railway CLI was linked to BNA, even though the canonical OneTime domain and instance config passed. | Reclassified local Railway status mismatch as a warning in `scripts/release-captain.mjs`, added regression coverage, and kept `npm run one-time:railway-target:guard` as the dedicated Railway instance proof. |
 | SETUPCHECK-20260709-005 | Done | Codex | `npm run one-time:setup:check` could fall back into the BNA project-token/local-link context and report OneTime Railway target/auth as missing even when OneTime was live. | Updated `scripts/check-onetime-external-setup-readiness.mjs` to honor account-auth mode and use an isolated temp Railway link for redacted OneTime variable readback. |
@@ -2660,6 +2661,54 @@ Remaining:
 - Production remains blocked by exact OneTime setup fields, missing terminal
   Agent Mode proof, active UI/API/Agent Review collision lanes, no unblocked
   executable batch, and Rabbi Telegram hosted restart/scoped live-smoke proof.
+
+## PERF-20260710-001 closeout
+
+Implemented locally:
+
+- Opened the `REQ-20260709-070` performance implementation lane after
+  `npm run chatgpt:dropoff:tower` showed a clean worktree at sample time, no
+  ready ChatGPT packets, no claimable agent-fleet jobs, and no active UI
+  collision lane.
+- Added a conservative public static asset cache policy in `server.js`:
+  JS/CSS gets `public, max-age=300, must-revalidate`; public media/fonts get
+  `public, max-age=86400, stale-while-revalidate=604800`.
+- Preserved no-store/no-cache behavior for HTML, `sw.js`, manifests, API/
+  private routes, and Operations shell assets.
+- Added source and behavioral regression coverage so the fake-Express static
+  middleware readback checks public JS/CSS/media headers and private shell
+  no-cache exclusions.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --test tests/one-time-intake-api-readback.test.js
+  tests/bna-helper-tools.test.js` with 18/18 passing.
+- PASS `node scripts/railway-target-guard.mjs doctor --json` for the default
+  BNA target profile.
+- PASS `node scripts/railway-target-guard.mjs deploy --json` for the default
+  BNA target profile.
+
+Evidence:
+
+- `server.js`
+- `tests/bna-helper-tools.test.js`
+- `tests/one-time-intake-api-readback.test.js`
+- `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`
+
+Guardrails:
+
+- No external send, payment/access mutation, CRM/provider/DNS/credential
+  mutation, Agent Review result save, live Telegram smoke, Drive write, class
+  backfill, or production-data mutation.
+- This is not terminal Done until the change is committed, pushed, deployed to
+  OneTime, and live header/lag readback is recorded.
+
+Remaining:
+
+- Deploy/live-smoke the cache policy fix on `join.onetimeonetime.com`.
+- Full OneTime external setup, terminal Agent Mode saved proof, and Rabbi
+  Telegram hosted restart/live-smoke proof remain separate blockers.
 
 ## Final audit
 

@@ -10797,6 +10797,26 @@ function setOperationsShellCacheHeader(res) {
   res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
 }
 
+const STATIC_CODE_CACHE_SECONDS = 300;
+const STATIC_MEDIA_CACHE_SECONDS = 86400;
+const STATIC_MEDIA_STALE_SECONDS = 604800;
+
+function setPublicStaticAssetCacheHeader(res, normalizedPath) {
+  const lowerPath = String(normalizedPath || '').toLowerCase();
+  if (/\.(?:js|css)$/.test(lowerPath)) {
+    res.setHeader('Cache-Control', `public, max-age=${STATIC_CODE_CACHE_SECONDS}, must-revalidate`);
+    return true;
+  }
+  if (/\.(?:avif|gif|ico|jpe?g|png|svg|webp|woff2?|ttf|otf)$/.test(lowerPath)) {
+    res.setHeader(
+      'Cache-Control',
+      `public, max-age=${STATIC_MEDIA_CACHE_SECONDS}, stale-while-revalidate=${STATIC_MEDIA_STALE_SECONDS}`
+    );
+    return true;
+  }
+  return false;
+}
+
 function sendOperationsShell(req, res) {
   setOperationsShellCacheHeader(res);
   res.sendFile(path.join(__dirname, 'public', 'operations-bootstrap.html'));
@@ -10817,7 +10837,9 @@ app.use(express.static('public', {
     }
     if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
       res.setHeader('Cache-Control', 'no-store');
+      return;
     }
+    setPublicStaticAssetCacheHeader(res, normalizedPath);
   }
 }));
 
