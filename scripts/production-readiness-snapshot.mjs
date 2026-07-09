@@ -9,6 +9,7 @@ const outputDir = path.join(repoRoot, 'ops', 'production-readiness');
 const latestJsonPath = path.join(outputDir, 'latest-production-readiness-snapshot.json');
 const latestMdPath = path.join(outputDir, 'latest-production-readiness-snapshot.md');
 const oneTimeSetupChecklistPath = 'ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json';
+const oneTimeSetupCheckCommandArgs = ['scripts/check-onetime-external-setup-readiness.mjs', '--json'];
 const rabbiTelegramReadinessPath = 'ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json';
 const rabbiChatIdRuntimeReportPath = '.runtime/rabbi-telegram-chat-id-candidates.json';
 const args = new Set(process.argv.slice(2));
@@ -250,12 +251,40 @@ function summarizeAgentFleetReadiness() {
   };
 }
 
-function summarizeOneTimeSetupChecklist() {
+function setupReadinessItemsById(setupReadiness = {}) {
+  const byId = new Map();
+  for (const item of [...(setupReadiness.items || []), ...(setupReadiness.blockers || [])]) {
+    const id = item?.id || '';
+    if (!id) continue;
+    byId.set(id, {
+      ...(byId.get(id) || {}),
+      ...item,
+    });
+  }
+  return byId;
+}
+
+function summarizeOneTimeSetupChecklist(setupCheckCommand = {}) {
   const checklist = readJsonIfExists(oneTimeSetupChecklistPath);
+  const setupReadiness = parseJsonFromOutput(setupCheckCommand.stdout || '');
+  const setupReadinessById = setupReadinessItemsById(setupReadiness || {});
+  const readinessSummary = {
+    source: 'npm run one-time:setup:check',
+    command: `node ${oneTimeSetupCheckCommandArgs.join(' ')}`,
+    available: Boolean(setupReadiness),
+    generated_at: setupReadiness?.generated_at || '',
+    command_exit_code: typeof setupCheckCommand.exit_code === 'number' ? setupCheckCommand.exit_code : null,
+    ready_count: setupReadiness?.ready_count ?? null,
+    total_count: setupReadiness?.total_count ?? null,
+    blocker_count: Array.isArray(setupReadiness?.blockers) ? setupReadiness.blockers.length : null,
+    all_required_external_setup_ready: setupReadiness?.all_required_external_setup_ready === true,
+    load_error: setupReadiness ? '' : redact(setupCheckCommand.stderr || 'Could not parse OneTime setup check JSON.'),
+  };
   if (!checklist) {
     return {
       path: oneTimeSetupChecklistPath,
       available: false,
+      setup_readiness: readinessSummary,
       workspace_key: '',
       project_key: '',
       setup_ready_count: '',
@@ -264,25 +293,39 @@ function summarizeOneTimeSetupChecklist() {
       operator_blocker_items: [],
     };
   }
+  const readyItemsFromCheck = (setupReadiness?.items || [])
+    .filter((item) => item?.ready === true)
+    .map((item) => item.id)
+    .filter(Boolean);
   const operatorBlockerItems = (checklist.setup_items || [])
     .filter((item) => item?.operator_blocker === true)
     .sort((a, b) => Number(a.priority ?? 999) - Number(b.priority ?? 999))
-    .map((item) => ({
-      id: item.id || '',
-      title: item.title || '',
-      status: item.current_status || 'unknown',
-      priority: item.priority ?? null,
-      owner: 'Shloimie / provider account owners',
-      required_fields: item.required_fields || [],
-      forbidden: item.forbidden || [],
-    }));
+    .map((item) => {
+      const readiness = setupReadinessById.get(item.id || '') || {};
+      return {
+        id: item.id || '',
+        title: item.title || '',
+        status: item.current_status || 'unknown',
+        priority: item.priority ?? null,
+        owner: 'Shloimie / provider account owners',
+        setup_check_ready: typeof readiness.ready === 'boolean' ? readiness.ready : null,
+        current_missing_fields: readiness.missing_fields || [],
+        current_warnings: readiness.warnings || [],
+        required_fields: item.required_fields || [],
+        forbidden: item.forbidden || [],
+      };
+    });
   return {
     path: oneTimeSetupChecklistPath,
     available: true,
+    setup_readiness: readinessSummary,
     workspace_key: checklist.workspace_key || '',
     project_key: checklist.project_key || '',
-    setup_ready_count: checklist.current_state?.setup_ready_count || '',
-    ready_items: checklist.current_state?.ready_items || [],
+    setup_ready_count:
+      typeof setupReadiness?.ready_count === 'number' && typeof setupReadiness?.total_count === 'number'
+        ? `${setupReadiness.ready_count}/${setupReadiness.total_count}`
+        : checklist.current_state?.setup_ready_count || '',
+    ready_items: readyItemsFromCheck.length ? readyItemsFromCheck : checklist.current_state?.ready_items || [],
     operator_blocker_count: operatorBlockerItems.length,
     operator_blocker_items: operatorBlockerItems,
   };
@@ -535,11 +578,13 @@ function renderMarkdown(report) {
     '## OneTime Setup Buckets',
     `- Checklist: ${report.one_time_setup.path || 'unknown'}`,
     `- Available: ${report.one_time_setup.available ? 'yes' : 'no'}`,
+    `- Current setup check: ${report.one_time_setup.setup_readiness?.ready_count ?? 'unknown'}/${report.one_time_setup.setup_readiness?.total_count ?? 'unknown'} ready (exit ${report.one_time_setup.setup_readiness?.command_exit_code ?? 'unknown'})`,
+    report.one_time_setup.setup_readiness?.load_error ? `- Setup check warning: ${report.one_time_setup.setup_readiness.load_error}` : '',
     `- Setup ready count: ${report.one_time_setup.setup_ready_count || 'unknown'}`,
     `- Operator blocker count: ${report.one_time_setup.operator_blocker_count ?? 'unknown'}`,
     ...(report.one_time_setup.operator_blocker_items?.length
       ? report.one_time_setup.operator_blocker_items.map((item) =>
-        `- ${item.id}: ${item.title} (${item.status}). Required: ${(item.required_fields || []).join(', ')}`
+        `- ${item.id}: ${item.title} (${item.status}). Missing now: ${(item.current_missing_fields || []).join(', ') || 'none'}. Required: ${(item.required_fields || []).join(', ')}`
       )
       : ['- No setup checklist operator blockers reported.']),
     '',
@@ -617,6 +662,7 @@ function main() {
   const runBlockersCommand = runNpm('bna:run:blockers');
   const fleetCommand = runNpm('agent:fleet:status');
   const chatgptCommand = runNpm('chatgpt:dropoff:scan');
+  const oneTimeSetupCheckCommand = runCommand('npm run one-time:setup:check', nodeBin, oneTimeSetupCheckCommandArgs);
   const activeRun = {
     ...parseActiveRun(runNextCommand.stdout),
     blockers: parseRunBlockers(runBlockersCommand.stdout),
@@ -630,7 +676,7 @@ function main() {
   };
   const rabbiAgentReview = summarizeProofState();
   const agentFleetReadiness = summarizeAgentFleetReadiness();
-  const oneTimeSetup = summarizeOneTimeSetupChecklist();
+  const oneTimeSetup = summarizeOneTimeSetupChecklist(oneTimeSetupCheckCommand);
   const rabbiTelegramRuntime = summarizeRabbiTelegramRuntime();
   const assessment = buildLaunchAssessment({
     activeRun,
@@ -660,6 +706,7 @@ function main() {
       bna_run_blockers: runBlockersCommand,
       agent_fleet_status: fleetCommand,
       chatgpt_dropoff_scan: chatgptCommand,
+      one_time_setup_check: oneTimeSetupCheckCommand,
     },
     evidence: [
       'tasks-pending/2026-07-09-production-readiness-goal.md',

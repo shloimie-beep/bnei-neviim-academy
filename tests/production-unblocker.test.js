@@ -81,6 +81,40 @@ test('production unblocker builds operator actions from setup and proof blockers
         },
       ],
     },
+    setupReadiness: {
+      generated_at: '2026-07-09T17:00:00.000Z',
+      ready_count: 5,
+      total_count: 8,
+      all_required_external_setup_ready: false,
+      items: [
+        {
+          id: 'SETUP-ONETIME-STRIPE-001',
+          title: 'Rabbi Stripe sandbox',
+          ready: false,
+          missing_fields: ['rabbi_stripe_test_secret_key_alias_or_test_key_status', '67_month_product_price_id_or_alias'],
+          warnings: ['Live Stripe key appears configured; sandbox-only smoke must not use it.'],
+          verification_after_setup: ['sandbox Stripe smoke only; no live payment'],
+        },
+        {
+          id: 'SETUP-ONETIME-WHAPI-001',
+          title: 'Whapi/WAPI provider details',
+          ready: false,
+          missing_fields: ['whapi_wapi_instance_id', 'whapi_wapi_phone_number'],
+          verification_after_setup: ['safe test send only in later exact packet'],
+        },
+      ],
+      blockers: [
+        {
+          id: 'SETUP-ONETIME-STRIPE-001',
+          title: 'Rabbi Stripe sandbox',
+          missing_fields: ['rabbi_stripe_test_secret_key_alias_or_test_key_status', '67_month_product_price_id_or_alias'],
+          warnings: ['Live Stripe key appears configured; sandbox-only smoke must not use it.'],
+        },
+      ],
+    },
+    setupReadinessSource: 'node scripts/check-onetime-external-setup-readiness.mjs --json',
+    setupReadinessSourceKind: 'live_no_write_command_expected_blocked',
+    setupReadinessCommandExitCode: 1,
     proofReadiness: {
       remaining_blockers: [
         {
@@ -110,6 +144,8 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.equal(report.source_snapshot.git_head, '60f1e599');
   assert.equal(report.source_snapshot.worktree_clean, true);
   assert.equal(report.summary.external_setup_item_count, 2);
+  assert.equal(report.summary.setup_readiness_ready_count, 5);
+  assert.equal(report.source_setup_readiness.command_exit_code, 1);
   assert.equal(report.summary.rabbi_telegram_runtime_status, 'candidate_available_config_required');
   assert.equal(report.summary.rabbi_telegram_candidate_count, 4);
   assert.equal(report.summary.agent_mode_proof_count, 1);
@@ -127,7 +163,17 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.equal(report.blocker_groups.find((group) => group.id === 'agent_mode_terminal_proof_missing').count, 1);
   assert.equal(report.blocker_groups.find((group) => group.id === 'active_agent_collision_lanes').count, 1);
   assert.deepEqual(report.setup_items.map((item) => item.id), ['SETUP-ONETIME-STRIPE-001', 'SETUP-ONETIME-WHAPI-001']);
+  assert.deepEqual(report.setup_items[0].current_missing_fields, [
+    'rabbi_stripe_test_secret_key_alias_or_test_key_status',
+    '67_month_product_price_id_or_alias',
+  ]);
+  assert.equal(report.operator_actions[0].source, 'one_time_setup_check_current_missing_fields');
+  assert.match(report.operator_actions[0].action, /rabbi_stripe_test_secret_key_alias_or_test_key_status/);
   assert.match(markdown, /Owner Action Summary/);
+  assert.match(markdown, /OneTime setup check: 5\/8 ready/);
+  assert.match(markdown, /Current missing fields from setup check/);
+  assert.match(markdown, /67_month_product_price_id_or_alias/);
+  assert.match(markdown, /Live Stripe key appears configured/);
   assert.match(markdown, /external_setup_blockers - External OneTime setup values or approvals are missing/);
   assert.match(markdown, /rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not production-verified/);
   assert.match(markdown, /Rabbi Telegram Runtime/);
@@ -172,6 +218,7 @@ test('production unblocker package script and output paths are wired', () => {
   assert.match(script, /defaultSetupChecklistPath/);
   assert.match(script, /defaultProofPath/);
   assert.match(script, /production-readiness-snapshot\.mjs/);
+  assert.match(script, /check-onetime-external-setup-readiness\.mjs/);
   assert.match(script, /--no-write/);
   assert.match(script, /--json/);
   assert.match(script, /--from-snapshot-file/);

@@ -204,6 +204,9 @@ test('production readiness snapshot includes OneTime setup bucket summary', () =
   assert.match(script, /operator_blocker_items/);
   assert.match(script, /OneTime Setup Buckets/);
   assert.match(script, /one-time-mishnah\/launch-unblocker\/2026-07-02-operator-external-setup-checklist\.json/);
+  assert.match(script, /check-onetime-external-setup-readiness\.mjs/);
+  assert.match(script, /current_missing_fields/);
+  assert.match(script, /Current setup check/);
   assert.match(script, /Operator blocker count/);
 });
 

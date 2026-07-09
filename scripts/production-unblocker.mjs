@@ -14,6 +14,8 @@ const defaultSetupChecklistPath = 'ops/one-time-mishnah/launch-unblocker/2026-07
 const defaultProofPath = 'ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json';
 const liveSnapshotCommandArgs = ['scripts/production-readiness-snapshot.mjs', '--no-write', '--json'];
 const liveSnapshotCommand = `node ${liveSnapshotCommandArgs.join(' ')}`;
+const setupReadinessCommandArgs = ['scripts/check-onetime-external-setup-readiness.mjs', '--json'];
+const setupReadinessCommand = `node ${setupReadinessCommandArgs.join(' ')}`;
 
 function nowIso() {
   return new Date().toISOString();
@@ -90,27 +92,78 @@ export function loadSnapshotForUnblocker({ useSnapshotFile = false } = {}) {
   };
 }
 
+export function loadSetupReadinessForUnblocker() {
+  const result = spawnSync(process.execPath, setupReadinessCommandArgs, {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    shell: false,
+    timeout: 120000,
+    windowsHide: true,
+    maxBuffer: 1024 * 1024 * 8,
+  });
+  const parsed = parseJsonFromCommandOutput(result.stdout || '');
+
+  if (parsed) {
+    return {
+      setupReadiness: parsed,
+      setupReadinessSource: setupReadinessCommand,
+      setupReadinessSourceKind: result.status === 0 ? 'live_no_write_command_ready' : 'live_no_write_command_expected_blocked',
+      setupReadinessCommandExitCode: typeof result.status === 'number' ? result.status : 1,
+      setupReadinessLoadError: '',
+    };
+  }
+
+  return {
+    setupReadiness: {},
+    setupReadinessSource: setupReadinessCommand,
+    setupReadinessSourceKind: 'live_no_write_command_parse_failed',
+    setupReadinessCommandExitCode: typeof result.status === 'number' ? result.status : 1,
+    setupReadinessLoadError: redact(result.stderr || result.error?.message || 'Could not parse live OneTime setup readiness JSON.'),
+  };
+}
+
 function sortByPriority(items = []) {
   return [...items].sort((a, b) => Number(a.priority ?? 999) - Number(b.priority ?? 999));
 }
 
-function setupItemsFromChecklist(checklist = {}) {
+function setupReadinessItemsById(setupReadiness = {}) {
+  const byId = new Map();
+  for (const item of [...(setupReadiness.items || []), ...(setupReadiness.blockers || [])]) {
+    const id = item?.id || '';
+    if (!id) continue;
+    byId.set(id, {
+      ...(byId.get(id) || {}),
+      ...item,
+    });
+  }
+  return byId;
+}
+
+function setupItemsFromChecklist(checklist = {}, setupReadiness = {}) {
+  const readinessById = setupReadinessItemsById(setupReadiness);
   return sortByPriority((checklist.setup_items || [])
     .filter((item) => item?.operator_blocker === true)
-    .map((item) => ({
-      id: item.id || '',
-      title: item.title || '',
-      priority: item.priority ?? null,
-      owner: 'Shloimie / provider account owners',
-      status: item.current_status || 'unknown',
-      current_evidence: item.current_evidence || '',
-      required_fields: item.required_fields || [],
-      forbidden: item.forbidden || [],
-      verification_after_setup: [
-        ...(item.verification_after_setup || []),
-        ...(item.verification_commands_after_setup || []),
-      ],
-    })));
+    .map((item) => {
+      const readiness = readinessById.get(item.id || '') || {};
+      return {
+        id: item.id || '',
+        title: item.title || '',
+        priority: item.priority ?? null,
+        owner: 'Shloimie / provider account owners',
+        status: item.current_status || 'unknown',
+        current_evidence: item.current_evidence || '',
+        setup_check_ready: typeof readiness.ready === 'boolean' ? readiness.ready : null,
+        current_missing_fields: readiness.missing_fields || [],
+        current_warnings: readiness.warnings || [],
+        required_fields: item.required_fields || [],
+        forbidden: item.forbidden || [],
+        verification_after_setup: [
+          ...(readiness.verification_after_setup || []),
+          ...(item.verification_after_setup || []),
+          ...(item.verification_commands_after_setup || []),
+        ],
+      };
+    }));
 }
 
 function proofItemsFromReadiness(proof = {}) {
@@ -186,13 +239,20 @@ function buildBlockerGroups({
     });
   }
   if (setup_items.length) {
+    const currentMissingFields = [...new Set(setup_items.flatMap((item) => item.current_missing_fields || []))];
     add({
       id: 'external_setup_blockers',
       title: 'External OneTime setup values or approvals are missing',
       owner: 'Shloimie / provider account owners',
       count: setup_items.length,
-      evidence: setup_items.map((item) => item.id),
-      next_action: 'Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.',
+      evidence: setup_items.map((item) => (
+        item.current_missing_fields?.length
+          ? `${item.id}: ${item.current_missing_fields.join(', ')}`
+          : item.id
+      )),
+      next_action: currentMissingFields.length
+        ? `Provide aliases/status only, not raw secrets, for current setup-check fields: ${currentMissingFields.join(', ')}.`
+        : 'Provide aliases/status only, not raw secrets: Stripe sandbox/price, WAPI/Whapi instance/phone/approval flags, and campaign list/copy/suppression/seed approval.',
     });
   }
   if (rabbi_telegram_runtime.status && !rabbiTelegramRuntimeProductionReady(rabbi_telegram_runtime)) {
@@ -250,13 +310,18 @@ function buildBlockerGroups({
 export function buildProductionUnblocker({
   snapshot = {},
   setupChecklist = {},
+  setupReadiness = {},
+  setupReadinessSource = setupReadinessCommand,
+  setupReadinessSourceKind = 'not_loaded',
+  setupReadinessCommandExitCode = null,
+  setupReadinessLoadError = '',
   proofReadiness = {},
   snapshotSource = defaultSnapshotPath,
   snapshotSourceKind = 'latest_file',
   snapshotCommandExitCode = null,
   snapshotLoadError = '',
 } = {}) {
-  const setup_items = setupItemsFromChecklist(setupChecklist);
+  const setup_items = setupItemsFromChecklist(setupChecklist, setupReadiness);
   const agent_mode_proofs = proofItemsFromReadiness(proofReadiness);
   const run_blockers = externalRunBlockers(snapshot);
   const active_collision_lanes = collisionLanes(snapshot);
@@ -275,9 +340,9 @@ export function buildProductionUnblocker({
     ...setup_items.map((item) => ({
       id: item.id,
       owner: item.owner,
-      action: `Provide aliases/status for: ${item.required_fields.join(', ')}`,
+      action: `Provide aliases/status for: ${(item.current_missing_fields?.length ? item.current_missing_fields : item.required_fields).join(', ')}`,
       forbidden: item.forbidden,
-      source: 'one_time_setup_checklist',
+      source: item.current_missing_fields?.length ? 'one_time_setup_check_current_missing_fields' : 'one_time_setup_checklist',
     })),
     ...(rabbi_telegram_runtime.status && !rabbiTelegramRuntimeProductionReady(rabbi_telegram_runtime)
       ? [{
@@ -331,8 +396,22 @@ export function buildProductionUnblocker({
       workspace_key: setupChecklist.workspace_key || 'rabbi_sheller_provider',
       project_key: setupChecklist.project_key || 'one_time_mishnah_class',
     },
+    source_setup_readiness: {
+      source: setupReadinessSource,
+      kind: setupReadinessSourceKind,
+      generated_at: setupReadiness.generated_at || '',
+      command_exit_code: setupReadinessCommandExitCode,
+      load_error: setupReadinessLoadError,
+      ready_count: setupReadiness.ready_count ?? null,
+      total_count: setupReadiness.total_count ?? null,
+      blocker_count: Array.isArray(setupReadiness.blockers) ? setupReadiness.blockers.length : null,
+      all_required_external_setup_ready: setupReadiness.all_required_external_setup_ready === true,
+    },
     summary: {
       external_setup_item_count: setup_items.length,
+      setup_readiness_ready_count: setupReadiness.ready_count ?? null,
+      setup_readiness_total_count: setupReadiness.total_count ?? null,
+      setup_readiness_blocker_count: Array.isArray(setupReadiness.blockers) ? setupReadiness.blockers.length : null,
       rabbi_telegram_runtime_status: rabbi_telegram_runtime.status || 'unknown',
       rabbi_telegram_runtime_local_ready: rabbi_telegram_runtime.local_ready === true,
       rabbi_telegram_chat_id_configured: rabbi_telegram_runtime.chat_id_configured === true,
@@ -366,6 +445,7 @@ export function buildProductionUnblocker({
     ],
     sources: [
       snapshotSource,
+      setupReadinessSource,
       rabbi_telegram_runtime.readiness_path,
       rabbi_telegram_runtime.runtime_report_available ? rabbi_telegram_runtime.chat_id_report_path : '',
       defaultSetupChecklistPath,
@@ -394,6 +474,8 @@ export function renderMarkdown(report = {}) {
     report.source_snapshot?.load_error ? `Source snapshot warning: ${report.source_snapshot.load_error}` : '',
     `Workspace/project: ${report.workspace_project.workspace_key} / ${report.workspace_project.project_key}`,
     `Next unblocked executable batch: ${report.summary.next_unblocked_executable_batch || 'none'}`,
+    `OneTime setup check: ${report.summary.setup_readiness_ready_count ?? 'unknown'}/${report.summary.setup_readiness_total_count ?? 'unknown'} ready (${report.source_setup_readiness?.kind || 'not_loaded'}, exit ${report.source_setup_readiness?.command_exit_code ?? 'unknown'})`,
+    report.source_setup_readiness?.load_error ? `OneTime setup check warning: ${report.source_setup_readiness.load_error}` : '',
     '',
     '## What Blocks Production',
     '',
@@ -429,7 +511,12 @@ export function renderMarkdown(report = {}) {
       `Owner: ${item.owner}`,
       `Status: ${item.status}`,
       item.current_evidence ? `Current evidence: ${item.current_evidence}` : '',
-      'Provide aliases/status, not raw secrets:',
+      `Setup check ready: ${typeof item.setup_check_ready === 'boolean' ? (item.setup_check_ready ? 'yes' : 'no') : 'unknown'}`,
+      'Current missing fields from setup check:',
+      formatList(item.current_missing_fields),
+      'Setup check warnings:',
+      formatList(item.current_warnings),
+      'Static checklist fields:',
       formatList(item.required_fields),
       'Forbidden in this packet:',
       formatList(item.forbidden),
@@ -507,9 +594,15 @@ export function parseArgs(argv = process.argv.slice(2)) {
 function main() {
   const args = parseArgs();
   const snapshotLoad = loadSnapshotForUnblocker({ useSnapshotFile: args.useSnapshotFile });
+  const setupReadinessLoad = loadSetupReadinessForUnblocker();
   const report = buildProductionUnblocker({
     snapshot: snapshotLoad.snapshot,
     setupChecklist: readJson(defaultSetupChecklistPath, {}),
+    setupReadiness: setupReadinessLoad.setupReadiness,
+    setupReadinessSource: setupReadinessLoad.setupReadinessSource,
+    setupReadinessSourceKind: setupReadinessLoad.setupReadinessSourceKind,
+    setupReadinessCommandExitCode: setupReadinessLoad.setupReadinessCommandExitCode,
+    setupReadinessLoadError: setupReadinessLoad.setupReadinessLoadError,
     proofReadiness: readJson(defaultProofPath, {}),
     snapshotSource: snapshotLoad.snapshotSource,
     snapshotSourceKind: snapshotLoad.snapshotSourceKind,
