@@ -1,5 +1,5 @@
 {
-  "started_at": "2026-07-09T19:39:30.593Z",
+  "started_at": "2026-07-09T22:55:12.732Z",
   "app_url": "https://bneineviimacademy.org",
   "one_time_url": "https://join.onetimeonetime.com",
   "status": "proof_blocked_or_pending",
@@ -7,7 +7,7 @@
     {
       "name": "public Rabbi Agent Review prompts are live",
       "ok": true,
-      "duration_ms": 1894,
+      "duration_ms": 1720,
       "details": [
         {
           "prompt_key": "rabbi-telegram-helper-ticket-smoke",
@@ -28,7 +28,7 @@
     {
       "name": "public Rabbi helper scope artifacts are live and current",
       "ok": true,
-      "duration_ms": 1580,
+      "duration_ms": 1469,
       "details": {
         "artifact_count": 3
       }
@@ -36,7 +36,7 @@
     {
       "name": "owner login for Agent Review hub readback",
       "ok": true,
-      "duration_ms": 724,
+      "duration_ms": 855,
       "details": {
         "cookie_name": "bna_ops_session",
         "source": "env"
@@ -45,7 +45,7 @@
     {
       "name": "Agent Review hub exposes current Rabbi proof state",
       "ok": true,
-      "duration_ms": 912,
+      "duration_ms": 1369,
       "details": {
         "prompt_count": 26,
         "checked": [
