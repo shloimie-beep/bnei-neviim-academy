@@ -35456,3 +35456,24 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No raw token, chat ID, private contact data, raw ticket body, student-sensitive
   content, external send to families, WhatsApp/WAPI message, payment, or access
   grant was performed.
+
+## 2026-07-09T07:58:00+03:00 - OneTime Parent/Student Review UI Locally Verified
+
+- Continued `REQ-20260709-007` for parent/student UI polish. Phone-width
+  OneTime review topbars now use a logo-only lockup with visible action buttons
+  instead of clipped labels, and parent/student/member review helper launchers
+  are compact icon buttons so they do not cover card text.
+- The OneTime parent setup headline is constrained to its desktop intro column
+  and no longer bleeds into the password form card.
+- Verification passed: local parent/student login UI audit with 20 screenshots
+  and 0 findings, direct `/one-time-parent` Playwright no-overlap check,
+  focused parent/student/helper tests 22/22, full `npm test` 1675/1675,
+  `npm run secrets:audit`, `npm run watchdog:actions`,
+  `npm run watchdog:protocol-drift`, and `git diff --check` with line-ending
+  warnings only.
+- Evidence is recorded in
+  `ops/ui-audits/2026-07-09-parent-student-login-ui-polish-local-final/`.
+- Remaining open work: deploy/live-smoke this UI patch, then continue full
+  logged-in student portal/classroom polish, backend CRM persistence,
+  WAPI/WhatsApp readiness, safe contact tagging, and Rabbi Telegram chat ID
+  setup.

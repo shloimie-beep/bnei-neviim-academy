@@ -749,6 +749,9 @@
       background: #ede518;
       color: #080910;
     }
+    body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-launcher,
+    body.one-time-review-active.bna-assistant-surface-one-time-student .bna-bot-launcher,
+    body.one-time-review-active.bna-assistant-surface-one-time-member .bna-bot-launcher,
     body.bna-assistant-surface-one-time-provider .bna-bot-launcher {
       right: 14px;
       bottom: 14px;
@@ -759,11 +762,17 @@
       justify-content: center;
       font-size: 0;
     }
+    body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-launcher-dot,
+    body.one-time-review-active.bna-assistant-surface-one-time-student .bna-bot-launcher-dot,
+    body.one-time-review-active.bna-assistant-surface-one-time-member .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-provider .bna-bot-launcher-dot {
       width: 12px;
       height: 12px;
     }
     @media (max-width: 520px) {
+      body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-launcher,
+      body.one-time-review-active.bna-assistant-surface-one-time-student .bna-bot-launcher,
+      body.one-time-review-active.bna-assistant-surface-one-time-member .bna-bot-launcher,
       body.bna-assistant-surface-one-time-provider .bna-bot-launcher {
         right: 10px;
         bottom: 10px;
@@ -774,6 +783,9 @@
         justify-content: center;
         font-size: 0;
       }
+      body.one-time-review-active.bna-assistant-surface-one-time-parent .bna-bot-launcher-dot,
+      body.one-time-review-active.bna-assistant-surface-one-time-student .bna-bot-launcher-dot,
+      body.one-time-review-active.bna-assistant-surface-one-time-member .bna-bot-launcher-dot,
       body.bna-assistant-surface-one-time-provider .bna-bot-launcher-dot {
         width: 12px;
         height: 12px;

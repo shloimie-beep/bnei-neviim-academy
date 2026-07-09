@@ -126,7 +126,9 @@
       padding: clamp(24px, 5vw, 44px);
       display: grid;
       align-content: center;
+      min-width: 0;
       min-height: 520px;
+      overflow: hidden;
     }
 
     .eyebrow {
@@ -139,18 +141,20 @@
 
     h1 {
       margin: 14px 0 16px;
-      font-size: clamp(2rem, 5vw, 4.35rem);
+      max-width: 100%;
+      font-size: clamp(2rem, 3.75vw, 3.35rem);
       line-height: 0.96;
       letter-spacing: 0;
-      max-width: 680px;
+      overflow-wrap: normal;
     }
 
     .lead {
       margin: 0;
-      max-width: 640px;
+      max-width: 100%;
       color: var(--muted);
       font-size: clamp(1rem, 1.6vw, 1.2rem);
       line-height: 1.6;
+      overflow-wrap: anywhere;
     }
 
     .quick-list {
@@ -159,7 +163,7 @@
       margin: 26px 0 0;
       padding: 0;
       list-style: none;
-      max-width: 620px;
+      max-width: 100%;
     }
 
     .quick-list li {

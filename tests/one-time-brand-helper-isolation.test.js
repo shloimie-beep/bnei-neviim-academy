@@ -90,6 +90,8 @@ test('One Time parent and student review routes mount scoped helper copy', () =>
   assert.match(widget, /body\.bna-assistant-surface-one-time-parent \.bna-bot-launcher/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-student \.bna-bot-launcher/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-provider \.bna-bot-launcher/);
+  assert.match(widget, /body\.one-time-review-active\.bna-assistant-surface-one-time-parent \.bna-bot-launcher/);
+  assert.match(widget, /body\.one-time-review-active\.bna-assistant-surface-one-time-student \.bna-bot-launcher/);
   assert.match(widget, /@media \(max-width: 520px\)[\s\S]*body\.bna-assistant-surface-one-time-provider \.bna-bot-launcher[\s\S]*font-size: 0/);
   assert.match(widget, /Billing question/);
   assert.match(widget, /Attendance question/);
@@ -103,6 +105,7 @@ test('One Time student login route hides legacy access-code fallback and mounts 
   assert.match(student, /accessDivider\.classList\.add\('hidden'\)/);
   assert.match(student, /codeForm\.classList\.add\('hidden'\)/);
   assert.match(student, /OneTimeOneTime Student Login/);
+  assert.match(student, /<a class="portal-topbar-link secondary-link" href="\/one-time-parent">Parent<\/a>/);
   assert.match(widget, /query\.get\('one_time_login'\)/);
   assert.match(widget, /bna-assistant-surface-one-time-student/);
 });

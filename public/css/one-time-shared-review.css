@@ -808,7 +808,7 @@ body.one-time-view-as-readonly .overview-metric {
   body.one-time-review-active .brand-lockup,
   body.one-time-review-active header .brand {
     flex: 0 0 auto;
-    max-width: 42%;
+    max-width: 33%;
   }
 
   body.one-time-review-active .brand-mark {
@@ -921,7 +921,7 @@ body.one-time-view-as-readonly .overview-metric {
 @media (max-width: 380px) {
   body.one-time-review-active .brand-lockup,
   body.one-time-review-active header .brand {
-    max-width: 40%;
+    max-width: 32%;
   }
 
   body.one-time-review-active .portal-topbar-actions,
@@ -935,6 +935,20 @@ body.one-time-view-as-readonly .overview-metric {
   body.one-time-review-active .top-actions button {
     padding-inline: 8px;
     font-size: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  body.one-time-review-active .brand-lockup,
+  body.one-time-review-active header .brand {
+    flex: 0 0 auto;
+    max-width: none;
+    gap: 0;
+  }
+
+  body.one-time-review-active .brand-lockup > div,
+  body.one-time-review-active header .brand > div {
+    display: none;
   }
 }
 

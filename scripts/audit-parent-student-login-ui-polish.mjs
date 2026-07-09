@@ -116,8 +116,18 @@ async function collectPageMetrics(page) {
     const inputs = Array.from(document.querySelectorAll('input, select, textarea')).filter(visible).map(rectSummary);
     const cards = Array.from(document.querySelectorAll('.card, .panel, .portal-card, .auth-card, .login-card, section, main > div')).filter(visible).slice(0, 25).map(rectSummary);
     const headings = Array.from(document.querySelectorAll('h1, h2, h3, [role="heading"]')).filter(visible).map(rectSummary);
+    const isAllowedScrollRail = (el, style) => {
+      const className = String(el.className || '');
+      const role = String(el.getAttribute('role') || '');
+      const hasRailClass = /\b(portal-topbar-actions|top-actions|filter-row|filter-tabs|section-tab-list)\b/.test(className);
+      const isScrollable = ['auto', 'scroll'].includes(style.overflowX);
+      return isScrollable && (hasRailClass || role === 'tablist' || el.hasAttribute('data-top-filter-rail'));
+    };
+
     const overflowElements = Array.from(document.querySelectorAll('body *')).filter((el) => {
       if (!visible(el)) return false;
+      const style = window.getComputedStyle(el);
+      if (isAllowedScrollRail(el, style)) return false;
       return el.scrollWidth > el.clientWidth + 3 && el.getBoundingClientRect().width <= viewportWidth + 1;
     }).slice(0, 12).map(rectSummary);
 

@@ -98,6 +98,8 @@ test('One Time parent setup page is isolated from Academy parent portal branding
   assert.match(setupPage, /OneTimeOneTime Parent Setup/);
   assert.match(setupPage, /id="passwordForm"/);
   assert.match(setupPage, /id="forgotForm"/);
+  assert.match(setupPage, /\.intro\s*\{[\s\S]*min-width: 0;[\s\S]*overflow: hidden;/);
+  assert.match(setupPage, /h1\s*\{[\s\S]*font-size: clamp\(2rem, 3\.75vw, 3\.35rem\);[\s\S]*overflow-wrap: normal;/);
   assert.match(setupPage, /\/api\/one-time\/parent-password\/request/);
   assert.match(setupPage, /\/api\/parent-portal\/password\/reset/);
   assert.match(setupPage, /Email me a new password link/);
