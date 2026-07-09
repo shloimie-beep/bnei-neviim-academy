@@ -2323,10 +2323,18 @@ function isLowEntropyPlaceholderSecret(value) {
   return unique.size <= 3;
 }
 
+function isHumanReadableRailwayIdentifier(value) {
+  const text = String(value || '').trim();
+  if (!/^railway_/i.test(text)) return false;
+  const suffix = text.replace(/^railway_/i, '');
+  return /^[a-z0-9]+(?:_[a-z0-9]+){2,}$/i.test(suffix);
+}
+
 function isNonSensitiveSecretScanPlaceholder(value) {
   const normalized = String(value || '').toLowerCase();
   return (
     /(redacted|placeholder|example|dummy|fake|sample)/.test(normalized) ||
+    isHumanReadableRailwayIdentifier(value) ||
     isLowEntropyPlaceholderSecret(value)
   );
 }
@@ -2348,7 +2356,11 @@ function collectSecretEvidenceFromText(relativePath, text, patterns = SECRET_SCA
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
     const matches = secretScanLineMatches(line, patterns);
-    if (!matches.length || isAllowlistedSecretScanLine(line, matches)) continue;
+    if (
+      !matches.length ||
+      isAllowlistedSecretScanLine(line, matches) ||
+      matches.every((value) => isHumanReadableRailwayIdentifier(value))
+    ) continue;
     count += matches.length;
     if (!firstLine) {
       firstLine = {

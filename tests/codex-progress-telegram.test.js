@@ -34,7 +34,7 @@ test('Codex Telegram progress formatter uses brief bullet structure', async () =
 test('Codex Telegram progress rejects secret-shaped content', async () => {
   const { assertSafeTelegramProgressText, formatCodexProgressMessage } = await loadModule();
   assert.throws(
-    () => assertSafeTelegramProgressText('token=ghp_aaaaaaaaaaaaaaaaaaaaaaaa'),
+    () => assertSafeTelegramProgressText('token=ghp_aaaaaaaaaaaaaaaaaaaaaaaa'), // watchdog-secret-scan: allow-placeholder
     /Refusing to send Telegram progress update/,
   );
   assert.throws(

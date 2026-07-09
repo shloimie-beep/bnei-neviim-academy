@@ -14,7 +14,7 @@ async function loadDiagnostics() {
 
 test('keyholder normalization trims BOM, quotes, and whitespace without exposing values', async () => {
   const { fingerprintSecret, inspectSecretText, normalizeSecretText } = await loadDiagnostics();
-  const secret = 'sk-test-value-that-must-not-print';
+  const secret = 'sk-placeholder-test-value-that-must-not-print'; // watchdog-secret-scan: allow-placeholder
   const raw = `\uFEFF  "${secret}"\r\n`;
   const normalized = normalizeSecretText(raw);
 
@@ -39,7 +39,7 @@ test('keyholder diagnostics inspect expected files and never include secret cont
   fs.mkdirSync(keyholderDir, { recursive: true });
   fs.mkdirSync(path.join(repoRoot, '.secrets'), { recursive: true });
 
-  const secret = 'sk-test-super-secret-never-print';
+  const secret = 'sk-placeholder-test-super-secret-never-print'; // watchdog-secret-scan: allow-placeholder
   fs.writeFileSync(path.join(keyholderDir, 'openai-api-key.txt'), `${secret}\n`);
   fs.writeFileSync(path.join(repoRoot, '.secrets', 'openai-api-key.txt'), secret);
 
@@ -69,7 +69,7 @@ test('keyholder diagnostics can select the legacy openaiv2 alias without exposin
   fs.mkdirSync(keyholderDir, { recursive: true });
   fs.mkdirSync(path.join(repoRoot, '.secrets'), { recursive: true });
 
-  const secret = 'sk-proj-alias-secret-never-print';
+  const secret = 'sk-placeholder-proj-alias-secret-never-print'; // watchdog-secret-scan: allow-placeholder
   fs.writeFileSync(path.join(keyholderDir, 'openai-api-key.txt'), '');
   fs.writeFileSync(path.join(keyholderDir, 'openaiv2.txt'), `${secret}\n`);
 

@@ -397,7 +397,7 @@ test('BNA Helper registry includes required tools and validates schemas', () => 
 
 test('BNA Helper redacts secrets, tokens, and student access codes', () => {
   const redacted = redactValue({
-    openai_key: 'sk-abcdefghijklmnopqrstuvwxyz1234567890',
+    openai_key: 'sk-placeholder-abcdefghijklmnopqrstuvwxyz1234567890', // watchdog-secret-scan: allow-placeholder
     Authorization: 'Bearer abc.def.ghi',
     note: 'Portal link /student.html?code=student-secret-123 should not leak.',
     nested: {
@@ -2052,7 +2052,7 @@ test('BNA Helper planner resolves explicit typed actions before hosted AI', asyn
   const previousApiKey = process.env.OPENAI_API_KEY;
   const previousFetch = global.fetch;
   let fetchCalled = false;
-  process.env.OPENAI_API_KEY = 'sk-test-helper-navigation';
+  process.env.OPENAI_API_KEY = 'sk-dummy-helper-navigation'; // watchdog-secret-scan: allow-placeholder
   global.fetch = async () => {
     fetchCalled = true;
     throw new Error('AI planner should not be called for explicit navigation');

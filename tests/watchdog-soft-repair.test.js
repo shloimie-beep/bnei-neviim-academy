@@ -403,10 +403,20 @@ test('watchdog secret scan allowlists marked placeholders only', async () => {
   assert.equal(isAllowlistedSecretScanLine(placeholderLine), true);
   assert.equal(collectSecretEvidenceFromText('fixture.md', placeholderLine), null);
   assert.equal(isAllowlistedSecretScanLine(realLikeLine), false);
+  assert.equal(
+    collectSecretEvidenceFromText('fixture.json', '"railway_dns_record_created_for_join_subdomain_only"'),
+    null,
+  );
+  assert.equal(
+    collectSecretEvidenceFromText('fixture.json', '"source": "railway_cli_session_fallback"'),
+    null,
+  );
 
   const evidence = collectSecretEvidenceFromText('fixture.md', realLikeLine);
   assert.equal(evidence.count, 1);
   assert.equal(evidence.file, 'fixture.md');
+  const railwayEvidence = collectSecretEvidenceFromText('fixture.md', `Captured token railway_${'Ab3Cd4Ef5Gh6Ij7Kl8Mn9Op0Qr1St'}`);
+  assert.equal(railwayEvidence.count, 1);
 });
 
 test('watchdog improvement audit stays quiet after stale docs and task filter drift are cleaned', async () => {

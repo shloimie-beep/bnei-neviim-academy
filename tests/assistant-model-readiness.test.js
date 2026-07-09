@@ -39,14 +39,15 @@ test('model readiness disabled reasons are exact and never generic Blocked', () 
     assert.doesNotMatch(reason, /api[_-]?key|secret|password|sk-/i);
   }
 
+  const fakeSecret = 'sk-placeholder-should-not-be-output'; // watchdog-secret-scan: allow-placeholder
   const invalid = classifyModelCredentialState({
     provider: 'kimi',
     key_fingerprint: 'sha256:def',
-    error: 'authentication failed: sk-should-not-be-output',
+    error: `authentication failed: ${fakeSecret}`,
   });
   assert.equal(invalid.state, 'invalid');
   assert.equal(invalid.secret_visible, false);
-  assert.doesNotMatch(JSON.stringify(invalid), /sk-should-not-be-output/);
+  assert.doesNotMatch(JSON.stringify(invalid), new RegExp(fakeSecret));
 });
 
 test('model readiness matrix is provider-neutral for users but diagnostic for audits', () => {

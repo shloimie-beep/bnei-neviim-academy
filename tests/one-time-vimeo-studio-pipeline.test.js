@@ -232,8 +232,9 @@ test('studio OpenAI key resolver prefers keyholder candidates over stale repo se
   const secrets = path.join(root, '.secrets');
   fs.mkdirSync(keyholder, { recursive: true });
   fs.mkdirSync(secrets, { recursive: true });
-  fs.writeFileSync(path.join(keyholder, 'openaiv2.txt'), 'sk-keyholder-valid-for-test');
-  fs.writeFileSync(path.join(secrets, 'openai-api-key.txt'), 'sk-stale-repo-secret-for-test');
+  const keyholderSecret = 'sk-dummy-keyholder-valid-for-test'; // watchdog-secret-scan: allow-placeholder
+  fs.writeFileSync(path.join(keyholder, 'openaiv2.txt'), keyholderSecret);
+  fs.writeFileSync(path.join(secrets, 'openai-api-key.txt'), 'sk-dummy-stale-repo-secret-for-test'); // watchdog-secret-scan: allow-placeholder
 
   const candidates = pipeline.readOpenAiCredentialCandidates(root, {
     env: {},
@@ -242,7 +243,7 @@ test('studio OpenAI key resolver prefers keyholder candidates over stale repo se
   });
 
   assert.equal(candidates[0].source, 'keyholder:openaiv2.txt');
-  assert.equal(pipeline.readOpenAiApiKey(root, { env: {}, keyholderRoots: [keyholder], secretsRoot: secrets }), 'sk-keyholder-valid-for-test');
+  assert.equal(pipeline.readOpenAiApiKey(root, { env: {}, keyholderRoots: [keyholder], secretsRoot: secrets }), keyholderSecret);
 });
 
 test('package script exposes the studio processor', () => {
