@@ -36803,3 +36803,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:57:00+03:00 - Rabbi WhatsApp Bot Instruction Send Blocked By Preflight
+
+- Inspected contact-private intake `RAW-20260709-012` without committing the
+  raw file.
+- Registered redacted requirement `REQ-20260709-069` in the Rabbi Telegram
+  ticket/agent-loop register.
+- Reran no-send preflights:
+  - `npm run telegram:rabbi:readiness` still shows the Rabbi bot token and
+    OneTime Operations credentials configured, but Rabbi chat ID missing.
+  - `npm run telegram:rabbi:chat-id` resolved `onetimeaios_bot` and found 0
+    candidates without sending a Telegram message or printing the token.
+  - `npm run one-time:wapi:readiness` remains blocked by missing WAPI instance
+    ID, sender phone metadata, auto-reply enable flag, and explicit approval
+    flag.
+- No WhatsApp, Telegram, WAPI, CRM, provider, credential, Agent Review, or
+  production-data mutation was performed.
