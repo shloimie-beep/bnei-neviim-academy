@@ -315,6 +315,15 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /internal_crm_recorded: lead\.internal_crm_recorded === true/);
   assert.match(server, /crm_lead_id: lead\.crm_lead_id \|\| null/);
   assert.match(server, /external_write_performed: false/);
+  assert.match(server, /const dryRun = req\.body\?\.dry_run === true/);
+  assert.match(server, /previewOneTimeProductLeadCapture\(req\.body \|\| \{\}\)/);
+  assert.match(server, /no_database_write_performed: true/);
+  assert.match(server, /no_product_lead_created: true/);
+  assert.match(server, /no_crm_lead_created_or_updated: true/);
+  assert.match(server, /no_internal_note_created: true/);
+  assert.match(server, /no_telegram_reminder_sent: true/);
+  assert.match(server, /Dry-run validated the OneTime free-class lead capture payload/);
+  assert.match(server, /if \(dryRun\)[\s\S]*return res\.json\([\s\S]*sendOneTimeSignupTelegramReminder\(lead\)/);
   assert.match(server, /INSERT INTO bna_parent_leads/);
   assert.match(server, /UPDATE bna_parent_leads/);
   assert.match(server, /OneTime free-class public signup captured/);

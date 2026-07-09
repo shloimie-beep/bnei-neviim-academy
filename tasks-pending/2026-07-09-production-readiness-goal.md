@@ -96,6 +96,7 @@ production-ready when these classes are green or precisely blocked:
 | SETUPCHECK-20260709-006 | Done | Codex | Readiness reports were still treating the hosted free-class/class-link value as missing even though OneTime Railway had enough redacted proof to clear that setup item. | Updated setup and WAPI readiness checks to consume only redacted hosted presence flags. Latest setup report is 5/8 ready: Railway, DB, join domain, Zoom/class link, and Vimeo/Drive are ready. |
 | HELPER-20260709-007 | Done | Codex | Rabbi helper/Telegram handoff still listed a stale OneTime deploy-pending blocker even though the prompt/artifacts are live. | Live-readback verified the Rabbi Telegram/helper prompt, 163-contract helper-scope prompt/artifact, and OneTime instance config; remaining blocker is Agent Mode saved proof plus Rabbi chat ID/external approval gates. |
 | HELPER-20260709-008 | Done / proof still pending | Codex | Future agents needed a one-command live readback of the Rabbi Agent Review proof state before opening new Agent Mode windows. | Added `npm run app:smoke:rabbi-agent-review-proof-readiness`. Latest run verified both Rabbi prompts and all public artifacts are live/current, then read the Agent Review hub state as `not_started` for both proof prompts. Next Agent Mode URLs are `https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md` and `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`. |
+| LEADCAP-20260709-009 | Local verified / pending deploy | Codex | The OneTime public interest endpoint had live read-only page proof but no safe production POST proof, because a real POST creates first-party CRM state and can trigger the internal Telegram reminder. | Added a `dry_run=true` preview path and `npm run app:smoke:one-time-interest-dry-run` so the live endpoint can prove OneTime project/program/CRM/internal-note mapping without product lead, CRM lead, internal note, Telegram, email, WhatsApp/WAPI, checkout, access, Zoom, or external writes. |
 
 ## First audit command plan
 
@@ -385,6 +386,58 @@ Performance proof:
 | Before dashboard/support fix | 8574ms | 17 | 1 | 35859ms | 0 | 0 | `ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-bna-platform-after-dashboard-light-pass.md` |
 | After hotfix | 3186ms | 16 | 0 | 2979ms | 0 | 0 | `ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-bna-platform-after-support-ticket-hotfix.md` |
 
+## LEADCAP-20260709-009 closeout
+
+Implemented:
+
+- Added `previewOneTimeProductLeadCapture` to validate `/api/one-time/interest`
+  payloads and resolve the OneTime project/program through the existing
+  scoped helpers without opening a transaction or inserting rows.
+- Added `dry_run=true` handling before the real product-lead write path, so a
+  production smoke can prove product lead, first-party CRM lead, and internal
+  communication-note mapping without mutating production data.
+- Added `scripts/smoke-one-time-interest-dry-run-live.mjs` and npm alias
+  `app:smoke:one-time-interest-dry-run`.
+- Regenerated the OneTime action coverage artifact after the full test suite
+  caught a stale content hash.
+
+Verification before deploy:
+
+- PASS `node --check server.js`.
+- PASS `node --check scripts\smoke-one-time-interest-dry-run-live.mjs`.
+- PASS `node --test tests\one-time-product-system.test.js`.
+- PASS `node --test tests\one-time-focused-landing.test.js`.
+- PASS `node --test tests\one-time-canonical-journey.test.js`.
+- PASS `node --test tests\watchdog-action-registry.test.js`.
+- PASS `npm test` 1697/1697 after regenerating
+  `ops/action-registry/one-time-action-coverage.*`.
+- PASS `npm run secrets:audit`.
+- PASS `npm run watchdog:protocol-drift`, 0 findings.
+- PASS `npm run bna:run:validate`, expected 8 done / 2 blocked state.
+- PASS `npm run one-time:railway-target:guard`, redacted
+  `one-time-production / one-time-web / production` readback.
+- EXPECTED WARNING `npm run one-time:target:guard -- --json`: canonical
+  public OneTime routes and instance config pass, but local Railway CLI status
+  is still linked to BNA; dedicated OneTime Railway target guard is the deploy
+  proof.
+
+Guardrails:
+
+- The dry-run route exits before `createOneTimeProductLead` and before
+  `sendOneTimeSignupTelegramReminder`.
+- No product lead, CRM lead, contact communication, Telegram reminder, email,
+  WhatsApp/WAPI message, checkout, access grant, Zoom meeting, external
+  connector write, DNS/account/provider mutation, or credential change was
+  performed during local verification.
+- Real production POST remains intentionally unrun unless Shloimie explicitly
+  asks to create a real test lead and accepts the internal reminder side effect.
+
+Deployment status:
+
+- Pending scoped commit/push, explicit OneTime Railway deploy, and live
+  `npm run app:smoke:one-time-interest-dry-run` against
+  `https://join.onetimeonetime.com`.
+
 ## Final audit
 
 | ID | Status | Evidence | Verification | Remaining issue |
@@ -392,6 +445,6 @@ Performance proof:
 | REQ-20260709-047 | Done | Raw/register/standing goal/memory note created. | Static file readback; ledger/changelog pending closeout commit. | None |
 | REQ-20260709-048 | Done | Current baseline recorded above. | Baseline reconciled against launch catch-up register and active execution run. | None |
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
-| REQ-20260709-050 | Already satisfied | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register. | Lead capture live-smoked in prior closeout. | Automated Zoom invite/payment/access/campaign remain blocked. |
+| REQ-20260709-050 | Already satisfied; dry-run proof pending deploy | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register; `LEADCAP-20260709-009` closeout above. | Lead capture live-smoked in prior closeout; local dry-run proof tests and full suite pass. | Dry-run proof still needs deploy/live smoke. Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, and `HELPER-20260709-008` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, and terminal Agent Mode saved proof remain blocked. |
+| REQ-20260709-052 | Done; current LEADCAP batch pending deploy | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, `HELPER-20260709-007`, `HELPER-20260709-008`, and `LEADCAP-20260709-009` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback/proof-readiness checks; current dry-run proof passes local/full-suite verification. | Complete LEADCAP deploy/live smoke. Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, and terminal Agent Mode saved proof remain blocked. |

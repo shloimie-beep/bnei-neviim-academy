@@ -78052,6 +78052,97 @@ async function createOneTimeProductLead(input = {}, db = pool) {
   }
 }
 
+async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
+  const lead = validateOneTimeLead(input);
+  const project = await getRabbiProject(db);
+  const program = await getOneTimeProductProgram(project.id, db);
+  const parentEmail = normalizeEmail(lead.email || '') || null;
+  const parentPhone = limitText(lead.phone || lead.whatsapp || '', 80) || null;
+  const studentAgeNumber = Number.parseInt(String(lead.student_age || ''), 10);
+  const crmStudentAge = Number.isInteger(studentAgeNumber) && studentAgeNumber > 0 && studentAgeNumber < 120
+    ? studentAgeNumber
+    : null;
+  const leadTags = [
+    'one-time',
+    'one-time-public-signup',
+    'free-class-interest',
+    'free-zoom-follow-up',
+  ];
+  return {
+    dry_run: true,
+    validated: true,
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+    project_id_present: Boolean(project.id),
+    program_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+    program_id_present: Boolean(program?.id),
+    product_lead_preview: {
+      project_id: project.id ? 'resolved' : 'missing',
+      program_id: program?.id ? 'resolved' : 'missing',
+      product_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+      region: lead.region,
+      audience: lead.audience,
+      interested_tiers: lead.interested_tiers,
+      parent_name: limitText(lead.parent_name, 180),
+      parent_email: parentEmail,
+      parent_phone: limitText(lead.phone || '', 80) || null,
+      parent_whatsapp: limitText(lead.whatsapp || '', 80) || null,
+      student_name: limitText(lead.student_name || '', 180) || null,
+      student_age: lead.student_age === null || lead.student_age === undefined ? null : limitText(String(lead.student_age), 40),
+      student_grade: limitText(lead.student_grade || '', 80) || null,
+      timezone: limitText(lead.timezone || '', 100) || null,
+      preferred_class_format: limitText(lead.preferred_class_format || 'free_zoom_intro', 120) || null,
+      source_landing_page: limitText(lead.source_landing_page || '/one-time', 220),
+      consent: lead.consent,
+      status: lead.status,
+      no_send: true,
+      external_write_performed: false,
+    },
+    crm_lead_preview: {
+      table: 'bna_parent_leads',
+      match_strategy: parentEmail ? 'email_first_then_phone' : 'phone_when_present',
+      parent_name: limitText(lead.parent_name, 180),
+      parent_email: parentEmail,
+      parent_phone: parentPhone,
+      student_name: limitText(lead.student_name || '', 180) || null,
+      student_age: crmStudentAge,
+      student_grade: limitText(lead.student_grade || '', 80) || null,
+      lead_type: 'group_member',
+      status: 'follow_up',
+      interest_level: 'warm',
+      source: 'website_form',
+      source_detail: 'OneTime public free-class interest form',
+      next_follow_up_date: 'CURRENT_DATE',
+      owner: 'Shloimie',
+      tags: leadTags,
+      internal_follow_up_required: true,
+    },
+    communication_preview: {
+      table: 'bna_contact_communications',
+      channel: 'internal_note',
+      direction: 'inbound',
+      summary: 'OneTime free-class public signup captured',
+      follow_up_required: true,
+      created_by: 'public_one_time_form',
+      source: 'web_assistant',
+      free_zoom_alias_required_before_automated_send: true,
+    },
+    guardrails: {
+      no_database_write_performed: true,
+      no_product_lead_created: true,
+      no_crm_lead_created_or_updated: true,
+      no_internal_note_created: true,
+      no_telegram_reminder_sent: true,
+      no_email_sent: true,
+      no_whatsapp_or_wapi_sent: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_zoom_meeting_created: true,
+      external_write_performed: false,
+    },
+  };
+}
+
 const ONE_TIME_CRM_IMPORT_INVENTORY_SUMMARY = Object.freeze({
   generated_at: '2026-06-21T13:46:05.453Z',
   source_directory_label: 'Downloads',
@@ -78679,6 +78770,27 @@ app.get(['/api/bna/product-leads', '/api/bna/one-time/product-leads'], requireAd
 
 app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) => {
   try {
+    const dryRun = req.body?.dry_run === true
+      || req.body?.dryRun === true
+      || /^(?:1|true|yes)$/i.test(String(req.query.dry_run || req.query.dryRun || req.body?.dry_run || req.body?.dryRun || ''));
+    if (dryRun) {
+      const preview = await previewOneTimeProductLeadCapture(req.body || {});
+      return res.json({
+        success: true,
+        dry_run: true,
+        preview,
+        no_send: true,
+        no_checkout: true,
+        no_access_granted: true,
+        no_database_write_performed: true,
+        no_product_lead_created: true,
+        no_crm_lead_created_or_updated: true,
+        no_internal_note_created: true,
+        no_telegram_reminder_sent: true,
+        external_write_performed: false,
+        message: 'Dry-run validated the OneTime free-class lead capture payload. No lead, reminder, checkout, access grant, send, Zoom meeting, or external write was created.',
+      });
+    }
     const lead = await createOneTimeProductLead(req.body || {});
     sendOneTimeSignupTelegramReminder(lead)
       .catch((err) => console.error('OneTime signup Telegram reminder error:', err));
