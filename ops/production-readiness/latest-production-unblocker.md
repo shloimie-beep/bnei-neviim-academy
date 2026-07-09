@@ -1,9 +1,9 @@
-# Production Unblocker - 2026-07-09T19:34:38.627Z
+# Production Unblocker - 2026-07-09T19:41:30.920Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-09T19:34:23.107Z
-Snapshot git head: 613d6f65 (origin/master: 95ed1247, worktree clean: yes)
+Source snapshot generated at: 2026-07-09T19:41:09.132Z
+Snapshot git head: c924cf09 (origin/master: 88c56ddb, worktree clean: yes)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 OneTime setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
@@ -51,9 +51,9 @@ Next action: Run each listed Agent Mode prompt and save terminal PASS, FAIL, or 
 Owner: Codex / agent fleet
 Count: 3
 Evidence:
-  - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.23 path=.runtime/agent-fleet/task-1859.lock.json)
+  - job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.34 path=.runtime/agent-fleet/task-1859.lock.json)
   - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json)
-  - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=174.92 path=.runtime/agent-fleet/task-1736.lock.json)
+  - job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.04 path=.runtime/agent-fleet/task-1736.lock.json)
 Next action: Inspect or reconcile the stale/missing local task-lock state and result packets before touching overlapping UI/API/Agent Review proof work.
 ## External Setup To Provide
 ### SETUP-ONETIME-STRIPE-001 - Rabbi Stripe sandbox
@@ -129,7 +129,7 @@ Verification after setup:
 Status: passed
 Ready: yes
 Fresh for launch gate: yes
-Age hours: 1.97
+Age hours: 2.09
 Commands passed: 4/4
 External write performed: no
 Production data mutation performed: no
@@ -163,9 +163,9 @@ Drop-off: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_re
 Blocker: No saved terminal Agent Review result is visible for this prompt yet.
 Required result: save terminal PASS, FAIL, or BLOCKED proof for only this prompt scope.
 ## Active Lanes To Avoid
-- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.23 path=.runtime/agent-fleet/task-1859.lock.json)
+- job #382 / task #1859 [running] Apply app-wide BNA brand shell and million-dollar SaaS UI polish (local_lock=stale_lock_dead_pid pid=25788 heartbeat=2026-07-05T18:20:51.072Z age_hours=97.34 path=.runtime/agent-fleet/task-1859.lock.json)
 - job #427 / ticket #1593 / task #2185 [running] About the fall back I'm saying you should use the API that I'm using (local_lock=missing path=.runtime/agent-fleet/task-2185.lock.json)
-- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=174.92 path=.runtime/agent-fleet/task-1736.lock.json)
+- job #344 / task #1736 [running] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=175.04 path=.runtime/agent-fleet/task-1736.lock.json)
 ## After Operator Update
 - Do not paste raw secrets into chat or tracked repo files; provide aliases, status labels, or keyholder/provider-dashboard confirmation.
 - Rerun `npm run one-time:setup:check` after Stripe/WAPI/campaign setup changes.
