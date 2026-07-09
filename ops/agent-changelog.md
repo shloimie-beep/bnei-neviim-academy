@@ -37044,3 +37044,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Rabbi Telegram hosted restart/live-smoke proof, two Agent Mode terminal
   proofs, no unblocked execution batch, and stale/missing active collision-lane
   reconciliation.
+
+## 2026-07-09T22:43:57+03:00 - Agent Review Proof Prompts Visible In Production Gate
+
+- Refreshed the read-only Rabbi Agent Review proof readiness smoke. Public
+  prompt/artifact readbacks passed and the Operations hub still shows both
+  Rabbi prompts as `not_started` with no terminal saved AGR result.
+- Hardened the production readiness gate so the
+  `agent_mode_terminal_proof_missing` blocker carries the exact prompt keys and
+  public prompt URLs instead of only `remaining_blocker_count=2`.
+- Regenerated production snapshot/unblocker artifacts from clean pushed heads;
+  the operator unblocker lists both Agent Mode proof prompts and drop-off URLs.
+- Verification passed: `npm run app:smoke:rabbi-agent-review-proof-readiness`,
+  `node --check scripts/production-readiness-gate.mjs`, `node --test
+  tests/production-readiness-gate.test.js tests/production-unblocker.test.js`,
+  and clean-head `npm run production:readiness:gate -- --json` expected-blocked
+  with prompt-level Agent Review proof evidence.
+- Guardrails held: read-only proof/reporting only; no Agent Review result save,
+  app UI/API edit, deploy, hosted restart, live Telegram smoke, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, or
+  production-data mutation.
+- Remaining blockers: exact external setup fields, Rabbi Telegram hosted
+  restart/live-smoke proof, two Agent Mode terminal proofs, no unblocked
+  execution batch, and active collision-lane reconciliation.
