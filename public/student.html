@@ -3792,7 +3792,7 @@
 
         function reviewDisplayText(value, fallback = '') {
             const text = String(value || fallback || '')
-                .replace(/\bTEST[-\s]+/gi, '')
+                .replace(/\bTEST[-_\s]+/gi, '')
                 .replace(/\breview fixture\b/gi, 'preview')
                 .replace(/_/g, ' ')
                 .replace(/\s{2,}/g, ' ')

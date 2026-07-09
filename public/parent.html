@@ -4634,17 +4634,18 @@
         }
 
         function reviewField(label, value) {
+            const displayValue = reviewDisplayText(value, 'Not available');
             return `
                 <article class="portal-card">
                     <span class="eyebrow">${escapeHtml(label)}</span>
-                    <strong>${escapeHtml(value || 'Not available')}</strong>
+                    <strong>${escapeHtml(displayValue)}</strong>
                 </article>
             `;
         }
 
         function reviewDisplayText(value, fallback = '') {
             const text = String(value || fallback || '')
-                .replace(/\bTEST[-\s]+/gi, '')
+                .replace(/\bTEST[-_\s]+/gi, '')
                 .replace(/\breview fixture\b/gi, 'preview')
                 .replace(/_/g, ' ')
                 .replace(/\s{2,}/g, ' ')
@@ -4740,8 +4741,8 @@
                         <h2>Library and worksheet</h2>
                         <p><strong>${escapeHtml(reviewDisplayText(data.video?.title))}</strong></p>
                         <p class="small">${escapeHtml(data.video?.media_provider || '')}</p>
-                        <p><a class="btn" href="${escapeHtml(data.links?.classroom || '/one-time-classroom.html?review=one-time')}" target="_blank" rel="noopener">Open classroom/library</a></p>
-                        <p><a class="btn" href="${escapeHtml(data.worksheet?.url || '#')}" target="_blank" rel="noopener">Open worksheet/resource</a></p>
+                        <p><a class="btn one-time-review-action" href="${escapeHtml(data.links?.classroom || '/one-time-classroom.html?review=one-time')}" target="_blank" rel="noopener">Open classroom/library</a></p>
+                        <p><a class="btn one-time-review-action" href="${escapeHtml(data.worksheet?.url || '#')}" target="_blank" rel="noopener">Open worksheet/resource</a></p>
                     </article>
                     <article class="panel">
                         <h2>Announcement</h2>
