@@ -36947,3 +36947,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   hosted restart, live Telegram smoke, external send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Agent Review result save, Kimi live
   fallback action, or production-data mutation.
+
+## 2026-07-09T20:36:20+03:00 - No-Write Public Launch Smoke Sweep Passed
+
+- Ran no-write live smokes for the already-live public launch surfaces:
+  OneTime separate instance, Rabbi OneTime landing, OneTime interest dry-run,
+  and BNA public route privacy.
+- Added tracked evidence under
+  `ops/production-readiness/2026-07-09-no-write-live-smoke-readback.*` because
+  timestamped `ops/live-smokes/` reports are intentionally ignored by Git.
+- Verified OneTime health/config/public routes, focused Rabbi branding, dry-run
+  lead-capture mapping without writes, public route anonymity, member alias
+  redirects, and protected route anonymous rejection.
+- Guardrails held: no checkout, payment link, member/account/access grant,
+  email, WhatsApp/WAPI, social post, upload, charge, DNS write, external
+  connector write, provider mutation, credential mutation, live task
+  create/delete, or production data mutation.
