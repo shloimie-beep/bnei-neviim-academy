@@ -94,15 +94,42 @@ test('provider admin-provider route gives truthful session-required state when n
   }
 });
 
+test('One Time provider.html requests are intercepted before static BNA shell markup', () => {
+  assert.match(serverJs, /function wantsOneTimeProviderShell\(req\)/);
+  assert.match(serverJs, /Boolean\(query\.view_as_rabbi \|\| query\.viewAsRabbi\)/);
+  assert.match(serverJs, /function oneTimeProviderShellHtml\(html = ''\)/);
+  assert.match(serverJs, /one-time-review-active/);
+  assert.match(serverJs, /OneTimeOneTime<\/strong>/);
+  assert.match(serverJs, /Rabbi provider account<\/span>/);
+  assert.match(serverJs, /app\.get\('\/provider\.html', \(req, res, next\) => \{/);
+  assert.match(serverJs, /return sendOneTimeProviderShell\(req, res\)/);
+});
+
 test('student login is a real student login and student preview is clearly TEST-only One Time scope', () => {
   assert.match(serverJs, /app\.get\(\['\/student', '\/student\/login'\]/);
+  assert.match(serverJs, /return res\.redirect\(302, '\/student\.html\?one_time_login=1'\)/);
   assert.match(studentHtml, /<form id="studentLoginForm">/);
   assert.match(studentHtml, /apiRequest\('\/api\/student-portal\/login'/);
   assert.match(studentHtml, /returnTo: window\.location\.pathname \+ window\.location\.search \+ window\.location\.hash/);
   assert.match(studentHtml, /const ONE_TIME_REVIEW_MODE/);
+  assert.match(studentHtml, /const ONE_TIME_LOGIN_MODE =/);
+  assert.match(studentHtml, /const ONE_TIME_HOST_MODE =/);
+  assert.match(studentHtml, /onetimeonetime\\\.com\$\/i\.test\(window\.location\.hostname/);
+  assert.match(studentHtml, /OneTimeOneTime Student Login/);
+  assert.match(studentHtml, /one-time-student-login-active/);
+  assert.match(studentHtml, /Use the student username and password managed by your parent/);
   assert.match(studentHtml, /renderOneTimeStudentReview/);
   assert.match(studentHtml, /Student dashboard for live Mishnayos[\s\S]*TEST-only class data and excludes BNA school accountability goals/);
   assert.match(studentHtml, /BNA school accountability goals, checkoffs, consequences, device controls, and other household\/student records stay out/);
+});
+
+test('One Time single-tenant parent login redirects to OneTime parent setup instead of Academy login', () => {
+  const routeStart = serverJs.indexOf("app.get(['/parent/login', '/parent-login']");
+  const routeEnd = serverJs.indexOf("app.get('/parent'", routeStart);
+  const route = serverJs.slice(routeStart, routeEnd);
+  assert.match(route, /if \(isOneTimeSingleTenantRuntime\(\)\) \{/);
+  assert.match(route, /return res\.redirect\(302, '\/one-time-parent'\)/);
+  assert.doesNotMatch(route, /Bnei Neviim Academy|parent-login\.html[\s\S]*isOneTimeSingleTenantRuntime/);
 });
 
 test('member route is a member entry shell and never redirects to provider login', () => {

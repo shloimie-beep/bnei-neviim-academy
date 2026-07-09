@@ -6,8 +6,11 @@
   const isParent = /^\/parent/.test(path);
   const isStudent = /^\/student/.test(path);
   const isOneTimeReview = ['one-time', 'onetime', '1', 'true'].includes(String(query.get('review') || '').toLowerCase());
+  const isOneTimeLoginMode = ['one-time', 'onetime', '1', 'true'].includes(String(query.get('one_time_login') || '').toLowerCase());
+  const isOneTimeHostDocument = /(^|\.)onetimeonetime\.com$/i.test(window.location.hostname || '')
+    || document.documentElement?.dataset?.appSelectSurface === 'one-time';
   const isOneTimeParentReview = isOneTimeReview && isParent;
-  const isOneTimeStudentReview = isOneTimeReview && isStudent;
+  const isOneTimeStudentReview = (isOneTimeReview || isOneTimeLoginMode || isOneTimeHostDocument) && isStudent;
   if (isOneTimeReview && !isOneTimeParentReview && !isOneTimeStudentReview) return;
   try {
     if (!isStudent) localStorage.removeItem('bnaStudentAccessCode');
@@ -22,6 +25,8 @@
       || ['/rabbi-preview', '/one-time-mishnayos'].includes(path)
       || isOneTimePublicDocument
     )
+    && !isParent
+    && !isStudent
     && !/^(?:\/rabbi-member)(?:\/|$|\.html$)/.test(path);
   const isOneTimeMember = /^(?:\/rabbi-member|\/member-library|\/one-time-classroom|\/provider-participant)(?:\/|$|\.html$)/.test(path)
     || ['/member', '/member.html', '/member-portal', '/one-time/member-login'].includes(path);

@@ -19,6 +19,11 @@
 - Agent Review drop-off is a tracked workflow state, not a final reminder:
   Start Audit, Copy Agent Prompt, keep/open drop-off, save pass/fail/blocked,
   verify AGR readback, then answer in chat.
+- Browser QA / Agent Mode verifiers should not ask Shloimie whether to submit,
+  seal, or report a blocked/fail run after they have enough evidence. The
+  autonomous loop is to save the result in Operations, name the blocker and
+  exact next action, verify readback when possible, and then report briefly in
+  chat.
 - Agent Mode UI audit prompts must be navigation-first templates: start from
   Super Admin, name exact click paths and visible labels, require the agent to
   navigate to Rabbi/provider/student/classroom views itself, and require

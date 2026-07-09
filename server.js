@@ -10661,12 +10661,52 @@ function sendOneTimePublicLanding(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
 }
 
+function wantsOneTimeProviderShell(req) {
+  const query = req?.query || {};
+  return isOneTimeSingleTenantRuntime()
+    || ['one-time', 'onetime', '1', 'true'].includes(String(query.review || '').toLowerCase())
+    || ['one-time', 'onetime'].includes(String(query.admin_provider || query.adminProvider || '').toLowerCase())
+    || Boolean(query.view_as_rabbi || query.viewAsRabbi);
+}
+
+function oneTimeProviderShellHtml(html = '') {
+  return String(html || '')
+    .replace(
+      '<body class="bna-shell bna-portal-page bna-provider-page"',
+      '<body class="bna-shell bna-portal-page bna-provider-page one-time-review-active"'
+    )
+    .replace(
+      '<span class="brand-mark" aria-hidden="true">BNA</span>',
+      '<span class="brand-mark" aria-hidden="true"><img src="/images/one-time/brand/onetimelogo.webp" alt=""></span>'
+    )
+    .replace('<strong>Bnei Neviim Academy</strong>', '<strong>OneTimeOneTime</strong>')
+    .replace('<span>Provider portal</span>', '<span>Rabbi provider account</span>')
+    .replace('<a class="portal-topbar-link" href="/">Public site</a>', '<a class="portal-topbar-link" href="/one-time">One Time</a>')
+    .replace('<a class="portal-topbar-link" href="/service-providers">Directory</a>', '<a class="portal-topbar-link secondary-link" href="/one-time-parent">Parent access</a>')
+    .replace('<a class="portal-topbar-link" href="/provider">Provider home</a>', '<a class="portal-topbar-link secondary-link" href="/student/login">Student login</a>')
+    .replace('<a class="portal-topbar-link" href="/providers/join?onboard=provider">Join</a>', '<a class="portal-topbar-link secondary-link" href="/one-time-classroom.html">Classroom</a>')
+    .replace('<span class="brand-chip">Scoped Provider Workspace</span>', '<span class="brand-chip">One Time provider</span>');
+}
+
+function sendOneTimeProviderShell(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
+  fs.readFile(path.join(__dirname, 'public', 'provider.html'), 'utf8', (error, html) => {
+    if (error) return res.status(500).send('One Time provider shell could not load.');
+    res.type('html').send(oneTimeProviderShellHtml(html));
+  });
+}
+
 app.get(['/', '/index.html', '/public', '/public/'], (req, res, next) => {
   if (!isOneTimeSingleTenantRuntime()) return next();
   return sendOneTimePublicLanding(req, res);
 });
 
 app.get(['/rabbi.html'], sendOneTimePublicLanding);
+
+app.get('/provider.html', (req, res, next) => {
+  if (!wantsOneTimeProviderShell(req)) return next();
+  return sendOneTimeProviderShell(req, res);
+});
 
 function setOperationsShellCacheHeader(res) {
   res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
@@ -85833,11 +85873,17 @@ app.get(['/blog/:slug', '/he/blog/:slug'], (req, res) => {
 
 app.get(['/student', '/student/login'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
+  if (isOneTimeSingleTenantRuntime() && req.path === '/student/login') {
+    return res.redirect(302, '/student.html?one_time_login=1');
+  }
   res.sendFile(path.join(__dirname, 'public', 'student.html'));
 });
 
 app.get(['/parent/login', '/parent-login'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
+  if (isOneTimeSingleTenantRuntime()) {
+    return res.redirect(302, '/one-time-parent');
+  }
   if (String(req.query.onboard || '') === 'accountability') {
     return res.sendFile(path.join(__dirname, 'public', 'parent.html'));
   }

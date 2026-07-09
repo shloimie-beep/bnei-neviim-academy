@@ -1018,6 +1018,7 @@ function renderAgentModePrompt(prompt, { baseUrl = '', generatedAt = new Date().
     '- Do not treat a partial audit as pass.',
     '- Do not say a JSON handoff is prepared.',
     '- Do not ask the owner to manually upload the payload.',
+    '- Do not ask the operator whether to submit/seal a blocked or failed result.',
     '- If blocked midway, save BLOCKED immediately.',
     '- If browser can still reach drop-off, use drop-off before any chat final.',
     '- If normal form fails, use exact drop-off URL.',

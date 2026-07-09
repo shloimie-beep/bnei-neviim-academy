@@ -1,6 +1,6 @@
 # Agent Mode Prompt - One Time Role IA Consistency
 
-Generated: 2026-07-08T21:10:52.389Z
+Generated: 2026-07-09T03:48:29.573Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -19,6 +19,7 @@ First open the Agent Review Hub. Confirm this prompt key. Click Start Audit / I 
 - Do not treat a partial audit as pass.
 - Do not say a JSON handoff is prepared.
 - Do not ask the owner to manually upload the payload.
+- Do not ask the operator whether to submit/seal a blocked or failed result.
 - If blocked midway, save BLOCKED immediately.
 - If browser can still reach drop-off, use drop-off before any chat final.
 - If normal form fails, use exact drop-off URL.

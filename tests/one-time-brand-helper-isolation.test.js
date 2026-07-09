@@ -22,6 +22,7 @@ test('One Time public helper has separate surface, copy, actions, and black-yell
   assert.match(widget, /const isOneTimePublicDocument = /);
   assert.match(widget, /\['\/rabbi-preview', '\/one-time-mishnayos'\]\.includes\(path\)/);
   assert.match(widget, /document\.documentElement\?\.dataset\?\.appSelectSurface === 'one-time'/);
+  assert.match(widget, /&& !isParent\s+&& !isStudent\s+&& !\/\^\(\?:\\\/rabbi-member\)/);
   assert.match(widget, /\? 'one_time_public'/);
   assert.match(widget, /surface === 'one_time_public'/);
   assert.match(widget, /Rabbi Scheller digital assistant/);
@@ -69,7 +70,9 @@ test('One Time helper surfaces normalize and store under the One Time project', 
 
 test('One Time parent and student review routes mount scoped helper copy', () => {
   assert.match(widget, /const isOneTimeParentReview = isOneTimeReview && isParent/);
-  assert.match(widget, /const isOneTimeStudentReview = isOneTimeReview && isStudent/);
+  assert.match(widget, /const isOneTimeLoginMode =/);
+  assert.match(widget, /const isOneTimeHostDocument =/);
+  assert.match(widget, /const isOneTimeStudentReview = \(isOneTimeReview \|\| isOneTimeLoginMode \|\| isOneTimeHostDocument\) && isStudent/);
   assert.match(widget, /if \(isOneTimeReview && !isOneTimeParentReview && !isOneTimeStudentReview\) return/);
   assert.match(widget, /\? 'one_time_parent'/);
   assert.match(widget, /\? 'one_time_student'/);
@@ -84,6 +87,17 @@ test('One Time parent and student review routes mount scoped helper copy', () =>
   assert.match(widget, /Billing question/);
   assert.match(widget, /Attendance question/);
   assert.match(widget, /Library preview/);
+});
+
+test('One Time student login route hides legacy access-code fallback and mounts scoped helper', () => {
+  const student = fs.readFileSync('public/student.html', 'utf8');
+  assert.match(student, /const ONE_TIME_LOGIN_MODE =/);
+  assert.match(student, /ONE_TIME_HOST_MODE && !ONE_TIME_REVIEW_MODE/);
+  assert.match(student, /accessDivider\.classList\.add\('hidden'\)/);
+  assert.match(student, /codeForm\.classList\.add\('hidden'\)/);
+  assert.match(student, /OneTimeOneTime Student Login/);
+  assert.match(widget, /query\.get\('one_time_login'\)/);
+  assert.match(widget, /bna-assistant-surface-one-time-student/);
 });
 
 test('One Time public helper launcher is registered as a visible action', () => {

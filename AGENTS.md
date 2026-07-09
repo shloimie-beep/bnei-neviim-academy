@@ -731,6 +731,10 @@ Keep `MEMORY.md` compact and curated.
 - If a route, login, helper, viewport, action, or save path blocks the audit,
   the prompt must require a partial `BLOCKED` save through Agent Review
   drop-off before any chat final.
+- Browser QA / Agent Mode verifiers must not ask the operator whether to
+  submit, seal, or report after they have enough evidence for pass, fail, or
+  blocked. Submitting/sealing a blocked run with evidence and an exact next
+  action is part of the autonomous loop.
 
 ## Current AI Setup
 

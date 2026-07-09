@@ -1639,6 +1639,11 @@
         const initialAccessCode = new URLSearchParams(window.location.search).get('code') || '';
         const queryParams = new URLSearchParams(window.location.search);
         const ONE_TIME_REVIEW_MODE = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
+        const ONE_TIME_LOGIN_MODE = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('one_time_login') || '').toLowerCase());
+        const ONE_TIME_HOST_MODE = ONE_TIME_LOGIN_MODE
+            || /(^|\.)onetimeonetime\.com$/i.test(window.location.hostname || '')
+            || document.documentElement?.dataset?.appSelectSurface === 'one-time';
+        const ONE_TIME_SCOPED_MODE = ONE_TIME_REVIEW_MODE || ONE_TIME_HOST_MODE;
         if (!initialAccessCode) localStorage.removeItem(STORAGE_KEY);
         let accessCode = initialAccessCode;
         let studentSessionActive = false;
@@ -2423,6 +2428,50 @@
             element.style.setProperty('--progress', `${roundedPercent(percent)}%`);
         }
 
+        function applyOneTimeStudentLoginBrand() {
+            if (!ONE_TIME_HOST_MODE || ONE_TIME_REVIEW_MODE) return;
+            document.body.classList.add('one-time-review-active');
+            document.body.classList.add('one-time-student-login-active');
+            document.title = 'OneTimeOneTime Student Login';
+            const mark = document.querySelector('.brand-mark');
+            if (mark && !mark.querySelector('img')) {
+                mark.textContent = '';
+                const img = document.createElement('img');
+                img.src = '/images/one-time/brand/onetimelogo.webp';
+                img.alt = '';
+                mark.appendChild(img);
+            }
+            const title = document.querySelector('.brand-lockup > div > strong');
+            const subtitle = document.querySelector('.brand-lockup > div > span');
+            const heroEyebrow = document.querySelector('.hero .eyebrow');
+            const languageToggle = document.querySelector('.language-toggle');
+            if (title) title.textContent = 'OneTimeOneTime';
+            if (subtitle) subtitle.textContent = 'Student login';
+            if (heroEyebrow) heroEyebrow.textContent = 'OneTimeOneTime Mishnah';
+            if (els.pageTitle) els.pageTitle.textContent = 'Student Login';
+            if (els.pageIntro) els.pageIntro.textContent = 'Sign in with the username and password your parent set for the OneTimeOneTime Mishnah class.';
+            if (languageToggle) languageToggle.classList.add('hidden');
+            const loginEyebrow = document.querySelector('#loginPanel .eyebrow');
+            const loginTitle = document.querySelector('#loginPanel h2');
+            const loginCopy = document.querySelector('#loginPanel .small');
+            const accessDivider = document.querySelector('.login-divider');
+            const codeForm = document.querySelector('#codeForm');
+            if (loginEyebrow) loginEyebrow.textContent = 'One Time student access';
+            if (loginTitle) loginTitle.textContent = 'Student login';
+            if (loginCopy) loginCopy.textContent = 'Use the student username and password managed by your parent.';
+            if (accessDivider) accessDivider.classList.add('hidden');
+            if (codeForm) codeForm.classList.add('hidden');
+            const actions = document.querySelector('.portal-topbar-actions');
+            if (actions) {
+                actions.innerHTML = `
+                    <a class="portal-topbar-link" href="/one-time">One Time</a>
+                    <a class="portal-topbar-link secondary-link" href="/one-time-parent">Parent access</a>
+                    <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html">Classroom</a>
+                    <span class="brand-chip">One Time student</span>
+                `;
+            }
+        }
+
         function applyLanguage() {
             language = language === 'he' ? 'he' : 'en';
             localStorage.setItem(LANGUAGE_KEY, language);
@@ -2436,15 +2485,15 @@
             els.langEnButton.classList.toggle('active', language === 'en');
             els.langHeButton.classList.toggle('active', language === 'he');
             const menuLabel = document.querySelector('#portalMenuToggle');
-            if (menuLabel) menuLabel.childNodes[menuLabel.childNodes.length - 1].textContent = ONE_TIME_REVIEW_MODE ? ' Review' : ` ${t('menu')}`;
+            if (menuLabel) menuLabel.childNodes[menuLabel.childNodes.length - 1].textContent = ONE_TIME_SCOPED_MODE ? ' One Time' : ` ${t('menu')}`;
             const sidebarEyebrow = document.querySelector('.portal-sidebar-header .eyebrow');
-            if (sidebarEyebrow) sidebarEyebrow.textContent = ONE_TIME_REVIEW_MODE ? 'One Time Classroom' : t('boardTitle');
+            if (sidebarEyebrow) sidebarEyebrow.textContent = ONE_TIME_SCOPED_MODE ? 'One Time Classroom' : t('boardTitle');
             const thisWeekLabel = document.querySelector('.sidebar-block .eyebrow');
             if (thisWeekLabel) thisWeekLabel.textContent = t('thisWeek');
             const brandSubtitle = document.querySelector('.brand-lockup div span');
-            if (brandSubtitle) brandSubtitle.textContent = ONE_TIME_REVIEW_MODE ? 'Student review portal' : t('brandSubtitle');
+            if (brandSubtitle) brandSubtitle.textContent = ONE_TIME_REVIEW_MODE ? 'Student review portal' : (ONE_TIME_HOST_MODE ? 'Student login' : t('brandSubtitle'));
             const languageToggle = document.querySelector('.language-toggle');
-            if (languageToggle) languageToggle.classList.toggle('hidden', ONE_TIME_REVIEW_MODE);
+            if (languageToggle) languageToggle.classList.toggle('hidden', ONE_TIME_SCOPED_MODE);
             const studentTopbarLabels = [
                 ['[data-student-topbar-public]', 'publicSite'],
                 ['[data-student-topbar-families]', 'families'],
@@ -2459,6 +2508,7 @@
             document.querySelector('#loginPanel .eyebrow').textContent = t('privateAccess');
             document.querySelector('#loginPanel h2').textContent = t('enterCode');
             document.querySelector('#loginPanel .small').textContent = t('accessHelp');
+            applyOneTimeStudentLoginBrand();
             document.querySelector('label[for="studentUsername"]').textContent = t('studentUsername');
             document.querySelector('label[for="studentPassword"]').textContent = t('studentPassword');
             els.studentUsername.placeholder = t('studentUsername');
@@ -2559,8 +2609,12 @@
 
         function showLogin(message = '', isError = false) {
             applyLanguage();
-            els.pageTitle.textContent = t('title');
-            els.pageIntro.textContent = t('intro');
+            if (ONE_TIME_HOST_MODE && !ONE_TIME_REVIEW_MODE) {
+                applyOneTimeStudentLoginBrand();
+            } else {
+                els.pageTitle.textContent = t('title');
+                els.pageIntro.textContent = t('intro');
+            }
             els.loginPanel.classList.remove('hidden');
             els.portalLayout.classList.add('hidden');
             els.portalMenuToggle.classList.add('hidden');

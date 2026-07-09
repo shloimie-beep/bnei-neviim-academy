@@ -116,6 +116,29 @@ body.one-time-review-active .portal-topbar-link:not(.secondary-link) {
   background: var(--one-time-yellow);
 }
 
+body.one-time-review-active.one-time-student-login-active .hero {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  color: var(--one-time-ink);
+  border: 1px solid rgba(8, 19, 35, 0.1);
+  border-radius: 8px;
+  background: var(--one-time-white) !important;
+  box-shadow: 0 14px 34px rgba(8, 19, 35, 0.08);
+  padding: clamp(16px, 2vw, 22px);
+}
+
+body.one-time-review-active.one-time-student-login-active .hero h1 {
+  color: var(--one-time-navy) !important;
+  font-size: clamp(34px, 4vw, 46px);
+  line-height: 1.02;
+}
+
+body.one-time-review-active.one-time-student-login-active .hero .hero-text {
+  max-width: 720px;
+  color: #526172 !important;
+}
+
 body.one-time-review-active .eyebrow {
   color: var(--one-time-teal);
   letter-spacing: 0.08em;

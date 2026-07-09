@@ -33,6 +33,12 @@ Every Agent Mode review prompt must require this sequence:
 9. Verify the AGR readback.
 10. Only then answer in chat.
 
+Blocked and failed runs are still autonomous closeouts. The browser agent must
+not ask the operator whether to submit, seal, or report the result after it has
+enough evidence to classify the run. It should save the blocked/fail result,
+name the exact next action, verify readback when possible, and only then report
+the final status in chat.
+
 The final answer must start with one of:
 
 - `OPERATIONS_DROPOFF_SAVED: AGR-... <readback URL>`
@@ -48,6 +54,7 @@ Every generated Agent Mode prompt must include:
 - `Click Start Audit / I started this agent mode`
 - `Do not treat a partial audit as pass`
 - `If blocked midway, save BLOCKED immediately`
+- `Do not ask the operator whether to submit/seal a blocked or failed result`
 - exact `dropoff_url`
 - `autosave=1`
 - `Emergency paste JSON and save`

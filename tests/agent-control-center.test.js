@@ -53,6 +53,12 @@ test('Agent prompt and seal validation enforce closed-loop verification evidence
   assert.match(prompt, /Open the Agent Run URL/);
   assert.match(prompt, /Post progress after each major section/);
   assert.match(prompt, /Attach\/reference evidence/);
+  assert.match(prompt, /Pass \/ fail \/ blocked rules/);
+  assert.match(prompt, /Do not ask the operator whether to submit, seal, or report a blocked run/);
+  assert.match(prompt, /Click Submit Result/);
+  assert.match(prompt, /Click Seal Run/);
+  assert.match(prompt, /Confirm the page shows a sealed\/completed status before ending/);
+  assert.match(prompt, /Do not check automated gates unless real gate output is visible/);
   assert.match(prompt, /Do not finish only in chat/);
 
   assert.equal(canTransitionAgentRun('ready', 'claimed'), true);

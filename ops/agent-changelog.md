@@ -35273,3 +35273,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - The update summarized the verified 163/0/0 helper scope state, full test
   coverage, healthy OneTime live smoke, local OneTime boot proof, the missing
   Rabbi chat ID blocker, and the Railway `a23e4e82` post-image deploy failure.
+
+## 2026-07-09T06:47:15+03:00 - OneTime Scope Bleed And Agent Loop Locally Verified
+
+- Hardened Browser QA / Agent Mode verifier prompts so blocked or failed runs
+  submit the result, seal the run, and do not ask the operator whether to close
+  out an autonomous verifier run.
+- Patched OneTime single-tenant auth/shell scope: `/parent/login` redirects to
+  `/one-time-parent`, `/student/login` redirects to
+  `/student.html?one_time_login=1`, and `provider.html?review=one-time` serves
+  a OneTime provider shell before the static BNA provider markup.
+- Patched OneTime student login and helper scoping: no BNA helper label, no HE
+  toggle, no access-code fallback, and a readable OneTime desktop/mobile login
+  hero.
+- Verification passed: focused test set 35/35 and local desktop/mobile
+  Playwright smoke for parent login, student login, and provider CRM shell.
+  Evidence is under `ops/ui-audits/2026-07-09-onetime-scope-bleed-local/`.
+- Final closeout verification passed after regenerating action coverage/parity
+  artifacts: `npm test` 1674/1674, `npm run secrets:audit`,
+  `npm run watchdog:protocol-drift`, and `git diff --check` with line-ending
+  warnings only.
+- Remaining open work: commit/push, deploy/live smoke, password-reset TTL and
+  expired-link resend flow, full Rabbi provider CRM/layout polish, full logged-in
+  student portal/classroom visual audit, WAPI setup/status, and safe contact
+  tagging.

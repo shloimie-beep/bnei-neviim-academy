@@ -78,6 +78,7 @@ test('Agent Mode prompt pack has exactly 18 generated mobile-copyable files', ()
     assert.match(text, /Emergency fallback: open the drop-off page and use "Emergency paste JSON and save"/);
     assert.match(text, /readback API shows the AGR result/);
     assert.match(text, /Do not ask for or store passwords/);
+    assert.match(text, /Do not ask the operator whether to submit\/seal a blocked or failed result/);
     assert.match(text, /save BLOCKED/);
     assert.match(text, /blocked_route_or_step/);
     assert.match(text, /partial_routes_visited/);
@@ -217,6 +218,7 @@ test('Agent Mode protocol template locks reusable Start Audit drop-off sequence'
     'Click Start Audit / I started this agent mode',
     'Do not treat a partial audit as pass',
     'If blocked midway, save BLOCKED immediately',
+    'Do not ask the operator whether to submit/seal a blocked or failed result',
     'Emergency paste JSON and save',
     'POST to /api/bna/agent-review/results',
     'readback API shows the AGR result',
@@ -242,6 +244,7 @@ test('Agent Mode protocol template locks reusable Start Audit drop-off sequence'
       'Click Start Audit / I started this agent mode',
       'Do not treat a partial audit as pass',
       'If blocked midway, save BLOCKED immediately',
+      'Do not ask the operator whether to submit/seal a blocked or failed result',
       'Emergency paste JSON and save',
       'POST to /api/bna/agent-review/results',
       'readback API shows the AGR result',
