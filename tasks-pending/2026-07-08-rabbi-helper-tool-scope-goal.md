@@ -127,8 +127,10 @@ block full agent-mode autonomy:
 8. Agent Mode has not yet saved a PASS/BLOCKED/FAIL drop-off result for the
    all-163 probe run.
 9. The reusable account-bot scope template exists, including the Benny
-   tasks/studio-only example, but automatic provisioning from that template when
-   a new subaccount/login is opened is not implemented yet.
+   tasks/studio-only example, and account-scope provisioning now materializes
+   that template into server-enforced allow/deny lists. Future new subaccount
+   openings still need live readback proof before they are considered
+   autonomous.
 10. Rabbi Telegram live delivery still depends on
    `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`; this is outside the helper wrapper
    map, but it still blocks end-to-end Rabbi bot autonomy for live Telegram

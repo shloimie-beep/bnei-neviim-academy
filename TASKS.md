@@ -85,25 +85,24 @@ not authorize active GHL runtime paths.
   `REQ-20260708-095`: Rabbi / One Time helper 163-tool account scope map and
   Agent Mode probe prompt. Register:
   `tasks-pending/2026-07-08-rabbi-helper-tool-scope-goal.md`. Current status:
-  local mapping/validator batch passed focused verification; the remaining
-  autonomy blocker is implementing the 163 scoped helper wrappers/planner
-  paths/result cards and saving live Agent Mode proof after deploy.
+  all 163 scoped helper contracts are wrapper-backed, pushed, deployed, and
+  live-smoked; the remaining autonomy blocker is saved all-163 Agent Mode
+  PASS/BLOCKED/FAIL proof, per-tool live audit readback, and external approval
+  gates.
 - [ ] `RAW-20260708-023`, `RAW-20260708-029`, `RAW-20260708-031` /
   `REQ-20260708-081` through `REQ-20260708-085`, `REQ-20260708-096`, and
   `REQ-20260708-097`: Rabbi Telegram bot, super-admin support ticket dings, and
   Agent Mode bot/helper smoke-test loop. Register:
   `tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md`. Current
   status: super-admin support-ticket ding hooks and the Rabbi Telegram/helper
-  Agent Mode smoke prompt are committed, pushed, deployed to OneTime
-  deployment `02195be0-33a2-4bee-96b3-c559a5c51256`, and live-smoked.
-  Verification included full `npm test` 1646/1646, action/protocol watchdogs,
-  secrets audit, helper-destination watchdog, OneTime target guard, and
-  no-secret Rabbi Telegram readiness proof. Rabbi live bot startup and Rabbi
-  Telegram delivery remain blocked until
-  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is supplied or inferred. Full Rabbi
-  bot/helper agent parity remains open; the current follow-up batch is adding
-  scoped read-only contact/communications/calendar/content helper wrappers and
-  progress-ding/Agent Mode smoke requirements.
+  Agent Mode smoke prompts are committed, pushed, deployed, and live-readback
+  verified with the OneTime scope markers. Verification includes no-secret
+  Rabbi Telegram readiness proof: Rabbi token and OneTime Operations
+  credentials are configured, but Rabbi live bot startup and Telegram delivery
+  remain blocked until `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is supplied or
+  inferred. Full Rabbi bot/helper agent parity remains open only for saved
+  Agent Mode PASS/BLOCKED/FAIL proof, per-tool live audit readback, and the
+  external approval gates.
 - [x] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
   `RAW-20260626-008` / `RAW-20260628-002` / `REQ-20260626-116` through
   `REQ-20260626-133` plus `REQ-20260628-134` through `REQ-20260628-140`:
@@ -2644,7 +2643,8 @@ not authorize active GHL runtime paths.
 
 ## 2026-06-15 — One Time Two-Login + White-Label + Scoped Parsing
 
-**Status:** In Progress (local complete, deploy pending)
+**Historical status:** In Progress at the time; superseded by later OneTime
+deployment/readback closeouts.
 **Source:** `kimi-one-time-rabbi-whatsapp-workspace-handoff.md`
 **Worker:** Kimi (implementation); Codex (deploy owner)
 

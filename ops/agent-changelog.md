@@ -36008,3 +36008,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Remaining full-launch blockers are narrowed to Stripe sandbox/price aliases,
   Whapi/WAPI instance and phone metadata, and campaign copy/list/suppression/
   seed approval.
+
+## 2026-07-09T16:40:52+03:00 - Rabbi Helper Deploy Blocker Reconciled
+
+- Fixed `HELPER-20260709-007`: the Rabbi Telegram/helper register no longer
+  lists the prompt refresh as deploy-pending behind an old OneTime failed
+  deployment.
+- Reconciled the helper-scope register so account-bot scope provisioning is no
+  longer described as unimplemented; future subaccounts still need live
+  readback proof before autonomy.
+- Live readback verified
+  `/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md` contains
+  `REQ-20260708-101`, `REQ-20260708-100`, the Rabbi chat-ID blocker, and
+  OneTime scope markers.
+- Live readback verified the all-163 helper-scope prompt and helper-scope
+  artifact return `200` with `RABBI-HELPER-SCOPE-163` and OneTime scope
+  markers.
+- No-write `npm run telegram:rabbi:readiness` confirms Rabbi token and OneTime
+  Operations credentials are configured, but
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is still missing. No Telegram message
+  was sent.
+- Remaining blockers are now precise: configure the intended Rabbi Telegram
+  chat ID, run/save Agent Mode PASS/BLOCKED/FAIL proof for the Rabbi
+  Telegram/helper smoke and all-163 helper-scope probe, and keep external-write
+  helper autonomy gated by exact approvals and credentials.

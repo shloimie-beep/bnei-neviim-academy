@@ -94,6 +94,7 @@ production-ready when these classes are green or precisely blocked:
 | TARGET-20260709-004 | Done | Codex | `npm run one-time:target:guard` hard-blocked the public OneTime target when the local Railway CLI was linked to BNA, even though the canonical OneTime domain and instance config passed. | Reclassified local Railway status mismatch as a warning in `scripts/release-captain.mjs`, added regression coverage, and kept `npm run one-time:railway-target:guard` as the dedicated Railway instance proof. |
 | SETUPCHECK-20260709-005 | Done | Codex | `npm run one-time:setup:check` could fall back into the BNA project-token/local-link context and report OneTime Railway target/auth as missing even when OneTime was live. | Updated `scripts/check-onetime-external-setup-readiness.mjs` to honor account-auth mode and use an isolated temp Railway link for redacted OneTime variable readback. |
 | SETUPCHECK-20260709-006 | Done | Codex | Readiness reports were still treating the hosted free-class/class-link value as missing even though OneTime Railway had enough redacted proof to clear that setup item. | Updated setup and WAPI readiness checks to consume only redacted hosted presence flags. Latest setup report is 5/8 ready: Railway, DB, join domain, Zoom/class link, and Vimeo/Drive are ready. |
+| HELPER-20260709-007 | Done | Codex | Rabbi helper/Telegram handoff still listed a stale OneTime deploy-pending blocker even though the prompt/artifacts are live. | Live-readback verified the Rabbi Telegram/helper prompt, 163-contract helper-scope prompt/artifact, and OneTime instance config; remaining blocker is Agent Mode saved proof plus Rabbi chat ID/external approval gates. |
 
 ## First audit command plan
 
@@ -306,6 +307,45 @@ Verification:
   class link are present; blocked only by Whapi/WAPI instance id, sender phone
   metadata, `ONE_TIME_WAPI_AUTO_REPLY_ENABLED`, and explicit approval flag.
 
+## HELPER-20260709-007 closeout
+
+Implemented:
+
+- Reconciled the Rabbi Telegram/helper register after current live readbacks.
+- Reclassified `REQ-20260708-101` from deploy-pending to deployed/live
+  readback verified.
+- Marked the old helper-scope Railway failed-deploy section as superseded so
+  future agents do not chase an obsolete deploy blocker.
+
+Verification:
+
+- PASS live readback
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md`
+  returned `200` with `REQ-20260708-101`, `REQ-20260708-100`,
+  `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`, and OneTime scope markers.
+- PASS live readback
+  `https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md`
+  returned `200` with `REQ-20260708-093`, `RABBI-HELPER-SCOPE-163`, and
+  OneTime scope markers.
+- PASS live readback
+  `https://join.onetimeonetime.com/agent-review-artifacts/rabbi-one-time-tool-scope-map.md`
+  returned `200` with `RABBI-HELPER-SCOPE-163` and OneTime scope markers.
+- PASS live instance config readback returned
+  `rabbi_sheller_provider / one_time_mishnah_class / onetime`.
+- PASS no-write `npm run telegram:rabbi:readiness`: Rabbi token and OneTime
+  Operations credentials are configured; `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`
+  remains missing; no Telegram send occurred.
+
+Remaining blockers:
+
+- Rabbi live Telegram delivery requires the intended account/group to message
+  `t.me/onetimeaios_bot` so `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` can be
+  configured through secret-safe runtime config.
+- Agent Mode must still save PASS/BLOCKED/FAIL drop-off proof for the deployed
+  Rabbi Telegram/helper smoke prompt and all-163 helper-scope probe.
+- External-write/helper autonomy remains gated by exact approvals and
+  credentials.
+
 Performance proof:
 
 | Profile | Shell visible | Fetches under 10s | Support-ticket dashboard fetches | Slowest fetch | Console errors | Failed requests | Evidence |
@@ -322,4 +362,4 @@ Performance proof:
 | REQ-20260709-049 | Done | First audit results table above plus `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006`. | PASS repo/security/privacy/BNA/OneTime public checks; expected blocked setup/WAPI checks recorded. | None for public target, Railway setup readback, or hosted class-link proof; full setup/WAPI remains externally blocked. |
 | REQ-20260709-050 | Already satisfied | `tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md`; launch catch-up register. | Lead capture live-smoked in prior closeout. | Automated Zoom invite/payment/access/campaign remain blocked. |
 | REQ-20260709-051 | Done | Known blockers table plus first audit results. | External blockers retained; performance blocker selected as next engineering batch. | None |
-| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, and `SETUPCHECK-20260709-006` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI regression checks. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup still externally blocked. |
+| REQ-20260709-052 | Done | `PERF-20260709-001`, `DEPLOY-20260709-003`, `TARGET-20260709-004`, `SETUPCHECK-20260709-005`, `SETUPCHECK-20260709-006`, and `HELPER-20260709-007` closeouts above. | PASS tests/gates/live smokes/support readback/profile plus focused target/setup/WAPI/helper-readback checks. | Residual performance follow-up `PERF-20260709-002` is not launch-blocking; full OneTime setup, Rabbi chat ID, and Agent Mode saved proof remain blocked. |
