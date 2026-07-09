@@ -37,9 +37,10 @@ evidence.
   pushed to `master`, BNA production deploy/live smoke passed, and One Time
   setup tooling now blocks stale historical provisioning proof. 2026-07-09
   readback resolved the old Railway target-context blocker:
-  `npm run one-time:railway-target:guard` saw `one-time-web` / `production`,
-  52 Railway variables, usable `DATABASE_URL`, matching
-  `join.onetimeonetime.com`, `rabbi_sheller_provider`, and
+  `npm run one-time:railway-target:guard` uses an isolated temporary Railway
+  link to read `one-time-web` / `production` from `one-time-production` and
+  records only redacted booleans: 52 Railway variables, usable `DATABASE_URL`,
+  matching `join.onetimeonetime.com`, `rabbi_sheller_provider`, and
   `one_time_mishnah_class`. `npm run one-time:setup:check` still reports ready
   4/8 because Zoom alias, Stripe sandbox/price alias, Whapi/WAPI details, and
   campaign approval data are missing. Immediate public lead capture is now

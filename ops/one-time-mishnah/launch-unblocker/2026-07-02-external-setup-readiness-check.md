@@ -1,6 +1,6 @@
 # One Time External Setup Readiness Check
 
-Generated: 2026-07-08T15:35:31.276Z
+Generated: 2026-07-09T13:20:28.219Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: full_setup

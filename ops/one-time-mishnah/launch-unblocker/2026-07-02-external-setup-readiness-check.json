@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T15:35:31.276Z",
+  "generated_at": "2026-07-09T13:20:28.219Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "external_write_performed": false,
@@ -215,10 +215,16 @@
   "railway_variable_readback": {
     "ok": true,
     "attempted": true,
-    "source": "railway_cli_session_fallback",
+    "source": "railway_temp_link_account_auth",
+    "link_target": {
+      "project_name": "one-time-production",
+      "service_name": "one-time-web",
+      "environment_name": "production",
+      "project_id_known": true
+    },
     "service": "one-time-web",
     "environment": "production",
-    "key_count": 45,
+    "key_count": 52,
     "database_url_present": true,
     "database_url_length": 98,
     "database_url_usable": true,

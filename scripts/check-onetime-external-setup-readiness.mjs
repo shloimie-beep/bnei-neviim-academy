@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { spawnSync } from 'node:child_process';
@@ -106,10 +107,15 @@ function configuredFromEnvOrSecret(env, envNames, secretSpecs, repoRoot, inspect
   return { configured: false, source: 'not configured', length: 0, value: '' };
 }
 
-function loadRailwayTokenEnv(repoRoot) {
-  const env = { ...process.env };
+function useAccountAuth(env = process.env) {
+  return [env.ONE_TIME_RAILWAY_USE_ACCOUNT_AUTH, env.BNA_RAILWAY_USE_ACCOUNT_AUTH, env.RAILWAY_USE_ACCOUNT_AUTH]
+    .some((value) => /^(1|true|yes)$/i.test(String(value || '').trim()));
+}
+
+function loadRailwayTokenEnv(repoRoot, baseEnv = process.env) {
+  const env = { ...baseEnv };
   const tokenPath = path.join(repoRoot, '.secrets', 'railway-token.txt');
-  if (!env.RAILWAY_TOKEN && !env.RAILWAY_API_TOKEN && fs.existsSync(tokenPath)) {
+  if (!useAccountAuth(env) && !env.RAILWAY_TOKEN && !env.RAILWAY_API_TOKEN && fs.existsSync(tokenPath)) {
     env.RAILWAY_TOKEN = fs.readFileSync(tokenPath, 'utf8').trim();
   }
   return env;
@@ -167,12 +173,74 @@ function buildRailwayReadbackDiagnosis(summary, reason = '') {
   return `Current Railway auth context summary: project "${currentProject}", services [${serviceList}].`;
 }
 
-function runRailwayVariablesReadback({ repoRoot, service = 'one-time-web', environment = 'production' } = {}) {
+function readProvisioningTarget(repoRoot, provisioningReportPath = DEFAULT_RAILWAY_PROVISIONING_REPORT) {
+  const report = readJsonIfExists(provisioningReportPath, repoRoot);
+  const linkStep = (report?.steps || []).find((step) => step.key === 'link_project' && step.command);
+  const projectId = String(linkStep?.command || '').match(/--project\s+([a-z0-9-]+)/i)?.[1] || '';
+  return {
+    project_id: projectId,
+    project_name: report?.target?.target_project || '',
+    service_name: report?.target?.web_service || '',
+    environment_name: 'production',
+  };
+}
+
+function redactedVariableSummary(variables = {}, { source, service, environment, linkTarget = null } = {}) {
+  const databaseUrl = normalizeValue(variables.DATABASE_URL);
+  return {
+    ok: true,
+    attempted: true,
+    source,
+    ...(linkTarget ? { link_target: linkTarget } : {}),
+    service,
+    environment,
+    key_count: Object.keys(variables).length,
+    database_url_present: Object.prototype.hasOwnProperty.call(variables, 'DATABASE_URL'),
+    database_url_length: databaseUrl.length,
+    database_url_usable: databaseUrl.length > 0,
+    one_time_public_domain_matches: variables.ONE_TIME_PUBLIC_DOMAIN === 'join.onetimeonetime.com',
+    default_workspace_matches: variables.DEFAULT_WORKSPACE_KEY === 'rabbi_sheller_provider',
+    default_project_matches: variables.DEFAULT_PROJECT_KEY === 'one_time_mishnah_class',
+    one_time_drive_drop_folder_present: Boolean(normalizeValue(
+      variables.ONE_TIME_DRIVE_DROP_FOLDER_ALIAS ||
+      variables.ONE_TIME_DRIVE_DROP_FOLDER_ID ||
+      variables.DRIVE_DROP_FOLDER_ID,
+    )),
+    vimeo_access_token_present: Boolean(normalizeValue(
+      variables.VIMEO_ACCESS_TOKEN ||
+      variables.ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS,
+    )),
+    vimeo_private_smoke_target_present: Boolean(normalizeValue(
+      variables.VIMEO_TEST_PROJECT_URI ||
+      variables.BNA_VIMEO_TEST_PROJECT_URI ||
+      variables.VIMEO_TEST_PROJECT_NAME ||
+      variables.BNA_VIMEO_TEST_PROJECT_NAME,
+    )),
+  };
+}
+
+function parseRailwayVariablesOutput(result, { source, service, environment, linkTarget = null } = {}) {
+  try {
+    const variables = JSON.parse(result.stdout || '{}');
+    return redactedVariableSummary(variables, { source, service, environment, linkTarget });
+  } catch {
+    return { ok: false, attempted: true, source, reason: 'Railway returned non-JSON variable output.' };
+  }
+}
+
+export function runRailwayVariablesReadback({
+  repoRoot,
+  service = 'one-time-web',
+  environment = 'production',
+  env = process.env,
+  runner = spawnSync,
+  railwayProvisioningReport = DEFAULT_RAILWAY_PROVISIONING_REPORT,
+} = {}) {
   const railwayArgs = ['variable', 'list', '--service', service, '--environment', environment, '--json'];
   const { command, args } = railwayCommandForPlatform(railwayArgs);
 
   function runWithEnv(commandEnv) {
-    return spawnSync(command, args, {
+    return runner(command, args, {
       cwd: repoRoot,
       env: commandEnv,
       encoding: 'utf8',
@@ -180,7 +248,7 @@ function runRailwayVariablesReadback({ repoRoot, service = 'one-time-web', envir
     });
   }
 
-  const tokenEnv = loadRailwayTokenEnv(repoRoot);
+  const tokenEnv = loadRailwayTokenEnv(repoRoot, env);
   let result = runWithEnv(tokenEnv);
   let source = 'railway_token_or_env';
   if (
@@ -206,7 +274,7 @@ function runRailwayVariablesReadback({ repoRoot, service = 'one-time-web', envir
     let currentContext = null;
     if (/service.+not found|project.+not found|environment.+not found/i.test(reason)) {
       const statusArgs = railwayCommandForPlatform(['status', '--json']);
-      const statusResult = spawnSync(statusArgs.command, statusArgs.args, {
+      const statusResult = runner(statusArgs.command, statusArgs.args, {
         cwd: repoRoot,
         env: tokenEnv,
         encoding: 'utf8',
@@ -214,6 +282,55 @@ function runRailwayVariablesReadback({ repoRoot, service = 'one-time-web', envir
       });
       if (statusResult.status === 0 && statusResult.stdout) {
         currentContext = parseRailwayStatusSummary(statusResult.stdout, { service, environment });
+      }
+      const target = readProvisioningTarget(repoRoot, railwayProvisioningReport);
+      if (target.project_id && target.service_name === service) {
+        const accountEnv = { ...env };
+        delete accountEnv.RAILWAY_TOKEN;
+        delete accountEnv.RAILWAY_API_TOKEN;
+        accountEnv.ONE_TIME_RAILWAY_USE_ACCOUNT_AUTH = '1';
+        const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'onetime-railway-readback-'));
+        try {
+          const linkArgs = railwayCommandForPlatform([
+            'link',
+            '--project',
+            target.project_id,
+            '--environment',
+            environment,
+            '--service',
+            service,
+            '--json',
+          ]);
+          const linkResult = runner(linkArgs.command, linkArgs.args, {
+            cwd: tempRoot,
+            env: accountEnv,
+            encoding: 'utf8',
+            maxBuffer: 1024 * 1024 * 4,
+          });
+          if (linkResult.status === 0 && !linkResult.error) {
+            const tempVariableResult = runner(command, args, {
+              cwd: tempRoot,
+              env: accountEnv,
+              encoding: 'utf8',
+              maxBuffer: 1024 * 1024 * 4,
+            });
+            if (tempVariableResult.status === 0 && !tempVariableResult.error) {
+              return parseRailwayVariablesOutput(tempVariableResult, {
+                source: 'railway_temp_link_account_auth',
+                service,
+                environment,
+                linkTarget: {
+                  project_name: target.project_name,
+                  service_name: service,
+                  environment_name: environment,
+                  project_id_known: true,
+                },
+              });
+            }
+          }
+        } finally {
+          fs.rmSync(tempRoot, { recursive: true, force: true });
+        }
       }
     }
     return {
@@ -225,41 +342,7 @@ function runRailwayVariablesReadback({ repoRoot, service = 'one-time-web', envir
       diagnosis: buildRailwayReadbackDiagnosis(currentContext, reason),
     };
   }
-  try {
-    const variables = JSON.parse(result.stdout || '{}');
-    const databaseUrl = normalizeValue(variables.DATABASE_URL);
-    return {
-      ok: true,
-      attempted: true,
-      source,
-      service,
-      environment,
-      key_count: Object.keys(variables).length,
-      database_url_present: Object.prototype.hasOwnProperty.call(variables, 'DATABASE_URL'),
-      database_url_length: databaseUrl.length,
-      database_url_usable: databaseUrl.length > 0,
-      one_time_public_domain_matches: variables.ONE_TIME_PUBLIC_DOMAIN === 'join.onetimeonetime.com',
-      default_workspace_matches: variables.DEFAULT_WORKSPACE_KEY === 'rabbi_sheller_provider',
-      default_project_matches: variables.DEFAULT_PROJECT_KEY === 'one_time_mishnah_class',
-      one_time_drive_drop_folder_present: Boolean(normalizeValue(
-        variables.ONE_TIME_DRIVE_DROP_FOLDER_ALIAS ||
-        variables.ONE_TIME_DRIVE_DROP_FOLDER_ID ||
-        variables.DRIVE_DROP_FOLDER_ID,
-      )),
-      vimeo_access_token_present: Boolean(normalizeValue(
-        variables.VIMEO_ACCESS_TOKEN ||
-        variables.ONE_TIME_VIMEO_ACCESS_TOKEN_ALIAS,
-      )),
-      vimeo_private_smoke_target_present: Boolean(normalizeValue(
-        variables.VIMEO_TEST_PROJECT_URI ||
-        variables.BNA_VIMEO_TEST_PROJECT_URI ||
-        variables.VIMEO_TEST_PROJECT_NAME ||
-        variables.BNA_VIMEO_TEST_PROJECT_NAME,
-      )),
-    };
-  } catch {
-    return { ok: false, attempted: true, source, reason: 'Railway returned non-JSON variable output.' };
-  }
+  return parseRailwayVariablesOutput(result, { source, service, environment });
 }
 
 function expectedEnvMissing(env) {
@@ -379,7 +462,12 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
   const inspectKeyholder = options.inspectKeyholder ?? !options.env;
   const inspectRailway = options.inspectRailway ?? !options.env;
   const checklist = readChecklist(options.checklist || DEFAULT_CHECKLIST_PATH, repoRoot);
-  const railwayVariables = options.railwayVariables || (inspectRailway ? runRailwayVariablesReadback({ repoRoot }) : null);
+  const railwayVariables = options.railwayVariables || (inspectRailway ? runRailwayVariablesReadback({
+    repoRoot,
+    env,
+    runner: options.railwayRunner || spawnSync,
+    railwayProvisioningReport: options.railwayProvisioningReport || DEFAULT_RAILWAY_PROVISIONING_REPORT,
+  }) : null);
   const railway = railwayReadiness(
     env,
     repoRoot,

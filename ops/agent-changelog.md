@@ -35967,3 +35967,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `/api/one-time/instance-config`.
 - Remaining blockers are unchanged: full OneTime WAPI/payment/campaign launch
   still needs the external setup values and approvals.
+
+## 2026-07-09T16:21:19+03:00 - OneTime Setup Checker Railway Readback Fixed
+
+- Fixed `SETUPCHECK-20260709-005`: the OneTime external setup checker no
+  longer falls back into the BNA project-token/local-link context when proving
+  the separate OneTime Railway setup.
+- `scripts/check-onetime-external-setup-readiness.mjs` now honors explicit
+  account-auth flags before loading `.secrets/railway-token.txt` and can read
+  `one-time-production` / `one-time-web` variables through an isolated
+  temporary Railway link.
+- The readback stores only redacted booleans/counts/lengths; no raw
+  `DATABASE_URL`, API key, Zoom link, Telegram token, password, or provider
+  secret is written to the report.
+- Verification passed: `node --check
+  scripts\check-onetime-external-setup-readiness.mjs`, `node --test
+  tests\one-time-external-setup-readiness.test.js` 7/7,
+  `npm run one-time:railway-target:guard`, and expected-blocked
+  `npm run one-time:setup:check -- --write-report`.
+- Current setup status is 4/8 ready. Ready: Railway target, separate database
+  reference, join domain, and Vimeo/Drive. Still blocked: Zoom alias, Stripe
+  sandbox/price alias, Whapi/WAPI instance and phone, campaign
+  copy/list/suppression proof, and explicit seed approval.

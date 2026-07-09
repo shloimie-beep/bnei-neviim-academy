@@ -1,5 +1,7 @@
 const assert = require('node:assert/strict');
 const path = require('node:path');
+const fs = require('node:fs');
+const os = require('node:os');
 const test = require('node:test');
 const { pathToFileURL } = require('node:url');
 
@@ -154,4 +156,104 @@ test('One Time setup readiness blocks stale provisioning proof when current Rail
   assert.equal(report.blockers.some((item) => item.id === 'SETUP-ONETIME-RAILWAY-001'), true);
   assert.equal(report.blockers.some((item) => item.id === 'SETUP-ONETIME-DB-001'), true);
   assert.doesNotMatch(JSON.stringify(report), /postgres:\/\/|sk_live_|sk_test_/i);
+});
+
+test('One Time railway readback honors account auth instead of loading the BNA project token', async () => {
+  const { runRailwayVariablesReadback } = await import(setupUrl);
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'onetime-readiness-auth-'));
+  fs.mkdirSync(path.join(repoRoot, '.secrets'), { recursive: true });
+  fs.writeFileSync(path.join(repoRoot, '.secrets', 'railway-token.txt'), 'bna-project-token');
+  const seen = [];
+
+  const result = runRailwayVariablesReadback({
+    repoRoot,
+    env: { BNA_RAILWAY_USE_ACCOUNT_AUTH: '1' },
+    runner: (command, args, options) => {
+      seen.push({ command, args, token: options.env.RAILWAY_TOKEN || '' });
+      return {
+        status: 0,
+        stdout: JSON.stringify({
+          DATABASE_URL: '${{ one-time-postgres.DATABASE_URL }}',
+          ONE_TIME_PUBLIC_DOMAIN: 'join.onetimeonetime.com',
+          DEFAULT_WORKSPACE_KEY: 'rabbi_sheller_provider',
+          DEFAULT_PROJECT_KEY: 'one_time_mishnah_class',
+        }),
+      };
+    },
+  });
+
+  fs.rmSync(repoRoot, { recursive: true, force: true });
+  assert.equal(result.ok, true);
+  assert.equal(result.source, 'railway_token_or_env');
+  assert.equal(seen[0].token, '');
+  assert.doesNotMatch(JSON.stringify(result), /bna-project-token|one-time-postgres\.DATABASE_URL/);
+});
+
+test('One Time railway readback can use an isolated temp link when the local Railway context is BNA', async () => {
+  const { runRailwayVariablesReadback } = await import(setupUrl);
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'onetime-readiness-temp-link-'));
+  fs.mkdirSync(path.join(repoRoot, 'ops', 'one-time-mishnah'), { recursive: true });
+  fs.mkdirSync(path.join(repoRoot, '.secrets'), { recursive: true });
+  fs.writeFileSync(path.join(repoRoot, '.secrets', 'railway-token.txt'), 'bna-project-token');
+  fs.writeFileSync(path.join(repoRoot, 'ops', 'one-time-mishnah', 'onetime-railway-provisioning-report.json'), JSON.stringify({
+    target: {
+      target_project: 'one-time-production',
+      web_service: 'one-time-web',
+      postgres_service: 'one-time-postgres',
+    },
+    steps: [
+      {
+        key: 'link_project',
+        command: 'railway link --project ce55ef20-1418-4ad3-aafa-f877fb992dc8 --environment production --json',
+      },
+    ],
+  }));
+  const calls = [];
+
+  const result = runRailwayVariablesReadback({
+    repoRoot,
+    env: {},
+    runner: (command, args, options) => {
+      const argText = args.join(' ');
+      calls.push({ command, args, cwd: options.cwd, token: options.env.RAILWAY_TOKEN || '' });
+      if (argText.includes('variable list') && options.cwd === repoRoot) {
+        return { status: 1, stderr: "Service 'one-time-web' not found" };
+      }
+      if (argText.includes('status --json')) {
+        return {
+          status: 0,
+          stdout: JSON.stringify({
+            name: 'skillful-motivation',
+            services: { edges: [{ node: { name: 'skillful-motivation' } }] },
+          }),
+        };
+      }
+      if (argText.includes('link --project ce55ef20-1418-4ad3-aafa-f877fb992dc8')) {
+        return { status: 0, stdout: JSON.stringify({ projectName: 'one-time-production' }) };
+      }
+      if (argText.includes('variable list') && options.cwd !== repoRoot) {
+        assert.equal(options.env.RAILWAY_TOKEN || '', '');
+        return {
+          status: 0,
+          stdout: JSON.stringify({
+            DATABASE_URL: 'postgres://secret-value.invalid/db',
+            ONE_TIME_PUBLIC_DOMAIN: 'join.onetimeonetime.com',
+            DEFAULT_WORKSPACE_KEY: 'rabbi_sheller_provider',
+            DEFAULT_PROJECT_KEY: 'one_time_mishnah_class',
+            ONE_TIME_DRIVE_DROP_FOLDER_ID: 'drive-folder-id',
+          }),
+        };
+      }
+      return { status: 1, stderr: 'unexpected fake railway command' };
+    },
+  });
+
+  fs.rmSync(repoRoot, { recursive: true, force: true });
+  assert.equal(result.ok, true);
+  assert.equal(result.source, 'railway_temp_link_account_auth');
+  assert.equal(result.link_target.project_name, 'one-time-production');
+  assert.equal(result.database_url_usable, true);
+  assert.equal(result.one_time_drive_drop_folder_present, true);
+  assert.ok(calls.some((call) => call.args.join(' ').includes('link --project ce55ef20-1418-4ad3-aafa-f877fb992dc8')));
+  assert.doesNotMatch(JSON.stringify(result), /secret-value|postgres:\/\//);
 });
