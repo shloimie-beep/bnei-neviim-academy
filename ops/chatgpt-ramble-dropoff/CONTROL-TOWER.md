@@ -1,17 +1,14 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-09T21:01:21.038Z
+Generated: 2026-07-09T21:07:54.287Z
 
 ## Lane Safety
 
 - Branch: `master`
-- Dirty worktree: yes
-- Collision warning: Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files.
+- Dirty worktree: no
 
-| Status | Path |
-| --- | --- |
-| M | ops/production-readiness/latest-production-readiness-snapshot.json |
-| M | ops/production-readiness/latest-production-readiness-snapshot.md |
+
+_None._
 
 ## Packet Status
 
@@ -35,7 +32,7 @@ Generated: 2026-07-09T21:01:21.038Z
 | - Claimable observable jobs: 0 |
 | - Active Codex task fallback: 28 |
 | - Ready to claim: observable jobs 0, fallback task candidates 0 |
-| - Queue health: fresh 9, stale 469, blocked 128, unknown 194, do-not-redo 880 |
+| - Queue health: fresh 8, stale 471, blocked 128, unknown 194, do-not-redo 880 |
 | - ChatGPT dropoff ingest: enabled |
 | - ChatGPT comment collect: enabled |
 
@@ -43,7 +40,7 @@ Generated: 2026-07-09T21:01:21.038Z
 
 | Job |
 | --- |
-| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.37 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.48 path=.runtime/agent-fleet/task-1736.lock.json) |
 | - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
 | - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json) |
 | - job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json) |
@@ -71,7 +68,6 @@ _None._
 
 ## Recommendations
 
-- Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.
 - No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.
 - Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.
 - GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it.

@@ -1,19 +1,10 @@
 {
-  "generated_at": "2026-07-09T21:01:21.038Z",
+  "generated_at": "2026-07-09T21:07:54.287Z",
   "git": {
     "branch": "master",
-    "dirty": true,
-    "dirty_files": [
-      {
-        "status": "M",
-        "path": "ops/production-readiness/latest-production-readiness-snapshot.json"
-      },
-      {
-        "status": "M",
-        "path": "ops/production-readiness/latest-production-readiness-snapshot.md"
-      }
-    ],
-    "collision_warning": "Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files."
+    "dirty": false,
+    "dirty_files": [],
+    "collision_warning": ""
   },
   "packets": {
     "count": 2,
@@ -142,43 +133,43 @@
   ],
   "latest_comment_pickup_reports": [
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-00-37-952Z-4893651840.md",
-      "updated_at": "2026-07-09T21:00:37.954Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-06-29-348Z-4893651840.md",
+      "updated_at": "2026-07-09T21:06:29.349Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-00-37-951Z-4893596622.md",
-      "updated_at": "2026-07-09T21:00:37.952Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-06-29-347Z-4893596622.md",
+      "updated_at": "2026-07-09T21:06:29.348Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-00-37-947Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T21:00:37.951Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-06-29-346Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T21:06:29.347Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-00-37-945Z-4893586910.md",
-      "updated_at": "2026-07-09T21:00:37.946Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-06-29-344Z-4893586910.md",
+      "updated_at": "2026-07-09T21:06:29.345Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-59-10-055Z-4893651840.md",
-      "updated_at": "2026-07-09T20:59:10.055Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-04-59-715Z-4893651840.md",
+      "updated_at": "2026-07-09T21:04:59.719Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-59-10-053Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-09T20:59:10.054Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-04-59-713Z-4893596622.md",
+      "updated_at": "2026-07-09T21:04:59.714Z",
+      "size": 743
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-04-59-712Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-09T21:04:59.713Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-59-10-054Z-4893596622.md",
-      "updated_at": "2026-07-09T20:59:10.054Z",
-      "size": 743
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T20-59-10-051Z-4893586910.md",
-      "updated_at": "2026-07-09T20:59:10.052Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-09T21-04-59-710Z-4893586910.md",
+      "updated_at": "2026-07-09T21:04:59.712Z",
       "size": 743
     }
   ],
@@ -191,12 +182,12 @@
       "- Claimable observable jobs: 0",
       "- Active Codex task fallback: 28",
       "- Ready to claim: observable jobs 0, fallback task candidates 0",
-      "- Queue health: fresh 9, stale 469, blocked 128, unknown 194, do-not-redo 880",
+      "- Queue health: fresh 8, stale 471, blocked 128, unknown 194, do-not-redo 880",
       "- ChatGPT dropoff ingest: enabled",
       "- ChatGPT comment collect: enabled"
     ],
     "not_claimable": [
-      "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.37 path=.runtime/agent-fleet/task-1736.lock.json)",
+      "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.48 path=.runtime/agent-fleet/task-1736.lock.json)",
       "- job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)",
       "- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)",
       "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json)",
@@ -215,7 +206,7 @@
       "- Linked observable task lookup: fetched 0, missing 0",
       "- Active Codex task fallback: 28",
       "- Ready to claim: observable jobs 0, fallback task candidates 0",
-      "- Queue health: fresh 9, stale 469, blocked 128, unknown 194, do-not-redo 880",
+      "- Queue health: fresh 8, stale 471, blocked 128, unknown 194, do-not-redo 880",
       "- Max retries: 2",
       "- Baseline smoke: enabled",
       "- Auto deploy gate: disabled",
@@ -234,7 +225,7 @@
       "- job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy",
       "- job #296 / task #1436 [failed] Repair follow-up after Drive transcription reprocess.",
       "Local task lock evidence for not-claimable jobs:",
-      "- task #1736 for job #344: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.37 path=.runtime/agent-fleet/task-1736.lock.json",
+      "- task #1736 for job #344: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=176.48 path=.runtime/agent-fleet/task-1736.lock.json",
       "- task #2181 for job #426: local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json",
       "- task #1130 for job #236: local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json",
       "- task #1136 for job #237: local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json",
@@ -246,7 +237,6 @@
     "error": ""
   },
   "recommendations": [
-    "Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.",
     "No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.",
     "Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.",
     "GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it."
