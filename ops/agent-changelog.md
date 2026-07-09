@@ -36570,3 +36570,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   feature edit, deploy, merge, external send, payment/access mutation,
   provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
   inference, public publish, or production-data mutation.
+
+## 2026-07-09T19:22:00+03:00 - Agent Review Repair Lane Added To Collision Gate
+
+- Updated the production readiness snapshot assessment so active Agent
+  Review/AGR result repair jobs are promoted into `avoid_colliding_with`.
+- Added a next action telling future agents not to overlap Agent Review
+  proof/result repair while the active repair job is running.
+- Focused no-write snapshot readback now shows job #344 / task #1736
+  `Repair Agent Mode result AGR-19cfa47542407167` alongside the active UI and
+  fallback/API lanes.
+- Guardrails held: control-tower/reporting hardening only; no app UI edit, API
+  feature edit, deploy, merge, external send, payment/access mutation,
+  provider/CRM/DNS/credential mutation, Agent Review result save, Kimi live
+  inference, public publish, or production-data mutation.

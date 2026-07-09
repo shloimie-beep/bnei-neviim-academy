@@ -112,6 +112,7 @@ production-ready when these classes are green or precisely blocked:
 | READINESS-20260709-026 | Done / no deploy performed | Codex | The release/deploy closeout gate embedded a reduced production-readiness summary, so deploy-gate output still did not expose the unblocker path even after the readiness gate did. | Preserved `operator_unblocker` and `next_actions` inside `scripts/bna-production-closeout-gate.mjs` production-readiness summaries, so blocked release/deploy output carries the unblocker pointer too. |
 | READINESS-20260709-027 | Done / no deploy performed | Codex | The operator unblocker could be generated from a stale committed production snapshot if agents forgot to refresh the control tower first. | Updated `npm run production:unblocker` to sample `node scripts/production-readiness-snapshot.mjs --no-write --json` by default, carry source snapshot metadata, and keep `--from-snapshot-file` for intentional file-based reads. |
 | READINESS-20260709-028 | Done / no deploy performed | Codex | GitHub-connected agents needed the tracked latest unblocker artifact refreshed after the fresh-snapshot default was pushed. | Regenerated `ops/production-readiness/latest-production-unblocker.*` from clean pushed head `c020293b`; the artifact records `live_no_write_command`, head/origin `c020293b`, worktree clean `true`, 3 external setup blockers, 2 Agent Mode proof blockers, 2 active collision lanes, 0 queued ChatGPT packets, and no executable batch. |
+| READINESS-20260709-029 | Done / no deploy performed | Codex | The control-tower launch assessment exposed the UI and fallback/API lanes as collision lanes but did not promote the active Agent Review result repair job, even though proof repair overlaps the missing terminal proof blocker. | Updated `scripts/production-readiness-snapshot.mjs` so active Agent Review/AGR repair jobs are included in `avoid_colliding_with` and next actions warn not to overlap proof/result repair while that job is running. |
 
 ## First audit command plan
 
@@ -1405,6 +1406,49 @@ Remaining:
 - Production remains blocked by the explicit external setup buckets, terminal
   Agent Mode proof saves, active UI/API collision lanes, and no unblocked
   execution batch.
+
+## READINESS-20260709-029 closeout
+
+Implemented:
+
+- Updated `scripts/production-readiness-snapshot.mjs` so active Agent Review
+  repair jobs matching `Agent Mode result`, `Agent Review`, or `AGR-` are
+  promoted into `assessment.avoid_colliding_with`.
+- Added a production-readiness reason when an Agent Review repair lane is
+  active.
+- Added a next action warning future agents not to overlap Agent Review
+  proof/result repair until the active repair job is inspected.
+- Added static regression coverage in `tests/production-readiness-gate.test.js`.
+
+Verification:
+
+- PASS `node --check scripts\production-readiness-snapshot.mjs`.
+- PASS `node --test tests\production-readiness-gate.test.js`.
+- PASS `node scripts/production-readiness-snapshot.mjs --no-write --json`
+  readback while dirty; `assessment.avoid_colliding_with` now included:
+  - job `382` / task `1859` running app-wide BNA brand shell/UI polish
+  - job `427` / task `2185` running fallback/API lane
+  - job `344` / task `1736` running Agent Review result repair
+  and next actions included the new Agent Review no-overlap warning.
+
+Evidence:
+
+- `scripts/production-readiness-snapshot.mjs`
+- `tests/production-readiness-gate.test.js`
+
+Guardrails:
+
+- Control-tower/reporting hardening only.
+- No app UI edit, API feature edit, deploy, merge, release, external send,
+  payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review
+  result save, Kimi live inference, public publish, or production-data mutation
+  was performed.
+
+Remaining:
+
+- After commit/push, regenerate the tracked production readiness snapshot and
+  production unblocker from a clean pushed tree so GitHub-visible artifacts
+  show the third Agent Review collision lane.
 
 ## Final audit
 

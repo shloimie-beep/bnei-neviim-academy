@@ -121,3 +121,13 @@ test('production readiness snapshot surfaces agent-fleet auto-deploy preflight p
   assert.match(script, /Auto-deploy readiness preflight/);
   assert.match(script, /Auto-deploy performed by readiness proof/);
 });
+
+test('production readiness snapshot treats active Agent Review repair as a collision lane', () => {
+  const script = fs.readFileSync(path.join(repoRoot, 'scripts', 'production-readiness-snapshot.mjs'), 'utf8');
+
+  assert.match(script, /activeAgentReviewLane/);
+  assert.match(script, /Agent Mode result\|Agent Review\|AGR-/);
+  assert.match(script, /Agent Review repair lane is already active/);
+  assert.match(script, /Do not overlap Agent Review proof\/result repair work/);
+  assert.match(script, /avoidCollidingWith/);
+});

@@ -249,15 +249,25 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof }) {
     /app-wide BNA brand shell|million-dollar SaaS UI polish|One Time provider UI|route-role mapping|View-as navigation/i.test(job.title)
   );
   const activeFallbackLane = fleet.active_policy_jobs.find((job) => /fall back|fallback|API/i.test(job.title));
+  const activeAgentReviewLane = fleet.active_policy_jobs.find((job) => /Agent Mode result|Agent Review|AGR-/i.test(job.title));
   const queuedDropoffs = Number(chatgpt?.queued_count || 0);
   const missingProofCount = Number(proof.remaining_blocker_count || 0);
   const hasExternalBlockers = blockers.length > 0;
   const noNextBatch = activeRun.work_remains === true && /none/i.test(activeRun.next_unblocked_executable_batch || '');
+  const avoidCollidingWith = [];
+  const seenCollisionKeys = new Set();
+  for (const lane of [activeUiLane, activeFallbackLane, activeAgentReviewLane].filter(Boolean)) {
+    const key = `${lane.job_id || ''}:${lane.task_id || ''}:${lane.title || ''}`;
+    if (seenCollisionKeys.has(key)) continue;
+    seenCollisionKeys.add(key);
+    avoidCollidingWith.push(lane);
+  }
   const reason = [
     hasExternalBlockers ? 'full OneTime launch has external Stripe/WAPI/campaign blockers' : '',
     missingProofCount > 0 ? 'Rabbi Agent Review still needs terminal Agent Mode proof' : '',
     activeUiLane ? 'broad UI lane is already active in another agent job' : '',
     activeFallbackLane ? 'fallback/API lane is already active in another agent job' : '',
+    activeAgentReviewLane ? 'Agent Review repair lane is already active in another agent job' : '',
     noNextBatch ? 'active execution run has no unblocked executable batch' : '',
   ].filter(Boolean);
   const productionReady = reason.length === 0;
@@ -268,7 +278,7 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof }) {
     reason,
     immediate_lead_capture_free_class_lane: 'live_verified_from_existing_register',
     safe_current_scope: 'read-only production-readiness reporting, blocker reconciliation, and non-overlapping proof automation',
-    avoid_colliding_with: [activeUiLane, activeFallbackLane].filter(Boolean),
+    avoid_colliding_with: avoidCollidingWith,
     chatgpt_dropoff_queue_ready_count: queuedDropoffs,
   };
 }
@@ -309,6 +319,15 @@ function buildNextActions({ blockers, proof, fleet }) {
     actions.push({
       owner: 'Codex / agent fleet',
       action: `Do not overlap broad UI file edits while ${laneLabel} remains active; inspect its result packet before starting the next UI batch.`,
+      source: 'agent_fleet_active_policy',
+    });
+  }
+  const agentReviewLane = fleet.active_policy_jobs.find((job) => /Agent Mode result|Agent Review|AGR-/i.test(job.title));
+  if (agentReviewLane) {
+    const laneLabel = agentReviewLane.raw.replace(/^- /, '');
+    actions.push({
+      owner: 'Codex / agent fleet',
+      action: `Do not overlap Agent Review proof/result repair work while ${laneLabel} remains active; inspect its result packet before saving or reconciling Agent Review terminal proof.`,
       source: 'agent_fleet_active_policy',
     });
   }
