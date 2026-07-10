@@ -10,11 +10,11 @@ const {
 const server = fs.readFileSync('server.js', 'utf8');
 
 test('One Time parent trial invite has scoped email copy and setup links', () => {
-  const subject = rabbiTemplateSubject('parent_trial_invite', { programName: 'OneTimeOneTime Mishnah' });
+  const subject = rabbiTemplateSubject('parent_trial_invite', { programName: 'One Time Mishnayos' });
   assert.match(subject, /30-day access is ready/);
 
   const body = rabbiTemplateBody('parent_trial_invite', {
-    programName: 'OneTimeOneTime Mishnah',
+    programName: 'One Time Mishnayos',
     recipientName: 'Parent',
     studentName: 'Live Student',
     passwordSetupUrl: 'https://join.onetimeonetime.com/one-time-parent?reset=token',
@@ -22,7 +22,7 @@ test('One Time parent trial invite has scoped email copy and setup links', () =>
     memberLibraryUrl: 'https://join.onetimeonetime.com/member-library?code=OT-live',
     classroomUrl: 'https://join.onetimeonetime.com/one-time-classroom?code=OT-live',
   });
-  assert.match(body, /Welcome to OneTimeOneTime Mishnah/);
+  assert.match(body, /Welcome to One Time Mishnayos/);
   assert.match(body, /I am glad to have Live Student join/);
   assert.match(body, /Your 30-day access is ready/);
   assert.match(body, /Set your parent password here/);
@@ -33,7 +33,7 @@ test('One Time parent trial invite has scoped email copy and setup links', () =>
   assert.doesNotMatch(body, /Academy|bneineviimacademy|TEST|codex/i);
 
   const template = buildRabbiEmailTemplate('parent_trial_invite', {
-    programName: 'OneTimeOneTime Mishnah',
+    programName: 'One Time Mishnayos',
     recipientName: 'Parent',
     passwordSetupUrl: 'https://join.onetimeonetime.com/one-time-parent?reset=token',
   });
@@ -95,7 +95,7 @@ test('One Time parent setup page is isolated from Academy parent portal branding
   const routeRegistry = fs.readFileSync('ops/route-registry.json', 'utf8');
   const actionRegistry = fs.readFileSync('ops/action-registry.json', 'utf8');
 
-  assert.match(setupPage, /OneTimeOneTime Parent Setup/);
+  assert.match(setupPage, /One Time Parent Setup/);
   assert.match(setupPage, /id="passwordForm"/);
   assert.match(setupPage, /id="forgotForm"/);
   assert.match(setupPage, /\.intro\s*\{[\s\S]*min-width: 0;[\s\S]*overflow: hidden;/);

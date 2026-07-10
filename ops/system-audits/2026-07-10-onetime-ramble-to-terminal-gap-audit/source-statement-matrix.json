@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-10T07:06:48.664Z",
+  "generated_at": "2026-07-10T14:20:01+03:00",
   "raw_id": "RAW-20260710-001",
   "source_statements": [
     {
@@ -9,13 +9,18 @@
       "source": "RAW-20260710-001",
       "source_text": "Artifact status was treated as product status.",
       "surface": "process / One Time UI lifecycle",
-      "current_status": "OPEN_PROCESS_GAP",
-      "terminal_status": "OPEN_PROCESS_GAP",
-      "first_skipped_stage": "implementation_or_process_repair",
+      "current_status": "LOCAL_PROCESS_REPAIR_DONE_DEPLOY_PENDING",
+      "terminal_status": "LOCAL_PROCESS_REPAIR_DONE_DEPLOY_PENDING",
+      "first_skipped_stage": "commit_push_deploy_live_smoke",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-004",
@@ -44,13 +49,18 @@
       "source": "RAW-20260710-001",
       "source_text": "Historical One Time UI audit artifacts still need mapping.",
       "surface": "audit governance",
-      "current_status": "OPEN_PROCESS_GAP",
-      "terminal_status": "OPEN_PROCESS_GAP",
-      "first_skipped_stage": "implementation_or_process_repair",
+      "current_status": "LOCAL_PROCESS_REPAIR_DONE_DEPLOY_PENDING",
+      "terminal_status": "LOCAL_PROCESS_REPAIR_DONE_DEPLOY_PENDING",
+      "first_skipped_stage": "commit_push_deploy_live_smoke",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-005"
@@ -62,13 +72,18 @@
       "source": "RAW-20260710-001",
       "source_text": "ui:source-coverage reported screenshot_files=0 despite current screenshots.",
       "surface": "route/action/screenshot evidence",
-      "current_status": "OPEN_PROCESS_GAP",
-      "terminal_status": "OPEN_PROCESS_GAP",
-      "first_skipped_stage": "implementation_or_process_repair",
+      "current_status": "LOCAL_PROCESS_REPAIR_DONE_DEPLOY_PENDING",
+      "terminal_status": "LOCAL_PROCESS_REPAIR_DONE_DEPLOY_PENDING",
+      "first_skipped_stage": "commit_push_deploy_live_smoke",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-004"
@@ -112,13 +127,18 @@
       "source": "RAW-20260710-001",
       "source_text": "Static chrome deployed and machine-passed, but manual review reopened mobile nav/copy gaps.",
       "surface": "public/member/classroom static chrome",
-      "current_status": "MACHINE_PASS_MANUAL_REVIEW_REOPENED_BY_UIGAP",
-      "terminal_status": "MACHINE_PASS_MANUAL_REVIEW_REOPENED_BY_UIGAP",
-      "first_skipped_stage": "manual_after_review_or_content_review",
+      "current_status": "DONE_DEPLOYED_REOPENED_BRAND_LOCAL_DONE",
+      "terminal_status": "LOCAL_BRAND_FIX_DEPLOY_PENDING",
+      "first_skipped_stage": "commit_push_deploy_live_smoke",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-001",
@@ -131,13 +151,18 @@
       "source": "RAW-20260710-001",
       "source_text": "Provider/Operations parity deployed with 0 automated findings, but manual review still found text/nav/copy limits.",
       "surface": "provider/Operations parity",
-      "current_status": "RECORDED",
-      "terminal_status": "MACHINE_PASS_MANUAL_REVIEW_REQUIRED",
-      "first_skipped_stage": "manual_after_review_or_content_review",
+      "current_status": "DONE_DEPLOYED_REOPENED_BRAND_LOCAL_DONE",
+      "terminal_status": "LOCAL_BRAND_FIX_DEPLOY_PENDING",
+      "first_skipped_stage": "commit_push_deploy_live_smoke",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-001",
@@ -152,13 +177,18 @@
       "source": "RAW-20260710-001",
       "source_text": "Public mobile nav clips the rightmost FAQ item at 390px.",
       "surface": "/one-time mobile",
-      "current_status": "OPEN_UI_GAP",
-      "terminal_status": "OPEN_UI_GAP",
-      "first_skipped_stage": "implementation_or_process_repair",
+      "current_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-001"
@@ -170,13 +200,18 @@
       "source": "manual/current evidence",
       "source_text": "Member and classroom mobile nav labels clip/truncate at 390px.",
       "surface": "/rabbi-member and /one-time-classroom mobile",
-      "current_status": "OPEN_UI_GAP",
-      "terminal_status": "OPEN_UI_GAP",
-      "first_skipped_stage": "implementation_or_process_repair",
+      "current_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-001"
@@ -188,13 +223,18 @@
       "source": "manual/current evidence",
       "source_text": "Provider mobile top nav clips labels including Member.",
       "surface": "/provider.html?review=one-time mobile",
-      "current_status": "OPEN_UI_GAP",
-      "terminal_status": "OPEN_UI_GAP",
-      "first_skipped_stage": "implementation_or_process_repair",
+      "current_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-001"
@@ -206,13 +246,18 @@
       "source": "manual/current evidence",
       "source_text": "Durable brand is One Time, but visible UI still shows OneTimeOneTime labels.",
       "surface": "brand/copy",
-      "current_status": "OPEN_UI_GAP",
-      "terminal_status": "OPEN_UI_GAP",
-      "first_skipped_stage": "implementation_or_process_repair",
+      "current_status": "LOCAL_UI_FIX_DONE_DEPLOY_PENDING",
+      "terminal_status": "LOCAL_UI_FIX_DONE_DEPLOY_PENDING",
+      "first_skipped_stage": "commit_push_deploy_live_smoke",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-002"
@@ -224,13 +269,18 @@
       "source": "manual/current evidence",
       "source_text": "Provider long CRM email/text values clip or wrap awkwardly.",
       "surface": "provider dashboard cards",
-      "current_status": "OPEN_UI_GAP",
-      "terminal_status": "OPEN_UI_GAP",
-      "first_skipped_stage": "implementation_or_process_repair",
+      "current_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-003"
@@ -242,13 +292,18 @@
       "source": "manual/current evidence",
       "source_text": "Prior overflow findings now machine-pass; copy normalization still applies.",
       "surface": "parent/student login",
-      "current_status": "RECORDED",
-      "terminal_status": "MACHINE_PASS_MANUAL_REVIEW_REQUIRED",
-      "first_skipped_stage": "manual_after_review_or_content_review",
+      "current_status": "LOCAL_UI_FIX_DONE_DEPLOY_PENDING",
+      "terminal_status": "LOCAL_UI_FIX_DONE_DEPLOY_PENDING",
+      "first_skipped_stage": "commit_push_deploy_live_smoke",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-002"
@@ -260,13 +315,18 @@
       "source": "manual/current evidence",
       "source_text": "Operations layout passes, but content-level review is limited by redaction.",
       "surface": "Operations scoped UI",
-      "current_status": "RECORDED",
-      "terminal_status": "MACHINE_PASS_MANUAL_REVIEW_REQUIRED",
-      "first_skipped_stage": "manual_after_review_or_content_review",
+      "current_status": "BLOCKED_REDACTION_LIMITED_REVIEW",
+      "terminal_status": "BLOCKED_REDACTION_LIMITED_REVIEW",
+      "first_skipped_stage": "readable_redacted_operations_review_or_browser_takeover",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-006"
@@ -278,13 +338,18 @@
       "source": "manual/current evidence",
       "source_text": "Rabbi helper/tool-scope and Telegram helper proof prompts are not_started.",
       "surface": "Agent Review proof layer",
-      "current_status": "BLOCKED_PROOF_GAP",
-      "terminal_status": "BLOCKED_PROOF_GAP",
-      "first_skipped_stage": "external_or_agent_mode_proof",
+      "current_status": "BLOCKED_AGENT_MODE_RUNNER_REQUIRED",
+      "terminal_status": "BLOCKED_AGENT_MODE_RUNNER_REQUIRED",
+      "first_skipped_stage": "run_two_agent_mode_prompts_and_save_AGR_results",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-007"
@@ -298,11 +363,16 @@
       "surface": "execution-run blockers",
       "current_status": "BLOCKED_EXTERNAL",
       "terminal_status": "BLOCKED_EXTERNAL",
-      "first_skipped_stage": "external_or_agent_mode_proof",
+      "first_skipped_stage": "provide_or_configure_external_runtime_decisions",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-007"
@@ -338,13 +408,18 @@
       "source": "manual/current evidence",
       "source_text": "Prompt creation is not a fix; generated windows must be run or implemented.",
       "surface": "ChatGPT code-package flow",
-      "current_status": "OPEN_CHILD_EXECUTION_REQUIRED",
-      "terminal_status": "OPEN_CHILD_EXECUTION_REQUIRED",
-      "first_skipped_stage": "implementation_or_process_repair",
+      "current_status": "PARTIALLY_IMPLEMENTED_BY_CODEX_AGENT_MODE_BLOCKED",
+      "terminal_status": "PARTIALLY_IMPLEMENTED_BY_CODEX_AGENT_MODE_BLOCKED",
+      "first_skipped_stage": "run_agent_mode_proof_packet",
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
-        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
+        "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-001",

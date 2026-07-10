@@ -35,7 +35,7 @@ const crmCards = [
     source_label: 'Public One Time form',
     last_contact_at: '2026-07-10T08:20:00.000Z',
     next_follow_up_at: '2026-07-11T12:00:00.000Z',
-    summary: 'OneTime free-class public signup captured. Wants current free-class details after approval gates are ready.',
+    summary: 'One Time free-class public signup captured. Wants current free-class details after approval gates are ready.',
     linked: { parent_lead_id: 501, signup_id: null, student_id: null, contact_id: null, provider_profile_id: null },
   },
   {
@@ -191,7 +191,7 @@ function apiPayload(url) {
           channel: 'internal',
           type: 'public_signup_capture',
           direction: 'inbound',
-          body: 'OneTime free-class public signup captured. No external message was sent from this CRM workbench.',
+          body: 'One Time free-class public signup captured. No external message was sent from this CRM workbench.',
           occurred_at: '2026-07-10T08:22:45.952Z',
           no_send: true,
           external_write_performed: false,
@@ -286,7 +286,7 @@ async function captureViewport(browser, baseUrl, viewport) {
   await page.waitForSelector('[data-one-time-crm-workbench]', { timeout: 15000 });
   await page.waitForFunction(() => /Sample One Time Parent/.test(document.body.textContent || ''), null, { timeout: 15000 });
   await page.locator('[data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
-  await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || '') && /OneTime free-class public signup captured/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || '') && /One Time free-class public signup captured/.test(document.body.textContent || ''), null, { timeout: 15000 });
 
   const metrics = await page.evaluate(() => {
     const text = document.body.innerText.replace(/\s+/g, ' ').trim();

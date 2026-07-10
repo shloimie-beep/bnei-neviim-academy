@@ -82,7 +82,7 @@ function writeReports() {
   const mdPath = reportPath('md');
   fs.writeFileSync(jsonPath, `${JSON.stringify(report, null, 2)}\n`);
   fs.writeFileSync(mdPath, `${[
-    `# OneTime Interest Dry-Run Live Smoke - ${report.started_at}`,
+    `# One Time Interest Dry-Run Live Smoke - ${report.started_at}`,
     '',
     `Base URL: ${report.base_url}`,
     `Result: ${report.status}`,
@@ -97,7 +97,7 @@ function writeReports() {
 }
 
 async function main() {
-  await step('public OneTime landing form points to interest endpoint', async () => {
+  await step('public One Time landing form points to interest endpoint', async () => {
     const { response, text } = await fetchText('/');
     assert(response.status === 200, `/ returned ${response.status}`);
     assert(/Your Child Can Love Learning Mishnayos/i.test(text), 'headline missing');

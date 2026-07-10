@@ -946,7 +946,7 @@ function rabbiShiurIdeaSpec(inputs = {}) {
     compactText(inputs.summary || inputs.notes || inputs.context || '', 700),
     bulletBlock('Suggested outline', outlineItems),
     bulletBlock('Source hints to verify', sourceHints),
-    'Review policy: internal One Time/Rabbi review only. Do not publish, send, schedule, or present sources as verified until Rabbi/Shloimie approves.',
+    'Review policy: internal One Time / Rabbi review only. Do not publish, send, schedule, or present sources as verified until Rabbi/Shloimie approves.',
   ].filter(Boolean).join('\n\n');
   return {
     action_id: 'create_rabbi_shiur_idea',
@@ -1290,7 +1290,7 @@ function moderatedQuestionSpec(inputs = {}) {
     `Question:\n${questionText}`,
     privacyNotes ? `Privacy notes: ${privacyNotes}` : '',
     compactText(inputs.context || inputs.notes || '', 900),
-    'Moderation policy: private One Time/Rabbi review only. Do not publish to a forum, send a reply, expose member/student identity, or create a member-visible answer until reviewed and approved.',
+    'Moderation policy: private One Time / Rabbi review only. Do not publish to a forum, send a reply, expose member/student identity, or create a member-visible answer until reviewed and approved.',
   ].filter(Boolean).join('\n\n');
   return {
     action_id: 'submit_student_question_for_moderation',

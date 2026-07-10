@@ -144,7 +144,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
   };
   const course = {
     id: 'TEST-OT-COURSE-001',
-    title: 'TEST One Time Mishnah Course',
+    title: 'TEST One Time Mishnayos Course',
     progress_percent: 42,
   };
   const module = {
@@ -171,7 +171,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     class_date: '2026-06-18',
     package_status: 'published_for_review',
     visibility: 'member_library_review',
-    description: 'Manual Vimeo sample reference traced from the legacy OneTimeOneTime site for UI review. This is not an automated upload.',
+    description: 'Manual Vimeo sample reference traced from the legacy One Time site for UI review. This is not an automated upload.',
     blocker: 'Automated Vimeo upload remains blocked until a user-level Vimeo authorization token and upload policy are approved.',
   };
   const worksheet = {
@@ -349,7 +349,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
 
   const settingsCenter = {
     workspace: {
-      label: 'OneTimeOneTime Mishnah',
+      label: 'One Time Mishnah Class',
       workspace_key: WORKSPACE_KEY,
       project_key: PROJECT_KEY,
       owner_login_username: rabbi.login_username,
@@ -411,7 +411,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     buildEmailTemplate({
       key: 'parent_invitation',
       label: 'Parent invitation',
-      subject: 'You are invited to One Time Mishnah',
+      subject: 'You are invited to One Time Mishnayos',
       preview_text: 'Set up your parent portal and review your child access.',
       body_preview: 'Welcome. Use your secure parent portal to see classes, attendance, progress, videos, worksheets, payments, and support.',
       recipient_scope: 'One selected parent',
@@ -419,7 +419,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     buildEmailTemplate({
       key: 'student_invitation',
       label: 'Student invitation',
-      subject: 'Your One Time Mishnah classroom is ready',
+      subject: 'Your One Time Mishnayos classroom is ready',
       preview_text: 'Open your student portal for the next class and review materials.',
       body_preview: 'Your student portal includes the next class, protected Join Class readiness, lessons, worksheets, videos, achievements, and questions.',
       recipient_scope: 'One linked student',
@@ -507,7 +507,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     buildEmailTemplate({
       key: 'attendance_progress_summary',
       label: 'Attendance/progress summary',
-      subject: 'This week in One Time Mishnah',
+      subject: 'This week in One Time Mishnayos',
       preview_text: 'Attendance minutes, progress, and review status are ready.',
       body_preview: 'TEST Student One Time attended 39 of 45 minutes and is 42% through the review course.',
       recipient_scope: 'Linked parent',
@@ -816,7 +816,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     access_code: REVIEW_ACCESS_CODE,
     links: reviewLinks,
     brand: {
-      name: 'OneTimeOneTime Mishnah',
+      name: 'One Time Mishnayos',
       provider_label: 'Rabbi Scheller',
       logo: '/images/one-time/brand/onetimelogo.webp',
       hero: '/images/one-time/brand/onetime-hero-vertical.webp',
@@ -869,7 +869,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
       'Read-only review endpoints',
       'Preview-only email template surfaces',
       'Manual Vimeo reference workflow state using legacy Vimeo ID 1178363755',
-      'Legacy OneTimeOneTime logo and hero image in shared review UI',
+      'Legacy One Time logo and hero image in shared review UI',
       'Parent/student/provider review scoping in TEST payloads',
     ],
     mock_test_only: [

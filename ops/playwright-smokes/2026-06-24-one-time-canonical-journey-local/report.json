@@ -1,6 +1,6 @@
 {
-  "started_at": "2026-07-09T05:48:03.698Z",
-  "base_url": "http://127.0.0.1:57257",
+  "started_at": "2026-07-10T11:18:46.733Z",
+  "base_url": "http://127.0.0.1:58443",
   "ok": true,
   "viewports": [
     {
@@ -25,6 +25,6 @@
     }
   ],
   "server_log_tail": [
-    "BNA Server running on 127.0.0.1:57257"
+    "BNA Server running on 127.0.0.1:58443"
   ]
 }

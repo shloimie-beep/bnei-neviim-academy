@@ -25,7 +25,7 @@ test('active email paths normalize sender identity and reject Office P', () => {
   assert.match(envExample, /EMAIL_PROVIDER=gmail/);
   assert.match(envExample, /RESEND_DOMAIN=onetimeonetime\.com/);
   assert.match(envExample, /RESEND_FROM_EMAIL=info@onetimeonetime\.com/);
-  assert.match(envExample, /RESEND_FROM_NAME=OneTimeOneTime Mishnah/);
+  assert.match(envExample, /RESEND_FROM_NAME=One Time Mishnayos/);
   assert.match(envExample, /RESEND_REPLY_TO=info@onetimeonetime\.com/);
   assert.doesNotMatch(activeEmailSources, /Office P|office p/);
 });

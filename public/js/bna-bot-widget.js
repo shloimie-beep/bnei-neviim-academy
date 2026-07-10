@@ -273,7 +273,7 @@
           ['Speak to Rabbi Scheller', 'Send a short question or contact request.'],
         ],
         prompts: [
-          'I want to join the free OneTime Mishnayos class.',
+          'I want to join the free One Time Mishnayos class.',
           'Please send me the current class information.',
           'What is the schedule?',
           'I want to speak to Rabbi Scheller.',
@@ -303,7 +303,7 @@
         ...base,
         helperTitle: 'Robot Scheller',
         surfaceLabel: "Rabbi Scheller's digital assistant",
-        intro: "Hi Rabbi Scheller. I'm Robot Scheller, your digital assistant for OneTimeOneTime contacts, CRM follow-up, class content, student questions, parent questions, emails, WhatsApp status, tickets, and class workflow. I will keep this workspace scoped to the OneTime Mishnayos class.",
+        intro: "Hi Rabbi Scheller. I'm Robot Scheller, your digital assistant for One Time contacts, CRM follow-up, class content, student questions, parent questions, emails, WhatsApp status, tickets, and class workflow. I will keep this workspace scoped to the One Time Mishnayos class.",
         cards: [
           ['CRM and inbox', 'Review contacts, conversations, follow-up notes, email drafts, WhatsApp status, and support tickets for this class.'],
           ['Class content', 'Work on recordings, transcripts, worksheets, slides, library organization, and class-question review.'],
@@ -417,7 +417,7 @@
         schedule: {
           body: `${oneTimeJoinMomentCopy()} Ask your schedule question and we will help you get started.`,
           actions: [
-            { type: 'prefill', label: 'Ask schedule question', prompt: 'I have a schedule question about the OneTime Mishnayos class: ' },
+            { type: 'prefill', label: 'Ask schedule question', prompt: 'I have a schedule question about the One Time Mishnayos class: ' },
             { type: 'scroll', target: '#start-free', label: 'Free class form' },
           ],
         },
@@ -429,9 +429,9 @@
           ],
         },
         program: {
-          body: 'OneTimeOneTime is Rabbi Scheller\'s live Mishnayos class for boys who should enjoy learning, review clearly, and feel proud of their progress.',
+          body: 'One Time is Rabbi Scheller\'s live Mishnayos class for boys who should enjoy learning, review clearly, and feel proud of their progress.',
           actions: [
-            { type: 'prefill', label: 'Ask about program', prompt: 'I want to know if the OneTime Mishnayos class is right for my child: ' },
+            { type: 'prefill', label: 'Ask about program', prompt: 'I want to know if the One Time Mishnayos class is right for my child: ' },
           ],
         },
         trial: {
@@ -792,8 +792,12 @@
       font-size: 0;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher {
-      top: auto;
-      bottom: 14px;
+      top: 96px;
+      bottom: auto;
+    }
+    body.bna-assistant-surface-one-time-public .bna-bot-nudge {
+      top: 152px;
+      bottom: auto;
     }
     body.bna-assistant-surface-one-time-member .bna-bot-launcher,
     body.bna-assistant-surface-one-time-member .bna-bot-nudge {
@@ -823,8 +827,12 @@
         font-size: 0;
       }
       body.bna-assistant-surface-one-time-public .bna-bot-launcher {
-        top: auto;
-        bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        top: calc(148px + env(safe-area-inset-top, 0px));
+        bottom: auto;
+      }
+      body.bna-assistant-surface-one-time-public .bna-bot-nudge {
+        top: calc(202px + env(safe-area-inset-top, 0px));
+        bottom: auto;
       }
       body.bna-assistant-surface-one-time-member .bna-bot-launcher,
       body.bna-assistant-surface-one-time-member .bna-bot-nudge {
@@ -1425,7 +1433,7 @@
       return [
         { type: 'scroll', target: '#start-free', label: 'Join the free class' },
         { type: 'path', path: 'current_info', label: 'Current class information' },
-        { type: 'prefill', label: 'Class schedule', prompt: 'I have a schedule question about the OneTime Mishnayos class: ' },
+        { type: 'prefill', label: 'Class schedule', prompt: 'I have a schedule question about the One Time Mishnayos class: ' },
         { type: 'prefill', label: 'Speak to Rabbi Scheller', prompt: 'I would like Rabbi Scheller to follow up about: ' },
         { type: 'link', href: '/rabbi-member', label: 'Member login' },
       ];

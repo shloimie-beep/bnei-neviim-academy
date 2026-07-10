@@ -672,7 +672,7 @@ const INTEGRATION_CARDS = [
   baseCard({
     id: 'green-invoice',
     name: 'Green Invoice',
-    purpose: 'Alternate or future billing provider path surfaced in accounting/payment settings for Rabbi/One Time decisions.',
+    purpose: 'Alternate or future billing provider path surfaced in accounting/payment settings for Rabbi / One Time decisions.',
     defaultStatus: 'owner_approval_required',
     reason: 'Green Invoice is visible as a payment-provider option, but provider selection, credentials, API key, and approval are unresolved.',
     configuredReason: 'Green Invoice test variables are present; provider choice and live acceptance still require owner decision.',

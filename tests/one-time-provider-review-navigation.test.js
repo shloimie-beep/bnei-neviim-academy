@@ -132,7 +132,7 @@ function signedProviderPortalPayload(baseUrl) {
       project_key: 'one_time_mishnah_class',
       entitlement_plan: 'rabbi_sheller_partner',
       status: 'active',
-      plan: { label: 'OneTimeOneTime Mishnah workspace' },
+      plan: { label: 'One Time Mishnah Class workspace' },
     },
     scope: {
       workspace_key: 'rabbi_sheller_provider',
@@ -143,7 +143,7 @@ function signedProviderPortalPayload(baseUrl) {
     services: [
       {
         id: 8,
-        title: 'OneTimeOneTime Mishnah Class',
+        title: 'One Time Mishnah Class',
         description: 'Live class and member library workspace.',
         status: 'active',
         service_type: 'learning',

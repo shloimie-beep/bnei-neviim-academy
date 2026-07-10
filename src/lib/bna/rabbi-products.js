@@ -19,7 +19,7 @@ const RABBI_TIER_DEFINITIONS = Object.freeze({
   library_only: {
     tier_key: RABBI_TIER_KEYS.LIBRARY_ONLY,
     display_name: 'Video Library',
-    description: 'Recorded OneTime Mishnayos library access.',
+    description: 'Recorded One Time Mishnayos library access.',
     price_amount_cents: 6700,
     access_scopes: ['library'],
     sort_order: 10,
@@ -28,7 +28,7 @@ const RABBI_TIER_DEFINITIONS = Object.freeze({
   live_library: {
     tier_key: RABBI_TIER_KEYS.LIVE_LIBRARY,
     display_name: 'Live + Library',
-    description: 'Live class access plus the recorded OneTime Mishnayos library.',
+    description: 'Live class access plus the recorded One Time Mishnayos library.',
     price_amount_cents: 14900,
     access_scopes: ['library', 'live'],
     sort_order: 20,

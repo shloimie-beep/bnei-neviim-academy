@@ -84,7 +84,7 @@ class FakeDb {
   }
 }
 
-test('Resend inbound routing recognizes the OneTime address and domain catch-all', () => {
+test('Resend inbound routing recognizes the One Time address and domain catch-all', () => {
   assert.deepEqual(
     extractEmailAddresses(['Parent <Parent@Example.COM>', { email: 'second@example.com' }]),
     ['parent@example.com', 'second@example.com']

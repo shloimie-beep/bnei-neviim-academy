@@ -871,6 +871,8 @@
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] header .topbar {
         align-items: flex-start;
         flex-direction: column;
+        gap: 8px;
+        padding-block: 8px;
       }
 
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions {
@@ -883,7 +885,7 @@
         overflow-y: hidden;
         overscroll-behavior-x: contain;
         -webkit-overflow-scrolling: touch;
-        padding-bottom: 8px;
+        padding-bottom: 5px;
         scroll-snap-type: none;
         scrollbar-width: none;
       }
@@ -892,15 +894,15 @@
         content: "";
         display: block;
         box-sizing: border-box;
-        flex: 0 0 42px;
-        width: 42px;
-        height: 42px;
+        flex: 0 0 40px;
+        width: 40px;
+        height: 40px;
         border: 1px solid rgba(255,255,255,0.34);
         border-radius: 8px;
         background:
-          linear-gradient(#080910, #080910) center 13px / 20px 2px no-repeat,
-          linear-gradient(#080910, #080910) center 20px / 20px 2px no-repeat,
-          linear-gradient(#080910, #080910) center 27px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 12px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 19px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 26px / 20px 2px no-repeat,
           #ffffff;
       }
 
@@ -969,7 +971,7 @@
           <div class="access-copy">
             <span class="eyebrow">Current One Time access</span>
             <h2 id="accessTitle">Open your classroom</h2>
-            <p class="access-help" id="accessHelp">Use your member login or the secure classroom link from your OneTime email. There is no separate classroom password.</p>
+            <p class="access-help" id="accessHelp">Use your member login or the secure classroom link from your One Time email. There is no separate classroom password.</p>
           </div>
           <input id="accessCode" type="hidden" autocomplete="one-time-code">
           <div class="actions">
@@ -1064,8 +1066,8 @@
     <footer class="one-time-site-footer" data-one-time-canonical-footer>
       <div class="footer-row">
         <div>
-          <strong>OneTimeOneTime Mishnayos</strong>
-          <p>Copyright 2026 OneTimeOneTime Mishnayos. Classroom access stays private and Rabbi-scoped.</p>
+          <strong>One Time Mishnayos</strong>
+          <p>Copyright 2026 One Time Mishnayos. Classroom access stays private and Rabbi-scoped.</p>
         </div>
         <nav class="footer-links" aria-label="One Time footer navigation">
           <a href="/one-time">One Time</a>
@@ -1144,7 +1146,7 @@
         els.accessHelp.textContent = message || 'Log in again or use Forgot parent password to get a fresh link by email.';
       } else {
         els.accessTitle.textContent = 'Open your classroom';
-        els.accessHelp.textContent = message || 'Use your member login or the secure classroom link from your OneTime email. There is no separate classroom password.';
+        els.accessHelp.textContent = message || 'Use your member login or the secure classroom link from your One Time email. There is no separate classroom password.';
       }
       if (!hasCurrentAccess && mode !== 'error') els.form.classList.remove('connected');
     }

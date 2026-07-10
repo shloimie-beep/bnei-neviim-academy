@@ -31,3 +31,19 @@ Raw ID: RAW-20260710-001
 ## Rule For Future Closeout
 
 A previous Done label may stand only for the exact scoped acceptance criteria it proved. Newer manual screenshot findings or unmapped source statements reopen only the affected descendant gap, not unrelated deployed work.
+
+## 2026-07-10T14:20:01+03:00 Update
+
+- `REQ-20260710-008` is locally implemented and deploy pending. Active checked
+  source/config/public/src/scripts/tests/docs/operator evidence surfaces no
+  longer contain standalone visible `OneTime`, `OneTimeOneTime`,
+  `OneTime Mishnah`, or `OneTime Mishnayos` labels.
+- `REQ-20260710-010` is locally repaired and deploy/push pending. The stale
+  shared-review selector now checks `.hero-media`, and PQC validation only
+  treats supported schema-version objects or `.product-quality.json` files as
+  packets.
+- `REQ-20260710-011` remains blocked/review-limited. Authenticated local
+  Operations layout proof passes, but screenshot redaction is too blurred to
+  count as content-level proof.
+- `REQ-20260710-012` remains blocked on an Agent Mode runner. Prompt URLs are
+  the next action, not proof.

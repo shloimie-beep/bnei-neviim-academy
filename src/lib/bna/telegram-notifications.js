@@ -203,7 +203,7 @@ function formatRabbiCommunicationTelegramAlert({ communication = {}, context = {
     : 'new communication';
   const channel = compactLine(communication.channel || context.channel, 'message', 80);
   const direction = compactLine(communication.direction || context.direction, 'inbound', 80);
-  const subject = compactLine(communication.subject || communication.summary || context.subject || context.summary, 'OneTime communication received', 180);
+  const subject = compactLine(communication.subject || communication.summary || context.subject || context.summary, 'One Time communication received', 180);
   const contact = compactLine(
     communication.contact_label ||
       communication.contactLabel ||
@@ -215,7 +215,7 @@ function formatRabbiCommunicationTelegramAlert({ communication = {}, context = {
       communication.pushName ||
       context.contact_label ||
       context.contactLabel,
-    'OneTime contact',
+    'One Time contact',
     140
   );
   const workspaceKey = workspaceKeyForCommunication(communication, context);
@@ -224,7 +224,7 @@ function formatRabbiCommunicationTelegramAlert({ communication = {}, context = {
   const reviewPath = context.review_path || context.reviewPath || '/provider.html?admin_provider=one-time&section=mailbox';
 
   return [
-    'OneTime communication received',
+    'One Time communication received',
     `- Communication: ${communicationLabel}`,
     `- Scope: ${workspaceKey} / ${projectKey}`,
     `- Channel: ${channel}`,

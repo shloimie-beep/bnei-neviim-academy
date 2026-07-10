@@ -3253,7 +3253,7 @@ async function draftMishnayosLandingPageTool(payload) {
   return runLocalRabbiDraftTool(payload, 'Mishnayos landing page draft', (args) => ({
     landing_page_draft_created: true,
     brand_scope: 'one_time_black_yellow',
-    title: compactText(args.title || 'OneTimeOneTime Mishnah', 180),
+    title: compactText(args.title || 'One Time Mishnayos', 180),
     audience: compactText(args.audience || 'parents considering One Time Mishnayos', 180),
     offer: compactText(args.offer || args.goal || 'Clear Mishnayos learning with Rabbi Scheller', 240),
     sections: [
@@ -3273,7 +3273,7 @@ async function generateStudentWorksheetTool(payload) {
     worksheet_draft_created: true,
     student_id: args.student_id || null,
     assignment_id: args.assignment_id || null,
-    topic: compactText(args.topic || args.title || 'One Time Mishnah review', 180),
+    topic: compactText(args.topic || args.title || 'One Time Mishnayos review', 180),
     level: compactText(args.level || 'student_safe', 80),
     language: compactText(args.language || 'english', 80),
     prompt_preview: draftTextPreview(args.prompt_patch || args.prompt || args.notes || 'Generate a student-safe worksheet outline for Rabbi review.', 600),

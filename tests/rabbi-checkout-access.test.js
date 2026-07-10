@@ -103,14 +103,14 @@ test('Rabbi product, payment, access, and page helpers use the One Time contract
   );
   assert.equal(rabbiPageView({}).route_path, '/rabbi');
   assert.equal(rabbiPageView({}).title, RABBI_DEFAULT_TITLE);
-  assert.equal(defaultRabbiLandingContent().hero_title, 'OneTimeOneTime');
+  assert.equal(defaultRabbiLandingContent().hero_title, 'One Time');
   assert.equal(
     normalizeRabbiLandingContent({ hero_title: 'One Time Mishnayos' }).hero_title,
-    'OneTimeOneTime',
+    'One Time',
   );
   assert.equal(
     rabbiPageView({ title: 'One Time Mishnayos Preview', content: { hero_title: 'One Time Mishnayos' } }).content.hero_title,
-    'OneTimeOneTime',
+    'One Time',
   );
 });
 
@@ -206,7 +206,7 @@ test('server exposes scoped Rabbi admin, public, member, and webhook routes', ()
   assert.match(server, /assertWorkspaceAccess\(req, 'rabbi_sheller_provider'\)/);
 });
 
-test('public Rabbi aliases serve the focused OneTime landing instead of the legacy BNA preview page', () => {
+test('public Rabbi aliases serve the focused One Time landing instead of the legacy BNA preview page', () => {
   assert.match(server, /app\.get\(\['\/rabbi\.html'\], sendOneTimePublicLanding\)/);
   assert.match(server, /app\.get\(\['\/rabbi', '\/rabbi-preview', '\/one-time-mishnayos'\], sendOneTimePublicLanding\)/);
   const rootHandler = server.match(/app\.get\(\['\/', '\/index\.html', '\/public', '\/public\/'\][\s\S]*?\n\}\);/);
@@ -223,7 +223,7 @@ test('public Rabbi aliases serve the focused OneTime landing instead of the lega
 
   // The old preview artifact can remain for historical tests, but public Rabbi routes must not serve it.
   assert.match(publicRabbiHtml, /Preview mode only\. The BNA homepage is not replaced\./);
-  assert.match(publicRabbiHtml, /OneTimeOneTime - Rabbi Eli Scheller/);
+  assert.match(publicRabbiHtml, /One Time - Rabbi Eli Scheller/);
   assert.match(publicRabbiHtml, /--yellow: #ffd400/);
   assert.match(publicRabbiHtml, /The public prices stay at \$67 and \$149/);
   assert.match(publicRabbiHtml, /Payment setup/);

@@ -75,7 +75,7 @@ test('Rabbi communication alert text is scoped and metadata-only', () => {
     },
     context: { source: 'unit_test' },
   });
-  assert.match(text, /OneTime communication received/);
+  assert.match(text, /One Time communication received/);
   assert.match(text, /Communication: #55/);
   assert.match(text, /rabbi_sheller_provider \/ one_time_mishnah_class/);
   assert.match(text, /Channel: whatsapp/);
@@ -147,7 +147,7 @@ test('notifyRabbiCommunication blocks wrong scope and missing Rabbi chat id', as
       id: 2,
       workspace_key: 'rabbi_sheller_provider',
       project_key: 'one_time_mishnah_class',
-      subject: 'OneTime message',
+      subject: 'One Time message',
     },
   });
   assert.equal(missingChat.would_send, false);
@@ -182,7 +182,7 @@ test('notifyRabbiCommunication sends to Rabbi chat when scoped target is configu
   assert.match(calls[0].url, /api\.telegram\.org\/bot456:rabbi-token\/sendMessage/);
   const body = JSON.parse(calls[0].options.body);
   assert.equal(body.chat_id, '777');
-  assert.match(body.text, /OneTime communication received/);
+  assert.match(body.text, /One Time communication received/);
   assert.match(body.text, /Parent question/);
 });
 

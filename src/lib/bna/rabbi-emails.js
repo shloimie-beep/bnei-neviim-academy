@@ -58,7 +58,7 @@ function rabbiTemplateBody(templateKey, context = {}) {
       context.memberLibraryUrl ? `Video library and review materials: ${context.memberLibraryUrl}` : '',
       '',
       'After your parent password is set, you can help with student access, see class materials, and follow the learning from one place.',
-      `If you need help, reply to this email and ${context.supportName || 'OneTimeOneTime'} will take care of it.`,
+      `If you need help, reply to this email and ${context.supportName || 'One Time'} will take care of it.`,
       '',
       'Looking forward to learning together,',
       context.senderName || 'Rabbi Elie Scheller',

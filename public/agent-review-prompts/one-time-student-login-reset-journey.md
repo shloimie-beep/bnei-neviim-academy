@@ -70,7 +70,7 @@ Focus: student login experience, parent-managed student username/password reset 
 
 1. Open /operations/agent-review?prompt=one-time-student-login-reset-journey first. Confirm this prompt key is visible, click Start Audit / I started this agent mode, and keep the drop-off page open.
 2. Open the live One Time host https://join.onetimeonetime.com/. Attempt the visible student login/access path before using direct route fallbacks.
-3. Open /student/login and audit the logged-out student login shell. It should be OneTime-branded and should not show BNA Academy reset, fallback classroom password, recovery code, or unrelated Academy copy.
+3. Open /student/login and audit the logged-out student login shell. It should be One Time branded and should not show BNA Academy reset, fallback classroom password, recovery code, or unrelated Academy copy.
 4. Open /student.html?review=one-time directly as a review fixture only after checking the visible path.
 5. Audit the first viewport at 1440px, then repeat the same route at 1024px, 768px, 430px, and 390px.
 6. Inspect the topbar/header spacing, sidebar or hamburger behavior, side categories, top subcategories, filters, button alignment, and text wrapping.

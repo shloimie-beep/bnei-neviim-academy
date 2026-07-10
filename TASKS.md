@@ -122,10 +122,14 @@ not authorize active GHL runtime paths.
   `90990bd3-676f-433f-8a97-dfa6fa4723b7`, and live-readback verified 10/10.
   `REQ-20260710-009` provider text fit is also committed, pushed, deployed to
   OneTime Railway deployment `f338b59b-a545-40ab-b952-13b4111ecd2a`, and
-  live-readback verified at 390px, 430px, and 1440px. Remaining open gaps:
-  brand/copy normalization, source/screenshot evidence guardrails, stale audit
-  mapping, redacted Operations content review, and Agent Mode proof prompts
-  not yet run. Next action: continue brand/copy and evidence guardrail packets.
+  live-readback verified at 390px, 430px, and 1440px. Brand/copy
+  normalization and the stale selector/PQC evidence guardrail repairs are now
+  locally implemented with 163 focused tests passing and a fresh local
+  five-viewport visual audit reporting 0 findings; they still need commit,
+  push, OneTime deploy, and live smoke before terminal Done. Remaining
+  blockers: redacted Operations content review needs readable redacted proof or
+  browser takeover, and the two Agent Mode prompts still need actual `AGR-*`
+  PASS/FAIL/BLOCKED saved results.
 - [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current

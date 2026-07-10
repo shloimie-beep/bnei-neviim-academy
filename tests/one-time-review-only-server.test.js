@@ -50,7 +50,7 @@ test('One Time review-only server serves fixture routes without database secrets
 
   const landing = await waitForRoute(baseUrl, '/one-time', child, logs);
   assert.equal(landing.status, 200);
-  assert.match(await landing.text(), /OneTimeOneTime Mishnah/);
+  assert.match(await landing.text(), /One Time Mishnayos/);
 
   const pages = [
     '/provider.html?review=one-time',
@@ -66,7 +66,7 @@ test('One Time review-only server serves fixture routes without database secrets
   }
 
   const parentReview = await (await fetch(`${baseUrl}/parent.html?review=one-time`)).text();
-  assert.match(parentReview, /OneTimeOneTime Parent Review/);
+  assert.match(parentReview, /One Time Parent Review/);
   assert.match(parentReview, /\/api\/one-time-review\/parent/);
   assert.match(parentReview, /One Time Parent Helper/);
   assert.doesNotMatch(parentReview, /data-parent-onboarding-form/);

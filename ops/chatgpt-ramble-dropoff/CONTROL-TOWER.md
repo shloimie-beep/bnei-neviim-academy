@@ -1,27 +1,33 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-10T06:55:12.328Z
+Generated: 2026-07-10T10:57:31.914Z
 
 ## Lane Safety
 
 - Branch: `master`
-- Dirty worktree: no
+- Dirty worktree: yes
+- Collision warning: Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files.
 
-
-_None._
+| Status | Path |
+| --- | --- |
+| M | ops/audit-governance/latest.json |
+| M | ops/audit-governance/latest.md |
+| ?? | ops/audit-governance/2026-07-10T07-49-27-587Z-audit-governance.json |
+| ?? | ops/audit-governance/2026-07-10T07-49-27-587Z-audit-governance.md |
 
 ## Packet Status
 
-- Total packets: 2
+- Total packets: 3
 - Ready: 0
 - Blocked: 0
-- Draft: 0
+- Draft: 1
 - Terminal: 2
 
 | Packet | State | Status | Owner | Lane | Scope | Next |
 | --- | --- | --- | --- | --- | --- | --- |
 | chatgpt-dropoff-smoke-test-20260705-001 | terminal | done_verified | ChatGPT |  | Harmless smoke test confirming ChatGPT can hand Codex a repo-visible packet or comment and that Codex can collect it automatically. |  |
 | onetime-agent-prompt-series-20260706-911 | terminal | done_verified | ChatGPT |  | Provide five Agent Mode audit prompts for the One Time UI audit covering control tower, public funnel, Rabbi operations/backend, portals/classroom, and cross-system synthesis. | Run Prompt 01 first, run Prompts 02-04 after the control-tower map exists, then run Prompt 05 after at least two surface audit reports have dropped repo-visible packets. |
+| onetime-launch-priority-ui-crm-automation-20260710-001 | draft | codex_done | ChatGPT | rabbi_sheller_provider-one_time_mishnah_class-launch-priority | Register and execute the latest One Time launch priority: beautiful landing, Robot Scheller, visible form-to-CRM lead flow, clickable contact CRM, historical inbox reconciliation, gated immediate class-link follow-up, and launch-ready Rabbi backend UI. | No unblocked Codex launch-priority implementation lane remains. Operator/runtime next actions are to configure ONE_TIME_PUBLIC_WHATSAPP_NUMBER for direct public WhatsApp activation and approve the canonical historical source package plus suppression/import policy before any production import/write. |
 
 ## Agent Fleet
 
@@ -32,7 +38,7 @@ _None._
 | - Claimable observable jobs: 0 |
 | - Active Codex task fallback: 28 |
 | - Ready to claim: observable jobs 0, fallback task candidates 0 |
-| - Queue health: fresh 0, stale 488, blocked 128, unknown 194, do-not-redo 880 |
+| - Queue health: fresh 0, stale 496, blocked 129, unknown 194, do-not-redo 885 |
 | - ChatGPT dropoff ingest: enabled |
 | - ChatGPT comment collect: enabled |
 
@@ -40,14 +46,14 @@ _None._
 
 | Job |
 | --- |
-| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=186.27 path=.runtime/agent-fleet/task-1736.lock.json) |
+| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=190.31 path=.runtime/agent-fleet/task-1736.lock.json) |
 | - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
 | - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json) |
 | - job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json) |
 | - job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json) |
-| - job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json) |
 | - job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json) |
-| - job #297 / task #1441 [failed] Why don't you verify the domain with GoDaddy and do it again and replace it with... (local_lock=missing path=.runtime/agent-fleet/task-1441.lock.json) |
+| - job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json) |
+| - job #296 / task #1436 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1436.lock.json) |
 
 ### Fallback Task Candidates
 
@@ -57,6 +63,7 @@ _None._
 
 | Report | Updated |
 | --- | --- |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-10T07-27-19-148Z-onetime-launch-priority-ui-crm-automation-20260710-001.md | 2026-07-10T07:27:19.149Z |
 | ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-49-06-941Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-09T05:49:06.942Z |
 | ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-49-06-937Z-chatgpt-dropoff-smoke-test-20260705-001.md | 2026-07-09T05:49:06.939Z |
 | ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-47-45-674Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-09T05:47:45.676Z |
@@ -64,10 +71,10 @@ _None._
 | ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-46-24-030Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-09T05:46:24.032Z |
 | ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-46-24-027Z-chatgpt-dropoff-smoke-test-20260705-001.md | 2026-07-09T05:46:24.028Z |
 | ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-45-01-124Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-09T05:45:01.125Z |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-45-01-121Z-chatgpt-dropoff-smoke-test-20260705-001.md | 2026-07-09T05:45:01.122Z |
 
 ## Recommendations
 
+- Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.
 - No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.
 - Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.
 - GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it.

@@ -23,8 +23,8 @@ const BRAND_PRESETS = Object.freeze({
   }),
   one_time: Object.freeze({
     key: 'one_time',
-    name: 'OneTimeOneTime Mishnah',
-    short_name: 'OneTimeOneTime',
+    name: 'One Time Mishnayos',
+    short_name: 'One Time',
     audience: 'partner_mishnah_program',
     workspace_profile: 'service_provider',
     workspace_key: 'rabbi_sheller_provider',

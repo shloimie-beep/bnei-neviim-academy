@@ -286,7 +286,7 @@ function compactSourceRows() {
     ['BNA-START-HERE.md', 'Start every session from active run and validate before implementation.'],
     ['AGENTS.md', 'Goal-mode packet means create/continue goal, preserve raw intake, register requirements, then execute to terminal statuses.'],
     ['README.md', 'Live app is Express/Postgres/Railway with BNA/One Time workspace model and no active GHL runtime.'],
-    ['MEMORY.md', 'One Time/Rabbi work is first-party BNA Operations, scoped to rabbi_sheller_provider / one_time_mishnah_class, with external actions approval-gated.'],
+    ['MEMORY.md', 'One Time / Rabbi work is first-party BNA Operations, scoped to rabbi_sheller_provider / one_time_mishnah_class, with external actions approval-gated.'],
     ['TASKS.md', 'Current queue already includes One Time Drive brief, Agent Control, active June 18 recovery run, and external provider blockers.'],
     ['SYSTEM-STATE.md', 'Newest system state confirms One Time drive brief dry-run, owner/admin seed, secure integration docs, and active run status.'],
     ['PROJECT-NOTES.md', 'Active app is server.js plus public/operations.html; archived React/Supabase app is historical only.'],

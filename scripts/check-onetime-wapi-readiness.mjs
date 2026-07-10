@@ -205,14 +205,14 @@ export function buildOneTimeWapiReadiness(options = {}) {
   const outboundConfigured = oneTimeToken.configured || defaultToken.configured;
   const autoReplyBlockers = [];
   if (!oneTimeToken.configured) autoReplyBlockers.push('ONE_TIME_WAPI_API_TOKEN or RABBI_SHELLER_WAPI_API_TOKEN missing');
-  if (defaultToken.configured && !oneTimeToken.configured) autoReplyBlockers.push('OneTime auto-reply cannot use default/global WAPI credentials');
+  if (defaultToken.configured && !oneTimeToken.configured) autoReplyBlockers.push('One Time auto-reply cannot use default/global WAPI credentials');
   if (!autoReplyEnabled) autoReplyBlockers.push('ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled');
   if (!autoReplyApproved) autoReplyBlockers.push('ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY');
   if (!classLinkConfigured) autoReplyBlockers.push('ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing');
 
   const setupBlockers = [];
   if (!outboundConfigured) setupBlockers.push('WAPI/Whapi token missing');
-  if (!oneTimeToken.configured) setupBlockers.push('OneTime-scoped WAPI token missing');
+  if (!oneTimeToken.configured) setupBlockers.push('One Time scoped WAPI token missing');
   if (!instanceConfigured) setupBlockers.push('Whapi/WAPI instance id missing');
   if (!phoneConfigured) setupBlockers.push('WhatsApp sender phone metadata missing');
 
@@ -273,7 +273,7 @@ export function buildOneTimeWapiReadiness(options = {}) {
       'Readiness check only; no WhatsApp message is sent.',
       'No CRM contact, tag, lead, or communication row is created or updated.',
       'No secret values, chat IDs, raw class links, or phone numbers are printed.',
-      'OneTime auto-reply requires OneTime-scoped WAPI credentials, an approved flag, and a configured class link.',
+      'One Time auto-reply requires One Time scoped WAPI credentials, an approved flag, and a configured class link.',
     ],
   };
 }
@@ -283,7 +283,7 @@ function renderMarkdown(report) {
     ? report.required_next_actions.map((item) => `- ${item}`)
     : ['- None'];
   return [
-    '# OneTime WAPI / WhatsApp Readiness',
+    '# One Time WAPI / WhatsApp Readiness',
     '',
     `Checked at: ${report.checked_at}`,
     '',

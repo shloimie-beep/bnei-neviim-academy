@@ -73,7 +73,7 @@ Focus: One Time helper launcher/panel placement, scoped helper language, convers
 2. Open /one-time, /one-time/mishnayos, /rabbi-member, /member-library, /one-time-classroom, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.
 3. At 1440px, 1024px, 768px, 430px, and 390px capture first viewport before opening helper, helper-open screenshot, form/CTA overlap crop, and footer crop if helper affects it.
 4. Ask only public-safe/read-only helper questions: how to start free, what the schedule is, how member access works, and how to ask Rabbi a question. Do not submit real contact info or trigger any send.
-5. Verify helper copy says One Time/Rabbi Scheller scope and does not mention BNA school goals, unrelated family/student data, admin setup, GHL, LeadConnector, or live sends/payments/access.
+5. Verify helper copy says One Time / Rabbi Scheller scope and does not mention BNA school goals, unrelated family/student data, admin setup, GHL, LeadConnector, or live sends/payments/access.
 6. Check whether helper launcher/panel covers Start Free, the interest form, Member Login, classroom question/support, or mobile bottom actions.
 7. Save PASS, FAIL, or BLOCKED through Agent Review drop-off, including screenshots and exact safe copy/placement fix.
 

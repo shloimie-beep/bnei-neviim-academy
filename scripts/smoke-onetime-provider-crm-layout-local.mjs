@@ -297,12 +297,12 @@ async function main() {
     status: results.every((result) => result.passed) ? 'PASS' : 'FAIL',
     generated_at: new Date().toISOString(),
     target: '/provider.html?admin_provider=one-time&section=crm',
-    scope: 'Local signed OneTime provider CRM layout smoke; no database, sends, payments, external accounts, or production writes.',
+    scope: 'Local signed One Time provider CRM layout smoke; no database, sends, payments, external accounts, or production writes.',
     results,
   };
   await writeFile(path.join(outDir, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
   await writeFile(path.join(outDir, 'report.md'), [
-    '# OneTime Provider CRM Layout Local Smoke',
+    '# One Time Provider CRM Layout Local Smoke',
     '',
     `Status: ${report.status}`,
     `Generated: ${report.generated_at}`,

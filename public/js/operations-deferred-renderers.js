@@ -9901,7 +9901,7 @@
                             </div>
                             ${candidates.length
                                 ? candidates.slice(0, 12).map(renderMeetingCandidateCard).join('')
-                                : '<div class="task-empty">No One Time/Rabbi meeting candidates are visible in content jobs yet.</div>'}
+                                : '<div class="task-empty">No One Time / Rabbi meeting candidates are visible in content jobs yet.</div>'}
                         </section>
                         <section class="meeting-drop-list">
                             <div class="content-bulk-header">

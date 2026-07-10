@@ -1341,11 +1341,11 @@
                 return;
             }
             document.body.classList.add('one-time-admin-provider-active');
-            document.title = options.sessionRequired ? 'Admin on Rabbi One Time Provider Account' : 'OneTimeOneTime Rabbi Workspace';
+            document.title = options.sessionRequired ? 'Admin on Rabbi One Time Provider Account' : 'One Time Rabbi Workspace';
             const title = document.querySelector('.brand-lockup > div > strong');
             const subtitle = document.querySelector('.brand-lockup > div > span');
             const chip = document.querySelector('.brand-chip');
-            if (title) title.textContent = 'OneTimeOneTime';
+            if (title) title.textContent = 'One Time';
             if (subtitle) subtitle.textContent = options.sessionRequired ? 'Admin on Rabbi provider account' : 'Rabbi Eli Scheller workspace';
             if (chip) chip.textContent = options.sessionRequired ? 'ADMIN ON RABBI ACCOUNT' : 'RABBI ACCOUNT';
             let banner = document.getElementById('oneTimeAdminProviderBanner');
@@ -1371,7 +1371,7 @@
             const providerTitle = document.getElementById('providerTitle');
             const providerSubtitle = document.getElementById('providerSubtitle');
             if (providerTitle) providerTitle.textContent = providerName;
-            if (providerSubtitle) providerSubtitle.textContent = 'Rabbi Eli Scheller workspace for OneTimeOneTime Mishnayos.';
+            if (providerSubtitle) providerSubtitle.textContent = 'Rabbi Eli Scheller workspace for One Time Mishnayos.';
             if (options.sessionRequired) {
                 const loginHeading = document.querySelector('#loginPanel h1');
                 const loginIntro = document.querySelector('#loginPanel .small');
@@ -1523,7 +1523,7 @@
             const loginForm = document.getElementById('loginForm');
             if (oneTimeAdminProviderMode) {
                 document.title = 'One Time Provider Session Required';
-                if (brandTitle) brandTitle.textContent = 'OneTimeOneTime';
+                if (brandTitle) brandTitle.textContent = 'One Time';
                 if (brandSubtitle) brandSubtitle.textContent = 'Rabbi provider account';
                 if (brandChip) brandChip.textContent = 'SESSION REQUIRED';
                 if (loginHeading) loginHeading.textContent = 'One Time provider session required';
@@ -2114,7 +2114,7 @@
                 ? (provider.provider_name || provider.display_name || 'Rabbi Eli Scheller')
                 : (provider.provider_name || 'Provider portal');
             document.getElementById('providerSubtitle').textContent = oneTimeProviderWorkspace
-                ? 'OneTimeOneTime Mishnah workspace'
+                ? 'One Time Mishnah Class workspace'
                 : `${plan.label || friendlyStatus(provider.entitlement_plan, 'Provider')} / ${friendlyStatus(provider.status || 'review')} workspace`;
             document.getElementById('profileNotice').textContent = data.guardrails?.public_changes || 'Edits stay pending review until BNA approves them.';
             document.getElementById('providerOverview').innerHTML = oneTimeProviderWorkspace
@@ -2188,25 +2188,25 @@
                     oneTimeUsers.innerHTML = miniCardGrid([
                         {
                             title: provider.provider_name || provider.display_name || 'Rabbi Eli Scheller',
-                            body: 'Workspace owner for the OneTimeOneTime Mishnah class.',
+                            body: 'Workspace owner for the One Time Mishnayos class.',
                             status: provider.login_username || 'provider owner'
                         }
                     ]);
                 }
                 if (oneTimeContent) {
                     oneTimeContent.innerHTML = miniCardGrid((services.length ? services : [{
-                        title: 'OneTimeOneTime Mishnah Class',
+                        title: 'One Time Mishnah Class',
                         description: 'Live class and member library workspace.',
                         status: 'active'
                     }]).map(service => ({
                         title: service.title,
-                        body: service.description || 'OneTime class content and library.',
+                        body: service.description || 'One Time class content and library.',
                         status: service.status || service.service_type || 'Program'
                     })));
                 }
                 if (oneTimeBadges) {
                     oneTimeBadges.innerHTML = [
-                        reviewCard('Badges and rewards', 'Question, attendance, review, and participation awards are scoped to the OneTime student/classroom experience.', 'Rabbi controlled'),
+                        reviewCard('Badges and rewards', 'Question, attendance, review, and participation awards are scoped to the One Time student/classroom experience.', 'Rabbi controlled'),
                         reviewCard('Published questions', 'Rabbi-approved questions can be featured for the class and reflected in the student scoreboard.', 'Moderated')
                     ].join('');
                 }
@@ -2424,7 +2424,7 @@
             });
             nav.innerHTML = `
                 <div class="one-time-sidebar-card">
-                    <strong>${escapeHtml(workspace.label || 'OneTimeOneTime Mishnah')}</strong>
+                    <strong>${escapeHtml(workspace.label || 'One Time Mishnayos')}</strong>
                     <span>${escapeHtml(workspace.workspace_key || data.workspace_key || 'rabbi_sheller_provider')}</span>
                     <span>${escapeHtml(workspace.project_key || data.project_key || 'one_time_mishnah_class')}</span>
                     <span class="status-pill">${viewAsSession ? 'Read-only Rabbi view' : 'Scoped provider workspace'}</span>
@@ -2511,7 +2511,7 @@
                 document.title = 'Viewing One Time as Rabbi Eli Scheller';
                 ensureViewAsBanner(viewAsSession);
             } else {
-                document.title = 'OneTimeOneTime Rabbi Workspace Review';
+                document.title = 'One Time Rabbi Workspace Review';
             }
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
@@ -2523,7 +2523,7 @@
             }
             const title = document.querySelector('.brand-lockup > div > strong');
             const subtitle = document.querySelector('.brand-lockup > div > span');
-            if (title) title.textContent = 'OneTimeOneTime';
+            if (title) title.textContent = 'One Time';
             if (subtitle) subtitle.textContent = viewAsSession ? 'Rabbi Eli Scheller workspace owner view' : 'Eli Scheller program workspace';
             const actions = document.querySelector('.portal-topbar-actions');
             if (actions) {
@@ -2554,7 +2554,7 @@
         function applyOneTimeProviderSessionBrand(data = portalState) {
             document.body.classList.add('one-time-review-active', 'one-time-provider-review-active', 'one-time-admin-provider-active');
             document.body.classList.remove('one-time-view-as-readonly');
-            document.title = 'OneTimeOneTime Rabbi Workspace';
+            document.title = 'One Time Rabbi Workspace';
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
                 mark.textContent = '';
@@ -2566,7 +2566,7 @@
             const title = document.querySelector('.brand-lockup > div > strong');
             const subtitle = document.querySelector('.brand-lockup > div > span');
             const chip = document.querySelector('.brand-chip');
-            if (title) title.textContent = 'OneTimeOneTime';
+            if (title) title.textContent = 'One Time';
             if (subtitle) subtitle.textContent = 'Rabbi Eli Scheller workspace';
             if (chip) chip.textContent = 'RABBI ACCOUNT';
             const actions = document.querySelector('.portal-topbar-actions');
@@ -2808,7 +2808,7 @@
             document.getElementById('providerTitle').textContent = viewAsSession ? 'One Time as Rabbi Eli Scheller' : 'Eli Scheller Workspace';
             document.getElementById('providerSubtitle').textContent = viewAsSession
                 ? 'Workspace owner experience, read-only, same One Time scope'
-                : 'Scoped OneTimeOneTime CRM, inbox, content, users, messages, class, and support.';
+                : 'Scoped One Time CRM, inbox, content, users, messages, class, and support.';
             activeProviderSection = oneTimeReviewInitialSection();
             renderOneTimeProviderNav(data, viewAsSession);
             document.querySelectorAll('[data-provider-section]').forEach(panel => panel.classList.add('provider-section-hidden'));

@@ -1,9 +1,9 @@
-# OneTime Provider CRM Layout Local Smoke
+# One Time Provider CRM Layout Local Smoke
 
 Status: PASS
-Generated: 2026-07-10T09:19:57.678Z
+Generated: 2026-07-10T11:18:50.490Z
 
-Local signed OneTime provider CRM layout smoke; no database, sends, payments, external accounts, or production writes.
+Local signed One Time provider CRM layout smoke; no database, sends, payments, external accounts, or production writes.
 
 | Viewport | Passed | Overflow | Fixture leak | Diagnostics leak | Helper | Screenshot |
 |---|---:|---:|---:|---:|---|---|

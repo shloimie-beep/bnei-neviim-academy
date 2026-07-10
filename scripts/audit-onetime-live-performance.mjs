@@ -357,7 +357,7 @@ function buildSummary(results) {
 
 function markdownReport(report) {
   const lines = [];
-  lines.push('# OneTime Live Lag Audit');
+  lines.push('# One Time Live Lag Audit');
   lines.push('');
   lines.push(`Generated: ${report.generated_at}`);
   lines.push(`Base URL: ${report.base_url}`);

@@ -204,7 +204,7 @@ async function collectUiState({ appUrl, cookie, width }) {
         has_schedule_form: Boolean(document.querySelector('#oneTimeClassTitle')),
         has_appointment_form: Boolean(document.querySelector('#oneTimeAppointmentType')),
         has_availability_panel: Boolean(document.querySelector('[data-one-time-availability-booking]')),
-        mentions_internal_class: /Add Class saves an internal OneTime calendar event only/i.test(text),
+        mentions_internal_class: /Add Class saves an internal One Time calendar event only/i.test(text),
         mentions_no_zoom: /does not create a Zoom meeting/i.test(text),
         mentions_no_external_calendar: /external calendar/i.test(text),
         enabled_send_or_zoom_buttons: enabledSendOrZoomButtons,

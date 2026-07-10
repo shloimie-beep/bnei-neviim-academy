@@ -513,7 +513,7 @@ function buildZoomMeetingRequest(session = {}, options = {}) {
     path: `/users/${encodeURIComponent(config.hostUser || 'me')}/meetings`,
     idempotency_key: `zoom_meeting:${safeText(session.id || session.live_session_id || session.calendar_event_id || session.title || 'preview')}:${safeText(session.start_at || session.start_time || '')}`,
     body: {
-      topic: safeText(session.title || session.topic || 'OneTime Mishnayos class').slice(0, 180),
+      topic: safeText(session.title || session.topic || 'One Time Mishnayos class').slice(0, 180),
       type: 2,
       start_time: session.start_at || session.start_time || null,
       duration,
@@ -552,9 +552,9 @@ function buildZoomMeetingRequest(session = {}, options = {}) {
 }
 
 function splitDisplayName(name = '') {
-  const parts = safeText(name || 'OneTime member').split(/\s+/).filter(Boolean);
+  const parts = safeText(name || 'One Time member').split(/\s+/).filter(Boolean);
   return {
-    first_name: parts[0] || 'OneTime',
+    first_name: parts[0] || 'One Time',
     last_name: parts.slice(1).join(' ') || 'Member',
   };
 }
@@ -795,7 +795,7 @@ function buildZoomSessionWorkflowModel(payload = {}, options = {}) {
     external_write_performed: false,
     class_session: {
       local_session_id: safeNumber(session.id || session.live_session_id || session.class_session_id),
-      title: safeText(session.title || session.topic || 'OneTime Mishnayos class'),
+      title: safeText(session.title || session.topic || 'One Time Mishnayos class'),
       start_at: session.start_at || session.start_time || null,
       end_at: session.end_at || session.end_time || null,
       timezone: safeText(session.timezone || 'Asia/Jerusalem'),

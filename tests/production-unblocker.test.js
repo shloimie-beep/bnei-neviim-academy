@@ -200,7 +200,7 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.equal(report.operator_actions[0].source, 'one_time_setup_check_current_missing_fields');
   assert.match(report.operator_actions[0].action, /rabbi_stripe_test_secret_key_alias_or_test_key_status/);
   assert.match(markdown, /Owner Action Summary/);
-  assert.match(markdown, /OneTime setup check: 5\/8 ready/);
+  assert.match(markdown, /One Time setup check: 5\/8 ready/);
   assert.match(markdown, /Public launch no-write smoke: passed \(ready\)/);
   assert.match(markdown, /Public Launch No-Write Smoke/);
   assert.match(markdown, /Commands passed: 4\/4/);
@@ -208,7 +208,7 @@ test('production unblocker builds operator actions from setup and proof blockers
   assert.match(markdown, /Current missing fields from setup check/);
   assert.match(markdown, /67_month_product_price_id_or_alias/);
   assert.match(markdown, /Live Stripe key appears configured/);
-  assert.match(markdown, /external_setup_blockers - External OneTime setup values or approvals are missing/);
+  assert.match(markdown, /external_setup_blockers - External One Time setup values or approvals are missing/);
   assert.match(markdown, /rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not production-verified/);
   assert.match(markdown, /Rabbi Telegram Runtime/);
   assert.match(markdown, /\*\*\*\*\*\*4810/);

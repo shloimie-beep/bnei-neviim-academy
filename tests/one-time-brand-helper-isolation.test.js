@@ -49,7 +49,7 @@ test('One Time public helper has separate surface, copy, actions, and black-yell
   assert.match(oneTimePublicDataBlock, /oneTimeJoinMomentCopy\(\)/);
   assert.doesNotMatch(oneTimePublicDataBlock, /approved free Zoom/);
   assert.doesNotMatch(oneTimePublicDataBlock, /Do you want your son to love Torah/);
-  assert.doesNotMatch(oneTimePublicDataBlock, /I only answer public OneTime questions/);
+  assert.doesNotMatch(oneTimePublicDataBlock, /I only answer public One Time questions/);
   assert.doesNotMatch(oneTimePublicDataBlock, /private parent billing, attendance, student transcripts, access codes, raw class transcripts, or admin data/);
   assert.doesNotMatch(oneTimePublicDataBlock, /Learn about BNA|How BNA works|BNA model path|Service-provider ecosystem path/);
 });
@@ -70,8 +70,8 @@ test('One Time helper surfaces normalize and store under the One Time project', 
   assert.match(server, /metadata: \{ source: 'assistant_surface_scope', workspace_key: surfaceSpec\.workspaceKey \}/);
   assert.match(server, /surface === 'one_time_public'/);
   assert.match(server, /Rabbi Scheller digital assistant/);
-  assert.match(server, /OneTime public landing\/class\/signup context only/);
-  assert.match(server, /Do not use BNA Academy enrollment, BNA accountability, BNA service-provider, BNA parent\/student portal, or generic BNA public helper knowledge as OneTime public facts/);
+  assert.match(server, /One Time public landing\/class\/signup context only/);
+  assert.match(server, /Do not use BNA Academy enrollment, BNA accountability, BNA service-provider, BNA parent\/student portal, or generic BNA public helper knowledge as One Time public facts/);
   assert.match(server, /if \(surface\.startsWith\('one_time_'\)\) return WORKSPACES\.RABBI_SHELLER_PROVIDER/);
 });
 
@@ -93,7 +93,7 @@ test('One Time parent and student review routes mount scoped helper copy', () =>
   assert.match(widget, /surface === 'one_time_student'/);
   assert.match(widget, /I do not show parent billing, private parent messages, other students, full transcripts, access codes, or admin data/);
   assert.match(widget, /surface === 'one_time_provider'/);
-  assert.match(widget, /I will keep this workspace scoped to the OneTime Mishnayos class/);
+  assert.match(widget, /I will keep this workspace scoped to the One Time Mishnayos class/);
   assert.doesNotMatch(widget, /One Time Parent Helper|One Time Student Helper|Rabbi Scheller Admin Helper|Rabbi Scheller Assistant/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-parent \.bna-bot-launcher/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-student \.bna-bot-launcher/);
@@ -111,7 +111,7 @@ test('One Time student login route hides legacy access-code fallback and mounts 
   assert.match(student, /ONE_TIME_HOST_MODE && !ONE_TIME_REVIEW_MODE/);
   assert.match(student, /accessDivider\.classList\.add\('hidden'\)/);
   assert.match(student, /codeForm\.classList\.add\('hidden'\)/);
-  assert.match(student, /OneTimeOneTime Student Login/);
+  assert.match(student, /One Time Student Login/);
   assert.match(student, /<a class="portal-topbar-link secondary-link" href="\/one-time-parent">Parent<\/a>/);
   assert.match(widget, /query\.get\('one_time_login'\)/);
   assert.match(widget, /bna-assistant-surface-one-time-student/);
@@ -124,7 +124,7 @@ test('One Time public helper launcher is registered as a visible action', () => 
   assert.equal(action.label, 'Robot Scheller');
   assert.match(action.expected_behavior, /concise parent-facing copy/);
   assert.match(action.expected_behavior, /free-class\/current-class\/schedule\/Rabbi\/member-login choices/);
-  assert.match(action.expected_behavior, /OneTime-only/);
+  assert.match(action.expected_behavior, /One Time only/);
 });
 
 test('One Time public WhatsApp action is registry-covered and no-send at runtime', () => {

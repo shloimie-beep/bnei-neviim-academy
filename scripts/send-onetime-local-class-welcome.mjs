@@ -180,7 +180,7 @@ function welcomeBody(zoomUrl) {
     '',
     'Looking forward to learning together,',
     '',
-    'OneTimeOneTime Mishnah',
+    'One Time Mishnayos',
   ].join('\n');
 }
 

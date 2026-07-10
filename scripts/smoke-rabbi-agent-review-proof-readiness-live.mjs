@@ -227,7 +227,7 @@ function writeReports() {
     `# Rabbi Agent Review Proof Readiness Live Smoke - ${report.started_at}`,
     '',
     `BNA app: ${report.app_url}`,
-    `OneTime app: ${report.one_time_url}`,
+    `One Time app: ${report.one_time_url}`,
     `Result: ${report.status}`,
     '',
     '## Prompt Readbacks',

@@ -49,7 +49,7 @@ from the Railway `academy-telegram-worker` service.
    the DB-backed runtime heartbeat becomes fresh again.
 3. Stop old local bridge processes if they are stale.
 4. Restart with `npm run telegram:kimi:start` for BNA or
-   `npm run telegram:rabbi:start` for Rabbi/One Time.
+   `npm run telegram:rabbi:start` for Rabbi / One Time.
 5. Confirm the log or runtime heartbeat updates and the bot responds to
    `/status` or `/help`.
 

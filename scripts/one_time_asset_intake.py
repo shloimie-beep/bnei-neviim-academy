@@ -73,8 +73,8 @@ ALIASES = [
     "Rabbi Sheller",
     "Elie Scheller",
     "One Time",
-    "OneTimeOneTime",
-    "One Time Mishnah",
+    "One Time",
+    "One Time Mishnayos",
     "One Time Mishnayos",
 ]
 

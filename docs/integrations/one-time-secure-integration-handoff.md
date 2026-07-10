@@ -92,5 +92,5 @@ Operator Decision:
 
 ## Local Acceptance
 
-- `tests/one-time-drive-brief-ingestion.test.js` verifies no-write preview behavior, idempotency, owner/admin assignments, and One Time-only scoping.
+- `tests/one-time-drive-brief-ingestion.test.js` verifies no-write preview behavior, idempotency, owner/admin assignments, and One Time only scoping.
 - Live credential setup and production mutation remain blocked until local acceptance passes and the operator explicitly approves deployment or external-account changes.

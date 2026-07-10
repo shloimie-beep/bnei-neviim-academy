@@ -830,7 +830,7 @@ function isLikelyPacket(json, file, explicit) {
   if (file.endsWith(".product-quality.json")) {
     return true;
   }
-  return isPlainObject(json) && (json.schema_version === "pqc.v1" || typeof json.packet_id === "string");
+  return isPlainObject(json) && SCHEMA_VERSIONS.has(json.schema_version);
 }
 
 function summarizeFixtureResult(file, json, errors) {

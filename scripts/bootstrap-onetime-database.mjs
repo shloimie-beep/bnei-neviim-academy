@@ -62,7 +62,7 @@ function usage() {
 
 Dry-run by default. In apply mode this requires APP_INSTANCE=onetime, reads the
 database URL from DATABASE_URL unless --database-url-env is supplied, applies
-tracked idempotent SQL files, applies the One Time-only seed, and runs the
+tracked idempotent SQL files, applies the One Time only seed, and runs the
 isolation scan. It never prints the database URL or SQL contents.`;
 }
 

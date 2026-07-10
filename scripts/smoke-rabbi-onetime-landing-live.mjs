@@ -59,7 +59,7 @@ function writeReport(options, startedAt, checks, result) {
   const stamp = startedAt.replace(/[:.]/g, '-');
   const reportPath = path.join(options.reportDir, `${stamp}-rabbi-onetime-landing-smoke.md`);
   const lines = [
-    `# Rabbi OneTime Landing Smoke - ${startedAt}`,
+    `# Rabbi One Time Landing Smoke - ${startedAt}`,
     '',
     `App: ${options.baseUrl}`,
     `Result: ${result}`,
@@ -96,13 +96,13 @@ async function main() {
     assert(page.response.status === 200, `/rabbi expected 200, got ${page.response.status}`);
     expectIncludes(page.text, [
       'Your Child Can Love Learning Mishnayos',
-      'OneTimeOneTime',
+      'One Time',
       'Rabbi Eli Scheller',
       'Sign Up Now',
       '/js/bna-bot-widget.js',
     ], '/rabbi');
     expectNotMatches(page.text, /Bnei Neviim Academy|BNA Academy|Hebrew|data-language-toggle/i, '/rabbi');
-    pass('/rabbi has focused OneTime branding and no Academy chrome');
+    pass('/rabbi has focused One Time branding and no Academy chrome');
 
     const configResponse = await fetch(`${options.baseUrl}/api/one-time/instance-config`, {
       headers: {
@@ -115,9 +115,9 @@ async function main() {
     assert(config.app_instance === 'onetime', `expected app_instance onetime, got ${config.app_instance}`);
     assert(config.workspace_key === 'rabbi_sheller_provider', `expected rabbi_sheller_provider, got ${config.workspace_key}`);
     assert(config.project_key === 'one_time_mishnah_class', `expected one_time_mishnah_class, got ${config.project_key}`);
-    pass('OneTime instance config is scoped to Rabbi Scheller provider');
+    pass('One Time instance config is scoped to Rabbi Scheller provider');
   } catch (error) {
-    fail('Rabbi OneTime landing smoke', error instanceof Error ? error.message : String(error));
+    fail('Rabbi One Time landing smoke', error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
   } finally {
     const reportPath = writeReport(options, startedAt, checks, result);

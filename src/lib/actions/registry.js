@@ -433,7 +433,7 @@ const ACTIONS = [
   action({
     action_id: 'create_rabbi_shiur_idea',
     label: 'Create Rabbi shiur idea',
-    description: 'Create a scoped One Time/Rabbi shiur idea review task without publishing, sending, or creating an agent job.',
+    description: 'Create a scoped One Time / Rabbi shiur idea review task without publishing, sending, or creating an agent job.',
     category: 'content',
     page_contexts: ['content', 'provider_workspace', 'tasks', 'telegram', 'bot'],
     allowed_roles: ADMIN_ROLES,
@@ -453,7 +453,7 @@ const ACTIONS = [
   action({
     action_id: 'create_rabbi_source_sheet_task',
     label: 'Create Rabbi source-sheet task',
-    description: 'Create a scoped One Time/Rabbi source-sheet prep task for review without publishing, sending, or starting Codex automatically.',
+    description: 'Create a scoped One Time / Rabbi source-sheet prep task for review without publishing, sending, or starting Codex automatically.',
     category: 'content',
     page_contexts: ['content', 'provider_workspace', 'tasks', 'telegram', 'bot'],
     allowed_roles: ADMIN_ROLES,
@@ -493,7 +493,7 @@ const ACTIONS = [
   action({
     action_id: 'submit_student_question_for_moderation',
     label: 'Submit student question for moderation',
-    description: 'Create a private One Time/Rabbi question review task without creating a public forum post, sending a response, or exposing identity.',
+    description: 'Create a private One Time / Rabbi question review task without creating a public forum post, sending a response, or exposing identity.',
     category: 'content',
     page_contexts: ['content', 'provider_workspace', 'tasks', 'telegram', 'bot'],
     allowed_roles: ADMIN_ROLES,
@@ -940,7 +940,7 @@ const ACTIONS = [
   action({
     action_id: 'calendar_batch_launch_plan_preview',
     label: 'Preview launch calendar plan',
-    description: 'Preview an 8-week One Time/Rabbi launch calendar batch without creating internal events or writing to Google Calendar.',
+    description: 'Preview an 8-week One Time / Rabbi launch calendar batch without creating internal events or writing to Google Calendar.',
     category: 'calendar',
     page_contexts: ['settings', 'calendar', 'provider_workspace', 'telegram', 'bot'],
     allowed_roles: ADMIN_ROLES,

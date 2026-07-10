@@ -39,7 +39,7 @@ function escapeRegex(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-test('OneTime product helper normalizes tiers, regions, leads, calendar views, and source prep safely', () => {
+test('One Time product helper normalizes tiers, regions, leads, calendar views, and source prep safely', () => {
   assert.equal(ONE_TIME_PRODUCT_PROGRAM_KEY, 'one_time_mishnah_class');
   assert.equal(ONE_TIME_CONTENT_ALIAS, 'mishna');
   assert.equal(normalizeOneTimeRegion('United States'), 'us');
@@ -85,7 +85,7 @@ test('OneTime product helper normalizes tiers, regions, leads, calendar views, a
   assert.equal(draft.source_sheet_draft.refs.length, 1);
 });
 
-test('OneTime product readiness maps product, schedule, booking, portal, and billing gates without writes', () => {
+test('One Time product readiness maps product, schedule, booking, portal, and billing gates without writes', () => {
   const readiness = oneTimeProductReadinessView({
     providers: [{ provider: 'stripe', enabled: true, secret_configured: false, configured: false }],
     schedules: [{ id: 1, timezone: 'Asia/Jerusalem' }],
@@ -155,7 +155,7 @@ test('OneTime product readiness maps product, schedule, booking, portal, and bil
   assert.match(readiness.blockers.join('\n'), /zoom_calendar_email_whatsapp_and_portal_publish_writes_require_explicit_approval/);
 });
 
-test('OneTime Batch 9/10 foundations model offers, booking, and portals without external writes', () => {
+test('One Time Batch 9/10 foundations model offers, booking, and portals without external writes', () => {
   const offers = buildOneTimeProductOfferCatalog([]);
   const monthly = offers.find((offer) => offer.offer_key === 'membership_67_monthly');
   const intensive = offers.find((offer) => offer.offer_key === 'premium_masechta_intensive');
@@ -220,7 +220,7 @@ test('OneTime Batch 9/10 foundations model offers, booking, and portals without 
   assert.equal(portals.provider.external_send_enabled, false);
 });
 
-test('Rabbi tier helper preserves existing tiers and accepts draft OneTime planning tiers', () => {
+test('Rabbi tier helper preserves existing tiers and accepts draft One Time planning tiers', () => {
   assert.equal(normalizeRabbiTierKey('Live Plus Library'), RABBI_TIER_KEYS.LIVE_LIBRARY);
   assert.equal(normalizeRabbiTierKey('interactive zoom'), RABBI_TIER_KEYS.INTERACTIVE_ZOOM);
   assert.equal(normalizeRabbiTierKey('vip high touch'), RABBI_TIER_KEYS.VIP_HIGH_TOUCH);
@@ -243,7 +243,7 @@ test('Rabbi tier helper preserves existing tiers and accepts draft OneTime plann
   assert.equal(tier.checkout_enabled, false);
 });
 
-test('SQL migrations create OneTime product system without final pricing or external writes', () => {
+test('SQL migrations create One Time product system without final pricing or external writes', () => {
   [
     'bna_product_programs',
     'bna_product_funnels',
@@ -292,7 +292,7 @@ test('SQL migrations create OneTime product system without final pricing or exte
   assert.match(productMigration, /external_write_performed BOOLEAN NOT NULL DEFAULT FALSE/);
 });
 
-test('server exposes scoped OneTime product APIs and public draft routes', () => {
+test('server exposes scoped One Time product APIs and public draft routes', () => {
   [
     "app.get('/api/bna/one-time/product-system'",
     "app.get('/api/bna/one-time/crm-import-preview'",
@@ -322,28 +322,28 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /no_crm_lead_created_or_updated: true/);
   assert.match(server, /no_internal_note_created: true/);
   assert.match(server, /no_telegram_reminder_sent: true/);
-  assert.match(server, /Dry-run validated the OneTime free-class lead capture payload/);
+  assert.match(server, /Dry-run validated the One Time free-class lead capture payload/);
   assert.match(server, /if \(dryRun\)[\s\S]*return res\.json\([\s\S]*sendOneTimeSignupTelegramReminder\(lead\)/);
   assert.match(server, /INSERT INTO bna_parent_leads/);
   assert.match(server, /UPDATE bna_parent_leads/);
-  assert.match(server, /OneTime free-class public signup captured/);
+  assert.match(server, /One Time free-class public signup captured/);
   assert.match(server, /function buildOneTimeTransactionalFollowUpPlan/);
   assert.match(server, /ensureOneTimeFreeClassTransactionalFollowUp/);
   assert.match(server, /one_time_transactional_follow_up_key/);
   assert.match(server, /metadata->>'one_time_transactional_follow_up_key'/);
   assert.match(server, /const label = channel === 'email' \? 'email' : 'WhatsApp'/);
-  assert.match(server, /`OneTime free-class transactional \$\{label\} follow-up blocked`/);
+  assert.match(server, /`One Time free-class transactional \$\{label\} follow-up blocked`/);
   assert.match(server, /externalActions\.requiredConfirmFor\('resend', 'send'\)/);
   assert.match(server, /SEND_WHATSAPP/);
   assert.match(server, /transactional_follow_up_send_blocked/);
   assert.match(server, /transactional_follow_up_preview: buildOneTimeTransactionalFollowUpPlan/);
   assert.match(server, /function buildOneTimeSignupTelegramReminder/);
   assert.match(server, /function isOneTimeSyntheticLead/);
-  assert.match(server, /<b>New OneTime signup<\/b>/);
-  assert.match(server, /Review this lead in the OneTime CRM/);
+  assert.match(server, /<b>New One Time signup<\/b>/);
+  assert.match(server, /Review this lead in the One Time CRM/);
   assert.match(server, /Guardrail: no parent email, WhatsApp, checkout, payment, access grant, Zoom, Vimeo, or Drive action/);
   assert.match(server, /synthetic_test_lead_no_external_reminder/);
-  assert.match(server, /if \(!syntheticNoExternalReminder\)[\s\S]*sendOneTimeSignupTelegramReminder\(lead\)[\s\S]*\.catch\(\(err\) => console\.error\('OneTime signup Telegram reminder error:'/);
+  assert.match(server, /if \(!syntheticNoExternalReminder\)[\s\S]*sendOneTimeSignupTelegramReminder\(lead\)[\s\S]*\.catch\(\(err\) => console\.error\('One Time signup Telegram reminder error:'/);
   assert.match(server, /no_telegram_reminder_sent: syntheticNoExternalReminder/);
   assert.match(server, /product_readiness: oneTimeProductReadinessView/);
   assert.match(server, /crm_import_preview: crmImportPreview/);
@@ -369,9 +369,9 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /app\.get\(\['\/one-time\/member-login', '\/member', '\/member-portal'\], redirectOneTimeMemberHome\)/);
 });
 
-test('public OneTime launch page is indexable, interest-only, and has no checkout call', () => {
+test('public One Time launch page is indexable, interest-only, and has no checkout call', () => {
   assert.match(oneTimeHtml, /<meta name="robots" content="index, follow">/);
-  assert.match(oneTimeHtml, /OneTimeOneTime Mishnah/);
+  assert.match(oneTimeHtml, /One Time Mishnayos/);
   assert.match(oneTimeHtml, /Your Child Can Love Learning Mishnayos/);
   assert.match(oneTimeHtml, /Sign Up Now/);
   assert.match(oneTimeHtml, /#start-free/);
@@ -386,8 +386,8 @@ test('public OneTime launch page is indexable, interest-only, and has no checkou
   assert.match(oneTimeHtml, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
   assert.match(oneTimeHtml, /WhatsApp Robot Scheller/);
   assert.match(oneTimeHtml, /Consent is required before submitting/);
-  assert.match(oneTimeHtml, /You're on the list\. We will follow up with the current OneTimeOneTime class details\./);
-  assert.doesNotMatch(oneTimeHtml, /approved OneTimeOneTime Zoom details|approved Zoom details/);
+  assert.match(oneTimeHtml, /You're on the list\. We will follow up with the current One Time class details\./);
+  assert.doesNotMatch(oneTimeHtml, /approved One Time Zoom details|approved Zoom details/);
   assert.doesNotMatch(oneTimeHtml, /class="announcement"/);
   assert.doesNotMatch(oneTimeHtml, /class="ticker"/);
   assert.doesNotMatch(oneTimeHtml, />Region</);
@@ -399,7 +399,7 @@ test('public OneTime launch page is indexable, interest-only, and has no checkou
   assert.doesNotMatch(oneTimeHtml, /GreenInvoice checkout/i);
 });
 
-test('Operations provider workspace reads OneTime product system and labels pricing as pending', () => {
+test('Operations provider workspace reads One Time product system and labels pricing as pending', () => {
   [
     'getOneTimeProductSystem',
     'getOneTimeProductCalendar',
@@ -435,7 +435,7 @@ test('Operations provider workspace reads OneTime product system and labels pric
   assert.match(operationsHtml, /no email, WhatsApp, payment, or external CRM write is performed/);
   assert.match(operationsHtml, /REQ-20260619-306/);
   assert.match(operationsHtml, /No checkout, invoice, payment link, Zoom, external calendar, email, WhatsApp, Telegram, portal publish, or access automation is enabled/);
-  assert.match(operationsHtml, /Add Class saves an internal OneTime calendar event only/);
+  assert.match(operationsHtml, /Add Class saves an internal One Time calendar event only/);
   assert.match(operationsHtml, /Add Appointment/);
   assert.match(operationsHtml, /oneTimeClassTitle/);
   assert.match(operationsHtml, /oneTimeAppointmentType/);

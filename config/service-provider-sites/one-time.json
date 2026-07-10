@@ -17,7 +17,7 @@
   "external_write_performed": false,
   "review_only": false,
   "identity": {
-    "name": "OneTimeOneTime Mishnah",
+    "name": "One Time Mishnayos",
     "owner_label": "Rabbi Eli Scheller",
     "category": "Worldwide Live Mishnah Learning"
   },
@@ -69,7 +69,7 @@
     "member_cta": "Member Login",
     "offer": "Free class follow-up before payment or member access opens",
     "campaign_contract": "ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY control the non-resetting countdown.",
-    "no_send_note": "Signup interest creates a first-party OneTime CRM follow-up only. Payment and member access remain separate approved paths."
+    "no_send_note": "Signup interest creates a first-party One Time CRM follow-up only. Payment and member access remain separate approved paths."
   },
   "nav": [
     {

@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
 
 const KNOWN_ASSET_TERMS = [
-  'OneTimeOneTime',
+  'One Time',
   'Rabbi Eli Scheller',
   'onetimelogo',
   'onetime hero vertical',

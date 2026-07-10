@@ -44,7 +44,7 @@
 
   function renderHero() {
     const content = state.site?.content || {};
-    $('heroTitle').textContent = content.hero_title || 'OneTimeOneTime';
+    $('heroTitle').textContent = content.hero_title || 'One Time';
     $('heroSubtitle').textContent = content.hero_subtitle || 'Stories, Mishnayos learning, and moderated group calls for children, now wired as a BNA service-provider landing and membership preview.';
     $('previewBanner').hidden = !state.previewMode;
   }

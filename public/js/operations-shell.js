@@ -7406,7 +7406,7 @@
                     <div class="task-section-header">
                         <div>
                             <h3>One Time CRM Contacts</h3>
-                            <p class="notification-lock-note">Workspace-scoped One Time/Rabbi leads and members only. Lead status, source, no-send, dedupe/review state, and local communications are visible before any campaign decision.</p>
+                            <p class="notification-lock-note">Workspace-scoped One Time / Rabbi leads and members only. Lead status, source, no-send, dedupe/review state, and local communications are visible before any campaign decision.</p>
                         </div>
                         <span>${rows.length} scoped records</span>
                     </div>
@@ -8770,7 +8770,7 @@
                     <div class="task-section-header">
                         <div>
                             <h3>Email Contacts Map</h3>
-                            <p class="notification-lock-note">One Time/Rabbi workspace only. Campaign staging is tagged, but no email, WhatsApp, Telegram, Buffer, payment, or external CRM send is triggered here.</p>
+                            <p class="notification-lock-note">One Time / Rabbi workspace only. Campaign staging is tagged, but no email, WhatsApp, Telegram, Buffer, payment, or external CRM send is triggered here.</p>
                         </div>
                         <span>${sectionLeads.length} contacts</span>
                     </div>
@@ -9763,7 +9763,7 @@
             const pricing = tier.candidate_pricing || {};
             return `
                 <article class="content-card">
-                    <div class="content-card-title">${escapeHtml(tier.display_name || tier.tier_key || 'OneTime tier')}</div>
+                    <div class="content-card-title">${escapeHtml(tier.display_name || tier.tier_key || 'One Time tier')}</div>
                     <div class="content-card-meta">${escapeHtml(tier.tier_key || '')} &middot; ${escapeHtml(tier.price_status || pricing.status || 'decision_pending')}</div>
                     <p class="event-meta">${escapeHtml(tier.description || 'Draft tier under product review.')}</p>
                     <div class="tag-list">
@@ -9798,7 +9798,7 @@
         function renderOneTimeProductOfferCard(offer = {}) {
             return `
                 <article class="content-card">
-                    <div class="content-card-title">${escapeHtml(offer.title || offer.offer_key || 'OneTime offer')}</div>
+                    <div class="content-card-title">${escapeHtml(offer.title || offer.offer_key || 'One Time offer')}</div>
                     <div class="content-card-meta">${escapeHtml(offer.offer_key || '')} &middot; ${escapeHtml(offer.billing_model || '')} &middot; ${escapeHtml(offer.price_status || 'decision_pending')}</div>
                     <p class="event-meta">${escapeHtml(oneTimeOfferPriceLabel(offer))} ${offer.duration_weeks ? `for ${escapeHtml(offer.duration_weeks)} weeks` : ''}</p>
                     <div class="tag-list">
@@ -9820,7 +9820,7 @@
                     <div class="task-section-header"><h3>Product Offers</h3><span>${offers.length} safe drafts</span></div>
                     <p class="settings-disabled-note">$67 monthly membership and premium Masechta intensive are represented as internal product offers. Checkout, payment links, invoices, charges, refunds, and access automation remain disabled until the operator approves final billing fields.</p>
                     <div class="content-section-grid">
-                        ${offers.map(renderOneTimeProductOfferCard).join('') || '<div class="task-empty">No OneTime product offers loaded yet.</div>'}
+                        ${offers.map(renderOneTimeProductOfferCard).join('') || '<div class="task-empty">No One Time product offers loaded yet.</div>'}
                     </div>
                 </section>
             `;
@@ -10117,7 +10117,7 @@
                         ${leads.slice(0, 12).map(lead => `
                             <div class="calendar-event-row">
                                 <div>
-                                    <strong>${escapeHtml(lead.parent_name || lead.parent_email || lead.parent_phone || 'OneTime lead')}</strong>
+                                    <strong>${escapeHtml(lead.parent_name || lead.parent_email || lead.parent_phone || 'One Time lead')}</strong>
                                     <div class="event-meta">${escapeHtml(lead.region || 'worldwide')} &middot; ${escapeHtml((lead.interested_tiers || []).join(', ') || 'tier pending')} &middot; ${escapeHtml(lead.status || 'new')}</div>
                                 </div>
                                 <span class="tag">no send</span>
@@ -10477,7 +10477,7 @@
                             <div class="task-overview-grid">
                                 ${renderMetricButton('Launch', rabbiLaunch.checkouts.length + rabbiLaunch.members.length, 'Checkout, access grants, member login, and preview page.', "setCurrentSection('launch')")}
                                 ${renderMetricButton('Program', 1, 'Mishnayos Membership and Rabbi Scheller 7:00 PM Israel class.', "setCurrentSection('program')")}
-                                ${renderMetricButton('Tiers', tiers.length, 'Decision-pending OneTime product tiers.', "setCurrentSection('tiers')")}
+                                ${renderMetricButton('Tiers', tiers.length, 'Decision-pending One Time product tiers.', "setCurrentSection('tiers')")}
                                 ${renderMetricButton('Content', serviceProviderSubnavCounts().content, 'Library, meeting drops, source prep, and bundles.', "setCurrentSection('content')")}
                                 ${renderMetricButton('Participants', providerParticipantRows().length, 'Provider participants/members, not BNA students.', "switchView('contacts'); setCurrentSection('participants')")}
                                 ${renderMetricButton('Access', providerAccessRows().length, 'Payment/access status and follow-up.', "setCurrentSection('access')")}
@@ -10573,7 +10573,7 @@
                     <p class="settings-disabled-note">Preview-only checkout, payment intake, access grants, member login, communications, and landing page controls for <code>one_time_mishnah_class</code>. This does not replace the BNA public homepage.</p>
                     ${rabbiLaunchNotice ? `<div class="error-banner">${escapeHtml(rabbiLaunchNotice)}</div>` : ''}
                     <div class="task-overview-grid">
-                        ${renderMetricButton('Tiers', rabbiLaunch.tiers.length, 'Rabbi checkout records plus draft OneTime planning tiers.', '')}
+                        ${renderMetricButton('Tiers', rabbiLaunch.tiers.length, 'Rabbi checkout records plus draft One Time planning tiers.', '')}
                         ${renderMetricButton('Checkouts', rabbiLaunch.checkouts.length, 'Independent Rabbi checkout records.', '')}
                         ${renderMetricButton('Members', rabbiLaunch.members.length, 'One Time members, not BNA students.', '')}
                         ${renderMetricButton('Active Grants', rabbiLaunch.accessGrants.filter(grant => grant.status === 'active').length, 'Library/live access grants.', '')}
@@ -10592,7 +10592,7 @@
                         <article class="content-card">
                             <div class="content-card-title">Landing Page Preview</div>
                             <div class="content-card-meta">${escapeHtml(rabbiLaunch.site?.route_path || '/rabbi')} &middot; ${escapeHtml(rabbiLaunch.site?.status || 'preview')}</div>
-                            <label class="form-label">Page title <input id="rabbiSiteTitle" value="${escapeHtml(rabbiLaunch.site?.title || 'OneTimeOneTime - Rabbi Eli Scheller')}"></label>
+                            <label class="form-label">Page title <input id="rabbiSiteTitle" value="${escapeHtml(rabbiLaunch.site?.title || 'One Time - Rabbi Eli Scheller')}"></label>
                             <button class="task-action primary" type="button" onclick="saveRabbiSite()">Save preview</button>
                             <a class="task-action" href="/rabbi" target="_blank" rel="noopener">Open preview</a>
                             <a class="task-action" href="/rabbi-member" target="_blank" rel="noopener">Open member page</a>
@@ -10868,7 +10868,7 @@
 
         async function saveRabbiSite() {
             try {
-                await api.updateRabbiSite({ title: document.getElementById('rabbiSiteTitle')?.value || 'OneTimeOneTime - Rabbi Eli Scheller', status: 'preview' });
+                await api.updateRabbiSite({ title: document.getElementById('rabbiSiteTitle')?.value || 'One Time - Rabbi Eli Scheller', status: 'preview' });
                 rabbiLaunchNotice = 'Landing page preview saved.';
                 await refreshRabbiLaunchData();
             } catch (error) {
@@ -10982,9 +10982,9 @@
             return `
                 <section class="focus-panel">
                     <div class="task-section-header"><h3>Provider Program Schedule</h3><span>${events.length} items</span></div>
-                    <p class="settings-disabled-note">Simple schedule only: next class, worksheet/source-sheet deadlines, structured question deadlines, optional class link, and access notices. Add Class saves an internal OneTime calendar event only; it does not create a Zoom meeting or external calendar event.</p>
+                    <p class="settings-disabled-note">Simple schedule only: next class, worksheet/source-sheet deadlines, structured question deadlines, optional class link, and access notices. Add Class saves an internal One Time calendar event only; it does not create a Zoom meeting or external calendar event.</p>
                     <form class="settings-form-grid" onsubmit="createOneTimeCalendarEvent(event)">
-                        <label>Class title<input id="oneTimeClassTitle" placeholder="OneTime Mishnayos class"></label>
+                        <label>Class title<input id="oneTimeClassTitle" placeholder="One Time Mishnayos class"></label>
                         <label>Start<input id="oneTimeClassStart" type="datetime-local"></label>
                         <label>Duration<input id="oneTimeClassDuration" type="number" min="15" max="240" value="60"></label>
                         <label>Masechta<input id="oneTimeClassMasechta" placeholder="Berakhot"></label>
@@ -11020,7 +11020,7 @@
             event?.preventDefault?.();
             try {
                 await api.createOneTimeCalendarEvent({
-                    title: document.getElementById('oneTimeClassTitle')?.value || 'OneTime Mishnayos class',
+                    title: document.getElementById('oneTimeClassTitle')?.value || 'One Time Mishnayos class',
                     start_at: document.getElementById('oneTimeClassStart')?.value || '',
                     duration_minutes: Number(document.getElementById('oneTimeClassDuration')?.value || 60),
                     masechta: document.getElementById('oneTimeClassMasechta')?.value || '',
@@ -11030,11 +11030,11 @@
                     notes: document.getElementById('oneTimeClassNotes')?.value || '',
                     event_status: 'draft',
                 });
-                rabbiLaunchNotice = 'OneTime class event saved internally. No Zoom meeting or external calendar write was performed.';
+                rabbiLaunchNotice = 'One Time class event saved internally. No Zoom meeting or external calendar write was performed.';
                 event.target?.reset?.();
                 await refreshRabbiLaunchData();
             } catch (error) {
-                alert(error.message || 'Could not save OneTime class event.');
+                alert(error.message || 'Could not save One Time class event.');
             }
         }
 
@@ -11053,11 +11053,11 @@
                     parent_visible_summary: document.getElementById('oneTimeAppointmentSummary')?.value || '',
                     status: 'intent',
                 });
-                rabbiLaunchNotice = 'OneTime appointment intent saved internally. No Zoom meeting, reminder, charge, or external calendar write was performed.';
+                rabbiLaunchNotice = 'One Time appointment intent saved internally. No Zoom meeting, reminder, charge, or external calendar write was performed.';
                 event.target?.reset?.();
                 await refreshRabbiLaunchData();
             } catch (error) {
-                alert(error.message || 'Could not save OneTime appointment intent.');
+                alert(error.message || 'Could not save One Time appointment intent.');
             }
         }
 
@@ -13773,7 +13773,7 @@
             }
             if (key === 'rabbi_sheller_provider') {
                 return {
-                    title: 'One Time Mishnah Community',
+                    title: 'One Time Mishnayos Community',
                     subtitle: 'Rabbi Elie Scheller workspace',
                     kicker: 'Provider Community',
                     overviewLabel: 'One Time community overview',

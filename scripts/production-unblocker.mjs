@@ -118,7 +118,7 @@ export function loadSetupReadinessForUnblocker() {
     setupReadinessSource: setupReadinessCommand,
     setupReadinessSourceKind: 'live_no_write_command_parse_failed',
     setupReadinessCommandExitCode: typeof result.status === 'number' ? result.status : 1,
-    setupReadinessLoadError: redact(result.stderr || result.error?.message || 'Could not parse live OneTime setup readiness JSON.'),
+    setupReadinessLoadError: redact(result.stderr || result.error?.message || 'Could not parse live One Time setup readiness JSON.'),
   };
 }
 
@@ -284,7 +284,7 @@ function buildBlockerGroups({
     const currentMissingFields = [...new Set(setup_items.flatMap((item) => item.current_missing_fields || []))];
     add({
       id: 'external_setup_blockers',
-      title: 'External OneTime setup values or approvals are missing',
+      title: 'External One Time setup values or approvals are missing',
       owner: 'Shloimie / provider account owners',
       count: setup_items.length,
       evidence: setup_items.map((item) => (
@@ -544,8 +544,8 @@ export function renderMarkdown(report = {}) {
     report.source_snapshot?.load_error ? `Source snapshot warning: ${report.source_snapshot.load_error}` : '',
     `Workspace/project: ${report.workspace_project.workspace_key} / ${report.workspace_project.project_key}`,
     `Next unblocked executable batch: ${report.summary.next_unblocked_executable_batch || 'none'}`,
-    `OneTime setup check: ${report.summary.setup_readiness_ready_count ?? 'unknown'}/${report.summary.setup_readiness_total_count ?? 'unknown'} ready (${report.source_setup_readiness?.kind || 'not_loaded'}, exit ${report.source_setup_readiness?.command_exit_code ?? 'unknown'})`,
-    report.source_setup_readiness?.load_error ? `OneTime setup check warning: ${report.source_setup_readiness.load_error}` : '',
+    `One Time setup check: ${report.summary.setup_readiness_ready_count ?? 'unknown'}/${report.summary.setup_readiness_total_count ?? 'unknown'} ready (${report.source_setup_readiness?.kind || 'not_loaded'}, exit ${report.source_setup_readiness?.command_exit_code ?? 'unknown'})`,
+    report.source_setup_readiness?.load_error ? `One Time setup check warning: ${report.source_setup_readiness.load_error}` : '',
     '',
     '## What Blocks Production',
     '',

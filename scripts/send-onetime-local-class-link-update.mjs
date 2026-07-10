@@ -157,7 +157,7 @@ function classLinkBody(zoomUrl) {
     "Please use this latest link for tonight's shiur.",
     '',
     'Looking forward to learning together,',
-    'OneTimeOneTime Mishnah',
+    'One Time Mishnayos',
   ].join('\n');
 }
 
@@ -184,7 +184,7 @@ async function run() {
   if (!send) throw new Error('This runner requires --send after operator approval.');
   if (runtime.confirm !== 'SEND_TO_LOCAL_STUDENTS') throw new Error('Current-link sends require --confirm-current-link-send=SEND_TO_LOCAL_STUDENTS.');
   if (!runtime.expectedCount || runtime.expectedCount < 1) throw new Error('Use --expected-count with the exact local-student count read from the scoped CRM.');
-  if (!runtime.zoomUrl || !/^https:\/\/us06web\.zoom\.us\/j\//i.test(runtime.zoomUrl)) throw new Error('A valid OneTime Zoom URL is required.');
+  if (!runtime.zoomUrl || !/^https:\/\/us06web\.zoom\.us\/j\//i.test(runtime.zoomUrl)) throw new Error('A valid One Time Zoom URL is required.');
 
   const report = {
     ok: false,
@@ -321,8 +321,8 @@ async function run() {
           lead_id: lead.id,
           channel: 'email',
           direction: 'outbound',
-          summary: 'Current Zoom link email sent for OneTime Mishnayos class',
-          body: "Sent an individual OneTime current-link email for today's Mishnayos class. The raw Zoom password URL is intentionally not stored in CRM evidence.",
+          summary: 'Current Zoom link email sent for One Time Mishnayos class',
+          body: "Sent an individual One Time current-link email for today's Mishnayos class. The raw Zoom password URL is intentionally not stored in CRM evidence.",
           follow_up_required: false,
           created_by: 'codex',
           source: 'dashboard',
@@ -376,7 +376,7 @@ async function run() {
   const mdPath = path.join(outDir, `${stamp}-one-time-local-student-current-link-resend.md`);
   fs.writeFileSync(jsonPath, `${JSON.stringify(safeReport, null, 2)}\n`);
   fs.writeFileSync(mdPath, [
-    `# OneTime Local Student Current-Link Resend - ${startedAt}`,
+    `# One Time Local Student Current-Link Resend - ${startedAt}`,
     '',
     `Result: ${safeReport.ok ? 'passed' : 'failed'}`,
     `Raw ID: ${safeReport.raw_id}`,

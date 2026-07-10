@@ -4,16 +4,16 @@ Updated: 2026-06-29
 
 Setup Center anchor: `/integration-setup.html#resend-email`
 
-Use this for OneTimeOneTime Mishnah email setup. Do not paste secrets into
+Use this for One Time Mishnayos email setup. Do not paste secrets into
 chat, docs, screenshots, or tracked files.
 
 ## Sender Identity
 
 - Domain: `onetimeonetime.com`
 - From email: `info@onetimeonetime.com`
-- From name: `OneTimeOneTime Mishnah`
+- From name: `One Time Mishnayos`
 - Reply-to: `info@onetimeonetime.com`
-- BNA domain is not used as the OneTime sender.
+- BNA domain is not used as the One Time sender.
 
 No live email send should happen unless Shloimie explicitly approves the exact
 recipient and send.
@@ -25,7 +25,7 @@ Set these in Railway/server environment:
 - `RESEND_API_KEY`
 - `RESEND_DOMAIN=onetimeonetime.com`
 - `RESEND_FROM_EMAIL=info@onetimeonetime.com`
-- `RESEND_FROM_NAME=OneTimeOneTime Mishnah`
+- `RESEND_FROM_NAME=One Time Mishnayos`
 - `RESEND_REPLY_TO=info@onetimeonetime.com`
 - `RESEND_WEBHOOK_SECRET`
 
@@ -95,5 +95,5 @@ After deploy, run the live doctor/smoke that checks:
 - app route exists
 - invalid signature gets `401`
 - webhook secret is configured by name
-- OneTime sender identity is reported as `info@onetimeonetime.com`
+- One Time sender identity is reported as `info@onetimeonetime.com`
 - no live send was triggered

@@ -69,7 +69,7 @@ Focus: no-password parent review journey, 30-day trial state, schedule/class lin
 ## Exact Navigation
 
 1. Open /operations/agent-review?prompt=one-time-parent-trial-journey first. Confirm this prompt key is visible, click Start Audit / I started this agent mode, and keep the drop-off page open.
-2. Open the live One Time host https://join.onetimeonetime.com/. Confirm it is OneTimeOneTime / One Time Mishnah Class, black/yellow scoped, English-only, and not BNA Academy.
+2. Open the live One Time host https://join.onetimeonetime.com/. Confirm it is One Time / One Time Mishnah Class, black/yellow scoped, English-only, and not BNA Academy.
 3. From the live host, attempt the visible parent/member login or access path first. Record whether a brand-new parent can understand how to set a password, reset a password, and enter the portal without seeing BNA Academy reset/login pages.
 4. Open /one-time-parent, /parent/login, and /parent.html?review=one-time as fallback routes only after checking the visible path. Flag any expired setup link, BNA Academy reset page, recovery code, classroom code, test label, or fallback password copy.
 5. Audit the parent route first viewport at 1440px, then repeat at 1024px, 768px, 430px, and 390px.
@@ -86,7 +86,7 @@ Focus: no-password parent review journey, 30-day trial state, schedule/class lin
 ## Required Audit Output
 
 - PASS/FAIL for schedule visibility, class link visibility, library visibility, trial/billing clarity, student click/activity visibility, attendance visibility, support UI, and student-login management expectations.
-- PASS/FAIL for OneTime-only branding on live parent login/reset/setup surfaces, with no BNA Academy leakage, Hebrew/English toggle, test labels, expired setup flow, fallback classroom code, or recovery-code copy.
+- PASS/FAIL for One Time only branding on live parent login/reset/setup surfaces, with no BNA Academy leakage, Hebrew/English toggle, test labels, expired setup flow, fallback classroom code, or recovery-code copy.
 - Top 5 UI/IA fixes in Codex-ready language, with severity labels P0-SCOPE, P1-IA, P1-DEADEND, P2-TOOLBAR, P2-RESPONSIVE, P2-RELEVANCE, P2-TYPOGRAPHY, or P3-POLISH.
 - Explicit missing pieces before Codex can send a real parent welcome email.
 - Recommended email copy shape, but no live send.

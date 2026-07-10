@@ -82,7 +82,7 @@ test('Classroom APIs expose admin readback, natural-language scheduling, moderat
 test('One Time classroom bot endpoint is approval-blocked while private replies remain active', () => {
   const route = sliceBetween(server, "app.post('/api/one-time-classroom/bot'", 'function rabbiJson');
   assert.match(route, /res\.status\(403\)\.json/);
-  assert.match(route, /OneTime classroom bot is disabled pending explicit operator approval/);
+  assert.match(route, /One Time classroom bot is disabled pending explicit operator approval/);
   assert.match(route, /approval_required: true/);
   assert.match(route, /Students can respond privately to Rabbi\/admin threads for review/);
   assert.doesNotMatch(route, /buildOneTimeClassroomBotReply/);

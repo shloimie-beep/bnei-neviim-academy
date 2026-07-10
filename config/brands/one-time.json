@@ -1,8 +1,8 @@
 {
   "key": "one_time",
-  "public_name": "OneTimeOneTime Mishnah",
-  "name": "OneTimeOneTime Mishnah",
-  "short_name": "OneTimeOneTime",
+  "public_name": "One Time Mishnayos",
+  "name": "One Time Mishnayos",
+  "short_name": "One Time",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "audience": "partner_mishnah_program",

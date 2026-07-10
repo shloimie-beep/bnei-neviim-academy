@@ -32,7 +32,7 @@ test('shared One Time review data stays scoped, branded, and preview-only', () =
   assert.equal(review.provider_portal.video.vimeo_video_id, '1178363755');
   assert.match(review.provider_portal.video.media_url, /1178363755/);
   assert.match(review.provider_portal.video.embed_url, /player\.vimeo\.com\/video\/1178363755/);
-  assert.match(review.provider_portal.video.description, /legacy OneTimeOneTime/);
+  assert.match(review.provider_portal.video.description, /legacy One Time/);
 
   assert.equal(review.email_templates.length, 21);
   const templateKeys = new Set(review.email_templates.map((template) => template.key));
@@ -93,20 +93,20 @@ test('shared One Time review pages include review branding assets', () => {
   assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
   assert.doesNotMatch(oneTimeHtml, /TEST-ONETIME-REVIEW-ACCESS/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /\/css\/one-time-shared-review\.css/);
-  assert.match(fs.readFileSync('public/provider.html', 'utf8'), /OneTimeOneTime Rabbi Workspace Review/);
+  assert.match(fs.readFileSync('public/provider.html', 'utf8'), /One Time Rabbi Workspace Review/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /ELISHELLER/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /Badges and Rewards/);
   assert.match(fs.readFileSync('public/parent.html', 'utf8'), /\/images\/one-time\/brand\/onetimelogo\.webp/);
-  assert.match(fs.readFileSync('public/parent.html', 'utf8'), /OneTimeOneTime Parent Review/);
+  assert.match(fs.readFileSync('public/parent.html', 'utf8'), /One Time Parent Review/);
   const parentReviewHtml = fs.readFileSync('public/one-time-parent-review.html', 'utf8');
-  assert.match(parentReviewHtml, /OneTimeOneTime Parent Review/);
+  assert.match(parentReviewHtml, /One Time Parent Review/);
   assert.match(parentReviewHtml, /\/api\/one-time-review\/parent/);
   assert.match(parentReviewHtml, /One Time Parent Helper/);
   assert.doesNotMatch(parentReviewHtml, /data-parent-onboarding-form/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /No bot \/ no BNA goals/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /Live Mishnayos, review videos, worksheets, attendance, questions, badges, and rewards/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /oneTimeStudentBot = 'disabled'/);
-  assert.match(fs.readFileSync('public/student.html', 'utf8'), /OneTimeOneTime Student Review/);
+  assert.match(fs.readFileSync('public/student.html', 'utf8'), /One Time Student Review/);
   const classroomHtml = fs.readFileSync('public/one-time-classroom.html', 'utf8');
   assert.match(classroomHtml, /Current One Time access/);
   assert.match(classroomHtml, /There is no separate classroom password/);
@@ -176,7 +176,7 @@ test('One Time static chrome keeps footer, active nav, and compact helper covera
   for (const [page, activePattern] of chromePages) {
     const html = fs.readFileSync(page, 'utf8');
     assert.match(html, /<footer class="one-time-site-footer" data-one-time-canonical-footer>/, `${page} needs canonical One Time footer`);
-    assert.match(html, /OneTimeOneTime Mishnayos/, `${page} should keep One Time footer brand`);
+    assert.match(html, /One Time Mishnayos/, `${page} should keep One Time footer brand`);
     assert.match(html, /href="\/one-time\/privacy\.html"/, `${page} should link privacy from footer`);
     assert.match(html, /href="\/one-time\/terms\.html"/, `${page} should link terms from footer`);
     assert.match(html, /href="\/rabbi-member"/, `${page} should link member login from footer`);

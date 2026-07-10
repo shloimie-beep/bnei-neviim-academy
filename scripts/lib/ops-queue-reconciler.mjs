@@ -214,7 +214,7 @@ const SEED_ROWS = [
   {
     id: 'brief:telegram-ai-mode-one-time-rabbi',
     source: 'tasks_pending',
-    requested_work: 'Telegram AI mode and One Time/Rabbi setup',
+    requested_work: 'Telegram AI mode and One Time / Rabbi setup',
     current_status: 'completed_verified',
     evidence: ['Pending brief has stale deploy note, but later task #72 report says verified.'],
     report_paths: [

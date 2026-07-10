@@ -18,7 +18,7 @@ function sourceBlock(source, startPattern, endPattern) {
   return tail.slice(0, end);
 }
 
-test('provider portal exposes Rabbi/One Time WAPI setup section and save action', () => {
+test('provider portal exposes Rabbi / One Time WAPI setup section and save action', () => {
   assert.match(providerHtml, /data-provider-section="whatsapp_setup"/);
   assert.match(providerHtml, /providerWapiSetupEnabled\(\)/);
   assert.match(providerHtml, /one_time_mishnah_class/);

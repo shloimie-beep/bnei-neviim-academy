@@ -2,10 +2,10 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const test = require('node:test');
 
-test('OneTime focused landing copy uses launch funnel offer and safe CTAs', () => {
+test('One Time focused landing copy uses launch funnel offer and safe CTAs', () => {
   const html = fs.readFileSync('public/one-time/index.html', 'utf8');
 
-  assert.match(html, /OneTimeOneTime Mishnah/);
+  assert.match(html, /One Time Mishnayos/);
   assert.match(html, /Your Child Can Love Learning Mishnayos/);
   assert.match(html, /Sign Up Now/);
   assert.match(html, /signup-strip/);
@@ -26,7 +26,7 @@ test('OneTime focused landing copy uses launch funnel offer and safe CTAs', () =
   assert.match(html, /Everything your child needs to stay connected/);
   assert.match(html, /How It Works/);
   assert.match(html, /Quick answers before you start/);
-  assert.match(html, /You're on the list\. We will follow up with the current OneTimeOneTime class details\./);
+  assert.match(html, /You're on the list\. We will follow up with the current One Time class details\./);
   assert.match(html, /hero-media/);
   assert.match(html, /onetime-hero-vertical\.webp/);
   assert.doesNotMatch(html, /TODO: replace with final hero video\/image/);
@@ -55,7 +55,7 @@ test('OneTime focused landing copy uses launch funnel offer and safe CTAs', () =
   assert.doesNotMatch(html, /Academy and Hotline/i);
 });
 
-test('OneTime focused offer route and registries are declared', () => {
+test('One Time focused offer route and registries are declared', () => {
   const server = fs.readFileSync('server.js', 'utf8');
   const operations = fs.readFileSync('public/operations.html', 'utf8');
   const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));

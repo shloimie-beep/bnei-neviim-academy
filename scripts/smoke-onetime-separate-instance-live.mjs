@@ -44,7 +44,7 @@ try {
   for (const route of ['/', '/public', '/one-time', '/one-time/']) {
     const result = await fetchText(route);
     assertText(route, result.text, /Your Child Can Love Learning Mishnayos/i, 'canonical launch funnel headline missing');
-    assertText(route, result.text, /OneTimeOneTime Mishnah/i, 'One Time focused brand missing');
+    assertText(route, result.text, /One Time Mishnayos/i, 'One Time focused brand missing');
     assertText(route, result.text, /Sign Up Now/i, 'signup CTA missing');
     assertText(route, result.text, /signup-strip/i, 'free-class signup strip missing');
     assertText(route, result.text, /id="signupParentName"/i, 'signup parent name input missing');

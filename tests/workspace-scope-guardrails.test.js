@@ -14,7 +14,7 @@ test('workspace scope guardrail is wired into watchdog closeout', () => {
   assert.match(packageJson.scripts['watchdog:all'], /watchdog:workspace-scope/);
 });
 
-test('workspace scope guardrail covers OneTime parent email leak class', () => {
+test('workspace scope guardrail covers One Time parent email leak class', () => {
   assert.match(watchdog, /configuredOneTimePublicBaseUrl/);
   assert.match(watchdog, /oneTimeParentPortalPasswordResetUrl/);
   assert.match(watchdog, /\/one-time-parent\\\?reset=/);

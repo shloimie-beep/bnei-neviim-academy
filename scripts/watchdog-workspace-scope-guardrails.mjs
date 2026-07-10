@@ -49,42 +49,42 @@ check(
   parentInviteRoute,
   'WSG-ONETIME-PARENT-ROUTE-MISSING',
   'high',
-  'OneTime parent trial invite route could not be found for scope inspection.'
+  'One Time parent trial invite route could not be found for scope inspection.'
 );
 
 check(
   /function configuredOneTimePublicBaseUrl/.test(server),
   'WSG-ONETIME-BASE-HELPER',
   'high',
-  'OneTime-scoped flows need a dedicated public-base helper instead of deriving URLs from the current request host.'
+  'One Time scoped flows need a dedicated public-base helper instead of deriving URLs from the current request host.'
 );
 
 check(
   /ONE_TIME_PUBLIC_DOMAIN/.test(server) && /join\.onetimeonetime\.com/.test(server),
   'WSG-ONETIME-CANONICAL-DOMAIN',
   'high',
-  'The canonical OneTime public domain must be declared server-side.'
+  'The canonical One Time public domain must be declared server-side.'
 );
 
 check(
   /configuredOneTimePublicBaseUrl\(\)/.test(parentInviteRoute),
   'WSG-ONETIME-PARENT-BASE',
   'high',
-  'OneTime parent invite route must use configuredOneTimePublicBaseUrl().'
+  'One Time parent invite route must use configuredOneTimePublicBaseUrl().'
 );
 
 check(
   /oneTimeParentPortalPasswordResetUrl\(reset\.token\)/.test(parentInviteRoute),
   'WSG-ONETIME-PASSWORD-LINK',
   'high',
-  'OneTime parent password setup links must be rebuilt against the OneTime public base URL.'
+  'One Time parent password setup links must be rebuilt against the One Time public base URL.'
 );
 
 check(
   /\/one-time-parent\?reset=/.test(server),
   'WSG-ONETIME-PASSWORD-SETUP-PATH',
   'high',
-  'OneTime parent password setup links must land on /one-time-parent instead of the generic Academy parent portal.'
+  'One Time parent password setup links must land on /one-time-parent instead of the generic Academy parent portal.'
 );
 
 check(
@@ -92,22 +92,22 @@ check(
     && !/parent_portal:\s*scopedPublicUrl\(oneTimeBaseUrl,\s*'\/parent'\)/.test(parentInviteRoute),
   'WSG-ONETIME-PREVIEW-PARENT-PORTAL-PATH',
   'high',
-  'OneTime parent invite preview must advertise /one-time-parent, not /parent.'
+  'One Time parent invite preview must advertise /one-time-parent, not /parent.'
 );
 
 check(
   !/requestBaseUrl\(req\)/.test(parentInviteRoute),
   'WSG-ONETIME-NO-REQUEST-HOST',
   'high',
-  'OneTime parent invite route must not derive parent/member/classroom links from requestBaseUrl(req).',
-  'This prevents Academy-hosted admin requests from creating Academy URLs in OneTime emails.'
+  'One Time parent invite route must not derive parent/member/classroom links from requestBaseUrl(req).',
+  'This prevents Academy-hosted admin requests from creating Academy URLs in One Time emails.'
 );
 
 check(
   !/Bnei Neviim Academy|bneineviimacademy\.org/i.test(parentInviteRoute),
   'WSG-ONETIME-NO-ACADEMY-COPY',
   'high',
-  'OneTime parent invite route must not contain Academy branding or Academy domains.'
+  'One Time parent invite route must not contain Academy branding or Academy domains.'
 );
 
 check(
@@ -117,7 +117,7 @@ check(
     && /missing_live_class_url/.test(server),
   'WSG-ONETIME-LIVE-LINK-VALIDATION',
   'medium',
-  'OneTime parent invite route should validate and require a live class/Zoom link before production sending.'
+  'One Time parent invite route should validate and require a live class/Zoom link before production sending.'
 );
 
 check(
@@ -128,7 +128,7 @@ check(
     && /inviteMode = smokeMode \? 'smoke_test' : 'production'/.test(parentInviteRoute),
   'WSG-ONETIME-NO-TEST-INVITE-DEFAULT',
   'high',
-  'OneTime parent invites must be production/live by default and must not default to TEST student labels.'
+  'One Time parent invites must be production/live by default and must not default to TEST student labels.'
 );
 
 check(
@@ -138,38 +138,38 @@ check(
     && /oneTimeParentPortalPasswordResetUrl\(token\)/.test(server),
   'WSG-ONETIME-PARENT-FORGOT-PASSWORD',
   'high',
-  'OneTime forgot-password must send a OneTime-branded /one-time-parent reset link only for OneTime-eligible parent/member records.'
+  'One Time forgot-password must send a One Time branded /one-time-parent reset link only for One Time eligible parent/member records.'
 );
 
 check(
   /workspace:\s*'one_time_mishnah_class'/.test(parentInviteRoute),
   'WSG-ONETIME-MAIL-WORKSPACE',
   'high',
-  'OneTime parent invite sends must pass the OneTime project workspace to the email sender.'
+  'One Time parent invite sends must pass the One Time project workspace to the email sender.'
 );
 
 check(
   /identity\?\.oneTime/.test(sendEmailBlock) && /sendResendMessage/.test(sendEmailBlock),
   'WSG-ONETIME-RESEND-SENDER',
   'high',
-  'sendEmail must route OneTime-scoped mail through the OneTime Resend identity when configured.'
+  'sendEmail must route One Time scoped mail through the One Time Resend identity when configured.'
 );
 
 check(
   /parent_trial_invite:[\s\S]*Tonight's live shiur Zoom link/.test(emailTemplates),
   'WSG-ONETIME-PARENT-ZOOM-COPY',
   'medium',
-  'OneTime parent invite template should have a dedicated live-shiur link line.'
+  'One Time parent invite template should have a dedicated live-shiur link line.'
 );
 
 check(
-  /OneTimeOneTime Parent Setup/.test(oneTimeParentSetupPage)
+  /One Time Parent Setup/.test(oneTimeParentSetupPage)
     && /\/api\/parent-portal\/password\/reset/.test(oneTimeParentSetupPage)
     && /\/api\/one-time\/parent-password\/request/.test(oneTimeParentSetupPage)
     && !/\bBNA\b|Bnei Neviim|Academy|bneineviimacademy/i.test(oneTimeParentSetupPage),
   'WSG-ONETIME-PARENT-SETUP-NO-ACADEMY',
   'high',
-  'OneTime parent setup page must be a OneTime-only password setup surface with no Academy branding.'
+  'One Time parent setup page must be a One Time only password setup surface with no Academy branding.'
 );
 
 check(
@@ -182,7 +182,7 @@ check(
   ].every((source) => !/One Time home|Return to public site|href="\/one-time(?:[?#"])|href="\/"/.test(source)),
   'WSG-ONETIME-NO-PUBLIC-RETURN-LINKS',
   'medium',
-  'Logged-in OneTime launch surfaces must not show public-home/public-site detours.'
+  'Logged-in One Time launch surfaces must not show public-home/public-site detours.'
 );
 
 check(
@@ -193,14 +193,14 @@ check(
     && /currentMemberSessionToken/.test(oneTimeClassroomPage),
   'WSG-ONETIME-NO-CODE-FALLBACK-UX',
   'high',
-  'OneTime library/classroom must load through member session or secure invite link without visible access-code fallback/recovery UI.'
+  'One Time library/classroom must load through member session or secure invite link without visible access-code fallback/recovery UI.'
 );
 
 check(
   !/parent_trial_invite:[\s\S]{0,900}Bnei Neviim Academy|parent_trial_invite:[\s\S]{0,900}bneineviimacademy\.org/i.test(emailTemplates),
   'WSG-ONETIME-TEMPLATE-NO-ACADEMY',
   'high',
-  'OneTime parent invite template must not include Academy branding or Academy domains.'
+  'One Time parent invite template must not include Academy branding or Academy domains.'
 );
 
 check(
@@ -216,7 +216,7 @@ check(
     && /BNA brand = cream \+ navy \+ teal\/cyan/.test(brandMemory),
   'WSG-BRAND-MEMORY',
   'medium',
-  'Brand memory must preserve separate OneTime and BNA palettes.'
+  'Brand memory must preserve separate One Time and BNA palettes.'
 );
 
 const report = {

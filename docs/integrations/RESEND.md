@@ -2,7 +2,7 @@
 
 Date checked: 2026-06-29
 
-Scope: OneTimeOneTime Mishnah outbound sender identity and inbound received
+Scope: One Time Mishnayos outbound sender identity and inbound received
 email capture into first-party BNA Operations CRM. This file contains no
 secrets.
 
@@ -20,7 +20,7 @@ secrets.
 ## Current External State
 
 - Resend domain: `onetimeonetime.com`
-- Sender: `OneTimeOneTime Mishnah <info@onetimeonetime.com>`
+- Sender: `One Time Mishnayos <info@onetimeonetime.com>`
 - Reply-to: `info@onetimeonetime.com`
 - Receiving region: `us-east-1` / North Virginia
 - Sending domain, DKIM, and return-path records are treated as verified per
@@ -43,7 +43,7 @@ Required server-side names:
 - `RESEND_API_KEY`
 - `RESEND_DOMAIN=onetimeonetime.com`
 - `RESEND_FROM_EMAIL=info@onetimeonetime.com`
-- `RESEND_FROM_NAME=OneTimeOneTime Mishnah`
+- `RESEND_FROM_NAME=One Time Mishnayos`
 - `RESEND_REPLY_TO=info@onetimeonetime.com`
 - `RESEND_WEBHOOK_SECRET`
 
@@ -53,8 +53,8 @@ screenshots, logs, or task titles.
 
 ## Outbound Behavior
 
-- OneTime/Rabbi Sheller scoped email uses:
-  `OneTimeOneTime Mishnah <info@onetimeonetime.com>`.
+- One Time / Rabbi Sheller scoped email uses:
+  `One Time Mishnayos <info@onetimeonetime.com>`.
 - Reply-to is `info@onetimeonetime.com`.
 - No real email send is allowed without explicit Shloimie approval and a named
   recipient.
@@ -105,7 +105,7 @@ Recognized inbound recipients:
 - `info@onetimeonetime.com`
 - Any `@onetimeonetime.com` address from the Resend catch-all path
 
-Recognized OneTime inbound mail is scoped to:
+Recognized One Time inbound mail is scoped to:
 
 - `workspace_key=rabbi_sheller_provider`
 - `project_key=one_time_mishnah_class`

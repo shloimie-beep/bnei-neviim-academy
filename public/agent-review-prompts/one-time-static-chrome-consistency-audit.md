@@ -72,7 +72,7 @@ Focus: canonical static One Time header/footer consistency across public, member
 1. Open /operations/agent-review?prompt=one-time-static-chrome-consistency-audit first when available, then open this public prompt URL and the drop-off page.
 2. Open /one-time, /one-time/mishnayos, /rabbi-member, /member-library, /one-time-classroom, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.
 3. For each route capture 1440px, 1024px, 768px, 430px, and 390px screenshots: full page, first viewport, header/topbar crop, and footer crop if present.
-4. Compare header contracts: sticky or stable placement, black/charcoal background, large logo, brand text OneTimeOneTime Mishnah / Worldwide Live Mishnayos, public nav labels, member/classroom nav labels, active yellow nav with black text, and inactive dark/cream/yellow styling.
+4. Compare header contracts: sticky or stable placement, black/charcoal background, large logo, brand text One Time Mishnayos / Worldwide Live Mishnayos, public nav labels, member/classroom nav labels, active yellow nav with black text, and inactive dark/cream/yellow styling.
 5. Compare footer contracts: brand, mission line, Privacy, Terms, Member Login, Support, copyright year, and the public closer "And the world will be filled with the knowledge of Hashem." where appropriate.
 6. On mobile, verify nav labels remain readable, tap targets are at least 44px, controlled nav scroll does not make the page overflow, and no vertical-letter or squeezed nav appears.
 7. Do not patch the header/footer. If the dirty worktree or control tower shows overlapping app-visible files, mark implementation BLOCKED and return a patch plan only.

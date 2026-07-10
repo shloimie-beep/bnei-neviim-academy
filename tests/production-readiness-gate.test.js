@@ -93,7 +93,7 @@ test('production readiness gate blocks external blockers, proof gaps, queued pac
     assessment: {
       production_ready: false,
       status: 'not_production_complete',
-      reason: ['full OneTime launch has external Stripe/WAPI/campaign blockers'],
+      reason: ['full One Time launch has external Stripe/WAPI/campaign blockers'],
       avoid_colliding_with: [
         {
           job_id: '382',
@@ -319,12 +319,12 @@ test('production readiness snapshot surfaces agent-fleet auto-deploy preflight p
   assert.match(script, /Auto-deploy performed by readiness proof/);
 });
 
-test('production readiness snapshot includes OneTime setup bucket summary', () => {
+test('production readiness snapshot includes One Time setup bucket summary', () => {
   const script = fs.readFileSync(path.join(repoRoot, 'scripts', 'production-readiness-snapshot.mjs'), 'utf8');
 
   assert.match(script, /one_time_setup/);
   assert.match(script, /operator_blocker_items/);
-  assert.match(script, /OneTime Setup Buckets/);
+  assert.match(script, /One Time Setup Buckets/);
   assert.match(script, /public_launch_smoke/);
   assert.match(script, /No-Write Smoke/);
   assert.match(script, /no-write-live-smoke-readback\.json/);

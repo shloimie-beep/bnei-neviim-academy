@@ -20,7 +20,7 @@
 - On 2026-07-08, the canonical shared One Time Drive folder was visible
   through the Drive connector but not mounted under this desktop's
   `G:\My Drive`; local smoke testing used
-  `G:\My Drive\OneTime Vimeo Studio Desktop Test`. V1 automatic trimming is
+  `G:\My Drive\One Time Vimeo Studio Desktop Test`. V1 automatic trimming is
   limited to leading/trailing black or silence edges and must not be described
   as semantic class-start/class-end detection.
 - On 2026-07-08, Shloimie's broad approval allowed safe continuation of the

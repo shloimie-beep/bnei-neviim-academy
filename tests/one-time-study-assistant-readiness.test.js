@@ -151,7 +151,7 @@ test('server declares source-version schema, private route, scoped allowlist, an
     'raw_source_text_returned: false',
     "routePath === '/api/bna/one-time/study-assistant-readiness' && method === 'GET'",
     "app.post('/api/one-time-classroom/bot'",
-    'OneTime classroom bot is disabled pending explicit operator approval',
+    'One Time classroom bot is disabled pending explicit operator approval',
     'source_grounded_only: true',
     'invented_sources_allowed: false',
   ].forEach((snippet) => assert.ok(server.includes(snippet), snippet));

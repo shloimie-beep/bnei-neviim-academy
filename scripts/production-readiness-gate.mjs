@@ -222,7 +222,7 @@ function buildBlockerGroups({
       : runBlockers.map((item) => item.requirement_id || item.title || 'run blocker');
     add({
       id: 'external_setup_blockers',
-      title: 'External OneTime setup values or approvals are missing',
+      title: 'External One Time setup values or approvals are missing',
       owner: 'Shloimie / provider account owners',
       count: evidence.length,
       evidence,
@@ -346,7 +346,7 @@ export function buildProductionReadinessGate(snapshot = {}, options = {}) {
   }
   if (externalSetupItems.length > 0) {
     const setupEvidence = externalSetupItems.map(formatExternalSetupEvidence).filter(Boolean).join('; ');
-    blockers.push(`OneTime setup checklist still has ${externalSetupItems.length} operator setup blocker(s): ${setupEvidence}.`);
+    blockers.push(`One Time setup checklist still has ${externalSetupItems.length} operator setup blocker(s): ${setupEvidence}.`);
   }
   if (!publicLaunchSmokeReady(publicLaunchSmoke)) {
     blockers.push(`Public launch no-write smoke proof is not launch-ready: status=${publicLaunchSmoke.status || 'missing'}; ready=${publicLaunchSmoke.ready === true}; fresh=${publicLaunchSmoke.fresh_for_launch_gate === true}; blocker=${publicLaunchSmoke.blocker || 'No tracked ready smoke proof.'}`);

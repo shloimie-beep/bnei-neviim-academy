@@ -465,7 +465,7 @@ const ONE_TIME_PUBLIC_DOMAIN = String(process.env.ONE_TIME_PUBLIC_DOMAIN || 'joi
   .replace(/\/+$/, '') || 'join.onetimeonetime.com';
 const ONE_TIME_EMAIL_DOMAIN = 'onetimeonetime.com';
 const ONE_TIME_EMAIL_FROM = 'info@onetimeonetime.com';
-const ONE_TIME_EMAIL_FROM_NAME = 'OneTimeOneTime Mishnah';
+const ONE_TIME_EMAIL_FROM_NAME = 'One Time Mishnayos';
 const ONE_TIME_EMAIL_REPLY_TO = ONE_TIME_EMAIL_FROM;
 const INSTANCE_RUNTIME_FLAGS = buildOneTimeRuntimeFlags(process.env);
 const ONE_TIME_DRIVE_ROOT_ID = '16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2';
@@ -4342,10 +4342,10 @@ function oneTimeParentTrialInvitePreflight({
   const liveClassUrlPresent = Boolean(liveClassUrl);
 
   if (!normalizeEmail(parentEmail)) {
-    addBlocker('missing_parent_email', 'parent_email', 'A parent email is required before any OneTime invite can be sent.');
+    addBlocker('missing_parent_email', 'parent_email', 'A parent email is required before any One Time invite can be sent.');
   }
   if (!smokeMode && !parentNamePresent) {
-    addBlocker('missing_parent_name', 'parent_name', 'A real parent display name is required for launch-ready OneTime invites.');
+    addBlocker('missing_parent_name', 'parent_name', 'A real parent display name is required for launch-ready One Time invites.');
   }
   if (!smokeMode && !studentNamePresent) {
     addBlocker('missing_student_name', 'student_name', 'A real live student display name is required before resending the parent invite.');
@@ -7068,18 +7068,18 @@ async function sendParentPasswordResetEmail({ parentEmail, url, req, ttlMs = PAR
 
 async function sendOneTimeParentPasswordResetEmail({ parentEmail, url, req, ttlMs = ONE_TIME_PARENT_TRIAL_PASSWORD_SETUP_TTL_MS }) {
   const expiresIn = formatDurationForEmail(ttlMs);
-  const subject = 'Reset your OneTimeOneTime parent password';
+  const subject = 'Reset your One Time parent password';
   const text = [
     'Hi,',
     '',
-    'Use this secure link to set a new OneTimeOneTime parent password:',
+    'Use this secure link to set a new One Time parent password:',
     url,
     '',
     `This link stays active for ${expiresIn}. If it expires, use the parent setup page to email yourself a fresh link.`,
     'If you did not request it, you can ignore this email.',
     '',
     'Rabbi Elie Scheller',
-    'OneTimeOneTime Mishnah',
+    'One Time Mishnayos',
   ].join('\n');
   try {
     const result = await sendEmail({
@@ -7364,23 +7364,23 @@ async function sendProviderPasswordSetupEmail({ provider, url, req, toEmail = ''
   }
   const username = limitText(provider.login_username, 120) || `provider-${provider.id}`;
   const oneTimeProvider = isOneTimeClassMediaProvider(provider);
-  const providerName = limitText(provider.provider_name || provider.display_name, 160) || (oneTimeProvider ? 'OneTimeOneTime Mishnah' : 'your BNA provider listing');
+  const providerName = limitText(provider.provider_name || provider.display_name, 160) || (oneTimeProvider ? 'One Time Mishnayos' : 'your BNA provider listing');
   const subject = oneTimeProvider
-    ? 'Set up your OneTimeOneTime Mishnah workspace password'
+    ? 'Set up your One Time Mishnah Class workspace password'
     : 'Set up your BNA provider workspace password';
   const greeting = `Hi ${limitText(provider.contact_name, 80) || 'there'},`;
   const text = oneTimeProvider
     ? [
       greeting,
       '',
-      `Your OneTimeOneTime Mishnah workspace is ready for ${providerName}.`,
+      `Your One Time Mishnah Class workspace is ready for ${providerName}.`,
       '',
       `Username: ${username}`,
       `Set your password here: ${url}`,
       '',
-      'This secure link expires in 1 hour. After setting your password, you can manage the OneTime Mishnah class mailbox, contacts, class media, WhatsApp setup, and provider messages from your workspace.',
+      'This secure link expires in 1 hour. After setting your password, you can manage the One Time Mishnah class mailbox, contacts, class media, WhatsApp setup, and provider messages from your workspace.',
       '',
-      'OneTimeOneTime Mishnah Class',
+      'One Time Mishnah Class',
     ].join('\n')
     : [
       greeting,
@@ -8369,7 +8369,7 @@ function whatsAppComposeUrl(phone, body) {
 function oneTimePublicWhatsAppMessage(intent = '') {
   const normalizedIntent = String(intent || '').trim().toLowerCase();
   const base = [
-    "Hi, I'm interested in Rabbi Scheller's OneTime Mishnayos class.",
+    "Hi, I'm interested in Rabbi Scheller's One Time Mishnayos class.",
     'Please send me the current free-class information.',
   ];
   if (normalizedIntent.includes('schedule')) base.push('I also have a schedule question.');
@@ -10724,7 +10724,7 @@ function wantsOneTimeProviderShell(req) {
 
 function oneTimeProviderShellHtml(html = '') {
   return String(html || '')
-    .replace(/<title>[\s\S]*?<\/title>/, '<title>OneTimeOneTime Rabbi Provider Portal</title>')
+    .replace(/<title>[\s\S]*?<\/title>/, '<title>One Time Rabbi Provider Portal</title>')
     .replace(
       '<body class="bna-shell bna-portal-page bna-provider-page"',
       '<body class="bna-shell bna-portal-page bna-provider-page one-time-review-active"'
@@ -10733,16 +10733,16 @@ function oneTimeProviderShellHtml(html = '') {
       '<span class="brand-mark" aria-hidden="true">BNA</span>',
       '<span class="brand-mark" aria-hidden="true"><img src="/images/one-time/brand/onetimelogo.webp" alt=""></span>'
     )
-    .replace('<strong>Bnei Neviim Academy</strong>', '<strong>OneTimeOneTime</strong>')
+    .replace('<strong>Bnei Neviim Academy</strong>', '<strong>One Time</strong>')
     .replace('<span>Provider portal</span>', '<span>Rabbi provider account</span>')
     .replace('<a class="portal-topbar-link" href="/">Public site</a>', '<a class="portal-topbar-link" href="/one-time">One Time</a>')
     .replace('<a class="portal-topbar-link" href="/service-providers">Directory</a>', '<a class="portal-topbar-link secondary-link" href="/one-time-parent">Parent access</a>')
     .replace('<a class="portal-topbar-link" href="/provider">Provider home</a>', '<a class="portal-topbar-link secondary-link" href="/student/login">Student login</a>')
     .replace('<a class="portal-topbar-link" href="/providers/join?onboard=provider">Join</a>', '<a class="portal-topbar-link secondary-link" href="/one-time-classroom.html">Classroom</a>')
     .replace('<span class="brand-chip">Scoped Provider Workspace</span>', '<span class="brand-chip">One Time provider</span>')
-    .replace(/Bnei Neviim Academy/g, 'OneTimeOneTime')
-    .replace(/BNA Academy/g, 'OneTimeOneTime')
-    .replace(/BNA Provider Portal/g, 'OneTimeOneTime Rabbi Provider Portal')
+    .replace(/Bnei Neviim Academy/g, 'One Time')
+    .replace(/BNA Academy/g, 'One Time')
+    .replace(/BNA Provider Portal/g, 'One Time Rabbi Provider Portal')
     .replace(/BNA Helper/g, 'Rabbi Scheller Helper')
     .replace(/Ask BNA Helper/g, 'Ask Rabbi Scheller Helper');
 }
@@ -10764,7 +10764,7 @@ function wantsOneTimeStudentShell(req) {
 
 function oneTimeStudentShellHtml(html = '') {
   return String(html || '')
-    .replace(/<title>[\s\S]*?<\/title>/, '<title>OneTimeOneTime Student Login</title>')
+    .replace(/<title>[\s\S]*?<\/title>/, '<title>One Time Student Login</title>')
     .replace(
       '<body class="bna-shell bna-portal-page bna-student-page"',
       '<body class="bna-shell bna-portal-page bna-student-page one-time-student-login-active"'
@@ -10773,9 +10773,9 @@ function oneTimeStudentShellHtml(html = '') {
       '<span class="brand-mark" aria-hidden="true">BNA</span>',
       '<span class="brand-mark" aria-hidden="true"><img src="/images/one-time/brand/onetimelogo.webp" alt=""></span>'
     )
-    .replace(/Bnei Neviim Academy/g, 'OneTimeOneTime')
-    .replace(/BNA Academy/g, 'OneTimeOneTime')
-    .replace(/BNA Student Goal Board/g, 'OneTimeOneTime Student Login')
+    .replace(/Bnei Neviim Academy/g, 'One Time')
+    .replace(/BNA Academy/g, 'One Time')
+    .replace(/BNA Student Goal Board/g, 'One Time Student Login')
     .replace(/Student goal board/g, 'Student login')
     .replace('<span>Student login</span>', '<span>One Time student access</span>')
     .replace('<a class="portal-topbar-link" href="/" data-student-topbar-public>Public site</a>', '<a class="portal-topbar-link" href="/one-time" data-student-topbar-public>One Time</a>')
@@ -10783,11 +10783,11 @@ function oneTimeStudentShellHtml(html = '') {
     .replace('<a class="portal-topbar-link" href="/student" data-student-topbar-home>Student home</a>', '<a class="portal-topbar-link secondary-link" href="/student/login" data-student-topbar-home>Student login</a>')
     .replace('<a class="portal-topbar-link" href="#bnaBotPanel" data-bna-assistant-open data-student-topbar-assistant aria-controls="bnaBotPanel">Assistant/help</a>', '<a class="portal-topbar-link secondary-link" href="#bnaBotPanel" data-bna-assistant-open data-student-topbar-assistant aria-controls="bnaBotPanel">Helper</a>')
     .replace('<a class="portal-topbar-link" href="/parent/login" data-student-topbar-parent-login>Parent login</a>', '<a class="portal-topbar-link secondary-link" href="/one-time-parent" data-student-topbar-parent-login>Parent login</a>')
-    .replace('<span class="brand-chip" data-student-topbar-accountability>Daily accountability</span>', '<span class="brand-chip" data-student-topbar-accountability>One Time Mishnah</span>')
+    .replace('<span class="brand-chip" data-student-topbar-accountability>Daily accountability</span>', '<span class="brand-chip" data-student-topbar-accountability>One Time Mishnayos</span>')
     .replace('<h1 id="pageTitle">Student Goal Board</h1>', '<h1 id="pageTitle">Student Login</h1>')
     .replace(
       '<p class="hero-text" id="pageIntro">Open your private link, review your Torah progress, and work through your goals honestly.</p>',
-      '<p class="hero-text" id="pageIntro">Sign in with the username and password your parent set for the OneTimeOneTime Mishnah class.</p>'
+      '<p class="hero-text" id="pageIntro">Sign in with the username and password your parent set for the One Time Mishnayos class.</p>'
     )
     .replace('<div class="language-toggle" aria-label="Language">', '<div class="language-toggle hidden" aria-label="Language" aria-hidden="true" style="display:none">')
     .replace('<button id="langHeButton" type="button" data-lang="he">HE</button>', '<button id="langHeButton" type="button" data-lang="he"></button>')
@@ -30089,7 +30089,7 @@ async function getOneTimeMemberLibraryForMemberEmail(memberEmail = '', db = pool
     [email]
   )).rows[0];
   if (!access) {
-    const error = new Error('No active OneTime member access was found for this login');
+    const error = new Error('No active One Time member access was found for this login');
     error.statusCode = 403;
     throw error;
   }
@@ -30179,7 +30179,7 @@ async function getOneTimeVisibleLibraryItemForMemberEmail({ memberEmail = '', it
     [email]
   )).rows[0];
   if (!access) {
-    const error = new Error('No active OneTime member access was found for this login');
+    const error = new Error('No active One Time member access was found for this login');
     error.statusCode = 403;
     throw error;
   }
@@ -36807,7 +36807,7 @@ async function ensureWs11CommunityFoundation(db = pool) {
       'rabbi-mishnah-learning-community',
       'Rabbi Mishnah Learning Community',
       'Mishnah Community',
-      'A moderated One Time Mishnah class space for lessons, worksheets, student questions, parent-safe wins, and Rabbi-approved progress.',
+      'A moderated One Time Mishnayos class space for lessons, worksheets, student questions, parent-safe wins, and Rabbi-approved progress.',
       'Rabbi Elie Scheller',
       JSON.stringify({
         source: 'ws11_seed',
@@ -36824,7 +36824,7 @@ async function ensureWs11CommunityFoundation(db = pool) {
        description, primary_teacher, status, visibility, sort_order, metadata
      ) VALUES (
        $1, $2, $3, 'mishnah-foundations', 'Mishnah Foundations', 'Foundations',
-       'The first One Time Mishnah course shell for reviewed classes, source sheets, questions, and student participation.',
+       'The first One Time Mishnayos course shell for reviewed classes, source sheets, questions, and student participation.',
        'Rabbi Elie Scheller', 'active', 'student', 10, $4::jsonb
      )
      ON CONFLICT (slug) DO UPDATE SET
@@ -44128,8 +44128,8 @@ async function handleResendInboundWebhook(req, res) {
           id: result.communication_id,
           channel: 'email',
           direction: 'inbound',
-          subject: event.data?.subject || 'OneTime email received',
-          summary: event.data?.subject || 'OneTime email received',
+          subject: event.data?.subject || 'One Time email received',
+          summary: event.data?.subject || 'One Time email received',
           contact_label: 'Email contact',
           workspace_key: result.workspace_key,
           project_key: result.project_key,
@@ -49280,7 +49280,7 @@ function oneTimeMailboxBody(row = {}, maxLength = 8000) {
 
 function oneTimeMailboxSubject(subject = '') {
   const value = String(subject || '').trim();
-  if (!value) return 'OneTimeOneTime email';
+  if (!value) return 'One Time email';
   return /^re:/i.test(value) ? value : `Re: ${value}`;
 }
 
@@ -49317,7 +49317,7 @@ function oneTimeMailboxThreadView(row = {}) {
   const latestInbound = row.latest_direction === 'inbound' || row.direction === 'inbound';
   return {
     thread_key: oneTimeMailboxThreadKey(row),
-    subject: row.subject || 'OneTimeOneTime email',
+    subject: row.subject || 'One Time email',
     contact_id: row.contact_id || null,
     contact_name: row.contact_full_name || row.from_name || row.to_name || 'Unknown sender',
     contact_email: normalizeEmail(row.contact_primary_email || row.from_address || row.to_address || '') || '',
@@ -49480,7 +49480,7 @@ async function oneTimeMailboxMessages(req, threadKeyInput = '') {
     latestInbound,
     thread: {
       thread_key: threadKey,
-      subject: latest?.subject || rows[0]?.subject || 'OneTimeOneTime email',
+      subject: latest?.subject || rows[0]?.subject || 'One Time email',
       reply_to_address: normalizeEmail(latestInbound?.from_address || ''),
       reply_to_name: latestInbound?.from_name || latestInbound?.contact_full_name || '',
       messages,
@@ -54539,7 +54539,7 @@ app.post('/api/one-time/parent-password/request', async (req, res) => {
         to: parentEmail,
         context: { metadata: { one_time_parent_password_request_missing_member: true } },
         status: 'skipped',
-        error: 'No OneTime parent/member access exists for this email.',
+        error: 'No One Time parent/member access exists for this email.',
       }).catch(() => {});
       return res.json({ success: true, sent: true });
     }
@@ -56386,7 +56386,7 @@ function buildOneTimeOnboardingFields(body = {}) {
       }
     : {};
   const transcript = [
-    'One Time Mishnah preview onboarding intake.',
+    'One Time Mishnayos preview onboarding intake.',
     parentName ? `Contact name: ${parentName}` : '',
     parentEmail ? `Email: ${parentEmail}` : '',
     parentPhone ? `Phone/WhatsApp: ${parentPhone}` : '',
@@ -56427,7 +56427,7 @@ function buildOneTimeOnboardingFields(body = {}) {
 }
 
 function oneTimeOnboardingPreview(fields = {}) {
-  const leadTitle = `One Time Mishnah lead: ${fields.parentName || fields.parentEmail || fields.parentPhone || 'new prospect'}`;
+  const leadTitle = `One Time Mishnayos lead: ${fields.parentName || fields.parentEmail || fields.parentPhone || 'new prospect'}`;
   return {
     lead_title: leadTitle,
     intent: fields.intent,
@@ -56702,7 +56702,7 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
       ]
     )).rows[0];
     const task = await createTaskFromText({
-      title: `Review One Time Mishnah onboarding lead: ${fields.parentName || fields.learnerName || fields.parentEmail || lead.id}`,
+      title: `Review One Time Mishnayos onboarding lead: ${fields.parentName || fields.learnerName || fields.parentEmail || lead.id}`,
       raw_text: fields.transcript,
       notes: [
         fields.transcript,
@@ -56724,7 +56724,7 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
       ai_parsed: {
         parser: 'one-time-preview-onboarding-v1',
         kind: 'one_time_onboarding_review',
-        display_title: `Review One Time Mishnah onboarding lead: ${fields.parentName || fields.learnerName || fields.parentEmail || lead.id}`,
+        display_title: `Review One Time Mishnayos onboarding lead: ${fields.parentName || fields.learnerName || fields.parentEmail || lead.id}`,
         original_text: fields.transcript,
         lead_id: lead.id,
         contact_id: contact?.id || null,
@@ -62672,7 +62672,7 @@ function wapiCredentialsForScope(scope = {}) {
 function oneTimeWapiAutoReplyMessage(classLink = ONE_TIME_WHATSAPP_CLASS_LINK) {
   const link = String(classLink || '').trim();
   return [
-    'Hi, welcome to the OneTimeOneTime Mishnah class.',
+    'Hi, welcome to the One Time Mishnayos class.',
     `Here is the link for today's shiur: ${link}`,
     '',
     'Thank you for your patience while we tune the Zoom setup and sound. The class is free while we finish setting up the technology.',
@@ -62726,8 +62726,8 @@ function oneTimeWapiAutoReplyReadiness(scope = {}) {
   if (!ONE_TIME_WAPI_AUTO_REPLY_ENABLED) blockers.push('ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled');
   if (!ONE_TIME_WAPI_AUTO_REPLY_APPROVED) blockers.push('ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY');
   if (!classLinkConfigured) blockers.push('ONE_TIME_WHATSAPP_CLASS_LINK missing');
-  if (!credentials.token) blockers.push('OneTime WAPI token missing');
-  if (credentials.token && !oneTimeScopedSender) blockers.push('OneTime auto-reply requires one_time_scoped WAPI credentials');
+  if (!credentials.token) blockers.push('One Time WAPI token missing');
+  if (credentials.token && !oneTimeScopedSender) blockers.push('One Time auto-reply requires one_time_scoped WAPI credentials');
   return {
     ready,
     blockers,
@@ -62857,10 +62857,10 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
   const attempt = await createOutboundWapiCommunicationAttempt({
     recipient,
     messageBody: replyBody,
-    summary: `OneTime WhatsApp auto-reply attempted to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240),
+    summary: `One Time WhatsApp auto-reply attempted to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240),
     projectId: recipient.project_id,
     source: 'one_time_wapi_auto_reply',
-    createdBy: 'OneTime WAPI bot',
+    createdBy: 'One Time WAPI bot',
     sourceContext: {
       auto_reply_type: 'one_time_welcome_class_link',
       inbound_communication_id: communication?.id || null,
@@ -62889,7 +62889,7 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
     });
     const outbound = await updateOutboundWapiCommunicationResult(attempt.id, {
       sendResult,
-      summary: `OneTime WhatsApp auto-reply sent to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240),
+      summary: `One Time WhatsApp auto-reply sent to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240),
       metadata: {
         auto_reply_type: 'one_time_welcome_class_link',
         inbound_communication_id: communication?.id || null,
@@ -64066,7 +64066,7 @@ app.post('/api/webhooks/wapi', async (req, res) => {
             ? `Duplicate WAPI message; linked to existing communication #${communicationResult.communication?.id}.`
             : `Filed into contact communications #${communicationResult.communication?.id}.`,
           autoReplyResult
-            ? `OneTime auto-reply ${autoReplyResult.status || 'not_evaluated'}.`
+            ? `One Time auto-reply ${autoReplyResult.status || 'not_evaluated'}.`
             : null,
         ].filter(Boolean).join(' '),
       ]
@@ -70011,7 +70011,7 @@ function assistantProjectForSurface(surface) {
       projectKey: ONE_TIME_PROJECT_KEY,
       name: 'One Time Mishnah Class',
       shortName: 'One Time',
-      description: 'Rabbi Sheller provider workspace for the OneTimeOneTime Mishnayos class.',
+      description: 'Rabbi Sheller provider workspace for the One Time Mishnayos class.',
       workspaceKey: ONE_TIME_PROVIDER_WORKSPACE_KEY,
     };
   }
@@ -70727,7 +70727,7 @@ function publicAssistantUnknownPolicyQuestion(message = '') {
 function publicAssistantPolicyBoundaryReply(body = {}, actor = {}) {
   const surface = normalizeAssistantSurface(body.surface || body.page || body.context?.surface);
   if (surface === 'one_time_public') {
-    return 'I do not have a verified OneTime policy for that in the current public class context. I can capture the question for Rabbi Scheller follow-up, or I can help with the schedule, the program, the 30-day trial, or member access.';
+    return 'I do not have a verified One Time policy for that in the current public class context. I can capture the question for Rabbi Scheller follow-up, or I can help with the schedule, the program, the 30-day trial, or member access.';
   }
   return assistantResponseIsHebrew(body, actor)
     ? 'אין לי מדיניות מאומתת של BNA בנושא הזה בתוך התוכן הציבורי הנוכחי. אפשר לשלוח את השאלה לשלוימי, או שאפשר לשאול אותי על תוכנית 10-1, שלטון עצמי, התאמה לילד, או איך מתחילים שיחה.'
@@ -70814,7 +70814,7 @@ function publicAssistantActionReply(body = {}, actor = {}, result = {}, kind = '
       : `I captured that suggestion as a Shloimie decision${taskId ? ` #${taskId}` : ''}, so it does not disappear inside the chat.`;
   }
   if (surface === 'one_time_public') {
-    return `Thank you. I saved this for Rabbi Scheller's OneTime team${ticketId ? ` as ticket #${ticketId}` : ''}. No WhatsApp or email was sent from this public chat; the team will use the approved OneTime follow-up path.`;
+    return `Thank you. I saved this for Rabbi Scheller's One Time team${ticketId ? ` as ticket #${ticketId}` : ''}. No WhatsApp or email was sent from this public chat; the team will use the approved One Time follow-up path.`;
   }
   return he
     ? `תודה. העברתי את ההודעה לשלוימי${ticketId ? ` בכרטיס #${ticketId}` : ''}. לפרטי קשר נוספים, השתמשו בטופס יצירת הקשר המאושר.`
@@ -70899,13 +70899,13 @@ async function buildAssistantConversationMemory({ actor = {}, thread = {}, db = 
 async function buildPublicAssistantKnowledgeBase({ db = pool, message = '', surface = '' } = {}) {
   if (normalizeAssistantSurface(surface) === 'one_time_public') {
     return [
-      'OneTimeOneTime public assistant scope: Rabbi Scheller digital assistant for the OneTime Mishnayos class only.',
+      'One Time public assistant scope: Rabbi Scheller digital assistant for the One Time Mishnayos class only.',
       'Public topics allowed: class schedule, program fit, 30-day trial, public member-login path, worksheets/source sheets when publicly described, and routing public questions to Rabbi Scheller follow-up.',
       'Lead capture rule: public visitors may ask for follow-up or leave contact interest; the server may record a first-party scoped follow-up item, but the assistant must not claim WhatsApp, email, Zoom, payment, access, Vimeo, Drive, or transcript actions happened unless a current server result explicitly says so.',
-      'Workspace boundary: project one_time_mishnah_class, workspace rabbi_sheller_provider. Do not use BNA Academy enrollment, BNA accountability, BNA service-provider, BNA parent/student portal, or generic BNA public helper knowledge as OneTime public facts.',
-      'Transcript boundary: raw class transcripts and recordings are private. Only approved OneTime class summaries or transcript-derived knowledge rows may be used after the transcript pipeline promotes them through a reviewed OneTime/Rabbi policy.',
+      'Workspace boundary: project one_time_mishnah_class, workspace rabbi_sheller_provider. Do not use BNA Academy enrollment, BNA accountability, BNA service-provider, BNA parent/student portal, or generic BNA public helper knowledge as One Time public facts.',
+      'Transcript boundary: raw class transcripts and recordings are private. Only approved One Time class summaries or transcript-derived knowledge rows may be used after the transcript pipeline promotes them through a reviewed One Time / Rabbi policy.',
       'Private-data boundary: do not expose parent billing, attendance, student transcript, access code, login, member library, provider CRM, Operations, admin diagnostics, or other student/family data in this public chat.',
-      'Unknown policy rule: if a OneTime policy is not verified in the current OneTime public context, say it is not verified and offer to capture the question for Rabbi Scheller follow-up.',
+      'Unknown policy rule: if a One Time policy is not verified in the current One Time public context, say it is not verified and offer to capture the question for Rabbi Scheller follow-up.',
     ].join('\n');
   }
   const base = [
@@ -70970,11 +70970,11 @@ async function buildSafeAssistantContextSummary({ actor = {}, message = '', thre
   const roleLines = [];
   let sourceBoundary = 'public BNA website/content only; no private portal, provider, student, family, or Operations records.';
   if (surface === 'one_time_public') {
-    roleLines.push("Role mode: Rabbi Scheller digital assistant for the public OneTime Mishnayos class landing. Stay in English and answer only public class, schedule, program, 30-day trial, member-login, and Rabbi Scheller question-routing topics.");
+    roleLines.push("Role mode: Rabbi Scheller digital assistant for the public One Time Mishnayos class landing. Stay in English and answer only public class, schedule, program, 30-day trial, member-login, and Rabbi Scheller question-routing topics.");
     roleLines.push('One Time scope rule: do not show or infer BNA Academy enrollment, BNA school goals, private parent billing, attendance, student transcripts, access codes, other students, admin diagnostics, generic BNA helper knowledge, or Operations records.');
     roleLines.push('WhatsApp rule: if the visitor asks for WhatsApp/class-link follow-up, capture the request only. Do not claim a WhatsApp message was sent or that WAPI/Happy is connected unless a current server result explicitly confirms it.');
-    roleLines.push('Transcript rule: do not use or mention raw class transcripts as knowledge. Use only approved OneTime transcript-derived summaries when supplied by the server context.');
-    sourceBoundary = 'OneTime public landing/class/signup context only; no BNA Academy public knowledge, authenticated parent, student, billing, attendance, transcript, member, provider, WAPI, or Operations data.';
+    roleLines.push('Transcript rule: do not use or mention raw class transcripts as knowledge. Use only approved One Time transcript-derived summaries when supplied by the server context.');
+    sourceBoundary = 'One Time public landing/class/signup context only; no BNA Academy public knowledge, authenticated parent, student, billing, attendance, transcript, member, provider, WAPI, or Operations data.';
   } else if (actor.type === 'parent') {
     roleLines.push('Role mode: parent accountability coach. Remember parent goals/interests only inside this parent-scoped actor memory and do not expose other households.');
     roleLines.push('Parent onboarding mode: guide child goals, home expectations, recordings, parser instructions, motivators, chores, meals, tablet/setup context, and self-governance language conversationally before any reviewed record is created.');
@@ -70997,7 +70997,7 @@ async function buildSafeAssistantContextSummary({ actor = {}, message = '', thre
       ...roleLines,
       'Assistant style: concise, warm, Shloimie-like, practical, and inspiring. Walk the person through the next step in chat instead of sending them to settings.',
       surface === 'one_time_public'
-        ? 'Policy/fact rule: if a requested policy or fact is not explicitly verified in the supplied OneTime source boundary, say it is not verified in the current OneTime context and offer to capture it for Rabbi Scheller follow-up.'
+        ? 'Policy/fact rule: if a requested policy or fact is not explicitly verified in the supplied One Time source boundary, say it is not verified in the current One Time context and offer to capture it for Rabbi Scheller follow-up.'
         : 'Policy/fact rule: if a requested policy or fact is not explicitly verified in the supplied source boundary, say it is not verified in the current BNA context and offer to ask Shloimie.',
       'If a person reports a real bug, missing UI, or product suggestion, the server records it as an internal ticket, Codex review item, or Shloimie decision. Do not claim a record was created unless the current server result says so.',
       '',
@@ -76750,7 +76750,7 @@ app.post('/api/one-time-classroom/threads/:id/responses', async (req, res) => {
 
 app.post('/api/one-time-classroom/bot', async (req, res) => {
   res.status(403).json({
-    error: 'OneTime classroom bot is disabled pending explicit operator approval.',
+    error: 'One Time classroom bot is disabled pending explicit operator approval.',
     blocked: true,
     approval_required: true,
     safe_student_path: 'Students can respond privately to Rabbi/admin threads for review.',
@@ -77618,8 +77618,8 @@ function oneTimeProductProgramView(row = {}) {
     project_id: row.project_id ? Number(row.project_id) : null,
     program_key: row.program_key || ONE_TIME_PRODUCT_PROGRAM_KEY,
     content_alias: row.content_alias || ONE_TIME_CONTENT_ALIAS,
-    name: row.name || 'OneTime Mishnayos',
-    short_name: row.short_name || 'OneTime',
+    name: row.name || 'One Time Mishnayos',
+    short_name: row.short_name || 'One Time',
     description: row.description || '',
     status: row.status || 'draft',
     metadata: oneTimeProductJson(row.metadata, {
@@ -77727,7 +77727,7 @@ function oneTimeProductLeadView(row = {}) {
 function buildOneTimeSignupTelegramReminder(lead = {}) {
   const safe = (value, fallback = 'Not provided') => escapeTelegramHtml(limitText(value || '', 320) || fallback);
   return [
-    '<b>New OneTime signup</b>',
+    '<b>New One Time signup</b>',
     '',
     `Email: ${safe(lead.parent_email || lead.email)}`,
     `Parent: ${safe(lead.parent_name)}`,
@@ -77737,7 +77737,7 @@ function buildOneTimeSignupTelegramReminder(lead = {}) {
     lead.id ? `Lead ID: ${escapeTelegramHtml(lead.id)}` : '',
     lead.created_at ? `Created: ${safe(lead.created_at)}` : '',
     '',
-    'Action: Review this lead in the OneTime CRM and follow up.',
+    'Action: Review this lead in the One Time CRM and follow up.',
     'Guardrail: no parent email, WhatsApp, checkout, payment, access grant, Zoom, Vimeo, or Drive action was triggered by this signup.'
   ].filter(Boolean).join('\n');
 }
@@ -77769,7 +77769,7 @@ function isOneTimeSyntheticLead(input = {}, lead = {}) {
 async function sendOneTimeSignupTelegramReminder(lead = {}) {
   const result = await sendTelegramNotification(buildOneTimeSignupTelegramReminder(lead));
   if (result && !result.sent && !result.skipped) {
-    console.error('OneTime signup Telegram reminder failed:', result.error || result.status || 'unknown error');
+    console.error('One Time signup Telegram reminder failed:', result.error || result.status || 'unknown error');
   }
   return result;
 }
@@ -77889,7 +77889,7 @@ async function upsertOneTimeTransactionalFollowUpCommunication({
 
   const label = channel === 'email' ? 'email' : 'WhatsApp';
   const body = [
-    `OneTime free-class ${label} follow-up prepared for current class details.`,
+    `One Time free-class ${label} follow-up prepared for current class details.`,
     `No ${label} was sent from the public signup form.`,
     channel === 'email'
       ? `External delivery requires Resend readiness plus exact ${gate.required_confirm} approval.`
@@ -77924,7 +77924,7 @@ async function upsertOneTimeTransactionalFollowUpCommunication({
       project.id,
       leadId,
       channel,
-      `OneTime free-class transactional ${label} follow-up blocked`,
+      `One Time free-class transactional ${label} follow-up blocked`,
       limitText(body, 2000),
       JSON.stringify({
         raw_intake_id: 'RAW-20260710-002',
@@ -78262,7 +78262,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
              status = 'follow_up',
              interest_level = 'warm',
              source = 'website_form',
-             source_detail = 'OneTime public free-class interest form',
+             source_detail = 'One Time public free-class interest form',
              next_follow_up_date = COALESCE(next_follow_up_date, CURRENT_DATE),
              owner = 'Shloimie',
              tags = (
@@ -78286,7 +78286,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
           crmStudentAge,
           limitText(lead.student_grade || '', 80),
           leadTags,
-          limitText(lead.notes || 'Public OneTime free-class interest form submitted. Follow up with current free-class details.', 2000),
+          limitText(lead.notes || 'Public One Time free-class interest form submitted. Follow up with current free-class details.', 2000),
           JSON.stringify(crmMetadata),
         ]
       )).rows[0];
@@ -78299,7 +78299,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
          ) VALUES (
            $1, $2, $3, $4, $5,
            $6, $7, 'group_member', 'follow_up', 'warm',
-           'website_form', 'OneTime public free-class interest form', CURRENT_DATE, 'Shloimie', $8::text[], $9, $10::jsonb
+           'website_form', 'One Time public free-class interest form', CURRENT_DATE, 'Shloimie', $8::text[], $9, $10::jsonb
          )
          RETURNING *`,
         [
@@ -78311,7 +78311,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
           crmStudentAge,
           limitText(lead.student_grade || '', 80) || null,
           leadTags,
-          limitText(lead.notes || 'Public OneTime free-class interest form submitted. Follow up with current free-class details.', 2000),
+          limitText(lead.notes || 'Public One Time free-class interest form submitted. Follow up with current free-class details.', 2000),
           JSON.stringify(crmMetadata),
         ]
       )).rows[0];
@@ -78324,13 +78324,13 @@ async function createOneTimeProductLead(input = {}, db = pool) {
          source_context, metadata
        ) VALUES (
          $1, 'lead', $2, 'internal_note', 'inbound',
-         'OneTime free-class public signup captured', $3, TRUE, NOW(), 'public_one_time_form', 'web_assistant',
+         'One Time free-class public signup captured', $3, TRUE, NOW(), 'public_one_time_form', 'web_assistant',
          $4::jsonb, $5::jsonb
        )`,
       [
         project.id,
         crmLead.id,
-        limitText(`Public OneTime signup captured for ${lead.parent_name}. Follow up with current free-class details. No checkout, access grant, external send, Zoom meeting creation, Vimeo, Drive, or portal action was triggered.`, 2000),
+        limitText(`Public One Time signup captured for ${lead.parent_name}. Follow up with current free-class details. No checkout, access grant, external send, Zoom meeting creation, Vimeo, Drive, or portal action was triggered.`, 2000),
         JSON.stringify({
           raw_intake_id: 'RAW-20260709-008',
           product_lead_id: productRow.id,
@@ -78436,7 +78436,7 @@ async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
       status: 'follow_up',
       interest_level: 'warm',
       source: 'website_form',
-      source_detail: 'OneTime public free-class interest form',
+      source_detail: 'One Time public free-class interest form',
       next_follow_up_date: 'CURRENT_DATE',
       owner: 'Shloimie',
       tags: leadTags,
@@ -78446,7 +78446,7 @@ async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
       table: 'bna_contact_communications',
       channel: 'internal_note',
       direction: 'inbound',
-      summary: 'OneTime free-class public signup captured',
+      summary: 'One Time free-class public signup captured',
       follow_up_required: true,
       created_by: 'public_one_time_form',
       source: 'web_assistant',
@@ -79129,14 +79129,14 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
         no_transactional_follow_up_created: true,
         no_telegram_reminder_sent: true,
         external_write_performed: false,
-        message: 'Dry-run validated the OneTime free-class lead capture payload. No lead, reminder, checkout, access grant, send, Zoom meeting, or external write was created.',
+        message: 'Dry-run validated the One Time free-class lead capture payload. No lead, reminder, checkout, access grant, send, Zoom meeting, or external write was created.',
       });
     }
     const lead = await createOneTimeProductLead(req.body || {});
     const syntheticNoExternalReminder = lead.synthetic_test_lead === true || isOneTimeSyntheticLead(req.body || {}, lead);
     if (!syntheticNoExternalReminder) {
       sendOneTimeSignupTelegramReminder(lead)
-        .catch((err) => console.error('OneTime signup Telegram reminder error:', err));
+        .catch((err) => console.error('One Time signup Telegram reminder error:', err));
     }
     res.json({
       success: true,
@@ -79157,7 +79157,7 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       telegram_reminder_skip_reason: syntheticNoExternalReminder ? 'synthetic_test_lead_no_external_reminder' : null,
       internal_operator_notification_attempted: !syntheticNoExternalReminder,
       external_write_performed: false,
-      message: 'Your free-class request was saved. We will follow up with the current OneTime free-class details.',
+      message: 'Your free-class request was saved. We will follow up with the current One Time free-class details.',
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message });
@@ -79213,7 +79213,7 @@ app.post('/api/bna/one-time/calendar-events', requireAdmin, async (req, res) => 
         project.id,
         program?.id || null,
         ONE_TIME_PRODUCT_PROGRAM_KEY,
-        limitText(body.title || body.class_title || body.classTitle || 'OneTime Mishnayos class', 220),
+        limitText(body.title || body.class_title || body.classTitle || 'One Time Mishnayos class', 220),
         limitText(body.masechta || '', 120) || null,
         limitText(body.perek || '', 80) || null,
         limitText(body.mishnah_range || body.mishnahRange || '', 120) || null,
@@ -79247,7 +79247,7 @@ app.post('/api/bna/one-time/calendar-events', requireAdmin, async (req, res) => 
       no_zoom_meeting_created: true,
       external_calendar_write_performed: false,
       external_write_performed: false,
-      message: 'OneTime class event saved internally. No Zoom meeting or external calendar write was performed.',
+      message: 'One Time class event saved internally. No Zoom meeting or external calendar write was performed.',
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
@@ -79360,7 +79360,7 @@ app.post('/api/bna/one-time/appointment-intents', requireAdmin, async (req, res)
       no_zoom_meeting_created: true,
       external_calendar_write_performed: false,
       external_write_performed: false,
-      message: 'OneTime appointment intent saved internally. No Zoom meeting, reminder, charge, or external calendar write was performed.',
+      message: 'One Time appointment intent saved internally. No Zoom meeting, reminder, charge, or external calendar write was performed.',
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
@@ -79393,7 +79393,7 @@ app.post('/api/bna/one-time/source-prep-jobs', requireAdmin, async (req, res) =>
     const draft = buildSourcePrepDraft({
       ...body,
       requested_refs: requestedRefs,
-      title: body.title || body.class_title || body.classTitle || 'OneTime Mishnayos Source Prep',
+      title: body.title || body.class_title || body.classTitle || 'One Time Mishnayos Source Prep',
     });
     const eventId = body.calendar_event_id || body.calendarEventId || null;
     if (eventId) {
@@ -79403,7 +79403,7 @@ app.post('/api/bna/one-time/source-prep-jobs', requireAdmin, async (req, res) =>
          LIMIT 1`,
         [eventId, project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
       )).rows[0] || null;
-      if (!ownedEvent) return res.status(404).json({ error: 'OneTime calendar event was not found' });
+      if (!ownedEvent) return res.status(404).json({ error: 'One Time calendar event was not found' });
     }
     const row = (await pool.query(
       `INSERT INTO bna_source_prep_jobs (
@@ -80225,8 +80225,8 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
   const parentEmail = normalizeEmail(body.parent_email || body.parentEmail || body.email);
   const rawParentName = String(body.parent_name || body.parentName || body.name || '').trim();
   const rawStudentName = String(body.student_name || body.studentName || body.child_name || body.childName || '').trim();
-  const parentName = limitText(rawParentName || (dryRun ? 'OneTimeOneTime Parent' : ''), 160);
-  const studentName = limitText(rawStudentName || (dryRun ? 'OneTime student' : ''), 160);
+  const parentName = limitText(rawParentName || (dryRun ? 'One Time Parent' : ''), 160);
+  const studentName = limitText(rawStudentName || (dryRun ? 'One Time student' : ''), 160);
   const trialDays = Math.max(1, Math.min(Number(body.trial_days || body.trialDays || 30) || 30, 90));
   const rawLiveClassUrl = body.live_class_url || body.liveClassUrl || body.zoom_url || body.zoomUrl || '';
   const requestedLiveClassUrl = normalizeHttpsExternalUrl(rawLiveClassUrl);
@@ -80297,7 +80297,7 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
     if (String(body.confirm || '').trim() !== ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM) {
       return res.status(400).json({
         error: `One Time parent trial invite emails require confirm: ${ONE_TIME_PARENT_TRIAL_INVITE_CONFIRM}`,
-        hint: 'Use this only for an explicit per-parent OneTime invite. It creates scoped trial access but does not create a payment or checkout.',
+        hint: 'Use this only for an explicit per-parent One Time invite. It creates scoped trial access but does not create a payment or checkout.',
         preflight,
         preview,
       });
@@ -80312,11 +80312,11 @@ app.post('/api/bna/one-time/parent-trial-invite', requireAdmin, async (req, res)
         : ['one-time-trial', 'one-time-parent-trial', 'one-time-live-invite'];
       const tagsToRemove = smokeMode ? [] : ['test', 'codex-test'];
       const studentNotes = smokeMode
-        ? 'TEST OneTimeOneTime parent trial student created from approved Codex smoke invite flow. Safe to archive after walkthrough.'
-        : 'OneTimeOneTime parent trial student created from approved launch-ready parent invite flow.';
+        ? 'TEST One Time parent trial student created from approved Codex smoke invite flow. Safe to archive after walkthrough.'
+        : 'One Time parent trial student created from approved launch-ready parent invite flow.';
       const memberNotes = smokeMode
-        ? 'TEST OneTimeOneTime parent trial member access for operator walkthrough.'
-        : 'OneTimeOneTime parent trial member access created from approved launch-ready parent invite flow.';
+        ? 'TEST One Time parent trial member access for operator walkthrough.'
+        : 'One Time parent trial member access created from approved launch-ready parent invite flow.';
       let student = (await client.query(
         `SELECT *
          FROM bna_students

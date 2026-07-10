@@ -37830,3 +37830,33 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   still Needs operator decision via `DEC-20260710-004`, and real direct
   WhatsApp / transactional delivery still blocked by runtime readiness and
   exact approval.
+
+## 2026-07-10 - One Time brand and evidence guardrails locally verified
+
+- Implemented the `REQ-20260710-008` visible brand/copy normalization locally:
+  active public/member/classroom/parent/student/provider/Operations/helper,
+  prompt, email/WAPI/readiness, script, test, and docs surfaces now use
+  `One Time`, `One Time Mishnayos`, and internal `One Time Mishnah Class`
+  labels instead of visible standalone `OneTime` / `OneTimeOneTime` copy.
+- Repaired `REQ-20260710-010` guardrails locally: the shared-review smoke now
+  checks `.hero-media`, and PQC validation ignores non-PQC prompt JSON unless
+  it has a supported schema version.
+- Local proof passed: `node --check server.js`, `node --check
+  scripts/validate-product-quality-packets.mjs`, `node --check
+  scripts/smoke-one-time-shared-review-live.mjs`, focused regression tests
+  163/163, local canonical journey smoke, local provider CRM layout smoke, and
+  a fresh local visual audit with 9 routes, 5 viewports, 140 screenshots, and
+  0 findings.
+- Evidence:
+  `ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md`
+  and
+  `ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md`.
+- `REQ-20260710-011` remains blocked/review-limited because current Operations
+  screenshot redaction blurs too much content for a readable manual content
+  review. `REQ-20260710-012` remains blocked until Agent Mode saves `AGR-*`
+  PASS/FAIL/BLOCKED results for the two required prompt runs.
+- Remaining before terminal Done: rerun PQC/watchdogs/audit governance after
+  the evidence update, commit, push, deploy to OneTime Railway production, and
+  run live smokes/readbacks. Guardrails: no external send, payment/access
+  mutation, DNS/credential change, Drive/Zoom/Vimeo mutation, production import,
+  or GHL/LeadConnector runtime.

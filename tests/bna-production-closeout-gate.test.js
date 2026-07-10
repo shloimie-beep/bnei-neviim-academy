@@ -250,7 +250,7 @@ test('production closeout gate requires production readiness before approved dep
     blocker_groups: [
       {
         id: 'external_setup_blockers',
-        title: 'External OneTime setup values or approvals are missing',
+        title: 'External One Time setup values or approvals are missing',
         count: 2,
         next_action: 'Provide aliases/status only.',
       },

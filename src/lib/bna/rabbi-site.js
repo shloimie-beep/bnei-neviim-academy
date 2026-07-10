@@ -1,5 +1,5 @@
 const RABBI_PAGE_KEY = 'rabbi_landing';
-const RABBI_DEFAULT_TITLE = 'OneTimeOneTime - Rabbi Eli Scheller';
+const RABBI_DEFAULT_TITLE = 'One Time - Rabbi Eli Scheller';
 const LEGACY_RABBI_TITLES = new Set([
   'One Time Mishnayos Preview',
   'One Time Mishnayos',
@@ -7,22 +7,22 @@ const LEGACY_RABBI_TITLES = new Set([
 
 function defaultRabbiLandingContent() {
   return {
-    hero_title: 'OneTimeOneTime',
+    hero_title: 'One Time',
     hero_subtitle: 'Stories, Mishnayos learning, and moderated group calls for children, now wired as a BNA service-provider landing and membership preview.',
     hero_note: 'Preview mode only. The BNA homepage is not replaced.',
     image_placeholders: [
-      'OneTimeOneTime hero preview',
+      'One Time hero preview',
       'Mishnayos library preview',
       'Moderated live group call preview',
     ],
     sections: [
       {
         title: 'Video Library',
-        body: 'Recorded OneTime Mishnayos library access.',
+        body: 'Recorded One Time Mishnayos library access.',
       },
       {
         title: 'Live + Library',
-        body: 'Live class access plus the recorded OneTime Mishnayos library.',
+        body: 'Live class access plus the recorded One Time Mishnayos library.',
       },
     ],
   };

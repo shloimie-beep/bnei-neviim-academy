@@ -1225,7 +1225,7 @@ function validateOneTimeLead(input = {}) {
     region,
     audience: normalizeOneTimeAudience(input.audience || 'parents'),
     interested_tiers: interestedTiers.length ? interestedTiers : [ONE_TIME_PRODUCT_TIER_KEYS.LIBRARY_LIVE_LOW_TOUCH],
-    parent_name: parentName || email || phone || whatsapp || 'OneTime prospect',
+    parent_name: parentName || email || phone || whatsapp || 'One Time prospect',
     email,
     phone,
     whatsapp,
@@ -1265,7 +1265,7 @@ function fixtureSefariaLookup(refs = []) {
 function buildSourcePrepDraft(input = {}) {
   const refs = fixtureSefariaLookup(input.requested_refs || input.refs || []);
   const prompt = String(input.natural_language_prompt || input.prompt || '').trim();
-  const title = String(input.title || input.class_title || 'OneTime Mishnayos Source Prep').trim();
+  const title = String(input.title || input.class_title || 'One Time Mishnayos Source Prep').trim();
   const sourceSheetDraft = {
     status: 'drafting',
     title,

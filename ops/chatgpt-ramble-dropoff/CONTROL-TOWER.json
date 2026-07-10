@@ -1,15 +1,33 @@
 {
-  "generated_at": "2026-07-10T06:55:12.328Z",
+  "generated_at": "2026-07-10T10:57:31.914Z",
   "git": {
     "branch": "master",
-    "dirty": false,
-    "dirty_files": [],
-    "collision_warning": ""
+    "dirty": true,
+    "dirty_files": [
+      {
+        "status": "M",
+        "path": "ops/audit-governance/latest.json"
+      },
+      {
+        "status": "M",
+        "path": "ops/audit-governance/latest.md"
+      },
+      {
+        "status": "??",
+        "path": "ops/audit-governance/2026-07-10T07-49-27-587Z-audit-governance.json"
+      },
+      {
+        "status": "??",
+        "path": "ops/audit-governance/2026-07-10T07-49-27-587Z-audit-governance.md"
+      }
+    ],
+    "collision_warning": "Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files."
   },
   "packets": {
-    "count": 2,
+    "count": 3,
     "counts": {
-      "terminal": 2
+      "terminal": 2,
+      "draft": 1
     },
     "items": [
       {
@@ -86,10 +104,91 @@
           "tasks-pending/2026-07-06-onetime-full-ui-agent-audit-prompts.md"
         ],
         "updated_at": "2026-07-07T06:18:45.000Z"
+      },
+      {
+        "packet_id": "onetime-launch-priority-ui-crm-automation-20260710-001",
+        "path": "ops/chatgpt-ramble-dropoff/incoming/onetime-launch-priority-ui-crm-automation-20260710-001",
+        "state": "draft",
+        "status": "codex_done",
+        "implementation_status": "terminal_statuses_recorded_launch_priority_complete_with_operator_runtime_blockers",
+        "packet_type": "implementation_bundle",
+        "packet_role": "goal_mode_correction_and_code_package_compiler",
+        "owner": "ChatGPT",
+        "lane_key": "rabbi_sheller_provider-one_time_mishnah_class-launch-priority",
+        "workspace": "rabbi_sheller_provider",
+        "project": "one_time_mishnah_class",
+        "scope_summary": "Register and execute the latest One Time launch priority: beautiful landing, Robot Scheller, visible form-to-CRM lead flow, clickable contact CRM, historical inbox reconciliation, gated immediate class-link follow-up, and launch-ready Rabbi backend UI.",
+        "next_action": "No unblocked Codex launch-priority implementation lane remains. Operator/runtime next actions are to configure ONE_TIME_PUBLIC_WHATSAPP_NUMBER for direct public WhatsApp activation and approve the canonical historical source package plus suppression/import policy before any production import/write.",
+        "blockers": [
+          "Direct public WhatsApp redirect remains blocked until ONE_TIME_PUBLIC_WHATSAPP_NUMBER is configured at runtime/keyholder level.",
+          "Historical import/write remains blocked by DEC-20260710-004 until Shloimie / One Time data owner chooses the canonical source package and suppression/import policy.",
+          "Direct GitHub issue #128 readback remains blocked by DEC-20260710-003 until local gh auth has the needed read:project scope; the materialized trusted dropoff packet was used for this run."
+        ],
+        "findings": [
+          {
+            "severity": "skip",
+            "code": "not_ready_status",
+            "message": "Packet status is not ready: codex_done"
+          }
+        ],
+        "ready_for_pickup": false,
+        "terminal": false,
+        "picked_up_by": "chatgpt-dropoff-ingestor",
+        "picked_up_at": "2026-07-10T07:27:19.147Z",
+        "task_ids_created": [
+          "1945"
+        ],
+        "requirement_ids_created": [
+          "REQ-20260710-013",
+          "REQ-20260710-014",
+          "REQ-20260710-015",
+          "REQ-20260710-016",
+          "REQ-20260710-017",
+          "REQ-20260710-018",
+          "REQ-20260710-019",
+          "REQ-20260710-020",
+          "REQ-20260710-021",
+          "REQ-20260710-022",
+          "REQ-20260710-023",
+          "REQ-20260710-024",
+          "REQ-20260710-025"
+        ],
+        "evidence": [
+          "GitHub issue #128 and this marked correction comment",
+          "raw-input/RAW-20260710-002-onetime-launch-priority-landing-crm-assistant.md",
+          "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
+          "ops/prompt-packets/2026-07-10-onetime-launch-priority/01-landing-robot-scheller.product-quality.json",
+          "ops/design-references/2026-07-10-onetime-landing-copy-and-assets/",
+          "ops/ui-audits/2026-07-10-onetime-launch-priority-landing-robot-local/report.md",
+          "ops/live-smokes/2026-07-10T08-12-46-559Z-rabbi-onetime-landing-smoke.md",
+          "ops/live-smokes/2026-07-10T08-12-46-630Z-one-time-interest-dry-run-live-smoke.md",
+          "ops/live-smokes/2026-07-10T08-22-45-952Z-one-time-interest-crm-e2e-live-smoke.md",
+          "ops/prompt-packets/2026-07-10-onetime-launch-priority/02-crm-list-detail.product-quality.json",
+          "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+          "ops/live-smokes/2026-07-10T08-45-30-918Z-one-time-operations-crm-workbench-live-smoke.md",
+          "ops/live-smokes/2026-07-10T08-45-40-132Z-one-time-interest-crm-e2e-live-smoke.md",
+          "ops/system-audits/2026-07-10-onetime-historical-inbox-reconciliation/report.md",
+          "ops/system-audits/2026-07-10-onetime-historical-inbox-reconciliation/report.json",
+          "ops/live-smokes/2026-07-10T09-11-21-572Z-one-time-interest-crm-e2e-live-smoke.md",
+          "ops/live-smokes/2026-07-10T09-11-34-105Z-one-time-interest-dry-run-live-smoke.md",
+          "ops/live-smokes/2026-07-10T09-11-34-122Z-rabbi-onetime-landing-smoke.md",
+          "ops/live-smokes/2026-07-10T09-11-34-189Z-one-time-operations-crm-workbench-live-smoke.md",
+          "ops/watchdog-audits/2026-07-10-product-quality-drift.md",
+          "ops/prompt-packets/2026-07-10-onetime-launch-priority/06-rabbi-backend-launch-readiness.product-quality.json",
+          "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+          "ops/live-smokes/2026-07-10T09-28-02-004Z-rabbi-onetime-landing-smoke.md",
+          "ops/live-smokes/2026-07-10T09-28-02-072Z-one-time-operations-crm-workbench-live-smoke.md"
+        ],
+        "updated_at": "2026-07-10T12:28:44+03:00"
       }
     ]
   },
   "latest_pickup_reports": [
+    {
+      "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-10T07-27-19-148Z-onetime-launch-priority-ui-crm-automation-20260710-001.md",
+      "updated_at": "2026-07-10T07:27:19.149Z",
+      "size": 284
+    },
     {
       "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-49-06-941Z-onetime-agent-prompt-series-20260706-911.md",
       "updated_at": "2026-07-09T05:49:06.942Z",
@@ -124,53 +223,48 @@
       "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-45-01-124Z-onetime-agent-prompt-series-20260706-911.md",
       "updated_at": "2026-07-09T05:45:01.125Z",
       "size": 296
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-45-01-121Z-chatgpt-dropoff-smoke-test-20260705-001.md",
-      "updated_at": "2026-07-09T05:45:01.122Z",
-      "size": 294
     }
   ],
   "latest_comment_pickup_reports": [
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T06-55-00-281Z-4893651840.md",
-      "updated_at": "2026-07-10T06:55:00.283Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-56-11-001Z-4893596622.md",
+      "updated_at": "2026-07-10T10:56:11.003Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T06-55-00-279Z-4893596622.md",
-      "updated_at": "2026-07-10T06:55:00.281Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-56-11-002Z-4893651840.md",
+      "updated_at": "2026-07-10T10:56:11.003Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T06-55-00-278Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-10T06:55:00.279Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-56-11-000Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-10T10:56:11.002Z",
       "size": 495
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T06-55-00-274Z-4893586910.md",
-      "updated_at": "2026-07-10T06:55:00.277Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-56-10-998Z-4893586910.md",
+      "updated_at": "2026-07-10T10:56:11.000Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T06-53-36-466Z-4893651840.md",
-      "updated_at": "2026-07-10T06:53:36.467Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-56-10-996Z-onetime-launch-priority-ui-crm-automation-20260710-001.md",
+      "updated_at": "2026-07-10T10:56:10.999Z",
+      "size": 365
+    },
+    {
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-54-48-598Z-4893651840.md",
+      "updated_at": "2026-07-10T10:54:48.600Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T06-53-36-462Z-4893596622.md",
-      "updated_at": "2026-07-10T06:53:36.466Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-54-48-597Z-4893596622.md",
+      "updated_at": "2026-07-10T10:54:48.599Z",
       "size": 743
     },
     {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T06-53-36-461Z-onetime-agent-prompt-series-20260706-911.md",
-      "updated_at": "2026-07-10T06:53:36.462Z",
+      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T10-54-48-596Z-onetime-agent-prompt-series-20260706-911.md",
+      "updated_at": "2026-07-10T10:54:48.598Z",
       "size": 495
-    },
-    {
-      "path": "ops/chatgpt-ramble-dropoff/comment-pickups/2026-07-10T06-53-36-459Z-4893586910.md",
-      "updated_at": "2026-07-10T06:53:36.459Z",
-      "size": 743
     }
   ],
   "agent_fleet": {
@@ -182,19 +276,19 @@
       "- Claimable observable jobs: 0",
       "- Active Codex task fallback: 28",
       "- Ready to claim: observable jobs 0, fallback task candidates 0",
-      "- Queue health: fresh 0, stale 488, blocked 128, unknown 194, do-not-redo 880",
+      "- Queue health: fresh 0, stale 496, blocked 129, unknown 194, do-not-redo 885",
       "- ChatGPT dropoff ingest: enabled",
       "- ChatGPT comment collect: enabled"
     ],
     "not_claimable": [
-      "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=186.27 path=.runtime/agent-fleet/task-1736.lock.json)",
+      "- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=190.31 path=.runtime/agent-fleet/task-1736.lock.json)",
       "- job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)",
       "- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)",
       "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json)",
       "- job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json)",
-      "- job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json)",
       "- job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json)",
-      "- job #297 / task #1441 [failed] Why don't you verify the domain with GoDaddy and do it again and replace it with... (local_lock=missing path=.runtime/agent-fleet/task-1441.lock.json)"
+      "- job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json)",
+      "- job #296 / task #1436 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1436.lock.json)"
     ],
     "fallback_candidates": [],
     "raw_excerpt": [
@@ -206,7 +300,7 @@
       "- Linked observable task lookup: fetched 0, missing 0",
       "- Active Codex task fallback: 28",
       "- Ready to claim: observable jobs 0, fallback task candidates 0",
-      "- Queue health: fresh 0, stale 488, blocked 128, unknown 194, do-not-redo 880",
+      "- Queue health: fresh 0, stale 496, blocked 129, unknown 194, do-not-redo 885",
       "- Max retries: 2",
       "- Baseline smoke: enabled",
       "- Auto deploy gate: disabled",
@@ -221,22 +315,23 @@
       "- job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess.",
       "- job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess.",
       "- job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess.",
-      "- job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy",
       "- job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy",
-      "- job #297 / task #1441 [failed] Why don't you verify the domain with GoDaddy and do it again and replace it with...",
+      "- job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy",
+      "- job #296 / task #1436 [failed] Repair follow-up after Drive transcription reprocess.",
       "Local task lock evidence for not-claimable jobs:",
-      "- task #1736 for job #344: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=186.27 path=.runtime/agent-fleet/task-1736.lock.json",
+      "- task #1736 for job #344: local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=190.31 path=.runtime/agent-fleet/task-1736.lock.json",
       "- task #2181 for job #426: local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json",
       "- task #1130 for job #236: local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json",
       "- task #1136 for job #237: local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json",
       "- task #1141 for job #238: local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json",
-      "- task #1393 for job #290: local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json",
       "- task #1392 for job #289: local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json",
-      "- task #1441 for job #297: local_lock=missing path=.runtime/agent-fleet/task-1441.lock.json"
+      "- task #1393 for job #290: local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json",
+      "- task #1436 for job #296: local_lock=missing path=.runtime/agent-fleet/task-1436.lock.json"
     ],
     "error": ""
   },
   "recommendations": [
+    "Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.",
     "No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.",
     "Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.",
     "GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it."

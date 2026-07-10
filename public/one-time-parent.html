@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <title>OneTimeOneTime Parent Setup</title>
+  <title>One Time Parent Setup</title>
   <style>
     :root {
       color-scheme: dark;
@@ -348,11 +348,11 @@
 </head>
 <body>
   <main class="shell">
-    <header class="topbar" aria-label="OneTimeOneTime parent setup">
-      <div class="brand" aria-label="OneTimeOneTime parent setup">
+    <header class="topbar" aria-label="One Time parent setup">
+      <div class="brand" aria-label="One Time parent setup">
         <span class="brand-mark" aria-hidden="true"><img src="/images/one-time/brand/onetimelogo.webp" alt=""></span>
         <span class="brand-text">
-          <span class="brand-title">OneTimeOneTime Mishnah</span>
+          <span class="brand-title">One Time Mishnayos</span>
           <span class="brand-subtitle">Parent access setup</span>
         </span>
       </div>
@@ -362,7 +362,7 @@
     <section class="layout">
       <div class="intro">
         <span class="eyebrow">30-day parent trial</span>
-        <h1>Your OneTimeOneTime access starts here.</h1>
+        <h1>Your One Time access starts here.</h1>
         <p class="lead">Create your parent password, then use the class and library links from your invite email to open the live class, schedule, recordings, worksheets, and student access tools.</p>
         <ul class="quick-list">
           <li><span class="check">1</span><span>Set a parent password for this email address.</span></li>
@@ -374,7 +374,7 @@
       <aside class="card" aria-live="polite">
         <div>
           <h2>Set parent password</h2>
-          <p id="setupCopy">Use the newest setup link from your OneTimeOneTime invite email. This link can only be used once.</p>
+          <p id="setupCopy">Use the newest setup link from your One Time invite email. This link can only be used once.</p>
         </div>
 
         <div id="status" class="status"></div>
@@ -445,7 +445,7 @@
       form.hidden = true;
       forgotForm.hidden = false;
       forgotEmail.value = String(params.get('email') || '').trim();
-      showStatus('ok', 'Enter the parent email used at signup and we will send a fresh OneTimeOneTime password link.');
+      showStatus('ok', 'Enter the parent email used at signup and we will send a fresh One Time password link.');
     }
 
     form.addEventListener('submit', async (event) => {
@@ -477,7 +477,7 @@
         window.history.replaceState(null, '', '/one-time-parent?ready=1');
       } catch (error) {
         forgotForm.hidden = false;
-        showStatus('error', `${error.message || 'This setup link is invalid or expired.'} Enter the signup email below to receive a fresh OneTimeOneTime password link.`);
+        showStatus('error', `${error.message || 'This setup link is invalid or expired.'} Enter the signup email below to receive a fresh One Time password link.`);
       } finally {
         setBusy(false);
       }
@@ -496,7 +496,7 @@
         });
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(payload.error || 'Could not request a password link.');
-        showStatus('ok', 'If that email is registered for OneTimeOneTime, a new password link was sent.');
+        showStatus('ok', 'If that email is registered for One Time, a new password link was sent.');
       } catch (error) {
         showStatus('error', error.message || 'Could not request a password link.');
       } finally {

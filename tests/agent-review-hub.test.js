@@ -154,12 +154,12 @@ test('Agent Mode prompt pack has exactly 26 generated mobile-copyable files', ()
   assert.match(rabbiTelegramText, /REQ-20260708-100 scoped sidekick behavior/);
   assert.match(rabbiTelegramText, /TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER/);
   assert.match(rabbiTelegramText, /super-admin support ticket ding routing/);
-  assert.match(rabbiTelegramText, /all OneTime contact\/message scope/);
+  assert.match(rabbiTelegramText, /all One Time contact\/message scope/);
   assert.match(rabbiTelegramText, /REQ-20260708-101 all-contact\/all-message scope/);
   assert.match(rabbiTelegramText, /scoped Drive\/web sidekick behavior/);
-  assert.match(rabbiTelegramText, /Show my OneTime contacts/);
+  assert.match(rabbiTelegramText, /Show my One Time contacts/);
   assert.match(rabbiTelegramText, /separate staff-owned support tickets from Rabbi communications/);
-  assert.match(rabbiTelegramText, /OneTime contacts, Email, WhatsApp\/WAPI, provider mailbox/);
+  assert.match(rabbiTelegramText, /One Time contacts, Email, WhatsApp\/WAPI, provider mailbox/);
   assert.match(rabbiTelegramText, /Where should I upload tonight's class recording or source sheet/);
   assert.match(rabbiTelegramText, /no broad BNA Drive listing/);
   assert.match(rabbiTelegramText, /brief progress-ding format/);

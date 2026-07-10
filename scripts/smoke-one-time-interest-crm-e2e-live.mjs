@@ -27,7 +27,7 @@ const baseUrl = String(
 const startedAt = new Date().toISOString();
 const stamp = startedAt.replace(/[:.]/g, '-');
 const testEmail = `test-onetime-crm-e2e-${stamp}@example.invalid`.toLowerCase();
-const testParentName = `TEST OneTime CRM E2E ${stamp}`;
+const testParentName = `TEST One Time CRM E2E ${stamp}`;
 const testStudentName = `TEST Student ${stamp}`;
 let authCookie = '';
 let createdLeadId = null;
@@ -102,7 +102,7 @@ function writeReports() {
   const mdPath = reportPath('md');
   fs.writeFileSync(jsonPath, `${JSON.stringify(report, null, 2)}\n`);
   fs.writeFileSync(mdPath, `${[
-    `# OneTime Interest CRM E2E Live Smoke - ${report.started_at}`,
+    `# One Time Interest CRM E2E Live Smoke - ${report.started_at}`,
     '',
     `Base URL: ${report.base_url}`,
     `Result: ${report.status}`,
@@ -129,7 +129,7 @@ async function archiveLeadIfNeeded() {
     },
     body: JSON.stringify({
       status: 'archived',
-      notes: `Archived after OneTime CRM E2E smoke ${stamp}. Product lead remains TEST/example.invalid proof.`,
+      notes: `Archived after One Time CRM E2E smoke ${stamp}. Product lead remains TEST/example.invalid proof.`,
       metadata: {
         smoke: 'one_time_interest_crm_e2e',
         cleanup: 'archived_after_visible_crm_readback',
@@ -232,7 +232,7 @@ async function main() {
     const route = `/api/bna/crm/contacts/${encodeURIComponent(crmCard.id)}/timeline?workspace=rabbi_sheller_provider&project_key=one_time_mishnah_class`;
     const { response, data, text } = await fetchJson(route, { headers: cookieHeader() });
     assert(response.status === 200, `CRM timeline returned ${response.status}: ${text.slice(0, 500)}`);
-    const item = (data.timeline || []).find((row) => /OneTime free-class public signup captured/i.test(`${row.body || ''} ${row.notes || ''}`));
+    const item = (data.timeline || []).find((row) => /One Time free-class public signup captured/i.test(`${row.body || ''} ${row.notes || ''}`));
     assert(item, 'signup capture timeline item missing');
     const emailAttempt = (data.timeline || []).find((row) => /transactional email follow-up blocked/i.test(`${row.body || ''} ${row.summary || ''}`));
     const whatsappAttempt = (data.timeline || []).find((row) => /transactional WhatsApp follow-up blocked/i.test(`${row.body || ''} ${row.summary || ''}`));

@@ -4,7 +4,7 @@
   Family.
 - Content, communications, tasks, prompts, helper context, and portal data must
   preserve workspace/project scope.
-- BNA, One Time/Rabbi, provider, family, parent, and student data must not bleed
+- BNA, One Time / Rabbi, provider, family, parent, and student data must not bleed
   across scopes.
 - Platform patterns/components may be shared, but provider-specific classroom,
   content, community, contact, communication, payment/access, question, and

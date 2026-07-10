@@ -4655,13 +4655,13 @@
 
         function applyOneTimeReviewBrand() {
             document.body.classList.add('one-time-review-active');
-            document.title = 'OneTimeOneTime Parent Review';
+            document.title = 'One Time Parent Review';
             document.querySelector('link[rel="manifest"]')?.remove();
             const heroEyebrow = document.querySelector('[data-hero-eyebrow]');
             const heroTitle = document.querySelector('[data-hero-title]');
             const heroCopy = document.querySelector('[data-hero-copy]');
             const languageToggle = document.querySelector('[data-language-toggle]');
-            if (heroEyebrow) heroEyebrow.textContent = 'OneTimeOneTime Mishnah';
+            if (heroEyebrow) heroEyebrow.textContent = 'One Time Mishnayos';
             if (heroTitle) heroTitle.textContent = 'Parent Review Portal';
             if (heroCopy) heroCopy.textContent = "Parent dashboard for Rabbi Scheller's One Time Mishnayos program, with family, class, library, payment/trial, and support data kept inside One Time.";
             if (languageToggle) languageToggle.classList.add('hidden');
@@ -4675,7 +4675,7 @@
             }
             const title = document.querySelector('.brand-lockup > div > strong');
             const subtitle = document.querySelector('.brand-lockup > div > span');
-            if (title) title.textContent = 'OneTimeOneTime';
+            if (title) title.textContent = 'One Time';
             if (subtitle) subtitle.textContent = 'Parent review portal';
             const actions = document.querySelector('.portal-topbar-actions');
             if (actions) {

@@ -99,10 +99,10 @@ test('One Time provider.html requests are intercepted before static BNA shell ma
   assert.match(serverJs, /Boolean\(query\.view_as_rabbi \|\| query\.viewAsRabbi\)/);
   assert.match(serverJs, /function oneTimeProviderShellHtml\(html = ''\)/);
   assert.match(serverJs, /one-time-review-active/);
-  assert.match(serverJs, /OneTimeOneTime<\/strong>/);
+  assert.match(serverJs, /One Time<\/strong>/);
   assert.match(serverJs, /Rabbi provider account<\/span>/);
-  assert.match(serverJs, /\.replace\(\/Bnei Neviim Academy\/g, 'OneTimeOneTime'\)/);
-  assert.match(serverJs, /\.replace\(\/BNA Academy\/g, 'OneTimeOneTime'\)/);
+  assert.match(serverJs, /\.replace\(\/Bnei Neviim Academy\/g, 'One Time'\)/);
+  assert.match(serverJs, /\.replace\(\/BNA Academy\/g, 'One Time'\)/);
   assert.match(serverJs, /app\.get\('\/provider\.html', \(req, res, next\) => \{/);
   assert.match(serverJs, /return sendOneTimeProviderShell\(req, res\)/);
 });
@@ -117,7 +117,7 @@ test('student login is a real student login and student preview is clearly TEST-
   assert.match(studentHtml, /const ONE_TIME_LOGIN_MODE =/);
   assert.match(studentHtml, /const ONE_TIME_HOST_MODE =/);
   assert.match(studentHtml, /onetimeonetime\\\.com\$\/i\.test\(window\.location\.hostname/);
-  assert.match(studentHtml, /OneTimeOneTime Student Login/);
+  assert.match(studentHtml, /One Time Student Login/);
   assert.match(studentHtml, /one-time-student-login-active/);
   assert.match(studentHtml, /Use the student username and password managed by your parent/);
   assert.match(serverJs, /function wantsOneTimeStudentShell\(req\)/);
@@ -127,12 +127,12 @@ test('student login is a real student login and student preview is clearly TEST-
   assert.match(serverJs, /<form id="codeForm" class="hidden" aria-hidden="true" style="display:none">/);
   assert.match(serverJs, /<div class="language-toggle hidden" aria-label="Language" aria-hidden="true" style="display:none">/);
   assert.match(studentHtml, /renderOneTimeStudentReview/);
-  assert.match(studentHtml, /Live Mishnayos, review videos, worksheets, attendance, questions, badges, and rewards in one clean OneTime classroom view/);
-  assert.match(studentHtml, /This view stays inside the Rabbi Scheller OneTime workspace/);
+  assert.match(studentHtml, /Live Mishnayos, review videos, worksheets, attendance, questions, badges, and rewards in one clean One Time classroom view/);
+  assert.match(studentHtml, /This view stays inside the Rabbi Scheller One Time workspace/);
   assert.doesNotMatch(studentHtml, /BNA school accountability goals, checkoffs, consequences, device controls, and other household\/student records stay out/);
 });
 
-test('One Time single-tenant parent login redirects to OneTime parent setup instead of Academy login', () => {
+test('One Time single-tenant parent login redirects to One Time parent setup instead of Academy login', () => {
   const routeStart = serverJs.indexOf("app.get(['/parent/login', '/parent-login']");
   const routeEnd = serverJs.indexOf("app.get('/parent'", routeStart);
   const route = serverJs.slice(routeStart, routeEnd);

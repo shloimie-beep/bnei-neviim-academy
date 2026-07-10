@@ -419,7 +419,7 @@ async function main() {
     helperTimings.push(await timeHelperPlan(
       authHeader,
       'complex planning fallback',
-      'Think through why the OneTime app and backend feel slow, preserve all safety gates, and propose the first measurement. Do not execute any external action.',
+      'Think through why the One Time app and backend feel slow, preserve all safety gates, and propose the first measurement. Do not execute any external action.',
       helperPageContext('dashboard', 'overview')
     ));
   }

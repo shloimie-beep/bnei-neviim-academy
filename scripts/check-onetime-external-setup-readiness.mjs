@@ -772,7 +772,7 @@ export function buildOneTimeExternalSetupReadiness(options = {}) {
         : ['ONE_TIME_ZOOM_SESSION_ALIAS_or_zoom_join_url_alias'],
       warnings: [
         !zoomSession.configured && zoomSessionConfigured
-          ? 'Zoom/class link is present by redacted OneTime Railway readback; raw link is not written to evidence.'
+          ? 'Zoom/class link is present by redacted One Time Railway readback; raw link is not written to evidence.'
           : '',
         zoomCredentialsReady
           ? zoomSessionConfigured

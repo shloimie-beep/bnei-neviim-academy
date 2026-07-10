@@ -6,7 +6,7 @@ const server = fs.readFileSync('server.js', 'utf8');
 const packageJson = fs.readFileSync('package.json', 'utf8');
 const envExample = fs.readFileSync('.env.example', 'utf8');
 
-test('OneTime WhatsApp sends prefer Rabbi-scoped credentials and keep CRM project scope', () => {
+test('One Time WhatsApp sends prefer Rabbi-scoped credentials and keep CRM project scope', () => {
   assert.match(server, /const ONE_TIME_WAPI_API_TOKEN/);
   assert.match(server, /process\.env\.ONE_TIME_WAPI_API_TOKEN/);
   assert.match(server, /readLocalSecretFile\('one-time-wapi-api-token\.txt'\)/);
@@ -27,7 +27,7 @@ test('OneTime WhatsApp sends prefer Rabbi-scoped credentials and keep CRM projec
   assert.match(server, /ONE_TIME_WAPI_API_TOKEN or RABBI_SHELLER_WAPI_API_TOKEN or WAPI_API_TOKEN/);
 });
 
-test('OneTime WAPI bot auto-reply is approval-gated and does not commit the class link', () => {
+test('One Time WAPI bot auto-reply is approval-gated and does not commit the class link', () => {
   assert.match(server, /ONE_TIME_WAPI_AUTO_REPLY_ENABLED/);
   assert.match(server, /ONE_TIME_WAPI_AUTO_REPLY_CONFIRM/);
   assert.match(server, /APPROVE_ONE_TIME_WAPI_AUTO_REPLY/);
@@ -35,7 +35,7 @@ test('OneTime WAPI bot auto-reply is approval-gated and does not commit the clas
   assert.match(server, /ONE_TIME_CURRENT_CLASS_LINK/);
   assert.match(server, /function oneTimeWapiAutoReplyReadiness/);
   assert.match(server, /credential_scope === 'one_time_scoped'/);
-  assert.match(server, /OneTime auto-reply requires one_time_scoped WAPI credentials/);
+  assert.match(server, /One Time auto-reply requires one_time_scoped WAPI credentials/);
   assert.match(server, /metadata->>'auto_reply_type' = 'one_time_welcome_class_link'/);
   assert.match(server, /INTERVAL '12 hours'/);
   assert.match(server, /not_applicable_non_onetime_scope/);
@@ -48,7 +48,7 @@ test('OneTime WAPI bot auto-reply is approval-gated and does not commit the clas
   assert.doesNotMatch(server, /us06web\.zoom\.us\/j\/83339110316/);
 });
 
-test('OneTime WAPI readiness script reports blockers without sends or secrets', async () => {
+test('One Time WAPI readiness script reports blockers without sends or secrets', async () => {
   const script = fs.readFileSync('scripts/check-onetime-wapi-readiness.mjs', 'utf8');
   assert.match(packageJson, /"one-time:wapi:readiness": "node scripts\/check-onetime-wapi-readiness\.mjs --json --write-report"/);
   assert.match(envExample, /ONE_TIME_WAPI_API_TOKEN=/);

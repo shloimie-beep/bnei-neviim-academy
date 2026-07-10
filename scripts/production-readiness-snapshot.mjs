@@ -377,7 +377,7 @@ function summarizeOneTimeSetupChecklist(setupCheckCommand = {}) {
     total_count: setupReadiness?.total_count ?? null,
     blocker_count: Array.isArray(setupReadiness?.blockers) ? setupReadiness.blockers.length : null,
     all_required_external_setup_ready: setupReadiness?.all_required_external_setup_ready === true,
-    load_error: setupReadiness ? '' : redact(setupCheckCommand.stderr || 'Could not parse OneTime setup check JSON.'),
+    load_error: setupReadiness ? '' : redact(setupCheckCommand.stderr || 'Could not parse One Time setup check JSON.'),
   };
   if (!checklist) {
     return {
@@ -619,7 +619,7 @@ function buildLaunchAssessment({ activeRun, blockers, fleet, chatgpt, proof, one
     avoidCollidingWith.push(lane);
   }
   const reason = [
-    hasExternalBlockers ? 'full OneTime launch has external Stripe/WAPI/campaign blockers' : '',
+    hasExternalBlockers ? 'full One Time launch has external Stripe/WAPI/campaign blockers' : '',
     publicLaunchSmokeBlocked ? `public launch no-write smoke is ${publicLaunchSmoke?.status || 'missing'}` : '',
     rabbiTelegramRuntimeBlocked ? `Rabbi Telegram runtime is ${rabbiTelegramRuntime.status}` : '',
     missingProofCount > 0 ? 'Rabbi Agent Review still needs terminal Agent Mode proof' : '',
@@ -767,7 +767,7 @@ function renderMarkdown(report) {
       ? report.active_run.blockers.map((item) => `- ${item.requirement_id}: ${item.blocker} Owner: ${item.owner}. Next: ${item.next_action}`)
       : ['- None reported by `npm run bna:run:blockers`.']),
     '',
-    '## OneTime Setup Buckets',
+    '## One Time Setup Buckets',
     `- Checklist: ${report.one_time_setup.path || 'unknown'}`,
     `- Available: ${report.one_time_setup.available ? 'yes' : 'no'}`,
     `- Current setup check: ${report.one_time_setup.setup_readiness?.ready_count ?? 'unknown'}/${report.one_time_setup.setup_readiness?.total_count ?? 'unknown'} ready (exit ${report.one_time_setup.setup_readiness?.command_exit_code ?? 'unknown'})`,

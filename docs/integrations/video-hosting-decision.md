@@ -8,7 +8,7 @@ provider uploads until Shloimie chooses the host/account model.
 | Option | Filter reliability | Embed/access control | API upload | Captions/transcripts | Ownership question |
 |---|---|---|---|---|---|
 | Vimeo | Often better for private embeds than public portals, but plan support must be confirmed. | Private links/domain/embed controls may fit family/student use if the plan supports them. | Requires a token and plan capability confirmation. | BNA can keep transcript/worksheet generation provider-neutral. | Which BNA/Rabbi-owned admin account owns the library? |
-| YouTube | May be blocked by family/student filters and supervised devices. | Unlisted/private behavior depends on account and viewer restrictions. | Requires OAuth scopes and quota planning. | Strong caption ecosystem, but public-platform exposure needs review. | Which channel owns BNA vs Rabbi/One Time videos? |
+| YouTube | May be blocked by family/student filters and supervised devices. | Unlisted/private behavior depends on account and viewer restrictions. | Requires OAuth scopes and quota planning. | Strong caption ecosystem, but public-platform exposure needs review. | Which channel owns BNA vs Rabbi / One Time videos? |
 | Drive/first-party | Often works where video portals are filtered, but UX and permissions need care. | Strong first-party gating is possible through approved app paths. | Google writes require explicit approval gates. | Best fit for BNA-controlled transcript and worksheet flow. | Does BNA Operations or the Rabbi-owned app host final media? |
 
 ## Provider-Neutral Pipeline

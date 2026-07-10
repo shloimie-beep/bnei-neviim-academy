@@ -815,7 +815,7 @@ async function assertScopeMarkers(page, route) {
   const hasScope = markers.some((marker) => marker.workspace === 'rabbi_sheller_provider' && marker.project === 'one_time_mishnah_class')
     || markers.some((marker) => /rabbi_sheller_provider/.test(marker.text) && /one_time_mishnah_class/.test(marker.text));
   assert.ok(hasScope, `${route} missing visible or attributed One Time workspace/project scope`);
-  assert.match(await textContent(page), /One Time|OneTime|Mishnah/i, `${route} missing One Time branding`);
+  assert.match(await textContent(page), /One Time|One Time|Mishnah/i, `${route} missing One Time branding`);
 }
 
 async function assertRouteShell(page, baseUrl, route) {
@@ -828,7 +828,7 @@ async function assertRouteShell(page, baseUrl, route) {
   await assertNoMobileOverflow(page, baseUrl, route);
 }
 
-test('final local One Time/Rabbi UI QA harness covers scoped routes without external writes', async () => {
+test('final local One Time / Rabbi UI QA harness covers scoped routes without external writes', async () => {
   fs.mkdirSync(reportDir, { recursive: true });
   const local = createServer();
   const baseUrl = await local.listen();

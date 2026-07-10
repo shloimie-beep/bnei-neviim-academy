@@ -205,7 +205,7 @@ function countBy(values, key) {
 
 function importNote(batch) {
   return [
-    `Imported from subscribers.csv batch ${batch} for One Time/Rabbi contact staging.`,
+    `Imported from subscribers.csv batch ${batch} for One Time / Rabbi contact staging.`,
     'No campaign, email, SMS, WhatsApp, Telegram, Buffer, payment, or external CRM action was sent or triggered.',
   ].join(' ');
 }

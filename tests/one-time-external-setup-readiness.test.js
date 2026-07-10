@@ -293,6 +293,6 @@ test('One Time setup readiness can satisfy Zoom session from redacted Railway cl
   const zoom = report.items.find((item) => item.id === 'SETUP-ONETIME-ZOOM-001');
   assert.equal(zoom.ready, true);
   assert.deepEqual(zoom.missing_fields, []);
-  assert.match(zoom.warnings.join(' '), /redacted OneTime Railway readback/);
+  assert.match(zoom.warnings.join(' '), /redacted One Time Railway readback/);
   assert.doesNotMatch(JSON.stringify(report), /zoom\.us|example\.test/);
 });

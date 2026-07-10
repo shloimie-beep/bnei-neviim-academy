@@ -301,7 +301,7 @@ function buildRabbiTaskFlowAudit(tasks = [], options = {}) {
     },
     guardrails: [
       'This audit is read-only and has no apply mode.',
-      'Do not move, close, retitle, reassign, or publish Rabbi/One Time tasks from this report alone.',
+      'Do not move, close, retitle, reassign, or publish Rabbi / One Time tasks from this report alone.',
       'Use typed approval-gated actions or explicit task endpoints only after review.',
       'Do not expose private BNA student/parent/accountability data in Rabbi/provider task flow.',
       'External writes remain blocked behind their existing approval phrases and connector gates.',

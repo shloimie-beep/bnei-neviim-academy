@@ -72,7 +72,7 @@ test('bare Resend API key file is not reused as sender or domain config', () => 
   }
 });
 
-test('Rabbi profile resolves OneTimeOneTime sender identity without using BNA defaults', () => {
+test('Rabbi profile resolves One Time sender identity without using BNA defaults', () => {
   const previous = {
     RESEND_PROFILE: process.env.RESEND_PROFILE,
     RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
@@ -91,7 +91,7 @@ test('Rabbi profile resolves OneTimeOneTime sender identity without using BNA de
     RESEND_REPLY_TO: 'office@bneineviimacademy.org',
     RESEND_DOMAIN: 'bneineviimacademy.org',
     RESEND_RABBI_FROM_EMAIL: 'info@onetimeonetime.com',
-    RESEND_RABBI_FROM_NAME: 'OneTimeOneTime Mishnah',
+    RESEND_RABBI_FROM_NAME: 'One Time Mishnayos',
     RESEND_RABBI_REPLY_TO: 'info@onetimeonetime.com',
     RESEND_RABBI_DOMAIN: 'onetimeonetime.com',
     RESEND_RABBI_PROVIDER_ACCOUNT: 'Rabbi Sheller Resend account',
@@ -106,9 +106,9 @@ test('Rabbi profile resolves OneTimeOneTime sender identity without using BNA de
     });
     assert.equal(config.domain, 'onetimeonetime.com');
     assert.equal(config.fromEmail, 'info@onetimeonetime.com');
-    assert.equal(config.fromName, 'OneTimeOneTime Mishnah');
+    assert.equal(config.fromName, 'One Time Mishnayos');
     assert.equal(config.replyTo, 'info@onetimeonetime.com');
-    assert.equal(config.from, 'OneTimeOneTime Mishnah <info@onetimeonetime.com>');
+    assert.equal(config.from, 'One Time Mishnayos <info@onetimeonetime.com>');
     assert.equal(config.providerAccount, 'Rabbi Sheller Resend account');
   } finally {
     fs.rmSync(secretsRoot, { recursive: true, force: true });

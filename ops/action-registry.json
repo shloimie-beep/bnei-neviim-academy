@@ -35,7 +35,7 @@
       "surface": "one_time_public_landing",
       "route": "/one-time",
       "selector_hint": "body.bna-assistant-surface-one-time-public .bna-bot-launcher",
-      "expected_behavior": "Opens Robot Scheller, Rabbi Scheller's OneTime-scoped public digital assistant, with concise parent-facing copy and free-class/current-class/schedule/Rabbi/member-login choices. Internal scope guardrails remain OneTime-only and do not expose BNA Academy or private portal data.",
+      "expected_behavior": "Opens Robot Scheller, Rabbi Scheller's One Time scoped public digital assistant, with concise parent-facing copy and free-class/current-class/schedule/Rabbi/member-login choices. Internal scope guardrails remain One Time only and do not expose BNA Academy or private portal data.",
       "permission": "anonymous public visitor",
       "status": "active",
       "test": {
@@ -76,7 +76,7 @@
       "surface": "one_time_parent_review",
       "route": "/parent.html?review=one-time",
       "selector_hint": "body.bna-assistant-surface-one-time-parent .bna-bot-launcher",
-      "expected_behavior": "Opens Robot Scheller in the One Time-scoped parent surface with trial, schedule, child access, billing-support, attendance-support, and Rabbi question guidance without exposing private billing records, student transcripts, access codes, other families, or admin data.",
+      "expected_behavior": "Opens Robot Scheller in the One Time scoped parent surface with trial, schedule, child access, billing-support, attendance-support, and Rabbi question guidance without exposing private billing records, student transcripts, access codes, other families, or admin data.",
       "permission": "TEST-only parent review fixture or authenticated parent scope",
       "status": "active",
       "test": {
@@ -96,12 +96,12 @@
       "surface": "one_time_parent_password_setup",
       "route": "/one-time-parent",
       "selector_hint": "#passwordForm button[type=\"submit\"]",
-      "expected_behavior": "Submits the one-time reset token and new password to the parent password reset API, then removes the reset token from the address bar and keeps the user on the OneTimeOneTime setup surface.",
+      "expected_behavior": "Submits the one-time reset token and new password to the parent password reset API, then removes the reset token from the address bar and keeps the user on the One Time setup surface.",
       "permission": "parent_setup_token_holder",
       "status": "active",
       "test": {
         "type": "contract",
-        "expected_result": "tests/one-time-parent-trial-invite.test.js verifies the OneTime invite points to /one-time-parent and public/one-time-parent.html contains the scoped password reset form without Academy branding."
+        "expected_result": "tests/one-time-parent-trial-invite.test.js verifies the One Time invite points to /one-time-parent and public/one-time-parent.html contains the scoped password reset form without Academy branding."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -116,12 +116,12 @@
       "surface": "one_time_parent_password_setup",
       "route": "/one-time-parent",
       "selector_hint": "#forgotForm button[type=\"submit\"]",
-      "expected_behavior": "Requests a OneTimeOneTime-branded parent password reset email to the signup email without exposing whether the email exists.",
+      "expected_behavior": "Requests a One Time branded parent password reset email to the signup email without exposing whether the email exists.",
       "permission": "parent_email_holder",
       "status": "active",
       "test": {
         "type": "contract",
-        "expected_result": "tests/one-time-parent-trial-invite.test.js verifies /api/one-time/parent-password/request, OneTime reset copy, and scoped /one-time-parent reset URL."
+        "expected_result": "tests/one-time-parent-trial-invite.test.js verifies /api/one-time/parent-password/request, One Time reset copy, and scoped /one-time-parent reset URL."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -136,7 +136,7 @@
       "surface": "one_time_student_review",
       "route": "/student.html?review=one-time",
       "selector_hint": "body.bna-assistant-surface-one-time-student .bna-bot-launcher",
-      "expected_behavior": "Opens Robot Scheller in the One Time-scoped student surface with class, library, worksheet, and Rabbi question guidance without exposing parent billing, private parent messages, full transcripts, access codes, other students, or admin data.",
+      "expected_behavior": "Opens Robot Scheller in the One Time scoped student surface with class, library, worksheet, and Rabbi question guidance without exposing parent billing, private parent messages, full transcripts, access codes, other students, or admin data.",
       "permission": "TEST-only student review fixture or authenticated student scope",
       "status": "active",
       "test": {
@@ -328,7 +328,7 @@
       "surface": "provider_portal",
       "route": "/provider?section=whatsapp_setup",
       "selector_hint": "[data-provider-wapi-setup-form] button[data-action-id=\"ACTION-PROVIDER-WAPI-SETUP-SAVE\"]",
-      "expected_behavior": "Saves Rabbi/One Time provider-scoped Whapi/WAPI setup details to BNA integration and secret-reference records for verification; the raw token is not rendered back, and no WhatsApp send, broadcast, payment, access grant, or external provider mutation runs from this action.",
+      "expected_behavior": "Saves Rabbi / One Time provider-scoped Whapi/WAPI setup details to BNA integration and secret-reference records for verification; the raw token is not rendered back, and no WhatsApp send, broadcast, payment, access grant, or external provider mutation runs from this action.",
       "permission": "authenticated One Time provider workspace member",
       "status": "active",
       "test": {
@@ -426,7 +426,7 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "#interestForm button[type=\"submit\"]",
-      "expected_behavior": "Creates a first-party OneTime product lead and CRM lead from the public free-class signup form with parent name, email, optional student name, optional phone/WhatsApp, hidden consent, source metadata, and idempotent blocked email/WhatsApp transactional follow-up timeline records; no checkout, external send, live charge, portal account, Zoom meeting creation, or access grant.",
+      "expected_behavior": "Creates a first-party One Time product lead and CRM lead from the public free-class signup form with parent name, email, optional student name, optional phone/WhatsApp, hidden consent, source metadata, and idempotent blocked email/WhatsApp transactional follow-up timeline records; no checkout, external send, live charge, portal account, Zoom meeting creation, or access grant.",
       "permission": "public",
       "status": "active",
       "test": {
@@ -530,7 +530,7 @@
       "status": "active_readonly",
       "test": {
         "type": "static_contract",
-        "expected_result": "Operations email workspace visibly labels the selected inbox and reads Rabbi/One Time bna_communications rows without exposing unrelated BNA inbox records."
+        "expected_result": "Operations email workspace visibly labels the selected inbox and reads Rabbi / One Time bna_communications rows without exposing unrelated BNA inbox records."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -780,7 +780,7 @@
       "surface": "operations_content_meeting_drops",
       "route": "/operations?view=content&section=meetings",
       "selector_hint": "[data-preview-one-time-drive-brief]",
-      "expected_behavior": "Runs a no-write preview of the latest Rabbi Elie / One Time Drive brief, proves One Time-only scope, displays owner/admin assignments, and lists credential or owner-only blockers.",
+      "expected_behavior": "Runs a no-write preview of the latest Rabbi Elie / One Time Drive brief, proves One Time only scope, displays owner/admin assignments, and lists credential or owner-only blockers.",
       "permission": "super_admin/project_admin",
       "status": "active",
       "test": {
@@ -2253,7 +2253,7 @@
       "surface": "provider_portal",
       "route": "/provider?section=mailbox",
       "selector_hint": "#providerMailboxSearchForm [data-action-id=\"ACTION-PROVIDER-MAILBOX-SEARCH\"]",
-      "expected_behavior": "Searches the Rabbi/One Time provider mailbox thread list using the private provider mailbox API; reads only scoped bna_communications email rows and performs no external send.",
+      "expected_behavior": "Searches the Rabbi / One Time provider mailbox thread list using the private provider mailbox API; reads only scoped bna_communications email rows and performs no external send.",
       "permission": "authenticated One Time provider workspace member",
       "status": "active_readonly",
       "test": {
@@ -2277,7 +2277,7 @@
       "status": "active_readonly",
       "test": {
         "type": "static_and_api_contract",
-        "expected_result": "GET /api/provider-portal/mailbox/:threadKey requires provider session and Rabbi/One Time workspace scope."
+        "expected_result": "GET /api/provider-portal/mailbox/:threadKey requires provider session and Rabbi / One Time workspace scope."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

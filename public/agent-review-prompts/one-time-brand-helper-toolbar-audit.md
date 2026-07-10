@@ -74,18 +74,18 @@ Focus: One Time black/yellow brand isolation, English-only public scope, helper 
 ## Exact Navigation
 
 1. Open /operations/agent-review?prompt=one-time-brand-helper-toolbar-audit first. Confirm this prompt key is visible in the Agent Review Hub and keep the drop-off page available in another tab.
-2. Open /one-time. Confirm the page is OneTimeOneTime / One Time Mishnah Class, black/yellow scoped, English-only, and does not flash BNA cream/navy/teal, BNA Academy copy, or a Hebrew/English toggle.
+2. Open /one-time. Confirm the page is One Time / One Time Mishnah Class, black/yellow scoped, English-only, and does not flash BNA cream/navy/teal, BNA Academy copy, or a Hebrew/English toggle.
 3. At /one-time, audit 1440px, 1024px, 768px, 430px, and 390px. Check first-viewport density, top section wasted space, button equal heights, text wrapping, helper launcher placement, and horizontal overflow.
 4. Open the One Time Helper on /one-time. Ask three public-safe questions: class schedule, parent trial link, and library access. Verify answers stay in one_time_mishnah_class scope and do not mention BNA school accountability unless explicitly framed as unrelated.
 5. Open /operations. If login is required, use browser takeover so the owner types credentials directly. Do not ask for, store, or repeat credentials.
 6. From Operations, use the workspace switcher to select One Time / Rabbi / One Time Mishnah Class. If the click path is not findable, record the failed click path and then open /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview.
 7. In the One Time Operations workspace, inspect the side panel, active workspace label, top subcategories, filters/search, primary action buttons, helper/drawer position, and any cards that say configured/not configured. If Rabbi cannot act on a card, mark it as role-contaminating admin noise.
 8. In Operations, open Communications > Email or /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email. Record whether the screen loops, switches to a broken display, or fails to show a clean Rabbi / One Time inbox distinction.
-9. In Operations, open Communications > WhatsApp or /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=whatsapp. Record whether WAPI readiness, WhatsApp contact history, and send controls are scoped to OneTime and clearly blocked when credentials are missing.
+9. In Operations, open Communications > WhatsApp or /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=whatsapp. Record whether WAPI readiness, WhatsApp contact history, and send controls are scoped to One Time and clearly blocked when credentials are missing.
 10. Open /provider.html?review=one-time and /provider.html?admin_provider=one-time&section=mailbox if available. Confirm Rabbi/provider sees clear action buttons such as send message/email previews only where safe, and no random Super Admin diagnostics.
 11. Open /parent.html?review=one-time, /student.html?review=one-time, /rabbi-member.html?review=one-time, and /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS.
 12. For every role route, audit 1440px, 1024px, 768px, 430px, and 390px. Compare category/subcategory/filter placement, toolbar density, button height, helper scope, role label, and mobile menu behavior against the Operations pattern.
-13. Open https://join.onetimeonetime.com/parent/login and https://join.onetimeonetime.com/student/login. Confirm login/reset surfaces are OneTime-only and do not flash BNA Academy branding or Hebrew/English toggle.
+13. Open https://join.onetimeonetime.com/parent/login and https://join.onetimeonetime.com/student/login. Confirm login/reset surfaces are One Time only and do not flash BNA Academy branding or Hebrew/English toggle.
 14. If any route, click path, login, helper, or drop-off step fails, do not stop in frustration. Save a BLOCKED or FAIL report through Operations drop-off with the exact route attempted, what failed, screenshots/DOM notes if available, and the smallest Codex-ready repair suggestion.
 
 ## Required Audit Output
