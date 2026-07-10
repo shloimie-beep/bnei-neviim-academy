@@ -1,7 +1,7 @@
 {
   "report_id": "onetime-historical-source-statement-matrix-20260710-skeleton",
-  "generated_at": "2026-07-10T16:38:59+03:00",
-  "status": "in_progress_first_through_fifteenth_batches_mapped_goal_active_not_ready",
+  "generated_at": "2026-07-10T16:44:36+03:00",
+  "status": "in_progress_first_through_sixteenth_batches_mapped_goal_active_not_ready",
   "source_inventory": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json",
   "counts": {
     "total_source_statements": 291,
@@ -15,10 +15,10 @@
       "mapped_terminal_done": 18,
       "mapped_terminal_done_deployed_live_smoked": 61,
       "mapped_terminal_done_no_external_send": 1,
-      "mapped_terminal_mixed_done_and_blocked": 25,
-      "mapped_terminal_mixed_done_needs_decision_blocked": 94,
+      "mapped_terminal_mixed_done_and_blocked": 26,
+      "mapped_terminal_mixed_done_needs_decision_blocked": 98,
       "needs_terminal_mapping": 1,
-      "needs_terminal_mapping_blocker_present": 73,
+      "needs_terminal_mapping_blocker_present": 68,
       "needs_terminal_mapping_done_claim_present": 15
     },
     "by_family": {
@@ -35,9 +35,9 @@
       "done": 18,
       "done_deployed_live_smoked": 61,
       "done_no_external_send": 1,
-      "mixed_terminal_done_and_blocked": 25,
-      "mixed_terminal_done_needs_decision_blocked": 94,
-      "null": 90
+      "mixed_terminal_done_and_blocked": 26,
+      "mixed_terminal_done_needs_decision_blocked": 98,
+      "null": 85
     }
   },
   "source_statements": [
@@ -7287,10 +7287,18 @@
         "DEC-20260618-001",
         "DEC-20260618-002"
       ],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-18-mobile-operations-workspace-audit.md",
+        "ops/playwright-smokes/2026-06-18-module-scoping-local/report.md",
+        "ops/playwright-smokes/2026-06-18-admin-comms-integrations-local/report.md",
+        "ops/playwright-smokes/2026-06-18-student-detail-scope-local/report.md",
+        "ops/playwright-smokes/2026-06-18-student-hebrew-rtl-local/report.md",
+        "ops/seed-runs/2026-06-18-req022-local/report.md",
+        "ops/watchdog-audits/2026-06-18T09-11-watchdog-audit.md"
+      ],
+      "blocker_or_next_action": "The June 18 mobile/workspace packet has local implementation, focused tests, Playwright smokes, seed dry-run, watchdog, and Railway doctor proof, with REQ-20260618-024 already satisfied. Deploy/live smoke and real DB seed apply/readback/cleanup remain blocked by scope-safe release/database target approval and the mixed dirty-worktree release boundary."
     },
     {
       "source_statement_id": "HIST-SRC-0202",
@@ -7315,10 +7323,15 @@
         "REQ-20260616-030"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-18-website-ramble-correction-audit.md",
+        "tasks-pending/2026-06-16-website-ramble-correction-audit.md",
+        "tasks-pending/2026-06-17-website-ramble-correction-audit.md",
+        "ops/watchdog-audits/2026-06-18T09-11-watchdog-audit.md"
+      ],
+      "blocker_or_next_action": "The June 18 website-correction marker is done as source-chain hygiene and carries forward the closed June 16/17 website correction proof. The only carried blocker remains payment-link creation, which needs explicit Stripe or Green Invoice provider choice plus credentials or payment links."
     },
     {
       "source_statement_id": "HIST-SRC-0203",
@@ -7366,10 +7379,18 @@
         "DEC-20260619-303",
         "DEC-20260619-304"
       ],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-19-one-time-master-recovery-register.md",
+        "raw-input/RAW-20260619-005-one-time-master-recovery-backlog-ui-launch.md",
+        "ops/one-time-mishnah/master-backlog-reconciliation.md",
+        "ops/one-time-mishnah/master-backlog-reconciliation.json",
+        "ops/task-decision-census/2026-06-19T09-29-03-110Z-task-decision-census.md",
+        "ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.md",
+        "ops/watchdog-audits/2026-06-19T12-00-watchdog-audit.md"
+      ],
+      "blocker_or_next_action": "The master recovery register gives REQ-20260619-300 through REQ-20260619-314 terminal statuses: local/protocol/preflight work is done, while task cleanup apply, role persistence, authenticated UI audit, live sends, billing/payment, Zoom/Vimeo/provider writes, Sefaria/study-assistant publication, Railway/database/domain/DNS/deploy, and final live-smoke actions remain operator-decision or external-account gated."
     },
     {
       "source_statement_id": "HIST-SRC-0204",
@@ -7402,10 +7423,17 @@
         "REQ-20260619-208"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-19-ramble-agent-integrations-followup.md",
+        "raw-input/RAW-20260619-002-next-ramble-agent-integrations-codex-prompt.md",
+        "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/VERIFICATION.md",
+        "docs/integrations/VIMEO.md",
+        "docs/integrations/ZOOM.md",
+        "docs/integrations/RESEND.md"
+      ],
+      "blocker_or_next_action": "The follow-up registered the prompt, added the no-write One Time Drive brief preview path, role/scoping corrections, action/route registry rows, dry-run ingestion evidence, and secure Vimeo/Zoom/Resend docs. Future ingestion hardening, full role/module closeout, external credentials, account-owner actions, DNS, payment setup, production DB readback, and uploaded audit-package-dependent UI remediation remain blocked or decision-gated."
     },
     {
       "source_statement_id": "HIST-SRC-0205",
@@ -7429,10 +7457,16 @@
         "REQ-20260616-030"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-19-website-ramble-correction-audit.md",
+        "tasks-pending/2026-06-18-website-ramble-correction-audit.md",
+        "tasks-pending/2026-06-17-website-ramble-correction-audit.md",
+        "tasks-pending/2026-06-16-website-ramble-correction-audit.md",
+        "ops/watchdog-audits/2026-06-19T12-00-watchdog-audit.md"
+      ],
+      "blocker_or_next_action": "The June 19 website-correction marker is done as source-chain hygiene and does not reopen the closed June 16/17 website correction work. The carried payment-link requirement remains blocked until explicit provider/payment-link choices and credentials exist."
     },
     {
       "source_statement_id": "HIST-SRC-0206",
@@ -10638,9 +10672,9 @@
     }
   ],
   "remaining_work": {
-    "active_or_mapped_rows": 179,
-    "rows_without_terminal_status": 113,
-    "next_source_statement_id": "HIST-SRC-0178",
+    "active_or_mapped_rows": 207,
+    "rows_without_terminal_status": 85,
+    "next_source_statement_id": "HIST-SRC-0206",
     "note": "Continue terminal mapping for the remaining historical source rows; owner-experience goal remains active and not ready."
   },
   "first_mapped_batch": {
@@ -10981,6 +11015,29 @@
       "HIST-SRC-0200"
     ],
     "summary": "Mapped June 17 task-register rows covering backlog readiness, full-system queue/debug unblock, goal-mode protocol hardening, Hebrew RTL labels, live queue cleanup, Rabbi Scheller / OneTime Mishnayos packet, and the June 17 website correction continuation.",
+    "guardrails": [
+      "No external send in this mapping pass",
+      "No WhatsApp/WAPI send in this mapping pass",
+      "No email send in this mapping pass",
+      "No Telegram send in this mapping pass",
+      "No payment/access mutation",
+      "No DNS/credential mutation",
+      "No Drive/Zoom/Vimeo mutation in this mapping pass",
+      "No production import/contact write in this mapping pass",
+      "No GHL/LeadConnector runtime",
+      "No provider-account mutation"
+    ]
+  },
+  "sixteenth_mapped_batch": {
+    "mapped_at": "2026-07-10T16:44:36+03:00",
+    "source_statement_ids": [
+      "HIST-SRC-0201",
+      "HIST-SRC-0202",
+      "HIST-SRC-0203",
+      "HIST-SRC-0204",
+      "HIST-SRC-0205"
+    ],
+    "summary": "Mapped June 18-19 task-register rows covering mobile Operations/workspace audit, website correction continuation markers, the One Time master recovery register, and the ramble/agent/integrations follow-up.",
     "guardrails": [
       "No external send in this mapping pass",
       "No WhatsApp/WAPI send in this mapping pass",
