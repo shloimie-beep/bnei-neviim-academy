@@ -1,6 +1,6 @@
 {
   "report_id": "onetime-owner-experience-closure-20260710-current-batch",
-  "generated_at": "2026-07-10T15:18:20+03:00",
+  "generated_at": "2026-07-10T15:18:49+03:00",
   "raw_id": "RAW-20260710-003",
   "register_path": "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
   "production_target": "https://join.onetimeonetime.com",
@@ -42,13 +42,13 @@
     },
     {
       "id": "REQ-20260710-027",
-      "status": "in_progress_third_batch_mapped_terminal_mapping_required",
-      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows and mapped the first July 10 batch, the second early foundational batch, and the third June 22-24 historical batch. Thirty-one rows now have mapped or active statuses, including HIST-SRC-0135 as the active owner objective. 261 rows still lack terminal status.",
+      "status": "in_progress_fourth_batch_mapped_terminal_mapping_required",
+      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows and mapped the first July 10 batch, the second early foundational batch, the third June 22-24 batch, and the fourth June 26-July 1 batch. Forty-three rows now have mapped or active statuses, including HIST-SRC-0135 as the active owner objective. 249 rows still lack terminal status.",
       "evidence": [
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.md",
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json"
       ],
-      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for the remaining 261 rows."
+      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for the remaining 249 rows."
     }
   ],
   "local_evidence": {
@@ -78,7 +78,7 @@
     "PASS live readable redacted Operations audit 140 screenshots, 0 skipped checks, 0 findings",
     "PASS manual review of desktop/mobile Operations overview and email inbox readable redacted screenshots",
     "PASS historical source inventory JSON parsed; counts raw_inputs 135, task_registers 156, evidence_groups 141",
-    "PASS historical source-statement matrix JSON parsed; total_source_statements 291; first, second, and third mapped batches cover 31 mapped/active rows; remaining rows without terminal status 261",
+    "PASS historical source-statement matrix JSON parsed; total_source_statements 291; first through fourth mapped batches cover 43 mapped/active rows; remaining rows without terminal status 249",
     "PASS no standalone visible OneTime/OneTimeOneTime brand grep in active checked surfaces"
   ],
   "deployment": {
@@ -120,6 +120,6 @@
     "status": "not_production_complete",
     "snapshot": "ops/production-readiness/latest-production-readiness-snapshot.md",
     "sampled_head": "98e49080",
-    "reason": "Full One Time launch remains blocked by external setup values, Telegram live delivery proof, Agent Mode terminal proof, and source-complete historical atomization; current UI/code batch is deployed and live-smoked, and the historical matrix third batch is mapped."
+    "reason": "Full One Time launch remains blocked by external setup values, Telegram live delivery proof, Agent Mode terminal proof, and source-complete historical atomization; current UI/code batch is deployed and live-smoked, and the historical matrix fourth batch is mapped."
   }
 }

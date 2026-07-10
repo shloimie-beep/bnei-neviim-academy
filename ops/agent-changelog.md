@@ -37942,3 +37942,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Mapped the June 22-24 historical source batch: `HIST-SRC-0015` through `HIST-SRC-0026`.
 - Studio, clean control-tower, public UI, final release, and Issue #20 rows now point to the relevant run/register/live-smoke proof. Broad launch/system rows remain conservatively mixed terminal where external sends, Stripe/access, account setup, production imports, Agent Mode proof, or class backfill stayed blocked.
 - The historical source matrix now has 31 mapped or active rows and 261 rows still lacking terminal status. The owner-experience goal remains active and not ready.
+
+## 2026-07-10 - One Time historical source fourth batch mapped
+
+- Mapped the June 26-July 1 historical source batch: `HIST-SRC-0027` through `HIST-SRC-0038`.
+- Agent Review, Issue #24 helper guardrails, transcript/Drive digest, service-provider scopes, drop-off notifier, content filter, current-systems closeout, protocol/brand packets, visual audit/Resend smoke, and separate launch-instance sources now point to terminal proof or exact blockers.
+- The historical source matrix now has 43 mapped or active rows and 249 rows still lacking terminal status. The owner-experience goal remains active and not ready.

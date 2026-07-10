@@ -1,7 +1,7 @@
 {
   "report_id": "onetime-historical-source-statement-matrix-20260710-skeleton",
-  "generated_at": "2026-07-10T15:18:20+03:00",
-  "status": "skeleton created; first, second, and third batches mapped; terminal mapping still required.",
+  "generated_at": "2026-07-10T15:18:49+03:00",
+  "status": "skeleton created; first through fourth batches mapped; terminal mapping still required.",
   "source_inventory": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json",
   "counts": {
     "total_source_statements": 291,
@@ -12,14 +12,14 @@
     "by_mapping_status": {
       "mapped_in_progress_goal_active": 1,
       "mapped_terminal_already_satisfied": 2,
-      "mapped_terminal_done": 3,
-      "mapped_terminal_done_deployed_live_smoked": 3,
+      "mapped_terminal_done": 5,
+      "mapped_terminal_done_deployed_live_smoked": 8,
       "mapped_terminal_done_no_external_send": 1,
-      "mapped_terminal_mixed_done_and_blocked": 7,
-      "mapped_terminal_mixed_done_needs_decision_blocked": 14,
-      "needs_terminal_mapping": 47,
-      "needs_terminal_mapping_blocker_present": 145,
-      "needs_terminal_mapping_done_claim_present": 68
+      "mapped_terminal_mixed_done_and_blocked": 11,
+      "mapped_terminal_mixed_done_needs_decision_blocked": 15,
+      "needs_terminal_mapping": 45,
+      "needs_terminal_mapping_blocker_present": 140,
+      "needs_terminal_mapping_done_claim_present": 63
     },
     "by_family": {
       "OT-HIST-001": 12,
@@ -32,12 +32,12 @@
     },
     "by_terminal_status": {
       "already_satisfied": 2,
-      "done": 3,
-      "done_deployed_live_smoked": 3,
+      "done": 5,
+      "done_deployed_live_smoked": 8,
       "done_no_external_send": 1,
-      "mixed_terminal_done_and_blocked": 7,
-      "mixed_terminal_done_needs_decision_blocked": 14,
-      "null": 261
+      "mixed_terminal_done_and_blocked": 11,
+      "mixed_terminal_done_needs_decision_blocked": 15,
+      "null": 249
     }
   },
   "source_statements": [
@@ -1115,12 +1115,26 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260626-001",
+        "REQ-20260626-002",
+        "REQ-20260626-003",
+        "REQ-20260626-004",
+        "REQ-20260626-005",
+        "REQ-20260626-006",
+        "REQ-20260626-007",
+        "REQ-20260626-008"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+        "tasks-pending/2026-06-26-agent-review-dropoff-repair.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/EVIDENCE.md",
+        "ops/live-smokes/2026-06-26T09-28-57-144Z-agent-review-required-pilots-live.md"
+      ],
+      "blocker_or_next_action": "Agent Review drop-off repair reached terminal Done through merged PRs, Railway deployment, live smokes, direct AGR save/readback, and Issue #24 closeout evidence. No class backfill or student-data mutation was performed."
     },
     {
       "source_statement_id": "HIST-SRC-0028",
@@ -1141,12 +1155,23 @@
         "public_funnel",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260626-116",
+        "REQ-20260626-117",
+        "REQ-20260626-118",
+        "REQ-20260626-119",
+        "REQ-20260626-120"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260626-004-issue24-owner-helper-guardrail-followup.md",
+        "tasks-pending/2026-06-26-issue24-owner-helper-guardrail-followup.md",
+        "ops/live-smokes/2026-06-26T09-28-41-497Z-public-helper-unsafe-action-live.md",
+        "ops/live-smokes/2026-06-26T09-28-57-144Z-agent-review-required-pilots-live.md"
+      ],
+      "blocker_or_next_action": "Issue #24 helper guardrail follow-up is terminal Done: unsafe helper requests refuse executable work, task #1738 is archived/history, Agent Mode drop-off contract was reverified, and the three required live pilots saved visible AGR evidence."
     },
     {
       "source_statement_id": "HIST-SRC-0029",
@@ -1169,14 +1194,44 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260626-116",
+        "REQ-20260626-117",
+        "REQ-20260626-118",
+        "REQ-20260626-119",
+        "REQ-20260626-120",
+        "REQ-20260626-121",
+        "REQ-20260626-122",
+        "REQ-20260626-123",
+        "REQ-20260626-124",
+        "REQ-20260626-125",
+        "REQ-20260626-126",
+        "REQ-20260626-127",
+        "REQ-20260626-128",
+        "REQ-20260628-134",
+        "REQ-20260628-135",
+        "REQ-20260628-136",
+        "REQ-20260628-137",
+        "REQ-20260628-138",
+        "REQ-20260628-139",
+        "REQ-20260628-140",
+        "REQ-20260628-141",
+        "REQ-20260628-142",
+        "REQ-20260628-143"
+      ],
       "referenced_decision_ids": [
         "DEC-20260626-101"
       ],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
+        "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/STATUS.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/COMPLETION-AUDIT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-RECOMMENDATION.json"
+      ],
+      "blocker_or_next_action": "Transcript/Drive digest rebuild reached terminal Done for approved scope: private digest cards, Drive #83 sync, PR/deploy readbacks, and exact Issue #41 parser/question/task apply/readback are recorded. Future raw transcript export, broad Drive sync, score/progress writes, AI/paid transcription, sends, or unrelated production writes require fresh exact approval."
     },
     {
       "source_statement_id": "HIST-SRC-0030",
@@ -1203,10 +1258,15 @@
         "REQ-20260626-126"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260626-005-service-provider-role-scope-package.md",
+        "tasks-pending/2026-06-26-service-provider-scopes-crm.md",
+        "ops/live-smokes/2026-06-26T11-12-12-747Z-service-provider-scopes-live-smoke.md",
+        "ops/live-smokes/2026-06-26T11-13-18-505Z-operations-workspace-taxonomy-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Service-provider scopes and first-party CRM package is terminal Done: PR #43 merged, Railway deployment succeeded, scoped APIs/UI/routes were live-smoked, and CRM remains first-party BNA Operations with no GHL/LeadConnector runtime."
     },
     {
       "source_statement_id": "HIST-SRC-0031",
@@ -1227,12 +1287,25 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260628-134",
+        "REQ-20260628-135",
+        "REQ-20260628-136",
+        "REQ-20260628-137",
+        "REQ-20260628-138",
+        "REQ-20260628-139",
+        "REQ-20260628-140"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done",
+      "terminal_status": "done",
+      "terminal_evidence": [
+        "raw-input/RAW-20260628-007-rabbi-drive-folder-structure-packet.md",
+        "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/STATUS.md"
+      ],
+      "blocker_or_next_action": "Rabbi Drive folder structure packet is covered by the transcript/Drive digest run and related folder/workflow evidence. Exact future unsafe Drive writes or parser applies remain governed by the standing approval rule, but no separate open action remains for this source row."
     },
     {
       "source_statement_id": "HIST-SRC-0032",
@@ -1250,10 +1323,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done",
+      "terminal_status": "done",
+      "terminal_evidence": [
+        "raw-input/RAW-20260628-008-rabbi-dropoff-email-notifier.md",
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-dropoff-notifier.md",
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-dropoff-notifier.json"
+      ],
+      "blocker_or_next_action": "Rabbi drop-off email notifier is active locally through Windows Task Scheduler, with the two Drive lanes titled, watcher scripts registered, Gmail setup-test proof, scheduled task readback result 0, and guardrails limiting it to operator notifications only."
     },
     {
       "source_statement_id": "HIST-SRC-0033",
@@ -1271,12 +1348,18 @@
         "payments_access",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260630-204"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260630-003-content-library-filter-visibility-followup.md",
+        "ops/system-audits/2026-06-30-current-systems-closeout.md",
+        "ops/live-smokes/2026-06-30T12-18-15-254Z-content-topic-filter-live-readback.md"
+      ],
+      "blocker_or_next_action": "Content Library visibility and filter repair is terminal Done: the stack overflow loop was fixed, Railway deployment succeeded, and live readback showed content cards plus topic filters without raw private body markers."
     },
     {
       "source_statement_id": "HIST-SRC-0034",
@@ -1299,12 +1382,26 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260630-201",
+        "REQ-20260630-202",
+        "REQ-20260630-203",
+        "REQ-20260630-204",
+        "REQ-20260630-205",
+        "REQ-20260630-206",
+        "REQ-20260630-207",
+        "REQ-20260630-208"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+        "tasks-pending/2026-06-30-current-systems-closeout.md",
+        "ops/system-audits/2026-06-30-current-systems-closeout.md",
+        "ops/execution-runs/2026-06-30-current-systems-closeout/BATCH-STATUS.md"
+      ],
+      "blocker_or_next_action": "Current-systems closeout source is terminal mixed: release, content, class intake, Telegram evidence, deployment, and live readbacks are done; live Resend sender/webhook setup and real email send smoke remain external/account-owner gated."
     },
     {
       "source_statement_id": "HIST-SRC-0035",
@@ -1339,10 +1436,16 @@
         "DEC-20260626-101",
         "DEC-20260630-201"
       ],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260630-005-current-systems-closeout.md",
+        "tasks-pending/2026-06-30-current-systems-closeout.md",
+        "ops/system-audits/2026-06-30-current-systems-closeout.md",
+        "ops/live-smokes/2026-06-30T12-28-31-153Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-30T12-29-08-404Z-one-time-crm-contacts-ux-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Current-systems closeout register is terminal mixed: PR #56/deploy/live smokes and current records are done, while Resend live inbound/outbound setup and any real email send remain blocked on account-owner configuration and exact approval."
     },
     {
       "source_statement_id": "HIST-SRC-0036",
@@ -1363,12 +1466,31 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260701-101",
+        "REQ-20260701-102",
+        "REQ-20260701-103",
+        "REQ-20260701-104",
+        "REQ-20260701-105",
+        "REQ-20260701-106",
+        "REQ-20260701-107",
+        "REQ-20260701-108",
+        "REQ-20260701-109",
+        "REQ-20260701-110",
+        "REQ-20260701-111",
+        "REQ-20260701-112",
+        "REQ-20260701-113"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260701-003-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md",
+        "tasks-pending/2026-07-01-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md",
+        "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/00-control-tower.md",
+        "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/01-current-state-visual-audit.md"
+      ],
+      "blocker_or_next_action": "Product-quality protocol, brand-kit correction, provider pipeline memory, and Rabbi control-tower/visual-audit packets were created and merged. Deploy/live smoke for this packet was blocked by missing explicit Railway project/service target."
     },
     {
       "source_statement_id": "HIST-SRC-0037",
@@ -1399,10 +1521,16 @@
         "REQ-20260701-408"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260701-004-run-rabbi-onetime-visual-audit-resend-smoke.md",
+        "tasks-pending/2026-07-01-run-rabbi-onetime-visual-audit-resend-smoke.md",
+        "ops/ui-audits/2026-07-01-rabbi-onetime-current-state/",
+        "ops/provider-config-readbacks/2026-07-01-resend-smoke-readback.md",
+        "ops/deploy-readbacks/2026-07-01-railway-target-readback.md"
+      ],
+      "blocker_or_next_action": "Runnable visual-audit and Resend-smoke packets were executed: 75 redacted screenshots and 107 findings captured, dry-run passed, and one guarded Resend test send was delivered. Persistent Railway target values, sender config, and webhook setup remained blocked."
     },
     {
       "source_statement_id": "HIST-SRC-0038",
@@ -1427,10 +1555,15 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260701-007-one-time-separate-instance-launch-funnel-source.txt",
+        "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "blocker_or_next_action": "Separate One Time instance and launch-funnel requirements are preserved and many landing/CRM/access/funnel pieces have later deploy/live-smoke proof. Full launch remains decision/external gated by Stripe, WAPI/WhatsApp, campaign send, Telegram delivery proof, access/payment approvals, historical import policy, and provider account setup."
     },
     {
       "source_statement_id": "HIST-SRC-0039",
@@ -9427,7 +9560,7 @@
     }
   ],
   "remaining_work": {
-    "rows_without_terminal_status": 261,
+    "rows_without_terminal_status": 249,
     "next_action": "Continue terminal mapping for the remaining historical rows, then split non-terminal gaps into small implementation/proof packets and produce the final owner walkthrough/readiness verdict."
   },
   "first_mapped_batch": {
@@ -9481,5 +9614,24 @@
     ],
     "status": "june_22_to_24_historical_rows_mapped",
     "remaining_rows_without_terminal_status": 261
+  },
+  "fourth_mapped_batch": {
+    "mapped_at": "2026-07-10T15:18:49+03:00",
+    "row_ids": [
+      "HIST-SRC-0027",
+      "HIST-SRC-0028",
+      "HIST-SRC-0029",
+      "HIST-SRC-0030",
+      "HIST-SRC-0031",
+      "HIST-SRC-0032",
+      "HIST-SRC-0033",
+      "HIST-SRC-0034",
+      "HIST-SRC-0035",
+      "HIST-SRC-0036",
+      "HIST-SRC-0037",
+      "HIST-SRC-0038"
+    ],
+    "status": "june_26_to_july_1_historical_rows_mapped",
+    "remaining_rows_without_terminal_status": 249
   }
 }
