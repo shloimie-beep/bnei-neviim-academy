@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-10T17:09:18.294Z
+# Production Readiness Snapshot - 2026-07-10T17:27:07.036Z
 
 Result: not_production_complete
 Production ready: no
@@ -12,14 +12,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: unknown
-- HEAD: 627c3c75
-- origin/master: 627c3c75
+- HEAD: fd04d006
+- origin/master: fd04d006
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 627c3c75
-- Sampled origin/master: 627c3c75
+- Sampled git head: fd04d006
+- Sampled origin/master: fd04d006
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
@@ -43,14 +43,14 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Setup ready count: 5/8
 - Operator blocker count: 3
 - SETUP-ONETIME-STRIPE-001: Rabbi Stripe sandbox (blocked_external_input). Missing now: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias. Required: rabbi_stripe_test_secret_key_alias, stripe_publishable_key_alias_if_needed, stripe_webhook_secret_alias_if_needed, 67_month_product_price_ids_or_sandbox_create_permission, confirm_sandbox_only
-- SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Missing now: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number. Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
+- SETUP-ONETIME-WHAPI-001: Whapi/WAPI provider details (blocked_external_input). Missing now: whapi_wapi_instance_id, whapi_wapi_phone_number. Required: provider_account, phone_number, instance_id_or_alias, webhook_url_status, safe_test_recipient_for_later_packet, ONE_TIME_WAPI_AUTO_REPLY_ENABLED_if_auto_reply_is_intended, ONE_TIME_WAPI_AUTO_REPLY_CONFIRM_APPROVE_ONE_TIME_WAPI_AUTO_REPLY_after_explicit_approval
 - SETUP-ONETIME-CAMPAIGN-001: Campaign seed / real campaign (blocked_external_input). Missing now: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval. Required: final_campaign_copy, exact_recipient_segment_or_list_source, suppression_unsubscribe_proof, final_join_member_links, seed_recipient_sdratler_gmail, explicit_seed_packet_approval, separate_explicit_real_send_command_if_seed_passes
 
 ## Public Launch No-Write Smoke
 - Path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
 - Status: passed
 - Ready: yes
-- Fresh for launch gate: yes (0.43h old, max 24h)
+- Fresh for launch gate: yes (0.73h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
@@ -71,10 +71,10 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Next: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
 
 ## Agent Fleet
-- Supervisor: not running
+- Supervisor: running PID 36560
 - Claimable observable jobs: 0
 - Ready to claim: observable jobs 0, fallback task candidates 0
-- Queue health: fresh 0, stale 514, blocked 155, unknown 221, do-not-redo 830
+- Queue health: fresh 0, stale 515, blocked 155, unknown 221, do-not-redo 830
 - Kimi fallback: quota_only / kimi-k2.7-code-highspeed
 - Auto-deploy readiness preflight: enforced
 - Auto-deploy preflight command: npm run production:readiness:gate -- --json
@@ -85,7 +85,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - No running launch collision lanes reported.
 
 ## Other Agent Policy Rows
-- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=missing path=.runtime/agent-fleet/task-1736.lock.json)
+- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=196.8 path=.runtime/agent-fleet/task-1736.lock.json)
 - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)
 - job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief (local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json)
 - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)

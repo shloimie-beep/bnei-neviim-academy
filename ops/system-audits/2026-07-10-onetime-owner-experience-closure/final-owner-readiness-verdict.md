@@ -1,11 +1,11 @@
 # One Time Owner-Experience Final Readiness Verdict
 
-Generated: 2026-07-10T20:10:05+03:00
+Generated: 2026-07-10T20:27:45+03:00
 Raw objective: `RAW-20260710-003`
 Requirement: `REQ-20260710-029`
-Audited head commit: `627c3c75`
+Audited head commit: `fd04d006`
 Latest app deployment: Railway `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` from app source commit `627c3c75`
-Latest readiness snapshot: `2026-07-10T17:09:18.294Z` sampled clean `627c3c75`
+Latest readiness snapshot: `2026-07-10T17:27:07.036Z` sampled clean `fd04d006`
 
 ## Verdict
 
@@ -33,7 +33,7 @@ The historical source audit is source-complete for all non-active rows: 291 rows
 
 - Verdict: blocked
 - Scope: Stripe/payment/access, WhatsApp/WAPI, real campaign seed/send, hosted Telegram delivery, and full launch automation.
-- Blockers: external_setup_blockers; owner=Shloimie / provider account owners; next=Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval. rabbi_telegram_runtime_configuration; owner=Codex / operator; next=Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof. agent_mode_terminal_proof_missing; owner=Shloimie / Agent Mode runner; next=Run each listed Agent Mode prompt and save terminal PASS, FAIL, or BLOCKED proof through the listed Operations drop-off URL.
+- Blockers: external_setup_blockers; owner=Shloimie / provider account owners; next=Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval. rabbi_telegram_runtime_configuration; owner=Codex / operator; next=Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof. agent_mode_terminal_proof_missing; owner=Shloimie / Agent Mode runner; next=Run each listed Agent Mode prompt and save terminal PASS, FAIL, or BLOCKED proof through the listed Operations drop-off URL.
 - Post-verdict scoped progress: One Time WAPI provider lead-bot guardrails are implemented locally and tested. This does not clear the blocked verdict because live provider instance metadata, webhook secret, live-mode approvals, and Telegram approval are still missing.
 - Evidence: `ops/production-readiness/latest-production-readiness-snapshot.md`, `ops/production-readiness/latest-production-unblocker.md`, `ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json`, `ops/system-audits/2026-07-10-onetime-owner-experience-closure/wapi-provider-lead-bot-guardrail-proof.md`
 
@@ -67,16 +67,17 @@ The historical source audit is source-complete for all non-active rows: 291 rows
 
 | Blocker | Status | Owner | Missing fields | Next action |
 |---|---|---|---|---|
-| external_setup_blockers | blocked_external_input | Shloimie / provider account owners | rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval | Provide aliases/status only, not raw secrets, for Stripe sandbox/price, Whapi/WAPI token alias, instance and sender phone metadata, and final campaign copy/list/suppression/seed approval. |
+| external_setup_blockers | blocked_external_input | Shloimie / provider account owners | rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval | Provide aliases/status only, not raw secrets, for Stripe sandbox/price, Whapi/WAPI instance and sender phone metadata, and final campaign copy/list/suppression/seed approval. |
 | agent_mode_terminal_proof_missing | blocked_agent_mode_runner_required | Shloimie / Agent Mode runner | terminal AGR result for rabbi-telegram-helper-ticket-smoke, terminal AGR result for rabbi-helper-tool-scope-map | Run each listed public Agent Mode prompt and save terminal PASS, FAIL, or BLOCKED proof through the Operations drop-off URL. |
 | rabbi_telegram_runtime_configuration | local_runtime_ready_live_smoke_pending | Codex / operator | none | Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof. |
 | no_unblocked_executable_batch | blocked_by_external_and_proof_items | Codex / operator | none | Clear external setup, Agent Mode proof, and Rabbi Telegram production verification blockers; then rerun npm run bna:run:next. |
 
 ## Verification
 
-- PASS commit `627c3c75` pushed to origin/master and deployed to One Time Railway deployment `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` after fixing the deploy bundle `config/` omission.
-- PASS refreshed production readiness snapshot at 2026-07-10T17:09:18.294Z: status not_production_complete, public_launch_smoke_ready=true, public_launch_smoke_age_hours=0.43, sampled_head=627c3c75, sampled_origin_master=627c3c75, sampled_worktree_clean=true
-- EXPECTED BLOCKED `node scripts/production-readiness-gate.mjs --from-file <clean 627c3c75 snapshot> --json` at 2026-07-10T17:08:56.084Z: blocker groups include snapshot_not_production_ready, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing
+- PASS app source commit `627c3c75` was pushed and deployed to One Time Railway deployment `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` after fixing the deploy bundle `config/` omission.
+- PASS latest evidence/readiness head `fd04d006` is pushed to `origin/master`; no app redeploy was required for evidence-only changes.
+- PASS refreshed production readiness snapshot at 2026-07-10T17:27:07.036Z: status not_production_complete, public_launch_smoke_ready=true, public_launch_smoke_age_hours=0.73, sampled_head=fd04d006, sampled_origin_master=fd04d006, sampled_worktree_clean=true
+- EXPECTED BLOCKED `node scripts/production-readiness-gate.mjs --from-file ops/production-readiness/latest-production-readiness-snapshot.json --json` at 2026-07-10T17:27:18.354Z: blocker groups include snapshot_not_production_ready, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing
 - PASS source matrix check: 291 total rows, 290 terminal rows, 1 active owner row, 0 non-active unmapped rows
 - PASS npm run bna:run:status: blocked 2, done 8, validation passed
 - PASS npm run bna:run:next: next unblocked executable batch none

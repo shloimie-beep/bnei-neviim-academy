@@ -1,6 +1,6 @@
 # One Time Owner Experience Closure - Current Batch
 
-Generated: 2026-07-10T20:16:00+03:00
+Generated: 2026-07-10T20:27:30+03:00
 Raw objective: `raw-input/RAW-20260710-003-codex-followup-one-time-owner-experience-closure.md`
 Register: `tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md`
 Production target: `https://join.onetimeonetime.com`
@@ -29,7 +29,7 @@ this report is stored in the current evidence commit that contains this file.
 | `REQ-20260710-026` | Done - inventory created | Redacted historical source inventory created with 135 raw inputs, 156 task registers, and 141 grouped evidence packages. Evidence: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md` and `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json`. |
 | `REQ-20260710-027` | Done - all non-active source rows mapped | `historical-source-statement-matrix.json` contains 291 stable `HIST-SRC-*` rows. All 290 non-active rows now have terminal statuses with evidence/blockers; only active owner objective `HIST-SRC-0135` remains without terminal status. |
 | `REQ-20260710-028` | Done - no unblocked split packets from mapping | No remaining non-active source rows need splitting into new implementation packets. Unresolved work is already represented as terminal blockers/decisions in scoped registers and production-readiness artifacts. |
-| `REQ-20260710-029` | Done - final walkthrough produced / not ready | Final owner-experience walkthrough/readiness verdict produced at `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md`. `ONE_TIME_VERDICT: not_ready` because the production gate still blocks on external setup, Agent Mode proof, hosted Rabbi Telegram live-smoke proof, and no unblocked executable batch. The latest readiness sample is clean at `627c3c75`. |
+| `REQ-20260710-029` | Done - final walkthrough produced / not ready | Final owner-experience walkthrough/readiness verdict produced at `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md`. `ONE_TIME_VERDICT: not_ready` because the production gate still blocks on external setup, Agent Mode proof, hosted Rabbi Telegram live-smoke proof, and no unblocked executable batch. The latest readiness sample is clean at `fd04d006`; the deployed app source remains `627c3c75`. |
 
 ## Local Verification
 
@@ -66,11 +66,12 @@ this report is stored in the current evidence commit that contains this file.
   records 291 stable source rows; first through twenty-first mapped batches cover all 291 mapped or active rows (290 terminal rows plus active `HIST-SRC-0135`), with 1 active row lacking terminal status and 0 non-active rows still requiring mapping.
 - PASS refreshed clean production-readiness sample:
   `ops/production-readiness/latest-production-readiness-snapshot.md` sampled
-  `627c3c75` against `origin/master` `627c3c75` with a clean worktree.
+  `fd04d006` against `origin/master` `fd04d006` with a clean worktree.
 
 ## Deployment And Live Readback
 
-- PASS pushed app commit `627c3c75` to `origin/master`.
+- PASS pushed app source commit `627c3c75`; later evidence-only commits are
+  pushed to `origin/master` without requiring an app redeploy.
 - PASS pushed evidence-only readiness/report updates to `origin/master`; no app
   redeploy was required because they only update readiness/evidence files.
 - PASS Railway doctor resolved target `one-time-production / one-time-web /
@@ -115,7 +116,9 @@ this report is stored in the current evidence commit that contains this file.
   Snapshot result remains `not_production_complete` because full launch still
   has external Stripe/WAPI/campaign setup blockers, Telegram live delivery
   proof pending, Agent Mode terminal proof pending, and no unblocked executable
-  batch. The latest tracked sample is clean at `627c3c75`.
+  batch. The latest tracked sample is clean at `fd04d006`; the latest app
+  deployment remains Railway `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` from app
+  source commit `627c3c75`.
 
 ## Layered Readiness Verdicts
 

@@ -1,10 +1,10 @@
 {
   "report_id": "onetime-owner-experience-final-readiness-verdict-20260710",
-  "generated_at": "2026-07-10T20:10:05+03:00",
+  "generated_at": "2026-07-10T20:27:45+03:00",
   "raw_id": "RAW-20260710-003",
   "requirement_id": "REQ-20260710-029",
   "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
-  "head_commit": "627c3c75",
+  "head_commit": "fd04d006",
   "one_time_verdict": "not_ready",
   "production_ready": false,
   "source_mapping_status": {
@@ -41,7 +41,6 @@
       "missing_fields": [
         "rabbi_stripe_test_secret_key_alias_or_test_key_status",
         "67_month_product_price_id_or_alias",
-        "whapi_wapi_token_alias",
         "whapi_wapi_instance_id",
         "whapi_wapi_phone_number",
         "final_campaign_copy",
@@ -49,7 +48,7 @@
         "suppression_unsubscribe_proof",
         "explicit_seed_packet_approval"
       ],
-      "next_action": "Provide aliases/status only, not raw secrets, for Stripe sandbox/price, Whapi/WAPI token alias, instance and sender phone metadata, and final campaign copy/list/suppression/seed approval."
+      "next_action": "Provide aliases/status only, not raw secrets, for Stripe sandbox/price, Whapi/WAPI instance ID and sender phone metadata, and final campaign copy/list/suppression/seed approval."
     },
     {
       "id": "agent_mode_terminal_proof_missing",
@@ -91,9 +90,6 @@
     }
   ],
   "verification": [
-    "PASS commit 627c3c75 pushed to origin/master and deployed to One Time Railway deployment 80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3 after fixing the deploy bundle config/ omission",
-    "PASS refreshed production readiness snapshot at 2026-07-10T17:09:18.294Z: status not_production_complete, public_launch_smoke_ready=true, public_launch_smoke_age_hours=0.43, sampled_head=627c3c75, sampled_origin_master=627c3c75, sampled_worktree_clean=true",
-    "EXPECTED BLOCKED node scripts/production-readiness-gate.mjs --from-file <clean 627c3c75 snapshot> --json at 2026-07-10T17:08:56.084Z: blocker groups include snapshot_not_production_ready, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing",
     "PASS source matrix check: 291 total rows, 290 terminal rows, 1 active owner row, 0 non-active unmapped rows",
     "PASS npm run bna:run:status: blocked 2, done 8, validation passed",
     "PASS npm run bna:run:next: next unblocked executable batch none",
@@ -102,7 +98,11 @@
     "PASS production-readiness sample is clean; unrelated local dirty files remain intentionally outside this sampled readiness artifact",
     "PASS One Time WAPI provider lead-bot guardrail proof: node syntax checks and focused tests passed",
     "EXPECTED BLOCKED npm run one-time:wapi:readiness -- --json: no send, no CRM mutation, no secret printing; blocked on provider instance metadata, webhook secret, live-mode approval, and Telegram approval",
-    "PASS post-deploy One Time live smokes after Railway 80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3: separate instance, Rabbi landing, shared review public/member/provider/parent/student/classroom/email surfaces, and authenticated Operations CRM workbench"
+    "PASS post-deploy One Time live smokes after Railway 80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3: separate instance, Rabbi landing, shared review public/member/provider/parent/student/classroom/email surfaces, and authenticated Operations CRM workbench",
+    "PASS app source commit 627c3c75 was pushed and deployed to One Time Railway deployment 80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3 after fixing the deploy bundle config/ omission",
+    "PASS latest evidence/readiness head fd04d006 is pushed to origin/master; no app redeploy was required for evidence-only changes",
+    "PASS refreshed production readiness snapshot at 2026-07-10T17:27:07.036Z: status not_production_complete, public_launch_smoke_ready=true, public_launch_smoke_age_hours=0.73, sampled_head=fd04d006, sampled_origin_master=fd04d006, sampled_worktree_clean=true",
+    "EXPECTED BLOCKED node scripts/production-readiness-gate.mjs --from-file ops/production-readiness/latest-production-readiness-snapshot.json --json at 2026-07-10T17:27:18.354Z: blocker groups include snapshot_not_production_ready, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing"
   ],
   "evidence": [
     "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json",
@@ -141,32 +141,17 @@
     "Schedule hosted restart/deploy window and scoped Rabbi Telegram live smoke only after exact approval.",
     "Rerun production readiness snapshot/gate after any blocker changes."
   ],
-  "audited_head_commit": "627c3c75",
+  "audited_head_commit": "fd04d006",
   "latest_readiness": {
-    "snapshot_generated_at": "2026-07-10T17:09:18.294Z",
-    "unblocker_generated_at": "2026-07-10T17:09:59.491Z",
-    "sampled_git_head": "627c3c75",
-    "sampled_origin_master": "627c3c75",
-    "sampled_worktree_clean": true,
-    "sampled_worktree_status_summary": {
-      "total_entries": 0,
-      "tracked_entries": 0,
-      "untracked_entries": 0,
-      "paths_redacted": false
-    },
+    "snapshot_generated_at": "2026-07-10T17:27:07.036Z",
     "snapshot_status": "not_production_complete",
+    "sampled_git_head": "fd04d006",
+    "sampled_origin_master": "fd04d006",
+    "sampled_worktree_clean": true,
     "public_launch_smoke_ready": true,
-    "public_launch_smoke_fresh": true,
-    "public_launch_smoke_age_hours": 0.43,
-    "setup_blocker_count": 3,
-    "blocker_groups": [
-      "no_unblocked_executable_batch",
-      "external_setup_blockers",
-      "rabbi_telegram_runtime_configuration",
-      "agent_mode_terminal_proof_missing"
-    ],
-    "setup_ready_count": 5,
-    "setup_total_count": 8
+    "public_launch_smoke_age_hours": 0.73,
+    "deployed_app_source_commit": "627c3c75",
+    "app_deployment_id": "80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3"
   },
   "layered_readiness_verdicts": {
     "PUBLIC_FREE_CLASS_LANE": {
@@ -211,34 +196,9 @@
         "Live WhatsApp commercial automation remains blocked until provider instance metadata, webhook secret, live-mode approvals, and Telegram approval are configured and verified."
       ],
       "blockers": [
-        {
-          "id": "external_setup_blockers",
-          "owner": "Shloimie / provider account owners",
-          "next_action": "Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.",
-          "missing_fields": [
-            "rabbi_stripe_test_secret_key_alias_or_test_key_status",
-            "67_month_product_price_id_or_alias",
-            "whapi_wapi_token_alias",
-            "whapi_wapi_instance_id",
-            "whapi_wapi_phone_number",
-            "final_campaign_copy",
-            "exact_recipient_segment_or_list",
-            "suppression_unsubscribe_proof",
-            "explicit_seed_packet_approval"
-          ]
-        },
-        {
-          "id": "rabbi_telegram_runtime_configuration",
-          "owner": "Codex / operator",
-          "next_action": "Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.",
-          "missing_fields": []
-        },
-        {
-          "id": "agent_mode_terminal_proof_missing",
-          "owner": "Shloimie / Agent Mode runner",
-          "next_action": "Run each listed Agent Mode prompt and save terminal PASS, FAIL, or BLOCKED proof through the listed Operations drop-off URL.",
-          "missing_fields": []
-        }
+        "external_setup_blockers: provide Stripe sandbox/test-key status, $67/month product/price alias, Whapi/WAPI instance ID and sender phone metadata, final campaign copy/list/suppression proof/seed approval",
+        "rabbi_telegram_runtime_configuration: schedule hosted restart/deploy window, then run scoped Rabbi Telegram live smoke only with exact send approval",
+        "agent_mode_terminal_proof_missing: save terminal PASS/FAIL/BLOCKED results for the two public Agent Mode prompts"
       ]
     }
   },
