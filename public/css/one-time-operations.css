@@ -524,7 +524,16 @@ body.bna-ops-shell-page.one-time-operations-active [data-top-filter-rail][data-c
   }
 
   body.bna-ops-shell-page.one-time-operations-active .ops-topbar-center {
-    display: none !important;
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: clip;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
   }
 
   body.bna-ops-shell-page.one-time-operations-active .ops-brand-actions {

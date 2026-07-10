@@ -65,10 +65,11 @@ async function runViewport(browser, baseUrl, viewport) {
 
   await page.goto(`${baseUrl}/one-time`, { waitUntil: 'domcontentloaded' });
   assert(await page.locator('a[href="/rabbi-member"]').count() >= 1, 'One Time landing should link to canonical member home');
+  assert(await page.locator('a[href="/rabbi-member"]:visible').count() >= 1, 'One Time landing should expose a visible canonical member home link');
   assert(!(await page.content()).includes('/one-time/member-login'), 'One Time landing should not link to legacy member-login alias');
   await snap('one-time-landing');
 
-  await page.locator('a[href="/rabbi-member"]').first().click();
+  await page.locator('a[href="/rabbi-member"]:visible').first().click();
   await page.waitForURL(/\/rabbi-member(?:$|\?)/);
   await page.locator('nav[aria-label="One Time member navigation"]').waitFor();
   for (const label of ['Home', 'Library', 'Classroom', 'Support', 'Logout']) {
