@@ -100,11 +100,15 @@ async function main() {
   await step('public One Time landing form points to interest endpoint', async () => {
     const { response, text } = await fetchText('/');
     assert(response.status === 200, `/ returned ${response.status}`);
-    assert(/Your Child Can Love Learning Mishnayos/i.test(text), 'headline missing');
-    assert(/id="interestForm"/.test(text), 'interest form missing');
+    assert(/Give your son a love for Torah you never thought possible\./i.test(text), 'headline missing');
+    assert(/data-signup-modal/.test(text), 'signup modal missing');
+    assert(/name="parent_name"/.test(text), 'parent/contact name input missing');
+    assert(/name="email"/.test(text), 'email input missing');
+    assert(/name="phone"/.test(text), 'optional phone input missing');
+    assert(/name="signup_audience"\s+value="family"/.test(text), 'family audience choice missing');
+    assert(/name="signup_audience"\s+value="school"/.test(text), 'school audience choice missing');
     assert(/\/api\/one-time\/interest/.test(text), 'interest endpoint missing');
-    assert(/name="preferred_class_format"\s+type="hidden"\s+value="free_zoom_intro"/i.test(text), 'free Zoom marker missing');
-    assert(/No spam, no charge, and no portal account is opened by this form/i.test(text), 'no-charge/no-portal guardrail missing');
+    assert(!/signup-strip|id="interestForm"|signupStudentName|name="student/i.test(text), 'retired inline/student signup field is still visible');
     assert(!/parent access next steps|Parent portal setup instructions|Stripe checkout|GreenInvoice checkout/i.test(text), 'portal/payment promise leaked into public form');
     return { status: response.status };
   });
@@ -114,11 +118,11 @@ async function main() {
       dry_run: true,
       parent_name: 'Smoke Test Parent',
       email: `onetime-dry-run-${stamp}@example.invalid`,
-      student_name: 'Smoke Test Student',
       phone: '+1 555 010 7878',
-      consent: true,
+      signup_audience: 'family',
       source_landing_page: '/one-time',
-      preferred_class_format: 'free_zoom_intro',
+      preferred_class_format: 'live_mishnayos_intro',
+      addendum_raw_intake_id: 'RAW-20260710-008',
       metadata: {
         smoke: 'one_time_interest_dry_run',
         external_write_expected: false,
@@ -137,7 +141,8 @@ async function main() {
     assert(data.preview?.program_key === 'one_time_mishnah_class', 'program key mismatch');
     assert(data.preview?.project_id_present === true, 'project was not resolved');
     assert(data.preview?.product_lead_preview?.parent_email === payload.email.toLowerCase(), 'email was not preserved in product preview');
-    assert(data.preview?.product_lead_preview?.preferred_class_format === 'free_zoom_intro', 'free Zoom preference missing');
+    assert(data.preview?.product_lead_preview?.student_name === null, 'student name should be absent from modal preview');
+    assert(data.preview?.product_lead_preview?.preferred_class_format === 'live_mishnayos_intro', 'preferred format missing');
     assert(data.preview?.crm_lead_preview?.table === 'bna_parent_leads', 'CRM lead table mismatch');
     assert(data.preview?.crm_lead_preview?.status === 'follow_up', 'CRM follow-up status mismatch');
     assert(data.preview?.crm_lead_preview?.tags?.includes('free-class-interest'), 'free-class tag missing');

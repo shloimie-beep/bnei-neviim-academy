@@ -1,0 +1,100 @@
+{
+  "started_at": "2026-07-10T16:24:14.540Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "live mobile landing DOM/readability contract",
+      "ok": true,
+      "metrics": {
+        "title": "Give Your Son A Love For Torah | One Time Mishnayos",
+        "h1": "Give your son a love for Torah you never thought possible.",
+        "hasModal": true,
+        "hasStudent": false,
+        "hasInlineSignup": false,
+        "horizontalNavCss": true,
+        "robotButton": {
+          "x": 324,
+          "y": 778,
+          "width": 54,
+          "height": 54
+        },
+        "bodyOverflow": false
+      }
+    },
+    {
+      "name": "live mobile menu horizontal white-chip contract",
+      "ok": true,
+      "metrics": {
+        "open": true,
+        "shellDisplay": "flex",
+        "shellOverflowX": "auto",
+        "menuButtonBackground": "rgb(255, 255, 255)",
+        "menuButtonColor": "rgb(5, 5, 5)",
+        "links": [
+          {
+            "text": "Rabbi Eli",
+            "width": 91.453125,
+            "height": 42,
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(5, 5, 5)"
+          },
+          {
+            "text": "What He’ll Gain",
+            "width": 136.96875,
+            "height": 42,
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(5, 5, 5)"
+          },
+          {
+            "text": "What You Receive",
+            "width": 147.25,
+            "height": 42,
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(5, 5, 5)"
+          },
+          {
+            "text": "How It Works",
+            "width": 120.828125,
+            "height": 42,
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(5, 5, 5)"
+          },
+          {
+            "text": "Who It’s For",
+            "width": 113,
+            "height": 42,
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(5, 5, 5)"
+          },
+          {
+            "text": "Member Login",
+            "width": 124.171875,
+            "height": 44,
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(5, 5, 5)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "live signup modal field contract without student field",
+      "ok": true,
+      "metrics": {
+        "visible": true,
+        "parentName": true,
+        "email": true,
+        "phone": true,
+        "student": false,
+        "family": true,
+        "school": true
+      }
+    }
+  ],
+  "screenshots": [
+    "ops/ui-audits/2026-07-10-onetime-public-landing-production-rebuild-live/live-mobile-390.png",
+    "ops/ui-audits/2026-07-10-onetime-public-landing-production-rebuild-live/live-mobile-menu-390.png",
+    "ops/ui-audits/2026-07-10-onetime-public-landing-production-rebuild-live/live-signup-modal-390.png",
+    "ops/ui-audits/2026-07-10-onetime-public-landing-production-rebuild-live/live-desktop-1440.png"
+  ]
+}

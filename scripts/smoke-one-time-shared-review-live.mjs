@@ -82,11 +82,11 @@ async function main() {
     {
       label: 'landing',
       path: '/one-time/',
-      expectedTitle: /Your Child Can Love Learning Mishnayos/i,
-      requiredText: ['One Time Mishnayos', 'Sign Up Now', 'See How It Works', 'Rosh Chodesh Elul', 'Member Login'],
-      requiredSelectors: ['img[src*="onetimelogo"]', '.hero-media', '#interestForm'],
+      expectedTitle: /Give Your Son A Love For Torah \| One Time Mishnayos/i,
+      requiredText: ['One Time Mishnayos', 'Sign Up Now', 'Member Login'],
+      requiredSelectors: ['img[src*="one-time-logo-white"]', '[data-signup-modal]', '[data-signup-trigger]', 'input[name="parent_name"]', 'input[name="email"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
-      forbidText: ['Bnei Neviim Academy', 'Huda Weber', 'Menachem Mendel', 'Dratler Family'],
+      forbidText: ['Bnei Neviim Academy', 'Huda Weber', 'Menachem Mendel', 'Dratler Family', 'Your Child Can Love Learning Mishnayos', 'Save My Spot'],
     },
     {
       label: 'provider',

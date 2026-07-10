@@ -95,12 +95,16 @@ async function main() {
     const page = await fetchText(options.baseUrl, '/rabbi');
     assert(page.response.status === 200, `/rabbi expected 200, got ${page.response.status}`);
     expectIncludes(page.text, [
-      'Your Child Can Love Learning Mishnayos',
+      'Give your son a love for Torah you never thought possible.',
       'One Time',
       'Rabbi Eli Scheller',
       'Sign Up Now',
+      'data-signup-modal',
+      'name="parent_name"',
+      'name="email"',
       '/js/bna-bot-widget.js',
     ], '/rabbi');
+    expectNotMatches(page.text, /signup-strip|id="interestForm"|signupStudentName|name="student/i, '/rabbi');
     expectNotMatches(page.text, /Bnei Neviim Academy|BNA Academy|Hebrew|data-language-toggle/i, '/rabbi');
     pass('/rabbi has focused One Time branding and no Academy chrome');
 

@@ -43,17 +43,18 @@ try {
 
   for (const route of ['/', '/public', '/one-time', '/one-time/']) {
     const result = await fetchText(route);
-    assertText(route, result.text, /Your Child Can Love Learning Mishnayos/i, 'canonical launch funnel headline missing');
+    assertText(route, result.text, /Give your son a love for Torah you never thought possible\./i, 'canonical launch funnel headline missing');
     assertText(route, result.text, /One Time Mishnayos/i, 'One Time focused brand missing');
     assertText(route, result.text, /Sign Up Now/i, 'signup CTA missing');
-    assertText(route, result.text, /signup-strip/i, 'free-class signup strip missing');
-    assertText(route, result.text, /id="signupParentName"/i, 'signup parent name input missing');
-    assertText(route, result.text, /id="signupEmail"/i, 'signup email input missing');
-    assertText(route, result.text, /id="signupStudentName"/i, 'signup student name input missing');
-    assertText(route, result.text, /id="signupPhone"/i, 'signup phone input missing');
-    assertText(route, result.text, /name="preferred_class_format"\s+type="hidden"\s+value="free_zoom_intro"/i, 'free Zoom preferred class marker missing');
-    assertText(route, result.text, /No spam, no charge, and no portal account is opened by this form/i, 'no-portal free-class guardrail copy missing');
+    assertText(route, result.text, /data-signup-modal/i, 'signup modal missing');
+    assertText(route, result.text, /name="parent_name"/i, 'signup parent/contact name input missing');
+    assertText(route, result.text, /name="email"/i, 'signup email input missing');
+    assertText(route, result.text, /name="phone"/i, 'optional phone input missing');
+    assertText(route, result.text, /name="signup_audience"\s+value="family"/i, 'family audience choice missing');
+    assertText(route, result.text, /name="signup_audience"\s+value="school"/i, 'school audience choice missing');
     assertText(route, result.text, /\/api\/one-time\/interest/i, 'signup form does not target One Time interest endpoint');
+    assertNoText(route, result.text, /Your Child Can Love Learning Mishnayos/i, 'retired launch headline is still visible');
+    assertNoText(route, result.text, /signup-strip|id="interestForm"|id="signupStudentName"|name="student/i, 'retired inline/student signup field is still visible');
     assertNoText(route, result.text, /name="parentName"|name="region"|name="notes"/i, 'retired lead-capture field naming is still visible');
     assertNoText(route, result.text, /parent access next steps|Parent portal setup instructions/i, 'old portal-access promise leaked into public funnel');
     assertNoText(route, result.text, /classroom code|recovery code|fallback classroom password/i, 'retired classroom/recovery-code copy leaked into public funnel');
