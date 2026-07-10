@@ -38081,3 +38081,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Covered Operations dashboard UI, Studio/OpenArt, Vimeo workflow, worker credential policy, Agent Mode failed dropoff/navigation/template/operations loop/prompt reconciliation, audit-fix implementation, clean launch, brand/helper/toprail isolation, Super Admin mailbox/provider login, parallel Agent Mode/mobile/email status, parent/student UI, parent trial IA, Rabbi CRM config cleanup, Telegram/Codex updates, and Agent Review start-copy/dropoff repair rows.
 - The historical source matrix now has 271 mapped or active rows: 270 terminal rows plus active `HIST-SRC-0135`; 21 rows still lack terminal status, including 20 non-active rows still requiring mapping. The owner-experience goal remains active and not ready.
 - Guardrail: No external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/configuration/imports as evidence only.
+
+## 2026-07-10 - One Time historical source final batch mapped
+
+- Mapped the final July 8-9 historical source batch: `HIST-SRC-0270` through `HIST-SRC-0289`.
+- The historical source matrix now has 291 mapped or active rows: 290 terminal rows plus active `HIST-SRC-0135`; 0 non-active rows remain unmapped.
+- Updated `REQ-20260710-027` to Done - all non-active rows mapped and `REQ-20260710-028` to Done - no unblocked split packets from mapping. `REQ-20260710-029` remains pending for the final owner walkthrough/readiness verdict.
+- Verification: JSON parse passed, strict matrix count check passed, terminal evidence paths check found 0 missing paths, and `npm run audit:governance` regenerated `ops/audit-governance/2026-07-10T14-25-03-746Z-audit-governance.md` with old repo-wide audit debt still present and no untracked audit packages. No external send/provider mutation was performed.

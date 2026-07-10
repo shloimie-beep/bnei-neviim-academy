@@ -151,32 +151,16 @@ not authorize active GHL runtime paths.
   inventory found 135 raw inputs, 156 task registers, and 141 grouped evidence
   packages in
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md`.
-  `REQ-20260710-027` is In progress - twentieth batch mapped:
+  `REQ-20260710-027` is Done - all non-active historical rows mapped:
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`
-  contains 291 stable `HIST-SRC-*` rows; the first July 10 mapping batch,
-  the second early foundational mapping batch, the third June 22-24 mapping
-  batch, the fourth June 26-July 1 mapping batch, the fifth July 1-2
-  launch/UI mapping batch, the sixth July 2-6 Studio/release/workflow
-  mapping batch, the seventh July 6 integration/release/workflow mapping
-  batch, the eighth July 7 mailbox/Agent Mode/UI/clean-launch/audit-fix
-  mapping batch, the ninth July 8 parent invite/Agent Review/classroom/media/Vimeo/signup/runtime
-  mapping batch, the tenth July 8-9 performance/Telegram/helper/lag
-  mapping batch, the eleventh early task-register Drive/Telegram/provider
-  mapping batch, the twelfth June 10-14 task-register source/provider/helper
-  mapping batch, the thirteenth June 14-15 workspace/helper/classroom/payments/assistant
-  mapping batch, the fourteenth June 16 agent-work/community/helper/integrations/watchdog/website
-  mapping batch, the fifteenth June 17 queue/protocol/hebrew/Rabbi/website
-  mapping batch, the sixteenth June 18-19 mobile/workspace/website/master-recovery/integrations
-  mapping batch, the seventeenth June 22-24 assets/studio/clean-slate/final-release/owner-review
-  mapping batch, the eighteenth June 26-July 4 helper/service-provider/transcript/current-systems/product-quality/launch/UI/Studio/PR87
-  mapping batch, the nineteenth July 5-6 release/workflow/Telegram/ChatGPT/cleanup/Studio/UI/drive
-  mapping batch, and the twentieth July 6-8 Operations/Studio/Agent/CRM/parent-student/Agent Review
-  mapping batch now cover 271 mapped or active rows (270 terminal rows plus
-  active `HIST-SRC-0135`), leaving 21 rows without terminal status, including
-  20 non-active rows still requiring mapping. Remaining
-  work: map terminal status/proof/blockers for each row, split any unblocked
-  gaps into small packets, and then produce the final owner
-  walkthrough/readiness verdict.
+  contains 291 stable `HIST-SRC-*` rows; twenty-one mapping batches now cover
+  291 mapped or active rows (290 terminal rows plus active `HIST-SRC-0135`),
+  leaving 1 row without terminal status, and it is the active owner objective.
+  `REQ-20260710-028` is Done - no unblocked split packets from mapping;
+  unresolved work is already represented by terminal blockers/decisions.
+  Remaining work: produce the final owner walkthrough/readiness verdict under
+  `REQ-20260710-029` and keep Agent Mode / production-readiness blockers
+  visible.
 - [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current
