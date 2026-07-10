@@ -1,7 +1,7 @@
 {
   "report_id": "onetime-historical-source-statement-matrix-20260710-skeleton",
-  "generated_at": "2026-07-10T15:18:49+03:00",
-  "status": "skeleton created; first through fourth batches mapped; terminal mapping still required.",
+  "generated_at": "2026-07-10T15:28:23+03:00",
+  "status": "skeleton created; first through fifth batches mapped; terminal mapping still required.",
   "source_inventory": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json",
   "counts": {
     "total_source_statements": 291,
@@ -12,14 +12,14 @@
     "by_mapping_status": {
       "mapped_in_progress_goal_active": 1,
       "mapped_terminal_already_satisfied": 2,
-      "mapped_terminal_done": 5,
+      "mapped_terminal_done": 6,
       "mapped_terminal_done_deployed_live_smoked": 8,
       "mapped_terminal_done_no_external_send": 1,
-      "mapped_terminal_mixed_done_and_blocked": 11,
-      "mapped_terminal_mixed_done_needs_decision_blocked": 15,
-      "needs_terminal_mapping": 45,
-      "needs_terminal_mapping_blocker_present": 140,
-      "needs_terminal_mapping_done_claim_present": 63
+      "mapped_terminal_mixed_done_and_blocked": 12,
+      "mapped_terminal_mixed_done_needs_decision_blocked": 20,
+      "needs_terminal_mapping": 42,
+      "needs_terminal_mapping_blocker_present": 137,
+      "needs_terminal_mapping_done_claim_present": 62
     },
     "by_family": {
       "OT-HIST-001": 12,
@@ -32,12 +32,12 @@
     },
     "by_terminal_status": {
       "already_satisfied": 2,
-      "done": 5,
+      "done": 6,
       "done_deployed_live_smoked": 8,
       "done_no_external_send": 1,
-      "mixed_terminal_done_and_blocked": 11,
-      "mixed_terminal_done_needs_decision_blocked": 15,
-      "null": 249
+      "mixed_terminal_done_and_blocked": 12,
+      "mixed_terminal_done_needs_decision_blocked": 20,
+      "null": 242
     }
   },
   "source_statements": [
@@ -1602,10 +1602,15 @@
         "REQ-20260701-717"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260701-007-one-time-separate-instance-launch-funnel.md",
+        "raw-input/RAW-20260701-007-one-time-separate-instance-launch-funnel-source.txt",
+        "tasks-pending/2026-07-02-one-time-launch-unblocker.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "blocker_or_next_action": "Launch funnel decisions are registered and much later launch work is proven, including separate-instance smoke/readiness evidence, but full launch remains mixed terminal: Stripe sandbox/price aliases, Whapi/WAPI instance/phone plus approval flags, campaign copy/list/suppression/seed approval, and Agent Review proof remain external or operator-gated."
     },
     {
       "source_statement_id": "HIST-SRC-0040",
@@ -1628,12 +1633,24 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260701-705",
+        "REQ-20260701-706",
+        "REQ-20260701-707",
+        "REQ-20260701-708",
+        "REQ-20260701-709",
+        "REQ-20260701-717"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260702-002-one-time-launch-unblocker.md",
+        "tasks-pending/2026-07-02-one-time-launch-unblocker.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "blocker_or_next_action": "Launch-unblocker local scope is terminally captured and later reconciled: no-card trial/access, member/admin workspace, attendance, and draft-only campaign/outbox checks were verified; current top blockers are narrowed to Stripe sandbox/price aliases, Whapi/WAPI instance/phone and approval flags, and campaign copy/list/suppression/seed approval. No external send, live payment, DNS mutation, or provider write is authorized by this row."
     },
     {
       "source_statement_id": "HIST-SRC-0041",
@@ -1656,12 +1673,27 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260702-020",
+        "REQ-20260702-021",
+        "REQ-20260702-022",
+        "REQ-20260702-023",
+        "REQ-20260702-024",
+        "REQ-20260702-025",
+        "REQ-20260702-026",
+        "REQ-20260702-027"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260702-003-one-time-launch-execution-worktree-external-setup.md",
+        "tasks-pending/2026-07-02-one-time-launch-execution-worktree-external-setup.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-rabbi-whatsapp-setup-message.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "blocker_or_next_action": "Worktree/external-setup execution is terminally mapped as mixed: preflight, non-destructive reconciliation, join-subdomain instructions, draft Resend/WhatsApp readiness, and top visible tasks were completed, while seed sends, WhatsApp setup sends, Stripe/payment, campaign, and deploy/live-smoke remained blocked until exact live-link/provider approvals and current setup readiness are present."
     },
     {
       "source_statement_id": "HIST-SRC-0042",
@@ -1684,12 +1716,24 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260702-901",
+        "REQ-20260702-902",
+        "REQ-20260702-903",
+        "REQ-20260702-904",
+        "REQ-20260702-905"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done",
+      "terminal_status": "done",
+      "terminal_evidence": [
+        "raw-input/RAW-20260702-005-one-time-clean-integration-from-pr62.md",
+        "tasks-pending/2026-07-02-one-time-clean-integration-from-pr62.md",
+        "ops/execution-runs/2026-07-02-one-time-clean-integration-launch-setup/STATUS.md",
+        "ops/execution-runs/2026-07-02-one-time-clean-integration-launch-setup/EVIDENCE.md",
+        "ops/execution-runs/2026-07-02-one-time-clean-integration-launch-setup/TEST-RESULTS.md"
+      ],
+      "blocker_or_next_action": "Clean integration from PR #62 is terminal Done: PR #62 stayed source material, selected setup/readiness artifacts were cleanly restored on a fresh branch, setup checker/tests/scripts were added, blockers were documented, and draft PR #63 was opened without broad force-merge or external mutation."
     },
     {
       "source_statement_id": "HIST-SRC-0043",
@@ -1709,12 +1753,29 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260702-101",
+        "REQ-20260702-102",
+        "REQ-20260702-103",
+        "REQ-20260702-104",
+        "REQ-20260702-105",
+        "REQ-20260702-106",
+        "REQ-20260702-107",
+        "REQ-20260702-108",
+        "REQ-20260702-109",
+        "REQ-20260702-110"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md",
+        "tasks-pending/2026-07-02-background-drive-ui-launch-continuation.md",
+        "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation/STATUS.md",
+        "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation/EVIDENCE.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "blocker_or_next_action": "Background/Drive/UI launch continuation is terminally mapped as mixed: agent readiness, Drive trace/parser visibility, mock data dry-runs, Railway target, DB reference, join-domain, and top-task narrowing are proven; full launch is still blocked by the current Stripe/WAPI/campaign setup and proof gates, with no provider mutation or send performed by this mapping."
     },
     {
       "source_statement_id": "HIST-SRC-0044",
@@ -1736,12 +1797,29 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260702-301",
+        "REQ-20260702-302",
+        "REQ-20260702-303",
+        "REQ-20260702-304",
+        "REQ-20260702-305",
+        "REQ-20260702-306",
+        "REQ-20260702-307",
+        "REQ-20260702-308",
+        "REQ-20260702-309"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260702-007-finalize-pr64-keyholder-domain-launch.md",
+        "tasks-pending/2026-07-02-finalize-pr64-keyholder-domain-launch.md",
+        "ops/execution-runs/2026-07-02-background-drive-ui-launch-continuation/STATUS.md",
+        "ops/domain-readbacks/2026-07-02-join-onetimeonetime-domain-task.md",
+        "ops/keyholder-readbacks/2026-07-02-one-time-provider-alias-inventory.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-top-visible-operator-tasks.md"
+      ],
+      "blocker_or_next_action": "PR64/domain/keyholder launch work is mixed terminal: join-domain DNS, alias discovery, setup/readback script fixes, DB reference, provider env propagation, and later PR64 closeout were recorded, while DB bootstrap from local host and full provider/campaign/deploy gates stayed blocked or decision-gated. Apex/root DNS, bulk sends, payments, and GHL remained out of scope."
     },
     {
       "source_statement_id": "HIST-SRC-0045",
@@ -1763,12 +1841,40 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
-      "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "referenced_requirement_ids": [
+        "REQ-20260702-801",
+        "REQ-20260702-802",
+        "REQ-20260702-803",
+        "REQ-20260702-804",
+        "REQ-20260702-805",
+        "REQ-20260702-810",
+        "REQ-20260702-811",
+        "REQ-20260702-812",
+        "REQ-20260702-813",
+        "REQ-20260702-814",
+        "REQ-20260702-815",
+        "REQ-20260702-816",
+        "REQ-20260702-817",
+        "REQ-20260702-818",
+        "REQ-20260702-819",
+        "REQ-20260702-820",
+        "REQ-20260702-821",
+        "REQ-20260702-822",
+        "REQ-20260702-823"
+      ],
+      "referenced_decision_ids": [
+        "DEC-20260702-801"
+      ],
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md",
+        "tasks-pending/2026-07-02-rabbi-onetime-ui-clean-even-loads-nicely.md",
+        "ops/ui-audits/2026-07-02-rabbi-onetime-library-first-viewport-readability/manual-review/latest-contact-sheet-review.md",
+        "ops/deploy-readbacks/2026-07-03-rabbi-onetime-ui-release-deploy-gate.md",
+        "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md"
+      ],
+      "blocker_or_next_action": "Broad UI cleanup is terminally mapped as mixed, not globally Done: many focused child packets were locally verified with PQC, tests, screenshots, action/protocol watchdogs, and later static-chrome live readbacks, but the original broad clean/even/loads-nicely scope remains open for release/live parity and later UI packets. This row is not proof that every UI complaint is fixed."
     },
     {
       "source_statement_id": "HIST-SRC-0046",

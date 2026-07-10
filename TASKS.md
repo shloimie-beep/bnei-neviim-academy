@@ -151,12 +151,13 @@ not authorize active GHL runtime paths.
   inventory found 135 raw inputs, 156 task registers, and 141 grouped evidence
   packages in
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md`.
-  `REQ-20260710-027` is In progress - fourth batch mapped:
+  `REQ-20260710-027` is In progress - fifth batch mapped:
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`
   contains 291 stable `HIST-SRC-*` rows; the first July 10 mapping batch,
   the second early foundational mapping batch, the third June 22-24 mapping
-  batch, and the fourth June 26-July 1 mapping batch now cover 43 mapped or
-  active rows, leaving 249 rows without terminal status. Remaining
+  batch, the fourth June 26-July 1 mapping batch, and the fifth July 1-2
+  launch/UI mapping batch now cover 50 mapped or active rows, leaving 242 rows
+  without terminal status. Remaining
   work: map terminal status/proof/blockers for each row, split any unblocked
   gaps into small packets, and then produce the final owner
   walkthrough/readiness verdict.

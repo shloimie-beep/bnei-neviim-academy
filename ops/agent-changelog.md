@@ -37970,3 +37970,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   and `npm run watchdog:protocol-drift` with 0 findings.
 - No email, WhatsApp/WAPI, payment/access, provider-account, DNS, credential,
   or raw private email/contact export mutation was performed.
+
+## 2026-07-10 - One Time historical source fifth batch mapped
+
+- Mapped the July 1-2 launch/UI source batch: `HIST-SRC-0039` through `HIST-SRC-0045`.
+- Launch funnel, launch-unblocker, worktree/external setup, clean PR #62 integration, background Drive/UI continuation, PR64/domain/keyholder, and broad Rabbi UI cleanup rows now point to terminal proof or exact Stripe/WAPI/campaign/deploy/UI-proof blockers.
+- The historical source matrix now has 50 mapped or active rows and 242 rows still lacking terminal status. The owner-experience goal remains active and not ready.

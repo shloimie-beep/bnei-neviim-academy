@@ -1,7 +1,7 @@
 # One Time Historical Source Statement Matrix - Skeleton
 
-Generated: 2026-07-10T15:18:49+03:00
-Status: skeleton created; first through fourth batches mapped; terminal mapping still required.
+Generated: 2026-07-10T15:28:23+03:00
+Status: skeleton created; first through fifth batches mapped; terminal mapping still required.
 
 Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json`
 
@@ -9,14 +9,15 @@ Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure
 
 - Total source statements: 291
 - By source kind: raw_input=135, task_register=156
-- By mapping status: mapped_in_progress_goal_active=1, mapped_terminal_already_satisfied=2, mapped_terminal_done=5, mapped_terminal_done_deployed_live_smoked=8, mapped_terminal_done_no_external_send=1, mapped_terminal_mixed_done_and_blocked=11, mapped_terminal_mixed_done_needs_decision_blocked=15, needs_terminal_mapping=45, needs_terminal_mapping_blocker_present=140, needs_terminal_mapping_done_claim_present=63
-- By terminal status: already_satisfied=2, done=5, done_deployed_live_smoked=8, done_no_external_send=1, mixed_terminal_done_and_blocked=11, mixed_terminal_done_needs_decision_blocked=15, null=249
+- By mapping status: mapped_in_progress_goal_active=1, mapped_terminal_already_satisfied=2, mapped_terminal_done=6, mapped_terminal_done_deployed_live_smoked=8, mapped_terminal_done_no_external_send=1, mapped_terminal_mixed_done_and_blocked=12, mapped_terminal_mixed_done_needs_decision_blocked=20, needs_terminal_mapping=42, needs_terminal_mapping_blocker_present=137, needs_terminal_mapping_done_claim_present=62
+- By terminal status: already_satisfied=2, done=6, done_deployed_live_smoked=8, done_no_external_send=1, mixed_terminal_done_and_blocked=12, mixed_terminal_done_needs_decision_blocked=20, null=242
 - By family: OT-HIST-001=12, OT-HIST-002=35, OT-HIST-003=65, OT-HIST-004=23, OT-HIST-005=42, OT-HIST-006=33, OT-HIST-UNSORTED=81
 - First mapped batch: HIST-SRC-0133, HIST-SRC-0134, HIST-SRC-0135, HIST-SRC-0290, HIST-SRC-0291
 - Second mapped batch: HIST-SRC-0001, HIST-SRC-0002, HIST-SRC-0003, HIST-SRC-0004, HIST-SRC-0005, HIST-SRC-0006, HIST-SRC-0007, HIST-SRC-0008, HIST-SRC-0009, HIST-SRC-0010, HIST-SRC-0011, HIST-SRC-0012, HIST-SRC-0013, HIST-SRC-0014
 - Third mapped batch: HIST-SRC-0015, HIST-SRC-0016, HIST-SRC-0017, HIST-SRC-0018, HIST-SRC-0019, HIST-SRC-0020, HIST-SRC-0021, HIST-SRC-0022, HIST-SRC-0023, HIST-SRC-0024, HIST-SRC-0025, HIST-SRC-0026
 - Fourth mapped batch: HIST-SRC-0027, HIST-SRC-0028, HIST-SRC-0029, HIST-SRC-0030, HIST-SRC-0031, HIST-SRC-0032, HIST-SRC-0033, HIST-SRC-0034, HIST-SRC-0035, HIST-SRC-0036, HIST-SRC-0037, HIST-SRC-0038
-- Remaining rows without terminal status: 249
+- Fifth mapped batch: HIST-SRC-0039, HIST-SRC-0040, HIST-SRC-0041, HIST-SRC-0042, HIST-SRC-0043, HIST-SRC-0044, HIST-SRC-0045
+- Remaining rows without terminal status: 242
 
 ## Matrix Rows
 
@@ -60,13 +61,13 @@ Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure
 | HIST-SRC-0036 | HRAW-036 | raw_input | OT-HIST-003 | 2026-07-01 | `raw-input/RAW-20260701-003-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md` | mapped_terminal_mixed_done_and_blocked | mixed_terminal_done_and_blocked |
 | HIST-SRC-0037 | HRAW-037 | raw_input | OT-HIST-003 | 2026-07-01 | `raw-input/RAW-20260701-004-run-rabbi-onetime-visual-audit-resend-smoke.md` | mapped_terminal_mixed_done_and_blocked | mixed_terminal_done_and_blocked |
 | HIST-SRC-0038 | HRAW-038 | raw_input | OT-HIST-002 | 2026-07-01 | `raw-input/RAW-20260701-007-one-time-separate-instance-launch-funnel-source.txt` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
-| HIST-SRC-0039 | HRAW-039 | raw_input | OT-HIST-002 | 2026-07-01 | `raw-input/RAW-20260701-007-one-time-separate-instance-launch-funnel.md` | needs_terminal_mapping |  |
-| HIST-SRC-0040 | HRAW-040 | raw_input | OT-HIST-002 | 2026-07-02 | `raw-input/RAW-20260702-002-one-time-launch-unblocker.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0041 | HRAW-041 | raw_input | OT-HIST-002 | 2026-07-02 | `raw-input/RAW-20260702-003-one-time-launch-execution-worktree-external-setup.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0042 | HRAW-042 | raw_input | OT-HIST-003 | 2026-07-02 | `raw-input/RAW-20260702-005-one-time-clean-integration-from-pr62.md` | needs_terminal_mapping |  |
-| HIST-SRC-0043 | HRAW-043 | raw_input | OT-HIST-002 | 2026-07-02 | `raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md` | needs_terminal_mapping |  |
-| HIST-SRC-0044 | HRAW-044 | raw_input | OT-HIST-002 | 2026-07-02 | `raw-input/RAW-20260702-007-finalize-pr64-keyholder-domain-launch.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0045 | HRAW-045 | raw_input | OT-HIST-003 | 2026-07-02 | `raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md` | needs_terminal_mapping_blocker_present |  |
+| HIST-SRC-0039 | HRAW-039 | raw_input | OT-HIST-002 | 2026-07-01 | `raw-input/RAW-20260701-007-one-time-separate-instance-launch-funnel.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0040 | HRAW-040 | raw_input | OT-HIST-002 | 2026-07-02 | `raw-input/RAW-20260702-002-one-time-launch-unblocker.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0041 | HRAW-041 | raw_input | OT-HIST-002 | 2026-07-02 | `raw-input/RAW-20260702-003-one-time-launch-execution-worktree-external-setup.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0042 | HRAW-042 | raw_input | OT-HIST-003 | 2026-07-02 | `raw-input/RAW-20260702-005-one-time-clean-integration-from-pr62.md` | mapped_terminal_done | done |
+| HIST-SRC-0043 | HRAW-043 | raw_input | OT-HIST-002 | 2026-07-02 | `raw-input/RAW-20260702-006-background-drive-ui-launch-continuation.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0044 | HRAW-044 | raw_input | OT-HIST-002 | 2026-07-02 | `raw-input/RAW-20260702-007-finalize-pr64-keyholder-domain-launch.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0045 | HRAW-045 | raw_input | OT-HIST-003 | 2026-07-02 | `raw-input/RAW-20260702-008-rabbi-onetime-ui-clean-even-loads-nicely.md` | mapped_terminal_mixed_done_and_blocked | mixed_terminal_done_and_blocked |
 | HIST-SRC-0046 | HRAW-046 | raw_input | OT-HIST-006 | 2026-07-02 | `raw-input/RAW-20260702-010-studio-content-engine-live-readiness.md` | needs_terminal_mapping |  |
 | HIST-SRC-0047 | HRAW-047 | raw_input | OT-HIST-005 | 2026-07-03 | `raw-input/RAW-20260703-003-helper-bot-workspace-agent-next-steps.md` | needs_terminal_mapping |  |
 | HIST-SRC-0048 | HRAW-048 | raw_input | OT-HIST-003 | 2026-07-04 | `raw-input/RAW-20260704-001-ship-pr87-onetime-ui-live-cleanup.md` | needs_terminal_mapping |  |
