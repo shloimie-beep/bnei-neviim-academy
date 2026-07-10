@@ -1,6 +1,6 @@
 # One Time Owner Experience Closure - Current Batch
 
-Generated: 2026-07-10T17:24:43+03:00
+Generated: 2026-07-10T17:31:34+03:00
 Raw objective: `raw-input/RAW-20260710-003-codex-followup-one-time-owner-experience-closure.md`
 Register: `tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md`
 Production target: `https://join.onetimeonetime.com`
@@ -26,7 +26,7 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
 | `REQ-20260710-026` | Done - inventory created | Redacted historical source inventory created with 135 raw inputs, 156 task registers, and 141 grouped evidence packages. Evidence: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md` and `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json`. |
 | `REQ-20260710-027` | Done - all non-active source rows mapped | `historical-source-statement-matrix.json` contains 291 stable `HIST-SRC-*` rows. All 290 non-active rows now have terminal statuses with evidence/blockers; only active owner objective `HIST-SRC-0135` remains without terminal status. |
 | `REQ-20260710-028` | Done - no unblocked split packets from mapping | No remaining non-active source rows need splitting into new implementation packets. Unresolved work is already represented as terminal blockers/decisions in scoped registers and production-readiness artifacts. |
-| `REQ-20260710-029` | Pending - final walkthrough/not-ready verdict | Final owner-experience walkthrough/readiness verdict remains to be written from the complete source matrix plus Agent Mode and production-readiness blockers. |
+| `REQ-20260710-029` | Done - final walkthrough produced / not ready | Final owner-experience walkthrough/readiness verdict produced at `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md`. `ONE_TIME_VERDICT: not_ready` because the production gate still blocks on external setup, Agent Mode proof, hosted Rabbi Telegram live-smoke proof, dirty readiness sample, and no unblocked executable batch. |
 
 ## Local Verification
 
@@ -111,13 +111,17 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
 
 ## Remaining Before Full Goal Done
 
-1. `REQ-20260710-029`: produce the final owner-experience walkthrough/readiness verdict from the completed source matrix and current blockers; expected verdict remains `not_ready`.
-2. `REQ-20260710-012`: run `rabbi-telegram-helper-ticket-smoke` and
+1. `REQ-20260710-012`: run `rabbi-telegram-helper-ticket-smoke` and
    `rabbi-helper-tool-scope-map` in Agent Mode and save/read back `AGR-*`
    PASS/FAIL/BLOCKED results.
-3. Full One Time production launch remains gated by the production readiness
-   snapshot: Stripe/WAPI/campaign setup, hosted Rabbi Telegram live-smoke,
-   and exact approval gates are outside this local mapping batch.
+2. Full One Time production launch remains gated by the production readiness
+   gate: Stripe/WAPI/campaign setup, hosted Rabbi Telegram live-smoke, clean
+   worktree/readiness sample, and exact approval gates are outside this local
+   verdict batch.
+
+## Final Owner Verdict
+
+`ONE_TIME_VERDICT: not_ready`. Final verdict artifact: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md`.
 
 ## Twelfth Mapping Batch
 

@@ -19,7 +19,7 @@ Telegram, integrations, and production-readiness material.
 | REQ-20260710-026 | Build a redacted historical source inventory for One Time/Rabbi material. | RAW-20260710-003 | agent_ops / one_time_mishnah_class | Codex | P0 | Done - inventory created | `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md`; `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json` | Use this inventory as the input queue for atomization. |
 | REQ-20260710-027 | Atomize historical source inventory into stable source statements and terminal mappings. | REQ-20260710-026 | agent_ops / one_time_mishnah_class | Codex | P0 | Done - all non-active rows mapped | `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json` contains 291 stable `HIST-SRC-*` rows. The first through twenty-first mapping batches now cover 291 mapped or active rows: 290 terminal rows plus active owner objective `HIST-SRC-0135`; 0 non-active rows still require mapping. | Keep `HIST-SRC-0135` active until final owner-goal closeout. |
 | REQ-20260710-028 | Split non-terminal historical source statements into small implementation/proof packets. | REQ-20260710-027 | one_time_mishnah_class | Codex | P1 | Done - no unblocked split packets from mapping | `historical-source-statement-matrix.json` terminal blocker strings and scoped task registers. | No new broad packets created; unresolved work remains represented by existing terminal blockers/decisions and production-readiness artifacts. |
-| REQ-20260710-029 | Produce final owner-experience walkthrough and layered readiness verdict. | RAW-20260710-003 | one_time_mishnah_class / production | Codex | P1 | Pending - final verdict next | Current readiness snapshot remains `not_production_complete`; historical source matrix is now source-complete except active owner row. | Produce layered final walkthrough and explicit `ONE_TIME_VERDICT: not_ready`; do not mark Codex goal complete. |
+| REQ-20260710-029 | Produce final owner-experience walkthrough and layered readiness verdict. | RAW-20260710-003 | one_time_mishnah_class / production | Codex | P1 | Done - final verdict produced / not ready | `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md`; current production gate remains blocked. | Clear external setup, Agent Mode proof, Rabbi Telegram hosted live-smoke, and clean readiness-gate blockers before any future ready verdict. |
 
 ## Current Truth
 
@@ -35,10 +35,7 @@ Telegram, integrations, and production-readiness material.
 
 ## Closeout Rule
 
-Do not mark the owner-experience objective ready until `REQ-20260710-027`
-terminal source mapping and `REQ-20260710-029` walkthrough/readiness verdict
-are terminal, and until `REQ-20260710-012` Agent Mode proof is terminal or
-precisely blocked.
+Do not mark the owner-experience objective ready until the final verdict is `ready`. `REQ-20260710-027`, `REQ-20260710-028`, and `REQ-20260710-029` are terminal for source reconciliation, but the current verdict is `not_ready` because Agent Mode proof, external setup, hosted Rabbi Telegram smoke, and production-gate blockers remain.
 
 ## 2026-07-10 Twelfth Mapping Batch
 
@@ -81,3 +78,7 @@ Mapped `HIST-SRC-0252` through `HIST-SRC-0269` to terminal evidence/blockers. Si
 ## 2026-07-10 Twenty-First Mapping Batch
 
 Mapped `HIST-SRC-0270` through `HIST-SRC-0289` to terminal evidence/blockers. Five rows are deployed/live-smoked, one process/fallback row is terminal Done without a direct deploy requirement, and fourteen broad rows remain mixed terminal because external provider setup, exact approvals, live-send/readback proof, Agent Mode proof, CRM/contact persistence, student/content IA, production-readiness gates, or legacy audit-conversion decisions remain blocked or decision-gated. The historical matrix now has 291 mapped or active rows: 290 terminal rows plus active `HIST-SRC-0135`; 0 non-active rows remain unmapped. No external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass.
+
+## 2026-07-10 Final Owner Readiness Verdict
+
+Produced `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md` with `ONE_TIME_VERDICT: not_ready`. Source mapping is complete for all non-active rows, but production readiness remains blocked by external Stripe/WAPI/campaign setup, two missing terminal Agent Mode proofs, hosted Rabbi Telegram live-smoke proof, dirty-worktree production gate sampling, and no unblocked executable batch. No external send, payment/access mutation, provider mutation, Agent Review result save, or production-data mutation was performed.

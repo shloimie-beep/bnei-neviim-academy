@@ -1,10 +1,10 @@
 {
   "report_id": "onetime-owner-experience-closure-20260710-current-batch",
-  "generated_at": "2026-07-10T17:24:43+03:00",
+  "generated_at": "2026-07-10T17:31:34+03:00",
   "raw_id": "RAW-20260710-003",
   "register_path": "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
   "production_target": "https://join.onetimeonetime.com",
-  "status": "not_ready_goal_active_all_non_active_historical_rows_mapped",
+  "status": "not_ready_final_walkthrough_written_goal_active",
   "requirements": [
     {
       "id": "REQ-20260710-008",
@@ -61,13 +61,14 @@
     },
     {
       "id": "REQ-20260710-029",
-      "status": "pending_final_walkthrough_not_ready_verdict",
-      "summary": "Final owner-experience walkthrough/readiness verdict remains to be written from the now-complete source matrix plus current Agent Mode and production-readiness blockers.",
+      "status": "done_final_walkthrough_produced_not_ready",
+      "summary": "Final owner-experience walkthrough/readiness verdict produced. ONE_TIME_VERDICT is not_ready because production gate still blocks on external setup, Agent Mode terminal proof, hosted Rabbi Telegram live-smoke proof, dirty worktree/readiness sampling, and no unblocked executable batch.",
       "evidence": [
-        "ops/production-readiness/latest-production-readiness-snapshot.md",
-        "ops/production-readiness/latest-production-unblocker.md"
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.json",
+        "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md"
       ],
-      "next_action": "Produce the layered owner walkthrough and explicit ONE_TIME_VERDICT: not_ready closeout without marking the active Codex goal complete."
+      "next_action": "Clear the listed blockers, then rerun production readiness snapshot/gate and decide whether a new final-ready verdict is warranted."
     }
   ],
   "local_evidence": {
@@ -145,7 +146,8 @@
   },
   "summary": {
     "historical_source_mapping": "all non-active historical rows mapped; 291 mapped or active rows (290 terminal plus active HIST-SRC-0135), 1 active row without terminal status, 0 non-active rows requiring mapping",
-    "one_time_verdict": "not_ready"
+    "one_time_verdict": "not_ready",
+    "final_walkthrough": "produced; source mapping is complete for non-active rows, but production readiness remains blocked"
   },
   "current_counts": {
     "historical_source_rows_mapped_or_active": 291,
@@ -181,6 +183,24 @@
     "PASS historical-source-statement-matrix.json parsed as JSON after twenty-first/final mapping",
     "PASS mapped/active rows 291; terminal rows 290; terminal-status-null rows 1; non-active rows still requiring mapping 0",
     "PASS terminal evidence paths exist after final mapping; strict matrix evidence check found 0 missing paths",
-    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T14-25-03-746Z-audit-governance.md; result still NEEDS TASK MAPPING for older repo-wide audit debt; untracked audit packages _None._"
-  ]
+    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T14-25-03-746Z-audit-governance.md; result still NEEDS TASK MAPPING for older repo-wide audit debt; untracked audit packages _None._",
+    "EXPECTED BLOCKED npm run production:readiness:gate -- --json: production readiness status blocked with external setup, Agent Mode proof, Rabbi Telegram runtime, dirty tree, and no-unblocked-batch blocker groups",
+    "PASS npm run bna:run:status: blocked 2, done 8, validation passed",
+    "PASS npm run bna:run:next: next unblocked executable batch none",
+    "PASS npm run app:smoke:rabbi-agent-review-proof-readiness: public prompts/artifacts live; proof_blocked_or_pending with 2 missing terminal prompts"
+  ],
+  "final_owner_readiness_verdict": {
+    "status": "not_ready",
+    "evidence": [
+      "ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md",
+      "ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.json"
+    ],
+    "blockers": [
+      "external_setup_blockers",
+      "agent_mode_terminal_proof_missing",
+      "rabbi_telegram_runtime_configuration",
+      "dirty_worktree_for_production_gate",
+      "no_unblocked_executable_batch"
+    ]
+  }
 }

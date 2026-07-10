@@ -158,9 +158,10 @@ not authorize active GHL runtime paths.
   leaving 1 row without terminal status, and it is the active owner objective.
   `REQ-20260710-028` is Done - no unblocked split packets from mapping;
   unresolved work is already represented by terminal blockers/decisions.
-  Remaining work: produce the final owner walkthrough/readiness verdict under
-  `REQ-20260710-029` and keep Agent Mode / production-readiness blockers
-  visible.
+  Final owner walkthrough/readiness verdict is produced under
+  `REQ-20260710-029` with `ONE_TIME_VERDICT: not_ready`; remaining blockers
+  are Agent Mode proof, external setup, hosted Rabbi Telegram live-smoke, and
+  production-readiness gate cleanup.
 - [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current

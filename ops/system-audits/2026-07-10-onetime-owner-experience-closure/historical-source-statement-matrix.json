@@ -4957,9 +4957,12 @@
       "terminal_evidence": [
         "tasks-pending/2026-07-10-onetime-owner-experience-source-reconciliation.md",
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json",
-        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json"
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.json",
+        "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md"
       ],
-      "blocker_or_next_action": "Goal remains active until all 291 historical source rows have terminal mappings, Agent Mode proof is terminal or precisely blocked, and the final owner walkthrough/readiness verdict is produced."
+      "blocker_or_next_action": "Final owner walkthrough/readiness verdict has been produced with ONE_TIME_VERDICT not_ready. Goal remains active because production readiness is blocked by external setup, Agent Mode terminal proof, hosted Rabbi Telegram live-smoke proof, and clean readiness-gate requirements."
     },
     {
       "source_statement_id": "HIST-SRC-0136",
