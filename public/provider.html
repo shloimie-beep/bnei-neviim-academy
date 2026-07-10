@@ -1155,6 +1155,7 @@
         const oneTimeAdminProviderReviewUrl = `/provider.html?review=one-time${queryParams.get('section') ? `&section=${encodeURIComponent(queryParams.get('section'))}` : ''}`;
         const oneTimeAdminProviderLoginMessage = 'No scoped One Time provider session is active in this browser. Start from Operations, open the Rabbi / One Time inbox, and launch the Rabbi provider portal from there. This page will not show Super Admin diagnostics or unrelated BNA data.';
         const providerApiUsagePreviewFlag = ['1', 'true', 'yes'].includes(String(queryParams.get('api_usage_preview') || '').toLowerCase());
+        const ONE_TIME_INBOX_ADDRESS = 'info@onetimeonetime.com';
         let oneTimeViewAsRabbiSession = null;
         const providerMailboxState = {
             threads: [],
@@ -1173,6 +1174,28 @@
                 '"': '&quot;',
                 "'": '&#039;'
             })[char]);
+        }
+
+        function oneTimeFitTitle(value) {
+            const text = String(value ?? '').trim();
+            return text ? ` title="${escapeHtml(text)}" aria-label="${escapeHtml(text)}"` : '';
+        }
+
+        function oneTimeFitStrong(value) {
+            const text = String(value ?? '').trim();
+            return `<strong class="one-time-fit-value"${oneTimeFitTitle(text)}>${escapeHtml(text)}</strong>`;
+        }
+
+        function oneTimeStatusPill(value, { fit = false } = {}) {
+            const text = String(value ?? '').trim();
+            const fitClass = fit ? ' one-time-fit-pill' : '';
+            return `<span class="status-pill${fitClass}"${fit ? oneTimeFitTitle(text) : ''}>${escapeHtml(text)}</span>`;
+        }
+
+        function oneTimeMaybeFitStatusPill(value) {
+            const text = String(value ?? '').trim();
+            const fit = /@|https?:\/\/|www\.|[A-Za-z0-9_-]{24,}/.test(text) || text.length > 28;
+            return oneTimeStatusPill(text, { fit });
         }
 
         function parseJsonField(value) {
@@ -1780,14 +1803,14 @@
         function mailboxReadinessPills(readiness = {}) {
             const provider = readiness.readiness || {};
             return [
-                { label: `Inbox: ${readiness.inbox_address || 'info@onetimeonetime.com'}`, ok: true },
+                { label: `Inbox: ${readiness.inbox_address || ONE_TIME_INBOX_ADDRESS}`, fit: true },
                 { label: provider.send_allowed ? 'Email replies available' : 'Draft replies only', ok: true },
-                { label: 'Parent and student email stored in One Time CRM', ok: true },
-            ].map(item => `<span class="status-pill" title="${escapeHtml(item.ok ? 'Available in this workspace' : 'Role action')}">${escapeHtml(item.label)}</span>`).join('');
+                { label: 'Parent and student email stored in One Time CRM', fit: true },
+            ].map(item => oneTimeStatusPill(item.label, { fit: item.fit })).join('');
         }
 
         function renderProviderMailboxThreadList(threads = []) {
-            if (!threads.length) return '<p class="small">No captured emails yet. New messages to info@onetimeonetime.com will appear here when they arrive.</p>';
+            if (!threads.length) return `<p class="small one-time-fit-copy">No captured emails yet. New messages to ${escapeHtml(ONE_TIME_INBOX_ADDRESS)} will appear here when they arrive.</p>`;
             return threads.map(thread => `
                 <button type="button" class="mailbox-thread-button ${thread.thread_key === providerMailboxState.selectedThreadKey ? 'active' : ''}" data-action-id="ACTION-PROVIDER-MAILBOX-THREAD-OPEN" data-provider-mailbox-thread="${escapeHtml(thread.thread_key)}">
                     <strong>${escapeHtml(thread.contact_name || thread.contact_email || 'Email thread')}</strong>
@@ -2097,7 +2120,7 @@
             document.getElementById('providerOverview').innerHTML = oneTimeProviderWorkspace
                 ? `
                     <div class="overview-metric"><strong>One Time</strong><span class="small">Rabbi workspace</span></div>
-                    <div class="overview-metric"><strong>info@onetimeonetime.com</strong><span class="small">CRM inbox</span></div>
+                    <div class="overview-metric">${oneTimeFitStrong(ONE_TIME_INBOX_ADDRESS)}<span class="small">CRM inbox</span></div>
                     <div class="overview-metric"><strong>${escapeHtml(String(services.length || 1))}</strong><span class="small">Program services</span></div>
                     <div class="overview-metric"><strong>${escapeHtml(String(messages.length || data.crm_workspace?.current_records?.support_items || 0))}</strong><span class="small">Messages/support</span></div>
                 `
@@ -2602,7 +2625,7 @@
                     body: oneTimeLaunchDisplay(parent.name || parent.display_name, '') || parentEmail
                         ? `Linked to ${studentLabel}. ${parentEmail ? `Email: ${parentEmail}.` : 'Email thread captured in the One Time inbox.'}`
                         : `${parentCount} parent record${parentCount === 1 ? '' : 's'} in this workspace. Open the inbox to review captured email threads and follow-up notes.`,
-                    meta: [parentEmail || 'info@onetimeonetime.com', `${parentCount || 0} parent record${parentCount === 1 ? '' : 's'}`],
+                    meta: [parentEmail || ONE_TIME_INBOX_ADDRESS, `${parentCount || 0} parent record${parentCount === 1 ? '' : 's'}`],
                     action: 'Open Inbox',
                     target: 'mailbox',
                 },
@@ -2642,7 +2665,7 @@
                     </div>
                     <p class="small">${escapeHtml(record.body)}</p>
                     <div class="one-time-crm-record-meta">
-                        ${(record.meta || []).filter(Boolean).map(item => `<span class="status-pill">${escapeHtml(item)}</span>`).join('')}
+                        ${(record.meta || []).filter(Boolean).map(item => oneTimeMaybeFitStatusPill(item)).join('')}
                     </div>
                     ${record.href
                         ? `<a class="btn" href="${escapeHtml(record.href)}" data-one-time-action-state="navigate">${escapeHtml(record.action)}</a>`
@@ -2654,7 +2677,7 @@
                     <div class="one-time-crm-header">
                         <div>
                             <h3>One Time CRM Inbox</h3>
-                            <p class="small">Emails to info@onetimeonetime.com, parent/student records, notes, support tickets, and private Rabbi questions are connected here inside the Rabbi Sheller workspace.</p>
+                            <p class="small one-time-fit-copy">Emails to ${escapeHtml(ONE_TIME_INBOX_ADDRESS)}, parent/student records, notes, support tickets, and private Rabbi questions are connected here inside the Rabbi Sheller workspace.</p>
                             <div class="one-time-crm-summary-grid">
                                 <span class="status-pill">${escapeHtml(String(parentCount || 0))} parent${parentCount === 1 ? '' : 's'}</span>
                                 <span class="status-pill">${escapeHtml(String(studentCount || 0))} student${studentCount === 1 ? '' : 's'}</span>
@@ -2805,7 +2828,7 @@
             const activityPanel = document.querySelector('[data-provider-section="activity"]');
             document.getElementById('providerOverview').innerHTML = `
                 <div class="overview-metric"><strong>One Time</strong><span class="small">${viewAsSession ? 'Rabbi workspace' : 'Branded review workspace'}</span></div>
-                <div class="overview-metric"><strong>info@onetimeonetime.com</strong><span class="small">CRM inbox</span></div>
+                <div class="overview-metric">${oneTimeFitStrong(ONE_TIME_INBOX_ADDRESS)}<span class="small">CRM inbox</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(String((data.workspace_users || []).length || 4))}</strong><span class="small">Workspace users</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(String(data.crm_workspace?.current_records?.support_items || 2))}</strong><span class="small">CRM/support items</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(`${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0}`)}</strong><span class="small">Attendance minutes</span></div>
@@ -2823,7 +2846,7 @@
                 reviewCard('Read-only view-as session', viewAsSession.banner || 'Viewing as Rabbi Eli Scheller', 'writes disabled'),
                 reviewCard('Allowed modules', (viewAsSession.allowed_modules || data.admin_review?.modules || []).join(', '), 'Rabbi scope'),
             ] : [
-                reviewCard('CRM inbox', 'Emails to info@onetimeonetime.com live in the One Time mailbox and CRM thread list.', 'Open Mailbox'),
+                reviewCard('CRM inbox', `Emails to ${ONE_TIME_INBOX_ADDRESS} live in the One Time mailbox and CRM thread list.`, 'Open Mailbox'),
                 reviewCard('Parent and student', `${oneTimeLaunchDisplay(parent.name || parent.display_name, 'Parent record')} is linked to ${oneTimeLaunchDisplay(student.display_name || student.name, 'student record')}.`, 'One Time only'),
                 reviewCard('Live class', `${oneTimeLaunchDisplay(classSession.title, 'Weekly Mishnah Live Class')} / ${classSession.masechta || ''} ${classSession.perek || ''}`, classSession.status || 'review ready'),
                 reviewCard('Support queue', oneTimeLaunchDisplay(data.support_ticket?.latest_activity, 'Parent support and private questions appear in CRM/Messages.'), data.support_ticket?.status || 'open'),
@@ -2854,7 +2877,7 @@
                 const mailboxSearchForm = document.getElementById('providerMailboxSearchForm');
                 if (mailboxSearchForm) mailboxSearchForm.classList.add('hidden');
                 if (readinessTarget) readinessTarget.innerHTML = [
-                    '<span class="status-pill">info@onetimeonetime.com</span>',
+                    oneTimeStatusPill(ONE_TIME_INBOX_ADDRESS, { fit: true }),
                     '<span class="status-pill">One Time CRM mailbox</span>',
                     '<span class="status-pill">Draft replies in signed provider login</span>',
                 ].join('');

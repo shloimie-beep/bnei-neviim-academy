@@ -330,6 +330,31 @@ body.one-time-review-active .portal-nav-count {
   background: rgba(8, 119, 156, 0.1);
 }
 
+body.one-time-review-active .one-time-fit-value,
+body.one-time-review-active .one-time-fit-pill {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.one-time-review-active .one-time-fit-value {
+  display: block;
+}
+
+body.one-time-review-active .one-time-fit-pill {
+  display: inline-flex;
+  align-items: center;
+}
+
+body.one-time-review-active .one-time-fit-copy {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+}
+
 body.one-time-review-active .notice,
 body.one-time-review-active .response-form {
   color: #4f4300;
@@ -615,7 +640,8 @@ body.one-time-review-active .one-time-crm-detail strong,
 body.one-time-review-active .one-time-crm-summary strong {
   color: var(--one-time-navy);
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 body.one-time-review-active .one-time-crm-record p,
@@ -623,8 +649,8 @@ body.one-time-review-active .one-time-crm-detail p,
 body.one-time-review-active .one-time-crm-summary p {
   margin: 0;
   min-width: 0;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 body.one-time-review-active .one-time-crm-record-top,
@@ -669,7 +695,15 @@ body.one-time-review-active .one-time-crm-record-meta .status-pill,
 body.one-time-review-active .one-time-crm-summary-grid .status-pill {
   min-width: 0;
   white-space: normal;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+body.one-time-review-active .one-time-crm-record-meta .one-time-fit-pill,
+body.one-time-review-active .one-time-crm-summary-grid .one-time-fit-pill {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 body.one-time-review-active.one-time-student-review-active .hero {
