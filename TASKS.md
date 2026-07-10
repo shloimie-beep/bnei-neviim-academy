@@ -151,7 +151,7 @@ not authorize active GHL runtime paths.
   inventory found 135 raw inputs, 156 task registers, and 141 grouped evidence
   packages in
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md`.
-  `REQ-20260710-027` is In progress - nineteenth batch mapped:
+  `REQ-20260710-027` is In progress - twentieth batch mapped:
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`
   contains 291 stable `HIST-SRC-*` rows; the first July 10 mapping batch,
   the second early foundational mapping batch, the third June 22-24 mapping
@@ -169,10 +169,11 @@ not authorize active GHL runtime paths.
   mapping batch, the sixteenth June 18-19 mobile/workspace/website/master-recovery/integrations
   mapping batch, the seventeenth June 22-24 assets/studio/clean-slate/final-release/owner-review
   mapping batch, the eighteenth June 26-July 4 helper/service-provider/transcript/current-systems/product-quality/launch/UI/Studio/PR87
-  mapping batch, and the nineteenth July 5-6 release/workflow/Telegram/ChatGPT/cleanup/Studio/UI/drive
-  mapping batch now cover 253 mapped or active rows (252 terminal rows plus
-  active `HIST-SRC-0135`), leaving 39 rows without terminal status, including
-  38 non-active rows still requiring mapping. Remaining
+  mapping batch, the nineteenth July 5-6 release/workflow/Telegram/ChatGPT/cleanup/Studio/UI/drive
+  mapping batch, and the twentieth July 6-8 Operations/Studio/Agent/CRM/parent-student/Agent Review
+  mapping batch now cover 271 mapped or active rows (270 terminal rows plus
+  active `HIST-SRC-0135`), leaving 21 rows without terminal status, including
+  20 non-active rows still requiring mapping. Remaining
   work: map terminal status/proof/blockers for each row, split any unblocked
   gaps into small packets, and then produce the final owner
   walkthrough/readiness verdict.

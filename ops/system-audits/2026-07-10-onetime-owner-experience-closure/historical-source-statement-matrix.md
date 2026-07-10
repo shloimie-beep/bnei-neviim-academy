@@ -1,37 +1,37 @@
 # One Time Historical Source Statement Matrix
 
-Generated: 2026-07-10T17:09:47+03:00
+Generated: 2026-07-10T17:15:42+03:00
 
-Status: first through nineteenth mapping batches complete; owner-experience goal remains active and not ready.
+Status: first through twentieth mapping batches complete; owner-experience goal remains active and not ready.
 
 ## Counts
 
 - Total source statements: 291
-- Active/mapped rows: 253
-- Rows without terminal status: 39
-- Non-active rows still requiring terminal mapping: 38
+- Active/mapped rows: 271
+- Rows without terminal status: 21
+- Non-active rows still requiring terminal mapping: 20
 
 ### Mapping Status Counts
 
 - mapped_in_progress_goal_active: 1
 - mapped_terminal_already_satisfied: 2
-- mapped_terminal_done: 22
-- mapped_terminal_done_deployed_live_smoked: 73
+- mapped_terminal_done: 23
+- mapped_terminal_done_deployed_live_smoked: 79
 - mapped_terminal_done_no_external_send: 1
-- mapped_terminal_mixed_done_and_blocked: 34
-- mapped_terminal_mixed_done_needs_decision_blocked: 120
-- needs_terminal_mapping_blocker_present: 33
-- needs_terminal_mapping_done_claim_present: 5
+- mapped_terminal_mixed_done_and_blocked: 35
+- mapped_terminal_mixed_done_needs_decision_blocked: 130
+- needs_terminal_mapping_blocker_present: 17
+- needs_terminal_mapping_done_claim_present: 3
 
 ### Terminal Status Counts
 
 - already_satisfied: 2
-- done: 22
-- done_deployed_live_smoked: 73
+- done: 23
+- done_deployed_live_smoked: 79
 - done_no_external_send: 1
-- mixed_terminal_done_and_blocked: 34
-- mixed_terminal_done_needs_decision_blocked: 120
-- null: 39
+- mixed_terminal_done_and_blocked: 35
+- mixed_terminal_done_needs_decision_blocked: 130
+- null: 21
 
 ## Source Statements
 
@@ -288,24 +288,24 @@ Status: first through nineteenth mapping batches complete; owner-experience goal
 | HIST-SRC-0249 | HTASK-114 | task_register | OT-HIST-003 | 2026-07-06 | `tasks-pending/2026-07-06-onetime-full-ui-agent-audit-prompts.md` | mapped_terminal_done | done |
 | HIST-SRC-0250 | HTASK-115 | task_register | OT-HIST-UNSORTED | 2026-07-06 | `tasks-pending/2026-07-06-onetime-local-class-welcome-send.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
 | HIST-SRC-0251 | HTASK-116 | task_register | OT-HIST-006 | 2026-07-06 | `tasks-pending/2026-07-06-onetime-operations-content-ia-filter-rail.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
-| HIST-SRC-0252 | HTASK-117 | task_register | OT-HIST-003 | 2026-07-06 | `tasks-pending/2026-07-06-onetime-operations-dashboard-ui-hotfix.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0253 | HTASK-118 | task_register | OT-HIST-006 | 2026-07-06 | `tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0254 | HTASK-119 | task_register | OT-HIST-006 | 2026-07-06 | `tasks-pending/2026-07-06-onetime-vimeo-folder-library-workflow.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0255 | HTASK-120 | task_register | OT-HIST-UNSORTED | 2026-07-06 | `tasks-pending/2026-07-06-worker-credentials-policy-and-dirty-closeout.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0256 | HTASK-121 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0257 | HTASK-122 | task_register | OT-HIST-005 | 2026-07-07 | `tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0258 | HTASK-123 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-agent-mode-operations-dropoff-loop-and-ui-audit-results.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0259 | HTASK-124 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0260 | HTASK-125 | task_register | OT-HIST-UNSORTED | 2026-07-07 | `tasks-pending/2026-07-07-audit-fix-implementation.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0261 | HTASK-126 | task_register | OT-HIST-002 | 2026-07-07 | `tasks-pending/2026-07-07-clean-launch-everything.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0262 | HTASK-127 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0263 | HTASK-128 | task_register | OT-HIST-004 | 2026-07-07 | `tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0264 | HTASK-129 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-parallel-agent-mode-mobile-communications-dashboard-email-status.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0265 | HTASK-130 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-parent-student-login-ui-polish.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0266 | HTASK-131 | task_register | OT-HIST-UNSORTED | 2026-07-07 | `tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0267 | HTASK-132 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0268 | HTASK-133 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0269 | HTASK-134 | task_register | OT-HIST-005 | 2026-07-08 | `tasks-pending/2026-07-08-agent-review-start-copy-dropoff-repair.md` | needs_terminal_mapping_blocker_present |  |
+| HIST-SRC-0252 | HTASK-117 | task_register | OT-HIST-003 | 2026-07-06 | `tasks-pending/2026-07-06-onetime-operations-dashboard-ui-hotfix.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0253 | HTASK-118 | task_register | OT-HIST-006 | 2026-07-06 | `tasks-pending/2026-07-06-onetime-studio-sidekick-openart-mcp.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0254 | HTASK-119 | task_register | OT-HIST-006 | 2026-07-06 | `tasks-pending/2026-07-06-onetime-vimeo-folder-library-workflow.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0255 | HTASK-120 | task_register | OT-HIST-UNSORTED | 2026-07-06 | `tasks-pending/2026-07-06-worker-credentials-policy-and-dirty-closeout.md` | mapped_terminal_mixed_done_and_blocked | mixed_terminal_done_and_blocked |
+| HIST-SRC-0256 | HTASK-121 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0257 | HTASK-122 | task_register | OT-HIST-005 | 2026-07-07 | `tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md` | mapped_terminal_done | done |
+| HIST-SRC-0258 | HTASK-123 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-agent-mode-operations-dropoff-loop-and-ui-audit-results.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0259 | HTASK-124 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0260 | HTASK-125 | task_register | OT-HIST-UNSORTED | 2026-07-07 | `tasks-pending/2026-07-07-audit-fix-implementation.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0261 | HTASK-126 | task_register | OT-HIST-002 | 2026-07-07 | `tasks-pending/2026-07-07-clean-launch-everything.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0262 | HTASK-127 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0263 | HTASK-128 | task_register | OT-HIST-004 | 2026-07-07 | `tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0264 | HTASK-129 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-parallel-agent-mode-mobile-communications-dashboard-email-status.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0265 | HTASK-130 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-parent-student-login-ui-polish.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0266 | HTASK-131 | task_register | OT-HIST-UNSORTED | 2026-07-07 | `tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0267 | HTASK-132 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0268 | HTASK-133 | task_register | OT-HIST-003 | 2026-07-07 | `tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0269 | HTASK-134 | task_register | OT-HIST-005 | 2026-07-08 | `tasks-pending/2026-07-08-agent-review-start-copy-dropoff-repair.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
 | HIST-SRC-0270 | HTASK-135 | task_register | OT-HIST-005 | 2026-07-08 | `tasks-pending/2026-07-08-app-backend-helper-performance.md` | needs_terminal_mapping_blocker_present |  |
 | HIST-SRC-0271 | HTASK-136 | task_register | OT-HIST-006 | 2026-07-08 | `tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md` | needs_terminal_mapping_done_claim_present |  |
 | HIST-SRC-0272 | HTASK-137 | task_register | OT-HIST-003 | 2026-07-08 | `tasks-pending/2026-07-08-onetime-email-brand-scope-guardrails.md` | needs_terminal_mapping_done_claim_present |  |
