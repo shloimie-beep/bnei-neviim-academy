@@ -37748,3 +37748,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   email send, WhatsApp/WAPI send, Telegram send for the TEST proof,
   payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation,
   raw private contact body commit, or external CRM write.
+
+## 2026-07-10 - One Time historical inbox/contact reconciliation blocked
+
+- Created redacted REQ-20260710-021 reconciliation reports at
+  `ops/system-audits/2026-07-10-onetime-historical-inbox-reconciliation/report.md`
+  and `.json`.
+- Metadata-only source inspection found likely local historical source families
+  totaling 2,335 June 21 audience/follower rows, or 2,423/2,509 rows when the
+  older subscriber exports are included. No raw rows, email addresses, message
+  bodies, received-email ids, subjects, credentials, or setup links were
+  committed.
+- Live One Time Operations readback showed 4 scoped parent leads, 12 CRM cards,
+  0 email-import-tagged records, no-send true, and external-write false. The
+  stored provider mailbox credential returned 401, so the latest usable mailbox
+  proof remains the July 6 Resend 9-email backfill report.
+- `npm run audit:governance` completed and still reports broad pre-existing
+  audit debt. Its generated inventory did not include the new reconciliation
+  folder, so this lane is mapped through the register, `DEC-20260710-004`,
+  ledger, and changelog instead of the governance inventory.
+- `REQ-20260710-021` is terminal as `Needs operator decision` via
+  `DEC-20260710-004`: Shloimie / the One Time data owner must choose the
+  canonical historical source package and suppression/import policy before any
+  production import or contact write. Next launch-priority lane is
+  `REQ-20260710-022` transactional follow-up.
