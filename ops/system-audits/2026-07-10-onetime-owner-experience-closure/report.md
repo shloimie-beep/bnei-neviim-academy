@@ -16,7 +16,7 @@ production launch is still not complete because external setup, Telegram live
 delivery proof, and Agent Mode proof remain blocked outside this code batch.
 The latest scoped app deployment is Railway
 `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` from app source commit `627c3c75`;
-the latest pushed evidence-only commit is `43069f27`.
+this report is stored in the current evidence commit that contains this file.
 
 ## Requirement Status
 
@@ -71,8 +71,8 @@ the latest pushed evidence-only commit is `43069f27`.
 ## Deployment And Live Readback
 
 - PASS pushed app commit `627c3c75` to `origin/master`.
-- PASS pushed evidence commit `43069f27` to `origin/master`; no app redeploy
-  was required because it only updates readiness/evidence files.
+- PASS pushed evidence-only readiness/report updates to `origin/master`; no app
+  redeploy was required because they only update readiness/evidence files.
 - PASS Railway doctor resolved target `one-time-production / one-time-web /
   production`.
 - PASS Railway deployment `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` reached

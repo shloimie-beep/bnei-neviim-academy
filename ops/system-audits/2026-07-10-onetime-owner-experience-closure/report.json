@@ -108,7 +108,6 @@
   "deployment": {
     "status": "success_live_smoked_current_app_source",
     "commit": "627c3c75",
-    "evidence_commit": "43069f27",
     "provider": "railway",
     "project": "one-time-production",
     "service": "one-time-web",
@@ -135,9 +134,10 @@
     "notes": [
       "Railway deployment 80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3 reached SUCCESS from app source commit 627c3c75.",
       "Prior deployment e82cbe34-6864-4bc7-ab9a-9332c64d65e9 crashed because config/service-provider-bots/one-time.json was omitted; 627c3c75 includes config/ in the bundle.",
-      "Evidence commit 43069f27 refreshed readiness/verdict files only and did not require redeploy.",
+      "Evidence-only readiness/report updates were pushed to origin/master and did not require redeploy.",
       "Production readiness snapshot remains not_production_complete because full launch still has Stripe/WAPI/campaign, Telegram live-smoke, Agent Mode proof, and no-unblocked-batch blockers."
-    ]
+    ],
+    "evidence_commit_note": "This report is stored in the current evidence commit that contains this file; no app redeploy is required for evidence-only commits."
   },
   "guardrails": {
     "external_sends": false,
@@ -208,7 +208,7 @@
     "PASS refreshed layered final verdict from production readiness snapshot 2026-07-10T14:46:16.040Z and unblocker 2026-07-10T14:46:56.935Z; ONE_TIME_VERDICT remains not_ready and dirty status paths are redacted.",
     "PASS refreshed clean production readiness snapshot at 2026-07-10T17:09:18.294Z: sampled_head=627c3c75, sampled_origin_master=627c3c75, sampled_worktree_clean=true, public_launch_smoke_ready=true",
     "PASS current app deployment 80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3 reached SUCCESS from app source commit 627c3c75 after deploy bundle config/ recovery",
-    "PASS evidence-only commit 43069f27 pushed to origin/master with refreshed report/readiness consistency; no app redeploy required for docs-only evidence",
+    "PASS evidence-only readiness/report updates pushed to origin/master; no app redeploy required for docs-only evidence",
     "EXPECTED BLOCKED production readiness gate remains blocked by external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing, and no_unblocked_executable_batch"
   ],
   "final_owner_readiness_verdict": {
