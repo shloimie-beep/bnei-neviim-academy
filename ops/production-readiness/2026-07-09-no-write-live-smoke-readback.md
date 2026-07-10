@@ -1,4 +1,4 @@
-# No-Write Live Smoke Readback - 2026-07-09T17:36:20Z
+# No-Write Live Smoke Readback - 2026-07-10T16:43:35Z
 
 Status: passed  
 Production ready: no
@@ -11,14 +11,14 @@ This readback verifies the already-live public and immediate lead-capture surfac
   - Verified `/api/health`, `/api/one-time/instance-config`, `/`, `/public`, `/one-time`, `/one-time/`, `/operations-login.html`, `/parent.html`, `/student.html`, `/provider.html`, and `/one-time-classroom.html`.
   - The script prints JSON only and does not write a report file.
 - PASS `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
-  - Local ignored report: `ops/live-smokes/2026-07-09T17-35-51-421Z-rabbi-onetime-landing-smoke.md`.
+  - Local ignored report: `ops/live-smokes/2026-07-10T16-43-16-150Z-rabbi-onetime-landing-smoke.md`.
   - Verified focused OneTime branding, no Academy chrome, and Rabbi Scheller provider scoping.
 - PASS `npm run app:smoke:one-time-interest-dry-run`
-  - Local ignored report: `ops/live-smokes/2026-07-09T17-35-51-513Z-one-time-interest-dry-run-live-smoke.md`.
-  - Local ignored JSON: `ops/live-smokes/2026-07-09T17-35-51-513Z-one-time-interest-dry-run-live-smoke.json`.
+  - Local ignored report: `ops/live-smokes/2026-07-10T16-43-16-137Z-one-time-interest-dry-run-live-smoke.md`.
+  - Local ignored JSON: `ops/live-smokes/2026-07-10T16-43-16-137Z-one-time-interest-dry-run-live-smoke.json`.
   - Verified public form endpoint and dry-run lead-capture mapping without writes.
 - PASS `npm run app:smoke:public-privacy`
-  - Local ignored report: `ops/live-smokes/2026-07-09T17-36-04-080Z-public-route-privacy-smoke.md`.
+  - Local ignored report: `ops/live-smokes/2026-07-10T16-43-28-006Z-public-route-privacy-smoke.md`.
   - Verified public route anonymity, member alias redirects, and protected route anonymous rejection.
 
 ## Guardrails
@@ -31,6 +31,7 @@ This readback verifies the already-live public and immediate lead-capture surfac
 
 - `rabbi_stripe_test_secret_key_alias_or_test_key_status`
 - `67_month_product_price_id_or_alias`
+- `whapi_wapi_token_alias`
 - `whapi_wapi_instance_id`
 - `whapi_wapi_phone_number`
 - `final_campaign_copy`
@@ -39,4 +40,4 @@ This readback verifies the already-live public and immediate lead-capture surfac
 - `explicit_seed_packet_approval`
 - Rabbi Telegram hosted restart and scoped live-smoke proof
 - Two Rabbi Agent Review terminal proofs
-- Active UI/API/Agent Review collision lanes
+- No unblocked executable batch until external/proof blockers clear
