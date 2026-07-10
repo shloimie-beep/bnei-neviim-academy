@@ -1,10 +1,10 @@
 {
   "report_id": "onetime-owner-experience-closure-20260710-current-batch",
-  "generated_at": "2026-07-10T16:43:05+03:00",
+  "generated_at": "2026-07-10T16:34:40+03:00",
   "raw_id": "RAW-20260710-003",
   "register_path": "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
   "production_target": "https://join.onetimeonetime.com",
-  "status": "not_ready_goal_active_first_through_thirteenth_batches_mapped",
+  "status": "not_ready_goal_active_first_through_fourteenth_batches_mapped",
   "requirements": [
     {
       "id": "REQ-20260710-008",
@@ -42,13 +42,13 @@
     },
     {
       "id": "REQ-20260710-027",
-      "status": "in_progress_thirteenth_batch_mapped_terminal_mapping_required",
-      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows and mapped the first thirteen batches through June 14-15 task-register workspace/helper/classroom/payments/assistant rows. 179 rows now have mapped or active statuses, including HIST-SRC-0135 as the active owner objective. 113 rows still lack terminal status.",
+      "status": "in_progress_fourteenth_batch_mapped_terminal_mapping_required",
+      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows and mapped the first fourteen batches through June 16 task-register agent-work/community/helper/integrations/watchdog/website rows. 195 rows now have mapped or active statuses, including HIST-SRC-0135 as the active owner objective. 97 rows still lack terminal status.",
       "evidence": [
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.md",
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json"
       ],
-      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for the remaining 113 rows, starting at HIST-SRC-0178."
+      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for the remaining 97 rows, starting at HIST-SRC-0194."
     }
   ],
   "local_evidence": {
@@ -71,7 +71,7 @@
     "PASS npm run pqc:validate 67/67",
     "PASS npm run watchdog:actions finding_count 0",
     "PASS npm run watchdog:protocol-drift findings 0",
-    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T13-28-43-972Z-audit-governance.md with older repo-wide debt still present and untracked audit packages none",
+    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T13-35-45-372Z-audit-governance.md with older repo-wide debt still present and untracked audit packages none",
     "PASS local visual audit 9 routes x 5 viewports, 140 screenshots, 0 findings",
     "PASS local canonical journey smoke",
     "PASS local provider CRM layout smoke",
@@ -122,31 +122,34 @@
     "reason": "Full One Time launch remains blocked by external setup values, hosted Rabbi Telegram live-smoke, terminal Agent Mode proof, valid Vimeo/WAPI credentials and approval gates, and source-complete historical atomization; current UI/code batch is deployed and live-smoked, and the historical matrix eleventh batch is mapped."
   },
   "summary": {
-    "historical_source_mapping": "first through thirteenth batches mapped; 179 mapped or active rows, 113 rows without terminal status",
+    "historical_source_mapping": "first through fourteenth batches mapped; 195 mapped or active rows, 97 rows without terminal status",
     "one_time_verdict": "not_ready"
   },
   "current_counts": {
-    "historical_source_rows_mapped_or_active": 179,
-    "historical_source_rows_without_terminal_status": 113,
-    "latest_mapped_batch": "thirteenth",
+    "historical_source_rows_mapped_or_active": 195,
+    "historical_source_rows_without_terminal_status": 97,
+    "latest_mapped_batch": "fourteenth",
     "latest_mapped_source_statement_ids": [
-      "HIST-SRC-0165",
-      "HIST-SRC-0166",
-      "HIST-SRC-0167",
-      "HIST-SRC-0168",
-      "HIST-SRC-0169",
-      "HIST-SRC-0170",
-      "HIST-SRC-0171",
-      "HIST-SRC-0172",
-      "HIST-SRC-0173",
-      "HIST-SRC-0174",
-      "HIST-SRC-0175",
-      "HIST-SRC-0176",
-      "HIST-SRC-0177"
+      "HIST-SRC-0178",
+      "HIST-SRC-0179",
+      "HIST-SRC-0180",
+      "HIST-SRC-0181",
+      "HIST-SRC-0182",
+      "HIST-SRC-0183",
+      "HIST-SRC-0184",
+      "HIST-SRC-0185",
+      "HIST-SRC-0186",
+      "HIST-SRC-0187",
+      "HIST-SRC-0188",
+      "HIST-SRC-0189",
+      "HIST-SRC-0190",
+      "HIST-SRC-0191",
+      "HIST-SRC-0192",
+      "HIST-SRC-0193"
     ]
   },
   "verification": [
-    "PASS historical-source-statement-matrix.json parsed as JSON after thirteenth-batch mapping",
-    "PASS mapped/active rows 179; remaining rows without terminal status 113"
+    "PASS historical-source-statement-matrix.json parsed as JSON after fourteenth-batch mapping",
+    "PASS mapped/active rows 195; remaining rows without terminal status 97"
   ]
 }

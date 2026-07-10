@@ -1,37 +1,37 @@
 # One Time Historical Source Statement Matrix
 
-Generated: 2026-07-10T16:43:05+03:00
+Generated: 2026-07-10T16:34:40+03:00
 
-Status: first through thirteenth mapping batches complete; owner-experience goal remains active and not ready.
+Status: first through fourteenth mapping batches complete; owner-experience goal remains active and not ready.
 
 ## Counts
 
 - Total source statements: 291
-- Active/mapped rows: 179
-- Rows without terminal status: 113
+- Active/mapped rows: 195
+- Rows without terminal status: 97
 
 ### Mapping Status Counts
 
 - mapped_in_progress_goal_active: 1
 - mapped_terminal_already_satisfied: 2
 - mapped_terminal_done: 18
-- mapped_terminal_done_deployed_live_smoked: 54
+- mapped_terminal_done_deployed_live_smoked: 57
 - mapped_terminal_done_no_external_send: 1
-- mapped_terminal_mixed_done_and_blocked: 23
-- mapped_terminal_mixed_done_needs_decision_blocked: 80
+- mapped_terminal_mixed_done_and_blocked: 25
+- mapped_terminal_mixed_done_needs_decision_blocked: 91
 - needs_terminal_mapping: 1
-- needs_terminal_mapping_blocker_present: 91
-- needs_terminal_mapping_done_claim_present: 20
+- needs_terminal_mapping_blocker_present: 79
+- needs_terminal_mapping_done_claim_present: 16
 
 ### Terminal Status Counts
 
 - already_satisfied: 2
 - done: 18
-- done_deployed_live_smoked: 54
+- done_deployed_live_smoked: 57
 - done_no_external_send: 1
-- mixed_terminal_done_and_blocked: 23
-- mixed_terminal_done_needs_decision_blocked: 80
-- null: 113
+- mixed_terminal_done_and_blocked: 25
+- mixed_terminal_done_needs_decision_blocked: 91
+- null: 97
 
 ## Source Statements
 
@@ -214,22 +214,22 @@ Status: first through thirteenth mapping batches complete; owner-experience goal
 | HIST-SRC-0175 | HTASK-040 | task_register | OT-HIST-UNSORTED | 2026-06-15 | `tasks-pending/2026-06-15-provider-index-mvp.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
 | HIST-SRC-0176 | HTASK-041 | task_register | OT-HIST-UNSORTED | 2026-06-15 | `tasks-pending/2026-06-15-rabbi-checkout-access.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
 | HIST-SRC-0177 | HTASK-042 | task_register | OT-HIST-UNSORTED | 2026-06-15 | `tasks-pending/2026-06-15-universal-assistant-mvp.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
-| HIST-SRC-0178 | HTASK-043 | task_register | OT-HIST-005 | 2026-06-16 | `tasks-pending/2026-06-16-agent-work-gap-audit.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0179 | HTASK-044 | task_register | OT-HIST-006 | 2026-06-16 | `tasks-pending/2026-06-16-community-06-mishnayos-community-gamification-parent-progress.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0180 | HTASK-045 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-full-ws-closeout-parent-student-login.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0181 | HTASK-046 | task_register | OT-HIST-005 | 2026-06-16 | `tasks-pending/2026-06-16-helper-scoped-tool-registry.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0182 | HTASK-047 | task_register | OT-HIST-005 | 2026-06-16 | `tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0183 | HTASK-048 | task_register | OT-HIST-004 | 2026-06-16 | `tasks-pending/2026-06-16-one-time-email-contacts-import.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0184 | HTASK-049 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-one-time-thursday-access-session.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0185 | HTASK-050 | task_register | OT-HIST-003 | 2026-06-16 | `tasks-pending/2026-06-16-operating-goals-prompt-intake-helper-ui.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0186 | HTASK-051 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-ops-workflows-lanes-calendar-routing.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0187 | HTASK-052 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-prompt-ingestion-execution-audit.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0188 | HTASK-053 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-provider-integrations-secret-storage.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0189 | HTASK-054 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-rabbi-04-onetime-product-system.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0190 | HTASK-055 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-rabbi-one-time-7pm-class-model.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0191 | HTASK-056 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-ramble-watchdog-self-healing.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0192 | HTASK-057 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-safe-integrations-closeout.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0193 | HTASK-058 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-website-ramble-correction-audit.md` | needs_terminal_mapping_blocker_present |  |
+| HIST-SRC-0178 | HTASK-043 | task_register | OT-HIST-005 | 2026-06-16 | `tasks-pending/2026-06-16-agent-work-gap-audit.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0179 | HTASK-044 | task_register | OT-HIST-006 | 2026-06-16 | `tasks-pending/2026-06-16-community-06-mishnayos-community-gamification-parent-progress.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0180 | HTASK-045 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-full-ws-closeout-parent-student-login.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0181 | HTASK-046 | task_register | OT-HIST-005 | 2026-06-16 | `tasks-pending/2026-06-16-helper-scoped-tool-registry.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0182 | HTASK-047 | task_register | OT-HIST-005 | 2026-06-16 | `tasks-pending/2026-06-16-on-page-scoped-helper-tool-parity.md` | mapped_terminal_mixed_done_and_blocked | mixed_terminal_done_and_blocked |
+| HIST-SRC-0183 | HTASK-048 | task_register | OT-HIST-004 | 2026-06-16 | `tasks-pending/2026-06-16-one-time-email-contacts-import.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0184 | HTASK-049 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-one-time-thursday-access-session.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0185 | HTASK-050 | task_register | OT-HIST-003 | 2026-06-16 | `tasks-pending/2026-06-16-operating-goals-prompt-intake-helper-ui.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0186 | HTASK-051 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-ops-workflows-lanes-calendar-routing.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0187 | HTASK-052 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-prompt-ingestion-execution-audit.md` | mapped_terminal_mixed_done_and_blocked | mixed_terminal_done_and_blocked |
+| HIST-SRC-0188 | HTASK-053 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-provider-integrations-secret-storage.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0189 | HTASK-054 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-rabbi-04-onetime-product-system.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0190 | HTASK-055 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-rabbi-one-time-7pm-class-model.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0191 | HTASK-056 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-ramble-watchdog-self-healing.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0192 | HTASK-057 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-safe-integrations-closeout.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0193 | HTASK-058 | task_register | OT-HIST-UNSORTED | 2026-06-16 | `tasks-pending/2026-06-16-website-ramble-correction-audit.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
 | HIST-SRC-0194 | HTASK-059 | task_register | OT-HIST-UNSORTED | 2026-06-17 | `tasks-pending/2026-06-17-backlog-readiness-sweep.md` | needs_terminal_mapping_blocker_present |  |
 | HIST-SRC-0195 | HTASK-060 | task_register | OT-HIST-UNSORTED | 2026-06-17 | `tasks-pending/2026-06-17-full-system-debug-queue-unblock-audit.md` | needs_terminal_mapping_blocker_present |  |
 | HIST-SRC-0196 | HTASK-061 | task_register | OT-HIST-UNSORTED | 2026-06-17 | `tasks-pending/2026-06-17-goal-mode-ramble-protocol-hardening.md` | needs_terminal_mapping_blocker_present |  |
