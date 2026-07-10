@@ -37976,3 +37976,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Mapped the July 1-2 launch/UI source batch: `HIST-SRC-0039` through `HIST-SRC-0045`.
 - Launch funnel, launch-unblocker, worktree/external setup, clean PR #62 integration, background Drive/UI continuation, PR64/domain/keyholder, and broad Rabbi UI cleanup rows now point to terminal proof or exact Stripe/WAPI/campaign/deploy/UI-proof blockers.
 - The historical source matrix now has 50 mapped or active rows and 242 rows still lacking terminal status. The owner-experience goal remains active and not ready.
+
+## 2026-07-10 - One Time historical source sixth batch mapped
+
+- Mapped the July 2-6 Studio/release/workflow historical source batch: `HIST-SRC-0046` through `HIST-SRC-0058`.
+- Covered Studio content-engine readiness, helper-bot planning, PR #87 live cleanup, keyholder/deploy follow-up, landing/signup funnel, Release Captain UI recovery, canonical target routing, repo/Drive release workflow, Studio sidekick/OpenArt scope, deploy-gate credential deferral, OpenArt endpoint registration, and ChatGPT dropoff audit setup.
+- The historical source matrix now has 63 mapped or active rows and 229 rows still lacking terminal status. The owner-experience goal remains active and not ready.
+- Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass.

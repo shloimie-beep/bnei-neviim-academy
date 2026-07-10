@@ -1,6 +1,6 @@
 {
   "report_id": "onetime-owner-experience-closure-20260710-current-batch",
-  "generated_at": "2026-07-10T15:28:23+03:00",
+  "generated_at": "2026-07-10T15:35:06+03:00",
   "raw_id": "RAW-20260710-003",
   "register_path": "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
   "production_target": "https://join.onetimeonetime.com",
@@ -42,13 +42,13 @@
     },
     {
       "id": "REQ-20260710-027",
-      "status": "in_progress_fifth_batch_mapped_terminal_mapping_required",
-      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows and mapped the first July 10 batch, the second early foundational batch, the third June 22-24 batch, the fourth June 26-July 1 batch, and the fifth July 1-2 launch/UI batch. Fifty rows now have mapped or active statuses, including HIST-SRC-0135 as the active owner objective. 242 rows still lack terminal status.",
+      "status": "in_progress_sixth_batch_mapped_terminal_mapping_required",
+      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows and mapped the first July 10 batch, the second early foundational batch, the third June 22-24 batch, the fourth June 26-July 1 batch, the fifth July 1-2 launch/UI batch, and the sixth July 2-6 Studio/release/workflow batch. Sixty-three rows now have mapped or active statuses, including HIST-SRC-0135 as the active owner objective. 229 rows still lack terminal status.",
       "evidence": [
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.md",
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json"
       ],
-      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for the remaining 242 rows."
+      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for the remaining 229 rows."
     }
   ],
   "local_evidence": {
@@ -78,7 +78,7 @@
     "PASS live readable redacted Operations audit 140 screenshots, 0 skipped checks, 0 findings",
     "PASS manual review of desktop/mobile Operations overview and email inbox readable redacted screenshots",
     "PASS historical source inventory JSON parsed; counts raw_inputs 135, task_registers 156, evidence_groups 141",
-    "PASS historical source-statement matrix JSON parsed; total_source_statements 291; first through fifth mapped batches cover 50 mapped/active rows; remaining rows without terminal status 242",
+    "PASS historical source-statement matrix JSON parsed; total_source_statements 291; first through sixth mapped batches cover 63 mapped/active rows; remaining rows without terminal status 229",
     "PASS no standalone visible OneTime/OneTimeOneTime brand grep in active checked surfaces"
   ],
   "deployment": {
