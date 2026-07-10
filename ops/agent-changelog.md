@@ -38025,3 +38025,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Covered transcript-wide source sheets, Operations action registry, Content Library v2 planning, provider onboarding, learning-community/bot/signup, Rabbi Drive/social/login, registration/provider/student security and Rabbi video, universal helper/contact/settings/Hebrew, assistant/communications, Google/onboarding/helper/CRM, One Time content library, parent-student links, Rabbi whitelabel, task UI/helper/workspace, provider open join, no-GHL release, and workspace/person/provider architecture.
 - The historical source matrix now has 166 mapped or active rows and 126 rows still lacking terminal status. The owner-experience goal remains active and not ready.
 - Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/configuration/imports as evidence only.
+
+## 2026-07-10 - One Time historical source thirteenth batch mapped
+
+- Mapped the June 14-15 task-register batch: `HIST-SRC-0165` through `HIST-SRC-0177`.
+- Covered workspace task dialogue, Automation Center, BNA Helper tools, Downloads prompt audit, WS11 gamification/community/parent progress, intake parser, One Time classroom/calendar/community bot, product-payment decisions, two-login/white-label scoped parsing, pending-access dedupe, Provider Index MVP, Rabbi checkout/access, and Universal Assistant MVP.
+- The historical source matrix now has 179 mapped or active rows and 113 rows still lacking terminal status. The owner-experience goal remains active and not ready.
+- Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/configuration/imports as evidence only.

@@ -1,7 +1,7 @@
 {
   "report_id": "onetime-historical-source-statement-matrix-20260710-skeleton",
-  "generated_at": "2026-07-10T16:28:22+03:00",
-  "status": "in_progress_first_through_twelfth_batches_mapped_goal_active_not_ready",
+  "generated_at": "2026-07-10T16:43:05+03:00",
+  "status": "in_progress_first_through_thirteenth_batches_mapped_goal_active_not_ready",
   "source_inventory": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json",
   "counts": {
     "total_source_statements": 291,
@@ -13,13 +13,13 @@
       "mapped_in_progress_goal_active": 1,
       "mapped_terminal_already_satisfied": 2,
       "mapped_terminal_done": 18,
-      "mapped_terminal_done_deployed_live_smoked": 47,
+      "mapped_terminal_done_deployed_live_smoked": 54,
       "mapped_terminal_done_no_external_send": 1,
-      "mapped_terminal_mixed_done_and_blocked": 21,
-      "mapped_terminal_mixed_done_needs_decision_blocked": 76,
+      "mapped_terminal_mixed_done_and_blocked": 23,
+      "mapped_terminal_mixed_done_needs_decision_blocked": 80,
       "needs_terminal_mapping": 1,
-      "needs_terminal_mapping_blocker_present": 99,
-      "needs_terminal_mapping_done_claim_present": 25
+      "needs_terminal_mapping_blocker_present": 91,
+      "needs_terminal_mapping_done_claim_present": 20
     },
     "by_family": {
       "OT-HIST-001": 12,
@@ -33,11 +33,11 @@
     "by_terminal_status": {
       "already_satisfied": 2,
       "done": 18,
-      "done_deployed_live_smoked": 47,
+      "done_deployed_live_smoked": 54,
       "done_no_external_send": 1,
-      "mixed_terminal_done_and_blocked": 21,
-      "mixed_terminal_done_needs_decision_blocked": 76,
-      "null": 126
+      "mixed_terminal_done_and_blocked": 23,
+      "mixed_terminal_done_needs_decision_blocked": 80,
+      "null": 113
     }
   },
   "source_statements": [
@@ -5872,10 +5872,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-14-workspace-task-dialogue-rabbi-scheller.md",
+        "ops/live-smokes/2026-06-14T07-56-50-529Z-live-app-smoke.md",
+        "ops/playwright-smokes/2026-06-14-workspace-task-system-live/2026-06-14T07-58-30-461Z-report.md"
+      ],
+      "blocker_or_next_action": "No terminal blocker for the workspace task/dialogue release. OpenAI key rejection remained an external account issue, with Kimi approved as the temporary hosted-AI provider for this release."
     },
     {
       "source_statement_id": "HIST-SRC-0166",
@@ -5897,10 +5901,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-automation-center-compact-layout.md",
+        "tests/operations-automation-center.test.js",
+        "tests/operations-automation-library.test.js"
+      ],
+      "blocker_or_next_action": "Automation Center schema, APIs, UI, tests, and local browser shell were completed, but live registry readback/deploy was blocked by unreachable configured database host and still needed Railway migration/deploy/live smoke."
     },
     {
       "source_statement_id": "HIST-SRC-0167",
@@ -5925,10 +5933,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-bna-helper-tools-actions.md",
+        "tasks-pending/2026-06-17-website-ramble-correction-audit.md",
+        "ops/live-smokes/2026-06-17T06-13-37-317Z-operations-helper-live-smoke.md"
+      ],
+      "blocker_or_next_action": "No terminal blocker for the helper duplicate/branding/action-planning batch after later 2026-06-17 deployment evidence. Earlier WS05 local/deploy blockers were superseded by deployed helper proof."
     },
     {
       "source_statement_id": "HIST-SRC-0168",
@@ -5953,10 +5965,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-downloads-prompt-implementation-audit.md",
+        "ops/download-prompt-audit/2026-06-16-requirement-evidence-ledger.md",
+        "ops/download-prompt-audit/2026-06-16-actual-ws-prompt-list-map.md"
+      ],
+      "blocker_or_next_action": "Downloads prompt audit and mapping artifacts were created and many WS prompts were implemented/deployed, but remaining targeted closeouts still require live data/privacy readbacks, reachable local database config, credential/DNS/account setup, queue cleanup decisions, and human product/legal/account decisions."
     },
     {
       "source_statement_id": "HIST-SRC-0169",
@@ -5978,10 +5994,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-gamification-community-parent-progress.md",
+        "ops/live-smokes/2026-06-16T11-00-29-396Z-ws11-parent-progress-live-smoke.md",
+        "ops/live-smokes/2026-06-16T11-01-05-357Z-live-app-smoke.md"
+      ],
+      "blocker_or_next_action": "No terminal blocker for WS11 gamification/community/parent-progress implementation. Public leaderboard exposure remains an intentionally future product decision, not part of the shipped scope."
     },
     {
       "source_statement_id": "HIST-SRC-0170",
@@ -6004,10 +6024,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-intake-parser-pipeline.md",
+        "ops/live-smokes/2026-06-15T11-27-37-735Z-live-app-smoke.md",
+        "tests/intake-parser.test.js"
+      ],
+      "blocker_or_next_action": "No terminal blocker for the canonical intake parser pipeline release. Local laptop smoke still needs a useful local DATABASE_URL only if requested."
     },
     {
       "source_statement_id": "HIST-SRC-0171",
@@ -6032,10 +6056,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-one-time-classroom-calendar-community-bot.md",
+        "ops/live-smokes/2026-06-15T15-07-00-013Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-15T15-07-51-743Z-public-route-privacy-smoke.md"
+      ],
+      "blocker_or_next_action": "No terminal blocker for the OneTime classroom/calendar/community/source-grounded bot release. Google Classroom/Calendar and external writes remain intentionally out of scope behind approval gates."
     },
     {
       "source_statement_id": "HIST-SRC-0172",
@@ -6060,10 +6088,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-one-time-product-payments-decisions.md",
+        "tasks-pending/2026-06-15-rabbi-checkout-access.md",
+        "ops/rabbi-scheller/green-invoice-billing-options.md"
+      ],
+      "blocker_or_next_action": "Payment decision architecture was reconciled locally and checkout/access preview code exists, but pricing, software/revenue ownership, merchant of record, Stripe/GreenInvoice accounts, webhook secrets, refund/cancellation policy, and live checkout/access approvals remain owner/legal/accounting decisions."
     },
     {
       "source_statement_id": "HIST-SRC-0173",
@@ -6086,10 +6118,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-one-time-two-login-white-label-scoped-parsing.md",
+        "TASKS.md",
+        "tests/one-time-external-user-portal.test.js"
+      ],
+      "blocker_or_next_action": "Two-login/white-label/scoped parsing code and task rows exist, but the source remains deploy-pending/decision-blocked for owner/manager Railway env vars, Rabbi WhatsApp owner seed, final brand colors/logo, live scoped-login smoke, branding API readback, and clean deployment ownership."
     },
     {
       "source_statement_id": "HIST-SRC-0174",
@@ -6114,10 +6150,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-pending-access-dedupe-done-links.md",
+        "tests/pending-access-dedupe-done-links.test.js",
+        "scripts/pending-access-dedupe-done-links-audit.mjs"
+      ],
+      "blocker_or_next_action": "Pending/access dedupe and done-link code was locally implemented and verified, but live database cleanup/deploy/readback was blocked by unreachable database host; migration, duplicate cleanup, proof backfill, Railway deploy, and live smoke remain required."
     },
     {
       "source_statement_id": "HIST-SRC-0175",
@@ -6140,10 +6180,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-provider-index-mvp.md",
+        "ops/live-smokes/2026-06-15T09-09-33-330Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-15T09-10-50-473Z-provider-index-live-smoke.json"
+      ],
+      "blocker_or_next_action": "No terminal blocker for Provider Index MVP. Provider upgrade URL and richer provider content remain normal future setup/content work."
     },
     {
       "source_statement_id": "HIST-SRC-0176",
@@ -6167,10 +6211,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-rabbi-checkout-access.md",
+        "ops/live-smokes/2026-06-15T08-26-30-999Z-live-app-smoke.md",
+        "tests/rabbi-checkout-access.test.js"
+      ],
+      "blocker_or_next_action": "Rabbi checkout/access preview, member access, dry-run grant/login/revoke, and public preview surfaces were deployed/live-smoked, but real prices/currency, provider of record, live Stripe/GreenInvoice config, webhook secrets, approved test recipient/send proof, non-dry-run checkout, and public homepage replacement remain approval/configuration gated."
     },
     {
       "source_statement_id": "HIST-SRC-0177",
@@ -6194,10 +6242,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-15-universal-assistant-mvp.md",
+        "ops/live-smokes/2026-06-15T10-42-45-867Z-live-app-smoke.md",
+        "tests/universal-assistant-mvp.test.js"
+      ],
+      "blocker_or_next_action": "No terminal blocker for the Universal Assistant MVP. Richer natural-language parsing, broad rollout copy, and escalation policy remain future/operator-review follow-ups."
     },
     {
       "source_statement_id": "HIST-SRC-0178",
@@ -10477,9 +10529,9 @@
     }
   ],
   "remaining_work": {
-    "active_or_mapped_rows": 166,
-    "rows_without_terminal_status": 126,
-    "next_source_statement_id": "HIST-SRC-0165",
+    "active_or_mapped_rows": 179,
+    "rows_without_terminal_status": 113,
+    "next_source_statement_id": "HIST-SRC-0178",
     "note": "Continue terminal mapping for the remaining historical source rows; owner-experience goal remains active and not ready."
   },
   "first_mapped_batch": {
@@ -10730,6 +10782,37 @@
       "HIST-SRC-0164"
     ],
     "summary": "Mapped June 10-14 task-register source rows covering source-sheet production, action registry, content-library v2 planning, provider onboarding, community/bot/signup, Rabbi Drive/social/login, registration/security/video, universal helper, communications, Google/onboarding, One Time content library, parent-student links, Rabbi whitelabel, task UI/helper, provider open join, no-GHL release, and workspace/person/provider architecture.",
+    "guardrails": [
+      "No external send in this mapping pass",
+      "No WhatsApp/WAPI send in this mapping pass",
+      "No email send in this mapping pass",
+      "No Telegram send in this mapping pass",
+      "No payment/access mutation",
+      "No DNS/credential mutation",
+      "No Drive/Zoom/Vimeo mutation in this mapping pass",
+      "No production import/contact write in this mapping pass",
+      "No GHL/LeadConnector runtime",
+      "No provider-account mutation"
+    ]
+  },
+  "thirteenth_mapped_batch": {
+    "mapped_at": "2026-07-10T16:43:05+03:00",
+    "source_statement_ids": [
+      "HIST-SRC-0165",
+      "HIST-SRC-0166",
+      "HIST-SRC-0167",
+      "HIST-SRC-0168",
+      "HIST-SRC-0169",
+      "HIST-SRC-0170",
+      "HIST-SRC-0171",
+      "HIST-SRC-0172",
+      "HIST-SRC-0173",
+      "HIST-SRC-0174",
+      "HIST-SRC-0175",
+      "HIST-SRC-0176",
+      "HIST-SRC-0177"
+    ],
+    "summary": "Mapped June 14-15 task-register source rows covering workspace task dialogue, automation center, BNA helper tools, downloads prompt audit, WS11 gamification/community/parent progress, intake parser, OneTime classroom/calendar/community bot, product-payment decisions, two-login/white-label scoped parsing, pending-access dedupe, provider index, Rabbi checkout/access, and Universal Assistant MVP.",
     "guardrails": [
       "No external send in this mapping pass",
       "No WhatsApp/WAPI send in this mapping pass",
