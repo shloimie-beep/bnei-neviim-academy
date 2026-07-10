@@ -1,0 +1,79 @@
+{
+  "manifest_id": "ASSET-20260710-ONETIME-LANDING-001",
+  "raw_id": "RAW-20260710-002",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "created_at": "2026-07-10T10:44:00+03:00",
+  "privacy": {
+    "raw_drive_files_committed": false,
+    "private_data_included": false,
+    "source_policy": "Only existing committed One Time repo assets are used in this first wave."
+  },
+  "slots": [
+    {
+      "slot_id": "OT-LANDING-HERO-001",
+      "section": "hero",
+      "desktop_aspect_ratio": "cover",
+      "mobile_aspect_ratio": "cover",
+      "preferred_subject": "Rabbi Scheller / One Time identity",
+      "candidate_repo_asset": "/images/one-time/brand/onetime-hero-vertical.webp",
+      "candidate_drive_asset": null,
+      "rights_source_status": "committed repo asset already referenced by One Time config",
+      "focal_point": "face and upper body",
+      "placeholder_allowed": false,
+      "replacement_instructions": "Replace the hero media URL in public/one-time/index.html or promote a config-driven slot in a later packet."
+    },
+    {
+      "slot_id": "OT-LANDING-PROGRAM-001",
+      "section": "program/live-class",
+      "desktop_aspect_ratio": "16:9",
+      "mobile_aspect_ratio": "16:9",
+      "preferred_subject": "live teaching",
+      "candidate_repo_asset": "/images/one-time/teaching/promo-stage-still-01.webp",
+      "candidate_drive_asset": null,
+      "rights_source_status": "committed repo asset",
+      "focal_point": "Rabbi with microphone",
+      "placeholder_allowed": false,
+      "replacement_instructions": "Replace only this card image src."
+    },
+    {
+      "slot_id": "OT-LANDING-PROGRAM-002",
+      "section": "program/clear-review",
+      "desktop_aspect_ratio": "16:9",
+      "mobile_aspect_ratio": "16:9",
+      "preferred_subject": "teaching/review moment",
+      "candidate_repo_asset": "/images/one-time/teaching/promo-stage-still-02.webp",
+      "candidate_drive_asset": null,
+      "rights_source_status": "committed repo asset",
+      "focal_point": "Rabbi profile/microphone",
+      "placeholder_allowed": false,
+      "replacement_instructions": "Replace only this card image src."
+    },
+    {
+      "slot_id": "OT-LANDING-PROGRAM-003",
+      "section": "program/steady-progress",
+      "desktop_aspect_ratio": "16:9",
+      "mobile_aspect_ratio": "16:9",
+      "preferred_subject": "stage/class environment",
+      "candidate_repo_asset": "/images/one-time/teaching/promo-stage-still-03.webp",
+      "candidate_drive_asset": null,
+      "rights_source_status": "committed repo asset",
+      "focal_point": "stage and Rabbi",
+      "placeholder_allowed": false,
+      "replacement_instructions": "Replace only this card image src."
+    },
+    {
+      "slot_id": "OT-ROBOT-SCHELLER-AVATAR-001",
+      "section": "helper",
+      "desktop_aspect_ratio": "1:1",
+      "mobile_aspect_ratio": "1:1",
+      "preferred_subject": "Rabbi Scheller face/avatar",
+      "candidate_repo_asset": "/images/one-time/brand/onetime-hero-vertical.webp",
+      "candidate_drive_asset": null,
+      "rights_source_status": "committed repo asset",
+      "focal_point": "face crop",
+      "placeholder_allowed": true,
+      "replacement_instructions": "Replace .bna-bot-avatar background-image after final portrait selection."
+    }
+  ]
+}

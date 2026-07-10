@@ -1,0 +1,92 @@
+{
+  "packet_id": "onetime-launch-priority-ui-crm-automation-20260710-001",
+  "schema_version": "bna.chatgpt_dropoff.v1",
+  "created_at": "2026-07-10T07:16:29Z",
+  "source": "chatgpt",
+  "packet_type": "implementation_bundle",
+  "packet_role": "goal_mode_correction_and_code_package_compiler",
+  "lane_key": "rabbi_sheller_provider-one_time_mishnah_class-launch-priority",
+  "owner": "ChatGPT",
+  "source_thread": "2026-07-10 One Time UI, CRM, landing, bot, and launch-priority correction",
+  "operator_raw_id": "RAW-20260710-001",
+  "workspace": "rabbi_sheller_provider",
+  "project": "one_time_mishnah_class",
+  "status": "ready_for_codex_audit",
+  "priority": "critical",
+  "scope_summary": "Register and execute the latest One Time launch priority: beautiful landing, Robot Scheller, visible form-to-CRM lead flow, clickable contact CRM, historical inbox reconciliation, gated immediate class-link follow-up, and launch-ready Rabbi backend UI.",
+  "next_action": "Codex must run control-tower/current-state reconciliation, preserve the source, create/update the requirement register, then produce and execute the first non-overlapping implementation/code-package wave instead of stopping at another audit.",
+  "out_of_scope": [
+    "bulk campaign sends",
+    "live Stripe charges or checkout",
+    "public storage of the exact WhatsApp number or credentials",
+    "unrelated BNA Academy work",
+    "product completion claims based only on audits/prompts/tests"
+  ],
+  "source_statements_covered": [
+    "The current landing copy and earlier text corrections are not fully implemented.",
+    "The landing must be beautiful and production-facing, not review-only or placeholder-looking.",
+    "Approved/Drive-derived images should be used where mapped; polished replaceable image slots are acceptable until exact choices are supplied.",
+    "The assistant should be named Robot Scheller with subtitle Rabbi Scheller's digital assistant, a face/avatar slot, and WhatsApp affordance.",
+    "The public form works and triggers Telegram, but a submitted lead is not visibly findable/openable in CRM.",
+    "CRM contacts are displayed sloppily, tags overwhelm the cards, and each contact needs a real detail page/workbench.",
+    "Email and WhatsApp history should appear on the contact record.",
+    "The historical upload of roughly 2,600 emails is not visibly present in the complete Rabbi/Super Admin inbox.",
+    "The business WhatsApp bot number supplied privately, ending 8614, should capture inbound leads and put them into CRM.",
+    "New interested families should promptly receive the current free-class/Zoom link by approved WhatsApp, email, or both.",
+    "The class is currently free until Rosh Hashanah, using Israel-time campaign configuration.",
+    "Rabbi-facing UI must not expose irrelevant not-scoped/test/review/configured diagnostics, dead controls, unfinished copy, uneven cards, or inconsistent toolbars."
+  ],
+  "expected_outputs": [
+    "new raw input and dated requirement register",
+    "current-state/source reconciliation",
+    "landing copy source-of-truth and image-slot manifest",
+    "form-to-visible-CRM E2E proof",
+    "CRM contact list/detail/timeline implementation packets",
+    "historical email import reconciliation",
+    "WAPI/email class-link automation implementation packet",
+    "Rabbi launch-readiness UI cleanup packet",
+    "repo-visible ChatGPT code-preparation prompts/packages",
+    "post-implementation Agent Mode acceptance prompts"
+  ],
+  "acceptance_criteria": [
+    "Landing is deployed and manually reviewed as a finished campaign at 1440, 1024, 768, 430, and 390 widths.",
+    "No public review-only/test/internal wording remains.",
+    "Robot Scheller identity is exact and does not obstruct conversion controls.",
+    "A synthetic/approved form submission can be found and opened in the scoped CRM with source and timeline visible.",
+    "Each CRM contact has a coherent detail state with email, WhatsApp, class/trial, notes, and next-action context where available.",
+    "The expected historical inbox is either imported and proven or blocked with one exact source/path owner requirement.",
+    "Controlled inbound lead follow-up is idempotent, CRM-logged, and gated to the scoped business sender/class-link configuration.",
+    "Normal Rabbi UI contains no dead buttons, irrelevant support/setup noise, or unfinished implementation labels.",
+    "App-visible Done requires pushed commit, correct deployment, live smoke, before/after screenshots, and manual source-level acceptance."
+  ],
+  "tests_expected": [
+    "focused landing and helper tests",
+    "form-to-CRM E2E browser/API test",
+    "CRM contact detail/deep-link/filter preservation tests",
+    "historical email import dedupe/thread/contact-link tests",
+    "WAPI inbound idempotency and gated auto-response tests",
+    "navigation/action/workspace/security watchdogs",
+    "PQC validation and protocol-drift watchdog",
+    "live One Time smokes and manual visual review"
+  ],
+  "known_blockers": [
+    "The exact business WhatsApp number must remain runtime/keyholder-only; tracked files may reference only the number ending 8614.",
+    "Exact final image choices may remain operator-selectable, but polished slots and already-approved assets must ship now.",
+    "Historical email source/path must be located before a complete import can be claimed.",
+    "Real class-link sends require scoped provider readiness, exact approved copy, idempotency, and one owner-controlled seed test."
+  ],
+  "local_state_warning": "GitHub-connected ChatGPT sees committed/pushed GitHub state only. Codex must refresh CONTROL-TOWER.md and current worktree/agent lanes before editing shared files.",
+  "files_included": [
+    "packet.json",
+    "RAW.md",
+    "CODEX_PROMPT.md",
+    "MANIFEST.json",
+    "status.json",
+    "PATCHES.md"
+  ],
+  "requires_operator_decision": false,
+  "external_write_required": false,
+  "external_writes_performed": false,
+  "secrets_included": false,
+  "private_data_included": false
+}

@@ -25,16 +25,18 @@ test('One Time public helper has separate surface, copy, actions, and black-yell
   assert.match(widget, /&& !isParent\s+&& !isStudent\s+&& !isProvider\s+&& !\/\^\(\?:\\\/rabbi-member\|\\\/member-library\|\\\/one-time-classroom/);
   assert.match(widget, /\? 'one_time_public'/);
   assert.match(widget, /surface === 'one_time_public'/);
-  assert.match(widget, /Rabbi Scheller digital assistant/);
-  assert.match(widget, /Rabbi Scheller Assistant/);
+  assert.match(widget, /Robot Scheller/);
+  assert.match(widget, /Rabbi Scheller's digital assistant/);
   assert.match(widget, /ONE_TIME_PUBLIC_FIRST_NUDGE_DELAY_MS = 10000/);
   assert.match(widget, /ONE_TIME_PUBLIC_SECOND_NUDGE_DELAY_MS = 20000/);
-  assert.match(widget, /Do you want your son to love Torah/);
+  assert.match(widget, /Want the current free-class details/);
   assert.match(widget, /We are up to \$\{oneTimeCurrentMasechta\(\)\} now\. It is a great time to join/);
   assert.match(widget, /Speak to Rabbi Scheller/);
-  assert.match(widget, /Join the Free Class/);
-  assert.match(widget, /free OneTime Mishnayos class follow-up/);
-  assert.match(widget, /approved free Zoom class details/);
+  assert.match(widget, /Join the free class/);
+  assert.match(widget, /Current class information/);
+  assert.match(widget, /WhatsApp Robot Scheller/);
+  assert.match(widget, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
+  assert.match(widget, /current free-class details/);
   assert.match(widget, /bna-assistant-surface-one-time-public/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher/);
 
@@ -42,8 +44,11 @@ test('One Time public helper has separate surface, copy, actions, and black-yell
     widget.indexOf('function oneTimePublicHelperData()'),
     widget.indexOf('function fallbackPublicHelperData()')
   );
-  assert.match(oneTimePublicDataBlock, /Do you want your son to love Torah/);
+  assert.match(oneTimePublicDataBlock, /Robot Scheller/);
+  assert.match(oneTimePublicDataBlock, /current free-class details/);
   assert.match(oneTimePublicDataBlock, /oneTimeJoinMomentCopy\(\)/);
+  assert.doesNotMatch(oneTimePublicDataBlock, /approved free Zoom/);
+  assert.doesNotMatch(oneTimePublicDataBlock, /Do you want your son to love Torah/);
   assert.doesNotMatch(oneTimePublicDataBlock, /I only answer public OneTime questions/);
   assert.doesNotMatch(oneTimePublicDataBlock, /private parent billing, attendance, student transcripts, access codes, raw class transcripts, or admin data/);
   assert.doesNotMatch(oneTimePublicDataBlock, /Learn about BNA|How BNA works|BNA model path|Service-provider ecosystem path/);
@@ -82,14 +87,14 @@ test('One Time parent and student review routes mount scoped helper copy', () =>
   assert.match(widget, /\? 'one_time_student'/);
   assert.match(widget, /\? 'one_time_provider'/);
   assert.match(widget, /surface === 'one_time_parent'/);
-  assert.match(widget, /One Time Parent Helper/);
+  assert.match(widget, /Robot Scheller/);
+  assert.match(widget, /Rabbi Scheller's digital assistant/);
   assert.match(widget, /I do not show private billing records, other families, student transcripts, access codes, or admin data/);
   assert.match(widget, /surface === 'one_time_student'/);
-  assert.match(widget, /One Time Student Helper/);
   assert.match(widget, /I do not show parent billing, private parent messages, other students, full transcripts, access codes, or admin data/);
   assert.match(widget, /surface === 'one_time_provider'/);
-  assert.match(widget, /Rabbi Scheller Admin Helper/);
   assert.match(widget, /I will keep this workspace scoped to the OneTime Mishnayos class/);
+  assert.doesNotMatch(widget, /One Time Parent Helper|One Time Student Helper|Rabbi Scheller Admin Helper|Rabbi Scheller Assistant/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-parent \.bna-bot-launcher/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-student \.bna-bot-launcher/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-provider \.bna-bot-launcher/);
@@ -116,11 +121,29 @@ test('One Time public helper launcher is registered as a visible action', () => 
   const action = actionRegistry.actions.find((item) => item.action_id === 'ACTION-ONETIME-PUBLIC-HELPER-OPEN');
   assert.ok(action);
   assert.equal(action.route, '/one-time');
-  assert.equal(action.label, 'Rabbi Scheller Assistant');
+  assert.equal(action.label, 'Robot Scheller');
   assert.match(action.expected_behavior, /concise parent-facing copy/);
-  assert.match(action.expected_behavior, /10 seconds/);
-  assert.match(action.expected_behavior, /20 seconds later/);
-  assert.match(action.expected_behavior, /masechta/);
+  assert.match(action.expected_behavior, /free-class\/current-class\/schedule\/Rabbi\/member-login choices/);
+  assert.match(action.expected_behavior, /OneTime-only/);
+});
+
+test('One Time public WhatsApp action is registry-covered and no-send at runtime', () => {
+  const action = actionRegistry.actions.find((item) => item.action_id === 'ACTION-ONETIME-PUBLIC-WHATSAPP');
+  assert.ok(action);
+  assert.equal(action.route, '/one-time');
+  assert.equal(action.label, 'WhatsApp Robot Scheller');
+  assert.match(action.handler, /\/api\/one-time\/public-whatsapp\/redirect/);
+  assert.match(action.status, /blocked_external_setup_until_runtime_number_configured/);
+  assert.match(action.expected_behavior, /ONE_TIME_PUBLIC_WHATSAPP_NUMBER/);
+  assert.match(action.expected_behavior, /performs no WhatsApp send by itself/);
+  assert.match(oneTime, /ACTION-ONETIME-PUBLIC-WHATSAPP/);
+  assert.match(oneTime, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
+  assert.match(widget, /\/api\/one-time\/public-whatsapp\/redirect\?intent=current_info/);
+  assert.match(server, /const ONE_TIME_PUBLIC_WHATSAPP_NUMBER/);
+  assert.match(server, /app\.get\(\['\/api\/one-time\/public-whatsapp', '\/api\/bna\/one-time\/public-whatsapp'\]/);
+  assert.match(server, /full_number_returned: false/);
+  assert.match(server, /no_whatsapp_sent: true/);
+  assert.match(server, /external_write_performed: false/);
 });
 
 test('One Time Rabbi public aliases are registry-covered and route to the focused landing', () => {
@@ -141,9 +164,11 @@ test('One Time parent and student helper launchers are registered visible action
   const studentAction = actionRegistry.actions.find((item) => item.action_id === 'ACTION-ONETIME-STUDENT-HELPER-OPEN');
   assert.ok(parentAction);
   assert.equal(parentAction.route, '/parent.html?review=one-time');
+  assert.equal(parentAction.label, 'Robot Scheller');
   assert.match(parentAction.expected_behavior, /without exposing private billing records/);
   assert.ok(studentAction);
   assert.equal(studentAction.route, '/student.html?review=one-time');
+  assert.equal(studentAction.label, 'Robot Scheller');
   assert.match(studentAction.expected_behavior, /without exposing parent billing/);
 });
 

@@ -86,7 +86,8 @@ test('shared One Time review pages include review branding assets', () => {
 
   const oneTimeHtml = fs.readFileSync('public/one-time/index.html', 'utf8');
   assert.match(oneTimeHtml, /Your Child Can Love Learning Mishnayos/);
-  assert.match(oneTimeHtml, /TODO: replace with final hero video\/image/);
+  assert.match(oneTimeHtml, /onetime-hero-vertical\.webp/);
+  assert.doesNotMatch(oneTimeHtml, /TODO: replace with final hero video\/image/);
   assert.match(oneTimeHtml, /\/images\/one-time\/press\/torahanytime-logo\.png/);
   assert.doesNotMatch(oneTimeHtml, /player\.vimeo\.com\/video\/1158542993\?h=daa31d3417/);
   assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
@@ -212,11 +213,12 @@ test('One Time brand kit and service-provider site config are present', () => {
   assert.equal(brand.palette.yellow, '#ede518');
   assert.equal(brand.assets.logo, '/images/one-time/brand/onetimelogo.webp');
   assert.equal(brand.assets.social_og, '/images/one-time/social/one-time-og-20260622.jpg');
-  assert.equal(brand.review_only, true);
+  assert.equal(brand.review_only, false);
 
   const site = JSON.parse(fs.readFileSync('config/service-provider-sites/one-time.json', 'utf8'));
   assert.equal(site.key, 'one_time');
-  assert.equal(site.status, 'shared_review');
+  assert.equal(site.status, 'public_launch_priority');
+  assert.equal(site.review_only, false);
   assert.equal(site.external_write_performed, false);
   assert.equal(site.copy.headline, 'Your Child Can Love Learning Mishnayos');
   assert.equal(site.copy.primary_cta, 'Join the Free Class');

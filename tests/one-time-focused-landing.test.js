@@ -14,7 +14,9 @@ test('OneTime focused landing copy uses launch funnel offer and safe CTAs', () =
   assert.match(html, /id="signupStudentName"/);
   assert.match(html, /id="signupPhone"/);
   assert.match(html, /Join the Free Class/);
-  assert.match(html, /approved Zoom details/);
+  assert.match(html, /current free-class details/);
+  assert.match(html, /WhatsApp Robot Scheller/);
+  assert.match(html, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
   assert.match(html, /preferred_class_format/);
   assert.match(html, /See How It Works/);
   assert.match(html, /Member Login/);
@@ -24,8 +26,12 @@ test('OneTime focused landing copy uses launch funnel offer and safe CTAs', () =
   assert.match(html, /Everything your child needs to stay connected/);
   assert.match(html, /How It Works/);
   assert.match(html, /Quick answers before you start/);
-  assert.match(html, /You're on the list\. We will follow up with the approved OneTimeOneTime Zoom details\./);
-  assert.match(html, /TODO: replace with final hero video\/image/);
+  assert.match(html, /You're on the list\. We will follow up with the current OneTimeOneTime class details\./);
+  assert.match(html, /hero-media/);
+  assert.match(html, /onetime-hero-vertical\.webp/);
+  assert.doesNotMatch(html, /TODO: replace with final hero video\/image/);
+  assert.doesNotMatch(html, /hero-media-placeholder|image-placeholder/);
+  assert.doesNotMatch(html, /approved Zoom details/);
   assert.match(html, /Consent is required before submitting/);
   assert.doesNotMatch(html, /class="announcement"/);
   assert.doesNotMatch(html, /class="ticker"/);

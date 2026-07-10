@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Your Child Can Love Learning Mishnayos | OneTimeOneTime</title>
   <meta name="description" content="Join the daily live Mishnayos class built for kids: exciting, clear, accountable, and connected to Rabbi Eli Scheller.">
-  <meta name="robots" content="noindex, nofollow">
+  <meta name="robots" content="index, follow">
   <meta property="og:title" content="Your Child Can Love Learning Mishnayos">
   <meta property="og:description" content="Start with 30 days free for the upcoming OneTimeOneTime Mishnayos class.">
   <meta property="og:image" content="/images/one-time/social/one-time-og-20260622.jpg">
@@ -226,19 +226,16 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(180deg, rgba(8,9,16,0.68), rgba(8,9,16,0.94)),
-        radial-gradient(circle at 50% 26%, rgba(237,229,24,0.2), transparent 32%),
-        linear-gradient(125deg, rgba(20,22,30,1), rgba(8,9,16,1) 48%, rgba(0,0,0,1));
+        linear-gradient(90deg, rgba(8,9,16,0.96) 0%, rgba(8,9,16,0.86) 38%, rgba(8,9,16,0.2) 68%, rgba(8,9,16,0.62) 100%),
+        linear-gradient(180deg, rgba(8,9,16,0.14), rgba(8,9,16,0.92));
       z-index: 1;
     }
-    .hero-media-placeholder {
+    .hero-media {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background:
-        linear-gradient(90deg, rgba(8,9,16,0.96), rgba(8,9,16,0.42), rgba(8,9,16,0.96)),
-        repeating-linear-gradient(112deg, rgba(255,255,255,0.055) 0 1px, transparent 1px 28px),
-        linear-gradient(135deg, #11141d, #25210c 54%, #080910);
+      background: url("/images/one-time/brand/onetime-hero-vertical.webp") right 10% center / min(56vw, 760px) auto no-repeat;
+      filter: saturate(1.08) contrast(1.06);
     }
     .hero-content {
       position: relative;
@@ -248,7 +245,24 @@
       flex-direction: column;
       justify-content: center;
       padding: 92px 0 0;
-      text-align: center;
+      text-align: left;
+    }
+    .hero h1 {
+      max-width: 760px;
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .hero .hero-copy,
+    .hero .hero-support,
+    .hero .microcopy {
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .hero .hero-copy { max-width: 620px; }
+    .hero .hero-support { max-width: 680px; }
+    .hero .button-row,
+    .hero .hero-badges {
+      justify-content: flex-start;
     }
     .eyebrow {
       margin: 0 0 14px;
@@ -438,12 +452,18 @@
       overflow: hidden;
       padding: 0;
     }
-    .image-placeholder {
-      min-height: 178px;
+    .image-frame {
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
       border-bottom: 1px solid rgba(255,255,255,0.1);
       background:
         radial-gradient(circle at 30% 25%, rgba(237,229,24,0.3), transparent 20%),
         linear-gradient(145deg, #20242e, #11141d 54%, #090a10);
+    }
+    .image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .image-card-body { padding: 20px; }
 
@@ -698,7 +718,31 @@
         background: rgba(255,255,255,0.06);
       }
       .hero { min-height: auto; }
-      .hero-content { padding-top: 62px; }
+      .hero::before {
+        background:
+          linear-gradient(180deg, rgba(8,9,16,0.62), rgba(8,9,16,0.95) 54%, rgba(8,9,16,0.98)),
+          linear-gradient(90deg, rgba(8,9,16,0.2), rgba(8,9,16,0.2));
+      }
+      .hero-media {
+        background-position: center top;
+        background-size: 128% auto;
+        opacity: 0.46;
+      }
+      .hero-content {
+        padding-top: 62px;
+        text-align: center;
+      }
+      .hero h1,
+      .hero .hero-copy,
+      .hero .hero-support,
+      .hero .microcopy {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .hero .button-row,
+      .hero .hero-badges {
+        justify-content: center;
+      }
       .signup-strip-inner {
         grid-template-columns: 1fr;
         align-items: stretch;
@@ -746,8 +790,7 @@
 
   <main>
     <section class="hero" id="top">
-      <!-- TODO: replace with final hero video/image. -->
-      <div class="hero-media-placeholder" aria-hidden="true"></div>
+      <div class="hero-media" aria-hidden="true"></div>
       <div class="hero-content">
         <div class="wrap">
           <p class="eyebrow">WORLDWIDE LIVE MISHNAYOS</p>
@@ -756,9 +799,10 @@
           <p class="hero-support">Starting from the beginning on Rosh Chodesh Elul. Students learn every day, review clearly, track their progress, and become part of one of the most engaging Mishnayos classes in the world.</p>
           <div class="button-row">
             <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
+            <a class="button dark" href="/api/one-time/public-whatsapp/redirect?intent=free_class" target="_blank" rel="noopener noreferrer" data-action-id="ACTION-ONETIME-PUBLIC-WHATSAPP">WhatsApp Robot Scheller</a>
             <a class="button secondary" href="#how-it-works" data-action-id="ACTION-ONETIME-WATCH-RABBI-CTA">See How It Works</a>
           </div>
-          <p class="microcopy">No pressure. Start with the free live-class follow-up. No charge and no portal setup today.</p>
+          <p class="microcopy">No charge today. We will send the current free-class details when your signup is received.</p>
           <div class="hero-badges" id="watch" aria-label="Program highlights">
             <span>Live class</span>
             <span>Clear review</span>
@@ -770,7 +814,7 @@
           <div class="wrap signup-strip-inner" id="start-free">
             <div class="signup-strip-copy">
               <strong>Join the Free Class</strong>
-              <span>Tell us who to contact and we will follow up with the approved Zoom details.</span>
+              <span>Tell us who to contact and Robot Scheller will route your request to the One Time team.</span>
             </div>
             <div class="signup-strip-fields">
               <label class="visually-hidden" for="signupParentName">Parent name</label>
@@ -786,7 +830,7 @@
             <input name="source_landing_page" type="hidden" value="/one-time#start-free">
             <input name="preferred_class_format" type="hidden" value="free_zoom_intro">
             <button class="button strip-button" type="submit" data-action-id="ACTION-ONETIME-INTEREST-FORM" data-one-time-action-state="working">Save My Spot</button>
-            <p class="signup-strip-note">No spam, no charge, and no portal account is opened by this form.</p>
+            <p class="signup-strip-note">No charge today. Parent/member access opens only after setup is ready.</p>
             <p class="form-status" id="interestStatus" aria-live="polite"></p>
           </div>
         </form>
@@ -817,21 +861,21 @@
         </div>
         <div class="grid three">
           <article class="card image-card">
-            <div class="image-placeholder" aria-hidden="true"></div>
+            <div class="image-frame"><img src="/images/one-time/teaching/promo-stage-still-01.webp" alt="Rabbi Scheller teaching a live OneTimeOneTime class"></div>
             <div class="image-card-body">
               <h3>Live Class</h3>
               <p>Students join the shiur live and learn with the energy of a real class.</p>
             </div>
           </article>
           <article class="card image-card">
-            <div class="image-placeholder" aria-hidden="true"></div>
+            <div class="image-frame"><img src="/images/one-time/teaching/promo-stage-still-02.webp" alt="Rabbi Scheller speaking during a Mishnayos review"></div>
             <div class="image-card-body">
               <h3>Clear Review</h3>
               <p>Each lesson is reinforced with review and practical worksheets so the learning sticks.</p>
             </div>
           </article>
           <article class="card image-card">
-            <div class="image-placeholder" aria-hidden="true"></div>
+            <div class="image-frame"><img src="/images/one-time/teaching/promo-stage-still-03.webp" alt="One Time class stage with black and yellow program colors"></div>
             <div class="image-card-body">
               <h3>Steady Progress</h3>
               <p>Kids see their progress, parents can track attendance, and the class keeps moving toward a real goal.</p>
@@ -927,16 +971,16 @@
         <div>
           <p class="eyebrow">START FREE</p>
           <h2>Start with the free class.</h2>
-          <p>Send your contact details and we will follow up with the approved OneTimeOneTime free Zoom class details.</p>
+          <p>Send your contact details and we will follow up with the current OneTimeOneTime free class details.</p>
           <div class="button-row" style="justify-content: flex-start;">
             <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
             <a class="button dark" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
           </div>
         </div>
         <ul class="check-list">
-          <li>Free-class interest captured in the OneTime CRM</li>
-          <li>Zoom details sent only after the approved class link is ready</li>
-          <li>No portal, checkout, payment, or access grant from this form</li>
+          <li>Free-class interest captured for the OneTime team</li>
+          <li>Current class details routed through the approved follow-up path</li>
+          <li>No charge today</li>
         </ul>
       </div>
     </section>
@@ -946,7 +990,7 @@
     <div class="wrap footer-row">
       <div>
         <strong>OneTimeOneTime Mishnayos</strong>
-        <p>Copyright <span id="copyrightYear">2026</span> OneTimeOneTime Mishnayos. Review-only launch funnel.</p>
+        <p>Copyright <span id="copyrightYear">2026</span> OneTimeOneTime Mishnayos. Live Mishnayos with Rabbi Scheller.</p>
       </div>
       <nav class="footer-links" aria-label="One Time footer navigation">
         <a href="/one-time" aria-current="page">One Time</a>
@@ -984,7 +1028,7 @@
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Could not save your request');
-        status.textContent = data.message || "You're on the list. We will follow up with the approved OneTimeOneTime Zoom details.";
+        status.textContent = data.message || "You're on the list. We will follow up with the current OneTimeOneTime class details.";
         form.reset();
       } catch (error) {
         status.textContent = error.message || 'Could not save your request.';

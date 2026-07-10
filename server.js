@@ -2666,6 +2666,13 @@ const ONE_TIME_WHATSAPP_CLASS_LINK = String(
   process.env.ONETIME_CLASS_LINK ||
   ''
 ).trim();
+const ONE_TIME_PUBLIC_WHATSAPP_NUMBER = String(
+  process.env.ONE_TIME_PUBLIC_WHATSAPP_NUMBER ||
+  process.env.ONETIME_PUBLIC_WHATSAPP_NUMBER ||
+  process.env.RABBI_SCHELLER_PUBLIC_WHATSAPP_NUMBER ||
+  process.env.RABBI_SHELLER_PUBLIC_WHATSAPP_NUMBER ||
+  ''
+).trim();
 const WAPI_SEND_TIMEOUT_MS = Math.max(
   1000,
   Number(process.env.WAPI_SEND_TIMEOUT_MS || process.env.WHAPI_SEND_TIMEOUT_MS || 15000)
@@ -8357,6 +8364,36 @@ function whatsAppComposeUrl(phone, body) {
   const digits = normalizePhoneDigits(phone);
   if (!digits) return '';
   return `https://wa.me/${encodeURIComponent(digits)}?text=${encodeURIComponent(String(body || ''))}`;
+}
+
+function oneTimePublicWhatsAppMessage(intent = '') {
+  const normalizedIntent = String(intent || '').trim().toLowerCase();
+  const base = [
+    "Hi, I'm interested in Rabbi Scheller's OneTime Mishnayos class.",
+    'Please send me the current free-class information.',
+  ];
+  if (normalizedIntent.includes('schedule')) base.push('I also have a schedule question.');
+  if (normalizedIntent.includes('rabbi')) base.push('I would like to speak to Rabbi Scheller.');
+  return base.join('\n');
+}
+
+function oneTimePublicWhatsAppReadiness() {
+  const configured = Boolean(normalizePhoneDigits(ONE_TIME_PUBLIC_WHATSAPP_NUMBER));
+  return {
+    success: true,
+    configured,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    assistant_name: 'Robot Scheller',
+    assistant_subtitle: "Rabbi Scheller's digital assistant",
+    redirect_path: configured ? '/api/one-time/public-whatsapp/redirect' : '',
+    missing_runtime: configured ? [] : ['ONE_TIME_PUBLIC_WHATSAPP_NUMBER'],
+    class_link_configured: Boolean(ONE_TIME_WHATSAPP_CLASS_LINK),
+    number_hint: configured ? 'configured' : 'missing',
+    full_number_returned: false,
+    no_whatsapp_sent: true,
+    external_write_performed: false,
+  };
 }
 
 async function sendParentMagicLinkWhatsApp({ target, parentEmail, url, req }, db = pool) {
@@ -78015,7 +78052,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
           crmStudentAge,
           limitText(lead.student_grade || '', 80),
           leadTags,
-          limitText(lead.notes || 'Public OneTime free-class interest form submitted. Follow up with approved free Zoom details.', 2000),
+          limitText(lead.notes || 'Public OneTime free-class interest form submitted. Follow up with current free-class details.', 2000),
           JSON.stringify(crmMetadata),
         ]
       )).rows[0];
@@ -78040,7 +78077,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
           crmStudentAge,
           limitText(lead.student_grade || '', 80) || null,
           leadTags,
-          limitText(lead.notes || 'Public OneTime free-class interest form submitted. Follow up with approved free Zoom details.', 2000),
+          limitText(lead.notes || 'Public OneTime free-class interest form submitted. Follow up with current free-class details.', 2000),
           JSON.stringify(crmMetadata),
         ]
       )).rows[0];
@@ -78059,7 +78096,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       [
         project.id,
         crmLead.id,
-        limitText(`Public OneTime signup captured for ${lead.parent_name}. Follow up with approved free Zoom class details. No checkout, access grant, external send, Zoom meeting creation, Vimeo, Drive, or portal action was triggered.`, 2000),
+        limitText(`Public OneTime signup captured for ${lead.parent_name}. Follow up with current free-class details. No checkout, access grant, external send, Zoom meeting creation, Vimeo, Drive, or portal action was triggered.`, 2000),
         JSON.stringify({
           raw_intake_id: 'RAW-20260709-008',
           product_lead_id: productRow.id,
@@ -78602,7 +78639,7 @@ async function oneTimeProductSystemPayload(req) {
     guardrails: {
       no_final_pricing: true,
       checkout_enabled: false,
-      public_pages_noindex: true,
+      public_pages_noindex: false,
       no_external_write_without_approval: true,
       no_account_grants_from_interest: true,
       appointment_intents_internal_only: true,
@@ -78806,6 +78843,19 @@ app.get(['/api/bna/product-leads', '/api/bna/one-time/product-leads'], requireAd
   }
 });
 
+app.get(['/api/one-time/public-whatsapp', '/api/bna/one-time/public-whatsapp'], (req, res) => {
+  res.json(oneTimePublicWhatsAppReadiness());
+});
+
+app.get(['/api/one-time/public-whatsapp/redirect', '/api/bna/one-time/public-whatsapp/redirect'], (req, res) => {
+  const composeUrl = whatsAppComposeUrl(
+    ONE_TIME_PUBLIC_WHATSAPP_NUMBER,
+    oneTimePublicWhatsAppMessage(req.query?.intent || '')
+  );
+  if (!composeUrl) return res.redirect(302, '/one-time#start-free');
+  res.redirect(302, composeUrl);
+});
+
 app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) => {
   try {
     const dryRun = req.body?.dry_run === true
@@ -78842,7 +78892,7 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       crm_lead_id: lead.crm_lead_id || null,
       internal_follow_up_required: lead.internal_follow_up_required === true,
       external_write_performed: false,
-      message: 'Your free-class request was saved. We will follow up with the approved OneTime Zoom details.',
+      message: 'Your free-class request was saved. We will follow up with the current OneTime free-class details.',
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message });

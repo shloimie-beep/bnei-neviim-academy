@@ -37612,3 +37612,31 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Focused live mobile nav containment readback passed 10/10 checks at 390px and 430px. Evidence: `ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/report.md`.
 - `REQ-20260710-007` / `UIGAP-20260710-001` is Done. Remaining UI gap-register work: brand/copy normalization, provider text-fit, source/screenshot evidence guardrails, stale audit mapping, redacted Operations content review, and Agent Mode proof.
 - Guardrails: no external send, payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram smoke, Drive write, class backfill, or production-data mutation.
+
+## 2026-07-10 - One Time launch-priority landing and Robot Scheller local wave
+
+- Registered `RAW-20260710-002` from the launch-priority handoff and created
+  `tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md`
+  with requirements `REQ-20260710-013` through `REQ-20260710-025`.
+- Compiled and validated the first Product Quality Compiler packet at
+  `ops/prompt-packets/2026-07-10-onetime-launch-priority/01-landing-robot-scheller.product-quality.json`.
+- Updated the public One Time landing to be indexable, use the Rabbi hero
+  portrait and teaching stills, remove public review/TODO/protocol wording,
+  and expose a same-origin `WhatsApp Robot Scheller` runtime redirect.
+- Updated One Time helper surfaces to use `Robot Scheller` /
+  `Rabbi Scheller's digital assistant` with One Time-scoped actions and avatar
+  treatment.
+- Added `/api/one-time/public-whatsapp` and redirect readiness paths that read
+  the public WhatsApp number only from runtime env, return no full number, and
+  perform no WhatsApp send.
+- Verification passed: PQC validation; `node --check server.js`; focused One
+  Time helper/landing/product/branding tests; `npm run watchdog:actions`;
+  `npm run watchdog:protocol-drift`; no-secret grep; local Playwright visual
+  audit at
+  `ops/ui-audits/2026-07-10-onetime-launch-priority-landing-robot-local/report.md`.
+- Status: local implementation verified; app-visible Done remains pending
+  commit, push, One Time deploy, live smoke, and manual source-level review.
+  `REQ-20260710-019` form-to-visible-CRM E2E is the next implementation lane.
+- Guardrails: no external send, WhatsApp send, email send, payment/access
+  mutation, CRM/provider/DNS/credential mutation, Drive/Zoom/Vimeo mutation,
+  Agent Review result save, or production-data mutation.

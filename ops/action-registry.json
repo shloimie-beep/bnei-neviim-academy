@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-09T14:42:00+03:00",
+  "updated_at": "2026-07-10T00:00:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -31,16 +31,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
-      "label": "Rabbi Scheller Assistant",
+      "label": "Robot Scheller",
       "surface": "one_time_public_landing",
       "route": "/one-time",
       "selector_hint": "body.bna-assistant-surface-one-time-public .bna-bot-launcher",
-      "expected_behavior": "Opens Rabbi Scheller's OneTime-scoped public digital assistant with concise parent-facing copy. The landing nudge asks whether the visitor wants his son to love Torah after 10 seconds, then says where the class is holding by masechta 20 seconds later and points to the free-class lead form. Internal scope guardrails remain OneTime-only and do not expose BNA Academy or private portal data.",
+      "expected_behavior": "Opens Robot Scheller, Rabbi Scheller's OneTime-scoped public digital assistant, with concise parent-facing copy and free-class/current-class/schedule/Rabbi/member-login choices. Internal scope guardrails remain OneTime-only and do not expose BNA Academy or private portal data.",
       "permission": "anonymous public visitor",
       "status": "active",
       "test": {
         "type": "contract",
-        "expected_result": "tests/one-time-brand-helper-isolation.test.js verifies Rabbi Scheller Assistant scripts, surface, copy, styling, no generic BNA helper choices, and server project scoping."
+        "expected_result": "tests/one-time-brand-helper-isolation.test.js verifies Robot Scheller scripts, surface, copy, styling, no generic BNA helper choices, and server project scoping."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -49,12 +49,34 @@
       ]
     },
     {
+      "action_id": "ACTION-ONETIME-PUBLIC-WHATSAPP",
+      "label": "WhatsApp Robot Scheller",
+      "surface": "one_time_public_landing",
+      "route": "/one-time",
+      "selector_hint": "a[href^=\"/api/one-time/public-whatsapp/redirect\"], helper action href /api/one-time/public-whatsapp/redirect",
+      "expected_behavior": "Opens a same-origin runtime redirect for the One Time public WhatsApp business line. The server reads ONE_TIME_PUBLIC_WHATSAPP_NUMBER or aliases at runtime, never commits or returns the full number in repo evidence, and performs no WhatsApp send by itself. If runtime config is missing, the redirect falls back to the public form and readiness reports the exact missing env var.",
+      "permission": "anonymous public visitor",
+      "status": "blocked_external_setup_until_runtime_number_configured",
+      "disabled_reason": "Direct WhatsApp chat requires ONE_TIME_PUBLIC_WHATSAPP_NUMBER in runtime/keyholder configuration.",
+      "handler": "GET /api/one-time/public-whatsapp/redirect",
+      "test": {
+        "type": "api_and_static",
+        "expected_result": "GET /api/one-time/public-whatsapp returns configured/readiness metadata without the full number; public page and Robot Scheller actions link to the same-origin redirect and perform no server-side send."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-PARENT-HELPER-OPEN",
-      "label": "One Time Parent Helper",
+      "label": "Robot Scheller",
       "surface": "one_time_parent_review",
       "route": "/parent.html?review=one-time",
       "selector_hint": "body.bna-assistant-surface-one-time-parent .bna-bot-launcher",
-      "expected_behavior": "Opens the One Time-scoped parent helper with trial, schedule, child access, billing-support, attendance-support, and Rabbi question guidance without exposing private billing records, student transcripts, access codes, other families, or admin data.",
+      "expected_behavior": "Opens Robot Scheller in the One Time-scoped parent surface with trial, schedule, child access, billing-support, attendance-support, and Rabbi question guidance without exposing private billing records, student transcripts, access codes, other families, or admin data.",
       "permission": "TEST-only parent review fixture or authenticated parent scope",
       "status": "active",
       "test": {
@@ -110,16 +132,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-STUDENT-HELPER-OPEN",
-      "label": "One Time Student Helper",
+      "label": "Robot Scheller",
       "surface": "one_time_student_review",
       "route": "/student.html?review=one-time",
       "selector_hint": "body.bna-assistant-surface-one-time-student .bna-bot-launcher",
-      "expected_behavior": "Opens the One Time-scoped student helper with class, library, worksheet, and Rabbi question guidance without exposing parent billing, private parent messages, full transcripts, access codes, other students, or admin data.",
+      "expected_behavior": "Opens Robot Scheller in the One Time-scoped student surface with class, library, worksheet, and Rabbi question guidance without exposing parent billing, private parent messages, full transcripts, access codes, other students, or admin data.",
       "permission": "TEST-only student review fixture or authenticated student scope",
       "status": "active",
       "test": {
         "type": "contract",
-        "expected_result": "tests/one-time-brand-helper-isolation.test.js verifies One Time student helper surface, copy, styling, initial actions, and server project scoping."
+        "expected_result": "tests/one-time-brand-helper-isolation.test.js verifies Robot Scheller student helper surface, copy, styling, initial actions, and server project scoping."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

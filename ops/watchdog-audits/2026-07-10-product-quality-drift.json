@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T07:33:17.542Z",
+  "generated_at": "2026-07-10T08:02:36.414Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -340,6 +340,7 @@
     "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/03-public-landing-reframe.product-quality.json",
     "ops/prompt-packets/2026-07-09-onetime-full-frontend-audit-static-chrome/04-provider-operations-layout-parity-audit.product-quality.json",
     "ops/prompt-packets/2026-07-09-onetime-live-lag-performance/05-live-lag-performance-fix.product-quality.json",
+    "ops/prompt-packets/2026-07-10-onetime-launch-priority/01-landing-robot-scheller.product-quality.json",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/MANIFEST.md",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/WINDOW-INDEX.md",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/manifest.json",
@@ -580,6 +581,7 @@
     "tasks-pending/2026-07-09-onetime-scope-ui-agent-contact-corrections.md",
     "tasks-pending/2026-07-09-process-cleanup-deploy-pending.md",
     "tasks-pending/2026-07-09-production-readiness-goal.md",
+    "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
     "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"

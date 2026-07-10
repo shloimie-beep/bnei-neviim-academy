@@ -182,9 +182,9 @@
     if (surface === 'one_time_parent') {
       return {
         ...base,
-        helperTitle: 'One Time Parent Helper',
-        surfaceLabel: 'One Time parent help',
-        intro: "Hi, I'm the One Time parent helper. I can help you understand the 30-day trial, the class schedule, your child's access, attendance questions, billing-support next steps, and how to ask Rabbi Scheller a class question. I do not show private billing records, other families, student transcripts, access codes, or admin data.",
+        helperTitle: 'Robot Scheller',
+        surfaceLabel: "Rabbi Scheller's digital assistant",
+        intro: "Hi, I'm Robot Scheller, Rabbi Scheller's digital assistant. I can help with the trial, class schedule, child access, attendance questions, and how to ask Rabbi Scheller a class question. I do not show private billing records, other families, student transcripts, access codes, or admin data.",
         cards: [
           ['Trial and schedule', 'Review how the 30-day trial works, where class links appear, and what a parent should expect.'],
           ['Child access', 'Understand how parent and student login fit together without resetting a password or exposing private codes here.'],
@@ -200,9 +200,9 @@
     if (surface === 'one_time_student') {
       return {
         ...base,
-        helperTitle: 'One Time Student Helper',
-        surfaceLabel: 'One Time student help',
-        intro: "Hi, I'm the One Time student helper. I can help with today's class, the library, worksheets, class questions, and how to ask Rabbi Scheller for help. I do not show parent billing, private parent messages, other students, full transcripts, access codes, or admin data.",
+        helperTitle: 'Robot Scheller',
+        surfaceLabel: "Rabbi Scheller's digital assistant",
+        intro: "Hi, I'm Robot Scheller, Rabbi Scheller's digital assistant. I can help with today's class, the library, worksheets, class questions, and how to ask Rabbi Scheller for help. I do not show parent billing, private parent messages, other students, full transcripts, access codes, or admin data.",
         cards: [
           ['Today and schedule', 'Find what to do next for the Mishnayos class without opening admin or billing information.'],
           ['Library and worksheets', 'Get oriented around recordings, worksheets, and safe class materials.'],
@@ -264,17 +264,17 @@
     if (surface === 'one_time_public') {
       return {
         ...base,
-        helperTitle: 'Rabbi Scheller Assistant',
-        surfaceLabel: 'Rabbi Scheller digital assistant',
-        intro: "Hi. Do you want your son to love Torah? I can help you join Rabbi Scheller's OneTime Mishnayos class.",
+        helperTitle: 'Robot Scheller',
+        surfaceLabel: "Rabbi Scheller's digital assistant",
+        intro: "Hi - I'm Robot Scheller, Rabbi Scheller's digital assistant. Would you like the current class information or help joining the free class?",
         cards: [
-          ['Join now', 'Start with the class link and parent setup.'],
-          ['Schedule', 'Ask when the live Mishnayos class meets.'],
+          ['Join the free class', 'Leave the minimum details and the One Time team will follow up.'],
+          ['Current class information', 'Ask what the class is learning now and how to join.'],
           ['Speak to Rabbi Scheller', 'Send a short question or contact request.'],
         ],
         prompts: [
-          'I want my son to join the OneTime Mishnayos class.',
-          'Where is the class holding now?',
+          'I want to join the free OneTime Mishnayos class.',
+          'Please send me the current class information.',
           'What is the schedule?',
           'I want to speak to Rabbi Scheller.',
         ],
@@ -283,9 +283,9 @@
     if (isOneTimeMember) {
       return {
         ...base,
-        helperTitle: 'One Time Helper',
-        surfaceLabel: 'One Time member help',
-        intro: "Hi, I'm the One Time member assistant. I can help with member access, the library, the classroom, questions for Rabbi Scheller, support tickets, and account help. This scope does not show BNA school goals, parent dashboards, other students, or admin data.",
+        helperTitle: 'Robot Scheller',
+        surfaceLabel: "Rabbi Scheller's digital assistant",
+        intro: "Hi, I'm Robot Scheller, Rabbi Scheller's digital assistant. I can help with member access, the library, the classroom, questions for Rabbi Scheller, support tickets, and account help. This scope does not show BNA school goals, parent dashboards, other students, or admin data.",
         cards: [
           ['Member access', 'Help with login links, access codes, account status, and safe return paths.'],
           ['Library and classroom', 'Find the right recording, worksheet/source sheet, live class, or classroom section.'],
@@ -301,9 +301,9 @@
     if (surface === 'one_time_provider') {
       return {
         ...base,
-        helperTitle: 'Rabbi Scheller Admin Helper',
-        surfaceLabel: 'One Time provider workspace',
-        intro: "Hi Rabbi Scheller. I can help with OneTimeOneTime contacts, CRM follow-up, class content, student questions, parent questions, emails, WhatsApp status, tickets, and class workflow. I will keep this workspace scoped to the OneTime Mishnayos class.",
+        helperTitle: 'Robot Scheller',
+        surfaceLabel: "Rabbi Scheller's digital assistant",
+        intro: "Hi Rabbi Scheller. I'm Robot Scheller, your digital assistant for OneTimeOneTime contacts, CRM follow-up, class content, student questions, parent questions, emails, WhatsApp status, tickets, and class workflow. I will keep this workspace scoped to the OneTime Mishnayos class.",
         cards: [
           ['CRM and inbox', 'Review contacts, conversations, follow-up notes, email drafts, WhatsApp status, and support tickets for this class.'],
           ['Class content', 'Work on recordings, transcripts, worksheets, slides, library organization, and class-question review.'],
@@ -389,20 +389,20 @@
   function oneTimePublicHelperData() {
     return {
       intro:
-        "Hi. Do you want your son to love Torah? I can help you request the free OneTime Mishnayos class follow-up.",
+        "Hi - I'm Robot Scheller, Rabbi Scheller's digital assistant. Would you like the current class information or help joining the free class?",
       choices: [
-        { id: 'trial', label: 'Join the Free Class' },
+        { id: 'trial', label: 'Join the free class' },
+        { id: 'current_info', label: 'Current class information' },
         { id: 'schedule', label: 'Class schedule' },
-        { id: 'program', label: 'About the class' },
-        { id: 'member_access', label: 'Member login help' },
         { id: 'rabbi_question', label: 'Speak to Rabbi Scheller' },
+        { id: 'member_access', label: 'Member login' },
       ],
       nudges: {
         first: {
-          body: 'Hi. Do you want your son to love Torah?',
+          body: "Hi - I'm Robot Scheller. Want the current free-class details?",
           actions: [
             { type: 'scroll', target: '#start-free', label: 'Join the free class' },
-            { type: 'open', label: 'Ask a question' },
+            { type: 'link', href: '/api/one-time/public-whatsapp/redirect?intent=free_class', label: 'WhatsApp' },
           ],
         },
         second: {
@@ -421,6 +421,13 @@
             { type: 'scroll', target: '#start-free', label: 'Free class form' },
           ],
         },
+        current_info: {
+          body: `${oneTimeJoinMomentCopy()} Leave your name and contact information and the One Time team will send the current free-class details.`,
+          actions: [
+            { type: 'scroll', target: '#start-free', label: 'Free class form' },
+            { type: 'link', href: '/api/one-time/public-whatsapp/redirect?intent=current_info', label: 'WhatsApp Robot Scheller' },
+          ],
+        },
         program: {
           body: 'OneTimeOneTime is Rabbi Scheller\'s live Mishnayos class for boys who should enjoy learning, review clearly, and feel proud of their progress.',
           actions: [
@@ -428,9 +435,10 @@
           ],
         },
         trial: {
-          body: 'Tell us who to contact and we will follow up with the approved free Zoom class details. This does not open a portal account or checkout.',
+          body: 'Tell us who to contact and the One Time team will follow up with the current free-class details. No charge today.',
           actions: [
             { type: 'scroll', target: '#start-free', label: 'Open free class form' },
+            { type: 'link', href: '/api/one-time/public-whatsapp/redirect?intent=free_class', label: 'WhatsApp Robot Scheller' },
           ],
         },
         member_access: {
@@ -576,6 +584,17 @@
       background: #e3b848;
       box-shadow: 0 0 0 4px rgba(227, 184, 72, 0.22);
     }
+    .bna-bot-avatar {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border: 2px solid rgba(237, 229, 24, 0.76);
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, rgba(8,9,16,0.08), rgba(8,9,16,0.18)),
+        url("/images/one-time/brand/onetime-hero-vertical.webp") center 16% / 145% auto no-repeat;
+      box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.14);
+    }
     .bna-bot-nudge {
       position: fixed;
       right: 18px;
@@ -667,6 +686,14 @@
       background: #080910;
       color: #ffffff;
       box-shadow: 0 16px 34px rgba(8, 9, 16, 0.34);
+    }
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher .bna-bot-avatar,
+    body.bna-assistant-surface-one-time-parent .bna-bot-launcher .bna-bot-avatar,
+    body.bna-assistant-surface-one-time-student .bna-bot-launcher .bna-bot-avatar,
+    body.bna-assistant-surface-one-time-member .bna-bot-launcher .bna-bot-avatar,
+    body.bna-assistant-surface-one-time-provider .bna-bot-launcher .bna-bot-avatar {
+      width: 38px;
+      height: 38px;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-parent .bna-bot-launcher-dot,
@@ -1099,6 +1126,8 @@
   document.body.classList.add('bna-universal-assistant-active');
   document.body.classList.add(`bna-assistant-surface-${surface.replace(/_/g, '-')}`);
   const copy = surfaceConfig();
+  const isOneTimeAssistantSurface = surface.startsWith('one_time_');
+  const oneTimeAssistantAvatar = '<span class="bna-bot-avatar" aria-hidden="true"></span>';
 
   const launcher = document.createElement('button');
   launcher.type = 'button';
@@ -1106,7 +1135,7 @@
   launcher.setAttribute('aria-expanded', 'false');
   launcher.setAttribute('aria-controls', 'bnaBotPanel');
   launcher.setAttribute('aria-label', copy.helperTitle);
-  launcher.innerHTML = `<span class="bna-bot-launcher-dot"></span><span>${escapeHtml(copy.helperTitle)}</span>`;
+  launcher.innerHTML = `${isOneTimeAssistantSurface ? oneTimeAssistantAvatar : '<span class="bna-bot-launcher-dot"></span>'}<span>${escapeHtml(copy.helperTitle)}</span>`;
 
   const nudge = document.createElement('div');
   nudge.className = 'bna-bot-nudge';
@@ -1123,6 +1152,7 @@
   panel.innerHTML = `
     <div class="bna-bot-head">
       <div class="bna-bot-head-top">
+        ${isOneTimeAssistantSurface ? oneTimeAssistantAvatar : ''}
         <div><strong>${escapeHtml(copy.helperTitle)}</strong><span data-bot-subtitle>${escapeHtml(surfaceLabel())}</span></div>
         <div class="bna-bot-head-actions">
           <button class="bna-bot-history-toggle" type="button" data-history-toggle aria-label="${escapeAttr(copy.history)}" title="${escapeAttr(copy.history)}" aria-expanded="false">
@@ -1393,8 +1423,9 @@
   function publicInitialHelperActions() {
     if (surface === 'one_time_public') {
       return [
-        { type: 'prefill', label: 'Ask about schedule', prompt: 'I have a schedule question about the OneTime Mishnayos class: ' },
-        { type: 'prefill', label: 'Tell me about the program', prompt: 'Tell me about Rabbi Scheller\'s OneTime Mishnayos program.' },
+        { type: 'scroll', target: '#start-free', label: 'Join the free class' },
+        { type: 'path', path: 'current_info', label: 'Current class information' },
+        { type: 'prefill', label: 'Class schedule', prompt: 'I have a schedule question about the OneTime Mishnayos class: ' },
         { type: 'prefill', label: 'Speak to Rabbi Scheller', prompt: 'I would like Rabbi Scheller to follow up about: ' },
         { type: 'link', href: '/rabbi-member', label: 'Member login' },
       ];

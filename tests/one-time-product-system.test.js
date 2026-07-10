@@ -349,14 +349,15 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /no_zoom_meeting_created: true/);
   assert.match(server, /external_calendar_write_performed: false/);
   assert.match(server, /appointment_intents_internal_only: true/);
+  assert.match(server, /public_pages_noindex: false/);
   assert.match(server, /\/api\/bna\/one-time\/calendar-events/);
   assert.match(server, /\/api\/bna\/one-time\/appointment-intents/);
   assert.match(server, /app\.get\(\[[^\]]*'\/one-time'[^\]]*'\/one-time\/mishnayos'[^\]]*'\/one-time\/us'[^\]]*'\/one-time\/uk'[^\]]*'\/one-time\/israel'[^\]]*'\/one-time\/interest'[^\]]*\], sendOneTimePublicLanding\)/);
   assert.match(server, /app\.get\(\['\/one-time\/member-login', '\/member', '\/member-portal'\], redirectOneTimeMemberHome\)/);
 });
 
-test('public OneTime draft page is noindex, interest-only, and has no checkout call', () => {
-  assert.match(oneTimeHtml, /<meta name="robots" content="noindex, nofollow">/);
+test('public OneTime launch page is indexable, interest-only, and has no checkout call', () => {
+  assert.match(oneTimeHtml, /<meta name="robots" content="index, follow">/);
   assert.match(oneTimeHtml, /OneTimeOneTime Mishnah/);
   assert.match(oneTimeHtml, /Your Child Can Love Learning Mishnayos/);
   assert.match(oneTimeHtml, /Sign Up Now/);
@@ -369,8 +370,11 @@ test('public OneTime draft page is noindex, interest-only, and has no checkout c
   assert.match(oneTimeHtml, /source_landing_page/);
   assert.match(oneTimeHtml, /preferred_class_format/);
   assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
+  assert.match(oneTimeHtml, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
+  assert.match(oneTimeHtml, /WhatsApp Robot Scheller/);
   assert.match(oneTimeHtml, /Consent is required before submitting/);
-  assert.match(oneTimeHtml, /You're on the list\. We will follow up with the approved OneTimeOneTime Zoom details\./);
+  assert.match(oneTimeHtml, /You're on the list\. We will follow up with the current OneTimeOneTime class details\./);
+  assert.doesNotMatch(oneTimeHtml, /approved OneTimeOneTime Zoom details|approved Zoom details/);
   assert.doesNotMatch(oneTimeHtml, /class="announcement"/);
   assert.doesNotMatch(oneTimeHtml, /class="ticker"/);
   assert.doesNotMatch(oneTimeHtml, />Region</);

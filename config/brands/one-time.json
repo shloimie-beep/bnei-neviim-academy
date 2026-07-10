@@ -37,7 +37,7 @@
   "forbidden_palette_sources": [
     "bna_cream_navy_teal_cyan"
   ],
-  "review_only": true,
+  "review_only": false,
   "secrets_included": false,
   "external_write_performed": false
 }

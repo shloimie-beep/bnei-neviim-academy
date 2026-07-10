@@ -13,9 +13,9 @@
     "/one-time/interest",
     "/one-time/member-login"
   ],
-  "status": "shared_review",
+  "status": "public_launch_priority",
   "external_write_performed": false,
-  "review_only": true,
+  "review_only": false,
   "identity": {
     "name": "OneTimeOneTime Mishnah",
     "owner_label": "Rabbi Eli Scheller",
@@ -60,16 +60,16 @@
     ]
   },
   "copy": {
-    "campaign_bar": "30 DAYS TO JOIN - START WITH 30 DAYS FREE",
+    "campaign_bar": "FREE CLASS OPEN NOW",
     "eyebrow": "Worldwide Live Mishnayos",
     "headline": "Your Child Can Love Learning Mishnayos",
     "subhead": "Join the daily live Mishnayos class built for kids - exciting, clear, accountable, and connected to Rabbi Eli Scheller.",
     "primary_cta": "Join the Free Class",
     "secondary_cta": "See How It Works",
     "member_cta": "Member Login",
-    "offer": "Free class follow-up before portal, payment, or member access setup",
+    "offer": "Free class follow-up before payment or member access opens",
     "campaign_contract": "ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY control the non-resetting countdown.",
-    "no_send_note": "Signup interest creates a first-party OneTime CRM follow-up only. No portal account, checkout, payment, access grant, WhatsApp send, or Zoom meeting is created by the public form."
+    "no_send_note": "Signup interest creates a first-party OneTime CRM follow-up only. Payment and member access remain separate approved paths."
   },
   "nav": [
     {

@@ -81,6 +81,18 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260710-002` / `REQ-20260710-013` through
+  `REQ-20260710-025`: One Time launch-priority landing, Robot Scheller, CRM,
+  inbox, follow-up, and Rabbi backend closeout. Register:
+  `tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md`.
+  Current status: raw intake and first-wave PQC are done; landing media/copy,
+  Robot Scheller identity, and runtime-only public WhatsApp readiness are
+  locally verified with focused tests, PQC validation, action/protocol
+  watchdogs, no-secret grep, and Playwright screenshots under
+  `ops/ui-audits/2026-07-10-onetime-launch-priority-landing-robot-local/`.
+  App-visible terminal Done is still pending commit/push, One Time deploy,
+  live smoke, and manual source-level review. Next actions: publish/deploy
+  the first wave, then continue `REQ-20260710-019` form-to-visible-CRM E2E.
 - [ ] `RAW-20260710-001` / `REQ-20260710-007` through
   `REQ-20260710-012`: One Time ramble-to-terminal UI gap closeout. Register:
   `tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md`.
