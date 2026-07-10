@@ -10,7 +10,7 @@ The first local fix used grid-like mobile nav blocks. Shloimie rejected that scr
 
 ## Implemented Locally
 
-- `/one-time`: mobile nav is a horizontal chip rail with a visible white hamburger/scroll cue, white selected chip, white text on dark chips, and yellow CTA preserved.
+- `/one-time`: mobile nav is a horizontal chip rail with a visible white hamburger/scroll cue, white option chips with black text, a yellow-inset selected state, and yellow CTA preserved.
 - `/rabbi-member`, `/member-library`, `/one-time-classroom`: member/classroom navs use horizontal mobile rails with a visible hamburger/scroll cue instead of clipped right-edge links.
 - `/provider.html?review=one-time`: provider review top nav uses the same horizontal rail/cue pattern and long CRM text is constrained inside cards.
 - `public/js/bna-bot-widget.js`: One Time public assistant launcher now stays in the lower safe area on mobile instead of overlapping the top nav.
@@ -42,3 +42,7 @@ Verification run:
 ## Terminal Status
 
 Superseded by deployed/live-smoked proof. `REQ-20260710-007` is Done after commit `0017b458`, OneTime Railway deployment `90990bd3-676f-433f-8a97-dfa6fa4723b7`, and live readback `ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/report.md` passed 10/10 checks.
+
+## 2026-07-10 White-Chip Refinement
+
+Operator screenshot review reopened the taste-level mobile nav state: dark inactive chips were still too close to the rejected look. `REQ-20260710-036` refines the rail to a black header with a white hamburger/sandwich cue and horizontally sliding white option chips with black text. Local readback passed 10/10 at 390px and 430px across `/one-time/`, `/rabbi-member?review=one-time`, `/member-library?review=one-time`, `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`, and `/provider.html?review=one-time`: `ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/report.md`. Push, deploy, and live readback are still required before terminal Done.

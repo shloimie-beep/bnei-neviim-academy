@@ -658,6 +658,18 @@
         white-space: nowrap;
         scroll-snap-align: start;
       }
+      .top-actions a[aria-current="page"] {
+        color: #080910;
+        border-color: #ffffff;
+        background: #ffffff;
+        box-shadow: inset 0 0 0 2px rgba(237,229,24,0.86);
+      }
+      .top-actions a:not([aria-current="page"]),
+      .top-actions button {
+        color: #080910;
+        border-color: rgba(255,255,255,0.92);
+        background: #ffffff;
+      }
       .one-time-page-logo {
         width: 48px;
         height: 48px;
@@ -915,6 +927,20 @@
         text-align: center;
         white-space: nowrap;
         scroll-snap-align: start;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions a[aria-current="page"] {
+        color: #080910;
+        border-color: #ffffff;
+        background: #ffffff;
+        box-shadow: inset 0 0 0 2px rgba(237,229,24,0.86);
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions a:not([aria-current="page"]),
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions button {
+        color: #080910;
+        border-color: rgba(255,255,255,0.92);
+        background: #ffffff;
       }
 
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .hero-copy,

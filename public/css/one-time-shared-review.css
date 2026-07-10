@@ -1123,6 +1123,25 @@ body.one-time-view-as-readonly .overview-metric {
     overflow-wrap: normal;
   }
 
+  body.one-time-review-active .portal-topbar-link,
+  body.one-time-review-active header .nav a,
+  body.one-time-review-active .top-actions a,
+  body.one-time-review-active .top-actions button {
+    color: var(--one-time-black) !important;
+    border-color: rgba(255, 255, 255, 0.92) !important;
+    background: var(--one-time-white) !important;
+  }
+
+  body.one-time-review-active .portal-topbar-link.active,
+  body.one-time-review-active .portal-topbar-link[aria-current="page"],
+  body.one-time-review-active header .nav a[aria-current="page"],
+  body.one-time-review-active .top-actions a[aria-current="page"] {
+    color: var(--one-time-black) !important;
+    border-color: var(--one-time-white) !important;
+    background: var(--one-time-white) !important;
+    box-shadow: inset 0 0 0 2px rgba(237, 229, 24, 0.86) !important;
+  }
+
   body.one-time-review-active .overview-metric,
   body.one-time-review-active .metric,
   body.one-time-review-active .portal-card {

@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "generated_at": "2026-07-10T07:06:48.664Z",
+  "updated_at": "2026-07-10T15:10:00.000Z",
   "raw_id": "RAW-20260710-001",
   "status": "OPEN_GAPS_REGISTERED",
   "latest_automated_visual_audit": {
@@ -28,13 +29,14 @@
       "UIGAP-20260710-004",
       "UIGAP-20260710-005",
       "UIGAP-20260710-006",
-      "UIGAP-20260710-007"
+      "UIGAP-20260710-007",
+      "UIGAP-20260710-008"
     ]
   },
   "scorecard": {
     "status": "MANUAL_REVIEW_FOUND_GAPS",
     "score_out_of_100": 78,
-    "reason": "Lag is source-verified fixed and the latest deployed visual audit has 0 automated findings. Manual review still found mobile nav clipping, brand/copy inconsistency, provider text-fit issues, and evidence-governance gaps.",
+    "reason": "Lag is source-verified fixed and the latest deployed visual audit has 0 automated findings. Manual review found mobile nav clipping, brand/copy inconsistency, provider text-fit issues, and evidence-governance gaps. A later operator screenshot review reopened mobile nav visual state; the white-chip refinement is locally verified and pending deploy/live proof.",
     "categories": [
       {
         "name": "Performance",
@@ -52,7 +54,7 @@
         "name": "Mobile fit",
         "score": 68,
         "evidence": "SS-20260710-002..006",
-        "note": "Several nav labels clip at 390px."
+        "note": "Original clipping is deployed fixed; later white-chip mobile nav refinement is locally verified and pending live readback."
       },
       {
         "name": "Provider/Rabbi workspace",
@@ -245,6 +247,57 @@
         "Codex audits readback and updates the relevant register.",
         "Prompt-generated readiness is not treated as proof before the run exists."
       ]
+    },
+    {
+      "id": "UIGAP-20260710-008",
+      "title": "Mobile nav inactive options should be white chips on the black rail",
+      "severity": "P1",
+      "status": "LOCAL_VERIFIED_NOT_PUSHED",
+      "raw_id": "RAW-20260710-006",
+      "requirement_id": "REQ-20260710-036",
+      "routes": [
+        "/one-time",
+        "/rabbi-member",
+        "/member-library",
+        "/one-time-classroom",
+        "/provider.html?review=one-time"
+      ],
+      "screenshots": [
+        "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/one-time-390.png",
+        "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/rabbi-member-390.png",
+        "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/member-library-390.png",
+        "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/one-time-classroom-390.png",
+        "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/provider-review-390.png"
+      ],
+      "packet": "REQ-20260710-036",
+      "acceptance": [
+        "Mobile rail remains black at 390px and 430px.",
+        "Hamburger/sandwich scroll cue is visible in white.",
+        "Nav options slide horizontally without wrapping or page overflow.",
+        "Inactive options use white chips with black text.",
+        "Active option remains visibly selected with One Time yellow treatment."
+      ],
+      "local_implementation": {
+        "status": "verified_local",
+        "report": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/report.md",
+        "screenshot_dir": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/screenshots/",
+        "checks": {
+          "passed": 10,
+          "total": 10,
+          "viewports": [
+            390,
+            430
+          ],
+          "routes": [
+            "/one-time/",
+            "/rabbi-member?review=one-time",
+            "/member-library?review=one-time",
+            "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+            "/provider.html?review=one-time"
+          ]
+        },
+        "terminal_blocker": "Needs commit, push, One Time Railway deploy, and live readback before Done."
+      }
     }
   ],
   "screenshots": [
@@ -313,6 +366,14 @@
       "evidence": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/report.md",
       "deployment_id": "90990bd3-676f-433f-8a97-dfa6fa4723b7",
       "commit": "0017b4580f97f2f3274e583ccd585bab6b885072"
+    },
+    {
+      "generated_at": "2026-07-10T15:10:00.000Z",
+      "gap_id": "UIGAP-20260710-008",
+      "status": "LOCAL_VERIFIED_NOT_PUSHED",
+      "evidence": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/report.md",
+      "raw_id": "RAW-20260710-006",
+      "requirement_id": "REQ-20260710-036"
     }
   ]
 }
