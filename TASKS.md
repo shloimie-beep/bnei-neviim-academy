@@ -151,7 +151,7 @@ not authorize active GHL runtime paths.
   inventory found 135 raw inputs, 156 task registers, and 141 grouped evidence
   packages in
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md`.
-  `REQ-20260710-027` is In progress - ninth batch mapped:
+  `REQ-20260710-027` is In progress - tenth batch mapped:
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`
   contains 291 stable `HIST-SRC-*` rows; the first July 10 mapping batch,
   the second early foundational mapping batch, the third June 22-24 mapping
@@ -159,8 +159,9 @@ not authorize active GHL runtime paths.
   launch/UI mapping batch, the sixth July 2-6 Studio/release/workflow
   mapping batch, the seventh July 6 integration/release/workflow mapping
   batch, the eighth July 7 mailbox/Agent Mode/UI/clean-launch/audit-fix
-  mapping batch, and the ninth July 8 parent invite/Agent Review/classroom/media/Vimeo/signup/runtime
-  mapping batch now cover 115 mapped or active rows, leaving 177 rows
+  mapping batch, the ninth July 8 parent invite/Agent Review/classroom/media/Vimeo/signup/runtime
+  mapping batch, and the tenth July 8-9 performance/Telegram/helper/lag
+  mapping batch now cover 137 mapped or active rows, leaving 155 rows
   without terminal status. Remaining
   work: map terminal status/proof/blockers for each row, split any unblocked
   gaps into small packets, and then produce the final owner
@@ -196,9 +197,7 @@ not authorize active GHL runtime paths.
   Agent Mode smoke prompts are committed, pushed, deployed, and live-readback
   verified with the OneTime scope markers. Verification includes no-secret
   Rabbi Telegram readiness proof: Rabbi token and OneTime Operations
-  credentials are configured, but Rabbi live bot startup and Telegram delivery
-  remain blocked until `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is supplied or
-  inferred. Full Rabbi bot/helper agent parity remains open only for saved
+  credentials are configured; Rabbi messaged the bot and the verified chat ID is now configured in ignored/local runtime and Railway variable keys with values hidden. Hosted Rabbi live bot delivery still needs restart/deploy and scoped live-smoke proof. Full Rabbi bot/helper agent parity remains open only for saved
   Agent Mode PASS/BLOCKED/FAIL proof, per-tool live audit readback, and the
   external approval gates. Latest proof-readiness smoke
   `npm run app:smoke:rabbi-agent-review-proof-readiness` passed and reports

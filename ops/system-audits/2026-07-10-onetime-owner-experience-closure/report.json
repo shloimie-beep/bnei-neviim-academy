@@ -1,6 +1,6 @@
 {
   "report_id": "onetime-owner-experience-closure-20260710-current-batch",
-  "generated_at": "2026-07-10T15:58:11+03:00",
+  "generated_at": "2026-07-10T16:05:42+03:00",
   "raw_id": "RAW-20260710-003",
   "register_path": "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
   "production_target": "https://join.onetimeonetime.com",
@@ -42,13 +42,13 @@
     },
     {
       "id": "REQ-20260710-027",
-      "status": "in_progress_ninth_batch_mapped_terminal_mapping_required",
-      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows and mapped the first nine batches through the July 8 parent invite, Agent Review, classroom/media, Vimeo, signup/helper, email, Telegram, and WAPI runtime rows. 115 rows now have mapped or active statuses, including HIST-SRC-0135 as the active owner objective. 177 rows still lack terminal status.",
+      "status": "in_progress_tenth_batch_mapped_terminal_mapping_required",
+      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows and mapped the first ten batches through the July 8-9 performance, Rabbi Telegram/helper, Agent Review, lead capture, production-readiness, frontend audit, WhatsApp instruction, and lag follow-up rows. 137 rows now have mapped or active statuses, including HIST-SRC-0135 as the active owner objective. 155 rows still lack terminal status.",
       "evidence": [
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.md",
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json"
       ],
-      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for the remaining 177 rows."
+      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for the remaining 155 rows."
     }
   ],
   "local_evidence": {
@@ -71,7 +71,7 @@
     "PASS npm run pqc:validate 67/67",
     "PASS npm run watchdog:actions finding_count 0",
     "PASS npm run watchdog:protocol-drift findings 0",
-    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T13-01-00-938Z-audit-governance.md with older repo-wide debt still present and untracked audit packages none",
+    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T13-08-15-765Z-audit-governance.md with older repo-wide debt still present and untracked audit packages none",
     "PASS local visual audit 9 routes x 5 viewports, 140 screenshots, 0 findings",
     "PASS local canonical journey smoke",
     "PASS local provider CRM layout smoke",
@@ -79,7 +79,7 @@
     "PASS manual review of desktop/mobile Operations overview and email inbox readable redacted screenshots",
     "PASS historical source inventory JSON parsed; counts raw_inputs 135, task_registers 156, evidence_groups 141",
     "PASS no standalone visible OneTime/OneTimeOneTime brand grep in active checked surfaces",
-    "PASS historical source-statement matrix JSON parsed; total_source_statements 291; first through ninth mapped batches cover 115 mapped/active rows; remaining rows without terminal status 177"
+    "PASS historical source-statement matrix JSON parsed; total_source_statements 291; first through tenth mapped batches cover 137 mapped/active rows; remaining rows without terminal status 155"
   ],
   "deployment": {
     "status": "success_live_smoked",
@@ -120,6 +120,6 @@
     "status": "not_production_complete",
     "snapshot": "ops/production-readiness/latest-production-readiness-snapshot.md",
     "sampled_head": "98e49080",
-    "reason": "Full One Time launch remains blocked by external setup values, Telegram/Agent Mode terminal proof, valid Vimeo/WAPI credentials and approval gates, and source-complete historical atomization; current UI/code batch is deployed and live-smoked, and the historical matrix ninth batch is mapped."
+    "reason": "Full One Time launch remains blocked by external setup values, hosted Rabbi Telegram live-smoke, terminal Agent Mode proof, valid Vimeo/WAPI credentials and approval gates, and source-complete historical atomization; current UI/code batch is deployed and live-smoked, and the historical matrix tenth batch is mapped."
   }
 }

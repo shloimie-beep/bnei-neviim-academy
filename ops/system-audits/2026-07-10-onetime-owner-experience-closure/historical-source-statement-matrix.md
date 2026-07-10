@@ -1,7 +1,7 @@
 # One Time Historical Source Statement Matrix - Skeleton
 
-Generated: 2026-07-10T15:58:11+03:00
-Status: skeleton created; first through ninth batches mapped; terminal mapping still required.
+Generated: 2026-07-10T16:05:42+03:00
+Status: skeleton created; first through tenth batches mapped; terminal mapping still required.
 
 Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json`
 
@@ -137,28 +137,28 @@ Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure
 | HIST-SRC-0108 | HRAW-108 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-019-onetime-direct-zoom-link-email.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
 | HIST-SRC-0109 | HRAW-109 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-020-codex-telegram-done-updates.md` | mapped_terminal_done | done |
 | HIST-SRC-0110 | HRAW-110 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-021-onetime-runtime-class-link-wapi-readiness.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
-| HIST-SRC-0111 | HRAW-111 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-022-app-backend-helper-performance.md` | needs_terminal_mapping |  |
-| HIST-SRC-0112 | HRAW-112 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-023-rabbi-telegram-ticket-agent-loop.md` | needs_terminal_mapping |  |
-| HIST-SRC-0113 | HRAW-113 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-024-operations-shell-split-performance.md` | needs_terminal_mapping |  |
-| HIST-SRC-0114 | HRAW-114 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-025-onetime-rabbi-setup-email-resend.md` | needs_terminal_mapping |  |
-| HIST-SRC-0115 | HRAW-115 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-026-onetime-rabbi-whatsapp-setup-notice.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0116 | HRAW-116 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-027-rabbi-wapi-token-save.md` | needs_terminal_mapping |  |
-| HIST-SRC-0117 | HRAW-117 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-028-rabbi-helper-tool-scope-goal.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0118 | HRAW-118 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-029-rabbi-telegram-helper-agent-scope-continuation.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0119 | HRAW-119 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-030-operations-deferred-renderer-chunk.md` | needs_terminal_mapping |  |
-| HIST-SRC-0120 | HRAW-120 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-031-rabbi-telegram-agent-parity-progress-dings.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0121 | HRAW-121 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-032-operations-still-slow-diagnosis.md` | needs_terminal_mapping |  |
-| HIST-SRC-0122 | HRAW-122 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-033-rabbi-telegram-agent-loop-expansion.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0123 | HRAW-123 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-034-rabbi-telegram-sidekick-comms-scope.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0124 | HRAW-124 | raw_input | OT-HIST-003 | 2026-07-09 | `raw-input/RAW-20260709-001-onetime-scope-ui-agent-contact-corrections.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0125 | HRAW-125 | raw_input | OT-HIST-003 | 2026-07-09 | `raw-input/RAW-20260709-002-chatgpt-credit-routing-and-app-lag-advice.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0126 | HRAW-126 | raw_input | OT-HIST-005 | 2026-07-09 | `raw-input/RAW-20260709-006-agent-review-public-prompt-blocker.md` | needs_terminal_mapping |  |
-| HIST-SRC-0127 | HRAW-127 | raw_input | OT-HIST-005 | 2026-07-09 | `raw-input/RAW-20260709-007-onetimeaios-bot-token-redacted.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0128 | HRAW-128 | raw_input | OT-HIST-003 | 2026-07-09 | `raw-input/RAW-20260709-008-onetime-lead-capture-free-zoom-ui-priority.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0129 | HRAW-129 | raw_input | OT-HIST-UNSORTED | 2026-07-09 | `raw-input/RAW-20260709-010-production-readiness-goal.md` | needs_terminal_mapping |  |
-| HIST-SRC-0130 | HRAW-130 | raw_input | OT-HIST-003 | 2026-07-09 | `raw-input/RAW-20260709-011-onetime-parallel-frontend-audit.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0131 | HRAW-131 | raw_input | OT-HIST-004 | 2026-07-09 | `raw-input/RAW-20260709-012-rabbi-telegram-bot-whatsapp-instructions.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0132 | HRAW-132 | raw_input | OT-HIST-003 | 2026-07-09 | `raw-input/RAW-20260709-013-onetime-app-lag-ui-followup.md` | needs_terminal_mapping |  |
+| HIST-SRC-0111 | HRAW-111 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-022-app-backend-helper-performance.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0112 | HRAW-112 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-023-rabbi-telegram-ticket-agent-loop.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0113 | HRAW-113 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-024-operations-shell-split-performance.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0114 | HRAW-114 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-025-onetime-rabbi-setup-email-resend.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0115 | HRAW-115 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-026-onetime-rabbi-whatsapp-setup-notice.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0116 | HRAW-116 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-027-rabbi-wapi-token-save.md` | mapped_terminal_done | done |
+| HIST-SRC-0117 | HRAW-117 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-028-rabbi-helper-tool-scope-goal.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0118 | HRAW-118 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-029-rabbi-telegram-helper-agent-scope-continuation.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0119 | HRAW-119 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-030-operations-deferred-renderer-chunk.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0120 | HRAW-120 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-031-rabbi-telegram-agent-parity-progress-dings.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0121 | HRAW-121 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-032-operations-still-slow-diagnosis.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0122 | HRAW-122 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-033-rabbi-telegram-agent-loop-expansion.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0123 | HRAW-123 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-034-rabbi-telegram-sidekick-comms-scope.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0124 | HRAW-124 | raw_input | OT-HIST-003 | 2026-07-09 | `raw-input/RAW-20260709-001-onetime-scope-ui-agent-contact-corrections.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0125 | HRAW-125 | raw_input | OT-HIST-003 | 2026-07-09 | `raw-input/RAW-20260709-002-chatgpt-credit-routing-and-app-lag-advice.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0126 | HRAW-126 | raw_input | OT-HIST-005 | 2026-07-09 | `raw-input/RAW-20260709-006-agent-review-public-prompt-blocker.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0127 | HRAW-127 | raw_input | OT-HIST-005 | 2026-07-09 | `raw-input/RAW-20260709-007-onetimeaios-bot-token-redacted.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0128 | HRAW-128 | raw_input | OT-HIST-003 | 2026-07-09 | `raw-input/RAW-20260709-008-onetime-lead-capture-free-zoom-ui-priority.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0129 | HRAW-129 | raw_input | OT-HIST-UNSORTED | 2026-07-09 | `raw-input/RAW-20260709-010-production-readiness-goal.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0130 | HRAW-130 | raw_input | OT-HIST-003 | 2026-07-09 | `raw-input/RAW-20260709-011-onetime-parallel-frontend-audit.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0131 | HRAW-131 | raw_input | OT-HIST-004 | 2026-07-09 | `raw-input/RAW-20260709-012-rabbi-telegram-bot-whatsapp-instructions.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0132 | HRAW-132 | raw_input | OT-HIST-003 | 2026-07-09 | `raw-input/RAW-20260709-013-onetime-app-lag-ui-followup.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
 | HIST-SRC-0133 | HRAW-133 | raw_input | OT-HIST-003 | 2026-07-10 | `raw-input/RAW-20260710-001-onetime-ramble-to-terminal-ui-gap-audit.md` | mapped_terminal_mixed_done_and_blocked | mixed_terminal_done_and_blocked |
 | HIST-SRC-0134 | HRAW-134 | raw_input | OT-HIST-002 | 2026-07-10 | `raw-input/RAW-20260710-002-onetime-launch-priority-landing-crm-assistant.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
 | HIST-SRC-0135 | HRAW-135 | raw_input | OT-HIST-UNSORTED | 2026-07-10 | `raw-input/RAW-20260710-003-codex-followup-one-time-owner-experience-closure.md` | mapped_in_progress_goal_active |  |

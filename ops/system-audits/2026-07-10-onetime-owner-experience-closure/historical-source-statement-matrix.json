@@ -1,7 +1,7 @@
 {
   "report_id": "onetime-historical-source-statement-matrix-20260710-skeleton",
-  "generated_at": "2026-07-10T15:58:11+03:00",
-  "status": "skeleton created; first through ninth batches mapped; terminal mapping still required.",
+  "generated_at": "2026-07-10T16:05:42+03:00",
+  "status": "skeleton created; first through tenth batches mapped; terminal mapping still required.",
   "source_inventory": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json",
   "counts": {
     "total_source_statements": 291,
@@ -12,14 +12,14 @@
     "by_mapping_status": {
       "mapped_in_progress_goal_active": 1,
       "mapped_terminal_already_satisfied": 2,
-      "mapped_terminal_done": 16,
-      "mapped_terminal_done_deployed_live_smoked": 29,
+      "mapped_terminal_done": 17,
+      "mapped_terminal_done_deployed_live_smoked": 38,
       "mapped_terminal_done_no_external_send": 1,
       "mapped_terminal_mixed_done_and_blocked": 19,
-      "mapped_terminal_mixed_done_needs_decision_blocked": 47,
-      "needs_terminal_mapping": 11,
-      "needs_terminal_mapping_blocker_present": 119,
-      "needs_terminal_mapping_done_claim_present": 46
+      "mapped_terminal_mixed_done_needs_decision_blocked": 59,
+      "needs_terminal_mapping": 1,
+      "needs_terminal_mapping_blocker_present": 112,
+      "needs_terminal_mapping_done_claim_present": 41
     },
     "by_family": {
       "OT-HIST-001": 12,
@@ -32,12 +32,12 @@
     },
     "by_terminal_status": {
       "already_satisfied": 2,
-      "done": 16,
-      "done_deployed_live_smoked": 29,
+      "done": 17,
+      "done_deployed_live_smoked": 38,
       "done_no_external_send": 1,
       "mixed_terminal_done_and_blocked": 19,
-      "mixed_terminal_done_needs_decision_blocked": 47,
-      "null": 177
+      "mixed_terminal_done_needs_decision_blocked": 59,
+      "null": 155
     }
   },
   "source_statements": [
@@ -4188,10 +4188,14 @@
         "REQ-20260708-080"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-app-backend-helper-performance.md",
+        "ops/performance-audits/2026-07-08-app-backend-helper-performance/report.md",
+        "ops/performance-audits/2026-07-08-app-backend-helper-performance/local-after-report.md"
+      ],
+      "blocker_or_next_action": "Baseline app/backend/helper performance audit, Operations cache/header fix, and deterministic helper slowness fast path were verified, deployed, and live-smoked; later shell-split rows carry the remaining performance follow-up proof."
     },
     {
       "source_statement_id": "HIST-SRC-0112",
@@ -4222,10 +4226,14 @@
         "DEC-20260708-017",
         "DEC-20260708-018"
       ],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md",
+        "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md",
+        "ops/live-smokes/2026-07-09T13-51-52-167Z-rabbi-agent-review-proof-readiness-live.md"
+      ],
+      "blocker_or_next_action": "Super-admin support-ticket dings, Rabbi Telegram/helper smoke prompts, and readiness checks were implemented, deployed, and live-readback verified. Rabbi Telegram is locally configured after the later WhatsApp/chat-ID flow, but hosted restart/live Telegram smoke and Agent Mode AGR proof remain blocked."
     },
     {
       "source_statement_id": "HIST-SRC-0113",
@@ -4249,10 +4257,14 @@
         "REQ-20260708-086"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-app-backend-helper-performance.md",
+        "ops/performance-audits/2026-07-08-app-backend-helper-performance/local-after-split-report.md",
+        "ops/performance-audits/2026-07-08-app-backend-helper-performance/report.md"
+      ],
+      "blocker_or_next_action": "The 2.35MB Operations shell split and OneTime overview fast-pass were implemented, deployed from a clean OneTime release branch, live-smoked, and recorded with before/after performance evidence."
     },
     {
       "source_statement_id": "HIST-SRC-0114",
@@ -4276,10 +4288,14 @@
         "REQ-20260708-087"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-025-onetime-rabbi-setup-email-resend.md",
+        "ops/access/2026-07-08-onetime-rabbi-setup-email-resend.md"
+      ],
+      "blocker_or_next_action": "The approved Rabbi setup email resend was completed with redacted evidence and readback. This mapping pass performed no email send."
     },
     {
       "source_statement_id": "HIST-SRC-0115",
@@ -4303,10 +4319,14 @@
         "REQ-20260708-088"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-026-onetime-rabbi-whatsapp-setup-notice.md",
+        "ops/access/2026-07-08-onetime-rabbi-wapi-token-and-whatsapp-send.md"
+      ],
+      "blocker_or_next_action": "The approved Rabbi setup WhatsApp notice was sent once with redacted provider evidence. This mapping pass performed no WhatsApp/WAPI send."
     },
     {
       "source_statement_id": "HIST-SRC-0116",
@@ -4326,10 +4346,14 @@
         "REQ-20260708-089"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done",
+      "terminal_status": "done",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-027-rabbi-wapi-token-save.md",
+        "ops/access/2026-07-08-onetime-rabbi-wapi-token-and-whatsapp-send.md"
+      ],
+      "blocker_or_next_action": "The WAPI token was saved only in ignored local secret files with fingerprint/length evidence. Hosted WAPI runtime, auto-reply, and approval gates remain tracked in separate readiness rows."
     },
     {
       "source_statement_id": "HIST-SRC-0117",
@@ -4358,10 +4382,14 @@
       "referenced_decision_ids": [
         "DEC-20260708-019"
       ],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-rabbi-helper-tool-scope-goal.md",
+        "ops/helper-tool-scope/rabbi-one-time-tool-scope-map.json",
+        "ops/live-smokes/2026-07-09T13-51-52-167Z-rabbi-agent-review-proof-readiness-live.md"
+      ],
+      "blocker_or_next_action": "All 163 Rabbi/OneTime helper contracts are wrapper-backed, deployed, live-smoked, and public artifact readbacks pass. Full autonomy remains blocked by saved all-163 Agent Mode PASS/FAIL/BLOCKED proof, per-tool live audit readback, and external/write approval gates."
     },
     {
       "source_statement_id": "HIST-SRC-0118",
@@ -4386,10 +4414,14 @@
         "REQ-20260708-096"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md",
+        "tasks-pending/2026-07-08-rabbi-helper-tool-scope-goal.md",
+        "ops/live-smokes/2026-07-09T13-51-52-167Z-rabbi-agent-review-proof-readiness-live.md"
+      ],
+      "blocker_or_next_action": "The helper/Telegram continuation is implemented through wrapper-backed contracts and deployed prompt/readiness proof. Terminal end-to-end parity still waits on Agent Mode AGR proof, hosted Rabbi Telegram live smoke, and approval-gated external lanes."
     },
     {
       "source_statement_id": "HIST-SRC-0119",
@@ -4414,10 +4446,14 @@
         "REQ-20260708-098"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-app-backend-helper-performance.md",
+        "ops/performance-audits/2026-07-08-app-backend-helper-performance/local-after-deferred-renderers-report.md",
+        "ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-live-asset-readback.json"
+      ],
+      "blocker_or_next_action": "The deferred renderer chunk split was implemented, verified, deployed, live-smoked, and live asset-readback verified for the OneTime Operations shell."
     },
     {
       "source_statement_id": "HIST-SRC-0120",
@@ -4445,10 +4481,14 @@
         "REQ-20260708-097"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md",
+        "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.md",
+        "ops/live-smokes/2026-07-09T13-51-52-167Z-rabbi-agent-review-proof-readiness-live.md"
+      ],
+      "blocker_or_next_action": "Rabbi helper scope, progress-ding prompts, and read-only proof-readiness are deployed/live-readback verified. Hosted Rabbi Telegram live delivery and Agent Mode saved proof remain the terminal blockers."
     },
     {
       "source_statement_id": "HIST-SRC-0121",
@@ -4471,10 +4511,14 @@
         "REQ-20260708-099"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-app-backend-helper-performance.md",
+        "ops/performance-audits/2026-07-08-app-backend-helper-performance/residual-slowness-profile-live-after-deploy.md",
+        "ops/performance-audits/2026-07-08-app-backend-helper-performance/report.md"
+      ],
+      "blocker_or_next_action": "Residual OneTime Operations slowness was profiled and the foreground/background hydration fix was deployed and live-smoked. Remaining local multi-second background reads are not blocking the visible overview after live deploy and should be re-profiled only if repeated slow samples recur."
     },
     {
       "source_statement_id": "HIST-SRC-0122",
@@ -4499,10 +4543,14 @@
         "REQ-20260708-100"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md",
+        "scripts/telegram-kimi-bridge.mjs",
+        "public/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md"
+      ],
+      "blocker_or_next_action": "The scoped Rabbi sidekick expansion, OneTime Drive/context previews, prompt readbacks, and runtime tests were deployed and live-smoked. Hosted Rabbi Telegram live delivery still needs restart/live-smoke proof, and Agent Mode must save PASS/FAIL/BLOCKED results."
     },
     {
       "source_statement_id": "HIST-SRC-0123",
@@ -4527,10 +4575,14 @@
         "REQ-20260708-101"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md",
+        "public/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+        "ops/live-smokes/2026-07-09T13-51-52-167Z-rabbi-agent-review-proof-readiness-live.md"
+      ],
+      "blocker_or_next_action": "The communications/ticket/progress-ding Agent Mode smoke contract is deployed and live-readback verified with OneTime scope. Terminal proof remains blocked on saved Agent Mode results and hosted Rabbi Telegram live smoke."
     },
     {
       "source_statement_id": "HIST-SRC-0124",
@@ -4552,10 +4604,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-09-onetime-scope-ui-agent-contact-corrections.md",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "ops/playwright-smokes/2026-07-09-onetime-review-final-live-readback.md"
+      ],
+      "blocker_or_next_action": "Agent Review submit/seal, scope bleed, parent reset, provider CRM workbench, and parent/student review/classroom UI slices were deployed/live-smoked. WAPI setup, three Zoom-attendee contact tagging, backend CRM persistence, and broader logged-in student/content IA remain open or operator-gated."
     },
     {
       "source_statement_id": "HIST-SRC-0125",
@@ -4574,10 +4630,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-09-chatgpt-credit-routing-and-app-lag-advice.md",
+        "ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md",
+        "ops/performance-audits/2026-07-08-app-backend-helper-performance/report.md"
+      ],
+      "blocker_or_next_action": "ChatGPT packet/control-tower workflow and queue hygiene were implemented and verified. The inferred BNA Operations slow-route live fix remains blocked until a clean BNA deploy lane can ship the split shell and rerun live profiling; OneTime-specific lag is handled by later rows."
     },
     {
       "source_statement_id": "HIST-SRC-0126",
@@ -4598,10 +4658,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-09-agent-review-public-prompt-blocker.md",
+        "public/agent-review-prompts/rabbi-helper-tool-scope-map.md",
+        "ops/live-smokes/2026-07-09T10-56-49-667Z-rabbi-onetime-landing-smoke.md"
+      ],
+      "blocker_or_next_action": "Public-first Agent Review prompts and read-only Rabbi helper scope artifacts were implemented, pushed, deployed, and live-readback verified; the protected hub blank/401 case now records evidence instead of stopping the audit."
     },
     {
       "source_statement_id": "HIST-SRC-0127",
@@ -4626,10 +4690,14 @@
         "DEC-20260708-016",
         "DEC-20260708-021"
       ],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260709-007-onetimeaios-bot-token-redacted.md",
+        "tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md",
+        "raw-input/RAW-20260709-012-rabbi-telegram-bot-whatsapp-instructions.md"
+      ],
+      "blocker_or_next_action": "The BotFather token intake was redacted, handled only through ignored secret storage, and later connected to a single masked Rabbi chat candidate. Hosted production restart/live-smoke and exact live-send approval remain pending; no token/raw chat ID is committed."
     },
     {
       "source_statement_id": "HIST-SRC-0128",
@@ -4652,10 +4720,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-09-onetime-lead-capture-free-zoom-ui-priority.md",
+        "ops/live-smokes/2026-07-09T14-10-19-816Z-one-time-interest-dry-run-live-smoke.md",
+        "config/service-provider-sites/one-time.json"
+      ],
+      "blocker_or_next_action": "Immediate OneTime lead capture/free-class follow-up was implemented, pushed, deployed, and live-smoked with dry-run CRM proof. Portal/payment/WAPI/campaign sends and the approved Zoom alias remain intentionally outside this done slice."
     },
     {
       "source_statement_id": "HIST-SRC-0129",
@@ -4679,10 +4751,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-09-production-readiness-goal.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md",
+        "ops/production-readiness/latest-production-unblocker.md"
+      ],
+      "blocker_or_next_action": "Production-readiness snapshot/unblocker/gate tooling is implemented and refreshed. The live verdict remains not production complete because external setup, Rabbi Telegram hosted live smoke, terminal Agent Mode proof, active collision lanes, and no unblocked executable batch remain."
     },
     {
       "source_statement_id": "HIST-SRC-0130",
@@ -4707,10 +4783,14 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md",
+        "ops/ui-audits/2026-07-09-onetime-parallel-frontend-audit/report.md",
+        "ops/ui-audits/2026-07-10-onetime-static-chrome-live-readback/report.md"
+      ],
+      "blocker_or_next_action": "Issue #128 audit, PQC packets, eight Agent Mode prompts, and the scoped static public/member/classroom chrome implementation were pushed, deployed, and live-readback verified. Provider-review/Operations parity findings and Agent Mode proof remain separate blockers."
     },
     {
       "source_statement_id": "HIST-SRC-0131",
@@ -4735,10 +4815,14 @@
       "referenced_decision_ids": [
         "DEC-20260708-021"
       ],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260709-012-rabbi-telegram-bot-whatsapp-instructions.md",
+        "ops/access/2026-07-09-rabbi-telegram-bot-whatsapp-instructions.md",
+        "tasks-pending/2026-07-08-rabbi-telegram-ticket-agent-loop.md"
+      ],
+      "blocker_or_next_action": "The approved WhatsApp instructions were sent once to Rabbi, Rabbi messaged the bot, the single masked private chat candidate was inferred, and local/ignored runtime readiness now passes. Hosted production still needs restart/deploy and scoped live Telegram smoke before production delivery is cleared."
     },
     {
       "source_statement_id": "HIST-SRC-0132",
@@ -4766,10 +4850,14 @@
       "referenced_decision_ids": [
         "DEC-20260709-012"
       ],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md",
+        "ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/report.md",
+        "ops/performance-audits/2026-07-10-onetime-cache-policy-live-readback/report.md"
+      ],
+      "blocker_or_next_action": "The OneTime lag follow-up now has deployed cache/static delivery proof plus the later lightweight parent-review live readback with 0/18 samples needing attention. Remaining broad visual UI gaps are tracked in the July 10 UI gap register, not this lag row."
     },
     {
       "source_statement_id": "HIST-SRC-0133",
@@ -10270,8 +10358,8 @@
     }
   ],
   "remaining_work": {
-    "rows_without_terminal_status": 177,
-    "next_action": "Continue terminal mapping for the remaining 177 historical rows, then split non-terminal gaps into small implementation/proof packets and produce the final owner walkthrough/readiness verdict."
+    "rows_without_terminal_status": 155,
+    "next_action": "Continue terminal mapping for the remaining 155 historical rows, then split non-terminal gaps into small implementation/proof packets and produce the final owner walkthrough/readiness verdict."
   },
   "first_mapped_batch": {
     "mapped_at": "2026-07-10T14:50:54+03:00",
@@ -10450,5 +10538,34 @@
     ],
     "status": "july_8_parent_agent_classroom_media_signup_runtime_rows_mapped",
     "remaining_rows_without_terminal_status": 177
+  },
+  "tenth_mapped_batch": {
+    "mapped_at": "2026-07-10T16:05:42+03:00",
+    "row_ids": [
+      "HIST-SRC-0111",
+      "HIST-SRC-0112",
+      "HIST-SRC-0113",
+      "HIST-SRC-0114",
+      "HIST-SRC-0115",
+      "HIST-SRC-0116",
+      "HIST-SRC-0117",
+      "HIST-SRC-0118",
+      "HIST-SRC-0119",
+      "HIST-SRC-0120",
+      "HIST-SRC-0121",
+      "HIST-SRC-0122",
+      "HIST-SRC-0123",
+      "HIST-SRC-0124",
+      "HIST-SRC-0125",
+      "HIST-SRC-0126",
+      "HIST-SRC-0127",
+      "HIST-SRC-0128",
+      "HIST-SRC-0129",
+      "HIST-SRC-0130",
+      "HIST-SRC-0131",
+      "HIST-SRC-0132"
+    ],
+    "status": "july_8_to_9_performance_telegram_helper_lag_rows_mapped",
+    "remaining_rows_without_terminal_status": 155
   }
 }
