@@ -37917,3 +37917,7 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.md`
   and `.json` with 291 stable `HIST-SRC-*` rows. Terminal mapping/proof remains
   open.
+- Mapped the first July 10 batch in the source-statement matrix:
+  `HIST-SRC-0133`, `HIST-SRC-0134`, `HIST-SRC-0135`, `HIST-SRC-0290`, and
+  `HIST-SRC-0291`. Four rows now have mixed terminal statuses; the current
+  owner objective row remains active; 287 rows still lack terminal status.

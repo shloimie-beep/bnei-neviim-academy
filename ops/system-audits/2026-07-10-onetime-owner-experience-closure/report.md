@@ -11,9 +11,10 @@ This batch is implemented, pushed, deployed, and live-smoked for the scoped
 One Time brand/copy, helper placement, evidence-guardrail repairs, and readable
 redacted Operations content review. A redacted historical source inventory and
 291-row source-statement skeleton now exist for the broader owner-experience
-objective, but terminal source mapping is still open. Full production launch is
-still not complete because external setup, Telegram live delivery proof, and
-Agent Mode proof remain blocked outside this code batch.
+objective. The July 10 source rows have a first terminal-mapping batch, but
+287 rows still lack terminal status. Full production launch is still not
+complete because external setup, Telegram live delivery proof, and Agent Mode
+proof remain blocked outside this code batch.
 
 ## Requirement Status
 
@@ -24,7 +25,7 @@ Agent Mode proof remain blocked outside this code batch.
 | `REQ-20260710-011` | Done - live readable redacted review | Live authenticated Operations routes loaded on `https://join.onetimeonetime.com` with One Time Railway auth and readable redaction. The audit captured 140 screenshots, skipped 0 checks, found 0 automated findings, and preserved labels, hierarchy, action rails, counters, scope banners, and no-send/no-charge guardrails while masking private values. Evidence: `ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md` and `ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md`. |
 | `REQ-20260710-012` | Blocked - Agent Mode runner required | Prompt creation is not proof. Exact next action: run `rabbi-telegram-helper-ticket-smoke` and `rabbi-helper-tool-scope-map` in Agent Mode and save/read back `AGR-*` PASS/FAIL/BLOCKED results. |
 | `REQ-20260710-026` | Done - inventory created | Redacted historical source inventory created with 135 raw inputs, 156 task registers, and 141 grouped evidence packages. Evidence: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md` and `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json`. |
-| `REQ-20260710-027` | In progress - skeleton created | `historical-source-statement-matrix.json` created 291 stable `HIST-SRC-*` rows from the inventory. Terminal source mapping remains required before the owner-experience objective can be called source-complete. |
+| `REQ-20260710-027` | In progress - first batch mapped | `historical-source-statement-matrix.json` created 291 stable `HIST-SRC-*` rows from the inventory. July 10 rows `HIST-SRC-0133`, `HIST-SRC-0134`, `HIST-SRC-0135`, `HIST-SRC-0290`, and `HIST-SRC-0291` are mapped; 287 rows still lack terminal status. |
 
 ## Local Verification
 
@@ -36,7 +37,7 @@ Agent Mode proof remain blocked outside this code batch.
 - PASS `npm run watchdog:actions`: 0 findings.
 - PASS `npm run watchdog:protocol-drift`: 0 findings.
 - PASS `npm run audit:governance`: report generated at
-  `ops/audit-governance/2026-07-10T11-56-14-865Z-audit-governance.md`.
+  `ops/audit-governance/2026-07-10T11-58-46-537Z-audit-governance.md`.
   It still reports older repo-wide audit debt, but untracked audit packages
   are `_None._`; this closeout batch is mapped through `REQ-20260710-008`,
   `REQ-20260710-010`, `REQ-20260710-011`, `REQ-20260710-012`, the refreshed
@@ -58,7 +59,8 @@ Agent Mode proof remain blocked outside this code batch.
   packages without copying raw private bodies.
 - PASS historical source-statement skeleton parse:
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`
-  records 291 stable source rows requiring terminal mapping.
+  records 291 stable source rows; first mapped batch has 5 July 10 rows, with
+  287 rows still lacking terminal status.
 
 ## Deployment And Live Readback
 
@@ -111,7 +113,7 @@ Agent Mode proof remain blocked outside this code batch.
 
 1. `REQ-20260710-027`: replace the skeleton statuses in
    `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`
-   with terminal statuses and evidence/blockers for all 291 rows.
+   with terminal statuses and evidence/blockers for the remaining 287 rows.
 2. `REQ-20260710-012`: run `rabbi-telegram-helper-ticket-smoke` and
    `rabbi-helper-tool-scope-map` in Agent Mode and save/read back `AGR-*`
    PASS/FAIL/BLOCKED results.
