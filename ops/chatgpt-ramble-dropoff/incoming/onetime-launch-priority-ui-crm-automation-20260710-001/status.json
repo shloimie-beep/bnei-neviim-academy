@@ -4,7 +4,7 @@
   "owner": "ChatGPT",
   "lane_key": "rabbi_sheller_provider-one_time_mishnah_class-launch-priority",
   "created_at": "2026-07-10T07:16:29Z",
-  "updated_at": "2026-07-10T11:58:01+03:00",
+  "updated_at": "2026-07-10T12:11:48+03:00",
   "picked_up_by": "chatgpt-dropoff-ingestor",
   "picked_up_at": "2026-07-10T07:27:19.147Z",
   "raw_ids_created": [
@@ -30,9 +30,9 @@
     "DEC-20260710-003",
     "DEC-20260710-004"
   ],
-  "implementation_status": "wave_4_historical_inbox_reconciled_needs_decision_transactional_followup_next",
+  "implementation_status": "wave_5_transactional_followup_done_rabbi_backend_next",
   "agent_mode_audit_ready": false,
-  "next_action": "Continue REQ-20260710-022 transactional follow-up, then REQ-20260710-023 Rabbi backend launch-readiness. REQ-20260710-021 is terminal as Needs operator decision via DEC-20260710-004.",
+  "next_action": "Continue REQ-20260710-023 Rabbi backend launch-readiness, then unresolved packet generation/closeout requirements REQ-20260710-024 and REQ-20260710-025. REQ-20260710-021 is terminal as Needs operator decision via DEC-20260710-004, and real transactional sends remain gated by runtime readiness and exact approval.",
   "verification": [
     "Queued for Codex by scripts/chatgpt-dropoff-ingestor.mjs as task #1945.",
     "PASS raw intake and dated requirement register created.",
@@ -60,7 +60,12 @@
     "PASS live One Time Operations readback showed 4 scoped parent leads, 12 CRM cards, 0 email-import-tagged records, no-send true, and external-write false.",
     "BLOCKED current provider mailbox readback: stored provider mailbox credential returned 401, so the latest usable mailbox proof remains the July 6 Resend backfill report.",
     "PASS npm run audit:governance completed with broad pre-existing audit debt; generated inventory did not include this new reconciliation folder, so REQ-021 is mapped in the register, DEC-004, ledger, and changelog.",
-    "PASS redacted reconciliation report created at ops/system-audits/2026-07-10-onetime-historical-inbox-reconciliation/report.md and report.json."
+    "PASS redacted reconciliation report created at ops/system-audits/2026-07-10-onetime-historical-inbox-reconciliation/report.md and report.json.",
+    "PASS pushed commit fc399bab adding idempotent blocked free-class transactional email/WhatsApp follow-up ledger rows to the first-party CRM timeline.",
+    "PASS local REQ-20260710-022 verification: node --check server.js; node --check scripts/smoke-one-time-interest-crm-e2e-live.mjs; focused One Time/CRM tests 31/31; npm run watchdog:actions; npm run watchdog:protocol-drift.",
+    "PASS deployed clean committed One Time bundle to Railway one-time-production / one-time-web with account auth after the project-scoped token was unauthorized; deployment d7abb60c-def4-4105-be8a-f160225b442d reached SUCCESS.",
+    "PASS npm run app:smoke:one-time-interest-crm-e2e after transactional follow-up deploy: TEST/example.invalid submit created CRM lead 10, timeline showed signup capture plus blocked transactional email and WhatsApp attempts, no-send/external-write flags were true/false as expected, and cleanup archived lead 10.",
+    "PASS post-follow-up regressions: one-time-interest-dry-run, onetime-separate-instance, rabbi-onetime-landing, and onetime-operations-crm-workbench."
   ],
   "evidence": [
     "GitHub issue #128 and this marked correction comment",
@@ -77,12 +82,17 @@
     "ops/live-smokes/2026-07-10T08-45-30-918Z-one-time-operations-crm-workbench-live-smoke.md",
     "ops/live-smokes/2026-07-10T08-45-40-132Z-one-time-interest-crm-e2e-live-smoke.md",
     "ops/system-audits/2026-07-10-onetime-historical-inbox-reconciliation/report.md",
-    "ops/system-audits/2026-07-10-onetime-historical-inbox-reconciliation/report.json"
+    "ops/system-audits/2026-07-10-onetime-historical-inbox-reconciliation/report.json",
+    "ops/live-smokes/2026-07-10T09-11-21-572Z-one-time-interest-crm-e2e-live-smoke.md",
+    "ops/live-smokes/2026-07-10T09-11-34-105Z-one-time-interest-dry-run-live-smoke.md",
+    "ops/live-smokes/2026-07-10T09-11-34-122Z-rabbi-onetime-landing-smoke.md",
+    "ops/live-smokes/2026-07-10T09-11-34-189Z-one-time-operations-crm-workbench-live-smoke.md",
+    "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
   ],
   "remaining_blockers": [
     "Direct public WhatsApp redirect remains blocked until ONE_TIME_PUBLIC_WHATSAPP_NUMBER is configured at runtime/keyholder level.",
     "Historical import/write remains blocked by DEC-20260710-004 until Shloimie / One Time data owner chooses the canonical source package and suppression/import policy.",
-    "Transactional follow-up and Rabbi backend launch-readiness remain open requirements."
+    "Rabbi backend launch-readiness remains open under REQ-20260710-023."
   ],
   "production_deployment_performed": true,
   "external_writes_performed": false,

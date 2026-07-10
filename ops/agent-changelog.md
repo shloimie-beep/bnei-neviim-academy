@@ -37772,3 +37772,33 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   canonical historical source package and suppression/import policy before any
   production import or contact write. Next launch-priority lane is
   `REQ-20260710-022` transactional follow-up.
+
+## 2026-07-10 - One Time blocked transactional follow-up ledger deployed
+
+- Pushed commit `fc399bab`, adding first-party CRM timeline records for
+  blocked free-class transactional email and WhatsApp follow-up attempts.
+- The public One Time interest flow now logs idempotent blocked attempts in
+  `bna_contact_communications` when a signup has email/WhatsApp recipients;
+  metadata records readiness gates, no-send flags, short recipient hashes, and
+  exact approval blockers without returning or committing raw recipient values.
+- Local proof passed: `node --check server.js`, `node --check
+  scripts/smoke-one-time-interest-crm-e2e-live.mjs`, focused One Time/CRM tests
+  31/31, `npm run watchdog:actions`, and `npm run watchdog:protocol-drift`.
+- Deployed the clean committed One Time bundle to Railway
+  `one-time-production / one-time-web`; the project-scoped token was
+  unauthorized for this project, so the repo-supported account-auth path was
+  used. Deployment `d7abb60c-def4-4105-be8a-f160225b442d` reached `SUCCESS`.
+- Live E2E passed via `npm run app:smoke:one-time-interest-crm-e2e`: synthetic
+  TEST CRM lead `10` was created, found in parent-leads and CRM contact search,
+  verified in the signup-capture timeline with blocked transactional email and
+  WhatsApp attempts, and archived after readback. Report:
+  `ops/live-smokes/2026-07-10T09-11-21-572Z-one-time-interest-crm-e2e-live-smoke.md`.
+- Regression smokes passed after deploy: `npm run
+  app:smoke:one-time-interest-dry-run`,
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`,
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`,
+  and `npm run app:smoke:onetime-operations-crm-workbench`.
+- `REQ-20260710-022` is Done as a blocked-ledger implementation/proof lane.
+  Real external email/WhatsApp delivery remains blocked by runtime readiness,
+  `DEC-20260710-002`, and exact send approval. Next launch-priority lane is
+  `REQ-20260710-023` Rabbi backend launch-readiness.
