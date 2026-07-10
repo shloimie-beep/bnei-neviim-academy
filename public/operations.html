@@ -1641,6 +1641,75 @@
             gap: 10px;
         }
 
+        .crm-workbench-shell {
+            display: grid;
+            grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.35fr);
+            gap: 12px;
+            align-items: start;
+            margin-top: 12px;
+        }
+
+        .crm-workbench-list,
+        .crm-workbench-detail {
+            min-width: 0;
+        }
+
+        .crm-workbench-detail {
+            display: grid;
+            gap: 12px;
+        }
+
+        .crm-selected-card {
+            border: 1px solid #334155;
+            border-radius: 8px;
+            background: #111827;
+            padding: 16px;
+        }
+
+        .crm-selected-title {
+            color: #f8fafc;
+            font-size: 18px;
+            font-weight: 900;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+        }
+
+        .crm-selected-subtitle {
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.45;
+            margin-top: 4px;
+            overflow-wrap: anywhere;
+        }
+
+        .crm-timeline-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .crm-workbench-refresh {
+            min-width: 76px;
+            white-space: nowrap;
+        }
+
+        .settings-control-grid.compact .crm-filter-search {
+            display: grid;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .settings-control-grid.compact .crm-filter-search input {
+            box-sizing: border-box;
+            min-width: 0;
+            width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            .crm-workbench-shell {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .wapi-conversation-workspace {
             display: grid;
             grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.35fr) minmax(240px, 0.95fr);
@@ -15363,22 +15432,25 @@
             return normalized.map(value => `<option value="${escapeHtml(value)}" ${value === current ? 'selected' : ''}>${escapeHtml(contactStatusLabel(value))}</option>`).join('');
         }
 
-        function renderFirstPartyCrmFilterControls(payload = {}) {
+        function renderFirstPartyCrmFilterControls(payload = {}, options = {}) {
             const filters = payload.filters || {};
             const sharedTagOptions = Array.from(new Set([...(filters.tags || []), ...allContactTags()]))
                 .filter(Boolean)
                 .sort((a, b) => String(a).localeCompare(String(b)));
+            const title = options.title || 'First-party CRM Contacts';
+            const description = options.description || 'Workspace-scoped local CRM records only. This view reads BNA contacts, parent leads, and local timelines; it does not send or write to external CRM.';
+            const extraAttrs = options.oneTime ? ' data-one-time-crm-api-workbench data-requirement-id="REQ-20260710-020"' : '';
             return `
-                <section class="focus-panel compact-panel" data-action-id="ACTION-CRM-CONTACTS-FILTER">
+                <section class="focus-panel compact-panel" data-action-id="ACTION-CRM-CONTACTS-FILTER"${extraAttrs}>
                     <div class="task-section-header">
                         <div>
-                            <h3>First-party CRM Contacts</h3>
-                            <p class="notification-lock-note">Workspace-scoped local CRM records only. This view reads BNA contacts, parent leads, and local timelines; it does not send or write to external CRM.</p>
+                            <h3>${escapeHtml(title)}</h3>
+                            <p class="notification-lock-note">${escapeHtml(description)}</p>
                         </div>
-                        <button class="task-action primary" type="button" onclick="loadFirstPartyCrmContacts(event)" data-action-id="ACTION-CRM-CONTACTS-FILTER">Refresh</button>
+                        <button class="task-action primary crm-workbench-refresh" type="button" onclick="loadFirstPartyCrmContacts(event)" data-action-id="ACTION-CRM-CONTACTS-FILTER">Refresh</button>
                     </div>
                     <div class="settings-control-grid compact" style="margin-top:12px;">
-                        <label>Search<input value="${escapeHtml(firstPartyCrmFilters.search || '')}" onchange="setFirstPartyCrmFilter('search', this.value)" placeholder="Name, email, phone, tag"></label>
+                        <label class="crm-filter-search">Search<input value="${escapeHtml(firstPartyCrmFilters.search || '')}" onchange="setFirstPartyCrmFilter('search', this.value)" placeholder="Name, email, phone, tag"></label>
                         <label>Type<select onchange="setFirstPartyCrmFilter('contact_type', this.value)">${firstPartyCrmOptionList(filters.contact_types, firstPartyCrmFilters.contact_type)}</select></label>
                         <label>Status<select onchange="setFirstPartyCrmFilter('status', this.value)">${firstPartyCrmOptionList(filters.statuses, firstPartyCrmFilters.status)}</select></label>
                         <label>Source<select onchange="setFirstPartyCrmFilter('source', this.value)">${firstPartyCrmOptionList(filters.sources, firstPartyCrmFilters.source)}</select></label>
@@ -15393,28 +15465,29 @@
             `;
         }
 
-        function renderFirstPartyCrmContactsPanel() {
+        function renderFirstPartyCrmContactsPanel(options = {}) {
             if (!firstPartyCrmContactsPayload && !firstPartyCrmLoading && !firstPartyCrmError) {
                 setTimeout(() => loadFirstPartyCrmContacts(), 0);
             }
             const payload = firstPartyCrmContactsPayload || { cards: [], filters: {}, total: 0, filtered_total: 0 };
             const cards = Array.isArray(payload.cards) ? payload.cards : [];
-            const selectedTimeline = selectedFirstPartyCrmContactId && firstPartyCrmTimelinePayload
-                ? renderFirstPartyCrmTimeline()
-                : '';
+            const selectedCard = cards.find(card => String(card.id) === String(selectedFirstPartyCrmContactId)) || null;
+            const workbenchAttrs = options.oneTime ? ' data-one-time-crm-workbench data-requirement-id="REQ-20260710-020"' : '';
             return `
-                ${renderFirstPartyCrmFilterControls(payload)}
+                ${renderFirstPartyCrmFilterControls(payload, options)}
                 ${firstPartyCrmError ? `<div class="error-banner">${escapeHtml(firstPartyCrmError)}</div>` : ''}
                 <div class="contact-empty-card">
                     ${firstPartyCrmLoading ? 'Loading CRM contacts...' : `${Number(payload.filtered_total || cards.length).toLocaleString()} of ${Number(payload.total || cards.length).toLocaleString()} contacts shown. Read-only / no-send.`}
                 </div>
                 ${cards.length ? `
-                    <div class="contact-layout">
-                        <div class="contact-list">
+                    <section class="crm-workbench-shell"${workbenchAttrs} aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
+                        <div class="contact-list crm-workbench-list">
                             ${cards.map(renderFirstPartyCrmCard).join('')}
                         </div>
-                    </div>
-                    ${selectedTimeline}
+                        <div class="crm-workbench-detail" data-crm-contact-detail>
+                            ${renderFirstPartyCrmDetail(selectedCard)}
+                        </div>
+                    </section>
                 ` : !firstPartyCrmLoading ? '<div class="contact-empty-card">No CRM contacts match this workspace/filter.</div>' : ''}
             `;
         }
@@ -15446,17 +15519,80 @@
             `;
         }
 
-        function renderFirstPartyCrmTimeline() {
+        function firstPartyCrmLinkedSummary(card = {}) {
+            const linked = card.linked || {};
+            const parts = [
+                linked.parent_lead_id ? `Lead #${linked.parent_lead_id}` : '',
+                linked.signup_id ? `Signup #${linked.signup_id}` : '',
+                linked.student_id ? `Student #${linked.student_id}` : '',
+                linked.contact_id ? `Contact #${linked.contact_id}` : '',
+                linked.provider_profile_id ? `Provider #${linked.provider_profile_id}` : ''
+            ].filter(Boolean);
+            return parts.join(' / ') || 'No linked local record id loaded';
+        }
+
+        function firstPartyCrmClassAccessSummary(card = {}) {
+            const tags = (card.tags || []).map(String);
+            const classTags = tags.filter(tag => /class|trial|zoom|access|member|tier|library|free/i.test(tag));
+            if (classTags.length) return classTags.slice(0, 4).join(', ');
+            const blob = `${card.summary || ''} ${card.status || ''} ${card.source_label || ''}`;
+            if (/free[-\s]?class|trial|zoom/i.test(blob)) return 'Free class / trial interest needs follow-up readiness review';
+            if (/member|library|access|tier/i.test(blob)) return 'Member/access context is present; review access panel before messaging';
+            return 'No class/trial/access context loaded yet';
+        }
+
+        function renderFirstPartyCrmDetail(card = null) {
+            if (!card) {
+                return `
+                    <section class="crm-selected-card" aria-label="CRM contact detail">
+                        <div class="crm-selected-title">Select a CRM contact</div>
+                        <div class="crm-selected-subtitle">Open a row to review identity, source, lifecycle, local timeline, notes, and safe next action. No email, WhatsApp, payment, access, or external CRM write runs from this detail panel.</div>
+                    </section>
+                `;
+            }
+            const timeline = selectedFirstPartyCrmContactId && firstPartyCrmTimelinePayload
+                ? renderFirstPartyCrmTimeline(card)
+                : '<div class="contact-empty-card">Loading selected contact timeline...</div>';
+            return `
+                <section class="crm-selected-card" aria-label="CRM contact detail">
+                    <div class="contact-detail-header">
+                        <div>
+                            <div class="crm-selected-title">${escapeHtml(card.display_name || 'CRM contact')}</div>
+                            <div class="crm-selected-subtitle">${escapeHtml([contactStatusLabel(card.contact_type), contactStatusLabel(card.source_label || card.source), contactStatusLabel(card.status || 'new')].filter(Boolean).join(' - '))}</div>
+                        </div>
+                        <span class="page-status-pill">${escapeHtml(contactStatusLabel(card.status || 'new'))}</span>
+                    </div>
+                    <div class="contact-detail-grid">
+                        ${renderContactDetailItem('Email', card.email || 'Not loaded')}
+                        ${renderContactDetailItem('Phone', card.phone || 'Not loaded')}
+                        ${renderContactDetailItem('Lifecycle / Source', [contactStatusLabel(card.status || 'new'), contactStatusLabel(card.source_label || card.source || 'first party')].filter(Boolean).join(' / '))}
+                        ${renderContactDetailItem('Last Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : 'No local activity yet')}
+                        ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : 'Not scheduled')}
+                        ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
+                        ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
+                        ${renderContactDetailItem('Notes', card.summary || 'No notes loaded yet')}
+                    </div>
+                    <div class="task-actions" style="margin-top:14px;">
+                        <button class="task-action primary" type="button" onclick="openFirstPartyCrmContact(${attrJson(card.id)})" data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">Refresh timeline</button>
+                        <span class="status-chip blocked" title="Email, WhatsApp, payment, access, and external CRM actions require the follow-up approval packet.">No-send locked</span>
+                    </div>
+                </section>
+                ${timeline}
+            `;
+        }
+
+        function renderFirstPartyCrmTimeline(card = {}) {
             const items = Array.isArray(firstPartyCrmTimelinePayload?.timeline) ? firstPartyCrmTimelinePayload.timeline : [];
             return `
                 <section class="focus-panel compact-panel" data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
                     <div class="task-section-header">
                         <div>
                             <h3>Contact Timeline</h3>
-                            <p class="notification-lock-note">Read-only local timeline. No message is sent from this view.</p>
+                            <p class="notification-lock-note">Read-only local timeline for ${escapeHtml(card.display_name || 'selected contact')}. No message is sent from this view.</p>
                         </div>
                         <span>${items.length} timeline items</span>
                     </div>
+                    <div class="crm-timeline-list">
                     ${items.length ? items.map(item => `
                         <article class="content-card">
                             <div class="content-card-title">${escapeHtml([item.channel, item.type].filter(Boolean).join(' / ') || 'Timeline item')}</div>
@@ -15464,6 +15600,7 @@
                             <p class="event-meta">${escapeHtml(item.body || '')}</p>
                         </article>
                     `).join('') : '<div class="contact-empty-card">No timeline records found.</div>'}
+                    </div>
                 </section>
             `;
         }
@@ -15684,57 +15821,68 @@
                 selectedLeadId = null;
                 leadDetailSection = 'overview';
             }
+            const apiWorkbench = renderFirstPartyCrmContactsPanel({
+                oneTime: true,
+                title: 'One Time CRM Workbench',
+                description: 'Search, filter, sort, open, and read local One Time CRM contact timelines from first-party BNA records only. No email, WhatsApp, payment, access, or external CRM write runs from this workbench.'
+            });
             return `
-                <section class="focus-panel compact-panel" data-one-time-crm-contacts-ux data-requirement-id="REQ-20260621-905" aria-label="One Time CRM Contacts UX">
-                    <div class="task-section-header">
-                        <div>
-                            <h3>One Time CRM Contacts</h3>
-                            <p class="notification-lock-note">Workspace-scoped One Time/Rabbi leads and members only. Lead status, source, no-send, dedupe/review state, and local communications are visible before any campaign decision.</p>
-                        </div>
-                        <span>${rows.length} scoped records</span>
+                ${apiWorkbench}
+                <details class="filter-details collapsible-details" data-one-time-crm-review-context>
+                    <summary>Review/source safeguards</summary>
+                    <div class="filter-details-body">
+                        <section class="focus-panel compact-panel" data-one-time-crm-contacts-ux data-requirement-id="REQ-20260621-905" aria-label="One Time CRM Contacts UX">
+                            <div class="task-section-header">
+                                <div>
+                                    <h3>One Time CRM Review Context</h3>
+                                    <p class="notification-lock-note">Workspace-scoped One Time/Rabbi leads and members only. This secondary review table surfaces no-send, dedupe/review state, source context, and local communications before any campaign decision.</p>
+                                </div>
+                                <span>${rows.length} scoped records</span>
+                            </div>
+                            <div class="settings-control-grid compact" style="margin-top:12px;">
+                                ${renderSettingsControlRow('Workspace scope', 'One Time / Rabbi Scheller', 'Parent-lead data is requested with the selected workspace/project filter and excludes BNA school-only records.', 'Scoped')}
+                                ${renderSettingsControlRow('No-send guard', 'No email, WhatsApp, payment, or external CRM write', 'Campaign sends remain locked until Shloimie approves copy, sender, suppressions, and test recipients.', 'Guarded')}
+                                ${renderSettingsControlRow('Dedupe / review', 'Explicit row state', 'Dedupe keys, possible duplicates, manual-review tags, and preview-only import states are surfaced for admin review.', 'Visible')}
+                                ${renderSettingsControlRow('Privacy', 'Private BNA data absent', 'Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.', 'Protected')}
+                            </div>
+                        </section>
+                        ${renderLeadFilterPanel(sectionLeads, visibleLeads)}
+                        ${rows.length === 0 ? `
+                            ${renderOneTimeCrmEmptyState('no_rows')}
+                        ` : sectionLeads.length > 0 && visibleLeads.length === 0 ? `
+                            ${renderOneTimeCrmEmptyState('filtered_empty')}
+                        ` : `
+                            <section class="focus-panel">
+                                <div class="task-section-header"><h3>CRM Contact Review</h3><span>${rows.length} shown</span></div>
+                                <div class="data-table compact-table" data-one-time-crm-contact-table>
+                                    <table>
+                                        <thead>
+                                            <tr><th>Name</th><th>Record Status</th><th>No-send</th><th>Dedupe / review</th><th>Source</th><th>Communications</th><th>Next Action</th><th>Direct Action</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            ${rows.map(row => `
+                                                <tr data-one-time-crm-contact-row data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
+                                                    <td>
+                                                        <strong>${escapeHtml(row.name)}</strong>
+                                                        <div class="event-meta">${escapeHtml(row.contact)}</div>
+                                                    </td>
+                                                    <td>${escapeHtml(row.status)}</td>
+                                                    <td><span class="status-chip ${escapeHtml(row.noSend.locked ? 'blocked' : 'ready')}">${escapeHtml(row.noSend.label)}</span><div class="event-meta">${escapeHtml(row.noSend.detail)}</div></td>
+                                                    <td><span class="status-chip ${escapeHtml(row.dedupe.needsReview ? 'needs-review' : 'ready')}">${escapeHtml(row.dedupe.label)}</span><div class="event-meta">${escapeHtml(row.dedupe.detail)}</div></td>
+                                                    <td>${escapeHtml(row.source.label)}<div class="event-meta">${escapeHtml(row.source.detail)}</div></td>
+                                                    <td>${escapeHtml(row.communications.label)}<div class="event-meta">${escapeHtml(row.communications.detail)}</div></td>
+                                                    <td>${escapeHtml(row.nextAction)}</td>
+                                                    <td><div class="task-actions compact-actions">${row.actionHtml}</div></td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                ${renderOneTimeCrmContactCards(rows)}
+                            </section>
+                        `}
                     </div>
-                    <div class="settings-control-grid compact" style="margin-top:12px;">
-                        ${renderSettingsControlRow('Workspace scope', 'One Time / Rabbi Scheller', 'Parent-lead data is requested with the selected workspace/project filter and excludes BNA school-only records.', 'Scoped')}
-                        ${renderSettingsControlRow('No-send guard', 'No email, WhatsApp, payment, or external CRM write', 'Campaign sends remain locked until Shloimie approves copy, sender, suppressions, and test recipients.', 'Guarded')}
-                        ${renderSettingsControlRow('Dedupe / review', 'Explicit row state', 'Dedupe keys, possible duplicates, manual-review tags, and preview-only import states are surfaced for admin review.', 'Visible')}
-                        ${renderSettingsControlRow('Privacy', 'Private BNA data absent', 'Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.', 'Protected')}
-                    </div>
-                </section>
-                ${renderLeadFilterPanel(sectionLeads, visibleLeads)}
-                ${rows.length === 0 ? `
-                    ${renderOneTimeCrmEmptyState('no_rows')}
-                ` : sectionLeads.length > 0 && visibleLeads.length === 0 ? `
-                    ${renderOneTimeCrmEmptyState('filtered_empty')}
-                ` : `
-                    <section class="focus-panel">
-                        <div class="task-section-header"><h3>CRM Contact Review</h3><span>${rows.length} shown</span></div>
-                        <div class="data-table compact-table" data-one-time-crm-contact-table>
-                            <table>
-                                <thead>
-                                    <tr><th>Name</th><th>Record Status</th><th>No-send</th><th>Dedupe / review</th><th>Source</th><th>Communications</th><th>Next Action</th><th>Direct Action</th></tr>
-                                </thead>
-                                <tbody>
-                                    ${rows.map(row => `
-                                        <tr data-one-time-crm-contact-row data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
-                                            <td>
-                                                <strong>${escapeHtml(row.name)}</strong>
-                                                <div class="event-meta">${escapeHtml(row.contact)}</div>
-                                            </td>
-                                            <td>${escapeHtml(row.status)}</td>
-                                            <td><span class="status-chip ${escapeHtml(row.noSend.locked ? 'blocked' : 'ready')}">${escapeHtml(row.noSend.label)}</span><div class="event-meta">${escapeHtml(row.noSend.detail)}</div></td>
-                                            <td><span class="status-chip ${escapeHtml(row.dedupe.needsReview ? 'needs-review' : 'ready')}">${escapeHtml(row.dedupe.label)}</span><div class="event-meta">${escapeHtml(row.dedupe.detail)}</div></td>
-                                            <td>${escapeHtml(row.source.label)}<div class="event-meta">${escapeHtml(row.source.detail)}</div></td>
-                                            <td>${escapeHtml(row.communications.label)}<div class="event-meta">${escapeHtml(row.communications.detail)}</div></td>
-                                            <td>${escapeHtml(row.nextAction)}</td>
-                                            <td><div class="task-actions compact-actions">${row.actionHtml}</div></td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                        ${renderOneTimeCrmContactCards(rows)}
-                    </section>
-                `}
+                </details>
             `;
         }
 

@@ -66,6 +66,11 @@ test('One Time email lane exposes draft, readiness, recipient, and approval gate
 
 test('One Time CRM Contacts UX keeps lead review scoped and no-send', () => {
   assert.match(operations, /data-one-time-crm-contacts-ux/);
+  assert.match(operations, /data-one-time-crm-workbench/);
+  assert.match(operations, /One Time CRM Workbench/);
+  assert.match(operations, /function renderFirstPartyCrmDetail/);
+  assert.match(operations, /Class \/ Trial \/ Access/);
+  assert.match(operations, /Read-only local timeline for/);
   assert.match(operations, /Workspace-scoped One Time\/Rabbi leads and members only/);
   assert.match(operations, /function oneTimeCrmLeadRows\(\)/);
   assert.match(operations, /normalizeProjectKey\(rawProjectKey\)/);

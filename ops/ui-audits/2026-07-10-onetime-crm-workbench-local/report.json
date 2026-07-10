@@ -1,0 +1,143 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-07-10T08:38:03.363Z",
+  "target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+  "scope": "Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.",
+  "guardrails": {
+    "external_write_performed": false,
+    "test_data_only": true,
+    "raw_private_data_committed": false
+  },
+  "results": [
+    {
+      "viewport": {
+        "id": "desktop-1440",
+        "width": 1440,
+        "height": 960
+      },
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm-workbench.png",
+      "title": "Rabbi Scheller / One Time - Operations",
+      "workbenchCount": 1,
+      "apiWorkbenchCount": 1,
+      "cardCount": 6,
+      "selectedDetailVisible": true,
+      "hasContactTimeline": true,
+      "hasClassTrialAccess": true,
+      "hasNoSendLock": true,
+      "hasWrongWorkspaceLeak": false,
+      "hasForbiddenExternalTerm": false,
+      "horizontalOverflow": false,
+      "bodyTextLength": 2814,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "passed": true
+    },
+    {
+      "viewport": {
+        "id": "desktop-1024",
+        "width": 1024,
+        "height": 900
+      },
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1024-crm-workbench.png",
+      "title": "Rabbi Scheller / One Time - Operations",
+      "workbenchCount": 1,
+      "apiWorkbenchCount": 1,
+      "cardCount": 6,
+      "selectedDetailVisible": true,
+      "hasContactTimeline": true,
+      "hasClassTrialAccess": true,
+      "hasNoSendLock": true,
+      "hasWrongWorkspaceLeak": false,
+      "hasForbiddenExternalTerm": false,
+      "horizontalOverflow": false,
+      "bodyTextLength": 2814,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "passed": true
+    },
+    {
+      "viewport": {
+        "id": "tablet-768",
+        "width": 768,
+        "height": 1024
+      },
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/tablet-768-crm-workbench.png",
+      "title": "Rabbi Scheller / One Time - Operations",
+      "workbenchCount": 1,
+      "apiWorkbenchCount": 1,
+      "cardCount": 6,
+      "selectedDetailVisible": true,
+      "hasContactTimeline": true,
+      "hasClassTrialAccess": true,
+      "hasNoSendLock": true,
+      "hasWrongWorkspaceLeak": false,
+      "hasForbiddenExternalTerm": false,
+      "horizontalOverflow": false,
+      "bodyTextLength": 2312,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "passed": true
+    },
+    {
+      "viewport": {
+        "id": "mobile-430",
+        "width": 430,
+        "height": 932
+      },
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-430-crm-workbench.png",
+      "title": "Rabbi Scheller / One Time - Operations",
+      "workbenchCount": 1,
+      "apiWorkbenchCount": 1,
+      "cardCount": 6,
+      "selectedDetailVisible": true,
+      "hasContactTimeline": true,
+      "hasClassTrialAccess": true,
+      "hasNoSendLock": true,
+      "hasWrongWorkspaceLeak": false,
+      "hasForbiddenExternalTerm": false,
+      "horizontalOverflow": false,
+      "bodyTextLength": 2312,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "passed": true
+    },
+    {
+      "viewport": {
+        "id": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "screenshot": "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png",
+      "title": "Rabbi Scheller / One Time - Operations",
+      "workbenchCount": 1,
+      "apiWorkbenchCount": 1,
+      "cardCount": 6,
+      "selectedDetailVisible": true,
+      "hasContactTimeline": true,
+      "hasClassTrialAccess": true,
+      "hasNoSendLock": true,
+      "hasWrongWorkspaceLeak": false,
+      "hasForbiddenExternalTerm": false,
+      "horizontalOverflow": false,
+      "bodyTextLength": 2312,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "badResponses": [],
+      "passed": true
+    }
+  ]
+}
