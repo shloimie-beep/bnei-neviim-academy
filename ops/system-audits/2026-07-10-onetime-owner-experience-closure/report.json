@@ -1,20 +1,20 @@
 {
   "report_id": "onetime-owner-experience-closure-20260710-current-batch",
-  "generated_at": "2026-07-10T14:20:01+03:00",
+  "generated_at": "2026-07-10T14:32:10+03:00",
   "raw_id": "RAW-20260710-003",
   "register_path": "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
   "production_target": "https://join.onetimeonetime.com",
-  "status": "local_verified_deploy_pending",
+  "status": "deployed_live_verified_known_blockers",
   "requirements": [
     {
       "id": "REQ-20260710-008",
-      "status": "local_implemented_deploy_pending",
-      "summary": "Visible One Time brand/copy labels normalized across active source, public UI, helper, prompt, docs, scripts, and tests while preserving onetimeonetime.com technical identifiers."
+      "status": "done_deployed_live_smoked",
+      "summary": "Visible One Time brand/copy labels normalized across active source, public UI, helper, prompt, docs, scripts, and tests while preserving onetimeonetime.com technical identifiers; pushed, deployed, and live-smoked on the One Time production target."
     },
     {
       "id": "REQ-20260710-010",
-      "status": "local_process_repair_deploy_pending",
-      "summary": "Shared-review smoke selector and PQC validator false-positive guardrail repaired."
+      "status": "done_deployed_live_smoked",
+      "summary": "Shared-review smoke selector and PQC validator false-positive guardrail repaired; PQC/actions/protocol/audit governance reran, and live shared-review/readback smokes passed after deploy."
     },
     {
       "id": "REQ-20260710-011",
@@ -52,10 +52,29 @@
     "PASS no standalone visible OneTime/OneTimeOneTime brand grep in active checked surfaces"
   ],
   "deployment": {
-    "status": "pending",
-    "commit": null,
-    "deployment_id": null,
-    "live_smokes": []
+    "status": "success_live_smoked",
+    "commit": "98e49080",
+    "provider": "railway",
+    "project": "one-time-production",
+    "service": "one-time-web",
+    "environment": "production",
+    "deployment_id": "f7043570-5ded-4c1c-8109-4475f9cd11ae",
+    "target": "https://join.onetimeonetime.com",
+    "live_smokes": [
+      "ops/live-smokes/2026-07-10T11-26-58-773Z-one-time-shared-review-live-smoke.md",
+      "ops/live-smokes/2026-07-10T11-27-39-029Z-rabbi-onetime-landing-smoke.md",
+      "ops/live-smokes/2026-07-10T11-27-39-095Z-one-time-interest-dry-run-live-smoke.md",
+      "ops/live-smokes/2026-07-10T11-27-49-452Z-one-time-interest-crm-e2e-live-smoke.md",
+      "ops/live-smokes/2026-07-10T11-27-49-452Z-one-time-operations-crm-workbench-live-smoke.md",
+      "ops/live-smokes/2026-07-10T11-28-00-896Z-public-route-privacy-smoke.md",
+      "ops/ui-audits/2026-07-10-onetime-brand-normalization-live-readback/report.md",
+      "ops/production-readiness/latest-production-readiness-snapshot.md"
+    ],
+    "notes": [
+      "Railway doctor resolved the One Time production target before redeploy.",
+      "Operations checks in the shared review and live visual audit skipped because Operations login did not succeed; REQ-20260710-011 remains blocked/review-limited.",
+      "Production readiness snapshot remains not_production_complete because full launch still has Stripe/WAPI/campaign, Telegram live-smoke, and Agent Mode proof blockers."
+    ]
   },
   "guardrails": {
     "external_sends": false,
@@ -64,5 +83,11 @@
     "drive_zoom_vimeo_mutation": false,
     "production_import_or_contact_write": false,
     "ghl_or_leadconnector_runtime": false
+  },
+  "production_readiness": {
+    "status": "not_production_complete",
+    "snapshot": "ops/production-readiness/latest-production-readiness-snapshot.md",
+    "sampled_head": "98e49080",
+    "reason": "Full One Time launch remains blocked by external setup values, Telegram live delivery proof, and Agent Mode terminal proof; current UI/code batch is deployed and live-smoked."
   }
 }

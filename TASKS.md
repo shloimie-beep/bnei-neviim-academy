@@ -118,18 +118,20 @@ not authorize active GHL runtime paths.
   Current status: audit/compiler artifacts are created, lag is
   source-verified as fixed for the measured issue, latest deployed visual
   audit is machine-pass, and `REQ-20260710-007` mobile nav clipping is
-  committed, pushed, deployed to OneTime Railway deployment
+  committed, pushed, deployed to One Time Railway deployment
   `90990bd3-676f-433f-8a97-dfa6fa4723b7`, and live-readback verified 10/10.
   `REQ-20260710-009` provider text fit is also committed, pushed, deployed to
-  OneTime Railway deployment `f338b59b-a545-40ab-b952-13b4111ecd2a`, and
-  live-readback verified at 390px, 430px, and 1440px. Brand/copy
-  normalization and the stale selector/PQC evidence guardrail repairs are now
-  locally implemented with 163 focused tests passing and a fresh local
-  five-viewport visual audit reporting 0 findings; they still need commit,
-  push, OneTime deploy, and live smoke before terminal Done. Remaining
-  blockers: redacted Operations content review needs readable redacted proof or
-  browser takeover, and the two Agent Mode prompts still need actual `AGR-*`
-  PASS/FAIL/BLOCKED saved results.
+  One Time Railway deployment `f338b59b-a545-40ab-b952-13b4111ecd2a`, and
+  live-readback verified at 390px, 430px, and 1440px. `REQ-20260710-008`
+  brand/copy normalization and `REQ-20260710-010` stale selector/PQC evidence
+  guardrail repairs are now committed at `98e49080`, pushed, deployed to
+  One Time Railway deployment `f7043570-5ded-4c1c-8109-4475f9cd11ae`, and
+  live-smoked. Live proof includes shared-review, separate-instance, Rabbi
+  landing, interest dry-run, TEST CRM E2E, Operations CRM workbench, public
+  privacy, and live visual readback reports from `2026-07-10T11-*`.
+  Remaining blockers: redacted Operations content review needs readable
+  redacted proof or browser takeover, and the two Agent Mode prompts still
+  need actual `AGR-*` PASS/FAIL/BLOCKED saved results.
 - [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current

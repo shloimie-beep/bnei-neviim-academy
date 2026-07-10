@@ -37860,3 +37860,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   run live smokes/readbacks. Guardrails: no external send, payment/access
   mutation, DNS/credential change, Drive/Zoom/Vimeo mutation, production import,
   or GHL/LeadConnector runtime.
+
+## 2026-07-10 - One Time brand and evidence guardrails deployed/live-smoked
+
+- Pushed commit `98e49080` and deployed the scoped One Time brand/copy,
+  helper-placement, shared-review selector, and PQC guardrail repairs to
+  Railway `one-time-production / one-time-web`; deployment
+  `f7043570-5ded-4c1c-8109-4475f9cd11ae` reached `SUCCESS`.
+- Live proof passed for shared review, separate instance, Rabbi landing,
+  interest dry-run, TEST CRM E2E, Operations CRM workbench, public privacy, and
+  visual readback. Key reports: `ops/live-smokes/2026-07-10T11-26-58-773Z-one-time-shared-review-live-smoke.md`,
+  `ops/live-smokes/2026-07-10T11-27-49-452Z-one-time-operations-crm-workbench-live-smoke.md`,
+  and `ops/ui-audits/2026-07-10-onetime-brand-normalization-live-readback/report.md`.
+- `REQ-20260710-008` and `REQ-20260710-010` are now Done -
+  deployed/live-smoked. `REQ-20260710-011` remains blocked/review-limited
+  because readable redacted Operations content proof is still missing, and
+  `REQ-20260710-012` remains blocked until Agent Mode saves `AGR-*`
+  PASS/FAIL/BLOCKED results.
+- `npm run production:readiness:snapshot` still reports
+  `not_production_complete` for the full launch because Stripe/WAPI/campaign
+  setup, Telegram live delivery proof, and Agent Mode proof remain outside this
+  code batch. No email, WhatsApp/WAPI, Telegram, payment/access, DNS,
+  credential, Drive/Zoom/Vimeo, production import, or GHL/LeadConnector runtime
+  mutation was performed.

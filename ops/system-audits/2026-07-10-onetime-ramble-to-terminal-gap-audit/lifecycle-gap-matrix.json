@@ -27,8 +27,8 @@
   "rows": [
     {
       "source_statement_id": "SRC-20260710-001",
-      "terminal_status": "LOCAL_PROCESS_REPAIR_DONE_DEPLOY_PENDING",
-      "first_skipped_stage": "commit_push_deploy_live_smoke",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "stages": {
         "raw_captured": true,
         "source_statement_atomized": true,
@@ -44,12 +44,12 @@
         "code_implemented": true,
         "tests_run": true,
         "watchdogs_run": true,
-        "committed_pushed": false,
-        "deployed_live_smoked": false,
+        "committed_pushed": true,
+        "deployed_live_smoked": true,
         "after_screenshot_captured": true,
         "manual_after_review_recorded": true,
-        "ledger_changelog_updated": false,
-        "source_statement_terminally_closed": false
+        "ledger_changelog_updated": true,
+        "source_statement_terminally_closed": true
       }
     },
     {
@@ -81,8 +81,8 @@
     },
     {
       "source_statement_id": "SRC-20260710-003",
-      "terminal_status": "LOCAL_PROCESS_REPAIR_DONE_DEPLOY_PENDING",
-      "first_skipped_stage": "commit_push_deploy_live_smoke",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "stages": {
         "raw_captured": true,
         "source_statement_atomized": true,
@@ -98,18 +98,18 @@
         "code_implemented": true,
         "tests_run": true,
         "watchdogs_run": true,
-        "committed_pushed": false,
-        "deployed_live_smoked": false,
+        "committed_pushed": true,
+        "deployed_live_smoked": true,
         "after_screenshot_captured": true,
         "manual_after_review_recorded": true,
-        "ledger_changelog_updated": false,
-        "source_statement_terminally_closed": false
+        "ledger_changelog_updated": true,
+        "source_statement_terminally_closed": true
       }
     },
     {
       "source_statement_id": "SRC-20260710-004",
-      "terminal_status": "LOCAL_PROCESS_REPAIR_DONE_DEPLOY_PENDING",
-      "first_skipped_stage": "commit_push_deploy_live_smoke",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "stages": {
         "raw_captured": true,
         "source_statement_atomized": true,
@@ -125,12 +125,12 @@
         "code_implemented": true,
         "tests_run": true,
         "watchdogs_run": true,
-        "committed_pushed": false,
-        "deployed_live_smoked": false,
+        "committed_pushed": true,
+        "deployed_live_smoked": true,
         "after_screenshot_captured": true,
         "manual_after_review_recorded": true,
-        "ledger_changelog_updated": false,
-        "source_statement_terminally_closed": false
+        "ledger_changelog_updated": true,
+        "source_statement_terminally_closed": true
       }
     },
     {
@@ -189,8 +189,8 @@
     },
     {
       "source_statement_id": "SRC-20260710-007",
-      "terminal_status": "LOCAL_BRAND_FIX_DEPLOY_PENDING",
-      "first_skipped_stage": "commit_push_deploy_live_smoke",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "stages": {
         "raw_captured": true,
         "source_statement_atomized": true,
@@ -210,14 +210,14 @@
         "deployed_live_smoked": true,
         "after_screenshot_captured": true,
         "manual_after_review_recorded": true,
-        "ledger_changelog_updated": false,
-        "source_statement_terminally_closed": false
+        "ledger_changelog_updated": true,
+        "source_statement_terminally_closed": true
       }
     },
     {
       "source_statement_id": "SRC-20260710-008",
-      "terminal_status": "LOCAL_BRAND_FIX_DEPLOY_PENDING",
-      "first_skipped_stage": "commit_push_deploy_live_smoke",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "stages": {
         "raw_captured": true,
         "source_statement_atomized": true,
@@ -237,8 +237,8 @@
         "deployed_live_smoked": true,
         "after_screenshot_captured": true,
         "manual_after_review_recorded": true,
-        "ledger_changelog_updated": false,
-        "source_statement_terminally_closed": false
+        "ledger_changelog_updated": true,
+        "source_statement_terminally_closed": true
       }
     },
     {
@@ -324,8 +324,8 @@
     },
     {
       "source_statement_id": "SRC-20260710-012",
-      "terminal_status": "LOCAL_UI_FIX_DONE_DEPLOY_PENDING",
-      "first_skipped_stage": "commit_push_deploy_live_smoke",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "stages": {
         "raw_captured": true,
         "source_statement_atomized": true,
@@ -341,12 +341,12 @@
         "code_implemented": true,
         "tests_run": true,
         "watchdogs_run": true,
-        "committed_pushed": false,
-        "deployed_live_smoked": false,
+        "committed_pushed": true,
+        "deployed_live_smoked": true,
         "after_screenshot_captured": true,
         "manual_after_review_recorded": true,
-        "ledger_changelog_updated": false,
-        "source_statement_terminally_closed": false
+        "ledger_changelog_updated": true,
+        "source_statement_terminally_closed": true
       }
     },
     {
@@ -378,8 +378,8 @@
     },
     {
       "source_statement_id": "SRC-20260710-014",
-      "terminal_status": "LOCAL_UI_FIX_DONE_DEPLOY_PENDING",
-      "first_skipped_stage": "commit_push_deploy_live_smoke",
+      "terminal_status": "DONE_DEPLOYED_LIVE_VERIFIED",
+      "first_skipped_stage": null,
       "stages": {
         "raw_captured": true,
         "source_statement_atomized": true,
@@ -399,8 +399,8 @@
         "deployed_live_smoked": true,
         "after_screenshot_captured": true,
         "manual_after_review_recorded": true,
-        "ledger_changelog_updated": false,
-        "source_statement_terminally_closed": false
+        "ledger_changelog_updated": true,
+        "source_statement_terminally_closed": true
       }
     },
     {
@@ -565,5 +565,6 @@
         "source_statement_terminally_closed": true
       }
     }
-  ]
+  ],
+  "updated_at": "2026-07-10T14:32:10+03:00"
 }

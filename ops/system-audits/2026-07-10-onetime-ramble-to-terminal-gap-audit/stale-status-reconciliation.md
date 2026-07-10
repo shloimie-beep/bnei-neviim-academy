@@ -32,18 +32,23 @@ Raw ID: RAW-20260710-001
 
 A previous Done label may stand only for the exact scoped acceptance criteria it proved. Newer manual screenshot findings or unmapped source statements reopen only the affected descendant gap, not unrelated deployed work.
 
-## 2026-07-10T14:20:01+03:00 Update
+## 2026-07-10T14:32:10+03:00 Update
 
-- `REQ-20260710-008` is locally implemented and deploy pending. Active checked
+- `REQ-20260710-008` is deployed/live-smoked. Active checked
   source/config/public/src/scripts/tests/docs/operator evidence surfaces no
   longer contain standalone visible `OneTime`, `OneTimeOneTime`,
-  `OneTime Mishnah`, or `OneTime Mishnayos` labels.
-- `REQ-20260710-010` is locally repaired and deploy/push pending. The stale
-  shared-review selector now checks `.hero-media`, and PQC validation only
-  treats supported schema-version objects or `.product-quality.json` files as
-  packets.
+  `OneTime Mishnah`, or `OneTime Mishnayos` labels. Commit `98e49080`
+  deployed to One Time Railway deployment
+  `f7043570-5ded-4c1c-8109-4475f9cd11ae`; live visual readback is
+  `ops/ui-audits/2026-07-10-onetime-brand-normalization-live-readback/report.md`.
+- `REQ-20260710-010` is deployed/live-smoked. The stale shared-review selector
+  now checks `.hero-media`, and PQC validation only treats supported
+  schema-version objects or `.product-quality.json` files as packets. Local
+  PQC/actions/protocol/audit-governance checks reran, and the post-deploy
+  shared-review smoke passed.
 - `REQ-20260710-011` remains blocked/review-limited. Authenticated local
   Operations layout proof passes, but screenshot redaction is too blurred to
-  count as content-level proof.
+  count as content-level proof; live visual readback skipped Operations because
+  Operations login did not succeed.
 - `REQ-20260710-012` remains blocked on an Agent Mode runner. Prompt URLs are
   the next action, not proof.
