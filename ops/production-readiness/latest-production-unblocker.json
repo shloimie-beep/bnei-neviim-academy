@@ -1,22 +1,22 @@
 {
-  "generated_at": "2026-07-10T14:46:56.935Z",
+  "generated_at": "2026-07-10T16:46:16.798Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-10T14:46:16.163Z",
-  "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
-  "snapshot_source_kind": "live_no_write_command",
-  "snapshot_git_head": "abce44b5",
-  "snapshot_origin_master": "abce44b5",
-  "snapshot_worktree_clean": false,
+  "source_snapshot_generated_at": "2026-07-10T16:46:07.528Z",
+  "snapshot_source": "ops/production-readiness/latest-production-readiness-snapshot.json",
+  "snapshot_source_kind": "latest_file_requested",
+  "snapshot_git_head": "74bdce15",
+  "snapshot_origin_master": "74bdce15",
+  "snapshot_worktree_clean": true,
   "source_snapshot": {
-    "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
-    "kind": "live_no_write_command",
-    "generated_at": "2026-07-10T14:46:16.163Z",
-    "git_head": "abce44b5",
-    "origin_master": "abce44b5",
-    "worktree_clean": false,
-    "command_exit_code": 0,
+    "source": "ops/production-readiness/latest-production-readiness-snapshot.json",
+    "kind": "latest_file_requested",
+    "generated_at": "2026-07-10T16:46:07.528Z",
+    "git_head": "74bdce15",
+    "origin_master": "74bdce15",
+    "worktree_clean": true,
+    "command_exit_code": null,
     "load_error": ""
   },
   "workspace_project": {
@@ -26,7 +26,7 @@
   "source_setup_readiness": {
     "source": "node scripts/check-onetime-external-setup-readiness.mjs --json",
     "kind": "live_no_write_command_expected_blocked",
-    "generated_at": "2026-07-10T14:46:56.924Z",
+    "generated_at": "2026-07-10T16:46:16.789Z",
     "command_exit_code": 1,
     "load_error": "",
     "ready_count": 5,
@@ -42,7 +42,7 @@
     "public_launch_smoke_status": "passed",
     "public_launch_smoke_ready": true,
     "public_launch_smoke_fresh": true,
-    "public_launch_smoke_age_hours": 21.18,
+    "public_launch_smoke_age_hours": 0.04,
     "public_launch_smoke_path": "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
     "rabbi_telegram_runtime_status": "local_runtime_ready_live_smoke_pending",
     "rabbi_telegram_runtime_local_ready": true,
@@ -90,10 +90,10 @@
       "count": 3,
       "evidence": [
         "SETUP-ONETIME-STRIPE-001: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias",
-        "SETUP-ONETIME-WHAPI-001: whapi_wapi_instance_id, whapi_wapi_phone_number",
+        "SETUP-ONETIME-WHAPI-001: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number",
         "SETUP-ONETIME-CAMPAIGN-001: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval"
       ],
-      "next_action": "Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval."
+      "next_action": "Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval."
     },
     {
       "id": "rabbi_telegram_runtime_configuration",
@@ -164,6 +164,7 @@
       "current_evidence": "OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.",
       "setup_check_ready": false,
       "current_missing_fields": [
+        "whapi_wapi_token_alias",
         "whapi_wapi_instance_id",
         "whapi_wapi_phone_number"
       ],
@@ -220,7 +221,7 @@
     "path": "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
     "available": true,
     "status": "passed",
-    "recorded_at": "2026-07-09T17:36:20Z",
+    "recorded_at": "2026-07-10T16:43:35Z",
     "report_version": "bna-no-write-live-smoke-readback-v1",
     "command_count": 4,
     "passed_command_count": 4,
@@ -236,27 +237,27 @@
         "command": "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com",
         "status": "passed",
         "base_url": "https://join.onetimeonetime.com",
-        "report_path": "ops/live-smokes/2026-07-09T17-35-51-421Z-rabbi-onetime-landing-smoke.md",
+        "report_path": "ops/live-smokes/2026-07-10T16-43-16-150Z-rabbi-onetime-landing-smoke.md",
         "writes_report_file": false
       },
       {
         "command": "npm run app:smoke:one-time-interest-dry-run",
         "status": "passed",
         "base_url": "https://join.onetimeonetime.com",
-        "report_path": "ops/live-smokes/2026-07-09T17-35-51-513Z-one-time-interest-dry-run-live-smoke.md",
+        "report_path": "ops/live-smokes/2026-07-10T16-43-16-137Z-one-time-interest-dry-run-live-smoke.md",
         "writes_report_file": false
       },
       {
         "command": "npm run app:smoke:public-privacy",
         "status": "passed",
         "base_url": "https://bneineviimacademy.org",
-        "report_path": "ops/live-smokes/2026-07-09T17-36-04-080Z-public-route-privacy-smoke.md",
+        "report_path": "ops/live-smokes/2026-07-10T16-43-28-006Z-public-route-privacy-smoke.md",
         "writes_report_file": false
       }
     ],
     "external_write_performed": false,
     "production_data_mutation_performed": false,
-    "age_hours": 21.18,
+    "age_hours": 0.04,
     "max_age_hours": 24,
     "fresh_for_launch_gate": true,
     "ready": true,
@@ -325,7 +326,7 @@
     {
       "id": "SETUP-ONETIME-WHAPI-001",
       "owner": "Shloimie / provider account owners",
-      "action": "Provide aliases/status for: whapi_wapi_instance_id, whapi_wapi_phone_number",
+      "action": "Provide aliases/status for: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number",
       "forbidden": [
         "real_whatsapp_send_without_later_exact_packet"
       ],
@@ -386,7 +387,7 @@
     "Immediate lead capture/free-class lane remains live; full payment/access/campaign automation remains blocked until these items are cleared and verified."
   ],
   "sources": [
-    "node scripts/production-readiness-snapshot.mjs --no-write --json",
+    "ops/production-readiness/latest-production-readiness-snapshot.json",
     "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
     "node scripts/check-onetime-external-setup-readiness.mjs --json",
     "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",

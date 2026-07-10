@@ -1,10 +1,10 @@
 {
   "report_id": "onetime-owner-experience-final-readiness-verdict-20260710",
-  "generated_at": "2026-07-10T17:47:03+03:00",
+  "generated_at": "2026-07-10T19:46:30+03:00",
   "raw_id": "RAW-20260710-003",
   "requirement_id": "REQ-20260710-029",
   "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
-  "head_commit": "abce44b5",
+  "head_commit": "74bdce15",
   "one_time_verdict": "not_ready",
   "production_ready": false,
   "source_mapping_status": {
@@ -39,6 +39,7 @@
       "missing_fields": [
         "rabbi_stripe_test_secret_key_alias_or_test_key_status",
         "67_month_product_price_id_or_alias",
+        "whapi_wapi_token_alias",
         "whapi_wapi_instance_id",
         "whapi_wapi_phone_number",
         "final_campaign_copy",
@@ -46,7 +47,7 @@
         "suppression_unsubscribe_proof",
         "explicit_seed_packet_approval"
       ],
-      "next_action": "Provide aliases/status only, not raw secrets, for Stripe sandbox/price, Whapi/WAPI instance and sender phone metadata, and final campaign copy/list/suppression/seed approval."
+      "next_action": "Provide aliases/status only, not raw secrets, for Stripe sandbox/price, Whapi/WAPI token alias, instance and sender phone metadata, and final campaign copy/list/suppression/seed approval."
     },
     {
       "id": "agent_mode_terminal_proof_missing",
@@ -76,16 +77,6 @@
       "next_action": "Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof."
     },
     {
-      "id": "dirty_worktree_for_production_gate",
-      "status": "blocked_clean_tree_required",
-      "owner": "Codex / active lanes",
-      "evidence": [
-        "production readiness gate 2026-07-10T14:29:36.014Z sampled dirty worktree after commit ae286370"
-      ],
-      "missing_fields": [],
-      "next_action": "Commit, stash, or intentionally exclude unrelated WAPI/Telegram/UI/meeting-brief local changes before any production readiness gate can pass."
-    },
-    {
       "id": "no_unblocked_executable_batch",
       "status": "blocked_by_external_and_proof_items",
       "owner": "Codex / operator",
@@ -98,14 +89,15 @@
     }
   ],
   "verification": [
-    "PASS commit abce44b5 pushed to origin/master with final historical source mapping and final readiness verdict",
-    "PASS refreshed production readiness snapshot at 2026-07-10T14:46:16.040Z: status not_production_complete, public_launch_smoke_ready=true, sampled_head=abce44b5, sampled_worktree_clean=false, dirty_paths_redacted=true",
-    "EXPECTED BLOCKED npm run production:readiness:gate -- --json at 2026-07-10T14:46:56.512Z: blocker groups include snapshot_not_production_ready, dirty_worktree, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing",
+    "PASS commit 74bdce15 pushed to origin/master with fresh no-write public launch smoke readback",
+    "PASS refreshed production readiness snapshot at 2026-07-10T16:46:07.528Z: status not_production_complete, public_launch_smoke_ready=true, public_launch_smoke_age_hours=0.04, sampled_head=74bdce15, sampled_origin_master=74bdce15, sampled_worktree_clean=true",
+    "EXPECTED BLOCKED npm run production:readiness:gate -- --from-file ops/production-readiness/latest-production-readiness-snapshot.json --json at 2026-07-10T16:49:20.965Z: blocker groups include snapshot_not_production_ready, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing",
     "PASS source matrix check: 291 total rows, 290 terminal rows, 1 active owner row, 0 non-active unmapped rows",
     "PASS npm run bna:run:status: blocked 2, done 8, validation passed",
     "PASS npm run bna:run:next: next unblocked executable batch none",
     "PASS npm run app:smoke:rabbi-agent-review-proof-readiness: prompts/artifacts live, hub proof state proof_blocked_or_pending, missing terminal prompt count 2",
-    "PASS production-readiness snapshot dirty status is path-redacted in tracked JSON",
+    "PASS no-write public launch smoke refresh at 2026-07-10T16:43:35Z: onetime separate instance, Rabbi landing, One Time interest dry-run, and public privacy smokes passed without writes",
+    "PASS production-readiness sample is clean; unrelated local dirty files remain intentionally outside this sampled readiness artifact",
     "PASS One Time WAPI provider lead-bot guardrail proof: node syntax checks and focused tests passed",
     "EXPECTED BLOCKED npm run one-time:wapi:readiness -- --json: no send, no CRM mutation, no secret printing; blocked on provider instance metadata, webhook secret, live-mode approval, and Telegram approval"
   ],
@@ -141,33 +133,34 @@
     "Run Agent Mode prompt rabbi-telegram-helper-ticket-smoke and save terminal PASS/FAIL/BLOCKED proof.",
     "Run Agent Mode prompt rabbi-helper-tool-scope-map and save terminal PASS/FAIL/BLOCKED proof.",
     "Schedule hosted restart/deploy window and scoped Rabbi Telegram live smoke only after exact approval.",
-    "Clean or intentionally isolate unrelated dirty work, then rerun production readiness snapshot/gate."
+    "Rerun production readiness snapshot/gate after any blocker changes."
   ],
-  "audited_head_commit": "abce44b5",
+  "audited_head_commit": "74bdce15",
   "latest_readiness": {
-    "snapshot_generated_at": "2026-07-10T14:46:16.040Z",
-    "unblocker_generated_at": "2026-07-10T14:46:56.935Z",
-    "sampled_git_head": "abce44b5",
-    "sampled_origin_master": "abce44b5",
-    "sampled_worktree_clean": false,
+    "snapshot_generated_at": "2026-07-10T16:46:07.528Z",
+    "unblocker_generated_at": "2026-07-10T16:46:16.798Z",
+    "sampled_git_head": "74bdce15",
+    "sampled_origin_master": "74bdce15",
+    "sampled_worktree_clean": true,
     "sampled_worktree_status_summary": {
-      "total_entries": 35,
-      "tracked_entries": 28,
-      "untracked_entries": 7,
-      "paths_redacted": true
+      "total_entries": 0,
+      "tracked_entries": 0,
+      "untracked_entries": 0,
+      "paths_redacted": false
     },
     "snapshot_status": "not_production_complete",
     "public_launch_smoke_ready": true,
     "public_launch_smoke_fresh": true,
-    "setup_ready_count": 5,
-    "setup_total_count": 8,
+    "public_launch_smoke_age_hours": 0.04,
     "setup_blocker_count": 3,
     "blocker_groups": [
       "no_unblocked_executable_batch",
       "external_setup_blockers",
       "rabbi_telegram_runtime_configuration",
       "agent_mode_terminal_proof_missing"
-    ]
+    ],
+    "setup_ready_count": 5,
+    "setup_total_count": 8
   },
   "layered_readiness_verdicts": {
     "PUBLIC_FREE_CLASS_LANE": {
@@ -175,8 +168,8 @@
       "scope": "Public One Time landing, free-class CTA, no-write interest/dry-run smoke, and first-party CRM readback only; excludes payments, campaign sends, WhatsApp/WAPI sends, and access grants.",
       "evidence": [
         "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
-        "ops/live-smokes/2026-07-10T11-27-39-095Z-one-time-interest-dry-run-live-smoke.md",
-        "ops/live-smokes/2026-07-10T11-27-49-452Z-one-time-interest-crm-e2e-live-smoke.md",
+        "ops/live-smokes/2026-07-10T16-43-16-137Z-one-time-interest-dry-run-live-smoke.md",
+        "ops/live-smokes/2026-07-10T16-43-16-137Z-one-time-interest-dry-run-live-smoke.json",
         "ops/production-readiness/latest-production-readiness-snapshot.md"
       ],
       "conditions": [
@@ -194,7 +187,7 @@
       ],
       "blockers": [
         "Two Agent Mode terminal proofs are still not_started: rabbi-telegram-helper-ticket-smoke and rabbi-helper-tool-scope-map.",
-        "A fresh clean-tree owner/role acceptance gate cannot pass while the production readiness sample is dirty and no unblocked executable batch exists.",
+        "A clean-sampled owner/role acceptance gate still cannot pass while the Agent Mode proof, Rabbi Telegram live-smoke proof, and no-unblocked-batch blockers remain.",
         "Hosted Rabbi Telegram live-smoke proof is still pending exact approval and verification."
       ]
     },
@@ -215,8 +208,18 @@
         {
           "id": "external_setup_blockers",
           "owner": "Shloimie / provider account owners",
-          "next_action": "Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.",
-          "missing_fields": []
+          "next_action": "Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.",
+          "missing_fields": [
+            "rabbi_stripe_test_secret_key_alias_or_test_key_status",
+            "67_month_product_price_id_or_alias",
+            "whapi_wapi_token_alias",
+            "whapi_wapi_instance_id",
+            "whapi_wapi_phone_number",
+            "final_campaign_copy",
+            "exact_recipient_segment_or_list",
+            "suppression_unsubscribe_proof",
+            "explicit_seed_packet_approval"
+          ]
         },
         {
           "id": "rabbi_telegram_runtime_configuration",
@@ -312,5 +315,15 @@
       "url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md",
       "state": "public_prompt_live_terminal_result_missing"
     }
-  ]
+  ],
+  "latest_app_deployment": {
+    "provider": "railway",
+    "project": "one-time-production",
+    "service": "one-time-web",
+    "environment": "production",
+    "deployment_id": "a394e0d4-8ced-4581-9cc7-bb6f68aa8246",
+    "deployed_app_source_commit": "4739362d",
+    "status": "SUCCESS",
+    "note": "The later 74bdce15 evidence commit changes tracked readiness documentation only; app-visible deployment remains the successful 4739362d build."
+  }
 }

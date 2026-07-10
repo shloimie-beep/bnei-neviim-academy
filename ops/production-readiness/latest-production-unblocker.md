@@ -1,9 +1,9 @@
-# Production Unblocker - 2026-07-10T14:46:56.935Z
+# Production Unblocker - 2026-07-10T16:46:16.798Z
 Snapshot status: not_production_complete
 Production ready: no
-Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-10T14:46:16.163Z
-Snapshot git head: abce44b5 (origin/master: abce44b5, worktree clean: no)
+Source snapshot: ops/production-readiness/latest-production-readiness-snapshot.json (latest_file_requested)
+Source snapshot generated at: 2026-07-10T16:46:07.528Z
+Snapshot git head: 74bdce15 (origin/master: 74bdce15, worktree clean: yes)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 One Time setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
@@ -28,9 +28,9 @@ Owner: Shloimie / provider account owners
 Count: 3
 Evidence:
   - SETUP-ONETIME-STRIPE-001: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias
-  - SETUP-ONETIME-WHAPI-001: whapi_wapi_instance_id, whapi_wapi_phone_number
+  - SETUP-ONETIME-WHAPI-001: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number
   - SETUP-ONETIME-CAMPAIGN-001: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval
-Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
+Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
 ### rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not production-verified
 Owner: Codex / operator
 Count: 1
@@ -78,6 +78,7 @@ Status: blocked_external_input
 Current evidence: OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.
 Setup check ready: no
 Current missing fields from setup check:
+  - whapi_wapi_token_alias
   - whapi_wapi_instance_id
   - whapi_wapi_phone_number
 Setup check warnings:
@@ -121,7 +122,7 @@ Verification after setup:
 Status: passed
 Ready: yes
 Fresh for launch gate: yes
-Age hours: 21.18
+Age hours: 0.04
 Commands passed: 4/4
 External write performed: no
 Production data mutation performed: no
@@ -169,7 +170,7 @@ Required result: save terminal PASS, FAIL, or BLOCKED proof for only this prompt
 - Raw secrets, raw phone/contact exports, payment data, and private message bodies must not be committed.
 - Immediate lead capture/free-class lane remains live; full payment/access/campaign automation remains blocked until these items are cleared and verified.
 ## Sources
-- node scripts/production-readiness-snapshot.mjs --no-write --json
+- ops/production-readiness/latest-production-readiness-snapshot.json
 - ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
 - node scripts/check-onetime-external-setup-readiness.mjs --json
 - ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
