@@ -85,14 +85,14 @@ not authorize active GHL runtime paths.
   `REQ-20260710-025`: One Time launch-priority landing, Robot Scheller, CRM,
   inbox, follow-up, and Rabbi backend closeout. Register:
   `tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md`.
-  Current status: raw intake and first-wave PQC are done; landing media/copy,
-  Robot Scheller identity, and runtime-only public WhatsApp readiness are
-  locally verified with focused tests, PQC validation, action/protocol
-  watchdogs, no-secret grep, and Playwright screenshots under
-  `ops/ui-audits/2026-07-10-onetime-launch-priority-landing-robot-local/`.
-  App-visible terminal Done is still pending commit/push, One Time deploy,
-  live smoke, and manual source-level review. Next actions: publish/deploy
-  the first wave, then continue `REQ-20260710-019` form-to-visible-CRM E2E.
+  Current status: raw/PQC, landing media/copy, Robot Scheller identity,
+  runtime-only public WhatsApp readiness, and form-to-visible-CRM E2E are
+  committed, pushed, deployed, and live-smoked. Final app deploys:
+  `0db8b757-4a7c-4a27-922a-30404f74ceb8` for the landing/helper wave and
+  `a261ef2c-1f27-485f-8d28-5361e1f7b8ff` for the TEST CRM E2E path. The CRM
+  E2E smoke created a TEST/example.invalid lead, found it in parent-leads and
+  CRM contact search, verified its timeline note, and archived CRM lead `8`.
+  Next action: continue `REQ-20260710-020` CRM workbench/detail polish.
 - [ ] `RAW-20260710-001` / `REQ-20260710-007` through
   `REQ-20260710-012`: One Time ramble-to-terminal UI gap closeout. Register:
   `tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md`.

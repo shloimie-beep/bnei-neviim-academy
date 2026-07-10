@@ -37689,3 +37689,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   mutation, CRM/provider/DNS/credential mutation, Drive/Zoom/Vimeo mutation,
   Agent Review result save, or production-data mutation beyond the approved
   Railway deploy.
+
+## 2026-07-10 - One Time form-to-CRM E2E live proof
+
+- Pushed commit `1d1a84b2`, adding a TEST/example.invalid-only public interest
+  E2E path that skips Telegram reminders while preserving normal signup
+  behavior.
+- Deployed to OneTime Railway `one-time-production / one-time-web`; deployment
+  `a261ef2c-1f27-485f-8d28-5361e1f7b8ff` reached `SUCCESS`.
+- Live E2E passed via `npm run app:smoke:one-time-interest-crm-e2e`: public
+  `/api/one-time/interest` created CRM lead `8`, parent-leads and CRM contact
+  search found the scoped row, the timeline showed `OneTime free-class public
+  signup captured`, Telegram reminder was skipped for the synthetic proof, and
+  cleanup archived lead `8`.
+- Regression smokes passed after deploy:
+  `npm run app:smoke:one-time-interest-dry-run`,
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`,
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`,
+  and `npm run watchdog:protocol-drift`.
+- `REQ-20260710-019` is Done. Remaining launch-priority work starts with
+  `REQ-20260710-020` CRM workbench/detail polish.
+- Guardrails: no email send, WhatsApp send, Telegram send for the TEST proof,
+  payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation,
+  external CRM write, or production-data mutation beyond the approved Railway
+  deploy and archived TEST CRM proof row.

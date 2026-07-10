@@ -9,6 +9,8 @@ const reportDir = path.join(repoRoot, 'ops', 'live-smokes');
 const env = loadSmokeEnv({ root: repoRoot });
 const oneTimeRailwayEnv = {
   ...env,
+  OPS_USERNAME: '',
+  OPS_PASSWORD: '',
   BNA_SMOKE_RAILWAY_PROJECT_ID: env.BNA_SMOKE_RAILWAY_PROJECT_ID || 'ce55ef20-1418-4ad3-aafa-f877fb992dc8',
   BNA_SMOKE_RAILWAY_SERVICE: env.BNA_SMOKE_RAILWAY_SERVICE || 'one-time-web',
   BNA_SMOKE_RAILWAY_ENVIRONMENT: env.BNA_SMOKE_RAILWAY_ENVIRONMENT || 'production',
