@@ -4,7 +4,7 @@
   "owner": "ChatGPT",
   "lane_key": "rabbi_sheller_provider-one_time_mishnah_class-launch-priority",
   "created_at": "2026-07-10T07:16:29Z",
-  "updated_at": "2026-07-10T11:00:55+03:00",
+  "updated_at": "2026-07-10T11:13:22+03:00",
   "picked_up_by": "chatgpt-dropoff-ingestor",
   "picked_up_at": "2026-07-10T07:27:19.147Z",
   "raw_ids_created": [
@@ -29,9 +29,9 @@
     "DEC-20260710-002",
     "DEC-20260710-003"
   ],
-  "implementation_status": "wave_1_local_verified_deploy_pending",
+  "implementation_status": "wave_1_deployed_live_smoked_crm_next",
   "agent_mode_audit_ready": false,
-  "next_action": "Commit/push/deploy/live-smoke the first landing/Robot Scheller/WhatsApp readiness wave, then continue REQ-20260710-019 form-to-visible-CRM E2E.",
+  "next_action": "Continue REQ-20260710-019 form-to-visible-CRM E2E, then the CRM workbench, historical inbox reconciliation, transactional follow-up, and Rabbi backend launch-readiness lanes.",
   "verification": [
     "Queued for Codex by scripts/chatgpt-dropoff-ingestor.mjs as task #1945.",
     "PASS raw intake and dated requirement register created.",
@@ -39,7 +39,13 @@
     "PASS focused One Time helper/landing/product/branding tests.",
     "PASS npm run watchdog:actions and npm run watchdog:protocol-drift.",
     "PASS local Playwright visual audit at ops/ui-audits/2026-07-10-onetime-launch-priority-landing-robot-local/report.md.",
-    "PASS no-secret grep for full public WhatsApp number variants."
+    "PASS no-secret grep for full public WhatsApp number variants.",
+    "PASS pushed commits f240b031 and 9599e708 to origin/master.",
+    "PASS deployed clean committed One Time bundle to Railway one-time-production / one-time-web; final deployment 0db8b757-4a7c-4a27-922a-30404f74ceb8 reached SUCCESS.",
+    "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com.",
+    "PASS npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com.",
+    "PASS npm run app:smoke:one-time-interest-dry-run.",
+    "PASS direct live readback for Robot Scheller, hero asset, WhatsApp redirect, guardrail copy, and no-send public WhatsApp readiness JSON."
   ],
   "evidence": [
     "GitHub issue #128 and this marked correction comment",
@@ -47,13 +53,15 @@
     "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
     "ops/prompt-packets/2026-07-10-onetime-launch-priority/01-landing-robot-scheller.product-quality.json",
     "ops/design-references/2026-07-10-onetime-landing-copy-and-assets/",
-    "ops/ui-audits/2026-07-10-onetime-launch-priority-landing-robot-local/report.md"
+    "ops/ui-audits/2026-07-10-onetime-launch-priority-landing-robot-local/report.md",
+    "ops/live-smokes/2026-07-10T08-12-46-559Z-rabbi-onetime-landing-smoke.md",
+    "ops/live-smokes/2026-07-10T08-12-46-630Z-one-time-interest-dry-run-live-smoke.md"
   ],
   "remaining_blockers": [
-    "App-visible terminal Done still requires commit, push, One Time deploy, live smoke, and manual source-level review.",
     "Direct public WhatsApp redirect remains blocked until ONE_TIME_PUBLIC_WHATSAPP_NUMBER is configured at runtime/keyholder level.",
     "Form-to-visible-CRM E2E, CRM workbench, historical inbox reconciliation, transactional follow-up, and Rabbi backend launch-readiness remain open requirements."
   ],
+  "production_deployment_performed": true,
   "external_writes_performed": false,
   "secrets_included": false,
   "requires_codex_audit_before_apply": true,

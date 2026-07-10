@@ -37640,3 +37640,30 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no external send, WhatsApp send, email send, payment/access
   mutation, CRM/provider/DNS/credential mutation, Drive/Zoom/Vimeo mutation,
   Agent Review result save, or production-data mutation.
+
+## 2026-07-10 - One Time launch-priority landing and Robot Scheller deployed
+
+- Pushed commits `f240b031` and guardrail-copy hotfix `9599e708` to
+  `origin/master`.
+- Deployed clean committed bundles from an isolated temp worktree with
+  `BNA_DEPLOY_APP=one-time`, preserving unrelated dirty provider/audit work in
+  the main checkout.
+- Railway deployment `f4d8578c-9dfc-4c41-85a8-cffb3338df91` reached
+  `SUCCESS`; first live smoke correctly failed because the public no-charge /
+  no-portal guardrail copy was missing.
+- Railway deployment `0db8b757-4a7c-4a27-922a-30404f74ceb8` reached
+  `SUCCESS` after hotfix.
+- Live verification passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`,
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`,
+  `npm run app:smoke:one-time-interest-dry-run`, and direct readback for Robot
+  Scheller, the hero asset, the same-origin WhatsApp redirect, guardrail copy,
+  and `/api/one-time/public-whatsapp` no-send readiness.
+- `REQ-20260710-015` through `REQ-20260710-018` are Done for the first
+  launch-visible wave. Direct public WhatsApp activation remains blocked by
+  `DEC-20260710-002` until `ONE_TIME_PUBLIC_WHATSAPP_NUMBER` is configured in
+  runtime/keyholder config. `REQ-20260710-019` through `REQ-20260710-025`
+  remain open.
+- Guardrails: no email send, WhatsApp send, payment/access mutation,
+  CRM/provider/DNS/credential mutation, Drive/Zoom/Vimeo mutation, Agent Review
+  result save, or production-data mutation beyond the approved Railway deploy.
