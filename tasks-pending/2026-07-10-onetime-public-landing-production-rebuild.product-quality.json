@@ -85,12 +85,10 @@
     ],
     "likely_external_provider_blockers": [
       "final hero image not supplied",
-      "generated Robot Scheller image not supplied",
       "direct WhatsApp public number/readiness may be unavailable",
       "public teaching-photo permissions and verified location captions required",
       "Ramat Beit Shemesh address approval required",
-      "verified social URLs required",
-      "deployment authorization withheld by prompt"
+      "verified social URLs required"
     ],
     "product_quality_compiler_required": true,
     "super_ramble_packet_splitter_required": true,
@@ -121,8 +119,8 @@
     },
     {
       "id": "DEC-20260710-011",
-      "decision": "Generated Robot Scheller image is not in the attachment folder.",
-      "status": "blocked"
+      "decision": "Robot Scheller image was resolved from RAW-20260710-009 using the latest downloaded approved image and cropped for the launcher bubble.",
+      "status": "resolved"
     },
     {
       "id": "DEC-20260710-012",
@@ -141,12 +139,12 @@
     },
     {
       "id": "DEC-20260710-015",
-      "decision": "Deployment is not authorized by the enclosing prompt.",
-      "status": "blocked"
+      "decision": "Deployment is authorized by the enclosing owner-experience closure prompt and the operator's keep-going instruction for safe app-visible One Time fixes.",
+      "status": "resolved"
     }
   ],
   "out_of_scope": [
-    "No deployment or live smoke unless the operator explicitly authorizes deployment.",
+    "No deployment outside the existing One Time Railway one-time-web production service.",
     "No payment, checkout, access grant, Zoom write, Drive write, Vimeo upload, email send, WhatsApp send, WAPI mutation, DNS change, or external provider mutation.",
     "No GHL, LeadConnector, or external CRM runtime.",
     "No fabricated logos, testimonials, statistics, affiliations, locations, social links, media appearances, or stock classroom photographs.",
@@ -248,7 +246,7 @@
       "acceptance_criteria": [
         "No production code references C:\\Users\\User\\Downloads.",
         "No fake logos, social links, claims, captions, testimonials, or stock classroom photos appear.",
-        "Missing final hero image and Robot image are recorded."
+        "Missing final hero image is recorded and the resolved Robot Scheller image is mapped."
       ]
     },
     {
@@ -323,11 +321,11 @@
     {
       "id": "REQ-20260710-046",
       "statement": "Complete verification and closeout with local commands, screenshot evidence, signup-flow results, registry review, ledger, changelog, and explicit blockers.",
-      "expected_result": "The final handoff names files changed, evidence, tests, screenshots, signup results, missing images, unverified captions/social links, non-live product features, and deployment blocker.",
+      "expected_result": "The final handoff names files changed, evidence, tests, screenshots, signup results, missing/unverified assets, unverified captions/social links, non-live product features, deployment, and live-smoke status.",
       "acceptance_criteria": [
         "Relevant checks/build pass or exact pre-existing blockers are isolated.",
         "Desktop and mobile screenshot evidence exists.",
-        "Deployment remains blocked unless explicitly authorized."
+        "Authorized deployment is followed by live smoke/readback, or the exact Railway/live-smoke blocker is recorded."
       ]
     }
   ],

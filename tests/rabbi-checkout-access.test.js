@@ -216,7 +216,7 @@ test('public Rabbi aliases serve the focused One Time landing instead of the leg
   assert.doesNotMatch(server, /app\.get\(\s*'\/'[\s\S]*rabbi\.html/);
   assert.match(server, /defaults\.price_amount_cents/);
 
-  assert.match(oneTimeLandingHtml, /Your Child Can Love Learning Mishnayos/);
+  assert.match(oneTimeLandingHtml, /Give your son a love for Torah you never thought possible\./);
   assert.match(oneTimeLandingHtml, /data-one-time-workspace="rabbi_sheller_provider"/);
   assert.match(oneTimeLandingHtml, /data-one-time-project="one_time_mishnah_class"/);
   assert.doesNotMatch(oneTimeLandingHtml, /Preview mode only\. The BNA homepage is not replaced\./);

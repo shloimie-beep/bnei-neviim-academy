@@ -590,19 +590,19 @@
       height: 34px;
       border: 2px solid rgba(237, 229, 24, 0.76);
       border-radius: 999px;
-      background: linear-gradient(150deg, #25d366 0%, #0e9f73 44%, #0d3140 100%);
+      overflow: hidden;
+      background:
+        linear-gradient(150deg, rgba(37, 211, 102, 0.22), rgba(8, 9, 16, 0.18)),
+        #080910 url("/assets/one-time/robot/robot-scheller-whatsapp.png") center center / cover no-repeat;
       box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.14);
     }
     .bna-bot-avatar::after {
-      content: "RS";
-      display: grid;
-      place-items: center;
+      content: "";
+      display: block;
       width: 100%;
       height: 100%;
-      color: #fff;
-      font-size: 0.68rem;
-      font-weight: 900;
-      letter-spacing: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
     }
     .bna-bot-nudge {
       position: fixed;

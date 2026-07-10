@@ -85,10 +85,11 @@ test('shared One Time review pages include review branding assets', () => {
   }
 
   const oneTimeHtml = fs.readFileSync('public/one-time/index.html', 'utf8');
-  assert.match(oneTimeHtml, /Your Child Can Love Learning Mishnayos/);
-  assert.match(oneTimeHtml, /onetime-hero-vertical\.webp/);
+  assert.match(oneTimeHtml, /Give your son a love for Torah you never thought possible\./);
+  assert.match(oneTimeHtml, /\/assets\/one-time\/brand\/one-time-logo-white\.webp/);
+  assert.doesNotMatch(oneTimeHtml, /onetime-hero-vertical\.webp/);
   assert.doesNotMatch(oneTimeHtml, /TODO: replace with final hero video\/image/);
-  assert.match(oneTimeHtml, /\/images\/one-time\/press\/torahanytime-logo\.png/);
+  assert.match(oneTimeHtml, /\/assets\/one-time\/press\/torah-anytime\.png/);
   assert.doesNotMatch(oneTimeHtml, /player\.vimeo\.com\/video\/1158542993\?h=daa31d3417/);
   assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
   assert.doesNotMatch(oneTimeHtml, /TEST-ONETIME-REVIEW-ACCESS/);
@@ -167,7 +168,7 @@ test('committed One Time review assets and manifest exist', () => {
 
 test('One Time static chrome keeps footer, active nav, and compact helper coverage', () => {
   const chromePages = [
-    ['public/one-time/index.html', /<nav class="nav"[^>]*>[\s\S]*href="\/one-time" aria-current="page"/],
+    ['public/one-time/index.html', /<header class="site-header">[\s\S]*class="brand-lockup" href="\/one-time"/],
     ['public/rabbi-member.html', /<nav class="member-topbar"[^>]*>[\s\S]*href="\/rabbi-member"[^>]*aria-current="page"/],
     ['public/member-library.html', /<nav class="member-nav"[^>]*>[\s\S]*href="\/member-library" aria-current="page"/],
     ['public/one-time-classroom.html', /<div class="top-actions">[\s\S]*href="\/one-time-classroom" aria-current="page"/],
@@ -184,9 +185,9 @@ test('One Time static chrome keeps footer, active nav, and compact helper covera
   }
 
   const landing = fs.readFileSync('public/one-time/index.html', 'utf8');
-  assert.match(landing, /\.brand-mark \{\s*width: 60px;\s*height: 60px;/);
-  assert.match(landing, /\.nav a \{\s*min-height: 44px;/);
-  assert.match(landing, /\.nav a\[aria-current="page"\],\s*\.nav \.nav-cta/);
+  assert.match(landing, /\.brand-lockup img \{\s*width: 132px;/);
+  assert.match(landing, /\.site-nav a \{\s*padding: 10px 0;/);
+  assert.match(landing, /\.site-nav a:hover,\s*\.site-nav a:focus-visible/);
 
   const member = fs.readFileSync('public/rabbi-member.html', 'utf8');
   assert.match(member, /\.member-brand-lockup img \{\s*width: 56px;\s*height: 56px;/);

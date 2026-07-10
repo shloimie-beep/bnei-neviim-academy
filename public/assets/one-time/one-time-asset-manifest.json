@@ -1,9 +1,9 @@
 {
   "manifest_version": "one-time-landing-assets-v1",
-  "updated_at": "2026-07-10T12:00:00+03:00",
+  "updated_at": "2026-07-10T19:05:00+03:00",
   "source_folder_status": "available",
   "source_folder_item_count": 21,
-  "robot_asset_status": "missing_from_addendum_attachment",
+  "robot_asset_status": "downloaded_latest_and_imported",
   "assets": [
     {
       "source_filename": "onetimelogo.webp",
@@ -384,22 +384,22 @@
       "status": "held_back_html"
     },
     {
-      "source_filename": "newest blue Robot Scheller image attached with addendum",
-      "source_mime": "image/png expected",
+      "source_filename": "ChatGPT Image Jul 10, 2026, 06_43_03 PM.png",
+      "source_mime": "image/png",
       "production_filename": "public/assets/one-time/robot/robot-scheller-whatsapp.png",
       "section": "RobotSchellerLauncher",
-      "width": null,
-      "height": null,
+      "width": 512,
+      "height": 512,
       "duration": null,
-      "codec": null,
-      "transparency": "unknown",
+      "codec": "png rgb crop resized from 1254x1254 source",
+      "transparency": "no",
       "alt_text": "Robot Scheller WhatsApp assistant",
-      "verified_content": "not accessible in attachment folder",
+      "verified_content": "Green WhatsApp-themed Robot Scheller with green glasses and green kippah",
       "verified_location": null,
-      "identity_verification": "missing: attachment folder contained only pasted-text.txt",
-      "rights_provenance": "not imported because source image was not attached or present in Downloads folder",
-      "optimization_status": "not copied",
-      "status": "missing_required_asset"
+      "identity_verification": "visually verified from newest downloaded image in Downloads",
+      "rights_provenance": "operator instructed Codex to use the latest downloaded Robot Scheller picture",
+      "optimization_status": "tightly cropped and resized to 512x512 so the glasses, kippah, and WhatsApp-green body read clearly inside the circular assistant launcher bubble",
+      "status": "used"
     }
   ],
   "missing_verified_teaching_locations": [

@@ -891,7 +891,7 @@
       margin-bottom: 0;
     }
 
-    .footer {
+    .one-time-site-footer {
       padding: 42px 0 34px;
       color: rgba(255, 255, 255, 0.68);
       border-top: 1px solid rgba(255, 255, 255, 0.12);
@@ -905,7 +905,7 @@
       gap: 22px;
     }
 
-    .footer img {
+    .one-time-site-footer img {
       width: 118px;
       height: auto;
     }
@@ -1125,51 +1125,78 @@
 
       .menu-button {
         display: inline-flex;
+        color: var(--black);
+        background: var(--white);
+        border-color: rgba(255, 255, 255, 0.72);
+        box-shadow: 0 14px 26px rgba(0, 0, 0, 0.22);
       }
 
       .nav-shell {
         position: fixed;
         top: var(--header-height);
-        bottom: 0;
         left: 0;
         right: 0;
         z-index: 1001;
         display: none;
-        height: calc(100vh - var(--header-height));
-        padding: 18px;
+        align-items: center;
+        gap: 10px;
+        min-height: 78px;
+        padding: 14px 18px 16px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-        background: #050505;
-        overflow-y: auto;
+        background: rgba(5, 5, 5, 0.96);
+        box-shadow: 0 24px 46px rgba(0, 0, 0, 0.42);
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
       }
 
       .nav-shell.open {
-        display: block;
+        display: flex;
       }
 
       .nav-shell .site-nav {
-        display: grid;
-        gap: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: max-content;
       }
 
       .nav-shell .site-nav a {
-        min-height: 46px;
-        display: flex;
+        min-height: 42px;
+        display: inline-flex;
         align-items: center;
-        padding: 0;
+        justify-content: center;
+        padding: 0 14px;
+        border: 1px solid rgba(255, 255, 255, 0.86);
+        border-radius: 6px;
+        color: var(--black);
+        background: var(--white);
+        box-shadow: none;
       }
 
       .nav-shell .header-actions {
-        display: grid;
-        grid-template-columns: 1fr;
+        display: flex;
+        align-items: center;
         gap: 10px;
-        margin-top: 16px;
+        min-width: max-content;
+        margin-top: 0;
       }
 
       .nav-shell .member-link {
         min-height: 44px;
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        padding: 0;
+        justify-content: center;
+        padding: 0 14px;
+        border: 1px solid rgba(255, 255, 255, 0.86);
+        border-radius: 6px;
+        color: var(--black);
+        background: var(--white);
+      }
+
+      .nav-shell .button {
+        min-height: 44px;
       }
 
       .hero {
@@ -1386,7 +1413,7 @@
     }
   </style>
 </head>
-<body>
+<body data-one-time-rabbi-dashboard="public-landing" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -1760,7 +1787,7 @@
     </section>
   </main>
 
-  <footer class="footer">
+  <footer class="one-time-site-footer" data-one-time-canonical-footer>
     <div class="wrap footer-inner">
       <div>
         <img src="/assets/one-time/brand/one-time-logo-white.webp" width="118" height="74" alt="One Time">

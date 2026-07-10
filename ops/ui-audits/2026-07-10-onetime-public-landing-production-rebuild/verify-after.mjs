@@ -202,7 +202,7 @@ await focusDesktop.locator('.hero').screenshot({ path: path.join(outDir, 'focus-
 await focusDesktop.locator('#rabbi').screenshot({ path: path.join(outDir, 'focus-rabbi-press-1440.png') });
 await focusDesktop.locator('#teaching').screenshot({ path: path.join(outDir, 'focus-teaching-carousel-1440.png') });
 await focusDesktop.locator('#receive').screenshot({ path: path.join(outDir, 'focus-benefits-grid-1440.png') });
-await focusDesktop.locator('.footer').screenshot({ path: path.join(outDir, 'focus-footer-1440.png') });
+await focusDesktop.locator('[data-one-time-canonical-footer]').screenshot({ path: path.join(outDir, 'focus-footer-1440.png') });
 await focusDesktop.locator('.bna-bot-launcher').screenshot({ path: path.join(outDir, 'focus-robot-scheller-launcher-1440.png') });
 await focusDesktop.close();
 
