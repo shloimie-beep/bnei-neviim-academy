@@ -37667,3 +37667,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Guardrails: no email send, WhatsApp send, payment/access mutation,
   CRM/provider/DNS/credential mutation, Drive/Zoom/Vimeo mutation, Agent Review
   result save, or production-data mutation beyond the approved Railway deploy.
+
+## 2026-07-10 - One Time provider text containment deployed
+
+- Pushed commit `f3368cfe` to `origin/master` for `REQ-20260710-009` /
+  `UIGAP-20260710-003`.
+- Provider overview, CRM record meta chips, and mailbox readiness chips now use
+  one-line fitted email values with full `title`/`aria-label`; CRM explanatory
+  copy wraps at normal word boundaries instead of arbitrary character breaks.
+- Deployed from a clean worktree at `f3368cfe` to OneTime Railway
+  `one-time-web` production deployment
+  `f338b59b-a545-40ab-b952-13b4111ecd2a`, which reached `SUCCESS`.
+- Verification passed: focused provider navigation test, shared One Time
+  branding test, separate-instance live smoke, focused live provider text-fit
+  readback at 390px, 430px, and 1440px with no overview/CRM/mailbox horizontal
+  overflow, and protocol-drift watchdog with 0 findings.
+- Non-blocking note: `app:smoke:one-time-shared-review` currently fails before
+  the provider route on stale landing selector `.hero-media-placeholder`; this
+  is tracked separately from the provider text-fit gap.
+- Guardrails: no external send, WhatsApp send, email send, payment/access
+  mutation, CRM/provider/DNS/credential mutation, Drive/Zoom/Vimeo mutation,
+  Agent Review result save, or production-data mutation beyond the approved
+  Railway deploy.

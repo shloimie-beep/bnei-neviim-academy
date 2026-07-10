@@ -101,10 +101,12 @@ not authorize active GHL runtime paths.
   audit is machine-pass, and `REQ-20260710-007` mobile nav clipping is
   committed, pushed, deployed to OneTime Railway deployment
   `90990bd3-676f-433f-8a97-dfa6fa4723b7`, and live-readback verified 10/10.
-  Remaining open gaps: brand/copy normalization, provider text fit,
-  source/screenshot evidence guardrails, stale audit mapping, redacted
-  Operations content review, and Agent Mode proof prompts not yet run. Next
-  action: continue brand/copy and evidence guardrail packets.
+  `REQ-20260710-009` provider text fit is also committed, pushed, deployed to
+  OneTime Railway deployment `f338b59b-a545-40ab-b952-13b4111ecd2a`, and
+  live-readback verified at 390px, 430px, and 1440px. Remaining open gaps:
+  brand/copy normalization, source/screenshot evidence guardrails, stale audit
+  mapping, redacted Operations content review, and Agent Mode proof prompts
+  not yet run. Next action: continue brand/copy and evidence guardrail packets.
 - [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current
