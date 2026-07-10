@@ -1,10 +1,10 @@
 {
   "report_id": "onetime-owner-experience-final-readiness-verdict-20260710",
-  "generated_at": "2026-07-10T17:31:34+03:00",
+  "generated_at": "2026-07-10T17:47:03+03:00",
   "raw_id": "RAW-20260710-003",
   "requirement_id": "REQ-20260710-029",
   "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
-  "head_commit": "ae286370",
+  "head_commit": "abce44b5",
   "one_time_verdict": "not_ready",
   "production_ready": false,
   "source_mapping_status": {
@@ -97,12 +97,14 @@
     }
   ],
   "verification": [
-    "PASS commit ae286370 pushed to origin/master with final historical source mapping",
-    "PASS staged/source matrix check: 291 total, 290 terminal, 1 active owner row, 0 non-active unmapped rows",
-    "PASS npm run production:readiness:gate -- --json returned expected blocked status and blocker groups",
+    "PASS commit abce44b5 pushed to origin/master with final historical source mapping and final readiness verdict",
+    "PASS refreshed production readiness snapshot at 2026-07-10T14:46:16.040Z: status not_production_complete, public_launch_smoke_ready=true, sampled_head=abce44b5, sampled_worktree_clean=false, dirty_paths_redacted=true",
+    "EXPECTED BLOCKED npm run production:readiness:gate -- --json at 2026-07-10T14:46:56.512Z: blocker groups include snapshot_not_production_ready, dirty_worktree, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing",
+    "PASS source matrix check: 291 total rows, 290 terminal rows, 1 active owner row, 0 non-active unmapped rows",
     "PASS npm run bna:run:status: blocked 2, done 8, validation passed",
     "PASS npm run bna:run:next: next unblocked executable batch none",
-    "PASS npm run app:smoke:rabbi-agent-review-proof-readiness: public prompts/artifacts live, hub proof state proof_blocked_or_pending, missing terminal prompt count 2"
+    "PASS npm run app:smoke:rabbi-agent-review-proof-readiness: prompts/artifacts live, hub proof state proof_blocked_or_pending, missing terminal prompt count 2",
+    "PASS production-readiness snapshot dirty status is path-redacted in tracked JSON"
   ],
   "evidence": [
     "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json",
@@ -111,7 +113,9 @@
     "ops/production-readiness/latest-production-readiness-snapshot.md",
     "ops/production-readiness/latest-production-unblocker.md",
     "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md",
-    "ops/audit-governance/2026-07-10T14-25-03-746Z-audit-governance.md"
+    "ops/audit-governance/2026-07-10T14-25-03-746Z-audit-governance.md",
+    "ops/production-readiness/latest-production-readiness-snapshot.json",
+    "ops/production-readiness/latest-production-unblocker.json"
   ],
   "guardrails": [
     "No email send",
@@ -131,5 +135,170 @@
     "Run Agent Mode prompt rabbi-helper-tool-scope-map and save terminal PASS/FAIL/BLOCKED proof.",
     "Schedule hosted restart/deploy window and scoped Rabbi Telegram live smoke only after exact approval.",
     "Clean or intentionally isolate unrelated dirty work, then rerun production readiness snapshot/gate."
+  ],
+  "audited_head_commit": "abce44b5",
+  "latest_readiness": {
+    "snapshot_generated_at": "2026-07-10T14:46:16.040Z",
+    "unblocker_generated_at": "2026-07-10T14:46:56.935Z",
+    "sampled_git_head": "abce44b5",
+    "sampled_origin_master": "abce44b5",
+    "sampled_worktree_clean": false,
+    "sampled_worktree_status_summary": {
+      "total_entries": 35,
+      "tracked_entries": 28,
+      "untracked_entries": 7,
+      "paths_redacted": true
+    },
+    "snapshot_status": "not_production_complete",
+    "public_launch_smoke_ready": true,
+    "public_launch_smoke_fresh": true,
+    "setup_ready_count": 5,
+    "setup_total_count": 8,
+    "setup_blocker_count": 3,
+    "blocker_groups": [
+      "no_unblocked_executable_batch",
+      "external_setup_blockers",
+      "rabbi_telegram_runtime_configuration",
+      "agent_mode_terminal_proof_missing"
+    ]
+  },
+  "layered_readiness_verdicts": {
+    "PUBLIC_FREE_CLASS_LANE": {
+      "verdict": "ready",
+      "scope": "Public One Time landing, free-class CTA, no-write interest/dry-run smoke, and first-party CRM readback only; excludes payments, campaign sends, WhatsApp/WAPI sends, and access grants.",
+      "evidence": [
+        "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
+        "ops/live-smokes/2026-07-10T11-27-39-095Z-one-time-interest-dry-run-live-smoke.md",
+        "ops/live-smokes/2026-07-10T11-27-49-452Z-one-time-interest-crm-e2e-live-smoke.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "conditions": [
+        "Continue using no-send/no-charge smoke paths until campaign, WAPI, and Stripe setup are explicitly approved and reverified."
+      ]
+    },
+    "OWNER_AND_ROLE_INTERFACE": {
+      "verdict": "not_ready",
+      "scope": "Owner/provider/member/parent/student/classroom/Agent Review role experience and acceptance path.",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md",
+        "ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md",
+        "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md",
+        "ops/production-readiness/latest-production-unblocker.md"
+      ],
+      "blockers": [
+        "Two Agent Mode terminal proofs are still not_started: rabbi-telegram-helper-ticket-smoke and rabbi-helper-tool-scope-map.",
+        "A fresh clean-tree owner/role acceptance gate cannot pass while the production readiness sample is dirty and no unblocked executable batch exists.",
+        "Hosted Rabbi Telegram live-smoke proof is still pending exact approval and verification."
+      ]
+    },
+    "FULL_COMMERCIAL_AUTOMATION": {
+      "verdict": "blocked",
+      "scope": "Stripe/payment/access, WhatsApp/WAPI, real campaign seed/send, hosted Telegram delivery, and full launch automation.",
+      "evidence": [
+        "ops/production-readiness/latest-production-readiness-snapshot.md",
+        "ops/production-readiness/latest-production-unblocker.md",
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json"
+      ],
+      "blockers": [
+        {
+          "id": "external_setup_blockers",
+          "owner": "Shloimie / provider account owners",
+          "next_action": "Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.",
+          "missing_fields": []
+        },
+        {
+          "id": "rabbi_telegram_runtime_configuration",
+          "owner": "Codex / operator",
+          "next_action": "Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.",
+          "missing_fields": []
+        },
+        {
+          "id": "agent_mode_terminal_proof_missing",
+          "owner": "Shloimie / Agent Mode runner",
+          "next_action": "Run each listed Agent Mode prompt and save terminal PASS, FAIL, or BLOCKED proof through the listed Operations drop-off URL.",
+          "missing_fields": []
+        }
+      ]
+    }
+  },
+  "owner_tour_urls": [
+    {
+      "order": 1,
+      "label": "Public One Time landing / free-class CTA",
+      "url": "https://join.onetimeonetime.com/one-time/",
+      "state": "live_public_ready_no_write_smoked"
+    },
+    {
+      "order": 2,
+      "label": "Member entry",
+      "url": "https://join.onetimeonetime.com/rabbi-member",
+      "state": "public_entry_private_member_data_requires_session"
+    },
+    {
+      "order": 3,
+      "label": "Member library",
+      "url": "https://join.onetimeonetime.com/member-library",
+      "state": "private_route_session_required"
+    },
+    {
+      "order": 4,
+      "label": "Classroom/library",
+      "url": "https://join.onetimeonetime.com/one-time-classroom",
+      "state": "private_route_session_required"
+    },
+    {
+      "order": 5,
+      "label": "Parent review fixture",
+      "url": "https://join.onetimeonetime.com/parent.html?review=one-time",
+      "state": "public_TEST_review_fixture_only_not_finished_parent_portal"
+    },
+    {
+      "order": 6,
+      "label": "Parent password setup shell",
+      "url": "https://join.onetimeonetime.com/one-time-parent",
+      "state": "private_setup_link_token_required"
+    },
+    {
+      "order": 7,
+      "label": "Student review fixture",
+      "url": "https://join.onetimeonetime.com/student.html?review=one-time",
+      "state": "public_TEST_review_fixture_only_not_full_student_auth_proof"
+    },
+    {
+      "order": 8,
+      "label": "Provider portal entry",
+      "url": "https://join.onetimeonetime.com/provider",
+      "state": "provider_login_or_scoped_session_required"
+    },
+    {
+      "order": 9,
+      "label": "Scoped provider mailbox session entry",
+      "url": "https://join.onetimeonetime.com/provider.html?admin_provider=one-time&section=mailbox",
+      "state": "private_scoped_session_required"
+    },
+    {
+      "order": 10,
+      "label": "Operations owner dashboard",
+      "url": "https://join.onetimeonetime.com/operations",
+      "state": "owner_login_required"
+    },
+    {
+      "order": 11,
+      "label": "Agent Review hub",
+      "url": "https://join.onetimeonetime.com/operations/agent-review",
+      "state": "owner_login_required_two_terminal_proofs_missing"
+    },
+    {
+      "order": 12,
+      "label": "Agent prompt: Telegram helper ticket smoke",
+      "url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md",
+      "state": "public_prompt_live_terminal_result_missing"
+    },
+    {
+      "order": 13,
+      "label": "Agent prompt: helper tool scope map",
+      "url": "https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md",
+      "state": "public_prompt_live_terminal_result_missing"
+    }
   ]
 }

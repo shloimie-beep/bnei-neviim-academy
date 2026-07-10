@@ -1,6 +1,6 @@
 # One Time Owner Experience Closure - Current Batch
 
-Generated: 2026-07-10T17:31:34+03:00
+Generated: 2026-07-10T17:47:03+03:00
 Raw objective: `raw-input/RAW-20260710-003-codex-followup-one-time-owner-experience-closure.md`
 Register: `tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md`
 Production target: `https://join.onetimeonetime.com`
@@ -96,7 +96,29 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
   `ops/production-readiness/latest-production-readiness-snapshot.md`.
   Snapshot result remains `not_production_complete` because full launch still
   has external Stripe/WAPI/campaign setup blockers, Telegram live delivery
-  proof pending, and Agent Mode terminal proof pending.
+  proof pending, and Agent Mode terminal proof pending. Dirty-tree path details are redacted in the tracked readiness JSON.
+
+## Layered Readiness Verdicts
+
+- PUBLIC_FREE_CLASS_LANE: ready. Public landing and free-class/no-write lead lane remain live-smoked and fresh for the launch gate; this does not include payments, campaign sends, WhatsApp/WAPI sends, or access grants.
+- OWNER_AND_ROLE_INTERFACE: not_ready. Readable Operations and role-surface proof exists, but two Agent Mode terminal results, clean-tree readiness sampling, hosted Rabbi Telegram live-smoke proof, and a final clean owner acceptance gate are still missing.
+- FULL_COMMERCIAL_AUTOMATION: blocked. Stripe sandbox/price aliases, Whapi/WAPI instance and phone metadata, campaign copy/list/suppression/seed approval, and hosted Telegram proof remain outside Codex-only execution.
+
+## Owner Tour URLs
+
+1. Public One Time landing / free-class CTA: https://join.onetimeonetime.com/one-time/ (live_public_ready_no_write_smoked)
+2. Member entry: https://join.onetimeonetime.com/rabbi-member (public_entry_private_member_data_requires_session)
+3. Member library: https://join.onetimeonetime.com/member-library (private_route_session_required)
+4. Classroom/library: https://join.onetimeonetime.com/one-time-classroom (private_route_session_required)
+5. Parent review fixture: https://join.onetimeonetime.com/parent.html?review=one-time (public_TEST_review_fixture_only_not_finished_parent_portal)
+6. Parent password setup shell: https://join.onetimeonetime.com/one-time-parent (private_setup_link_token_required)
+7. Student review fixture: https://join.onetimeonetime.com/student.html?review=one-time (public_TEST_review_fixture_only_not_full_student_auth_proof)
+8. Provider portal entry: https://join.onetimeonetime.com/provider (provider_login_or_scoped_session_required)
+9. Scoped provider mailbox session entry: https://join.onetimeonetime.com/provider.html?admin_provider=one-time&section=mailbox (private_scoped_session_required)
+10. Operations owner dashboard: https://join.onetimeonetime.com/operations (owner_login_required)
+11. Agent Review hub: https://join.onetimeonetime.com/operations/agent-review (owner_login_required_two_terminal_proofs_missing)
+12. Agent prompt: Telegram helper ticket smoke: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md (public_prompt_live_terminal_result_missing)
+13. Agent prompt: helper tool scope map: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md (public_prompt_live_terminal_result_missing)
 
 ## Guardrails
 
@@ -121,7 +143,7 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
 
 ## Final Owner Verdict
 
-`ONE_TIME_VERDICT: not_ready`. Final verdict artifact: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md`.
+`ONE_TIME_VERDICT: not_ready`. Layered verdicts and owner-tour URLs are recorded in `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md`.
 
 ## Twelfth Mapping Batch
 
@@ -164,4 +186,4 @@ Mapped `HIST-SRC-0252` through `HIST-SRC-0269`, covering July 6-8 task-register 
 
 ## Twenty-First Mapping Batch
 
-Mapped `HIST-SRC-0270` through `HIST-SRC-0289`, covering the final July 8-9 task-register rows for performance, classroom rewards, parent/student invite, media/classroom workflow, WAPI/Rabbi login/CRM, Vimeo Studio, parent trial/watch tracking, helper scope, Telegram ticket loop, audit governance, ChatGPT/Kimi workflow, launch catch-up, lead capture, frontend audit/static chrome/lag, scope UI/contact corrections, process cleanup, and production readiness. The matrix now has 291 mapped or active rows: 290 terminal rows plus active `HIST-SRC-0135`; 1 row still lacks terminal status, and it is the active owner objective. 0 non-active rows remain unmapped. No external send or provider mutation was performed in this mapping pass.
+Mapped `HIST-SRC-0270` through `HIST-SRC-0289`, covering the final July 8-9 task-register rows for performance, classroom rewards, parent/student invite, media/classroom workflow, WAPI/Rabbi login/CRM, Vimeo Studio, parent trial/watch tracking, helper scope, Telegram ticket loop, audit governance, ChatGPT/Kimi workflow, launch catch-up, lead capture, frontend audit/static chrome/lag, scope UI/contact corrections, process cleanup, and production readiness. The matrix now has 291 mapped or active rows: 290 terminal rows plus active `HIST-SRC-0135`; 1 row still lacks terminal status, and it is the active owner objective. 0 non-active rows remain unmapped. Layered readiness verdicts and owner-tour URLs are now recorded in the final verdict artifact. No external send or provider mutation was performed in this mapping pass.

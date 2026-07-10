@@ -38094,3 +38094,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Produced `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md` and `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.json` for `REQ-20260710-029`.
 - Verdict: `ONE_TIME_VERDICT: not_ready`. Historical source mapping is complete for all non-active rows, but production readiness remains blocked by external setup, two missing Agent Mode terminal proofs, hosted Rabbi Telegram live-smoke proof, dirty-tree readiness sampling, and no unblocked executable batch.
 - Verification: `npm run production:readiness:gate -- --json` returned expected blocked status; `npm run bna:run:status` reported 8 done / 2 blocked; `npm run bna:run:next` found no unblocked executable batch; `npm run app:smoke:rabbi-agent-review-proof-readiness` passed live prompt/artifact readback with 2 missing terminal proofs. No external mutation was performed.
+
+## 2026-07-10 - One Time layered readiness verdict refreshed
+
+- Refreshed production readiness snapshot/unblocker at sampled head `abce44b5` and updated the final owner verdict package with the required layered verdicts plus ordered owner-tour URLs.
+- Added a production-readiness snapshot guardrail so dirty worktree evidence records counts and `paths redacted` instead of raw local file paths.
+- Verdicts: `PUBLIC_FREE_CLASS_LANE: ready` for the no-write/free-class scope; `OWNER_AND_ROLE_INTERFACE: not_ready`; `FULL_COMMERCIAL_AUTOMATION: blocked`; overall `ONE_TIME_VERDICT: not_ready`.
+- Verification: staged JSON parsed; source matrix counts remain 291 total / 290 terminal / 1 active / 0 non-active unmapped; production readiness gate remains expected-blocked. No external mutation was performed.

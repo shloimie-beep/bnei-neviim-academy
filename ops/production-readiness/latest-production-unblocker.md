@@ -1,12 +1,12 @@
-# Production Unblocker - 2026-07-09T22:58:19.741Z
+# Production Unblocker - 2026-07-10T14:46:56.935Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-09T22:58:06.364Z
-Snapshot git head: f9ceb330 (origin/master: 86bff3eb, worktree clean: yes)
+Source snapshot generated at: 2026-07-10T14:46:16.163Z
+Snapshot git head: abce44b5 (origin/master: abce44b5, worktree clean: no)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
-OneTime setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
+One Time setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
 ## What Blocks Production
 - External setup items: 3
 - Public launch no-write smoke: passed (ready)
@@ -23,7 +23,7 @@ Evidence:
   - REQ-20260702-108
   - REQ-20260702-110
 Next action: Clear the external setup, terminal Agent Mode proof, and active collision-lane blockers; then rerun `npm run bna:run:next`.
-### external_setup_blockers - External OneTime setup values or approvals are missing
+### external_setup_blockers - External One Time setup values or approvals are missing
 Owner: Shloimie / provider account owners
 Count: 3
 Evidence:
@@ -121,7 +121,7 @@ Verification after setup:
 Status: passed
 Ready: yes
 Fresh for launch gate: yes
-Age hours: 5.37
+Age hours: 21.18
 Commands passed: 4/4
 External write performed: no
 Production data mutation performed: no

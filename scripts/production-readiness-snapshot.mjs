@@ -274,15 +274,40 @@ function latestMatchingFile(relativeDir, pattern) {
     .at(-1) || '';
 }
 
+export function summarizeGitStatus(statusShort = '') {
+  const statusLines = String(statusShort || '').split(/\r?\n/).filter(Boolean);
+  const branchLine = statusLines.find((line) => line.startsWith('##')) || '';
+  const entries = statusLines.filter((line) => !line.startsWith('##'));
+  const untrackedEntries = entries.filter((line) => line.startsWith('??')).length;
+  const trackedEntries = entries.length - untrackedEntries;
+  const summary = {
+    total_entries: entries.length,
+    tracked_entries: trackedEntries,
+    untracked_entries: untrackedEntries,
+    paths_redacted: entries.length > 0,
+  };
+  return {
+    clean: entries.length === 0,
+    summary,
+    status_short: entries.length
+      ? [
+          branchLine,
+          `[dirty tree: tracked_entries=${trackedEntries}, untracked_entries=${untrackedEntries}, total_entries=${entries.length}; paths redacted]`,
+        ].filter(Boolean).join('\n')
+      : branchLine,
+  };
+}
+
 function buildGitSnapshot() {
-  const statusShort = runGit(['status', '-sb']);
-  const statusLines = statusShort.split(/\r?\n/).filter(Boolean);
+  const rawStatusShort = runGit(['status', '-sb']);
+  const summarizedStatus = summarizeGitStatus(rawStatusShort);
   return {
     branch: runGit(['branch', '--show-current']),
     head: runGit(['rev-parse', '--short', 'HEAD']),
     origin_master: runGit(['rev-parse', '--short', 'origin/master']),
-    status_short: statusShort,
-    clean: statusLines.length === 1 && !statusLines.some((line, index) => index > 0 && line.trim()),
+    status_short: summarizedStatus.status_short,
+    status_summary: summarizedStatus.summary,
+    clean: summarizedStatus.clean,
   };
 }
 

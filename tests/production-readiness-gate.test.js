@@ -87,6 +87,23 @@ test('production readiness gate passes a clean fully ready snapshot', async () =
   assert.equal(report.guardrails.some((item) => /Read-only/.test(item)), true);
 });
 
+test('production readiness snapshot redacts dirty worktree path details', async () => {
+  const mod = await loadSnapshot();
+  const summary = mod.summarizeGitStatus([
+    '## master...origin/master',
+    ' M server.js',
+    '?? raw-input/private-note.md',
+  ].join('\n'));
+
+  assert.equal(summary.clean, false);
+  assert.equal(summary.summary.tracked_entries, 1);
+  assert.equal(summary.summary.untracked_entries, 1);
+  assert.equal(summary.summary.paths_redacted, true);
+  assert.match(summary.status_short, /paths redacted/);
+  assert.doesNotMatch(summary.status_short, /server\.js/);
+  assert.doesNotMatch(summary.status_short, /private-note/);
+});
+
 test('production readiness gate blocks external blockers, proof gaps, queued packets, dirty state, and active lanes', async () => {
   const mod = await loadGate();
   const snapshot = readySnapshot({
