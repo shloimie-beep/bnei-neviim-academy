@@ -426,12 +426,12 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "#interestForm button[type=\"submit\"]",
-      "expected_behavior": "Creates a first-party OneTime product lead and CRM lead from the public free-class signup form with parent name, email, optional student name, optional phone/WhatsApp, hidden consent, and source metadata; no checkout, external send, live charge, portal account, Zoom meeting creation, or access grant.",
+      "expected_behavior": "Creates a first-party OneTime product lead and CRM lead from the public free-class signup form with parent name, email, optional student name, optional phone/WhatsApp, hidden consent, source metadata, and idempotent blocked email/WhatsApp transactional follow-up timeline records; no checkout, external send, live charge, portal account, Zoom meeting creation, or access grant.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "api_guarded",
-        "expected_result": "Posts parent name, email, optional student name, optional phone/WhatsApp, hidden consent, and source metadata to /api/one-time/interest and returns a CRM-recorded no-checkout/no-send/no-access-grant confirmation."
+        "expected_result": "Posts parent name, email, optional student name, optional phone/WhatsApp, hidden consent, and source metadata to /api/one-time/interest and returns a CRM-recorded no-checkout/no-send/no-access-grant confirmation with blocked transactional follow-up attempts visible in the CRM timeline."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

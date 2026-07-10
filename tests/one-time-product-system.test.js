@@ -327,6 +327,16 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /INSERT INTO bna_parent_leads/);
   assert.match(server, /UPDATE bna_parent_leads/);
   assert.match(server, /OneTime free-class public signup captured/);
+  assert.match(server, /function buildOneTimeTransactionalFollowUpPlan/);
+  assert.match(server, /ensureOneTimeFreeClassTransactionalFollowUp/);
+  assert.match(server, /one_time_transactional_follow_up_key/);
+  assert.match(server, /metadata->>'one_time_transactional_follow_up_key'/);
+  assert.match(server, /const label = channel === 'email' \? 'email' : 'WhatsApp'/);
+  assert.match(server, /`OneTime free-class transactional \$\{label\} follow-up blocked`/);
+  assert.match(server, /externalActions\.requiredConfirmFor\('resend', 'send'\)/);
+  assert.match(server, /SEND_WHATSAPP/);
+  assert.match(server, /transactional_follow_up_send_blocked/);
+  assert.match(server, /transactional_follow_up_preview: buildOneTimeTransactionalFollowUpPlan/);
   assert.match(server, /function buildOneTimeSignupTelegramReminder/);
   assert.match(server, /function isOneTimeSyntheticLead/);
   assert.match(server, /<b>New OneTime signup<\/b>/);

@@ -177,6 +177,13 @@ async function main() {
     assert(Number(data.crm_lead_id) > 0, 'crm_lead_id missing');
     assert(data.no_telegram_reminder_sent === true, 'synthetic route did not skip Telegram reminder');
     assert(data.telegram_reminder_skipped === true, 'telegram_reminder_skipped flag missing');
+    assert(data.transactional_follow_up_logged === true, 'transactional follow-up ledger was not reported');
+    assert(data.transactional_follow_up_send_blocked === true, 'transactional follow-up send_blocked flag missing');
+    assert(data.no_email_sent === true, 'email send guardrail missing');
+    assert(data.no_whatsapp_or_wapi_sent === true, 'WhatsApp/WAPI send guardrail missing');
+    assert(Array.isArray(data.transactional_follow_up?.attempts), 'transactional follow-up attempts missing');
+    assert(data.transactional_follow_up.attempts.some((attempt) => attempt.channel === 'email'), 'email follow-up attempt missing');
+    assert(data.transactional_follow_up.attempts.some((attempt) => attempt.channel === 'whatsapp'), 'WhatsApp follow-up attempt missing');
     assert(data.external_write_performed === false, 'external_write_performed was not false');
     assert(data.no_checkout === true, 'checkout guardrail missing');
     assert(data.no_access_granted === true, 'access grant guardrail missing');
@@ -185,6 +192,16 @@ async function main() {
       product_lead_id: data.lead?.id || null,
       crm_lead_id: createdLeadId,
       telegram_reminder_skip_reason: data.telegram_reminder_skip_reason,
+      transactional_follow_up: {
+        logged: data.transactional_follow_up_logged,
+        send_blocked: data.transactional_follow_up_send_blocked,
+        attempts: data.transactional_follow_up.attempts.map((attempt) => ({
+          channel: attempt.channel,
+          created: attempt.created,
+          skipped: attempt.skipped || false,
+          delivery_status: attempt.delivery_status,
+        })),
+      },
     };
   });
 
@@ -211,15 +228,23 @@ async function main() {
     return { id: card.id, display_name: card.display_name, status: card.status, project_key: card.project_key };
   });
 
-  await step('CRM timeline shows the captured signup internal note', async () => {
+  await step('CRM timeline shows the captured signup and blocked follow-up attempts', async () => {
     const route = `/api/bna/crm/contacts/${encodeURIComponent(crmCard.id)}/timeline?workspace=rabbi_sheller_provider&project_key=one_time_mishnah_class`;
     const { response, data, text } = await fetchJson(route, { headers: cookieHeader() });
     assert(response.status === 200, `CRM timeline returned ${response.status}: ${text.slice(0, 500)}`);
     const item = (data.timeline || []).find((row) => /OneTime free-class public signup captured/i.test(`${row.body || ''} ${row.notes || ''}`));
     assert(item, 'signup capture timeline item missing');
+    const emailAttempt = (data.timeline || []).find((row) => /transactional email follow-up blocked/i.test(`${row.body || ''} ${row.summary || ''}`));
+    const whatsappAttempt = (data.timeline || []).find((row) => /transactional WhatsApp follow-up blocked/i.test(`${row.body || ''} ${row.summary || ''}`));
+    assert(emailAttempt, 'blocked transactional email follow-up timeline item missing');
+    assert(whatsappAttempt, 'blocked transactional WhatsApp follow-up timeline item missing');
     assert(data.no_send === true, 'timeline no_send flag missing');
     assert(data.external_write_performed === false, 'timeline external_write_performed was not false');
-    return { timeline_items: data.timeline.length, matched_type: item.communication_type || item.channel || 'unknown' };
+    return {
+      timeline_items: data.timeline.length,
+      matched_type: item.communication_type || item.channel || 'unknown',
+      blocked_follow_up_channels: [emailAttempt.channel || 'email', whatsappAttempt.channel || 'whatsapp'],
+    };
   });
 
   await step('archive TEST CRM lead after readback', archiveLeadIfNeeded);

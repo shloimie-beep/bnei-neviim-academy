@@ -77774,6 +77774,213 @@ async function sendOneTimeSignupTelegramReminder(lead = {}) {
   return result;
 }
 
+function safeOneTimeRecipientHash(value = '') {
+  const normalized = String(value || '').trim().toLowerCase();
+  if (!normalized) return '';
+  return crypto.createHash('sha256').update(normalized).digest('hex').slice(0, 16);
+}
+
+function buildOneTimeFreeClassEmailGate(lead = {}) {
+  const recipient = normalizeEmail(lead.email || lead.parent_email || '');
+  const config = resendServerRuntimeConfig({ oneTime: true });
+  const runtimeConfigured = Boolean(config.apiKey && config.fromEmail && config.domain);
+  const blockers = [];
+  if (!recipient) blockers.push('no_email_recipient');
+  if (!config.apiKey) blockers.push('RESEND_API_KEY missing');
+  if (!config.fromEmail) blockers.push('One Time Resend from email missing');
+  if (!config.domain) blockers.push('One Time Resend domain missing');
+  blockers.push(`exact approval missing: ${externalActions.requiredConfirmFor('resend', 'send')}`);
+  return {
+    channel: 'email',
+    recipient_present: Boolean(recipient),
+    recipient_hash: safeOneTimeRecipientHash(recipient),
+    runtime_configured: runtimeConfigured,
+    send_allowed: false,
+    send_blocked: true,
+    delivery_status: 'not_sent',
+    required_confirm: externalActions.requiredConfirmFor('resend', 'send'),
+    blockers,
+    no_send: true,
+    external_write_performed: false,
+  };
+}
+
+function buildOneTimeFreeClassWhatsAppGate(lead = {}) {
+  const recipient = normalizePhoneDigits(lead.whatsapp || lead.phone || lead.parent_whatsapp || lead.parent_phone || '');
+  const publicWhatsApp = oneTimePublicWhatsAppReadiness();
+  const wapiReadiness = oneTimeWapiAutoReplyReadiness({
+    workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    project_key: ONE_TIME_PROJECT_KEY,
+  });
+  const blockers = [];
+  if (!recipient) blockers.push('no_whatsapp_recipient');
+  if (!publicWhatsApp.configured) blockers.push('ONE_TIME_PUBLIC_WHATSAPP_NUMBER missing');
+  for (const blocker of wapiReadiness.blockers || []) blockers.push(blocker);
+  blockers.push('exact approval missing: SEND_WHATSAPP');
+  return {
+    channel: 'whatsapp',
+    recipient_present: Boolean(recipient),
+    recipient_hash: safeOneTimeRecipientHash(recipient),
+    public_whatsapp_configured: publicWhatsApp.configured === true,
+    class_link_configured: wapiReadiness.class_link_configured === true,
+    one_time_wapi_ready: wapiReadiness.ready === true,
+    credential_scope: wapiReadiness.credential_scope || 'unknown',
+    send_allowed: false,
+    send_blocked: true,
+    delivery_status: 'not_sent',
+    required_confirm: 'SEND_WHATSAPP',
+    blockers,
+    no_send: true,
+    external_write_performed: false,
+  };
+}
+
+function buildOneTimeTransactionalFollowUpPlan(lead = {}) {
+  const email = buildOneTimeFreeClassEmailGate(lead);
+  const whatsapp = buildOneTimeFreeClassWhatsAppGate(lead);
+  return {
+    source: 'one_time_free_class_transactional_follow_up',
+    idempotency_version: 'v1',
+    send_blocked: true,
+    no_email_sent: true,
+    no_whatsapp_or_wapi_sent: true,
+    no_checkout: true,
+    no_access_granted: true,
+    no_zoom_meeting_created: true,
+    external_write_performed: false,
+    channels: [email, whatsapp],
+  };
+}
+
+async function upsertOneTimeTransactionalFollowUpCommunication({
+  db,
+  project,
+  productLead,
+  crmLead,
+  channel,
+  gate,
+  syntheticTestLead = false,
+}) {
+  const leadId = Number(crmLead?.id || 0);
+  if (!db || !project?.id || !leadId || !channel || !gate) return null;
+  const key = `one-time-free-class-follow-up:${leadId}:${channel}:v1`;
+  const existing = (await db.query(
+    `SELECT id, channel, direction, summary, body, follow_up_required, metadata, created_at
+     FROM bna_contact_communications
+     WHERE project_id = $1
+       AND contact_type = 'lead'
+       AND lead_id = $2
+       AND channel = $3
+       AND COALESCE(metadata->>'one_time_transactional_follow_up_key', '') = $4
+     ORDER BY created_at DESC, id DESC
+     LIMIT 1`,
+    [project.id, leadId, channel, key]
+  )).rows[0] || null;
+  if (existing) {
+    return {
+      id: Number(existing.id),
+      channel,
+      created: false,
+      idempotency_key: key,
+      send_blocked: true,
+      delivery_status: oneTimeProductJson(existing.metadata).delivery_status || 'not_sent',
+    };
+  }
+
+  const label = channel === 'email' ? 'email' : 'WhatsApp';
+  const body = [
+    `OneTime free-class ${label} follow-up prepared for current class details.`,
+    `No ${label} was sent from the public signup form.`,
+    channel === 'email'
+      ? `External delivery requires Resend readiness plus exact ${gate.required_confirm} approval.`
+      : 'External delivery requires One Time WhatsApp/WAPI readiness plus exact SEND_WHATSAPP approval.',
+    'No checkout, payment, portal account, access grant, Zoom meeting, Vimeo, Drive, or external CRM write was triggered.',
+  ].join(' ');
+  const metadata = {
+    source: 'one_time_free_class_transactional_follow_up',
+    one_time_transactional_follow_up_key: key,
+    product_lead_id: productLead?.id || null,
+    crm_lead_id: leadId,
+    channel,
+    gate,
+    send_blocked: true,
+    delivery_status: 'not_sent',
+    synthetic_test_lead: syntheticTestLead,
+    no_send: true,
+    external_write_performed: false,
+  };
+  const row = (await db.query(
+    `INSERT INTO bna_contact_communications (
+       project_id, contact_type, lead_id, channel, direction,
+       summary, body, follow_up_required, occurred_at, created_by, source,
+       source_context, metadata
+     ) VALUES (
+       $1, 'lead', $2, $3, 'outbound',
+       $4, $5, TRUE, NOW(), 'public_one_time_form', 'web_assistant',
+       $6::jsonb, $7::jsonb
+     )
+     RETURNING id, channel, direction, summary, body, follow_up_required, metadata, created_at`,
+    [
+      project.id,
+      leadId,
+      channel,
+      `OneTime free-class transactional ${label} follow-up blocked`,
+      limitText(body, 2000),
+      JSON.stringify({
+        raw_intake_id: 'RAW-20260710-002',
+        product_lead_id: productLead?.id || null,
+        crm_lead_id: leadId,
+        channel,
+        recipient_present: gate.recipient_present === true,
+        recipient_hash: gate.recipient_hash || '',
+      }),
+      JSON.stringify(metadata),
+    ]
+  )).rows[0];
+  return {
+    id: Number(row.id),
+    channel,
+    created: true,
+    idempotency_key: key,
+    send_blocked: true,
+    delivery_status: 'not_sent',
+  };
+}
+
+async function ensureOneTimeFreeClassTransactionalFollowUp({ db, project, productLead, crmLead, lead, syntheticTestLead = false }) {
+  const plan = buildOneTimeTransactionalFollowUpPlan(lead);
+  const attempts = [];
+  for (const gate of plan.channels) {
+    if (!gate.recipient_present) {
+      attempts.push({
+        channel: gate.channel,
+        created: false,
+        skipped: true,
+        skip_reason: `no_${gate.channel}_recipient`,
+        send_blocked: true,
+        delivery_status: 'not_sent',
+      });
+      continue;
+    }
+    attempts.push(await upsertOneTimeTransactionalFollowUpCommunication({
+      db,
+      project,
+      productLead,
+      crmLead,
+      channel: gate.channel,
+      gate,
+      syntheticTestLead,
+    }));
+  }
+  return {
+    ...plan,
+    attempts: attempts.filter(Boolean),
+    logged_count: attempts.filter((attempt) => attempt && attempt.created).length,
+    existing_count: attempts.filter((attempt) => attempt && attempt.created === false && !attempt.skipped).length,
+    skipped_count: attempts.filter((attempt) => attempt && attempt.skipped).length,
+  };
+}
+
 function oneTimeScheduleView(row = {}) {
   return {
     id: row.id ? Number(row.id) : null,
@@ -78137,6 +78344,14 @@ async function createOneTimeProductLead(input = {}, db = pool) {
         }),
       ]
     );
+    const transactionalFollowUp = await ensureOneTimeFreeClassTransactionalFollowUp({
+      db: runner,
+      project,
+      productLead: productRow,
+      crmLead,
+      lead,
+      syntheticTestLead,
+    });
     if (client) await client.query('COMMIT');
     return {
       ...oneTimeProductLeadView(productRow),
@@ -78144,6 +78359,11 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       crm_source_table: 'bna_parent_leads',
       internal_crm_recorded: true,
       internal_follow_up_required: true,
+      transactional_follow_up: transactionalFollowUp,
+      transactional_follow_up_logged: transactionalFollowUp.logged_count > 0 || transactionalFollowUp.existing_count > 0,
+      transactional_follow_up_send_blocked: true,
+      no_email_sent: true,
+      no_whatsapp_or_wapi_sent: true,
       synthetic_test_lead: syntheticTestLead,
       telegram_reminder_allowed: !syntheticTestLead,
     };
@@ -78232,11 +78452,13 @@ async function previewOneTimeProductLeadCapture(input = {}, db = pool) {
       source: 'web_assistant',
       free_zoom_alias_required_before_automated_send: true,
     },
+    transactional_follow_up_preview: buildOneTimeTransactionalFollowUpPlan(lead),
     guardrails: {
       no_database_write_performed: true,
       no_product_lead_created: true,
       no_crm_lead_created_or_updated: true,
       no_internal_note_created: true,
+      no_transactional_follow_up_created: true,
       no_telegram_reminder_sent: true,
       no_email_sent: true,
       no_whatsapp_or_wapi_sent: true,
@@ -78904,6 +79126,7 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
         no_product_lead_created: true,
         no_crm_lead_created_or_updated: true,
         no_internal_note_created: true,
+        no_transactional_follow_up_created: true,
         no_telegram_reminder_sent: true,
         external_write_performed: false,
         message: 'Dry-run validated the OneTime free-class lead capture payload. No lead, reminder, checkout, access grant, send, Zoom meeting, or external write was created.',
@@ -78924,6 +79147,11 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       internal_crm_recorded: lead.internal_crm_recorded === true,
       crm_lead_id: lead.crm_lead_id || null,
       internal_follow_up_required: lead.internal_follow_up_required === true,
+      transactional_follow_up: lead.transactional_follow_up || null,
+      transactional_follow_up_logged: lead.transactional_follow_up_logged === true,
+      transactional_follow_up_send_blocked: lead.transactional_follow_up_send_blocked === true,
+      no_email_sent: true,
+      no_whatsapp_or_wapi_sent: true,
       no_telegram_reminder_sent: syntheticNoExternalReminder,
       telegram_reminder_skipped: syntheticNoExternalReminder,
       telegram_reminder_skip_reason: syntheticNoExternalReminder ? 'synthetic_test_lead_no_external_reminder' : null,
