@@ -382,7 +382,14 @@ test('One Time provider review keeps Communications selected through load, tab s
   }
 });
 
-test('One Time Rabbi CRM and mailbox review hide Super Admin setup diagnostics', async () => {
+test('One Time Rabbi CRM, mailbox, and access review hide Super Admin setup diagnostics', async () => {
+  assert.match(providerHtml, /Provider access boundary/);
+  assert.match(providerHtml, /Rabbi \/ One Time workspace/);
+  assert.doesNotMatch(
+    providerHtml,
+    /Eli Scheller can operate inside rabbi_sheller_provider \/ one_time_mishnah_class|super-admin access|Super Admin diagnostics/i,
+  );
+
   const local = createProviderReviewServer();
   const baseUrl = await local.listen();
   const browser = await chromium.launch({ headless: true });

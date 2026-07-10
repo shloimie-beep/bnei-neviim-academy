@@ -2964,7 +2964,7 @@
                         status: item.status,
                     }))),
                     reviewCard('Student portal boundary', `One Time includes: ${(data.student_portal_boundary?.one_time_student_portal || []).join(', ')}. Excludes: ${(data.student_portal_boundary?.excluded_school_portal_features || []).join(', ')}.`, 'No bot / no BNA goals'),
-                    reviewCard('Scope boundary', 'Eli Scheller can operate inside rabbi_sheller_provider / one_time_mishnah_class, view parent/student/classroom previews, and manage his workspace. He does not receive super-admin access to other accounts.', 'scoped only'),
+                    reviewCard('Provider access boundary', 'Eli Scheller can work inside the Rabbi / One Time workspace, view parent/student/classroom previews, and manage his own One Time records. Other BNA workspaces stay outside this portal.', 'Scoped'),
                 ].join('');
             }
             if (activityPanel) {
