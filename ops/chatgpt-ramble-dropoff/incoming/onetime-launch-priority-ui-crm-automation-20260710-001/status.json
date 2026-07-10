@@ -4,7 +4,7 @@
   "owner": "ChatGPT",
   "lane_key": "rabbi_sheller_provider-one_time_mishnah_class-launch-priority",
   "created_at": "2026-07-10T07:16:29Z",
-  "updated_at": "2026-07-10T11:23:11+03:00",
+  "updated_at": "2026-07-10T11:50:00+03:00",
   "picked_up_by": "chatgpt-dropoff-ingestor",
   "picked_up_at": "2026-07-10T07:27:19.147Z",
   "raw_ids_created": [
@@ -29,9 +29,9 @@
     "DEC-20260710-002",
     "DEC-20260710-003"
   ],
-  "implementation_status": "wave_2_form_to_crm_e2e_done_crm_workbench_next",
+  "implementation_status": "wave_3_crm_workbench_done_historical_inbox_next",
   "agent_mode_audit_ready": false,
-  "next_action": "Continue REQ-20260710-020 CRM workbench/detail polish, then historical inbox reconciliation, transactional follow-up, and Rabbi backend launch-readiness lanes.",
+  "next_action": "Continue REQ-20260710-021 historical inbox/contact reconciliation, then transactional follow-up and Rabbi backend launch-readiness lanes.",
   "verification": [
     "Queued for Codex by scripts/chatgpt-dropoff-ingestor.mjs as task #1945.",
     "PASS raw intake and dated requirement register created.",
@@ -48,7 +48,13 @@
     "PASS direct live readback for Robot Scheller, hero asset, WhatsApp redirect, guardrail copy, and no-send public WhatsApp readiness JSON.",
     "PASS pushed commit 1d1a84b2 and deployed to OneTime Railway one-time-production / one-time-web; deployment a261ef2c-1f27-485f-8d28-5361e1f7b8ff reached SUCCESS.",
     "PASS npm run app:smoke:one-time-interest-crm-e2e: TEST/example.invalid submit created CRM lead 8, parent-leads and CRM contact search found it, timeline showed signup capture note, and cleanup archived lead 8 with Telegram reminder skipped.",
-    "PASS post-E2E regressions: one-time-interest-dry-run, onetime-separate-instance, rabbi-onetime-landing, and protocol drift watchdog."
+    "PASS post-E2E regressions: one-time-interest-dry-run, onetime-separate-instance, rabbi-onetime-landing, and protocol drift watchdog.",
+    "PASS PQC validation for ops/prompt-packets/2026-07-10-onetime-launch-priority/02-crm-list-detail.product-quality.json.",
+    "PASS local One Time Operations CRM workbench screenshot smoke at desktop/tablet/mobile viewports with no overflow: ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md.",
+    "PASS pushed commit 353a0f33 and deployed clean committed One Time bundle to Railway one-time-production / one-time-web; deployment 73676e6e-b489-4da1-9c95-f366a4aa7c92 reached SUCCESS.",
+    "PASS npm run app:smoke:onetime-operations-crm-workbench: deployed operations app contained workbench/detail markers, scoped CRM API returned 12 cards, and selected timeline readback stayed no-send/read-only without saving raw contact data.",
+    "PASS npm run app:smoke:one-time-interest-crm-e2e after workbench deploy: TEST/example.invalid submit created CRM lead 9, parent-leads and CRM contact search found it, timeline showed signup capture note, and cleanup archived lead 9 with Telegram reminder skipped.",
+    "PASS post-workbench regressions: one-time-interest-dry-run, onetime-separate-instance, rabbi-onetime-landing, and protocol drift watchdog."
   ],
   "evidence": [
     "GitHub issue #128 and this marked correction comment",
@@ -59,11 +65,15 @@
     "ops/ui-audits/2026-07-10-onetime-launch-priority-landing-robot-local/report.md",
     "ops/live-smokes/2026-07-10T08-12-46-559Z-rabbi-onetime-landing-smoke.md",
     "ops/live-smokes/2026-07-10T08-12-46-630Z-one-time-interest-dry-run-live-smoke.md",
-    "ops/live-smokes/2026-07-10T08-22-45-952Z-one-time-interest-crm-e2e-live-smoke.md"
+    "ops/live-smokes/2026-07-10T08-22-45-952Z-one-time-interest-crm-e2e-live-smoke.md",
+    "ops/prompt-packets/2026-07-10-onetime-launch-priority/02-crm-list-detail.product-quality.json",
+    "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+    "ops/live-smokes/2026-07-10T08-45-30-918Z-one-time-operations-crm-workbench-live-smoke.md",
+    "ops/live-smokes/2026-07-10T08-45-40-132Z-one-time-interest-crm-e2e-live-smoke.md"
   ],
   "remaining_blockers": [
     "Direct public WhatsApp redirect remains blocked until ONE_TIME_PUBLIC_WHATSAPP_NUMBER is configured at runtime/keyholder level.",
-    "CRM workbench/detail polish, historical inbox reconciliation, transactional follow-up, and Rabbi backend launch-readiness remain open requirements."
+    "Historical inbox reconciliation, transactional follow-up, and Rabbi backend launch-readiness remain open requirements."
   ],
   "production_deployment_performed": true,
   "external_writes_performed": false,

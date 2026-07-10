@@ -37713,3 +37713,38 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation,
   external CRM write, or production-data mutation beyond the approved Railway
   deploy and archived TEST CRM proof row.
+
+## 2026-07-10 - One Time CRM workbench detail view deployed
+
+- Pushed commit `353a0f33`, adding the One Time CRM Workbench route treatment:
+  API-backed filter/search/sort controls, contact cards, selected contact
+  detail, class/trial/access context, local timeline readback, and no-send
+  next-action guardrails.
+- Local proof passed: PQC validation for
+  `ops/prompt-packets/2026-07-10-onetime-launch-priority/02-crm-list-detail.product-quality.json`,
+  focused CRM/communications tests, local five-viewport screenshot smoke
+  `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`, action
+  watchdog, and protocol-drift watchdog.
+- Deployed clean committed worktree `353a0f33` to OneTime Railway
+  `one-time-production / one-time-web`; deployment
+  `73676e6e-b489-4da1-9c95-f366a4aa7c92` reached `SUCCESS`.
+- Live workbench smoke passed via
+  `npm run app:smoke:onetime-operations-crm-workbench`: deployed
+  `operations.html` contained workbench/detail markers, the scoped CRM API
+  returned 12 cards, and selected timeline readback stayed no-send/read-only
+  without saving raw contact data. Report:
+  `ops/live-smokes/2026-07-10T08-45-30-918Z-one-time-operations-crm-workbench-live-smoke.md`.
+- Live E2E after deploy passed via `npm run app:smoke:one-time-interest-crm-e2e`:
+  synthetic TEST CRM lead `9` was created, found in parent-leads and CRM
+  contact search, verified in the signup-capture timeline, and archived after
+  readback. Report:
+  `ops/live-smokes/2026-07-10T08-45-40-132Z-one-time-interest-crm-e2e-live-smoke.md`.
+- Regression smokes passed after deploy: `npm run app:smoke:one-time-interest-dry-run`,
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`,
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`,
+  and `npm run watchdog:protocol-drift`.
+- `REQ-20260710-020` is Done. Next launch-priority lane is
+  `REQ-20260710-021` historical inbox/contact reconciliation. Guardrails: no
+  email send, WhatsApp/WAPI send, Telegram send for the TEST proof,
+  payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation,
+  raw private contact body commit, or external CRM write.
