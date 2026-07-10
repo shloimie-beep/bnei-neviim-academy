@@ -37997,3 +37997,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Covered mailbox status/readback, Super Admin mailbox/provider-login access, Telegram/Codex update prompting, Agent Mode prompt reconciliation/navigation/drop-off repairs, parent/student login polish, parent trial/IA consistency, Rabbi CRM noise cleanup, brand/helper/toolbar isolation, clean-launch cleanup, and audit-fix implementation.
 - The historical source matrix now has 95 mapped or active rows and 197 rows still lacking terminal status. The owner-experience goal remains active and not ready.
 - Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/imports/backfills as evidence only.
+
+## 2026-07-10 - One Time historical source ninth batch mapped
+
+- Mapped the July 8 parent invite, Agent Review, classroom/media, Vimeo, signup/helper, email, Telegram, and WAPI runtime source batch: `HIST-SRC-0091` through `HIST-SRC-0110`.
+- Covered parent trial invite/watch tracking, Agent Review start/copy/drop-off/readback repair, Agent Mode protocol lock, classroom rewards, member-library lag/materials/comments/access UX, email brand/scope guardrails, launch-ready parent/student cleanup, WAPI/Rabbi login/CRM work, Vimeo local workflow, public assistant/signup/helper, current-link emails, Telegram done updates, and runtime class-link readiness.
+- The historical source matrix now has 115 mapped or active rows and 177 rows still lacking terminal status. The owner-experience goal remains active and not ready.
+- Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/configuration as evidence only.

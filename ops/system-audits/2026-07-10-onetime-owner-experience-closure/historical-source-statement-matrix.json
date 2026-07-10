@@ -1,7 +1,7 @@
 {
   "report_id": "onetime-historical-source-statement-matrix-20260710-skeleton",
-  "generated_at": "2026-07-10T15:50:23+03:00",
-  "status": "skeleton created; first through eighth batches mapped; terminal mapping still required.",
+  "generated_at": "2026-07-10T15:58:11+03:00",
+  "status": "skeleton created; first through ninth batches mapped; terminal mapping still required.",
   "source_inventory": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json",
   "counts": {
     "total_source_statements": 291,
@@ -12,14 +12,14 @@
     "by_mapping_status": {
       "mapped_in_progress_goal_active": 1,
       "mapped_terminal_already_satisfied": 2,
-      "mapped_terminal_done": 15,
-      "mapped_terminal_done_deployed_live_smoked": 19,
+      "mapped_terminal_done": 16,
+      "mapped_terminal_done_deployed_live_smoked": 29,
       "mapped_terminal_done_no_external_send": 1,
       "mapped_terminal_mixed_done_and_blocked": 19,
-      "mapped_terminal_mixed_done_needs_decision_blocked": 38,
-      "needs_terminal_mapping": 23,
-      "needs_terminal_mapping_blocker_present": 125,
-      "needs_terminal_mapping_done_claim_present": 48
+      "mapped_terminal_mixed_done_needs_decision_blocked": 47,
+      "needs_terminal_mapping": 11,
+      "needs_terminal_mapping_blocker_present": 119,
+      "needs_terminal_mapping_done_claim_present": 46
     },
     "by_family": {
       "OT-HIST-001": 12,
@@ -32,12 +32,12 @@
     },
     "by_terminal_status": {
       "already_satisfied": 2,
-      "done": 15,
-      "done_deployed_live_smoked": 19,
+      "done": 16,
+      "done_deployed_live_smoked": 29,
       "done_no_external_send": 1,
       "mixed_terminal_done_and_blocked": 19,
-      "mixed_terminal_done_needs_decision_blocked": 38,
-      "null": 197
+      "mixed_terminal_done_needs_decision_blocked": 47,
+      "null": 177
     }
   },
   "source_statements": [
@@ -3508,11 +3508,18 @@
         "REQ-20260707-113",
         "REQ-20260707-114"
       ],
-      "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "referenced_decision_ids": [
+        "DEC-20260708-001"
+      ],
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-parent-trial-email-vimeo-watch-continuation.md",
+        "tasks-pending/2026-07-08-onetime-email-brand-scope-guardrails.md",
+        "tasks-pending/2026-07-08-onetime-launch-ready-parent-student-invite.md",
+        "ops/one-time-mishnah/vimeo-folder-library/2026-07-08T05-55-25-683Z-report.md"
+      ],
+      "blocker_or_next_action": "Parent trial/login reconciliation, invite path, student password reset verification, and watch tracking were implemented or verified locally, and later July 8 rows deployed the scoped invite/setup fixes. The original continuation remains mixed because Vimeo import/source selection and final live parent invite/send details were decision-gated."
     },
     {
       "source_statement_id": "HIST-SRC-0092",
@@ -3536,13 +3543,24 @@
         "workspace_scope_privacy"
       ],
       "referenced_requirement_ids": [
-        "REQ-20260707-136"
+        "REQ-20260708-007",
+        "REQ-20260708-008",
+        "REQ-20260708-009",
+        "REQ-20260708-010",
+        "REQ-20260708-011",
+        "REQ-20260708-012",
+        "REQ-20260708-013",
+        "REQ-20260708-014"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-agent-review-start-copy-dropoff-repair.md",
+        "ops/live-smokes/2026-07-08T06-48-50-272Z-one-time-agent-mode-acceptance-live-smoke.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/2026-07-08-one-time-brand-helper-toolbar-audit-failed-partial.md"
+      ],
+      "blocker_or_next_action": "Agent Review Start Audit, copy gating, partial BLOCKED saves, readback confirmation, draft autosave, prompt compliance tests, and failed partial audit preservation were pushed, deployed, and live-smoked. Full Issue #24 UI repair remained separate."
     },
     {
       "source_statement_id": "HIST-SRC-0093",
@@ -3569,10 +3587,14 @@
         "REQ-20260708-020"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-classroom-rewards-scoreboard.md",
+        "ops/live-smokes/2026-07-08T06-46-07-386Z-one-time-shared-review-live-smoke.md",
+        "ops/live-smokes/2026-07-08T06-46-07-674Z-one-time-classroom-rewards-scoreboard-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Member-visible positive-only classroom rewards scoreboard was implemented, deployed, and live-smoked; prizes, coupons, discounts, payment credits, access grants, and unreviewed/private events remained out of scope."
     },
     {
       "source_statement_id": "HIST-SRC-0094",
@@ -3595,10 +3617,14 @@
         "REQ-20260708-015"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-agent-review-start-copy-dropoff-repair.md",
+        "docs/AGENT-REVIEW-AGENT-MODE-PROTOCOL.md",
+        "ops/live-smokes/2026-07-08T06-48-50-272Z-one-time-agent-mode-acceptance-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Reusable Agent Mode protocol/template was locked into docs, generator output, and tests, then deployed/live-smoked through production prompt readback."
     },
     {
       "source_statement_id": "HIST-SRC-0095",
@@ -3618,12 +3644,33 @@
         "public_funnel",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
-      "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "referenced_requirement_ids": [
+        "REQ-20260708-021",
+        "REQ-20260708-022",
+        "REQ-20260708-023",
+        "REQ-20260708-024",
+        "REQ-20260708-025",
+        "REQ-20260708-026",
+        "REQ-20260708-027",
+        "REQ-20260708-028",
+        "REQ-20260708-029",
+        "REQ-20260708-030",
+        "REQ-20260708-031"
+      ],
+      "referenced_decision_ids": [
+        "DEC-20260708-006",
+        "DEC-20260708-007"
+      ],
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-performance-media-classroom-workflow.md",
+        "ops/live-smokes/2026-07-08T08-29-27-722Z-one-time-member-library-lazy-media-live-smoke.md",
+        "ops/live-smokes/2026-07-08T08-59-04-813Z-one-time-classroom-materials-live-smoke.md",
+        "ops/live-smokes/2026-07-08T09-21-15-474Z-one-time-class-updates-live-smoke.md",
+        "ops/live-smokes/2026-07-08T09-48-42-352Z-one-time-access-session-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Member-library lag/filters, class materials, media security, access-code UX, moderated comments, and updates/awards feed were deployed and live-smoked. Drive-to-Vimeo automation remains blocked by external-write target, token/privacy, duplicate, and rollback decisions."
     },
     {
       "source_statement_id": "HIST-SRC-0096",
@@ -3652,10 +3699,14 @@
       "referenced_decision_ids": [
         "DEC-20260708-007"
       ],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-email-brand-scope-guardrails.md",
+        "ops/watchdog-audits/2026-07-08-onetime-parent-invite-scope-dry-run.md",
+        "ops/watchdog-audits/2026-07-08-onetime-parent-invite-live-send-readback.md"
+      ],
+      "blocker_or_next_action": "OneTime parent invite domain, sender, copy, live-shiur validation, and workspace-scope watchdog guardrails were implemented, deployed/dry-run verified, and the approved live resend/readback completed under the exact-send approval recorded in the register."
     },
     {
       "source_statement_id": "HIST-SRC-0097",
@@ -3679,10 +3730,14 @@
         "REQ-20260708-038"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-email-brand-scope-guardrails.md",
+        "raw-input/RAW-20260708-008-onetime-parent-setup-link-expiry.md",
+        "ops/watchdog-audits/2026-07-08-onetime-parent-setup-fix-live-send-readback.md"
+      ],
+      "blocker_or_next_action": "OneTime-only parent setup route and longer trial setup-token expiry were deployed and live-smoked; the single approved parent invite was resent and read back with redacted evidence."
     },
     {
       "source_statement_id": "HIST-SRC-0098",
@@ -3704,12 +3759,26 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
-      "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "referenced_requirement_ids": [
+        "REQ-20260708-039",
+        "REQ-20260708-040",
+        "REQ-20260708-041",
+        "REQ-20260708-042",
+        "REQ-20260708-043",
+        "REQ-20260708-044",
+        "REQ-20260708-045",
+        "REQ-20260708-046"
+      ],
+      "referenced_decision_ids": [
+        "DEC-20260708-008"
+      ],
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-launch-ready-parent-student-invite.md",
+        "ops/watchdog-audits/2026-07-08-onetime-parent-student-auth-deploy-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Launch-ready parent/student invite cleanup was deployed and live-smoked for no-test labels, real-name requirements, OneTime-only surfaces, fallback-code UX, copy, and image cleanup. Agent Mode launch-readiness prompt hardening and the fresh live invite remained pending/decision-gated by exact student display name."
     },
     {
       "source_statement_id": "HIST-SRC-0099",
@@ -3730,12 +3799,31 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
-      "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "referenced_requirement_ids": [
+        "REQ-20260708-047",
+        "REQ-20260708-048",
+        "REQ-20260708-049",
+        "REQ-20260708-050",
+        "REQ-20260708-051",
+        "REQ-20260708-052",
+        "REQ-20260708-053",
+        "REQ-20260708-054"
+      ],
+      "referenced_decision_ids": [
+        "DEC-20260708-009",
+        "DEC-20260708-010",
+        "DEC-20260708-011",
+        "DEC-20260708-012"
+      ],
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "ops/watchdog-audits/2026-07-08-onetime-parent-invite-preflight-live-smoke.md",
+        "ops/watchdog-audits/2026-07-08-onetime-wapi-class-link-readiness.md",
+        "ops/ui-audits/2026-07-08-onetime-rabbi-provider-session-ui/report.md"
+      ],
+      "blocker_or_next_action": "Parent-invite preflight, Rabbi scoped login/setup email, Rabbi provider UI cleanup, WAPI bot gates, CRM logging, and Agent Mode prompt hardening have deployed proof or readbacks. Actual parent resend and WAPI/auto-reply runtime remain blocked by exact student name, WAPI runtime token, and approval gates."
     },
     {
       "source_statement_id": "HIST-SRC-0100",
@@ -3755,12 +3843,26 @@
         "process_quality",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
-      "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "referenced_requirement_ids": [
+        "REQ-20260708-055",
+        "REQ-20260708-056",
+        "REQ-20260708-057",
+        "REQ-20260708-058",
+        "REQ-20260708-059",
+        "REQ-20260708-060"
+      ],
+      "referenced_decision_ids": [
+        "DEC-20260708-011",
+        "DEC-20260708-012",
+        "DEC-20260708-013"
+      ],
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md",
+        "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-synthetic-self-test/2026-07-08T14-36-02-478Z-report.md"
+      ],
+      "blocker_or_next_action": "Local/Drive-synced Vimeo folder processor, no-write dry-run handoff, and synthetic self-test were completed. Transcript promotion and real Vimeo upload/member visibility remain blocked on approved policy, private smoke, and explicit upload/publish gates."
     },
     {
       "source_statement_id": "HIST-SRC-0101",
@@ -3786,10 +3888,15 @@
       "referenced_decision_ids": [
         "DEC-20260708-014"
       ],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md",
+        "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-setup-readback.md",
+        "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-drive-edge-smoke/2026-07-08T14-57-57-516Z-report.md",
+        "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-desktop-promo-smoke/2026-07-08T14-57-46-513Z-report.md"
+      ],
+      "blocker_or_next_action": "Desktop/local video workflow setup, safe local renders, trimming improvements, and no-write readiness proof are done locally. Real external upload, portal publish, and bot knowledge remain blocked by Vimeo/token/class-package decisions."
     },
     {
       "source_statement_id": "HIST-SRC-0102",
@@ -3814,10 +3921,15 @@
         "DEC-20260708-012",
         "DEC-20260708-013"
       ],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-vimeo-folder-v1-studio-workflow.md",
+        "raw-input/RAW-20260708-013-onetime-vimeo-approved-continue.md",
+        "ops/one-time-mishnah/vimeo-studio-pipeline/2026-07-08-approved-speech-transcription-smoke/2026-07-08T15-19-21-874Z-report.md",
+        "ops/one-time-mishnah/vimeo-private-smoke/2026-07-08-approved-private-smoke-readiness/2026-07-08T15-19-37-633Z-vimeo-private-smoke.md"
+      ],
+      "blocker_or_next_action": "Broad approval was captured safely, OpenAI keyholder transcription smoke passed, and Drive folder config was set/read back. Vimeo private smoke failed with provider 401 credential_invalid, so real upload/portal/latest-class/bot promotion remain blocked."
     },
     {
       "source_statement_id": "HIST-SRC-0103",
@@ -3844,10 +3956,15 @@
         "DEC-20260708-010",
         "DEC-20260708-011"
       ],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-014-onetime-rabbi-public-assistant-isolation.md",
+        "ops/ui-audits/2026-07-08-onetime-rabbi-public-assistant-isolation/live-report.md",
+        "ops/ui-audits/2026-07-08-onetime-rabbi-public-assistant-isolation/live-rabbi-helper-mobile.png"
+      ],
+      "blocker_or_next_action": "Public Rabbi/OneTime aliases and helper isolation were deployed/live-smoked with no BNA helper bleed. WhatsApp send and transcript knowledge promotion remained blocked by WAPI/runtime and Vimeo/transcript decisions."
     },
     {
       "source_statement_id": "HIST-SRC-0104",
@@ -3869,10 +3986,14 @@
         "REQ-20260708-071"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-015-onetime-public-signup-agent-workflow.md",
+        "ops/ui-audits/2026-07-08-onetime-public-signup-agent-workflow/live-report.md"
+      ],
+      "blocker_or_next_action": "OneTime public signup workflow and Agent Mode audit workflow were deployed and live-smoked with black/yellow header, email-only signup strip, scoped lead capture, and prompt-copy lane tracking; no WhatsApp/email/payment/access external send occurred in that smoke."
     },
     {
       "source_statement_id": "HIST-SRC-0105",
@@ -3896,10 +4017,14 @@
         "REQ-20260708-072"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-016-onetime-signup-telegram-reminder.md",
+        "ops/watchdog-audits/2026-07-08-onetime-signup-telegram-reminder-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Signup Telegram reminder path was implemented, runtime env presence was read back, OneTime redeploy succeeded, and live smoke passed without submitting a live signup."
     },
     {
       "source_statement_id": "HIST-SRC-0106",
@@ -3921,10 +4046,14 @@
         "REQ-20260708-073"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-017-onetime-landing-helper-concise-timed.md",
+        "ops/ui-audits/2026-07-08-onetime-concise-helper/live-report.md"
+      ],
+      "blocker_or_next_action": "Public OneTime landing helper concise/timed nudges were implemented, deployed, and live timed-smoked at mobile size."
     },
     {
       "source_statement_id": "HIST-SRC-0107",
@@ -3945,10 +4074,14 @@
         "REQ-20260708-074"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-018-onetime-local-student-current-link-resend.md",
+        "ops/live-smokes/2026-07-08T17-12-00-033Z-one-time-local-student-current-link-resend.md"
+      ],
+      "blocker_or_next_action": "Three approved individual OneTime Resend emails were sent to the scoped local-student/local-class CRM segment with current class link, CRM notes, and provider mailbox readback; no send was performed in this mapping pass."
     },
     {
       "source_statement_id": "HIST-SRC-0108",
@@ -3969,10 +4102,14 @@
         "REQ-20260708-075"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-019-onetime-direct-zoom-link-email.md",
+        "ops/live-smokes/2026-07-08T17-17-31-400Z-one-time-direct-zoom-link-only-email.md"
+      ],
+      "blocker_or_next_action": "One approved Zoom-link-only OneTime Resend email was sent and read back from provider mailbox with raw recipient and Zoom URL redacted; no send was performed in this mapping pass."
     },
     {
       "source_statement_id": "HIST-SRC-0109",
@@ -3991,10 +4128,14 @@
         "REQ-20260708-076"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done",
+      "terminal_status": "done",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-020-codex-telegram-done-updates.md",
+        "ops/watchdog-audits/2026-07-08-codex-progress-telegram-update.md"
+      ],
+      "blocker_or_next_action": "Codex progress Telegram formatter was updated and verified; two live Telegram progress updates were sent with token/chat id hidden. No Telegram send was performed in this mapping pass."
     },
     {
       "source_statement_id": "HIST-SRC-0110",
@@ -4014,10 +4155,14 @@
         "REQ-20260708-077"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-08-onetime-resend-wapi-rabbi-login-crm.md",
+        "raw-input/RAW-20260708-021-onetime-runtime-class-link-wapi-readiness.md",
+        "ops/watchdog-audits/2026-07-08-onetime-wapi-class-link-readiness.md"
+      ],
+      "blocker_or_next_action": "Current class-link runtime variables were configured, OneTime redeployed, and live WAPI diagnostics show class-link configured. WAPI auto-reply remains blocked by disabled approval gates and missing OneTime/Rabbi WAPI runtime token."
     },
     {
       "source_statement_id": "HIST-SRC-0111",
@@ -10125,8 +10270,8 @@
     }
   ],
   "remaining_work": {
-    "rows_without_terminal_status": 197,
-    "next_action": "Continue terminal mapping for the remaining 197 historical rows, then split non-terminal gaps into small implementation/proof packets and produce the final owner walkthrough/readiness verdict."
+    "rows_without_terminal_status": 177,
+    "next_action": "Continue terminal mapping for the remaining 177 historical rows, then split non-terminal gaps into small implementation/proof packets and produce the final owner walkthrough/readiness verdict."
   },
   "first_mapped_batch": {
     "mapped_at": "2026-07-10T14:50:54+03:00",
@@ -10278,5 +10423,32 @@
     ],
     "status": "july_7_mailbox_agent_mode_ui_launch_rows_mapped",
     "remaining_rows_without_terminal_status": 197
+  },
+  "ninth_mapped_batch": {
+    "mapped_at": "2026-07-10T15:58:11+03:00",
+    "row_ids": [
+      "HIST-SRC-0091",
+      "HIST-SRC-0092",
+      "HIST-SRC-0093",
+      "HIST-SRC-0094",
+      "HIST-SRC-0095",
+      "HIST-SRC-0096",
+      "HIST-SRC-0097",
+      "HIST-SRC-0098",
+      "HIST-SRC-0099",
+      "HIST-SRC-0100",
+      "HIST-SRC-0101",
+      "HIST-SRC-0102",
+      "HIST-SRC-0103",
+      "HIST-SRC-0104",
+      "HIST-SRC-0105",
+      "HIST-SRC-0106",
+      "HIST-SRC-0107",
+      "HIST-SRC-0108",
+      "HIST-SRC-0109",
+      "HIST-SRC-0110"
+    ],
+    "status": "july_8_parent_agent_classroom_media_signup_runtime_rows_mapped",
+    "remaining_rows_without_terminal_status": 177
   }
 }

@@ -1,7 +1,7 @@
 # One Time Historical Source Statement Matrix - Skeleton
 
-Generated: 2026-07-10T15:50:23+03:00
-Status: skeleton created; first through eighth batches mapped; terminal mapping still required.
+Generated: 2026-07-10T15:58:11+03:00
+Status: skeleton created; first through ninth batches mapped; terminal mapping still required.
 
 Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json`
 
@@ -9,8 +9,8 @@ Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure
 
 - Total source statements: 291
 - By source kind: raw_input=135, task_register=156
-- By mapping status: mapped_in_progress_goal_active=1, mapped_terminal_already_satisfied=2, mapped_terminal_done=15, mapped_terminal_done_deployed_live_smoked=19, mapped_terminal_done_no_external_send=1, mapped_terminal_mixed_done_and_blocked=19, mapped_terminal_mixed_done_needs_decision_blocked=38, needs_terminal_mapping=23, needs_terminal_mapping_blocker_present=125, needs_terminal_mapping_done_claim_present=48
-- By terminal status: already_satisfied=2, done=15, done_deployed_live_smoked=19, done_no_external_send=1, mixed_terminal_done_and_blocked=19, mixed_terminal_done_needs_decision_blocked=38, null=197
+- By mapping status: mapped_in_progress_goal_active=1, mapped_terminal_already_satisfied=2, mapped_terminal_done=16, mapped_terminal_done_deployed_live_smoked=29, mapped_terminal_done_no_external_send=1, mapped_terminal_mixed_done_and_blocked=19, mapped_terminal_mixed_done_needs_decision_blocked=47, needs_terminal_mapping=11, needs_terminal_mapping_blocker_present=119, needs_terminal_mapping_done_claim_present=46
+- By terminal status: already_satisfied=2, done=16, done_deployed_live_smoked=29, done_no_external_send=1, mixed_terminal_done_and_blocked=19, mixed_terminal_done_needs_decision_blocked=47, null=177
 - By family: OT-HIST-001=12, OT-HIST-002=35, OT-HIST-003=65, OT-HIST-004=23, OT-HIST-005=42, OT-HIST-006=33, OT-HIST-UNSORTED=81
 - First mapped batch: HIST-SRC-0133, HIST-SRC-0134, HIST-SRC-0135, HIST-SRC-0290, HIST-SRC-0291
 - Second mapped batch: HIST-SRC-0001, HIST-SRC-0002, HIST-SRC-0003, HIST-SRC-0004, HIST-SRC-0005, HIST-SRC-0006, HIST-SRC-0007, HIST-SRC-0008, HIST-SRC-0009, HIST-SRC-0010, HIST-SRC-0011, HIST-SRC-0012, HIST-SRC-0013, HIST-SRC-0014
@@ -20,7 +20,8 @@ Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure
 - Sixth mapped batch: HIST-SRC-0046, HIST-SRC-0047, HIST-SRC-0048, HIST-SRC-0049, HIST-SRC-0050, HIST-SRC-0051, HIST-SRC-0052, HIST-SRC-0053, HIST-SRC-0054, HIST-SRC-0055, HIST-SRC-0056, HIST-SRC-0057, HIST-SRC-0058
 - Seventh mapped batch: HIST-SRC-0059, HIST-SRC-0060, HIST-SRC-0061, HIST-SRC-0062, HIST-SRC-0063, HIST-SRC-0064, HIST-SRC-0065, HIST-SRC-0066, HIST-SRC-0067, HIST-SRC-0068, HIST-SRC-0069, HIST-SRC-0070, HIST-SRC-0071, HIST-SRC-0072, HIST-SRC-0073, HIST-SRC-0074, HIST-SRC-0075, HIST-SRC-0076
 - Eighth mapped batch: HIST-SRC-0077, HIST-SRC-0078, HIST-SRC-0079, HIST-SRC-0080, HIST-SRC-0081, HIST-SRC-0082, HIST-SRC-0083, HIST-SRC-0084, HIST-SRC-0085, HIST-SRC-0086, HIST-SRC-0087, HIST-SRC-0088, HIST-SRC-0089, HIST-SRC-0090
-- Remaining rows without terminal status: 197
+- Ninth mapped batch: HIST-SRC-0091, HIST-SRC-0092, HIST-SRC-0093, HIST-SRC-0094, HIST-SRC-0095, HIST-SRC-0096, HIST-SRC-0097, HIST-SRC-0098, HIST-SRC-0099, HIST-SRC-0100, HIST-SRC-0101, HIST-SRC-0102, HIST-SRC-0103, HIST-SRC-0104, HIST-SRC-0105, HIST-SRC-0106, HIST-SRC-0107, HIST-SRC-0108, HIST-SRC-0109, HIST-SRC-0110
+- Remaining rows without terminal status: 177
 
 ## Matrix Rows
 
@@ -116,26 +117,26 @@ Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure
 | HIST-SRC-0088 | HRAW-088 | raw_input | OT-HIST-003 | 2026-07-07 | `raw-input/RAW-20260707-013-onetime-brand-helper-toolbar-isolation.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
 | HIST-SRC-0089 | HRAW-089 | raw_input | OT-HIST-002 | 2026-07-07 | `raw-input/RAW-20260707-014-clean-launch-everything.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
 | HIST-SRC-0090 | HRAW-090 | raw_input | OT-HIST-UNSORTED | 2026-07-07 | `raw-input/RAW-20260707-015-audit-fix-implementation.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
-| HIST-SRC-0091 | HRAW-091 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-001-parent-trial-email-vimeo-watch-continuation.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0092 | HRAW-092 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-002-agent-review-start-copy-dropoff-repair.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0093 | HRAW-093 | raw_input | OT-HIST-006 | 2026-07-08 | `raw-input/RAW-20260708-004-onetime-classroom-rewards-scoreboard.md` | needs_terminal_mapping |  |
-| HIST-SRC-0094 | HRAW-094 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-005-agent-mode-template-protocol-lock.md` | needs_terminal_mapping |  |
-| HIST-SRC-0095 | HRAW-095 | raw_input | OT-HIST-006 | 2026-07-08 | `raw-input/RAW-20260708-006-onetime-performance-media-classroom-workflow.md` | needs_terminal_mapping |  |
-| HIST-SRC-0096 | HRAW-096 | raw_input | OT-HIST-003 | 2026-07-08 | `raw-input/RAW-20260708-007-onetime-email-brand-scope-guardrails.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0097 | HRAW-097 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-008-onetime-parent-setup-link-expiry.md` | needs_terminal_mapping |  |
-| HIST-SRC-0098 | HRAW-098 | raw_input | OT-HIST-002 | 2026-07-08 | `raw-input/RAW-20260708-009-onetime-launch-ready-live-parent-student.md` | needs_terminal_mapping |  |
-| HIST-SRC-0099 | HRAW-099 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0100 | HRAW-100 | raw_input | OT-HIST-006 | 2026-07-08 | `raw-input/RAW-20260708-011-onetime-vimeo-folder-v1-studio-workflow.md` | needs_terminal_mapping |  |
-| HIST-SRC-0101 | HRAW-101 | raw_input | OT-HIST-006 | 2026-07-08 | `raw-input/RAW-20260708-012-onetime-vimeo-desktop-setup-test-continuation.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0102 | HRAW-102 | raw_input | OT-HIST-006 | 2026-07-08 | `raw-input/RAW-20260708-013-onetime-vimeo-approved-continue.md` | needs_terminal_mapping |  |
-| HIST-SRC-0103 | HRAW-103 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-014-onetime-rabbi-public-assistant-isolation.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0104 | HRAW-104 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-015-onetime-public-signup-agent-workflow.md` | needs_terminal_mapping |  |
-| HIST-SRC-0105 | HRAW-105 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-016-onetime-signup-telegram-reminder.md` | needs_terminal_mapping |  |
-| HIST-SRC-0106 | HRAW-106 | raw_input | OT-HIST-002 | 2026-07-08 | `raw-input/RAW-20260708-017-onetime-landing-helper-concise-timed.md` | needs_terminal_mapping |  |
-| HIST-SRC-0107 | HRAW-107 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-018-onetime-local-student-current-link-resend.md` | needs_terminal_mapping |  |
-| HIST-SRC-0108 | HRAW-108 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-019-onetime-direct-zoom-link-email.md` | needs_terminal_mapping |  |
-| HIST-SRC-0109 | HRAW-109 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-020-codex-telegram-done-updates.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0110 | HRAW-110 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-021-onetime-runtime-class-link-wapi-readiness.md` | needs_terminal_mapping_blocker_present |  |
+| HIST-SRC-0091 | HRAW-091 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-001-parent-trial-email-vimeo-watch-continuation.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0092 | HRAW-092 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-002-agent-review-start-copy-dropoff-repair.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0093 | HRAW-093 | raw_input | OT-HIST-006 | 2026-07-08 | `raw-input/RAW-20260708-004-onetime-classroom-rewards-scoreboard.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0094 | HRAW-094 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-005-agent-mode-template-protocol-lock.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0095 | HRAW-095 | raw_input | OT-HIST-006 | 2026-07-08 | `raw-input/RAW-20260708-006-onetime-performance-media-classroom-workflow.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0096 | HRAW-096 | raw_input | OT-HIST-003 | 2026-07-08 | `raw-input/RAW-20260708-007-onetime-email-brand-scope-guardrails.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0097 | HRAW-097 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-008-onetime-parent-setup-link-expiry.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0098 | HRAW-098 | raw_input | OT-HIST-002 | 2026-07-08 | `raw-input/RAW-20260708-009-onetime-launch-ready-live-parent-student.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0099 | HRAW-099 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-010-onetime-resend-wapi-rabbi-login-crm.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0100 | HRAW-100 | raw_input | OT-HIST-006 | 2026-07-08 | `raw-input/RAW-20260708-011-onetime-vimeo-folder-v1-studio-workflow.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0101 | HRAW-101 | raw_input | OT-HIST-006 | 2026-07-08 | `raw-input/RAW-20260708-012-onetime-vimeo-desktop-setup-test-continuation.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0102 | HRAW-102 | raw_input | OT-HIST-006 | 2026-07-08 | `raw-input/RAW-20260708-013-onetime-vimeo-approved-continue.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0103 | HRAW-103 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-014-onetime-rabbi-public-assistant-isolation.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0104 | HRAW-104 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-015-onetime-public-signup-agent-workflow.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0105 | HRAW-105 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-016-onetime-signup-telegram-reminder.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0106 | HRAW-106 | raw_input | OT-HIST-002 | 2026-07-08 | `raw-input/RAW-20260708-017-onetime-landing-helper-concise-timed.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0107 | HRAW-107 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-018-onetime-local-student-current-link-resend.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0108 | HRAW-108 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-019-onetime-direct-zoom-link-email.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0109 | HRAW-109 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-020-codex-telegram-done-updates.md` | mapped_terminal_done | done |
+| HIST-SRC-0110 | HRAW-110 | raw_input | OT-HIST-004 | 2026-07-08 | `raw-input/RAW-20260708-021-onetime-runtime-class-link-wapi-readiness.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
 | HIST-SRC-0111 | HRAW-111 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-022-app-backend-helper-performance.md` | needs_terminal_mapping |  |
 | HIST-SRC-0112 | HRAW-112 | raw_input | OT-HIST-005 | 2026-07-08 | `raw-input/RAW-20260708-023-rabbi-telegram-ticket-agent-loop.md` | needs_terminal_mapping |  |
 | HIST-SRC-0113 | HRAW-113 | raw_input | OT-HIST-UNSORTED | 2026-07-08 | `raw-input/RAW-20260708-024-operations-shell-split-performance.md` | needs_terminal_mapping |  |
