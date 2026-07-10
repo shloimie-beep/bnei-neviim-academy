@@ -38053,3 +38053,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Covered mobile Operations/workspace audit, June 18 and June 19 website correction continuation markers, One Time master recovery, and ramble/agent/integrations follow-up rows.
 - The historical source matrix now has 207 mapped or active rows and 85 rows still lacking terminal status. The owner-experience goal remains active and not ready.
 - Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/configuration/imports as evidence only.
+
+## 2026-07-10 - One Time historical source seventeenth batch mapped
+
+- Mapped the June 22-24 task-register batch: `HIST-SRC-0206` through `HIST-SRC-0217`.
+- Covered One Time assets/funnel/Vimeo/email/Stripe, Rabbi workspace parity, Universal Service Provider Studio, website continuation, clean-slate acceptance/control/final release, owner-review navigation, Issue #20, owner setup, and public UI polish rows.
+- The historical source matrix now has 219 mapped or active rows: 218 terminal rows plus active `HIST-SRC-0135`; 73 rows still lack terminal status. The owner-experience goal remains active and not ready.
+- Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/configuration/imports as evidence only.
