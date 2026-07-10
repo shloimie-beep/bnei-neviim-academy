@@ -1,0 +1,271 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-10T07:06:48.664Z",
+  "raw_id": "RAW-20260710-001",
+  "status": "OPEN_GAPS_REGISTERED",
+  "latest_automated_visual_audit": {
+    "path": "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+    "automated_findings": 0,
+    "operations_auth": "railway",
+    "limitation": "Machine zero findings are not terminal UI proof without manual review."
+  },
+  "manual_review": {
+    "status": "complete_for_selected_latest_screenshots",
+    "reviewed_screenshots": [
+      "SS-20260710-001",
+      "SS-20260710-002",
+      "SS-20260710-003",
+      "SS-20260710-004",
+      "SS-20260710-005",
+      "SS-20260710-006",
+      "SS-20260710-007",
+      "SS-20260710-008"
+    ],
+    "findings_created": [
+      "UIGAP-20260710-001",
+      "UIGAP-20260710-002",
+      "UIGAP-20260710-003",
+      "UIGAP-20260710-004",
+      "UIGAP-20260710-005",
+      "UIGAP-20260710-006",
+      "UIGAP-20260710-007"
+    ]
+  },
+  "scorecard": {
+    "status": "MANUAL_REVIEW_FOUND_GAPS",
+    "score_out_of_100": 78,
+    "reason": "Lag is source-verified fixed and the latest deployed visual audit has 0 automated findings. Manual review still found mobile nav clipping, brand/copy inconsistency, provider text-fit issues, and evidence-governance gaps.",
+    "categories": [
+      {
+        "name": "Performance",
+        "score": 95,
+        "evidence": "ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/report.md",
+        "note": "0/18 live samples needing attention after deployed fixes."
+      },
+      {
+        "name": "Public first impression",
+        "score": 82,
+        "evidence": "SS-20260710-001",
+        "note": "Strong hero; mobile nav/copy issues remain."
+      },
+      {
+        "name": "Mobile fit",
+        "score": 68,
+        "evidence": "SS-20260710-002..006",
+        "note": "Several nav labels clip at 390px."
+      },
+      {
+        "name": "Provider/Rabbi workspace",
+        "score": 76,
+        "evidence": "SS-20260710-005..006",
+        "note": "Coherent workspace; text fit and copy polish remain."
+      },
+      {
+        "name": "Operations parity",
+        "score": 80,
+        "evidence": "SS-20260710-007",
+        "note": "Layout passes; content-level review is redaction-limited."
+      },
+      {
+        "name": "Proof governance",
+        "score": 55,
+        "evidence": "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "note": "Screenshots exist but source coverage reports zero."
+      }
+    ]
+  },
+  "gaps": [
+    {
+      "id": "UIGAP-20260710-001",
+      "title": "Mobile top navigation clips labels on One Time surfaces",
+      "severity": "P1",
+      "status": "OPEN_IMPLEMENTATION_PACKET_REQUIRED",
+      "routes": [
+        "/one-time",
+        "/rabbi-member",
+        "/one-time-classroom",
+        "/provider.html?review=one-time"
+      ],
+      "screenshots": [
+        "SS-20260710-002",
+        "SS-20260710-003",
+        "SS-20260710-004",
+        "SS-20260710-006"
+      ],
+      "packet": "WINDOW-01-mobile-nav-containment.md",
+      "acceptance": [
+        "At 390px and 430px nav labels do not clip or disappear without an intentional menu/scroll affordance.",
+        "Tap targets remain usable and selected state remains yellow/black.",
+        "No horizontal page scroll and no truncated final nav item."
+      ]
+    },
+    {
+      "id": "UIGAP-20260710-002",
+      "title": "Visible brand display text still uses OneTimeOneTime",
+      "severity": "P2",
+      "status": "OPEN_COPY_NORMALIZATION_PACKET_REQUIRED",
+      "routes": [
+        "/one-time",
+        "/provider.html?review=one-time",
+        "/student/login",
+        "/rabbi-member"
+      ],
+      "screenshots": [
+        "SS-20260710-001",
+        "SS-20260710-005",
+        "SS-20260710-008"
+      ],
+      "packet": "WINDOW-03-brand-copy-normalization.md",
+      "acceptance": [
+        "Visible product label follows the durable One Time / One Time Mishnah naming rule unless config explicitly says otherwise.",
+        "Domain/email values such as onetimeonetime.com are not rewritten as display names.",
+        "Static tests or readbacks cover public, provider, member, student, and email/review copy surfaces."
+      ]
+    },
+    {
+      "id": "UIGAP-20260710-003",
+      "title": "Provider workspace metric cards need long-text containment",
+      "severity": "P2",
+      "status": "OPEN_IMPLEMENTATION_PACKET_REQUIRED",
+      "routes": [
+        "/provider.html?review=one-time"
+      ],
+      "screenshots": [
+        "SS-20260710-005",
+        "SS-20260710-006"
+      ],
+      "packet": "WINDOW-02-provider-text-fit.md",
+      "acceptance": [
+        "Long emails/status values fit via deliberate wrapping, truncation with tooltip, or label/value layout.",
+        "The 390px card grid does not create awkward single-word breaks.",
+        "Desktop cards do not clip or hide meaningful provider data."
+      ]
+    },
+    {
+      "id": "UIGAP-20260710-004",
+      "title": "Source coverage reports zero route-tied screenshots while screenshots exist",
+      "severity": "P0-process",
+      "status": "PROCESS_REPAIR_PACKET_REQUIRED",
+      "routes": [
+        "all audited routes"
+      ],
+      "screenshots": [],
+      "packet": "WINDOW-04-source-evidence-guardrail.md",
+      "acceptance": [
+        "Route/source coverage can find current screenshot artifacts or records an exact blocker.",
+        "UI Done cannot pass with zero route-tied screenshots unless a precise blocker exists.",
+        "Screenshot index is generated from actual files, not only report text."
+      ]
+    },
+    {
+      "id": "UIGAP-20260710-005",
+      "title": "Historical UI/audit artifacts still need task mapping or archival decisions",
+      "severity": "P1-process",
+      "status": "PROCESS_REPAIR_PACKET_REQUIRED",
+      "routes": [
+        "historical One Time UI audit packages"
+      ],
+      "screenshots": [],
+      "packet": "WINDOW-05-stale-audit-mapping.md",
+      "acceptance": [
+        "Stale One Time UI audit artifacts are mapped to this register, a live REQ/TASK/WATCH, or archived with rationale.",
+        "No audit package remains the only evidence for an actionable UI complaint.",
+        "audit:governance trend improves or remaining mappings are explicitly blocked."
+      ]
+    },
+    {
+      "id": "UIGAP-20260710-006",
+      "title": "Operations content-level manual review is limited by redaction",
+      "severity": "P2-review",
+      "status": "MACHINE_PASS_MANUAL_REVIEW_LIMITED",
+      "routes": [
+        "/operations scoped One Time overview",
+        "/operations Rabbi email inbox"
+      ],
+      "screenshots": [
+        "SS-20260710-007"
+      ],
+      "packet": "WINDOW-06-manual-review-closeout.md",
+      "acceptance": [
+        "Layout review remains passed.",
+        "Content labels/actions are reviewed through safe redacted DOM/text readback or trusted session.",
+        "Any content/action mismatch gets its own source statement and gap ID."
+      ]
+    },
+    {
+      "id": "UIGAP-20260710-007",
+      "title": "Agent Mode UI proof prompts are not run yet",
+      "severity": "P1-proof",
+      "status": "BLOCKED_AGENT_MODE_PROOF_NOT_STARTED",
+      "routes": [
+        "agent-review-prompts/rabbi-helper-tool-scope-map",
+        "agent-review-prompts/rabbi-telegram-helper-ticket-smoke"
+      ],
+      "screenshots": [],
+      "packet": "not-code-window-agent-mode-run-required",
+      "acceptance": [
+        "Prompt output is saved as PASS/BLOCKED/FAIL proof in the Agent Review hub.",
+        "Codex audits readback and updates the relevant register.",
+        "Prompt-generated readiness is not treated as proof before the run exists."
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "id": "SS-20260710-001",
+      "route": "/one-time",
+      "viewport": "1440-desktop",
+      "path": "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/screenshots/one-time-1440-desktop-viewport.png",
+      "note": "Strong black/yellow hero and conversion bar. Brand text still reads OneTimeOneTime, which is tracked separately."
+    },
+    {
+      "id": "SS-20260710-002",
+      "route": "/one-time",
+      "viewport": "390-mobile",
+      "path": "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/screenshots/one-time-390-mobile-viewport.png",
+      "note": "Mobile nav clips/truncates the rightmost FAQ item at the viewport edge despite the automated zero-finding report."
+    },
+    {
+      "id": "SS-20260710-003",
+      "route": "/rabbi-member",
+      "viewport": "390-mobile",
+      "path": "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/screenshots/rabbi-member-390-mobile-viewport.png",
+      "note": "Member area is coherent, but the top nav clips on the right edge on mobile."
+    },
+    {
+      "id": "SS-20260710-004",
+      "route": "/one-time-classroom",
+      "viewport": "390-mobile",
+      "path": "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/screenshots/one-time-classroom-390-mobile-viewport.png",
+      "note": "Classroom content is compact and on-brand; the active Classroom tab truncates on the right edge."
+    },
+    {
+      "id": "SS-20260710-005",
+      "route": "/provider.html?review=one-time",
+      "viewport": "1440-desktop",
+      "path": "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/screenshots/provider-review-1440-desktop-viewport.png",
+      "note": "Provider dashboard is much improved. Remaining manual issues are OneTimeOneTime copy and long CRM email/text containment."
+    },
+    {
+      "id": "SS-20260710-006",
+      "route": "/provider.html?review=one-time",
+      "viewport": "390-mobile",
+      "path": "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/screenshots/provider-review-390-mobile-viewport.png",
+      "note": "Provider mobile clips top nav labels and wraps the long CRM email awkwardly across lines."
+    },
+    {
+      "id": "SS-20260710-007",
+      "route": "/operations scoped One Time overview",
+      "viewport": "1440-desktop",
+      "path": "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/screenshots/operations-onetime-overview-1440-desktop-viewport.png",
+      "note": "Authenticated Operations layout passes automated checks, but redaction/blur prevents content-level manual closeout."
+    },
+    {
+      "id": "SS-20260710-008",
+      "route": "/student/login",
+      "viewport": "390-mobile",
+      "path": "ops/ui-audits/2026-07-09-parent-student-login-ui-polish-live-after-deploy/screenshots/student-login-390-mobile.png",
+      "note": "Student login shell is usable after the fix; visible copy still contains OneTimeOneTime naming."
+    }
+  ]
+}

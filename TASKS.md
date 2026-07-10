@@ -81,16 +81,28 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
+- [ ] `RAW-20260710-001` / `REQ-20260710-007` through
+  `REQ-20260710-012`: One Time ramble-to-terminal UI gap closeout. Register:
+  `tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md`.
+  Current status: audit/compiler artifacts are created, lag is
+  source-verified as fixed for the measured issue, latest deployed visual
+  audit is machine-pass, and manual review reopened concrete UI/process gaps:
+  mobile nav clipping, brand/copy normalization, provider text fit,
+  source/screenshot evidence guardrails, stale audit mapping, redacted
+  Operations content review, and Agent Mode proof prompts not yet run. Next
+  action: run or implement
+  `ops/chatgpt-ramble-dropoff/outgoing/2026-07-10-onetime-ui-gap-implementation/prompts/WINDOW-01-mobile-nav-containment.md`,
+  then brand/copy and evidence guardrail packets.
+- [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current
-  status: no-write live lag audit captured 18/18 samples needing attention,
-  direct TTFB readback shows slow and variable first-byte responses on HTML,
-  static JS/CSS, and small APIs, and visual UI defects remain separately
-  tracked in the OneTime frontend audit. Next action after active app/UI/API
-  lanes clear: inspect runtime/hosting response variability and cache/static
-  delivery policy first, then resume UI chrome polish; app-visible fixes still
-  need commit, deploy, and live smoke.
+  status: measured lag is done for the 2026-07-09 complaint. The original live
+  audit had 18/18 samples needing attention; after the cache/static delivery
+  and lightweight parent-review shell deployments,
+  `ops/performance-audits/2026-07-10-onetime-parent-review-lightweight-live-readback/report.md`
+  shows 0/18 samples needing attention. Remaining visual/source-proof UI gaps
+  are now tracked separately under
+  `tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md`.
 - [ ] `RAW-20260708-028` / `REQ-20260708-090` through
   `REQ-20260708-095`: Rabbi / One Time helper 163-tool account scope map and
   Agent Mode probe prompt. Register:

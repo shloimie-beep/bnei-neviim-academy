@@ -1,0 +1,383 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-10T07:06:48.664Z",
+  "raw_id": "RAW-20260710-001",
+  "source_statements": [
+    {
+      "id": "SRC-20260710-001",
+      "raw_id": "RAW-20260710-001",
+      "source": "RAW-20260710-001",
+      "source_text": "Artifact status was treated as product status.",
+      "surface": "process / One Time UI lifecycle",
+      "current_status": "OPEN_PROCESS_GAP",
+      "terminal_status": "OPEN_PROCESS_GAP",
+      "first_skipped_stage": "implementation_or_process_repair",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-004",
+        "UIGAP-20260710-005"
+      ]
+    },
+    {
+      "id": "SRC-20260710-002",
+      "raw_id": "RAW-20260710-001",
+      "source": "RAW-20260710-001",
+      "source_text": "Artifact completion is not product completion.",
+      "surface": "protocol / requirement closeout",
+      "current_status": "RECORDED",
+      "terminal_status": "DONE_FOR_AUDIT_COMPILER_ONLY",
+      "first_skipped_stage": null,
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": []
+    },
+    {
+      "id": "SRC-20260710-003",
+      "raw_id": "RAW-20260710-001",
+      "source": "RAW-20260710-001",
+      "source_text": "Historical One Time UI audit artifacts still need mapping.",
+      "surface": "audit governance",
+      "current_status": "OPEN_PROCESS_GAP",
+      "terminal_status": "OPEN_PROCESS_GAP",
+      "first_skipped_stage": "implementation_or_process_repair",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-005"
+      ]
+    },
+    {
+      "id": "SRC-20260710-004",
+      "raw_id": "RAW-20260710-001",
+      "source": "RAW-20260710-001",
+      "source_text": "ui:source-coverage reported screenshot_files=0 despite current screenshots.",
+      "surface": "route/action/screenshot evidence",
+      "current_status": "OPEN_PROCESS_GAP",
+      "terminal_status": "OPEN_PROCESS_GAP",
+      "first_skipped_stage": "implementation_or_process_repair",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-004"
+      ]
+    },
+    {
+      "id": "SRC-20260710-005",
+      "raw_id": "RAW-20260710-001",
+      "source": "RAW-20260710-001",
+      "source_text": "The measured lag issue went from 18/18 slow samples to 0/18 after deployed fixes.",
+      "surface": "One Time live performance",
+      "current_status": "RECORDED",
+      "terminal_status": "DONE_DEPLOYED_SOURCE_VERIFIED",
+      "first_skipped_stage": null,
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": []
+    },
+    {
+      "id": "SRC-20260710-006",
+      "raw_id": "RAW-20260710-001",
+      "source": "RAW-20260710-001",
+      "source_text": "Parent-review lightweight shell deployed and live readback passed.",
+      "surface": "/parent.html?review=one-time performance",
+      "current_status": "RECORDED",
+      "terminal_status": "DONE_DEPLOYED_SOURCE_VERIFIED",
+      "first_skipped_stage": null,
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": []
+    },
+    {
+      "id": "SRC-20260710-007",
+      "raw_id": "RAW-20260710-001",
+      "source": "RAW-20260710-001",
+      "source_text": "Static chrome deployed and machine-passed, but manual review reopened mobile nav/copy gaps.",
+      "surface": "public/member/classroom static chrome",
+      "current_status": "MACHINE_PASS_MANUAL_REVIEW_REOPENED_BY_UIGAP",
+      "terminal_status": "MACHINE_PASS_MANUAL_REVIEW_REOPENED_BY_UIGAP",
+      "first_skipped_stage": "manual_after_review_or_content_review",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-001",
+        "UIGAP-20260710-002"
+      ]
+    },
+    {
+      "id": "SRC-20260710-008",
+      "raw_id": "RAW-20260710-001",
+      "source": "RAW-20260710-001",
+      "source_text": "Provider/Operations parity deployed with 0 automated findings, but manual review still found text/nav/copy limits.",
+      "surface": "provider/Operations parity",
+      "current_status": "RECORDED",
+      "terminal_status": "MACHINE_PASS_MANUAL_REVIEW_REQUIRED",
+      "first_skipped_stage": "manual_after_review_or_content_review",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-001",
+        "UIGAP-20260710-002",
+        "UIGAP-20260710-003",
+        "UIGAP-20260710-006"
+      ]
+    },
+    {
+      "id": "SRC-20260710-009",
+      "raw_id": "RAW-20260710-001",
+      "source": "RAW-20260710-001",
+      "source_text": "Public mobile nav clips the rightmost FAQ item at 390px.",
+      "surface": "/one-time mobile",
+      "current_status": "OPEN_UI_GAP",
+      "terminal_status": "OPEN_UI_GAP",
+      "first_skipped_stage": "implementation_or_process_repair",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-001"
+      ]
+    },
+    {
+      "id": "SRC-20260710-010",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "Member and classroom mobile nav labels clip/truncate at 390px.",
+      "surface": "/rabbi-member and /one-time-classroom mobile",
+      "current_status": "OPEN_UI_GAP",
+      "terminal_status": "OPEN_UI_GAP",
+      "first_skipped_stage": "implementation_or_process_repair",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-001"
+      ]
+    },
+    {
+      "id": "SRC-20260710-011",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "Provider mobile top nav clips labels including Member.",
+      "surface": "/provider.html?review=one-time mobile",
+      "current_status": "OPEN_UI_GAP",
+      "terminal_status": "OPEN_UI_GAP",
+      "first_skipped_stage": "implementation_or_process_repair",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-001"
+      ]
+    },
+    {
+      "id": "SRC-20260710-012",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "Durable brand is One Time, but visible UI still shows OneTimeOneTime labels.",
+      "surface": "brand/copy",
+      "current_status": "OPEN_UI_GAP",
+      "terminal_status": "OPEN_UI_GAP",
+      "first_skipped_stage": "implementation_or_process_repair",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-002"
+      ]
+    },
+    {
+      "id": "SRC-20260710-013",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "Provider long CRM email/text values clip or wrap awkwardly.",
+      "surface": "provider dashboard cards",
+      "current_status": "OPEN_UI_GAP",
+      "terminal_status": "OPEN_UI_GAP",
+      "first_skipped_stage": "implementation_or_process_repair",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-003"
+      ]
+    },
+    {
+      "id": "SRC-20260710-014",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "Prior overflow findings now machine-pass; copy normalization still applies.",
+      "surface": "parent/student login",
+      "current_status": "RECORDED",
+      "terminal_status": "MACHINE_PASS_MANUAL_REVIEW_REQUIRED",
+      "first_skipped_stage": "manual_after_review_or_content_review",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-002"
+      ]
+    },
+    {
+      "id": "SRC-20260710-015",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "Operations layout passes, but content-level review is limited by redaction.",
+      "surface": "Operations scoped UI",
+      "current_status": "RECORDED",
+      "terminal_status": "MACHINE_PASS_MANUAL_REVIEW_REQUIRED",
+      "first_skipped_stage": "manual_after_review_or_content_review",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-006"
+      ]
+    },
+    {
+      "id": "SRC-20260710-016",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "Rabbi helper/tool-scope and Telegram helper proof prompts are not_started.",
+      "surface": "Agent Review proof layer",
+      "current_status": "BLOCKED_PROOF_GAP",
+      "terminal_status": "BLOCKED_PROOF_GAP",
+      "first_skipped_stage": "external_or_agent_mode_proof",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-007"
+      ]
+    },
+    {
+      "id": "SRC-20260710-017",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "External setup/Rabbi Telegram/proof gates remain but do not block local UI audit or code-prep work.",
+      "surface": "execution-run blockers",
+      "current_status": "BLOCKED_EXTERNAL",
+      "terminal_status": "BLOCKED_EXTERNAL",
+      "first_skipped_stage": "external_or_agent_mode_proof",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-007"
+      ]
+    },
+    {
+      "id": "SRC-20260710-018",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "Each complaint now has route/evidence/status/packet mapping in this audit.",
+      "surface": "source-to-terminal matrix",
+      "current_status": "RECORDED",
+      "terminal_status": "DONE_FOR_AUDIT_COMPILER_ONLY",
+      "first_skipped_stage": null,
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-001",
+        "UIGAP-20260710-002",
+        "UIGAP-20260710-003",
+        "UIGAP-20260710-004",
+        "UIGAP-20260710-005",
+        "UIGAP-20260710-006",
+        "UIGAP-20260710-007"
+      ]
+    },
+    {
+      "id": "SRC-20260710-019",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "Prompt creation is not a fix; generated windows must be run or implemented.",
+      "surface": "ChatGPT code-package flow",
+      "current_status": "OPEN_CHILD_EXECUTION_REQUIRED",
+      "terminal_status": "OPEN_CHILD_EXECUTION_REQUIRED",
+      "first_skipped_stage": "implementation_or_process_repair",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-001",
+        "UIGAP-20260710-002",
+        "UIGAP-20260710-003",
+        "UIGAP-20260710-004",
+        "UIGAP-20260710-005",
+        "UIGAP-20260710-006"
+      ]
+    },
+    {
+      "id": "SRC-20260710-020",
+      "raw_id": "RAW-20260710-001",
+      "source": "manual/current evidence",
+      "source_text": "Raw intake, register, matrices, gap register, root cause, and outgoing prompts exist.",
+      "surface": "this audit/compiler task",
+      "current_status": "RECORDED",
+      "terminal_status": "DONE_FOR_AUDIT_COMPILER_ONLY",
+      "first_skipped_stage": null,
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-ui-source-coverage.md",
+        "ops/audit-governance/2026-07-10T07-09-48-975Z-audit-governance.md"
+      ],
+      "mapped_gap_ids": [
+        "UIGAP-20260710-001",
+        "UIGAP-20260710-002",
+        "UIGAP-20260710-003",
+        "UIGAP-20260710-004",
+        "UIGAP-20260710-005",
+        "UIGAP-20260710-006",
+        "UIGAP-20260710-007"
+      ]
+    }
+  ]
+}

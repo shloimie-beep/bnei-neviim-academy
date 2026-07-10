@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-10T07:06:48.664Z",
+  "raw_id": "RAW-20260710-001",
+  "register": "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
+  "ui_gap_register": "ops/ui-audits/2026-07-10-onetime-ui-gap-register/report.md",
+  "outgoing_batch": "ops/chatgpt-ramble-dropoff/outgoing/2026-07-10-onetime-ui-gap-implementation",
+  "windows": [
+    {
+      "id": "WINDOW-01",
+      "file": "WINDOW-01-mobile-nav-containment.md",
+      "title": "Fix mobile nav containment across One Time surfaces",
+      "gap_ids": [
+        "UIGAP-20260710-001"
+      ],
+      "expected_packet_id": "chatgpt-onetime-mobile-nav-containment-20260710"
+    },
+    {
+      "id": "WINDOW-02",
+      "file": "WINDOW-02-provider-text-fit.md",
+      "title": "Fix provider workspace long-text/card containment",
+      "gap_ids": [
+        "UIGAP-20260710-003"
+      ],
+      "expected_packet_id": "chatgpt-onetime-provider-text-fit-20260710"
+    },
+    {
+      "id": "WINDOW-03",
+      "file": "WINDOW-03-brand-copy-normalization.md",
+      "title": "Normalize visible One Time brand display copy",
+      "gap_ids": [
+        "UIGAP-20260710-002"
+      ],
+      "expected_packet_id": "chatgpt-onetime-brand-copy-normalization-20260710"
+    },
+    {
+      "id": "WINDOW-04",
+      "file": "WINDOW-04-source-evidence-guardrail.md",
+      "title": "Repair source-to-screenshot evidence guardrails",
+      "gap_ids": [
+        "UIGAP-20260710-004"
+      ],
+      "expected_packet_id": "chatgpt-onetime-source-evidence-guardrail-20260710"
+    },
+    {
+      "id": "WINDOW-05",
+      "file": "WINDOW-05-stale-audit-mapping.md",
+      "title": "Reconcile stale One Time UI audit mappings",
+      "gap_ids": [
+        "UIGAP-20260710-005"
+      ],
+      "expected_packet_id": "chatgpt-onetime-stale-audit-mapping-20260710"
+    },
+    {
+      "id": "WINDOW-06",
+      "file": "WINDOW-06-manual-review-closeout.md",
+      "title": "Create safe manual review closeout for redacted Operations screens",
+      "gap_ids": [
+        "UIGAP-20260710-006"
+      ],
+      "expected_packet_id": "chatgpt-onetime-manual-review-closeout-20260710"
+    }
+  ]
+}
