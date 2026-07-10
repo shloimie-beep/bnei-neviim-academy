@@ -45196,7 +45196,15 @@ app.get('/api/bna/integrations/buffer/channels', requireAdmin, async (req, res) 
     res.json({ success: true, provider: 'buffer', channels });
   } catch (err) {
     const safe = safeIntegrationError(err, 'Buffer channel lookup failed');
-    res.status(safe.status).json({ success: false, provider: 'buffer', blocker: safe.blocker, error: safe.error });
+    res.status(200).json({
+      success: false,
+      provider: 'buffer',
+      read_blocked: true,
+      channels: [],
+      blocker: safe.blocker,
+      error: safe.error,
+      upstream_status: safe.status || null,
+    });
   }
 });
 

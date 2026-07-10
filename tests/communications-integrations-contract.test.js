@@ -51,6 +51,18 @@ test('DNS task readback fails soft for integration setup errors', () => {
   assert.match(dnsTasksRoute, /dns_tasks: \[\]/);
 });
 
+test('Buffer channel readback fails soft instead of forcing Operations logout', () => {
+  const bufferChannelsRoute = server.slice(
+    server.indexOf("app.get('/api/bna/integrations/buffer/channels'"),
+    server.indexOf("app.get('/api/bna/integrations/resend/health'")
+  );
+  assert.match(bufferChannelsRoute, /safeIntegrationError\(err, 'Buffer channel lookup failed'\)/);
+  assert.match(bufferChannelsRoute, /res\.status\(200\)\.json/);
+  assert.match(bufferChannelsRoute, /read_blocked: true/);
+  assert.match(bufferChannelsRoute, /channels: \[\]/);
+  assert.match(bufferChannelsRoute, /upstream_status: safe\.status \|\| null/);
+});
+
 test('communications detail route does not intercept named communications subroutes', () => {
   const detailRoute = server.slice(
     server.indexOf("app.get('/api/bna/communications/:id'"),
