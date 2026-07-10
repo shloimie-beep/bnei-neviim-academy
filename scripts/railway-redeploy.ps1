@@ -180,6 +180,9 @@ Get-ChildItem -LiteralPath $repoRoot -Filter "railway-migration-*.sql" -File |
 if (Test-Path (Join-Path $repoRoot "Dockerfile")) {
   Copy-Item -LiteralPath (Join-Path $repoRoot "Dockerfile") -Destination $deployRoot
 }
+if (Test-Path (Join-Path $repoRoot "config")) {
+  Copy-Item -LiteralPath (Join-Path $repoRoot "config") -Destination $deployRoot -Recurse
+}
 Copy-Item -LiteralPath (Join-Path $repoRoot "public") -Destination $deployRoot -Recurse
 $generatedPublicAssets = @(
   "organic-clip-assets"
