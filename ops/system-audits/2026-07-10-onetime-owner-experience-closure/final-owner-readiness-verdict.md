@@ -1,17 +1,17 @@
 # One Time Owner-Experience Final Readiness Verdict
 
-Generated: 2026-07-10T19:46:30+03:00
+Generated: 2026-07-10T20:10:05+03:00
 Raw objective: `RAW-20260710-003`
 Requirement: `REQ-20260710-029`
-Audited head commit: `74bdce15`
-Latest app deployment: Railway `a394e0d4-8ced-4581-9cc7-bb6f68aa8246` from app source commit `4739362d`
-Latest readiness snapshot: `2026-07-10T16:46:07.528Z` sampled clean `74bdce15`
+Audited head commit: `627c3c75`
+Latest app deployment: Railway `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` from app source commit `627c3c75`
+Latest readiness snapshot: `2026-07-10T17:09:18.294Z` sampled clean `627c3c75`
 
 ## Verdict
 
 ONE_TIME_VERDICT: not_ready
 
-The historical source audit is source-complete for all non-active rows: 291 rows are mapped or active, 290 rows are terminal, and only active owner objective `HIST-SRC-0135` remains open. That closes the inventory/mapping problem, but it does not make One Time production-ready. The refreshed production gate still blocks on external setup, Agent Mode terminal proof, hosted Rabbi Telegram live-smoke proof, and no unblocked executable batch. The latest readiness artifact is clean-sampled; the remaining blockers are product/setup/proof blockers, not a stale dirty-tree artifact.
+The historical source audit is source-complete for all non-active rows: 291 rows are mapped or active, 290 rows are terminal, and only active owner objective `HIST-SRC-0135` remains open. That closes the inventory/mapping problem, but it does not make One Time production-ready. The latest UI/member/CRM polish is committed, pushed, deployed, and live-smoked on the One Time Railway service. The refreshed production gate still blocks on external setup, Agent Mode terminal proof, hosted Rabbi Telegram live-smoke proof, and no unblocked executable batch. The latest readiness artifact is clean-sampled; the remaining blockers are product/setup/proof blockers, not a stale dirty-tree artifact.
 
 ## Layered Readiness Verdicts
 
@@ -57,6 +57,8 @@ The historical source audit is source-complete for all non-active rows: 291 rows
 
 - Public lead capture/free-class path is deployed and live-smoked with no-write/dry-run CRM proof.
 - Brand/copy guardrails, static chrome, parent-review lag fix, readable redacted Operations review, and scoped CRM/front-end slices have evidence in the linked registers.
+- The mobile One Time landing now uses the black rail, visible white hamburger cue, and horizontally sliding white chips requested by Shloimie; member-library/classroom footer links stay inside member context; Operations CRM review copy clearly marks no access grant.
+- Railway deploy `e82cbe34-6864-4bc7-ab9a-9332c64d65e9` initially crashed because the deploy bundle omitted `config/service-provider-bots/one-time.json`; commit `627c3c75` fixed `scripts/railway-redeploy.ps1` to include `config/`, and deploy `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` reached `SUCCESS`.
 - Public Rabbi Agent Review prompts and helper-scope artifacts are live.
 - All non-active historical source rows have terminal proof/blocker mappings.
 - One Time WAPI provider lead-bot guardrails are implemented and locally verified with no send/mutation, while live commercial automation remains blocked.
@@ -72,14 +74,15 @@ The historical source audit is source-complete for all non-active rows: 291 rows
 
 ## Verification
 
-- PASS commit 74bdce15 pushed to origin/master with fresh no-write public launch smoke readback
-- PASS refreshed production readiness snapshot at 2026-07-10T16:46:07.528Z: status not_production_complete, public_launch_smoke_ready=true, public_launch_smoke_age_hours=0.04, sampled_head=74bdce15, sampled_origin_master=74bdce15, sampled_worktree_clean=true
-- EXPECTED BLOCKED npm run production:readiness:gate -- --from-file ops/production-readiness/latest-production-readiness-snapshot.json --json at 2026-07-10T16:49:20.965Z: blocker groups include snapshot_not_production_ready, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing
+- PASS commit `627c3c75` pushed to origin/master and deployed to One Time Railway deployment `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` after fixing the deploy bundle `config/` omission.
+- PASS refreshed production readiness snapshot at 2026-07-10T17:09:18.294Z: status not_production_complete, public_launch_smoke_ready=true, public_launch_smoke_age_hours=0.43, sampled_head=627c3c75, sampled_origin_master=627c3c75, sampled_worktree_clean=true
+- EXPECTED BLOCKED `node scripts/production-readiness-gate.mjs --from-file <clean 627c3c75 snapshot> --json` at 2026-07-10T17:08:56.084Z: blocker groups include snapshot_not_production_ready, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing
 - PASS source matrix check: 291 total rows, 290 terminal rows, 1 active owner row, 0 non-active unmapped rows
 - PASS npm run bna:run:status: blocked 2, done 8, validation passed
 - PASS npm run bna:run:next: next unblocked executable batch none
 - PASS npm run app:smoke:rabbi-agent-review-proof-readiness: prompts/artifacts live, hub proof state proof_blocked_or_pending, missing terminal prompt count 2
 - PASS no-write public launch smoke refresh at 2026-07-10T16:43:35Z: onetime separate instance, Rabbi landing, One Time interest dry-run, and public privacy smokes passed without writes
+- PASS post-deploy One Time live smokes after Railway `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3`: separate instance, Rabbi landing, shared review public/member/provider/parent/student/classroom/email surfaces, and authenticated Operations CRM workbench.
 - PASS production-readiness sample is clean; unrelated local dirty files remain intentionally outside this sampled readiness artifact
 - PASS One Time WAPI provider lead-bot guardrail proof: focused syntax/tests passed; readiness command returned expected blocked status with no send, CRM mutation, or secret printing.
 
@@ -98,6 +101,9 @@ The historical source audit is source-complete for all non-active rows: 291 rows
 - `ops/system-audits/2026-07-10-onetime-owner-experience-closure/wapi-provider-lead-bot-guardrail-proof.json`
 - `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`
 - `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json`
+- `ops/live-smokes/2026-07-10T17-03-20-545Z-rabbi-onetime-landing-smoke.md`
+- `ops/live-smokes/2026-07-10T17-03-20-608Z-one-time-operations-crm-workbench-live-smoke.md`
+- `ops/live-smokes/2026-07-10T17-03-20-881Z-one-time-shared-review-live-smoke.md`
 
 ## Guardrails
 

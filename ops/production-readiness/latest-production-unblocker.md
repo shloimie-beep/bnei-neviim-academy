@@ -1,9 +1,9 @@
-# Production Unblocker - 2026-07-10T16:46:16.798Z
+# Production Unblocker - 2026-07-10T17:09:59.491Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: ops/production-readiness/latest-production-readiness-snapshot.json (latest_file_requested)
-Source snapshot generated at: 2026-07-10T16:46:07.528Z
-Snapshot git head: 74bdce15 (origin/master: 74bdce15, worktree clean: yes)
+Source snapshot generated at: 2026-07-10T17:09:18.294Z
+Snapshot git head: 627c3c75 (origin/master: 627c3c75, worktree clean: yes)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 One Time setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
@@ -28,9 +28,9 @@ Owner: Shloimie / provider account owners
 Count: 3
 Evidence:
   - SETUP-ONETIME-STRIPE-001: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias
-  - SETUP-ONETIME-WHAPI-001: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number
+  - SETUP-ONETIME-WHAPI-001: whapi_wapi_instance_id, whapi_wapi_phone_number
   - SETUP-ONETIME-CAMPAIGN-001: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval
-Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
+Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
 ### rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not production-verified
 Owner: Codex / operator
 Count: 1
@@ -78,7 +78,6 @@ Status: blocked_external_input
 Current evidence: OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.
 Setup check ready: no
 Current missing fields from setup check:
-  - whapi_wapi_token_alias
   - whapi_wapi_instance_id
   - whapi_wapi_phone_number
 Setup check warnings:
@@ -122,7 +121,7 @@ Verification after setup:
 Status: passed
 Ready: yes
 Fresh for launch gate: yes
-Age hours: 0.04
+Age hours: 0.43
 Commands passed: 4/4
 External write performed: no
 Production data mutation performed: no
