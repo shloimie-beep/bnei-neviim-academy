@@ -11,7 +11,7 @@ This batch is implemented, pushed, deployed, and live-smoked for the scoped
 One Time brand/copy, helper placement, evidence-guardrail repairs, and readable
 redacted Operations content review. A redacted historical source inventory and
 291-row source-statement skeleton now exist for the broader owner-experience
-objective. Seventeen terminal-mapping batches now cover 219 mapped or active rows: 218 terminal rows plus active owner objective `HIST-SRC-0135`. 73 rows still lack terminal status. Full
+objective. Eighteen terminal-mapping batches now cover 235 mapped or active rows: 234 terminal rows plus active owner objective `HIST-SRC-0135`. 57 rows still lack terminal status. Full
 production launch is still not complete because external setup, Telegram live
 delivery proof, and Agent Mode proof remain blocked outside this code batch.
 
@@ -24,7 +24,7 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
 | `REQ-20260710-011` | Done - live readable redacted review | Live authenticated Operations routes loaded on `https://join.onetimeonetime.com` with One Time Railway auth and readable redaction. The audit captured 140 screenshots, skipped 0 checks, found 0 automated findings, and preserved labels, hierarchy, action rails, counters, scope banners, and no-send/no-charge guardrails while masking private values. Evidence: `ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md` and `ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md`. |
 | `REQ-20260710-012` | Blocked - Agent Mode runner required | Prompt creation is not proof. Exact next action: run `rabbi-telegram-helper-ticket-smoke` and `rabbi-helper-tool-scope-map` in Agent Mode and save/read back `AGR-*` PASS/FAIL/BLOCKED results. |
 | `REQ-20260710-026` | Done - inventory created | Redacted historical source inventory created with 135 raw inputs, 156 task registers, and 141 grouped evidence packages. Evidence: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md` and `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json`. |
-| `REQ-20260710-027` | In progress - seventeenth batch mapped | `historical-source-statement-matrix.json` created 291 stable `HIST-SRC-*` rows from the inventory. The first seventeen batches through `HIST-SRC-0217` are mapped; 73 rows still lack terminal status. |
+| `REQ-20260710-027` | In progress - eighteenth batch mapped | `historical-source-statement-matrix.json` created 291 stable `HIST-SRC-*` rows from the inventory. The first eighteen batches through `HIST-SRC-0233` are mapped; 57 rows still lack terminal status. |
 
 ## Local Verification
 
@@ -36,7 +36,7 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
 - PASS `npm run watchdog:actions`: 0 findings.
 - PASS `npm run watchdog:protocol-drift`: 0 findings.
 - PASS `npm run audit:governance`: report generated at
-  `ops/audit-governance/2026-07-10T13-51-17-720Z-audit-governance.md`.
+  `ops/audit-governance/2026-07-10T14-04-20-784Z-audit-governance.md`.
   It still reports older repo-wide audit debt, but untracked audit packages
   are `_None._`; this closeout batch is mapped through `REQ-20260710-008`,
   `REQ-20260710-010`, `REQ-20260710-011`, `REQ-20260710-012`, the refreshed
@@ -58,7 +58,7 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
   packages without copying raw private bodies.
 - PASS historical source-statement matrix parse:
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`
-  records 291 stable source rows; first through seventeenth mapped batches cover 219 mapped or active rows (218 terminal rows plus active `HIST-SRC-0135`), with 73 rows still lacking terminal status.
+  records 291 stable source rows; first through eighteenth mapped batches cover 235 mapped or active rows (234 terminal rows plus active `HIST-SRC-0135`), with 57 rows still lacking terminal status.
 
 ## Deployment And Live Readback
 
@@ -111,7 +111,7 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
 
 1. `REQ-20260710-027`: replace the skeleton statuses in
    `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`
-   with terminal statuses and evidence/blockers for the remaining non-active unmapped source rows, starting at `HIST-SRC-0218`; keep `HIST-SRC-0135` active until owner-goal closeout.
+   with terminal statuses and evidence/blockers for the remaining non-active unmapped source rows, starting at `HIST-SRC-0234`; keep `HIST-SRC-0135` active until owner-goal closeout.
 2. `REQ-20260710-012`: run `rabbi-telegram-helper-ticket-smoke` and
    `rabbi-helper-tool-scope-map` in Agent Mode and save/read back `AGR-*`
    PASS/FAIL/BLOCKED results.
@@ -143,4 +143,8 @@ Mapped `HIST-SRC-0201` through `HIST-SRC-0205`, covering June 18-19 task-registe
 
 ## Seventeenth Mapping Batch
 
-Mapped `HIST-SRC-0206` through `HIST-SRC-0217`, covering June 22-24 task-register rows for One Time assets/funnel/Vimeo/email/Stripe, Rabbi workspace parity, Universal Service Provider Studio, website correction continuation, clean-slate acceptance/control/final release, owner-review navigation, Issue #20, owner setup center, and public UI polish. The matrix now has 219 mapped or active rows: 218 terminal rows plus active `HIST-SRC-0135`; 73 rows still lack terminal status. No external send or provider mutation was performed in this mapping pass.
+Mapped `HIST-SRC-0206` through `HIST-SRC-0217`, covering June 22-24 task-register rows for One Time assets/funnel/Vimeo/email/Stripe, Rabbi workspace parity, Universal Service Provider Studio, website correction continuation, clean-slate acceptance/control/final release, owner-review navigation, Issue #20, owner setup center, and public UI polish. This was superseded by the eighteenth mapping batch below. No external send or provider mutation was performed in this mapping pass.
+
+## Eighteenth Mapping Batch
+
+Mapped `HIST-SRC-0218` through `HIST-SRC-0233`, covering June 26-July 4 task-register rows for Issue #24 helper guardrails, service-provider scopes/CRM, transcript/Drive digest rebuild, current-systems closeout, Product Quality/brand/control packets, visual audit/Resend smoke, One Time launch/DNS/provider readiness, Job 101 triage, PR #62 clean integration, Rabbi/One Time UI cleanup, Studio readiness, helper-bot planning, and PR #87 ship/live cleanup. The matrix now has 235 mapped or active rows: 234 terminal rows plus active `HIST-SRC-0135`; 57 rows still lack terminal status. No external send or provider mutation was performed in this mapping pass.

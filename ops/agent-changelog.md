@@ -38060,3 +38060,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Covered One Time assets/funnel/Vimeo/email/Stripe, Rabbi workspace parity, Universal Service Provider Studio, website continuation, clean-slate acceptance/control/final release, owner-review navigation, Issue #20, owner setup, and public UI polish rows.
 - The historical source matrix now has 219 mapped or active rows: 218 terminal rows plus active `HIST-SRC-0135`; 73 rows still lack terminal status. The owner-experience goal remains active and not ready.
 - Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/configuration/imports as evidence only.
+
+## 2026-07-10 - One Time historical source eighteenth batch mapped
+
+- Mapped the June 26-July 4 task-register batch: `HIST-SRC-0218` through `HIST-SRC-0233`.
+- Covered Issue #24 helper guardrails, service-provider scopes/CRM, transcript/Drive digest rebuild, current-systems closeout, Product Quality/brand/control packets, visual audit/Resend smoke, One Time launch/DNS/provider readiness, Job 101 triage, PR #62 clean integration, Rabbi/One Time UI cleanup, Studio readiness, helper-bot planning, and PR #87 ship/live cleanup rows.
+- The historical source matrix now has 235 mapped or active rows: 234 terminal rows plus active `HIST-SRC-0135`; 57 rows still lack terminal status. The owner-experience goal remains active and not ready.
+- Guardrail: No external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/configuration/imports as evidence only.
