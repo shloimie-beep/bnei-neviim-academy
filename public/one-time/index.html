@@ -143,6 +143,8 @@
       align-items: center;
       justify-content: flex-end;
       gap: 5px;
+      min-width: 0;
+      flex-wrap: nowrap;
       overflow-x: auto;
       scrollbar-width: none;
     }
@@ -150,13 +152,16 @@
       min-height: 44px;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       border: 1px solid transparent;
       border-radius: 8px;
       padding: 8px 11px;
       color: rgba(255,255,255,0.8);
       font-size: 0.86rem;
       font-weight: 800;
+      line-height: 1.15;
       text-decoration: none;
+      text-align: center;
       white-space: nowrap;
     }
     .nav a:hover,
@@ -647,9 +652,51 @@
       .brand-mark { width: 50px; height: 50px; }
       .nav {
         width: 100%;
+        display: flex;
+        flex-wrap: nowrap;
         justify-content: flex-start;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        padding: 2px 2px 8px;
+        scroll-snap-type: none;
       }
-      .nav a { padding: 8px 10px; font-size: 0.82rem; }
+      .nav::before {
+        content: "";
+        display: block;
+        box-sizing: border-box;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        border: 1px solid rgba(255,255,255,0.34);
+        border-radius: 8px;
+        background:
+          linear-gradient(#080910, #080910) center 13px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 20px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 27px / 20px 2px no-repeat,
+          #ffffff;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.24);
+      }
+      .nav a {
+        flex: 0 0 auto;
+        min-width: max-content;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        scroll-snap-align: start;
+        white-space: nowrap;
+      }
+      .nav a[aria-current="page"] {
+        color: #080910;
+        border-color: #ffffff;
+        background: #ffffff;
+      }
+      .nav a:not([aria-current="page"]):not(.nav-cta) {
+        color: #ffffff;
+        border-color: rgba(255,255,255,0.24);
+        background: rgba(255,255,255,0.06);
+      }
       .hero { min-height: auto; }
       .hero-content { padding-top: 62px; }
       .signup-strip-inner {

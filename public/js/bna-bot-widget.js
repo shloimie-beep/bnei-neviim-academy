@@ -765,8 +765,8 @@
       font-size: 0;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher {
-      top: 96px;
-      bottom: auto;
+      top: auto;
+      bottom: 14px;
     }
     body.bna-assistant-surface-one-time-member .bna-bot-launcher,
     body.bna-assistant-surface-one-time-member .bna-bot-nudge {
@@ -796,8 +796,8 @@
         font-size: 0;
       }
       body.bna-assistant-surface-one-time-public .bna-bot-launcher {
-        top: 140px;
-        bottom: auto;
+        top: auto;
+        bottom: calc(10px + env(safe-area-inset-bottom, 0px));
       }
       body.bna-assistant-surface-one-time-member .bna-bot-launcher,
       body.bna-assistant-surface-one-time-member .bna-bot-nudge {

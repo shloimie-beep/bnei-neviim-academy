@@ -591,8 +591,16 @@
     @media (max-width: 680px) {
       .topbar {
         align-items: center;
-        flex-direction: row;
+        flex-direction: column;
         padding: 10px 0;
+      }
+
+      .topbar > div {
+        min-width: 0;
+      }
+
+      .topbar > div:last-child {
+        width: 100%;
       }
 
       .member-meta {
@@ -601,13 +609,46 @@
       }
 
       .member-nav {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
         flex-wrap: nowrap;
         justify-content: flex-start;
-        max-width: calc(100vw - 172px);
+        gap: 8px;
+        max-width: none;
         overflow-x: auto;
         overflow-y: hidden;
-        padding-bottom: 2px;
+        overscroll-behavior-x: contain;
         -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        scroll-snap-type: none;
+        scrollbar-width: none;
+      }
+
+      .member-nav::before {
+        content: "";
+        display: block;
+        box-sizing: border-box;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        border: 1px solid rgba(255, 210, 0, 0.42);
+        border-radius: 8px;
+        background:
+          linear-gradient(#080910, #080910) center 13px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 20px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 27px / 20px 2px no-repeat,
+          #ffffff;
+      }
+
+      .member-nav a {
+        flex: 0 0 auto;
+        min-width: max-content;
+        justify-content: center;
+        padding: 8px 11px;
+        text-align: center;
+        white-space: nowrap;
+        scroll-snap-align: start;
       }
 
       .member-brand-lockup img {

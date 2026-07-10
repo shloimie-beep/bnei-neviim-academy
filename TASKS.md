@@ -90,9 +90,9 @@ not authorize active GHL runtime paths.
   mobile nav clipping, brand/copy normalization, provider text fit,
   source/screenshot evidence guardrails, stale audit mapping, redacted
   Operations content review, and Agent Mode proof prompts not yet run. Next
-  action: run or implement
-  `ops/chatgpt-ramble-dropoff/outgoing/2026-07-10-onetime-ui-gap-implementation/prompts/WINDOW-01-mobile-nav-containment.md`,
-  then brand/copy and evidence guardrail packets.
+  action: commit/push/deploy/live-smoke the locally verified mobile nav rail
+  repair for `REQ-20260710-007`, then continue brand/copy and evidence
+  guardrail packets.
 - [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current

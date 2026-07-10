@@ -79,7 +79,7 @@
       "id": "UIGAP-20260710-001",
       "title": "Mobile top navigation clips labels on One Time surfaces",
       "severity": "P1",
-      "status": "OPEN_IMPLEMENTATION_PACKET_REQUIRED",
+      "status": "LOCAL_IMPLEMENTED_PENDING_DEPLOY_LIVE_SMOKE",
       "routes": [
         "/one-time",
         "/rabbi-member",
@@ -97,7 +97,14 @@
         "At 390px and 430px nav labels do not clip or disappear without an intentional menu/scroll affordance.",
         "Tap targets remain usable and selected state remains yellow/black.",
         "No horizontal page scroll and no truncated final nav item."
-      ]
+      ],
+      "local_implementation": {
+        "status": "verified_local",
+        "report": "ops/ui-audits/2026-07-10-onetime-ui-gap-register/mobile-nav-containment-local-readback.md",
+        "ignored_screenshot_dir": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-local/",
+        "operator_correction": "First grid-style implementation was rejected from screenshots; final local implementation uses a horizontal chip rail with a visible hamburger/scroll cue.",
+        "terminal_blocker": "Needs commit/push, deployment, and live smoke/readback before Done."
+      }
     },
     {
       "id": "UIGAP-20260710-002",

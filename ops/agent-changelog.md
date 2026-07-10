@@ -37591,3 +37591,14 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Created source/lifecycle matrices under `ops/system-audits/2026-07-10-onetime-ramble-to-terminal-gap-audit/` with 20 source statements.
 - Created canonical UI gap register `ops/ui-audits/2026-07-10-onetime-ui-gap-register/report.md` with 7 gaps. Manual review reopened mobile nav clipping, brand/copy normalization, provider text-fit, screenshot evidence mapping, stale audit mapping, redacted Operations review, and Agent Mode proof gaps.
 - Generated 6 outgoing ChatGPT code-package prompts under `ops/chatgpt-ramble-dropoff/outgoing/2026-07-10-onetime-ui-gap-implementation/`. These prompts are not product completion; underlying UI gaps remain open until implemented, verified, deployed/live-smoked, and source-closed.
+
+## 2026-07-10 - One Time mobile nav rail local implementation
+
+- Implemented `REQ-20260710-007` locally after operator screenshot correction rejected the first grid-style nav treatment.
+- Public/member/classroom/provider-review mobile navs now use horizontal chip rails with visible white hamburger/scroll cues instead of clipped right-edge labels or stacked grid blocks.
+- Moved the One Time public assistant launcher back to the lower mobile safe area so it does not overlap the top nav.
+- Added CRM text containment guards in shared One Time review cards/buttons.
+- Evidence: `ops/ui-audits/2026-07-10-onetime-ui-gap-register/mobile-nav-containment-local-readback.md`.
+- Verification: custom Playwright mobile readback passed 10/10 checks at 390px and 430px; `node --check public/js/bna-bot-widget.js`; `npm run one-time:smoke:provider-crm-layout-local`; `npm run one-time:smoke:canonical-journey-local`.
+- Broader toolbar-density audit remains non-terminal with separate parent-review tap-target, member whitespace, and flaky Operations communications findings.
+- Remaining for terminal Done: commit/push, deploy, and live smoke/readback.

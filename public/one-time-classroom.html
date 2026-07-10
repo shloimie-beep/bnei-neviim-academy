@@ -624,22 +624,39 @@
         display: flex;
         flex-wrap: nowrap;
         justify-content: flex-start;
+        gap: 8px;
         overflow-x: auto;
         overflow-y: hidden;
-        padding-bottom: 2px;
         overscroll-behavior-x: contain;
-        scroll-snap-type: x proximity;
         -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        scroll-snap-type: none;
+        scrollbar-width: none;
+      }
+      .top-actions::before {
+        content: "";
+        display: block;
+        box-sizing: border-box;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        border: 1px solid rgba(255,255,255,0.34);
+        border-radius: 8px;
+        background:
+          linear-gradient(#080910, #080910) center 13px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 20px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 27px / 20px 2px no-repeat,
+          #ffffff;
       }
       .top-actions a,
       .top-actions button {
         flex: 0 0 auto;
-        min-width: 132px;
+        min-width: max-content;
         width: auto;
-        scroll-snap-align: start;
-      }
-      .top-actions button {
+        padding: 8px 11px;
+        text-align: center;
         white-space: nowrap;
+        scroll-snap-align: start;
       }
       .one-time-page-logo {
         width: 48px;
@@ -660,7 +677,7 @@
     @media (max-width: 360px) {
       .top-actions a,
       .top-actions button {
-        min-width: 124px;
+        padding-inline: 10px;
       }
     }
   </style>
@@ -864,22 +881,38 @@
         gap: 8px;
         overflow-x: auto;
         overflow-y: hidden;
-        padding-bottom: 2px;
         overscroll-behavior-x: contain;
-        scroll-snap-type: x proximity;
         -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        scroll-snap-type: none;
+        scrollbar-width: none;
+      }
+
+      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions::before {
+        content: "";
+        display: block;
+        box-sizing: border-box;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        border: 1px solid rgba(255,255,255,0.34);
+        border-radius: 8px;
+        background:
+          linear-gradient(#080910, #080910) center 13px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 20px / 20px 2px no-repeat,
+          linear-gradient(#080910, #080910) center 27px / 20px 2px no-repeat,
+          #ffffff;
       }
 
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions a,
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions button {
         flex: 0 0 auto;
-        min-width: 132px;
+        min-width: max-content;
         width: auto;
-        scroll-snap-align: start;
-      }
-
-      body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions button {
+        padding: 8px 11px;
+        text-align: center;
         white-space: nowrap;
+        scroll-snap-align: start;
       }
 
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .hero-copy,
@@ -892,7 +925,7 @@
     @media (max-width: 360px) {
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions a,
       body.one-time-review-active[data-one-time-rabbi-dashboard="classroom-review"] .top-actions button {
-        min-width: 124px;
+        padding-inline: 10px;
       }
     }
   </style>

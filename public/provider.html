@@ -605,14 +605,19 @@
         @media (max-width: 820px) {
             .brand-topbar {
                 align-items: flex-start;
+                flex-wrap: wrap;
             }
             .portal-topbar-actions {
-                max-width: 48%;
+                width: 100%;
+                max-width: none;
                 gap: 6px;
+                justify-content: flex-start;
             }
             .portal-topbar-link {
+                flex: 0 0 auto;
                 padding: 6px 8px;
                 font-size: 10px;
+                white-space: nowrap;
             }
             .brand-chip { display: none; }
             .hero,

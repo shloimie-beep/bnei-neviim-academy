@@ -19,7 +19,7 @@ The deployed app is no longer in the earlier obviously broken state. Lag is meas
 
 | Gap ID | Severity | Status | Routes | Evidence | Packet |
 |---|---|---|---|---|---|
-| UIGAP-20260710-001 | P1 | OPEN_IMPLEMENTATION_PACKET_REQUIRED | /one-time<br>/rabbi-member<br>/one-time-classroom<br>/provider.html?review=one-time | SS-20260710-002, SS-20260710-003, SS-20260710-004, SS-20260710-006 | WINDOW-01-mobile-nav-containment.md |
+| UIGAP-20260710-001 | P1 | LOCAL_IMPLEMENTED_PENDING_DEPLOY_LIVE_SMOKE | /one-time<br>/rabbi-member<br>/one-time-classroom<br>/provider.html?review=one-time | `mobile-nav-containment-local-readback.md`; ignored local screenshots under `ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-local/` | WINDOW-01-mobile-nav-containment.md |
 | UIGAP-20260710-002 | P2 | OPEN_COPY_NORMALIZATION_PACKET_REQUIRED | /one-time<br>/provider.html?review=one-time<br>/student/login<br>/rabbi-member | SS-20260710-001, SS-20260710-005, SS-20260710-008 | WINDOW-03-brand-copy-normalization.md |
 | UIGAP-20260710-003 | P2 | OPEN_IMPLEMENTATION_PACKET_REQUIRED | /provider.html?review=one-time | SS-20260710-005, SS-20260710-006 | WINDOW-02-provider-text-fit.md |
 | UIGAP-20260710-004 | P0-process | PROCESS_REPAIR_PACKET_REQUIRED | all audited routes | ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md | WINDOW-04-source-evidence-guardrail.md |
@@ -80,6 +80,14 @@ Overall: 78/100 - MANUAL_REVIEW_FOUND_GAPS
 - Provider/Rabbi workspace: 76/100. Coherent workspace; text fit and copy polish remain. Evidence: `SS-20260710-005..006`.
 - Operations parity: 80/100. Layout passes; content-level review is redaction-limited. Evidence: `SS-20260710-007`.
 - Proof governance: 55/100. Screenshots exist but source coverage reports zero. Evidence: `ops/ui-audits/2026-07-10-ui-source-coverage.md`.
+
+## Local Implementation Update - UIGAP-20260710-001
+
+After operator screenshot review, the first grid-style mobile nav implementation was rejected as visually unacceptable. The local implementation was revised to a compact black One Time mobile header with a visible white hamburger/scroll cue, horizontally sliding nav chips, selected-state chip treatment, and the assistant launcher moved out of the top nav area.
+
+Local readback: `ops/ui-audits/2026-07-10-onetime-ui-gap-register/mobile-nav-containment-local-readback.md`.
+
+Status remains non-terminal until commit/push, deployment, and live smoke/readback prove the same behavior on the production One Time target.
 
 ## Terminal Rule
 

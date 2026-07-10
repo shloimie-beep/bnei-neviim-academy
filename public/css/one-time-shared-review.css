@@ -102,6 +102,7 @@ body.one-time-review-active .brand-chip {
 
 body.one-time-review-active .portal-topbar-link,
 body.one-time-review-active header .nav a,
+body.one-time-review-active .top-actions a,
 body.one-time-review-active .top-actions button {
   min-height: 34px;
   display: inline-flex;
@@ -544,6 +545,7 @@ body.one-time-review-active .one-time-crm-header,
 body.one-time-review-active .one-time-crm-detail,
 body.one-time-review-active .one-time-crm-record,
 body.one-time-review-active .one-time-crm-summary {
+  min-width: 0;
   border: 1px solid rgba(8, 19, 35, 0.12);
   border-radius: 8px;
   background: var(--one-time-white);
@@ -612,12 +614,17 @@ body.one-time-review-active .one-time-crm-record strong,
 body.one-time-review-active .one-time-crm-detail strong,
 body.one-time-review-active .one-time-crm-summary strong {
   color: var(--one-time-navy);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 body.one-time-review-active .one-time-crm-record p,
 body.one-time-review-active .one-time-crm-detail p,
 body.one-time-review-active .one-time-crm-summary p {
   margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 body.one-time-review-active .one-time-crm-record-top,
@@ -636,6 +643,8 @@ body.one-time-review-active .one-time-crm-record-top {
 body.one-time-review-active .one-time-crm-record .btn {
   min-height: 38px;
   padding: 8px 10px;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 body.one-time-review-active .one-time-crm-detail {
@@ -654,6 +663,13 @@ body.one-time-review-active .one-time-crm-summary {
   min-width: 0;
   padding: 12px;
   box-shadow: none;
+}
+
+body.one-time-review-active .one-time-crm-record-meta .status-pill,
+body.one-time-review-active .one-time-crm-summary-grid .status-pill {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 body.one-time-review-active.one-time-student-review-active .hero {
@@ -1029,8 +1045,27 @@ body.one-time-view-as-readonly .overview-metric {
     overflow-y: hidden;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-    scroll-snap-type: x proximity;
+    padding-bottom: 8px;
+    scroll-snap-type: none;
+    scrollbar-width: none;
+  }
+
+  body.one-time-review-active .portal-topbar-actions::before,
+  body.one-time-review-active .top-actions::before,
+  body.one-time-review-active header .nav::before {
+    content: "";
+    display: block;
+    box-sizing: border-box;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 8px;
+    background:
+      linear-gradient(var(--one-time-black), var(--one-time-black)) center 13px / 20px 2px no-repeat,
+      linear-gradient(var(--one-time-black), var(--one-time-black)) center 20px / 20px 2px no-repeat,
+      linear-gradient(var(--one-time-black), var(--one-time-black)) center 27px / 20px 2px no-repeat,
+      #ffffff;
   }
 
   body.one-time-review-active .portal-topbar-actions::-webkit-scrollbar,
@@ -1041,9 +1076,11 @@ body.one-time-view-as-readonly .overview-metric {
 
   body.one-time-review-active .portal-topbar-link,
   body.one-time-review-active header .nav a,
+  body.one-time-review-active .top-actions a,
   body.one-time-review-active .top-actions button {
     flex: 0 0 auto;
     min-width: max-content;
+    width: auto;
     min-height: 44px;
     padding: 8px 10px;
     scroll-snap-align: start;
