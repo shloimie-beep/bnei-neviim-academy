@@ -4,6 +4,13 @@ Updated: 2026-06-19
 
 This baseline resumes the active recovery run. It does not start a new protocol, rebuild the audit harness, start a UI crawl, deploy, or mutate production data.
 
+Governance mapping: covered by `HIST-SRC-0008` under `REQ-20260710-027` in
+`ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`.
+Terminal status is `mixed_terminal_done_needs_decision_blocked`: overlapping
+agent/intake/workspace foundations have later proof, while external
+integrations, live sends, provider writes, billing, and Agent Mode proof remain
+blocked by current owner-experience gates.
+
 ## Source Discovery
 
 Status: `already_verified`

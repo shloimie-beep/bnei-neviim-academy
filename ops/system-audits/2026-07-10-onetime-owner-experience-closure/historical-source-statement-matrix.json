@@ -1,7 +1,7 @@
 {
   "report_id": "onetime-historical-source-statement-matrix-20260710-skeleton",
-  "generated_at": "2026-07-10T14:50:54+03:00",
-  "status": "skeleton_created_first_batch_mapped_terminal_mapping_required",
+  "generated_at": "2026-07-10T15:03:12+03:00",
+  "status": "skeleton_created_second_batch_mapped_terminal_mapping_required",
   "source_inventory": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json",
   "counts": {
     "total_source_statements": 291,
@@ -10,26 +10,32 @@
       "task_register": 156
     },
     "by_mapping_status": {
-      "needs_terminal_mapping_blocker_present": 161,
-      "needs_terminal_mapping_done_claim_present": 76,
-      "needs_terminal_mapping": 49,
-      "mapped_terminal_mixed_done_and_blocked": 2,
-      "mapped_terminal_mixed_done_needs_decision_blocked": 2,
-      "mapped_in_progress_goal_active": 1
+      "mapped_in_progress_goal_active": 1,
+      "mapped_terminal_already_satisfied": 2,
+      "mapped_terminal_done": 2,
+      "mapped_terminal_done_no_external_send": 1,
+      "mapped_terminal_mixed_done_and_blocked": 6,
+      "mapped_terminal_mixed_done_needs_decision_blocked": 7,
+      "needs_terminal_mapping": 48,
+      "needs_terminal_mapping_blocker_present": 154,
+      "needs_terminal_mapping_done_claim_present": 70
     },
     "by_family": {
       "OT-HIST-001": 12,
-      "OT-HIST-UNSORTED": 81,
-      "OT-HIST-005": 42,
       "OT-HIST-002": 35,
-      "OT-HIST-006": 33,
       "OT-HIST-003": 65,
-      "OT-HIST-004": 23
+      "OT-HIST-004": 23,
+      "OT-HIST-005": 42,
+      "OT-HIST-006": 33,
+      "OT-HIST-UNSORTED": 81
     },
     "by_terminal_status": {
-      "null": 287,
-      "mixed_terminal_done_and_blocked": 2,
-      "mixed_terminal_done_needs_decision_blocked": 2
+      "already_satisfied": 2,
+      "done": 2,
+      "done_no_external_send": 1,
+      "mixed_terminal_done_and_blocked": 6,
+      "mixed_terminal_done_needs_decision_blocked": 7,
+      "null": 273
     }
   },
   "source_statements": [
@@ -126,10 +132,18 @@
         "REQ-20260616-069"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260616-001-bna-super-prompt.md",
+        "tasks-pending/2026-06-16-website-ramble-correction-audit.md",
+        "tasks-pending/2026-06-17-website-ramble-correction-audit.md",
+        "tasks-pending/2026-06-18-website-ramble-correction-audit.md",
+        "tasks-pending/2026-06-19-website-ramble-correction-audit.md",
+        "tasks-pending/2026-06-23-website-ramble-correction-audit.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md"
+      ],
+      "blocker_or_next_action": "Raw/register chain is preserved and the website-correction carry-forward is already satisfied where deployed. Broader One Time launch/product portions are superseded by later source rows and current external/Agent Mode blockers."
     },
     {
       "source_statement_id": "HIST-SRC-0002",
@@ -154,10 +168,17 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_already_satisfied",
+      "terminal_status": "already_satisfied",
+      "terminal_evidence": [
+        "raw-input/RAW-20260617-005-universal-agentic-goal-memory-watchdog-hardening.md",
+        "AGENTS.md",
+        "GOAL-MODE.md",
+        "QUALITY-GOALS.md",
+        "AGENTIC-MEMORY.md",
+        "docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md"
+      ],
+      "blocker_or_next_action": "Universal goal-memory/watchdog protocol is now represented in durable operating files; no One Time product implementation packet remains in this row."
     },
     {
       "source_statement_id": "HIST-SRC-0003",
@@ -173,10 +194,15 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_already_satisfied",
+      "terminal_status": "already_satisfied",
+      "terminal_evidence": [
+        "raw-input/RAW-20260617-007-live-queue-state-cleanup.md",
+        "ops/queue-audits/2026-07-09T20-51-00-896Z-observable-stale-sweep-apply.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "blocker_or_next_action": "Queue cleanup intent is covered by guarded stale-sweep evidence and current ledger/changelog records; no new queue-cleanup requirement is needed from this row."
     },
     {
       "source_statement_id": "HIST-SRC-0004",
@@ -234,10 +260,15 @@
         "REQ-20260617-032"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260617-010-rabbi-scheller-onetime-super-prompt.md",
+        "tasks-pending/2026-06-17-rabbi-scheller-onetime-mishnayos-register.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "blocker_or_next_action": "The focused One Time landing, workspace, brand, route, and local workflow items have later proof, but parent billing persistence, live external setup, and production-readiness gates remain operator/external decisions."
     },
     {
       "source_statement_id": "HIST-SRC-0005",
@@ -258,10 +289,16 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done",
+      "terminal_status": "done",
+      "terminal_evidence": [
+        "raw-input/RAW-20260617-011-hebrew-rtl-ui-label-audit.md",
+        "tasks-pending/2026-06-17-hebrew-rtl-ui-label-audit.md",
+        "ops/system-audits/2026-06-17T14-33-38-557Z-hebrew-rtl-ui-label-audit.md",
+        "ops/live-smokes/2026-06-17T14-40-47-547Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-17T14-42-45-838Z-hebrew-rtl-ui-label-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Hebrew/RTL label audit was implemented, tested, live-smoked, and the source task was closed; provider portal Hebrew mode remains intentionally not offered."
     },
     {
       "source_statement_id": "HIST-SRC-0006",
@@ -286,10 +323,16 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260618-001-codex-super-prompt-mobile-workspace-audit.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/ui-audits/2026-07-10-onetime-brand-normalization-live-readback/report.md",
+        "ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md",
+        "ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md"
+      ],
+      "blocker_or_next_action": "Current mobile/workspace/UI proof exists for the scoped One Time surfaces. Remaining broad production-complete and Agent Mode proof blockers stay tracked in the current owner report and source register."
     },
     {
       "source_statement_id": "HIST-SRC-0007",
@@ -315,10 +358,14 @@
         "REQ-20260618-304"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done",
+      "terminal_status": "done",
+      "terminal_evidence": [
+        "raw-input/RAW-20260618-005-telegram-weekly-recordings-parsed.md",
+        "tasks-pending/2026-06-18-telegram-bot-stuck-google-drive-intake.md",
+        "ops/drive-audits/2026-06-18T15-06-16-741Z-google-drive-audit.md"
+      ],
+      "blocker_or_next_action": "Weekly recordings parsing, Israel calendar assumption, Telegram detector repair, Drive parse readback, and worker deploy/status proof are recorded; no WhatsApp/Telegram send was performed."
     },
     {
       "source_statement_id": "HIST-SRC-0008",
@@ -351,10 +398,15 @@
         "REQ-20260618-119"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260619-002-next-ramble-agent-integrations-codex-prompt.md",
+        "ops/audits/2026-06-18-ramble-agent-integrations-baseline.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md"
+      ],
+      "blocker_or_next_action": "Overlapping agent/intake/workspace foundations have later proof. External integrations, live sends, provider writes, billing, and Agent Mode proof remain governed by current blockers rather than this historical prompt."
     },
     {
       "source_statement_id": "HIST-SRC-0009",
@@ -374,10 +426,13 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_no_external_send",
+      "terminal_status": "done_no_external_send",
+      "terminal_evidence": [
+        "raw-input/RAW-20260619-004-latest-drive-video-newsletter-correction.md",
+        "raw-input/RAW-20260618-005-telegram-weekly-recordings-parsed.md"
+      ],
+      "blocker_or_next_action": "Corrected newsletter draft was produced in chat from the latest Drive source context; no WhatsApp, Telegram, social, Drive, or production write was authorized or performed."
     },
     {
       "source_statement_id": "HIST-SRC-0010",
@@ -402,10 +457,16 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260619-005-one-time-master-recovery-backlog-ui-launch.md",
+        "tasks-pending/2026-06-19-one-time-master-recovery-register.md",
+        "ops/one-time-mishnah/master-backlog-reconciliation.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "blocker_or_next_action": "Master recovery requirements have terminal local/done/needs-decision statuses in the 2026-06-19 register. Safe work has later proof; live billing, sends, DNS/provider actions, and final launch readiness remain blocked or decision-gated."
     },
     {
       "source_statement_id": "HIST-SRC-0011",
@@ -425,10 +486,15 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/requirements.json",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md"
+      ],
+      "blocker_or_next_action": "The master completion run records substantial implementation/deploy evidence, but the current owner objective is still not production-complete because Agent Mode proof and external setup gates remain open."
     },
     {
       "source_statement_id": "HIST-SRC-0012",
@@ -455,10 +521,15 @@
         "REQ-20260619-306"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+        "tasks-pending/2026-06-19-one-time-master-recovery-register.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "blocker_or_next_action": "Revenue/parser/CRM/auth/beta QA overlaps are represented by the master recovery and current launch registers. Real billing, sends, contact imports, and provider/account writes remain explicit approval/external blockers."
     },
     {
       "source_statement_id": "HIST-SRC-0013",
@@ -479,10 +550,15 @@
         "REQ-20260619-309"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_and_blocked",
+      "terminal_status": "mixed_terminal_done_and_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260621-003-goal-mode-follow-up-resume-prompt.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/NEXT-SESSION.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md"
+      ],
+      "blocker_or_next_action": "The follow-up prompt correctly continued the same active run and later evidence exists. Current unresolved parts are represented by the owner-experience source matrix, Agent Mode blocker, and production-readiness blockers."
     },
     {
       "source_statement_id": "HIST-SRC-0014",
@@ -501,10 +577,16 @@
         "REQ-20260619-313"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md",
+        "tasks-pending/2026-06-19-one-time-master-recovery-register.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/report.md",
+        "ops/live-smokes/2026-07-10T11-26-58-773Z-one-time-shared-review-live-smoke.md",
+        "ops/production-readiness/latest-production-readiness-snapshot.md"
+      ],
+      "blocker_or_next_action": "Separate One Time Railway production deployment and live-smoke evidence exist. Full custom-domain/DNS/account/provider actions and final production-complete launch remain decision/external gated."
     },
     {
       "source_statement_id": "HIST-SRC-0015",
@@ -9172,9 +9254,9 @@
     }
   ],
   "remaining_work": [
-    "Read each source row and replace the skeleton status with a terminal status and evidence or blocker.",
+    "Continue terminal mapping for the remaining 273 source rows.",
     "Create new scoped requirements only for unblocked gaps that are not already represented elsewhere.",
-    "Do not use this skeleton as readiness proof; it is only the stable queue for the reconciliation pass."
+    "Do not use this matrix as final readiness proof until every row has terminal evidence or a precise blocker."
   ],
   "first_mapped_batch": {
     "mapped_at": "2026-07-10T14:50:54+03:00",
@@ -9187,5 +9269,26 @@
     ],
     "status": "july_10_rows_mapped",
     "remaining_rows_without_terminal_status": 287
+  },
+  "second_mapped_batch": {
+    "mapped_at": "2026-07-10T15:03:12+03:00",
+    "row_ids": [
+      "HIST-SRC-0001",
+      "HIST-SRC-0002",
+      "HIST-SRC-0003",
+      "HIST-SRC-0004",
+      "HIST-SRC-0005",
+      "HIST-SRC-0006",
+      "HIST-SRC-0007",
+      "HIST-SRC-0008",
+      "HIST-SRC-0009",
+      "HIST-SRC-0010",
+      "HIST-SRC-0011",
+      "HIST-SRC-0012",
+      "HIST-SRC-0013",
+      "HIST-SRC-0014"
+    ],
+    "status": "early_foundational_rows_mapped",
+    "remaining_rows_without_terminal_status": 273
   }
 }

@@ -1,6 +1,6 @@
 {
   "report_id": "onetime-owner-experience-closure-20260710-current-batch",
-  "generated_at": "2026-07-10T14:32:10+03:00",
+  "generated_at": "2026-07-10T15:03:12+03:00",
   "raw_id": "RAW-20260710-003",
   "register_path": "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
   "production_target": "https://join.onetimeonetime.com",
@@ -42,13 +42,13 @@
     },
     {
       "id": "REQ-20260710-027",
-      "status": "in_progress_first_batch_mapped_terminal_mapping_required",
-      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows and mapped the first July 10 batch. Five rows were reviewed; four now have mixed terminal statuses and HIST-SRC-0135 remains the active owner objective. 287 rows still lack terminal status.",
+      "status": "in_progress_second_batch_mapped_terminal_mapping_required",
+      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows and mapped the first July 10 batch plus the second early foundational batch. Nineteen rows now have terminal or active mappings, including HIST-SRC-0135 as the active owner objective. 273 rows still lack terminal status.",
       "evidence": [
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.md",
         "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json"
       ],
-      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for the remaining 287 rows."
+      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for the remaining 273 rows."
     }
   ],
   "local_evidence": {
@@ -71,14 +71,14 @@
     "PASS npm run pqc:validate 67/67",
     "PASS npm run watchdog:actions finding_count 0",
     "PASS npm run watchdog:protocol-drift findings 0",
-    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T11-58-46-537Z-audit-governance.md with older repo-wide debt still present and untracked audit packages none",
+    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T12-06-02-830Z-audit-governance.md with older repo-wide debt still present and untracked audit packages none",
     "PASS local visual audit 9 routes x 5 viewports, 140 screenshots, 0 findings",
     "PASS local canonical journey smoke",
     "PASS local provider CRM layout smoke",
     "PASS live readable redacted Operations audit 140 screenshots, 0 skipped checks, 0 findings",
     "PASS manual review of desktop/mobile Operations overview and email inbox readable redacted screenshots",
     "PASS historical source inventory JSON parsed; counts raw_inputs 135, task_registers 156, evidence_groups 141",
-    "PASS historical source-statement matrix JSON parsed; total_source_statements 291; first mapped batch 5 rows; remaining rows without terminal status 287",
+    "PASS historical source-statement matrix JSON parsed; total_source_statements 291; first and second mapped batches 19 rows; remaining rows without terminal status 273",
     "PASS no standalone visible OneTime/OneTimeOneTime brand grep in active checked surfaces"
   ],
   "deployment": {

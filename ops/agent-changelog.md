@@ -37921,3 +37921,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `HIST-SRC-0133`, `HIST-SRC-0134`, `HIST-SRC-0135`, `HIST-SRC-0290`, and
   `HIST-SRC-0291`. Four rows now have mixed terminal statuses; the current
   owner objective row remains active; 287 rows still lack terminal status.
+
+## 2026-07-10 - One Time historical source second batch mapped
+
+- Mapped the early foundational historical source batch:
+  `HIST-SRC-0001` through `HIST-SRC-0014`.
+- These rows cover the first broad BNA/One Time super-prompt, universal
+  goal/watchdog hardening, queue cleanup, Rabbi Scheller super-prompt,
+  Hebrew/RTL proof, mobile/workspace audit, Telegram weekly recordings,
+  agent-integrations follow-up, Drive newsletter correction, master recovery,
+  master completion, revenue launch, follow-up resume, and separate-instance
+  authorization sources.
+- The matrix now has 19 rows mapped and 273 rows still lacking terminal
+  status. Broad launch rows remain mixed terminal where safe work is proven
+  but external setup, live sends, billing/access/DNS/provider actions, or Agent
+  Mode proof remain blocked.
