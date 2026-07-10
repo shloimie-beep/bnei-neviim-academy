@@ -1,6 +1,6 @@
 # One Time Owner Experience Closure - Current Batch
 
-Generated: 2026-07-10T17:47:03+03:00
+Generated: 2026-07-10T20:16:00+03:00
 Raw objective: `raw-input/RAW-20260710-003-codex-followup-one-time-owner-experience-closure.md`
 Register: `tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md`
 Production target: `https://join.onetimeonetime.com`
@@ -14,6 +14,9 @@ redacted Operations content review. A redacted historical source inventory and
 objective. Twenty-one terminal-mapping batches now cover all 291 mapped or active rows: 290 terminal rows plus active owner objective `HIST-SRC-0135`. Only the active owner objective lacks terminal status; 0 non-active rows still require terminal mapping. Full
 production launch is still not complete because external setup, Telegram live
 delivery proof, and Agent Mode proof remain blocked outside this code batch.
+The latest scoped app deployment is Railway
+`80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` from app source commit `627c3c75`;
+the latest pushed evidence-only commit is `43069f27`.
 
 ## Requirement Status
 
@@ -26,7 +29,7 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
 | `REQ-20260710-026` | Done - inventory created | Redacted historical source inventory created with 135 raw inputs, 156 task registers, and 141 grouped evidence packages. Evidence: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md` and `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json`. |
 | `REQ-20260710-027` | Done - all non-active source rows mapped | `historical-source-statement-matrix.json` contains 291 stable `HIST-SRC-*` rows. All 290 non-active rows now have terminal statuses with evidence/blockers; only active owner objective `HIST-SRC-0135` remains without terminal status. |
 | `REQ-20260710-028` | Done - no unblocked split packets from mapping | No remaining non-active source rows need splitting into new implementation packets. Unresolved work is already represented as terminal blockers/decisions in scoped registers and production-readiness artifacts. |
-| `REQ-20260710-029` | Done - final walkthrough produced / not ready | Final owner-experience walkthrough/readiness verdict produced at `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md`. `ONE_TIME_VERDICT: not_ready` because the production gate still blocks on external setup, Agent Mode proof, hosted Rabbi Telegram live-smoke proof, dirty readiness sample, and no unblocked executable batch. |
+| `REQ-20260710-029` | Done - final walkthrough produced / not ready | Final owner-experience walkthrough/readiness verdict produced at `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md`. `ONE_TIME_VERDICT: not_ready` because the production gate still blocks on external setup, Agent Mode proof, hosted Rabbi Telegram live-smoke proof, and no unblocked executable batch. The latest readiness sample is clean at `627c3c75`. |
 
 ## Local Verification
 
@@ -61,14 +64,23 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
 - PASS historical source-statement matrix parse:
   `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`
   records 291 stable source rows; first through twenty-first mapped batches cover all 291 mapped or active rows (290 terminal rows plus active `HIST-SRC-0135`), with 1 active row lacking terminal status and 0 non-active rows still requiring mapping.
+- PASS refreshed clean production-readiness sample:
+  `ops/production-readiness/latest-production-readiness-snapshot.md` sampled
+  `627c3c75` against `origin/master` `627c3c75` with a clean worktree.
 
 ## Deployment And Live Readback
 
-- PASS pushed commit `98e49080` to `origin/master`.
+- PASS pushed app commit `627c3c75` to `origin/master`.
+- PASS pushed evidence commit `43069f27` to `origin/master`; no app redeploy
+  was required because it only updates readiness/evidence files.
 - PASS Railway doctor resolved target `one-time-production / one-time-web /
   production`.
-- PASS Railway deployment `f7043570-5ded-4c1c-8109-4475f9cd11ae` reached
-  `SUCCESS`.
+- PASS Railway deployment `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` reached
+  `SUCCESS` from app source commit `627c3c75`.
+- RECOVERED Railway deployment `e82cbe34-6864-4bc7-ab9a-9332c64d65e9`
+  initially crashed because the deploy bundle omitted
+  `config/service-provider-bots/one-time.json`; `627c3c75` includes `config/`
+  in the deploy bundle.
 - PASS live shared-review smoke:
   `ops/live-smokes/2026-07-10T11-26-58-773Z-one-time-shared-review-live-smoke.md`.
 - PASS live separate-instance smoke:
@@ -83,6 +95,12 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
   `ops/live-smokes/2026-07-10T11-27-49-452Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS live public privacy smoke:
   `ops/live-smokes/2026-07-10T11-28-00-896Z-public-route-privacy-smoke.md`.
+- PASS post-deploy live Rabbi landing smoke:
+  `ops/live-smokes/2026-07-10T17-03-20-545Z-rabbi-onetime-landing-smoke.md`.
+- PASS post-deploy authenticated Operations CRM workbench smoke:
+  `ops/live-smokes/2026-07-10T17-03-20-608Z-one-time-operations-crm-workbench-live-smoke.md`.
+- PASS post-deploy shared-review smoke:
+  `ops/live-smokes/2026-07-10T17-03-20-881Z-one-time-shared-review-live-smoke.md`.
 - PASS live visual audit:
   `ops/ui-audits/2026-07-10-onetime-brand-normalization-live-readback/report.md`
   with 110 screenshots, 0 findings, and 10 Operations checks skipped because
@@ -96,12 +114,13 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
   `ops/production-readiness/latest-production-readiness-snapshot.md`.
   Snapshot result remains `not_production_complete` because full launch still
   has external Stripe/WAPI/campaign setup blockers, Telegram live delivery
-  proof pending, and Agent Mode terminal proof pending. Dirty-tree path details are redacted in the tracked readiness JSON.
+  proof pending, Agent Mode terminal proof pending, and no unblocked executable
+  batch. The latest tracked sample is clean at `627c3c75`.
 
 ## Layered Readiness Verdicts
 
 - PUBLIC_FREE_CLASS_LANE: ready. Public landing and free-class/no-write lead lane remain live-smoked and fresh for the launch gate; this does not include payments, campaign sends, WhatsApp/WAPI sends, or access grants.
-- OWNER_AND_ROLE_INTERFACE: not_ready. Readable Operations and role-surface proof exists, but two Agent Mode terminal results, clean-tree readiness sampling, hosted Rabbi Telegram live-smoke proof, and a final clean owner acceptance gate are still missing.
+- OWNER_AND_ROLE_INTERFACE: not_ready. Readable Operations and role-surface proof exists, but two Agent Mode terminal results, hosted Rabbi Telegram live-smoke proof, and a final owner acceptance gate are still missing.
 - FULL_COMMERCIAL_AUTOMATION: blocked. Stripe sandbox/price aliases, Whapi/WAPI instance and phone metadata, campaign copy/list/suppression/seed approval, and hosted Telegram proof remain outside Codex-only execution.
 
 ## Owner Tour URLs
@@ -137,9 +156,8 @@ delivery proof, and Agent Mode proof remain blocked outside this code batch.
    `rabbi-helper-tool-scope-map` in Agent Mode and save/read back `AGR-*`
    PASS/FAIL/BLOCKED results.
 2. Full One Time production launch remains gated by the production readiness
-   gate: Stripe/WAPI/campaign setup, hosted Rabbi Telegram live-smoke, clean
-   worktree/readiness sample, and exact approval gates are outside this local
-   verdict batch.
+   gate: Stripe/WAPI/campaign setup, hosted Rabbi Telegram live-smoke, Agent
+   Mode proof, and exact approval gates are outside this local verdict batch.
 
 ## Final Owner Verdict
 

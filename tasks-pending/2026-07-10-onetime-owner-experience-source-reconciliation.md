@@ -81,11 +81,11 @@ Mapped `HIST-SRC-0270` through `HIST-SRC-0289` to terminal evidence/blockers. Fi
 
 ## 2026-07-10 Final Owner Readiness Verdict
 
-Produced `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md` with `ONE_TIME_VERDICT: not_ready`. Source mapping is complete for all non-active rows, but production readiness remains blocked by external Stripe/WAPI/campaign setup, two missing terminal Agent Mode proofs, hosted Rabbi Telegram live-smoke proof, dirty-worktree production gate sampling, and no unblocked executable batch. No external send, payment/access mutation, provider mutation, Agent Review result save, or production-data mutation was performed.
+Produced `ops/system-audits/2026-07-10-onetime-owner-experience-closure/final-owner-readiness-verdict.md` with `ONE_TIME_VERDICT: not_ready`. Source mapping is complete for all non-active rows, but production readiness remains blocked by external Stripe/WAPI/campaign setup, two missing terminal Agent Mode proofs, hosted Rabbi Telegram live-smoke proof, and no unblocked executable batch. A later clean readiness sample at app source commit `627c3c75` removed the stale dirty-worktree blocker. No external send, payment/access mutation, provider mutation, Agent Review result save, or production-data mutation was performed.
 
 ## 2026-07-10 Layered Verdict Refresh
 
-Refreshed `ops/production-readiness/latest-production-readiness-snapshot.md` and `ops/production-readiness/latest-production-unblocker.md` at sampled head `abce44b5`, then updated the final owner verdict with layered launch truth and ordered owner-tour URLs. `PUBLIC_FREE_CLASS_LANE` is `ready` for the no-write/free-class scope; `OWNER_AND_ROLE_INTERFACE` is `not_ready`; `FULL_COMMERCIAL_AUTOMATION` is `blocked`. No external send, payment/access mutation, provider mutation, Agent Review result save, deploy, or production-data mutation was performed.
+Refreshed `ops/production-readiness/latest-production-readiness-snapshot.md` and `ops/production-readiness/latest-production-unblocker.md` at sampled app source head `627c3c75`, then updated the final owner verdict with layered launch truth and ordered owner-tour URLs. `PUBLIC_FREE_CLASS_LANE` is `ready` for the no-write/free-class scope; `OWNER_AND_ROLE_INTERFACE` is `not_ready`; `FULL_COMMERCIAL_AUTOMATION` is `blocked`. No external send, payment/access mutation, provider mutation, Agent Review result save, deploy, or production-data mutation was performed.
 
 ## 2026-07-10 WAPI Provider Lead-Bot Guardrail Proof
 
