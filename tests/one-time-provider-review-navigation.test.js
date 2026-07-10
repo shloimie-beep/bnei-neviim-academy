@@ -402,7 +402,7 @@ test('One Time Rabbi CRM and mailbox review hide Super Admin setup diagnostics',
     assert.match(crmText, /Selected CRM view/);
     assert.match(crmText, /Parent records|Parent/);
     assert.doesNotMatch(crmText, /TEST Parent One Time|TEST Student One Time|Message Actions/);
-    assert.doesNotMatch(crmText, /configured|not configured|webhook|runtime config|Needs live policy|Needs sender decision|Bulk email locked|Access Checklist|Commercial Model|External Apps/i);
+    assert.doesNotMatch(crmText, /configured|not configured|webhook|runtime config|Needs live policy|Needs sender decision|Bulk email locked|Access Checklist|Commercial Model|External Apps|rabbi_sheller_provider|one_time_mishnah_class|Super Admin diagnostics/i);
 
     await page.goto(`${baseUrl}/provider.html?review=one-time&section=mailbox`, { waitUntil: 'networkidle' });
     await page.waitForSelector('[data-provider-nav="mailbox"].active');
@@ -411,7 +411,7 @@ test('One Time Rabbi CRM and mailbox review hide Super Admin setup diagnostics',
     assert.match(mailboxText, /Worksheet link question/);
     assert.match(mailboxText, /Preview Email/);
     assert.match(mailboxText, /Save Draft/);
-    assert.doesNotMatch(mailboxText, /configured|not configured|Inbound webhook|runtime config|Needs live policy|Needs sender decision|Bulk email locked|Provider login required/i);
+    assert.doesNotMatch(mailboxText, /configured|not configured|Inbound webhook|runtime config|Needs live policy|Needs sender decision|Bulk email locked|Provider login required|rabbi_sheller_provider|one_time_mishnah_class|Super Admin diagnostics/i);
 
     await page.setViewportSize({ width: 390, height: 844 });
     const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);

@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-09T04:36:52.302Z",
+  "generated_at": "2026-07-10T09:19:57.678Z",
   "target": "/provider.html?admin_provider=one-time&section=crm",
   "scope": "Local signed OneTime provider CRM layout smoke; no database, sends, payments, external accounts, or production writes.",
   "results": [
@@ -12,7 +12,7 @@
       },
       "route": "/provider.html?admin_provider=one-time&section=crm",
       "screenshot": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png",
-      "helperTitle": "Rabbi Scheller Admin Helper",
+      "helperTitle": "Robot Scheller",
       "helperLoaded": true,
       "providerSurfaceClass": true,
       "title": "OneTimeOneTime Rabbi Workspace",
@@ -25,7 +25,7 @@
       "activeCrmNav": true,
       "visibleCrmSection": true,
       "horizontalOverflow": false,
-      "crmTop": 398,
+      "crmTop": 362,
       "crmWidth": 772,
       "viewportWidth": 1440,
       "buttonRects": [
@@ -114,7 +114,7 @@
       },
       "route": "/provider.html?admin_provider=one-time&section=crm",
       "screenshot": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/tablet-768-crm.png",
-      "helperTitle": "Rabbi Scheller Admin Helper",
+      "helperTitle": "Robot Scheller",
       "helperLoaded": true,
       "providerSurfaceClass": true,
       "title": "OneTimeOneTime Rabbi Workspace",
@@ -127,7 +127,7 @@
       "activeCrmNav": true,
       "visibleCrmSection": true,
       "horizontalOverflow": false,
-      "crmTop": 486,
+      "crmTop": 478,
       "crmWidth": 712,
       "viewportWidth": 768,
       "buttonRects": [
@@ -216,7 +216,7 @@
       },
       "route": "/provider.html?admin_provider=one-time&section=crm",
       "screenshot": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png",
-      "helperTitle": "Rabbi Scheller Admin Helper",
+      "helperTitle": "Robot Scheller",
       "helperLoaded": true,
       "providerSurfaceClass": true,
       "title": "OneTimeOneTime Rabbi Workspace",
@@ -229,7 +229,7 @@
       "activeCrmNav": true,
       "visibleCrmSection": true,
       "horizontalOverflow": false,
-      "crmTop": 554,
+      "crmTop": 569,
       "crmWidth": 334,
       "viewportWidth": 390,
       "buttonRects": [

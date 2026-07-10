@@ -128,7 +128,7 @@ test('section labels, top rails, status chips, and mobile labels are client-read
 
   assert.deepEqual(
     ONE_TIME_RABBI_DASHBOARD_STATUS_CHIP_MODEL.map((chip) => chip.label),
-    ['Review mode', 'No-send', 'No-charge', 'No external write'],
+    ['Scoped workspace', 'Send approval required', 'Billing approval required', 'Owner approval required'],
   );
   for (const chip of ONE_TIME_RABBI_DASHBOARD_STATUS_CHIP_MODEL) {
     assertClientReadable(chip.label, `${chip.id} status chip`);

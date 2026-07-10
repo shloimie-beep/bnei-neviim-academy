@@ -1153,7 +1153,7 @@
         const oneTimeViewAsRabbiToken = queryParams.get('view_as_rabbi') || '';
         const oneTimeAdminProviderReturnUrl = '/operations?workspace=platform&view=communications&section=email&inbox=rabbi';
         const oneTimeAdminProviderReviewUrl = `/provider.html?review=one-time${queryParams.get('section') ? `&section=${encodeURIComponent(queryParams.get('section'))}` : ''}`;
-        const oneTimeAdminProviderLoginMessage = 'No scoped One Time provider session is active in this browser. Start from Operations, open the Rabbi / One Time inbox, and launch the Rabbi provider portal from there. This page will not show Super Admin diagnostics or unrelated BNA data.';
+        const oneTimeAdminProviderLoginMessage = 'No scoped One Time provider session is active in this browser. Start from Operations, open the Rabbi / One Time inbox, and launch the Rabbi provider portal from there. This page will not show unrelated platform or BNA data.';
         const providerApiUsagePreviewFlag = ['1', 'true', 'yes'].includes(String(queryParams.get('api_usage_preview') || '').toLowerCase());
         const ONE_TIME_INBOX_ADDRESS = 'info@onetimeonetime.com';
         let oneTimeViewAsRabbiSession = null;
@@ -1364,8 +1364,8 @@
                 `
                 : `
                     <strong>Scoped Rabbi workspace</strong>
-                    <span>Provider tools here stay inside rabbi_sheller_provider / one_time_mishnah_class. Platform diagnostics and Super Admin setup cards stay out of this view.</span>
-                    <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=platform&view=communications&section=email&inbox=rabbi">Back to Super Admin</a>
+                    <span>Provider tools here stay inside the Rabbi / One Time workspace. Platform setup cards stay in Operations.</span>
+                    <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=platform&view=communications&section=email&inbox=rabbi">Back to Operations</a>
                 `;
             const providerName = provider.provider_name || provider.display_name || 'Rabbi Eli Scheller';
             const providerTitle = document.getElementById('providerTitle');
@@ -2706,7 +2706,7 @@
                                 </div>
                                 <div class="one-time-crm-summary">
                                     <strong>Notes</strong>
-                                    <p class="small">Rabbi notes stay scoped to rabbi_sheller_provider and do not expose platform setup diagnostics.</p>
+                                    <p class="small">Rabbi notes stay inside this One Time workspace and do not expose platform setup cards.</p>
                                 </div>
                                 <div class="one-time-crm-summary">
                                     <strong>Class access</strong>

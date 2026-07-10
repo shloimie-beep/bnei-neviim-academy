@@ -1,0 +1,578 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260710-023",
+  "parent_raw_id": "RAW-20260710-002",
+  "source_statement_ids": [
+    "SRC-20260710-002-013",
+    "SRC-20260710-002-014",
+    "SRC-20260710-002-015"
+  ],
+  "packet_dag": {
+    "parent_packet_id": "PKT-20260710-014",
+    "child_packet_ids": [],
+    "depends_on_packet_ids": [
+      "PKT-20260710-014",
+      "PKT-20260710-020",
+      "PKT-20260710-022"
+    ],
+    "blocks_packet_ids": [
+      "PKT-20260710-025"
+    ],
+    "consumes": [
+      "raw-input/RAW-20260710-002-onetime-launch-priority-landing-crm-assistant.md",
+      "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
+      "memory-topics/one-time-rabbi-sheller.md",
+      "memory-topics/workspace-scope-isolation.md",
+      "public/provider.html",
+      "public/operations.html",
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "tests/one-time-provider-review-navigation.test.js",
+      "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md"
+    ],
+    "produces": [
+      "public/provider.html",
+      "public/operations.html",
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "tests/one-time-provider-review-navigation.test.js",
+      "scripts/smoke-onetime-provider-crm-layout-local.mjs",
+      "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+      "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md"
+    ],
+    "validation_command": "npm run pqc:validate -- ops/prompt-packets/2026-07-10-onetime-launch-priority/06-rabbi-backend-launch-readiness.product-quality.json",
+    "terminal_condition": "REQ-20260710-023 reaches Done only after normal Rabbi/provider pages are source-reviewed, tested, screenshot-smoked, committed, pushed, deployed to the verified One Time target, and live-smoked, or a precise blocker is recorded.",
+    "handoff_target": "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "ready_for_codex",
+  "title": "One Time Rabbi Backend Normal-View Launch Readiness",
+  "created_at": "2026-07-10T12:20:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260710-002",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "SECURITY_PRIVACY"
+    ],
+    "confidence": 0.94,
+    "reasons": [
+      "The source says normal Rabbi pages are not ready if they expose not-scoped, test, review, configured/not-configured, diagnostics, placeholders, dead buttons, or implementation noise.",
+      "The current provider CRM smoke had a stale helper expectation and existing normal-view tests did not guard raw scope-key text.",
+      "Memory requires support/admin diagnostics to stay behind support or role gates."
+    ],
+    "affected_product_surfaces": [
+      "One Time Operations provider workspace",
+      "One Time signed provider portal",
+      "One Time Rabbi dashboard IA/status chip language"
+    ],
+    "likely_external_provider_blockers": [
+      "No live email, WhatsApp, Telegram, payment, access, DNS, Zoom, Vimeo, Drive, Railway credential, GHL, or external provider write is approved in this packet.",
+      "Provider mailbox current readback may still be blocked by stored credential, but this packet can clean normal visible copy and controls without mutating mailbox credentials."
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "01-landing-robot-scheller",
+      "02-form-to-visible-crm",
+      "03-crm-list-detail",
+      "04-historical-inbox-reconciliation",
+      "05-transactional-followup",
+      "06-rabbi-backend-launch-readiness"
+    ],
+    "next_exact_packet": "After this packet, generate only unresolved code-package lanes for REQ-20260710-024/025 or record precise blockers."
+  },
+  "operator_intent_summary": "Make the normal Rabbi / One Time backend feel ready to hand over by removing visible implementation vocabulary, stale helper expectations, raw scope keys, and confusing guardrail labels while preserving first-party safety gates.",
+  "raw_quotes": [
+    "Normal Rabbi pages must not expose irrelevant not-scoped/configured/test/review/fixture/diagnostic/internal-ID language.",
+    "Hide it or move it to a role-gated support drawer.",
+    "Every visible control works or has one polished actionable blocked state.",
+    "Fix uneven grids, off-centered single cards, toolbar inconsistency, and irrelevant Super Admin content.",
+    "Require manual screenshot review despite zero machine findings."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260710-002",
+      "decision": "Real email/WhatsApp delivery remains runtime and approval gated.",
+      "status": "needs_operator_runtime_action"
+    },
+    {
+      "id": "DEC-20260710-004",
+      "decision": "Historical contact import/write remains blocked pending source and suppression policy.",
+      "status": "needs_operator_decision"
+    }
+  ],
+  "out_of_scope": [
+    "No new external integration setup.",
+    "No real email, WhatsApp, Telegram, SMS, or bulk campaign send.",
+    "No payment, checkout, subscription, access grant, Zoom, Vimeo, Drive, DNS, credential, GHL, LeadConnector, or external CRM write.",
+    "No broad redesign of all Operations modules.",
+    "No historical import apply."
+  ],
+  "affected_surfaces": [
+    "One Time Operations normal provider overview",
+    "One Time signed provider CRM/mailbox portal",
+    "One Time Rabbi dashboard IA/status chips",
+    "Provider CRM screenshot audit"
+  ],
+  "affected_routes": [
+    "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+    "/provider.html?admin_provider=one-time&section=crm",
+    "/provider.html?review=one-time&section=crm",
+    "/provider.html?review=one-time&section=mailbox"
+  ],
+  "affected_files": [
+    "public/operations.html",
+    "public/provider.html",
+    "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+    "tests/one-time-rabbi-dashboard-ia.test.js",
+    "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+    "tests/one-time-provider-review-navigation.test.js",
+    "scripts/smoke-onetime-provider-crm-layout-local.mjs"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "Provider review CRM/mailbox copy and banner text in public/provider.html",
+      "One Time perspective preview and topbar/sidebar language in public/operations.html",
+      "One Time Rabbi dashboard IA status chips in src/platform/instances/one-time-rabbi-dashboard-ia.js",
+      "Provider CRM layout smoke output in ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md"
+    ],
+    "observed_findings": [
+      "Provider CRM/mailbox tests already hide configured/not configured, setup diagnostics, and fixture names.",
+      "The provider banner/detail still exposed raw workspace keys and Super Admin diagnostics wording.",
+      "The Operations perspective panel still used test/review/no-send/no-charge vocabulary.",
+      "The IA status chip model still exposed Review mode, No-send, No-charge, and No external write labels.",
+      "The provider CRM layout smoke failed only because it expected the old helper name instead of Robot Scheller."
+    ]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "launch-ready",
+      "normal pages",
+      "dead buttons",
+      "diagnostics",
+      "support noise"
+    ],
+    "expanded_phrases": {
+      "launch-ready": "Normal Rabbi/provider pages can be handed to the operator/Rabbi without implementation vocabulary, raw scope IDs, confusing test/review labels, dead controls, or unverified mobile/layout states.",
+      "normal pages": "The visible provider/Operations workspace routes a Rabbi would actually use, excluding role-gated support drawers and developer-only reports.",
+      "dead buttons": "Every visible button has a handler/registry marker or is disabled with a concise user-facing reason.",
+      "diagnostics": "Technical readiness and setup details stay in Operations support/setup views, not normal Rabbi CRM/mailbox overview copy.",
+      "support noise": "Internal support language is replaced with business-facing labels such as approvals, scoped workspace, billing approval, and owner approval.",
+      "clean": "Clean means normal Rabbi-visible routes use business-facing labels, stable spacing, no raw scope IDs, no stale test/review vocabulary, and explicit state for every visible control.",
+      "CRM": "CRM means first-party One Time contact/member/timeline surfaces only, with no GHL, LeadConnector, or external CRM write."
+    },
+    "first_party_pattern_interpretation": "This is a copy/state/test hardening pass over first-party One Time UI; it does not authorize any external write."
+  },
+  "design_pattern_references": [
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "ops/visual-quality-rubric.md",
+    "docs/BROWSER-AGENT-SECURITY.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260710-023",
+      "statement": "Remove normal-view Rabbi backend support/test/scoping/protocol noise.",
+      "expected_result": "Normal Rabbi/provider views hide irrelevant diagnostics or move them to support/admin drawers; buttons work, are hidden, or show concise blocked states; layout/card/toolbars pass manual screenshots.",
+      "acceptance_criteria": [
+        "Normal visible text does not include Review mode, No-send, No-charge, No external write, raw workspace keys, or Super Admin diagnostics.",
+        "Provider CRM/mailbox review tests reject raw scope keys and stale setup wording.",
+        "The provider CRM layout smoke accepts current Robot Scheller identity and passes across desktop, tablet, and mobile screenshots.",
+        "Deploy/live-smoke proof is recorded before Done."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready",
+    "criteria": [
+      "RAW-20260710-002 and REQ-20260710-023 are registered.",
+      "Memory lookup confirmed One Time black/yellow brand, scoped workspace/project, and support/admin diagnostics rule.",
+      "Current source inspection identified the visible noisy copy and stale smoke expectation.",
+      "Implementation scope is bounded to normal-view copy/state/test hardening.",
+      "External writes and provider setup are explicitly out of scope."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 1440,
+      "auth_role": "workspace_owner",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open the One Time Operations workspace while data loads.",
+      "expected_visible_title": "One Time Mishnah Class",
+      "expected_visible_message": "Workspace shell and compact navigation render without raw setup errors.",
+      "expected_primary_action": "Overview",
+      "expected_secondary_actions": ["Members", "Classes", "Studio", "Setup"],
+      "forbidden_content": ["Review mode", "No-send", "No-charge", "rabbi_sheller_provider"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Topbar and sidebar controls keep accessible names.",
+      "accessibility_expectation": "No horizontal overflow or overlapping top rail.",
+      "test_smoke_assertion": "Final local smoke opens the route and verifies scope markers plus no forbidden normal-view text.",
+      "requirement_id": "REQ-20260710-023"
+    },
+    "empty": {
+      "route": "/provider.html?review=one-time&section=mailbox",
+      "viewport": 390,
+      "auth_role": "provider_review",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mailbox review when no signed provider mailbox thread is active.",
+      "expected_visible_title": "Worksheet link question",
+      "expected_visible_message": "Mailbox copy explains draft/save actions without provider credentials or setup noise.",
+      "expected_primary_action": "Preview Email",
+      "expected_secondary_actions": ["Open CRM", "Save Draft"],
+      "forbidden_content": ["configured", "not configured", "runtime config", "Super Admin diagnostics"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Disabled save/send buttons expose concise title reasons.",
+      "accessibility_expectation": "Mailbox thread and action buttons wrap on mobile.",
+      "test_smoke_assertion": "Provider navigation test rejects setup and raw-scope wording.",
+      "requirement_id": "REQ-20260710-023"
+    },
+    "populated": {
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "viewport": 1440,
+      "auth_role": "signed_provider_session",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open signed provider CRM section from Operations provider session.",
+      "expected_visible_title": "One Time CRM Inbox",
+      "expected_visible_message": "CRM shell, record list, selected detail, and Robot Scheller helper render with no diagnostic leak.",
+      "expected_primary_action": "Open Inbox",
+      "expected_secondary_actions": ["Preview Email", "Draft Message", "Parent View", "Student View"],
+      "forbidden_content": ["TEST Parent", "Message Actions", "configured", "Access Checklist", "Commercial Model"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM list and detail regions have labels.",
+      "accessibility_expectation": "Toolbar buttons fit without clipping.",
+      "test_smoke_assertion": "Provider CRM layout smoke passes all viewports and accepts Robot Scheller.",
+      "requirement_id": "REQ-20260710-023"
+    },
+    "filtered_empty": {
+      "route": "/provider.html?review=one-time&section=crm",
+      "viewport": 430,
+      "auth_role": "provider_review",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open CRM review with sample data and no selected external result.",
+      "expected_visible_title": "Selected CRM view",
+      "expected_visible_message": "Detail explains contact context and next actions without raw scope keys.",
+      "expected_primary_action": "Open Inbox",
+      "expected_secondary_actions": ["Draft Message", "Preview Email"],
+      "forbidden_content": ["rabbi_sheller_provider", "one_time_mishnah_class", "Super Admin diagnostics"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Selected detail is readable as a complementary region.",
+      "accessibility_expectation": "Mobile detail appears after the list without overlap.",
+      "test_smoke_assertion": "Provider review test rejects visible raw scope keys.",
+      "requirement_id": "REQ-20260710-023"
+    },
+    "error": {
+      "route": "/provider.html?admin_provider=one-time",
+      "viewport": 1024,
+      "auth_role": "admin_without_provider_session",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open admin provider URL without a scoped provider session cookie.",
+      "expected_visible_title": "One Time provider session required",
+      "expected_visible_message": "Start from Operations to open the Rabbi account safely.",
+      "expected_primary_action": "Open Read-only Review Preview",
+      "expected_secondary_actions": ["Return to Super Admin Inbox"],
+      "forbidden_content": ["Rabbi password", "student password", "member password", "Super Admin diagnostics"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The recovery link is a normal anchor with an action id.",
+      "accessibility_expectation": "Session-required message is concise and not a raw stack/error.",
+      "test_smoke_assertion": "Provider page source uses user-facing platform-data wording.",
+      "requirement_id": "REQ-20260710-023"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "viewport": 768,
+      "auth_role": "workspace_owner",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open an action that requires owner approval.",
+      "expected_visible_title": "Safe Role Preview",
+      "expected_visible_message": "Message, billing, and access approvals are described without no-send/no-charge labels.",
+      "expected_primary_action": "View One Time as Rabbi",
+      "expected_secondary_actions": ["Student Preview", "Member Preview"],
+      "forbidden_content": ["No-send", "No-charge", "No external write", "TEST review data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Status pills are short and human-readable.",
+      "accessibility_expectation": "Pills wrap cleanly on tablet and mobile.",
+      "test_smoke_assertion": "Final local smoke rejects old guardrail labels in normal overview.",
+      "requirement_id": "REQ-20260710-023"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=content&section=meetings",
+      "viewport": 390,
+      "auth_role": "workspace_owner",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open Classes & Content and click Preview Drive Brief.",
+      "expected_visible_title": "No-write Drive Brief Preview",
+      "expected_visible_message": "Support/diagnostic detail is allowed only inside the explicit preview result.",
+      "expected_primary_action": "Preview Drive Brief",
+      "expected_secondary_actions": ["Library", "Meeting Drops"],
+      "forbidden_content": ["raw transcript body", "private export", "secret"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview panel is clearly separate from the normal overview.",
+      "accessibility_expectation": "Preview result is readable without horizontal overflow.",
+      "test_smoke_assertion": "Final local smoke allows scoped technical detail only after the explicit preview action.",
+      "requirement_id": "REQ-20260710-023"
+    },
+    "success_readback": {
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "viewport": 1440,
+      "auth_role": "signed_provider_session",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Run provider CRM layout smoke after implementation.",
+      "expected_visible_title": "One Time CRM Inbox",
+      "expected_visible_message": "All viewports pass with Robot Scheller and no diagnostics leak.",
+      "expected_primary_action": "Open Inbox",
+      "expected_secondary_actions": ["Preview Email", "Draft Message"],
+      "forbidden_content": ["BNA Helper", "configured", "not configured", "TEST Parent"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Smoke report names helper and route state.",
+      "accessibility_expectation": "Desktop screenshot is centered and stable.",
+      "test_smoke_assertion": "scripts/smoke-onetime-provider-crm-layout-local.mjs returns PASS.",
+      "requirement_id": "REQ-20260710-023"
+    },
+    "permission_denied": {
+      "route": "/provider.html?admin_provider=one-time",
+      "viewport": 430,
+      "auth_role": "missing_provider_session",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open signed provider URL without a session.",
+      "expected_visible_title": "One Time provider session required",
+      "expected_visible_message": "The page directs the user back to Operations without asking for Rabbi/student/member passwords.",
+      "expected_primary_action": "Open Read-only Review Preview",
+      "expected_secondary_actions": ["Return to Super Admin Inbox"],
+      "forbidden_content": ["raw token", "password:", "api key", "diagnostics"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "The denial is a normal page, not an alert-only failure.",
+      "accessibility_expectation": "Mobile denial copy fits within the panel.",
+      "test_smoke_assertion": "Provider source copy is concise and credential-safe.",
+      "requirement_id": "REQ-20260710-023"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/provider.html?admin_provider=one-time&section=crm",
+      "viewport": 390,
+      "auth_role": "signed_provider_session",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open signed provider CRM section on 390px mobile.",
+      "expected_visible_title": "One Time CRM Inbox",
+      "expected_visible_message": "CRM list and detail stack in a stable order and helper does not occlude controls.",
+      "expected_primary_action": "Open Inbox",
+      "expected_secondary_actions": ["Preview Email", "Draft Message"],
+      "forbidden_content": ["horizontal overflow", "overlapping buttons", "BNA Helper"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "CRM regions keep labels after stacking.",
+      "accessibility_expectation": "No horizontal overflow at 390px.",
+      "test_smoke_assertion": "Provider CRM layout smoke captures mobile-390 screenshot and passes.",
+      "requirement_id": "REQ-20260710-023"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      { "route": "/provider.html?admin_provider=one-time&section=crm", "viewport": 1440, "state": "populated", "path": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png" },
+      { "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview", "viewport": 1024, "state": "loading", "path": "local-smoke/text-readback" },
+      { "route": "/provider.html?admin_provider=one-time&section=crm", "viewport": 768, "state": "blocked_setup", "path": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/tablet-768-crm.png" },
+      { "route": "/provider.html?review=one-time&section=crm", "viewport": 430, "state": "filtered_empty", "path": "provider-review-test-readback" },
+      { "route": "/provider.html?admin_provider=one-time&section=crm", "viewport": 390, "state": "mobile_drawer_or_detail_state", "path": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png" }
+    ],
+    "findings": [
+      {
+        "finding_id": "VQ-20260710-023-001",
+        "route": "/provider.html?admin_provider=one-time&section=crm",
+        "viewport": 390,
+        "screenshot_before": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "screenshot_after_or_blocker": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "defect_codes": ["VQ-COPY-001"],
+        "severity": "P1",
+        "user_impact": "A stale helper-title assertion made current Robot Scheller UI appear failed in the manual screenshot audit.",
+        "expected_fix": "Update smoke expectation and rerun screenshots.",
+        "requirement_id": "REQ-20260710-023"
+      }
+    ]
+  },
+  "accessibility": {
+    "expectations": [
+      "Buttons have data-action-id, data-button-state, or data-one-time-action-state.",
+      "Disabled/gated controls expose concise title or local explanatory text.",
+      "Mobile 390px provider CRM has no horizontal overflow.",
+      "Status pills use short labels that wrap cleanly."
+    ]
+  },
+  "action_states": [
+    {
+      "label": "View One Time as Rabbi",
+      "selector_or_action_key": "ACTION-ONETIME-PROVIDER-SESSION-START",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "openOneTimeProviderSession(event)",
+      "registry_required": true
+    },
+    {
+      "label": "Student Preview",
+      "selector_or_action_key": "ACTION-ONETIME-STUDENT-PREVIEW",
+      "action_state": "PREVIEW_ONLY",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "scoped preview link",
+      "registry_required": true
+    },
+    {
+      "label": "Save Draft",
+      "selector_or_action_key": "provider-mailbox-save-draft-disabled",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "Codex",
+      "external_write": false,
+      "handler_or_blocker": "signed provider mailbox and send approval required",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "read_sources": [
+      "One Time shared review fixture",
+      "Operations scoped workspace data",
+      "First-party CRM/timeline records"
+    ],
+    "write_sources": [],
+    "raw_private_data_policy": "Do not commit raw contact exports, raw message bodies, credentials, provider tokens, or full public WhatsApp number."
+  },
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true,
+    "privacy_scope": "Provider/Rabbi scope only.",
+    "forbidden_leaks": [
+      "BNA Academy private data",
+      "raw scope IDs in visible normal copy",
+      "Super Admin diagnostics",
+      "credentials or setup links",
+      "GHL or LeadConnector"
+    ],
+    "allowed_technical_detail": "Explicit support/setup/preview panels may explain blockers, but normal CRM/mailbox/overview copy should use concise business-facing labels."
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "B6-REQ-023-copy-state-test",
+      "scope": "Clean normal Rabbi backend visible wording and stale screenshot smoke expectation.",
+      "instructions": [
+        "Replace raw scope-key and diagnostics copy in provider banner/detail text.",
+        "Replace normal Operations overview no-send/no-charge/review vocabulary with business-facing approval wording.",
+        "Update IA status chip model and tests.",
+        "Update provider CRM screenshot smoke to expect Robot Scheller.",
+        "Run focused tests, screenshot smoke, watchdogs, deploy, and live smokes before Done."
+      ]
+    }
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "medium",
+    "source_files_to_read": [
+      "public/provider.html",
+      "public/operations.html",
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "tests/one-time-provider-review-navigation.test.js"
+    ],
+    "files_allowed_to_edit": [
+      "public/provider.html",
+      "public/operations.html",
+      "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+      "tests/one-time-rabbi-dashboard-ia.test.js",
+      "tests/one-time-rabbi-ui-final-local-smoke.test.js",
+      "tests/one-time-provider-review-navigation.test.js",
+      "scripts/smoke-onetime-provider-crm-layout-local.mjs"
+    ],
+    "max_files_to_edit": 7,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "If this expands beyond normal Rabbi backend copy/state/testing, split into separate provider portal, Operations IA, and support drawer packets.",
+    "split_if_exceeds": true,
+    "context_risk_level": "medium"
+  },
+  "tests": {
+    "local": [
+      "npm run pqc:validate -- ops/prompt-packets/2026-07-10-onetime-launch-priority/06-rabbi-backend-launch-readiness.product-quality.json",
+      "node --test tests/one-time-rabbi-dashboard-ia.test.js tests/one-time-rabbi-ui-final-local-smoke.test.js tests/one-time-provider-review-navigation.test.js",
+      "node scripts/smoke-onetime-provider-crm-layout-local.mjs",
+      "npm run watchdog:actions",
+      "npm run watchdog:protocol-drift"
+    ],
+    "live": [
+      "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com",
+      "npm run app:smoke:onetime-operations-crm-workbench",
+      "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com"
+    ]
+  },
+  "evidence": {
+    "expected_paths": [
+      "ops/prompt-packets/2026-07-10-onetime-launch-priority/06-rabbi-backend-launch-readiness.product-quality.json",
+      "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+      "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
+      "ops/agent-task-ledger.jsonl",
+      "ops/agent-changelog.md"
+    ],
+    "manual_review_required": true
+  },
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "criteria": [
+      "PQC packet validates.",
+      "Focused IA/provider/final UI tests pass.",
+      "Provider CRM screenshot smoke passes desktop/tablet/mobile with Robot Scheller.",
+      "No normal-view forbidden text remains in the tested Operations overview.",
+      "Scoped commit is pushed.",
+      "Verified One Time Railway deploy reaches SUCCESS.",
+      "Live smokes pass and closeout evidence is recorded."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260710-002-onetime-launch-priority-landing-crm-assistant.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-07-10-onetime-launch-priority/06-rabbi-backend-launch-readiness.product-quality.json",
+    "validator_result_path": "terminal:pqc:validate",
+    "tool_actions_expected": [
+      "apply_patch",
+      "focused tests",
+      "local screenshot smoke",
+      "Railway deploy",
+      "live smokes"
+    ],
+    "skipped_actions_policy": "No external writes, sends, payments, access grants, DNS, credentials, provider-account mutations, GHL, or imports.",
+    "blocker_decisions": [
+      "DEC-20260710-002",
+      "DEC-20260710-004"
+    ],
+    "evidence_paths": [
+      "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+      "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md"
+    ],
+    "final_status_path": "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
+    "next_packet_path": "ops/chatgpt-ramble-dropoff/outgoing/2026-07-10-onetime-launch-priority-*"
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "0 findings for product-quality protocol drift.",
+    "required_command": "npm run watchdog:protocol-drift",
+    "expected_findings": 0,
+    "report_path": "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
+  },
+  "next_packet": {
+    "id": "REQ-20260710-024",
+    "title": "Generate non-overlapping ChatGPT code-package lanes only for unresolved launch work.",
+    "condition": "Run after REQ-20260710-023 reaches Done or precise blocker."
+  },
+  "app_visible": true
+}

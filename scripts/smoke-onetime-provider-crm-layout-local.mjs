@@ -240,7 +240,7 @@ async function captureViewport(browser, baseUrl, viewport) {
   const passed = Boolean(
     helperBeforeOpen.helperLoaded &&
       helperBeforeOpen.providerSurfaceClass &&
-      /Rabbi Scheller Admin Helper/i.test(helperTitle) &&
+      /Robot Scheller/i.test(helperTitle) &&
       metrics.crmShellCount === 1 &&
       metrics.crmWorkbenchCount === 1 &&
       metrics.crmDetailCount === 1 &&

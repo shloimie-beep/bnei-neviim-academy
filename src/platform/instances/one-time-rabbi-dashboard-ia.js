@@ -101,8 +101,8 @@ const SECTION_SUBSECTION_MAP = {
     subsections: [
       { id: 'package_status', label: 'Package Status', source_view: 'service_providers', source_section: 'overview' },
       { id: 'launch_readiness', label: 'Launch Readiness', source_view: 'service_providers', source_section: 'launch' },
-      { id: 'review_links', label: 'Review Links', source_view: 'service_providers', source_section: 'access_checklist' },
-      { id: 'blocked_actions', label: 'Blocked Actions', source_view: 'service_providers', source_section: 'integration_audit' },
+      { id: 'role_links', label: 'Role Links', source_view: 'service_providers', source_section: 'access_checklist' },
+      { id: 'owner_actions', label: 'Owner Actions', source_view: 'service_providers', source_section: 'integration_audit' },
     ],
   },
   members_crm: {
@@ -298,41 +298,41 @@ const MOBILE_LABEL_RULES = {
   prefer_short_labels: true,
   module_short_labels: Object.fromEntries(MAIN_MODULES.map((module) => [module.id, module.short_label])),
   status_chip_short_labels: {
-    review_mode: 'Review',
-    no_send: 'No-send',
-    no_charge: 'No-charge',
-    no_external_write: 'No-write',
+    review_mode: 'Scoped',
+    no_send: 'Approval',
+    no_charge: 'Billing',
+    no_external_write: 'Guarded',
   },
 };
 
 const STATUS_CHIP_MODEL = [
   {
     id: 'review_mode',
-    label: 'Review mode',
-    short_label: 'Review',
+    label: 'Scoped workspace',
+    short_label: 'Scoped',
     tone: 'info',
-    meaning: 'Synthetic review fixtures and review-only links are active.',
+    meaning: 'The Rabbi / One Time workspace is active and separated from school or platform records.',
   },
   {
     id: 'no_send',
-    label: 'No-send',
-    short_label: 'No-send',
+    label: 'Send approval required',
+    short_label: 'Approval',
     tone: 'locked',
     meaning: 'Email, WhatsApp, SMS, and announcement sends require approval before live use.',
   },
   {
     id: 'no_charge',
-    label: 'No-charge',
-    short_label: 'No-charge',
+    label: 'Billing approval required',
+    short_label: 'Billing',
     tone: 'locked',
     meaning: 'Checkout, billing, trial conversion, and access changes stay preview-only.',
   },
   {
     id: 'no_external_write',
-    label: 'No external write',
-    short_label: 'No-write',
+    label: 'Owner approval required',
+    short_label: 'Guarded',
     tone: 'locked',
-    meaning: 'No CRM, Zoom, Vimeo, DNS, Railway, or production data mutation is part of review mode.',
+    meaning: 'Connector, media, access, billing, and provider-account changes require owner approval.',
   },
 ];
 

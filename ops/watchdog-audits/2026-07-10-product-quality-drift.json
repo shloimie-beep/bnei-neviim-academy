@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T09:06:25.300Z",
+  "generated_at": "2026-07-10T09:20:11.974Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -342,6 +342,7 @@
     "ops/prompt-packets/2026-07-09-onetime-live-lag-performance/05-live-lag-performance-fix.product-quality.json",
     "ops/prompt-packets/2026-07-10-onetime-launch-priority/01-landing-robot-scheller.product-quality.json",
     "ops/prompt-packets/2026-07-10-onetime-launch-priority/02-crm-list-detail.product-quality.json",
+    "ops/prompt-packets/2026-07-10-onetime-launch-priority/06-rabbi-backend-launch-readiness.product-quality.json",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/MANIFEST.md",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/WINDOW-INDEX.md",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/manifest.json",

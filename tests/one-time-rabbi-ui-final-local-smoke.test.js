@@ -891,6 +891,12 @@ test('final local One Time/Rabbi UI QA harness covers scoped routes without exte
     }
     assert.equal(operationsContract.hasStudents, false, 'students module must be hidden/demoted in One Time provider scope');
     assert.equal(operationsContract.hasAccounting, false, 'accounting module must be hidden/demoted in One Time provider scope');
+    const normalOperationsText = await textContent(page);
+    assert.doesNotMatch(
+      normalOperationsText,
+      /Review mode|No-send|No-charge|No external write|TEST-prefixed|review data only|rabbi_sheller_provider|one_time_mishnah_class|Super Admin diagnostics/i,
+      'normal One Time Operations overview should not expose review/test/raw-scope/diagnostic noise',
+    );
 
     await page.evaluate(() => {
       window.switchView('content');

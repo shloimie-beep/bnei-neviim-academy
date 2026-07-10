@@ -1,15 +1,15 @@
 # OneTime Provider CRM Layout Local Smoke
 
 Status: PASS
-Generated: 2026-07-09T04:36:52.302Z
+Generated: 2026-07-10T09:19:57.678Z
 
 Local signed OneTime provider CRM layout smoke; no database, sends, payments, external accounts, or production writes.
 
 | Viewport | Passed | Overflow | Fixture leak | Diagnostics leak | Helper | Screenshot |
 |---|---:|---:|---:|---:|---|---|
-| 1440x960 | true | false | false | false | Rabbi Scheller Admin Helper | ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png |
-| 768x1024 | true | false | false | false | Rabbi Scheller Admin Helper | ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/tablet-768-crm.png |
-| 390x844 | true | false | false | false | Rabbi Scheller Admin Helper | ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png |
+| 1440x960 | true | false | false | false | Robot Scheller | ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png |
+| 768x1024 | true | false | false | false | Robot Scheller | ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/tablet-768-crm.png |
+| 390x844 | true | false | false | false | Robot Scheller | ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png |
 
 Checks:
 
