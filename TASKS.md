@@ -81,6 +81,15 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [x] `RAW-20260710-004` / `REQ-20260710-030` /
+  `TASK-20260710-001`: Fix the Operations Rabbi email inbox filter logout
+  glitch. Scope: Super Admin can switch to the Rabbi / One Time email inbox
+  without being redirected to login; the view must stay scoped to
+  `rabbi_sheller_provider` / `one_time_mishnah_class`; no email/WhatsApp send
+  or provider mutation is allowed. Current status: deployed to BNA production
+  in Railway deployment `bd86c313-3987-4b8e-b90d-5baee483659e`; live email UX
+  smoke passed at 1024px and 390px; Buffer channel provider-auth failure now
+  safe-blocks without forcing Operations logout.
 - [x] `RAW-20260710-002` / `REQ-20260710-013` through
   `REQ-20260710-025`: One Time launch-priority landing, Robot Scheller, CRM,
   inbox, follow-up, and Rabbi backend closeout. Register:

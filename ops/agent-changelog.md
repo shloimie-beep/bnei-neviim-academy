@@ -37948,3 +37948,25 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Mapped the June 26-July 1 historical source batch: `HIST-SRC-0027` through `HIST-SRC-0038`.
 - Agent Review, Issue #24 helper guardrails, transcript/Drive digest, service-provider scopes, drop-off notifier, content filter, current-systems closeout, protocol/brand packets, visual audit/Resend smoke, and separate launch-instance sources now point to terminal proof or exact blockers.
 - The historical source matrix now has 43 mapped or active rows and 249 rows still lacking terminal status. The owner-experience goal remains active and not ready.
+
+## 2026-07-10 - Rabbi email inbox logout glitch fixed
+
+- Fixed Operations email inbox scope switching so the Rabbi / One Time inbox
+  canonicalizes to `workspace=rabbi_sheller_provider`,
+  `project=one_time_mishnah_class`, and `inbox=rabbi` instead of mixing Rabbi
+  inbox state with the platform workspace.
+- Updated the split Operations shell, monolithic Operations source, deferred
+  email renderer, provider return links, action registry, and static
+  regression tests.
+- Fixed `/api/bna/integrations/buffer/channels` to fail soft with HTTP 200,
+  `read_blocked: true`, and an empty `channels` list when Buffer rejects the
+  provider key/account context, preventing a non-auth integration readback from
+  forcing the global Operations login redirect.
+- Pushed commits `5ab17053`, `e9c91724`, and `a60b4e12`; deployed BNA
+  production Railway deployment `bd86c313-3987-4b8e-b90d-5baee483659e`.
+- Verification passed: focused static tests 24/24, local email UX smoke,
+  production Buffer channel readback status 200/read-blocked, production email
+  UX smoke at 1024px and 390px, `npm run watchdog:actions` with 0 findings,
+  and `npm run watchdog:protocol-drift` with 0 findings.
+- No email, WhatsApp/WAPI, payment/access, provider-account, DNS, credential,
+  or raw private email/contact export mutation was performed.
