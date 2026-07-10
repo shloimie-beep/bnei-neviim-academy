@@ -37936,3 +37936,9 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   status. Broad launch rows remain mixed terminal where safe work is proven
   but external setup, live sends, billing/access/DNS/provider actions, or Agent
   Mode proof remain blocked.
+
+## 2026-07-10 - One Time historical source third batch mapped
+
+- Mapped the June 22-24 historical source batch: `HIST-SRC-0015` through `HIST-SRC-0026`.
+- Studio, clean control-tower, public UI, final release, and Issue #20 rows now point to the relevant run/register/live-smoke proof. Broad launch/system rows remain conservatively mixed terminal where external sends, Stripe/access, account setup, production imports, Agent Mode proof, or class backfill stayed blocked.
+- The historical source matrix now has 31 mapped or active rows and 261 rows still lacking terminal status. The owner-experience goal remains active and not ready.
