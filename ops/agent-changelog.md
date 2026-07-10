@@ -37802,3 +37802,31 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Real external email/WhatsApp delivery remains blocked by runtime readiness,
   `DEC-20260710-002`, and exact send approval. Next launch-priority lane is
   `REQ-20260710-023` Rabbi backend launch-readiness.
+
+## 2026-07-10 - One Time Rabbi backend launch-readiness closed
+
+- Pushed commits `cb0bbe32` and `692eac50`, cleaning normal Rabbi/provider
+  backend wording, status chips, and provider access-boundary copy so normal
+  One Time views do not expose raw scope keys, stale diagnostic labels, or
+  review/test implementation language.
+- Added and validated REQ-20260710-023 PQC packet
+  `ops/prompt-packets/2026-07-10-onetime-launch-priority/06-rabbi-backend-launch-readiness.product-quality.json`.
+- Local proof passed: provider review/navigation tests, dashboard IA tests,
+  final local One Time/Rabbi UI harness, provider CRM desktop/tablet/mobile
+  layout smoke, action watchdog, and protocol-drift watchdog.
+- Deployed to OneTime Railway `one-time-production / one-time-web`; deployment
+  `94d1fab4-7429-4992-b352-16ccb553e408` reached `SUCCESS`, then final
+  deployment `aeb8710f-03ef-4a07-995a-9df6cedac140` reached `SUCCESS` after
+  the access-copy cleanup.
+- Final live smokes passed: One Time separate-instance, Operations CRM
+  workbench, Rabbi landing, and direct provider HTML readback for clean
+  access-boundary copy. Reports include
+  `ops/live-smokes/2026-07-10T09-28-02-004Z-rabbi-onetime-landing-smoke.md`
+  and
+  `ops/live-smokes/2026-07-10T09-28-02-072Z-one-time-operations-crm-workbench-live-smoke.md`.
+- `REQ-20260710-023` and `REQ-20260710-025` are Done. `REQ-20260710-024` is
+  Already satisfied because no unblocked outgoing ChatGPT code-package lane
+  remains. The launch-priority register is terminal with `REQ-20260710-021`
+  still Needs operator decision via `DEC-20260710-004`, and real direct
+  WhatsApp / transactional delivery still blocked by runtime readiness and
+  exact approval.

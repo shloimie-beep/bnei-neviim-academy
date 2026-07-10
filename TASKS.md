@@ -81,7 +81,7 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] `RAW-20260710-002` / `REQ-20260710-013` through
+- [x] `RAW-20260710-002` / `REQ-20260710-013` through
   `REQ-20260710-025`: One Time launch-priority landing, Robot Scheller, CRM,
   inbox, follow-up, and Rabbi backend closeout. Register:
   `tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md`.
@@ -90,22 +90,28 @@ not authorize active GHL runtime paths.
   list/detail/timeline workbench, and redacted historical inbox/contact
   reconciliation are recorded. The immediate free-class transactional
   follow-up ledger is implemented as idempotent blocked email/WhatsApp timeline
-  attempts with recipient hashes and no-send guardrails. App-visible work is committed, pushed,
-  deployed, and live-smoked. Final app deploys:
+  attempts with recipient hashes and no-send guardrails. Rabbi backend
+  launch-readiness copy/state cleanup is committed, pushed, deployed, and
+  live-smoked. Final app deploys:
   `0db8b757-4a7c-4a27-922a-30404f74ceb8` for the landing/helper wave and
   `a261ef2c-1f27-485f-8d28-5361e1f7b8ff` for the TEST CRM E2E path;
   deployment `73676e6e-b489-4da1-9c95-f366a4aa7c92` shipped the CRM workbench
   detail view; deployment `d7abb60c-def4-4105-be8a-f160225b442d` shipped the
-  blocked transactional follow-up ledger. The latest live workbench smoke read
-  12 scoped CRM cards and a no-send selected timeline; the latest CRM E2E smoke
-  created CRM lead `10`, verified blocked transactional email/WhatsApp timeline
-  attempts, and archived the lead. `REQ-20260710-021` is terminal as `Needs operator
-  decision`: current One Time shows 0 email-import-tagged records, and
-  `DEC-20260710-004` requires canonical historical source/suppression policy
-  approval before any import/write. Real external transactional delivery remains
-  blocked by runtime/readiness and exact send approval. Next action: continue
-  `REQ-20260710-023` Rabbi backend launch-readiness, then unresolved packet
-  generation/closeout requirements `REQ-20260710-024` and `REQ-20260710-025`.
+  blocked transactional follow-up ledger; final deployment
+  `aeb8710f-03ef-4a07-995a-9df6cedac140` shipped the Rabbi backend cleanup.
+  The latest live workbench smoke read 12 scoped CRM cards and a no-send
+  selected timeline; the latest CRM E2E smoke created CRM lead `10`, verified
+  blocked transactional email/WhatsApp timeline attempts, and archived the lead.
+  Final Rabbi backend live readback confirmed the provider access-boundary copy
+  is clean and the old raw scope/super-admin diagnostic sentence is absent.
+  `REQ-20260710-021` is terminal as `Needs operator decision`: current One Time
+  shows 0 email-import-tagged records, and `DEC-20260710-004` requires canonical
+  historical source/suppression policy approval before any import/write. Real
+  external transactional delivery remains blocked by runtime/readiness and
+  exact send approval. `REQ-20260710-024` is terminal as Already satisfied
+  because no unblocked outgoing ChatGPT code-package lane remains; `REQ-20260710-025`
+  is Done with pushed commits, Railway deploys, live smokes, screenshot proof,
+  and terminal statuses recorded.
 - [ ] `RAW-20260710-001` / `REQ-20260710-007` through
   `REQ-20260710-012`: One Time ramble-to-terminal UI gap closeout. Register:
   `tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md`.
