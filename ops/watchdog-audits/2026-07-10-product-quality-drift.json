@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T11:46:24.555Z",
+  "generated_at": "2026-07-10T15:49:27.052Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -343,6 +343,8 @@
     "ops/prompt-packets/2026-07-10-onetime-launch-priority/01-landing-robot-scheller.product-quality.json",
     "ops/prompt-packets/2026-07-10-onetime-launch-priority/02-crm-list-detail.product-quality.json",
     "ops/prompt-packets/2026-07-10-onetime-launch-priority/06-rabbi-backend-launch-readiness.product-quality.json",
+    "ops/prompt-packets/2026-07-10-onetime-public-landing-rebuild/00-control-tower.md",
+    "ops/prompt-packets/2026-07-10-onetime-public-landing-rebuild/01-current-state-visual-audit.md",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/MANIFEST.md",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/WINDOW-INDEX.md",
     "ops/prompt-packets/2026-07-10-onetime-ui-gap-implementation/manifest.json",
@@ -584,6 +586,9 @@
     "tasks-pending/2026-07-09-process-cleanup-deploy-pending.md",
     "tasks-pending/2026-07-09-production-readiness-goal.md",
     "tasks-pending/2026-07-10-onetime-launch-priority-landing-crm-assistant.md",
+    "tasks-pending/2026-07-10-onetime-learning-motivation-commandments-build-brief.md",
+    "tasks-pending/2026-07-10-onetime-owner-experience-source-reconciliation.md",
+    "tasks-pending/2026-07-10-onetime-public-landing-production-rebuild.md",
     "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"

@@ -3,76 +3,139 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Your Child Can Love Learning Mishnayos | One Time</title>
-  <meta name="description" content="Join the daily live Mishnayos class built for kids: exciting, clear, accountable, and connected to Rabbi Eli Scheller.">
+  <title>Give Your Son A Love For Torah | One Time Mishnayos</title>
+  <meta name="description" content="A live worldwide Mishnayos class with Rabbi Eli Scheller, built for boys to love learning Torah with clarity, excitement, and accountability.">
   <meta name="robots" content="index, follow">
-  <meta property="og:title" content="Your Child Can Love Learning Mishnayos">
-  <meta property="og:description" content="Start with 30 days free for the upcoming One Time Mishnayos class.">
+  <meta property="og:title" content="Give Your Son A Love For Torah">
+  <meta property="og:description" content="Join One Time Mishnayos live from Eretz Yisrael with Rabbi Eli Scheller.">
   <meta property="og:image" content="/images/one-time/social/one-time-og-20260622.jpg">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#080910">
+  <meta name="theme-color" content="#050505">
   <link rel="canonical" href="/one-time">
   <style>
     :root {
-      --ot-black: #080910;
-      --ot-deep: #0b0d14;
-      --ot-panel: #12151d;
-      --ot-panel-2: #171b24;
-      --ot-yellow: #ede518;
-      --ot-yellow-2: #fff35a;
-      --ot-white: #ffffff;
-      --ot-paper: #f7f7f1;
-      --ot-ink: #11131a;
-      --ot-muted: #b9bec8;
-      --ot-muted-dark: #596171;
-      --ot-line: rgba(255,255,255,0.14);
-      --ot-dark-line: rgba(8,9,16,0.12);
-      --ot-serif: Georgia, "Times New Roman", Times, serif;
-      --ot-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --black: #050505;
+      --black-soft: #101010;
+      --ink: #141414;
+      --white: #ffffff;
+      --paper: #f9f7ee;
+      --muted: #cfcfcf;
+      --muted-dark: #555b61;
+      --yellow: #f3e63d;
+      --yellow-deep: #d9c915;
+      --ice: #dff8ff;
+      --ice-line: rgba(145, 226, 255, 0.42);
+      --line: rgba(255, 255, 255, 0.16);
+      --line-dark: rgba(5, 5, 5, 0.13);
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --serif: Georgia, "Times New Roman", Times, serif;
+      --header-height: 74px;
     }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      color: var(--ot-white);
-      background: var(--ot-black);
-      font-family: var(--ot-sans);
+      color: var(--white);
+      background: var(--black);
+      font-family: var(--sans);
       line-height: 1.5;
       letter-spacing: 0;
     }
-    body, button, input, select, textarea { font: inherit; }
-    a { color: inherit; }
-    img { display: block; max-width: 100%; }
-    h1, h2, h3, p { margin-top: 0; letter-spacing: 0; }
-    h1, h2 {
-      font-family: var(--ot-serif);
-      font-weight: 800;
+
+    body.modal-open {
+      overflow: hidden;
     }
-    h1 {
-      max-width: 940px;
-      margin: 0 auto 18px;
-      font-size: clamp(46px, 8vw, 98px);
-      line-height: 0.95;
-      text-wrap: balance;
+
+    body,
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
     }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+      letter-spacing: 0;
+    }
+
+    h1,
     h2 {
-      margin-bottom: 14px;
-      font-size: clamp(30px, 4.5vw, 56px);
-      line-height: 1.02;
+      font-family: var(--serif);
+      font-weight: 800;
       text-wrap: balance;
     }
+
+    h1 {
+      max-width: 920px;
+      margin: 0 0 22px;
+      font-size: 5.1rem;
+      line-height: 0.96;
+    }
+
+    h2 {
+      margin-bottom: 16px;
+      font-size: 3.35rem;
+      line-height: 1.02;
+    }
+
     h3 {
       margin-bottom: 8px;
-      font-size: 1.08rem;
+      font-size: 1.12rem;
       line-height: 1.18;
     }
-    p { color: rgba(255,255,255,0.76); }
+
+    p {
+      color: rgba(255, 255, 255, 0.74);
+    }
 
     .wrap {
-      width: min(1180px, calc(100% - 32px));
+      width: min(1180px, calc(100% - 36px));
       margin: 0 auto;
+    }
+
+    .skip-link {
+      position: fixed;
+      left: 16px;
+      top: 12px;
+      z-index: 2000;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: var(--black);
+      background: var(--yellow);
+      transform: translateY(-150%);
+      transition: transform 160ms ease;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
     }
 
     .visually-hidden {
@@ -90,911 +153,1620 @@
     .site-header {
       position: sticky;
       top: 0;
-      z-index: 60;
-      background: rgba(8,9,16,0.96);
-      border-bottom: 2px solid var(--ot-yellow);
-      backdrop-filter: blur(16px);
-      box-shadow: 0 10px 28px rgba(0,0,0,0.24);
+      z-index: 1000;
+      min-height: var(--header-height);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(5, 5, 5, 0.94);
+      backdrop-filter: blur(14px);
     }
-    .toolbar {
-      min-height: 74px;
+
+    .header-inner {
+      min-height: var(--header-height);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 20px;
     }
-    .brand {
-      min-width: 0;
+
+    .brand-lockup {
       display: inline-flex;
       align-items: center;
       gap: 12px;
-      color: var(--ot-white);
-      text-decoration: none;
-    }
-    .brand-mark {
-      width: 60px;
-      height: 60px;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      border-radius: 8px;
-      background: var(--ot-white);
-      border: 1px solid rgba(255,255,255,0.82);
-    }
-    .brand-mark img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      filter: brightness(0) contrast(1.2);
-    }
-    .brand strong {
-      display: block;
-      font-size: 0.98rem;
-      line-height: 1.08;
-    }
-    .brand span span {
-      display: block;
-      color: var(--ot-muted);
-      font-size: 0.78rem;
-      line-height: 1.2;
-    }
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 5px;
       min-width: 0;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .nav a {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid transparent;
-      border-radius: 8px;
-      padding: 8px 11px;
-      color: rgba(255,255,255,0.8);
-      font-size: 0.86rem;
-      font-weight: 800;
-      line-height: 1.15;
-      text-decoration: none;
-      text-align: center;
-      white-space: nowrap;
-    }
-    .nav a:hover,
-    .nav a:focus-visible {
-      color: var(--ot-white);
-      border-color: var(--ot-line);
-      outline: none;
-    }
-    .nav a[aria-current="page"],
-    .nav .nav-cta {
-      color: #101010;
-      border-color: var(--ot-yellow);
-      background: var(--ot-yellow);
     }
 
-    .button,
-    button.button {
-      min-height: 46px;
+    .brand-lockup img {
+      width: 132px;
+      height: auto;
+    }
+
+    .brand-lockup span {
+      display: block;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.78rem;
+      font-weight: 750;
+      line-height: 1.15;
+      text-transform: uppercase;
+    }
+
+    .nav-shell {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: rgba(255, 255, 255, 0.76);
+      font-size: 0.94rem;
+      font-weight: 720;
+    }
+
+    .site-nav a {
+      padding: 10px 0;
+      border-bottom: 2px solid transparent;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+
+    .site-nav a:hover,
+    .site-nav a:focus-visible {
+      color: var(--white);
+      border-color: var(--yellow);
+      outline: none;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .header-actions.mobile-direct {
+      display: none;
+    }
+
+    .member-link {
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.92rem;
+      font-weight: 760;
+      padding: 9px 10px;
+      border-radius: 6px;
+    }
+
+    .member-link:hover,
+    .member-link:focus-visible {
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.08);
+      outline: none;
+    }
+
+    .button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 8px;
-      padding: 11px 16px;
-      font-weight: 900;
-      text-decoration: none;
+      gap: 9px;
+      min-height: 46px;
+      padding: 0 18px;
+      border: 1px solid transparent;
+      border-radius: 6px;
       cursor: pointer;
-      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+      font-weight: 850;
+      line-height: 1;
+      text-align: center;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
     }
-    .button:hover,
-    .button:focus-visible {
+
+    .button:focus-visible,
+    .icon-button:focus-visible,
+    .choice-card:focus-within {
+      outline: 3px solid rgba(223, 248, 255, 0.92);
+      outline-offset: 3px;
+    }
+
+    .button:hover {
       transform: translateY(-1px);
-      outline: none;
     }
+
     .button.primary {
-      color: #101010;
-      background: var(--ot-yellow);
-      border-color: var(--ot-yellow);
-      box-shadow: 0 14px 34px rgba(237,229,24,0.22);
+      position: relative;
+      overflow: hidden;
+      color: var(--black);
+      background: var(--yellow);
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 14px 30px rgba(243, 230, 61, 0.18);
     }
-    .button.secondary {
-      color: var(--ot-black);
-      background: var(--ot-white);
-      border-color: var(--ot-white);
+
+    .button.primary::after {
+      content: "";
+      position: absolute;
+      inset: -120% auto -120% -40%;
+      width: 34%;
+      transform: rotate(18deg);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+      animation: buttonSweep 5.8s ease-in-out infinite;
+      pointer-events: none;
     }
+
+    .button.primary:hover {
+      background: #fff26b;
+    }
+
     .button.dark {
-      color: var(--ot-white);
-      background: rgba(255,255,255,0.08);
-      border-color: var(--ot-line);
+      color: var(--white);
+      background: var(--black);
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .button.light {
+      color: var(--black);
+      background: var(--white);
+      border-color: rgba(5, 5, 5, 0.1);
+    }
+
+    .button.full {
+      width: 100%;
+    }
+
+    .button[disabled] {
+      cursor: not-allowed;
+      opacity: 0.52;
+      transform: none;
+    }
+
+    .icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 6px;
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+    }
+
+    .menu-button {
+      display: none;
+    }
+
+    .menu-lines {
+      width: 19px;
+      height: 13px;
+      display: grid;
+      align-content: space-between;
+    }
+
+    .menu-lines::before,
+    .menu-lines::after,
+    .menu-lines span {
+      content: "";
+      height: 2px;
+      border-radius: 999px;
+      background: currentColor;
     }
 
     .hero {
-      min-height: calc(100vh - 116px);
       position: relative;
-      display: flex;
-      align-items: stretch;
       overflow: hidden;
-      background: var(--ot-black);
+      min-height: 760px;
+      padding: 76px 0 62px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      background:
+        radial-gradient(circle at 84% 30%, rgba(223, 248, 255, 0.18), transparent 24%),
+        radial-gradient(circle at 68% 72%, rgba(243, 230, 61, 0.1), transparent 22%),
+        linear-gradient(90deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.91) 48%, rgba(8, 18, 22, 0.76) 100%),
+        var(--black);
     }
+
     .hero::before {
       content: "";
       position: absolute;
       inset: 0;
-      background:
-        linear-gradient(90deg, rgba(8,9,16,0.96) 0%, rgba(8,9,16,0.86) 38%, rgba(8,9,16,0.2) 68%, rgba(8,9,16,0.62) 100%),
-        linear-gradient(180deg, rgba(8,9,16,0.14), rgba(8,9,16,0.92));
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+      background-size: 92px 92px;
+      mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.8), transparent 72%);
+    }
+
+    .hero-inner {
+      position: relative;
       z-index: 1;
+      width: min(720px, 100%);
     }
-    .hero-media {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      background: url("/images/one-time/brand/onetime-hero-vertical.webp") right 10% center / min(56vw, 760px) auto no-repeat;
-      filter: saturate(1.08) contrast(1.06);
-    }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 92px 0 0;
-      text-align: left;
-    }
-    .hero h1 {
-      max-width: 760px;
-      margin-left: 0;
-      margin-right: 0;
-    }
-    .hero .hero-copy,
-    .hero .hero-support,
-    .hero .microcopy {
-      margin-left: 0;
-      margin-right: 0;
-    }
-    .hero .hero-copy { max-width: 620px; }
-    .hero .hero-support { max-width: 680px; }
-    .hero .button-row,
-    .hero .hero-badges {
-      justify-content: flex-start;
-    }
+
     .eyebrow {
-      margin: 0 0 14px;
-      color: var(--ot-yellow);
-      font-size: 0.78rem;
-      font-weight: 930;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-    .hero-copy {
-      max-width: 790px;
-      margin: 0 auto;
-      color: rgba(255,255,255,0.84);
-      font-size: clamp(1.08rem, 2.2vw, 1.34rem);
-    }
-    .hero-support {
-      max-width: 910px;
-      margin: 16px auto 0;
-      color: rgba(255,255,255,0.74);
-      font-size: 1.02rem;
-    }
-    .button-row {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 28px;
-    }
-    .microcopy {
-      max-width: 680px;
-      margin: 16px auto 0;
-      color: rgba(255,255,255,0.72);
-      font-size: 0.94rem;
-    }
-    .hero-badges {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 26px;
-    }
-    .hero-badges span {
-      border: 1px solid rgba(237,229,24,0.28);
-      border-radius: 999px;
-      padding: 7px 10px;
-      color: rgba(255,255,255,0.82);
-      background: rgba(0,0,0,0.2);
-      font-size: 0.78rem;
-      font-weight: 800;
-    }
-    .signup-strip {
-      position: relative;
-      z-index: 2;
-      margin-top: auto;
-      color: #0b0c10;
-      background: var(--ot-yellow);
-      border-top: 1px solid rgba(8,9,16,0.32);
-    }
-    .signup-strip-inner {
-      min-height: 82px;
-      display: grid;
-      grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.55fr) auto;
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-    }
-    .signup-strip-copy {
-      display: grid;
-      gap: 1px;
-      min-width: 0;
-    }
-    .signup-strip-copy strong {
-      font-size: 1.08rem;
-      line-height: 1.1;
-      font-weight: 950;
+      gap: 10px;
+      margin-bottom: 18px;
+      color: var(--ice);
+      font-size: 0.82rem;
+      font-weight: 900;
       text-transform: uppercase;
     }
-    .signup-strip-copy span,
-    .signup-strip-note {
-      color: rgba(8,9,16,0.72);
-      font-size: 0.86rem;
-      font-weight: 760;
+
+    .eyebrow::before {
+      content: "";
+      width: 36px;
+      height: 2px;
+      background: var(--yellow);
     }
-    .signup-strip-fields {
-      min-width: 0;
+
+    .hero-copy {
+      max-width: 650px;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 1.2rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 30px 0 28px;
+    }
+
+    .hero-proof {
       display: grid;
-      grid-template-columns: repeat(4, minmax(120px, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 650px;
     }
-    .signup-strip input {
-      min-height: 46px;
-      border-color: rgba(8,9,16,0.24);
-      color: var(--ot-ink);
-      background: var(--ot-white);
+
+    .proof-item {
+      min-height: 92px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
     }
-    .signup-strip input::placeholder { color: rgba(8,9,16,0.54); }
-    .signup-strip .strip-button {
-      min-width: 132px;
-      color: var(--ot-white);
-      background: var(--ot-black);
-      border-color: var(--ot-black);
-      box-shadow: none;
+
+    .proof-item strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--yellow);
+      font-size: 1rem;
     }
-    .signup-strip-note,
-    .signup-strip .form-status {
-      margin: 0;
-      color: rgba(8,9,16,0.76);
+
+    .proof-item span {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.91rem;
+    }
+
+    .promotion {
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      border-bottom: 1px solid rgba(243, 230, 61, 0.32);
+      background:
+        linear-gradient(90deg, rgba(243, 230, 61, 0.08), transparent 42%),
+        #070707;
+      color: var(--white);
+    }
+
+    .promotion-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 24px;
+      min-height: 104px;
+      padding: 20px 0;
+    }
+
+    .promotion small {
+      display: block;
+      color: var(--yellow);
       font-size: 0.78rem;
-      font-weight: 850;
+      font-weight: 900;
+      text-transform: uppercase;
     }
-    .signup-strip-note {
-      grid-column: 2 / -1;
+
+    .promotion strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 2rem;
+      line-height: 1.05;
     }
-    .signup-strip .form-status {
-      grid-column: 2 / -1;
-      min-height: 20px;
-      overflow-wrap: anywhere;
+
+    .promotion p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.72);
+      font-weight: 650;
     }
 
     .section {
-      padding: 76px 0;
-      background: var(--ot-black);
+      padding: 86px 0;
     }
-    .section.paper {
-      color: var(--ot-ink);
-      background: var(--ot-paper);
-    }
-    .section.paper p { color: var(--ot-muted-dark); }
-    .section.paper .eyebrow { color: #0a718e; }
-    .section-head {
-      max-width: 800px;
-      margin-bottom: 30px;
-    }
-    .section-head.center {
-      margin-left: auto;
-      margin-right: auto;
-      text-align: center;
-    }
-    .section-head.center p { margin-left: auto; margin-right: auto; }
-    .section-head p { max-width: 740px; }
 
-    .press-logos {
+    .section.dark {
+      background: var(--black);
+    }
+
+    .section.paper {
+      color: var(--black);
+      background: var(--paper);
+    }
+
+    .section.paper p {
+      color: rgba(5, 5, 5, 0.68);
+    }
+
+    .section.ice {
+      color: var(--black);
+      background: var(--ice);
+    }
+
+    .section.ice p {
+      color: rgba(5, 5, 5, 0.68);
+    }
+
+    .section-head {
       display: grid;
-      grid-template-columns: repeat(5, minmax(130px, 1fr));
-      gap: 12px;
+      grid-template-columns: minmax(0, 0.9fr) minmax(260px, 0.55fr);
+      align-items: end;
+      gap: 32px;
+      margin-bottom: 34px;
+    }
+
+    .section-head p {
+      margin-bottom: 0;
+      font-size: 1.06rem;
+    }
+
+    .rabbi-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.62fr);
+      gap: 34px;
       align-items: stretch;
     }
-    .press-logo {
-      min-height: 98px;
+
+    .rabbi-copy {
       display: grid;
-      place-items: center;
-      border: 1px solid var(--ot-dark-line);
-      border-radius: 8px;
-      background: var(--ot-white);
-      padding: 16px;
-      color: #171b24;
-      font-weight: 900;
-      text-align: center;
+      gap: 20px;
+      align-content: center;
+      padding-right: 22px;
     }
-    .press-logo img { max-height: 52px; object-fit: contain; }
 
-    .grid {
-      display: grid;
-      gap: 16px;
+    .rabbi-copy p {
+      margin-bottom: 0;
+      font-size: 1.13rem;
     }
-    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
-    .card,
-    .feature {
-      min-width: 0;
-      border: 1px solid var(--ot-line);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.055);
-      padding: 20px;
+    .rabbi-copy .lead {
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 1.32rem;
+      font-weight: 760;
+      line-height: 1.46;
     }
-    .section.paper .card,
-    .section.paper .feature {
-      border-color: var(--ot-dark-line);
-      background: var(--ot-white);
-    }
-    .section.paper .card p,
-    .section.paper .feature p { color: var(--ot-muted-dark); }
 
-    .image-card {
+    .rabbi-photo {
       overflow: hidden;
-      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      background: #0f0f0f;
+      box-shadow: var(--shadow);
     }
-    .image-frame {
-      aspect-ratio: 16 / 9;
-      overflow: hidden;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      background:
-        radial-gradient(circle at 30% 25%, rgba(237,229,24,0.3), transparent 20%),
-        linear-gradient(145deg, #20242e, #11141d 54%, #090a10);
-    }
-    .image-frame img {
+
+    .rabbi-photo img {
       width: 100%;
       height: 100%;
+      min-height: 420px;
       object-fit: cover;
     }
-    .image-card-body { padding: 20px; }
 
-    .funnel {
-      display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
-      gap: 28px;
-      align-items: center;
-    }
-    .check-list {
-      display: grid;
-      gap: 10px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-    .check-list li,
-    .receive-item {
-      border: 1px solid var(--ot-line);
-      border-radius: 8px;
-      padding: 14px 15px;
-      background: rgba(255,255,255,0.055);
-      font-weight: 800;
-    }
-    .check-list li::before,
-    .receive-item::before {
-      content: "";
-      width: 9px;
-      height: 9px;
-      display: inline-block;
-      margin-right: 10px;
-      border-radius: 50%;
-      background: var(--ot-yellow);
-      vertical-align: middle;
-    }
-    .section.paper .check-list li,
-    .section.paper .receive-item {
-      border-color: var(--ot-dark-line);
-      background: var(--ot-white);
-    }
-
-    .outcome-band {
-      border: 1px solid rgba(237,229,24,0.28);
-      border-radius: 8px;
-      padding: clamp(28px, 5vw, 52px);
-      background:
-        linear-gradient(135deg, rgba(237,229,24,0.14), transparent 34%),
-        var(--ot-panel);
-    }
-
-    .faq {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-    details {
-      border: 1px solid var(--ot-dark-line);
-      border-radius: 8px;
-      background: var(--ot-white);
+    .press-band {
+      margin-top: 42px;
       overflow: hidden;
-    }
-    summary {
-      min-height: 56px;
-      display: flex;
-      align-items: center;
-      padding: 15px 18px;
-      color: var(--ot-ink);
-      cursor: pointer;
-      font-weight: 900;
-    }
-    details p {
-      margin: 0;
-      padding: 0 18px 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    .start-section {
-      padding: 82px 0;
-      background:
-        linear-gradient(135deg, rgba(237,229,24,0.13), transparent 30%),
-        var(--ot-black);
-    }
-    .signup-panel {
-      border: 1px solid rgba(237,229,24,0.24);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.065);
-      padding: 20px;
-    }
-    .form-grid { display: grid; gap: 12px; }
-    .field-pair {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-    label {
-      display: grid;
-      gap: 6px;
-      color: rgba(255,255,255,0.88);
-      font-size: 0.84rem;
-      font-weight: 820;
-    }
-    .checkbox-label {
-      grid-template-columns: 34px minmax(0, 1fr);
+    .press-track {
+      display: flex;
+      width: max-content;
+      gap: 34px;
       align-items: center;
-      color: rgba(255,255,255,0.78);
-      line-height: 1.35;
-    }
-    .checkbox-label input {
-      width: 28px;
-      height: 28px;
-      margin: 0;
-      accent-color: var(--ot-yellow);
-    }
-    input,
-    select,
-    textarea {
-      width: 100%;
-      border: 1px solid rgba(255,255,255,0.16);
-      border-radius: 8px;
-      padding: 11px 12px;
-      color: var(--ot-white);
-      background: rgba(0,0,0,0.38);
-    }
-    textarea { min-height: 96px; resize: vertical; }
-    .form-status {
-      min-height: 22px;
-      margin: 0;
-      color: var(--ot-yellow);
-      font-weight: 800;
+      padding: 22px 0;
+      animation: marquee 26s linear infinite;
     }
 
-    footer {
-      border-top: 1px solid var(--ot-line);
-      padding: 28px 0 34px;
-      background: #050609;
+    .press-track:hover {
+      animation-play-state: paused;
     }
-    .footer-row {
-      display: grid;
-      grid-template-columns: minmax(220px, 0.6fr) minmax(0, 1fr);
-      gap: 20px;
-      align-items: start;
-    }
-    .footer-links {
-      display: flex;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      gap: 8px 14px;
-    }
-    .footer-links a {
-      min-height: 44px;
+
+    .press-logo {
       display: inline-flex;
       align-items: center;
-      border-radius: 8px;
-      color: rgba(255,255,255,0.74);
-      padding: 7px 9px;
-      text-decoration: none;
+      justify-content: center;
+      min-width: 155px;
+      height: 48px;
+      padding: 0 12px;
     }
+
+    .press-logo img {
+      max-width: 124px;
+      max-height: 34px;
+      object-fit: contain;
+    }
+
+    @keyframes marquee {
+      from {
+        transform: translateX(0);
+      }
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    @keyframes buttonSweep {
+      0%,
+      72% {
+        transform: translateX(-170%) rotate(18deg);
+      }
+      100% {
+        transform: translateX(620%) rotate(18deg);
+      }
+    }
+
+    .carousel-shell {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line-dark);
+      border-radius: 8px;
+      background: var(--white);
+      box-shadow: 0 18px 48px rgba(5, 5, 5, 0.08);
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 420ms ease;
+    }
+
+    .teaching-slide {
+      flex: 0 0 100%;
+      margin: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      min-height: 460px;
+      background: var(--white);
+    }
+
+    .teaching-visual {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      min-height: 460px;
+      background:
+        radial-gradient(circle at 24% 28%, rgba(243, 230, 61, 0.2), transparent 20%),
+        radial-gradient(circle at 72% 32%, rgba(223, 248, 255, 0.24), transparent 26%),
+        linear-gradient(140deg, #090909 0%, #111 52%, #16272d 100%);
+    }
+
+    .teaching-visual::before {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border: 1px solid rgba(223, 248, 255, 0.24);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 42px rgba(223, 248, 255, 0.025),
+        0 0 70px rgba(223, 248, 255, 0.22);
+    }
+
+    .teaching-visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 78px 78px;
+      mask-image: radial-gradient(circle at 42% 50%, rgba(0, 0, 0, 0.9), transparent 70%);
+    }
+
+    .teaching-marker {
+      position: absolute;
+      width: 13px;
+      height: 13px;
+      border-radius: 999px;
+      background: var(--yellow);
+      box-shadow: 0 0 0 8px rgba(243, 230, 61, 0.15), 0 0 28px rgba(223, 248, 255, 0.5);
+    }
+
+    .teaching-marker.one {
+      left: 28%;
+      top: 38%;
+    }
+
+    .teaching-marker.two {
+      left: 55%;
+      top: 28%;
+    }
+
+    .teaching-marker.three {
+      left: 68%;
+      top: 58%;
+    }
+
+    .teaching-caption {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 34px;
+      color: var(--black);
+      background: var(--ice);
+    }
+
+    .teaching-caption span {
+      color: rgba(5, 5, 5, 0.6);
+      font-size: 0.82rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .teaching-caption strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 2rem;
+      line-height: 1.08;
+    }
+
+    .teaching-caption p {
+      margin: 0;
+      color: rgba(5, 5, 5, 0.66);
+    }
+
+    .carousel-controls {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      z-index: 2;
+      display: flex;
+      gap: 8px;
+    }
+
+    .carousel-controls .icon-button {
+      color: var(--black);
+      border-color: rgba(5, 5, 5, 0.16);
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    .dots {
+      position: absolute;
+      right: 18px;
+      bottom: 25px;
+      z-index: 2;
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border: 1px solid rgba(5, 5, 5, 0.35);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .dot.active {
+      background: var(--yellow);
+      border-color: rgba(5, 5, 5, 0.56);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card-grid.receive {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .info-card {
+      min-height: 220px;
+      padding: 24px;
+      border: 1px solid var(--line-dark);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--black);
+    }
+
+    .info-card p {
+      margin-bottom: 0;
+      color: rgba(5, 5, 5, 0.66);
+    }
+
+    .info-card.dark {
+      border-color: rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--white);
+    }
+
+    .info-card.dark p {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .card-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(5, 5, 5, 0.14);
+      border-radius: 8px;
+      color: var(--black);
+      background: var(--yellow);
+      font-weight: 900;
+    }
+
+    .dark .card-icon,
+    .info-card.dark .card-icon {
+      border-color: rgba(255, 255, 255, 0.18);
+      color: var(--black);
+      background: var(--yellow);
+    }
+
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      counter-reset: steps;
+    }
+
+    .step {
+      position: relative;
+      min-height: 250px;
+      padding: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.07);
+      counter-increment: steps;
+    }
+
+    .step::before {
+      content: counter(steps, decimal-leading-zero);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 24px;
+      border-radius: 50%;
+      color: var(--black);
+      background: var(--yellow);
+      font-weight: 950;
+    }
+
+    .step p {
+      margin-bottom: 0;
+    }
+
+    .audience-section {
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      background:
+        linear-gradient(90deg, rgba(5, 5, 5, 0.99), rgba(5, 5, 5, 0.92)),
+        var(--black);
+    }
+
+    .audience-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 38px;
+    }
+
+    .audience-copy p {
+      max-width: 560px;
+      font-size: 1.08rem;
+    }
+
+    .audience-cards {
+      display: grid;
+      gap: 14px;
+    }
+
+    .audience-card {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 16px;
+      min-height: 118px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .audience-card .card-icon {
+      margin: 0;
+    }
+
+    .audience-card p {
+      margin-bottom: 0;
+    }
+
+    .footer {
+      padding: 42px 0 34px;
+      color: rgba(255, 255, 255, 0.68);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      background: #030303;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .footer img {
+      width: 118px;
+      height: auto;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-weight: 750;
+    }
+
     .footer-links a:hover,
-    .footer-links a:focus-visible,
-    .footer-links a[aria-current="page"] {
-      color: var(--ot-yellow);
+    .footer-links a:focus-visible {
+      color: var(--white);
       outline: none;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .button { transition: none; }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.72);
     }
 
-    @media (max-width: 980px) {
-      .toolbar {
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .signup-dialog {
+      position: relative;
+      width: min(610px, 100%);
+      max-height: min(720px, calc(100vh - 36px));
+      overflow: auto;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 8px;
+      color: var(--black);
+      background: var(--paper);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 26px 28px 14px;
+      border-bottom: 1px solid rgba(5, 5, 5, 0.1);
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      font-size: 2.15rem;
+    }
+
+    .modal-head p {
+      margin: 8px 0 0;
+      color: rgba(5, 5, 5, 0.64);
+    }
+
+    .modal-close {
+      flex: 0 0 auto;
+      color: var(--black);
+      border-color: rgba(5, 5, 5, 0.14);
+      background: var(--white);
+    }
+
+    .modal-body {
+      padding: 24px 28px 28px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--black);
+      font-weight: 800;
+    }
+
+    label span {
+      color: rgba(5, 5, 5, 0.68);
+      font-size: 0.88rem;
+      font-weight: 750;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"] {
+      width: 100%;
+      min-height: 52px;
+      padding: 0 14px;
+      border: 1px solid rgba(5, 5, 5, 0.2);
+      border-radius: 6px;
+      color: var(--black);
+      background: var(--white);
+    }
+
+    input:focus {
+      outline: 3px solid rgba(145, 226, 255, 0.8);
+      outline-offset: 2px;
+      border-color: rgba(5, 5, 5, 0.46);
+    }
+
+    .field-error {
+      display: none;
+      color: #8c1f13;
+      font-size: 0.88rem;
+      font-weight: 760;
+    }
+
+    .field-error.visible {
+      display: block;
+    }
+
+    .form-note {
+      margin: 2px 0 0;
+      color: rgba(5, 5, 5, 0.62);
+      font-size: 0.92rem;
+    }
+
+    .form-status {
+      display: none;
+      margin: 18px 0 0;
+      padding: 13px 14px;
+      border-radius: 6px;
+      color: var(--black);
+      background: var(--ice);
+      font-weight: 760;
+    }
+
+    .form-status.visible {
+      display: block;
+    }
+
+    .form-status.error {
+      color: #681a12;
+      background: #ffe4dc;
+    }
+
+    .success-step {
+      display: none;
+    }
+
+    .success-step.active {
+      display: block;
+    }
+
+    .choice-grid {
+      display: grid;
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .choice-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      padding: 16px;
+      border: 1px solid rgba(5, 5, 5, 0.14);
+      border-radius: 8px;
+      background: var(--white);
+      cursor: pointer;
+    }
+
+    .choice-card input {
+      width: 20px;
+      height: 20px;
+      margin-top: 3px;
+      accent-color: var(--black);
+    }
+
+    .choice-card strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--black);
+    }
+
+    .choice-card span {
+      color: rgba(5, 5, 5, 0.62);
+      font-size: 0.94rem;
+    }
+
+    .choice-card:has(input:checked) {
+      border-color: rgba(5, 5, 5, 0.55);
+      background: var(--ice);
+    }
+
+    @media (max-width: 1080px) {
+      h1 {
+        font-size: 4.2rem;
+      }
+
+      h2 {
+        font-size: 2.75rem;
+      }
+
+      .site-nav {
+        display: none;
+      }
+
+      .header-actions.mobile-direct {
+        display: flex;
+      }
+
+      .header-actions.mobile-direct .member-link {
+        display: none;
+      }
+
+      .menu-button {
+        display: inline-flex;
+      }
+
+      .nav-shell {
+        position: fixed;
+        top: var(--header-height);
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1001;
+        display: none;
+        height: calc(100vh - var(--header-height));
+        padding: 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        background: #050505;
+        overflow-y: auto;
+      }
+
+      .nav-shell.open {
+        display: block;
+      }
+
+      .nav-shell .site-nav {
         display: grid;
-        grid-template-columns: 1fr;
-        padding: 12px 0;
+        gap: 4px;
       }
-      .nav { justify-content: flex-start; }
-      .signup-strip-inner {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .signup-strip .strip-button,
-      .signup-strip-note,
-      .signup-strip .form-status {
-        grid-column: auto;
-      }
-      .signup-strip-fields {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .press-logos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .grid.three,
-      .grid.four,
-      .grid.two,
-      .faq,
-      .funnel,
-      .footer-row {
-        grid-template-columns: 1fr;
-      }
-      .footer-links { justify-content: flex-start; }
-    }
 
-    @media (max-width: 640px) {
-      .toolbar {
+      .nav-shell .site-nav a {
+        min-height: 46px;
+        display: flex;
+        align-items: center;
+        padding: 0;
+      }
+
+      .nav-shell .header-actions {
         display: grid;
         grid-template-columns: 1fr;
         gap: 10px;
+        margin-top: 16px;
       }
-      .brand span span { display: none; }
-      .brand-mark { width: 50px; height: 50px; }
-      .nav {
-        width: 100%;
+
+      .nav-shell .member-link {
+        min-height: 44px;
         display: flex;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        gap: 8px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        overscroll-behavior-x: contain;
-        -webkit-overflow-scrolling: touch;
-        padding: 2px 2px 8px;
-        scroll-snap-type: none;
+        align-items: center;
+        padding: 0;
       }
-      .nav::before {
-        content: "";
-        display: block;
-        box-sizing: border-box;
-        flex: 0 0 42px;
-        width: 42px;
-        height: 42px;
-        border: 1px solid rgba(255,255,255,0.34);
-        border-radius: 8px;
+
+      .hero {
         background:
-          linear-gradient(#080910, #080910) center 13px / 20px 2px no-repeat,
-          linear-gradient(#080910, #080910) center 20px / 20px 2px no-repeat,
-          linear-gradient(#080910, #080910) center 27px / 20px 2px no-repeat,
-          #ffffff;
-        box-shadow: 0 10px 22px rgba(0,0,0,0.24);
+          radial-gradient(circle at 88% 34%, rgba(223, 248, 255, 0.18), transparent 22%),
+          linear-gradient(90deg, rgba(5, 5, 5, 0.98), rgba(5, 5, 5, 0.88)),
+          var(--black);
       }
-      .nav a {
-        flex: 0 0 auto;
-        min-width: max-content;
-        padding: 8px 12px;
-        font-size: 0.8rem;
-        scroll-snap-align: start;
-        white-space: nowrap;
-      }
-      .nav a[aria-current="page"] {
-        color: #080910;
-        border-color: #ffffff;
-        background: #ffffff;
-        box-shadow: inset 0 0 0 2px rgba(237,229,24,0.86);
-      }
-      .nav a:not([aria-current="page"]):not(.nav-cta) {
-        color: #080910;
-        border-color: rgba(255,255,255,0.92);
-        background: #ffffff;
-      }
-      .hero { min-height: auto; }
-      .hero::before {
-        background:
-          linear-gradient(180deg, rgba(8,9,16,0.62), rgba(8,9,16,0.95) 54%, rgba(8,9,16,0.98)),
-          linear-gradient(90deg, rgba(8,9,16,0.2), rgba(8,9,16,0.2));
-      }
-      .hero-media {
-        background-position: center top;
-        background-size: 128% auto;
-        opacity: 0.46;
-      }
-      .hero-content {
-        padding-top: 62px;
-        text-align: center;
-      }
-      .hero h1,
-      .hero .hero-copy,
-      .hero .hero-support,
-      .hero .microcopy {
-        margin-left: auto;
-        margin-right: auto;
-      }
-      .hero .button-row,
-      .hero .hero-badges {
-        justify-content: center;
-      }
-      .signup-strip-inner {
-        grid-template-columns: 1fr;
-        align-items: stretch;
-        padding: 14px 0;
-      }
-      .signup-strip-fields {
+
+      .promotion-inner,
+      .section-head,
+      .rabbi-grid,
+      .audience-panel {
         grid-template-columns: 1fr;
       }
-      .signup-strip .strip-button,
-      .signup-strip-note,
-      .signup-strip .form-status {
+
+      .promotion-inner {
+        align-items: start;
+      }
+
+      .promotion-inner .button {
+        justify-self: start;
+      }
+
+      .card-grid,
+      .card-grid.receive,
+      .step-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .teaching-slide {
+        grid-template-columns: 1fr;
+      }
+
+      .teaching-visual {
+        height: 420px;
+        min-height: 420px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      :root {
+        --header-height: 66px;
+      }
+
+      .wrap {
+        width: min(100% - 28px, 1180px);
+      }
+
+      .brand-lockup img {
+        width: 106px;
+      }
+
+      .brand-lockup span {
+        display: none;
+      }
+
+      h1 {
+        font-size: 3.05rem;
+      }
+
+      h2 {
+        font-size: 2.25rem;
+      }
+
+      .hero {
+        min-height: 610px;
+        padding: 54px 0 42px;
+        background:
+          radial-gradient(circle at 84% 18%, rgba(223, 248, 255, 0.16), transparent 24%),
+          linear-gradient(180deg, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.88) 62%, rgba(5, 5, 5, 0.98) 100%),
+          var(--black);
+      }
+
+      .hero-copy {
+        max-width: 86%;
+        font-size: 1.05rem;
+      }
+
+      .hero-actions {
+        max-width: 230px;
+      }
+
+      .hero-actions .button {
         width: 100%;
       }
-      .section,
-      .start-section { padding: 52px 0; }
-      .press-logos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .field-pair { grid-template-columns: 1fr; }
-      .button { width: 100%; }
+
+      .hero-proof {
+        grid-template-columns: 1fr;
+        max-width: 72%;
+      }
+
+      .promotion strong {
+        font-size: 1.55rem;
+      }
+
+      .section {
+        padding: 62px 0;
+      }
+
+      .rabbi-copy {
+        padding-right: 0;
+      }
+
+      .rabbi-photo img {
+        min-height: 300px;
+      }
+
+      .card-grid,
+      .card-grid.receive,
+      .step-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-card,
+      .step {
+        min-height: auto;
+      }
+
+      .teaching-slide {
+        min-height: auto;
+      }
+
+      .teaching-visual {
+        height: 320px;
+        min-height: 320px;
+      }
+
+      .teaching-caption {
+        padding: 24px 22px 78px;
+      }
+
+      .carousel-controls {
+        left: 14px;
+        bottom: 14px;
+      }
+
+      .dots {
+        right: 14px;
+        bottom: 21px;
+      }
+
+      .audience-card {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .modal-backdrop {
+        align-items: center;
+        padding: 10px;
+      }
+
+      .signup-dialog {
+        max-height: calc(100vh - 20px);
+      }
+
+      .modal-head,
+      .modal-body {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .button {
+        min-height: 44px;
+        padding: 0 14px;
+      }
+
+      .header-inner {
+        gap: 8px;
+      }
+
+      .header-actions.mobile-direct .button {
+        width: 122px;
+        padding: 0 10px;
+      }
+
+      h1 {
+        font-size: 2.55rem;
+      }
+
+      h2 {
+        font-size: 1.95rem;
+      }
+
+      .hero {
+        min-height: 590px;
+      }
+
+      .hero-copy,
+      .hero-proof {
+        max-width: 100%;
+      }
+
+      .proof-item {
+        min-height: 82px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+      }
     }
   </style>
 </head>
-<body data-site-config="/config/service-provider-sites/one-time.json" data-one-time-rabbi-dashboard="public-offer" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
   <header class="site-header">
-    <div class="wrap toolbar">
-      <a class="brand" href="/one-time" aria-label="One Time Mishnayos home">
-        <span class="brand-mark">
-          <img src="/images/one-time/brand/onetimelogo.webp" alt="">
-        </span>
-        <span>
-          <strong>One Time Mishnayos</strong>
-          <span>Worldwide Live Mishnayos</span>
-        </span>
+    <div class="wrap header-inner">
+      <a class="brand-lockup" href="/one-time" aria-label="One Time Mishnayos home">
+        <img src="/assets/one-time/brand/one-time-logo-white.webp" width="132" height="83" alt="One Time">
+        <span>Mishnayos with Rabbi Eli Scheller</span>
       </a>
-      <nav class="nav" aria-label="One Time navigation">
-        <a href="/one-time" aria-current="page">One Time</a>
-        <a href="#watch">Watch</a>
-        <a href="#program">Program</a>
-        <a href="#how-it-works">How It Works</a>
-        <a href="#faq">FAQ</a>
-        <a class="nav-cta" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
-        <a href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
-      </nav>
+
+      <div class="header-actions mobile-direct" aria-label="Primary actions">
+        <a class="member-link" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
+        <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
+        <button class="icon-button menu-button" type="button" aria-label="Open navigation" aria-controls="siteNavShell" aria-expanded="false" data-menu-button data-action-id="ACTION-ONETIME-PUBLIC-MOBILE-MENU">
+          <span class="menu-lines" aria-hidden="true"><span></span></span>
+        </button>
+      </div>
+
+      <div class="nav-shell" id="siteNavShell" data-nav-shell>
+        <nav class="site-nav" aria-label="One Time page sections">
+          <a href="#rabbi">Rabbi Eli</a>
+          <a href="#gain">What He&rsquo;ll Gain</a>
+          <a href="#receive">What You Receive</a>
+          <a href="#how-it-works">How It Works</a>
+          <a href="#who">Who It&rsquo;s For</a>
+        </nav>
+        <div class="header-actions" aria-label="Secondary actions">
+          <a class="member-link" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
+          <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main>
-    <section class="hero" id="top">
-      <div class="hero-media" aria-hidden="true"></div>
-      <div class="hero-content">
-        <div class="wrap">
-          <p class="eyebrow">WORLDWIDE LIVE MISHNAYOS</p>
-          <h1>Your Child Can Love Learning Mishnayos</h1>
-          <p class="hero-copy">Join the daily live Mishnayos class built for kids - exciting, clear, accountable, and connected to Rabbi Eli Scheller.</p>
-          <p class="hero-support">Starting from the beginning on Rosh Chodesh Elul. Students learn every day, review clearly, track their progress, and become part of one of the most engaging Mishnayos classes in the world.</p>
-          <div class="button-row">
-            <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
-            <a class="button dark" href="/api/one-time/public-whatsapp/redirect?intent=free_class" target="_blank" rel="noopener noreferrer" data-action-id="ACTION-ONETIME-PUBLIC-WHATSAPP">WhatsApp Robot Scheller</a>
-            <a class="button secondary" href="#how-it-works" data-action-id="ACTION-ONETIME-WATCH-RABBI-CTA">See How It Works</a>
-          </div>
-          <p class="microcopy">No spam, no charge, and no portal account is opened by this form. We will send the current free-class details when your signup is received.</p>
-          <div class="hero-badges" id="watch" aria-label="Program highlights">
-            <span>Live class</span>
-            <span>Clear review</span>
-            <span>Worksheets</span>
-            <span>Free Zoom follow-up</span>
-          </div>
-        </div>
-        <form id="interestForm" class="signup-strip" aria-label="Sign up for One Time Mishnayos updates">
-          <div class="wrap signup-strip-inner" id="start-free">
-            <div class="signup-strip-copy">
-              <strong>Join the Free Class</strong>
-              <span>Tell us who to contact and Robot Scheller will route your request to the One Time team.</span>
-            </div>
-            <div class="signup-strip-fields">
-              <label class="visually-hidden" for="signupParentName">Parent name</label>
-              <input id="signupParentName" name="parent_name" type="text" autocomplete="name" placeholder="Parent name" required>
-              <label class="visually-hidden" for="signupEmail">Parent email</label>
-              <input id="signupEmail" name="email" type="email" autocomplete="email" placeholder="Parent email" required>
-              <label class="visually-hidden" for="signupStudentName">Student name</label>
-              <input id="signupStudentName" name="student_name" type="text" autocomplete="off" placeholder="Student name">
-              <label class="visually-hidden" for="signupPhone">Phone / WhatsApp</label>
-              <input id="signupPhone" name="phone" type="tel" autocomplete="tel" placeholder="Phone / WhatsApp">
-            </div>
-            <input name="consent" type="hidden" value="yes">
-            <input name="source_landing_page" type="hidden" value="/one-time#start-free">
-            <input name="preferred_class_format" type="hidden" value="free_zoom_intro">
-            <button class="button strip-button" type="submit" data-action-id="ACTION-ONETIME-INTEREST-FORM" data-one-time-action-state="working">Save My Spot</button>
-            <p class="signup-strip-note">No spam, no charge, and no portal account is opened by this form. Parent/member access opens only after setup is ready.</p>
-            <p class="form-status" id="interestStatus" aria-live="polite"></p>
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <section class="section paper" aria-labelledby="seen-heading">
+  <main id="main">
+    <section class="hero" aria-labelledby="heroTitle">
       <div class="wrap">
-        <div class="section-head center">
-          <h2 id="seen-heading">AS SEEN ACROSS THE JEWISH WORLD:</h2>
-        </div>
-        <div class="press-logos">
-          <div class="press-logo"><img src="/images/one-time/press/torahanytime-logo.png" alt="TorahAnytime"></div>
-          <div class="press-logo"><img src="/images/one-time/press/twentyfour-six-logo.png" alt="24Six"></div>
-          <div class="press-logo"><img src="/images/one-time/press/loop-logo.png" alt="The Loop"></div>
-          <div class="press-logo"><img src="/images/one-time/press/mishpacha.webp" alt="Mishpacha"></div>
-          <div class="press-logo" aria-label="Naki logo placeholder">Naki</div>
+        <div class="hero-inner">
+          <p class="eyebrow">Worldwide Mishnah Learning &mdash; Live From Eretz Yisrael</p>
+          <h1 id="heroTitle">Give your son a love for Torah you never thought possible.</h1>
+          <p class="hero-copy">A live Mishnayos class with Rabbi Eli Scheller that makes learning exciting, clear, and unforgettable &mdash; for boys around the world.</p>
+          <div class="hero-actions">
+            <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
+          </div>
+          <div class="hero-proof" aria-label="One Time Mishnayos highlights">
+            <div class="proof-item">
+              <strong>Live from Eretz Yisrael</strong>
+              <span>A real shiur rhythm your son can look forward to.</span>
+            </div>
+            <div class="proof-item">
+              <strong>Rabbi Eli Scheller</strong>
+              <span>Storytelling, clarity, warmth, and geshmak.</span>
+            </div>
+            <div class="proof-item">
+              <strong>Built for boys</strong>
+              <span>Short, memorable, accountable learning.</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="program">
-      <div class="wrap">
-        <div class="section-head">
-          <p class="eyebrow">INSIDE THE PROGRAM</p>
-          <h2>Live learning, review, and follow-through in one simple rhythm.</h2>
-          <p>The class is designed to keep kids excited while giving parents a clear structure: live shiur, practical review, worksheets, attendance tracking, and steady progress toward finishing Mishnayos.</p>
-        </div>
-        <div class="grid three">
-          <article class="card image-card">
-            <div class="image-frame"><img src="/images/one-time/teaching/promo-stage-still-01.webp" alt="Rabbi Scheller teaching a live One Time class"></div>
-            <div class="image-card-body">
-              <h3>Live Class</h3>
-              <p>Students join the shiur live and learn with the energy of a real class.</p>
-            </div>
-          </article>
-          <article class="card image-card">
-            <div class="image-frame"><img src="/images/one-time/teaching/promo-stage-still-02.webp" alt="Rabbi Scheller speaking during a Mishnayos review"></div>
-            <div class="image-card-body">
-              <h3>Clear Review</h3>
-              <p>Each lesson is reinforced with review and practical worksheets so the learning sticks.</p>
-            </div>
-          </article>
-          <article class="card image-card">
-            <div class="image-frame"><img src="/images/one-time/teaching/promo-stage-still-03.webp" alt="One Time class stage with black and yellow program colors"></div>
-            <div class="image-card-body">
-              <h3>Steady Progress</h3>
-              <p>Kids see their progress, parents can track attendance, and the class keeps moving toward a real goal.</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section paper" id="who-its-for">
-      <div class="wrap funnel">
+    <section class="promotion" aria-labelledby="promoTitle">
+      <div class="wrap promotion-inner">
         <div>
-          <p class="eyebrow">WHO IT'S FOR</p>
-          <h2>Built for kids who need Mishnayos to feel alive.</h2>
-          <p>This is for families who want more than another recording. The class gives kids a live rebbi, a real schedule, accountability, and a worldwide group of students learning together.</p>
+          <small>Rosh Hashanah Special</small>
+          <strong id="promoTitle">Join free until Rosh Hashanah.</strong>
         </div>
-        <ul class="check-list">
-          <li>Kids who learn better with energy and interaction</li>
-          <li>Parents who want clear attendance and progress tracking</li>
-          <li>Families who want a serious daily Mishnayos structure</li>
-          <li>Students who want to ask questions and communicate with the rabbi</li>
-        </ul>
+        <p>Give your son a chance to experience the class, feel the excitement, and see what changes when Mishnayos finally clicks.</p>
+        <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
       </div>
     </section>
 
-    <section class="section" id="what-students-receive">
+    <section class="section dark" id="rabbi" aria-labelledby="rabbiTitle">
       <div class="wrap">
-        <div class="section-head">
-          <p class="eyebrow">WHAT STUDENTS RECEIVE</p>
-          <h2>Everything your child needs to stay connected.</h2>
+        <div class="rabbi-grid">
+          <div class="rabbi-copy">
+            <p class="eyebrow">Meet Rabbi Eli Scheller</p>
+            <h2 id="rabbiTitle">A storyteller your son will remember.</h2>
+            <p class="lead">Rabbi Eli Scheller isn&rsquo;t just another teacher. He&rsquo;s one of the most sought-after storytellers and speakers in the Jewish world &mdash; known for his humor, warmth, clarity, and ability to make Torah unforgettable.</p>
+            <p>His shiurim have reached audiences through TorahAnytime, 24Six, Loop, NakiRadio, Mishpacha Magazine, and live events across the world.</p>
+            <p>Now, through One Time Mishnayos, your son can learn directly from Rabbi Scheller every day &mdash; with excitement, accountability, and geshmak.</p>
+          </div>
+          <figure class="rabbi-photo">
+            <img src="/assets/one-time/rabbi/rabbi-eli-holding-book.jpg" width="1600" height="1067" alt="Rabbi Eli Scheller holding the One Time book" loading="lazy">
+          </figure>
         </div>
-        <div class="grid four">
-          <div class="receive-item">Daily live Mishnayos shiur</div>
-          <div class="receive-item">Clear live-class join details</div>
-          <div class="receive-item">Worksheets and review materials</div>
-          <div class="receive-item">Attendance tracking for parents</div>
-          <div class="receive-item">Progress path toward finishing Mishnayos</div>
-          <div class="receive-item">Student communication with the rabbi</div>
-          <div class="receive-item">Worldwide class energy</div>
-          <div class="receive-item">Clear structure between shiurim</div>
-        </div>
-      </div>
-    </section>
 
-    <section class="section" id="how-it-works">
-      <div class="wrap outcome-band">
-        <p class="eyebrow">HOW IT WORKS</p>
-        <h2>They don't just join a class. They join a mission.</h2>
-        <p>Over two and a half years, students move through Mishnayos with consistency, clarity, and excitement. The goal is not only to cover material. The goal is for kids to enjoy learning, stay accountable, and feel proud of their progress.</p>
-        <div class="button-row" style="justify-content: flex-start;">
-          <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
-        </div>
-      </div>
-    </section>
-
-    <section class="section paper" id="faq">
-      <div class="wrap">
-        <div class="section-head">
-          <p class="eyebrow">FAQ</p>
-          <h2>Quick answers before you start.</h2>
-        </div>
-        <div class="faq">
-          <details>
-            <summary>When does the program start?</summary>
-            <p>The new cycle starts from the beginning on Rosh Chodesh Elul.</p>
-          </details>
-          <details>
-            <summary>Is it live or recorded?</summary>
-            <p>The core experience is the live class. Review and follow-up materials help students keep learning between shiurim.</p>
-          </details>
-          <details>
-            <summary>Can parents track attendance?</summary>
-            <p>The immediate free-class signup captures your contact details for follow-up. Parent tracking is a later member experience and is not opened by this form.</p>
-          </details>
-          <details>
-            <summary>Can students contact the rabbi?</summary>
-            <p>Questions can be routed through the safe class follow-up process. A student portal account is not opened by the public signup.</p>
-          </details>
-          <details>
-            <summary>How long does it take to finish Mishnayos?</summary>
-            <p>The program is built to complete Mishnayos in about two and a half years.</p>
-          </details>
-          <details>
-            <summary>Is there a free trial?</summary>
-            <p>Yes. Families can start with 30 days free.</p>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <section class="start-section" id="next-step">
-      <div class="wrap funnel">
-        <div>
-          <p class="eyebrow">START FREE</p>
-          <h2>Start with the free class.</h2>
-          <p>Send your contact details and we will follow up with the current One Time free class details.</p>
-          <div class="button-row" style="justify-content: flex-start;">
-            <a class="button primary" href="#start-free" data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</a>
-            <a class="button dark" href="/rabbi-member" data-action-id="ACTION-ONETIME-MEMBER-LOGIN-LINK">Member Login</a>
+        <div class="press-band" aria-label="As seen through Jewish media and learning platforms">
+          <div class="press-track">
+            <span class="press-logo"><img src="/assets/one-time/press/torah-anytime.png" width="124" height="34" alt="TorahAnytime"></span>
+            <span class="press-logo"><img src="/assets/one-time/press/24six.png" width="124" height="34" alt="24Six"></span>
+            <span class="press-logo"><img src="/assets/one-time/press/the-loop.png" width="124" height="34" alt="The Loop"></span>
+            <span class="press-logo"><img src="/assets/one-time/press/naki.webp" width="124" height="34" alt="NakiRadio"></span>
+            <span class="press-logo"><img src="/assets/one-time/press/mishpacha.webp" width="124" height="34" alt="Mishpacha"></span>
+            <span class="press-logo" aria-hidden="true"><img src="/assets/one-time/press/torah-anytime.png" width="124" height="34" alt=""></span>
+            <span class="press-logo" aria-hidden="true"><img src="/assets/one-time/press/24six.png" width="124" height="34" alt=""></span>
+            <span class="press-logo" aria-hidden="true"><img src="/assets/one-time/press/the-loop.png" width="124" height="34" alt=""></span>
+            <span class="press-logo" aria-hidden="true"><img src="/assets/one-time/press/naki.webp" width="124" height="34" alt=""></span>
+            <span class="press-logo" aria-hidden="true"><img src="/assets/one-time/press/mishpacha.webp" width="124" height="34" alt=""></span>
           </div>
         </div>
-        <ul class="check-list">
-          <li>Free-class interest captured for the One Time team</li>
-          <li>Current class details routed through the approved follow-up path</li>
-          <li>No charge today</li>
-        </ul>
+      </div>
+    </section>
+
+    <section class="section paper" id="teaching" aria-labelledby="teachingTitle">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Teaching Torah Across The World</p>
+            <h2 id="teachingTitle">A class that feels alive before the first Mishnah begins.</h2>
+          </div>
+          <p>Large teaching moments, clear visuals, and a pace built for boys who need Torah to feel close, warm, and memorable.</p>
+        </div>
+
+        <div class="carousel-shell" data-carousel>
+          <div class="carousel-track" data-carousel-track>
+            <figure class="teaching-slide">
+              <div class="teaching-visual" role="img" aria-label="Replacement-ready visual slot for a verified Baltimore teaching photograph">
+                <span class="teaching-marker one" aria-hidden="true"></span>
+                <span class="teaching-marker two" aria-hidden="true"></span>
+                <span class="teaching-marker three" aria-hidden="true"></span>
+              </div>
+              <figcaption class="teaching-caption">
+                <span>Verified photo slot</span>
+                <strong>Baltimore teaching photograph.</strong>
+                <p>This slide is ready for the approved Baltimore asset once identity, location, and usage rights are confirmed.</p>
+              </figcaption>
+            </figure>
+            <figure class="teaching-slide">
+              <div class="teaching-visual" role="img" aria-label="Replacement-ready visual slot for a verified Flatbush or New York teaching photograph">
+                <span class="teaching-marker one" aria-hidden="true"></span>
+                <span class="teaching-marker two" aria-hidden="true"></span>
+                <span class="teaching-marker three" aria-hidden="true"></span>
+              </div>
+              <figcaption class="teaching-caption">
+                <span>Verified photo slot</span>
+                <strong>Flatbush or New York teaching photograph.</strong>
+                <p>This slide is ready for the approved New York-area asset once identity, location, and usage rights are confirmed.</p>
+              </figcaption>
+            </figure>
+            <figure class="teaching-slide">
+              <div class="teaching-visual" role="img" aria-label="Replacement-ready visual slot for a verified Florida teaching photograph">
+                <span class="teaching-marker one" aria-hidden="true"></span>
+                <span class="teaching-marker two" aria-hidden="true"></span>
+                <span class="teaching-marker three" aria-hidden="true"></span>
+              </div>
+              <figcaption class="teaching-caption">
+                <span>Verified photo slot</span>
+                <strong>Hollywood or Orlando teaching photograph.</strong>
+                <p>This slide is ready for an approved Florida asset once identity, location, and usage rights are confirmed.</p>
+              </figcaption>
+            </figure>
+          </div>
+          <div class="carousel-controls" aria-label="Teaching photo controls">
+            <button class="icon-button" type="button" aria-label="Previous teaching photo" data-carousel-prev data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-PREV">&lsaquo;</button>
+            <button class="icon-button" type="button" aria-label="Next teaching photo" data-carousel-next data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-NEXT">&rsaquo;</button>
+            <button class="icon-button" type="button" aria-label="Pause teaching photo carousel" data-carousel-pause data-action-id="ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE">||</button>
+          </div>
+          <div class="dots" aria-hidden="true">
+            <span class="dot active" data-dot></span>
+            <span class="dot" data-dot></span>
+            <span class="dot" data-dot></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section ice" id="gain" aria-labelledby="gainTitle">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">What He&rsquo;ll Gain</p>
+            <h2 id="gainTitle">Not just another class. A new relationship with learning.</h2>
+          </div>
+          <p>Designed for boys who can handle more when the learning is clear, alive, and connected to a real teacher.</p>
+        </div>
+
+        <div class="card-grid">
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">01</span>
+            <h3>He&rsquo;ll enjoy Mishnayos instead of just getting through it.</h3>
+            <p>Rabbi Scheller turns each Mishnah into a story, a question, and a point your son can remember later.</p>
+          </article>
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">02</span>
+            <h3>He&rsquo;ll feel part of a serious Torah rhythm.</h3>
+            <p>The live structure creates momentum without making learning feel heavy or impersonal.</p>
+          </article>
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">03</span>
+            <h3>He&rsquo;ll build confidence saying over what he learned.</h3>
+            <p>Clear takeaways help boys review, repeat, and feel proud that the Mishnah belongs to them.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section paper" id="receive" aria-labelledby="receiveTitle">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">What You Receive</p>
+            <h2 id="receiveTitle">A complete learning experience for home or school.</h2>
+          </div>
+          <p>Everything is shaped around a simple goal: your son should walk away loving the learning more than when he came in.</p>
+        </div>
+
+        <div class="card-grid receive">
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">L</span>
+            <h3>Live Mishnayos shiurim with Rabbi Eli Scheller.</h3>
+            <p>Direct learning with a teacher boys connect to.</p>
+          </article>
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">R</span>
+            <h3>Review-friendly clarity.</h3>
+            <p>Built so boys can remember and say over the main point.</p>
+          </article>
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">S</span>
+            <h3>Stories that make the Mishnah stick.</h3>
+            <p>Warm, memorable examples that turn content into connection.</p>
+          </article>
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">A</span>
+            <h3>Accountability without pressure.</h3>
+            <p>A real rhythm that keeps boys coming back.</p>
+          </article>
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">F</span>
+            <h3>Family-friendly access.</h3>
+            <p>Simple onboarding for parents who want a better daily learning option.</p>
+          </article>
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">C</span>
+            <h3>Classroom-ready structure.</h3>
+            <p>Helpful for schools that want energy, consistency, and a trusted Torah voice.</p>
+          </article>
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">G</span>
+            <h3>Geshmak-first teaching.</h3>
+            <p>The class is designed to make boys feel Torah is alive and enjoyable.</p>
+          </article>
+          <article class="info-card">
+            <span class="card-icon" aria-hidden="true">W</span>
+            <h3>Worldwide connection.</h3>
+            <p>Boys can join a serious Torah environment wherever they live.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark" id="how-it-works" aria-labelledby="howTitle">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">How It Works</p>
+            <h2 id="howTitle">Simple enough to start. Strong enough to keep going.</h2>
+          </div>
+          <p>No complicated public checkout or portal promise from this page. The first step is a clean signup, then the full onboarding flow collects what is needed.</p>
+        </div>
+
+        <div class="step-grid">
+          <article class="step">
+            <h3>Sign up with parent contact details.</h3>
+            <p>Quick capture asks only for the contact name, email, and optional phone number.</p>
+          </article>
+          <article class="step">
+            <h3>Choose family or school onboarding.</h3>
+            <p>After the first step, continue into the existing onboarding path for the right setup.</p>
+          </article>
+          <article class="step">
+            <h3>Receive the next class details.</h3>
+            <p>The signup creates a first-party follow-up record; it does not charge, send, or grant access automatically.</p>
+          </article>
+          <article class="step">
+            <h3>Your son joins the learning rhythm.</h3>
+            <p>Rabbi Scheller brings Mishnayos to life with warmth, clarity, and accountability.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section audience-section" id="who" aria-labelledby="whoTitle">
+      <div class="wrap audience-panel">
+        <div class="audience-copy">
+          <p class="eyebrow">Who It&rsquo;s For</p>
+          <h2 id="whoTitle">For parents and schools who want boys to love learning.</h2>
+          <p>One Time Mishnayos is built for families, rebbeim, and schools looking for a serious, warm, exciting way to bring Mishnayos into a boy&rsquo;s daily life.</p>
+          <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
+        </div>
+        <div class="audience-cards">
+          <article class="audience-card">
+            <span class="card-icon" aria-hidden="true">P</span>
+            <div>
+              <h3>Parents who want Torah to feel exciting at home.</h3>
+              <p>A simple entry point for boys who need the right teacher and rhythm.</p>
+            </div>
+          </article>
+          <article class="audience-card">
+            <span class="card-icon" aria-hidden="true">S</span>
+            <div>
+              <h3>Schools that want a strong supplemental shiur.</h3>
+              <p>A clear option for classrooms that need energy, consistency, and trusted delivery.</p>
+            </div>
+          </article>
+          <article class="audience-card">
+            <span class="card-icon" aria-hidden="true">B</span>
+            <div>
+              <h3>Boys who can love Torah when it is taught with life.</h3>
+              <p>For students ready to hear the Mishnah in a way that feels close and memorable.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="modal-backdrop" aria-hidden="true" data-signup-modal>
+      <div class="signup-dialog" role="dialog" aria-modal="true" aria-labelledby="signupTitle" aria-describedby="signupDescription">
+        <div class="modal-head">
+          <div>
+            <h2 id="signupTitle">Sign Up Now</h2>
+            <p id="signupDescription">Start with parent contact details. The next step asks whether this is for a family or a school.</p>
+          </div>
+          <button class="icon-button modal-close" type="button" aria-label="Close signup modal" data-modal-close data-action-id="ACTION-ONETIME-SIGNUP-MODAL-CLOSE">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form class="form-grid" data-signup-form novalidate>
+            <label>
+              Parent or contact name
+              <input type="text" name="parent_name" autocomplete="name" required data-required-field>
+              <span class="field-error" data-error-for="parent_name">Enter the parent or contact name.</span>
+            </label>
+            <label>
+              Email
+              <input type="email" name="email" autocomplete="email" inputmode="email" required data-required-field>
+              <span class="field-error" data-error-for="email">Enter a valid email address.</span>
+            </label>
+            <label>
+              Phone <span>Optional</span>
+              <input type="tel" name="phone" autocomplete="tel" inputmode="tel">
+            </label>
+            <p class="form-note">This page records a first-party interest request only. It does not charge, send a message, create a meeting, or grant access automatically.</p>
+            <button class="button primary full" type="submit" data-action-id="ACTION-ONETIME-INTEREST-FORM">Sign Up Now</button>
+            <div class="form-status" role="status" aria-live="polite" data-form-status></div>
+          </form>
+
+          <div class="success-step" data-success-step>
+            <h3>Choose the right onboarding path.</h3>
+            <p class="form-note">Your first step was captured. Tell us which setup fits, then continue to the existing onboarding page.</p>
+            <div class="choice-grid" role="radiogroup" aria-label="Signup type">
+              <label class="choice-card">
+                <input type="radio" name="signup_audience" value="family">
+                <span>
+                  <strong>Family</strong>
+                  <span>For a parent signing up a son at home.</span>
+                </span>
+              </label>
+              <label class="choice-card">
+                <input type="radio" name="signup_audience" value="school">
+                <span>
+                  <strong>School</strong>
+                  <span>For a rebbi, principal, or school contact.</span>
+                </span>
+              </label>
+            </div>
+            <button class="button primary full" type="button" data-continue-onboarding data-action-id="ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING" disabled>Continue</button>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer class="one-time-site-footer" data-one-time-canonical-footer>
-    <div class="wrap footer-row">
+  <footer class="footer">
+    <div class="wrap footer-inner">
       <div>
-        <strong>One Time Mishnayos</strong>
-        <p>Copyright <span id="copyrightYear">2026</span> One Time Mishnayos. Live Mishnayos with Rabbi Scheller.</p>
+        <img src="/assets/one-time/brand/one-time-logo-white.webp" width="118" height="74" alt="One Time">
+        <p>One Time Mishnayos with Rabbi Eli Scheller.</p>
       </div>
-      <nav class="footer-links" aria-label="One Time footer navigation">
-        <a href="/one-time" aria-current="page">One Time</a>
+      <nav class="footer-links" aria-label="Footer">
         <a href="/one-time/privacy.html">Privacy</a>
         <a href="/one-time/terms.html">Terms</a>
         <a href="/rabbi-member">Member Login</a>
@@ -1002,44 +1774,279 @@
     </div>
   </footer>
 
+  <script src="/js/bna-helper-knowledge.js" defer></script>
+  <script src="/js/bna-bot-widget.js" defer></script>
   <script>
-    const form = document.getElementById('interestForm');
-    const status = document.getElementById('interestStatus');
-    const copyrightYear = document.getElementById('copyrightYear');
+    (() => {
+      const navShell = document.querySelector('[data-nav-shell]');
+      const menuButton = document.querySelector('[data-menu-button]');
+      const signupTriggers = Array.from(document.querySelectorAll('[data-signup-trigger]'));
+      const modal = document.querySelector('[data-signup-modal]');
+      const dialog = modal?.querySelector('.signup-dialog');
+      const closeButton = modal?.querySelector('[data-modal-close]');
+      const form = modal?.querySelector('[data-signup-form]');
+      const status = modal?.querySelector('[data-form-status]');
+      const successStep = modal?.querySelector('[data-success-step]');
+      const continueButton = modal?.querySelector('[data-continue-onboarding]');
+      const audienceRadios = modal ? Array.from(modal.querySelectorAll('input[name="signup_audience"]')) : [];
+      const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      let lastFocused = null;
+      let latestLead = null;
 
-    if (copyrightYear) copyrightYear.textContent = String(new Date().getFullYear());
-
-    function formPayload(formElement) {
-      const data = new FormData(formElement);
-      return Object.fromEntries(data.entries());
-    }
-
-    form?.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      status.textContent = 'Saving your request...';
-      const button = form.querySelector('button[type="submit"]');
-      button.disabled = true;
-      try {
-        const payload = formPayload(form);
-        if (payload.consent !== 'yes') throw new Error('Consent is required before submitting.');
-        const response = await fetch('/api/one-time/interest', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Could not save your request');
-        status.textContent = data.message || "You're on the list. We will follow up with the current One Time class details.";
-        form.reset();
-      } catch (error) {
-        status.textContent = error.message || 'Could not save your request.';
-      } finally {
-        button.disabled = false;
+      function setMenu(open) {
+        if (!navShell || !menuButton) return;
+        navShell.classList.toggle('open', open);
+        menuButton.setAttribute('aria-expanded', String(open));
+        menuButton.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
       }
-    });
+
+      menuButton?.addEventListener('click', () => {
+        setMenu(!navShell?.classList.contains('open'));
+      });
+
+      navShell?.addEventListener('click', (event) => {
+        if (event.target.closest('a')) setMenu(false);
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!navShell?.classList.contains('open')) return;
+        if (event.target.closest('[data-nav-shell]') || event.target.closest('[data-menu-button]')) return;
+        setMenu(false);
+      });
+
+      function showStatus(type, message) {
+        if (!status) return;
+        status.className = `form-status visible ${type || ''}`.trim();
+        status.textContent = message;
+      }
+
+      function clearErrors() {
+        modal?.querySelectorAll('.field-error.visible').forEach((node) => node.classList.remove('visible'));
+        modal?.querySelectorAll('[aria-invalid="true"]').forEach((node) => node.removeAttribute('aria-invalid'));
+      }
+
+      function showFieldError(name) {
+        const input = form?.elements[name];
+        const error = modal?.querySelector(`[data-error-for="${name}"]`);
+        input?.setAttribute('aria-invalid', 'true');
+        error?.classList.add('visible');
+      }
+
+      function isValidEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+      }
+
+      function buildMetadata() {
+        const params = new URLSearchParams(window.location.search);
+        const utm = {};
+        params.forEach((value, key) => {
+          if (/^(utm_|gclid|fbclid)/i.test(key)) utm[key] = value;
+        });
+        return {
+          raw_intake_id: 'RAW-20260710-007',
+          addendum_raw_intake_id: 'RAW-20260710-008',
+          route: window.location.pathname,
+          page_hash: window.location.hash || '',
+          referrer: document.referrer || '',
+          utm,
+          viewport: {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            device_scale_factor: window.devicePixelRatio || 1
+          },
+          external_write_performed: false
+        };
+      }
+
+      function openModal(trigger) {
+        if (!modal || !dialog) return;
+        lastFocused = trigger || document.activeElement;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+        const firstInput = modal.querySelector('input[name="parent_name"]');
+        window.setTimeout(() => firstInput?.focus(), 40);
+      }
+
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+      }
+
+      signupTriggers.forEach((trigger) => {
+        trigger.addEventListener('click', (event) => {
+          event.preventDefault();
+          openModal(trigger);
+        });
+      });
+
+      closeButton?.addEventListener('click', closeModal);
+
+      modal?.addEventListener('click', (event) => {
+        if (event.target === modal) closeModal();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          if (modal?.classList.contains('open')) closeModal();
+          setMenu(false);
+        }
+
+        if (event.key !== 'Tab' || !modal?.classList.contains('open')) return;
+        const focusable = Array.from(modal.querySelectorAll(focusableSelector)).filter((node) => node.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+
+      form?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearErrors();
+        const formData = new FormData(form);
+        const parentName = String(formData.get('parent_name') || '').trim();
+        const email = String(formData.get('email') || '').trim().toLowerCase();
+        const phone = String(formData.get('phone') || '').trim();
+        let invalid = false;
+
+        if (!parentName) {
+          showFieldError('parent_name');
+          invalid = true;
+        }
+        if (!isValidEmail(email)) {
+          showFieldError('email');
+          invalid = true;
+        }
+        if (invalid) {
+          showStatus('error', 'Please fix the highlighted fields.');
+          const firstInvalid = form.querySelector('[aria-invalid="true"]');
+          firstInvalid?.focus();
+          return;
+        }
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        showStatus('', 'Capturing your signup...');
+
+        const payload = {
+          parent_name: parentName,
+          email,
+          phone,
+          audience: 'parents',
+          preferred_class_format: 'live_mishnayos_intro',
+          source_landing_page: window.location.pathname,
+          consent: true,
+          notes: 'Public One Time Mishnayos landing page quick capture. Continue onboarding asks family or school.',
+          metadata: buildMetadata()
+        };
+
+        try {
+          const response = await fetch('/api/one-time/interest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || result.success === false) {
+            throw new Error(result.error || 'Could not capture the signup.');
+          }
+          latestLead = {
+            parent_name: parentName,
+            email,
+            phone,
+            crm_lead_id: result.crm_lead_id || result.lead?.crm_lead_id || '',
+            product_lead_id: result.lead?.id || result.product_lead_id || ''
+          };
+          try {
+            window.sessionStorage.setItem('oneTimeSignupLead', JSON.stringify(latestLead));
+          } catch {}
+          form.style.display = 'none';
+          successStep?.classList.add('active');
+          audienceRadios.forEach((radio) => { radio.checked = false; });
+          if (continueButton) continueButton.disabled = true;
+          showStatus('', '');
+          window.setTimeout(() => audienceRadios[0]?.focus(), 40);
+        } catch (error) {
+          showStatus('error', error.message || 'Could not capture the signup.');
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+
+      audienceRadios.forEach((radio) => {
+        radio.addEventListener('change', () => {
+          if (continueButton) continueButton.disabled = !audienceRadios.some((item) => item.checked);
+        });
+      });
+
+      continueButton?.addEventListener('click', () => {
+        const selected = audienceRadios.find((item) => item.checked)?.value;
+        if (!selected) return;
+        const params = new URLSearchParams({
+          audience: selected,
+          source: 'one_time_public_landing',
+          lead_hint: 'captured'
+        });
+        if (latestLead?.product_lead_id) params.set('product_lead_id', latestLead.product_lead_id);
+        if (latestLead?.crm_lead_id) params.set('crm_lead_id', latestLead.crm_lead_id);
+        window.location.href = `/one-time-preview?${params.toString()}`;
+      });
+
+      const carousel = document.querySelector('[data-carousel]');
+      if (carousel) {
+        const track = carousel.querySelector('[data-carousel-track]');
+        const slides = Array.from(carousel.querySelectorAll('.teaching-slide'));
+        const dots = Array.from(carousel.querySelectorAll('[data-dot]'));
+        const prev = carousel.querySelector('[data-carousel-prev]');
+        const next = carousel.querySelector('[data-carousel-next]');
+        const pause = carousel.querySelector('[data-carousel-pause]');
+        let index = 0;
+        let paused = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let timer = null;
+
+        function render() {
+          if (track) track.style.transform = `translateX(-${index * 100}%)`;
+          dots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === index));
+        }
+
+        function go(delta) {
+          index = (index + delta + slides.length) % slides.length;
+          render();
+        }
+
+        function schedule() {
+          window.clearInterval(timer);
+          if (!paused) timer = window.setInterval(() => go(1), 5600);
+        }
+
+        prev?.addEventListener('click', () => {
+          go(-1);
+          schedule();
+        });
+        next?.addEventListener('click', () => {
+          go(1);
+          schedule();
+        });
+        pause?.addEventListener('click', () => {
+          paused = !paused;
+          pause.setAttribute('aria-label', paused ? 'Play teaching photo carousel' : 'Pause teaching photo carousel');
+          pause.textContent = paused ? '>' : '||';
+          schedule();
+        });
+
+        render();
+        schedule();
+      }
+    })();
   </script>
-  <script src="/js/bna-helper-knowledge.js"></script>
-  <script src="/js/bna-bot-widget.js"></script>
-  <script src="/js/app-select.js"></script>
 </body>
 </html>

@@ -589,6 +589,41 @@
       ]
     },
     {
+      "route": "/one-time-preview",
+      "surface": "one_time_public_preview_onboarding",
+      "access": "public_preview",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
+      "expected_logged_in_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
+      "privacy_risk": "normal",
+      "security_expectation": "Preview-only One Time continuation: no live checkout, no payment write, no access grant, no email or WhatsApp send, and no private member/student/provider records are exposed.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/preview/one-time-mishnah",
+      "surface": "one_time_public_preview_onboarding_alias",
+      "access": "public_preview",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "canonical_target": "/one-time-preview",
+      "expected_logged_out_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
+      "expected_logged_in_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
+      "privacy_risk": "normal",
+      "security_expectation": "Legacy preview alias only: serves the same no-write One Time preview onboarding page and must not start checkout, grant access, or expose private records.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/one-time/campaign",
       "surface": "one_time_public_campaign_timer_api",
       "access": "public",

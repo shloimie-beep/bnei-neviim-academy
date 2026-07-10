@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-10T00:00:00+03:00",
+  "updated_at": "2026-07-10T12:00:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -31,11 +31,11 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-HELPER-OPEN",
-      "label": "Robot Scheller",
+      "label": "Robot Scheller WhatsApp Assistant",
       "surface": "one_time_public_landing",
       "route": "/one-time",
       "selector_hint": "body.bna-assistant-surface-one-time-public .bna-bot-launcher",
-      "expected_behavior": "Opens Robot Scheller, Rabbi Scheller's One Time scoped public digital assistant, with concise parent-facing copy and free-class/current-class/schedule/Rabbi/member-login choices. Internal scope guardrails remain One Time only and do not expose BNA Academy or private portal data.",
+      "expected_behavior": "Opens the bottom-corner Robot Scheller public assistant for Rabbi Scheller's One Time public page, with tooltip/ARIA text that identifies it as the WhatsApp assistant entry. Internal scope guardrails remain One Time only and do not expose BNA Academy or private portal data.",
       "permission": "anonymous public visitor",
       "status": "active",
       "test": {
@@ -50,7 +50,7 @@
     },
     {
       "action_id": "ACTION-ONETIME-PUBLIC-WHATSAPP",
-      "label": "WhatsApp Robot Scheller",
+      "label": "Open WhatsApp Assistant",
       "surface": "one_time_public_landing",
       "route": "/one-time",
       "selector_hint": "a[href^=\"/api/one-time/public-whatsapp/redirect\"], helper action href /api/one-time/public-whatsapp/redirect",
@@ -364,16 +364,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
-      "label": "Join the Free Class",
+      "label": "Sign Up Now",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "a[href=\"#start-free\"].button.primary",
-      "expected_behavior": "Scrolls to the first-party interest form for free-class/free-Zoom follow-up; does not create checkout, send messages, create a Zoom meeting, open a portal account, or grant access.",
+      "selector_hint": "[data-signup-trigger][data-action-id=\"ACTION-ONETIME-JOIN-SHIR-CTA\"]",
+      "expected_behavior": "Opens the accessible first-party signup modal; does not create checkout, send messages, create a Zoom meeting, open a portal account, or grant access.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "static_and_browser",
-        "expected_result": "Primary CTA points to #start-free and no payment, send, Zoom creation, or access grant fires."
+        "expected_result": "Primary CTA text is Sign Up Now, opens the modal, and no payment, send, Zoom creation, or access grant fires."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -383,13 +383,14 @@
     },
     {
       "action_id": "ACTION-ONETIME-WATCH-RABBI-CTA",
-      "label": "See How It Works",
+      "label": "Removed secondary CTA",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "a[href=\"#how-it-works\"].button.secondary",
+      "selector_hint": "removed from /one-time public landing",
       "expected_behavior": "Scrolls to the public explanation section without exposing private member-library videos or TEST review links.",
       "permission": "public",
-      "status": "active",
+      "status": "archived_removed_from_public_landing",
+      "disabled_reason": "Removed by RAW-20260710-007. Public landing page now uses Sign Up Now as the only signup CTA text.",
       "test": {
         "type": "static_and_browser",
         "expected_result": "Secondary CTA targets #how-it-works and public page uses placeholder hero media until the final promo asset is approved."
@@ -402,13 +403,14 @@
     },
     {
       "action_id": "ACTION-ONETIME-CAMPAIGN-TIMER-READBACK",
-      "label": "Read Campaign Timer",
+      "label": "Removed campaign timer",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "[data-countdown]",
+      "selector_hint": "removed from /one-time public landing",
       "expected_behavior": "Reads /api/one-time/campaign for server time and the configured deadline; if no deadline is configured it shows an operator-decision state instead of a fake reset timer.",
       "permission": "public",
-      "status": "active",
+      "status": "archived_removed_from_public_landing",
+      "disabled_reason": "Removed by RAW-20260710-007. The rebuilt public landing page does not show a campaign timer.",
       "test": {
         "type": "static_and_api_guarded",
         "expected_result": "/api/one-time/campaign is read-only and exposes ONE_TIME_CAMPAIGN_DEADLINE_AT dependency without external writes."
@@ -422,16 +424,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-INTEREST-FORM",
-      "label": "Save My Spot",
+      "label": "Sign Up Now",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "#interestForm button[type=\"submit\"]",
-      "expected_behavior": "Creates a first-party One Time product lead and CRM lead from the public free-class signup form with parent name, email, optional student name, optional phone/WhatsApp, hidden consent, source metadata, and idempotent blocked email/WhatsApp transactional follow-up timeline records; no checkout, external send, live charge, portal account, Zoom meeting creation, or access grant.",
+      "selector_hint": "[data-signup-form] button[type=\"submit\"]",
+      "expected_behavior": "Creates a first-party One Time product lead and CRM lead from the public signup modal with required parent/contact name, required email, optional phone, consent, route/referrer/UTM metadata, and idempotent blocked email/WhatsApp transactional follow-up timeline records; no student name is collected in quick capture, and no checkout, external send, live charge, portal account, Zoom meeting creation, or access grant occurs.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "api_guarded",
-        "expected_result": "Posts parent name, email, optional student name, optional phone/WhatsApp, hidden consent, and source metadata to /api/one-time/interest and returns a CRM-recorded no-checkout/no-send/no-access-grant confirmation with blocked transactional follow-up attempts visible in the CRM timeline."
+        "expected_result": "Posts parent/contact name, email, optional phone, consent, and source metadata to /api/one-time/interest and returns a CRM-recorded no-checkout/no-send/no-access-grant confirmation with blocked transactional follow-up attempts visible in the CRM timeline."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -457,6 +459,116 @@
         "GOAL-CORE-002",
         "GOAL-CORE-003",
         "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PUBLIC-MOBILE-MENU",
+      "label": "Mobile Navigation",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-PUBLIC-MOBILE-MENU\"]",
+      "expected_behavior": "Toggles the mobile navigation panel, updates aria-expanded, and closes on section-link click, outside click, or Escape without navigating to private data.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "browser_static",
+        "expected_result": "At mobile widths the menu opens, exposes only public section links plus Member Login and Sign Up Now, and closes predictably."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-SIGNUP-MODAL-CLOSE",
+      "label": "Close signup modal",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-SIGNUP-MODAL-CLOSE\"]",
+      "expected_behavior": "Closes the signup modal, restores body scroll, and returns keyboard focus to the triggering Sign Up Now control.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "browser_accessibility",
+        "expected_result": "Escape, backdrop click, and close button dismiss the dialog and preserve focus order."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING",
+      "label": "Continue",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING\"]",
+      "expected_behavior": "After successful first-party capture and a family/school choice, continues to /one-time-preview with non-secret query parameters for the existing onboarding flow.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "browser_static",
+        "expected_result": "Button is disabled until family or school is selected and then navigates to /one-time-preview with the chosen audience."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TEACHING-CAROUSEL-PREV",
+      "label": "Previous teaching photo",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-PREV\"]",
+      "expected_behavior": "Moves the public teaching photo carousel to the previous verified repo asset without loading private media.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "browser_static",
+        "expected_result": "Carousel changes slide and does not expose private classroom, student, or provider-only media."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TEACHING-CAROUSEL-NEXT",
+      "label": "Next teaching photo",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-NEXT\"]",
+      "expected_behavior": "Moves the public teaching photo carousel to the next verified repo asset without loading private media.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "browser_static",
+        "expected_result": "Carousel changes slide and does not expose private classroom, student, or provider-only media."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE",
+      "label": "Pause teaching photo carousel",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE\"]",
+      "expected_behavior": "Pauses or resumes the public teaching photo carousel and updates the accessible label.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "browser_accessibility",
+        "expected_result": "Pause toggles carousel playback and updates aria-label for assistive technology."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
         "GOAL-CORE-014"
       ]
     },

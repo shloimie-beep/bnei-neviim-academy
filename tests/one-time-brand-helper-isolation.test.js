@@ -11,9 +11,10 @@ const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf
 
 test('One Time landing mounts helper without BNA nav or language toggle chrome', () => {
   assert.match(oneTime, /<html lang="en" data-app-select-surface="one-time" data-one-time-current-masechta="Maseches Berachos">/);
-  assert.match(oneTime, /<script src="\/js\/bna-helper-knowledge\.js"><\/script>\s*<script src="\/js\/bna-bot-widget\.js"><\/script>\s*<script src="\/js\/app-select\.js"><\/script>/);
+  assert.match(oneTime, /<script src="\/js\/bna-helper-knowledge\.js" defer><\/script>\s*<script src="\/js\/bna-bot-widget\.js" defer><\/script>/);
   assert.doesNotMatch(oneTime, /data-bna-site-nav/);
   assert.doesNotMatch(oneTime, /\/js\/bna-site-nav\.js/);
+  assert.doesNotMatch(oneTime, /\/js\/app-select\.js/);
   assert.doesNotMatch(oneTime, /id="languageToggle"|data-language-toggle/);
 });
 
@@ -29,14 +30,14 @@ test('One Time public helper has separate surface, copy, actions, and black-yell
   assert.match(widget, /Rabbi Scheller's digital assistant/);
   assert.match(widget, /ONE_TIME_PUBLIC_FIRST_NUDGE_DELAY_MS = 10000/);
   assert.match(widget, /ONE_TIME_PUBLIC_SECOND_NUDGE_DELAY_MS = 20000/);
-  assert.match(widget, /Want the current free-class details/);
-  assert.match(widget, /We are up to \$\{oneTimeCurrentMasechta\(\)\} now\. It is a great time to join/);
+  assert.match(widget, /help signing up/);
+  assert.match(widget, /Leave the minimum details and the One Time team will follow up/);
+  assert.match(widget, /Sign Up Now/);
+  assert.match(widget, /type: 'signup'/);
   assert.match(widget, /Speak to Rabbi Scheller/);
-  assert.match(widget, /Join the free class/);
   assert.match(widget, /Current class information/);
-  assert.match(widget, /WhatsApp Robot Scheller/);
+  assert.match(widget, /Open WhatsApp/);
   assert.match(widget, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
-  assert.match(widget, /current free-class details/);
   assert.match(widget, /bna-assistant-surface-one-time-public/);
   assert.match(widget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher/);
 
@@ -45,8 +46,10 @@ test('One Time public helper has separate surface, copy, actions, and black-yell
     widget.indexOf('function fallbackPublicHelperData()')
   );
   assert.match(oneTimePublicDataBlock, /Robot Scheller/);
-  assert.match(oneTimePublicDataBlock, /current free-class details/);
+  assert.match(oneTimePublicDataBlock, /Sign Up Now/);
+  assert.match(oneTimePublicDataBlock, /type: 'signup'/);
   assert.match(oneTimePublicDataBlock, /oneTimeJoinMomentCopy\(\)/);
+  assert.doesNotMatch(oneTimePublicDataBlock, /Join the free class/);
   assert.doesNotMatch(oneTimePublicDataBlock, /approved free Zoom/);
   assert.doesNotMatch(oneTimePublicDataBlock, /Do you want your son to love Torah/);
   assert.doesNotMatch(oneTimePublicDataBlock, /I only answer public One Time questions/);
@@ -121,9 +124,9 @@ test('One Time public helper launcher is registered as a visible action', () => 
   const action = actionRegistry.actions.find((item) => item.action_id === 'ACTION-ONETIME-PUBLIC-HELPER-OPEN');
   assert.ok(action);
   assert.equal(action.route, '/one-time');
-  assert.equal(action.label, 'Robot Scheller');
-  assert.match(action.expected_behavior, /concise parent-facing copy/);
-  assert.match(action.expected_behavior, /free-class\/current-class\/schedule\/Rabbi\/member-login choices/);
+  assert.equal(action.label, 'Robot Scheller WhatsApp Assistant');
+  assert.match(action.expected_behavior, /bottom-corner Robot Scheller public assistant/);
+  assert.match(action.expected_behavior, /WhatsApp assistant entry/);
   assert.match(action.expected_behavior, /One Time only/);
 });
 
@@ -131,14 +134,14 @@ test('One Time public WhatsApp action is registry-covered and no-send at runtime
   const action = actionRegistry.actions.find((item) => item.action_id === 'ACTION-ONETIME-PUBLIC-WHATSAPP');
   assert.ok(action);
   assert.equal(action.route, '/one-time');
-  assert.equal(action.label, 'WhatsApp Robot Scheller');
+  assert.equal(action.label, 'Open WhatsApp Assistant');
   assert.match(action.handler, /\/api\/one-time\/public-whatsapp\/redirect/);
   assert.match(action.status, /blocked_external_setup_until_runtime_number_configured/);
   assert.match(action.expected_behavior, /ONE_TIME_PUBLIC_WHATSAPP_NUMBER/);
   assert.match(action.expected_behavior, /performs no WhatsApp send by itself/);
-  assert.match(oneTime, /ACTION-ONETIME-PUBLIC-WHATSAPP/);
-  assert.match(oneTime, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
+  assert.doesNotMatch(oneTime, /ACTION-ONETIME-PUBLIC-WHATSAPP/);
   assert.match(widget, /\/api\/one-time\/public-whatsapp\/redirect\?intent=current_info/);
+  assert.match(widget, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
   assert.match(server, /const ONE_TIME_PUBLIC_WHATSAPP_NUMBER/);
   assert.match(server, /app\.get\(\['\/api\/one-time\/public-whatsapp', '\/api\/bna\/one-time\/public-whatsapp'\]/);
   assert.match(server, /full_number_returned: false/);
