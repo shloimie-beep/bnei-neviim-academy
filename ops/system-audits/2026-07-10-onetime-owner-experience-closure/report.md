@@ -8,10 +8,10 @@ Production target: `https://join.onetimeonetime.com`
 ## Status
 
 This batch is implemented, pushed, deployed, and live-smoked for the scoped
-One Time brand/copy, helper placement, and evidence-guardrail repairs. Full
-production launch is still not complete because external setup, Telegram live
-delivery proof, readable Operations content review, and Agent Mode proof remain
-blocked outside this code batch.
+One Time brand/copy, helper placement, evidence-guardrail repairs, and readable
+redacted Operations content review. Full production launch is still not
+complete because external setup, Telegram live delivery proof, and Agent Mode
+proof remain blocked outside this code batch.
 
 ## Requirement Status
 
@@ -19,7 +19,7 @@ blocked outside this code batch.
 |---|---|---|
 | `REQ-20260710-008` | Done - deployed/live-smoked | Standalone visible `OneTime` and `OneTimeOneTime` labels were removed from active public/config/source/script/test/doc surfaces; canonical labels now use `One Time`, `One Time Mishnayos`, and internal `One Time Mishnah Class`. Commit `98e49080` deployed to One Time Railway deployment `f7043570-5ded-4c1c-8109-4475f9cd11ae`; local visual audit captured 140 screenshots with 0 findings, and live visual readback captured 110 screenshots with 0 findings on reachable routes. |
 | `REQ-20260710-010` | Done - deployed/live-smoked | `scripts/smoke-one-time-shared-review-live.mjs` now uses `.hero-media`, and `scripts/validate-product-quality-packets.mjs` only validates real PQC schema files/objects. `npm run pqc:validate`, `npm run watchdog:actions`, `npm run watchdog:protocol-drift`, and `npm run audit:governance` reran before deploy; live shared-review and visual readback smokes passed after deploy. |
-| `REQ-20260710-011` | Blocked / review-limited | Authenticated local Operations routes loaded with env auth and passed no-overflow checks, but the current screenshot redaction blurs too much content to prove a full content-level manual review. Exact next action: run a readable redacted Operations review or browser-takeover review that preserves labels, hierarchy, actions, and state while redacting private values. |
+| `REQ-20260710-011` | Done - live readable redacted review | Live authenticated Operations routes loaded on `https://join.onetimeonetime.com` with One Time Railway auth and readable redaction. The audit captured 140 screenshots, skipped 0 checks, found 0 automated findings, and preserved labels, hierarchy, action rails, counters, scope banners, and no-send/no-charge guardrails while masking private values. Evidence: `ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md` and `ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md`. |
 | `REQ-20260710-012` | Blocked - Agent Mode runner required | Prompt creation is not proof. Exact next action: run `rabbi-telegram-helper-ticket-smoke` and `rabbi-helper-tool-scope-map` in Agent Mode and save/read back `AGR-*` PASS/FAIL/BLOCKED results. |
 
 ## Local Verification
@@ -32,11 +32,11 @@ blocked outside this code batch.
 - PASS `npm run watchdog:actions`: 0 findings.
 - PASS `npm run watchdog:protocol-drift`: 0 findings.
 - PASS `npm run audit:governance`: report generated at
-  `ops/audit-governance/2026-07-10T11-22-48-372Z-audit-governance.md`.
-  It still reports older repo-wide audit debt, but this closeout batch is
-  mapped through `REQ-20260710-008`, `REQ-20260710-010`,
-  `REQ-20260710-011`, `REQ-20260710-012`, the refreshed matrices, ledger, and
-  changelog.
+  `ops/audit-governance/2026-07-10T11-47-14-228Z-audit-governance.md`.
+  It still reports older repo-wide audit debt, but untracked audit packages
+  are `_None._`; this closeout batch is mapped through `REQ-20260710-008`,
+  `REQ-20260710-010`, `REQ-20260710-011`, `REQ-20260710-012`, the refreshed
+  matrices, ledger, and changelog.
 - PASS local One Time visual audit:
   `ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md`
   with 9 routes, 5 viewports, 140 screenshots, 0 skipped checks, and 0
@@ -74,6 +74,11 @@ blocked outside this code batch.
   `ops/ui-audits/2026-07-10-onetime-brand-normalization-live-readback/report.md`
   with 110 screenshots, 0 findings, and 10 Operations checks skipped because
   Operations login did not succeed.
+- PASS live readable redacted Operations audit:
+  `ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md` with
+  140 screenshots, 0 skipped checks, 0 automated findings, and One Time Railway
+  Operations auth. Manual review note:
+  `ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md`.
 - PASS production readiness snapshot generated:
   `ops/production-readiness/latest-production-readiness-snapshot.md`.
   Snapshot result remains `not_production_complete` because full launch still
@@ -88,17 +93,14 @@ blocked outside this code batch.
   was performed.
 - The public domain/email value `onetimeonetime.com` is intentionally unchanged
   where it is a real technical identifier.
-- Operations screenshots remain local/redacted evidence only; private values
-  must not be committed.
+- Operations screenshots are readable redacted evidence only; private values
+  are masked before commit while labels, hierarchy, and actions remain visible.
 
 ## Remaining Before Full Goal Done
 
-1. `REQ-20260710-011`: run a readable redacted Operations review or browser
-   takeover preserving labels, hierarchy, actions, and state while redacting
-   private values.
-2. `REQ-20260710-012`: run `rabbi-telegram-helper-ticket-smoke` and
+1. `REQ-20260710-012`: run `rabbi-telegram-helper-ticket-smoke` and
    `rabbi-helper-tool-scope-map` in Agent Mode and save/read back `AGR-*`
    PASS/FAIL/BLOCKED results.
-3. Full One Time production launch remains gated by the production readiness
+2. Full One Time production launch remains gated by the production readiness
    snapshot: Stripe/WAPI/campaign setup, Telegram live delivery proof, and
    exact approval gates are outside this local UI/code batch.

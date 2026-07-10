@@ -4,7 +4,7 @@
   "raw_id": "RAW-20260710-003",
   "register_path": "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
   "production_target": "https://join.onetimeonetime.com",
-  "status": "deployed_live_verified_known_blockers",
+  "status": "deployed_live_verified_agent_mode_blocked",
   "requirements": [
     {
       "id": "REQ-20260710-008",
@@ -18,9 +18,12 @@
     },
     {
       "id": "REQ-20260710-011",
-      "status": "blocked_review_limited",
-      "summary": "Authenticated local Operations layout proof passed, but current screenshot redaction is too blurred for full readable content-level review.",
-      "next_action": "Run readable redacted Operations review or browser-takeover review preserving labels, hierarchy, actions, and state while redacting private values."
+      "status": "done_live_readable_redacted_review",
+      "summary": "Live authenticated Operations routes loaded with One Time Railway auth and readable redaction; 140 screenshots were captured with 0 skipped checks and 0 automated findings, and manual inspection confirmed labels, hierarchy, actions, counters, scope banners, and no-send/no-charge guardrails stayed readable while private values were masked.",
+      "evidence": [
+        "ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md",
+        "ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md"
+      ]
     },
     {
       "id": "REQ-20260710-012",
@@ -34,6 +37,8 @@
     "canonical_journey": "ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/report.md",
     "provider_crm_layout": "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
     "shared_review_live_stale_selector_repaired": "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
+    "operations_readable_live_audit": "ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md",
+    "operations_readable_manual_review": "ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md",
     "pqc_validation": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
     "protocol_drift": "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
   },
@@ -45,10 +50,12 @@
     "PASS npm run pqc:validate 67/67",
     "PASS npm run watchdog:actions finding_count 0",
     "PASS npm run watchdog:protocol-drift findings 0",
-    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T11-22-48-372Z-audit-governance.md with older repo-wide debt still present",
+    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T11-47-14-228Z-audit-governance.md with older repo-wide debt still present and untracked audit packages none",
     "PASS local visual audit 9 routes x 5 viewports, 140 screenshots, 0 findings",
     "PASS local canonical journey smoke",
     "PASS local provider CRM layout smoke",
+    "PASS live readable redacted Operations audit 140 screenshots, 0 skipped checks, 0 findings",
+    "PASS manual review of desktop/mobile Operations overview and email inbox readable redacted screenshots",
     "PASS no standalone visible OneTime/OneTimeOneTime brand grep in active checked surfaces"
   ],
   "deployment": {
@@ -68,11 +75,13 @@
       "ops/live-smokes/2026-07-10T11-27-49-452Z-one-time-operations-crm-workbench-live-smoke.md",
       "ops/live-smokes/2026-07-10T11-28-00-896Z-public-route-privacy-smoke.md",
       "ops/ui-audits/2026-07-10-onetime-brand-normalization-live-readback/report.md",
+      "ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md",
+      "ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md",
       "ops/production-readiness/latest-production-readiness-snapshot.md"
     ],
     "notes": [
       "Railway doctor resolved the One Time production target before redeploy.",
-      "Operations checks in the shared review and live visual audit skipped because Operations login did not succeed; REQ-20260710-011 remains blocked/review-limited.",
+      "A follow-up readable redacted Operations audit succeeded with One Time Railway auth, 140 screenshots, 0 skipped checks, and 0 findings; REQ-20260710-011 is terminal for this proof gap.",
       "Production readiness snapshot remains not_production_complete because full launch still has Stripe/WAPI/campaign, Telegram live-smoke, and Agent Mode proof blockers."
     ]
   },

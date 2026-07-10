@@ -405,8 +405,8 @@
     },
     {
       "source_statement_id": "SRC-20260710-015",
-      "terminal_status": "BLOCKED_REDACTION_LIMITED_REVIEW",
-      "first_skipped_stage": "readable_redacted_operations_review_or_browser_takeover",
+      "terminal_status": "DONE_LIVE_READABLE_REDACTED_REVIEW",
+      "first_skipped_stage": null,
       "stages": {
         "raw_captured": true,
         "source_statement_atomized": true,
@@ -423,9 +423,9 @@
         "tests_run": true,
         "watchdogs_run": true,
         "committed_pushed": true,
-        "deployed_live_smoked": false,
+        "deployed_live_smoked": true,
         "after_screenshot_captured": true,
-        "manual_after_review_recorded": false,
+        "manual_after_review_recorded": true,
         "ledger_changelog_updated": true,
         "source_statement_terminally_closed": true
       }

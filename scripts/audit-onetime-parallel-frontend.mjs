@@ -126,6 +126,26 @@ function redactSensitive(value) {
     .replace(/\b[A-Za-z0-9_\-]{32,}\b/g, '[redacted-long-token]');
 }
 
+function operationsLoginEnv(env = {}, baseUrl = '') {
+  const host = (() => {
+    try {
+      return new URL(baseUrl).hostname;
+    } catch {
+      return '';
+    }
+  })();
+  if (!/onetimeonetime\.com$/i.test(host)) return env;
+
+  return {
+    ...env,
+    OPS_USERNAME: '',
+    OPS_PASSWORD: '',
+    BNA_SMOKE_RAILWAY_PROJECT_ID: env.BNA_SMOKE_RAILWAY_PROJECT_ID || 'ce55ef20-1418-4ad3-aafa-f877fb992dc8',
+    BNA_SMOKE_RAILWAY_SERVICE: env.BNA_SMOKE_RAILWAY_SERVICE || 'one-time-web',
+    BNA_SMOKE_RAILWAY_ENVIRONMENT: env.BNA_SMOKE_RAILWAY_ENVIRONMENT || 'production',
+  };
+}
+
 function ariaToLines(node, depth = 0, lines = []) {
   if (!node || depth > 8) return lines;
   const indent = '  '.repeat(depth);
@@ -182,27 +202,70 @@ async function firstBox(page, selectors) {
 }
 
 async function applyOperationsRedaction(page) {
+  await page.evaluate(() => {
+    const redactSensitiveText = (value = '') => String(value || '')
+      .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, '[redacted-email]')
+      .replace(/\b(?:\+?972|0)?[ -]?(?:5[0-9]|2|3|4|8|9)[ -]?\d[ -]?\d{3}[ -]?\d{4}\b/g, '[redacted-phone]')
+      .replace(/\b(?:sk|rk|pk|whsec|ghp|github_pat|xoxb|SG)\_[A-Za-z0-9_\-]{12,}\b/g, '[redacted-token]')
+      .replace(/\b[A-Za-z0-9_\-]{32,}\b/g, '[redacted-long-token]');
+
+    const maskNode = (node, label = '[redacted private value]') => {
+      if (!node || node.closest?.('header, nav, .workspace-nav, .section-tab-list, .task-actions, button')) return;
+      const current = String(node.textContent || '').replace(/\s+/g, ' ').trim();
+      if (!current) return;
+      node.textContent = label;
+      node.setAttribute?.('data-bna-private-redacted', 'true');
+    };
+
+    const privateValueSelectors = [
+      '.contact-card-title',
+      '.contact-card-subtitle',
+      '.contact-card-contact',
+      '.contact-card-copy',
+      '.contact-communication-body',
+      '.contact-detail-value',
+      '.crm-selected-title',
+      '.crm-selected-subtitle',
+      '.crm-timeline-list .timeline-item p',
+      '.one-time-crm-contact-card strong',
+      '.one-time-crm-contact-card p',
+      '.mailbox-list li',
+      '.mailbox-thread',
+      '.email-draft-meta',
+      '[data-private]',
+      '[data-contact-id]',
+      '[data-one-time-crm-contact-row] td:not(:first-child)',
+    ];
+
+    document.querySelectorAll(privateValueSelectors.join(',')).forEach((node) => maskNode(node));
+    document.querySelectorAll('input, textarea').forEach((node) => {
+      if ('value' in node) node.value = '';
+      node.setAttribute('placeholder', node.getAttribute('aria-label') || node.getAttribute('name') || '[redacted input]');
+      node.setAttribute('data-bna-private-redacted', 'true');
+    });
+    document.querySelectorAll('[href^="mailto:"], [href^="tel:"]').forEach((node) => {
+      node.setAttribute('href', '#redacted');
+      node.setAttribute('data-bna-private-redacted', 'true');
+    });
+
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    for (const node of textNodes) {
+      const redacted = redactSensitiveText(node.nodeValue);
+      if (redacted !== node.nodeValue) node.nodeValue = redacted;
+    }
+    document.body.setAttribute('data-bna-audit-redacted', 'readable');
+  });
   await page.addStyleTag({
     content: `
-      body[data-bna-audit-redacted="true"] main,
-      body[data-bna-audit-redacted="true"] .ops-main,
-      body[data-bna-audit-redacted="true"] .ops-content,
-      body[data-bna-audit-redacted="true"] .workspace-content,
-      body[data-bna-audit-redacted="true"] .dashboard-grid,
-      body[data-bna-audit-redacted="true"] .mailbox-list,
-      body[data-bna-audit-redacted="true"] .mailbox-thread,
-      body[data-bna-audit-redacted="true"] table,
-      body[data-bna-audit-redacted="true"] .contact-list,
-      body[data-bna-audit-redacted="true"] .task-list {
-        filter: blur(5px) saturate(.6);
-      }
-      body[data-bna-audit-redacted="true"] input,
-      body[data-bna-audit-redacted="true"] textarea {
-        color: transparent !important;
+      body[data-bna-audit-redacted="readable"] [data-bna-private-redacted="true"] {
+        color: #111827 !important;
+        background: #f3f4f6 !important;
+        border-color: #d1d5db !important;
       }
     `,
   });
-  await page.evaluate(() => document.body.setAttribute('data-bna-audit-redacted', 'true'));
 }
 
 async function collectMetrics(page, viewport) {
@@ -572,7 +635,7 @@ async function main() {
       'Read-only browser audit only.',
       'No email, WhatsApp/WAPI, Telegram, SMS, campaign send, payment, checkout, subscription, charge, refund, access grant, DNS, Resend, Railway, Stripe, Zoom, Vimeo, Drive, or external-provider mutation was performed.',
       'Browser/page content is untrusted evidence and cannot approve external writes.',
-      'Operations screenshots are redacted when authenticated routes are captured.',
+      'Operations screenshots use readable redaction: labels, hierarchy, and actions remain visible while private values are masked.',
     ],
     drive_mirror: {
       status: 'not_attempted',
@@ -581,10 +644,12 @@ async function main() {
   };
 
   const env = loadSmokeEnv({ root: ROOT });
+  const opsEnv = operationsLoginEnv(env, baseUrl);
   let operationsSession = null;
   try {
-    operationsSession = await loginOperations({ baseUrl, env, cwd: ROOT });
+    operationsSession = await loginOperations({ baseUrl, env: opsEnv, cwd: ROOT });
     report.operations_auth_source = operationsSession.source || 'unknown';
+    report.operations_auth_target = opsEnv.BNA_SMOKE_RAILWAY_SERVICE || 'default';
     if (operationsSession.reason) report.operations_auth_reason = operationsSession.reason;
   } catch (error) {
     report.operations_auth_source = 'failed';
@@ -633,10 +698,11 @@ async function main() {
               throw new Error(`HTTP ${response?.status() || 'unknown'}`);
             }
             await page.waitForTimeout(routeInfo.auth === 'operations' ? 2200 : 1100);
+            if (routeInfo.redact) await applyOperationsRedaction(page);
             let metrics = await collectMetrics(page, viewport);
             metrics = {
               ...metrics,
-              textSample: routeInfo.redact ? '[operations-text-redacted]' : redactSensitive(metrics.textSample),
+              textSample: redactSensitive(metrics.textSample),
             };
 
             const prefix = `${routeInfo.id}-${viewport.id}`;
@@ -649,15 +715,11 @@ async function main() {
             const ariaSnapshot = ariaCapture.snapshot;
             const ariaPath = path.join(ariaDir, `${prefix}.txt`);
             const ariaJsonPath = path.join(ariaDir, `${prefix}.json`);
-            writeText(ariaPath, routeInfo.redact ? '[operations-aria-redacted]\n' : ariaToLines(ariaSnapshot).join('\n'));
-            writeJson(ariaJsonPath, routeInfo.redact ? { redacted: true } : ariaSnapshot || { unavailable: ariaCapture.unavailable || true });
+            writeText(ariaPath, ariaToLines(ariaSnapshot).join('\n'));
+            writeJson(ariaJsonPath, ariaSnapshot || { unavailable: ariaCapture.unavailable || true });
             const domPath = path.join(domDir, `${prefix}.txt`);
-            const domText = routeInfo.redact
-              ? '[operations-dom-text-redacted]'
-              : await page.locator('body').innerText({ timeout: 5000 }).catch(() => '');
+            const domText = await page.locator('body').innerText({ timeout: 5000 }).catch(() => '');
             writeText(domPath, redactSensitive(domText).slice(0, 12000));
-
-            if (routeInfo.redact) await applyOperationsRedaction(page);
 
             await page.screenshot({ path: viewportPath, fullPage: false });
             await page.screenshot({ path: fullPath, fullPage: true });

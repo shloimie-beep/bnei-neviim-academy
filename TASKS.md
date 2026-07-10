@@ -129,9 +129,11 @@ not authorize active GHL runtime paths.
   live-smoked. Live proof includes shared-review, separate-instance, Rabbi
   landing, interest dry-run, TEST CRM E2E, Operations CRM workbench, public
   privacy, and live visual readback reports from `2026-07-10T11-*`.
-  Remaining blockers: redacted Operations content review needs readable
-  redacted proof or browser takeover, and the two Agent Mode prompts still
-  need actual `AGR-*` PASS/FAIL/BLOCKED saved results.
+  `REQ-20260710-011` readable redacted Operations review is now live-proven in
+  `ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md` with
+  140 screenshots, 0 skipped checks, 0 findings, and a manual review note.
+  Remaining blocker: the two Agent Mode prompts still need actual `AGR-*`
+  PASS/FAIL/BLOCKED saved results.
 - [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current

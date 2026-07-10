@@ -329,9 +329,9 @@
       "source": "manual/current evidence",
       "source_text": "Operations layout passes, but content-level review is limited by redaction.",
       "surface": "Operations scoped UI",
-      "current_status": "BLOCKED_REDACTION_LIMITED_REVIEW",
-      "terminal_status": "BLOCKED_REDACTION_LIMITED_REVIEW",
-      "first_skipped_stage": "readable_redacted_operations_review_or_browser_takeover",
+      "current_status": "DONE_LIVE_READABLE_REDACTED_REVIEW",
+      "terminal_status": "DONE_LIVE_READABLE_REDACTED_REVIEW",
+      "first_skipped_stage": null,
       "evidence": [
         "ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md",
         "ops/ui-audits/2026-07-10-ui-source-coverage.md",
@@ -340,7 +340,9 @@
         "ops/ui-audits/2026-07-10-onetime-brand-normalization-local-current/report.md",
         "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
         "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
-        "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
+        "ops/watchdog-audits/2026-07-10-product-quality-drift.md",
+        "ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md",
+        "ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md"
       ],
       "mapped_gap_ids": [
         "UIGAP-20260710-006"

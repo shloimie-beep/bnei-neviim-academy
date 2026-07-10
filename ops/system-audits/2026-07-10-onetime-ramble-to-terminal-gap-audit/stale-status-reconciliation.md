@@ -52,3 +52,18 @@ A previous Done label may stand only for the exact scoped acceptance criteria it
   Operations login did not succeed.
 - `REQ-20260710-012` remains blocked on an Agent Mode runner. Prompt URLs are
   the next action, not proof.
+
+## 2026-07-10T14:44:23+03:00 Update
+
+- `REQ-20260710-011` is no longer blocked/review-limited. A live authenticated
+  Operations audit on `https://join.onetimeonetime.com` used One Time Railway
+  auth and readable redaction, captured 140 screenshots, skipped 0 checks, and
+  found 0 automated findings. Manual inspection covered desktop/mobile
+  Operations overview and Rabbi email inbox screenshots; private values were
+  masked while labels, hierarchy, action rails, counters, scope banners, and
+  no-send/no-charge guardrails stayed readable.
+- Evidence:
+  `ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md` and
+  `ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md`.
+- `REQ-20260710-012` remains blocked on an Agent Mode runner. Prompt URLs are
+  still the next action, not proof.
