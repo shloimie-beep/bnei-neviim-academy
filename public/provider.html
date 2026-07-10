@@ -1151,7 +1151,7 @@
         const oneTimeReviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
         const oneTimeAdminProviderMode = ['one-time', 'onetime', 'rabbi', '1', 'true'].includes(String(queryParams.get('admin_provider') || '').toLowerCase());
         const oneTimeViewAsRabbiToken = queryParams.get('view_as_rabbi') || '';
-        const oneTimeAdminProviderReturnUrl = '/operations?workspace=platform&view=communications&section=email&inbox=rabbi';
+        const oneTimeAdminProviderReturnUrl = '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi';
         const oneTimeAdminProviderReviewUrl = `/provider.html?review=one-time${queryParams.get('section') ? `&section=${encodeURIComponent(queryParams.get('section'))}` : ''}`;
         const oneTimeAdminProviderLoginMessage = 'No scoped One Time provider session is active in this browser. Start from Operations, open the Rabbi / One Time inbox, and launch the Rabbi provider portal from there. This page will not show unrelated platform or BNA data.';
         const providerApiUsagePreviewFlag = ['1', 'true', 'yes'].includes(String(queryParams.get('api_usage_preview') || '').toLowerCase());
@@ -1360,12 +1360,12 @@
                 ? `
                     <strong>ADMIN ON RABBI ACCOUNT</strong>
                     <span>Start from Operations to open the Rabbi / One Time workspace safely. This page never asks for Rabbi, student, or member passwords.</span>
-                    <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=platform&view=communications&section=email&inbox=rabbi">Return to Super Admin Inbox</a>
+                    <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi">Return to Super Admin Inbox</a>
                 `
                 : `
                     <strong>Scoped Rabbi workspace</strong>
                     <span>Provider tools here stay inside the Rabbi / One Time workspace. Platform setup cards stay in Operations.</span>
-                    <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=platform&view=communications&section=email&inbox=rabbi">Back to Operations</a>
+                    <a data-action-id="ACTION-ONETIME-PROVIDER-SESSION-EXIT" href="/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi">Back to Operations</a>
                 `;
             const providerName = provider.provider_name || provider.display_name || 'Rabbi Eli Scheller';
             const providerTitle = document.getElementById('providerTitle');

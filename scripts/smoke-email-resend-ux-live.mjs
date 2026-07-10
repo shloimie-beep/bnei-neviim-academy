@@ -100,8 +100,12 @@ async function collectEmailRuntimeState({ appUrl, username, password, width }) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     viewport: { width, height: 900 },
-    extraHTTPHeaders: { Cookie: `${cookie.name}=${cookie.value}` },
   });
+  await context.addCookies([{
+    name: cookie.name,
+    value: cookie.value,
+    url: appUrl,
+  }]);
   const page = await context.newPage();
   const consoleErrors = [];
   page.on('console', (message) => {
@@ -110,7 +114,7 @@ async function collectEmailRuntimeState({ appUrl, username, password, width }) {
   page.on('pageerror', (error) => consoleErrors.push(error.message));
 
   try {
-    const emailTarget = `${appUrl}/operations?workspace=rabbi_sheller_provider&view=communications&section=email&smoke=${Date.now()}`;
+    const emailTarget = `${appUrl}/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi&smoke=${Date.now()}`;
     await page.goto(emailTarget, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForSelector('.ops-app-shell', { timeout: 30000 });
     await page.waitForSelector('[data-top-filter-rail][data-current-module="communications"]', { timeout: 30000 });

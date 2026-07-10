@@ -85,7 +85,7 @@ test('provider admin-provider route gives truthful session-required state when n
 
     assert.equal(await page.locator('#loginPanel').isVisible(), true);
     assert.equal(await page.locator('#portalPanel').isVisible(), false);
-    assert.equal(await page.locator('a[href="/operations?workspace=platform&view=communications&section=email&inbox=rabbi"]').count(), 1);
+    assert.equal(await page.locator('a[href="/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi"]').count(), 1);
     assert.equal(await page.locator('a[href="/provider.html?review=one-time&section=mailbox"]').count(), 1);
     assert.equal(await page.locator('text=Super Admin diagnostics').count(), 0);
   } finally {

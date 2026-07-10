@@ -1290,12 +1290,15 @@
             const nextScope = emailInboxScopeRecord(scopeId);
             if (emailInboxScope === nextScope.id) return;
             emailInboxScope = nextScope.id;
+            currentWorkspaceId = nextScope.workspace;
+            taskProjectFilter = nextScope.project_key || projectKeyForWorkspaceKey(nextScope.workspace);
             communicationsIntegrationState = {
                 ...communicationsIntegrationState,
                 emailDrafts: [],
                 dnsTasks: [],
                 notice: `Viewing ${nextScope.label} inbox.`,
             };
+            syncOperationsUrl();
             rerenderOperationsApp();
             await loadData({ background: true });
         }

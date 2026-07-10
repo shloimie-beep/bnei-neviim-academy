@@ -504,7 +504,7 @@
       "action_id": "ACTION-OPERATIONS-EMAIL-INBOX-BNA",
       "label": "View BNA Inbox",
       "surface": "operations_communications_email_workspace",
-      "route": "/operations?view=communications&section=email",
+      "route": "/operations?workspace=bna&project=bna&view=communications&section=email&inbox=bna",
       "selector_hint": "[data-email-inbox-selector] [data-action-id=\"ACTION-OPERATIONS-EMAIL-INBOX-BNA\"]",
       "expected_behavior": "Switches the Super Admin email workspace to BNA / Shloimie scoped email rows and drafts using workspace=bna and project_key=bna.",
       "permission": "platform_super_admin",
@@ -523,7 +523,7 @@
       "action_id": "ACTION-OPERATIONS-EMAIL-INBOX-RABBI",
       "label": "View Rabbi / One Time Inbox",
       "surface": "operations_communications_email_workspace",
-      "route": "/operations?view=communications&section=email&inbox=rabbi",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
       "selector_hint": "[data-email-inbox-selector] [data-action-id=\"ACTION-OPERATIONS-EMAIL-INBOX-RABBI\"]",
       "expected_behavior": "Switches the Super Admin email workspace to Rabbi / One Time scoped email rows and drafts using workspace=rabbi_sheller_provider and project_key=one_time_mishnah_class.",
       "permission": "platform_super_admin",
@@ -609,7 +609,7 @@
       "status": "active_navigation",
       "test": {
         "type": "static_contract",
-        "expected_result": "Provider portal admin banner clearly labels admin-on-Rabbi-account mode and links back to /operations?view=communications&section=email&inbox=rabbi."
+        "expected_result": "Provider portal admin banner clearly labels admin-on-Rabbi-account mode and links back to /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi."
       },
       "related_goal_ids": [
         "GOAL-CORE-003",
