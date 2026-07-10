@@ -79,7 +79,7 @@
       "id": "UIGAP-20260710-001",
       "title": "Mobile top navigation clips labels on One Time surfaces",
       "severity": "P1",
-      "status": "LOCAL_IMPLEMENTED_PENDING_DEPLOY_LIVE_SMOKE",
+      "status": "DONE_DEPLOYED_LIVE_SMOKED",
       "routes": [
         "/one-time",
         "/rabbi-member",
@@ -103,7 +103,37 @@
         "report": "ops/ui-audits/2026-07-10-onetime-ui-gap-register/mobile-nav-containment-local-readback.md",
         "ignored_screenshot_dir": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-local/",
         "operator_correction": "First grid-style implementation was rejected from screenshots; final local implementation uses a horizontal chip rail with a visible hamburger/scroll cue.",
-        "terminal_blocker": "Needs commit/push, deployment, and live smoke/readback before Done."
+        "terminal_blocker": "",
+        "terminal_status": "Superseded by deployed/live-smoked proof in live_implementation."
+      },
+      "live_implementation": {
+        "status": "done_deployed_live_smoked",
+        "commit": "0017b4580f97f2f3274e583ccd585bab6b885072",
+        "deployment": {
+          "provider": "railway",
+          "project": "one-time-production",
+          "service": "one-time-web",
+          "environment": "production",
+          "deployment_id": "90990bd3-676f-433f-8a97-dfa6fa4723b7",
+          "status": "SUCCESS"
+        },
+        "report": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/report.md",
+        "screenshot_dir": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/screenshots/",
+        "checks": {
+          "passed": 10,
+          "total": 10,
+          "viewports": [
+            390,
+            430
+          ],
+          "routes": [
+            "/one-time/",
+            "/rabbi-member?review=one-time",
+            "/member-library?review=one-time",
+            "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+            "/provider.html?review=one-time"
+          ]
+        }
       }
     },
     {
@@ -273,6 +303,16 @@
       "viewport": "390-mobile",
       "path": "ops/ui-audits/2026-07-09-parent-student-login-ui-polish-live-after-deploy/screenshots/student-login-390-mobile.png",
       "note": "Student login shell is usable after the fix; visible copy still contains OneTimeOneTime naming."
+    }
+  ],
+  "post_deploy_updates": [
+    {
+      "generated_at": "2026-07-10T07:48:56.181Z",
+      "gap_id": "UIGAP-20260710-001",
+      "status": "DONE_DEPLOYED_LIVE_SMOKED",
+      "evidence": "ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/report.md",
+      "deployment_id": "90990bd3-676f-433f-8a97-dfa6fa4723b7",
+      "commit": "0017b4580f97f2f3274e583ccd585bab6b885072"
     }
   ]
 }

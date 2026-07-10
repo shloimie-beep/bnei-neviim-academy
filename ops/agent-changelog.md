@@ -37602,3 +37602,13 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Verification: custom Playwright mobile readback passed 10/10 checks at 390px and 430px; `node --check public/js/bna-bot-widget.js`; `npm run one-time:smoke:provider-crm-layout-local`; `npm run one-time:smoke:canonical-journey-local`.
 - Broader toolbar-density audit remains non-terminal with separate parent-review tap-target, member whitespace, and flaky Operations communications findings.
 - Remaining for terminal Done: commit/push, deploy, and live smoke/readback.
+
+## 2026-07-10 - One Time mobile nav rail deployed
+
+- Pushed commit `0017b458` and deployed to OneTime Railway service `one-time-production / one-time-web`.
+- Railway deployment `90990bd3-676f-433f-8a97-dfa6fa4723b7` reached `SUCCESS`.
+- Live route smokes passed: `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com` and `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
+- Updated stale shared-review smoke expectations to the current One Time launch/review copy and positional `baseUrl` handling; corrected smoke passed all reachable public/review routes at 390, 768, and 1440px. Authenticated Operations route was skipped because stored Operations auth did not succeed.
+- Focused live mobile nav containment readback passed 10/10 checks at 390px and 430px. Evidence: `ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/report.md`.
+- `REQ-20260710-007` / `UIGAP-20260710-001` is Done. Remaining UI gap-register work: brand/copy normalization, provider text-fit, source/screenshot evidence guardrails, stale audit mapping, redacted Operations content review, and Agent Mode proof.
+- Guardrails: no external send, payment/access mutation, CRM/provider/DNS/credential mutation, Agent Review result save, live Telegram smoke, Drive write, class backfill, or production-data mutation.

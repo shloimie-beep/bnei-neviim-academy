@@ -41,4 +41,4 @@ Verification run:
 
 ## Terminal Status
 
-Local implementation is verified but not terminal. `REQ-20260710-007` still needs commit/push, deployment, and live smoke/readback before it can be marked Done.
+Superseded by deployed/live-smoked proof. `REQ-20260710-007` is Done after commit `0017b458`, OneTime Railway deployment `90990bd3-676f-433f-8a97-dfa6fa4723b7`, and live readback `ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live/report.md` passed 10/10 checks.

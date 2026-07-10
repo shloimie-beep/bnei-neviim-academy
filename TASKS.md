@@ -86,13 +86,13 @@ not authorize active GHL runtime paths.
   `tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md`.
   Current status: audit/compiler artifacts are created, lag is
   source-verified as fixed for the measured issue, latest deployed visual
-  audit is machine-pass, and manual review reopened concrete UI/process gaps:
-  mobile nav clipping, brand/copy normalization, provider text fit,
+  audit is machine-pass, and `REQ-20260710-007` mobile nav clipping is
+  committed, pushed, deployed to OneTime Railway deployment
+  `90990bd3-676f-433f-8a97-dfa6fa4723b7`, and live-readback verified 10/10.
+  Remaining open gaps: brand/copy normalization, provider text fit,
   source/screenshot evidence guardrails, stale audit mapping, redacted
   Operations content review, and Agent Mode proof prompts not yet run. Next
-  action: commit/push/deploy/live-smoke the locally verified mobile nav rail
-  repair for `REQ-20260710-007`, then continue brand/copy and evidence
-  guardrail packets.
+  action: continue brand/copy and evidence guardrail packets.
 - [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current

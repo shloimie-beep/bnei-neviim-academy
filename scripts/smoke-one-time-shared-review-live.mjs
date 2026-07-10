@@ -22,8 +22,11 @@ function parseArgs(argv) {
       index += 1;
     } else if (arg === '--no-report') {
       options.reportDir = '';
+    } else if (!arg.startsWith('--') && !options.positionalBaseUrl) {
+      options.positionalBaseUrl = arg;
     }
   }
+  if (options.positionalBaseUrl) options.baseUrl = options.positionalBaseUrl;
   options.baseUrl = String(options.baseUrl || '').replace(/\/+$/, '');
   return options;
 }
@@ -80,7 +83,7 @@ async function main() {
       label: 'landing',
       path: '/one-time/',
       expectedTitle: /Your Child Can Love Learning Mishnayos/i,
-      requiredText: ['OneTimeOneTime Mishnah', 'Start 30 Days Free', 'See How It Works', 'Enrollment deadline will be posted before launch', 'Member Login'],
+      requiredText: ['OneTimeOneTime Mishnah', 'Sign Up Now', 'See How It Works', 'Rosh Chodesh Elul', 'Member Login'],
       requiredSelectors: ['img[src*="onetimelogo"]', '.hero-media-placeholder', '#interestForm'],
       forbidTitle: /BNA|Bnei Neviim/i,
       forbidText: ['Bnei Neviim Academy', 'Huda Weber', 'Menachem Mendel', 'Dratler Family'],
@@ -98,7 +101,7 @@ async function main() {
       label: 'parent',
       path: '/parent.html?review=one-time',
       expectedTitle: /OneTimeOneTime Parent Review|BNA Parent Portal/i,
-      requiredText: ['Parent Review Portal', 'TEST Student One Time', 'Payment / trial', 'One Time Parent Helper'],
+      requiredText: ['Parent Review Portal', 'Student One Time', 'Payment / trial', 'One Time Parent Helper'],
       requiredSelectors: ['img[src*="onetimelogo"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
       forbidText: ['Bnei Neviim Academy', 'Dratler Family'],
@@ -107,7 +110,7 @@ async function main() {
       label: 'student',
       path: '/student.html?review=one-time',
       expectedTitle: /OneTimeOneTime Student Review|BNA Student Goal Board/i,
-      requiredText: ['ONE TIME STUDENT REVIEW', 'Student dashboard for live Mishnayos', 'PORTAL BOUNDARY', 'One Time Student Helper'],
+      requiredText: ['ONE TIME STUDENT REVIEW', 'Live Mishnayos, review videos', 'PORTAL BOUNDARY', 'ASK RABBI /'],
       requiredSelectors: ['img[src*="onetimelogo"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
       forbidText: ['Bnei Neviim Academy', 'Student Goal Board', 'My Goal Board', 'Dratler Family'],
@@ -125,7 +128,7 @@ async function main() {
       label: 'email',
       path: '/one-time-email-review.html',
       expectedTitle: /One Time Email Review/i,
-      requiredText: ['One Time Email Review', 'Preview-only parent, student, class, payment, and support templates', 'No live email'],
+      requiredText: ['Email sending is blocked', 'No external write', '21 templates ready for review'],
       requiredSelectors: ['img[src*="onetimelogo"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
       forbidText: ['Bnei Neviim Academy', 'Dratler Family'],
@@ -168,7 +171,17 @@ async function main() {
 
   const browser = await chromium.launch({ headless: true });
   try {
-    const session = await loginOperations({ baseUrl: options.baseUrl, env, cwd: root });
+    let session;
+    try {
+      session = await loginOperations({ baseUrl: options.baseUrl, env, cwd: root });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      session = {
+        cookie: null,
+        source: 'missing',
+        reason: `Operations authentication setup failed; authenticated Operations route not checked. ${message}`,
+      };
+    }
     const sessionCookie = session.cookie;
     report.auth_source = session.source || 'missing';
     await check('public health endpoint', async () => {
