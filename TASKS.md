@@ -134,6 +134,19 @@ not authorize active GHL runtime paths.
   140 screenshots, 0 skipped checks, 0 findings, and a manual review note.
   Remaining blocker: the two Agent Mode prompts still need actual `AGR-*`
   PASS/FAIL/BLOCKED saved results.
+- [ ] `RAW-20260710-003` / `REQ-20260710-026` through
+  `REQ-20260710-029`: One Time owner-experience historical source
+  reconciliation. Register:
+  `tasks-pending/2026-07-10-onetime-owner-experience-source-reconciliation.md`.
+  Current status: `REQ-20260710-026` is Done - inventory created. The redacted
+  inventory found 135 raw inputs, 156 task registers, and 141 grouped evidence
+  packages in
+  `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md`.
+  `REQ-20260710-027` is In progress - skeleton created:
+  `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json`
+  contains 291 stable `HIST-SRC-*` rows. Remaining work: map terminal
+  status/proof/blockers for each row, split any unblocked gaps into small
+  packets, and then produce the final owner walkthrough/readiness verdict.
 - [x] `RAW-20260709-013` / `REQ-20260709-070`: OneTime app lag and UI
   follow-up. Register:
   `tasks-pending/2026-07-09-onetime-parallel-frontend-audit.md`. Current

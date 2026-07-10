@@ -4,7 +4,7 @@
   "raw_id": "RAW-20260710-003",
   "register_path": "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
   "production_target": "https://join.onetimeonetime.com",
-  "status": "deployed_live_verified_agent_mode_blocked",
+  "status": "deployed_live_verified_source_inventory_open_agent_mode_blocked",
   "requirements": [
     {
       "id": "REQ-20260710-008",
@@ -30,6 +30,25 @@
       "status": "blocked_agent_mode_runner_required",
       "summary": "Agent Mode proof remains blocked until two required prompt runs save AGR results.",
       "next_action": "Run rabbi-telegram-helper-ticket-smoke and rabbi-helper-tool-scope-map in Agent Mode and save/read back AGR PASS/FAIL/BLOCKED results."
+    },
+    {
+      "id": "REQ-20260710-026",
+      "status": "done_inventory_created",
+      "summary": "Created a redacted historical One Time/Rabbi source inventory with 135 raw inputs, 156 task registers, and 141 grouped evidence packages.",
+      "evidence": [
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json"
+      ]
+    },
+    {
+      "id": "REQ-20260710-027",
+      "status": "in_progress_skeleton_created_terminal_mapping_required",
+      "summary": "Created historical-source-statement-matrix.json with 291 stable HIST-SRC rows, but every row still needs terminal proof/blocker mapping before the source-complete objective can close.",
+      "evidence": [
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.md",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json"
+      ],
+      "next_action": "Replace skeleton statuses with terminal statuses and evidence/blockers for all 291 rows."
     }
   ],
   "local_evidence": {
@@ -39,6 +58,8 @@
     "shared_review_live_stale_selector_repaired": "ops/live-smokes/2026-07-10T10-59-47-540Z-one-time-shared-review-live-smoke.md",
     "operations_readable_live_audit": "ops/ui-audits/2026-07-10-onetime-operations-readable-live/report.md",
     "operations_readable_manual_review": "ops/ui-audits/2026-07-10-onetime-operations-readable-live/manual-review.md",
+    "historical_source_inventory": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md",
+    "historical_source_statement_matrix": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.md",
     "pqc_validation": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
     "protocol_drift": "ops/watchdog-audits/2026-07-10-product-quality-drift.md"
   },
@@ -50,12 +71,14 @@
     "PASS npm run pqc:validate 67/67",
     "PASS npm run watchdog:actions finding_count 0",
     "PASS npm run watchdog:protocol-drift findings 0",
-    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T11-47-14-228Z-audit-governance.md with older repo-wide debt still present and untracked audit packages none",
+    "PASS npm run audit:governance generated ops/audit-governance/2026-07-10T11-56-14-865Z-audit-governance.md with older repo-wide debt still present and untracked audit packages none",
     "PASS local visual audit 9 routes x 5 viewports, 140 screenshots, 0 findings",
     "PASS local canonical journey smoke",
     "PASS local provider CRM layout smoke",
     "PASS live readable redacted Operations audit 140 screenshots, 0 skipped checks, 0 findings",
     "PASS manual review of desktop/mobile Operations overview and email inbox readable redacted screenshots",
+    "PASS historical source inventory JSON parsed; counts raw_inputs 135, task_registers 156, evidence_groups 141",
+    "PASS historical source-statement matrix JSON parsed; counts total_source_statements 291",
     "PASS no standalone visible OneTime/OneTimeOneTime brand grep in active checked surfaces"
   ],
   "deployment": {
@@ -97,6 +120,6 @@
     "status": "not_production_complete",
     "snapshot": "ops/production-readiness/latest-production-readiness-snapshot.md",
     "sampled_head": "98e49080",
-    "reason": "Full One Time launch remains blocked by external setup values, Telegram live delivery proof, and Agent Mode terminal proof; current UI/code batch is deployed and live-smoked."
+    "reason": "Full One Time launch remains blocked by external setup values, Telegram live delivery proof, Agent Mode terminal proof, and source-complete historical atomization; current UI/code batch is deployed and live-smoked."
   }
 }

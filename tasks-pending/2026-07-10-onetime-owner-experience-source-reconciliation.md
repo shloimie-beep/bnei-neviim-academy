@@ -1,0 +1,40 @@
+# One Time Owner Experience Historical Source Reconciliation
+
+## Raw Intake
+
+Source raw record: `raw-input/RAW-20260710-003-codex-followup-one-time-owner-experience-closure.md`
+
+## Mission
+
+Reconcile historical Rabbi Scheller / One Time Mishnah Class raw inputs,
+registers, prompt packets, execution runs, and audit evidence into a
+source-complete owner-experience matrix. This is separate from the scoped UI
+gap register because it covers older launch, CRM, classroom, communications,
+Telegram, integrations, and production-readiness material.
+
+## Parsed Requirements
+
+| ID | Requirement | Source | Workspace/project | Owner | Priority | Status | Evidence | Next action |
+|---|---|---|---|---|---|---|---|---|
+| REQ-20260710-026 | Build a redacted historical source inventory for One Time/Rabbi material. | RAW-20260710-003 | agent_ops / one_time_mishnah_class | Codex | P0 | Done - inventory created | `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.md`; `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json` | Use this inventory as the input queue for atomization. |
+| REQ-20260710-027 | Atomize historical source inventory into stable source statements and terminal mappings. | REQ-20260710-026 | agent_ops / one_time_mishnah_class | Codex | P0 | In progress - skeleton created | `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json` created 291 stable `HIST-SRC-*` rows from the inventory. | Replace skeleton statuses with terminal Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or new scoped requirement mappings. |
+| REQ-20260710-028 | Split non-terminal historical source statements into small implementation/proof packets. | REQ-20260710-027 | one_time_mishnah_class | Codex | P1 | Pending | none yet | Wait for atomized source matrix; do not create broad giant packets. |
+| REQ-20260710-029 | Produce final owner-experience walkthrough and layered readiness verdict. | RAW-20260710-003 | one_time_mishnah_class / production | Codex | P1 | Pending | Current readiness snapshot remains `not_production_complete`. | Wait for source matrix, Agent Mode proof, and production readiness blockers to be terminal. |
+
+## Current Truth
+
+- The historical inventory and atomization skeleton are created, but they do
+  not close the source-complete requirement by themselves.
+- Current open proof blocker from the UI gap register:
+  `REQ-20260710-012` still needs Agent Mode `AGR-*` proof.
+- External launch blockers remain outside safe Codex execution unless the
+  operator provides exact approval/access: Stripe/WAPI/campaign setup, Telegram
+  live delivery proof, payment/access gates, historical contact import/write
+  policy, and external provider account actions.
+
+## Closeout Rule
+
+Do not mark the owner-experience objective ready until `REQ-20260710-027`
+terminal source mapping and `REQ-20260710-029` walkthrough/readiness verdict
+are terminal, and until `REQ-20260710-012` Agent Mode proof is terminal or
+precisely blocked.
