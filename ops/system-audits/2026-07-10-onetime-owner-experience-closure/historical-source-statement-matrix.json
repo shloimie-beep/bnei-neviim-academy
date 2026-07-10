@@ -1,7 +1,7 @@
 {
   "report_id": "onetime-historical-source-statement-matrix-20260710-skeleton",
-  "generated_at": "2026-07-10T16:34:40+03:00",
-  "status": "in_progress_first_through_fourteenth_batches_mapped_goal_active_not_ready",
+  "generated_at": "2026-07-10T16:38:59+03:00",
+  "status": "in_progress_first_through_fifteenth_batches_mapped_goal_active_not_ready",
   "source_inventory": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json",
   "counts": {
     "total_source_statements": 291,
@@ -13,13 +13,13 @@
       "mapped_in_progress_goal_active": 1,
       "mapped_terminal_already_satisfied": 2,
       "mapped_terminal_done": 18,
-      "mapped_terminal_done_deployed_live_smoked": 57,
+      "mapped_terminal_done_deployed_live_smoked": 61,
       "mapped_terminal_done_no_external_send": 1,
       "mapped_terminal_mixed_done_and_blocked": 25,
-      "mapped_terminal_mixed_done_needs_decision_blocked": 91,
+      "mapped_terminal_mixed_done_needs_decision_blocked": 94,
       "needs_terminal_mapping": 1,
-      "needs_terminal_mapping_blocker_present": 79,
-      "needs_terminal_mapping_done_claim_present": 16
+      "needs_terminal_mapping_blocker_present": 73,
+      "needs_terminal_mapping_done_claim_present": 15
     },
     "by_family": {
       "OT-HIST-001": 12,
@@ -33,11 +33,11 @@
     "by_terminal_status": {
       "already_satisfied": 2,
       "done": 18,
-      "done_deployed_live_smoked": 57,
+      "done_deployed_live_smoked": 61,
       "done_no_external_send": 1,
       "mixed_terminal_done_and_blocked": 25,
-      "mixed_terminal_done_needs_decision_blocked": 91,
-      "null": 97
+      "mixed_terminal_done_needs_decision_blocked": 94,
+      "null": 90
     }
   },
   "source_statements": [
@@ -6863,10 +6863,15 @@
         "REQ-20260617-233"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-17-backlog-readiness-sweep.md",
+        "ops/system-audits/2026-06-17-full-queue-audit.md",
+        "ops/raw-intake-audits/2026-06-17-next-ramble-readiness-audit.md",
+        "ops/live-smokes/2026-06-17T18-30-21-330Z-live-app-smoke.md"
+      ],
+      "blocker_or_next_action": "No terminal blocker for the backlog-readiness sweep. Active machine tasks, observable jobs, and requeue candidates were reduced to zero; final post-closeout fresh Telegram tasks were completed and live-smoked."
     },
     {
       "source_statement_id": "HIST-SRC-0195",
@@ -6899,10 +6904,15 @@
         "REQ-20260617-243"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-17-full-system-debug-queue-unblock-audit.md",
+        "ops/system-audits/2026-06-17-full-queue-audit.md",
+        "ops/watchdog-audits/2026-06-17T17-50-watchdog-audit.md",
+        "ops/live-smokes/2026-06-17T17-52-27-607Z-live-app-smoke.md"
+      ],
+      "blocker_or_next_action": "No terminal blocker for the queue-unblock audit scope. System truth, queue ownership, watchdogs, raw intake, tests, deploy, and live smoke were completed; contact-summary source material remains a separate non-Codex input blocker."
     },
     {
       "source_statement_id": "HIST-SRC-0196",
@@ -6941,10 +6951,15 @@
       "referenced_decision_ids": [
         "DEC-20260617-001"
       ],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-17-goal-mode-ramble-protocol-hardening.md",
+        "raw-input/RAW-20260617-001-goal-mode-ramble-protocol.md",
+        "ops/live-smokes/2026-06-17T04-53-04-502Z-goal-mode-helper-live-smoke.md",
+        "tasks-pending/2026-06-16-website-ramble-correction-audit.md"
+      ],
+      "blocker_or_next_action": "Goal-mode protocol, parser, bridge, template, and live smoke were completed. The broad correction-register execution stayed mixed because the register continued through later batches and retained blocked provider/payment/production decisions."
     },
     {
       "source_statement_id": "HIST-SRC-0197",
@@ -6974,10 +6989,15 @@
         "REQ-20260617-208"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-17-hebrew-rtl-ui-label-audit.md",
+        "ops/system-audits/2026-06-17T14-33-38-557Z-hebrew-rtl-ui-label-audit.md",
+        "ops/live-smokes/2026-06-17T14-42-45-838Z-hebrew-rtl-ui-label-live-smoke.md",
+        "ops/live-smokes/2026-06-17T14-40-47-547Z-live-app-smoke.md"
+      ],
+      "blocker_or_next_action": "No terminal blocker for the Hebrew RTL label audit. Parent, student, signup, and public provider Hebrew/RTL coverage was implemented, deployed, live-smoked, and task #569 closed with valid proof."
     },
     {
       "source_statement_id": "HIST-SRC-0198",
@@ -7003,10 +7023,15 @@
         "REQ-20260617-134"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-17-live-queue-state-cleanup.md",
+        "raw-input/RAW-20260617-007-live-queue-state-cleanup.md",
+        "ops/queue-audits/2026-06-17T13-51-37-466Z-queue-audit.md",
+        "ops/live-smokes/2026-06-17T13-51-35-788Z-live-app-smoke.md"
+      ],
+      "blocker_or_next_action": "No terminal blocker for the live queue-state cleanup. Stale fleet state, completed tasks showing active, misfiled conversational ping, and launch-seed terminal-task reopening were fixed, deployed, and live-smoked."
     },
     {
       "source_statement_id": "HIST-SRC-0199",
@@ -7105,10 +7130,15 @@
         "DEC-20260617-006",
         "DEC-20260617-007"
       ],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-17-rabbi-scheller-onetime-mishnayos-register.md",
+        "raw-input/RAW-20260617-010-rabbi-scheller-onetime-super-prompt.md",
+        "ops/asset-audits/2026-06-17-onetime-assets-audit.md",
+        "ops/live-smokes/2026-06-17T14-28-38-904Z-onetime-focused-landing-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Most Rabbi / One Time packet rows reached Done or Already satisfied with focused landing, assets, portal safety, meeting prep, email drafts, Telegram/backlog audits, and timeline proof. Hero video rights, parent enrollment/billing sync, public header/provider CTA, final offer/CTA/payment/domain/email/VIP/asset decisions remain blocked or needs-operator-decision."
     },
     {
       "source_statement_id": "HIST-SRC-0200",
@@ -7196,10 +7226,15 @@
       "referenced_decision_ids": [
         "DEC-20260617-001"
       ],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-06-17-website-ramble-correction-audit.md",
+        "ops/system-audits/2026-06-17-final-register-surfaces-audit.md",
+        "ops/live-smokes/2026-06-17T11-24-18-485Z-final-register-surfaces-live-smoke.md",
+        "ops/playwright-smokes/2026-06-17-final-register-surfaces-local/report.md"
+      ],
+      "blocker_or_next_action": "The June 17 website correction continuation closed the implemented batches with final audits, local browser proof, deployments, and live smokes. Payment-link creation and provider credentials/payment-link decisions remained blocked."
     },
     {
       "source_statement_id": "HIST-SRC-0201",
@@ -10921,6 +10956,31 @@
       "HIST-SRC-0193"
     ],
     "summary": "Mapped June 16 task-register rows covering agent-work gap audit, Mishnayos community/gamification, parent-student login, helper registry/parity, One Time contacts, Thursday access blockers, operating goals/prompt intake, Operations workflows, prompt ingestion audit, provider integrations, Rabbi product/7pm model, watchdog, safe integrations, and the June 16 website correction register.",
+    "guardrails": [
+      "No external send in this mapping pass",
+      "No WhatsApp/WAPI send in this mapping pass",
+      "No email send in this mapping pass",
+      "No Telegram send in this mapping pass",
+      "No payment/access mutation",
+      "No DNS/credential mutation",
+      "No Drive/Zoom/Vimeo mutation in this mapping pass",
+      "No production import/contact write in this mapping pass",
+      "No GHL/LeadConnector runtime",
+      "No provider-account mutation"
+    ]
+  },
+  "fifteenth_mapped_batch": {
+    "mapped_at": "2026-07-10T16:38:59+03:00",
+    "source_statement_ids": [
+      "HIST-SRC-0194",
+      "HIST-SRC-0195",
+      "HIST-SRC-0196",
+      "HIST-SRC-0197",
+      "HIST-SRC-0198",
+      "HIST-SRC-0199",
+      "HIST-SRC-0200"
+    ],
+    "summary": "Mapped June 17 task-register rows covering backlog readiness, full-system queue/debug unblock, goal-mode protocol hardening, Hebrew RTL labels, live queue cleanup, Rabbi Scheller / OneTime Mishnayos packet, and the June 17 website correction continuation.",
     "guardrails": [
       "No external send in this mapping pass",
       "No WhatsApp/WAPI send in this mapping pass",

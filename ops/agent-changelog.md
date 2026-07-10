@@ -38039,3 +38039,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Covered agent-work gap audit, Mishnayos community/gamification/parent progress, parent-student login, helper registry/parity, One Time email contacts, Thursday access blockers, operating goals/prompt intake, Operations workflows, prompt ingestion audit, provider integrations, Rabbi product/7pm model, ramble watchdog, safe integrations, and the June 16 website correction register.
 - The historical source matrix now has 195 mapped or active rows and 97 rows still lacking terminal status. The owner-experience goal remains active and not ready.
 - Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/configuration/imports as evidence only.
+
+## 2026-07-10 - One Time historical source fifteenth batch mapped
+
+- Mapped the June 17 task-register batch: `HIST-SRC-0194` through `HIST-SRC-0200`.
+- Covered backlog readiness, full-system debug/queue unblock, goal-mode ramble protocol, Hebrew RTL labels, live queue cleanup, Rabbi Scheller / OneTime Mishnayos packet registration, and the June 17 website correction continuation.
+- The historical source matrix now has 202 mapped or active rows and 90 rows still lacking terminal status. The owner-experience goal remains active and not ready.
+- Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/configuration/imports as evidence only.
