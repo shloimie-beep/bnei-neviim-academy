@@ -1,7 +1,7 @@
 {
   "report_id": "onetime-historical-source-statement-matrix-20260710-skeleton",
-  "generated_at": "2026-07-10T15:42:36+03:00",
-  "status": "skeleton created; first through seventh batches mapped; terminal mapping still required.",
+  "generated_at": "2026-07-10T15:50:23+03:00",
+  "status": "skeleton created; first through eighth batches mapped; terminal mapping still required.",
   "source_inventory": "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json",
   "counts": {
     "total_source_statements": 291,
@@ -12,14 +12,14 @@
     "by_mapping_status": {
       "mapped_in_progress_goal_active": 1,
       "mapped_terminal_already_satisfied": 2,
-      "mapped_terminal_done": 13,
-      "mapped_terminal_done_deployed_live_smoked": 14,
+      "mapped_terminal_done": 15,
+      "mapped_terminal_done_deployed_live_smoked": 19,
       "mapped_terminal_done_no_external_send": 1,
       "mapped_terminal_mixed_done_and_blocked": 19,
-      "mapped_terminal_mixed_done_needs_decision_blocked": 31,
-      "needs_terminal_mapping": 28,
-      "needs_terminal_mapping_blocker_present": 128,
-      "needs_terminal_mapping_done_claim_present": 54
+      "mapped_terminal_mixed_done_needs_decision_blocked": 38,
+      "needs_terminal_mapping": 23,
+      "needs_terminal_mapping_blocker_present": 125,
+      "needs_terminal_mapping_done_claim_present": 48
     },
     "by_family": {
       "OT-HIST-001": 12,
@@ -32,12 +32,12 @@
     },
     "by_terminal_status": {
       "already_satisfied": 2,
-      "done": 13,
-      "done_deployed_live_smoked": 14,
+      "done": 15,
+      "done_deployed_live_smoked": 19,
       "done_no_external_send": 1,
       "mixed_terminal_done_and_blocked": 19,
-      "mixed_terminal_done_needs_decision_blocked": 31,
-      "null": 211
+      "mixed_terminal_done_needs_decision_blocked": 38,
+      "null": 197
     }
   },
   "source_statements": [
@@ -2998,10 +2998,15 @@
       ],
       "referenced_requirement_ids": [],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done",
+      "terminal_status": "done",
+      "terminal_evidence": [
+        "raw-input/RAW-20260707-001-onetime-mailbox-status-question.md",
+        "tasks-pending/2026-07-06-onetime-crm-mailbox-goal.md",
+        "ops/live-smokes/2026-07-06T14-49-16-448Z-one-time-provider-mailbox-live-readback.md",
+        "ops/live-smokes/2026-07-06T15-03-36-636Z-one-time-mailbox-resend-backfill.md"
+      ],
+      "blocker_or_next_action": "Status question was answered from live no-content provider-mailbox readback: Rabbi provider login worked, the mailbox showed info@onetimeonetime.com with live threads/messages, inbound webhook readiness was configured, and no external send or production data mutation was performed by the status check."
     },
     {
       "source_statement_id": "HIST-SRC-0078",
@@ -3023,12 +3028,26 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
-      "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "referenced_requirement_ids": [
+        "REQ-20260707-020",
+        "REQ-20260707-021",
+        "REQ-20260707-022",
+        "REQ-20260707-023",
+        "REQ-20260707-024"
+      ],
+      "referenced_decision_ids": [
+        "DEC-20260707-020"
+      ],
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-onetime-super-admin-mailbox-and-provider-login.md",
+        "ops/prompt-packets/2026-07-07-onetime-admin-mailbox-access/00-admin-mailbox-filter-provider-login.product-quality.json",
+        "ops/live-smokes/2026-07-07T04-38-47-113Z-live-app-smoke.md",
+        "ops/live-smokes/2026-07-07T04-39-25-748Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-07-07-onetime-admin-provider-session-live-readback.md"
+      ],
+      "blocker_or_next_action": "Super Admin email workspace filtering and audited admin-on-provider session start were implemented, pushed, deployed, and live-smoked. Generic railway:doctor target config remained a separate guardrail issue, but scoped deployment/readback succeeded."
     },
     {
       "source_statement_id": "HIST-SRC-0079",
@@ -3046,12 +3065,27 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
-      "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "referenced_requirement_ids": [
+        "REQ-20260707-030",
+        "REQ-20260707-031",
+        "REQ-20260707-032",
+        "REQ-20260707-033",
+        "REQ-20260707-034",
+        "REQ-20260707-035",
+        "REQ-20260707-036"
+      ],
+      "referenced_decision_ids": [
+        "DEC-20260707-030",
+        "DEC-20260707-031"
+      ],
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-telegram-codex-updates-onetime-role-ui-student-view.md",
+        "ops/ui-audits/2026-07-07-telegram-updates-onetime-ui-access/report.md",
+        "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/"
+      ],
+      "blocker_or_next_action": "Raw/register, notification-only Codex closeout, current-state visual audit, and prompt setup are done. Restarting the Telegram bridge/full fleet and final provider/student view-as implementation remain blocked pending poller ownership/stale-job policy and Agent Mode/access-audit results."
     },
     {
       "source_statement_id": "HIST-SRC-0080",
@@ -3069,12 +3103,28 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
-      "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "referenced_requirement_ids": [
+        "REQ-20260707-040",
+        "REQ-20260707-041",
+        "REQ-20260707-042",
+        "REQ-20260707-043",
+        "REQ-20260707-044"
+      ],
+      "referenced_decision_ids": [
+        "DEC-20260707-040",
+        "DEC-20260707-041"
+      ],
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-agent-mode-prompt-reconciliation-onetime-ui-audit.md",
+        "ops/system-audits/2026-07-07-agent-mode-prompt-reconciliation.md",
+        "ops/chatgpt-ramble-dropoff/incoming/onetime-agent-prompt-series-20260706-911/status.json",
+        "ops/chatgpt-ramble-dropoff/pickups/2026-07-07T09-15-13-onetime-agent-prompt-series-audit.md",
+        "ops/ui-audits/2026-07-07-telegram-updates-onetime-ui-access/report.md",
+        "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/"
+      ],
+      "blocker_or_next_action": "Prompt reconciliation and new Agent Mode audit prompts are done. Actual Agent Mode report collection, provider/student inspection choice, and full fleet restart remain decision/blocker items."
     },
     {
       "source_statement_id": "HIST-SRC-0081",
@@ -3094,12 +3144,26 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260707-050",
+        "REQ-20260707-051",
+        "REQ-20260707-052",
+        "REQ-20260707-053",
+        "REQ-20260707-054",
+        "REQ-20260707-055"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-parallel-agent-mode-mobile-communications-dashboard-email-status.md",
+        "ops/ui-audits/2026-07-07-telegram-updates-onetime-ui-access/report.md",
+        "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/",
+        "ops/live-smokes/2026-07-07T06-53-21-693Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-07-07T06-54-02-816Z-one-time-crm-contacts-ux-live-smoke.md",
+        "ops/live-smokes/2026-07-07T06-54-02-818Z-one-time-crm-import-dedupe-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Parallel prompt setup, known mobile/communications/dashboard findings, and email/CRM status clarification are recorded with live smoke evidence. Implementation remained gated on Agent Mode reports/PQC packets and external automation approvals."
     },
     {
       "source_statement_id": "HIST-SRC-0082",
@@ -3117,12 +3181,21 @@
         "payments_access",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260707-070",
+        "REQ-20260707-071",
+        "REQ-20260707-072"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done",
+      "terminal_status": "done",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-agent-mode-navigation-template-correction.md",
+        "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/AGENT-MODE-NAVIGATION-TEMPLATE.md",
+        "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/02-view-as-navigation-agent-mode.md",
+        "ops/prompt-packets/2026-07-07-onetime-ui-consistency-view-as-agent-audit/03-role-perspective-screen-matrix-agent-mode.md"
+      ],
+      "blocker_or_next_action": "Reusable navigation-first Agent Mode template, exact Super Admin to Rabbi/student click paths, and required BLOCKED/FAIL drop-off instructions were implemented and verified; no remaining issue is recorded for this packet."
     },
     {
       "source_statement_id": "HIST-SRC-0083",
@@ -3142,12 +3215,23 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260707-080",
+        "REQ-20260707-081",
+        "REQ-20260707-082",
+        "REQ-20260707-083",
+        "REQ-20260707-084",
+        "REQ-20260707-085"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md",
+        "ops/live-smokes/2026-07-07T13-57-00-220Z-one-time-shared-review-live-smoke.md",
+        "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/report.md"
+      ],
+      "blocker_or_next_action": "Failed Agent Mode drop-off/result recovery and first UI repair set were implemented, deployed, and live-smoked, including backend IA/header/filter/button/mobile consistency and safe view-as navigation repairs."
     },
     {
       "source_statement_id": "HIST-SRC-0084",
@@ -3169,10 +3253,15 @@
         "REQ-20260707-086"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_blocker_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-agent-mode-failed-dropoff-results-and-ui-repairs.md",
+        "raw-input/RAW-20260707-009-helper-crisp-aligned-ui-closeout.md",
+        "ops/ui-audits/2026-07-07-helper-crisp-aligned-ui-closeout/focused-helper-proof/report.md",
+        "ops/live-smokes/2026-07-07T13-57-00-220Z-one-time-shared-review-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Helper/One Time role-preview UI release closeout was implemented, deployed, and live-smoked for the BNA helper and One Time standalone route."
     },
     {
       "source_statement_id": "HIST-SRC-0085",
@@ -3199,10 +3288,16 @@
         "REQ-20260707-104"
       ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-parent-student-login-ui-polish.md",
+        "ops/prompt-packets/2026-07-07-parent-student-login-ui-polish/00-parent-student-login-ui-polish.product-quality.json",
+        "ops/ui-audits/2026-07-07-parent-student-login-ui-polish/report.md",
+        "ops/ui-audits/2026-07-07-parent-student-login-ui-polish-local-after-final-2/report.md",
+        "ops/ui-audits/2026-07-07-parent-student-login-ui-polish-live-after-deploy/report.md"
+      ],
+      "blocker_or_next_action": "Parent/student entry UI polish was implemented, deployed, and live-smoked with 0 findings. External Agent Mode audit reports for REQ-20260707-101 were still awaiting drop-off, so the broader audit collection portion remains explicitly pending rather than overclaimed."
     },
     {
       "source_statement_id": "HIST-SRC-0086",
@@ -3222,12 +3317,29 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
-      "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "referenced_requirement_ids": [
+        "REQ-20260707-110",
+        "REQ-20260707-111",
+        "REQ-20260707-112",
+        "REQ-20260707-113",
+        "REQ-20260707-114",
+        "REQ-20260707-115",
+        "REQ-20260707-116",
+        "REQ-20260707-117"
+      ],
+      "referenced_decision_ids": [
+        "DEC-20260707-110",
+        "DEC-20260707-111"
+      ],
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-parent-trial-login-and-ia-consistency.md",
+        "ops/prompt-packets/2026-07-07-parent-trial-login-and-ia-consistency/00-parent-trial-login-ia-consistency.product-quality.json",
+        "ops/prompt-packets/2026-07-07-parent-trial-login-and-ia-consistency/AGENT-MODE-PROMPTS.md",
+        "ops/live-smokes/2026-07-07T20-32-23-393Z-one-time-shared-review-live-smoke.md"
+      ],
+      "blocker_or_next_action": "PQC, safe no-password review routes, prompt availability, and an email-preview overflow fix were done/deployed. Real parent trial email/access mutation remains blocked on exact recipient/class-link/account-scope approval, and broader journey/IA audits remain pending Agent Mode results."
     },
     {
       "source_statement_id": "HIST-SRC-0087",
@@ -3248,12 +3360,21 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260707-121",
+        "REQ-20260707-122",
+        "REQ-20260707-123",
+        "REQ-20260707-124"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-rabbi-crm-config-noise-cleanup.md",
+        "ops/prompt-packets/2026-07-07-rabbi-crm-config-noise-cleanup/00-rabbi-crm-config-noise-cleanup.product-quality.json",
+        "ops/live-smokes/2026-07-07T15-35-32-647Z-one-time-shared-review-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Rabbi/provider CRM and mailbox configuration noise cleanup was implemented, tested, deployed, and live-smoked. Focused production readback confirmed CRM/mailbox copy present, forbidden setup diagnostics absent, and no mobile overflow."
     },
     {
       "source_statement_id": "HIST-SRC-0088",
@@ -3273,12 +3394,25 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260707-134",
+        "REQ-20260707-135",
+        "REQ-20260707-136",
+        "REQ-20260707-137",
+        "REQ-20260707-138"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_done_deployed_live_smoked",
+      "terminal_status": "done_deployed_live_smoked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-onetime-brand-helper-toolbar-isolation.md",
+        "ops/live-smokes/2026-07-07T20-32-23-393Z-one-time-shared-review-live-smoke.md",
+        "ops/live-smokes/2026-07-07T21-18-07-080Z-one-time-shared-review-live-smoke.md",
+        "ops/ui-audits/2026-07-07-onetime-toolbar-filter-density-live-after-deploy/report.md",
+        "ops/ui-audits/2026-07-07-onetime-operations-toprail-density-live-after-deploy/report.md",
+        "ops/live-smokes/2026-07-07T22-10-40-895Z-one-time-agent-mode-acceptance-live-smoke.md"
+      ],
+      "blocker_or_next_action": "One Time brand/helper/toolbar isolation, parent/student helper scope, toolbar density, Operations toprail density, and Agent Mode acceptance prompt delivery were deployed and live-smoked. Separate provider setup/Railway-target blockers belong to broader launch rows, not this UI isolation row."
     },
     {
       "source_statement_id": "HIST-SRC-0089",
@@ -3296,12 +3430,24 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260707-140",
+        "REQ-20260707-141",
+        "REQ-20260707-142",
+        "REQ-20260707-143",
+        "REQ-20260707-144",
+        "REQ-20260707-145"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-clean-launch-everything.md",
+        "tasks-pending/2026-07-07-generated-artifact-retention-cleanup.md",
+        "ops/release-captain/2026-07-07-clean-launch-inventory.md",
+        "ops/release-captain/2026-07-07-clean-launch-live-smoke.md"
+      ],
+      "blocker_or_next_action": "Safe scoped clean/push/deploy work was inventoried, committed, deployed, and live-smoked, and generated artifact retention cleanup was completed. The broad ?everything? request remains terminal as mixed because provider aliases, separate Railway target access, Drive/private-data approval, and exact external mutation approvals stayed blocked."
     },
     {
       "source_statement_id": "HIST-SRC-0090",
@@ -3319,12 +3465,24 @@
         "ui_visual",
         "workspace_scope_privacy"
       ],
-      "referenced_requirement_ids": [],
+      "referenced_requirement_ids": [
+        "REQ-20260707-150",
+        "REQ-20260707-151",
+        "REQ-20260707-152",
+        "REQ-20260707-153",
+        "REQ-20260707-154",
+        "REQ-20260707-155",
+        "REQ-20260707-156"
+      ],
       "referenced_decision_ids": [],
-      "current_mapping_status": "needs_terminal_mapping_done_claim_present",
-      "terminal_status": null,
-      "terminal_evidence": [],
-      "blocker_or_next_action": "Map this source statement to Done, Already satisfied, Blocked, Needs operator decision, Failed, Archived, or a new scoped requirement."
+      "current_mapping_status": "mapped_terminal_mixed_done_needs_decision_blocked",
+      "terminal_status": "mixed_terminal_done_needs_decision_blocked",
+      "terminal_evidence": [
+        "tasks-pending/2026-07-07-audit-fix-implementation.md",
+        "ops/ui-audits/2026-07-07-audit-fix-pass-local-final5/report.md",
+        "ops/ui-audits/2026-07-07-audit-fix-pass-live-final-after-deploy/report.md"
+      ],
+      "blocker_or_next_action": "Audit-fix UI implementation was deployed and live-smoked with final local/live role UI audits at 0 automated findings. WAPI, Drive/private-data, payments, DNS, external sends, provider writes, credentials, and generated artifact flood remain blocked unless exact account-owner/action packets are approved."
     },
     {
       "source_statement_id": "HIST-SRC-0091",
@@ -9967,8 +10125,8 @@
     }
   ],
   "remaining_work": {
-    "rows_without_terminal_status": 249,
-    "next_action": "Continue terminal mapping for the remaining historical rows, then split non-terminal gaps into small implementation/proof packets and produce the final owner walkthrough/readiness verdict."
+    "rows_without_terminal_status": 197,
+    "next_action": "Continue terminal mapping for the remaining 197 historical rows, then split non-terminal gaps into small implementation/proof packets and produce the final owner walkthrough/readiness verdict."
   },
   "first_mapped_batch": {
     "mapped_at": "2026-07-10T14:50:54+03:00",
@@ -10099,5 +10257,26 @@
     ],
     "status": "july_6_integration_release_workflow_rows_mapped",
     "remaining_rows_without_terminal_status": 211
+  },
+  "eighth_mapped_batch": {
+    "mapped_at": "2026-07-10T15:50:23+03:00",
+    "row_ids": [
+      "HIST-SRC-0077",
+      "HIST-SRC-0078",
+      "HIST-SRC-0079",
+      "HIST-SRC-0080",
+      "HIST-SRC-0081",
+      "HIST-SRC-0082",
+      "HIST-SRC-0083",
+      "HIST-SRC-0084",
+      "HIST-SRC-0085",
+      "HIST-SRC-0086",
+      "HIST-SRC-0087",
+      "HIST-SRC-0088",
+      "HIST-SRC-0089",
+      "HIST-SRC-0090"
+    ],
+    "status": "july_7_mailbox_agent_mode_ui_launch_rows_mapped",
+    "remaining_rows_without_terminal_status": 197
   }
 }

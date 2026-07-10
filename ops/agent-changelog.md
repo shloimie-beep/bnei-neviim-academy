@@ -37990,3 +37990,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Covered WhatsApp/contact scope cleanup, Studio worker handoff/access, worker credential policy, CRM mailbox/backfill, Agent Mode prompt/dropoff tooling, Operations dashboard/content IA hotfixes, local class welcome-send closeout, Vimeo/Stripe scoping, safe-command preference, Stripe webhook handoff, and broad clean-deploy inventory.
 - The historical source matrix now has 81 mapped or active rows and 211 rows still lacking terminal status. The owner-experience goal remains active and not ready.
 - Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/imports/backfills as evidence only.
+
+## 2026-07-10 - One Time historical source eighth batch mapped
+
+- Mapped the July 7 mailbox, Agent Mode, UI, clean-launch, and audit-fix historical source batch: `HIST-SRC-0077` through `HIST-SRC-0090`.
+- Covered mailbox status/readback, Super Admin mailbox/provider-login access, Telegram/Codex update prompting, Agent Mode prompt reconciliation/navigation/drop-off repairs, parent/student login polish, parent trial/IA consistency, Rabbi CRM noise cleanup, brand/helper/toolbar isolation, clean-launch cleanup, and audit-fix implementation.
+- The historical source matrix now has 95 mapped or active rows and 197 rows still lacking terminal status. The owner-experience goal remains active and not ready.
+- Guardrail: no external send, WhatsApp/WAPI send, email send, Telegram send, payment/access mutation, DNS/credential mutation, Drive/Zoom/Vimeo mutation, production import/contact write, GHL/LeadConnector runtime, or provider-account mutation was performed in this mapping pass. Historical rows may document prior approved sends/imports/backfills as evidence only.
