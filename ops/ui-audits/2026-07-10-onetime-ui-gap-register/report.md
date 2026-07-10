@@ -8,13 +8,14 @@ Status: OPEN_GAPS_REGISTERED
 
 - Latest authenticated deployed visual audit: ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md
 - Latest local mobile nav refinement readback: ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/report.md
+- Latest live mobile nav refinement readback: ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-live/report.md
 - Automated findings in latest audit: 0
 - Screenshots reviewed manually: 8
 - UI/process gaps registered: 8
 
 ## Important Distinction
 
-The deployed app is no longer in the earlier obviously broken state. Lag is measured fixed, the latest automated visual audit passes, and the mobile nav clipping gap is now deployed/live-smoked. A later operator screenshot review reopened the mobile nav visual state because the inactive chips still looked too close to the rejected design; that refinement is locally verified and pending push/deploy/live readback. The remaining UI complaints are smaller but real: brand/copy consistency, provider text fitting, and proof governance.
+The deployed app is no longer in the earlier obviously broken state. Lag is measured fixed, the latest automated visual audit passes, and the mobile nav clipping gap is now deployed/live-smoked. A later operator screenshot review reopened the mobile nav visual state because the inactive chips still looked too close to the rejected design; that refinement is now deployed and live-proven. The remaining UI complaints are smaller but real: brand/copy consistency, provider text fitting, and proof governance.
 
 ## Gap Register
 
@@ -27,7 +28,7 @@ The deployed app is no longer in the earlier obviously broken state. Lag is meas
 | UIGAP-20260710-005 | P1-process | PROCESS_REPAIR_PACKET_REQUIRED | historical One Time UI audit packages | ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md | WINDOW-05-stale-audit-mapping.md |
 | UIGAP-20260710-006 | P2-review | MACHINE_PASS_MANUAL_REVIEW_LIMITED | /operations scoped One Time overview<br>/operations Rabbi email inbox | SS-20260710-007 | WINDOW-06-manual-review-closeout.md |
 | UIGAP-20260710-007 | P1-proof | BLOCKED_AGENT_MODE_PROOF_NOT_STARTED | agent-review-prompts/rabbi-helper-tool-scope-map<br>agent-review-prompts/rabbi-telegram-helper-ticket-smoke | ops/ui-audits/2026-07-10-onetime-provider-parity-live-readback/report.md | not-code-window-agent-mode-run-required |
-| UIGAP-20260710-008 | P1 | LOCAL_VERIFIED_NOT_PUSHED | /one-time<br>/rabbi-member<br>/member-library<br>/one-time-classroom<br>/provider.html?review=one-time | Raw: `raw-input/RAW-20260710-006-onetime-mobile-nav-white-chip-correction.md`<br>Local: `ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/report.md` | REQ-20260710-036 |
+| UIGAP-20260710-008 | P1 | DONE_DEPLOYED_LIVE_SMOKED | /one-time<br>/rabbi-member<br>/member-library<br>/one-time-classroom<br>/provider.html?review=one-time | Raw: `raw-input/RAW-20260710-006-onetime-mobile-nav-white-chip-correction.md`<br>Local: `ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/report.md`<br>Live: `ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-live/report.md` | REQ-20260710-036 |
 
 ## Manual Review Notes
 
@@ -93,13 +94,17 @@ Deployed readback: `ops/ui-audits/2026-07-10-onetime-mobile-nav-containment-live
 
 OneTime Railway deployment `90990bd3-676f-433f-8a97-dfa6fa4723b7` reached `SUCCESS`. Live mobile nav containment passed 10/10 checks on `https://join.onetimeonetime.com` at 390px and 430px for `/one-time/`, `/rabbi-member?review=one-time`, `/member-library?review=one-time`, `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`, and `/provider.html?review=one-time`.
 
-## Local Implementation Update - UIGAP-20260710-008
+## Deployed Implementation Update - UIGAP-20260710-008
 
 After the deployed containment screenshot review, the operator rejected the dark inactive chip treatment and asked for a black mobile rail, white hamburger/sandwich cue, and horizontally sliding white option chips. Local implementation now uses white option chips with black text, yellow-inset active state, no chip wrapping, and no page overflow across the public, member, library, classroom, and provider review routes.
 
 Local readback passed 10/10 at 390px and 430px: `ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/report.md`.
 
-Terminal status is not Done yet. Required closeout: commit, push, One Time Railway deploy, and live readback on `https://join.onetimeonetime.com`.
+Pushed commit `4275cb3b` and deployed to OneTime Railway service `one-time-production / one-time-web`. The first detached upload created deployment `10d8e01c-bca2-4ab1-97a4-5f6ba0161afa` but remained stuck in `INITIALIZING`; the attached retry produced deployment `802fdb51-9d0d-4f47-b314-b7aabcd308d9`, which reached `SUCCESS`.
+
+Live readback passed 10/10 at 390px and 430px on `https://join.onetimeonetime.com`: `ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-live/report.md`. Standard One Time live smokes also passed for separate instance routing and Rabbi/One Time landing branding.
+
+Terminal status: Done - deployed/live-smoked for this scoped white-chip correction.
 
 ## Terminal Rule
 

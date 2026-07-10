@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_at": "2026-07-10T07:06:48.664Z",
-  "updated_at": "2026-07-10T15:10:00.000Z",
+  "updated_at": "2026-07-10T15:32:30.000Z",
   "raw_id": "RAW-20260710-001",
   "status": "OPEN_GAPS_REGISTERED",
   "latest_automated_visual_audit": {
@@ -36,7 +36,7 @@
   "scorecard": {
     "status": "MANUAL_REVIEW_FOUND_GAPS",
     "score_out_of_100": 78,
-    "reason": "Lag is source-verified fixed and the latest deployed visual audit has 0 automated findings. Manual review found mobile nav clipping, brand/copy inconsistency, provider text-fit issues, and evidence-governance gaps. A later operator screenshot review reopened mobile nav visual state; the white-chip refinement is locally verified and pending deploy/live proof.",
+    "reason": "Lag is source-verified fixed and the latest deployed visual audit has 0 automated findings. Manual review found mobile nav clipping, brand/copy inconsistency, provider text-fit issues, and evidence-governance gaps. A later operator screenshot review reopened mobile nav visual state; the white-chip refinement is now deployed and live-proven.",
     "categories": [
       {
         "name": "Performance",
@@ -54,7 +54,7 @@
         "name": "Mobile fit",
         "score": 68,
         "evidence": "SS-20260710-002..006",
-        "note": "Original clipping is deployed fixed; later white-chip mobile nav refinement is locally verified and pending live readback."
+        "note": "Original clipping is deployed fixed; later white-chip mobile nav refinement is deployed and live-proven."
       },
       {
         "name": "Provider/Rabbi workspace",
@@ -252,7 +252,7 @@
       "id": "UIGAP-20260710-008",
       "title": "Mobile nav inactive options should be white chips on the black rail",
       "severity": "P1",
-      "status": "LOCAL_VERIFIED_NOT_PUSHED",
+      "status": "DONE_DEPLOYED_LIVE_SMOKED",
       "raw_id": "RAW-20260710-006",
       "requirement_id": "REQ-20260710-036",
       "routes": [
@@ -296,7 +296,38 @@
             "/provider.html?review=one-time"
           ]
         },
-        "terminal_blocker": "Needs commit, push, One Time Railway deploy, and live readback before Done."
+        "terminal_blocker": "",
+        "terminal_status": "Superseded by deployed/live-smoked proof in live_implementation."
+      },
+      "live_implementation": {
+        "status": "done_deployed_live_smoked",
+        "commit": "4275cb3b",
+        "deployment": {
+          "provider": "railway",
+          "project": "one-time-production",
+          "service": "one-time-web",
+          "environment": "production",
+          "deployment_id": "802fdb51-9d0d-4f47-b314-b7aabcd308d9",
+          "status": "SUCCESS",
+          "superseded_partial_deployment_id": "10d8e01c-bca2-4ab1-97a4-5f6ba0161afa"
+        },
+        "report": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-live/report.md",
+        "screenshot_dir": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-live/screenshots/",
+        "checks": {
+          "passed": 10,
+          "total": 10,
+          "viewports": [
+            390,
+            430
+          ],
+          "routes": [
+            "/one-time/",
+            "/rabbi-member?review=one-time",
+            "/member-library?review=one-time",
+            "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+            "/provider.html?review=one-time"
+          ]
+        }
       }
     }
   ],
@@ -370,10 +401,12 @@
     {
       "generated_at": "2026-07-10T15:10:00.000Z",
       "gap_id": "UIGAP-20260710-008",
-      "status": "LOCAL_VERIFIED_NOT_PUSHED",
-      "evidence": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-local/report.md",
+      "status": "DONE_DEPLOYED_LIVE_SMOKED",
+      "evidence": "ops/ui-audits/2026-07-10-onetime-mobile-nav-white-chip-live/report.md",
       "raw_id": "RAW-20260710-006",
-      "requirement_id": "REQ-20260710-036"
+      "requirement_id": "REQ-20260710-036",
+      "deployment_id": "802fdb51-9d0d-4f47-b314-b7aabcd308d9",
+      "commit": "4275cb3b"
     }
   ]
 }
