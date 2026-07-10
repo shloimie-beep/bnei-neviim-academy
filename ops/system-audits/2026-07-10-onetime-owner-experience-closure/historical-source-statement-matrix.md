@@ -1,7 +1,7 @@
 # One Time Historical Source Statement Matrix - Skeleton
 
-Generated: 2026-07-10T16:05:42+03:00
-Status: skeleton created; first through tenth batches mapped; terminal mapping still required.
+Generated: 2026-07-10T16:11:37+03:00
+Status: skeleton created; first through eleventh batches mapped; terminal mapping still required.
 
 Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-inventory.json`
 
@@ -162,16 +162,16 @@ Source inventory: `ops/system-audits/2026-07-10-onetime-owner-experience-closure
 | HIST-SRC-0133 | HRAW-133 | raw_input | OT-HIST-003 | 2026-07-10 | `raw-input/RAW-20260710-001-onetime-ramble-to-terminal-ui-gap-audit.md` | mapped_terminal_mixed_done_and_blocked | mixed_terminal_done_and_blocked |
 | HIST-SRC-0134 | HRAW-134 | raw_input | OT-HIST-002 | 2026-07-10 | `raw-input/RAW-20260710-002-onetime-launch-priority-landing-crm-assistant.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
 | HIST-SRC-0135 | HRAW-135 | raw_input | OT-HIST-UNSORTED | 2026-07-10 | `raw-input/RAW-20260710-003-codex-followup-one-time-owner-experience-closure.md` | mapped_in_progress_goal_active |  |
-| HIST-SRC-0136 | HTASK-001 | task_register | OT-HIST-006 | 2026-05-31 | `tasks-pending/2026-05-31-drive-video-social-and-student-question-routing.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0137 | HTASK-002 | task_register | OT-HIST-005 | 2026-06-05 | `tasks-pending/2026-06-05-telegram-ai-mode-and-one-time-rabbi-setup.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0138 | HTASK-003 | task_register | OT-HIST-005 | 2026-06-09 | `tasks-pending/2026-06-09-one-time-ghl-agent-loop.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0139 | HTASK-004 | task_register | OT-HIST-006 | 2026-06-09 | `tasks-pending/2026-06-09-one-time-partnership-drive-map.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0140 | HTASK-005 | task_register | OT-HIST-UNSORTED | 2026-06-09 | `tasks-pending/2026-06-09-parent-student-dashboard-registration-followup.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0141 | HTASK-006 | task_register | OT-HIST-UNSORTED | 2026-06-09 | `tasks-pending/2026-06-09-warm-leads-and-task-filters.md` | needs_terminal_mapping_done_claim_present |  |
-| HIST-SRC-0142 | HTASK-007 | task_register | OT-HIST-005 | 2026-06-10 | `tasks-pending/2026-06-10-one-time-external-user-portal-and-ticketing.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0143 | HTASK-008 | task_register | OT-HIST-003 | 2026-06-10 | `tasks-pending/2026-06-10-one-time-rabbi-meeting-build-brief.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0144 | HTASK-009 | task_register | OT-HIST-UNSORTED | 2026-06-10 | `tasks-pending/2026-06-10-provider-commercial-model-entitlements.md` | needs_terminal_mapping_blocker_present |  |
-| HIST-SRC-0145 | HTASK-010 | task_register | OT-HIST-UNSORTED | 2026-06-10 | `tasks-pending/2026-06-10-service-provider-directory-and-login.md` | needs_terminal_mapping_blocker_present |  |
+| HIST-SRC-0136 | HTASK-001 | task_register | OT-HIST-006 | 2026-05-31 | `tasks-pending/2026-05-31-drive-video-social-and-student-question-routing.md` | mapped_terminal_done | done |
+| HIST-SRC-0137 | HTASK-002 | task_register | OT-HIST-005 | 2026-06-05 | `tasks-pending/2026-06-05-telegram-ai-mode-and-one-time-rabbi-setup.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0138 | HTASK-003 | task_register | OT-HIST-005 | 2026-06-09 | `tasks-pending/2026-06-09-one-time-ghl-agent-loop.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0139 | HTASK-004 | task_register | OT-HIST-006 | 2026-06-09 | `tasks-pending/2026-06-09-one-time-partnership-drive-map.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0140 | HTASK-005 | task_register | OT-HIST-UNSORTED | 2026-06-09 | `tasks-pending/2026-06-09-parent-student-dashboard-registration-followup.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0141 | HTASK-006 | task_register | OT-HIST-UNSORTED | 2026-06-09 | `tasks-pending/2026-06-09-warm-leads-and-task-filters.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0142 | HTASK-007 | task_register | OT-HIST-005 | 2026-06-10 | `tasks-pending/2026-06-10-one-time-external-user-portal-and-ticketing.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0143 | HTASK-008 | task_register | OT-HIST-003 | 2026-06-10 | `tasks-pending/2026-06-10-one-time-rabbi-meeting-build-brief.md` | mapped_terminal_mixed_done_needs_decision_blocked | mixed_terminal_done_needs_decision_blocked |
+| HIST-SRC-0144 | HTASK-009 | task_register | OT-HIST-UNSORTED | 2026-06-10 | `tasks-pending/2026-06-10-provider-commercial-model-entitlements.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
+| HIST-SRC-0145 | HTASK-010 | task_register | OT-HIST-UNSORTED | 2026-06-10 | `tasks-pending/2026-06-10-service-provider-directory-and-login.md` | mapped_terminal_done_deployed_live_smoked | done_deployed_live_smoked |
 | HIST-SRC-0146 | HTASK-011 | task_register | OT-HIST-UNSORTED | 2026-06-10 | `tasks-pending/2026-06-10-transcript-wide-source-sheet-production.md` | needs_terminal_mapping_done_claim_present |  |
 | HIST-SRC-0147 | HTASK-012 | task_register | OT-HIST-003 | 2026-06-11 | `tasks-pending/2026-06-11-action-registry-telegram-ui-bot.md` | needs_terminal_mapping_done_claim_present |  |
 | HIST-SRC-0148 | HTASK-013 | task_register | OT-HIST-003 | 2026-06-11 | `tasks-pending/2026-06-11-content-library-v2-build-brief.md` | needs_terminal_mapping_blocker_present |  |
