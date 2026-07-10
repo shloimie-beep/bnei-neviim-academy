@@ -382,6 +382,32 @@ async function notifySuperAdminSupportTicket({
   };
 }
 
+async function notifyTelegramRoleAlias({
+  roleAlias = '',
+  communication = {},
+  ticket = {},
+  context = {},
+  env = process.env,
+  secretsDir = defaultSecretsDir,
+  fetchImpl = global.fetch,
+  dryRun = false,
+} = {}) {
+  const alias = String(roleAlias || '').trim().toLowerCase();
+  if (alias === 'one_time_rabbi_operator') {
+    return notifyRabbiCommunication({ communication, context, env, secretsDir, fetchImpl, dryRun });
+  }
+  if (alias === 'platform_support_shloimie') {
+    return notifySuperAdminSupportTicket({ ticket, context, env, secretsDir, fetchImpl, dryRun });
+  }
+  return {
+    attempted: false,
+    sent: false,
+    would_send: false,
+    blocker: 'unknown_telegram_role_alias',
+    role_alias: alias || null,
+  };
+}
+
 function buildRabbiTelegramReadiness({ env = process.env, secretsDir = defaultSecretsDir } = {}) {
   const config = loadTelegramNotificationConfig({ env, secretsDir });
   const blockers = [];
@@ -410,6 +436,7 @@ module.exports = {
   loadTelegramNotificationConfig,
   notifyRabbiCommunication,
   notifySuperAdminSupportTicket,
+  notifyTelegramRoleAlias,
   rabbiCommunicationAlertsEnabled,
   redactTelegramConfig,
   sendTelegramMessage,

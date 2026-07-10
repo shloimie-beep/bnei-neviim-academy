@@ -27,24 +27,37 @@ test('One Time WhatsApp sends prefer Rabbi-scoped credentials and keep CRM proje
   assert.match(server, /ONE_TIME_WAPI_API_TOKEN or RABBI_SHELLER_WAPI_API_TOKEN or WAPI_API_TOKEN/);
 });
 
-test('One Time WAPI bot auto-reply is approval-gated and does not commit the class link', () => {
+test('One Time WAPI provider lead-bot reply is approval-gated and does not commit or anonymously release the class link', () => {
+  const webhookAuth = server.slice(
+    server.indexOf('function authorizeWapiWebhookRequest'),
+    server.indexOf('function oneTimeWapiAutoReplyReadiness')
+  );
   assert.match(server, /ONE_TIME_WAPI_AUTO_REPLY_ENABLED/);
   assert.match(server, /ONE_TIME_WAPI_AUTO_REPLY_CONFIRM/);
   assert.match(server, /APPROVE_ONE_TIME_WAPI_AUTO_REPLY/);
   assert.match(server, /ONE_TIME_WHATSAPP_CLASS_LINK/);
   assert.match(server, /ONE_TIME_CURRENT_CLASS_LINK/);
   assert.match(server, /function oneTimeWapiAutoReplyReadiness/);
+  assert.match(server, /ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live'/);
+  assert.match(server, /ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_APPROVED/);
+  assert.match(server, /WAPI_WEBHOOK_ALLOW_INSECURE_LOCAL_TEST/);
+  assert.doesNotMatch(webhookAuth, /req\.query\.secret/);
   assert.match(server, /credential_scope === 'one_time_scoped'/);
   assert.match(server, /One Time auto-reply requires one_time_scoped WAPI credentials/);
-  assert.match(server, /metadata->>'auto_reply_type' = 'one_time_welcome_class_link'/);
-  assert.match(server, /INTERVAL '12 hours'/);
+  assert.match(server, /metadata->>'auto_reply_type' IN \('provider_lead_bot_reply', 'one_time_welcome_class_link'\)/);
+  assert.match(server, /inbound_communication_id/);
+  assert.match(server, /inbound_wapi_message_id/);
+  assert.match(server, /claimOneTimeWapiAutoReplyAttempt/);
   assert.match(server, /not_applicable_non_onetime_scope/);
   assert.match(server, /!isOneTimeWapiScope\(webhookScope\)/);
   assert.match(server, /function oneTimeWapiAutoReplyMessage/);
+  assert.match(server, /buildProviderLeadBotPlan/);
+  assert.match(server, /class_link_release_requires_active_member/);
   assert.match(server, /maybeSendOneTimeWapiAutoReply/);
   assert.match(server, /auto_reply_configured/);
   assert.match(server, /auto_reply_readiness/);
   assert.match(server, /no_secret_link_in_source/);
+  assert.doesNotMatch(server, /Here is the link for today.s shiur/);
   assert.doesNotMatch(server, /us06web\.zoom\.us\/j\/83339110316/);
 });
 
@@ -84,11 +97,15 @@ test('One Time WAPI readiness script reports blockers without sends or secrets',
       ONE_TIME_WHAPI_PHONE: '+972501111111',
       ONE_TIME_WAPI_AUTO_REPLY_ENABLED: 'live',
       ONE_TIME_WAPI_AUTO_REPLY_CONFIRM: 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY',
+      ONE_TIME_PROVIDER_LEAD_BOT_MODE: 'live',
+      ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM: 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM',
+      ONE_TIME_WAPI_WEBHOOK_SECRET: 'test-webhook-secret',
       ONE_TIME_WHATSAPP_CLASS_LINK: 'https://example.test/class-link',
     },
   });
   assert.equal(ready.provider_setup.ready, true);
   assert.equal(ready.auto_reply.ready, true);
+  assert.equal(ready.telegram_notifications.ready, true);
   assert.equal(ready.outbound.credential_scope, 'one_time_scoped');
   assert.equal(ready.whatsapp_send_performed, false);
   assert.equal(ready.crm_mutation_performed, false);

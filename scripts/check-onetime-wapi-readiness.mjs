@@ -12,6 +12,10 @@ const {
   safeSecretSourceLabel,
   usableSecretValue,
 } = require('../src/lib/integrations/secret-loader');
+const {
+  loadProviderLeadBotProfile,
+  validateProviderLeadBotProfile,
+} = require('../src/lib/bna/provider-lead-bot');
 
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), '..');
@@ -200,14 +204,36 @@ export function buildOneTimeWapiReadiness(options = {}) {
       : phone.source;
 
   const credentialScope = summarizeCredential(oneTimeToken, defaultToken);
+  const providerBotProfileKey = String(env.ONE_TIME_PROVIDER_LEAD_BOT_PROFILE || 'one-time').trim() || 'one-time';
+  let providerBotProfile = null;
+  let providerBotProfileError = '';
+  try {
+    providerBotProfile = loadProviderLeadBotProfile(providerBotProfileKey, { configDir: path.join(root, 'config', 'service-provider-bots') });
+    const validation = validateProviderLeadBotProfile(providerBotProfile);
+    if (!validation.valid) providerBotProfileError = validation.errors.join('; ');
+  } catch (error) {
+    providerBotProfileError = error instanceof Error ? error.message : String(error);
+  }
+  const providerBotMode = String(env.ONE_TIME_PROVIDER_LEAD_BOT_MODE || providerBotProfile?.policies?.activation_mode || 'observe_only').trim().toLowerCase();
+  const webhookSecret = configuredValue(env, [
+    'ONE_TIME_WAPI_WEBHOOK_SECRET',
+    'ONETIME_WAPI_WEBHOOK_SECRET',
+    'RABBI_SHELLER_WAPI_WEBHOOK_SECRET',
+    'RABBI_SCHELLER_WAPI_WEBHOOK_SECRET',
+    'WAPI_WEBHOOK_SECRET',
+  ]);
   const autoReplyEnabled = truthy(env.ONE_TIME_WAPI_AUTO_REPLY_ENABLED);
   const autoReplyApproved = String(env.ONE_TIME_WAPI_AUTO_REPLY_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY';
+  const telegramApproved = String(env.ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM';
   const outboundConfigured = oneTimeToken.configured || defaultToken.configured;
   const autoReplyBlockers = [];
   if (!oneTimeToken.configured) autoReplyBlockers.push('ONE_TIME_WAPI_API_TOKEN or RABBI_SHELLER_WAPI_API_TOKEN missing');
   if (defaultToken.configured && !oneTimeToken.configured) autoReplyBlockers.push('One Time auto-reply cannot use default/global WAPI credentials');
   if (!autoReplyEnabled) autoReplyBlockers.push('ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled');
   if (!autoReplyApproved) autoReplyBlockers.push('ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY');
+  if (providerBotMode !== 'live') autoReplyBlockers.push('ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live');
+  if (!providerBotProfile || providerBotProfileError) autoReplyBlockers.push('One Time provider lead-bot profile is missing or invalid');
+  if (!webhookSecret.configured) autoReplyBlockers.push('One Time WAPI webhook secret missing');
   if (!classLinkConfigured) autoReplyBlockers.push('ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing');
 
   const setupBlockers = [];
@@ -215,6 +241,12 @@ export function buildOneTimeWapiReadiness(options = {}) {
   if (!oneTimeToken.configured) setupBlockers.push('One Time scoped WAPI token missing');
   if (!instanceConfigured) setupBlockers.push('Whapi/WAPI instance id missing');
   if (!phoneConfigured) setupBlockers.push('WhatsApp sender phone metadata missing');
+  if (!webhookSecret.configured) setupBlockers.push('WAPI webhook secret missing');
+  if (!providerBotProfile || providerBotProfileError) setupBlockers.push('Provider lead-bot profile missing or invalid');
+
+  const telegramBlockers = [];
+  if (providerBotMode !== 'live') telegramBlockers.push('ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live');
+  if (!telegramApproved) telegramBlockers.push('ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM');
 
   const autoReplyReady = autoReplyBlockers.length === 0;
   const providerSetupReady = setupBlockers.length === 0;
@@ -265,15 +297,30 @@ export function buildOneTimeWapiReadiness(options = {}) {
       class_link_configured: classLinkConfigured,
       class_link_source: classLinkSource,
       credential_scope: credentialScope,
+      provider_bot_profile: providerBotProfile?.profile_key || providerBotProfileKey,
+      provider_bot_profile_version: providerBotProfile?.version || null,
+      provider_bot_profile_valid: Boolean(providerBotProfile && !providerBotProfileError),
+      provider_bot_mode: providerBotMode,
+      webhook_secret_present: webhookSecret.configured,
+      webhook_header_auth_only_required: true,
+      instance_binding_required: true,
+      destination_number_binding_required: true,
+      telegram_notifications_approved: telegramApproved,
       blockers: autoReplyBlockers,
-      copy_version: '2026-07-08-r1',
+      copy_version: providerBotProfile?.version || 'unavailable',
     },
-    required_next_actions: [...new Set([...setupBlockers, ...autoReplyBlockers])],
+    telegram_notifications: {
+      ready: telegramBlockers.length === 0,
+      approved: telegramApproved,
+      provider_bot_mode: providerBotMode,
+      blockers: telegramBlockers,
+    },
+    required_next_actions: [...new Set([...setupBlockers, ...autoReplyBlockers, ...telegramBlockers])],
     guardrails: [
       'Readiness check only; no WhatsApp message is sent.',
       'No CRM contact, tag, lead, or communication row is created or updated.',
       'No secret values, chat IDs, raw class links, or phone numbers are printed.',
-      'One Time auto-reply requires One Time scoped WAPI credentials, an approved flag, and a configured class link.',
+      'One Time auto-reply requires One Time scoped WAPI credentials, a valid provider-bot profile, header-authenticated instance/destination binding, live mode, explicit WhatsApp and Telegram approvals, and a configured class link.',
     ],
   };
 }
@@ -302,6 +349,8 @@ function renderMarkdown(report) {
     `- Auto-reply ready: ${report.auto_reply.ready}`,
     `- Auto-reply enabled: ${report.auto_reply.enabled}`,
     `- Auto-reply approved: ${report.auto_reply.approved}`,
+    `- Telegram notifications approved: ${report.auto_reply.telegram_notifications_approved}`,
+    `- Telegram notifications ready: ${report.telegram_notifications.ready}`,
     `- Class link configured: ${report.auto_reply.class_link_configured}`,
     '',
     '## Blockers / Next Actions',
@@ -333,7 +382,7 @@ export async function main(argv = process.argv.slice(2), options = {}) {
   const payload = { ...report, report_paths: paths };
   if (args.json) console.log(JSON.stringify(payload, null, 2));
   else console.log(renderMarkdown(report));
-  if (!report.provider_setup.ready || !report.auto_reply.ready) process.exitCode = 1;
+  if (!report.provider_setup.ready || !report.auto_reply.ready || !report.telegram_notifications.ready) process.exitCode = 1;
   return payload;
 }
 

@@ -7,6 +7,7 @@ const {
   formatRabbiCommunicationTelegramAlert,
   formatSupportTicketTelegramAlert,
   notifyRabbiCommunication,
+  notifyTelegramRoleAlias,
   loadTelegramNotificationConfig,
   notifySuperAdminSupportTicket,
   rabbiCommunicationAlertsEnabled,
@@ -186,10 +187,56 @@ test('notifyRabbiCommunication sends to Rabbi chat when scoped target is configu
   assert.match(body.text, /Parent question/);
 });
 
+test('notifyTelegramRoleAlias resolves only the approved Rabbi and platform-support roles', async () => {
+  const rabbi = await notifyTelegramRoleAlias({
+    roleAlias: 'one_time_rabbi_operator',
+    dryRun: true,
+    secretsDir: null,
+    env: {
+      TELEGRAM_RABBI_COMMUNICATION_ALERTS_ENABLED: 'true',
+      TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER: '456:rabbi-token',
+      TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER: '777',
+    },
+    communication: {
+      id: 10,
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+      subject: 'Lead question',
+    },
+  });
+  assert.equal(rabbi.would_send, true);
+  assert.equal(rabbi.sent, false);
+
+  const support = await notifyTelegramRoleAlias({
+    roleAlias: 'platform_support_shloimie',
+    dryRun: true,
+    secretsDir: null,
+    env: {
+      TELEGRAM_SUPPORT_TICKET_ALERTS_ENABLED: 'true',
+      TELEGRAM_BOT_TOKEN_BNA: '123:test-token',
+      TELEGRAM_CHAT_ID_BNA: '999',
+    },
+    ticket: { id: 11, title: 'Login problem', severity: 'normal', category: 'bot_api' },
+  });
+  assert.equal(support.would_send, true);
+  assert.equal(support.sent, false);
+
+  const unknown = await notifyTelegramRoleAlias({
+    roleAlias: 'unapproved_recipient',
+    dryRun: true,
+    secretsDir: null,
+  });
+  assert.equal(unknown.would_send, false);
+  assert.equal(unknown.blocker, 'unknown_telegram_role_alias');
+});
+
 test('server wires Rabbi communication alerts separately from super-admin ticket alerts', () => {
   const server = fs.readFileSync('server.js', 'utf8');
   assert.match(server, /notifySuperAdminSupportTicket/);
   assert.match(server, /notifyRabbiCommunication/);
+  assert.match(server, /notifyTelegramRoleAlias/);
+  assert.match(server, /roleAlias: 'one_time_rabbi_operator'/);
+  assert.match(server, /'platform_support_shloimie'/);
   assert.match(server, /source: 'parent_portal_provider_message'/);
   assert.match(server, /source: 'resend_inbound_email'/);
   assert.match(server, /source: 'one_time_wapi_inbound'/);

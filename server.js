@@ -133,7 +133,13 @@ const {
 const {
   notifyRabbiCommunication,
   notifySuperAdminSupportTicket,
+  notifyTelegramRoleAlias,
 } = require('./src/lib/bna/telegram-notifications');
+const {
+  buildProviderLeadBotPlan,
+  classifyProviderLeadBotIntent,
+  loadProviderLeadBotProfile,
+} = require('./src/lib/bna/provider-lead-bot');
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
 const bufferIntegration = require('./src/lib/integrations/buffer-client');
 const resendIntegration = require('./src/lib/integrations/resend-client');
@@ -2657,6 +2663,37 @@ const ONE_TIME_WAPI_AUTO_REPLY_ENABLED = /^(?:1|true|yes|live)$/i.test(
 );
 const ONE_TIME_WAPI_AUTO_REPLY_APPROVED =
   String(process.env.ONE_TIME_WAPI_AUTO_REPLY_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY';
+const ONE_TIME_PROVIDER_LEAD_BOT_PROFILE = loadProviderLeadBotProfile(
+  process.env.ONE_TIME_PROVIDER_LEAD_BOT_PROFILE || 'one-time'
+);
+const ONE_TIME_PROVIDER_LEAD_BOT_REQUESTED_MODE = String(
+  process.env.ONE_TIME_PROVIDER_LEAD_BOT_MODE ||
+  ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.policies?.activation_mode ||
+  'observe_only'
+).trim().toLowerCase();
+const ONE_TIME_PROVIDER_LEAD_BOT_MODE = ['observe_only', 'capture_only', 'live'].includes(ONE_TIME_PROVIDER_LEAD_BOT_REQUESTED_MODE)
+  ? ONE_TIME_PROVIDER_LEAD_BOT_REQUESTED_MODE
+  : 'observe_only';
+const ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_APPROVED =
+  String(process.env.ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM';
+const WAPI_WEBHOOK_ALLOW_INSECURE_LOCAL_TEST = /^(?:1|true|yes)$/i.test(
+  String(process.env.WAPI_WEBHOOK_ALLOW_INSECURE_LOCAL_TEST || '').trim()
+);
+const ONE_TIME_WAPI_WEBHOOK_SECRET =
+  usableSecretValue(process.env.ONE_TIME_WAPI_WEBHOOK_SECRET) ||
+  usableSecretValue(process.env.ONETIME_WAPI_WEBHOOK_SECRET) ||
+  usableSecretValue(process.env.RABBI_SHELLER_WAPI_WEBHOOK_SECRET) ||
+  usableSecretValue(process.env.RABBI_SCHELLER_WAPI_WEBHOOK_SECRET);
+const ONE_TIME_WAPI_INSTANCE_ID = String(
+  process.env.ONE_TIME_WHAPI_INSTANCE_ID ||
+  process.env.ONE_TIME_WAPI_INSTANCE_ID ||
+  ''
+).trim();
+const ONE_TIME_WAPI_SENDER_PHONE = String(
+  process.env.ONE_TIME_WHAPI_PHONE ||
+  process.env.ONE_TIME_WAPI_PHONE ||
+  ''
+).trim();
 const ONE_TIME_WHATSAPP_CLASS_LINK = String(
   process.env.ONE_TIME_WHATSAPP_CLASS_LINK ||
   process.env.ONE_TIME_LIVE_CLASS_URL ||
@@ -38528,8 +38565,14 @@ async function createInAppNotification(input = {}, db = pool) {
   const notification = inAppNotificationView(row);
   const sourceTable = String(input.sourceTable || input.source_table || '').trim().toLowerCase();
   const relatedType = String(input.relatedType || input.related_type || '').trim().toLowerCase();
-  if (row?.inserted && (sourceTable === 'bna_support_tickets' || relatedType === 'support_ticket') && ['support_ticket_created', 'safety_moderation_flag'].includes(eventType)) {
-    notifySuperAdminSupportTicket({
+  if (
+    row?.inserted &&
+    sourceContext.telegram_notification_allowed !== false &&
+    (sourceTable === 'bna_support_tickets' || relatedType === 'support_ticket') &&
+    ['support_ticket_created', 'safety_moderation_flag'].includes(eventType)
+  ) {
+    notifyTelegramRoleAlias({
+      roleAlias: sourceContext.telegram_role_alias || 'platform_support_shloimie',
       ticket: {
         id: input.relatedId || input.related_id || input.sourceId || input.source_id || null,
         title,
@@ -44123,7 +44166,8 @@ async function handleResendInboundWebhook(req, res) {
       }),
     });
     if (result?.success && !result.duplicate && result.communication_id) {
-      notifyRabbiCommunication({
+      notifyTelegramRoleAlias({
+        roleAlias: 'one_time_rabbi_operator',
         communication: {
           id: result.communication_id,
           channel: 'email',
@@ -62338,9 +62382,28 @@ function normalizeWapiWebhookPayload(payload = {}) {
   return {
     eventType: firstWapiValue(body.event?.type, body.event?.event, data.event?.type, data.event?.event, body.event, body.eventType, body.type, data.event, data.type),
     eventId: firstWapiValue(body.eventId, body.event_id, body.id, data.eventId, data.id),
+    channelId: firstWapiValue(
+      body.channelId,
+      body.channel_id,
+      body.channel?.id,
+      data.channelId,
+      data.channel_id,
+      data.channel?.id,
+      message.channelId,
+      message.channel_id
+    ),
+    instanceId: firstWapiValue(
+      body.instanceId,
+      body.instance_id,
+      data.instanceId,
+      data.instance_id,
+      message.instanceId,
+      message.instance_id
+    ),
     messageId: firstWapiValue(body.messageId, body.message_id, message.messageId, message.id, key.id),
     chatId: firstWapiValue(body.chatId, body.chat_id, data.chatId, data.chat_id, message.chatId, message.chat_id, message.recipient_id, key.remoteJid),
     fromNumber: firstWapiValue(body.from, body.phone, data.from, data.phone, message.from, message.sender, message.recipient_id, key.participant, key.remoteJid),
+    toNumber: firstWapiValue(body.to, body.recipient, body.receiver, data.to, data.recipient, data.receiver, message.to, message.recipient, message.receiver),
     pushName: firstWapiValue(body.pushName, body.push_name, data.pushName, message.pushName, message.notifyName),
     messageType: firstWapiValue(body.messageType, body.message_type, data.messageType, message.type, message.messageType, mediaType, message.status ? 'status' : null),
     messageStatus: firstWapiValue(message.status, data.status, body.status),
@@ -62374,7 +62437,7 @@ function wapiPhoneSuffix(value) {
   return digits.length >= 7 ? digits.slice(-9) : '';
 }
 
-async function findWapiCommunicationContact(normalized, db = pool) {
+async function findWapiCommunicationContact(normalized, db = pool, { projectId = null } = {}) {
   const contactNumber = normalized.fromMe
     ? (normalized.chatId || normalized.fromNumber || '')
     : (normalized.fromNumber || normalized.chatId || '');
@@ -62384,11 +62447,13 @@ async function findWapiCommunicationContact(normalized, db = pool) {
     return { contact_type: 'general', match_source: 'none' };
   }
 
-  const phoneParams = [phoneDigits, phoneSuffix];
-  const phoneCondition = `
-    ($1 <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $1)
-    OR ($2 <> '' AND right(regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g'), 9) = $2)
-  `;
+  const phoneParams = [phoneDigits, phoneSuffix, projectId || null];
+  const phoneCondition = projectId
+    ? `($1 <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $1)`
+    : `
+      ($1 <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $1)
+      OR ($2 <> '' AND right(regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g'), 9) = $2)
+    `;
 
   const leadPhoneCondition = `
     ${phoneCondition}
@@ -62396,14 +62461,42 @@ async function findWapiCommunicationContact(normalized, db = pool) {
       SELECT 1
       FROM unnest(COALESCE(other_phones, '{}'::text[])) AS phone_values(value)
       WHERE ($1 <> '' AND regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g') = $1)
-         OR ($2 <> '' AND right(regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g'), 9) = $2)
+         OR ($3::int IS NULL AND $2 <> '' AND right(regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g'), 9) = $2)
     )
   `;
+
+  if (projectId) {
+    const member = (await db.query(
+      `SELECT id, signup_id, student_id, project_id, display_name, phone, access_status, access_enabled
+       FROM bna_members
+       WHERE ($1 <> '' AND regexp_replace(COALESCE(phone, ''), '\\D', '', 'g') = $1)
+         AND project_id = $3
+         AND access_enabled = TRUE
+         AND access_status IN ('active', 'trial')
+       ORDER BY updated_at DESC NULLS LAST, created_at DESC NULLS LAST, id DESC
+       LIMIT 1`,
+      phoneParams
+    )).rows[0];
+    if (member) {
+      return {
+        contact_type: member.signup_id ? 'signup' : member.student_id ? 'student' : 'general',
+        signup_id: member.signup_id || null,
+        student_id: member.student_id || null,
+        member_id: member.id,
+        project_id: member.project_id,
+        match_source: 'active_member_phone',
+        matched_name: member.display_name || null,
+        access_state: 'active_member',
+        access_verified: true,
+      };
+    }
+  }
 
   const lead = (await db.query(
      `SELECT id, project_id, parent_name, parent_phone
       FROM bna_parent_leads
-      WHERE ${leadPhoneCondition}
+      WHERE (${leadPhoneCondition})
+       AND ($3::int IS NULL OR project_id = $3::int)
        AND COALESCE(status, 'interested') <> 'archived'
      ORDER BY last_inbound_at DESC NULLS LAST, updated_at DESC NULLS LAST, created_at DESC
      LIMIT 1`,
@@ -62416,13 +62509,16 @@ async function findWapiCommunicationContact(normalized, db = pool) {
       project_id: lead.project_id || null,
       match_source: 'lead_phone',
       matched_name: lead.parent_name || null,
+      access_state: 'lead',
+      access_verified: false,
     };
   }
 
   const signup = (await db.query(
     `SELECT id, project_id, parent_name, student_name, parent_phone
      FROM signups
-     WHERE ${phoneCondition}
+     WHERE (${phoneCondition})
+       AND ($3::int IS NULL OR project_id = $3::int)
        AND COALESCE(status, 'new') <> 'archived'
      ORDER BY updated_at DESC NULLS LAST, created_at DESC
      LIMIT 1`,
@@ -62435,13 +62531,16 @@ async function findWapiCommunicationContact(normalized, db = pool) {
       project_id: signup.project_id || null,
       match_source: 'signup_phone',
       matched_name: signup.parent_name || signup.student_name || null,
+      access_state: 'anonymous',
+      access_verified: false,
     };
   }
 
   const student = (await db.query(
     `SELECT id, project_id, name, parent_name, parent_phone
      FROM bna_students
-     WHERE ${phoneCondition}
+     WHERE (${phoneCondition})
+       AND ($3::int IS NULL OR project_id = $3::int)
        AND COALESCE(status, 'active') <> 'inactive'
      ORDER BY updated_at DESC NULLS LAST, created_at DESC
      LIMIT 1`,
@@ -62454,6 +62553,8 @@ async function findWapiCommunicationContact(normalized, db = pool) {
       project_id: student.project_id || null,
       match_source: 'student_phone',
       matched_name: student.parent_name || student.name || null,
+      access_state: 'anonymous',
+      access_verified: false,
     };
   }
 
@@ -62496,7 +62597,36 @@ function buildWapiCommunicationCopy(normalized, match = {}) {
   };
 }
 
-async function createCommunicationFromWapiWebhook({ normalized, webhookLogId, payload, syncRunId = null, projectId = null }, db = pool) {
+async function createCommunicationFromWapiWebhook({
+  normalized,
+  webhookLogId,
+  payload,
+  syncRunId = null,
+  projectId = null,
+  suppressAttentionArtifacts = false,
+}, db = pool) {
+  if (normalized.messageId && typeof db.connect === 'function') {
+    const client = await db.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`wapi-message:${normalized.messageId}`]);
+      const result = await createCommunicationFromWapiWebhook({
+        normalized,
+        webhookLogId,
+        payload,
+        syncRunId,
+        projectId,
+        suppressAttentionArtifacts,
+      }, client);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      await client.query('ROLLBACK').catch(() => null);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
   const deliveryStatus = String(normalized.messageStatus || '').trim().toLowerCase();
   const hasMessageContent = Boolean(normalized.messageText || normalized.hasMedia);
   const statusOnlyEvent = Boolean(deliveryStatus && !hasMessageContent && !normalized.fromMe);
@@ -62554,7 +62684,7 @@ async function createCommunicationFromWapiWebhook({ normalized, webhookLogId, pa
     }
   }
 
-  const match = await findWapiCommunicationContact(normalized, db);
+  const match = await findWapiCommunicationContact(normalized, db, { projectId });
   const copy = buildWapiCommunicationCopy(normalized, match);
   const outboundMessage = Boolean(normalized.fromMe || statusOnlyEvent);
   const followUpRequired = deliveryStatus
@@ -62649,9 +62779,431 @@ async function createCommunicationFromWapiWebhook({ normalized, webhookLogId, pa
     );
   }
 
-  await createCommunicationAttentionArtifacts(communication, screening, { db }).catch(() => {});
+  if (!suppressAttentionArtifacts) {
+    await createCommunicationAttentionArtifacts(communication, screening, { db }).catch(() => {});
+  }
 
   return { communication, duplicate: false, match };
+}
+
+async function ensureOneTimeProviderBotLead({ normalized, communicationResult, scope, intent }, db = pool) {
+  const inboundCustomerMessage = !normalized.fromMe
+    && !String(normalized.messageStatus || '').trim()
+    && Boolean(normalized.messageText || normalized.hasMedia);
+  if (!inboundCustomerMessage || !isOneTimeWapiScope(scope)) {
+    return { lead: null, created: false, communicationResult };
+  }
+
+  const phone = normalizeWapiRecipient(normalized.fromNumber || normalized.chatId || '');
+  if (!phone) return { lead: null, created: false, communicationResult };
+  const existingMatch = communicationResult.match || {};
+  if (
+    ['signup', 'student'].includes(existingMatch.contact_type) ||
+    existingMatch.access_state === 'active_member' ||
+    existingMatch.access_verified === true
+  ) {
+    return { lead: null, created: false, communicationResult };
+  }
+  const client = db.connect ? await db.connect() : null;
+  const runner = client || db;
+  try {
+    if (client) await client.query('BEGIN');
+    await runner.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`provider-lead-bot:${ONE_TIME_PROJECT_KEY}:${phone}`]);
+    const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, runner);
+    let lead = (await runner.query(
+      `SELECT *
+       FROM bna_parent_leads
+       WHERE project_id = $1
+         AND COALESCE(status, 'interested') <> 'archived'
+         AND (
+           regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $2
+           OR EXISTS (
+             SELECT 1
+             FROM unnest(COALESCE(other_phones, '{}'::text[])) AS phone_values(value)
+             WHERE regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g') = $2
+           )
+         )
+       ORDER BY updated_at DESC NULLS LAST, created_at DESC NULLS LAST, id DESC
+       LIMIT 1`,
+      [project.id, normalizePhoneDigits(phone)]
+    )).rows[0] || null;
+    const optOut = intent === 'opt_out_or_wrong_number';
+    let created = false;
+    if (!lead) {
+      lead = (await runner.query(
+        `INSERT INTO bna_parent_leads (
+           project_id, parent_name, parent_phone, lead_type, status,
+           interest_level, source, source_detail, last_inbound_at, owner,
+           tags, notes, metadata
+         ) VALUES (
+           $1, $2, $3, 'school_interest', $4,
+           'unknown', 'whatsapp', 'One Time WhatsApp lead bot', NOW(), 'Rabbi Scheller',
+           $5::text[], $6, $7::jsonb
+         )
+         RETURNING *`,
+        [
+          project.id,
+          limitText(normalized.pushName || 'WhatsApp inquiry', 180) || 'WhatsApp inquiry',
+          phone,
+          optOut ? 'not_now' : 'lead_candidate',
+          optOut ? ['one-time', 'whatsapp-lead-bot', 'whatsapp-opt-out'] : ['one-time', 'whatsapp-lead-bot'],
+          optOut ? 'WhatsApp contact requested no further messages.' : 'Inbound One Time WhatsApp inquiry captured automatically.',
+          JSON.stringify({
+            source: 'one_time_provider_lead_bot',
+            profile_key: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.profile_key,
+            profile_version: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.version,
+            whatsapp_suppressed: optOut,
+            contact_consent: false,
+            external_write_performed: false,
+          }),
+        ]
+      )).rows[0];
+      created = true;
+    } else {
+      lead = (await runner.query(
+        `UPDATE bna_parent_leads
+         SET parent_name = CASE
+               WHEN COALESCE(parent_name, '') IN ('', 'WhatsApp inquiry') AND $2 <> '' THEN $2
+               ELSE parent_name
+             END,
+             last_inbound_at = NOW(),
+             status = CASE WHEN $3 THEN 'not_now' ELSE status END,
+             tags = (
+               SELECT ARRAY(
+                 SELECT DISTINCT tag_value
+                 FROM unnest(COALESCE(tags, '{}'::text[]) || $4::text[]) AS tag_values(tag_value)
+                 WHERE trim(tag_value) <> ''
+               )
+             ),
+             metadata = COALESCE(metadata, '{}'::jsonb) || $5::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [
+          lead.id,
+          limitText(normalized.pushName || '', 180),
+          optOut,
+          optOut ? ['one-time', 'whatsapp-lead-bot', 'whatsapp-opt-out'] : ['one-time', 'whatsapp-lead-bot'],
+          JSON.stringify({
+            profile_key: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.profile_key,
+            profile_version: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.version,
+            whatsapp_suppressed: optOut || Boolean(oneTimeProductJson(lead.metadata).whatsapp_suppressed),
+          }),
+        ]
+      )).rows[0];
+    }
+
+    const communication = communicationResult.communication;
+    let linkedCommunication = communication;
+    if (communication?.id && ['general', 'lead'].includes(communication.contact_type || 'general')) {
+      linkedCommunication = (await runner.query(
+        `UPDATE bna_contact_communications
+         SET project_id = $2,
+             contact_type = 'lead',
+             lead_id = $3,
+             follow_up_required = TRUE,
+             source_context = COALESCE(source_context, '{}'::jsonb) || $4::jsonb,
+             metadata = COALESCE(metadata, '{}'::jsonb) || $5::jsonb,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [
+          communication.id,
+          project.id,
+          lead.id,
+          JSON.stringify({
+            workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+            project_key: ONE_TIME_PROJECT_KEY,
+            provider_lead_bot_profile: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.profile_key,
+          }),
+          JSON.stringify({
+            provider_lead_bot_profile: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.profile_key,
+            crm_lead_created: created,
+          }),
+        ]
+      )).rows[0] || communication;
+    }
+    if (client) await client.query('COMMIT');
+    return {
+      lead,
+      created,
+      communicationResult: {
+        ...communicationResult,
+        communication: linkedCommunication,
+        match: ['signup', 'student'].includes(communicationResult.match?.contact_type)
+          ? communicationResult.match
+          : {
+              contact_type: 'lead',
+              lead_id: lead.id,
+              project_id: project.id,
+              match_source: created ? 'provider_lead_bot_created' : 'provider_lead_bot_phone',
+              matched_name: lead.parent_name || null,
+            },
+      },
+    };
+  } catch (error) {
+    if (client) await client.query('ROLLBACK').catch(() => null);
+    throw error;
+  } finally {
+    if (client) client.release();
+  }
+}
+
+async function loadOneTimeProviderBotKnowledge(projectId, db = pool) {
+  const nextClass = (await db.query(
+    `SELECT title, masechta, perek, mishnah_range, start_at, timezone
+     FROM bna_program_calendar_events
+     WHERE project_id = $1
+       AND program_key = $2
+       AND visibility = 'public'
+       AND event_status = 'planned'
+       AND start_at >= NOW()
+     ORDER BY start_at ASC, id ASC
+     LIMIT 1`,
+    [projectId, ONE_TIME_PRODUCT_PROGRAM_KEY]
+  ).catch(() => ({ rows: [] }))).rows[0] || null;
+  const currentLearning = nextClass && (nextClass.masechta || nextClass.perek || nextClass.mishnah_range)
+    ? nextClass
+    : (await db.query(
+        `SELECT masechta, perek, mishnah_range, start_at, timezone
+         FROM bna_program_calendar_events
+         WHERE project_id = $1
+           AND program_key = $2
+           AND visibility = 'public'
+           AND event_status IN ('planned', 'completed')
+           AND (COALESCE(masechta, '') <> '' OR COALESCE(perek, '') <> '' OR COALESCE(mishnah_range, '') <> '')
+         ORDER BY start_at DESC NULLS LAST, id DESC
+         LIMIT 1`,
+        [projectId, ONE_TIME_PRODUCT_PROGRAM_KEY]
+      ).catch(() => ({ rows: [] }))).rows[0] || null;
+  return {
+    next_class: nextClass,
+    current_learning: currentLearning,
+    facts_from_approved_public_calendar: true,
+    raw_class_link_included: false,
+  };
+}
+
+async function oneTimeProviderBotWasSuppressed({ lead = null, normalized = {}, communicationResult = {} } = {}, db = pool) {
+  if (oneTimeProductJson(lead?.metadata).whatsapp_suppressed === true) return true;
+  const communication = communicationResult.communication || {};
+  const phoneDigits = normalizePhoneDigits(normalized.fromNumber || normalized.chatId || '');
+  const result = await db.query(
+    `SELECT id
+     FROM bna_contact_communications
+     WHERE project_id = $1
+       AND direction = 'inbound'
+       AND id <> $2
+       AND metadata->>'whatsapp_suppressed' = 'true'
+       AND (
+         ($3::int IS NOT NULL AND lead_id = $3::int)
+         OR ($4::int IS NOT NULL AND signup_id = $4::int)
+         OR ($5::int IS NOT NULL AND student_id = $5::int)
+         OR ($6 <> '' AND regexp_replace(COALESCE(source_context->>'from_number', source_context->>'chat_id', ''), '\\D', '', 'g') = $6)
+       )
+     ORDER BY occurred_at DESC, id DESC
+     LIMIT 1`,
+    [
+      communication.project_id || null,
+      communication.id || 0,
+      communication.lead_id || null,
+      communication.signup_id || null,
+      communication.student_id || null,
+      phoneDigits,
+    ]
+  );
+  return Boolean(result.rows[0]);
+}
+
+function oneTimeProviderBotContact({ lead = null, communicationResult = {}, whatsappSuppressed = false } = {}) {
+  const metadata = oneTimeProductJson(lead?.metadata);
+  const match = communicationResult.match || {};
+  return {
+    contact_type: match.contact_type || communicationResult.communication?.contact_type || (lead ? 'lead' : 'general'),
+    lead_id: lead?.id || communicationResult.communication?.lead_id || null,
+    access_state: match.access_state || (lead ? 'lead' : 'anonymous'),
+    access_verified: match.access_verified === true,
+    parent_name: lead?.parent_name || '',
+    parent_email: lead?.parent_email || '',
+    student_name: lead?.student_name || '',
+    student_age: lead?.student_age || '',
+    timezone: metadata.timezone || '',
+    contact_consent: metadata.contact_consent === true,
+    whatsapp_suppressed: whatsappSuppressed === true || metadata.whatsapp_suppressed === true,
+    bot_state: metadata.provider_lead_bot_state || {},
+  };
+}
+
+async function applyOneTimeProviderBotPlan({ plan, lead = null, communication = null }, db = pool) {
+  let updatedLead = lead;
+  if (lead?.id) {
+    const captured = plan.captured_fields || {};
+    const numericAge = /^\d{1,2}$/.test(String(captured.student_age_band || ''))
+      ? Number(captured.student_age_band)
+      : null;
+    updatedLead = (await db.query(
+      `UPDATE bna_parent_leads
+       SET parent_name = COALESCE(NULLIF($2, ''), parent_name),
+           parent_email = COALESCE(NULLIF($3, ''), parent_email),
+           student_name = COALESCE(NULLIF($4, ''), student_name),
+           student_age = COALESCE($5, student_age),
+           status = CASE
+             WHEN $6 THEN 'not_now'
+             WHEN $7 = 'signup_or_trial_start' AND COALESCE(status, 'lead_candidate') IN ('new', 'lead_candidate', 'interested') THEN 'follow_up'
+             ELSE status
+           END,
+           interest_level = CASE
+             WHEN $7 = 'signup_or_trial_start' AND NOT $6 THEN 'warm'
+             ELSE interest_level
+           END,
+           tags = (
+             SELECT ARRAY(
+               SELECT DISTINCT tag_value
+               FROM unnest(COALESCE(tags, '{}'::text[]) || $8::text[]) AS tag_values(tag_value)
+               WHERE trim(tag_value) <> ''
+             )
+           ),
+           metadata = COALESCE(metadata, '{}'::jsonb) || $9::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        lead.id,
+        limitText(captured.parent_name || '', 180),
+        normalizeEmail(captured.parent_email || '') || '',
+        limitText(captured.student_name || '', 180),
+        numericAge,
+        plan.opt_out === true,
+        plan.intent,
+        plan.lead_tags || [],
+        JSON.stringify({
+          provider_lead_bot_state: plan.bot_state,
+          provider_lead_bot_profile: plan.profile_key,
+          provider_lead_bot_profile_version: plan.profile_version,
+          timezone: captured.timezone || oneTimeProductJson(lead.metadata).timezone || '',
+          contact_consent: captured.contact_consent === true || oneTimeProductJson(lead.metadata).contact_consent === true,
+          whatsapp_suppressed: plan.suppress_outbound === true || oneTimeProductJson(lead.metadata).whatsapp_suppressed === true,
+          last_bot_intent: plan.intent,
+          last_bot_route_aliases: plan.route_aliases,
+          class_link_released: plan.class_link_released === true,
+        }),
+      ]
+    )).rows[0] || lead;
+  }
+  let updatedCommunication = communication;
+  if (communication?.id) {
+    updatedCommunication = (await db.query(
+      `UPDATE bna_contact_communications
+       SET follow_up_required = $2,
+           source_context = COALESCE(source_context, '{}'::jsonb) || $3::jsonb,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $4::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        communication.id,
+        Boolean(plan.route_aliases?.length || plan.create_support_ticket),
+        JSON.stringify({
+          provider_lead_bot: {
+            profile_key: plan.profile_key,
+            profile_version: plan.profile_version,
+            intent: plan.intent,
+            route_aliases: plan.route_aliases,
+            class_link_requested: plan.class_link_requested,
+            class_link_released: plan.class_link_released,
+            opt_out: plan.opt_out,
+          },
+        }),
+        JSON.stringify({
+          provider_lead_bot_profile: plan.profile_key,
+          provider_lead_bot_profile_version: plan.profile_version,
+          provider_lead_bot_intent: plan.intent,
+          provider_lead_bot_route_aliases: plan.route_aliases,
+          provider_lead_bot_state: plan.bot_state,
+          provider_lead_bot_capture_fields: Object.keys(plan.captured_fields || {}),
+          whatsapp_suppressed: plan.suppress_outbound === true,
+          class_link_requested: plan.class_link_requested === true,
+          class_link_released: plan.class_link_released === true,
+          raw_class_link_in_metadata: false,
+        }),
+      ]
+    )).rows[0] || communication;
+  }
+  return { lead: updatedLead, communication: updatedCommunication };
+}
+
+async function ensureOneTimeProviderBotSupportTicket({ plan, communication, lead }, db = pool) {
+  if (!plan.create_support_ticket || !communication?.id) return null;
+  const existing = (await db.query(
+    `SELECT *
+     FROM bna_support_tickets
+     WHERE workspace_key = $1
+       AND project_key = $2
+       AND source_context->>'provider_bot_communication_id' = $3
+     ORDER BY created_at DESC, id DESC
+     LIMIT 1`,
+    [ONE_TIME_PROVIDER_WORKSPACE_KEY, ONE_TIME_PROJECT_KEY, String(communication.id)]
+  )).rows[0] || null;
+  if (existing) return existing;
+  const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, db);
+  const ticket = (await db.query(
+    `INSERT INTO bna_support_tickets (
+       project_id, title, description, severity, status, category,
+       reporter_name, reporter_role, assigned_to, source,
+       workspace_key, project_key, notification_state, staff_reply_state,
+       source_context, created_by
+     ) VALUES (
+       $1, $2, $3, $4, 'triage', 'bot_api',
+       $5, 'whatsapp_contact', 'Shloimie', 'system',
+       $6, $7, 'internal_only', 'internal_only',
+       $8::jsonb, 'one_time_provider_lead_bot'
+     )
+     RETURNING *`,
+    [
+      project.id,
+      plan.intent === 'urgent_or_safety_handoff' ? 'Urgent One Time WhatsApp handoff' : 'One Time WhatsApp technology question',
+      limitText(communication.summary || 'A One Time WhatsApp contact needs platform support.', 1200),
+      plan.intent === 'urgent_or_safety_handoff' ? 'high' : 'normal',
+      lead?.parent_name || 'WhatsApp contact',
+      ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      ONE_TIME_PROJECT_KEY,
+      JSON.stringify({
+        source: 'one_time_provider_lead_bot',
+        provider_bot_communication_id: String(communication.id),
+        provider_bot_profile: plan.profile_key,
+        intent: plan.intent,
+        route_alias: 'platform_support_shloimie',
+        raw_message_body_in_telegram: false,
+      }),
+    ]
+  )).rows[0];
+  await createInAppNotification({
+    notificationKey: `one-time-provider-bot-support:${communication.id}`,
+    eventType: 'support_ticket_created',
+    projectId: project.id,
+    projectKey: ONE_TIME_PROJECT_KEY,
+    workspaceKey: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+    recipientLabel: 'Shloimie',
+    recipientRole: 'platform_support',
+    title: ticket.title,
+    body: 'Review the scoped One Time WhatsApp technology/support ticket.',
+    priority: ticket.severity,
+    relatedType: 'support_ticket',
+    relatedId: ticket.id,
+    sourceTable: 'bna_support_tickets',
+    sourceId: ticket.id,
+    sourceContext: {
+      source: 'one_time_provider_lead_bot',
+      category: ticket.category,
+      severity: ticket.severity,
+      project_key: ONE_TIME_PROJECT_KEY,
+      communication_id: communication.id,
+      telegram_role_alias: 'platform_support_shloimie',
+      telegram_notification_allowed: oneTimeProviderLeadBotTelegramApproved(),
+    },
+    createdBy: 'one_time_provider_lead_bot',
+  }, db);
+  return ticket;
 }
 
 function normalizeWapiRecipient(value) {
@@ -62666,6 +63218,14 @@ function isOneTimeWapiScope(scope = {}) {
     || normalizeProjectKey(scope.project_key || scope.project || '') === ONE_TIME_PROJECT_KEY;
 }
 
+function oneTimeProviderLeadBotCaptureEnabled() {
+  return ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'capture_only' || ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live';
+}
+
+function oneTimeProviderLeadBotTelegramApproved() {
+  return ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live' && ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_APPROVED;
+}
+
 function wapiCredentialsForScope(scope = {}) {
   const oneTimeScope = isOneTimeWapiScope(scope);
   const scopedToken = oneTimeScope ? ONE_TIME_WAPI_API_TOKEN : '';
@@ -62677,16 +63237,8 @@ function wapiCredentialsForScope(scope = {}) {
   };
 }
 
-function oneTimeWapiAutoReplyMessage(classLink = ONE_TIME_WHATSAPP_CLASS_LINK) {
-  const link = String(classLink || '').trim();
-  return [
-    'Hi, welcome to the One Time Mishnayos class.',
-    `Here is the link for today's shiur: ${link}`,
-    '',
-    'Thank you for your patience while we tune the Zoom setup and sound. The class is free while we finish setting up the technology.',
-    '',
-    'Reply here if you are interested in joining, and we will keep you posted.',
-  ].join('\n');
+function oneTimeWapiAutoReplyMessage(botPlan = {}) {
+  return String(botPlan.reply_body || '').trim();
 }
 
 function wapiInboundLooksLikeOptOut(text = '') {
@@ -62717,33 +63269,200 @@ function wapiWebhookScopeFromRequest(req, payload = {}) {
   };
 }
 
+function safeWebhookSecretEqual(left = '', right = '') {
+  const first = Buffer.from(String(left || ''));
+  const second = Buffer.from(String(right || ''));
+  return first.length > 0 && first.length === second.length && crypto.timingSafeEqual(first, second);
+}
+
+function hostedWapiWebhookRuntime() {
+  return String(process.env.NODE_ENV || '').toLowerCase() === 'production'
+    || Boolean(process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_SERVICE_ID);
+}
+
+function normalizedPhoneIdentity(value = '') {
+  const digits = normalizePhoneDigits(value);
+  return { digits };
+}
+
+function samePhoneIdentity(left = '', right = '') {
+  const first = normalizedPhoneIdentity(left);
+  const second = normalizedPhoneIdentity(right);
+  if (!first.digits || !second.digits) return false;
+  return first.digits === second.digits;
+}
+
+function oneTimeWapiBindingError(normalized = {}) {
+  const suppliedInstance = limitText(normalized.instanceId || normalized.channelId || '', 180);
+  const providerPhone = normalized.fromMe ? normalized.fromNumber : normalized.toNumber;
+  if (ONE_TIME_WAPI_INSTANCE_ID && !suppliedInstance) {
+    return 'WAPI webhook omitted the required One Time provider instance binding';
+  }
+  if (ONE_TIME_WAPI_INSTANCE_ID && suppliedInstance !== ONE_TIME_WAPI_INSTANCE_ID) {
+    return 'WAPI webhook channel binding did not match the One Time provider instance';
+  }
+  if (ONE_TIME_WAPI_SENDER_PHONE && !providerPhone) {
+    return 'WAPI webhook omitted the required One Time provider-number binding';
+  }
+  if (ONE_TIME_WAPI_SENDER_PHONE && !samePhoneIdentity(providerPhone, ONE_TIME_WAPI_SENDER_PHONE)) {
+    return 'WAPI webhook provider-number binding did not match the One Time sender';
+  }
+  return '';
+}
+
+function sanitizedWapiWebhookHeaders(headers = {}) {
+  const userAgent = String(headers['user-agent'] || '').trim();
+  return {
+    content_type: limitText(headers['content-type'] || '', 160) || null,
+    user_agent_hash: userAgent ? crypto.createHash('sha256').update(userAgent).digest('hex').slice(0, 24) : null,
+    request_id: limitText(headers['x-request-id'] || headers['cf-ray'] || '', 160) || null,
+    webhook_secret_header_present: Boolean(headers['x-one-time-wapi-webhook-secret'] || headers['x-wapi-webhook-secret']),
+    authorization_header_present: Boolean(headers.authorization),
+    raw_auth_headers_stored: false,
+  };
+}
+
+function minimizedWapiWebhookPayload(payload = {}, normalized = {}) {
+  return {
+    storage_mode: 'minimized',
+    event_type: normalized.eventType || null,
+    event_id: normalized.eventId || null,
+    message_id: normalized.messageId || null,
+    message_type: normalized.messageType || null,
+    message_status: normalized.messageStatus || null,
+    from_me: normalized.fromMe === true,
+    has_text: Boolean(normalized.messageText),
+    has_media: normalized.hasMedia === true,
+    media_type: normalized.mediaType || null,
+    instance_binding_present: Boolean(normalized.instanceId || normalized.channelId),
+    provider_number_binding_present: Boolean(normalized.fromMe ? normalized.fromNumber : normalized.toNumber),
+    payload_keys: payload && typeof payload === 'object' ? Object.keys(payload).slice(0, 30) : [],
+    raw_message_body_stored_here: false,
+    raw_media_url_stored_here: false,
+  };
+}
+
+function authorizeWapiWebhookRequest(req, payload = {}, normalized = {}) {
+  const globalSecret = usableSecretValue(process.env.WAPI_WEBHOOK_SECRET);
+  const suppliedSecret = String(
+    req.headers['x-one-time-wapi-webhook-secret'] ||
+    req.headers['x-wapi-webhook-secret'] ||
+    ''
+  ).trim();
+  const hosted = hostedWapiWebhookRuntime();
+
+  if (!ONE_TIME_WAPI_WEBHOOK_SECRET && !globalSecret) {
+    if (hosted) {
+      return {
+        authorized: false,
+        status_code: 503,
+        error: 'WAPI webhook is disabled until a server-side webhook secret is configured',
+      };
+    }
+    if (WAPI_WEBHOOK_ALLOW_INSECURE_LOCAL_TEST) {
+      return {
+        authorized: true,
+        binding: 'explicit_insecure_local_test_only',
+        scope: wapiWebhookScopeFromRequest(req, payload),
+      };
+    }
+    return {
+      authorized: false,
+      status_code: 503,
+      error: 'WAPI webhook is disabled until a server-side webhook secret is configured',
+    };
+  }
+
+  if (ONE_TIME_WAPI_WEBHOOK_SECRET && safeWebhookSecretEqual(suppliedSecret, ONE_TIME_WAPI_WEBHOOK_SECRET)) {
+    const bindingError = oneTimeWapiBindingError(normalized);
+    if (bindingError) {
+      return {
+        authorized: false,
+        status_code: 401,
+        error: bindingError,
+      };
+    }
+    return {
+      authorized: true,
+      binding: 'one_time_provider_secret',
+      scope: {
+        workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+        project_key: ONE_TIME_PROJECT_KEY,
+      },
+    };
+  }
+
+  if (globalSecret && safeWebhookSecretEqual(suppliedSecret, globalSecret)) {
+    const oneTimeSingleTenant = isOneTimeSingleTenantRuntime();
+    const bindingError = oneTimeSingleTenant ? oneTimeWapiBindingError(normalized) : '';
+    if (bindingError) {
+      return {
+        authorized: false,
+        status_code: 401,
+        error: bindingError,
+      };
+    }
+    return {
+      authorized: true,
+      binding: oneTimeSingleTenant ? 'one_time_single_tenant_global_secret' : 'default_global_secret',
+      scope: oneTimeSingleTenant
+        ? { workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY, project_key: ONE_TIME_PROJECT_KEY }
+        : { workspace_key: workspaceKeyForProject(DEFAULT_PROJECT_KEY), project_key: DEFAULT_PROJECT_KEY },
+    };
+  }
+
+  return {
+    authorized: false,
+    status_code: 401,
+    error: 'Unauthorized WAPI webhook',
+  };
+}
+
 function oneTimeWapiAutoReplyReadiness(scope = {}) {
   const credentials = wapiCredentialsForScope(scope);
   const classLinkConfigured = Boolean(ONE_TIME_WHATSAPP_CLASS_LINK);
   const oneTimeScopedSender = credentials.credential_scope === 'one_time_scoped';
+  const webhookSecretConfigured = Boolean(ONE_TIME_WAPI_WEBHOOK_SECRET || (isOneTimeSingleTenantRuntime() && usableSecretValue(process.env.WAPI_WEBHOOK_SECRET)));
+  const instanceBindingConfigured = Boolean(ONE_TIME_WAPI_INSTANCE_ID);
+  const senderBindingConfigured = Boolean(ONE_TIME_WAPI_SENDER_PHONE);
   const ready = Boolean(
     isOneTimeWapiScope(scope) &&
+    ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live' &&
     ONE_TIME_WAPI_AUTO_REPLY_ENABLED &&
     ONE_TIME_WAPI_AUTO_REPLY_APPROVED &&
     classLinkConfigured &&
     credentials.token &&
-    oneTimeScopedSender
+    oneTimeScopedSender &&
+    webhookSecretConfigured &&
+    instanceBindingConfigured &&
+    senderBindingConfigured
   );
   const blockers = [];
   if (!isOneTimeWapiScope(scope)) blockers.push('not_one_time_scope');
+  if (ONE_TIME_PROVIDER_LEAD_BOT_MODE !== 'live') blockers.push('ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live');
   if (!ONE_TIME_WAPI_AUTO_REPLY_ENABLED) blockers.push('ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled');
   if (!ONE_TIME_WAPI_AUTO_REPLY_APPROVED) blockers.push('ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY');
   if (!classLinkConfigured) blockers.push('ONE_TIME_WHATSAPP_CLASS_LINK missing');
   if (!credentials.token) blockers.push('One Time WAPI token missing');
   if (credentials.token && !oneTimeScopedSender) blockers.push('One Time auto-reply requires one_time_scoped WAPI credentials');
+  if (!webhookSecretConfigured) blockers.push('One Time WAPI webhook secret missing');
+  if (!instanceBindingConfigured) blockers.push('One Time WAPI instance binding missing');
+  if (!senderBindingConfigured) blockers.push('One Time WAPI destination-number binding missing');
   return {
     ready,
     blockers,
     enabled: ONE_TIME_WAPI_AUTO_REPLY_ENABLED,
     approved: ONE_TIME_WAPI_AUTO_REPLY_APPROVED,
+    provider_bot_profile: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.profile_key,
+    provider_bot_profile_version: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.version,
+    provider_bot_mode: ONE_TIME_PROVIDER_LEAD_BOT_MODE,
     class_link_configured: classLinkConfigured,
     credential_scope: credentials.credential_scope,
     one_time_scoped_sender: oneTimeScopedSender,
+    webhook_secret_configured: webhookSecretConfigured,
+    instance_binding_configured: instanceBindingConfigured,
+    sender_binding_configured: senderBindingConfigured,
+    telegram_notifications_approved: oneTimeProviderLeadBotTelegramApproved(),
     workspace_key: normalizeWorkspaceKey(scope.workspace_key || scope.workspace || ''),
     project_key: normalizeProjectKey(scope.project_key || scope.project || ''),
   };
@@ -62768,47 +63487,91 @@ async function stampWapiAutoReplyPlan(communicationId, plan = {}, db = pool) {
 }
 
 async function recentOneTimeWapiAutoReplyExists({ communication, normalized, scope }, db = pool) {
-  const phoneDigits = normalizePhoneDigits(normalized.fromNumber || normalized.chatId || '');
+  const inboundCommunicationId = communication?.id ? String(communication.id) : '';
+  const inboundMessageId = String(normalized.messageId || '').trim();
+  if (!inboundCommunicationId && !inboundMessageId) return null;
   const result = await db.query(
-    `SELECT id
+    `SELECT id, metadata->>'delivery_status' AS delivery_status
      FROM bna_contact_communications
      WHERE source = 'wapi'
        AND direction = 'outbound'
-       AND metadata->>'auto_reply_type' = 'one_time_welcome_class_link'
-       AND occurred_at > NOW() - INTERVAL '12 hours'
+       AND metadata->>'auto_reply_type' IN ('provider_lead_bot_reply', 'one_time_welcome_class_link')
        AND (
-         ($1::int IS NOT NULL AND lead_id = $1::int)
-         OR ($2::int IS NOT NULL AND signup_id = $2::int)
-         OR ($3::int IS NOT NULL AND student_id = $3::int)
-         OR ($4 <> '' AND (
-           regexp_replace(COALESCE(metadata->>'recipient_phone', ''), '\\D', '', 'g') = $4
-           OR regexp_replace(COALESCE(source_context->>'recipient_phone', ''), '\\D', '', 'g') = $4
-         ))
+         ($1 <> '' AND (metadata->>'inbound_communication_id' = $1 OR source_context->>'inbound_communication_id' = $1))
+         OR ($2 <> '' AND (metadata->>'inbound_wapi_message_id' = $2 OR source_context->>'inbound_wapi_message_id' = $2))
        )
        AND (
-         $5 = ''
-         OR metadata->>'project_key' = $5
-         OR source_context->>'project_key' = $5
+         $3 = ''
+         OR metadata->>'project_key' = $3
+         OR source_context->>'project_key' = $3
        )
      ORDER BY occurred_at DESC, id DESC
      LIMIT 1`,
     [
-      communication?.lead_id || null,
-      communication?.signup_id || null,
-      communication?.student_id || null,
-      phoneDigits,
+      inboundCommunicationId,
+      inboundMessageId,
       normalizeProjectKey(scope.project_key || scope.project || ''),
     ]
   );
   return result.rows[0] || null;
 }
 
-async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match, scope, webhookLogId }, db = pool) {
+async function claimOneTimeWapiAutoReplyAttempt({
+  communication,
+  normalized,
+  scope,
+  recipient,
+  auditMessageBody,
+  summary,
+  sourceContext,
+  metadata,
+}, db = pool) {
+  const claimWithRunner = async (runner) => {
+    const duplicate = await recentOneTimeWapiAutoReplyExists({ communication, normalized, scope }, runner);
+    if (duplicate) return { duplicate, attempt: null };
+    const attempt = await createOutboundWapiCommunicationAttempt({
+      recipient,
+      messageBody: auditMessageBody,
+      summary,
+      projectId: recipient.project_id,
+      source: 'one_time_provider_lead_bot',
+      createdBy: 'Robot Scheller',
+      sourceContext,
+      metadata,
+    }, runner);
+    return { duplicate: null, attempt };
+  };
+
+  if (typeof db.connect !== 'function') return claimWithRunner(db);
+  const client = await db.connect();
+  try {
+    await client.query('BEGIN');
+    const recipientIdentity = normalizePhoneDigits(recipient.phone || recipient.to || '') || String(communication?.id || 'unknown');
+    const projectKey = normalizeProjectKey(scope.project_key || scope.project || ONE_TIME_PROJECT_KEY);
+    await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`provider-lead-bot-reply:${projectKey}:${recipientIdentity}`]);
+    const claim = await claimWithRunner(client);
+    await client.query('COMMIT');
+    return claim;
+  } catch (error) {
+    await client.query('ROLLBACK').catch(() => null);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match, scope, webhookLogId, botPlan = null }, db = pool) {
   const readiness = oneTimeWapiAutoReplyReadiness(scope);
   const messageText = String(normalized.messageText || '').trim();
   const plan = {
-    auto_reply_type: 'one_time_welcome_class_link',
-    copy_version: '2026-07-08-r1',
+    auto_reply_type: 'provider_lead_bot_reply',
+    copy_version: botPlan?.profile_version || ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.version,
+    profile_key: botPlan?.profile_key || ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.profile_key,
+    intent: botPlan?.intent || 'unknown',
+    access_state: botPlan?.access_state || 'anonymous',
+    class_link_requested: botPlan?.class_link_requested === true,
+    class_link_released: botPlan?.class_link_released === true,
+    opt_out: botPlan?.opt_out === true,
     status: 'blocked',
     sent: false,
     no_secret_link_in_source: true,
@@ -62824,20 +63587,18 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
   if (!messageText && !normalized.hasMedia) {
     plan.blockers.push('no_inbound_message_content');
   }
-  if (wapiInboundLooksLikeOptOut(messageText)) {
+  if (wapiInboundLooksLikeOptOut(messageText) || botPlan?.opt_out || botPlan?.suppress_outbound) {
     plan.blockers.push('opt_out_or_wrong_number_language');
+  }
+  if (!botPlan?.reply_allowed || !String(botPlan?.reply_body || '').trim()) {
+    plan.blockers.push('provider_lead_bot_reply_not_allowed');
+  }
+  if (botPlan?.class_link_released && botPlan?.access_state !== 'active_member') {
+    plan.blockers.push('class_link_release_requires_active_member');
   }
 
   if (plan.blockers.length) {
     plan.status = 'blocked';
-    await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
-    return plan;
-  }
-
-  const duplicate = await recentOneTimeWapiAutoReplyExists({ communication, normalized, scope }, db);
-  if (duplicate) {
-    plan.status = 'skipped_recent_reply_exists';
-    plan.recent_reply_communication_id = duplicate.id;
     await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
     return plan;
   }
@@ -62850,7 +63611,7 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
     return plan;
   }
 
-  const replyBody = oneTimeWapiAutoReplyMessage();
+  const replyBody = oneTimeWapiAutoReplyMessage(botPlan);
   const recipient = {
     to: recipientPhone,
     phone: normalized.fromNumber || normalized.chatId || recipientPhone,
@@ -62862,29 +63623,44 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
     project_id: communication?.project_id || null,
     match_source: match?.match_source || 'wapi_inbound_auto_reply',
   };
-  const attempt = await createOutboundWapiCommunicationAttempt({
+  const claim = await claimOneTimeWapiAutoReplyAttempt({
+    communication,
+    normalized,
+    scope,
     recipient,
-    messageBody: replyBody,
+    auditMessageBody: String(botPlan?.reply_audit_body || replyBody).trim(),
     summary: `One Time WhatsApp auto-reply attempted to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240),
-    projectId: recipient.project_id,
-    source: 'one_time_wapi_auto_reply',
-    createdBy: 'One Time WAPI bot',
     sourceContext: {
-      auto_reply_type: 'one_time_welcome_class_link',
+      auto_reply_type: 'provider_lead_bot_reply',
       inbound_communication_id: communication?.id || null,
+      inbound_wapi_message_id: normalized.messageId || null,
       wapi_webhook_log_id: webhookLogId || null,
       workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
       project_key: ONE_TIME_PROJECT_KEY,
     },
     metadata: {
-      auto_reply_type: 'one_time_welcome_class_link',
+      auto_reply_type: 'provider_lead_bot_reply',
       inbound_communication_id: communication?.id || null,
+      inbound_wapi_message_id: normalized.messageId || null,
       wapi_webhook_log_id: webhookLogId || null,
       workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
       project_key: ONE_TIME_PROJECT_KEY,
-      class_link_configured: true,
+      provider_lead_bot_profile: plan.profile_key,
+      provider_lead_bot_profile_version: plan.copy_version,
+      provider_lead_bot_intent: plan.intent,
+      class_link_requested: plan.class_link_requested,
+      class_link_released: plan.class_link_released,
+      raw_class_link_in_metadata: false,
     },
   }, db);
+  if (claim.duplicate) {
+    plan.status = 'skipped_recent_reply_exists';
+    plan.recent_reply_communication_id = claim.duplicate.id;
+    await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
+    return plan;
+  }
+  const attempt = claim.attempt;
+  plan.claim_persisted_before_send = true;
 
   try {
     const sendResult = await sendWapiTextMessage({
@@ -62895,12 +63671,25 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
       workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
       project_key: ONE_TIME_PROJECT_KEY,
     });
+    const safeSendResult = botPlan?.class_link_released
+      ? {
+          ...sendResult,
+          response: {
+            id: wapiResponseMessageId(sendResult?.response),
+            restricted_payload_redacted: true,
+          },
+        }
+      : sendResult;
     const outbound = await updateOutboundWapiCommunicationResult(attempt.id, {
-      sendResult,
+      sendResult: safeSendResult,
       summary: `One Time WhatsApp auto-reply sent to ${recipient.name || recipient.phone || recipient.to}`.slice(0, 240),
       metadata: {
-        auto_reply_type: 'one_time_welcome_class_link',
+        auto_reply_type: 'provider_lead_bot_reply',
         inbound_communication_id: communication?.id || null,
+        provider_lead_bot_profile: plan.profile_key,
+        provider_lead_bot_intent: plan.intent,
+        class_link_released: plan.class_link_released,
+        raw_class_link_in_metadata: false,
       },
     }, db);
     plan.status = 'sent';
@@ -62909,17 +63698,24 @@ async function maybeSendOneTimeWapiAutoReply({ normalized, communication, match,
     await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
     return plan;
   } catch (error) {
+    const safeError = botPlan?.class_link_released
+      ? Object.assign(new Error('Restricted-link WAPI send failed; provider response omitted'), { statusCode: error.statusCode })
+      : error;
     const outbound = await updateOutboundWapiCommunicationResult(attempt.id, {
-      error,
+      error: safeError,
       metadata: {
-        auto_reply_type: 'one_time_welcome_class_link',
+        auto_reply_type: 'provider_lead_bot_reply',
         inbound_communication_id: communication?.id || null,
+        provider_lead_bot_profile: plan.profile_key,
+        provider_lead_bot_intent: plan.intent,
+        class_link_released: plan.class_link_released,
+        raw_class_link_in_metadata: false,
       },
     }, db).catch(() => null);
     plan.status = 'failed';
     plan.sent = false;
     plan.outbound_communication_id = outbound?.id || attempt.id;
-    plan.error = error.message;
+    plan.error = safeError.message;
     await stampWapiAutoReplyPlan(communication?.id, plan, db).catch(() => null);
     return plan;
   }
@@ -63989,21 +64785,25 @@ app.get('/api/webhooks/wapi', (req, res) => {
 });
 
 app.post('/api/webhooks/wapi', async (req, res) => {
-  const configuredSecret = String(process.env.WAPI_WEBHOOK_SECRET || '').trim();
-  const suppliedSecret = String(req.query.secret || req.headers['x-wapi-webhook-secret'] || '').trim();
-  if (configuredSecret && suppliedSecret !== configuredSecret) {
-    return res.status(401).json({ success: false, error: 'Unauthorized WAPI webhook' });
-  }
-
   const receivedAt = new Date().toISOString();
   const payload = req.body && typeof req.body === 'object' ? req.body : {};
   const normalized = normalizeWapiWebhookPayload(payload);
-  const webhookScope = wapiWebhookScopeFromRequest(req, payload);
+  const authorization = authorizeWapiWebhookRequest(req, payload, normalized);
+  if (!authorization.authorized) {
+    return res.status(authorization.status_code || 401).json({ success: false, error: authorization.error || 'Unauthorized WAPI webhook' });
+  }
+  const webhookScope = authorization.scope || {};
 
   try {
     const webhookProject = webhookScope.project_key
       ? await getProjectByKey(webhookScope.project_key).catch(() => null)
       : null;
+    if (webhookScope.project_key && !webhookProject) {
+      return res.status(503).json({
+        success: false,
+        error: 'WAPI webhook scope is unavailable until its canonical project is configured',
+      });
+    }
     const logResult = await pool.query(
       `INSERT INTO bna_wapi_webhook_log (
         event_type, event_id, message_id, chat_id, from_number, push_name,
@@ -64022,30 +64822,91 @@ app.post('/api/webhooks/wapi', async (req, res) => {
         normalized.hasMedia,
         normalized.mediaType,
         normalized.mediaUrl,
-        JSON.stringify(payload),
-        JSON.stringify(req.headers || {}),
+        JSON.stringify(minimizedWapiWebhookPayload(payload, normalized)),
+        JSON.stringify({
+          ...sanitizedWapiWebhookHeaders(req.headers || {}),
+          provider_binding: authorization.binding,
+        }),
       ]
     );
     const webhookLog = logResult.rows[0];
-    const communicationResult = await createCommunicationFromWapiWebhook({
+    let communicationResult = await createCommunicationFromWapiWebhook({
       normalized,
       webhookLogId: webhookLog.id,
       payload,
       projectId: webhookProject?.id || null,
+      suppressAttentionArtifacts: isOneTimeWapiScope(webhookScope) && ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'observe_only',
     });
+    let providerBotPlan = null;
+    let providerBotLead = null;
+    let providerBotLeadCreated = false;
+    let providerBotSupportTicket = null;
+    if (isOneTimeWapiScope(webhookScope) && !communicationResult.duplicate && oneTimeProviderLeadBotCaptureEnabled()) {
+      const intent = classifyProviderLeadBotIntent(normalized.messageText || '');
+      const leadResult = await ensureOneTimeProviderBotLead({
+        normalized,
+        communicationResult,
+        scope: webhookScope,
+        intent,
+      });
+      communicationResult = leadResult.communicationResult;
+      providerBotLead = leadResult.lead;
+      providerBotLeadCreated = leadResult.created;
+      const whatsappSuppressed = await oneTimeProviderBotWasSuppressed({
+        lead: providerBotLead,
+        normalized,
+        communicationResult,
+      });
+      const projectId = communicationResult.communication?.project_id || webhookProject?.id || null;
+      const dynamicKnowledge = projectId
+        ? await loadOneTimeProviderBotKnowledge(projectId)
+        : { next_class: null, current_learning: null, facts_from_approved_public_calendar: false };
+      providerBotPlan = buildProviderLeadBotPlan({
+        profile: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE,
+        message: normalized.messageText || '',
+        contact: oneTimeProviderBotContact({
+          lead: providerBotLead,
+          communicationResult,
+          whatsappSuppressed,
+        }),
+        dynamicKnowledge,
+        classJoinUrl: ONE_TIME_WHATSAPP_CLASS_LINK,
+        publicBaseUrl: configuredOneTimePublicBaseUrl(),
+        newLead: providerBotLeadCreated,
+      });
+      const applied = await applyOneTimeProviderBotPlan({
+        plan: providerBotPlan,
+        lead: providerBotLead,
+        communication: communicationResult.communication,
+      });
+      providerBotLead = applied.lead;
+      communicationResult.communication = applied.communication;
+      providerBotSupportTicket = await ensureOneTimeProviderBotSupportTicket({
+        plan: providerBotPlan,
+        communication: communicationResult.communication,
+        lead: providerBotLead,
+      });
+    }
     const autoReplyResult = !isOneTimeWapiScope(webhookScope)
       ? {
-          auto_reply_type: 'one_time_welcome_class_link',
+          auto_reply_type: 'provider_lead_bot_reply',
           status: 'not_applicable_non_onetime_scope',
           sent: false,
           blockers: ['not_one_time_scope'],
         }
       : communicationResult.duplicate
       ? {
-          auto_reply_type: 'one_time_welcome_class_link',
+          auto_reply_type: 'provider_lead_bot_reply',
           status: 'skipped_duplicate_inbound',
           sent: false,
           blockers: ['duplicate_inbound_message'],
+        }
+      : !oneTimeProviderLeadBotCaptureEnabled()
+      ? {
+          auto_reply_type: 'provider_lead_bot_reply',
+          status: 'skipped_observe_only',
+          sent: false,
+          blockers: ['provider_lead_bot_observe_only'],
         }
       : await maybeSendOneTimeWapiAutoReply({
           normalized,
@@ -64053,8 +64914,9 @@ app.post('/api/webhooks/wapi', async (req, res) => {
           match: communicationResult.match,
           scope: webhookScope,
           webhookLogId: webhookLog.id,
+          botPlan: providerBotPlan,
         }).catch((error) => ({
-          auto_reply_type: 'one_time_welcome_class_link',
+          auto_reply_type: 'provider_lead_bot_reply',
           status: 'failed',
           sent: false,
           error: error.message,
@@ -64082,11 +64944,14 @@ app.post('/api/webhooks/wapi', async (req, res) => {
     if (
       isOneTimeWapiScope(webhookScope) &&
       !communicationResult.duplicate &&
+      providerBotPlan?.notify_rabbi === true &&
+      oneTimeProviderLeadBotTelegramApproved() &&
       !normalized.fromMe &&
       !String(normalized.messageStatus || '').trim() &&
       (normalized.messageText || normalized.hasMedia)
     ) {
-      notifyRabbiCommunication({
+      notifyTelegramRoleAlias({
+        roleAlias: 'one_time_rabbi_operator',
         communication: {
           id: communicationResult.communication?.id || null,
           channel: 'whatsapp',
@@ -64113,10 +64978,13 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       duplicateCommunication: communicationResult.duplicate,
       eventType: normalized.eventType,
       messageId: normalized.messageId,
-      fromNumber: normalized.fromNumber,
       hasMedia: normalized.hasMedia,
       mediaType: normalized.mediaType,
       autoReplyStatus: autoReplyResult?.status || null,
+      providerBotProfile: providerBotPlan?.profile_key || null,
+      providerBotIntent: providerBotPlan?.intent || null,
+      providerBotLeadCreated,
+      providerBotSupportTicketId: providerBotSupportTicket?.id || null,
     });
 
     res.json({
@@ -64125,6 +64993,20 @@ app.post('/api/webhooks/wapi', async (req, res) => {
       webhookLogId: webhookLog.id || null,
       communicationId: communicationResult.communication?.id || null,
       duplicateCommunication: communicationResult.duplicate,
+      crmLeadId: providerBotLead?.id || communicationResult.communication?.lead_id || null,
+      crmLeadCreated: providerBotLeadCreated,
+      providerBot: providerBotPlan
+        ? {
+            profileKey: providerBotPlan.profile_key,
+            profileVersion: providerBotPlan.profile_version,
+            intent: providerBotPlan.intent,
+            routeAliases: providerBotPlan.route_aliases,
+            optOut: providerBotPlan.opt_out,
+            classLinkRequested: providerBotPlan.class_link_requested,
+            classLinkReleased: providerBotPlan.class_link_released,
+            rawClassLinkReturned: false,
+          }
+        : null,
       autoReply: autoReplyResult
         ? {
             status: autoReplyResult.status,
@@ -64200,7 +65082,25 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
     )).rows[0] || null;
     res.json({
       success: true,
-      inbound_webhook_configured: Boolean(String(process.env.WAPI_WEBHOOK_SECRET || '').trim()),
+      inbound_webhook_configured: Boolean(ONE_TIME_WAPI_WEBHOOK_SECRET || usableSecretValue(process.env.WAPI_WEBHOOK_SECRET)),
+      inbound_webhook_fail_closed_in_hosted_runtime: true,
+      inbound_webhook_header_auth_only: true,
+      insecure_local_webhook_test_enabled: WAPI_WEBHOOK_ALLOW_INSECURE_LOCAL_TEST,
+      provider_channel_binding_configured: Boolean(ONE_TIME_WAPI_WEBHOOK_SECRET || (isOneTimeSingleTenantRuntime() && process.env.WAPI_WEBHOOK_SECRET)),
+      provider_instance_metadata_present: Boolean(ONE_TIME_WAPI_INSTANCE_ID),
+      provider_sender_phone_metadata_present: Boolean(ONE_TIME_WAPI_SENDER_PHONE),
+      provider_instance_binding_enforced_when_configured: true,
+      provider_destination_binding_enforced_when_configured: true,
+      provider_lead_bot: {
+        profile_key: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.profile_key,
+        profile_version: ONE_TIME_PROVIDER_LEAD_BOT_PROFILE.version,
+        mode: ONE_TIME_PROVIDER_LEAD_BOT_MODE,
+        capture_enabled: oneTimeProviderLeadBotCaptureEnabled(),
+        live_send_approved: ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live' && ONE_TIME_WAPI_AUTO_REPLY_APPROVED,
+        telegram_notifications_approved: oneTimeProviderLeadBotTelegramApproved(),
+        minimized_webhook_payload_storage: true,
+        raw_class_link_returned: false,
+      },
       outbound_configured: Boolean(credentials.token),
       sync_configured: Boolean(credentials.token),
       outbound_base_url: credentials.baseUrl,

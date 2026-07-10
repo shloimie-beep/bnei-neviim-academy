@@ -1,6 +1,6 @@
-# OneTime WAPI / WhatsApp Readiness
+# One Time WAPI / WhatsApp Readiness
 
-Checked at: 2026-07-09T22:55:54.338Z
+Checked at: 2026-07-10T14:55:52.762Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: readiness_no_send
@@ -17,18 +17,24 @@ Secret values printed: false
 - Auto-reply ready: false
 - Auto-reply enabled: false
 - Auto-reply approved: false
+- Telegram notifications approved: false
+- Telegram notifications ready: false
 - Class link configured: true
 
 ## Blockers / Next Actions
 
 - Whapi/WAPI instance id missing
 - WhatsApp sender phone metadata missing
+- WAPI webhook secret missing
 - ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled
 - ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY
+- ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live
+- One Time WAPI webhook secret missing
+- ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM
 
 ## Guardrails
 
 - Readiness check only; no WhatsApp message is sent.
 - No CRM contact, tag, lead, or communication row is created or updated.
 - No secret values, chat IDs, raw class links, or phone numbers are printed.
-- OneTime auto-reply requires OneTime-scoped WAPI credentials, an approved flag, and a configured class link.
+- One Time auto-reply requires One Time scoped WAPI credentials, a valid provider-bot profile, header-authenticated instance/destination binding, live mode, explicit WhatsApp and Telegram approvals, and a configured class link.

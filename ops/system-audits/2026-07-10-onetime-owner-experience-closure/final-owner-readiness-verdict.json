@@ -21,7 +21,8 @@
     "public_lead_capture": "deployed/live-smoked with dry-run CRM proof; no real external send/payment/access mutation",
     "brand_and_ui_guardrails": "brand/copy, static chrome, parent-review lag shell, readable redacted Operations review, and scoped CRM/front-end slices have live or local evidence in linked registers",
     "helper_and_agent_prompts": "public Rabbi Agent Review prompts and helper scope artifacts live; hub readback still shows missing terminal results",
-    "historical_source_mapping": "all non-active historical source rows mapped to terminal proof/blockers"
+    "historical_source_mapping": "all non-active historical source rows mapped to terminal proof/blockers",
+    "wapi_provider_lead_bot_guardrails": "post-verdict scoped guardrails are implemented locally and verified with no send/mutation; full commercial automation remains blocked by missing provider setup and approvals"
   },
   "blockers": [
     {
@@ -104,7 +105,9 @@
     "PASS npm run bna:run:status: blocked 2, done 8, validation passed",
     "PASS npm run bna:run:next: next unblocked executable batch none",
     "PASS npm run app:smoke:rabbi-agent-review-proof-readiness: prompts/artifacts live, hub proof state proof_blocked_or_pending, missing terminal prompt count 2",
-    "PASS production-readiness snapshot dirty status is path-redacted in tracked JSON"
+    "PASS production-readiness snapshot dirty status is path-redacted in tracked JSON",
+    "PASS One Time WAPI provider lead-bot guardrail proof: node syntax checks and focused tests passed",
+    "EXPECTED BLOCKED npm run one-time:wapi:readiness -- --json: no send, no CRM mutation, no secret printing; blocked on provider instance metadata, webhook secret, live-mode approval, and Telegram approval"
   ],
   "evidence": [
     "ops/system-audits/2026-07-10-onetime-owner-experience-closure/historical-source-statement-matrix.json",
@@ -115,7 +118,11 @@
     "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.md",
     "ops/audit-governance/2026-07-10T14-25-03-746Z-audit-governance.md",
     "ops/production-readiness/latest-production-readiness-snapshot.json",
-    "ops/production-readiness/latest-production-unblocker.json"
+    "ops/production-readiness/latest-production-unblocker.json",
+    "ops/system-audits/2026-07-10-onetime-owner-experience-closure/wapi-provider-lead-bot-guardrail-proof.md",
+    "ops/system-audits/2026-07-10-onetime-owner-experience-closure/wapi-provider-lead-bot-guardrail-proof.json",
+    "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md",
+    "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json"
   ],
   "guardrails": [
     "No email send",
@@ -197,7 +204,12 @@
       "evidence": [
         "ops/production-readiness/latest-production-readiness-snapshot.md",
         "ops/production-readiness/latest-production-unblocker.md",
-        "ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json"
+        "ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json",
+        "ops/system-audits/2026-07-10-onetime-owner-experience-closure/wapi-provider-lead-bot-guardrail-proof.md"
+      ],
+      "post_verdict_scoped_progress": [
+        "One Time WAPI provider lead-bot guardrails are implemented locally and tested.",
+        "Live WhatsApp commercial automation remains blocked until provider instance metadata, webhook secret, live-mode approvals, and Telegram approval are configured and verified."
       ],
       "blockers": [
         {

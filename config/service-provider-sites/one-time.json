@@ -21,6 +21,14 @@
     "owner_label": "Rabbi Eli Scheller",
     "category": "Worldwide Live Mishnah Learning"
   },
+  "lead_bot": {
+    "profile_key": "one_time_whatsapp_lead_bot",
+    "config_path": "config/service-provider-bots/one-time.json",
+    "public_name": "Robot Scheller",
+    "public_subtitle": "Rabbi Scheller's digital assistant",
+    "primary_channel": "whatsapp",
+    "activation": "runtime_controlled"
+  },
   "assets": {
     "logo": "/images/one-time/brand/onetimelogo.webp",
     "hero_portrait": "/images/one-time/brand/onetime-hero-vertical.webp",

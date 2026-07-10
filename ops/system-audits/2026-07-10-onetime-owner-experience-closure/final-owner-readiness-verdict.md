@@ -33,7 +33,8 @@ The historical source audit is source-complete for all non-active rows: 291 rows
 - Verdict: blocked
 - Scope: Stripe/payment/access, WhatsApp/WAPI, real campaign seed/send, hosted Telegram delivery, and full launch automation.
 - Blockers: external_setup_blockers; owner=Shloimie / provider account owners; next=Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval. rabbi_telegram_runtime_configuration; owner=Codex / operator; next=Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof. agent_mode_terminal_proof_missing; owner=Shloimie / Agent Mode runner; next=Run each listed Agent Mode prompt and save terminal PASS, FAIL, or BLOCKED proof through the listed Operations drop-off URL.
-- Evidence: `ops/production-readiness/latest-production-readiness-snapshot.md`, `ops/production-readiness/latest-production-unblocker.md`, `ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json`
+- Post-verdict scoped progress: One Time WAPI provider lead-bot guardrails are implemented locally and tested. This does not clear the blocked verdict because live provider instance metadata, webhook secret, live-mode approvals, and Telegram approval are still missing.
+- Evidence: `ops/production-readiness/latest-production-readiness-snapshot.md`, `ops/production-readiness/latest-production-unblocker.md`, `ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json`, `ops/system-audits/2026-07-10-onetime-owner-experience-closure/wapi-provider-lead-bot-guardrail-proof.md`
 
 ## Owner Tour URLs
 
@@ -57,6 +58,7 @@ The historical source audit is source-complete for all non-active rows: 291 rows
 - Brand/copy guardrails, static chrome, parent-review lag fix, readable redacted Operations review, and scoped CRM/front-end slices have evidence in the linked registers.
 - Public Rabbi Agent Review prompts and helper-scope artifacts are live.
 - All non-active historical source rows have terminal proof/blocker mappings.
+- One Time WAPI provider lead-bot guardrails are implemented and locally verified with no send/mutation, while live commercial automation remains blocked.
 
 ## Blocking Items
 
@@ -78,6 +80,7 @@ The historical source audit is source-complete for all non-active rows: 291 rows
 - PASS npm run bna:run:next: next unblocked executable batch none
 - PASS npm run app:smoke:rabbi-agent-review-proof-readiness: prompts/artifacts live, hub proof state proof_blocked_or_pending, missing terminal prompt count 2
 - PASS production-readiness snapshot dirty status is path-redacted in tracked JSON
+- PASS One Time WAPI provider lead-bot guardrail proof: focused syntax/tests passed; readiness command returned expected blocked status with no send, CRM mutation, or secret printing.
 
 ## Evidence
 
@@ -90,6 +93,10 @@ The historical source audit is source-complete for all non-active rows: 291 rows
 - `ops/audit-governance/2026-07-10T14-25-03-746Z-audit-governance.md`
 - `ops/production-readiness/latest-production-readiness-snapshot.json`
 - `ops/production-readiness/latest-production-unblocker.json`
+- `ops/system-audits/2026-07-10-onetime-owner-experience-closure/wapi-provider-lead-bot-guardrail-proof.md`
+- `ops/system-audits/2026-07-10-onetime-owner-experience-closure/wapi-provider-lead-bot-guardrail-proof.json`
+- `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md`
+- `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json`
 
 ## Guardrails
 
