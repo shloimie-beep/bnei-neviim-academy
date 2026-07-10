@@ -77742,6 +77742,30 @@ function buildOneTimeSignupTelegramReminder(lead = {}) {
   ].filter(Boolean).join('\n');
 }
 
+function isOneTimeSyntheticLead(input = {}, lead = {}) {
+  const metadata = oneTimeProductJson(input.metadata || lead.metadata || {});
+  const haystack = [
+    input.parent_name,
+    input.email,
+    input.parent_email,
+    input.student_name,
+    input.source_landing_page,
+    metadata.smoke,
+    metadata.synthetic_test_lead,
+    metadata.test_e2e,
+    metadata.workflow,
+    lead.parent_name,
+    lead.parent_email,
+    lead.student_name,
+  ].map((value) => String(value || '')).join(' ');
+  return metadata.synthetic_test_lead === true
+    || metadata.test_e2e === true
+    || /(?:^|\b)TEST[-\s_]/i.test(haystack)
+    || /Smoke Test/i.test(haystack)
+    || /example\.invalid/i.test(haystack)
+    || /one_time_interest_crm_e2e/i.test(haystack);
+}
+
 async function sendOneTimeSignupTelegramReminder(lead = {}) {
   const result = await sendTelegramNotification(buildOneTimeSignupTelegramReminder(lead));
   if (result && !result.sent && !result.skipped) {
@@ -77902,6 +77926,7 @@ async function oneTimeCalendarRows({ projectId, view = 'week', audience = 'admin
 
 async function createOneTimeProductLead(input = {}, db = pool) {
   const lead = validateOneTimeLead(input);
+  const syntheticTestLead = isOneTimeSyntheticLead(input, lead);
   const client = db.connect ? await db.connect() : null;
   const runner = client || db;
   try {
@@ -77929,6 +77954,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       no_checkout: true,
       no_access_granted: true,
       no_external_send: true,
+      synthetic_test_lead: syntheticTestLead,
       external_write_performed: false,
     };
     const productRow = (await runner.query(
@@ -77985,6 +78011,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       no_checkout: true,
       no_access_granted: true,
       no_external_send: true,
+      synthetic_test_lead: syntheticTestLead,
       external_write_performed: false,
     };
     let crmLead = null;
@@ -78102,6 +78129,7 @@ async function createOneTimeProductLead(input = {}, db = pool) {
           product_lead_id: productRow.id,
           source_landing_page: productRow.source_landing_page || '/one-time',
           free_zoom_alias_required_before_automated_send: true,
+          synthetic_test_lead: syntheticTestLead,
         }),
         JSON.stringify({
           ...crmMetadata,
@@ -78116,6 +78144,8 @@ async function createOneTimeProductLead(input = {}, db = pool) {
       crm_source_table: 'bna_parent_leads',
       internal_crm_recorded: true,
       internal_follow_up_required: true,
+      synthetic_test_lead: syntheticTestLead,
+      telegram_reminder_allowed: !syntheticTestLead,
     };
   } catch (error) {
     if (client) {
@@ -78880,8 +78910,11 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       });
     }
     const lead = await createOneTimeProductLead(req.body || {});
-    sendOneTimeSignupTelegramReminder(lead)
-      .catch((err) => console.error('OneTime signup Telegram reminder error:', err));
+    const syntheticNoExternalReminder = lead.synthetic_test_lead === true || isOneTimeSyntheticLead(req.body || {}, lead);
+    if (!syntheticNoExternalReminder) {
+      sendOneTimeSignupTelegramReminder(lead)
+        .catch((err) => console.error('OneTime signup Telegram reminder error:', err));
+    }
     res.json({
       success: true,
       lead,
@@ -78891,6 +78924,10 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       internal_crm_recorded: lead.internal_crm_recorded === true,
       crm_lead_id: lead.crm_lead_id || null,
       internal_follow_up_required: lead.internal_follow_up_required === true,
+      no_telegram_reminder_sent: syntheticNoExternalReminder,
+      telegram_reminder_skipped: syntheticNoExternalReminder,
+      telegram_reminder_skip_reason: syntheticNoExternalReminder ? 'synthetic_test_lead_no_external_reminder' : null,
+      internal_operator_notification_attempted: !syntheticNoExternalReminder,
       external_write_performed: false,
       message: 'Your free-class request was saved. We will follow up with the current OneTime free-class details.',
     });
