@@ -1212,6 +1212,12 @@
             : currentView === 'communications' && ['overview', 'parents', 'students', 'providers', 'internal', 'whatsapp', 'email', 'bots', 'announcements', 'templates', 'support_threads', 'settings'].includes(initialSection)
             ? initialSection
             : 'overview';
+        if (currentView === 'communications' && communicationsSection === 'email' && currentWorkspaceId === 'platform') {
+            if (emailInboxScope === 'rabbi') currentWorkspaceId = 'rabbi_sheller_provider';
+            if (emailInboxScope === 'bna') currentWorkspaceId = 'bna';
+            const scopedEmailProjectFilter = projectKeyForWorkspaceKey(currentWorkspaceId);
+            taskProjectFilter = scopedEmailProjectFilter === 'all' ? 'all' : scopedEmailProjectFilter;
+        }
         let dialogueSection = currentView === 'internal_dialogue' && ['overview', 'shloimie_rabbi', 'meeting_notes', 'uploads', 'decisions', 'support', 'activity'].includes(initialSection)
             ? initialSection
             : 'overview';
@@ -15885,7 +15891,8 @@
             if (currentView !== 'intake') url.searchParams.delete('parse_run');
             if (currentView === 'intake' && intakeSelectedRunId) url.searchParams.set('parse_run', intakeSelectedRunId);
             if (currentView === 'tasks' && taskProjectFilter !== 'all') url.searchParams.set('project', taskProjectFilter);
-            if (currentView !== 'tasks' || taskProjectFilter === 'all') url.searchParams.delete('project');
+            if (currentView === 'communications' && communicationsSection === 'email') url.searchParams.set('project', emailInboxScopeRecord().project_key);
+            if ((currentView !== 'tasks' && !(currentView === 'communications' && communicationsSection === 'email')) || (currentView === 'tasks' && taskProjectFilter === 'all')) url.searchParams.delete('project');
             if (currentView === 'tasks' && taskFocus === 'schedule') {
                 url.searchParams.set('calendar_mode', taskCalendarMode);
                 url.searchParams.set('date', taskCalendarSelectedDate);

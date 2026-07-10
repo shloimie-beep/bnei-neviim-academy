@@ -5,6 +5,7 @@ const test = require('node:test');
 
 const root = path.resolve(__dirname, '..');
 const operationsHtml = fs.readFileSync(path.join(root, 'public', 'operations.html'), 'utf8');
+const operationsShellJs = fs.readFileSync(path.join(root, 'public', 'js', 'operations-shell.js'), 'utf8');
 const operationsDeferredRenderersJs = fs.readFileSync(path.join(root, 'public', 'js', 'operations-deferred-renderers.js'), 'utf8');
 const providerHtml = fs.readFileSync(path.join(root, 'public', 'provider.html'), 'utf8');
 const server = fs.readFileSync(path.join(root, 'server.js'), 'utf8');
@@ -40,9 +41,13 @@ test('Operations Rabbi inbox URL canonicalizes to scoped workspace instead of pl
   assert.match(operationsHtml, /currentView === 'communications' && communicationsSection === 'email' && currentWorkspaceId === 'platform'/);
   assert.match(operationsHtml, /if \(emailInboxScope === 'rabbi'\) currentWorkspaceId = 'rabbi_sheller_provider'/);
   assert.match(operationsHtml, /taskProjectFilter = scopedEmailProjectFilter === 'all' \? 'all' : scopedEmailProjectFilter/);
+  assert.match(operationsShellJs, /currentView === 'communications' && communicationsSection === 'email' && currentWorkspaceId === 'platform'/);
+  assert.match(operationsShellJs, /if \(emailInboxScope === 'rabbi'\) currentWorkspaceId = 'rabbi_sheller_provider'/);
+  assert.match(operationsShellJs, /taskProjectFilter = scopedEmailProjectFilter === 'all' \? 'all' : scopedEmailProjectFilter/);
   assert.match(operationsHtml, /currentWorkspaceId = nextScope\.workspace/);
   assert.match(operationsHtml, /taskProjectFilter = nextScope\.project_key \|\| projectKeyForWorkspaceKey\(nextScope\.workspace\)/);
   assert.match(operationsHtml, /currentView === 'communications' && communicationsSection === 'email'\) url\.searchParams\.set\('project', emailInboxScopeRecord\(\)\.project_key\)/);
+  assert.match(operationsShellJs, /currentView === 'communications' && communicationsSection === 'email'\) url\.searchParams\.set\('project', emailInboxScopeRecord\(\)\.project_key\)/);
   assert.match(operationsDeferredRenderersJs, /currentWorkspaceId = nextScope\.workspace/);
   assert.match(operationsDeferredRenderersJs, /syncOperationsUrl\(\);[\s\S]*rerenderOperationsApp\(\);[\s\S]*await loadData\(\{ background: true \}\)/);
 });
