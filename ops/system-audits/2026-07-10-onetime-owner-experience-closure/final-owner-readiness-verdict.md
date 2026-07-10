@@ -3,7 +3,7 @@
 Generated: 2026-07-10T20:27:45+03:00
 Raw objective: `RAW-20260710-003`
 Requirement: `REQ-20260710-029`
-Audited head commit: `fd04d006`
+Audited clean-snapshot head commit: `fd04d006`
 Latest app deployment: Railway `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` from app source commit `627c3c75`
 Latest readiness snapshot: `2026-07-10T17:27:07.036Z` sampled clean `fd04d006`
 
@@ -75,7 +75,7 @@ The historical source audit is source-complete for all non-active rows: 291 rows
 ## Verification
 
 - PASS app source commit `627c3c75` was pushed and deployed to One Time Railway deployment `80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3` after fixing the deploy bundle `config/` omission.
-- PASS latest evidence/readiness head `fd04d006` is pushed to `origin/master`; no app redeploy was required for evidence-only changes.
+- PASS this verdict/readiness report is stored in an evidence-only commit; no app redeploy was required for evidence-only changes.
 - PASS refreshed production readiness snapshot at 2026-07-10T17:27:07.036Z: status not_production_complete, public_launch_smoke_ready=true, public_launch_smoke_age_hours=0.73, sampled_head=fd04d006, sampled_origin_master=fd04d006, sampled_worktree_clean=true
 - EXPECTED BLOCKED `node scripts/production-readiness-gate.mjs --from-file ops/production-readiness/latest-production-readiness-snapshot.json --json` at 2026-07-10T17:27:18.354Z: blocker groups include snapshot_not_production_ready, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing
 - PASS source matrix check: 291 total rows, 290 terminal rows, 1 active owner row, 0 non-active unmapped rows

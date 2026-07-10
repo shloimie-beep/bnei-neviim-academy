@@ -216,7 +216,7 @@
     "PASS evidence-only readiness/report updates pushed to origin/master; no app redeploy required for docs-only evidence",
     "EXPECTED BLOCKED production readiness gate remains blocked by external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing, and no_unblocked_executable_batch",
     "PASS app source commit 627c3c75 was pushed and deployed to One Time Railway deployment 80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3 after fixing the deploy bundle config/ omission",
-    "PASS latest evidence/readiness head fd04d006 is pushed to origin/master; no app redeploy was required for evidence-only changes",
+    "PASS this verdict/readiness report is stored in an evidence-only commit; no app redeploy was required for evidence-only changes",
     "PASS refreshed production readiness snapshot at 2026-07-10T17:27:07.036Z: status not_production_complete, public_launch_smoke_ready=true, public_launch_smoke_age_hours=0.73, sampled_head=fd04d006, sampled_origin_master=fd04d006, sampled_worktree_clean=true",
     "EXPECTED BLOCKED node scripts/production-readiness-gate.mjs --from-file ops/production-readiness/latest-production-readiness-snapshot.json --json at 2026-07-10T17:27:18.354Z: blocker groups include snapshot_not_production_ready, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing"
   ],
@@ -322,7 +322,7 @@
       "EXPECTED BLOCKED npm run one-time:wapi:readiness -- --json: no send, no CRM mutation, no secret printing; blocked on provider instance metadata, webhook secret, live-mode approval, and Telegram approval",
       "PASS post-deploy One Time live smokes after Railway 80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3: separate instance, Rabbi landing, shared review public/member/provider/parent/student/classroom/email surfaces, and authenticated Operations CRM workbench",
       "PASS app source commit 627c3c75 was pushed and deployed to One Time Railway deployment 80a2fe4d-fb5b-4087-b1ab-1c7e3bcc57f3 after fixing the deploy bundle config/ omission",
-      "PASS latest evidence/readiness head fd04d006 is pushed to origin/master; no app redeploy was required for evidence-only changes",
+      "PASS this verdict/readiness report is stored in an evidence-only commit; no app redeploy was required for evidence-only changes",
       "PASS refreshed production readiness snapshot at 2026-07-10T17:27:07.036Z: status not_production_complete, public_launch_smoke_ready=true, public_launch_smoke_age_hours=0.73, sampled_head=fd04d006, sampled_origin_master=fd04d006, sampled_worktree_clean=true",
       "EXPECTED BLOCKED node scripts/production-readiness-gate.mjs --from-file ops/production-readiness/latest-production-readiness-snapshot.json --json at 2026-07-10T17:27:18.354Z: blocker groups include snapshot_not_production_ready, no_unblocked_executable_batch, external_setup_blockers, rabbi_telegram_runtime_configuration, agent_mode_terminal_proof_missing"
     ],
