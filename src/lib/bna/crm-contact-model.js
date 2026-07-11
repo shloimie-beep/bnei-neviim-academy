@@ -95,6 +95,8 @@ function toContactCard(row = {}, options = {}) {
     display_name: String(displayName || 'Unknown contact'),
     contact_type: contactType,
     status,
+    lifecycle_stage: status,
+    assigned_owner: firstNonEmpty(row.assigned_owner, row.owner, row.assignee, row.created_by),
     interest_level: row.interest_level || row.priority || '',
     email,
     phone,

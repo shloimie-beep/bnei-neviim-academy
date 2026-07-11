@@ -9,6 +9,8 @@
                         'Content-Type': 'application/json'
                     }
                 };
+                const oneTimeViewAsToken = new URLSearchParams(window.location.search).get('view_as_rabbi') || '';
+                if (oneTimeViewAsToken) options.headers['X-One-Time-View-As-Token'] = oneTimeViewAsToken;
                 if (body) options.body = JSON.stringify(body);
 
                 const response = await fetch('/api/bna' + path, options);
@@ -285,6 +287,7 @@
                 });
                 return this.request('GET', '/crm/contacts/' + encodeURIComponent(id) + '/timeline' + (params.toString() ? '?' + params.toString() : ''));
             },
+            updateCrmContact(id, payload = {}) { return this.request('PATCH', '/crm/contacts/' + encodeURIComponent(id), payload); },
             createContactCommunication(note) { return this.request('POST', '/contact-communications', note); },
             previewContactImport(payload = {}) { return this.request('POST', '/contact-imports/preview', payload); },
             getParentAnnouncements(filters = {}) {
@@ -1171,6 +1174,8 @@
         let selectedFirstPartyCrmContactId = null;
         let firstPartyCrmLoading = false;
         let firstPartyCrmError = '';
+        let firstPartyCrmNotice = '';
+        let firstPartyCrmSaving = false;
         let firstPartyCrmFilters = {
             contact_type: 'all',
             status: 'all',
@@ -2290,6 +2295,8 @@
             firstPartyCrmTimelinePayload = null;
             selectedFirstPartyCrmContactId = null;
             firstPartyCrmError = '';
+            firstPartyCrmNotice = '';
+            firstPartyCrmSaving = false;
             const nextProjectFilter = projectKeyForWorkspaceKey(currentWorkspaceId);
             taskProjectFilter = nextProjectFilter === 'all' ? 'all' : nextProjectFilter;
             normalizeCurrentRouteForWorkspace();
@@ -2304,6 +2311,28 @@
 
         function currentSubnavConfig() {
             const providerWorkspace = isProviderWorkspace();
+            if (providerWorkspace && currentWorkspaceIsOneTime()) {
+                const navItem = currentNavItem();
+                const ia = oneTimeDashboardIa();
+                const topRail = ia?.top_rail_model?.[navItem.navKey] || null;
+                if (topRail && Array.isArray(topRail.items)) {
+                    const tabs = topRail.items.map(item => ({
+                        id: item.id,
+                        label: item.label,
+                        source_view: item.source_view,
+                        source_section: item.source_section,
+                    }));
+                    const activeItem = tabs.find(tab => tab.source_view === currentView && tab.source_section === currentSectionId())
+                        || tabs.find(tab => tab.id === topRail.default_item)
+                        || tabs[0];
+                    return {
+                        tabs,
+                        active: activeItem?.id || topRail.default_item,
+                        countSource: contactSubnavCounts(),
+                        label: topRail.label || navItem.label || 'One Time',
+                    };
+                }
+            }
             const configs = {
                 dashboard: () => ({ tabs: DASHBOARD_SUBTABS, active: dashboardSection, countSource: dashboardSectionCounts(), label: 'Dashboard' }),
                 watchdog: () => ({ tabs: [{ id: 'overview', label: 'Overview' }], active: 'overview', countSource: {}, label: 'Watchdog' }),
@@ -2351,7 +2380,7 @@
                         </div>
                     </div>
                     ${tabs.map(tab => `
-                        <button type="button" class="ops-nested-button ${String(config.active) === String(tab.id) ? 'active' : ''}" onclick="setCurrentSection('${tab.id}')">
+                        <button type="button" class="ops-nested-button ${String(config.active) === String(tab.id) ? 'active' : ''}" onclick="${tab.source_view ? `openSidebarNavItem(${attrJson(tab.source_view)}, ${attrJson(tab.source_section || tab.id)})` : `setCurrentSection(${attrJson(tab.id)})`}">
                             <span>${escapeHtml(tab.label)}</span>
                             ${tab.count !== undefined && tab.count !== null ? `<span>${escapeHtml(String(tab.count))}</span>` : ''}
                         </button>
@@ -2480,7 +2509,7 @@
                                 const selected = String(tab.id) === active;
                                 const displayLabel = compactTopRailLabel(tab);
                                 return `
-                            <button type="button" class="ops-filter-tab ${selected ? 'active' : ''}" role="tab" aria-selected="${selected ? 'true' : 'false'}" aria-current="${selected ? 'page' : 'false'}" aria-label="${escapeHtml(tab.label || tab.id)}" title="${escapeHtml(tab.label || tab.id)}" data-top-filter-id="${escapeHtml(tab.id)}" onclick="setCurrentSection(${attrJson(tab.id)})">
+                            <button type="button" class="ops-filter-tab ${selected ? 'active' : ''}" role="tab" aria-selected="${selected ? 'true' : 'false'}" aria-current="${selected ? 'page' : 'false'}" aria-label="${escapeHtml(tab.label || tab.id)}" title="${escapeHtml(tab.label || tab.id)}" data-top-filter-id="${escapeHtml(tab.id)}" onclick="${tab.source_view ? `openSidebarNavItem(${attrJson(tab.source_view)}, ${attrJson(tab.source_section || tab.id)})` : `setCurrentSection(${attrJson(tab.id)})`}">
                                 <span>${escapeHtml(displayLabel)}</span>
                                 ${tab.count !== undefined && tab.count !== null ? `<span class="ops-filter-count">${escapeHtml(String(tab.count))}</span>` : ''}
                             </button>
@@ -2510,12 +2539,15 @@
 
         function oneTimeOperationsTopbarStatusChips() {
             const counts = oneTimeProviderDashboardCounts();
-            return [
-                { label: 'Members', value: counts.members, tone: counts.members ? 'active' : 'ok', action: "switchView('contacts'); setCurrentSection('participants')", title: 'One Time participants and member records scoped to this provider.' },
+            const chips = [
+                { label: 'CRM', value: counts.members, tone: counts.members ? 'active' : 'ok', action: "switchView('contacts'); setCurrentSection('participants')", title: 'One Time participants, leads, and CRM records scoped to this provider.' },
                 { label: 'Classes', value: counts.classes, tone: counts.classes ? 'active' : 'ok', action: "switchView('content'); setCurrentSection('one_time_library')", title: 'One Time classes, source material, and library items.' },
-                { label: 'Studio', value: counts.studio, tone: counts.studio ? 'active' : 'ok', action: "switchView('studio'); setCurrentSection('overview')", title: 'Studio projects and content workflow for this workspace.' },
                 { label: 'Setup', value: counts.setup, tone: counts.setup ? 'attention' : 'ok', action: "switchView('settings'); setCurrentSection('workspace')", title: 'Provider setup, connectors, and access items.' },
             ];
+            if (new URLSearchParams(window.location.search).get('view_as_rabbi')) {
+                chips.unshift({ label: 'View-as', value: 'Read-only', tone: 'locked', action: '', title: 'Viewing as Rabbi Eli Scheller. Server blocks writes, sends, charges, imports, uploads, and access changes.' });
+            }
+            return chips;
         }
 
         function oneTimeProviderDashboardCounts() {
@@ -3376,11 +3408,11 @@
                                 ${alerts.map(item => renderMetricButton(item.label, item.value, item.note, item.target)).join('')}
                             </div>
                         </section>
-                        ${renderDashboardTopNewsPanel(6)}
+                        ${renderCommunicationTopNewsPanel(communicationTopNewsItems(6), true)}
                         ${renderNotificationCenter(24)}
                     ` : ''}
                     ${section === 'overview' ? renderNotificationCenter(5) : ''}
-                    ${section === 'overview' ? renderDashboardTopNewsPanel(4) : ''}
+                    ${section === 'overview' ? renderCommunicationTopNewsPanel(communicationTopNewsItems(4), true) : ''}
                     ${section === 'today' || section === 'overview' ? `
                         <section class="focus-panel" aria-label="Today">
                             <div class="task-section-header"><h3>Today's Work</h3><span>${recentTasks.length} tasks</span></div>
@@ -3628,71 +3660,6 @@
         function limitTextClient(value, max = 180) {
             const text = String(value || '').replace(/\s+/g, ' ').trim();
             return text.length > max ? `${text.slice(0, max - 1).trim()}...` : text;
-        }
-
-        function renderDashboardTopNewsPanel(limit = 4) {
-            const topNews = [...contactCommunications]
-                .filter(item => item.follow_up_required || /urgent|high|failed|payment|reply|accountability/i.test(`${item.priority || ''} ${item.summary || ''} ${item.body || ''}`))
-                .sort((a, b) => Date.parse(b.occurred_at || b.created_at || 0) - Date.parse(a.occurred_at || a.created_at || 0))
-                .slice(0, limit);
-            return `
-                <section class="focus-panel" data-communication-top-news>
-                    <div class="task-section-header"><h3>Top News</h3><span>${topNews.length} events</span></div>
-                    ${topNews.length ? `<div class="communication-top-news-grid">
-                        ${topNews.map(item => `
-                            <article class="communication-top-news-card">
-                                <div class="task-card-meta">
-                                    <span class="badge badge-urgency-${escapeHtml(String(item.priority || '').toLowerCase() === 'urgent' ? 'urgent' : 'today')}">${escapeHtml(item.priority || (item.follow_up_required ? 'high' : 'normal'))}</span>
-                                    <span class="badge">${escapeHtml(communicationChannelLabel(item.channel))}</span>
-                                    <span class="badge">${escapeHtml(communicationDirectionLabel(item.direction))}</span>
-                                </div>
-                                <div class="task-title">${escapeHtml(item.subject || item.title || item.summary || communicationContactName(item) || 'Contact update')}</div>
-                                <p class="task-notes">${escapeHtml(limitTextClient(item.body || item.summary || '', 160))}</p>
-                            </article>
-                        `).join('')}
-                    </div>` : '<div class="empty-state">No high-priority communication events are loaded.</div>'}
-                </section>
-            `;
-        }
-
-        function shellDeviceAccessState(value = '') {
-            const status = String(value || '').toLowerCase();
-            if (/approved|open|active|manual/.test(status)) return status.includes('manual') ? 'manual_override' : 'approved_access';
-            if (/lock/.test(status)) return 'locked';
-            if (/accountability/.test(status)) return 'accountability_only';
-            if (/expired/.test(status)) return 'expired';
-            if (/pending|review/.test(status)) return 'needs_review';
-            return status || 'not_configured';
-        }
-
-        function shellDeviceAccessLabel(state = '') {
-            return contactStatusLabel(String(state || 'not_configured').replace(/_/g, ' '));
-        }
-
-        function studentAccountabilitySnapshot(student = {}) {
-            const studentId = String(student.id || student.student_id || '');
-            const relatedEvents = (accountabilityEvents || []).filter(event => String(event.student_id || event.student?.id || '') === studentId);
-            const device = (devices || [])
-                .filter(item => String(item.student_id || item.student?.id || '') === studentId)
-                .sort((a, b) => Date.parse(b.updated_at || b.created_at || 0) - Date.parse(a.updated_at || a.created_at || 0))[0] || null;
-            const eventText = relatedEvents.map(event => `${event.status || ''} ${event.stage || ''} ${event.outcome || ''}`).join(' ').toLowerCase();
-            const deviceState = shellDeviceAccessState(device?.status);
-            let status = 'due_today';
-            if (!relatedEvents.length && !device) status = 'needs_setup';
-            else if (/review|pending/.test(eventText) || deviceState === 'needs_review') status = 'needs_review';
-            else if (/missed|overdue|late/.test(eventText)) status = 'missed';
-            else if (['approved_access', 'manual_override'].includes(deviceState)) status = 'access_open';
-            else if (/done|complete|completed|checked/.test(eventText)) status = 'checked_off';
-            else if (['locked', 'accountability_only', 'expired'].includes(deviceState)) status = 'locked';
-            return {
-                status,
-                goal: relatedEvents[0] || null,
-                metadata: {},
-                device,
-                deviceState,
-                deviceLabel: shellDeviceAccessLabel(deviceState),
-                accessWindow: device?.active_session ? 'Active session' : '',
-            };
         }
 
         function operationsCommandMetrics() {
@@ -7074,10 +7041,13 @@
 
         function firstPartyCrmQueryFilters() {
             const workspace = currentWorkspaceKey();
+            const project = projectKeyForWorkspaceKey(workspace);
             return {
                 ...firstPartyCrmFilters,
                 workspace,
-                project: projectKeyForWorkspaceKey(workspace)
+                workspace_key: workspace,
+                project,
+                project_key: project
             };
         }
 
@@ -7086,22 +7056,25 @@
             return normalized.map(value => `<option value="${escapeHtml(value)}" ${value === current ? 'selected' : ''}>${escapeHtml(contactStatusLabel(value))}</option>`).join('');
         }
 
-        function renderFirstPartyCrmFilterControls(payload = {}) {
+        function renderFirstPartyCrmFilterControls(payload = {}, options = {}) {
             const filters = payload.filters || {};
             const sharedTagOptions = Array.from(new Set([...(filters.tags || []), ...allContactTags()]))
                 .filter(Boolean)
                 .sort((a, b) => String(a).localeCompare(String(b)));
+            const title = options.title || 'First-party CRM Contacts';
+            const description = options.description || 'Workspace-scoped local CRM records only. This view reads BNA contacts, parent leads, and local timelines; it does not send or write to external CRM.';
+            const extraAttrs = options.oneTime ? ' data-one-time-crm-api-workbench data-requirement-id="REQ-20260710-020"' : '';
             return `
-                <section class="focus-panel compact-panel" data-action-id="ACTION-CRM-CONTACTS-FILTER">
+                <section class="focus-panel compact-panel" data-action-id="ACTION-CRM-CONTACTS-FILTER"${extraAttrs}>
                     <div class="task-section-header">
                         <div>
-                            <h3>First-party CRM Contacts</h3>
-                            <p class="notification-lock-note">Workspace-scoped local CRM records only. This view reads BNA contacts, parent leads, and local timelines; it does not send or write to external CRM.</p>
+                            <h3>${escapeHtml(title)}</h3>
+                            <p class="notification-lock-note">${escapeHtml(description)}</p>
                         </div>
-                        <button class="task-action primary" type="button" onclick="loadFirstPartyCrmContacts(event)" data-action-id="ACTION-CRM-CONTACTS-FILTER">Refresh</button>
+                        <button class="task-action primary crm-workbench-refresh" type="button" onclick="loadFirstPartyCrmContacts(event)" data-action-id="ACTION-CRM-CONTACTS-FILTER">Refresh</button>
                     </div>
                     <div class="settings-control-grid compact" style="margin-top:12px;">
-                        <label>Search<input value="${escapeHtml(firstPartyCrmFilters.search || '')}" onchange="setFirstPartyCrmFilter('search', this.value)" placeholder="Name, email, phone, tag"></label>
+                        <label class="crm-filter-search">Search<input value="${escapeHtml(firstPartyCrmFilters.search || '')}" onchange="setFirstPartyCrmFilter('search', this.value)" placeholder="Name, email, phone, tag"></label>
                         <label>Type<select onchange="setFirstPartyCrmFilter('contact_type', this.value)">${firstPartyCrmOptionList(filters.contact_types, firstPartyCrmFilters.contact_type)}</select></label>
                         <label>Status<select onchange="setFirstPartyCrmFilter('status', this.value)">${firstPartyCrmOptionList(filters.statuses, firstPartyCrmFilters.status)}</select></label>
                         <label>Source<select onchange="setFirstPartyCrmFilter('source', this.value)">${firstPartyCrmOptionList(filters.sources, firstPartyCrmFilters.source)}</select></label>
@@ -7116,28 +7089,37 @@
             `;
         }
 
-        function renderFirstPartyCrmContactsPanel() {
+        function renderFirstPartyCrmContactsPanel(options = {}) {
             if (!firstPartyCrmContactsPayload && !firstPartyCrmLoading && !firstPartyCrmError) {
                 setTimeout(() => loadFirstPartyCrmContacts(), 0);
             }
             const payload = firstPartyCrmContactsPayload || { cards: [], filters: {}, total: 0, filtered_total: 0 };
             const cards = Array.isArray(payload.cards) ? payload.cards : [];
-            const selectedTimeline = selectedFirstPartyCrmContactId && firstPartyCrmTimelinePayload
-                ? renderFirstPartyCrmTimeline()
-                : '';
+            if (!selectedFirstPartyCrmContactId) {
+                const restoredId = window.sessionStorage?.getItem?.('oneTimeSelectedCrmContactId') || '';
+                if (restoredId && cards.some(card => String(card.id) === String(restoredId))) {
+                    selectedFirstPartyCrmContactId = restoredId;
+                    if (!firstPartyCrmTimelinePayload) setTimeout(() => openFirstPartyCrmContact(restoredId), 0);
+                }
+            }
+            const selectedCard = cards.find(card => String(card.id) === String(selectedFirstPartyCrmContactId)) || null;
+            const workbenchAttrs = options.oneTime ? ' data-one-time-crm-workbench data-requirement-id="REQ-20260710-020"' : '';
             return `
-                ${renderFirstPartyCrmFilterControls(payload)}
+                ${renderFirstPartyCrmFilterControls(payload, options)}
                 ${firstPartyCrmError ? `<div class="error-banner">${escapeHtml(firstPartyCrmError)}</div>` : ''}
+                ${firstPartyCrmNotice ? `<div class="success-banner">${escapeHtml(firstPartyCrmNotice)}</div>` : ''}
                 <div class="contact-empty-card">
-                    ${firstPartyCrmLoading ? 'Loading CRM contacts...' : `${Number(payload.filtered_total || cards.length).toLocaleString()} of ${Number(payload.total || cards.length).toLocaleString()} contacts shown. Read-only / no-send.`}
+                    ${firstPartyCrmLoading ? 'Loading CRM contacts...' : `${Number(payload.filtered_total || cards.length).toLocaleString()} of ${Number(payload.total || cards.length).toLocaleString()} contacts shown. Local CRM actions only; no external send.`}
                 </div>
                 ${cards.length ? `
-                    <div class="contact-layout">
-                        <div class="contact-list">
+                    <section class="crm-workbench-shell"${workbenchAttrs} aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
+                        <div class="contact-list crm-workbench-list">
                             ${cards.map(renderFirstPartyCrmCard).join('')}
                         </div>
-                    </div>
-                    ${selectedTimeline}
+                        <div class="crm-workbench-detail" data-crm-contact-detail>
+                            ${renderFirstPartyCrmDetail(selectedCard)}
+                        </div>
+                    </section>
                 ` : !firstPartyCrmLoading ? '<div class="contact-empty-card">No CRM contacts match this workspace/filter.</div>' : ''}
             `;
         }
@@ -7169,17 +7151,118 @@
             `;
         }
 
-        function renderFirstPartyCrmTimeline() {
+        function firstPartyCrmLinkedSummary(card = {}) {
+            const linked = card.linked || {};
+            const parts = [
+                linked.parent_lead_id ? `Lead #${linked.parent_lead_id}` : '',
+                linked.signup_id ? `Signup #${linked.signup_id}` : '',
+                linked.student_id ? `Student #${linked.student_id}` : '',
+                linked.contact_id ? `Contact #${linked.contact_id}` : '',
+                linked.provider_profile_id ? `Provider #${linked.provider_profile_id}` : ''
+            ].filter(Boolean);
+            return parts.join(' / ') || 'No linked local record id loaded';
+        }
+
+        function firstPartyCrmClassAccessSummary(card = {}) {
+            const tags = (card.tags || []).map(String);
+            const classTags = tags.filter(tag => /class|trial|zoom|access|member|tier|library|free/i.test(tag));
+            if (classTags.length) return classTags.slice(0, 4).join(', ');
+            const blob = `${card.summary || ''} ${card.status || ''} ${card.source_label || ''}`;
+            if (/free[-\s]?class|trial|zoom/i.test(blob)) return 'Free class / trial interest needs follow-up readiness review';
+            if (/member|library|access|tier/i.test(blob)) return 'Member/access context is present; review access panel before messaging';
+            return 'No class/trial/access context loaded yet';
+        }
+
+        function firstPartyCrmLifecycleOptions(current = '') {
+            const stages = ['new', 'interested', 'follow_up', 'trial', 'accepted_not_paid', 'member', 'not_now', 'not_fit', 'archived'];
+            const selected = String(current || 'new');
+            return stages.map(stage => `<option value="${escapeHtml(stage)}" ${stage === selected ? 'selected' : ''}>${escapeHtml(contactStatusLabel(stage))}</option>`).join('');
+        }
+
+        function firstPartyCrmTagsInput(card = {}) {
+            return (card.tags || []).join(', ');
+        }
+
+        function oneTimeViewAsRabbiActive() {
+            return Boolean(new URLSearchParams(window.location.search).get('view_as_rabbi'));
+        }
+
+        function renderFirstPartyCrmDetail(card = null) {
+            if (!card) {
+                return `
+                    <section class="crm-selected-card" aria-label="CRM contact detail">
+                        <div class="crm-selected-title">Select a CRM contact</div>
+                        <div class="crm-selected-subtitle">Open a row to review identity, source, lifecycle, local timeline, notes, and safe next action. No email, WhatsApp, payment, access, or external CRM write runs from this detail panel.</div>
+                    </section>
+                `;
+            }
+            const timeline = selectedFirstPartyCrmContactId && firstPartyCrmTimelinePayload
+                ? renderFirstPartyCrmTimeline(card)
+                : '<div class="contact-empty-card">Loading selected contact timeline...</div>';
+            const viewAsReadOnly = oneTimeViewAsRabbiActive();
+            return `
+                <section class="crm-selected-card" aria-label="CRM contact detail">
+                    <div class="contact-detail-header">
+                        <div>
+                            <div class="crm-selected-title">${escapeHtml(card.display_name || 'CRM contact')}</div>
+                            <div class="crm-selected-subtitle">${escapeHtml([contactStatusLabel(card.contact_type), contactStatusLabel(card.source_label || card.source), contactStatusLabel(card.status || 'new')].filter(Boolean).join(' - '))}</div>
+                        </div>
+                        <span class="page-status-pill">${escapeHtml(contactStatusLabel(card.status || 'new'))}</span>
+                    </div>
+                    <div class="contact-detail-grid">
+                        ${renderContactDetailItem('Email', card.email || 'Not loaded')}
+                        ${renderContactDetailItem('Phone', card.phone || 'Not loaded')}
+                        ${renderContactDetailItem('Lifecycle / Source', [contactStatusLabel(card.status || 'new'), contactStatusLabel(card.source_label || card.source || 'first party')].filter(Boolean).join(' / '))}
+                        ${renderContactDetailItem('Last Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : 'No local activity yet')}
+                        ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : 'Not scheduled')}
+                        ${renderContactDetailItem('Assigned Owner', card.assigned_owner || 'Unassigned')}
+                        ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
+                        ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
+                        ${renderContactDetailItem('Notes', card.summary || 'No notes loaded yet')}
+                    </div>
+                    <div class="task-actions" style="margin-top:14px;">
+                        <button class="task-action primary" type="button" onclick="openFirstPartyCrmContact(${attrJson(card.id)})" data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">Refresh timeline</button>
+                        <button class="task-action" type="button" onclick="openFirstPartyCrmMailbox(${attrJson(card.id)}, ${attrJson(card.email || '')})" data-action-id="ACTION-CRM-CONTACT-MAILBOX-OPEN">Open mailbox</button>
+                        <span class="status-chip blocked" title="Email, WhatsApp, payment, access, and external CRM actions require approval.">External actions locked</span>
+                    </div>
+                    <form class="settings-control-grid compact crm-action-form" style="margin-top:14px;" onsubmit="saveFirstPartyCrmAction(event, ${attrJson(card.id)})" data-crm-contact-action-form data-action-id="ACTION-CRM-CONTACT-SAFE-UPDATE">
+                        <label>Lifecycle
+                            <select name="status">${firstPartyCrmLifecycleOptions(card.status || card.lifecycle_stage)}</select>
+                        </label>
+                        <label>Next follow-up
+                            <input name="next_follow_up_at" type="date" value="${escapeHtml(String(card.next_follow_up_at || '').slice(0, 10))}">
+                        </label>
+                        <label>Assigned owner
+                            <input name="assigned_owner" value="${escapeHtml(card.assigned_owner || '')}" placeholder="Rabbi Scheller team">
+                        </label>
+                        <label>Tags
+                            <input name="tags" value="${escapeHtml(firstPartyCrmTagsInput(card))}" placeholder="Comma-separated tags">
+                        </label>
+                        <label style="grid-column:1/-1;">Internal note
+                            <textarea name="note_body" rows="3" placeholder="Add a local note. This does not send email, WhatsApp, Telegram, payment, access, or external CRM messages."></textarea>
+                        </label>
+                        <div class="task-actions" style="grid-column:1/-1;">
+                            <button class="task-action primary" type="submit" ${firstPartyCrmSaving || viewAsReadOnly ? 'disabled' : ''}>${viewAsReadOnly ? 'Read-only View-as' : firstPartyCrmSaving ? 'Saving...' : 'Save CRM Update'}</button>
+                            <span class="status-chip">${viewAsReadOnly ? 'Server-enforced read-only' : 'First-party local write'}</span>
+                        </div>
+                    </form>
+                </section>
+                ${timeline}
+            `;
+        }
+
+        function renderFirstPartyCrmTimeline(card = {}) {
             const items = Array.isArray(firstPartyCrmTimelinePayload?.timeline) ? firstPartyCrmTimelinePayload.timeline : [];
             return `
                 <section class="focus-panel compact-panel" data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
                     <div class="task-section-header">
                         <div>
                             <h3>Contact Timeline</h3>
-                            <p class="notification-lock-note">Read-only local timeline. No message is sent from this view.</p>
+                            <p class="notification-lock-note">Read-only local timeline for ${escapeHtml(card.display_name || 'selected contact')}. No message is sent from this view.</p>
                         </div>
                         <span>${items.length} timeline items</span>
                     </div>
+                    <div class="crm-timeline-list">
                     ${items.length ? items.map(item => `
                         <article class="content-card">
                             <div class="content-card-title">${escapeHtml([item.channel, item.type].filter(Boolean).join(' / ') || 'Timeline item')}</div>
@@ -7187,6 +7270,7 @@
                             <p class="event-meta">${escapeHtml(item.body || '')}</p>
                         </article>
                     `).join('') : '<div class="contact-empty-card">No timeline records found.</div>'}
+                    </div>
                 </section>
             `;
         }
@@ -7210,6 +7294,7 @@
         async function openFirstPartyCrmContact(contactId) {
             selectedFirstPartyCrmContactId = contactId;
             firstPartyCrmTimelinePayload = null;
+            firstPartyCrmNotice = '';
             render();
             try {
                 firstPartyCrmTimelinePayload = await api.getCrmContactTimeline(contactId, firstPartyCrmQueryFilters());
@@ -7219,10 +7304,67 @@
             render();
         }
 
+        async function saveFirstPartyCrmAction(event, contactId) {
+            event.preventDefault();
+            const form = event.currentTarget;
+            const data = new FormData(form);
+            const noteBody = String(data.get('note_body') || '').trim();
+            const tags = String(data.get('tags') || '')
+                .split(',')
+                .map(tag => tag.trim())
+                .filter(Boolean);
+            firstPartyCrmSaving = true;
+            firstPartyCrmError = '';
+            firstPartyCrmNotice = '';
+            render();
+            try {
+                const result = await api.updateCrmContact(contactId, {
+                    ...firstPartyCrmQueryFilters(),
+                    status: data.get('status') || '',
+                    lifecycle_stage: data.get('status') || '',
+                    next_follow_up_at: data.get('next_follow_up_at') || '',
+                    assigned_owner: data.get('assigned_owner') || '',
+                    tags,
+                    note_summary: noteBody ? `CRM note for selected contact` : 'CRM contact updated',
+                    note_body: noteBody,
+                    no_send: true,
+                    external_write_performed: false
+                });
+                firstPartyCrmNotice = result?.external_write_performed === false
+                    ? 'CRM update saved locally. No external message, charge, import, or access change ran.'
+                    : 'CRM update saved.';
+                await loadFirstPartyCrmContacts();
+                selectedFirstPartyCrmContactId = contactId;
+                firstPartyCrmTimelinePayload = result?.timeline ? { timeline: result.timeline } : null;
+                if (!firstPartyCrmTimelinePayload) await openFirstPartyCrmContact(contactId);
+            } catch (error) {
+                firstPartyCrmError = error.message || 'Could not save CRM update.';
+            } finally {
+                firstPartyCrmSaving = false;
+                render();
+            }
+        }
+
+        function openFirstPartyCrmMailbox(contactId, email = '') {
+            selectedFirstPartyCrmContactId = contactId;
+            window.sessionStorage?.setItem?.('oneTimeSelectedCrmContactId', String(contactId || ''));
+            window.sessionStorage?.setItem?.('oneTimeSelectedCrmContactEmail', String(email || ''));
+            currentView = 'communications';
+            communicationsSection = 'email';
+            emailInboxScope = 'rabbi';
+            firstPartyCrmNotice = email
+                ? `Mailbox opened for ${email}. Return to Members / CRM to keep this contact selected.`
+                : 'Mailbox opened. Return to Members / CRM to keep this contact selected.';
+            syncOperationsUrl();
+            render();
+            loadData({ background: true });
+        }
+
         function setFirstPartyCrmFilter(key, value) {
             firstPartyCrmFilters = { ...firstPartyCrmFilters, [key]: value };
             selectedFirstPartyCrmContactId = null;
             firstPartyCrmTimelinePayload = null;
+            window.sessionStorage?.removeItem?.('oneTimeSelectedCrmContactId');
             loadFirstPartyCrmContacts();
         }
 
@@ -7407,57 +7549,68 @@
                 selectedLeadId = null;
                 leadDetailSection = 'overview';
             }
+            const apiWorkbench = renderFirstPartyCrmContactsPanel({
+                oneTime: true,
+                title: 'One Time CRM Workbench',
+                description: 'Search, filter, sort, open, and read local One Time CRM contact timelines from first-party BNA records only. No email, WhatsApp, payment, access, or external CRM write runs from this workbench.'
+            });
             return `
-                <section class="focus-panel compact-panel" data-one-time-crm-contacts-ux data-requirement-id="REQ-20260621-905" aria-label="One Time CRM Contacts UX">
-                    <div class="task-section-header">
-                        <div>
-                            <h3>One Time CRM Contacts</h3>
-                            <p class="notification-lock-note">Workspace-scoped One Time / Rabbi leads and members only. Lead status, source, no-send, dedupe/review state, and local communications are visible before any campaign decision.</p>
-                        </div>
-                        <span>${rows.length} scoped records</span>
+                ${apiWorkbench}
+                <details class="filter-details collapsible-details" data-one-time-crm-review-context>
+                    <summary>Review/source safeguards</summary>
+                    <div class="filter-details-body">
+                        <section class="focus-panel compact-panel" data-one-time-crm-contacts-ux data-requirement-id="REQ-20260621-905" aria-label="One Time CRM Contacts UX">
+                            <div class="task-section-header">
+                                <div>
+                                    <h3>One Time CRM Review Context</h3>
+                                    <p class="notification-lock-note">Workspace-scoped One Time/Rabbi leads and members only. Lead status, source, no-send, dedupe/review state, and local communications are visible before any campaign decision.</p>
+                                </div>
+                                <span>${rows.length} scoped records</span>
+                            </div>
+                            <div class="settings-control-grid compact" style="margin-top:12px;">
+                                ${renderSettingsControlRow('Workspace scope', 'One Time / Rabbi Scheller', 'Parent-lead data is requested with the selected workspace/project filter and excludes BNA school-only records.', 'Scoped')}
+                                ${renderSettingsControlRow('No-send guard', 'No email, WhatsApp, payment, or external CRM write', 'Campaign sends remain locked until Shloimie approves copy, sender, suppressions, and test recipients.', 'Guarded')}
+                                ${renderSettingsControlRow('Dedupe / review', 'Explicit row state', 'Dedupe keys, possible duplicates, manual-review tags, and preview-only import states are surfaced for admin review.', 'Visible')}
+                                ${renderSettingsControlRow('Privacy', 'Private BNA data absent', 'Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.', 'Protected')}
+                            </div>
+                        </section>
+                        ${renderLeadFilterPanel(sectionLeads, visibleLeads)}
+                        ${rows.length === 0 ? `
+                            ${renderOneTimeCrmEmptyState('no_rows')}
+                        ` : sectionLeads.length > 0 && visibleLeads.length === 0 ? `
+                            ${renderOneTimeCrmEmptyState('filtered_empty')}
+                        ` : `
+                            <section class="focus-panel">
+                                <div class="task-section-header"><h3>CRM Contact Review</h3><span>${rows.length} shown</span></div>
+                                <div class="data-table compact-table" data-one-time-crm-contact-table>
+                                    <table>
+                                        <thead>
+                                            <tr><th>Name</th><th>Record Status</th><th>No-send</th><th>Dedupe / review</th><th>Source</th><th>Communications</th><th>Next Action</th><th>Direct Action</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            ${rows.map(row => `
+                                                <tr data-one-time-crm-contact-row data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
+                                                    <td>
+                                                        <strong>${escapeHtml(row.name)}</strong>
+                                                        <div class="event-meta">${escapeHtml(row.contact)}</div>
+                                                    </td>
+                                                    <td>${escapeHtml(row.status)}</td>
+                                                    <td><span class="status-chip ${escapeHtml(row.noSend.locked ? 'blocked' : 'ready')}">${escapeHtml(row.noSend.label)}</span><div class="event-meta">${escapeHtml(row.noSend.detail)}</div></td>
+                                                    <td><span class="status-chip ${escapeHtml(row.dedupe.needsReview ? 'needs-review' : 'ready')}">${escapeHtml(row.dedupe.label)}</span><div class="event-meta">${escapeHtml(row.dedupe.detail)}</div></td>
+                                                    <td>${escapeHtml(row.source.label)}<div class="event-meta">${escapeHtml(row.source.detail)}</div></td>
+                                                    <td>${escapeHtml(row.communications.label)}<div class="event-meta">${escapeHtml(row.communications.detail)}</div></td>
+                                                    <td>${escapeHtml(row.nextAction)}</td>
+                                                    <td><div class="task-actions compact-actions">${row.actionHtml}</div></td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                ${renderOneTimeCrmContactCards(rows)}
+                            </section>
+                        `}
                     </div>
-                    <div class="settings-control-grid compact" style="margin-top:12px;">
-                        ${renderSettingsControlRow('Workspace scope', 'One Time / Rabbi Scheller', 'Parent-lead data is requested with the selected workspace/project filter and excludes BNA school-only records.', 'Scoped')}
-                        ${renderSettingsControlRow('No-send guard', 'No email, WhatsApp, payment, or external CRM write', 'Campaign sends remain locked until Shloimie approves copy, sender, suppressions, and test recipients.', 'Guarded')}
-                        ${renderSettingsControlRow('Dedupe / review', 'Explicit row state', 'Dedupe keys, possible duplicates, manual-review tags, and preview-only import states are surfaced for admin review.', 'Visible')}
-                        ${renderSettingsControlRow('Privacy', 'Private BNA data absent', 'Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.', 'Protected')}
-                    </div>
-                </section>
-                ${renderLeadFilterPanel(sectionLeads, visibleLeads)}
-                ${rows.length === 0 ? `
-                    ${renderOneTimeCrmEmptyState('no_rows')}
-                ` : sectionLeads.length > 0 && visibleLeads.length === 0 ? `
-                    ${renderOneTimeCrmEmptyState('filtered_empty')}
-                ` : `
-                    <section class="focus-panel">
-                        <div class="task-section-header"><h3>CRM Contact Review</h3><span>${rows.length} shown</span></div>
-                        <div class="data-table compact-table" data-one-time-crm-contact-table>
-                            <table>
-                                <thead>
-                                    <tr><th>Name</th><th>Record Status</th><th>No-send</th><th>Dedupe / review</th><th>Source</th><th>Communications</th><th>Next Action</th><th>Direct Action</th></tr>
-                                </thead>
-                                <tbody>
-                                    ${rows.map(row => `
-                                        <tr data-one-time-crm-contact-row data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
-                                            <td>
-                                                <strong>${escapeHtml(row.name)}</strong>
-                                                <div class="event-meta">${escapeHtml(row.contact)}</div>
-                                            </td>
-                                            <td>${escapeHtml(row.status)}</td>
-                                            <td><span class="status-chip ${escapeHtml(row.noSend.locked ? 'blocked' : 'ready')}">${escapeHtml(row.noSend.label)}</span><div class="event-meta">${escapeHtml(row.noSend.detail)}</div></td>
-                                            <td><span class="status-chip ${escapeHtml(row.dedupe.needsReview ? 'needs-review' : 'ready')}">${escapeHtml(row.dedupe.label)}</span><div class="event-meta">${escapeHtml(row.dedupe.detail)}</div></td>
-                                            <td>${escapeHtml(row.source.label)}<div class="event-meta">${escapeHtml(row.source.detail)}</div></td>
-                                            <td>${escapeHtml(row.communications.label)}<div class="event-meta">${escapeHtml(row.communications.detail)}</div></td>
-                                            <td>${escapeHtml(row.nextAction)}</td>
-                                            <td><div class="task-actions compact-actions">${row.actionHtml}</div></td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                        ${renderOneTimeCrmContactCards(rows)}
-                    </section>
-                `}
+                </details>
             `;
         }
 
@@ -10427,16 +10580,17 @@
                         <h3>Safe Role Preview</h3>
                         <span>Rabbi / student / member</span>
                     </div>
-                    <p class="settings-disabled-note">Open the One Time app perspectives from here. View-as Rabbi is a signed read-only session; student and member previews use TEST review data only.</p>
+                    <p class="settings-disabled-note">Open the One Time app perspectives from here. Rabbi opens through a signed provider session; student and member previews use scoped sample data without changing records.</p>
                     <div class="task-actions one-time-perspective-actions">
                         <button type="button" class="task-action primary" data-action-id="ACTION-ONETIME-PROVIDER-SESSION-START" onclick="openOneTimeProviderSession(event)">View One Time as Rabbi</button>
                         <a class="task-action" data-action-id="ACTION-ONETIME-STUDENT-PREVIEW" href="/student.html?review=one-time" target="_blank" rel="noopener">Student Preview</a>
                         <a class="task-action" data-action-id="ACTION-ONETIME-MEMBER-PREVIEW" href="/rabbi-member?review=one-time" target="_blank" rel="noopener">Member Preview</a>
                     </div>
                     <div class="service-meta one-time-perspective-meta" style="margin-top:10px;">
-                        <span class="status-pill">Read-only</span>
-                        <span class="status-pill">No-send</span>
-                        <span class="status-pill">No-charge</span>
+                        <span class="status-pill">Scoped</span>
+                        <span class="status-pill">Message approval</span>
+                        <span class="status-pill">Billing approval</span>
+                        <span class="status-pill">Access approval</span>
                         <span class="status-pill">No access grant</span>
                     </div>
                 </section>
@@ -13640,7 +13794,7 @@
             const views = allowedViews();
             const navIds = workspaceNavViewIds(workspaceKey);
             const preferred = currentWorkspaceIsOneTime(workspaceKey)
-                ? ['studio', 'tasks', 'dashboard']
+                ? ['service_providers', 'contacts', 'content', 'tasks']
                 : ['dashboard', 'tasks', 'studio'];
             return preferred.find(view => views.has(view) && navIds.includes(view))
                 || navIds.find(view => views.has(view))
@@ -13859,25 +14013,49 @@
             return 'platform';
         }
 
-        const ONE_TIME_PROVIDER_PRIMARY_NAV_ITEMS = [
-            { id: 'service_providers', navKey: 'overview_package_status', section: 'overview', label: 'Overview', marker: 'OV' },
-            { id: 'contacts', navKey: 'members_crm', section: 'participants', label: 'Members', marker: 'MB' },
-            { id: 'content', navKey: 'classes_content', section: 'one_time_library', label: 'Classes & Content', marker: 'CC' },
-            { id: 'studio', navKey: 'studio', section: 'overview', label: 'Studio', marker: 'ST' },
-            { id: 'live_classes', navKey: 'live_class_schedule', section: 'overview', label: 'Live Class', marker: 'LC' },
-            { id: 'calendar', navKey: 'program_schedule', section: 'provider', label: 'Schedule', marker: 'SC' },
-            { id: 'community', navKey: 'community_questions', section: 'overview', label: 'Community', marker: 'CO' },
-            { id: 'communications', navKey: 'communications', section: 'providers', label: 'Communications', marker: 'CM' },
-            { id: 'automations', navKey: 'automations', section: 'center', label: 'Automations', marker: 'AU' },
-            { id: 'service_providers', navKey: 'payments_access', section: 'access', label: 'Payments', marker: 'PA' },
-            { id: 'tasks', navKey: 'tasks_decisions', section: 'one_time', label: 'Tasks', marker: 'TS' },
-            { id: 'api_usage', navKey: 'reporting_readiness', section: 'provider', label: 'Reporting', marker: 'RP' },
-            { id: 'integrations', navKey: 'connector_setup', section: 'readiness', label: 'Integrations', marker: 'IN' },
-            { id: 'settings', navKey: 'settings_setup', section: 'workspace', label: 'Workspace Setup', marker: 'SU' }
-        ];
+        function oneTimeDashboardIa() {
+            const ia = window.ONE_TIME_RABBI_DASHBOARD_IA;
+            return ia && Array.isArray(ia.main_modules) ? ia : null;
+        }
+
+        function markerForLabel(label = '') {
+            const words = String(label || '')
+                .replace(/&/g, ' ')
+                .split(/\s+/)
+                .map(word => word.replace(/[^A-Za-z0-9]/g, ''))
+                .filter(Boolean);
+            const marker = words.slice(0, 2).map(word => word[0]).join('').toUpperCase();
+            return marker || String(label || 'OP').slice(0, 2).toUpperCase();
+        }
+
+        function oneTimeIaSubsection(module = {}) {
+            const ia = oneTimeDashboardIa();
+            const sections = ia?.section_subsection_map?.[module.id]?.subsections || [];
+            return sections.find(section => section.id === module.default_section) || sections[0] || null;
+        }
+
+        function oneTimeProviderPrimaryNavItems() {
+            const ia = oneTimeDashboardIa();
+            if (!ia) return [];
+            return ia.main_modules.map(module => {
+                const subsection = oneTimeIaSubsection(module);
+                const label = module.short_label || module.label || module.id;
+                return {
+                    id: subsection?.source_view || module.operations_view || 'service_providers',
+                    navKey: module.id,
+                    section: subsection?.source_section || module.default_section || 'overview',
+                    label,
+                    marker: markerForLabel(label),
+                    iaModule: module
+                };
+            });
+        }
 
         function workspaceNavViewIds(workspaceKey = currentWorkspaceKey()) {
             const profile = workspaceNavProfile(workspaceKey);
+            if (profile === 'service_provider' && currentWorkspaceIsOneTime(workspaceKey)) {
+                return Array.from(new Set(oneTimeProviderPrimaryNavItems().map(item => item.id))).filter(Boolean);
+            }
             const nav = {
                 platform: ['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'],
                 bna: ['dashboard', 'watchdog', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'service_providers', 'accounting', 'automations', 'integrations', 'settings'],
@@ -13966,7 +14144,7 @@
                 }
             };
             if (workspaceNavProfile(workspaceKey) === 'service_provider' && currentWorkspaceIsOneTime(workspaceKey)) {
-                return ONE_TIME_PROVIDER_PRIMARY_NAV_ITEMS
+                return oneTimeProviderPrimaryNavItems()
                     .filter(item => allowedViews().has(item.id))
                     .map(item => ({ ...item }));
             }
@@ -15277,42 +15455,36 @@
                 const studioTaskOnlySession = isStudioTaskOnlySession();
                 const needsLocalClassroomData = activeView === 'students' || (activeView === 'content' && activeContentSection === 'one_time_library');
                 const needsDashboardData = activeView === 'dashboard';
-                const dashboardLightPass = needsDashboardData && !oneTimeProgramLightPass;
-                const needsBroadDashboardData = needsDashboardData && !dashboardLightPass;
-                const needsPlatformData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['watchdog', 'pipelines', 'calendar', 'communications', 'internal_dialogue', 'service_providers', 'api_usage', 'admin', 'integrations', 'settings'].includes(activeView));
-                const needsCalendarData = !oneTimeProgramLightPass && (needsBroadDashboardData || activeView === 'calendar' || (activeView === 'integrations' && ['google', 'connectors'].includes(activeIntegrationsSection)) || (activeView === 'settings' && ['calendar', 'calendar_classroom', 'google_classroom', 'integrations', 'google_workspace'].includes(activeSettingsSection)));
+                const needsPlatformData = !oneTimeProgramLightPass && (needsDashboardData || ['watchdog', 'pipelines', 'calendar', 'communications', 'internal_dialogue', 'service_providers', 'api_usage', 'admin', 'integrations', 'settings'].includes(activeView));
+                const needsCalendarData = !oneTimeProgramLightPass && (needsDashboardData || activeView === 'calendar' || (activeView === 'integrations' && ['google', 'connectors'].includes(activeIntegrationsSection)) || (activeView === 'settings' && ['calendar', 'calendar_classroom', 'google_classroom', 'integrations', 'google_workspace'].includes(activeSettingsSection)));
                 const needsGoogleIntegrationData = !oneTimeProgramLightPass && ((activeView === 'integrations' && activeIntegrationsSection === 'google') || (activeView === 'settings' && ['google_workspace', 'google_calendar', 'google_classroom', 'integrations', 'integrations_core', 'calendar_classroom'].includes(activeSettingsSection)));
-                const needsPipelineData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsBroadDashboardData || ['watchdog', 'pipelines', 'tasks', 'service_providers'].includes(activeView));
-                const needsDialogueData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection)));
-                const needsProjectData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['pipelines', 'service_providers', 'studio', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection)));
+                const needsPipelineData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'pipelines', 'tasks', 'service_providers'].includes(activeView));
+                const needsDialogueData = !oneTimeProgramLightPass && (needsDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection)));
+                const needsProjectData = !oneTimeProgramLightPass && (needsDashboardData || ['pipelines', 'service_providers', 'studio', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection)));
                 const needsTaskData = !oneTimeProgramLightPass && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'pipelines', 'internal_dialogue'].includes(activeView));
                 const needsAgentFleetData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'agents', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView));
                 const needsQueueHealthData = !oneTimeProgramLightPass && !studioTaskOnlySession && (needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView));
                 const canUseAgentControl = opsMe?.scope?.type === 'all';
                 const needsAgentRunData = !oneTimeProgramLightPass && canUseAgentControl && ['agents', 'tasks'].includes(activeView);
-                const needsPeopleData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['contacts', 'admin'].includes(activeView) || (activeView === 'settings' && ['users_roles', 'users_access'].includes(activeSettingsSection)));
-                const needsContactData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['contacts', 'communications', 'service_providers', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal', 'communications'].includes(activeSettingsSection)));
-                const needsCommunicationActivityData = !oneTimeProgramLightPass && (needsDashboardData || needsContactData);
+                const needsPeopleData = !oneTimeProgramLightPass && (needsDashboardData || ['contacts', 'admin'].includes(activeView) || (activeView === 'settings' && ['users_roles', 'users_access'].includes(activeSettingsSection)));
+                const needsContactData = !oneTimeProgramLightPass && (needsDashboardData || ['contacts', 'communications', 'service_providers', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal', 'communications'].includes(activeSettingsSection)));
                 const needsWapiPhonebookData = activeView === 'communications' && communicationsSection === 'whatsapp';
-                const needsAnnouncementData = !oneTimeProgramLightPass && (needsBroadDashboardData || activeView === 'communications' || (activeView === 'settings' && activeSettingsSection === 'communications'));
-                const needsSignupData = needsDashboardData || needsContactData || activeView === 'students' || activeView === 'accounting' || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection));
+                const needsAnnouncementData = !oneTimeProgramLightPass && (needsDashboardData || activeView === 'communications' || (activeView === 'settings' && activeSettingsSection === 'communications'));
+                const needsSignupData = needsContactData || activeView === 'students' || activeView === 'accounting' || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection));
                 const needsAccountingData = !oneTimeProgramLightPass && (needsDashboardData || ['accounting', 'api_usage'].includes(activeView) || (activeView === 'settings' && ['billing_payments', 'billing', 'payment_links', 'api_limits'].includes(activeSettingsSection)));
-                const needsContentData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['content', 'service_providers', 'calendar'].includes(activeView));
-                const needsContentJobData = !oneTimeProgramLightPass && (needsDashboardData || needsContentData);
+                const needsContentData = !oneTimeProgramLightPass && (needsDashboardData || ['content', 'service_providers', 'calendar'].includes(activeView));
                 const needsStudioData = !oneTimeProgramLightPass && ['studio', 'api_usage'].includes(activeView);
-                const needsCommunityData = !oneTimeProgramLightPass && (needsBroadDashboardData || activeView === 'community');
-                const needsLiveClassData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['live_classes', 'contacts', 'students'].includes(activeView));
+                const needsCommunityData = !oneTimeProgramLightPass && (needsDashboardData || activeView === 'community');
+                const needsLiveClassData = !oneTimeProgramLightPass && (needsDashboardData || ['live_classes', 'contacts', 'students'].includes(activeView));
                 const needsStudentRosterData = !oneTimeProgramLightPass && (needsDashboardData || needsLocalClassroomData || needsCommunityData || ['contacts', 'api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection)));
-                const needsStudentData = !oneTimeProgramLightPass && (needsBroadDashboardData || needsLocalClassroomData || ['api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'student_portal'].includes(activeSettingsSection)));
-                const needsStudentAttentionData = !oneTimeProgramLightPass && (needsDashboardData || needsStudentData);
-                const needsProviderData = needsBroadDashboardData || ['service_providers', 'contacts', 'communications', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'external_apps') || (activeView === 'settings' && ['provider_index', 'provider_portal', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models', 'payment_links', 'external_apps'].includes(activeSettingsSection));
+                const needsStudentData = !oneTimeProgramLightPass && (needsDashboardData || needsLocalClassroomData || ['api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'student_portal'].includes(activeSettingsSection)));
+                const needsProviderData = needsDashboardData || ['service_providers', 'contacts', 'communications', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'external_apps') || (activeView === 'settings' && ['provider_index', 'provider_portal', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models', 'payment_links', 'external_apps'].includes(activeSettingsSection));
                 const needsRabbiLaunchData = !oneTimeProgramFastPass && needsProviderData && isProviderWorkspace();
-                const needsSupportData = !oneTimeProgramLightPass && (needsBroadDashboardData || ['admin', 'communications', 'api_usage', 'internal_dialogue', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'api_limits', 'bot_permissions'].includes(activeSettingsSection)));
+                const needsSupportData = !oneTimeProgramLightPass && (needsDashboardData || ['admin', 'communications', 'api_usage', 'internal_dialogue', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'api_limits', 'bot_permissions'].includes(activeSettingsSection)));
                 const needsNotificationData = !oneTimeProgramLightPass && (needsDashboardData || ['admin', 'communications', 'content', 'contacts', 'service_providers', 'api_usage'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'bot_permissions'].includes(activeSettingsSection)));
-                const needsNotificationPreferencesData = needsNotificationData && !dashboardLightPass;
-                const needsCommunicationsIntegrationData = !oneTimeProgramLightPass && (needsBroadDashboardData || (activeView === 'integrations' && activeIntegrationsSection === 'communications') || (activeView === 'communications' && ['overview', 'email', 'settings'].includes(communicationsSection)) || (activeView === 'settings' && ['communications', 'communications_core', 'email_identities', 'social_accounts', 'integrations', 'integrations_core'].includes(activeSettingsSection)));
+                const needsCommunicationsIntegrationData = !oneTimeProgramLightPass && (needsDashboardData || (activeView === 'integrations' && activeIntegrationsSection === 'communications') || (activeView === 'communications' && ['overview', 'email', 'settings'].includes(communicationsSection)) || (activeView === 'settings' && ['communications', 'communications_core', 'email_identities', 'social_accounts', 'integrations', 'integrations_core'].includes(activeSettingsSection)));
                 const needsIntegrationsReadinessData = currentWorkspaceIsGlobal() && (
-                    needsBroadDashboardData ||
+                    needsDashboardData ||
                     activeView === 'watchdog' ||
                     (activeView === 'integrations' && activeIntegrationsSection === 'readiness') ||
                     (activeView === 'settings' && ['integrations', 'integrations_core'].includes(activeSettingsSection))
@@ -15352,13 +15524,13 @@
                     needsSignupData || needsAccountingData ? api.getSignups() : Promise.resolve({ signups: [] }),
                     needsContactData ? api.getParentLeads(workspaceDataFilters) : Promise.resolve({ leads: [] }),
                     shouldLoadServiceProvidersData ? dataRequestWithTimeout(api.getServiceProviders({ approved_only: false }), { providers: serviceProviders }, 'service providers', oneTimeProgramFastPass ? 3200 : 6000) : Promise.resolve({ providers: serviceProviders }),
-                    needsCommunicationActivityData ? api.getContactCommunications(workspaceDataFilters) : Promise.resolve({ communications: [] }),
+                    needsContactData ? api.getContactCommunications(workspaceDataFilters) : Promise.resolve({ communications: [] }),
                     needsWapiPhonebookData ? api.getWapiPhonebookReport(100, { workspace: currentWorkspaceKey() }) : Promise.resolve(null),
                     needsAnnouncementData ? api.getParentAnnouncements(workspaceFilter ? { workspace: workspaceFilter, limit: 20 } : { limit: 20 }) : Promise.resolve({ announcements: [] }),
                     needsAccountingData ? api.getPayments() : Promise.resolve({ payments: [] }),
                     needsAccountingData ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
                     needsAccountingData ? api.getPaymentReminderDue() : Promise.resolve(null),
-                    needsContentJobData ? api.getContentJobs(contentFilters) : Promise.resolve({ jobs: [] }),
+                    needsContentData ? api.getContentJobs(contentFilters) : Promise.resolve({ jobs: [] }),
                     needsContentData ? api.getClassSessions(contentFilters) : Promise.resolve({ sessions: [] }),
                     needsContentData ? api.getProjectMeetings({ project: contentFilters.project_key || 'one_time_mishnah_class' }) : Promise.resolve({ meetings: [] }),
                     shouldLoadOneTimeContentData ? api.getOneTimeClasses({ limit: 120 }) : Promise.resolve({ classes: [] }),
@@ -15371,10 +15543,10 @@
                     needsStudentRosterData ? api.getStudents(workspaceDataFilters) : Promise.resolve({ students: [] }),
                     needsStudentData ? api.getAssignments(selectedStudentFilters) : Promise.resolve({ assignments: [] }),
                     needsStudentData ? api.getAssignmentPrompts() : Promise.resolve({ prompts: [] }),
-                    needsStudentAttentionData ? api.getDevices(selectedStudentFilters) : Promise.resolve({ devices: [] }),
+                    needsStudentData ? api.getDevices(selectedStudentFilters) : Promise.resolve({ devices: [] }),
                     needsStudentData ? api.getDeviceAccessRules(selectedStudentFilters) : Promise.resolve({ rules: [] }),
                     needsStudentData ? api.getTorahLearning(workspaceDataFilters) : Promise.resolve(null),
-                    needsStudentAttentionData ? api.getAccountability(selectedStudentFilters) : Promise.resolve({ events: [] }),
+                    needsStudentData ? api.getAccountability(selectedStudentFilters) : Promise.resolve({ events: [] }),
                     needsStudentData ? api.getGroupGoals(workspaceDataFilters) : Promise.resolve({ goals: [] }),
                     needsCommunityData ? api.getWs11Courses(communityFilters) : Promise.resolve({ courses: [] }),
                     needsCommunityData ? api.getWs11Worksheets(communityFilters) : Promise.resolve({ worksheets: [] }),
@@ -15383,7 +15555,7 @@
                     needsCommunityData ? api.getWs11Shoutouts(communityFilters) : Promise.resolve({ shoutouts: [] }),
                     needsGoogleIntegrationData ? api.getGoogleIntegrationStatus() : Promise.resolve(null),
                     needsNotificationData ? api.getNotifications({ status: 'all', limit: 100, ...(workspaceFilter ? { workspace: workspaceFilter } : {}) }) : Promise.resolve({ notifications: [], summary: null }),
-                    needsNotificationPreferencesData ? api.getNotificationPreferences(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ preferences: [] }),
+                    needsNotificationData ? api.getNotificationPreferences(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ preferences: [] }),
                     needsCommunicationsIntegrationData ? fetchCommunicationsIntegrationBundle(communicationsIntegrationFilters) : Promise.resolve(null),
                     needsAutomationData ? api.getAutomations(workspaceDataFilters) : Promise.resolve({ automations: [], filters: automationFiltersMeta }),
                     needsIntegrationsReadinessData ? api.getIntegrationStatus(workspaceDataFilters) : Promise.resolve(null)
@@ -15440,7 +15612,7 @@
                     if (providerErrors.length) providerIndexNotice = providerErrors.join('; ');
                 }
                 if (contactCommunicationsRes.status === 'fulfilled' && contactCommunicationsRes.value?.communications) contactCommunications = contactCommunicationsRes.value.communications;
-                if (needsContactData && !dashboardLightPass) {
+                if (needsContactData) {
                     try {
                         const unifiedCommunicationsRes = await api.getCommunications({ ...communicationDataFilters, limit: 200 });
                         contactCommunications = mergeContactAndUnifiedCommunications(contactCommunications, unifiedCommunicationsRes?.communications || []);

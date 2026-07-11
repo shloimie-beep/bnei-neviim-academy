@@ -6,8 +6,12 @@
     <title>BNA Operations</title>
     <script>
         const operationsSource = new URLSearchParams(window.location.search).get('source');
-        if (window.location.pathname === '/operations.html' && ['pwa', 'ops-pwa'].includes(operationsSource)) {
-            window.location.replace('/operations');
+        const operationsSourceReadModes = ['split-source', 'codex-source'];
+        if (window.location.pathname === '/operations.html' && !operationsSourceReadModes.includes(operationsSource)) {
+            const redirectParams = new URLSearchParams(window.location.search);
+            redirectParams.delete('source');
+            const redirectQuery = redirectParams.toString();
+            window.location.replace(`/operations${redirectQuery ? `?${redirectQuery}` : ''}${window.location.hash || ''}`);
         }
     </script>
     <meta name="theme-color" content="#1e3a5f">
@@ -1699,6 +1703,24 @@
         }
 
         .settings-control-grid.compact .crm-filter-search input {
+            box-sizing: border-box;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .settings-control-grid.compact.crm-action-form {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .settings-control-grid.compact.crm-action-form label,
+        .settings-control-grid.compact.crm-action-form .task-actions {
+            grid-column: 1 / -1;
+            min-width: 0;
+        }
+
+        .settings-control-grid.compact.crm-action-form input,
+        .settings-control-grid.compact.crm-action-form select,
+        .settings-control-grid.compact.crm-action-form textarea {
             box-sizing: border-box;
             min-width: 0;
             width: 100%;
@@ -8415,6 +8437,7 @@
 
     <script src="/js/platform-ui/platform-ui-fixtures.js"></script>
     <script src="/js/platform-ui/platform-ui.js"></script>
+    <script src="/js/one-time-rabbi-dashboard-ia.generated.js"></script>
     <script>
         // API Client
         const api = {
@@ -8426,6 +8449,8 @@
                         'Content-Type': 'application/json'
                     }
                 };
+                const oneTimeViewAsToken = new URLSearchParams(window.location.search).get('view_as_rabbi') || '';
+                if (oneTimeViewAsToken) options.headers['X-One-Time-View-As-Token'] = oneTimeViewAsToken;
                 if (body) options.body = JSON.stringify(body);
 
                 const response = await fetch('/api/bna' + path, options);
@@ -8702,6 +8727,7 @@
                 });
                 return this.request('GET', '/crm/contacts/' + encodeURIComponent(id) + '/timeline' + (params.toString() ? '?' + params.toString() : ''));
             },
+            updateCrmContact(id, payload = {}) { return this.request('PATCH', '/crm/contacts/' + encodeURIComponent(id), payload); },
             createContactCommunication(note) { return this.request('POST', '/contact-communications', note); },
             previewContactImport(payload = {}) { return this.request('POST', '/contact-imports/preview', payload); },
             getParentAnnouncements(filters = {}) {
@@ -9588,6 +9614,8 @@
         let selectedFirstPartyCrmContactId = null;
         let firstPartyCrmLoading = false;
         let firstPartyCrmError = '';
+        let firstPartyCrmNotice = '';
+        let firstPartyCrmSaving = false;
         let firstPartyCrmFilters = {
             contact_type: 'all',
             status: 'all',
@@ -10707,6 +10735,8 @@
             firstPartyCrmTimelinePayload = null;
             selectedFirstPartyCrmContactId = null;
             firstPartyCrmError = '';
+            firstPartyCrmNotice = '';
+            firstPartyCrmSaving = false;
             const nextProjectFilter = projectKeyForWorkspaceKey(currentWorkspaceId);
             taskProjectFilter = nextProjectFilter === 'all' ? 'all' : nextProjectFilter;
             normalizeCurrentRouteForWorkspace();
@@ -10721,6 +10751,28 @@
 
         function currentSubnavConfig() {
             const providerWorkspace = isProviderWorkspace();
+            if (providerWorkspace && currentWorkspaceIsOneTime()) {
+                const navItem = currentNavItem();
+                const ia = oneTimeDashboardIa();
+                const topRail = ia?.top_rail_model?.[navItem.navKey] || null;
+                if (topRail && Array.isArray(topRail.items)) {
+                    const tabs = topRail.items.map(item => ({
+                        id: item.id,
+                        label: item.label,
+                        source_view: item.source_view,
+                        source_section: item.source_section,
+                    }));
+                    const activeItem = tabs.find(tab => tab.source_view === currentView && tab.source_section === currentSectionId())
+                        || tabs.find(tab => tab.id === topRail.default_item)
+                        || tabs[0];
+                    return {
+                        tabs,
+                        active: activeItem?.id || topRail.default_item,
+                        countSource: contactSubnavCounts(),
+                        label: topRail.label || navItem.label || 'One Time',
+                    };
+                }
+            }
             const configs = {
                 dashboard: () => ({ tabs: DASHBOARD_SUBTABS, active: dashboardSection, countSource: dashboardSectionCounts(), label: 'Dashboard' }),
                 watchdog: () => ({ tabs: [{ id: 'overview', label: 'Overview' }], active: 'overview', countSource: {}, label: 'Watchdog' }),
@@ -10768,7 +10820,7 @@
                         </div>
                     </div>
                     ${tabs.map(tab => `
-                        <button type="button" class="ops-nested-button ${String(config.active) === String(tab.id) ? 'active' : ''}" onclick="setCurrentSection('${tab.id}')">
+                        <button type="button" class="ops-nested-button ${String(config.active) === String(tab.id) ? 'active' : ''}" onclick="${tab.source_view ? `openSidebarNavItem(${attrJson(tab.source_view)}, ${attrJson(tab.source_section || tab.id)})` : `setCurrentSection(${attrJson(tab.id)})`}">
                             <span>${escapeHtml(tab.label)}</span>
                             ${tab.count !== undefined && tab.count !== null ? `<span>${escapeHtml(String(tab.count))}</span>` : ''}
                         </button>
@@ -10897,7 +10949,7 @@
                                 const selected = String(tab.id) === active;
                                 const displayLabel = compactTopRailLabel(tab);
                                 return `
-                            <button type="button" class="ops-filter-tab ${selected ? 'active' : ''}" role="tab" aria-selected="${selected ? 'true' : 'false'}" aria-current="${selected ? 'page' : 'false'}" aria-label="${escapeHtml(tab.label || tab.id)}" title="${escapeHtml(tab.label || tab.id)}" data-top-filter-id="${escapeHtml(tab.id)}" onclick="setCurrentSection(${attrJson(tab.id)})">
+                            <button type="button" class="ops-filter-tab ${selected ? 'active' : ''}" role="tab" aria-selected="${selected ? 'true' : 'false'}" aria-current="${selected ? 'page' : 'false'}" aria-label="${escapeHtml(tab.label || tab.id)}" title="${escapeHtml(tab.label || tab.id)}" data-top-filter-id="${escapeHtml(tab.id)}" onclick="${tab.source_view ? `openSidebarNavItem(${attrJson(tab.source_view)}, ${attrJson(tab.source_section || tab.id)})` : `setCurrentSection(${attrJson(tab.id)})`}">
                                 <span>${escapeHtml(displayLabel)}</span>
                                 ${tab.count !== undefined && tab.count !== null ? `<span class="ops-filter-count">${escapeHtml(String(tab.count))}</span>` : ''}
                             </button>
@@ -10927,12 +10979,15 @@
 
         function oneTimeOperationsTopbarStatusChips() {
             const counts = oneTimeProviderDashboardCounts();
-            return [
-                { label: 'Members', value: counts.members, tone: counts.members ? 'active' : 'ok', action: "switchView('contacts'); setCurrentSection('participants')", title: 'One Time participants and member records scoped to this provider.' },
+            const chips = [
+                { label: 'CRM', value: counts.members, tone: counts.members ? 'active' : 'ok', action: "switchView('contacts'); setCurrentSection('participants')", title: 'One Time participants, leads, and CRM records scoped to this provider.' },
                 { label: 'Classes', value: counts.classes, tone: counts.classes ? 'active' : 'ok', action: "switchView('content'); setCurrentSection('one_time_library')", title: 'One Time classes, source material, and library items.' },
-                { label: 'Studio', value: counts.studio, tone: counts.studio ? 'active' : 'ok', action: "switchView('studio'); setCurrentSection('overview')", title: 'Studio projects and content workflow for this workspace.' },
                 { label: 'Setup', value: counts.setup, tone: counts.setup ? 'attention' : 'ok', action: "switchView('settings'); setCurrentSection('workspace')", title: 'Provider setup, connectors, and access items.' },
             ];
+            if (new URLSearchParams(window.location.search).get('view_as_rabbi')) {
+                chips.unshift({ label: 'View-as', value: 'Read-only', tone: 'locked', action: '', title: 'Viewing as Rabbi Eli Scheller. Server blocks writes, sends, charges, imports, uploads, and access changes.' });
+            }
+            return chips;
         }
 
         function oneTimeProviderDashboardCounts() {
@@ -15426,10 +15481,13 @@
 
         function firstPartyCrmQueryFilters() {
             const workspace = currentWorkspaceKey();
+            const project = projectKeyForWorkspaceKey(workspace);
             return {
                 ...firstPartyCrmFilters,
                 workspace,
-                project: projectKeyForWorkspaceKey(workspace)
+                workspace_key: workspace,
+                project,
+                project_key: project
             };
         }
 
@@ -15477,13 +15535,21 @@
             }
             const payload = firstPartyCrmContactsPayload || { cards: [], filters: {}, total: 0, filtered_total: 0 };
             const cards = Array.isArray(payload.cards) ? payload.cards : [];
+            if (!selectedFirstPartyCrmContactId) {
+                const restoredId = window.sessionStorage?.getItem?.('oneTimeSelectedCrmContactId') || '';
+                if (restoredId && cards.some(card => String(card.id) === String(restoredId))) {
+                    selectedFirstPartyCrmContactId = restoredId;
+                    if (!firstPartyCrmTimelinePayload) setTimeout(() => openFirstPartyCrmContact(restoredId), 0);
+                }
+            }
             const selectedCard = cards.find(card => String(card.id) === String(selectedFirstPartyCrmContactId)) || null;
             const workbenchAttrs = options.oneTime ? ' data-one-time-crm-workbench data-requirement-id="REQ-20260710-020"' : '';
             return `
                 ${renderFirstPartyCrmFilterControls(payload, options)}
                 ${firstPartyCrmError ? `<div class="error-banner">${escapeHtml(firstPartyCrmError)}</div>` : ''}
+                ${firstPartyCrmNotice ? `<div class="success-banner">${escapeHtml(firstPartyCrmNotice)}</div>` : ''}
                 <div class="contact-empty-card">
-                    ${firstPartyCrmLoading ? 'Loading CRM contacts...' : `${Number(payload.filtered_total || cards.length).toLocaleString()} of ${Number(payload.total || cards.length).toLocaleString()} contacts shown. Read-only / no-send.`}
+                    ${firstPartyCrmLoading ? 'Loading CRM contacts...' : `${Number(payload.filtered_total || cards.length).toLocaleString()} of ${Number(payload.total || cards.length).toLocaleString()} contacts shown. Local CRM actions only; no external send.`}
                 </div>
                 ${cards.length ? `
                     <section class="crm-workbench-shell"${workbenchAttrs} aria-label="${escapeHtml(options.title || 'CRM contact workbench')}">
@@ -15547,6 +15613,20 @@
             return 'No class/trial/access context loaded yet';
         }
 
+        function firstPartyCrmLifecycleOptions(current = '') {
+            const stages = ['new', 'interested', 'follow_up', 'trial', 'accepted_not_paid', 'member', 'not_now', 'not_fit', 'archived'];
+            const selected = String(current || 'new');
+            return stages.map(stage => `<option value="${escapeHtml(stage)}" ${stage === selected ? 'selected' : ''}>${escapeHtml(contactStatusLabel(stage))}</option>`).join('');
+        }
+
+        function firstPartyCrmTagsInput(card = {}) {
+            return (card.tags || []).join(', ');
+        }
+
+        function oneTimeViewAsRabbiActive() {
+            return Boolean(new URLSearchParams(window.location.search).get('view_as_rabbi'));
+        }
+
         function renderFirstPartyCrmDetail(card = null) {
             if (!card) {
                 return `
@@ -15559,6 +15639,7 @@
             const timeline = selectedFirstPartyCrmContactId && firstPartyCrmTimelinePayload
                 ? renderFirstPartyCrmTimeline(card)
                 : '<div class="contact-empty-card">Loading selected contact timeline...</div>';
+            const viewAsReadOnly = oneTimeViewAsRabbiActive();
             return `
                 <section class="crm-selected-card" aria-label="CRM contact detail">
                     <div class="contact-detail-header">
@@ -15574,14 +15655,37 @@
                         ${renderContactDetailItem('Lifecycle / Source', [contactStatusLabel(card.status || 'new'), contactStatusLabel(card.source_label || card.source || 'first party')].filter(Boolean).join(' / '))}
                         ${renderContactDetailItem('Last Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : 'No local activity yet')}
                         ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : 'Not scheduled')}
+                        ${renderContactDetailItem('Assigned Owner', card.assigned_owner || 'Unassigned')}
                         ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
                         ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
                         ${renderContactDetailItem('Notes', card.summary || 'No notes loaded yet')}
                     </div>
                     <div class="task-actions" style="margin-top:14px;">
                         <button class="task-action primary" type="button" onclick="openFirstPartyCrmContact(${attrJson(card.id)})" data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">Refresh timeline</button>
-                        <span class="status-chip blocked" title="Email, WhatsApp, payment, access, and external CRM actions require the follow-up approval packet.">No-send locked</span>
+                        <button class="task-action" type="button" onclick="openFirstPartyCrmMailbox(${attrJson(card.id)}, ${attrJson(card.email || '')})" data-action-id="ACTION-CRM-CONTACT-MAILBOX-OPEN">Open mailbox</button>
+                        <span class="status-chip blocked" title="Email, WhatsApp, payment, access, and external CRM actions require approval.">External actions locked</span>
                     </div>
+                    <form class="settings-control-grid compact crm-action-form" style="margin-top:14px;" onsubmit="saveFirstPartyCrmAction(event, ${attrJson(card.id)})" data-crm-contact-action-form data-action-id="ACTION-CRM-CONTACT-SAFE-UPDATE">
+                        <label>Lifecycle
+                            <select name="status">${firstPartyCrmLifecycleOptions(card.status || card.lifecycle_stage)}</select>
+                        </label>
+                        <label>Next follow-up
+                            <input name="next_follow_up_at" type="date" value="${escapeHtml(String(card.next_follow_up_at || '').slice(0, 10))}">
+                        </label>
+                        <label>Assigned owner
+                            <input name="assigned_owner" value="${escapeHtml(card.assigned_owner || '')}" placeholder="Rabbi Scheller team">
+                        </label>
+                        <label>Tags
+                            <input name="tags" value="${escapeHtml(firstPartyCrmTagsInput(card))}" placeholder="Comma-separated tags">
+                        </label>
+                        <label style="grid-column:1/-1;">Internal note
+                            <textarea name="note_body" rows="3" placeholder="Add a local note. This does not send email, WhatsApp, Telegram, payment, access, or external CRM messages."></textarea>
+                        </label>
+                        <div class="task-actions" style="grid-column:1/-1;">
+                            <button class="task-action primary" type="submit" ${firstPartyCrmSaving || viewAsReadOnly ? 'disabled' : ''}>${viewAsReadOnly ? 'Read-only View-as' : firstPartyCrmSaving ? 'Saving...' : 'Save CRM Update'}</button>
+                            <span class="status-chip">${viewAsReadOnly ? 'Server-enforced read-only' : 'First-party local write'}</span>
+                        </div>
+                    </form>
                 </section>
                 ${timeline}
             `;
@@ -15630,6 +15734,7 @@
         async function openFirstPartyCrmContact(contactId) {
             selectedFirstPartyCrmContactId = contactId;
             firstPartyCrmTimelinePayload = null;
+            firstPartyCrmNotice = '';
             render();
             try {
                 firstPartyCrmTimelinePayload = await api.getCrmContactTimeline(contactId, firstPartyCrmQueryFilters());
@@ -15639,10 +15744,67 @@
             render();
         }
 
+        async function saveFirstPartyCrmAction(event, contactId) {
+            event.preventDefault();
+            const form = event.currentTarget;
+            const data = new FormData(form);
+            const noteBody = String(data.get('note_body') || '').trim();
+            const tags = String(data.get('tags') || '')
+                .split(',')
+                .map(tag => tag.trim())
+                .filter(Boolean);
+            firstPartyCrmSaving = true;
+            firstPartyCrmError = '';
+            firstPartyCrmNotice = '';
+            render();
+            try {
+                const result = await api.updateCrmContact(contactId, {
+                    ...firstPartyCrmQueryFilters(),
+                    status: data.get('status') || '',
+                    lifecycle_stage: data.get('status') || '',
+                    next_follow_up_at: data.get('next_follow_up_at') || '',
+                    assigned_owner: data.get('assigned_owner') || '',
+                    tags,
+                    note_summary: noteBody ? `CRM note for selected contact` : 'CRM contact updated',
+                    note_body: noteBody,
+                    no_send: true,
+                    external_write_performed: false
+                });
+                firstPartyCrmNotice = result?.external_write_performed === false
+                    ? 'CRM update saved locally. No external message, charge, import, or access change ran.'
+                    : 'CRM update saved.';
+                await loadFirstPartyCrmContacts();
+                selectedFirstPartyCrmContactId = contactId;
+                firstPartyCrmTimelinePayload = result?.timeline ? { timeline: result.timeline } : null;
+                if (!firstPartyCrmTimelinePayload) await openFirstPartyCrmContact(contactId);
+            } catch (error) {
+                firstPartyCrmError = error.message || 'Could not save CRM update.';
+            } finally {
+                firstPartyCrmSaving = false;
+                render();
+            }
+        }
+
+        function openFirstPartyCrmMailbox(contactId, email = '') {
+            selectedFirstPartyCrmContactId = contactId;
+            window.sessionStorage?.setItem?.('oneTimeSelectedCrmContactId', String(contactId || ''));
+            window.sessionStorage?.setItem?.('oneTimeSelectedCrmContactEmail', String(email || ''));
+            currentView = 'communications';
+            communicationsSection = 'email';
+            emailInboxScope = 'rabbi';
+            firstPartyCrmNotice = email
+                ? `Mailbox opened for ${email}. Return to Members / CRM to keep this contact selected.`
+                : 'Mailbox opened. Return to Members / CRM to keep this contact selected.';
+            syncOperationsUrl();
+            render();
+            loadData({ background: true });
+        }
+
         function setFirstPartyCrmFilter(key, value) {
             firstPartyCrmFilters = { ...firstPartyCrmFilters, [key]: value };
             selectedFirstPartyCrmContactId = null;
             firstPartyCrmTimelinePayload = null;
+            window.sessionStorage?.removeItem?.('oneTimeSelectedCrmContactId');
             loadFirstPartyCrmContacts();
         }
 
@@ -35433,7 +35595,7 @@
             const views = allowedViews();
             const navIds = workspaceNavViewIds(workspaceKey);
             const preferred = currentWorkspaceIsOneTime(workspaceKey)
-                ? ['studio', 'tasks', 'dashboard']
+                ? ['service_providers', 'contacts', 'content', 'tasks']
                 : ['dashboard', 'tasks', 'studio'];
             return preferred.find(view => views.has(view) && navIds.includes(view))
                 || navIds.find(view => views.has(view))
@@ -35652,25 +35814,49 @@
             return 'platform';
         }
 
-        const ONE_TIME_PROVIDER_PRIMARY_NAV_ITEMS = [
-            { id: 'service_providers', navKey: 'overview_package_status', section: 'overview', label: 'Overview', marker: 'OV' },
-            { id: 'contacts', navKey: 'members_crm', section: 'participants', label: 'Members', marker: 'MB' },
-            { id: 'content', navKey: 'classes_content', section: 'one_time_library', label: 'Classes & Content', marker: 'CC' },
-            { id: 'studio', navKey: 'studio', section: 'overview', label: 'Studio', marker: 'ST' },
-            { id: 'live_classes', navKey: 'live_class_schedule', section: 'overview', label: 'Live Class', marker: 'LC' },
-            { id: 'calendar', navKey: 'program_schedule', section: 'provider', label: 'Schedule', marker: 'SC' },
-            { id: 'community', navKey: 'community_questions', section: 'overview', label: 'Community', marker: 'CO' },
-            { id: 'communications', navKey: 'communications', section: 'providers', label: 'Communications', marker: 'CM' },
-            { id: 'automations', navKey: 'automations', section: 'center', label: 'Automations', marker: 'AU' },
-            { id: 'service_providers', navKey: 'payments_access', section: 'access', label: 'Payments', marker: 'PA' },
-            { id: 'tasks', navKey: 'tasks_decisions', section: 'one_time', label: 'Tasks', marker: 'TS' },
-            { id: 'api_usage', navKey: 'reporting_readiness', section: 'provider', label: 'Reporting', marker: 'RP' },
-            { id: 'integrations', navKey: 'connector_setup', section: 'readiness', label: 'Integrations', marker: 'IN' },
-            { id: 'settings', navKey: 'settings_setup', section: 'workspace', label: 'Workspace Setup', marker: 'SU' }
-        ];
+        function oneTimeDashboardIa() {
+            const ia = window.ONE_TIME_RABBI_DASHBOARD_IA;
+            return ia && Array.isArray(ia.main_modules) ? ia : null;
+        }
+
+        function markerForLabel(label = '') {
+            const words = String(label || '')
+                .replace(/&/g, ' ')
+                .split(/\s+/)
+                .map(word => word.replace(/[^A-Za-z0-9]/g, ''))
+                .filter(Boolean);
+            const marker = words.slice(0, 2).map(word => word[0]).join('').toUpperCase();
+            return marker || String(label || 'OP').slice(0, 2).toUpperCase();
+        }
+
+        function oneTimeIaSubsection(module = {}) {
+            const ia = oneTimeDashboardIa();
+            const sections = ia?.section_subsection_map?.[module.id]?.subsections || [];
+            return sections.find(section => section.id === module.default_section) || sections[0] || null;
+        }
+
+        function oneTimeProviderPrimaryNavItems() {
+            const ia = oneTimeDashboardIa();
+            if (!ia) return [];
+            return ia.main_modules.map(module => {
+                const subsection = oneTimeIaSubsection(module);
+                const label = module.short_label || module.label || module.id;
+                return {
+                    id: subsection?.source_view || module.operations_view || 'service_providers',
+                    navKey: module.id,
+                    section: subsection?.source_section || module.default_section || 'overview',
+                    label,
+                    marker: markerForLabel(label),
+                    iaModule: module
+                };
+            });
+        }
 
         function workspaceNavViewIds(workspaceKey = currentWorkspaceKey()) {
             const profile = workspaceNavProfile(workspaceKey);
+            if (profile === 'service_provider' && currentWorkspaceIsOneTime(workspaceKey)) {
+                return Array.from(new Set(oneTimeProviderPrimaryNavItems().map(item => item.id))).filter(Boolean);
+            }
             const nav = {
                 platform: ['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'],
                 bna: ['dashboard', 'watchdog', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'service_providers', 'accounting', 'automations', 'integrations', 'settings'],
@@ -35759,7 +35945,7 @@
                 }
             };
             if (workspaceNavProfile(workspaceKey) === 'service_provider' && currentWorkspaceIsOneTime(workspaceKey)) {
-                return ONE_TIME_PROVIDER_PRIMARY_NAV_ITEMS
+                return oneTimeProviderPrimaryNavItems()
                     .filter(item => allowedViews().has(item.id))
                     .map(item => ({ ...item }));
             }

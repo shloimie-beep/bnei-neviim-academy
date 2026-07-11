@@ -172,6 +172,24 @@ test('workspace and project keys stay scoped to Rabbi Scheller One Time', () => 
   assert.equal(site.project_key, ONE_TIME_RABBI_DASHBOARD_PROJECT_KEY);
 });
 
+test('Operations loads the generated Rabbi dashboard IA instead of hard-coded provider tabs', () => {
+  const operations = fs.readFileSync('public/operations.html', 'utf8');
+  const generated = fs.readFileSync('public/js/one-time-rabbi-dashboard-ia.generated.js', 'utf8');
+  const server = fs.readFileSync('server.js', 'utf8');
+
+  assert.match(operations, /\/js\/one-time-rabbi-dashboard-ia\.generated\.js/);
+  assert.match(operations, /function oneTimeProviderPrimaryNavItems\(\)/);
+  assert.match(operations, /window\.ONE_TIME_RABBI_DASHBOARD_IA/);
+  assert.doesNotMatch(operations, /const ONE_TIME_PROVIDER_PRIMARY_NAV_ITEMS = \[/);
+  assert.match(generated, /window\.ONE_TIME_RABBI_DASHBOARD_IA = /);
+  assert.match(generated, /"workspace_key": "rabbi_sheller_provider"/);
+  assert.match(server, /function oneTimeDashboardAllowedViews\(\)/);
+  assert.match(server, /const ownerAllowedViews = oneTimeDashboardAllowedViews\(\)/);
+  assert.match(server, /allowedViews: ownerAllowedViews/);
+  assert.match(server, /function allowedViewsForOpsIdentity\(identity = \{\}\)/);
+  assert.match(server, /app\.get\('\/api\/bna\/one-time\/dashboard-ia'/);
+});
+
 test('acceptance routes do not mix public and private scope', () => {
   const serialized = JSON.stringify(ONE_TIME_RABBI_DASHBOARD_IA);
   assert.doesNotMatch(serialized, /workspace=bna|project=bna|dratler_family|family_legacy/i);

@@ -388,7 +388,6 @@
       color: var(--ice);
       font-size: 0.82rem;
       font-weight: 900;
-      text-transform: uppercase;
     }
 
     .eyebrow::before {
@@ -402,6 +401,13 @@
       max-width: 650px;
       color: rgba(255, 255, 255, 0.82);
       font-size: 1.2rem;
+    }
+
+    .hero-schedule {
+      margin: 14px 0 0;
+      color: var(--yellow);
+      font-size: 1.06rem;
+      font-weight: 900;
     }
 
     .hero-actions {
@@ -1451,9 +1457,10 @@
     <section class="hero" aria-labelledby="heroTitle">
       <div class="wrap">
         <div class="hero-inner">
-          <p class="eyebrow">Worldwide Mishnah Learning &mdash; Live From Eretz Yisrael</p>
+          <p class="eyebrow">Worldwide Mishnah learning &mdash; live from Eretz Yisrael</p>
           <h1 id="heroTitle">Give your son a love for Torah you never thought possible.</h1>
           <p class="hero-copy">A live Mishnayos class with Rabbi Eli Scheller that makes learning exciting, clear, and unforgettable &mdash; for boys around the world.</p>
+          <p class="hero-schedule">Live from Israel. Every day at 7 p.m. Israel time.</p>
           <div class="hero-actions">
             <button class="button primary" type="button" data-signup-trigger data-action-id="ACTION-ONETIME-JOIN-SHIR-CTA">Sign Up Now</button>
           </div>
@@ -1881,6 +1888,7 @@
             height: window.innerHeight,
             device_scale_factor: window.devicePixelRatio || 1
           },
+          no_external_send: true,
           external_write_performed: false
         };
       }
@@ -1971,6 +1979,7 @@
           audience: 'parents',
           preferred_class_format: 'live_mishnayos_intro',
           source_landing_page: window.location.pathname,
+          suppress_external_notifications: true,
           consent: true,
           notes: 'Public One Time Mishnayos landing page quick capture. Continue onboarding asks family or school.',
           metadata: buildMetadata()
@@ -2025,7 +2034,7 @@
         });
         if (latestLead?.product_lead_id) params.set('product_lead_id', latestLead.product_lead_id);
         if (latestLead?.crm_lead_id) params.set('crm_lead_id', latestLead.crm_lead_id);
-        window.location.href = `/one-time-preview?${params.toString()}`;
+        window.location.href = `/one-time-onboarding?${params.toString()}`;
       });
 
       const carousel = document.querySelector('[data-carousel]');

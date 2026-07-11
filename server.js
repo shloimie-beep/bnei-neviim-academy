@@ -106,6 +106,10 @@ const {
   oneTimeRoleLabel,
 } = require('./src/lib/bna/one-time-role-model');
 const {
+  ONE_TIME_RABBI_DASHBOARD_IA,
+  ONE_TIME_RABBI_DASHBOARD_MAIN_MODULES,
+} = require('./src/platform/instances/one-time-rabbi-dashboard-ia');
+const {
   hasContactLeadPipelineBuildIntent,
   hasInterestedParentLeadCaptureIntent,
 } = require('./src/lib/bna/telegram-contact-lead-capture');
@@ -8912,16 +8916,33 @@ async function applyDeviceAccessAction({
   };
 }
 
+function oneTimeDashboardAllowedViews() {
+  return Array.from(new Set(
+    ONE_TIME_RABBI_DASHBOARD_MAIN_MODULES
+      .map((module) => module.operations_view)
+      .filter(Boolean)
+  ));
+}
+
+function allowedViewsForOpsIdentity(identity = {}) {
+  if (Array.isArray(identity?.allowedViews) && identity.allowedViews.length) return identity.allowedViews;
+  const scopedProjectKey = normalizeProjectKey(identity?.scope?.projectKey || identity?.scope?.project_key || identity?.project_key || '');
+  if (identity?.scope?.type === 'project' && scopedProjectKey === ONE_TIME_PROJECT_KEY) {
+    return oneTimeAllowedViewsForRole(identity.role).length
+      ? oneTimeAllowedViewsForRole(identity.role)
+      : oneTimeDashboardAllowedViews();
+  }
+  return ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
+}
+
 function identifyOpsUser(username, password = null) {
   const user = String(username || '').trim();
   const pass = password === null || password === undefined ? null : String(password || '');
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
   const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
-  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  // Owner gets full provider view + settings; manager gets provider view without sensitive admin
-  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
+  const ownerAllowedViews = oneTimeDashboardAllowedViews();
+  const managerAllowedViews = oneTimeDashboardAllowedViews();
   const studioOperatorAllowedViews = oneTimeAllowedViewsForRole('one_time_ai_studio_operator');
   const aiVideoWorkerAllowedViews = oneTimeAllowedViewsForRole('one_time_ai_video_worker');
 
@@ -9134,6 +9155,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/one-time/trial-referral-config' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/payment-access-class-links' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/crm-import-preview' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/dashboard-ia' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/test-identities-preview' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/agent-mode-acceptance' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/transcript-privacy' && method === 'GET') return true;
@@ -9228,6 +9250,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (/^\/api\/bna\/service-providers\/\d+\/setup-email$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/account-scope/summary' && method === 'GET') return true;
   if (routePath === '/api/bna/crm/contacts' && method === 'GET') return true;
+  if (/^\/api\/bna\/crm\/contacts\/[^/]+$/.test(routePath) && method === 'PATCH') return true;
   if (/^\/api\/bna\/crm\/contacts\/[^/]+\/timeline$/.test(routePath) && method === 'GET') return true;
   if (routePath === '/api/bna/assistant/scope-plan' && method === 'POST') return true;
   if (routePath === '/api/bna/provider-onboarding-intakes' && method === 'GET') return true;
@@ -10626,6 +10649,7 @@ async function requireAdmin(req, res, next) {
     if (identity.scope.type !== 'all' && !isScopedOpsPathAllowed(req, identity)) {
       return res.status(403).json({ error: 'This login is scoped to One Time Mishnah Class records.' });
     }
+    if (!enforceOneTimeViewAsReadOnly(req, res)) return;
     req.opsUser = identity.username;
     req.opsIdentity = identity;
     return next();
@@ -10657,6 +10681,7 @@ async function requireAdmin(req, res, next) {
   if (identity.scope.type !== 'all' && !isScopedOpsPathAllowed(req, identity)) {
     return res.status(403).json({ error: 'This login is scoped to One Time Mishnah Class records.' });
   }
+  if (!enforceOneTimeViewAsReadOnly(req, res)) return;
   req.opsUser = identity.username;
   req.opsIdentity = identity;
   next();
@@ -10792,6 +10817,26 @@ function sendOneTimeProviderShell(req, res) {
   });
 }
 
+function oneTimeProviderCanonicalOperationsUrl(req) {
+  const query = req?.query || {};
+  const viewAsToken = query.view_as_rabbi || query.viewAsRabbi || '';
+  const target = new URLSearchParams({
+    workspace: 'rabbi_sheller_provider',
+    project: 'one_time_mishnah_class',
+    view: query.section === 'mailbox' ? 'communications' : 'service_providers',
+    section: query.section === 'mailbox' ? 'email' : 'overview',
+  });
+  if (query.section === 'mailbox') target.set('inbox', 'rabbi');
+  if (viewAsToken) target.set('view_as_rabbi', String(viewAsToken));
+  return `/operations?${target.toString()}`;
+}
+
+function shouldRedirectOneTimeProviderToOperations(req) {
+  const query = req?.query || {};
+  return ['one-time', 'onetime'].includes(String(query.admin_provider || query.adminProvider || '').toLowerCase())
+    || Boolean(query.view_as_rabbi || query.viewAsRabbi);
+}
+
 function wantsOneTimeStudentShell(req) {
   const query = req?.query || {};
   return isOneTimeSingleTenantRuntime()
@@ -10858,6 +10903,7 @@ app.get(['/', '/index.html', '/public', '/public/'], (req, res, next) => {
 app.get(['/rabbi.html'], sendOneTimePublicLanding);
 
 app.get('/provider.html', (req, res, next) => {
+  if (shouldRedirectOneTimeProviderToOperations(req)) return res.redirect(302, oneTimeProviderCanonicalOperationsUrl(req));
   if (!wantsOneTimeProviderShell(req)) return next();
   return sendOneTimeProviderShell(req, res);
 });
@@ -11057,6 +11103,31 @@ function verifyOneTimeViewAsToken(token = '') {
   if (payload.typ !== 'one_time_view_as_rabbi' || payload.read_only !== true) return null;
   if (payload.workspace_key !== 'rabbi_sheller_provider' || payload.target_role !== 'workspace_owner') return null;
   return payload;
+}
+
+function oneTimeViewAsPayloadFromRequest(req) {
+  return verifyOneTimeViewAsToken(
+    req.headers['x-one-time-view-as-token'] ||
+    req.query?.view_as_rabbi ||
+    req.body?.view_as_rabbi ||
+    ''
+  );
+}
+
+function enforceOneTimeViewAsReadOnly(req, res) {
+  const payload = oneTimeViewAsPayloadFromRequest(req);
+  if (!payload) return true;
+  req.oneTimeViewAsRabbi = payload;
+  if (['GET', 'HEAD', 'OPTIONS'].includes(String(req.method || 'GET').toUpperCase())) return true;
+  res.status(403).json({
+    success: false,
+    error: 'View as Rabbi is read-only. No notes, sends, charges, access changes, imports, uploads, or provider writes can run from this session.',
+    mode: 'view_as_rabbi',
+    workspace_key: payload.workspace_key,
+    project_key: payload.project_key,
+    external_write_performed: false,
+  });
+  return false;
 }
 
 function agentReviewSigningSecret() {
@@ -11849,7 +11920,7 @@ app.post('/api/bna/one-time/provider-session/start', requireAdmin, async (req, r
     res.json({
       success: true,
       mode: 'admin_on_provider_account',
-      view_url: '/provider.html?admin_provider=one-time&section=mailbox',
+      view_url: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi',
       provider: oneTimeProviderAdminSessionView(provider),
       audit_event: {
         event_type: 'one_time_provider_session_started_by_super_admin',
@@ -11902,7 +11973,7 @@ app.post('/api/bna/one-time/view-as-rabbi/start', requireAdmin, (req, res) => {
   res.json({
     success: true,
     token,
-    view_url: `/provider.html?review=one-time&view_as_rabbi=${encodeURIComponent(token)}`,
+    view_url: `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview&view_as_rabbi=${encodeURIComponent(token)}`,
     session: oneTimeViewAsSessionView(payload, req),
     external_write_performed: false,
   });
@@ -28733,8 +28804,9 @@ async function operationsCrmContactRows(scope = {}, db = pool) {
   }
 
   const contacts = await db.query(
-    `SELECT
+     `SELECT
        ('bna_contacts:' || c.id::text) AS id,
+       c.id AS contact_id,
        'bna_contacts' AS source_table,
        ws.workspace_key,
        c.full_name AS display_name,
@@ -28744,6 +28816,7 @@ async function operationsCrmContactRows(scope = {}, db = pool) {
        c.status,
        c.source,
        c.tags,
+       COALESCE(NULLIF(c.metadata->>'assigned_owner', ''), NULLIF(c.metadata->>'owner', '')) AS assigned_owner,
        COALESCE(NULLIF(c.metadata->>'summary', ''), NULLIF(c.metadata->>'notes', '')) AS summary,
        c.updated_at AS last_contact_at,
        c.created_at
@@ -28769,8 +28842,9 @@ async function operationsCrmContactRows(scope = {}, db = pool) {
   }
 
   const leads = await db.query(
-    `SELECT
+     `SELECT
        ('bna_parent_leads:' || l.id::text) AS id,
+       l.id AS parent_lead_id,
        'bna_parent_leads' AS source_table,
        p.project_key,
        l.parent_name AS display_name,
@@ -28781,6 +28855,7 @@ async function operationsCrmContactRows(scope = {}, db = pool) {
        l.interest_level,
        l.source,
        l.tags,
+       l.owner AS assigned_owner,
        l.notes AS summary,
        COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at) AS last_contact_at,
        l.next_follow_up_date AS next_follow_up_at,
@@ -38253,7 +38328,7 @@ async function buildBnaIdentityPayload({ identity = null, req = null, actor = 'a
     activeWorkspace: workspaceProjectView(activeWorkspace),
     active_workspace: workspaceProjectView(activeWorkspace),
     memberships: memberships.map(workspaceMembershipView),
-    allowedViews: identity?.allowedViews || ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'studio', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
+    allowedViews: allowedViewsForOpsIdentity(identity),
   };
 }
 
@@ -49060,6 +49135,192 @@ app.get('/api/bna/crm/contacts/:id/timeline', requireAdmin, async (req, res) => 
   }
 });
 
+app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const contactRef = parseCrmContactRef(req.params.id);
+  if (!Number.isFinite(contactRef.id) || contactRef.id <= 0) {
+    return res.status(400).json({ success: false, error: 'A valid CRM contact id is required.', external_write_performed: false });
+  }
+
+  const noteText = limitText(String(body.note || body.note_body || body.body || '').trim(), 4000);
+  const noteSummary = limitText(String(body.note_summary || body.summary || (noteText ? `CRM note: ${noteText}` : '')).trim(), 240);
+  const nextFollowUpAt = String(body.next_follow_up_at || body.next_follow_up_date || '').trim();
+  const lifecycleStage = limitText(String(body.lifecycle_stage || body.status || '').trim(), 80);
+  const assignedOwner = limitText(String(body.assigned_owner || body.owner || '').trim(), 120);
+  const tags = normalizeTextArray(body.tags);
+
+  try {
+    const scope = scopeFromOpsRequest(req, body);
+    const workspaceKey = assertWorkspaceAccess(req, scope.workspace_key || defaultWorkspaceKeyForRequest(req), 'update CRM contact');
+    scope.workspace_key = workspaceKey;
+    scope.project_key = scope.project_key || workspaceProjectKey(workspaceKey) || opsScopeProjectKey(req) || null;
+    scope.feature_overrides = await featureOverridesForScope(scope);
+    accountScope.assertEntitlement(scope, accountScope.ENTITLEMENTS.CRM_CONTACTS);
+
+    let updated = null;
+    let localEvent = null;
+
+    if (contactRef.source === 'bna_parent_leads') {
+      await assertProjectOwnedRowAccess(req, 'bna_parent_leads', contactRef.id);
+      const fields = [];
+      const values = [];
+      const addField = (field, value) => {
+        values.push(value);
+        fields.push(`${field} = $${values.length}`);
+      };
+      if (lifecycleStage) addField('status', lifecycleStage);
+      if (nextFollowUpAt) addField('next_follow_up_date', nextFollowUpAt);
+      if (assignedOwner) addField('owner', assignedOwner);
+      if (tags.length) addField('tags', tags);
+      if (body.parent_name) addField('parent_name', limitText(String(body.parent_name), 180));
+      if (body.email || body.parent_email) addField('parent_email', normalizeEmail(body.email || body.parent_email));
+      if (body.phone || body.parent_phone) addField('parent_phone', limitText(String(body.phone || body.parent_phone), 80));
+      if (body.contact_notes || body.notes) addField('notes', limitText(String(body.contact_notes || body.notes), 4000));
+
+      if (fields.length) {
+        values.push(contactRef.id);
+        const result = await pool.query(
+          `UPDATE bna_parent_leads
+           SET ${fields.join(', ')}, updated_at = NOW()
+           WHERE id = $${values.length}
+           RETURNING *`,
+          values
+        );
+        updated = result.rows[0] || null;
+      } else {
+        updated = (await pool.query('SELECT * FROM bna_parent_leads WHERE id = $1', [contactRef.id])).rows[0] || null;
+      }
+
+      if (noteSummary || noteText || nextFollowUpAt || lifecycleStage || tags.length) {
+        const result = await pool.query(
+          `INSERT INTO bna_contact_communications (
+             project_id, contact_type, lead_id, channel, direction, summary, body,
+             follow_up_required, occurred_at, created_by, source, source_context, metadata
+           )
+           SELECT
+             l.project_id, COALESCE(l.lead_type, 'lead'), l.id, 'internal_note', 'internal',
+             $2, $3, $4, NOW(), $5, 'operations_crm_workbench',
+             $6::jsonb, $7::jsonb
+           FROM bna_parent_leads l
+           WHERE l.id = $1
+           RETURNING *`,
+          [
+            contactRef.id,
+            noteSummary || 'CRM contact updated',
+            noteText || null,
+            Boolean(nextFollowUpAt),
+            req.opsUser || 'operations',
+            JSON.stringify({
+              crm_contact_id: req.params.id,
+              workspace_key: workspaceKey,
+              project_key: scope.project_key,
+              no_send: true,
+              external_write_performed: false,
+            }),
+            JSON.stringify({
+              lifecycle_stage: lifecycleStage || null,
+              next_follow_up_at: nextFollowUpAt || null,
+              tags,
+              assigned_owner: assignedOwner || null,
+              no_send: true,
+              external_write_performed: false,
+            }),
+          ]
+        );
+        localEvent = result.rows[0] || null;
+      }
+    } else {
+      const workspaceResult = await pool.query('SELECT id FROM bna_workspace_settings WHERE workspace_key = $1 LIMIT 1', [workspaceKey]);
+      const workspaceId = workspaceResult.rows[0]?.id || null;
+      const fields = [];
+      const values = [];
+      const metadata = {};
+      const addField = (field, value) => {
+        values.push(value);
+        fields.push(`${field} = $${values.length}`);
+      };
+      if (lifecycleStage) addField('status', lifecycleStage);
+      if (tags.length) addField('tags', tags);
+      if (body.full_name || body.parent_name || body.display_name) addField('full_name', limitText(String(body.full_name || body.parent_name || body.display_name), 180));
+      if (body.email || body.primary_email) addField('primary_email', normalizeEmail(body.email || body.primary_email));
+      if (body.phone || body.primary_phone) addField('primary_phone', limitText(String(body.phone || body.primary_phone), 80));
+      if (assignedOwner) metadata.assigned_owner = assignedOwner;
+      if (nextFollowUpAt) metadata.next_follow_up_at = nextFollowUpAt;
+      if (body.contact_notes || body.notes) metadata.summary = limitText(String(body.contact_notes || body.notes), 4000);
+      if (Object.keys(metadata).length) {
+        values.push(JSON.stringify(metadata));
+        fields.push(`metadata = COALESCE(metadata, '{}'::jsonb) || $${values.length}::jsonb`);
+      }
+
+      if (fields.length) {
+        values.push(contactRef.id);
+        values.push(workspaceId);
+        const result = await pool.query(
+          `UPDATE bna_contacts
+           SET ${fields.join(', ')}, updated_at = NOW()
+           WHERE id = $${values.length - 1}
+             AND ($${values.length}::integer IS NULL OR workspace_id = $${values.length})
+           RETURNING *`,
+          values
+        );
+        updated = result.rows[0] || null;
+      } else {
+        updated = (await pool.query(
+          `SELECT * FROM bna_contacts WHERE id = $1 AND ($2::integer IS NULL OR workspace_id = $2)`,
+          [contactRef.id, workspaceId]
+        )).rows[0] || null;
+      }
+      if (!updated) {
+        return res.status(404).json({ success: false, error: 'CRM contact not found in this workspace.', external_write_performed: false });
+      }
+
+      if (noteSummary || noteText || nextFollowUpAt || lifecycleStage || tags.length) {
+        const result = await pool.query(
+          `INSERT INTO bna_contact_pipeline_events (
+             workspace_id, contact_id, event_type, pipeline_status, summary, source, metadata
+           ) VALUES (
+             $1, $2, 'crm_workbench_update', $3, $4, 'operations_crm_workbench', $5::jsonb
+           )
+           RETURNING *`,
+          [
+            updated.workspace_id || workspaceId,
+            contactRef.id,
+            lifecycleStage || updated.status || null,
+            noteSummary || noteText || 'CRM contact updated',
+            JSON.stringify({
+              body: noteText || null,
+              next_follow_up_at: nextFollowUpAt || null,
+              tags,
+              assigned_owner: assignedOwner || null,
+              no_send: true,
+              external_write_performed: false,
+            }),
+          ]
+        );
+        localEvent = result.rows[0] || null;
+      }
+    }
+
+    const rows = await operationsCrmContactRows(scope);
+    const card = crmContactModel.filterCrmContacts(rows, {}, scope).cards
+      .find((item) => String(item.id) === String(req.params.id)) || null;
+    const timeline = await operationsCrmTimelineRows(contactRef, scope);
+    res.json({
+      success: true,
+      contact: card || updated,
+      local_event: localEvent,
+      timeline: crmContactModel.buildTimeline(timeline),
+      no_send: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_import_performed: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, external_write_performed: false });
+  }
+});
+
 app.post('/api/bna/assistant/scope-plan', requireAdmin, async (req, res) => {
   try {
     const scope = scopeFromOpsRequest(req, req.body || {});
@@ -56381,6 +56642,8 @@ app.post('/api/parent-accountability/onboarding', async (req, res) => {
 
 function normalizeOneTimeOnboardingIntent(value) {
   const normalized = String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  if (['family', 'home', 'parent_family'].includes(normalized)) return 'family';
+  if (['school', 'yeshiva', 'classroom', 'rebbe', 'principal'].includes(normalized)) return 'school';
   if (['video', 'video_library', 'library', 'recordings'].includes(normalized)) return 'library';
   if (['future', 'future_cohort', 'later', 'waitlist'].includes(normalized)) return 'future_cohort';
   if (['question', 'ask_question', 'info', 'details'].includes(normalized)) return 'question';
@@ -56389,6 +56652,8 @@ function normalizeOneTimeOnboardingIntent(value) {
 
 function oneTimeOnboardingIntentLabel(intent) {
   return ({
+    family: 'Family onboarding',
+    school: 'School onboarding',
     live: 'Live Mishnah membership',
     library: 'Video library preview',
     future_cohort: 'Future cohort / later',
@@ -56400,7 +56665,7 @@ function oneTimeOnboardingTags(intent) {
   const normalizedIntent = normalizeOneTimeOnboardingIntent(intent);
   return [
     'one-time-lead',
-    'one-time-source:preview',
+    'one-time-source:onboarding',
     `one-time-intent:${normalizedIntent}`,
     'one-time-needs-first-response',
     'one-time-no-payment-created',
@@ -56423,6 +56688,9 @@ function buildOneTimeOnboardingFields(body = {}) {
   const city = limitText(body.city || body.location || body.neighborhood, 180);
   const timezone = limitText(body.timezone || body.time_zone || body.timeZone, 120);
   const intent = normalizeOneTimeOnboardingIntent(body.intent || body.interest || body.path || body.offer_interest || body.offerInterest);
+  const audienceType = ['family', 'school'].includes(normalizeOneTimeOnboardingIntent(body.audience_type || body.audience || body.signup_audience))
+    ? normalizeOneTimeOnboardingIntent(body.audience_type || body.audience || body.signup_audience)
+    : (['family', 'school'].includes(intent) ? intent : 'family');
   const scheduleNotes = limitText(body.schedule_notes || body.scheduleNotes || body.schedule, 1200);
   const learningGoals = limitText(body.learning_goals || body.learningGoals || body.goals, 1200);
   const questions = limitText(body.questions || body.question || body.notes || body.message, 1800);
@@ -56438,7 +56706,8 @@ function buildOneTimeOnboardingFields(body = {}) {
       }
     : {};
   const transcript = [
-    'One Time Mishnayos preview onboarding intake.',
+    'One Time Mishnayos onboarding intake.',
+    `Onboarding branch: ${oneTimeOnboardingIntentLabel(audienceType)}`,
     parentName ? `Contact name: ${parentName}` : '',
     parentEmail ? `Email: ${parentEmail}` : '',
     parentPhone ? `Phone/WhatsApp: ${parentPhone}` : '',
@@ -56465,6 +56734,7 @@ function buildOneTimeOnboardingFields(body = {}) {
     city,
     timezone,
     intent,
+    audienceType,
     scheduleNotes,
     learningGoals,
     questions,
@@ -56526,9 +56796,10 @@ async function upsertOneTimePreviewContact(fields = {}, db = pool) {
     )).rows[0] || null;
   }
   const metadata = {
-    source: 'one_time_preview_onboarding',
+    source: 'one_time_onboarding',
     project_key: ONE_TIME_PROJECT_KEY,
     intent: fields.intent,
+    audience_type: fields.audienceType,
     learner_name: fields.learnerName || null,
     learner_age: fields.learnerAgeRaw || null,
     city: fields.city || null,
@@ -56542,7 +56813,7 @@ async function upsertOneTimePreviewContact(fields = {}, db = pool) {
              primary_email = COALESCE(NULLIF($3, ''), primary_email),
              primary_phone = COALESCE(NULLIF($4, ''), primary_phone),
              status = CASE WHEN COALESCE(status, 'lead') IN ('lead', 'prospect') THEN 'lead' ELSE status END,
-             source = COALESCE(source, 'one_time_preview_onboarding'),
+           source = COALESCE(source, 'one_time_onboarding'),
              tags = (
                SELECT ARRAY(
                  SELECT DISTINCT tag_value
@@ -56559,7 +56830,7 @@ async function upsertOneTimePreviewContact(fields = {}, db = pool) {
     : await db.query(
         `INSERT INTO bna_contacts (
            workspace_id, full_name, primary_email, primary_phone, status, source, tags, metadata
-         ) VALUES ($1, $2, $3, $4, 'lead', 'one_time_preview_onboarding', $5, $6::jsonb)
+         ) VALUES ($1, $2, $3, $4, 'lead', 'one_time_onboarding', $5, $6::jsonb)
          RETURNING *`,
         [workspaceId, fields.parentName || null, email || null, fields.parentPhone || null, tags, JSON.stringify(metadata)]
       );
@@ -56584,10 +56855,11 @@ async function upsertOneTimePreviewLead(fields = {}, project, db = pool) {
     [project.id, email || '', phoneDigits || '', fields.parentName || '']
   )).rows[0] || null;
   const metadata = {
-    source: 'one_time_preview_onboarding',
+    source: 'one_time_onboarding',
     project_key: ONE_TIME_PROJECT_KEY,
     intent: fields.intent,
     intent_label: oneTimeOnboardingIntentLabel(fields.intent),
+    audience_type: fields.audienceType,
     learner_age_raw: fields.learnerAgeRaw || null,
     learner_stage: fields.learnerStage || null,
     city: fields.city || null,
@@ -56637,7 +56909,7 @@ async function upsertOneTimePreviewLead(fields = {}, project, db = pool) {
         fields.learnerAge,
         fields.learnerStage || '',
         fields.intent,
-        fields.referralSource || 'One Time preview page',
+        fields.referralSource || 'One Time onboarding page',
         fields.tags,
         notes || '',
         JSON.stringify(metadata),
@@ -56666,7 +56938,7 @@ async function upsertOneTimePreviewLead(fields = {}, project, db = pool) {
       fields.learnerAge,
       fields.learnerStage || null,
       fields.intent,
-      fields.referralSource || 'One Time preview page',
+      fields.referralSource || 'One Time onboarding page',
       fields.tags,
       notes || null,
       JSON.stringify(metadata),
@@ -56700,11 +56972,12 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
     const { lead, merged_existing: mergedLead } = await upsertOneTimePreviewLead(fields, project, client);
     const contact = await upsertOneTimePreviewContact(fields, client);
     const sourceContext = {
-      source: 'one_time_preview_onboarding',
+      source: 'one_time_onboarding',
       project_key: ONE_TIME_PROJECT_KEY,
-      route: fields.sourceRoute || '/preview/one-time-mishnah',
+      route: fields.sourceRoute || '/one-time-onboarding',
       viewport: fields.viewport,
       intent: fields.intent,
+      audience_type: fields.audienceType,
       lead_id: lead.id,
       contact_id: contact?.id || null,
       no_send: true,
@@ -56718,7 +56991,7 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
          follow_up_required, occurred_at, created_by, source, source_context, metadata
        ) VALUES (
          $1, 'lead', $2, 'internal_note', 'inbound', $3, $4,
-         TRUE, NOW(), 'one_time_preview_onboarding', 'dashboard', $5::jsonb, $6::jsonb
+         TRUE, NOW(), 'one_time_onboarding', 'dashboard', $5::jsonb, $6::jsonb
        )
        RETURNING *`,
       [
@@ -56743,7 +57016,7 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
          reporter_name, reporter_role, assigned_to, source, source_context, created_by
        )
        VALUES ($1, $2, $3, 'normal', 'open', 'other',
-         $4, 'one_time_parent_member_lead', 'Shloimie', 'api', $5::jsonb, 'one_time_preview_onboarding')
+         $4, 'one_time_parent_member_lead', 'Shloimie', 'api', $5::jsonb, 'one_time_onboarding')
        RETURNING *`,
       [
         project.id,
@@ -56763,18 +57036,18 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
         contact?.id ? `Contact #${contact.id}` : '',
         `Communication #${communication.id}`,
         `Support ticket #${ticket.id}`,
-        'Preview-only guardrails: no checkout, payment link, access grant, email, WhatsApp, or social send was created.',
+        'No-send onboarding guardrails: no checkout, payment link, access grant, email, WhatsApp, Telegram, or social send was created.',
       ].filter(Boolean).join('\n'),
       stage: 'assigned',
       category: 'community',
       urgency: fields.intent === 'live' ? 'today' : 'this_week',
       source: 'web',
-      source_channel: 'one_time_preview_onboarding',
-      created_by: 'one_time_preview_onboarding',
+      source_channel: 'one_time_onboarding',
+      created_by: 'one_time_onboarding',
       assigned_to: 'Shloimie',
       project: ONE_TIME_PROJECT_KEY,
       ai_parsed: {
-        parser: 'one-time-preview-onboarding-v1',
+        parser: 'one-time-onboarding-v2',
         kind: 'one_time_onboarding_review',
         display_title: `Review One Time Mishnayos onboarding lead: ${fields.parentName || fields.learnerName || fields.parentEmail || lead.id}`,
         original_text: fields.transcript,
@@ -56783,6 +57056,7 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
         communication_id: communication.id,
         support_ticket_id: ticket.id,
         project: ONE_TIME_PROJECT_KEY,
+        audience_type: fields.audienceType,
         no_send: true,
         no_checkout: true,
         no_access_granted: true,
@@ -56809,18 +57083,19 @@ app.post('/api/one-time/mishnah/onboarding', async (req, res) => {
       sourceTable: 'bna_parent_leads',
       sourceId: lead.id,
       sourceContext: {
-        source: 'one_time_preview_onboarding',
+        source: 'one_time_onboarding',
         contact_id: contact?.id || null,
         communication_id: communication.id,
         support_ticket_id: ticket.id,
         task_id: task.id,
         intent: fields.intent,
+        audience_type: fields.audienceType,
         no_send: true,
         no_checkout: true,
         no_access_granted: true,
         external_write_performed: false,
       },
-      createdBy: 'one_time_preview_onboarding',
+      createdBy: 'one_time_onboarding',
     }, client);
     await client.query('COMMIT');
     res.json({
@@ -79862,6 +80137,22 @@ app.get('/api/bna/one-time/crm-import-preview', requireAdmin, async (req, res) =
   }
 });
 
+app.get('/api/bna/one-time/dashboard-ia', requireAdmin, async (req, res) => {
+  try {
+    await assertRabbiAdminAccess(req);
+    res.json({
+      success: true,
+      ia: ONE_TIME_RABBI_DASHBOARD_IA,
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: ONE_TIME_PROJECT_KEY,
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || err.status || 500).json({ success: false, error: err.message, external_write_performed: false });
+  }
+});
+
 app.get('/api/bna/one-time/test-identities-preview', requireAdmin, async (req, res) => {
   try {
     await assertRabbiAdminAccess(req);
@@ -80041,8 +80332,14 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       });
     }
     const lead = await createOneTimeProductLead(req.body || {});
+    const suppressExternalReminder = req.body?.suppress_external_notifications === true
+      || req.body?.suppressExternalNotifications === true
+      || req.body?.metadata?.no_external_send === true
+      || req.body?.metadata?.external_write_performed === false
+      || String(req.body?.source_landing_page || req.body?.sourceLandingPage || '').startsWith('/one-time');
     const syntheticNoExternalReminder = lead.synthetic_test_lead === true || isOneTimeSyntheticLead(req.body || {}, lead);
-    if (!syntheticNoExternalReminder) {
+    const skipTelegramReminder = syntheticNoExternalReminder || suppressExternalReminder;
+    if (!skipTelegramReminder) {
       sendOneTimeSignupTelegramReminder(lead)
         .catch((err) => console.error('One Time signup Telegram reminder error:', err));
     }
@@ -80060,12 +80357,14 @@ app.post(['/api/bna/product-leads', '/api/one-time/interest'], async (req, res) 
       transactional_follow_up_send_blocked: lead.transactional_follow_up_send_blocked === true,
       no_email_sent: true,
       no_whatsapp_or_wapi_sent: true,
-      no_telegram_reminder_sent: syntheticNoExternalReminder,
-      telegram_reminder_skipped: syntheticNoExternalReminder,
-      telegram_reminder_skip_reason: syntheticNoExternalReminder ? 'synthetic_test_lead_no_external_reminder' : null,
-      internal_operator_notification_attempted: !syntheticNoExternalReminder,
+      no_telegram_reminder_sent: skipTelegramReminder,
+      telegram_reminder_skipped: skipTelegramReminder,
+      telegram_reminder_skip_reason: skipTelegramReminder
+        ? (suppressExternalReminder ? 'public_landing_no_external_send_guardrail' : 'synthetic_test_lead_no_external_reminder')
+        : null,
+      internal_operator_notification_attempted: !skipTelegramReminder,
       external_write_performed: false,
-      message: 'Your free-class request was saved. We will follow up with the current One Time free-class details.',
+      message: 'Your One Time signup was saved. Continue onboarding so the team can review the right next step.',
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message });
@@ -87569,6 +87868,9 @@ app.get(['/family', '/household'], (req, res) => {
 
 app.get(['/provider', '/provider/login', '/provider-dashboard'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
+  if (shouldRedirectOneTimeProviderToOperations(req)) {
+    return res.redirect(302, oneTimeProviderCanonicalOperationsUrl(req));
+  }
   if (wantsOneTimeProviderShell(req)) {
     return sendOneTimeProviderShell(req, res);
   }
@@ -87585,7 +87887,7 @@ app.get('/providers/category/:categorySlug', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'service-providers.html'));
 });
 
-app.get(['/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
+app.get(['/one-time-onboarding', '/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });

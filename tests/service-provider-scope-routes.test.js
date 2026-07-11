@@ -17,6 +17,7 @@ test('server wires service-provider scope and first-party CRM routes', () => {
     "app.get('/api/bna/account-scope/summary'",
     "app.get('/api/bna/crm/contacts'",
     "app.get('/api/bna/crm/contacts/:id/timeline'",
+    "app.patch('/api/bna/crm/contacts/:id'",
     "app.post('/api/bna/assistant/scope-plan'",
     "app.get('/api/provider-portal/scope-session'",
     "app.get('/api/provider-portal/inquiries'",
@@ -69,6 +70,8 @@ test('migration and registries cover service-provider scope package', () => {
     'ACTION-PROVIDER-PORTAL-UPGRADE',
     'ACTION-CRM-CONTACTS-FILTER',
     'ACTION-CRM-CONTACT-CARD-EXPAND',
+    'ACTION-CRM-CONTACT-MAILBOX-OPEN',
+    'ACTION-CRM-CONTACT-SAFE-UPDATE',
     'ACTION-ASSISTANT-CODEX-CLI-ROUTING-DISABLED',
   ].forEach((id) => assert.equal(actionIds.has(id), true, `${id} is registered`));
 
@@ -76,6 +79,7 @@ test('migration and registries cover service-provider scope package', () => {
     '/api/bna/account-scope/summary',
     '/api/bna/crm/contacts',
     '/api/bna/crm/contacts/:id/timeline',
+    '/api/bna/crm/contacts/:id',
     '/api/bna/assistant/scope-plan',
     '/api/provider-portal/scope-session',
     '/api/provider-portal/inquiries',

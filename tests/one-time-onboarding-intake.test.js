@@ -52,9 +52,10 @@ test('One Time preview page posts guided intake to the scoped onboarding route',
   assert.match(preview, /name="parent_name"/);
   assert.match(preview, /name="parent_email"/);
   assert.match(preview, /name="parent_phone"/);
-  assert.match(preview, /name="learner_name"/);
-  assert.match(preview, /name="intent" value="live"/);
-  assert.match(preview, /name="intent" value="library"/);
-  assert.match(preview, /name="preview_ack" required/);
-  assert.match(preview, /No payment, access, email, WhatsApp, or public posting was created/);
+  assert.match(preview, /name="audience_type" value="family"/);
+  assert.match(preview, /name="audience_type" value="school"/);
+  assert.match(preview, /name="family_learner_name"/);
+  assert.match(preview, /name="school_name"/);
+  assert.match(preview, /No payment or member access is created from this form/);
+  assert.match(preview, /No external message was sent/);
 });

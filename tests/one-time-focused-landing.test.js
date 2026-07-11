@@ -16,7 +16,7 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.doesNotMatch(html, /name="student_name"|name="studentName"|name="learner_name"|name="learnerName"/);
   assert.match(html, /preferred_class_format/);
   assert.match(html, /data-continue-onboarding/);
-  assert.match(html, /window\.location\.href = `\/one-time-preview\?\$\{params\.toString\(\)\}`/);
+  assert.match(html, /window\.location\.href = `\/one-time-onboarding\?\$\{params\.toString\(\)\}`/);
   assert.match(html, /Member Login/);
   assert.match(html, /Join free until Rosh Hashanah/);
   assert.match(html, /Meet Rabbi Eli Scheller/);
@@ -77,6 +77,7 @@ test('One Time focused offer route and registries are declared', () => {
   assert.ok(routes.has('/one-time/mishnayos'));
   assert.ok(routes.has('/one-time/privacy.html'));
   assert.ok(routes.has('/one-time/terms.html'));
+  assert.ok(routes.has('/one-time-onboarding'));
   assert.ok(routes.has('/one-time-preview'));
 
   const actions = new Set(actionRegistry.actions.map((action) => action.action_id));
@@ -97,5 +98,5 @@ test('One Time focused offer route and registries are declared', () => {
   assert.match(formAction.expected_behavior, /no student name/i);
   assert.match(formAction.expected_behavior, /no checkout/i);
   const continueAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING');
-  assert.match(continueAction.expected_behavior, /one-time-preview/);
+  assert.match(continueAction.expected_behavior, /one-time-onboarding/);
 });

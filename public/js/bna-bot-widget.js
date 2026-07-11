@@ -593,7 +593,7 @@
       overflow: hidden;
       background:
         linear-gradient(150deg, rgba(37, 211, 102, 0.22), rgba(8, 9, 16, 0.18)),
-        #080910 url("/assets/one-time/robot/robot-scheller-whatsapp.png") center center / cover no-repeat;
+        #080910 url("/assets/one-time/robot/robot-scheller-whatsapp.png") center center / contain no-repeat;
       box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.14);
     }
     .bna-bot-avatar::after {

@@ -38101,3 +38101,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Added a production-readiness snapshot guardrail so dirty worktree evidence records counts and `paths redacted` instead of raw local file paths.
 - Verdicts: `PUBLIC_FREE_CLASS_LANE: ready` for the no-write/free-class scope; `OWNER_AND_ROLE_INTERFACE: not_ready`; `FULL_COMMERCIAL_AUTOMATION: blocked`; overall `ONE_TIME_VERDICT: not_ready`.
 - Verification: staged JSON parsed; source matrix counts remain 291 total / 290 terminal / 1 active / 0 non-active unmapped; production readiness gate remains expected-blocked. No external mutation was performed.
+
+## 2026-07-12 - One Time P0/P1 corrective branch locally verified
+
+- Implemented the corrective One Time owner/CRM/public landing branch from `RAW-20260711-001`: canonical Operations generated artifact gate, generated Rabbi dashboard IA, scoped owner shell, read-only View-as write blocking, first-party CRM workbench with local safe update action, public signup-to-onboarding flow, and latest green Robot Scheller image fitted in the bubble.
+- Updated action/route registries, run evidence, PQC/run records, screenshots, and watchdog reports. App-visible requirements remain review/deploy-gated, not Done.
+- Verification: `operations:build`, `operations:check-generated`, `operations:check-canonical`, focused One Time test batch (`42` tests), public onboarding smoke, Operations owner smoke, CRM workbench smoke, provider CRM layout smoke, `watchdog:actions`, `watchdog:protocol-drift`, `pqc:validate`, and `bna:run:validate` passed.
+- Guardrail: no production deploy, email/WhatsApp/Telegram/campaign send, charge, access grant, historical import, DNS/credential mutation, external provider write, or GHL/LeadConnector runtime was performed.

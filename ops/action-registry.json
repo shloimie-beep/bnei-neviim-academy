@@ -504,12 +504,51 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING\"]",
-      "expected_behavior": "After successful first-party capture and a family/school choice, continues to /one-time-preview with non-secret query parameters for the existing onboarding flow.",
+      "expected_behavior": "After successful first-party capture and a family/school choice, continues to /one-time-onboarding with non-secret query parameters for the onboarding flow.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "browser_static",
-        "expected_result": "Button is disabled until family or school is selected and then navigates to /one-time-preview with the chosen audience."
+        "expected_result": "Button is disabled until family or school is selected and then navigates to /one-time-onboarding with the chosen audience."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-ONBOARDING-AUDIENCE",
+      "label": "Family or School",
+      "surface": "one_time_public_onboarding",
+      "route": "/one-time-onboarding",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-ONBOARDING-AUDIENCE\"]",
+      "expected_behavior": "Switches the public onboarding form between family and school fields without submitting, sending, charging, creating access, or exposing private data.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "browser_static",
+        "expected_result": "Family and school branch controls reveal only their own public-safe fields and preserve lead query parameters."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-ONBOARDING-SUBMIT",
+      "label": "Save Onboarding Details",
+      "surface": "one_time_public_onboarding",
+      "route": "/one-time-onboarding",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-ONBOARDING-SUBMIT\"]",
+      "expected_behavior": "Saves a first-party One Time onboarding review record linked to any product/CRM lead ids and returns a no-send/no-checkout/no-access confirmation.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "POSTs public-safe onboarding details to /api/one-time/mishnah/onboarding and confirms no email, WhatsApp, Telegram, payment, access grant, or external provider write occurred."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -2504,6 +2543,44 @@
       "test": {
         "type": "api_and_node_test",
         "expected_result": "GET /api/bna/crm/contacts/:id/timeline returns no_send/external_write_performed=false; tests/crm-contact-model.test.js verifies timeline no-send fields."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-MAILBOX-OPEN",
+      "label": "Open contact mailbox",
+      "surface": "operations_contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CONTACT-MAILBOX-OPEN\"]",
+      "expected_behavior": "Moves from the selected local CRM contact to the scoped Rabbi / One Time email inbox while preserving selected contact context; does not send, draft-send, charge, grant access, import, or write to an external CRM.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "active_navigation_only",
+      "test": {
+        "type": "browser_static_and_local_smoke",
+        "expected_result": "One Time CRM workbench exposes a mailbox shortcut that routes to the Rabbi inbox with workspace=rabbi_sheller_provider and project_key=one_time_mishnah_class."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-SAFE-UPDATE",
+      "label": "Save CRM update",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CONTACT-SAFE-UPDATE\"]",
+      "expected_behavior": "Saves status, tags, owner, follow-up date, and internal note to first-party local CRM tables only; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "api_and_browser_local_smoke",
+        "expected_result": "PATCH /api/bna/crm/contacts/:id returns no_send=true and external_write_performed=false; View-as requests with X-One-Time-View-As-Token are rejected for non-GET methods."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

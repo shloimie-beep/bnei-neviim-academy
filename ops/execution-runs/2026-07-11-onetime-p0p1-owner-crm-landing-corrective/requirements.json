@@ -1,0 +1,673 @@
+{
+  "run_id": "2026-07-11-onetime-p0p1-owner-crm-landing-corrective",
+  "title": "One Time P0/P1 Owner CRM Landing Corrective",
+  "updated_at": "2026-07-11T21:23:00.000Z",
+  "git_refs": {
+    "expected_branch": "codex/onetime-p0p1-corrective-20260711",
+    "branch": "codex/onetime-p0p1-corrective-20260711",
+    "expected_remote_head": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a",
+    "remote_head": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a",
+    "expected_head": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a",
+    "head": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260711-001",
+      "source_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "captured_at": "2026-07-11T20:16:14.000Z",
+      "content_fingerprint": "sha256:file-copied-from-codex-attachment-c8331ec5-c76e-4f85-8c8d-42465304515f",
+      "privacy_classification": "operator_prompt_no_secret_expected",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_attachment"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260711-001:S1",
+      "source_id": "RAW-20260711-001",
+      "source_statement": "Work from current origin/master, fetch first, report exact head, and use one clean corrective branch/PR.",
+      "requirement_id": "REQ-20260711-001"
+    },
+    {
+      "statement_id": "RAW-20260711-001:S2",
+      "source_id": "RAW-20260711-001",
+      "source_statement": "Create a new canonical execution run, reopen false Done claims, and record that direct operations.html proof does not prove canonical /operations.",
+      "requirement_id": "REQ-20260711-002"
+    },
+    {
+      "statement_id": "RAW-20260711-001:S3",
+      "source_id": "RAW-20260711-001",
+      "source_statement": "Fix active Operations artifact, canonical /operations, generated assets, split script, package commands, drift gate, and browser tests.",
+      "requirement_id": "REQ-20260711-003"
+    },
+    {
+      "statement_id": "RAW-20260711-001:S4",
+      "source_id": "RAW-20260711-001",
+      "source_statement": "Normal Rabbi owner account must use the same structural Operations application shell as BNA Super Admin, scoped to One Time and without Super Admin-only diagnostics.",
+      "requirement_id": "REQ-20260711-004"
+    },
+    {
+      "statement_id": "RAW-20260711-001:S5",
+      "source_id": "RAW-20260711-001",
+      "source_statement": "Implement real first-party One Time CRM contacts, detail, timeline, mailbox, pipeline, and safe local actions; block sends/import/payment/access writes.",
+      "requirement_id": "REQ-20260711-005"
+    },
+    {
+      "statement_id": "RAW-20260711-001:S6",
+      "source_id": "RAW-20260711-001",
+      "source_statement": "Public landing must match approved content hierarchy and signup/onboarding behavior, and use approved Robot Scheller asset.",
+      "requirement_id": "REQ-20260711-006"
+    },
+    {
+      "statement_id": "RAW-20260711-001:S7",
+      "source_id": "RAW-20260711-001",
+      "source_statement": "Synchronize config, remove stale FAQ/free-class/See How It Works contracts, and maintain action/route registry coverage.",
+      "requirement_id": "REQ-20260711-007"
+    },
+    {
+      "statement_id": "RAW-20260711-001:S8",
+      "source_id": "RAW-20260711-001",
+      "source_statement": "Run screenshots, focused tests, no BNA leakage proof, watchdog/protocol drift checks, and record evidence.",
+      "requirement_id": "REQ-20260711-008"
+    },
+    {
+      "statement_id": "RAW-20260711-001:S9",
+      "source_id": "RAW-20260711-001",
+      "source_statement": "Open/push one corrective PR and deploy only after review through the approved pipeline.",
+      "requirement_id": "REQ-20260711-009"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260711-001",
+      "title": "Register P0/P1 corrective packet and run",
+      "source_id": "RAW-20260711-001",
+      "source_statement_ids": [
+        "RAW-20260711-001:S1"
+      ],
+      "source_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "protocol",
+      "priority": "P0",
+      "batch_id": "wave-0-intake-run",
+      "depends_on": [],
+      "status": "verified",
+      "implementation_status": "Raw intake, execution run, requirement register, PQC packet, control tower, visual audit, and surface map are created and validator-backed.",
+      "can_continue_without_operator": true,
+      "next_action": "None until review/publish closeout records are added.",
+      "acceptance_criteria": [
+        "Raw source exists.",
+        "latest.json points to new run.",
+        "Register/PQC/control/audit/surface-map exist."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+        "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md",
+        "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.product-quality.json",
+        "npm run pqc:validate PASS",
+        "npm run bna:run:validate PASS"
+      ],
+      "verification": [
+        "npm run pqc:validate",
+        "npm run bna:run:validate"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+        "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md",
+        "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.product-quality.json",
+        "ops/prompt-packets/2026-07-11-onetime-p0p1-corrective/00-control-tower.md",
+        "ops/prompt-packets/2026-07-11-onetime-p0p1-corrective/01-current-state-visual-audit.md",
+        "ops/surface-maps/2026-07-11-onetime-p0p1-corrective-surface-map.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-11T21:20:00.000Z",
+      "expected_result": "The corrective packet is traceable, branch-scoped, and validator-backed."
+    },
+    {
+      "id": "REQ-20260711-002",
+      "title": "Reopen false Done proof gaps",
+      "source_id": "RAW-20260711-001",
+      "source_statement_ids": [
+        "RAW-20260711-001:S2"
+      ],
+      "source_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "audit",
+      "priority": "P0",
+      "batch_id": "wave-0-false-done-reopen",
+      "depends_on": [
+        "REQ-20260711-001"
+      ],
+      "status": "verified",
+      "implementation_status": "Run/register records state that stale direct operations.html or prior evidence-only Done claims are non-terminal without canonical /operations proof.",
+      "can_continue_without_operator": true,
+      "next_action": "Keep production completion blocked until review-approved deploy/live smoke.",
+      "acceptance_criteria": [
+        "Direct operations.html proof is rejected as canonical /operations proof.",
+        "Prior Done labels are not terminal.",
+        "No new historical-source inventory is generated."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/requirements.json",
+        "npm run bna:run:validate PASS"
+      ],
+      "verification": [
+        "npm run bna:run:validate"
+      ],
+      "implementation_files": [
+        "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md",
+        "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/requirements.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-11T21:20:00.000Z",
+      "expected_result": "The run cannot close by reusing stale source-mapping or direct operations.html evidence."
+    },
+    {
+      "id": "REQ-20260711-003",
+      "title": "Gate canonical Operations generated artifacts",
+      "source_id": "RAW-20260711-001",
+      "source_statement_ids": [
+        "RAW-20260711-001:S3"
+      ],
+      "source_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "ui",
+      "priority": "P0",
+      "batch_id": "wave-1-operations-artifact",
+      "depends_on": [
+        "REQ-20260711-001"
+      ],
+      "status": "needs_operator_decision",
+      "implementation_status": "Local implementation and verification are complete in the corrective branch; production deploy/live smoke is intentionally blocked pending review approval.",
+      "can_continue_without_operator": true,
+      "next_action": "Push/open the corrective PR, review the local evidence, then approve or reject production deployment through the approved pipeline.",
+      "acceptance_criteria": [
+        "operations:build regenerates assets.",
+        "operations:check-generated fails on drift.",
+        "Direct /operations.html redirects or is nonproduction source.",
+        "Canonical artifact check proves bootstrap assets."
+      ],
+      "evidence": [
+        "npm run operations:build PASS",
+        "npm run operations:check-generated PASS",
+        "npm run operations:check-canonical PASS",
+        "node --test focused One Time batch PASS: 42 tests",
+        "npm run one-time:smoke:public-onboarding-local PASS",
+        "npm run one-time:smoke:operations-crm-workbench-local PASS",
+        "npm run one-time:smoke:provider-crm-layout-local PASS",
+        "npm run watchdog:actions PASS: 0 findings",
+        "npm run watchdog:protocol-drift PASS: 0 findings",
+        "npm run pqc:validate PASS",
+        "npm run bna:run:validate PASS",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/public-onboarding-smoke.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "ops/watchdog-audits/2026-07-11T21-18-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-11-product-quality-drift.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-robot-launcher-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-family-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-school-success-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/desktop.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/mobile-content.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm-workbench.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png"
+      ],
+      "verification": [
+        "npm run operations:build",
+        "npm run operations:check-generated"
+      ],
+      "implementation_files": [
+        "package.json",
+        "scripts/split-operations-shell.mjs",
+        "public/operations.html",
+        "public/operations-bootstrap.html",
+        "public/css/operations-shell.css",
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-11T21:20:00.000Z",
+      "expected_result": "Operations generated assets are reproducible and canonical-route proof no longer relies on source HTML.",
+      "blocker": "Production deploy/live smoke requires review approval for this corrective packet.",
+      "blocker_owner": "Operator / reviewer",
+      "blocker_next_action": "Review the corrective branch/PR and explicitly approve deployment through the approved pipeline."
+    },
+    {
+      "id": "REQ-20260711-004",
+      "title": "Unify Rabbi owner shell with Operations structure",
+      "source_id": "RAW-20260711-001",
+      "source_statement_ids": [
+        "RAW-20260711-001:S4"
+      ],
+      "source_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "ui",
+      "priority": "P0",
+      "batch_id": "wave-2-owner-shell",
+      "depends_on": [
+        "REQ-20260711-003"
+      ],
+      "status": "needs_operator_decision",
+      "implementation_status": "Local implementation and verification are complete in the corrective branch; production deploy/live smoke is intentionally blocked pending review approval.",
+      "can_continue_without_operator": true,
+      "next_action": "Push/open the corrective PR, review the local evidence, then approve or reject production deployment through the approved pipeline.",
+      "acceptance_criteria": [
+        "Rabbi owner login bridges to canonical Operations URL.",
+        "Provider/review route bridges or redirects as required.",
+        "Super Admin diagnostics hidden.",
+        "View-as Rabbi rejects writes."
+      ],
+      "evidence": [
+        "npm run operations:build PASS",
+        "npm run operations:check-generated PASS",
+        "npm run operations:check-canonical PASS",
+        "node --test focused One Time batch PASS: 42 tests",
+        "npm run one-time:smoke:public-onboarding-local PASS",
+        "npm run one-time:smoke:operations-crm-workbench-local PASS",
+        "npm run one-time:smoke:provider-crm-layout-local PASS",
+        "npm run watchdog:actions PASS: 0 findings",
+        "npm run watchdog:protocol-drift PASS: 0 findings",
+        "npm run pqc:validate PASS",
+        "npm run bna:run:validate PASS",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/public-onboarding-smoke.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "ops/watchdog-audits/2026-07-11T21-18-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-11-product-quality-drift.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-robot-launcher-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-family-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-school-success-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/desktop.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/mobile-content.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm-workbench.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png"
+      ],
+      "verification": [
+        "focused owner shell smoke",
+        "no BNA leakage check"
+      ],
+      "implementation_files": [
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "public/css/operations-shell.css",
+        "public/provider.html",
+        "src/platform/instances/one-time-rabbi-dashboard-ia.js",
+        "src/lib/bna/one-time-role-model.js",
+        "server.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-11T21:20:00.000Z",
+      "expected_result": "Rabbi Scheller sees a real One Time owner application, not a static/provider mock or Super Admin diagnostic surface.",
+      "blocker": "Production deploy/live smoke requires review approval for this corrective packet.",
+      "blocker_owner": "Operator / reviewer",
+      "blocker_next_action": "Review the corrective branch/PR and explicitly approve deployment through the approved pipeline."
+    },
+    {
+      "id": "REQ-20260711-005",
+      "title": "Complete first-party One Time CRM",
+      "source_id": "RAW-20260711-001",
+      "source_statement_ids": [
+        "RAW-20260711-001:S5"
+      ],
+      "source_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "crm",
+      "priority": "P0",
+      "batch_id": "wave-3-crm",
+      "depends_on": [
+        "REQ-20260711-004"
+      ],
+      "status": "needs_operator_decision",
+      "implementation_status": "Local implementation and verification are complete in the corrective branch; production deploy/live smoke is intentionally blocked pending review approval.",
+      "can_continue_without_operator": true,
+      "next_action": "Push/open the corrective PR, review the local evidence, then approve or reject production deployment through the approved pipeline.",
+      "acceptance_criteria": [
+        "Canonical DTO includes first-party sources.",
+        "Search/filter/list/detail/timeline/mailbox pipeline are usable.",
+        "Local safe actions persist/read back.",
+        "Email/WhatsApp/payment/access/import actions are blocked or no-send drafts."
+      ],
+      "evidence": [
+        "npm run operations:build PASS",
+        "npm run operations:check-generated PASS",
+        "npm run operations:check-canonical PASS",
+        "node --test focused One Time batch PASS: 42 tests",
+        "npm run one-time:smoke:public-onboarding-local PASS",
+        "npm run one-time:smoke:operations-crm-workbench-local PASS",
+        "npm run one-time:smoke:provider-crm-layout-local PASS",
+        "npm run watchdog:actions PASS: 0 findings",
+        "npm run watchdog:protocol-drift PASS: 0 findings",
+        "npm run pqc:validate PASS",
+        "npm run bna:run:validate PASS",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/public-onboarding-smoke.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "ops/watchdog-audits/2026-07-11T21-18-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-11-product-quality-drift.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-robot-launcher-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-family-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-school-success-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/desktop.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/mobile-content.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm-workbench.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png"
+      ],
+      "verification": [
+        "npm run one-time:smoke:operations-crm-workbench-local"
+      ],
+      "implementation_files": [
+        "src/lib/bna/crm-contact-model.js",
+        "server.js",
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-11T21:20:00.000Z",
+      "expected_result": "Rabbi owner CRM works as first-party operational CRM without GHL/external writes.",
+      "blocker": "Production deploy/live smoke requires review approval for this corrective packet.",
+      "blocker_owner": "Operator / reviewer",
+      "blocker_next_action": "Review the corrective branch/PR and explicitly approve deployment through the approved pipeline."
+    },
+    {
+      "id": "REQ-20260711-006",
+      "title": "Correct public landing, signup, onboarding, and Robot Scheller",
+      "source_id": "RAW-20260711-001",
+      "source_statement_ids": [
+        "RAW-20260711-001:S6"
+      ],
+      "source_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "ui",
+      "priority": "P1",
+      "batch_id": "wave-4-public-landing",
+      "depends_on": [
+        "REQ-20260711-001"
+      ],
+      "status": "needs_operator_decision",
+      "implementation_status": "Local implementation and verification are complete in the corrective branch; production deploy/live smoke is intentionally blocked pending review approval.",
+      "can_continue_without_operator": true,
+      "next_action": "Push/open the corrective PR, review the local evidence, then approve or reject production deployment through the approved pipeline.",
+      "acceptance_criteria": [
+        "Hero content and schedule match approved text.",
+        "Only large public CTA text is Sign Up Now.",
+        "Signup asks contact name/email, phone optional, no student field.",
+        "Continuation has family/school branches and preserves lead IDs.",
+        "Robot bubble uses latest full-body image with non-destructive fit."
+      ],
+      "evidence": [
+        "npm run operations:build PASS",
+        "npm run operations:check-generated PASS",
+        "npm run operations:check-canonical PASS",
+        "node --test focused One Time batch PASS: 42 tests",
+        "npm run one-time:smoke:public-onboarding-local PASS",
+        "npm run one-time:smoke:operations-crm-workbench-local PASS",
+        "npm run one-time:smoke:provider-crm-layout-local PASS",
+        "npm run watchdog:actions PASS: 0 findings",
+        "npm run watchdog:protocol-drift PASS: 0 findings",
+        "npm run pqc:validate PASS",
+        "npm run bna:run:validate PASS",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/public-onboarding-smoke.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "ops/watchdog-audits/2026-07-11T21-18-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-11-product-quality-drift.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-robot-launcher-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-family-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-school-success-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/desktop.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/mobile-content.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm-workbench.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png"
+      ],
+      "verification": [
+        "public landing/signup local smoke",
+        "screenshot evidence"
+      ],
+      "implementation_files": [
+        "public/one-time/index.html",
+        "public/one-time-preview.html",
+        "public/js/bna-bot-widget.js",
+        "public/assets/one-time/robot/robot-scheller-whatsapp.png",
+        "server.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-11T21:20:00.000Z",
+      "expected_result": "Public One Time signup becomes a real no-send lead-to-onboarding flow with the approved Robot Scheller visual.",
+      "blocker": "Production deploy/live smoke requires review approval for this corrective packet.",
+      "blocker_owner": "Operator / reviewer",
+      "blocker_next_action": "Review the corrective branch/PR and explicitly approve deployment through the approved pipeline."
+    },
+    {
+      "id": "REQ-20260711-007",
+      "title": "Synchronize config and route/action registries",
+      "source_id": "RAW-20260711-001",
+      "source_statement_ids": [
+        "RAW-20260711-001:S7"
+      ],
+      "source_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "registry",
+      "priority": "P1",
+      "batch_id": "wave-4-config-registries",
+      "depends_on": [
+        "REQ-20260711-006"
+      ],
+      "status": "needs_operator_decision",
+      "implementation_status": "Local implementation and verification are complete in the corrective branch; production deploy/live smoke is intentionally blocked pending review approval.",
+      "can_continue_without_operator": true,
+      "next_action": "Push/open the corrective PR, review the local evidence, then approve or reject production deployment through the approved pipeline.",
+      "acceptance_criteria": [
+        "Config has approved public hierarchy.",
+        "Route registry includes onboarding alias and canonical expectations.",
+        "Action registry covers changed controls."
+      ],
+      "evidence": [
+        "npm run operations:build PASS",
+        "npm run operations:check-generated PASS",
+        "npm run operations:check-canonical PASS",
+        "node --test focused One Time batch PASS: 42 tests",
+        "npm run one-time:smoke:public-onboarding-local PASS",
+        "npm run one-time:smoke:operations-crm-workbench-local PASS",
+        "npm run one-time:smoke:provider-crm-layout-local PASS",
+        "npm run watchdog:actions PASS: 0 findings",
+        "npm run watchdog:protocol-drift PASS: 0 findings",
+        "npm run pqc:validate PASS",
+        "npm run bna:run:validate PASS",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/public-onboarding-smoke.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "ops/watchdog-audits/2026-07-11T21-18-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-11-product-quality-drift.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-robot-launcher-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-family-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-school-success-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/desktop.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/mobile-content.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm-workbench.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png"
+      ],
+      "verification": [
+        "npm run watchdog:actions",
+        "route registry static check"
+      ],
+      "implementation_files": [
+        "config/service-provider-sites/one-time.json",
+        "ops/action-registry.json",
+        "ops/route-registry.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-11T21:20:00.000Z",
+      "expected_result": "Config and registries describe the product that is actually served.",
+      "blocker": "Production deploy/live smoke requires review approval for this corrective packet.",
+      "blocker_owner": "Operator / reviewer",
+      "blocker_next_action": "Review the corrective branch/PR and explicitly approve deployment through the approved pipeline."
+    },
+    {
+      "id": "REQ-20260711-008",
+      "title": "Verify screenshots, smokes, privacy, and watchdogs",
+      "source_id": "RAW-20260711-001",
+      "source_statement_ids": [
+        "RAW-20260711-001:S8"
+      ],
+      "source_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "verification",
+      "priority": "P1",
+      "batch_id": "wave-5-verification",
+      "depends_on": [
+        "REQ-20260711-003",
+        "REQ-20260711-005",
+        "REQ-20260711-006",
+        "REQ-20260711-007"
+      ],
+      "status": "needs_operator_decision",
+      "implementation_status": "Local focused tests, browser smokes, screenshots, action watchdog, product-quality drift watchdog, PQC validator, and run validator have passed; terminal verification remains review/deploy-gated because app-visible dependencies require approved production deploy/live smoke.",
+      "can_continue_without_operator": true,
+      "next_action": "Keep local evidence attached to the PR; after review approval, deploy and run live smoke/readback before marking verification Done.",
+      "acceptance_criteria": [
+        "Focused tests pass or blockers are exact.",
+        "Desktop/mobile screenshots exist.",
+        "No BNA private data leakage appears.",
+        "Validators and protocol drift are recorded."
+      ],
+      "evidence": [
+        "npm run operations:build PASS",
+        "npm run operations:check-generated PASS",
+        "npm run operations:check-canonical PASS",
+        "node --test focused One Time batch PASS: 42 tests",
+        "npm run one-time:smoke:public-onboarding-local PASS",
+        "npm run one-time:smoke:operations-crm-workbench-local PASS",
+        "npm run one-time:smoke:provider-crm-layout-local PASS",
+        "npm run watchdog:actions PASS: 0 findings",
+        "npm run watchdog:protocol-drift PASS: 0 findings",
+        "npm run pqc:validate PASS",
+        "npm run bna:run:validate PASS",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/public-onboarding-smoke.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/report.md",
+        "ops/watchdog-audits/2026-07-11T21-18-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-07-11-product-quality-drift.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-landing-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-robot-launcher-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-family-390.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/one-time-onboarding-school-success-1440.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/desktop.png",
+        "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/operations-ui-smoke/mobile-content.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/desktop-1440-crm-workbench.png",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/mobile-390-crm-workbench.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/desktop-1440-crm.png",
+        "ops/ui-audits/2026-07-09-onetime-provider-crm-layout-local/mobile-390-crm.png"
+      ],
+      "verification": [
+        "npm run pqc:validate",
+        "npm run bna:run:validate",
+        "npm run watchdog:protocol-drift"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/EVIDENCE.md",
+        "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/TEST-RESULTS.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-11T21:23:00.000Z",
+      "expected_result": "Local and browser evidence is sufficient for PR review without claiming deployment Done.",
+      "blocker": "Terminal verification depends on review-approved production deploy/live smoke for app-visible requirements.",
+      "blocker_owner": "Operator / reviewer",
+      "blocker_next_action": "Approve deployment through the approved pipeline, then run live smoke/readback."
+    },
+    {
+      "id": "REQ-20260711-009",
+      "title": "Push PR and deploy only after review approval",
+      "source_id": "RAW-20260711-001",
+      "source_statement_ids": [
+        "RAW-20260711-001:S9"
+      ],
+      "source_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "release",
+      "priority": "P1",
+      "batch_id": "wave-6-pr-deploy",
+      "depends_on": [
+        "REQ-20260711-008"
+      ],
+      "status": "needs_operator_decision",
+      "implementation_status": "Branch-local corrective implementation is verified. Push/PR and production deployment closeout remain to be completed; deploy is gated by review approval.",
+      "can_continue_without_operator": false,
+      "next_action": "Stage, commit, push corrective branch, open PR if GitHub auth permits, then wait for explicit deployment approval before production deploy/live smoke.",
+      "acceptance_criteria": [
+        "One corrective branch is pushed.",
+        "One corrective PR is opened.",
+        "Production deploy/live smoke occur only after review approval."
+      ],
+      "evidence": [
+        "Local verification complete; no production deploy performed."
+      ],
+      "verification": [
+        "git push",
+        "PR URL",
+        "deploy/live smoke after approval"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/DEPLOYMENT.md"
+      ],
+      "deployment_required": true,
+      "blocker": "Production deploy requires review approval for this corrective packet.",
+      "blocker_owner": "Operator / reviewer",
+      "blocker_next_action": "Review the corrective PR and explicitly approve deployment through the approved pipeline.",
+      "updated_at": "2026-07-11T21:20:00.000Z",
+      "expected_result": "The branch reaches review safely without unauthorized production deployment."
+    }
+  ]
+}

@@ -2506,7 +2506,7 @@
                                     <div class="content-section-grid">
                                         <div class="form-group">
                                             <label>Title</label>
-                                            <input name="title" required placeholder="One Time Mishnah episode promo">
+                                            <input name="title" required placeholder="One Time Mishnayos episode promo">
                                         </div>
                                         <div class="form-group">
                                             <label>Project</label>

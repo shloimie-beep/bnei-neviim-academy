@@ -589,16 +589,34 @@
       ]
     },
     {
-      "route": "/one-time-preview",
-      "surface": "one_time_public_preview_onboarding",
-      "access": "public_preview",
+      "route": "/one-time-onboarding",
+      "surface": "one_time_public_onboarding",
+      "access": "public",
       "required_role": null,
       "workspace_scope_required": false,
       "public_allowed": true,
-      "expected_logged_out_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
-      "expected_logged_in_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
+      "expected_logged_out_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
+      "expected_logged_in_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
       "privacy_risk": "normal",
-      "security_expectation": "Preview-only One Time continuation: no live checkout, no payment write, no access grant, no email or WhatsApp send, and no private member/student/provider records are exposed.",
+      "security_expectation": "One Time family/school onboarding continuation: no checkout, no payment write, no access grant, no email/WhatsApp/Telegram send, and no private member/student/provider records are exposed.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/one-time-preview",
+      "surface": "one_time_public_onboarding_legacy_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "canonical_target": "/one-time-onboarding",
+      "expected_logged_out_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
+      "expected_logged_in_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
+      "privacy_risk": "normal",
+      "security_expectation": "Legacy alias serving the same no-send One Time onboarding page; no live checkout, no payment write, no access grant, no email/WhatsApp/Telegram send, and no private member/student/provider records are exposed.",
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-014",
@@ -607,16 +625,16 @@
     },
     {
       "route": "/preview/one-time-mishnah",
-      "surface": "one_time_public_preview_onboarding_alias",
-      "access": "public_preview",
+      "surface": "one_time_public_onboarding_legacy_alias",
+      "access": "public",
       "required_role": null,
       "workspace_scope_required": false,
       "public_allowed": true,
-      "canonical_target": "/one-time-preview",
-      "expected_logged_out_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
-      "expected_logged_in_behavior": "load_anonymous_one_time_preview_onboarding_without_live_checkout_or_private_member_data",
+      "canonical_target": "/one-time-onboarding",
+      "expected_logged_out_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
+      "expected_logged_in_behavior": "load_anonymous_one_time_onboarding_without_live_checkout_or_private_member_data",
       "privacy_risk": "normal",
-      "security_expectation": "Legacy preview alias only: serves the same no-write One Time preview onboarding page and must not start checkout, grant access, or expose private records.",
+      "security_expectation": "Legacy alias only: serves the same no-send One Time onboarding page and must not start checkout, grant access, send external messages, or expose private records.",
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-014",
@@ -1307,13 +1325,32 @@
       "workspace_scope_required": true,
       "public_allowed": false,
       "expected_logged_out_behavior": "reject_unauthorized",
-      "expected_logged_in_behavior": "create_scoped_rabbi_one_time_provider_session_cookie_and_return_provider_mailbox_url",
+      "expected_logged_in_behavior": "create_scoped_rabbi_one_time_provider_session_cookie_and_return_operations_rabbi_mailbox_url",
       "privacy_risk": "critical",
-      "canonical_target": "/provider.html?admin_provider=one-time&section=mailbox",
+      "canonical_target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
       "security_expectation": "Requires platform-super-admin/all-scope identity, resolves only the Rabbi / One Time provider account, sets a provider session cookie, returns no password or secret fields, and performs no external send, payment, access grant, DNS, or provider-account mutation beyond the session row.",
       "smoke_expectation": "tests/one-time-admin-mailbox-access.test.js verifies route registration, Super Admin guard, provider session creation, no password return, and provider admin banner contract.",
       "related_goal_ids": [
         "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/dashboard-ia",
+      "surface": "operations_api_one_time_dashboard_ia",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_scoped_rabbi_dashboard_ia_without_internal_support_modules",
+      "privacy_risk": "normal",
+      "security_expectation": "Requires One Time workspace access and returns the Rabbi-facing IA contract only; no private contact rows, provider secrets, sends, charges, imports, uploads, or access changes.",
+      "smoke_expectation": "tests/one-time-rabbi-dashboard-ia.test.js verifies labels, routes, hidden internal modules, and generated client IA.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
         "GOAL-CORE-006",
         "GOAL-CORE-014",
         "GOAL-CORE-015"
@@ -2223,6 +2260,24 @@
       "privacy_risk": "high_private_contacts",
       "security_expectation": "Requires contact_timeline entitlement and workspace access; returns no_send/external_write_performed=false.",
       "smoke_expectation": "tests/crm-contact-model.test.js verifies timeline no-send flags.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/crm/contacts/:id",
+      "surface": "operations_api_first_party_crm_contact_update",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "save_workspace_scoped_local_crm_update_without_external_write",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires CRM entitlements and workspace access; only updates first-party local CRM tables and local timeline/events; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write. View-as Rabbi non-GET requests are rejected.",
+      "smoke_expectation": "Focused CRM workbench smoke verifies local update copy and no_send/external_write_performed=false.",
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-006",
