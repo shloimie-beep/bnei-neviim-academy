@@ -11,6 +11,9 @@ Source and protocol artifacts:
 
 Local proof:
 
+- Corrective branch: `codex/onetime-p0p1-corrective-20260711`
+- Corrective commit: `e49bd3b00291818bb44e4a483fdd69b35f599c28`
+- Draft PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/129
 - Operations artifact gate: `npm run operations:build`, `npm run operations:check-generated`, `npm run operations:check-canonical`
 - Focused tests: `42` passing One Time/CRM/owner-shell tests
 - Public smoke report: `ops/ui-audits/2026-07-11-onetime-p0p1-corrective/public-onboarding-smoke.md`
@@ -35,5 +38,4 @@ Screenshot evidence:
 
 Pending:
 
-- PR URL.
-- Production deploy/live smoke after review approval.
+- Review approval, production deploy, and live smoke.

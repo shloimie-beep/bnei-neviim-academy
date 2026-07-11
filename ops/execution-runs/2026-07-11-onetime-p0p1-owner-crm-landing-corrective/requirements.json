@@ -1,14 +1,14 @@
 {
   "run_id": "2026-07-11-onetime-p0p1-owner-crm-landing-corrective",
   "title": "One Time P0/P1 Owner CRM Landing Corrective",
-  "updated_at": "2026-07-11T21:23:00.000Z",
+  "updated_at": "2026-07-12T00:30:12.804+03:00",
   "git_refs": {
     "expected_branch": "codex/onetime-p0p1-corrective-20260711",
     "branch": "codex/onetime-p0p1-corrective-20260711",
-    "expected_remote_head": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a",
-    "remote_head": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a",
-    "expected_head": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a",
-    "head": "d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a"
+    "pr_number": 129,
+    "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+    "pr_branch": "codex/onetime-p0p1-corrective-20260711",
+    "pushed_implementation_commit": "e49bd3b00291818bb44e4a483fdd69b35f599c28"
   },
   "sources": [
     {
