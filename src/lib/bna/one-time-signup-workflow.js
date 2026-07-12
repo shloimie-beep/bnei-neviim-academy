@@ -341,6 +341,9 @@ function buildOneTimeSignupLeadInput(input = {}, { now = new Date() } = {}) {
     one_time_direct_signup: true,
     signup_workflow_version: 'one-time-direct-signup-v1',
     signup_as: signupAs,
+    signup_as_label: signupAs,
+    audience_type: signupAs.toLowerCase(),
+    family_school_classification: signupAs.toLowerCase(),
     city: {
       id: city.id,
       label: city.label,
@@ -382,6 +385,8 @@ function buildOneTimeSignupLeadInput(input = {}, { now = new Date() } = {}) {
     phone,
     whatsapp: preference.channels.includes('whatsapp') ? phone : '',
     audience: 'parents',
+    audience_type: signupAs.toLowerCase(),
+    family_school_classification: signupAs.toLowerCase(),
     signup_as: signupAs,
     region: city.country_code || 'worldwide',
     city_id: city.id,

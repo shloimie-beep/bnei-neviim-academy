@@ -169,20 +169,41 @@ test('One Time preview continuation preserves exact lead IDs and branch classifi
       utm: { utm_campaign: 'rosh-hashanah', utm_source: 'newsletter' },
     });
 
-    await page.goto(`${baseUrl}/one-time-onboarding?audience=school`, { waitUntil: 'domcontentloaded' });
-    await page.click('button[data-action-id="ACTION-ONETIME-ONBOARDING-SUBMIT"]');
-    await page.waitForFunction(() => /school name and your role/i.test(document.querySelector('[data-onetime-onboarding-status]')?.textContent || ''));
+    const schoolPage = await browser.newPage();
+    await schoolPage.addInitScript(() => {
+      window.sessionStorage.setItem('oneTimeSignupLead', JSON.stringify({
+        parent_name: 'Bais Torah',
+        contact_name: 'Bais Torah',
+        email: 'school@example.invalid',
+        phone: '+1 732 555 0102',
+        signup_as: 'School',
+        audience_type: 'school',
+        family_school_classification: 'school',
+        city: 'Lakewood, New Jersey, United States',
+        product_lead_id: '123',
+        crm_lead_id: '456',
+        source_landing_page: '/one-time/signup',
+        referrer: 'https://example.invalid/referral',
+        utm: { utm_source: 'newsletter' },
+      }));
+    });
+    await schoolPage.goto(`${baseUrl}/one-time-onboarding`, { waitUntil: 'domcontentloaded' });
+    await schoolPage.click('button[data-action-id="ACTION-ONETIME-ONBOARDING-SUBMIT"]');
+    await schoolPage.waitForFunction(() => /school name and your role/i.test(document.querySelector('[data-onetime-onboarding-status]')?.textContent || ''));
     assert.equal(requests.length, 1, 'school branch does not submit without school fields');
-    await page.fill('input[name="school_name"]', 'Bais Torah');
-    await page.fill('input[name="school_role"]', 'Principal');
-    await page.click('button[data-action-id="ACTION-ONETIME-ONBOARDING-SUBMIT"]');
-    await page.waitForFunction(() => /Saved/i.test(document.querySelector('[data-onetime-onboarding-status]')?.textContent || ''));
+    await schoolPage.fill('input[name="school_name"]', 'Bais Torah');
+    await schoolPage.fill('input[name="school_role"]', 'Principal');
+    await schoolPage.click('button[data-action-id="ACTION-ONETIME-ONBOARDING-SUBMIT"]');
+    await schoolPage.waitForFunction(() => /Saved/i.test(document.querySelector('[data-onetime-onboarding-status]')?.textContent || ''));
     assert.equal(requests.length, 2, 'school branch submits after required fields');
     assert.equal(requests[1].audience_type, 'school');
     assert.equal(requests[1].learner_name, 'Bais Torah');
     assert.equal(requests[1].learner_stage, 'Principal');
     assert.equal(requests[1].product_lead_id, '123');
     assert.equal(requests[1].crm_lead_id, '456');
+
+    await schoolPage.goto(`${baseUrl}/one-time-onboarding?audience=family`, { waitUntil: 'domcontentloaded' });
+    assert.equal(await schoolPage.locator('input[name="audience_type"]:checked').inputValue(), 'family', 'explicit URL audience overrides saved school branch');
   } finally {
     await browser.close();
     await new Promise((resolve) => srv.close(resolve));

@@ -90,6 +90,11 @@ test('signup payload validation covers consent, free-text city timezone, and Wha
   };
   const noReminder = buildOneTimeSignupLeadInput(base, { now: new Date('2026-07-12T12:00:00Z') });
   assert.equal(noReminder.email, 'family@example.com');
+  assert.equal(noReminder.signup_as, 'Family');
+  assert.equal(noReminder.audience_type, 'family');
+  assert.equal(noReminder.family_school_classification, 'family');
+  assert.equal(noReminder.metadata.audience_type, 'family');
+  assert.equal(noReminder.metadata.family_school_classification, 'family');
   assert.equal(noReminder.browser_timezone, 'America/New_York');
   assert.equal(noReminder.consent, false);
   assert.equal(noReminder.metadata.reminder_consent_at, null);
@@ -112,6 +117,14 @@ test('signup payload validation covers consent, free-text city timezone, and Wha
   );
   const whatsapp = buildOneTimeSignupLeadInput({ ...base, reminder_preference: 'whatsapp', phone: '+1 732 555 0101', reminder_consent_ack: true });
   assert.equal(whatsapp.whatsapp, '+1 732 555 0101');
+
+  const schoolSignup = buildOneTimeSignupLeadInput({ ...base, signup_as: 'school' });
+  assert.equal(schoolSignup.signup_as, 'School');
+  assert.equal(schoolSignup.audience_type, 'school');
+  assert.equal(schoolSignup.family_school_classification, 'school');
+  assert.equal(schoolSignup.metadata.signup_as, 'School');
+  assert.equal(schoolSignup.metadata.audience_type, 'school');
+  assert.equal(schoolSignup.metadata.family_school_classification, 'school');
 
   const customCity = resolveOneTimeCitySelection({
     city_label: 'Buenos Aires',

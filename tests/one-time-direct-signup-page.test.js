@@ -225,6 +225,10 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
     assert.equal(payload.city_country_code, '');
     assert.equal(payload.browser_timezone, 'America/Buenos_Aires');
     assert.equal(payload.metadata.signup_as, 'Family');
+    assert.equal(payload.audience_type, 'family');
+    assert.equal(payload.family_school_classification, 'family');
+    assert.equal(payload.metadata.audience_type, 'family');
+    assert.equal(payload.metadata.family_school_classification, 'family');
     assert.equal(payload.metadata.city.id, '');
     assert.equal(payload.metadata.city.label, '11230');
     assert.equal(payload.metadata.city.timezone, 'America/Buenos_Aires');
@@ -242,6 +246,8 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
     assert.equal(storedLead.email, 'leah@example.invalid');
     assert.equal(storedLead.phone, '+1 732 555 0100');
     assert.equal(storedLead.signup_as, 'Family');
+    assert.equal(storedLead.audience_type, 'family');
+    assert.equal(storedLead.family_school_classification, 'family');
     assert.equal(storedLead.product_lead_id, '123');
     assert.equal(storedLead.crm_lead_id, '456');
     assert.equal(storedLead.source_landing_page, '/one-time/signup');
@@ -249,6 +255,34 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
     assert.equal(storedLead.city_context.id, '');
     assert.equal(storedLead.city_context.timezone, 'America/Buenos_Aires');
     assert.deepEqual(storedLead.utm, {});
+
+    await page.goto(`${baseUrl}/one-time/signup`, { waitUntil: 'domcontentloaded' });
+    await page.fill('input[name="contact_name"]', 'Bais Torah');
+    await page.click('[data-signup-type-option][data-value="School"]');
+    assert.equal(await page.locator('input[name="signup_as"]').inputValue(), 'School');
+    assert.equal(await page.locator('[data-signup-type-option][data-value="School"]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('[data-signup-type-option][data-value="Family"]').getAttribute('aria-pressed'), 'false');
+    await page.fill('input[name="city_label"]', 'Lakewood');
+    await page.dispatchEvent('input[name="city_label"]', 'input');
+    await page.fill('input[name="email"]', 'school@example.invalid');
+    await page.check('input[name="reminder_preference"][value="email"]');
+    await page.check('input[name="signup_acknowledgement"]');
+    await page.click('button[data-action-id="ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT"]');
+    await page.waitForSelector('[data-success-panel].active');
+    assert.equal(requests.length, 2, 'valid school signup submits once');
+
+    const schoolPayload = requests[1];
+    assert.equal(schoolPayload.contact_name, 'Bais Torah');
+    assert.equal(schoolPayload.metadata.signup_as, 'School');
+    assert.equal(schoolPayload.audience_type, 'school');
+    assert.equal(schoolPayload.family_school_classification, 'school');
+    assert.equal(schoolPayload.metadata.audience_type, 'school');
+    assert.equal(schoolPayload.metadata.family_school_classification, 'school');
+    assert.match(schoolPayload.notes, /^School signup/);
+    const storedSchoolLead = JSON.parse(await page.evaluate(() => window.sessionStorage.getItem('oneTimeSignupLead')));
+    assert.equal(storedSchoolLead.signup_as, 'School');
+    assert.equal(storedSchoolLead.audience_type, 'school');
+    assert.equal(storedSchoolLead.family_school_classification, 'school');
   } finally {
     await browser.close();
     await new Promise((resolve) => srv.close(resolve));

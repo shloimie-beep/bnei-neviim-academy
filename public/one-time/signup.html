@@ -979,7 +979,6 @@
       const signupTypeInput = form?.elements.signup_as;
       const signupTypePicker = document.querySelector('[data-signup-type-picker]');
       const signupTypeOptions = Array.from(document.querySelectorAll('[data-signup-type-option]'));
-      const signupTypeValues = new Set(['Family', 'School']);
       const timezoneFallbackField = document.querySelector('[data-timezone-fallback]');
       const timezoneFallbackInput = form?.elements.timezone_fallback;
       const localClassTime = document.querySelector('[data-local-class-time]');
@@ -988,16 +987,27 @@
         return reminderInputs.find((input) => input.checked)?.value || '';
       }
 
+      function normalizeSignupType(value) {
+        const normalized = String(value || '').trim().toLowerCase();
+        if (normalized === 'family') return 'Family';
+        if (normalized === 'school') return 'School';
+        return '';
+      }
+
+      function signupAudienceType(value) {
+        return normalizeSignupType(value).toLowerCase();
+      }
+
       function selectedSignupType() {
         const value = String(signupTypeInput?.value || '').trim();
-        return signupTypeValues.has(value) ? value : '';
+        return normalizeSignupType(value);
       }
 
       function setSignupType(value) {
-        const normalized = signupTypeValues.has(value) ? value : '';
+        const normalized = normalizeSignupType(value);
         if (signupTypeInput) signupTypeInput.value = normalized;
         signupTypeOptions.forEach((option) => {
-          const active = option.dataset.value === normalized;
+          const active = normalizeSignupType(option.dataset.value) === normalized;
           option.setAttribute('aria-pressed', String(active));
         });
         if (normalized) {
@@ -1199,7 +1209,7 @@
         const now = new Date().toISOString();
         const detectedBrowserTimezone = form.elements.browser_timezone?.value || '';
         const browserTimezone = detectedBrowserTimezone || timezone;
-        const signupType = signupAs.toLowerCase();
+        const signupType = signupAudienceType(signupAs);
         return {
           parent_name: contactName,
           contact_name: contactName,
@@ -1207,6 +1217,8 @@
           phone,
           whatsapp: needsWhatsAppPhone(reminder) ? phone : '',
           audience: 'parents',
+          audience_type: signupType,
+          family_school_classification: signupType,
           region: 'worldwide',
           city_id: '',
           city_label: cityLabel,
@@ -1228,6 +1240,8 @@
             requirement_id: 'REQ-20260712-106',
             form_version: 'one-time-direct-signup-v2',
             signup_as: signupAs,
+            audience_type: signupType,
+            family_school_classification: signupType,
             city: {
               id: '',
               label: cityLabel,
@@ -1379,6 +1393,8 @@
             email,
             phone,
             signup_as: signupAs,
+            audience_type: signupAudienceType(signupAs),
+            family_school_classification: signupAudienceType(signupAs),
             city: cityLabel,
             city_context: {
               id: '',

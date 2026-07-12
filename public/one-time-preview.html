@@ -535,6 +535,13 @@
         return parseObject(field(name)?.value || '{}');
       }
 
+      function normalizeAudience(value) {
+        const normalized = String(value || '').trim().toLowerCase();
+        if (normalized === 'school') return 'school';
+        if (normalized === 'family') return 'family';
+        return '';
+      }
+
       setValue('parent_name', storedLead.parent_name || params.get('parent_name'));
       setValue('parent_email', storedLead.email || params.get('email'));
       setValue('parent_phone', storedLead.phone || params.get('phone'));
@@ -546,7 +553,10 @@
       setValue('referrer', params.get('referrer') || storedLead.referrer || document.referrer || '');
       setValue('source_landing_page', params.get('source_landing_page') || storedLead.source_landing_page || '/one-time/signup');
 
-      const requestedAudience = params.get('audience');
+      const requestedAudience = normalizeAudience(params.get('audience'))
+        || normalizeAudience(storedLead.audience_type || storedLead.audienceType)
+        || normalizeAudience(storedLead.family_school_classification || storedLead.familySchoolClassification)
+        || normalizeAudience(storedLead.signup_as || storedLead.signupAs);
       if (requestedAudience === 'school' || requestedAudience === 'family') {
         const radio = branchRadios.find((item) => item.value === requestedAudience);
         if (radio) radio.checked = true;

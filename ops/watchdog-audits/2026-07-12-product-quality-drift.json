@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T13:53:02.761Z",
+  "generated_at": "2026-07-12T18:48:46.660Z",
   "scan_paths": [
     "ops/prompt-packets",
     "tasks-pending",
@@ -607,9 +607,12 @@
     "tasks-pending/2026-07-10-onetime-ramble-to-terminal-ui-gap-audit.md",
     "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md",
     "tasks-pending/2026-07-12-onetime-landing-visual-revision.md",
+    "tasks-pending/2026-07-12-onetime-mishnah-signup-family-school-hotfix.md",
     "tasks-pending/2026-07-12-onetime-neon-landing-polish-deploy.md",
     "tasks-pending/2026-07-12-onetime-p0p1-corrective-completion.md",
+    "tasks-pending/2026-07-12-onetime-signup-location-hotfix.md",
     "tasks-pending/2026-07-12-onetime-signup-reminder-workflow-addendum.md",
+    "tasks-pending/2026-07-12-onetime-wapi-webhook-bot-not-responding.md",
     "tasks-pending/_template-goal-mode-correction-output.md",
     "tasks-pending/_template-ramble-intake.md"
   ],

@@ -38801,3 +38801,18 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Time landing/signup surfaces.
 - Telegram notifications remain disabled and unapproved; no manual WhatsApp
   message was sent during the flag enablement.
+
+## 2026-07-12 - One Time Mishnah signup Family/School hotfix local proof
+
+- Captured Shloimie's urgent One Time Mishnah signup form bug as
+  `RAW-20260712-012` with a scoped hotfix register.
+- Reproduced the bug locally: a saved School signup opened the continuation as
+  Family and requested a son's name/grade.
+- Fixed `/one-time/signup` to preserve the existing `Family`/`School` value
+  while also storing canonical `family`/`school` branch fields for follow-up.
+- Fixed `/one-time-onboarding` to honor the saved branch when no explicit
+  `?audience=family|school` override is present.
+- Verification passed: focused branch tests 17/17, `npm run
+  test:onetime:focused` 73/73, action watchdog 0 findings, and protocol drift
+  watchdog 0 findings.
+- Deployment and live smoke remain pending.
