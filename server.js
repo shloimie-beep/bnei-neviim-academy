@@ -63693,7 +63693,7 @@ async function createCommunicationFromWapiWebhook({
   projectId = null,
   suppressAttentionArtifacts = false,
 }, db = pool) {
-  if (normalized.messageId && typeof db.connect === 'function') {
+  if (normalized.messageId && db === pool && typeof db.connect === 'function') {
     const client = await db.connect();
     try {
       await client.query('BEGIN');
@@ -63892,7 +63892,7 @@ async function ensureOneTimeProviderBotLead({ normalized, communicationResult, s
   ) {
     return { lead: null, created: false, communicationResult };
   }
-  const client = db.connect ? await db.connect() : null;
+  const client = db === pool && typeof db.connect === 'function' ? await db.connect() : null;
   const runner = client || db;
   try {
     if (client) await client.query('BEGIN');
@@ -64633,7 +64633,7 @@ async function claimOneTimeWapiAutoReplyAttempt({
     return { duplicate: null, attempt };
   };
 
-  if (typeof db.connect !== 'function') return claimWithRunner(db);
+  if (db !== pool || typeof db.connect !== 'function') return claimWithRunner(db);
   const client = await db.connect();
   try {
     await client.query('BEGIN');
