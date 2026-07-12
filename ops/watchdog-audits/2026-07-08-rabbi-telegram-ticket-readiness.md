@@ -1,13 +1,13 @@
 # Rabbi Telegram / Ticket Alert Readiness
 
-Checked at: 2026-07-12T07:46:59.887Z
+Checked at: 2026-07-12T19:52:13.576Z
 
 ## Summary
 
-- Rabbi Telegram status: blocked_missing_runtime_config
-- Rabbi Telegram ready: false
+- Rabbi Telegram status: ready
+- Rabbi Telegram ready: true
 - Super-admin ticket alerts enabled: false
-- Super-admin Telegram target ready: false
+- Super-admin Telegram target ready: true
 - Dry-run would send ticket alert: false
 - Rabbi communication alerts enabled: false
 - Dry-run would send Rabbi communication alert: false
@@ -15,10 +15,7 @@ Checked at: 2026-07-12T07:46:59.887Z
 
 ## Rabbi Telegram Blockers
 
-- TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER is not configured.
-- TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER is not configured.
-- ONE_TIME_OPS_USERNAME or RABBI_ELIE_SCHELLER_OPS_USERNAME is not configured.
-- ONE_TIME_OPS_PASSWORD or RABBI_ELIE_SCHELLER_OPS_PASSWORD is not configured.
+- None
 
 ## Dry-Run Ticket Alert Preview
 

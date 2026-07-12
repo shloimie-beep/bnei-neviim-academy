@@ -1,34 +1,29 @@
 {
-  "checked_at": "2026-07-12T07:46:59.887Z",
+  "checked_at": "2026-07-12T19:52:13.576Z",
   "external_write_performed": false,
   "notification_config": {
     "ticket_alerts_enabled": false,
     "rabbi_communication_alerts_enabled": false,
     "super_admin": {
-      "token_configured": false,
-      "chat_id_configured": false,
-      "ready": false
+      "token_configured": true,
+      "chat_id_configured": true,
+      "ready": true
     },
     "rabbi_elie_scheller": {
       "profile": "rabbi-elie-scheller",
       "workspace_key": "rabbi_sheller_provider",
       "project_key": "one_time_mishnah_class",
-      "token_configured": false,
-      "chat_id_configured": false,
-      "ops_username_configured": false,
-      "ops_password_configured": false,
-      "ready": false
+      "token_configured": true,
+      "chat_id_configured": true,
+      "ops_username_configured": true,
+      "ops_password_configured": true,
+      "ready": true
     }
   },
   "rabbi_telegram": {
-    "ready": false,
-    "status": "blocked_missing_runtime_config",
-    "blockers": [
-      "TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER is not configured.",
-      "TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER is not configured.",
-      "ONE_TIME_OPS_USERNAME or RABBI_ELIE_SCHELLER_OPS_USERNAME is not configured.",
-      "ONE_TIME_OPS_PASSWORD or RABBI_ELIE_SCHELLER_OPS_PASSWORD is not configured."
-    ],
+    "ready": true,
+    "status": "ready",
+    "blockers": [],
     "expected_profile": "rabbi-elie-scheller",
     "expected_command": "npm run telegram:rabbi",
     "expected_workspace_key": "rabbi_sheller_provider",
@@ -37,11 +32,11 @@
       "profile": "rabbi-elie-scheller",
       "workspace_key": "rabbi_sheller_provider",
       "project_key": "one_time_mishnah_class",
-      "token_configured": false,
-      "chat_id_configured": false,
-      "ops_username_configured": false,
-      "ops_password_configured": false,
-      "ready": false
+      "token_configured": true,
+      "chat_id_configured": true,
+      "ops_username_configured": true,
+      "ops_password_configured": true,
+      "ready": true
     }
   },
   "ticket_alert_dry_run": {
@@ -54,19 +49,19 @@
       "ticket_alerts_enabled": false,
       "rabbi_communication_alerts_enabled": false,
       "super_admin": {
-        "token_configured": false,
-        "chat_id_configured": false,
-        "ready": false
+        "token_configured": true,
+        "chat_id_configured": true,
+        "ready": true
       },
       "rabbi_elie_scheller": {
         "profile": "rabbi-elie-scheller",
         "workspace_key": "rabbi_sheller_provider",
         "project_key": "one_time_mishnah_class",
-        "token_configured": false,
-        "chat_id_configured": false,
-        "ops_username_configured": false,
-        "ops_password_configured": false,
-        "ready": false
+        "token_configured": true,
+        "chat_id_configured": true,
+        "ops_username_configured": true,
+        "ops_password_configured": true,
+        "ready": true
       }
     }
   },
@@ -80,19 +75,19 @@
       "ticket_alerts_enabled": false,
       "rabbi_communication_alerts_enabled": false,
       "super_admin": {
-        "token_configured": false,
-        "chat_id_configured": false,
-        "ready": false
+        "token_configured": true,
+        "chat_id_configured": true,
+        "ready": true
       },
       "rabbi_elie_scheller": {
         "profile": "rabbi-elie-scheller",
         "workspace_key": "rabbi_sheller_provider",
         "project_key": "one_time_mishnah_class",
-        "token_configured": false,
-        "chat_id_configured": false,
-        "ops_username_configured": false,
-        "ops_password_configured": false,
-        "ready": false
+        "token_configured": true,
+        "chat_id_configured": true,
+        "ops_username_configured": true,
+        "ops_password_configured": true,
+        "ready": true
       }
     }
   }

@@ -214,7 +214,10 @@ export function buildOneTimeWapiReadiness(options = {}) {
   } catch (error) {
     providerBotProfileError = error instanceof Error ? error.message : String(error);
   }
-  const providerBotMode = String(env.ONE_TIME_PROVIDER_LEAD_BOT_MODE || providerBotProfile?.policies?.activation_mode || 'observe_only').trim().toLowerCase();
+  const railwayProviderBotModeLive = railwayVariables?.one_time_provider_lead_bot_mode_live === true;
+  const providerBotMode = railwayProviderBotModeLive
+    ? 'live'
+    : String(env.ONE_TIME_PROVIDER_LEAD_BOT_MODE || providerBotProfile?.policies?.activation_mode || 'observe_only').trim().toLowerCase();
   const webhookSecret = configuredValue(env, [
     'ONE_TIME_WAPI_WEBHOOK_SECRET',
     'ONETIME_WAPI_WEBHOOK_SECRET',
@@ -222,9 +225,18 @@ export function buildOneTimeWapiReadiness(options = {}) {
     'RABBI_SCHELLER_WAPI_WEBHOOK_SECRET',
     'WAPI_WEBHOOK_SECRET',
   ]);
-  const autoReplyEnabled = truthy(env.ONE_TIME_WAPI_AUTO_REPLY_ENABLED);
-  const autoReplyApproved = String(env.ONE_TIME_WAPI_AUTO_REPLY_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY';
-  const telegramApproved = String(env.ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM';
+  const webhookSecretConfigured =
+    webhookSecret.configured ||
+    railwayVariables?.one_time_wapi_webhook_secret_present === true;
+  const autoReplyEnabled =
+    truthy(env.ONE_TIME_WAPI_AUTO_REPLY_ENABLED) ||
+    railwayVariables?.one_time_wapi_auto_reply_enabled_true === true;
+  const autoReplyApproved =
+    String(env.ONE_TIME_WAPI_AUTO_REPLY_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY' ||
+    railwayVariables?.one_time_wapi_auto_reply_confirm_approved === true;
+  const telegramApproved =
+    String(env.ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM' ||
+    railwayVariables?.one_time_provider_lead_bot_telegram_confirm_approved === true;
   const outboundConfigured = oneTimeToken.configured || defaultToken.configured;
   const autoReplyBlockers = [];
   if (!oneTimeToken.configured) autoReplyBlockers.push('ONE_TIME_WAPI_API_TOKEN or RABBI_SHELLER_WAPI_API_TOKEN missing');
@@ -233,7 +245,7 @@ export function buildOneTimeWapiReadiness(options = {}) {
   if (!autoReplyApproved) autoReplyBlockers.push('ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY');
   if (providerBotMode !== 'live') autoReplyBlockers.push('ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live');
   if (!providerBotProfile || providerBotProfileError) autoReplyBlockers.push('One Time provider lead-bot profile is missing or invalid');
-  if (!webhookSecret.configured) autoReplyBlockers.push('One Time WAPI webhook secret missing');
+  if (!webhookSecretConfigured) autoReplyBlockers.push('One Time WAPI webhook secret missing');
   if (!classLinkConfigured) autoReplyBlockers.push('ONE_TIME_WHATSAPP_CLASS_LINK or current class link alias missing');
 
   const setupBlockers = [];
@@ -241,7 +253,7 @@ export function buildOneTimeWapiReadiness(options = {}) {
   if (!oneTimeToken.configured) setupBlockers.push('One Time scoped WAPI token missing');
   if (!instanceConfigured) setupBlockers.push('Whapi/WAPI instance id missing');
   if (!phoneConfigured) setupBlockers.push('WhatsApp sender phone metadata missing');
-  if (!webhookSecret.configured) setupBlockers.push('WAPI webhook secret missing');
+  if (!webhookSecretConfigured) setupBlockers.push('WAPI webhook secret missing');
   if (!providerBotProfile || providerBotProfileError) setupBlockers.push('Provider lead-bot profile missing or invalid');
 
   const telegramBlockers = [];
@@ -279,6 +291,11 @@ export function buildOneTimeWapiReadiness(options = {}) {
           class_link_present: railwayVariables.one_time_class_link_present === true,
           instance_id_present: railwayVariables.one_time_whapi_instance_present === true,
           phone_metadata_present: railwayVariables.one_time_whapi_phone_present === true,
+          webhook_secret_present: railwayVariables.one_time_wapi_webhook_secret_present === true,
+          auto_reply_enabled: railwayVariables.one_time_wapi_auto_reply_enabled_true === true,
+          auto_reply_confirm_approved: railwayVariables.one_time_wapi_auto_reply_confirm_approved === true,
+          provider_bot_mode_live: railwayVariables.one_time_provider_lead_bot_mode_live === true,
+          telegram_confirm_approved: railwayVariables.one_time_provider_lead_bot_telegram_confirm_approved === true,
         }
         : null,
     },
@@ -301,7 +318,7 @@ export function buildOneTimeWapiReadiness(options = {}) {
       provider_bot_profile_version: providerBotProfile?.version || null,
       provider_bot_profile_valid: Boolean(providerBotProfile && !providerBotProfileError),
       provider_bot_mode: providerBotMode,
-      webhook_secret_present: webhookSecret.configured,
+      webhook_secret_present: webhookSecretConfigured,
       webhook_header_auth_only_required: true,
       instance_binding_required: true,
       destination_number_binding_required: true,

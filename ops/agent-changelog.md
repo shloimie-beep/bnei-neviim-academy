@@ -38842,3 +38842,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live smokes did not perform external sends, payment/access/DNS/account
   changes, provider-data mutations, production CRM imports, or GHL runtime
   operations.
+
+## 2026-07-12 - WAPI/Rabbi readiness correction and final branch audit
+
+- Preserved Shloimie's WAPI and Rabbi Telegram correction as
+  `raw-input/RAW-20260712-011-wapi-rabbi-telegram-readiness-correction.md` and
+  updated One Time durable memory.
+- Updated readiness scripts so redacted One Time Railway readback can satisfy
+  WAPI token, Whapi/WAPI instance, sender metadata, webhook secret, auto-reply
+  enabled/approval, and provider bot live-mode checks without printing or
+  storing raw secrets.
+- Refreshed Rabbi Telegram readiness evidence; runtime config now reads back
+  ready and no Telegram send was attempted.
+- Added `ops/branch-audits/2026-07-12-final-launch-branch-audit.md` classifying
+  merged, harvested, already satisfied, blocked, superseded, and revival-only
+  branches.
+- Verification passed: WAPI/setup tests `12/12`, `npm run secrets:audit`, and
+  read-only readiness checks. Production readiness remains blocked by Stripe
+  sandbox fields, campaign proof/approval, Rabbi Telegram live-smoke proof,
+  Agent Mode terminal proof, and clean-tree release gate.

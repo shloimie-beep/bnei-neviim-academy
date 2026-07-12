@@ -53,3 +53,10 @@
   concise Telegram dings; Rabbi receives One Time communication alerts when his
   Telegram chat ID is configured. External sends, Drive/Vimeo/Zoom/WAPI writes,
   payments, access grants, credentials, and cross-workspace data remain gated.
+- As of 2026-07-12, WAPI provider setup and One Time WhatsApp auto-reply
+  readiness are present by redacted Railway/keyholder readback; do not keep
+  treating WAPI token, Whapi/WAPI instance, sender metadata, webhook secret, or
+  live auto-reply approval as missing unless a newer readback proves regression.
+- As of 2026-07-12, Rabbi Telegram token/chat/ops runtime config is present by
+  readiness check. Live Telegram-send proof still requires an exact scoped send
+  approval and recorded no-secret evidence.
