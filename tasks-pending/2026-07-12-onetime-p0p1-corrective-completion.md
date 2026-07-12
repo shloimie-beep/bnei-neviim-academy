@@ -20,9 +20,9 @@ Continues prior run:
 - Merge commit:
   `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
 - Deployed/live-smoked master SHA:
-  `fc147ded1ee0e12325111382fa8e460134a8ce3d`
+  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
 - Railway deployment:
-  `64ab8814-c984-4618-b808-5e762914f3eb`
+  `079c53ca-cb65-4cf9-af06-286a7705e7a1`
 - Live URL:
   https://join.onetimeonetime.com
 
@@ -51,7 +51,7 @@ clean Git truth until reconciled by its owner.
 | REQ-20260712-014 | Verified | City/timezone signup schedule behavior is implemented, tested, deployed, and covered by live route proof. | None |
 | REQ-20260712-015 through REQ-20260712-019 | In progress / needs verification | CRM/outbox/reminder/Telegram/WAPI pieces have local implementation and guarded tests; One Time WAPI provider setup is now configured. | Real DB proof, live auto-reply/Telegram approval, scheduler readiness, and no-send/operator-test evidence remain open where applicable. |
 | REQ-20260712-020 / REQ-20260712-021 | Needs operator decision | Release/deploy/live SHA proof is complete. | Terminal closeout depends on blocked persistence/operator personal test evidence. |
-| REQ-20260712-022 | Needs operator decision | Guarded reminder simulation and readiness checks are implemented locally; One Time WAPI provider setup is configured. | Operator personal deployed signup, live auto-reply/Telegram approval, and scheduler/CRON readiness remain open; no external sends were performed. |
+| REQ-20260712-022 | Needs operator decision | Guarded reminder simulation and readiness checks are implemented locally; One Time WAPI provider setup is configured and deployed. | Operator personal deployed signup, live auto-reply/Telegram approval, and scheduler/CRON readiness remain open; no external sends were performed. |
 | REQ-20260712-023 | In progress | Signup/reminder evidence matrix exists. | Broader final matrix and remaining live screenshots are incomplete. |
 
 ## Verification
@@ -71,10 +71,10 @@ Release/live gates passed:
 
 - `npm run bna:release-gate -- --allow-detached --remote-branch master`
 - `npm run one-time:railway-target:guard`
-- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
 - Direct `GET https://join.onetimeonetime.com/api/deploy-info` returned
-  `commit_sha` = `fc147ded1ee0e12325111382fa8e460134a8ce3d`.
+  `commit_sha` = `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`.
 
 ## Decisions And Blockers
 

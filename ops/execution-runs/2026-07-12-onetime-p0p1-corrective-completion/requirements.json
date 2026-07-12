@@ -1,11 +1,11 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T14:16:00+03:00",
+  "updated_at": "2026-07-12T14:22:00+03:00",
   "git_refs": {
-    "expected_branch": "codex/onetime-p0p1-corrective-20260711",
-    "branch": "codex/onetime-p0p1-corrective-20260711",
-    "last_validated_head": "ce312aa53a73b1df7248db9ebb5beed0f7056354",
+    "delivery_branch": "codex/onetime-p0p1-corrective-20260711",
+    "release_worktree": "detached HEAD from origin/master at deployed commit",
+    "last_validated_head": "8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435",
     "pr_number": 129,
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
     "pr_branch": "codex/onetime-p0p1-corrective-20260711",
@@ -32,13 +32,13 @@
     "pr_state": "merged",
     "pr_head_at_merge": "598f66238f68293575d5f9e6195bb6b032ebb156",
     "merge_commit": "8e22e5d79844e994e94c4f3ed92ac51422649b8c",
-    "master_release_commit": "fc147ded1ee0e12325111382fa8e460134a8ce3d",
-    "deployed_commit": "fc147ded1ee0e12325111382fa8e460134a8ce3d",
-    "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",
+    "master_release_commit": "8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435",
+    "deployed_commit": "8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435",
+    "deployment_id": "079c53ca-cb65-4cf9-af06-286a7705e7a1",
     "deployment_target": "one-time-production / production / one-time-web",
     "deployment_url": "https://join.onetimeonetime.com",
-    "live_smoke_at": "2026-07-12T10:52:36Z",
-    "final_evidence_commit": "fc147ded1ee0e12325111382fa8e460134a8ce3d"
+    "live_smoke_at": "2026-07-12T11:21:36Z",
+    "final_evidence_commit": "8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435"
   },
   "sources": [
     {
@@ -995,12 +995,15 @@
         "Generated One Time WAPI webhook secret and stored it locally and in Railway.",
         "npm run one-time:railway-target:guard PASS: one_time_wapi_token_present=true, one_time_whapi_instance_present=true, one_time_whapi_phone_present=true.",
         "npm run one-time:wapi:readiness report: provider_setup.ready=true, outbound configured=true, credential_scope=one_time_scoped, auto_reply.ready=false pending explicit live-send flags.",
+        "Post-WAPI Railway deployment 079c53ca-cb65-4cf9-af06-286a7705e7a1 reached SUCCESS and live /api/deploy-info returned commit_sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435 PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after WAPI readiness deployment.",
         "npm run secrets:audit PASS after readiness report update.",
         "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json",
         "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T14:16:00+03:00",
+      "updated_at": "2026-07-12T14:22:00+03:00",
       "id": "REQ-20260712-018",
       "title": "Gate WhatsApp reminders on explicit consent and Rabbi Whapi readiness",
       "source_statement_ids": [
@@ -1036,6 +1039,8 @@
         "npm run test:onetime:focused PASS 72/72",
         "npm run one-time:railway-target:guard PASS after WAPI env update",
         "npm run one-time:wapi:readiness provider_setup.ready=true with no sends",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435 PASS after WAPI readiness deployment",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after WAPI readiness deployment",
         "npm run secrets:audit PASS"
       ],
       "implementation_files": [
@@ -2181,7 +2186,7 @@
         "REQ-20260712-010"
       ],
       "status": "needs_verification",
-      "implementation_status": "Release authorization was granted in chat, PR #129 was marked ready and merged, master was deployed to One Time Railway, and live smoke verified exact SHA fc147ded1ee0e12325111382fa8e460134a8ce3d. The overall run remains open because REQ-010 and external proof blockers are still non-terminal.",
+      "implementation_status": "Release authorization was granted in chat, PR #129 was marked ready and merged, master was deployed to One Time Railway, and live smoke verified exact SHA 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435 after the WAPI readiness setup. The overall run remains open because REQ-010 and external proof blockers are still non-terminal.",
       "can_continue_without_operator": false,
       "blocker": "",
       "blocker_owner": "",
@@ -2203,7 +2208,11 @@
         "Final Railway deployment 64ab8814-c984-4618-b808-5e762914f3eb reached SUCCESS for one-time-production / production / one-time-web.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
+        "Post-WAPI Railway deployment 079c53ca-cb65-4cf9-af06-286a7705e7a1 reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435 PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after WAPI readiness deployment."
       ],
       "verification": [
         "release approval readback",
@@ -2216,18 +2225,21 @@
         "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435 PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after WAPI readiness deployment."
       ],
       "implementation_files": [
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/DEPLOYMENT.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T14:16:00+03:00",
+      "updated_at": "2026-07-12T14:22:00+03:00",
       "expected_result": "App-visible work is held at ready-for-release until explicit authorization, then deployed and live-smoked by exact SHA.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
-      "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",
-      "deployed_commit": "fc147ded1ee0e12325111382fa8e460134a8ce3d",
-      "live_smoke": "PASS https://join.onetimeonetime.com at fc147ded1ee0e12325111382fa8e460134a8ce3d",
+      "deployment_id": "079c53ca-cb65-4cf9-af06-286a7705e7a1",
+      "deployed_commit": "8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435",
       "deployment_evidence": [
         "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
         "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
@@ -2238,7 +2250,11 @@
         "Final Railway deployment 64ab8814-c984-4618-b808-5e762914f3eb reached SUCCESS for one-time-production / production / one-time-web.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
+        "Post-WAPI Railway deployment 079c53ca-cb65-4cf9-af06-286a7705e7a1 reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435 PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after WAPI readiness deployment."
       ]
     }
   ]

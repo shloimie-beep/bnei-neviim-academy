@@ -38582,3 +38582,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   real-send approval is given for those behaviors.
 - No WhatsApp message, Telegram message, email, CRM mutation, payment/access
   mutation, DNS/account mutation, or raw secret commit was performed.
+
+## 2026-07-12 - One Time WAPI readiness deployed and live-smoked
+
+- Redeployed the One Time production service after WAPI env setup; Railway
+  deployment `079c53ca-cb65-4cf9-af06-286a7705e7a1` reached `SUCCESS`.
+- Live `/api/deploy-info` reports deployed commit
+  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`.
+- Live smokes passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
+  and `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
+- `npm run one-time:wapi:readiness` now proves provider setup ready with no
+  sends; it remains gated only by live auto-reply/Telegram approval flags.
+- No WhatsApp message, Telegram message, email, CRM mutation, payment/access
+  mutation, DNS/account mutation, or raw secret commit was performed.

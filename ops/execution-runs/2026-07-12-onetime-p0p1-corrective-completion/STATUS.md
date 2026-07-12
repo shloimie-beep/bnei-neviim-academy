@@ -11,9 +11,9 @@ Run remains active with release/live proof recorded and a short blocker list.
 - Merge commit:
   `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
 - Deployed/live-smoked master SHA:
-  `fc147ded1ee0e12325111382fa8e460134a8ce3d`
+  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
 - Railway deployment id:
-  `64ab8814-c984-4618-b808-5e762914f3eb`
+  `079c53ca-cb65-4cf9-af06-286a7705e7a1`
 - Production URL:
   https://join.onetimeonetime.com
 
@@ -70,6 +70,10 @@ Run remains active with release/live proof recorded and a short blocker list.
   implemented and deployed. A live no-secret request returns HTTP 503 instead
   of sending, so terminal proof still needs hosted cron/provider readiness and
   the operator personal test.
+- `REQ-20260712-018`: One Time WAPI credentials and provider binding are
+  configured in Railway and live on deployment
+  `079c53ca-cb65-4cf9-af06-286a7705e7a1`; readiness confirms
+  `provider_setup.ready=true` with no sends.
 
 ## Blockers
 

@@ -16,22 +16,23 @@ live-smoked.
 - Post-merge release trail:
   `4a6951643eebb341dcc495d5f306417e1621a07a` smoke-harness fix,
   `63243c915b2774c59faf980e027efc8e546a3f1e` delivery outbox dispatcher,
-  `fc147ded1ee0e12325111382fa8e460134a8ce3d` release-proof commit.
+  `fc147ded1ee0e12325111382fa8e460134a8ce3d` release-proof commit,
+  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435` WAPI readiness setup.
 
 ## Railway
 
 - Target: `one-time-production / production / one-time-web`
 - Public URL: https://join.onetimeonetime.com
-- Final deployment id: `64ab8814-c984-4618-b808-5e762914f3eb`
+- Final deployment id: `079c53ca-cb65-4cf9-af06-286a7705e7a1`
 - Deployment status: `SUCCESS`
 - Live deployed SHA from `/api/deploy-info`:
-  `fc147ded1ee0e12325111382fa8e460134a8ce3d`
+  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
 
 ## Live Smoke
 
 Passed after deployment:
 
-- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
 - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
 - `npm run app:smoke:one-time-interest-dry-run`
@@ -66,8 +67,9 @@ external-provider write was performed.
 - `REQ-20260712-022`: operator personal deployed signup and hosted reminder
   provider readiness remain open; no external sends were performed. The
   handoff guard now marks deployment complete from live smoke but still
-  suppresses the ready message because CI, WAPI, Telegram, and scheduler/
-  `CRON_SECRET` readiness are not green.
+  suppresses the ready message because CI, live-send approval, Telegram, and
+  scheduler/`CRON_SECRET` readiness are not green. One Time WAPI provider
+  setup itself is configured and deployed.
 - `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
   write-smoke was not performed because it would create live raw/parse records
   without a separately scoped production test packet.

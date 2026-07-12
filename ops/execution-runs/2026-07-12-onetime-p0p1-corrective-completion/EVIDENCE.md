@@ -359,22 +359,29 @@ Release / live proof update:
   `63243c915b2774c59faf980e027efc8e546a3f1e`.
 - Final release-proof commit deployed:
   `fc147ded1ee0e12325111382fa8e460134a8ce3d`.
+- WAPI readiness setup commit deployed:
+  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`.
 - Railway target:
   `one-time-production / production / one-time-web`.
 - Final Railway deployment:
-  `64ab8814-c984-4618-b808-5e762914f3eb`, status `SUCCESS`.
+  `079c53ca-cb65-4cf9-af06-286a7705e7a1`, status `SUCCESS`.
 - Live URL:
   https://join.onetimeonetime.com
 - Live `/api/deploy-info` readback:
-  `commit_sha` = `fc147ded1ee0e12325111382fa8e460134a8ce3d`,
+  `commit_sha` = `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`,
   `deployment_source` = `railway:redeploy`,
   `target_app` = `one-time`,
   `target_project` = `one-time-production`,
   `target_service` = `one-time-web`.
 - Exact-SHA live smoke passed:
-  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`.
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`.
 - Focused Rabbi/One Time landing live smoke passed:
   `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
+- WAPI no-send readiness passed for provider setup:
+  `npm run one-time:wapi:readiness` reported `provider_setup.ready=true`,
+  `secret_values_printed=false`, and no WhatsApp/Telegram/CRM mutation; it
+  exits non-zero only because live auto-reply and Telegram send approvals
+  remain off.
 - No production email/WhatsApp/Telegram/campaign send, charge/refund, access
   grant, historical import, DNS/account mutation, credential mutation, or
   external-provider write was performed.

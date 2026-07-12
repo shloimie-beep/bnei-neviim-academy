@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-07-02T10:05:00+03:00",
-  "last_reconciled_at": "2026-07-09T18:12:00+03:00",
+  "last_reconciled_at": "2026-07-12T14:22:00+03:00",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "source_raw_ids": ["RAW-20260701-007", "RAW-20260702-002"],
@@ -163,9 +163,9 @@
       "id": "SETUP-ONETIME-WHAPI-001",
       "priority": 2,
       "title": "Whapi/WAPI provider details",
-      "current_status": "blocked_external_input",
+      "current_status": "provider_setup_ready_live_send_gated",
       "operator_blocker": true,
-      "current_evidence": "OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.",
+      "current_evidence": "One Time-scoped outbound token, Whapi instance ID, sender metadata, webhook secret, and hosted class link are configured in ignored local secret storage and Railway by redacted readiness readback. Auto-reply/live Telegram flags and one approved no-broad-send provider proof remain gated.",
       "required_fields": [
         "provider_account",
         "phone_number",

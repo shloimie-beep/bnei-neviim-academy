@@ -15,9 +15,9 @@ uncommitted change that breaks `node --check server.js`.
 - PR state: merged
 - Merge commit: `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
 - Deployed/live-smoked SHA:
-  `fc147ded1ee0e12325111382fa8e460134a8ce3d`
+  `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`
 - Railway deployment:
-  `64ab8814-c984-4618-b808-5e762914f3eb`
+  `079c53ca-cb65-4cf9-af06-286a7705e7a1`
 - Live URL:
   https://join.onetimeonetime.com
 
@@ -37,8 +37,8 @@ uncommitted change that breaks `node --check server.js`.
   edit, targeted mailbox, and Robot launcher.
 - `REQ-20260712-022`: operator personal deployed signup, live WAPI auto-reply/
   Telegram approval, and scheduler/CRON readiness remain open. One Time WAPI
-  provider setup is configured. Do not send externally until the exact send
-  scope is approved.
+  provider setup is configured and deployed. Do not send externally until the
+  exact send scope is approved.
 
 ## First Commands
 
