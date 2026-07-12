@@ -234,6 +234,7 @@ test('server wires fail-closed hosted webhook auth, sanitized headers, CRM lead 
   assert.match(server, /claimOneTimeWapiAutoReplyAttempt/);
   assert.match(server, /normalized\.messageId && db === pool && typeof db\.connect === 'function'/);
   assert.match(server, /db !== pool \|\| typeof db\.connect !== 'function'/);
+  assert.match(server, /\$2::text <> ''/);
   assert.match(server, /reply_audit_body/);
   assert.match(server, /skipped_observe_only/);
   assert.match(server, /ONE_TIME_PROVIDER_LEAD_BOT_MODE === 'live'/);

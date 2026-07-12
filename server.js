@@ -63537,10 +63537,10 @@ async function findWapiCommunicationContact(normalized, db = pool, { projectId =
 
   const phoneParams = [phoneDigits, phoneSuffix, projectId || null];
   const phoneCondition = projectId
-    ? `($1 <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $1)`
+    ? `($1::text <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $1::text)`
     : `
-      ($1 <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $1)
-      OR ($2 <> '' AND right(regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g'), 9) = $2)
+      ($1::text <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $1::text)
+      OR ($2::text <> '' AND right(regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g'), 9) = $2::text)
     `;
 
   const leadPhoneCondition = `
@@ -63548,8 +63548,8 @@ async function findWapiCommunicationContact(normalized, db = pool, { projectId =
     OR EXISTS (
       SELECT 1
       FROM unnest(COALESCE(other_phones, '{}'::text[])) AS phone_values(value)
-      WHERE ($1 <> '' AND regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g') = $1)
-         OR ($3::int IS NULL AND $2 <> '' AND right(regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g'), 9) = $2)
+      WHERE ($1::text <> '' AND regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g') = $1::text)
+         OR ($3::int IS NULL AND $2::text <> '' AND right(regexp_replace(COALESCE(phone_values.value, ''), '\\D', '', 'g'), 9) = $2::text)
     )
   `;
 
