@@ -38722,3 +38722,29 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   2/2, `node --test tests/one-time-focused-landing.test.js` 2/2,
   `npm run test:onetime:focused` 73/73, `npm run watchdog:actions`, and
   `node --test tests/watchdog-action-registry.test.js` 5/5.
+
+## 2026-07-12 - One Time class reminder email and WhatsApp automation queued
+
+- Deployed source commit `e9f9441a` to Railway deployment
+  `97a1213e-7d38-48b1-9f05-74ffe9bbf3c4` with WhatsApp class reminder copy,
+  reminder-specific WAPI readiness, and sender binding guardrails for Rabbi
+  Scheller's 443 WhatsApp identity.
+- Set live reminder-specific WAPI flags and public sender alias without
+  printing raw sender values; confirmed the broader One Time lead-bot
+  auto-reply flags remain disabled.
+- Added the missing live `bna_parent_leads.parent_whatsapp` column with an
+  idempotent additive migration.
+- Live enrollment found local contacts `4`, `5`, and `6` have email reminders
+  but no stored phone/WhatsApp values, so they remain email-only.
+- Created personal WhatsApp reminder contacts `20` and `21`; queued outbox
+  IDs `19` and `20` for 6:30 p.m. Israel time; local email outbox IDs `16`,
+  `17`, and `18` were already queued for the same time.
+- Verification: PASS focused reminder/WAPI tests 19/19; PASS post-deploy
+  signup page check; PASS protected class-reminder dry-run with WAPI readiness
+  ready; PASS enqueue returned queued WhatsApp rows and already-queued email
+  rows; PASS delivery dry-run before 6:30 p.m. returned due count 0; PASS
+  outbox readback checked WhatsApp copy flags without returning message body or
+  raw join URL.
+- Remaining: Shloimie's email reminder is pending an exact email address.
+  Actual email/WhatsApp provider acceptance must be inspected after the
+  6:30 p.m. dispatcher run.
