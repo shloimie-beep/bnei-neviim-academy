@@ -1,13 +1,20 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 
 const root = process.cwd();
+const require = createRequire(import.meta.url);
 const sourcePath = path.join(root, 'public', 'operations.html');
 const bootstrapPath = path.join(root, 'public', 'operations-bootstrap.html');
 const cssPath = path.join(root, 'public', 'css', 'operations-shell.css');
 const jsPath = path.join(root, 'public', 'js', 'operations-shell.js');
 const deferredJsPath = path.join(root, 'public', 'js', 'operations-deferred-renderers.js');
+const oneTimeIaPath = path.join(root, 'public', 'js', 'one-time-rabbi-dashboard-ia.generated.js');
+const checkMode = process.argv.includes('--check');
+const {
+  ONE_TIME_RABBI_DASHBOARD_IA,
+} = require(path.join(root, 'src', 'platform', 'instances', 'one-time-rabbi-dashboard-ia.js'));
 
 function normalizeGeneratedText(value) {
   return String(value || '')
@@ -85,6 +92,52 @@ if (
 
 const emailScopeHelperBlock = normalizeGeneratedText(scriptBody.slice(emailScopeHelperStart + 1, emailScopeHelperEnd));
 const communicationsBundleBlock = normalizeGeneratedText(scriptBody.slice(communicationsBundleStart + 1, communicationsBundleEnd));
+
+function requiredSharedBlock(startMarker, endMarker, label) {
+  const start = scriptBody.indexOf(startMarker, deferredStart);
+  const end = scriptBody.indexOf(endMarker, start);
+  if (start < 0 || end < 0) throw new Error(`Could not find Operations shared shell helper block: ${label}`);
+  return normalizeGeneratedText(scriptBody.slice(start + 1, end));
+}
+
+const sharedShellHelperBlock = normalizeGeneratedText([
+  requiredSharedBlock(
+    '\n        function renderPipelineBoard(cards = []) {',
+    '\n        function renderStaleTaskSweeper(items = []) {',
+    'pipeline board',
+  ),
+  requiredSharedBlock(
+    '\n        function communicationMetadata(item = {}) {',
+    '\n        function communicationPipelineCounts(items = contactCommunications) {',
+    'communication display helpers',
+  ),
+  requiredSharedBlock(
+    '\n        function normalizePhoneDigitsClient(value = \'\') {',
+    '\n        function wapiPhonebookGroupsSorted() {',
+    'communication scope helpers',
+  ),
+  requiredSharedBlock(
+    '\n        function communicationPhoneTokens(item = {}) {',
+    '\n        function communicationMatchesWapiGroup(item = {}, group = {}) {',
+    'communication phone helpers',
+  ),
+  requiredSharedBlock(
+    '\n        function communicationAttachmentSummary(item = {}) {',
+    '\n        function renderWapiSendReadiness(group = {}) {',
+    'communication attachment helper',
+  ),
+  requiredSharedBlock(
+    '\n        function renderSettingsControlRow(label, value, note, status = \'Read-only\') {',
+    '\n        function latestAutomationEvidence(match) {',
+    'settings control row',
+  ),
+  requiredSharedBlock(
+    '\n        function renderNotConfiguredPanel(title, description) {',
+    '\n        function renderAccounting() {',
+    'not-configured panel',
+  ),
+].join('\n'));
+
 let deferredRendererBlock = scriptBody.slice(deferredStart + 1, deferredCommandBotStart);
 deferredRendererBlock = deferredRendererBlock
   .replace(scriptBody.slice(emailScopeHelperStart, emailScopeHelperEnd), '')
@@ -232,7 +285,7 @@ mainScriptBody = replaceRequired(
 mainScriptBody = replaceRequired(
   mainScriptBody,
   '\n        async function loadData(options = {}) {',
-  `\n${emailScopeHelperBlock}\n${communicationsBundleBlock}\n        async function loadData(options = {}) {`,
+  `\n${emailScopeHelperBlock}\n${communicationsBundleBlock}\n${sharedShellHelperBlock}\n        async function loadData(options = {}) {`,
 );
 
 [
@@ -312,28 +365,74 @@ mainScriptBody = normalizeGeneratedText(
   `${mainScriptBody.slice(0, objectAssignStart)}${objectAssignReplacement}${mainScriptBody.slice(objectAssignEnd + '\n        });'.length)}`,
 );
 
-fs.writeFileSync(cssPath, `/* Extracted from public/operations.html for split /operations delivery. */\n${cssBody}`);
-fs.writeFileSync(jsPath, `// Extracted from public/operations.html for split /operations delivery.\n${mainScriptBody}`);
-fs.writeFileSync(deferredJsPath, `// Deferred renderers extracted from public/operations.html for lighter initial /operations delivery.\n${deferredBlock}\nwindow.__operationsDeferredRenderersLoaded = true;\nif (typeof exposeOperationsDeferredHandlers === 'function') exposeOperationsDeferredHandlers();\n`);
-
 let bootstrap = `${source.slice(0, scriptStart)}
     <script src="/js/operations-shell.js"></script>${source.slice(scriptClose + '\n    </script>'.length)}`;
 bootstrap = bootstrap.replace(styleMatch[0], '\n    <link rel="stylesheet" href="/css/operations-shell.css">');
 bootstrap = normalizeGeneratedText(bootstrap);
-fs.writeFileSync(bootstrapPath, bootstrap);
+
+const generatedOutputs = [
+  {
+    label: 'bootstrap',
+    path: bootstrapPath,
+    content: bootstrap,
+  },
+  {
+    label: 'css',
+    path: cssPath,
+    content: `/* Extracted from public/operations.html for split /operations delivery. */\n${cssBody}`,
+  },
+  {
+    label: 'js',
+    path: jsPath,
+    content: `// Extracted from public/operations.html for split /operations delivery.\n${mainScriptBody}`,
+  },
+  {
+    label: 'deferredJs',
+    path: deferredJsPath,
+    content: `// Deferred renderers extracted from public/operations.html for lighter initial /operations delivery.\n${deferredBlock}\nwindow.__operationsDeferredRenderersLoaded = true;\nif (typeof exposeOperationsDeferredHandlers === 'function') exposeOperationsDeferredHandlers();\n`,
+  },
+  {
+    label: 'oneTimeIa',
+    path: oneTimeIaPath,
+    content: `// Generated from src/platform/instances/one-time-rabbi-dashboard-ia.js. Do not edit by hand.\nwindow.ONE_TIME_RABBI_DASHBOARD_IA = ${JSON.stringify(ONE_TIME_RABBI_DASHBOARD_IA, null, 2)};\n`,
+  },
+];
+
+if (checkMode) {
+  const drift = generatedOutputs
+    .filter((output) => {
+      if (!fs.existsSync(output.path)) return true;
+      return normalizeGeneratedText(fs.readFileSync(output.path, 'utf8')) !== normalizeGeneratedText(output.content);
+    })
+    .map((output) => path.relative(root, output.path).replace(/\\/g, '/'));
+  if (drift.length) {
+    console.error(JSON.stringify({
+      ok: false,
+      mode: 'check',
+      message: 'Operations generated assets are out of date. Run npm run operations:build.',
+      drift,
+    }, null, 2));
+    process.exit(1);
+  }
+} else {
+  generatedOutputs.forEach((output) => fs.writeFileSync(output.path, output.content));
+}
 
 console.log(JSON.stringify({
   ok: true,
+  mode: checkMode ? 'check' : 'build',
   source: path.relative(root, sourcePath).replace(/\\/g, '/'),
   bootstrap: path.relative(root, bootstrapPath).replace(/\\/g, '/'),
   css: path.relative(root, cssPath).replace(/\\/g, '/'),
   js: path.relative(root, jsPath).replace(/\\/g, '/'),
   deferredJs: path.relative(root, deferredJsPath).replace(/\\/g, '/'),
+  oneTimeIa: path.relative(root, oneTimeIaPath).replace(/\\/g, '/'),
   bytes: {
     source: fs.statSync(sourcePath).size,
     bootstrap: fs.statSync(bootstrapPath).size,
     css: fs.statSync(cssPath).size,
     js: fs.statSync(jsPath).size,
     deferredJs: fs.statSync(deferredJsPath).size,
+    oneTimeIa: fs.existsSync(oneTimeIaPath) ? fs.statSync(oneTimeIaPath).size : 0,
   },
 }, null, 2));

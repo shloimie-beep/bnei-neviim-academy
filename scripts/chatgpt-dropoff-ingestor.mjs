@@ -1,11 +1,23 @@
 #!/usr/bin/env node
 import crypto from 'crypto';
 import fs from 'fs';
+import { createRequire } from 'module';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
+const {
+  ingestOperatorRamble,
+} = require('../src/platform/ingestion/operator-ramble-service');
+const packetStatus = require('../src/platform/ingestion/packet-status');
+const {
+  isReadyPacketStatus,
+  isTerminalPacketStatus,
+  normalizePacketStatus,
+  packetStatusValue,
+} = packetStatus;
 const repoRoot = path.resolve(__dirname, '..');
 const dropoffRoot = path.join(repoRoot, 'ops', 'chatgpt-ramble-dropoff');
 const incomingDir = path.join(dropoffRoot, 'incoming');
@@ -14,8 +26,6 @@ const runtimeDir = path.join(repoRoot, '.runtime', 'chatgpt-dropoff-ingestor');
 const statePath = path.join(runtimeDir, 'state.json');
 const envLocalPath = path.join(repoRoot, '.env.local');
 const requiredPacketFiles = ['packet.json', 'RAW.md', 'CODEX_PROMPT.md', 'MANIFEST.json', 'status.json'];
-const readyStatuses = new Set(['ready_for_codex_audit', 'ready_for_codex_pickup']);
-const terminalStatuses = new Set(['done_verified', 'rejected', 'blocked_needs_operator_decision']);
 const helperBotPacketIds = new Set([
   'helper-bot-workspace-agent-01-audit-map',
   'helper-bot-workspace-agent-02-query-filter-results',
@@ -263,15 +273,24 @@ function validatePacket(loaded, options = {}) {
   for (const file of loaded.missingFiles) {
     findings.push({ severity: 'blocker', code: 'missing_required_file', message: `Missing required file: ${file}` });
   }
-  const statusValue = String(loaded.status.status || '').trim();
-  if (!statusValue) {
+  const statusOriginal = String(loaded.status.status || '').trim();
+  const statusValue = packetStatusValue(statusOriginal || 'draft');
+  const statusNormalization = normalizePacketStatus(statusOriginal || 'draft');
+  if (!statusOriginal) {
     findings.push({ severity: 'blocker', code: 'missing_ready_status', message: 'status.json must declare status ready_for_codex_audit or ready_for_codex_pickup.' });
-  } else if (terminalStatuses.has(statusValue)) {
-    if (!options.force) {
-      findings.push({ severity: 'skip', code: 'terminal_status', message: `Packet is already terminal: ${statusValue}` });
+  } else {
+    if (!statusNormalization.known) {
+      findings.push({ severity: 'blocker', code: 'unknown_packet_status', message: `Packet status is not recognized by the canonical lifecycle: ${statusOriginal}` });
+    } else if (statusNormalization.migrated && statusOriginal !== statusValue) {
+      findings.push({ severity: isTerminalPacketStatus(statusValue) && !options.force ? 'skip' : 'info', code: 'packet_status_migrated', message: `Packet status ${statusOriginal} migrates to ${statusValue}.` });
     }
-  } else if (!readyStatuses.has(statusValue)) {
-    findings.push({ severity: 'skip', code: 'not_ready_status', message: `Packet status is not ready: ${statusValue}` });
+    if (statusNormalization.known && isTerminalPacketStatus(statusValue)) {
+      if (!options.force) {
+        findings.push({ severity: 'skip', code: 'terminal_status', message: `Packet is already terminal: ${statusValue}` });
+      }
+    } else if (statusNormalization.known && !isReadyPacketStatus(statusValue)) {
+      findings.push({ severity: 'skip', code: 'not_ready_status', message: `Packet status is not ready: ${statusValue}` });
+    }
   }
   const ids = declaredPacketIds(loaded);
   const uniqueIds = [...new Set(ids.map((entry) => entry.packet_id))];
@@ -326,6 +345,31 @@ function projectForPacket(loaded, config = {}) {
   return config.defaultProject || 'one_time_mishnah_class';
 }
 
+function canonicalDropoffIntakeView(workflow = {}) {
+  return {
+    contract_version: workflow.contract_version || null,
+    adapter_key: workflow.adapter_key || null,
+    raw_intake_stable_id: workflow.raw_intake_stable_id || null,
+    requirement_register_path: workflow.requirement_register_path || null,
+    source_statement_count: (workflow.source_statements || []).length,
+    source_statement_ids: (workflow.source_statements || []).map((statement) => statement.statement_id),
+    no_lost_sentence_gate: workflow.no_lost_sentence_gate || null,
+    requirement_ids: (workflow.requirement_rows || []).map((row) => row.requirement_id),
+    job_ids: (workflow.jobs || []).map((job) => job.job_id),
+    receipts: (workflow.receipts || []).map((receipt) => ({
+      receipt_type: receipt.receipt_type,
+      status: receipt.status || null,
+      reason: receipt.reason || null,
+      no_lost_sentence_gate_ok: receipt.no_lost_sentence_gate_ok ?? null,
+      external_write_performed: receipt.external_write_performed === true ? true : false,
+    })),
+    worker_health: workflow.worker_health || null,
+    packet_status: workflow.packet_status || null,
+    status_propagation: workflow.status_propagation || null,
+    external_write_performed: workflow.external_write_performed === true ? true : false,
+  };
+}
+
 function buildCodexPickupTaskPayload(loaded, config = {}) {
   const packetTitle = loaded.packet.scope_summary || loaded.manifest.title || loaded.packetId;
   const packetType = String(loaded.packet.packet_type || loaded.manifest.packet_type || 'implementation_bundle').trim()
@@ -350,6 +394,34 @@ function buildCodexPickupTaskPayload(loaded, config = {}) {
     'Packet CODEX_PROMPT excerpt:',
     loaded.codexPrompt.slice(0, 3500) || '[none]',
   ].join('\n');
+  const projectKey = projectForPacket(loaded, config);
+  const generatedAt = nowIso();
+  const canonicalIngestion = canonicalDropoffIntakeView(ingestOperatorRamble({
+    source_provider: 'chatgpt',
+    source_channel: 'chatgpt_dropoff',
+    source_type: 'chatgpt_dropoff',
+    source_id: loaded.packetId,
+    raw_text: rawText,
+    title,
+    workspace_key: loaded.packet.workspace || loaded.manifest.workspace || null,
+    project_key: projectKey,
+    packet_status: loaded.status.status || loaded.packet.status || 'ready_for_codex_audit',
+    requirement_register_path: loaded.packet.requirement_register_path || loaded.manifest.requirement_register_path || null,
+    metadata: {
+      packet_id: loaded.packetId,
+      packet_path: loaded.packetPath,
+      packet_type: packetType,
+      fingerprint: loaded.fingerprint,
+    },
+  }, {
+    generated_at: generatedAt,
+    agent: 'chatgpt-dropoff-ingestor',
+    worker_status: {
+      name: 'chatgpt-dropoff-ingestor',
+      status: 'online',
+      last_seen_at: generatedAt,
+    },
+  }));
   return {
     title,
     raw_text: rawText,
@@ -367,6 +439,7 @@ function buildCodexPickupTaskPayload(loaded, config = {}) {
       fingerprint: loaded.fingerprint,
       files: loaded.files,
       packet_status: loaded.status.status || loaded.packet.status || null,
+      canonical_ingestion: canonicalIngestion,
     },
     created_by: 'chatgpt-dropoff-ingestor',
     author: 'chatgpt-dropoff-ingestor',
@@ -378,8 +451,8 @@ function buildCodexPickupTaskPayload(loaded, config = {}) {
     stage: 'assigned',
     category: 'operations',
     urgency: loaded.packet.priority === 'urgent' ? 'urgent' : 'this_week',
-    project: projectForPacket(loaded, config),
-    project_key: projectForPacket(loaded, config),
+    project: projectKey,
+    project_key: projectKey,
     dedupe_key: `chatgpt_dropoff:${loaded.packetId}:${loaded.fingerprint.slice(0, 16)}`,
     ai_parsed: {
       parser: 'chatgpt-dropoff-ingestor-v1',
@@ -392,6 +465,7 @@ function buildCodexPickupTaskPayload(loaded, config = {}) {
       source_packet_type: packetType,
       source_packet_path: loaded.packetPath,
       source_packet_fingerprint: loaded.fingerprint,
+      canonical_ingestion: canonicalIngestion,
     },
   };
 }

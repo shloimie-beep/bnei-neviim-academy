@@ -1,59 +1,100 @@
 # ChatGPT / Codex Dropoff Control Tower
 
-Generated: 2026-07-10T10:57:31.914Z
+Generated: 2026-07-12T07:31:14.274Z
 
 ## Lane Safety
 
-- Branch: `master`
+- Branch: `codex/onetime-p0p1-corrective-20260711`
 - Dirty worktree: yes
 - Collision warning: Worktree has local changes. New agents must claim a non-overlapping lane or wait before editing these files.
 
 | Status | Path |
 | --- | --- |
-| M | ops/audit-governance/latest.json |
-| M | ops/audit-governance/latest.md |
-| ?? | ops/audit-governance/2026-07-10T07-49-27-587Z-audit-governance.json |
-| ?? | ops/audit-governance/2026-07-10T07-49-27-587Z-audit-governance.md |
+| M | config/service-provider-sites/one-time.json |
+| M | content-memory/website-blog-posts.json |
+| M | ops/action-registry.json |
+| M | ops/agent-changelog.md |
+| M | ops/agent-task-ledger.jsonl |
+| M | ops/chatgpt-ramble-dropoff/incoming/onetime-launch-priority-ui-crm-automation-20260710-001/status.json |
+| M | ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/DEPLOYMENT.md |
+| M | ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/EVIDENCE.md |
+| M | ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/requirements.json |
+| M | ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/run.json |
+| M | ops/execution-runs/latest.json |
+| M | ops/route-registry.json |
+| M | package.json |
+| M | public/data/website-blog-posts.json |
+| M | public/js/bna-bot-widget.js |
+| M | public/js/operations-deferred-renderers.js |
+| M | public/js/operations-shell.js |
+| M | public/one-time/index.html |
+| M | public/one-time/privacy.html |
+| M | public/one-time/terms.html |
+| M | public/operations.html |
+| M | scripts/chatgpt-dropoff-control-tower.mjs |
+| M | scripts/chatgpt-dropoff-ingestor.mjs |
+| M | scripts/smoke-onetime-operations-crm-workbench-local.mjs |
+| M | scripts/split-operations-shell.mjs |
+| M | scripts/watchdog-raw-intake-drift.mjs |
+| M | server.js |
+| M | src/lib/bna/crm-contact-model.js |
+| M | src/lib/bna/intake-schema.js |
+| M | src/lib/bna/ramble-routing.js |
+| M | tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md |
+| M | tests/chatgpt-dropoff-control-tower.test.js |
+| M | tests/chatgpt-dropoff-ingestor.test.js |
+| M | tests/crm-contact-model.test.js |
+| M | tests/one-time-focused-landing.test.js |
+| M | tests/one-time-intake-api-readback.test.js |
+| M | tests/one-time-operations-ui-smoke.test.js |
+| M | tests/one-time-product-system.test.js |
+| M | tests/one-time-route-role-mapping.test.js |
+| M | tests/service-provider-scope-routes.test.js |
+| M | tests/watchdog-raw-intake-drift.test.js |
+| ?? | .github/ |
+| ?? | memory/2026-07-12.md |
+| ?? | ops/evidence/ |
+| ?? | ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/ |
+| ?? | ops/watchdog-audits/2026-07-12-product-quality-drift.json |
+| ?? | ops/watchdog-audits/2026-07-12-product-quality-drift.md |
+| ?? | public/one-time/signup.html |
+| ?? | raw-input/RAW-20260712-001-onetime-pr129-completion-followup.md |
+| ?? | raw-input/RAW-20260712-002-onetime-signup-reminder-workflow-addendum.md |
+| ?? | raw-input/RAW-20260712-003-onetime-signup-required-markers-consent.md |
+| ?? | scripts/simulate-one-time-class-reminder.mjs |
+| ?? | scripts/smoke-onetime-crm-journey-local-db.mjs |
+| ?? | src/lib/bna/one-time-signup-workflow.js |
+| ?? | src/platform/ingestion/operator-ramble-service.js |
+| ?? | src/platform/ingestion/packet-status.js |
+| ?? | tasks-pending/2026-07-12-onetime-p0p1-corrective-completion.md |
+| ?? | tasks-pending/2026-07-12-onetime-signup-reminder-workflow-addendum.md |
+| ?? | tests/ingestion/operator-ramble-service.test.js |
+| ?? | tests/ingestion/ramble-regression-suite.test.js |
+| ?? | tests/one-time-direct-signup-page.test.js |
+| ?? | tests/one-time-provider-operations-login.test.js |
+| ?? | tests/one-time-signup-reminder-workflow.test.js |
 
 ## Packet Status
 
 - Total packets: 3
 - Ready: 0
 - Blocked: 0
-- Draft: 1
-- Terminal: 2
+- Draft: 0
+- Terminal: 3
 
 | Packet | State | Status | Owner | Lane | Scope | Next |
 | --- | --- | --- | --- | --- | --- | --- |
 | chatgpt-dropoff-smoke-test-20260705-001 | terminal | done_verified | ChatGPT |  | Harmless smoke test confirming ChatGPT can hand Codex a repo-visible packet or comment and that Codex can collect it automatically. |  |
 | onetime-agent-prompt-series-20260706-911 | terminal | done_verified | ChatGPT |  | Provide five Agent Mode audit prompts for the One Time UI audit covering control tower, public funnel, Rabbi operations/backend, portals/classroom, and cross-system synthesis. | Run Prompt 01 first, run Prompts 02-04 after the control-tower map exists, then run Prompt 05 after at least two surface audit reports have dropped repo-visible packets. |
-| onetime-launch-priority-ui-crm-automation-20260710-001 | draft | codex_done | ChatGPT | rabbi_sheller_provider-one_time_mishnah_class-launch-priority | Register and execute the latest One Time launch priority: beautiful landing, Robot Scheller, visible form-to-CRM lead flow, clickable contact CRM, historical inbox reconciliation, gated immediate class-link follow-up, and launch-ready Rabbi backend UI. | No unblocked Codex launch-priority implementation lane remains. Operator/runtime next actions are to configure ONE_TIME_PUBLIC_WHATSAPP_NUMBER for direct public WhatsApp activation and approve the canonical historical source package plus suppression/import policy before any production import/write. |
+| onetime-launch-priority-ui-crm-automation-20260710-001 | terminal | done_verified | ChatGPT | rabbi_sheller_provider-one_time_mishnah_class-launch-priority | Register and execute the latest One Time launch priority: beautiful landing, Robot Scheller, visible form-to-CRM lead flow, clickable contact CRM, historical inbox reconciliation, gated immediate class-link follow-up, and launch-ready Rabbi backend UI. | No unblocked Codex launch-priority implementation lane remains. Operator/runtime next actions are to configure ONE_TIME_PUBLIC_WHATSAPP_NUMBER for direct public WhatsApp activation and approve the canonical historical source package plus suppression/import policy before any production import/write. |
 
 ## Agent Fleet
 
-| Status Line |
-| --- |
-| - Supervisor: running PID 36560 |
-| - Observable Codex jobs: 28 |
-| - Claimable observable jobs: 0 |
-| - Active Codex task fallback: 28 |
-| - Ready to claim: observable jobs 0, fallback task candidates 0 |
-| - Queue health: fresh 0, stale 496, blocked 129, unknown 194, do-not-redo 885 |
-| - ChatGPT dropoff ingest: enabled |
-| - ChatGPT comment collect: enabled |
+_None._
 
 ### Not Claimable / Needs Cleanup
 
-| Job |
-| --- |
-| - job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=190.31 path=.runtime/agent-fleet/task-1736.lock.json) |
-| - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json) |
-| - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json) |
-| - job #237 / task #1136 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1136.lock.json) |
-| - job #238 / task #1141 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1141.lock.json) |
-| - job #289 / task #1392 [failed] Caption: Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1392.lock.json) |
-| - job #290 / task #1393 [failed] Auto BNA Drive recovery after parser persistence deploy (local_lock=missing path=.runtime/agent-fleet/task-1393.lock.json) |
-| - job #296 / task #1436 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1436.lock.json) |
+_None._
 
 ### Fallback Task Candidates
 
@@ -63,18 +104,12 @@ _None._
 
 | Report | Updated |
 | --- | --- |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-10T07-27-19-148Z-onetime-launch-priority-ui-crm-automation-20260710-001.md | 2026-07-10T07:27:19.149Z |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-49-06-941Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-09T05:49:06.942Z |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-49-06-937Z-chatgpt-dropoff-smoke-test-20260705-001.md | 2026-07-09T05:49:06.939Z |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-47-45-674Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-09T05:47:45.676Z |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-47-45-670Z-chatgpt-dropoff-smoke-test-20260705-001.md | 2026-07-09T05:47:45.671Z |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-46-24-030Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-09T05:46:24.032Z |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-46-24-027Z-chatgpt-dropoff-smoke-test-20260705-001.md | 2026-07-09T05:46:24.028Z |
-| ops/chatgpt-ramble-dropoff/pickups/2026-07-09T05-45-01-124Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-09T05:45:01.125Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-07T09-15-13-onetime-agent-prompt-series-audit.md | 2026-07-11T20:13:40.513Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-05-fleet-claim-completion-fix.md | 2026-07-11T20:13:40.512Z |
+| ops/chatgpt-ramble-dropoff/pickups/2026-07-06T14-25-46-791Z-onetime-agent-prompt-series-20260706-911.md | 2026-07-11T20:13:40.512Z |
 
 ## Recommendations
 
 - Do not start overlapping source edits until the dirty-file lane is claimed or isolated in another branch/worktree.
 - No ready ChatGPT packets are waiting. Give ChatGPT a scoped packet prompt instead of rerambling the same work to Codex.
-- Use the Agent Fleet summary below to avoid duplicating work already running, blocked, or stale.
 - GitHub-connected ChatGPT sees committed/pushed files only; local dirty work must be committed/pushed or summarized in a packet before ChatGPT can use it.

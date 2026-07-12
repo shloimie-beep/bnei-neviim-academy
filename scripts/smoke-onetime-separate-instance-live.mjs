@@ -1,5 +1,24 @@
 #!/usr/bin/env node
-const baseUrl = String(process.env.ONETIME_BASE_URL || process.argv[2] || '').replace(/\/+$/, '');
+const args = process.argv.slice(2);
+let expectedSha = process.env.BNA_EXPECT_DEPLOYED_SHA || '';
+let baseUrlArg = process.env.ONETIME_BASE_URL || '';
+for (const arg of args) {
+  if (arg.startsWith('--expected-sha=')) {
+    expectedSha = arg.slice('--expected-sha='.length);
+  } else if (arg === '--expected-sha') {
+    // Handled by the indexed pass below.
+  } else if (/^https?:\/\//i.test(arg) && !baseUrlArg) {
+    baseUrlArg = arg;
+  } else if (!baseUrlArg && !arg.startsWith('--')) {
+    baseUrlArg = arg;
+  }
+}
+for (let index = 0; index < args.length; index += 1) {
+  if (args[index] === '--expected-sha') expectedSha = args[index + 1] || expectedSha;
+}
+
+const baseUrl = String(baseUrlArg || '').replace(/\/+$/, '');
+expectedSha = String(expectedSha || '').trim();
 
 if (!baseUrl) {
   console.error('Set ONETIME_BASE_URL or pass the base URL as the first argument.');
@@ -35,6 +54,12 @@ try {
     health = await fetchText('/health');
   }
   assertText(healthPath, health.text, /ok|healthy|database/i, 'health route did not return a healthy marker');
+
+  const deployInfo = await fetchText('/api/deploy-info');
+  assertText('/api/deploy-info', deployInfo.text, /"status"\s*:\s*"ok"/, 'deploy info did not return ok');
+  if (expectedSha) {
+    assertText('/api/deploy-info', deployInfo.text, new RegExp(`"commit_sha"\\s*:\\s*"${expectedSha.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`), `deployed SHA does not match ${expectedSha}`);
+  }
 
   const config = await fetchText('/api/one-time/instance-config');
   assertText('/api/one-time/instance-config', config.text, /"app_instance"\s*:\s*"onetime"/, 'instance config is not One Time');
@@ -73,12 +98,14 @@ try {
   console.log(JSON.stringify({
     ok: true,
     base_url: baseUrl,
+    expected_sha: expectedSha,
     checks,
   }, null, 2));
 } catch (error) {
   console.error(JSON.stringify({
     ok: false,
     base_url: baseUrl,
+    expected_sha: expectedSha,
     checks,
     error: error.message,
   }, null, 2));

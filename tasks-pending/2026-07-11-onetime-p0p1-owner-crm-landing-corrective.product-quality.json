@@ -1,0 +1,595 @@
+{
+  "schema_version": "pqc.v2",
+  "packet_id": "PKT-20260711-001",
+  "parent_raw_id": "RAW-20260711-001",
+  "source_statement_ids": [
+    "RAW-20260711-001:S1",
+    "RAW-20260711-001:S2",
+    "RAW-20260711-001:S3",
+    "RAW-20260711-001:S4",
+    "RAW-20260711-001:S5",
+    "RAW-20260711-001:S6",
+    "RAW-20260711-001:S7",
+    "RAW-20260711-001:S8",
+    "RAW-20260711-001:S9"
+  ],
+  "packet_dag": {
+    "parent_packet_id": null,
+    "child_packet_ids": [
+      "PKT-20260711-001-CONTROL",
+      "PKT-20260711-001-AUDIT",
+      "PKT-20260711-001-OPS",
+      "PKT-20260711-001-CRM",
+      "PKT-20260711-001-LANDING",
+      "PKT-20260711-001-VERIFY"
+    ],
+    "depends_on_packet_ids": [],
+    "blocks_packet_ids": [
+      "PKT-20260711-001-OPS",
+      "PKT-20260711-001-CRM",
+      "PKT-20260711-001-LANDING",
+      "PKT-20260711-001-VERIFY"
+    ],
+    "consumes": [
+      "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+      "BNA-START-HERE.md",
+      "AGENTS.md",
+      "docs/BNA-RAMBLE-TO-DONE.md",
+      "docs/PRODUCT-QUALITY-COMPILER.md",
+      "docs/REPO-SURFACE-MAP.md"
+    ],
+    "produces": [
+      "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md",
+      "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/requirements.json",
+      "ops/prompt-packets/2026-07-11-onetime-p0p1-corrective/00-control-tower.md",
+      "ops/prompt-packets/2026-07-11-onetime-p0p1-corrective/01-current-state-visual-audit.md",
+      "ops/surface-maps/2026-07-11-onetime-p0p1-corrective-surface-map.md"
+    ],
+    "validation_command": "npm run pqc:validate",
+    "terminal_condition": "REQ-20260711-001 through REQ-20260711-009 have terminal statuses with proof or precise blockers.",
+    "handoff_target": "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.md"
+  },
+  "stage": "STAGE_3_CODEX_IMPLEMENTATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "status": "in_progress",
+  "title": "One Time owner experience, CRM, and landing corrective implementation",
+  "created_at": "2026-07-11T20:20:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": [
+    "PUBLIC_MARKETING",
+    "RABBI_PROVIDER_ADMIN",
+    "SHLOIMIE_PLATFORM_SUPPORT",
+    "INTERNAL_AGENT_SUPPORT"
+  ],
+  "ramble_router": {
+    "raw_id": "RAW-20260711-001",
+    "classification": [
+      "PRODUCT_QUALITY",
+      "SUPER_RAMBLE",
+      "UI_VISUAL_AUDIT",
+      "UI_IMPLEMENTATION",
+      "CRM_PIPELINE",
+      "COMMUNICATIONS_EMAIL",
+      "PAYMENTS_ACCESS",
+      "PROVIDER_SETUP",
+      "SECURITY_PRIVACY",
+      "SOURCE_OF_TRUTH_UPDATE",
+      "VERIFIER_CLOSEOUT",
+      "DEPLOY_RELEASE",
+      "DECISION_REQUIRED"
+    ],
+    "confidence": 0.99,
+    "reasons": [
+      "The packet asks for production-quality corrections across owner shell, CRM, public landing, signup, onboarding, verification, PR, and deploy gates.",
+      "The packet explicitly says implementation, not audit-only, but requires raw capture, run setup, current-state audit, and proof before Done.",
+      "Several requested actions are external-provider writes and must be blocked or no-send."
+    ],
+    "affected_product_surfaces": [
+      "Operations generated artifact and One Time public onboarding handoff"
+    ],
+    "likely_external_provider_blockers": [
+      "production deployment requires review approval",
+      "email/WhatsApp/Telegram/payment/access/contact import/provider writes are blocked"
+    ],
+    "product_quality_compiler_required": true,
+    "super_ramble_packet_splitter_required": true,
+    "visual_audit_before_implementation": true,
+    "implementation_forbidden_until_dor": true,
+    "recommended_packet_sequence": [
+      "00-control-tower",
+      "01-current-state-visual-audit",
+      "02-operations-generated-artifact",
+      "03-owner-shell-crm",
+      "04-public-landing-onboarding",
+      "05-verification-pr-deploy-gate"
+    ],
+    "next_exact_packet": "ops/prompt-packets/2026-07-11-onetime-p0p1-corrective/01-current-state-visual-audit.md"
+  },
+  "operator_intent_summary": "Correct the actual One Time owner/admin experience so Rabbi Scheller uses the shared Operations shell scoped to One Time, the CRM is first-party and usable, the public landing/signup/onboarding journey matches approved copy and no-send policy, and evidence replaces false Done labels.",
+  "raw_quotes": [
+    "This is implementation, not audit-only.",
+    "Direct /operations.html proof does not prove canonical /operations.",
+    "No email / WhatsApp / Telegram / campaign sends.",
+    "Use the latest approved full-body Robot asset."
+  ],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260711-001",
+      "decision": "External sends, imports, charges, access grants, DNS, and provider writes are blocked in this packet.",
+      "status": "blocked"
+    },
+    {
+      "id": "DEC-20260711-002",
+      "decision": "Robot Scheller source resolved to the latest downloaded local image and should be fit inside the launcher bubble without destructive crop.",
+      "status": "resolved"
+    },
+    {
+      "id": "DEC-20260711-003",
+      "decision": "Deployment after PR is blocked until review approval.",
+      "status": "needs_operator_decision"
+    }
+  ],
+  "out_of_scope": [
+    "No email, WhatsApp, Telegram, campaign, payment, charge, refund, access grant, DNS, contact import, or external CRM/provider mutation.",
+    "No GHL or LeadConnector runtime.",
+    "No raw private contact exports, secrets, or private student/contact bodies committed.",
+    "No production deployment before the approved review gate."
+  ],
+  "affected_surfaces": [
+    "canonical Operations shell",
+    "One Time owner mode",
+    "One Time first-party CRM",
+    "One Time public landing",
+    "One Time signup modal",
+    "One Time onboarding continuation",
+    "Robot Scheller assistant launcher"
+  ],
+  "affected_routes": [
+    "/operations",
+    "/operations.html",
+    "/provider.html?review=one-time",
+    "/one-time",
+    "/one-time-onboarding",
+    "/one-time-preview",
+    "/api/one-time/interest",
+    "/api/one-time/mishnah/onboarding",
+    "/api/bna/crm/contacts"
+  ],
+  "affected_files": [
+    "package.json",
+    "scripts/split-operations-shell.mjs",
+    "public/operations.html",
+    "public/operations-bootstrap.html",
+    "public/js/operations-shell.js",
+    "public/js/operations-deferred-renderers.js",
+    "public/css/operations-shell.css",
+    "public/js/bna-bot-widget.js",
+    "public/one-time/index.html",
+    "public/one-time-preview.html",
+    "config/service-provider-sites/one-time.json",
+    "server.js",
+    "ops/action-registry.json",
+    "ops/route-registry.json"
+  ],
+  "current_state": {
+    "inspection_targets": [
+      "server.js",
+      "operations generated shell files",
+      "public landing",
+      "signup continuation",
+      "site config",
+      "Robot Scheller widget"
+    ],
+    "known_current_defects": [
+      "No generated Operations artifact drift command.",
+      "Direct operations.html remains a user-reachable source page.",
+      "Public lead capture can attempt Telegram reminder.",
+      "One Time config still has stale public CTA contract.",
+      "Signup continuation page still says preview/TBD/checklist.",
+      "Robot Scheller approved image is not imported under the referenced asset path."
+    ],
+    "before_screenshot_plan": "Source-level audit exists now; after implementation, capture desktop/mobile route screenshots and modal/onboarding states."
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": [
+      "production-quality",
+      "complete corrective implementation",
+      "first-party operational CRM",
+      "premium visual brief",
+      "false Done claims",
+      "deploy"
+    ],
+    "expanded_phrases": {
+      "production-quality": "Code changes, generated asset drift gate, screenshots, tests, registries, PR, deployment gate, and live-smoke proof or blocker.",
+      "first-party operational CRM": "Local BNA/One Time CRM records, notes, follow-ups, stages, tags, timeline, mailbox linkage, and blocked external sends/imports.",
+      "premium visual brief": "Exact public hierarchy, clean responsive UI, no stale CTAs, no placeholder public social/media claims, and Robot Scheller asset fit."
+      ,"CRM": "First-party One Time lead and contact records only, with no GHL, LeadConnector, external import, or external send in this packet."
+    }
+  },
+  "design_pattern_references": [
+    "docs/PRODUCT-QUALITY-COMPILER.md",
+    "docs/UI-STATE-MATRIX.md",
+    "docs/VISUAL-QUALITY-HARNESS.md",
+    "docs/UI-PATTERN-REFERENCE.md",
+    "docs/REPO-SURFACE-MAP.md",
+    "ops/visual-quality-rubric.md"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260711-001",
+      "statement": "Create raw intake, canonical execution run, control tower, current-state audit, surface map, and product-quality packet before implementation.",
+      "expected_result": "The broad corrective packet is registered and executable with validator-backed requirements."
+    },
+    {
+      "id": "REQ-20260711-003",
+      "statement": "Add Operations generated artifact build/check and canonical route proof.",
+      "expected_result": "Canonical /operations evidence uses generated bootstrap assets and drift is gated."
+    },
+    {
+      "id": "REQ-20260711-006",
+      "statement": "Correct the public landing/signup/onboarding journey, including Robot Scheller asset and no-send guardrails.",
+      "expected_result": "Public users see approved copy and enter a real no-send onboarding flow linked to the CRM lead."
+    }
+  ],
+  "definition_of_ready": {
+    "status": "ready_for_initial_safe_batches",
+    "criteria": [
+      "Raw intake, run, register, surface map, control tower, and current-state audit exist.",
+      "Implementation is limited to the current Operations artifact/public onboarding batch.",
+      "External writes are explicitly blocked or no-send.",
+      "Deployment remains blocked pending review approval."
+    ],
+    "surface_map": "ops/surface-maps/2026-07-11-onetime-p0p1-corrective-surface-map.md",
+    "current_state_audit": "ops/prompt-packets/2026-07-11-onetime-p0p1-corrective/01-current-state-visual-audit.md",
+    "blocked_fields": [
+      "production deployment requires review approval",
+      "authenticated live Operations screenshots require session/deploy access"
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations",
+      "viewport": 1440,
+      "auth_role": "operations_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load canonical /operations after auth while generated JS initializes.",
+      "expected_visible_title": "Loading BNA Operations",
+      "expected_visible_message": "Loading BNA Operations...",
+      "expected_primary_action": "none",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["BNA private data in public context"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "loading region remains readable",
+      "accessibility_expectation": "no focus trap before app load",
+      "test_smoke_assertion": "operations bootstrap loads generated JS/CSS",
+      "requirement_id": "REQ-20260711-003"
+    },
+    "empty": {
+      "route": "/one-time-onboarding",
+      "viewport": 390,
+      "auth_role": "public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open onboarding without prior session storage or query lead ids.",
+      "expected_visible_title": "Choose your path.",
+      "expected_visible_message": "Contact fields are empty and family branch is selected.",
+      "expected_primary_action": "Save Onboarding Details",
+      "expected_secondary_actions": ["Family", "School", "Member Login"],
+      "forbidden_content": ["preview", "TBD", "fake checkout"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "form labels are associated with fields",
+      "accessibility_expectation": "keyboard can reach branch radios and submit button",
+      "test_smoke_assertion": "empty public form renders without private data",
+      "requirement_id": "REQ-20260711-006"
+    },
+    "populated": {
+      "route": "/one-time-onboarding?audience=family&product_lead_id=1&crm_lead_id=2",
+      "viewport": 430,
+      "auth_role": "public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Continue from landing signup with lead ids.",
+      "expected_visible_title": "Choose your path.",
+      "expected_visible_message": "Stored lead values are preserved when available.",
+      "expected_primary_action": "Save Onboarding Details",
+      "expected_secondary_actions": ["Family", "School"],
+      "forbidden_content": ["payment link", "access code", "private CRM body"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "radio group has accessible name",
+      "accessibility_expectation": "selected branch is visible without overlap",
+      "test_smoke_assertion": "lead ids remain hidden inputs and are posted only to first-party endpoint",
+      "requirement_id": "REQ-20260711-006"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "viewport": 1024,
+      "auth_role": "rabbi_provider_admin",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Apply CRM filters with no matching first-party contacts.",
+      "expected_visible_title": "Contacts",
+      "expected_visible_message": "No matching One Time contacts or equivalent empty state.",
+      "expected_primary_action": "clear filters",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["BNA school-private contacts"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "empty state is announced as text",
+      "accessibility_expectation": "filters remain keyboard reachable",
+      "test_smoke_assertion": "CRM empty state remains scoped to One Time",
+      "requirement_id": "REQ-20260711-005"
+    },
+    "error": {
+      "route": "/one-time-onboarding",
+      "viewport": 390,
+      "auth_role": "public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit without required contact name or email.",
+      "expected_visible_title": "Choose your path.",
+      "expected_visible_message": "Please enter a contact name and email.",
+      "expected_primary_action": "Save Onboarding Details",
+      "expected_secondary_actions": ["Family", "School"],
+      "forbidden_content": ["raw stack trace"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "status uses aria-live",
+      "accessibility_expectation": "error is visible and readable",
+      "test_smoke_assertion": "client-side validation blocks incomplete submit",
+      "requirement_id": "REQ-20260711-006"
+    },
+    "blocked_setup": {
+      "route": "/one-time-onboarding",
+      "viewport": 768,
+      "auth_role": "public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Read guardrail text before submitting.",
+      "expected_visible_title": "Finish your signup for Rabbi Scheller's shiur.",
+      "expected_visible_message": "No payment or member access is created from this form.",
+      "expected_primary_action": "Save Onboarding Details",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["live checkout", "send now"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "guardrail list is text, not image-only",
+      "accessibility_expectation": "guardrails have sufficient contrast",
+      "test_smoke_assertion": "blocked external actions are visible as no-send policy",
+      "requirement_id": "REQ-20260711-006"
+    },
+    "preview_only": {
+      "route": "/one-time-preview",
+      "viewport": 390,
+      "auth_role": "public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open legacy alias.",
+      "expected_visible_title": "Finish your signup for Rabbi Scheller's shiur.",
+      "expected_visible_message": "Legacy alias serves real onboarding copy with no preview/TBD text.",
+      "expected_primary_action": "Save Onboarding Details",
+      "expected_secondary_actions": ["Family", "School"],
+      "forbidden_content": ["Preview only", "TBD", "Approval checklist"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "same as canonical onboarding",
+      "accessibility_expectation": "legacy alias has same keyboard behavior",
+      "test_smoke_assertion": "legacy alias no longer exposes preview language",
+      "requirement_id": "REQ-20260711-006"
+    },
+    "success_readback": {
+      "route": "/one-time-onboarding",
+      "viewport": 430,
+      "auth_role": "public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Submit valid onboarding details to local/API smoke.",
+      "expected_visible_title": "Choose your path.",
+      "expected_visible_message": "Saved. The One Time team will review the right next step. No external message was sent.",
+      "expected_primary_action": "Save Onboarding Details",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["payment success", "access granted"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "success uses aria-live",
+      "accessibility_expectation": "success message is readable on mobile",
+      "test_smoke_assertion": "API returns no_send/no_checkout/no_access",
+      "requirement_id": "REQ-20260711-006"
+    },
+    "permission_denied": {
+      "route": "/operations",
+      "viewport": 1440,
+      "auth_role": "logged_out",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open /operations while logged out.",
+      "expected_visible_title": "Operations login",
+      "expected_visible_message": "Authentication is required.",
+      "expected_primary_action": "login",
+      "expected_secondary_actions": [],
+      "forbidden_content": ["Operations data", "One Time CRM data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "login form labels exist",
+      "accessibility_expectation": "logged-out route does not flash private data",
+      "test_smoke_assertion": "requireAdmin gates canonical route",
+      "requirement_id": "REQ-20260711-003"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/one-time",
+      "viewport": 390,
+      "auth_role": "public",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open mobile nav and signup modal.",
+      "expected_visible_title": "Give your son a love for Torah you never thought possible.",
+      "expected_visible_message": "Sign Up Now modal remains usable.",
+      "expected_primary_action": "Sign Up Now",
+      "expected_secondary_actions": ["Member Login"],
+      "forbidden_content": ["See How It Works CTA", "student field"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "aria-expanded and modal aria-hidden update",
+      "accessibility_expectation": "text does not overlap at mobile width",
+      "test_smoke_assertion": "mobile nav/modal remain accessible",
+      "requirement_id": "REQ-20260711-006"
+    }
+  },
+  "visual_quality": {
+    "viewports": [1440, 1024, 768, 430, 390, 360],
+    "screenshot_requirements": [
+      { "viewport": 1440, "route": "/operations", "state": "canonical bootstrap/auth gate", "required": true },
+      { "viewport": 1024, "route": "/operations", "state": "generated artifact", "required": true },
+      { "viewport": 768, "route": "/one-time-onboarding", "state": "tablet onboarding", "required": true },
+      { "viewport": 430, "route": "/one-time", "state": "mobile landing/signup", "required": true },
+      { "viewport": 390, "route": "/one-time-onboarding", "state": "mobile onboarding", "required": true }
+    ],
+    "defects_to_prevent": [
+      "overlap",
+      "text clipping",
+      "stale preview labels",
+      "placeholder public media/social links",
+      "cropped Robot Scheller bubble"
+    ]
+  },
+  "accessibility": {
+    "requirements": [
+      "keyboard modal and menu behavior",
+      "visible focus",
+      "form error readback",
+      "reduced motion compatibility",
+      "semantic headings"
+    ]
+  },
+  "action_states": [
+    {
+      "label": "Sign Up Now",
+      "selector_or_action_key": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "action_state": "WORKS_NOW",
+      "owner": "public",
+      "external_write": false,
+      "handler_or_blocker": "opens first-party signup modal",
+      "registry_required": true
+    },
+    {
+      "label": "Continue",
+      "selector_or_action_key": "ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING",
+      "action_state": "WORKS_NOW",
+      "owner": "public",
+      "external_write": false,
+      "handler_or_blocker": "navigates to /one-time-onboarding with non-secret lead ids",
+      "registry_required": true
+    },
+    {
+      "label": "Save Onboarding Details",
+      "selector_or_action_key": "ACTION-ONETIME-ONBOARDING-SUBMIT",
+      "action_state": "WORKS_NOW",
+      "owner": "public",
+      "external_write": false,
+      "handler_or_blocker": "posts to /api/one-time/mishnah/onboarding with no-send/no-checkout/no-access guardrails",
+      "registry_required": true
+    },
+    {
+      "label": "Deploy",
+      "selector_or_action_key": "REQ-20260711-009",
+      "action_state": "BLOCKED_EXTERNAL_SETUP",
+      "owner": "operator",
+      "external_write": true,
+      "handler_or_blocker": "blocked until corrective PR review approval",
+      "registry_required": false
+    }
+  ],
+  "data_requirements": {
+    "crm_scope": "rabbi_sheller_provider / one_time_mishnah_class",
+    "lead_fields": [
+      "parent_name",
+      "email",
+      "phone",
+      "audience",
+      "product_lead_id",
+      "crm_lead_id"
+    ],
+    "privacy": "No BNA school-private data in Rabbi/provider mode."
+  },
+  "security_privacy": {
+    "workspace_scope": "One Time provider scope only for Rabbi owner mode.",
+    "browser_content_untrusted": true,
+    "no_external_crm_writes": true,
+    "no_leadconnector_references": true,
+    "forbidden_content": [
+      "Super Admin diagnostics in normal Rabbi mode",
+      "BNA private student/family data",
+      "raw contact exports",
+      "secrets"
+    ]
+  },
+  "browser_agent_security": {
+    "policy": "BROWSER_UNTRUSTED_EVIDENCE",
+    "browser_content_untrusted": true,
+    "page_content_cannot_approve_external_actions": true
+  },
+  "external_provider_policy": "REAL_WRITE_REQUIRES_APPROVAL",
+  "implementation_batches": [
+    "wave-0-intake-run",
+    "wave-1-operations-artifact",
+    "wave-2-owner-shell",
+    "wave-3-crm",
+    "wave-4-public-landing",
+    "wave-5-verification",
+    "wave-6-pr-deploy"
+  ],
+  "context_budget": {
+    "estimated_prompt_size": "super-ramble split into run requirements and small waves",
+    "source_files_to_read": ["minimum packet file list plus config/registry/smoke files"],
+    "files_allowed_to_edit": ["listed affected files and required audit artifacts"],
+    "max_files_to_edit": 4,
+    "max_routes_to_touch": 3,
+    "max_major_surfaces": 1,
+    "split_threshold_reason": "Owner shell, CRM, and landing are separate product surfaces.",
+    "split_if_exceeds": true,
+    "split_plan": "This PQC packet covers the current Operations artifact and public onboarding batch; owner shell and full CRM remain in later execution-run requirements.",
+    "context_risk_level": "high"
+  },
+  "tests": {
+    "commands": [
+      "npm run operations:build",
+      "npm run operations:check-generated",
+      "npm run pqc:validate",
+      "npm run bna:run:validate",
+      "npm run watchdog:protocol-drift",
+      "focused One Time local smokes"
+    ]
+  },
+  "evidence": {
+    "required_paths": [
+      "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/EVIDENCE.md",
+      "ops/ui-audits/2026-07-11-onetime-p0p1-corrective/"
+    ]
+  },
+  "deployment_gate": "BLOCKED_WITH_REASON",
+  "definition_of_done": {
+    "criteria": [
+      "Operations build/check/canonical artifact commands pass.",
+      "Public landing/onboarding no-send flow is locally verified.",
+      "PQC and execution-run validators pass.",
+      "Screenshots or exact blockers are recorded.",
+      "Deployment remains blocked until review approval."
+    ],
+    "terminal_condition": "All requirements terminal with evidence or precise blockers, branch pushed, PR opened, deployment/live smoke after review or blocked.",
+    "not_done_if": [
+      "only direct operations.html proof exists",
+      "external send/import/payment/access happens",
+      "public route has preview/TBD stale language",
+      "app-visible change lacks deploy/live-smoke proof"
+    ]
+  },
+  "trace": {
+    "run": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective",
+    "raw_input_path": "raw-input/RAW-20260711-001-onetime-p0p1-owner-crm-landing-corrective.md",
+    "compiled_packet_path": "tasks-pending/2026-07-11-onetime-p0p1-owner-crm-landing-corrective.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+    "tool_actions_expected": ["apply_patch", "npm run operations:build", "npm run operations:check-generated", "npm run operations:check-canonical"],
+    "skipped_actions_policy": "External sends, imports, payments, access grants, DNS, provider writes, and deployment are skipped unless separately approved.",
+    "blocker_decisions": ["DEC-20260711-001", "DEC-20260711-003"],
+    "evidence_paths": ["ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/EVIDENCE.md"],
+    "final_status_path": "ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective/STATUS.md",
+    "next_packet_path": "ops/prompt-packets/2026-07-11-onetime-p0p1-corrective/02-operations-generated-artifact.md",
+    "ledger_required": true,
+    "changelog_required": true
+  },
+  "drift_watchdog": {
+    "required": true,
+    "command": "npm run watchdog:protocol-drift",
+    "expected_result": "Protocol drift report passes or records exact blockers before closeout.",
+    "required_before_closeout": true
+  },
+  "next_packet": {
+    "id": "PKT-20260711-001-OPS",
+    "path": "ops/prompt-packets/2026-07-11-onetime-p0p1-corrective/02-operations-generated-artifact.md",
+    "status": "start_now"
+  }
+}

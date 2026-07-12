@@ -144,8 +144,11 @@ export async function buildOneTimePublicTargetGate(options = {}, context = {}) {
   const runner = context.runner || defaultRunner;
   const fetchFn = context.fetchFn || globalThis.fetch;
   const baseUrl = normalizeBaseUrl(options.targetBaseUrl || process.env.ONETIME_BASE_URL || 'https://join.onetimeonetime.com');
-  const requiredText = ['Your Child Can Love Learning Mishnayos', 'One Time Mishnayos', 'Sign Up Now'];
+  const expectedTitlePattern = /Give Your Son A Love For Torah/i;
+  const expectedHeadlinePattern = /Give your son a love for Torah you never thought possible\./i;
+  const requiredText = ['Give your son a love for Torah you never thought possible.', 'One Time Mishnayos', 'Sign Up Now'];
   const forbiddenPatterns = [
+    /Your Child Can Love Learning Mishnayos/i,
     /Learn Mishnayos Live with Rabbi Eli Scheller/i,
     /Bnei Nevi'?im Academy/i,
     /Torah Learning for Boys/i,
@@ -157,7 +160,7 @@ export async function buildOneTimePublicTargetGate(options = {}, context = {}) {
     canonical_domain: 'join.onetimeonetime.com',
     expected_project: 'one-time-production',
     expected_service: 'one-time-web',
-    expected_headline: 'Your Child Can Love Learning Mishnayos',
+    expected_headline: 'Give your son a love for Torah you never thought possible.',
     canonical_routes: ['/', '/one-time/'],
     checks: [],
     blockers: [],
@@ -182,7 +185,8 @@ export async function buildOneTimePublicTargetGate(options = {}, context = {}) {
         .filter((pattern) => pattern.test(result.text) || pattern.test(result.title))
         .map((pattern) => String(pattern));
       const ok = result.ok
-        && /Your Child Can Love Learning Mishnayos/i.test(result.title)
+        && expectedTitlePattern.test(result.title)
+        && expectedHeadlinePattern.test(result.text)
         && missingText.length === 0
         && forbiddenHits.length === 0;
       report.checks.push({
@@ -196,8 +200,11 @@ export async function buildOneTimePublicTargetGate(options = {}, context = {}) {
         forbidden_hits: forbiddenHits,
       });
       if (!result.ok) report.blockers.push(`${url} returned HTTP ${result.status}.`);
-      if (!/Your Child Can Love Learning Mishnayos/i.test(result.title)) {
+      if (!expectedTitlePattern.test(result.title)) {
         report.blockers.push(`${url} title is "${result.title || '(missing)'}"; expected the One Time focused funnel title.`);
+      }
+      if (!expectedHeadlinePattern.test(result.text)) {
+        report.blockers.push(`${url} is missing the canonical One Time hero headline.`);
       }
       for (const item of missingText) report.blockers.push(`${url} is missing required One Time funnel text: ${item}.`);
       for (const hit of forbiddenHits) report.blockers.push(`${url} matched forbidden stale/BNA content: ${hit}.`);

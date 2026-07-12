@@ -8,11 +8,15 @@ import { listPacketDirs, loadPacket, validatePacket } from './chatgpt-dropoff-in
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const packetStatus = await import(pathToFileURL(path.join(__dirname, '..', 'src', 'platform', 'ingestion', 'packet-status.js')).href);
+const {
+  isTerminalPacketStatus,
+  packetStatusValue,
+} = packetStatus.default || packetStatus;
 const repoRoot = path.resolve(__dirname, '..');
 const dropoffRoot = path.join(repoRoot, 'ops', 'chatgpt-ramble-dropoff');
 const controlTowerMd = path.join(dropoffRoot, 'CONTROL-TOWER.md');
 const controlTowerJson = path.join(dropoffRoot, 'CONTROL-TOWER.json');
-const terminalStatuses = new Set(['done_verified', 'rejected', 'blocked_needs_operator_decision']);
 const controlTowerGeneratedPaths = new Set([
   'ops/chatgpt-ramble-dropoff/CONTROL-TOWER.md',
   'ops/chatgpt-ramble-dropoff/CONTROL-TOWER.json',
@@ -84,8 +88,8 @@ function gitSummary() {
 }
 
 function classifyPacket(loaded, validation) {
-  const status = String(loaded.status.status || loaded.packet.status || '').trim();
-  if (terminalStatuses.has(status)) return 'terminal';
+  const status = packetStatusValue(loaded.status.status || loaded.packet.status || '');
+  if (isTerminalPacketStatus(status)) return 'terminal';
   if (validation.findings.some((finding) => finding.severity === 'blocker')) return 'blocked';
   if (validation.ready) return 'ready';
   if (validation.findings.some((finding) => finding.code === 'not_ready_status')) return 'draft';
@@ -100,12 +104,13 @@ function packetSummary(args = {}) {
     const validation = validatePacket(loaded);
     const packet = loaded.packet || {};
     const status = loaded.status || {};
+    const normalizedStatus = packetStatusValue(status.status || packet.status || '');
     const state = classifyPacket(loaded, validation);
     return {
       packet_id: loaded.packetId,
       path: loaded.packetPath,
       state,
-      status: status.status || packet.status || '',
+      status: normalizedStatus,
       implementation_status: status.implementation_status || '',
       packet_type: packet.packet_type || loaded.manifest.packet_type || 'implementation_bundle',
       packet_role: packet.packet_role || loaded.manifest.packet_role || '',
@@ -123,7 +128,7 @@ function packetSummary(args = {}) {
       ].filter(Boolean).slice(0, 6),
       findings: validation.findings,
       ready_for_pickup: validation.ready,
-      terminal: terminalStatuses.has(String(status.status || '').trim()),
+      terminal: isTerminalPacketStatus(normalizedStatus),
       picked_up_by: status.picked_up_by || '',
       picked_up_at: status.picked_up_at || '',
       task_ids_created: status.task_ids_created || [],

@@ -277,6 +277,19 @@ function runGit(root, args) {
   }
 }
 
+function isGitAncestor(root, ancestor, descendant) {
+  if (!ancestor || !descendant) return false;
+  try {
+    execFileSync('git', ['merge-base', '--is-ancestor', ancestor, descendant], {
+      cwd: root,
+      stdio: ['ignore', 'ignore', 'ignore']
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function extractRepoEvidencePath(root, value) {
   const text = String(value || '').trim().replace(/^`|`$/g, '');
   if (!text || /^https?:\/\//i.test(text) || text.startsWith('.secrets/')) {
@@ -466,7 +479,14 @@ function validateGitRefs(root, requirementsDoc, runJson, errors, warnings) {
 
   const actualHead = runGit(root, ['rev-parse', 'HEAD']);
   if (expectedHead && actualHead && actualHead !== expectedHead) {
-    errors.push(`git_refs: head ${expectedHead} is stale; current head is ${actualHead}.`);
+    const correctiveCommits = textArray(refs.existing_corrective_commits || refs.corrective_commits);
+    if (correctiveCommits.includes(expectedHead) && isGitAncestor(root, expectedHead, actualHead)) {
+      warnings.push(
+        `git_refs: recorded head ${expectedHead} is an earlier corrective commit; current head is ${actualHead}.`
+      );
+    } else {
+      errors.push(`git_refs: head ${expectedHead} is stale; current head is ${actualHead}.`);
+    }
   } else if (expectedHead && !actualHead) {
     warnings.push('git_refs: could not verify current HEAD because git is unavailable.');
   }

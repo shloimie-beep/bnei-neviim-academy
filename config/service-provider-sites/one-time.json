@@ -11,6 +11,8 @@
     "/one-time/uk",
     "/one-time/israel",
     "/one-time/interest",
+    "/one-time/signup",
+    "/one-time-onboarding",
     "/one-time/member-login"
   ],
   "status": "public_launch_priority",
@@ -26,12 +28,14 @@
     "config_path": "config/service-provider-bots/one-time.json",
     "public_name": "Robot Scheller",
     "public_subtitle": "Rabbi Scheller's digital assistant",
+    "launcher_asset": "/assets/one-time/robot/robot-scheller-whatsapp.png",
     "primary_channel": "whatsapp",
     "activation": "runtime_controlled"
   },
   "assets": {
     "logo": "/images/one-time/brand/onetimelogo.webp",
     "hero_portrait": "/images/one-time/brand/onetime-hero-vertical.webp",
+    "robot_scheller": "/assets/one-time/robot/robot-scheller-whatsapp.png",
     "vimeo_promo_embed": "placeholder_until_final_hero_media_is_approved",
     "social_og": "/images/one-time/social/one-time-og-20260622.jpg",
     "press_logos": [
@@ -52,53 +56,38 @@
         "src": "/images/one-time/press/mishpacha.webp"
       }
     ],
-    "teaching_gallery": [
-      {
-        "label": "Live teaching stage",
-        "src": "/images/one-time/teaching/promo-stage-still-01.webp"
-      },
-      {
-        "label": "Rabbi teaching moment",
-        "src": "/images/one-time/teaching/promo-stage-still-02.webp"
-      },
-      {
-        "label": "Mishnayos review setting",
-        "src": "/images/one-time/teaching/promo-stage-still-03.webp"
-      }
-    ]
+    "teaching_gallery": []
   },
   "copy": {
-    "campaign_bar": "FREE CLASS OPEN NOW",
-    "eyebrow": "Worldwide Live Mishnayos",
-    "headline": "Your Child Can Love Learning Mishnayos",
-    "subhead": "Join the daily live Mishnayos class built for kids - exciting, clear, accountable, and connected to Rabbi Eli Scheller.",
-    "primary_cta": "Join the Free Class",
-    "secondary_cta": "See How It Works",
+    "campaign_bar": "Live from Israel. Every day at 7 p.m. Israel time.",
+    "eyebrow": "Worldwide Mishnah learning — live from Eretz Yisrael",
+    "headline": "Give your son a love for Torah you never thought possible.",
+    "subhead": "A live Mishnayos class with Rabbi Eli Scheller that makes learning exciting, clear, and unforgettable - for boys around the world.",
+    "schedule": "Live from Israel. Every day at 7 p.m. Israel time.",
+    "primary_cta": "Sign Up Now",
+    "primary_cta_href": "/one-time/signup",
+    "secondary_cta": null,
     "member_cta": "Member Login",
-    "offer": "Free class follow-up before payment or member access opens",
-    "campaign_contract": "ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY control the non-resetting countdown.",
-    "no_send_note": "Signup interest creates a first-party One Time CRM follow-up only. Payment and member access remain separate approved paths."
+    "offer": "Sign up for Rabbi Scheller's daily live Mishnah class and choose the reminders that fit you.",
+    "campaign_contract": "Daily live class signup at 7 p.m. Israel time.",
+    "no_send_note": "Daily class reminders are available by email, WhatsApp, both, or not at all."
   },
   "nav": [
     {
-      "label": "Watch",
-      "href": "#watch"
+      "label": "Rabbi Eli",
+      "href": "#rabbi"
     },
     {
-      "label": "Program",
-      "href": "#program"
+      "label": "What He'll Gain",
+      "href": "#gain"
     },
     {
-      "label": "How It Works",
-      "href": "#how-it-works"
+      "label": "What You Receive",
+      "href": "#receive"
     },
     {
-      "label": "FAQ",
-      "href": "#faq"
-    },
-    {
-      "label": "Join Free Class",
-      "href": "#start-free"
+      "label": "Who It's For",
+      "href": "#who"
     },
     {
       "label": "Member Login",

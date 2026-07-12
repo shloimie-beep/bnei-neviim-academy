@@ -593,7 +593,7 @@
       overflow: hidden;
       background:
         linear-gradient(150deg, rgba(37, 211, 102, 0.22), rgba(8, 9, 16, 0.18)),
-        #080910 url("/assets/one-time/robot/robot-scheller-whatsapp.png") center center / cover no-repeat;
+        #080910 url("/assets/one-time/robot/robot-scheller-whatsapp.png") center center / contain no-repeat;
       box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.14);
     }
     .bna-bot-avatar::after {
@@ -704,6 +704,10 @@
       width: 38px;
       height: 38px;
     }
+    body.bna-assistant-surface-one-time-public .bna-bot-launcher .bna-bot-avatar {
+      width: 72px;
+      height: 72px;
+    }
     body.bna-assistant-surface-one-time-public .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-parent .bna-bot-launcher-dot,
     body.bna-assistant-surface-one-time-student .bna-bot-launcher-dot,
@@ -804,14 +808,14 @@
       top: auto;
       right: 22px;
       bottom: calc(22px + env(safe-area-inset-bottom, 0px));
-      width: 56px;
-      min-width: 56px;
-      min-height: 56px;
+      width: 84px;
+      min-width: 84px;
+      min-height: 84px;
     }
     body.bna-assistant-surface-one-time-public .bna-bot-nudge {
       top: auto;
       right: 22px;
-      bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+      bottom: calc(120px + env(safe-area-inset-bottom, 0px));
     }
     body.bna-assistant-surface-one-time-member .bna-bot-launcher,
     body.bna-assistant-surface-one-time-member .bna-bot-nudge {
@@ -844,14 +848,18 @@
         top: auto;
         right: 12px;
         bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-        width: 54px;
-        min-width: 54px;
-        min-height: 54px;
+        width: 76px;
+        min-width: 76px;
+        min-height: 76px;
+      }
+      body.bna-assistant-surface-one-time-public .bna-bot-launcher .bna-bot-avatar {
+        width: 66px;
+        height: 66px;
       }
       body.bna-assistant-surface-one-time-public .bna-bot-nudge {
         top: auto;
         right: 12px;
-        bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(100px + env(safe-area-inset-bottom, 0px));
       }
       body.bna-assistant-surface-one-time-member .bna-bot-launcher,
       body.bna-assistant-surface-one-time-member .bna-bot-nudge {
@@ -1562,11 +1570,9 @@
       return;
     }
     if (action.type === 'signup') {
-      const signupTrigger = document.querySelector('[data-signup-trigger]');
-      if (signupTrigger) {
-        setOpen(false);
-        signupTrigger.click();
-      }
+      const signupLink = document.querySelector('[data-signup-link]')?.getAttribute('href') || '/one-time/signup';
+      setOpen(false);
+      window.location.href = signupLink;
       return;
     }
     if (action.type === 'prefill') {

@@ -173,6 +173,15 @@ function validate(root) {
   });
 }
 
+function git(root, args) {
+  const result = spawnSync('git', args, {
+    cwd: root,
+    encoding: 'utf8'
+  });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  return String(result.stdout || '').trim();
+}
+
 test('valid execution run passes', () => {
   const root = makeRoot({
     requirements: [
@@ -434,6 +443,34 @@ test('stale git refs fail when declared refs disagree', () => {
   assert.match(result.stderr, /stale branch reference/i);
   assert.match(result.stderr, /stale head reference/i);
   assert.match(result.stderr, /PR URL does not match/i);
+});
+
+test('git refs accept recorded corrective ancestor head', () => {
+  const root = makeRoot();
+  git(root, ['init']);
+  git(root, ['config', 'user.email', 'codex@example.invalid']);
+  git(root, ['config', 'user.name', 'Codex Test']);
+  git(root, ['add', '.']);
+  git(root, ['commit', '-m', 'initial run']);
+  const recordedHead = git(root, ['rev-parse', 'HEAD']);
+  const branch = git(root, ['rev-parse', '--abbrev-ref', 'HEAD']);
+
+  const requirementsPath = path.join(root, 'ops', 'execution-runs', '2026-06-18-validator-fixture', 'requirements.json');
+  const requirements = JSON.parse(fs.readFileSync(requirementsPath, 'utf8'));
+  requirements.git_refs = {
+    expected_branch: branch,
+    current_head: recordedHead,
+    existing_corrective_commits: [recordedHead],
+  };
+  fs.writeFileSync(requirementsPath, JSON.stringify(requirements, null, 2));
+  fs.writeFileSync(path.join(root, 'AFTER.md'), '# Later bookkeeping commit\n');
+  git(root, ['add', '.']);
+  git(root, ['commit', '-m', 'later bookkeeping']);
+
+  const result = validate(root);
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Validation passed/);
+  assert.match(result.stdout, /earlier corrective commit/i);
 });
 
 test('resume output identifies next unblocked executable batch', () => {

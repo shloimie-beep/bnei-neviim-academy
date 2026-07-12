@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="en" data-app-select-surface="one-time">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign Up Now | One Time Mishnayos</title>
+  <meta name="description" content="Sign up for the One Time Mishnayos daily live class with Rabbi Eli Scheller.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#050505">
+  <link rel="canonical" href="/one-time/signup">
+  <style>
+    :root {
+      --black: #050505;
+      --ink: #171717;
+      --white: #ffffff;
+      --paper: #f8f7f1;
+      --muted-dark: #5b6268;
+      --yellow: #f2e53b;
+      --chrome: linear-gradient(135deg, #fff9b7 0%, #f2e53b 34%, #f6fbff 52%, #caa900 76%, #fff58c 100%);
+      --ice: #dff8ff;
+      --ice-strong: #8ee5ff;
+      --line: rgba(255, 255, 255, 0.16);
+      --danger: #8f2115;
+      --success: #0d5c44;
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --serif: Georgia, "Times New Roman", Times, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 82% 18%, rgba(223, 248, 255, 0.18), transparent 23%),
+        radial-gradient(circle at 15% 86%, rgba(242, 229, 59, 0.12), transparent 26%),
+        linear-gradient(145deg, #050505 0%, #090909 58%, #102026 100%);
+      font-family: var(--sans);
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+
+    body,
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .skip-link {
+      position: fixed;
+      left: 16px;
+      top: 12px;
+      z-index: 10;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: var(--black);
+      background: var(--yellow);
+      transform: translateY(-150%);
+      transition: transform 160ms ease;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .signup-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .signup-header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 1px solid var(--line);
+      background: rgba(5, 5, 5, 0.94);
+      backdrop-filter: blur(16px);
+    }
+
+    .header-inner {
+      width: min(1180px, calc(100% - 36px));
+      min-height: 74px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand-lockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-lockup img {
+      width: 120px;
+      height: auto;
+    }
+
+    .brand-lockup span {
+      display: block;
+      color: rgba(255, 255, 255, 0.74);
+      font-size: 0.78rem;
+      font-weight: 850;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .header-title {
+      color: var(--white);
+      font-weight: 900;
+      min-width: 0;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      padding: 0 13px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.82);
+      font-weight: 800;
+      white-space: nowrap;
+      transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible {
+      color: var(--white);
+      border-color: rgba(242, 229, 59, 0.68);
+      background: rgba(255, 255, 255, 0.07);
+      outline: none;
+    }
+
+    .signup-main {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 58px 0 64px;
+      display: grid;
+      grid-template-columns: minmax(0, 0.82fr) minmax(430px, 0.72fr);
+      gap: 44px;
+      align-items: center;
+    }
+
+    .intro {
+      position: relative;
+      min-width: 0;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 18px;
+      color: var(--ice);
+      font-size: 0.82rem;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--yellow);
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      font-family: var(--serif);
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 740px;
+      font-size: 4.55rem;
+      line-height: 0.96;
+    }
+
+    .intro-copy {
+      max-width: 620px;
+      margin: 22px 0 0;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 1.12rem;
+    }
+
+    .schedule-card {
+      width: min(520px, 100%);
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px solid rgba(223, 248, 255, 0.22);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.18);
+    }
+
+    .schedule-card strong {
+      display: block;
+      color: var(--yellow);
+      font-size: 1.05rem;
+    }
+
+    .schedule-card span {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .signup-card {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 247, 241, 0.98)),
+        var(--paper);
+      color: var(--black);
+      box-shadow: var(--shadow);
+    }
+
+    .signup-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: var(--chrome);
+    }
+
+    .signup-card h2 {
+      font-size: 2.1rem;
+      line-height: 1.05;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label,
+    .fieldset-label {
+      color: var(--black);
+      font-weight: 880;
+    }
+
+    .required-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-left: 7px;
+      border-radius: 999px;
+      background: #d92d20;
+      box-shadow: 0 0 0 2px rgba(217, 45, 32, 0.13);
+      vertical-align: middle;
+    }
+
+    .required-dot[hidden] {
+      display: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .field-hint {
+      color: var(--muted-dark);
+      font-size: 0.88rem;
+      font-weight: 650;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 52px;
+      padding: 0 14px;
+      border: 1px solid rgba(5, 5, 5, 0.2);
+      border-radius: 6px;
+      color: var(--black);
+      background: var(--white);
+    }
+
+    input:focus,
+    select:focus,
+    .radio-card:focus-within {
+      outline: 3px solid rgba(142, 229, 255, 0.9);
+      outline-offset: 2px;
+      border-color: rgba(5, 5, 5, 0.48);
+    }
+
+    .radio-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .radio-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      min-height: 64px;
+      align-items: start;
+      padding: 13px;
+      border: 1px solid rgba(5, 5, 5, 0.14);
+      border-radius: 8px;
+      background: var(--white);
+      cursor: pointer;
+    }
+
+    .radio-card input {
+      width: 19px;
+      height: 19px;
+      min-height: 19px;
+      margin: 2px 0 0;
+      accent-color: var(--black);
+    }
+
+    .radio-card strong {
+      display: block;
+      color: var(--black);
+      font-size: 0.94rem;
+      line-height: 1.18;
+    }
+
+    .radio-card span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted-dark);
+      font-size: 0.82rem;
+      line-height: 1.25;
+    }
+
+    .radio-card:has(input:checked) {
+      border-color: rgba(5, 5, 5, 0.58);
+      background: var(--ice);
+    }
+
+    .consent-check {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      margin: 2px 0 0;
+      padding: 13px;
+      border: 1px solid rgba(5, 5, 5, 0.14);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--muted-dark);
+      font-size: 0.9rem;
+      font-weight: 680;
+      line-height: 1.35;
+      cursor: pointer;
+    }
+
+    .consent-check input {
+      appearance: none;
+      display: grid;
+      place-content: center;
+      width: 22px;
+      height: 22px;
+      min-height: 22px;
+      margin: 0;
+      border: 2px solid rgba(5, 5, 5, 0.62);
+      border-radius: 5px;
+      background: #ffffff;
+      color: var(--black);
+    }
+
+    .consent-check input::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      transform: scale(0);
+      transition: transform 120ms ease-in-out;
+      background: var(--black);
+      clip-path: polygon(14% 48%, 0 62%, 40% 100%, 100% 18%, 85% 4%, 37% 66%);
+    }
+
+    .consent-check input:checked {
+      border-color: var(--black);
+      background: var(--yellow);
+    }
+
+    .consent-check input:checked::before {
+      transform: scale(1);
+    }
+
+    .consent-check:focus-within {
+      outline: 3px solid rgba(142, 229, 255, 0.9);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    .consent-copy {
+      color: var(--muted-dark);
+    }
+
+    .field-error {
+      display: none;
+      color: var(--danger);
+      font-size: 0.88rem;
+      font-weight: 760;
+    }
+
+    .field-error.visible {
+      display: block;
+    }
+
+    .button {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 20px;
+      border: 1px solid rgba(5, 5, 5, 0.12);
+      border-radius: 6px;
+      color: var(--black);
+      background: var(--chrome);
+      box-shadow: 0 14px 34px rgba(242, 229, 59, 0.28);
+      cursor: pointer;
+      overflow: hidden;
+      font-weight: 950;
+      text-align: center;
+      transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+    }
+
+    .button::after {
+      content: "";
+      position: absolute;
+      inset: -130% auto -130% -42%;
+      width: 34%;
+      transform: rotate(18deg);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+      animation: buttonSweep 5.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-1px);
+      filter: saturate(1.08);
+      box-shadow: 0 18px 40px rgba(242, 229, 59, 0.34);
+      outline: none;
+    }
+
+    .button[disabled] {
+      cursor: not-allowed;
+      opacity: 0.55;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .status {
+      display: none;
+      margin-top: 14px;
+      padding: 13px 14px;
+      border-radius: 6px;
+      color: var(--black);
+      background: var(--ice);
+      font-weight: 760;
+    }
+
+    .status.visible {
+      display: block;
+    }
+
+    .status.error {
+      color: var(--danger);
+      background: #ffe4dc;
+    }
+
+    .status.success {
+      color: var(--success);
+      background: #dcfff1;
+    }
+
+    .success-panel {
+      display: none;
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid rgba(13, 92, 68, 0.18);
+      border-radius: 8px;
+      background: #ebfff7;
+      color: var(--black);
+    }
+
+    .success-panel.active {
+      display: block;
+    }
+
+    .success-panel h3 {
+      margin: 0 0 8px;
+      font-size: 1.14rem;
+    }
+
+    .success-panel p {
+      margin: 0 0 14px;
+      color: var(--muted-dark);
+    }
+
+    .success-panel .button {
+      min-height: 46px;
+      width: 100%;
+    }
+
+    .robot-cue {
+      position: absolute;
+      right: -28px;
+      bottom: -26px;
+      width: min(238px, 32vw);
+      opacity: 0.84;
+      filter: drop-shadow(0 22px 34px rgba(0, 0, 0, 0.28));
+      pointer-events: none;
+    }
+
+    @keyframes buttonSweep {
+      0%,
+      72% {
+        transform: translateX(-170%) rotate(18deg);
+      }
+      100% {
+        transform: translateX(620%) rotate(18deg);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .signup-main {
+        grid-template-columns: 1fr;
+        align-items: start;
+        padding-top: 42px;
+      }
+
+      h1 {
+        max-width: 780px;
+        font-size: 3.65rem;
+      }
+
+      .signup-card {
+        width: min(680px, 100%);
+      }
+
+      .robot-cue {
+        right: 0;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .brand-lockup span,
+      .header-title {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-inner {
+        width: min(100% - 28px, 1180px);
+        min-height: 66px;
+      }
+
+      .brand-lockup img {
+        width: 98px;
+      }
+
+      .brand-lockup span {
+        display: none;
+      }
+
+      .header-title {
+        display: none;
+      }
+
+      .signup-main {
+        width: min(100% - 28px, 1180px);
+        padding: 34px 0 42px;
+        gap: 28px;
+      }
+
+      h1 {
+        font-size: 2.7rem;
+      }
+
+      .intro-copy {
+        font-size: 1.02rem;
+      }
+
+      .signup-card {
+        padding: 22px;
+      }
+
+      .signup-card h2 {
+        font-size: 1.76rem;
+      }
+
+      .radio-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .robot-cue {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body class="one-time-direct-signup">
+  <a class="skip-link" href="#signupForm">Skip to signup form</a>
+  <div class="signup-shell">
+    <header class="signup-header">
+      <div class="header-inner">
+        <a class="brand-lockup" href="/one-time" aria-label="One Time home">
+          <img src="/assets/one-time/brand/one-time-logo-white.webp" width="120" height="76" alt="One Time">
+          <span>Mishnayos with Rabbi Eli Scheller</span>
+        </a>
+        <div class="header-title">Sign Up Now</div>
+        <a class="back-link" href="/one-time" data-action-id="ACTION-ONETIME-SIGNUP-BACK-HOME">Back to Home</a>
+      </div>
+    </header>
+
+    <main class="signup-main" id="main" data-one-time-signup-page>
+      <section class="intro" aria-labelledby="signupHeroTitle">
+        <p class="eyebrow">Worldwide Mishnah learning &mdash; live from Eretz Yisrael</p>
+        <h1 id="signupHeroTitle">Give your son a love for Torah you never thought possible.</h1>
+        <p class="intro-copy">Join the daily live Mishnayos class with Rabbi Eli Scheller. Start with your contact details and how you want to receive class reminders.</p>
+        <div class="schedule-card">
+          <strong>Live from Israel. Every day at 7 p.m. Israel time.</strong>
+          <span>Class reminders are timed from the Israel class schedule.</span>
+        </div>
+      </section>
+
+      <section class="signup-card" aria-labelledby="formTitle">
+        <h2 id="formTitle">Sign Up Now</h2>
+        <form class="form-grid" id="signupForm" data-one-time-direct-signup-form novalidate>
+          <div class="field">
+            <label for="contactName">Contact name <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
+            <input id="contactName" name="contact_name" type="text" autocomplete="name" required>
+            <span class="field-error" data-error-for="contact_name">Enter the contact name.</span>
+          </div>
+
+          <div class="field">
+            <label for="signupAs">Signing up as <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
+            <select id="signupAs" name="signup_as" required>
+              <option value="">Choose one</option>
+              <option value="Family">Family</option>
+              <option value="School">School</option>
+            </select>
+            <span class="field-error" data-error-for="signup_as">Choose Family or School.</span>
+          </div>
+
+          <div class="field">
+            <label for="city">City <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
+            <input id="city" name="city_label" type="text" list="cityOptions" autocomplete="address-level2" required>
+            <datalist id="cityOptions">
+              <option value="Lakewood, New Jersey, United States"></option>
+              <option value="New York, New York, United States"></option>
+              <option value="London, England, United Kingdom"></option>
+              <option value="Jerusalem, Jerusalem District, Israel"></option>
+              <option value="Sydney, New South Wales, Australia"></option>
+              <option value="Beit Shemesh, Jerusalem District, Israel"></option>
+              <option value="Springfield, Massachusetts, United States"></option>
+              <option value="Springfield, Illinois, United States"></option>
+            </datalist>
+            <input type="hidden" name="city_id">
+            <input type="hidden" name="city_name">
+            <input type="hidden" name="city_region">
+            <input type="hidden" name="city_country">
+            <input type="hidden" name="city_country_code">
+            <input type="hidden" name="timezone">
+            <input type="hidden" name="browser_timezone">
+            <span class="field-hint">Choose the matching city from the list.</span>
+            <span class="field-error" data-error-for="city_label">Choose an unambiguous city from the list.</span>
+          </div>
+
+          <div class="field">
+            <label for="email">Email <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
+            <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required>
+            <span class="field-error" data-error-for="email">Enter a valid email address.</span>
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone / WhatsApp <span class="required-dot" data-phone-required-dot aria-hidden="true" hidden></span><span class="sr-only" data-phone-required-copy hidden>required when WhatsApp reminders are selected</span></label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" aria-describedby="phoneHint">
+            <span class="field-hint" id="phoneHint" data-phone-hint hidden>Required for WhatsApp reminders.</span>
+            <span class="field-error" data-error-for="phone">Enter a phone number for WhatsApp reminders.</span>
+          </div>
+
+          <fieldset class="field" data-reminder-fieldset>
+            <legend class="fieldset-label">Class reminders <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></legend>
+            <div class="radio-grid">
+              <label class="radio-card">
+                <input type="radio" name="reminder_preference" value="email" required>
+                <span><strong>Email reminders</strong><span>Daily class reminders by email.</span></span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="reminder_preference" value="whatsapp">
+                <span><strong>WhatsApp reminders</strong><span>Daily class reminders by WhatsApp.</span></span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="reminder_preference" value="both">
+                <span><strong>Email and WhatsApp</strong><span>Use both reminder channels.</span></span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="reminder_preference" value="none">
+                <span><strong>No daily reminders</strong><span>Sign up without recurring reminders.</span></span>
+              </label>
+            </div>
+            <label class="consent-check" for="signupAcknowledgement">
+              <input id="signupAcknowledgement" name="signup_acknowledgement" type="checkbox" value="yes" required>
+              <span class="consent-copy">Use my selected city for class times. By choosing reminders, I agree to receive class updates and can stop them at any time. <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></span>
+            </label>
+            <span class="field-error" data-error-for="signup_acknowledgement">Check the box to confirm your class-time and reminder preferences.</span>
+            <span class="field-error" data-error-for="reminder_preference">Choose a reminder option.</span>
+          </fieldset>
+
+          <button class="button" type="submit" data-action-id="ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT">Sign Up Now</button>
+          <div class="status" role="status" aria-live="polite" data-form-status></div>
+        </form>
+
+        <div class="success-panel" data-success-panel tabindex="-1">
+          <h3>You're signed up.</h3>
+          <p>Check your email for the class link and class time in your city.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const CITY_OPTIONS = [
+        { id: 'lakewood-nj-us', label: 'Lakewood, New Jersey, United States', city: 'Lakewood', region: 'New Jersey', country: 'United States', countryCode: 'US', timezone: 'America/New_York' },
+        { id: 'new-york-ny-us', label: 'New York, New York, United States', city: 'New York', region: 'New York', country: 'United States', countryCode: 'US', timezone: 'America/New_York' },
+        { id: 'london-england-gb', label: 'London, England, United Kingdom', city: 'London', region: 'England', country: 'United Kingdom', countryCode: 'GB', timezone: 'Europe/London' },
+        { id: 'jerusalem-il', label: 'Jerusalem, Jerusalem District, Israel', city: 'Jerusalem', region: 'Jerusalem District', country: 'Israel', countryCode: 'IL', timezone: 'Asia/Jerusalem' },
+        { id: 'sydney-nsw-au', label: 'Sydney, New South Wales, Australia', city: 'Sydney', region: 'New South Wales', country: 'Australia', countryCode: 'AU', timezone: 'Australia/Sydney' },
+        { id: 'beit-shemesh-il', label: 'Beit Shemesh, Jerusalem District, Israel', city: 'Beit Shemesh', region: 'Jerusalem District', country: 'Israel', countryCode: 'IL', timezone: 'Asia/Jerusalem' },
+        { id: 'springfield-ma-us', label: 'Springfield, Massachusetts, United States', city: 'Springfield', region: 'Massachusetts', country: 'United States', countryCode: 'US', timezone: 'America/New_York' },
+        { id: 'springfield-il-us', label: 'Springfield, Illinois, United States', city: 'Springfield', region: 'Illinois', country: 'United States', countryCode: 'US', timezone: 'America/Chicago' }
+      ];
+
+      const form = document.querySelector('[data-one-time-direct-signup-form]');
+      const status = document.querySelector('[data-form-status]');
+      const successPanel = document.querySelector('[data-success-panel]');
+      const phoneInput = form?.elements.phone;
+      const phoneHint = document.querySelector('[data-phone-hint]');
+      const phoneRequiredDot = document.querySelector('[data-phone-required-dot]');
+      const phoneRequiredCopy = document.querySelector('[data-phone-required-copy]');
+      const reminderInputs = form ? Array.from(form.querySelectorAll('input[name="reminder_preference"]')) : [];
+
+      function selectedReminder() {
+        return reminderInputs.find((input) => input.checked)?.value || '';
+      }
+
+      function needsWhatsAppPhone(value = selectedReminder()) {
+        return value === 'whatsapp' || value === 'both';
+      }
+
+      function updatePhoneRequirement() {
+        const needsPhone = needsWhatsAppPhone();
+        if (!phoneInput) return;
+        phoneInput.required = needsPhone;
+        phoneInput.setAttribute('aria-required', String(needsPhone));
+        if (phoneRequiredDot) phoneRequiredDot.hidden = !needsPhone;
+        if (phoneRequiredCopy) phoneRequiredCopy.hidden = !needsPhone;
+        if (phoneHint) {
+          phoneHint.hidden = !needsPhone;
+          phoneHint.textContent = 'Required for WhatsApp reminders.';
+        }
+      }
+
+      function cityForLabel(label) {
+        const normalized = String(label || '').trim().toLowerCase();
+        return CITY_OPTIONS.find((city) => city.label.toLowerCase() === normalized) || null;
+      }
+
+      function setCityFields(city) {
+        for (const [name, value] of Object.entries({
+          city_id: city?.id || '',
+          city_name: city?.city || '',
+          city_region: city?.region || '',
+          city_country: city?.country || '',
+          city_country_code: city?.countryCode || '',
+          timezone: city?.timezone || ''
+        })) {
+          if (form?.elements[name]) form.elements[name].value = value;
+        }
+      }
+
+      function isValidEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+      }
+
+      function showStatus(type, message) {
+        if (!status) return;
+        status.className = `status visible ${type || ''}`.trim();
+        status.textContent = message;
+      }
+
+      function clearStatus() {
+        if (!status) return;
+        status.className = 'status';
+        status.textContent = '';
+      }
+
+      function clearErrors() {
+        form?.querySelectorAll('.field-error.visible').forEach((node) => node.classList.remove('visible'));
+        form?.querySelectorAll('[aria-invalid="true"]').forEach((node) => node.removeAttribute('aria-invalid'));
+        form?.querySelector('[data-reminder-fieldset]')?.removeAttribute('aria-invalid');
+      }
+
+      function showFieldError(name) {
+        const input = form?.elements[name];
+        const error = form?.querySelector(`[data-error-for="${name}"]`);
+        if (name === 'reminder_preference') {
+          form?.querySelector('[data-reminder-fieldset]')?.setAttribute('aria-invalid', 'true');
+        } else {
+          input?.setAttribute('aria-invalid', 'true');
+        }
+        error?.classList.add('visible');
+      }
+
+      function regionForCity(city) {
+        if (!city) return 'worldwide';
+        if (city.countryCode === 'IL') return 'israel';
+        if (city.countryCode === 'GB') return 'uk';
+        if (city.countryCode === 'US') return 'us';
+        return 'worldwide';
+      }
+
+      function utmParams() {
+        const utm = {};
+        const params = new URLSearchParams(window.location.search);
+        params.forEach((value, key) => {
+          if (/^(utm_|gclid|fbclid)/i.test(key)) utm[key] = value;
+        });
+        return utm;
+      }
+
+      function buildPayload({ contactName, signupAs, city, email, phone, reminder, acknowledgement }) {
+        const reminderConsent = acknowledgement && reminder !== 'none';
+        const now = new Date().toISOString();
+        const browserTimezone = form.elements.browser_timezone?.value || '';
+        const signupType = signupAs.toLowerCase();
+        return {
+          parent_name: contactName,
+          contact_name: contactName,
+          email,
+          phone,
+          whatsapp: needsWhatsAppPhone(reminder) ? phone : '',
+          audience: 'parents',
+          region: regionForCity(city),
+          city_id: city.id,
+          city_label: city.label,
+          city_name: city.city,
+          city_region: city.region,
+          city_country: city.country,
+          city_country_code: city.countryCode,
+          timezone: city.timezone,
+          browser_timezone: browserTimezone,
+          source_landing_page: '/one-time/signup',
+          signup_mode: 'one_time_class_signup',
+          signup_acknowledgement: acknowledgement,
+          reminder_consent_ack: reminderConsent,
+          location_time_acknowledgement: acknowledgement,
+          consent: reminderConsent,
+          notes: `${signupType === 'school' ? 'School' : 'Family'} signup for the One Time daily Mishnayos class.`,
+          metadata: {
+            raw_intake_id: 'RAW-20260712-002',
+            requirement_id: 'REQ-20260712-013',
+            form_version: 'one-time-direct-signup-v1',
+            signup_as: signupAs,
+            city: {
+              id: city.id,
+              label: city.label,
+              name: city.city,
+              region: city.region,
+              country: city.country,
+              country_code: city.countryCode,
+              timezone: city.timezone
+            },
+            reminder_preference: reminder,
+            reminder_consent: reminderConsent,
+            reminder_consent_acknowledged: reminderConsent,
+            reminder_consent_at: reminderConsent ? now : null,
+            reminder_consent_policy_version: reminderConsent ? 'one-time-class-reminders-v1-2026-07-12' : null,
+            signup_acknowledgement: acknowledgement,
+            location_time_acknowledgement: acknowledgement,
+            class_schedule: {
+              source_timezone: 'Asia/Jerusalem',
+              class_time: '19:00',
+              reminder_time: '18:30'
+            },
+            referrer: document.referrer || '',
+            utm: utmParams(),
+            browser_timezone: browserTimezone
+          }
+        };
+      }
+
+      if (form?.elements.browser_timezone) {
+        form.elements.browser_timezone.value = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      }
+
+      form?.elements.city_label?.addEventListener('input', () => {
+        setCityFields(cityForLabel(form.elements.city_label.value));
+      });
+
+      reminderInputs.forEach((input) => {
+        input.addEventListener('change', updatePhoneRequirement);
+      });
+      updatePhoneRequirement();
+
+      form?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearErrors();
+        clearStatus();
+
+        const contactName = String(form.elements.contact_name.value || '').trim();
+        const signupAs = String(form.elements.signup_as.value || '').trim();
+        const city = cityForLabel(form.elements.city_label.value);
+        const email = String(form.elements.email.value || '').trim().toLowerCase();
+        const phone = String(form.elements.phone.value || '').trim();
+        const reminder = selectedReminder();
+        const acknowledgement = Boolean(form.elements.signup_acknowledgement?.checked);
+        let invalid = false;
+
+        if (!contactName) {
+          showFieldError('contact_name');
+          invalid = true;
+        }
+        if (!signupAs) {
+          showFieldError('signup_as');
+          invalid = true;
+        }
+        if (!city) {
+          showFieldError('city_label');
+          invalid = true;
+        } else {
+          setCityFields(city);
+        }
+        if (!isValidEmail(email)) {
+          showFieldError('email');
+          invalid = true;
+        }
+        if (!reminder) {
+          showFieldError('reminder_preference');
+          invalid = true;
+        }
+        if (needsWhatsAppPhone(reminder) && !phone) {
+          showFieldError('phone');
+          invalid = true;
+        }
+        if (!acknowledgement) {
+          showFieldError('signup_acknowledgement');
+          invalid = true;
+        }
+
+        if (invalid) {
+          showStatus('error', 'Please fix the highlighted fields.');
+          const firstInvalid = form.querySelector('[aria-invalid="true"]');
+          firstInvalid?.focus();
+          return;
+        }
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        showStatus('', 'Saving your signup...');
+
+        try {
+          const response = await fetch('/api/one-time/interest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(buildPayload({ contactName, signupAs, city, email, phone, reminder, acknowledgement }))
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || result.success === false) {
+            throw new Error(result.error || 'Could not save the signup.');
+          }
+
+          const productLeadId = result.product_lead_id || result.productLeadId || result.lead?.id || result.lead_id || '';
+          const crmLeadId = result.crm_lead_id || result.crmLeadId || result.lead?.crm_lead_id || '';
+          const lead = {
+            parent_name: contactName,
+            contact_name: contactName,
+            email,
+            phone,
+            signup_as: signupAs,
+            city: city.label,
+            city_context: {
+              id: city.id,
+              label: city.label,
+              name: city.city,
+              region: city.region,
+              country: city.country,
+              country_code: city.countryCode,
+              timezone: city.timezone
+            },
+            timezone: city.timezone,
+            browser_timezone: form.elements.browser_timezone?.value || '',
+            reminder_preference: reminder,
+            product_lead_id: productLeadId ? String(productLeadId) : '',
+            crm_lead_id: crmLeadId ? String(crmLeadId) : '',
+            source_landing_page: '/one-time/signup',
+            referrer: document.referrer || '',
+            utm: utmParams()
+          };
+          try {
+            window.sessionStorage.setItem('oneTimeSignupLead', JSON.stringify(lead));
+          } catch {}
+
+          form.hidden = true;
+          successPanel?.classList.add('active');
+          showStatus('success', 'Signup received.');
+          window.setTimeout(() => successPanel?.focus?.(), 40);
+        } catch (error) {
+          showStatus('error', error.message || 'Could not save the signup.');
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

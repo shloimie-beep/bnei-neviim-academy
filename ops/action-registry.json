@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-07-10T12:00:00+03:00",
+  "updated_at": "2026-07-12T09:05:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -367,13 +367,13 @@
       "label": "Sign Up Now",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "[data-signup-trigger][data-action-id=\"ACTION-ONETIME-JOIN-SHIR-CTA\"]",
-      "expected_behavior": "Opens the accessible first-party signup modal; does not create checkout, send messages, create a Zoom meeting, open a portal account, or grant access.",
+      "selector_hint": "a[href=\"/one-time/signup\"][data-action-id=\"ACTION-ONETIME-JOIN-SHIR-CTA\"]",
+      "expected_behavior": "Opens the canonical /one-time/signup page; does not create checkout, send messages, create a Zoom meeting, open a portal account, or grant access.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "static_and_browser",
-        "expected_result": "Primary CTA text is Sign Up Now, opens the modal, and no payment, send, Zoom creation, or access grant fires."
+        "expected_result": "Primary CTA text is Sign Up Now and every public CTA links to /one-time/signup without payment, send, Zoom creation, portal account, or access grant."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -423,17 +423,17 @@
       ]
     },
     {
-      "action_id": "ACTION-ONETIME-INTEREST-FORM",
+      "action_id": "ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT",
       "label": "Sign Up Now",
-      "surface": "one_time_public_focused_offer",
-      "route": "/one-time",
-      "selector_hint": "[data-signup-form] button[type=\"submit\"]",
-      "expected_behavior": "Creates a first-party One Time product lead and CRM lead from the public signup modal with required parent/contact name, required email, optional phone, consent, route/referrer/UTM metadata, and idempotent blocked email/WhatsApp transactional follow-up timeline records; no student name is collected in quick capture, and no checkout, external send, live charge, portal account, Zoom meeting creation, or access grant occurs.",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
+      "selector_hint": "[data-one-time-direct-signup-form] button[type=\"submit\"]",
+      "expected_behavior": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required unambiguous city/timezone metadata, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "api_guarded",
-        "expected_result": "Posts parent/contact name, email, optional phone, consent, and source metadata to /api/one-time/interest and returns a CRM-recorded no-checkout/no-send/no-access-grant confirmation with blocked transactional follow-up attempts visible in the CRM timeline."
+        "expected_result": "Posts direct signup payload to /api/one-time/interest, stores city/timezone, Family or School, reminder preference and consent, queues confirmation/alert outbox records idempotently, and returns no-checkout/no-access-grant metadata with no student-name field."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -486,12 +486,13 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-SIGNUP-MODAL-CLOSE\"]",
-      "expected_behavior": "Closes the signup modal, restores body scroll, and returns keyboard focus to the triggering Sign Up Now control.",
+      "expected_behavior": "Archived old modal close action. The public page now links to /one-time/signup instead of opening a modal.",
       "permission": "public",
-      "status": "active",
+      "status": "archived_removed_direct_signup_page",
+      "disabled_reason": "Removed by REQ-20260712-013. The canonical signup implementation is /one-time/signup.",
       "test": {
         "type": "browser_accessibility",
-        "expected_result": "Escape, backdrop click, and close button dismiss the dialog and preserve focus order."
+        "expected_result": "Landing page has no data-signup-modal and no visible close-modal action."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -500,16 +501,75 @@
     },
     {
       "action_id": "ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING",
-      "label": "Continue",
-      "surface": "one_time_public_focused_offer",
-      "route": "/one-time",
-      "selector_hint": "[data-action-id=\"ACTION-ONETIME-SIGNUP-CONTINUE-ONBOARDING\"]",
-      "expected_behavior": "After successful first-party capture and a family/school choice, continues to /one-time-preview with non-secret query parameters for the existing onboarding flow.",
+      "label": "Removed signup continuation",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
+      "selector_hint": "removed from /one-time/signup success state",
+      "expected_behavior": "Archived continuation action. The direct launch signup now ends on a confirmation state after queueing the email and Rabbi alert.",
+      "permission": "public",
+      "status": "archived_removed_from_direct_signup",
+      "disabled_reason": "Removed by REQ-20260712-013. The launch form must not start parent portal, student portal, onboarding, password setup, payment, or access-grant flows.",
+      "test": {
+        "type": "browser_static",
+        "expected_result": "Success state has no data-continue-link and no route to /one-time-onboarding."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-SIGNUP-BACK-HOME",
+      "label": "Back to Home",
+      "surface": "one_time_public_direct_signup",
+      "route": "/one-time/signup",
+      "selector_hint": "a[href=\"/one-time\"][data-action-id=\"ACTION-ONETIME-SIGNUP-BACK-HOME\"]",
+      "expected_behavior": "Returns from the direct signup page to the public One Time landing page without starting a private portal, payment, send, or access workflow.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "browser_static",
-        "expected_result": "Button is disabled until family or school is selected and then navigates to /one-time-preview with the chosen audience."
+        "expected_result": "Back to Home points to /one-time and performs only same-origin navigation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-ONBOARDING-AUDIENCE",
+      "label": "Family or School",
+      "surface": "one_time_public_onboarding",
+      "route": "/one-time-onboarding",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-ONBOARDING-AUDIENCE\"]",
+      "expected_behavior": "Switches the public onboarding form between family and school fields without submitting, sending, charging, creating access, or exposing private data.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "browser_static",
+        "expected_result": "Family and school branch controls reveal only their own public-safe fields and preserve lead query parameters."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-ONBOARDING-SUBMIT",
+      "label": "Save Onboarding Details",
+      "surface": "one_time_public_onboarding",
+      "route": "/one-time-onboarding",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-ONBOARDING-SUBMIT\"]",
+      "expected_behavior": "Saves a first-party One Time onboarding review record linked to any product/CRM lead ids and returns a no-send/no-checkout/no-access confirmation.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "POSTs public-safe onboarding details to /api/one-time/mishnah/onboarding and confirms no email, WhatsApp, Telegram, payment, access grant, or external provider write occurred."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -524,17 +584,18 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-PREV\"]",
-      "expected_behavior": "Moves the public teaching photo carousel to the previous verified repo asset without loading private media.",
+      "expected_behavior": "No public carousel control is rendered while verified approved teaching-location images are unavailable.",
       "permission": "public",
-      "status": "active",
+      "status": "hidden_until_verified_assets",
       "test": {
-        "type": "browser_static",
-        "expected_result": "Carousel changes slide and does not expose private classroom, student, or provider-only media."
+        "type": "static_guard",
+        "expected_result": "The One Time landing page omits the teaching carousel controls and contains no placeholder asset instructions."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-014"
-      ]
+      ],
+      "disabled_reason": "Hidden by RAW-20260712-002 / REQ-20260712-007 until verified approved teaching-location images exist in public assets."
     },
     {
       "action_id": "ACTION-ONETIME-TEACHING-CAROUSEL-NEXT",
@@ -542,17 +603,18 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-NEXT\"]",
-      "expected_behavior": "Moves the public teaching photo carousel to the next verified repo asset without loading private media.",
+      "expected_behavior": "No public carousel control is rendered while verified approved teaching-location images are unavailable.",
       "permission": "public",
-      "status": "active",
+      "status": "hidden_until_verified_assets",
       "test": {
-        "type": "browser_static",
-        "expected_result": "Carousel changes slide and does not expose private classroom, student, or provider-only media."
+        "type": "static_guard",
+        "expected_result": "The One Time landing page omits the teaching carousel controls and contains no placeholder asset instructions."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-014"
-      ]
+      ],
+      "disabled_reason": "Hidden by RAW-20260712-002 / REQ-20260712-007 until verified approved teaching-location images exist in public assets."
     },
     {
       "action_id": "ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE",
@@ -560,17 +622,18 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE\"]",
-      "expected_behavior": "Pauses or resumes the public teaching photo carousel and updates the accessible label.",
+      "expected_behavior": "No public carousel control is rendered while verified approved teaching-location images are unavailable.",
       "permission": "public",
-      "status": "active",
+      "status": "hidden_until_verified_assets",
       "test": {
-        "type": "browser_accessibility",
-        "expected_result": "Pause toggles carousel playback and updates aria-label for assistive technology."
+        "type": "static_guard",
+        "expected_result": "The One Time landing page omits the teaching carousel controls and contains no placeholder asset instructions."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-014"
-      ]
+      ],
+      "disabled_reason": "Hidden by RAW-20260712-002 / REQ-20260712-007 until verified approved teaching-location images exist in public assets."
     },
     {
       "action_id": "ACTION-ONETIME-VIEW-AS-RABBI-START",
@@ -2504,6 +2567,44 @@
       "test": {
         "type": "api_and_node_test",
         "expected_result": "GET /api/bna/crm/contacts/:id/timeline returns no_send/external_write_performed=false; tests/crm-contact-model.test.js verifies timeline no-send fields."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-MAILBOX-OPEN",
+      "label": "Open contact mailbox",
+      "surface": "operations_contacts",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CONTACT-MAILBOX-OPEN\"]",
+      "expected_behavior": "Moves from the selected local CRM contact to the scoped Rabbi / One Time email inbox while preserving selected contact context; does not send, draft-send, charge, grant access, import, or write to an external CRM.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "active_navigation_only",
+      "test": {
+        "type": "browser_static_and_local_smoke",
+        "expected_result": "One Time CRM workbench exposes a mailbox shortcut that routes to the Rabbi inbox with workspace=rabbi_sheller_provider and project_key=one_time_mishnah_class."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-SAFE-UPDATE",
+      "label": "Save CRM update",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CONTACT-SAFE-UPDATE\"]",
+      "expected_behavior": "Saves status, tags, owner, follow-up date, and internal note to first-party local CRM tables only; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write runs.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements; disabled in read-only View-as Rabbi mode",
+      "status": "active_first_party_local_write",
+      "test": {
+        "type": "api_and_browser_local_smoke",
+        "expected_result": "PATCH /api/bna/crm/contacts/:id returns no_send=true and external_write_performed=false; View-as requests with X-One-Time-View-As-Token are rejected for non-GET methods."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

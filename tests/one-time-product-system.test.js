@@ -34,6 +34,7 @@ const checkoutMigration = fs.readFileSync('railway-migration-2026-06-15-rabbi-ch
 const productMigration = fs.readFileSync('railway-migration-2026-06-16-one-time-product-system.sql', 'utf8');
 const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
 const oneTimeHtml = fs.readFileSync('public/one-time/index.html', 'utf8');
+const oneTimeSignupHtml = fs.readFileSync('public/one-time/signup.html', 'utf8');
 
 function escapeRegex(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -336,15 +337,15 @@ test('server exposes scoped One Time product APIs and public draft routes', () =
   assert.match(server, /externalActions\.requiredConfirmFor\('resend', 'send'\)/);
   assert.match(server, /SEND_WHATSAPP/);
   assert.match(server, /transactional_follow_up_send_blocked/);
-  assert.match(server, /transactional_follow_up_preview: buildOneTimeTransactionalFollowUpPlan/);
+  assert.match(server, /transactional_follow_up_preview:[\s\S]*buildOneTimeTransactionalFollowUpPlan/);
   assert.match(server, /function buildOneTimeSignupTelegramReminder/);
   assert.match(server, /function isOneTimeSyntheticLead/);
   assert.match(server, /<b>New One Time signup<\/b>/);
   assert.match(server, /Review this lead in the One Time CRM/);
   assert.match(server, /Guardrail: no parent email, WhatsApp, checkout, payment, access grant, Zoom, Vimeo, or Drive action/);
   assert.match(server, /synthetic_test_lead_no_external_reminder/);
-  assert.match(server, /if \(!syntheticNoExternalReminder\)[\s\S]*sendOneTimeSignupTelegramReminder\(lead\)[\s\S]*\.catch\(\(err\) => console\.error\('One Time signup Telegram reminder error:'/);
-  assert.match(server, /no_telegram_reminder_sent: syntheticNoExternalReminder/);
+  assert.match(server, /if \(!skipTelegramReminder\)[\s\S]*sendOneTimeSignupTelegramReminder\(lead\)[\s\S]*\.catch\(\(err\) => console\.error\('One Time signup Telegram reminder error:'/);
+  assert.match(server, /no_telegram_reminder_sent: skipTelegramReminder/);
   assert.match(server, /product_readiness: oneTimeProductReadinessView/);
   assert.match(server, /crm_import_preview: crmImportPreview/);
   assert.match(server, /oneTimeCrmImportPreviewReadiness/);
@@ -374,18 +375,22 @@ test('public One Time launch page is indexable, interest-only, and has no checko
   assert.match(oneTimeHtml, /One Time Mishnayos/);
   assert.match(oneTimeHtml, /Give your son a love for Torah you never thought possible\./);
   assert.match(oneTimeHtml, /Sign Up Now/);
-  assert.match(oneTimeHtml, /data-signup-modal/);
-  assert.match(oneTimeHtml, /data-signup-trigger/);
-  assert.match(oneTimeHtml, /name="parent_name"/);
-  assert.match(oneTimeHtml, /name="email"/);
-  assert.match(oneTimeHtml, /name="phone"/);
+  assert.match(oneTimeHtml, /href="\/one-time\/signup"/);
+  assert.doesNotMatch(oneTimeHtml, /data-signup-modal|data-signup-trigger/);
+  assert.match(oneTimeSignupHtml, /name="contact_name"/);
+  assert.match(oneTimeSignupHtml, /name="signup_as"/);
+  assert.match(oneTimeSignupHtml, /name="city_label"/);
+  assert.match(oneTimeSignupHtml, /name="email"/);
+  assert.match(oneTimeSignupHtml, /name="phone"/);
+  assert.match(oneTimeSignupHtml, /name="reminder_preference"/);
   assert.doesNotMatch(oneTimeHtml, /name="(?:student|learner)/i);
+  assert.doesNotMatch(oneTimeSignupHtml, /name="(?:student|learner)/i);
   assert.doesNotMatch(oneTimeHtml, /#start-free/);
   assert.doesNotMatch(oneTimeHtml, /signup-strip/);
-  assert.match(oneTimeHtml, /source_landing_page/);
-  assert.match(oneTimeHtml, /preferred_class_format/);
-  assert.match(oneTimeHtml, /addendum_raw_intake_id/);
-  assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
+  assert.match(oneTimeSignupHtml, /source_landing_page/);
+  assert.match(oneTimeSignupHtml, /signup_mode/);
+  assert.match(oneTimeSignupHtml, /REQ-20260712-013/);
+  assert.match(oneTimeSignupHtml, /\/api\/one-time\/interest/);
   assert.doesNotMatch(oneTimeHtml, /\/api\/one-time\/public-whatsapp\/redirect\?intent=free_class/);
   assert.doesNotMatch(oneTimeHtml, /WhatsApp Robot Scheller/);
   assert.doesNotMatch(oneTimeHtml, /Consent is required before submitting/);

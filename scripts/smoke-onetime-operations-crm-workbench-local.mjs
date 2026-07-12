@@ -8,7 +8,7 @@ import { chromium } from 'playwright';
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), '..');
 const publicDir = path.join(repoRoot, 'public');
-const outDir = path.join(repoRoot, 'ops', 'ui-audits', '2026-07-10-onetime-crm-workbench-local');
+const outDir = path.join(repoRoot, 'ops', 'evidence', 'one-time-crm-journey', '2026-07-12');
 const route = '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts';
 
 const viewports = [
@@ -19,7 +19,7 @@ const viewports = [
   { id: 'mobile-390', width: 390, height: 844 },
 ];
 
-const crmCards = [
+const initialCrmCards = [
   {
     id: 'bna_parent_leads:501',
     source: 'bna_parent_leads',
@@ -57,6 +57,34 @@ const crmCards = [
     linked: { parent_lead_id: 502, signup_id: null, student_id: null, contact_id: null, provider_profile_id: null },
   },
 ];
+
+let crmCards = [];
+let timelineByContactId = new Map();
+let apiRequests = [];
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function resetCrmState() {
+  crmCards = clone(initialCrmCards);
+  timelineByContactId = new Map(crmCards.map((card) => [
+    card.id,
+    [
+      {
+        id: `${card.id}:signup-capture`,
+        channel: 'internal',
+        type: 'public_signup_capture',
+        direction: 'inbound',
+        body: `${card.display_name} captured in the One Time first-party CRM. No external message was sent from this workbench.`,
+        occurred_at: '2026-07-10T08:22:45.952Z',
+        no_send: true,
+        external_write_performed: false,
+      },
+    ],
+  ]));
+  apiRequests = [];
+}
 
 function contentType(filePath) {
   if (filePath.endsWith('.html')) return 'text/html; charset=utf-8';
@@ -96,8 +124,27 @@ function filterCrmCards(url) {
     });
 }
 
-function apiPayload(url) {
+function findCrmCardFromPath(pathname = '') {
+  const encodedId = pathname.replace(/^\/api\/bna\/crm\/contacts\//, '').replace(/\/timeline$/, '');
+  const id = decodeURIComponent(encodedId);
+  return crmCards.find((card) => String(card.id) === id) || null;
+}
+
+function normalizeTags(value) {
+  if (Array.isArray(value)) return value.map(String).map((tag) => tag.trim()).filter(Boolean);
+  if (!value) return [];
+  return String(value).split(',').map((tag) => tag.trim()).filter(Boolean);
+}
+
+function apiPayload(url, { method = 'GET', body = {} } = {}) {
   const pathname = url.pathname;
+  apiRequests.push({
+    method,
+    pathname,
+    search: url.search,
+    workspace: url.searchParams.get('workspace') || url.searchParams.get('workspace_key') || '',
+    project: url.searchParams.get('project') || url.searchParams.get('project_key') || '',
+  });
   if (pathname === '/api/bna/auth/me') {
     return {
       authenticated: true,
@@ -166,6 +213,16 @@ function apiPayload(url) {
     };
   }
   if (pathname === '/api/bna/crm/contacts') {
+    if (['bna', 'bna_school', 'platform'].includes(String(url.searchParams.get('workspace') || url.searchParams.get('workspace_key') || '').toLowerCase())) {
+      return {
+        status: 403,
+        body: {
+          success: false,
+          error: 'This scoped One Time session cannot access BNA CRM contacts.',
+          external_write_performed: false,
+        },
+      };
+    }
     const cards = filterCrmCards(url);
     return {
       success: true,
@@ -182,22 +239,68 @@ function apiPayload(url) {
       external_write_performed: false,
     };
   }
-  if (pathname.startsWith('/api/bna/crm/contacts/')) {
+  if (pathname.startsWith('/api/bna/crm/contacts/') && pathname.endsWith('/timeline')) {
+    const card = findCrmCardFromPath(pathname);
     return {
       success: true,
-      timeline: [
-        {
-          id: 'local-smoke-timeline-1',
-          channel: 'internal',
-          type: 'public_signup_capture',
-          direction: 'inbound',
-          body: 'One Time free-class public signup captured. No external message was sent from this CRM workbench.',
-          occurred_at: '2026-07-10T08:22:45.952Z',
-          no_send: true,
-          external_write_performed: false,
-        },
-      ],
+      timeline: card ? timelineByContactId.get(card.id) || [] : [],
       no_send: true,
+      external_write_performed: false,
+    };
+  }
+  if (pathname.startsWith('/api/bna/crm/contacts/') && method === 'PATCH') {
+    const card = findCrmCardFromPath(pathname);
+    if (!card) {
+      return {
+        status: 404,
+        body: { success: false, error: 'CRM contact not found in this workspace.', external_write_performed: false },
+      };
+    }
+    card.display_name = body.display_name || card.display_name;
+    card.email = body.email || card.email;
+    card.phone = body.phone || card.phone;
+    card.status = body.status || body.lifecycle_stage || card.status;
+    card.next_follow_up_at = body.next_follow_up_at || card.next_follow_up_date || card.next_follow_up_at;
+    card.assigned_owner = body.assigned_owner || card.assigned_owner;
+    card.tags = normalizeTags(body.tags).length ? normalizeTags(body.tags) : card.tags;
+    card.last_contact_at = '2026-07-12T09:55:00.000Z';
+    if (body.note_body) card.summary = body.note_body;
+    const followUpTask = body.create_follow_up_task
+      ? {
+          task_id: 9001,
+          assigned_to: card.assigned_owner || 'Rabbi Scheller team',
+          due_date: card.next_follow_up_at || null,
+          status: 'assigned',
+        }
+      : null;
+    if (followUpTask) card.follow_up_task = followUpTask;
+    const timeline = timelineByContactId.get(card.id) || [];
+    timeline.unshift({
+      id: `${card.id}:safe-update`,
+      channel: 'internal_note',
+      type: followUpTask ? 'crm_workbench_update_follow_up_task' : 'crm_workbench_update',
+      direction: 'internal',
+      body: body.note_body || 'CRM contact updated locally.',
+      occurred_at: '2026-07-12T09:55:00.000Z',
+      no_send: true,
+      external_write_performed: false,
+      source_context: {
+        create_follow_up_task: Boolean(followUpTask),
+        no_checkout: true,
+        no_access_granted: true,
+      },
+    });
+    timelineByContactId.set(card.id, timeline);
+    return {
+      success: true,
+      contact: card,
+      local_event: timeline[0],
+      follow_up_task: followUpTask,
+      timeline,
+      no_send: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_import_performed: true,
       external_write_performed: false,
     };
   }
@@ -234,7 +337,22 @@ async function serve(req, res, baseUrl) {
     return;
   }
   if (url.pathname.startsWith('/api/bna/')) {
-    json(res, apiPayload(url));
+    let rawBody = '';
+    for await (const chunk of req) rawBody += chunk;
+    let body = {};
+    if (rawBody) {
+      try {
+        body = JSON.parse(rawBody);
+      } catch {
+        body = {};
+      }
+    }
+    const payload = apiPayload(url, { method: req.method || 'GET', body });
+    if (payload && typeof payload === 'object' && Number.isInteger(payload.status) && payload.body) {
+      json(res, payload.body, payload.status);
+    } else {
+      json(res, payload);
+    }
     return;
   }
   const requested = url.pathname === '/' || url.pathname === '/operations' ? '/operations.html' : url.pathname;
@@ -272,21 +390,78 @@ async function captureViewport(browser, baseUrl, viewport) {
   const failedRequests = [];
   const badResponses = [];
   page.on('console', (message) => {
-    if (message.type() === 'error') consoleErrors.push(message.text());
+    const text = message.text();
+    if (message.type() === 'error' && !/403 \(Forbidden\)/i.test(text)) consoleErrors.push(text);
   });
   page.on('pageerror', (error) => pageErrors.push(error.message));
   page.on('requestfailed', (request) => {
-    failedRequests.push(`${request.method()} ${request.url()} ${request.failure()?.errorText || ''}`.trim());
+    const failureText = request.failure()?.errorText || '';
+    const isExpectedNavigationAbort = request.method() === 'GET'
+      && /net::ERR_ABORTED/i.test(failureText)
+      && request.url().startsWith(baseUrl);
+    if (!isExpectedNavigationAbort) failedRequests.push(`${request.method()} ${request.url()} ${failureText}`.trim());
   });
   page.on('response', (response) => {
-    if (response.status() >= 400) badResponses.push(`${response.status()} ${response.url()}`);
+    const expectedDeniedCrmRead = response.status() === 403
+      && response.url().includes('/api/bna/crm/contacts')
+      && response.url().includes('workspace=bna');
+    if (response.status() >= 400 && !expectedDeniedCrmRead) badResponses.push(`${response.status()} ${response.url()}`);
   });
 
+  resetCrmState();
   await page.goto(`${baseUrl}${route}`, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('[data-one-time-crm-workbench]', { timeout: 15000 });
-  await page.waitForFunction(() => /Sample One Time Parent/.test(document.body.textContent || ''), null, { timeout: 15000 });
-  await page.locator('[data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
-  await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || '') && /One Time free-class public signup captured/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  await page.waitForFunction(() => /Sample One Time Parent/.test(document.body.textContent || ''), null, { timeout: 15000 }).catch(async (error) => {
+    const bodyText = await page.evaluate(() => (document.body.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 1800)).catch(() => '');
+    throw new Error(`${error.message}\nBody text before CRM card timeout: ${bodyText}`);
+  });
+  await page.locator('.crm-filter-search input').fill('Sample One Time Parent');
+  await page.evaluate(() => {
+    if (typeof window.setFirstPartyCrmFilter === 'function') {
+      window.setFirstPartyCrmFilter('search', 'Sample One Time Parent');
+      return;
+    }
+    const input = document.querySelector('.crm-filter-search input');
+    input?.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await page.waitForFunction(() => {
+    const text = document.body.textContent || '';
+    const input = document.querySelector('.crm-filter-search input');
+    return /Sample One Time Parent/.test(text) && input && input.value === 'Sample One Time Parent';
+  }, null, { timeout: 15000 }).catch(async (error) => {
+    const bodyText = await page.evaluate(() => (document.body.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 1800)).catch(() => '');
+    throw new Error(`${error.message}\nBody text before CRM search-control timeout: ${bodyText}`);
+  });
+  await page.locator('article.contact-card [data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND"]').first().click();
+  await page.waitForFunction(() => /Contact Timeline/.test(document.body.textContent || '') && /captured in the One Time first-party CRM/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  await page.fill('[data-crm-contact-action-form] input[name="display_name"]', 'Sample One Time Parent Updated');
+  await page.fill('[data-crm-contact-action-form] input[name="email"]', 'sample-updated@example.invalid');
+  await page.fill('[data-crm-contact-action-form] input[name="phone"]', '+1 555 010 2200');
+  await page.locator('[data-crm-contact-action-form] select[name="status"]').evaluate((select) => {
+    select.value = 'follow_up';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await page.fill('[data-crm-contact-action-form] input[name="next_follow_up_at"]', '2026-07-20');
+  await page.fill('[data-crm-contact-action-form] input[name="assigned_owner"]', 'Rabbi Scheller team');
+  await page.fill('[data-crm-contact-action-form] input[name="tags"]', 'free-class-interest, operator-test, follow-up');
+  await page.fill('[data-crm-contact-action-form] textarea[name="note_body"]', 'Operator local CRM journey note. No send.');
+  await Promise.all([
+    page.waitForResponse((response) => response.url().includes('/api/bna/crm/contacts/') && response.request().method() === 'PATCH' && response.status() === 200),
+    page.locator('[data-crm-contact-action-form] button[type="submit"]').click(),
+  ]);
+  await page.waitForFunction(() => /CRM update saved locally/.test(document.body.textContent || '') && /Task #9001/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  const denial = await page.evaluate(async () => {
+    const response = await fetch('/api/bna/crm/contacts?workspace=bna&project=bna');
+    const body = await response.json().catch(() => ({}));
+    return { status: response.status, error: body.error || '', external_write_performed: body.external_write_performed };
+  });
+  await page.locator('[data-action-id="ACTION-CRM-CONTACT-MAILBOX-OPEN"]').first().click();
+  await page.waitForFunction(() => window.location.search.includes('view=communications') && window.location.search.includes('section=email') && window.location.search.includes('inbox=rabbi'), null, { timeout: 15000 });
+  await page.waitForFunction(() => /Now Viewing: Rabbi \/ One Time Inbox/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  const mailboxUrl = page.url();
+  await page.goto(`${baseUrl}${route}`, { waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('[data-one-time-crm-workbench]', { timeout: 15000 });
+  await page.waitForFunction(() => /Sample One Time Parent Updated/.test(document.body.textContent || '') && /Contact Timeline/.test(document.body.textContent || ''), null, { timeout: 15000 });
 
   const metrics = await page.evaluate(() => {
     const text = document.body.innerText.replace(/\s+/g, ' ').trim();
@@ -300,6 +475,14 @@ async function captureViewport(browser, baseUrl, viewport) {
       selectedDetailVisible: Boolean(detail && detailRect && detailRect.width > 0 && detailRect.height > 0),
       hasContactTimeline: /Contact Timeline/.test(text),
       hasClassTrialAccess: /Class \/ Trial \/ Access/i.test(text),
+      hasEditableIdentityFields: Boolean(
+        document.querySelector('[data-crm-contact-action-form] input[name="display_name"]')
+        && document.querySelector('[data-crm-contact-action-form] input[name="email"]')
+        && document.querySelector('[data-crm-contact-action-form] input[name="phone"]')
+      ),
+      hasSavedUpdatedContact: /Sample One Time Parent Updated/.test(text) && /sample-updated@example\.invalid/.test(text),
+      hasFollowUpTask: /Task #9001/.test(text),
+      hasLocalNote: /Operator local CRM journey note/.test(text),
       hasNoSendLock: /No-send locked|Read-only \/ no-send|No email, WhatsApp, payment, access, or external CRM write/.test(text),
       hasWrongWorkspaceLeak: /BNA Academy/i.test(text),
       hasForbiddenExternalTerm: /LeadConnector|GHL runtime/i.test(text),
@@ -307,6 +490,8 @@ async function captureViewport(browser, baseUrl, viewport) {
       bodyTextLength: text.length,
     };
   });
+  const patchRequests = apiRequests.filter((request) => request.method === 'PATCH' && request.pathname.startsWith('/api/bna/crm/contacts/'));
+  const contactsReads = apiRequests.filter((request) => request.method === 'GET' && request.pathname === '/api/bna/crm/contacts');
 
   const screenshot = path.join(outDir, `${viewport.id}-crm-workbench.png`);
   await page.screenshot({ path: screenshot, fullPage: true, type: 'png', animations: 'disabled' });
@@ -319,8 +504,20 @@ async function captureViewport(browser, baseUrl, viewport) {
       metrics.selectedDetailVisible &&
       metrics.hasContactTimeline &&
       metrics.hasClassTrialAccess &&
+      metrics.hasEditableIdentityFields &&
+      metrics.hasSavedUpdatedContact &&
+      metrics.hasFollowUpTask &&
+      metrics.hasLocalNote &&
       metrics.hasNoSendLock &&
       !metrics.hasWrongWorkspaceLeak &&
+      denial.status === 403 &&
+      denial.external_write_performed === false &&
+      /cannot access BNA CRM/i.test(denial.error) &&
+      patchRequests.length === 1 &&
+      contactsReads.some((request) => /workspace=rabbi_sheller_provider/.test(request.search)) &&
+      /view=communications/.test(mailboxUrl) &&
+      /section=email/.test(mailboxUrl) &&
+      /inbox=rabbi/.test(mailboxUrl) &&
       !metrics.horizontalOverflow &&
       consoleErrors.length === 0 &&
       pageErrors.length === 0 &&
@@ -337,6 +534,10 @@ async function captureViewport(browser, baseUrl, viewport) {
     pageErrors,
     failedRequests,
     badResponses,
+    patchRequests,
+    contactsReads,
+    denial,
+    mailboxUrl,
     passed,
   };
 }
@@ -367,7 +568,10 @@ async function main() {
     status: results.every((result) => result.passed) ? 'PASS' : 'FAIL',
     generated_at: new Date().toISOString(),
     target: route,
-    scope: 'Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.',
+    scope: 'Local browser/API Operations One Time CRM journey smoke using isolated first-party test records; no production database, sends, payments, external accounts, or production writes.',
+    remaining_blocker: process.env.DATABASE_URL || process.env.PGHOST
+      ? ''
+      : 'True local/test Postgres persistence proof was not run because DATABASE_URL/PGHOST is not configured in this session.',
     guardrails: {
       external_write_performed: false,
       test_data_only: true,
@@ -400,8 +604,13 @@ async function main() {
     '',
     '- One Time Operations CRM route renders the API-backed workbench.',
     '- Search/filter/sort controls, cards, selected detail, class/trial/access context, no-send guard, and timeline readback are visible.',
+    '- The browser submits one safe PATCH update with name, email, phone, lifecycle, owner, tags, note, and follow-up task data.',
+    '- The returned timeline and follow-up task are displayed after reload.',
+    '- Opening mailbox routes to the Rabbi / One Time inbox and returning to CRM restores the selected contact.',
+    '- A BNA workspace CRM read is denied with HTTP 403.',
     '- Desktop, tablet, and mobile screenshots have no horizontal overflow.',
-    '- Synthetic data only; no external sends, payments, access grants, or external CRM writes.',
+    '- Synthetic local records only; no external sends, payments, access grants, or external CRM writes.',
+    report.remaining_blocker ? `- Remaining blocker: ${report.remaining_blocker}` : '',
     '',
   ].join('\n'));
 

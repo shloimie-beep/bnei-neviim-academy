@@ -34,7 +34,7 @@
   "agent_mode_audit_ready": true,
   "next_action": "No unblocked Codex launch-priority implementation lane remains. Operator/runtime next actions are to configure ONE_TIME_PUBLIC_WHATSAPP_NUMBER for direct public WhatsApp activation and approve the canonical historical source package plus suppression/import policy before any production import/write.",
   "verification": [
-    "Queued for Codex by scripts/chatgpt-dropoff-ingestor.mjs as task #1945.",
+    "2026-07-12 correction: removed stale duplicate task #1945 claim; task #1945 belongs to onetime-agent-prompt-series-20260706-911, not this launch-priority packet.",
     "PASS raw intake and dated requirement register created.",
     "PASS PQC validation for ops/prompt-packets/2026-07-10-onetime-launch-priority/01-landing-robot-scheller.product-quality.json.",
     "PASS focused One Time helper/landing/product/branding tests.",
@@ -108,7 +108,5 @@
   "external_writes_performed": false,
   "secrets_included": false,
   "requires_codex_audit_before_apply": false,
-  "task_ids_created": [
-    "1945"
-  ]
+  "task_ids_created": []
 }

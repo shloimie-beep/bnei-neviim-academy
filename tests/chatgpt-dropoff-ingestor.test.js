@@ -67,7 +67,13 @@ test('ChatGPT dropoff ingestor validates a ready packet and builds a Codex task 
   assert.equal(payload.source_channel, 'chatgpt_dropoff');
   assert.equal(payload.project, 'one_time_mishnah_class');
   assert.equal(payload.source_context.packet_type, 'implementation_bundle');
+  assert.equal(payload.source_context.canonical_ingestion.adapter_key, 'chatgpt');
+  assert.equal(payload.source_context.canonical_ingestion.no_lost_sentence_gate.ok, true);
+  assert.ok(payload.source_context.canonical_ingestion.source_statement_count >= 1);
+  assert.ok(payload.source_context.canonical_ingestion.receipts.some((receipt) => receipt.receipt_type === 'worker_health' && receipt.status === 'online'));
+  assert.equal(payload.source_context.canonical_ingestion.external_write_performed, false);
   assert.equal(payload.ai_parsed.source_packet_type, 'implementation_bundle');
+  assert.equal(payload.ai_parsed.canonical_ingestion.adapter_key, 'chatgpt');
   assert.match(payload.title, /implementation bundle packet/);
   assert.match(payload.raw_text, /Packet path:/);
   assert.match(payload.raw_text, /Packet type: implementation_bundle/);
@@ -173,6 +179,19 @@ test('ChatGPT dropoff ingestor hardens status, ids, helper lanes, and write decl
   const statusSecret = ingestor.validatePacket(ingestor.loadPacket(statusSecretDir));
   assert.equal(statusSecret.ok, false);
   assert.ok(statusSecret.findings.some((finding) => finding.code === 'declared_secrets_included'));
+
+  const codexDoneDir = makePacketDir();
+  writePacket(codexDoneDir, { status: 'codex_done' });
+  const codexDone = ingestor.validatePacket(ingestor.loadPacket(codexDoneDir));
+  assert.equal(codexDone.ok, true);
+  assert.equal(codexDone.ready, false);
+  assert.ok(codexDone.findings.some((finding) => finding.code === 'packet_status_migrated'));
+
+  const inventedStatusDir = makePacketDir();
+  writePacket(inventedStatusDir, { status: 'codex_finished_magic' });
+  const inventedStatus = ingestor.validatePacket(ingestor.loadPacket(inventedStatusDir));
+  assert.equal(inventedStatus.ok, false);
+  assert.ok(inventedStatus.findings.some((finding) => finding.code === 'unknown_packet_status'));
 });
 
 test('ChatGPT dropoff ingestor force retry can reprocess a terminal packet status', async () => {

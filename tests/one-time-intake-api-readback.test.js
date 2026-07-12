@@ -444,6 +444,17 @@ test('One Time intake parse API writes and reads back raw intake, parse run, ite
   assert.equal(first.body.raw_intake.metadata.scoped_project_key, ONE_TIME_PROJECT_KEY);
   assert.equal(first.body.parse_run.metadata.workspace_key, ONE_TIME_WORKSPACE_KEY);
   assert.equal(first.body.parse_run.metadata.project_key, ONE_TIME_PROJECT_KEY);
+  assert.equal(first.body.ramble_to_done.adapter_key, 'file_intake');
+  assert.equal(first.body.ramble_to_done.raw_intake_stable_id, first.body.raw_intake.stable_id);
+  assert.equal(first.body.ramble_to_done.no_lost_sentence_gate.ok, true);
+  assert.ok(first.body.ramble_to_done.source_statement_count >= 4);
+  assert.ok(first.body.ramble_to_done.source_statement_ids.every((id) => id.startsWith(`${first.body.raw_intake.stable_id}:S`)));
+  assert.ok(first.body.ramble_to_done.requirement_rows.length >= 1);
+  assert.ok(first.body.ramble_to_done.jobs.length >= first.body.ramble_to_done.requirement_rows.length);
+  assert.ok(first.body.ramble_to_done.receipts.some((receipt) => receipt.receipt_type === 'worker_health' && receipt.status === 'online'));
+  assert.equal(first.body.ramble_to_done.external_write_performed, false);
+  assert.equal(first.body.parsed.ramble_to_done.raw_intake_stable_id, first.body.raw_intake.stable_id);
+  assert.equal(first.body.parse_run.metadata.ramble_to_done.raw_intake_stable_id, first.body.raw_intake.stable_id);
   assert.ok(first.body.raw_intake.created_task_ids.length >= 1);
   assert.ok(scopedRecords(first.body.parsed).length >= 1);
   assert.ok(scopedRecords(first.body.parsed).every((item) => item.workspace_key === ONE_TIME_WORKSPACE_KEY));

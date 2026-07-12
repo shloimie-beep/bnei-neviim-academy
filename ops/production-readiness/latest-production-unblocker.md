@@ -1,16 +1,16 @@
-# Production Unblocker - 2026-07-10T17:27:18.312Z
+# Production Unblocker - 2026-07-12T08:40:55.742Z
 Snapshot status: not_production_complete
 Production ready: no
-Source snapshot: ops/production-readiness/latest-production-readiness-snapshot.json (latest_file_requested)
-Source snapshot generated at: 2026-07-10T17:27:07.036Z
-Snapshot git head: fd04d006 (origin/master: fd04d006, worktree clean: yes)
+Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
+Source snapshot generated at: 2026-07-12T08:40:52.744Z
+Snapshot git head: c9fba94c (origin/master: d68e3f9a, worktree clean: yes)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 One Time setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
 ## What Blocks Production
 - External setup items: 3
 - Public launch no-write smoke: passed (ready)
-- Rabbi Telegram runtime: local_runtime_ready_live_smoke_pending
+- Rabbi Telegram runtime: blocked_missing_bot_token
 - Agent Mode terminal proof items: 2
 - Active collision lanes: 0 (stale/missing local locks: 0)
 - ChatGPT packets queued: 0
@@ -20,26 +20,36 @@ One Time setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
 Owner: Codex / operator
 Count: 1
 Evidence:
-  - REQ-20260702-108
-  - REQ-20260702-110
+  - REQ-20260712-002
+  - REQ-20260712-013
+  - REQ-20260712-014
+  - REQ-20260712-020
+  - REQ-20260712-021
+  - REQ-20260712-022
+  - REQ-20260712-005
+  - REQ-20260712-006
+  - REQ-20260712-007
+  - REQ-20260712-008
+  - REQ-20260712-009
+  - REQ-20260712-011
 Next action: Clear the external setup, terminal Agent Mode proof, and active collision-lane blockers; then rerun `npm run bna:run:next`.
 ### external_setup_blockers - External One Time setup values or approvals are missing
 Owner: Shloimie / provider account owners
 Count: 3
 Evidence:
   - SETUP-ONETIME-STRIPE-001: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias
-  - SETUP-ONETIME-WHAPI-001: whapi_wapi_instance_id, whapi_wapi_phone_number
+  - SETUP-ONETIME-WHAPI-001: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number
   - SETUP-ONETIME-CAMPAIGN-001: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval
-Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
+Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
 ### rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not production-verified
 Owner: Codex / operator
 Count: 1
 Evidence:
-  - status=local_runtime_ready_live_smoke_pending
-  - chat_id_configured=true
+  - status=blocked_missing_bot_token
+  - chat_id_configured=false
   - candidate_count=0
   - unique_chat_count=0
-Next action: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
+Next action: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
 ### agent_mode_terminal_proof_missing - Rabbi Agent Review terminal proof is missing
 Owner: Shloimie / Agent Mode runner
 Count: 2
@@ -78,6 +88,7 @@ Status: blocked_external_input
 Current evidence: OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.
 Setup check ready: no
 Current missing fields from setup check:
+  - whapi_wapi_token_alias
   - whapi_wapi_instance_id
   - whapi_wapi_phone_number
 Setup check warnings:
@@ -121,24 +132,24 @@ Verification after setup:
 Status: passed
 Ready: yes
 Fresh for launch gate: yes
-Age hours: 0.73
+Age hours: 0.07
 Commands passed: 4/4
 External write performed: no
 Production data mutation performed: no
-Evidence path: ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
+Evidence path: ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 Blocker: none
 ## Rabbi Telegram Runtime
-Status: local_runtime_ready_live_smoke_pending
-Local ready: yes
+Status: blocked_missing_bot_token
+Local ready: no
 Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
-Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (available locally)
-Chat ID configured: yes
+Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (missing locally)
+Chat ID configured: no
 Candidate count: 0
 Unique masked chat count: 0
 Masked candidates:
   - none
 Live delivery smoke: not_exercised_by_readiness_report
-Next action: Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.
+Next action: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
 ## Agent Mode Proof To Save
 ### rabbi-telegram-helper-ticket-smoke
 Owner: Shloimie / Agent Mode runner
@@ -169,10 +180,9 @@ Required result: save terminal PASS, FAIL, or BLOCKED proof for only this prompt
 - Raw secrets, raw phone/contact exports, payment data, and private message bodies must not be committed.
 - Immediate lead capture/free-class lane remains live; full payment/access/campaign automation remains blocked until these items are cleared and verified.
 ## Sources
-- ops/production-readiness/latest-production-readiness-snapshot.json
-- ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json
+- node scripts/production-readiness-snapshot.mjs --no-write --json
+- ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 - node scripts/check-onetime-external-setup-readiness.mjs --json
 - ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
-- .runtime/rabbi-telegram-chat-id-candidates.json
 - ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
 - ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json

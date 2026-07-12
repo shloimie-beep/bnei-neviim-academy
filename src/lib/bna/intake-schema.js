@@ -22,11 +22,17 @@ const INTAKE_SOURCE_CHANNELS = [
 ];
 
 const RAW_PARSE_STATUSES = [
+  'captured',
   'raw',
   'parsed',
   'needs_review',
   'registered',
+  'queued',
+  'running',
   'implemented',
+  'verified',
+  'deployed',
+  'blocked',
   'archived',
   'failed',
 ];

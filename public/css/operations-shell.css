@@ -1621,6 +1621,93 @@
             gap: 10px;
         }
 
+        .crm-workbench-shell {
+            display: grid;
+            grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.35fr);
+            gap: 12px;
+            align-items: start;
+            margin-top: 12px;
+        }
+
+        .crm-workbench-list,
+        .crm-workbench-detail {
+            min-width: 0;
+        }
+
+        .crm-workbench-detail {
+            display: grid;
+            gap: 12px;
+        }
+
+        .crm-selected-card {
+            border: 1px solid #334155;
+            border-radius: 8px;
+            background: #111827;
+            padding: 16px;
+        }
+
+        .crm-selected-title {
+            color: #f8fafc;
+            font-size: 18px;
+            font-weight: 900;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+        }
+
+        .crm-selected-subtitle {
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.45;
+            margin-top: 4px;
+            overflow-wrap: anywhere;
+        }
+
+        .crm-timeline-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .crm-workbench-refresh {
+            min-width: 76px;
+            white-space: nowrap;
+        }
+
+        .settings-control-grid.compact .crm-filter-search {
+            display: grid;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .settings-control-grid.compact .crm-filter-search input {
+            box-sizing: border-box;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .settings-control-grid.compact.crm-action-form {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .settings-control-grid.compact.crm-action-form label,
+        .settings-control-grid.compact.crm-action-form .task-actions {
+            grid-column: 1 / -1;
+            min-width: 0;
+        }
+
+        .settings-control-grid.compact.crm-action-form input,
+        .settings-control-grid.compact.crm-action-form select,
+        .settings-control-grid.compact.crm-action-form textarea {
+            box-sizing: border-box;
+            min-width: 0;
+            width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            .crm-workbench-shell {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .wapi-conversation-workspace {
             display: grid;
             grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.35fr) minmax(240px, 0.95fr);

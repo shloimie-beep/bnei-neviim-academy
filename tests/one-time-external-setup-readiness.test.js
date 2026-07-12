@@ -243,6 +243,9 @@ test('One Time railway readback can use an isolated temp link when the local Rai
             ONE_TIME_DRIVE_DROP_FOLDER_ID: 'drive-folder-id',
             ONE_TIME_ZOOM_JOIN_URL: 'https://example.test/redacted-zoom-link',
             ONE_TIME_WHATSAPP_CLASS_LINK: 'https://example.test/redacted-class-link',
+            ONE_TIME_CLASS_REMINDERS_ENABLED: 'true',
+            ONE_TIME_CLASS_REMINDERS_CONFIRM: 'APPROVE_ONE_TIME_CLASS_REMINDERS',
+            CRON_SECRET: 'cron-secret-value',
             ONE_TIME_WAPI_API_TOKEN: 'scoped-wapi-token',
             ONE_TIME_WHAPI_INSTANCE_ID: 'instance-id',
             ONE_TIME_WHAPI_PHONE: '+972500000000',
@@ -261,11 +264,15 @@ test('One Time railway readback can use an isolated temp link when the local Rai
   assert.equal(result.one_time_drive_drop_folder_present, true);
   assert.equal(result.one_time_zoom_session_present, true);
   assert.equal(result.one_time_class_link_present, true);
+  assert.equal(result.one_time_class_reminders_enabled_true, true);
+  assert.equal(result.one_time_class_reminders_confirm_approved, true);
+  assert.equal(result.cron_secret_present, true);
+  assert.equal(result.one_time_class_reminder_scheduler_ready, true);
   assert.equal(result.one_time_wapi_token_present, true);
   assert.equal(result.one_time_whapi_instance_present, true);
   assert.equal(result.one_time_whapi_phone_present, true);
   assert.ok(calls.some((call) => call.args.join(' ').includes('link --project ce55ef20-1418-4ad3-aafa-f877fb992dc8')));
-  assert.doesNotMatch(JSON.stringify(result), /secret-value|postgres:\/\/|example\.test|scoped-wapi-token|\+972500000000/);
+  assert.doesNotMatch(JSON.stringify(result), /secret-value|postgres:\/\/|example\.test|scoped-wapi-token|cron-secret-value|\+972500000000/);
 });
 
 test('One Time setup readiness can satisfy Zoom session from redacted Railway class-link readback', async () => {
