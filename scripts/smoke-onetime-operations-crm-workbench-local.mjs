@@ -518,6 +518,8 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     { id: 'conversations', label: 'Conversations', pattern: /No conversations yet|email messages|Open email thread/i },
     { id: 'tasks', label: 'Tasks', pattern: /No tasks assigned|Task #|Create task/i },
     { id: 'access', label: 'Access', pattern: /Membership|Class Activity|Linked Records/i },
+    { id: 'identity', label: 'Identity', pattern: /Communication Preference|Consent \/ Suppression|Email is not available|WhatsApp is not available/i },
+    { id: 'family', label: 'Family', pattern: /Family \/ School|No membership linked|No follow-up scheduled|Linked Records/i },
     { id: 'activity', label: 'Activity', pattern: /Local CRM update|Safe next actions/i },
   ];
   const workspaceTabMetrics = {};
@@ -870,7 +872,7 @@ async function main() {
     '- One Time Operations CRM route renders the API-backed workbench.',
     '- Split shell and monolith fallback render the API-backed workbench.',
     '- Search/filter/sort controls, Add Contact form, cards, shared CRM contract attributes, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe actions, explicit Create task/archive actions, and timeline readback are visible.',
-    '- Overview, Activity, Conversations, Tasks, and Access tabs are clickable and render non-disabled workspace panels.',
+    '- Overview, Activity, Conversations, Tasks, Access, Identity, and Family tabs are clickable and render non-disabled workspace panels.',
     '- Mobile selected-contact state hides the list and Back to contacts restores it.',
     '- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.',
     '- Initial CRM API calls after auth are <= 3, initial cards are <= 50, contact selection does not replace the app root, and debounced search sends one list request.',

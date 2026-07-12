@@ -186,3 +186,13 @@
 - PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 909cb26d9a21a1e505ee30835ff31646b7c1c9cd`.
 - PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com`; report `ops/live-smokes/2026-07-12T23-25-19-779Z-one-time-operations-crm-workbench-live-smoke.md`.
 - PASS read-only deployed HTML marker check: `https://join.onetimeonetime.com/operations.html` contains shared CRM contract attributes and the 40px back-control CSS marker.
+- PASS `node --check public\js\operations-shell.js scripts\smoke-onetime-operations-crm-workbench-local.mjs public\js\crm\contact-workspace.js` after Identity/Family workspace slice.
+- PASS `npm run operations:check-generated` after Identity/Family workspace slice.
+- PASS `node --test tests\shared-crm-workbench-contract.test.js tests\crm-contact-service.test.js` (12/12) after Identity/Family workspace slice.
+- PASS `node --test tests\crm-contact-service.test.js tests\shared-crm-workbench-contract.test.js tests\crm-contact-model.test.js tests\rabbi-scheller-tenant-isolation-contract.test.js tests\one-time-communications-workspace.test.js tests\operations-contacts-intake-cleanup.test.js` (37/37) after Identity/Family workspace slice.
+- PASS `node scripts\smoke-onetime-operations-crm-workbench-local.mjs` after Identity/Family workspace slice; report `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md`.
+- PASS `npm run watchdog:actions` finding_count `0` after Identity/Family workspace slice; report `ops/watchdog-audits/2026-07-12T23-29-watchdog-action-audit.md`.
+- PASS `npm run watchdog:protocol-drift` after Identity/Family workspace slice.
+- PASS `npm run secrets:audit` after Identity/Family workspace slice.
+- PASS `npm run bna:run:validate` after Identity/Family workspace slice; work remains on the broader addendum.
+- PASS `git diff --check` with line-ending warnings only after Identity/Family workspace slice.

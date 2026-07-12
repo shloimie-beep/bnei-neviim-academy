@@ -16075,7 +16075,9 @@
                 { id: 'activity', label: 'Activity', enabled: true },
                 { id: 'conversations', label: 'Conversations', enabled: true },
                 { id: 'tasks', label: 'Tasks', enabled: true },
-                { id: 'access', label: 'Access', enabled: true }
+                { id: 'access', label: 'Access', enabled: true },
+                { id: 'identity', label: 'Identity', enabled: true },
+                { id: 'family', label: 'Family', enabled: true }
             ];
         }
 
@@ -16137,6 +16139,33 @@
                         ${renderContactDetailItem('Class Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : (window.BnaCrmContactWorkspace?.emptyState?.('class_activity') || 'No class activity recorded.'))}
                         ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
                         ${renderContactDetailItem('Class / Trial / Access', firstPartyCrmClassAccessSummary(card))}
+                    </div>
+                `;
+            }
+            if (activeTab === 'identity') {
+                return `
+                    <div class="contact-detail-grid" data-crm-tab-panel="identity">
+                        ${renderContactDetailItem('Display Name', card.display_name || 'CRM contact')}
+                        ${renderContactDetailItem('Email', window.BnaCrmContactWorkspace?.profileValue?.('email', card.email) || (card.email || 'Email is not available for this contact.'))}
+                        ${renderContactDetailItem('WhatsApp', window.BnaCrmContactWorkspace?.profileValue?.('whatsapp', card.phone) || (card.phone || 'WhatsApp is not available for this contact.'))}
+                        ${renderContactDetailItem('Contact Type', contactStatusLabel(card.contact_type || 'general_contact'))}
+                        ${renderContactDetailItem('Lifecycle', contactStatusLabel(card.status || 'new'))}
+                        ${renderContactDetailItem('Source', contactStatusLabel(card.source_label || card.source || 'first party'))}
+                        ${renderContactDetailItem('Communication Preference', contactStatusLabel(card.communication_preference || 'Not set'))}
+                        ${renderContactDetailItem('Consent / Suppression', [card.consent_status, card.suppression_status].filter(Boolean).map(contactStatusLabel).join(' / ') || 'No suppression recorded')}
+                    </div>
+                    ${renderFirstPartyCrmSafeActions(card)}
+                `;
+            }
+            if (activeTab === 'family') {
+                return `
+                    <div class="contact-detail-grid" data-crm-tab-panel="family">
+                        ${renderContactDetailItem('Family / School', contactStatusLabel(card.family_school_classification || 'family'))}
+                        ${renderContactDetailItem('Linked Records', firstPartyCrmLinkedSummary(card))}
+                        ${renderContactDetailItem('Membership', [card.membership_access?.access_tier, card.membership_access?.access_status].filter(Boolean).join(' / ') || (window.BnaCrmContactWorkspace?.emptyState?.('membership') || 'No membership linked.'))}
+                        ${renderContactDetailItem('Class Activity', card.last_contact_at ? formatDateTime(card.last_contact_at) : (window.BnaCrmContactWorkspace?.emptyState?.('class_activity') || 'No class activity recorded.'))}
+                        ${renderContactDetailItem('Next Follow-up', card.next_follow_up_at ? formatDate(card.next_follow_up_at) : (window.BnaCrmContactWorkspace?.emptyState?.('follow_up') || 'No follow-up scheduled.'))}
+                        ${renderContactDetailItem('Notes', card.summary || (window.BnaCrmContactWorkspace?.emptyState?.('notes') || 'No notes yet.'))}
                     </div>
                 `;
             }

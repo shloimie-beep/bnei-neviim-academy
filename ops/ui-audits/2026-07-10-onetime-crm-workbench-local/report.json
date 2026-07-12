@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-07-12T23:18:32.842Z",
+  "generated_at": "2026-07-12T23:29:28.929Z",
   "target": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts + /operations.html?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
   "scope": "Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.",
   "guardrails": {
@@ -53,6 +53,8 @@
         "conversations": true,
         "tasks": true,
         "access": true,
+        "identity": true,
+        "family": true,
         "activity": true
       },
       "disabledCrmActionCountAfterSelect": 0,
@@ -135,6 +137,8 @@
         "conversations": true,
         "tasks": true,
         "access": true,
+        "identity": true,
+        "family": true,
         "activity": true
       },
       "disabledCrmActionCountAfterSelect": 0,
@@ -217,6 +221,8 @@
         "conversations": true,
         "tasks": true,
         "access": true,
+        "identity": true,
+        "family": true,
         "activity": true
       },
       "disabledCrmActionCountAfterSelect": 0,
@@ -299,6 +305,8 @@
         "conversations": true,
         "tasks": true,
         "access": true,
+        "identity": true,
+        "family": true,
         "activity": true
       },
       "disabledCrmActionCountAfterSelect": 0,
@@ -381,6 +389,8 @@
         "conversations": true,
         "tasks": true,
         "access": true,
+        "identity": true,
+        "family": true,
         "activity": true
       },
       "disabledCrmActionCountAfterSelect": 0,
@@ -463,6 +473,8 @@
         "conversations": true,
         "tasks": true,
         "access": true,
+        "identity": true,
+        "family": true,
         "activity": true
       },
       "disabledCrmActionCountAfterSelect": 0,
@@ -545,6 +557,8 @@
         "conversations": true,
         "tasks": true,
         "access": true,
+        "identity": true,
+        "family": true,
         "activity": true
       },
       "disabledCrmActionCountAfterSelect": 0,
@@ -627,6 +641,8 @@
         "conversations": true,
         "tasks": true,
         "access": true,
+        "identity": true,
+        "family": true,
         "activity": true
       },
       "disabledCrmActionCountAfterSelect": 0,
@@ -709,6 +725,8 @@
         "conversations": true,
         "tasks": true,
         "access": true,
+        "identity": true,
+        "family": true,
         "activity": true
       },
       "disabledCrmActionCountAfterSelect": 0,
@@ -791,6 +809,8 @@
         "conversations": true,
         "tasks": true,
         "access": true,
+        "identity": true,
+        "family": true,
         "activity": true
       },
       "disabledCrmActionCountAfterSelect": 0,
@@ -850,7 +870,7 @@
       "pageErrors": [],
       "failedRequests": [],
       "badResponses": [],
-      "mailboxUrl": "http://127.0.0.1:58873/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
+      "mailboxUrl": "http://127.0.0.1:51549/operations?workspace=rabbi_sheller_provider&view=communications&section=email&project=one_time_mishnah_class&inbox=rabbi",
       "passed": true
     }
   ]

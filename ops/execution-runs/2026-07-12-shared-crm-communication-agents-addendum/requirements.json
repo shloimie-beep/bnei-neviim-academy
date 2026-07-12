@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-shared-crm-communication-agents-addendum",
   "title": "Shared CRM and communication agents addendum",
-  "updated_at": "2026-07-13T02:25:00+03:00",
+  "updated_at": "2026-07-13T02:29:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260712-301",
@@ -78,9 +78,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the shared CRM contract/geometry slice. Canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked, the local CRM update form/no-auto-task policy slice is deployed and live-smoked, the dead-end Create task placeholder is replaced by deployed explicit ACTION-CRM-CREATE-TASK at commit ded53274e31f91abff7944c094bdcdfaa9c55c5e, Overview/Activity/Conversations/Tasks/Access tabs are deployed at commit 1c4880418954d984c08683ba0955a32549eb33aa with real customer-facing panels, and the shared CRM contract/geometry slice is deployed at commit 909cb26d9a21a1e505ee30835ff31646b7c1c9cd with data attributes for shared component order, pane count, breakpoints, and 40px mobile back-control target.",
+      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the shared CRM contract/geometry slice. Canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked, the local CRM update form/no-auto-task policy slice is deployed and live-smoked, the dead-end Create task placeholder is replaced by deployed explicit ACTION-CRM-CREATE-TASK at commit ded53274e31f91abff7944c094bdcdfaa9c55c5e, Overview/Activity/Conversations/Tasks/Access tabs are deployed at commit 1c4880418954d984c08683ba0955a32549eb33aa with real customer-facing panels, and the shared CRM contract/geometry slice is deployed at commit 909cb26d9a21a1e505ee30835ff31646b7c1c9cd with data attributes for shared component order, pane count, breakpoints, and 40px mobile back-control target. Identity/Family workspace slice is locally verified: the shared tab registry exposes enabled Identity and Family tabs, Operations renders customer-facing identity, communication preference, consent/suppression, family/school, membership, class activity, follow-up, and notes panels, and local smoke clicks both tabs without write requests.",
       "can_continue_without_operator": true,
-      "next_action": "Continue deeper dedicated contact workspace/actions without reintroducing workspace leakage or internal CRM copy.",
+      "next_action": "Commit, push, deploy, and live-smoke Identity/Family workspace tabs; then continue deeper dedicated contact workspace/actions without reintroducing workspace leakage or internal CRM copy.",
       "acceptance_criteria": [
         "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace."
       ],
@@ -118,7 +118,11 @@
         "One Time deployment 279b82a0-a726-4493-a4f6-23ed409b487d SUCCESS at commit 909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
         "BNA and One Time deploy-info returned commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
         "ops/live-smokes/2026-07-12T23-25-19-779Z-one-time-operations-crm-workbench-live-smoke.md records deployed One Time Operations CRM workbench smoke after shared CRM contract/geometry slice.",
-        "Read-only deployed HTML marker check confirmed shared CRM contract attributes and the 40px back-control CSS marker on https://join.onetimeonetime.com/operations.html."
+        "Read-only deployed HTML marker check confirmed shared CRM contract attributes and the 40px back-control CSS marker on https://join.onetimeonetime.com/operations.html.",
+        "public/js/crm/contact-workspace.js shared tab registry exposes enabled Identity and Family tabs.",
+        "public/operations.html and generated Operations shell render data-crm-tab-panel=\"identity\" and data-crm-tab-panel=\"family\" with customer-facing contact workspace fields.",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records local smoke PASS after clicking Identity and Family tabs across split shell and monolith.",
+        "ops/watchdog-audits/2026-07-12T23-29-watchdog-action-audit.md records action watchdog PASS finding_count 0 after the Identity/Family workspace slice."
       ],
       "verification": [
         "node --check server.js PASS",
@@ -204,7 +208,17 @@
         "BNA and One Time deploy-info returned commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 909cb26d9a21a1e505ee30835ff31646b7c1c9cd PASS",
         "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS after shared CRM contract/geometry slice",
-        "curl.exe -fsSL https://join.onetimeonetime.com/operations.html marker check PASS for shared CRM contract attributes and 40px back-control CSS marker"
+        "curl.exe -fsSL https://join.onetimeonetime.com/operations.html marker check PASS for shared CRM contract attributes and 40px back-control CSS marker",
+        "node --check public/js/operations-shell.js scripts/smoke-onetime-operations-crm-workbench-local.mjs public/js/crm/contact-workspace.js PASS after Identity/Family workspace slice",
+        "npm run operations:check-generated PASS after Identity/Family workspace slice",
+        "node --test tests/shared-crm-workbench-contract.test.js tests/crm-contact-service.test.js PASS 12/12 after Identity/Family workspace slice",
+        "node --test tests/crm-contact-service.test.js tests/shared-crm-workbench-contract.test.js tests/crm-contact-model.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js PASS 37/37 after Identity/Family workspace slice",
+        "node scripts/smoke-onetime-operations-crm-workbench-local.mjs PASS after Identity/Family workspace slice",
+        "npm run watchdog:actions PASS finding_count 0 after Identity/Family workspace slice",
+        "npm run watchdog:protocol-drift PASS after Identity/Family workspace slice",
+        "npm run secrets:audit PASS after Identity/Family workspace slice",
+        "npm run bna:run:validate PASS after Identity/Family workspace slice",
+        "git diff --check PASS with line-ending warnings only after Identity/Family workspace slice"
       ],
       "implementation_files": [
         "src/lib/bna/crm/contact-service.js",
@@ -229,7 +243,8 @@
         "tests/shared-crm-workbench-contract.test.js",
     "tests/rabbi-scheller-tenant-isolation-contract.test.js",
     "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
-    "ops/watchdog-audits/2026-07-12T23-18-watchdog-action-audit.md"
+    "ops/watchdog-audits/2026-07-12T23-18-watchdog-action-audit.md",
+    "ops/watchdog-audits/2026-07-12T23-29-watchdog-action-audit.md"
       ],
       "deployment_required": true,
       "deployment_evidence": [
@@ -244,9 +259,10 @@
     "Shared CRM contract/geometry slice deployed at 909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
     "BNA production deploy-info readback commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
     "One Time production deploy-info readback commit_sha=909cb26d9a21a1e505ee30835ff31646b7c1c9cd.",
-    "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-25-19-779Z-one-time-operations-crm-workbench-live-smoke.md."
+    "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T23-25-19-779Z-one-time-operations-crm-workbench-live-smoke.md.",
+    "Identity/Family workspace slice local verification completed; deployment/live smoke pending for this slice."
       ],
-  "updated_at": "2026-07-13T02:25:00+03:00",
+  "updated_at": "2026-07-13T02:29:00+03:00",
       "blocker": ""
     },
     {

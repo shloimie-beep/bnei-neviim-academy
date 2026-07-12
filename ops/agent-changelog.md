@@ -39076,6 +39076,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   CRM workbench smoke with 12 scoped cards and read-only selected timeline,
   and a read-only deployed HTML marker check for shared CRM contract attributes.
 
+## 2026-07-13 - Shared CRM Identity and Family tabs local verification
+
+- Added enabled shared `Identity` and `Family` tabs to the CRM contact
+  workspace registry.
+- Operations renders customer-facing identity, communication preference,
+  consent/suppression, family/school, membership, class activity, follow-up,
+  and notes panels without adding any external send, access, import, payment, or
+  automatic task write.
+- Verification passed: generated-shell check, focused CRM tests `37/37`, local
+  Operations CRM workbench smoke at 1440/1024/768/430/390 with Identity and
+  Family tabs clicked, action watchdog 0 findings, protocol drift watchdog,
+  secret audit, execution run validation, and diff check with line-ending
+  warnings only.
+- Status: local verified, pending commit, push, BNA/One Time deploy, and live
+  One Time Operations CRM smoke before this slice is deployed.
+
 ## 2026-07-13 - Shared CRM Archive Contact local verification
 
 - Added `ACTION-CRM-ARCHIVE-CONTACT` to the selected CRM contact workspace with

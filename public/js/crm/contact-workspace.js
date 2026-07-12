@@ -17,7 +17,9 @@
         { id: 'activity', label: 'Activity', enabled: true },
         { id: 'conversations', label: 'Conversations', enabled: true },
         { id: 'tasks', label: 'Tasks', enabled: true },
-        { id: 'access', label: 'Access', enabled: true }
+        { id: 'access', label: 'Access', enabled: true },
+        { id: 'identity', label: 'Identity', enabled: true },
+        { id: 'family', label: 'Family', enabled: true }
     ]);
 
     const WORKBENCH_CONTRACT = Object.freeze({

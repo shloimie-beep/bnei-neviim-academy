@@ -120,6 +120,11 @@ test('Operations CRM workspace tabs are enabled surfaces, not disabled placehold
   assert.match(operations, /data-crm-tab-panel="conversations"/);
   assert.match(operations, /data-crm-tab-panel="tasks"/);
   assert.match(operations, /data-crm-tab-panel="access"/);
+  assert.match(operations, /data-crm-tab-panel="identity"/);
+  assert.match(operations, /data-crm-tab-panel="family"/);
+  assert.match(operations, /Communication Preference/);
+  assert.match(operations, /Consent \/ Suppression/);
+  assert.match(operations, /Family \/ School/);
   assert.doesNotMatch(operations, /tab\.enabled \? '' : `disabled aria-disabled="true"/);
 });
 
@@ -143,6 +148,8 @@ test('Shared CRM modules expose paths, empty states, actions, and inbox scope', 
     ['conversations', true],
     ['tasks', true],
     ['access', true],
+    ['identity', true],
+    ['family', true],
   ]));
   assert.equal(JSON.stringify(global.BnaCrmContactWorkspace.workbenchContract()), JSON.stringify({
     version: 'shared-crm-v1',
