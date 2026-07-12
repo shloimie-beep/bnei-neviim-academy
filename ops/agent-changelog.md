@@ -38763,3 +38763,13 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   tests/one-time-signup-reminder-workflow.test.js` 13/13,
   `npm run test:onetime:focused` 73/73, `npm run secrets:audit`,
   `npm run watchdog:actions`, and `git diff --check`.
+- Deployed code commit `009876c71e29b5394bd396e0c0a2d79c97faff11` to the
+  One Time Railway production service and verified
+  `https://join.onetimeonetime.com/api/deploy-info` returned that exact SHA.
+- Live smokes passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 009876c71e29b5394bd396e0c0a2d79c97faff11`,
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com --expected-sha 009876c71e29b5394bd396e0c0a2d79c97faff11`,
+  and `npm run app:smoke:one-time-interest-dry-run -- https://join.onetimeonetime.com --expected-sha 009876c71e29b5394bd396e0c0a2d79c97faff11`.
+- Live browser proof at 390px selected Family, set hidden
+  `signup_as=Family`, cleared the Family/School validation error, found no
+  native select, and performed no external write.
