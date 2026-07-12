@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T13:53:29.251Z",
+  "generated_at": "2026-07-12T14:48:47.904Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,9 +16,9 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "953cd5dce4dd3863eab226bd5ab494b0c5cfa1498ddcf2336e20a8018289f256",
+  "content_hash": "4992588ef48286325623b40c0239d9bfac36fe47e43d5c56e1f4e1c26e8a1fab",
   "source_hashes": {
-    "ops/action-registry.json": "3659e05b65294aa4339cc2d51020418971b2965a219cd1ce7bc248da509b54bb",
+    "ops/action-registry.json": "144b206996c45c5e3e562657deb768a5c0f1078e1dd11cc02037f677f48a21f9",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
     "public/operations.html": "625762356ef6c288b20c11329eb0785a161f83eddb22cedaed9a292d703adc42",
     "public/parent.html": "c9928f157d29d6f5da7e6710805315c8403d782f318d63dbd425f157de9f4549",
@@ -1527,7 +1527,7 @@
         "public"
       ],
       "allowed_workspaces": [],
-      "execution_handler": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text city, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
+      "execution_handler": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text location entry accepting city, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
       "status": "active",
       "classification": "preview_then_approve",
       "risk": "high",
@@ -1542,7 +1542,7 @@
       "website_examples": [
         "Sign Up Now"
       ],
-      "result_renderer": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text city, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
+      "result_renderer": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text location entry accepting city, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },

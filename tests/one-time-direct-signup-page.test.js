@@ -73,6 +73,9 @@ test('One Time direct signup route, registries, and landing CTAs are canonical',
   assert.match(signupHtml, /name="browser_timezone"/);
   assert.match(signupHtml, /name="timezone_fallback"/);
   assert.doesNotMatch(signupHtml, /cityOptions|CITY_OPTIONS|Choose the matching city|unambiguous city/);
+  assert.match(signupHtml, /City, ZIP\/postal code, or area/);
+  assert.match(signupHtml, /No city list is required/);
+  assert.match(signupHtml, /area code/);
   assert.match(signupHtml, /name="email"/);
   assert.match(signupHtml, /name="phone"/);
   assert.match(signupHtml, /name="signup_acknowledgement"/);
@@ -138,6 +141,8 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
         phoneLabel: document.querySelector('label[for="phone"]')?.textContent || '',
         consentText: document.querySelector('.consent-copy')?.textContent || '',
         cityList: document.querySelector('input[name="city_label"]')?.getAttribute('list') || '',
+        cityPlaceholder: document.querySelector('input[name="city_label"]')?.getAttribute('placeholder') || '',
+        cityHint: document.querySelector('input[name="city_label"]')?.closest('.field')?.querySelector('.field-hint')?.textContent || '',
         timezone: document.querySelector('input[name="timezone"]')?.value || '',
         localClassTime: document.querySelector('[data-local-class-time]')?.textContent || '',
       }));
@@ -150,6 +155,8 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
       assert.equal(metrics.acknowledgementRequired, true, `acknowledgement required at ${width}`);
       assert.equal(metrics.acknowledgementChecked, false, `acknowledgement not prechecked at ${width}`);
       assert.equal(metrics.cityList, '', `city field is free text at ${width}`);
+      assert.match(metrics.cityPlaceholder, /ZIP\/postal code|area/i, `location placeholder accepts zip/area at ${width}`);
+      assert.match(metrics.cityHint, /No city list is required/i, `location hint removes city-picker ambiguity at ${width}`);
       assert.equal(metrics.timezone, 'America/Buenos_Aires', `detected timezone stored at ${width}`);
       assert.match(metrics.localClassTime, /where you are/i, `local class time displays at ${width}`);
       assert.match(metrics.consentText, /detected time zone/i, `consent line mentions detected timezone at ${width}`);
@@ -161,7 +168,7 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
     await page.goto(`${baseUrl}/one-time/signup`, { waitUntil: 'domcontentloaded' });
     await page.fill('input[name="contact_name"]', 'Leah Cohen');
     await page.selectOption('select[name="signup_as"]', 'Family');
-    await page.fill('input[name="city_label"]', 'Buenos Aires');
+    await page.fill('input[name="city_label"]', '11230');
     await page.dispatchEvent('input[name="city_label"]', 'input');
     await page.fill('input[name="email"]', 'leah@example.invalid');
     await page.check('input[name="reminder_preference"][value="whatsapp"]');
@@ -192,13 +199,13 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
     assert.equal(payload.region, 'worldwide');
     assert.equal(payload.timezone, 'America/Buenos_Aires');
     assert.equal(payload.city_id, '');
-    assert.equal(payload.city_label, 'Buenos Aires');
-    assert.equal(payload.city_name, 'Buenos Aires');
+    assert.equal(payload.city_label, '11230');
+    assert.equal(payload.city_name, '11230');
     assert.equal(payload.city_country_code, '');
     assert.equal(payload.browser_timezone, 'America/Buenos_Aires');
     assert.equal(payload.metadata.signup_as, 'Family');
     assert.equal(payload.metadata.city.id, '');
-    assert.equal(payload.metadata.city.label, 'Buenos Aires');
+    assert.equal(payload.metadata.city.label, '11230');
     assert.equal(payload.metadata.city.timezone, 'America/Buenos_Aires');
     assert.equal(payload.metadata.timezone_source, 'browser');
     assert.equal(payload.metadata.reminder_preference, 'whatsapp');
@@ -217,7 +224,7 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
     assert.equal(storedLead.product_lead_id, '123');
     assert.equal(storedLead.crm_lead_id, '456');
     assert.equal(storedLead.source_landing_page, '/one-time/signup');
-    assert.equal(storedLead.city, 'Buenos Aires');
+    assert.equal(storedLead.city, '11230');
     assert.equal(storedLead.city_context.id, '');
     assert.equal(storedLead.city_context.timezone, 'America/Buenos_Aires');
     assert.deepEqual(storedLead.utm, {});

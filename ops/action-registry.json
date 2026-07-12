@@ -428,12 +428,12 @@
       "surface": "one_time_public_direct_signup",
       "route": "/one-time/signup",
       "selector_hint": "[data-one-time-direct-signup-form] button[type=\"submit\"]",
-      "expected_behavior": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text city, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
+      "expected_behavior": "Creates or links a first-party One Time product lead and CRM lead from the direct public signup form with required contact name, required Family or School choice, required free-text location entry accepting city, ZIP/postal code, area code, or neighborhood, detected browser IANA timezone or manual IANA fallback, required email, phone required only for WhatsApp reminder choices, reminder preference, consent metadata, route/referrer/UTM metadata, and no student name. It enqueues the immediate confirmation email and Rabbi Telegram signup alert through scoped outbox records, and it does not create checkout, live charge, portal account, password setup, Zoom meeting, or access grant.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "api_guarded",
-        "expected_result": "Posts direct signup payload to /api/one-time/interest, stores free-text city plus detected/fallback IANA timezone, Family or School, reminder preference and consent, queues confirmation/alert outbox records idempotently, and returns no-checkout/no-access-grant metadata with no student-name field."
+      "expected_result": "Posts direct signup payload to /api/one-time/interest, stores the free-text location entry plus detected/fallback IANA timezone, Family or School, reminder preference and consent, queues confirmation/alert outbox records idempotently, and returns no-checkout/no-access-grant metadata with no student-name field."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

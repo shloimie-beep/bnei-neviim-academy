@@ -38705,3 +38705,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `node --test tests/watchdog-action-registry.test.js`, and
   `git diff --check`.
 - Production deployment outcome is pending in the same Codex task.
+
+## 2026-07-12 - One Time signup location hotfix locally verified
+
+- Confirmed the city/timezone correction had already been tracked as
+  `REQ-20260712-106`, but the live form still had city-specific copy that could
+  make families think a missing city picker was required.
+- Updated `/one-time/signup` so the required location field visibly accepts a
+  city, ZIP/postal code, area code, or neighborhood and says no city list is
+  required.
+- Preserved the existing first-party signup payload shape, browser timezone
+  detection/fallback, reminder consent, and WhatsApp-only phone requirement.
+- Updated action/route registry language and regenerated action coverage/parity
+  artifacts.
+- Local gates passed: `node --test tests/one-time-direct-signup-page.test.js`
+  2/2, `node --test tests/one-time-focused-landing.test.js` 2/2,
+  `npm run test:onetime:focused` 73/73, `npm run watchdog:actions`, and
+  `node --test tests/watchdog-action-registry.test.js` 5/5.

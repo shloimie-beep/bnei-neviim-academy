@@ -801,8 +801,8 @@
           </div>
 
           <div class="field">
-            <label for="city">City. <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
-            <input id="city" name="city_label" type="text" autocomplete="address-level2" required>
+            <label for="city">Location <span class="required-dot" aria-hidden="true"></span><span class="sr-only">required</span></label>
+            <input id="city" name="city_label" type="text" autocomplete="address-level2" placeholder="City, ZIP/postal code, or area" required>
             <input type="hidden" name="city_id">
             <input type="hidden" name="city_name">
             <input type="hidden" name="city_region">
@@ -810,8 +810,8 @@
             <input type="hidden" name="city_country_code">
             <input type="hidden" name="timezone">
             <input type="hidden" name="browser_timezone">
-            <span class="field-hint">Enter your city exactly as you want it saved.</span>
-            <span class="field-error" data-error-for="city_label">Enter your city.</span>
+            <span class="field-hint">Type a city, ZIP/postal code, area code, or neighborhood. No city list is required.</span>
+            <span class="field-error" data-error-for="city_label">Enter your city, ZIP/postal code, or area.</span>
           </div>
 
           <div class="field timezone-fallback" data-timezone-fallback hidden>

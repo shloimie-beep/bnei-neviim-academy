@@ -553,7 +553,7 @@
       "expected_logged_in_behavior": "load_public_one_time_direct_signup_without_starting_private_portal_payment_or_access_workflows",
       "privacy_risk": "normal",
       "canonical_target": "/one-time/signup",
-      "security_expectation": "Public One Time direct signup only: collects contact name, Family or School choice, unambiguous city/timezone metadata, email, optional phone unless WhatsApp reminders are selected, and class reminder preference. It must not expose private records, open member login, start checkout/payment, grant access, create a Zoom meeting, or perform an external send from the page route.",
+      "security_expectation": "Public One Time direct signup only: collects contact name, Family or School choice, free-text location/timezone metadata, email, optional phone unless WhatsApp reminders are selected, and class reminder preference. It must not expose private records, open member login, start checkout/payment, grant access, create a Zoom meeting, or perform an external send from the page route.",
       "smoke_expectation": "tests/one-time-direct-signup-page.test.js verifies route registration, responsive form behavior, no student-name field, WhatsApp-only phone requirement, and no portal/payment/access actions.",
       "related_goal_ids": [
         "GOAL-CORE-003",
