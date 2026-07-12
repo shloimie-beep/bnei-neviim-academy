@@ -125,6 +125,11 @@ REQ-20260712-013 evidence:
   dot hidden until WhatsApp is selected, the acknowledgment checkbox visible,
   no customer-facing optional-phone wording, WhatsApp selection making phone
   required, and no overlapping robot artwork.
+- Signup/reminder proof matrix added:
+  `ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md`.
+  It maps each urgent P0 signup/reminder requirement to source files, local
+  tests, screenshot evidence, redacted readiness reports, and remaining
+  live/provider/operator blockers without claiming terminal Done.
 - Local gates passed:
   `node --check server.js`,
   `node --test tests/one-time-direct-signup-page.test.js` (2/2),
@@ -141,6 +146,27 @@ REQ-20260712-013 evidence:
   non-terminal deployment-required work.
 - Production deploy/live proof is not claimed. It remains gated by
   `REQ-20260712-011` and `REQ-20260712-022`.
+
+REQ-20260712-010 / REQ-20260712-023 matrix evidence:
+
+- The urgent signup/reminder slice now has a requirement-by-requirement matrix:
+  `ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md`.
+- The matrix covers Family/School, direct route/Back to Home, responsive
+  signup screenshots, internal-copy removal, city/timezone/DST behavior,
+  worldwide instant, local display, phone gating, no-reminder confirmation,
+  explicit consent, CRM/outbox/idempotency, paused/canceled class suppression,
+  unsubscribe/STOP/wrong-number suppression, missing/changed class-link
+  handling, Rabbi Telegram, WAPI readiness, local-class preview/activation
+  gate, no portal/payment/access paths, cross-workspace isolation, `.invalid`
+  no-send tests, and operator-test blockers.
+- `tests/one-time-signup-reminder-workflow.test.js` now explicitly asserts the
+  dedicated reminder path contains `ONE_TIME_CLASS_ACTIVE`,
+  `class_paused_or_canceled`, `oneTimeReminderSuppressionReason`,
+  `email_unsubscribed`, `whatsapp_stop`, and `wrong_number` guardrails.
+- The broader older REQ-20260712-010 screenshot/matrix requirement remains
+  in progress, because landing, Family/School continuation, provider login,
+  Operations, CRM, mailbox, and Robot live/deployed screenshots are not all
+  complete in this urgent signup/reminder slice.
 
 REQ-20260712-005 evidence:
 

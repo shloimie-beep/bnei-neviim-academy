@@ -46,6 +46,12 @@ REQ-20260712-013 local gate:
   no optional-style phone copy, phone dot/hint hidden before WhatsApp, phone
   dot/hint visible after WhatsApp, required reminder/location checkbox, and no
   preselected reminder option.
+- `node --test tests/one-time-signup-reminder-workflow.test.js` PASS: 10
+  tests, 10 passed. The refreshed suite now also asserts the dedicated reminder
+  path has paused/canceled class suppression and email unsubscribe, WhatsApp
+  STOP, and wrong-number guardrails.
+- Requirement matrix added:
+  `ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md`.
 - `node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js`
   PASS: 12 tests, 12 passed.
 - `node --test tests/one-time-signup-reminder-workflow.test.js` PASS: 10
