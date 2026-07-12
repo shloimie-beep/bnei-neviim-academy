@@ -1,22 +1,22 @@
 {
-  "generated_at": "2026-07-10T17:27:18.312Z",
+  "generated_at": "2026-07-12T08:40:55.742Z",
   "report_version": "bna-production-unblocker-v1",
   "production_ready": false,
   "snapshot_status": "not_production_complete",
-  "source_snapshot_generated_at": "2026-07-10T17:27:07.036Z",
-  "snapshot_source": "ops/production-readiness/latest-production-readiness-snapshot.json",
-  "snapshot_source_kind": "latest_file_requested",
-  "snapshot_git_head": "fd04d006",
-  "snapshot_origin_master": "fd04d006",
+  "source_snapshot_generated_at": "2026-07-12T08:40:52.744Z",
+  "snapshot_source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
+  "snapshot_source_kind": "live_no_write_command",
+  "snapshot_git_head": "c9fba94c",
+  "snapshot_origin_master": "d68e3f9a",
   "snapshot_worktree_clean": true,
   "source_snapshot": {
-    "source": "ops/production-readiness/latest-production-readiness-snapshot.json",
-    "kind": "latest_file_requested",
-    "generated_at": "2026-07-10T17:27:07.036Z",
-    "git_head": "fd04d006",
-    "origin_master": "fd04d006",
+    "source": "node scripts/production-readiness-snapshot.mjs --no-write --json",
+    "kind": "live_no_write_command",
+    "generated_at": "2026-07-12T08:40:52.744Z",
+    "git_head": "c9fba94c",
+    "origin_master": "d68e3f9a",
     "worktree_clean": true,
-    "command_exit_code": null,
+    "command_exit_code": 0,
     "load_error": ""
   },
   "workspace_project": {
@@ -26,7 +26,7 @@
   "source_setup_readiness": {
     "source": "node scripts/check-onetime-external-setup-readiness.mjs --json",
     "kind": "live_no_write_command_expected_blocked",
-    "generated_at": "2026-07-10T17:27:18.304Z",
+    "generated_at": "2026-07-12T08:40:55.733Z",
     "command_exit_code": 1,
     "load_error": "",
     "ready_count": 5,
@@ -42,11 +42,11 @@
     "public_launch_smoke_status": "passed",
     "public_launch_smoke_ready": true,
     "public_launch_smoke_fresh": true,
-    "public_launch_smoke_age_hours": 0.73,
-    "public_launch_smoke_path": "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
-    "rabbi_telegram_runtime_status": "local_runtime_ready_live_smoke_pending",
-    "rabbi_telegram_runtime_local_ready": true,
-    "rabbi_telegram_chat_id_configured": true,
+    "public_launch_smoke_age_hours": 0.07,
+    "public_launch_smoke_path": "ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json",
+    "rabbi_telegram_runtime_status": "blocked_missing_bot_token",
+    "rabbi_telegram_runtime_local_ready": false,
+    "rabbi_telegram_chat_id_configured": false,
     "rabbi_telegram_candidate_count": 0,
     "agent_mode_proof_count": 2,
     "active_collision_lane_count": 0,
@@ -57,18 +57,88 @@
   },
   "run_blockers": [
     {
-      "id": "REQ-20260702-108",
-      "title": "Verify provider setup panels/tasks",
-      "owner": "Shloimie / provider account owners",
-      "blocker": "Full provider/campaign setup remains incomplete in current read-only setup check; Railway target context is resolved.",
-      "next_action": "Provide or label the exact missing setup values for full launch: Rabbi Stripe sandbox/test key status plus $67/month product/price aliases, Whapi/WAPI instance ID and phone number, WAPI auto-reply enable/approval flags if auto-reply is intended, final campaign copy, exact recipient segment/list, suppression/unsubscribe proof, and explicit seed approval packet."
+      "id": "REQ-20260712-002",
+      "title": "Reconcile PR delivery truth and CI enforcement",
+      "owner": "GitHub credential owner / operator",
+      "blocker": "GitHub rejected push of .github/workflows/onetime-corrective.yml because the OAuth App lacks workflow scope.",
+      "next_action": "Push the CI workflow with a GitHub token that has workflow scope, or have an authorized maintainer add .github/workflows/onetime-corrective.yml separately."
     },
     {
-      "id": "REQ-20260702-110",
-      "title": "Validate, push PR, and close out blockers",
-      "owner": "Shloimie / provider account owners for full setup; Codex for RAW-20260709-008 capture lane",
-      "blocker": "Full OneTime launch remains blocked by external setup values, not Railway target context. The immediate lead-capture/free-class lane is unblocked and tracked in RAW-20260709-008.",
-      "next_action": "Keep the immediate lead-capture/free-class lane live and verified. For full launch, provide Stripe sandbox/price alias, Whapi/WAPI instance/phone plus auto-reply approval flags if auto-reply is intended, and campaign approvals, then rerun setup and WAPI readiness checks."
+      "id": "REQ-20260712-013",
+      "title": "Create canonical direct One Time signup page",
+      "owner": "Operator / reviewer",
+      "blocker": "Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet.",
+      "next_action": "Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test."
+    },
+    {
+      "id": "REQ-20260712-014",
+      "title": "Implement city autocomplete and DST-safe class time conversion",
+      "owner": "Operator / reviewer",
+      "blocker": "Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet.",
+      "next_action": "Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test."
+    },
+    {
+      "id": "REQ-20260712-020",
+      "title": "Prove signup does not trigger portal, account, payment, or access paths",
+      "owner": "Operator / reviewer",
+      "blocker": "Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet.",
+      "next_action": "Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test."
+    },
+    {
+      "id": "REQ-20260712-021",
+      "title": "Build exact-three local-class contact preview and activation gate",
+      "owner": "Operator / reviewer",
+      "blocker": "Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet.",
+      "next_action": "Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test."
+    },
+    {
+      "id": "REQ-20260712-022",
+      "title": "Gate deployed personal end-to-end operator test",
+      "owner": "Operator / reviewer",
+      "blocker": "The operator must approve release/deployment and personally submit exactly one test signup before Codex can verify real external-send evidence or activate the exact three-contact local segment.",
+      "next_action": "After local implementation and no-send validation pass, approve deployment and submit the personal test through https://join.onetimeonetime.com/one-time/signup, then report when the page confirms signup."
+    },
+    {
+      "id": "REQ-20260712-005",
+      "title": "Complete first-party One Time CRM journey",
+      "owner": "Operator / local test environment",
+      "blocker": "Missing BNA_ONETIME_CRM_TEST_DATABASE_URL for the required real local/test Postgres CRM journey. Production DATABASE_URL is intentionally ignored by the smoke.",
+      "next_action": "Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, then run npm run one-time:smoke:crm-journey-local-db and attach the generated report."
+    },
+    {
+      "id": "REQ-20260712-006",
+      "title": "Link quick signup to Family and School continuation",
+      "owner": "Operator / local test environment",
+      "blocker": "BNA_ONETIME_CRM_TEST_DATABASE_URL is missing for the real local/test Postgres persistence journey, and deployment/live smoke is not authorized.",
+      "next_action": "Provide an approved non-production BNA_ONETIME_CRM_TEST_DATABASE_URL, rerun the real persistence journey, then authorize PR #129 release/deploy/live smoke for terminal proof."
+    },
+    {
+      "id": "REQ-20260712-007",
+      "title": "Complete public landing, Robot, and config",
+      "owner": "Operator / reviewer",
+      "blocker": "Terminal Done requires release authorization, deployment of the exact PR #129 SHA, and live-smoke proof. Local browser proof is complete, but no deploy/live external write is authorized.",
+      "next_action": "Authorize PR #129 release, deploy the exact approved SHA, then run live screenshots/readback against the deployed URL."
+    },
+    {
+      "id": "REQ-20260712-008",
+      "title": "Implement canonical ramble-to-done ingestion service",
+      "owner": "release_owner",
+      "blocker": "Deployment/live-smoke evidence is required before this server-visible requirement can be terminal Done.",
+      "next_action": "After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path."
+    },
+    {
+      "id": "REQ-20260712-009",
+      "title": "Add mandatory ramble and release-gate regressions",
+      "owner": "release_owner",
+      "blocker": "Deployment/live-smoke evidence is required before this server-visible regression batch can be terminal Done.",
+      "next_action": "After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path."
+    },
+    {
+      "id": "REQ-20260712-011",
+      "title": "Release only after authorization and live smoke exact SHA",
+      "owner": "Operator / reviewer",
+      "blocker": "Explicit authorization is required before merge, deployment, or production live smoke.",
+      "next_action": "Review PR #129 after local verification and explicitly approve or reject release through the approved pipeline."
     }
   ],
   "blocker_groups": [
@@ -78,8 +148,18 @@
       "owner": "Codex / operator",
       "count": 1,
       "evidence": [
-        "REQ-20260702-108",
-        "REQ-20260702-110"
+        "REQ-20260712-002",
+        "REQ-20260712-013",
+        "REQ-20260712-014",
+        "REQ-20260712-020",
+        "REQ-20260712-021",
+        "REQ-20260712-022",
+        "REQ-20260712-005",
+        "REQ-20260712-006",
+        "REQ-20260712-007",
+        "REQ-20260712-008",
+        "REQ-20260712-009",
+        "REQ-20260712-011"
       ],
       "next_action": "Clear the external setup, terminal Agent Mode proof, and active collision-lane blockers; then rerun `npm run bna:run:next`."
     },
@@ -90,10 +170,10 @@
       "count": 3,
       "evidence": [
         "SETUP-ONETIME-STRIPE-001: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias",
-        "SETUP-ONETIME-WHAPI-001: whapi_wapi_instance_id, whapi_wapi_phone_number",
+        "SETUP-ONETIME-WHAPI-001: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number",
         "SETUP-ONETIME-CAMPAIGN-001: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval"
       ],
-      "next_action": "Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval."
+      "next_action": "Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval."
     },
     {
       "id": "rabbi_telegram_runtime_configuration",
@@ -101,12 +181,12 @@
       "owner": "Codex / operator",
       "count": 1,
       "evidence": [
-        "status=local_runtime_ready_live_smoke_pending",
-        "chat_id_configured=true",
+        "status=blocked_missing_bot_token",
+        "chat_id_configured=false",
         "candidate_count=0",
         "unique_chat_count=0"
       ],
-      "next_action": "Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof."
+      "next_action": "Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness."
     },
     {
       "id": "agent_mode_terminal_proof_missing",
@@ -164,6 +244,7 @@
       "current_evidence": "OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.",
       "setup_check_ready": false,
       "current_missing_fields": [
+        "whapi_wapi_token_alias",
         "whapi_wapi_instance_id",
         "whapi_wapi_phone_number"
       ],
@@ -217,10 +298,10 @@
     }
   ],
   "public_launch_smoke": {
-    "path": "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
+    "path": "ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json",
     "available": true,
     "status": "passed",
-    "recorded_at": "2026-07-10T16:43:35Z",
+    "recorded_at": "2026-07-12T08:36:45Z",
     "report_version": "bna-no-write-live-smoke-readback-v1",
     "command_count": 4,
     "passed_command_count": 4,
@@ -236,27 +317,27 @@
         "command": "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com",
         "status": "passed",
         "base_url": "https://join.onetimeonetime.com",
-        "report_path": "ops/live-smokes/2026-07-10T16-43-16-150Z-rabbi-onetime-landing-smoke.md",
+        "report_path": "ops/live-smokes/2026-07-12T08-36-21-853Z-rabbi-onetime-landing-smoke.md",
         "writes_report_file": false
       },
       {
         "command": "npm run app:smoke:one-time-interest-dry-run",
         "status": "passed",
         "base_url": "https://join.onetimeonetime.com",
-        "report_path": "ops/live-smokes/2026-07-10T16-43-16-137Z-one-time-interest-dry-run-live-smoke.md",
+        "report_path": "ops/live-smokes/2026-07-12T08-36-21-908Z-one-time-interest-dry-run-live-smoke.md",
         "writes_report_file": false
       },
       {
         "command": "npm run app:smoke:public-privacy",
         "status": "passed",
         "base_url": "https://bneineviimacademy.org",
-        "report_path": "ops/live-smokes/2026-07-10T16-43-28-006Z-public-route-privacy-smoke.md",
+        "report_path": "ops/live-smokes/2026-07-12T08-36-33-417Z-public-route-privacy-smoke.md",
         "writes_report_file": false
       }
     ],
     "external_write_performed": false,
     "production_data_mutation_performed": false,
-    "age_hours": 0.73,
+    "age_hours": 0.07,
     "max_age_hours": 24,
     "fresh_for_launch_gate": true,
     "ready": true,
@@ -266,26 +347,31 @@
     "readiness_path": "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",
     "chat_id_report_path": ".runtime/rabbi-telegram-chat-id-candidates.json",
     "readiness_available": true,
-    "runtime_report_available": true,
-    "checked_at": "2026-07-09T22:54:32.391Z",
-    "chat_id_checked_at": "2026-07-09T23:00:05.155Z",
-    "status": "local_runtime_ready_live_smoke_pending",
-    "local_ready": true,
-    "configuration_ready": true,
+    "runtime_report_available": false,
+    "checked_at": "2026-07-12T07:46:59.887Z",
+    "chat_id_checked_at": "",
+    "status": "blocked_missing_bot_token",
+    "local_ready": false,
+    "configuration_ready": false,
     "production_verified": false,
-    "readiness_status": "ready",
-    "readiness_blockers": [],
-    "token_configured": true,
-    "chat_id_configured": true,
-    "ops_username_configured": true,
-    "ops_password_configured": true,
-    "bot_username": "onetimeaios_bot",
+    "readiness_status": "blocked_missing_runtime_config",
+    "readiness_blockers": [
+      "TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER is not configured.",
+      "TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER is not configured.",
+      "ONE_TIME_OPS_USERNAME or RABBI_ELIE_SCHELLER_OPS_USERNAME is not configured.",
+      "ONE_TIME_OPS_PASSWORD or RABBI_ELIE_SCHELLER_OPS_PASSWORD is not configured."
+    ],
+    "token_configured": false,
+    "chat_id_configured": false,
+    "ops_username_configured": false,
+    "ops_password_configured": false,
+    "bot_username": "",
     "candidate_count": 0,
     "unique_chat_count": 0,
     "start_command_count": 0,
     "masked_candidates": [],
     "live_delivery_smoke": "not_exercised_by_readiness_report",
-    "next_action": "Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof."
+    "next_action": "Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness."
   },
   "agent_mode_proofs": [
     {
@@ -325,7 +411,7 @@
     {
       "id": "SETUP-ONETIME-WHAPI-001",
       "owner": "Shloimie / provider account owners",
-      "action": "Provide aliases/status for: whapi_wapi_instance_id, whapi_wapi_phone_number",
+      "action": "Provide aliases/status for: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number",
       "forbidden": [
         "real_whatsapp_send_without_later_exact_packet"
       ],
@@ -343,7 +429,7 @@
     {
       "id": "rabbi_telegram_runtime",
       "owner": "Codex / operator",
-      "action": "Schedule the normal hosted restart/deploy window, then run a scoped Rabbi Telegram live smoke only with exact send approval and record proof.",
+      "action": "Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.",
       "forbidden": [
         "Do not paste raw chat IDs, tokens, phone numbers, or private messages into tracked files or chat.",
         "Do not send a live Telegram smoke without exact approval."
@@ -386,11 +472,10 @@
     "Immediate lead capture/free-class lane remains live; full payment/access/campaign automation remains blocked until these items are cleared and verified."
   ],
   "sources": [
-    "ops/production-readiness/latest-production-readiness-snapshot.json",
-    "ops/production-readiness/2026-07-09-no-write-live-smoke-readback.json",
+    "node scripts/production-readiness-snapshot.mjs --no-write --json",
+    "ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json",
     "node scripts/check-onetime-external-setup-readiness.mjs --json",
     "ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json",
-    ".runtime/rabbi-telegram-chat-id-candidates.json",
     "ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json",
     "ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json"
   ]
