@@ -1,11 +1,11 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T11:42:00+03:00",
+  "updated_at": "2026-07-12T11:45:00+03:00",
   "git_refs": {
     "expected_branch": "codex/onetime-p0p1-corrective-20260711",
     "branch": "codex/onetime-p0p1-corrective-20260711",
-    "current_head": "de601c82290110bbf7029364cecca834f8f3440d",
+    "current_head": "597e56a75cd0815f40289de0dc931fdc9b8386e8",
     "pr_number": 129,
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
     "pr_branch": "codex/onetime-p0p1-corrective-20260711",
@@ -20,7 +20,9 @@
       "7bdc5519d167ea560f3f8d383cd771f7f1e540c5",
       "a7e75ebaa4f495a9e201109222c3a1acd7ef3214",
       "0df0300ab1e1d3701a4fa3489c9fc9cfc9eabcfb",
-      "de601c82290110bbf7029364cecca834f8f3440d"
+      "de601c82290110bbf7029364cecca834f8f3440d",
+      "8f401d6aacd59f56e6c4505be9a8f6a130d5e064",
+      "597e56a75cd0815f40289de0dc931fdc9b8386e8"
     ],
     "current_priority_addendum": "RAW-20260712-002",
     "current_p0_batch": "crm-confirmation-outbox"
