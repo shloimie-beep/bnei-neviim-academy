@@ -38568,3 +38568,17 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   WAPI, Rabbi Telegram, and scheduler/`CRON_SECRET` readiness are still not
   green. No email/WhatsApp/Telegram send, provider mutation, production-data
   mutation, payment/access mutation, or local-class activation was performed.
+
+## 2026-07-12 - One Time WAPI credential stored and readiness improved
+
+- Stored the One Time WAPI token in ignored local secret files and set the
+  Railway `one-time-web` production variable through stdin without printing the
+  value.
+- Used read-only Whapi health to derive and store the instance id and sender
+  metadata, then generated and stored a One Time WAPI webhook secret.
+- Updated the WAPI readiness report: outbound is configured, credential scope
+  is One Time-scoped, and provider setup is ready.
+- Auto-reply and Telegram live mode remain intentionally disabled until exact
+  real-send approval is given for those behaviors.
+- No WhatsApp message, Telegram message, email, CRM mutation, payment/access
+  mutation, DNS/account mutation, or raw secret commit was performed.

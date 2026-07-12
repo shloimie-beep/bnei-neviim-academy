@@ -35,9 +35,10 @@ uncommitted change that breaks `node --check server.js`.
 - `REQ-20260712-010`: complete the remaining live screenshot/matrix set for
   provider login, canonical Rabbi dashboard, CRM list/detail, persisted CRM
   edit, targeted mailbox, and Robot launcher.
-- `REQ-20260712-022`: operator personal deployed signup and hosted
-  WAPI/Telegram/scheduler readiness remain open. Do not send externally until
-  the exact send scope and provider readiness are approved.
+- `REQ-20260712-022`: operator personal deployed signup, live WAPI auto-reply/
+  Telegram approval, and scheduler/CRON readiness remain open. One Time WAPI
+  provider setup is configured. Do not send externally until the exact send
+  scope is approved.
 
 ## First Commands
 

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T13:54:00+03:00",
+  "updated_at": "2026-07-12T14:16:00+03:00",
   "git_refs": {
     "expected_branch": "codex/onetime-p0p1-corrective-20260711",
     "branch": "codex/onetime-p0p1-corrective-20260711",
@@ -403,7 +403,7 @@
         "ops/execution-runs/latest.json"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "The July 12 prompt is preserved and converted into a resumable continuation run before implementation."
     },
     {
@@ -471,7 +471,7 @@
         "ops/agent-changelog.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "PR delivery records are truthful and CI prevents future stale Operations/One Time evidence-only closeout."
     },
     {
@@ -528,7 +528,7 @@
         "public/js/one-time-rabbi-dashboard-ia.generated.js"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "Canonical-route browser evidence proves the same Operations assets the server actually serves."
     },
     {
@@ -548,7 +548,7 @@
         "memory/2026-07-12.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-012",
       "title": "Attach P0 signup/reminder addendum to current run",
       "source_statement_ids": [
@@ -673,7 +673,7 @@
         "tests/one-time-signup-reminder-workflow.test.js",
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json"
       ],
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "A professional standalone signup route is the single public signup implementation.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
       "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",
@@ -719,7 +719,7 @@
         "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-014",
       "title": "Implement city autocomplete and DST-safe class time conversion",
       "source_statement_ids": [
@@ -803,7 +803,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-015",
       "title": "Atomically store signup CRM data, consent, and outbox intents",
       "source_statement_ids": [
@@ -860,7 +860,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-016",
       "title": "Queue and send immediate transactional confirmation email",
       "source_statement_ids": [
@@ -923,7 +923,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-017",
       "title": "Build dedicated One Time class reminder dispatcher",
       "source_statement_ids": [
@@ -985,14 +985,22 @@
       "owner": "Codex",
       "priority": "P0",
       "can_continue_without_operator": true,
-      "blocker": "",
-      "blocker_owner": "",
-      "blocker_next_action": "",
+      "blocker": "Auto-reply and Telegram live-send flags are intentionally off pending exact real-send approval; STOP/wrong-number provider proof remains required before broad WhatsApp automation is terminal.",
+      "blocker_owner": "Operator / provider setup owner",
+      "blocker_next_action": "Approve the exact live auto-reply/Telegram behavior or keep observe-only; then run one approved single-recipient/provider proof without broad sends.",
       "evidence": [
-        "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
+        "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed.",
+        "One Time WAPI token stored in ignored .secrets and Railway one-time-web production variable via stdin; secret_values_printed=false.",
+        "Read-only Whapi health returned AUTH and business account true; instance id and sender metadata stored without committing raw values.",
+        "Generated One Time WAPI webhook secret and stored it locally and in Railway.",
+        "npm run one-time:railway-target:guard PASS: one_time_wapi_token_present=true, one_time_whapi_instance_present=true, one_time_whapi_phone_present=true.",
+        "npm run one-time:wapi:readiness report: provider_setup.ready=true, outbound configured=true, credential_scope=one_time_scoped, auto_reply.ready=false pending explicit live-send flags.",
+        "npm run secrets:audit PASS after readiness report update.",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.json",
+        "ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-018",
       "title": "Gate WhatsApp reminders on explicit consent and Rabbi Whapi readiness",
       "source_statement_ids": [
@@ -1003,9 +1011,9 @@
       "depends_on": [
         "REQ-20260712-017"
       ],
-      "status": "in_progress",
-      "implementation_status": "WhatsApp reminder eligibility is locally gated by explicit WhatsApp/Both preference, valid phone, suppression state, and One Time Whapi readiness settings. The delivery-outbox helper builds WAPI requests only for WhatsApp confirmation/reminder channel rows, uses the One Time WAPI scope, normalizes the phone recipient from the linked CRM contact, and keeps public delivery results redacted. Live Whapi readiness/readback and STOP/wrong-number provider proof remain required.",
-      "next_action": "Complete hosted readiness/deploy/live-smoke/provider evidence and operator personal test before terminal closeout.",
+      "status": "needs_operator_decision",
+      "implementation_status": "WhatsApp/WAPI provider setup is now configured for One Time: token, instance id, sender metadata, and webhook secret are stored locally and in Railway without committing raw secrets. WhatsApp confirmation/reminder delivery remains guarded; auto-reply/live Telegram flags and STOP/wrong-number provider proof are still intentionally pending.",
+      "next_action": "Approve the exact live auto-reply/Telegram behavior or keep observe-only; then run one approved single-recipient/provider proof without broad sends.",
       "acceptance_criteria": [
         "WhatsApp sends only for WhatsApp or Both selections.",
         "Phone remains optional for Email or No daily reminders.",
@@ -1025,7 +1033,10 @@
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
         "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
         "node --test tests/one-time-delivery-outbox.test.js PASS 5/5",
-        "npm run test:onetime:focused PASS 72/72"
+        "npm run test:onetime:focused PASS 72/72",
+        "npm run one-time:railway-target:guard PASS after WAPI env update",
+        "npm run one-time:wapi:readiness provider_setup.ready=true with no sends",
+        "npm run secrets:audit PASS"
       ],
       "implementation_files": [
         "server.js",
@@ -1051,7 +1062,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-019",
       "title": "Send exactly one scoped Rabbi Telegram signup alert",
       "source_statement_ids": [
@@ -1122,7 +1133,7 @@
         "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-020",
       "title": "Prove signup does not trigger portal, account, payment, or access paths",
       "source_statement_ids": [
@@ -1212,7 +1223,7 @@
         "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-021",
       "title": "Build exact-three local-class contact preview and activation gate",
       "source_statement_ids": [
@@ -1288,9 +1299,9 @@
       "owner": "Codex",
       "priority": "P0",
       "can_continue_without_operator": false,
-      "blocker": "Deployment/live SHA proof is complete, but the operator has not personally submitted the deployed test signup, and hosted WAPI/Telegram/scheduler readiness still is not fully green for external-send proof.",
-      "blocker_owner": "Operator / reviewer",
-      "blocker_next_action": "Operator submits exactly one personal test signup at https://join.onetimeonetime.com/one-time/signup and reports the confirmation; then Codex verifies product lead, CRM contact, consent, no portal/access/payment side effects, and any approved single-recipient reminder simulation without broad sends.",
+      "blocker": "Operator personal deployed signup, GitHub workflow scope, scheduler/CRON readiness, Telegram live approval, and explicit WAPI auto-reply/live-send approval remain open. WAPI token/instance/phone/webhook setup is no longer the blocker.",
+      "blocker_owner": "Operator / provider setup owner",
+      "blocker_next_action": "Complete the operator personal deployed signup and decide whether to approve exact live WAPI auto-reply/Telegram behavior; do not send broadly.",
       "evidence": [
         "scripts/simulate-one-time-class-reminder.mjs requires --confirm APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST, one positive numeric --contact-id, and CRON_SECRET before calling the protected reminder endpoint.",
         "scripts/simulate-one-time-class-reminder.mjs rejects broad audience flags including --all, --audience, --segment, --workspace, and --project.",
@@ -1307,10 +1318,16 @@
         "Final Railway deployment 64ab8814-c984-4618-b808-5e762914f3eb reached SUCCESS for one-time-production / production / one-time-web.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
+        "One Time WAPI token stored in ignored .secrets and Railway one-time-web production variable via stdin; secret_values_printed=false.",
+        "Read-only Whapi health returned AUTH and business account true; instance id and sender metadata stored without committing raw values.",
+        "Generated One Time WAPI webhook secret and stored it locally and in Railway.",
+        "npm run one-time:railway-target:guard PASS: one_time_wapi_token_present=true, one_time_whapi_instance_present=true, one_time_whapi_phone_present=true.",
+        "npm run one-time:wapi:readiness report: provider_setup.ready=true, outbound configured=true, credential_scope=one_time_scoped, auto_reply.ready=false pending explicit live-send flags.",
+        "npm run secrets:audit PASS after readiness report update."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-022",
       "title": "Gate deployed personal end-to-end operator test",
       "source_statement_ids": [
@@ -1322,8 +1339,8 @@
         "REQ-20260712-023"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Guarded single-recipient reminder simulation command is locally implemented and tested. A separate operator-test handoff guard now suppresses the required \"Automation is deployed and ready for your test\" message until implementation, migrations, no-send tests, CI, deployment, Resend/WAPI/Telegram readiness, scheduler health, and direct-form visual proof all pass. Current readiness is blocked as expected on ci_passed, deployment_complete, wapi_ready, and telegram_ready. Deployment authorization, hosted readiness, scheduler health, visual proof on the deployed URL, real provider evidence, and operator personal signup submission remain required before terminal closeout. Deployment_complete is now true by live SHA proof; the operator personal test and hosted send-readiness proof remain blocked.",
-      "next_action": "Operator submits exactly one personal test signup at https://join.onetimeonetime.com/one-time/signup and reports the confirmation; then Codex verifies product lead, CRM contact, consent, no portal/access/payment side effects, and any approved single-recipient reminder simulation without broad sends.",
+      "implementation_status": "Deployment/live SHA proof is complete and One Time WAPI provider setup is now configured. The operator-test handoff remains suppressed until CI workflow scope, scheduler/CRON readiness, Telegram live approval, explicit WAPI auto-reply/live-send approval, and the operator personal deployed signup proof are complete.",
+      "next_action": "Complete the operator personal deployed signup and decide whether to approve exact live WAPI auto-reply/Telegram behavior; do not send broadly.",
       "acceptance_criteria": [
         "Automation deployed and ready message is given only after implementation/tests/readiness/deploy/visual proof.",
         "Only operator-submitted recipient is used.",
@@ -1348,7 +1365,9 @@
         "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha fc147ded1ee0e12325111382fa8e460134a8ce3d.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final deployment.",
+        "npm run one-time:railway-target:guard PASS after WAPI env update",
+        "npm run one-time:wapi:readiness provider_setup.ready=true with auto-reply still gated"
       ],
       "implementation_files": [
         "scripts/simulate-one-time-class-reminder.mjs",
@@ -1392,7 +1411,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "id": "REQ-20260712-023",
       "title": "Run required signup/reminder test matrix and evidence closeout",
       "source_statement_ids": [
@@ -1531,7 +1550,7 @@
         "package.json"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "Rabbi/provider users enter one scoped canonical Operations shell instead of a separate stale provider dashboard."
     },
     {
@@ -1607,7 +1626,7 @@
         "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "The One Time CRM is a useful first-party operational CRM with safe scoped mutations and mailbox continuity."
     },
     {
@@ -1694,7 +1713,7 @@
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/TEST-RESULTS.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "Public signup becomes a clean no-send lead capture that continues through exact Family/School onboarding records.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
       "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",
@@ -1803,7 +1822,7 @@
         "public/js/bna-bot-widget.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "The public landing is customer-ready for the approved no-send signup path and no longer exposes placeholder/internal copy or competing CTAs.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
       "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",
@@ -1946,7 +1965,7 @@
         "tests/ingestion/ramble-regression-suite.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "All natural-language intake channels project into one observable raw-to-requirement-to-job-to-proof graph.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
       "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",
@@ -2062,7 +2081,7 @@
         "public/js/operations-deferred-renderers.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "The ramble-to-done system has deterministic regression coverage for the July 12 failure modes.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
       "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",
@@ -2140,7 +2159,7 @@
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/STATUS.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "The PR has independent visual/runtime proof and a source-to-code-to-proof matrix for review."
     },
     {
@@ -2203,7 +2222,7 @@
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/DEPLOYMENT.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T13:54:00+03:00",
+      "updated_at": "2026-07-12T14:16:00+03:00",
       "expected_result": "App-visible work is held at ready-for-release until explicit authorization, then deployed and live-smoked by exact SHA.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
       "deployment_id": "64ab8814-c984-4618-b808-5e762914f3eb",

@@ -1,6 +1,6 @@
 # One Time WAPI / WhatsApp Readiness
 
-Checked at: 2026-07-12T07:47:02.271Z
+Checked at: 2026-07-12T11:15:46.079Z
 
 Workspace/project: `rabbi_sheller_provider` / `one_time_mishnah_class`
 Mode: readiness_no_send
@@ -11,9 +11,9 @@ Secret values printed: false
 
 ## Summary
 
-- Outbound configured: false
-- Credential scope: missing
-- Provider setup ready: false
+- Outbound configured: true
+- Credential scope: one_time_scoped
+- Provider setup ready: true
 - Auto-reply ready: false
 - Auto-reply enabled: false
 - Auto-reply approved: false
@@ -23,16 +23,9 @@ Secret values printed: false
 
 ## Blockers / Next Actions
 
-- WAPI/Whapi token missing
-- One Time scoped WAPI token missing
-- Whapi/WAPI instance id missing
-- WhatsApp sender phone metadata missing
-- WAPI webhook secret missing
-- ONE_TIME_WAPI_API_TOKEN or RABBI_SHELLER_WAPI_API_TOKEN missing
 - ONE_TIME_WAPI_AUTO_REPLY_ENABLED not enabled
 - ONE_TIME_WAPI_AUTO_REPLY_CONFIRM must equal APPROVE_ONE_TIME_WAPI_AUTO_REPLY
 - ONE_TIME_PROVIDER_LEAD_BOT_MODE must equal live
-- One Time WAPI webhook secret missing
 - ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM_CONFIRM must equal APPROVE_ONE_TIME_PROVIDER_LEAD_BOT_TELEGRAM
 
 ## Guardrails

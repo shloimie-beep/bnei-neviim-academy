@@ -60,10 +60,11 @@ Run remains active with release/live proof recorded and a short blocker list.
 - `REQ-20260712-020` / `REQ-20260712-021`: release proof is complete, but
   terminal closeout depends on the blocked persistence/operator-test evidence.
 - `REQ-20260712-022`: guarded reminder simulation and readiness checks pass
-  locally, but the operator has not personally submitted the deployed test
-  signup and hosted WAPI/Telegram/scheduler readiness is not fully green.
-  The handoff guard now correctly marks deployment complete from live smoke
-  while keeping the ready message suppressed for CI, WAPI, Telegram, and
+  locally, and One Time WAPI provider setup is now configured. The operator has
+  not personally submitted the deployed test signup, and live auto-reply,
+  Telegram approval, and scheduler/CRON readiness remain gated. The handoff
+  guard now correctly marks deployment complete from live smoke while keeping
+  the ready message suppressed for CI, live-send approvals, Telegram, and
   scheduler/`CRON_SECRET` readiness.
 - `REQ-20260712-017`: the protected One Time delivery outbox dispatcher is
   implemented and deployed. A live no-secret request returns HTTP 503 instead
@@ -80,8 +81,9 @@ Run remains active with release/live proof recorded and a short blocker list.
 - `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
   write-smoke requires a separately scoped production test packet because it
   creates live raw/parse records.
-- `REQ-20260712-022`: operator personal deployed signup and hosted reminder
-  provider readiness are still open. No external sends were performed.
+- `REQ-20260712-022`: operator personal deployed signup, live auto-reply/
+  Telegram approval, and scheduler/CRON readiness are still open. One Time WAPI
+  provider setup is configured. No external sends were performed.
 - `REQ-20260712-017`: hosted class reminder settings are not enabled/approved
   and `CRON_SECRET` is missing by redacted Railway readiness readback, so the
   delivery/reminder workers must not be activated yet.

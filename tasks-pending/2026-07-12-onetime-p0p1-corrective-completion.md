@@ -49,9 +49,9 @@ clean Git truth until reconciled by its owner.
 | REQ-20260712-012 | Verified | Urgent signup/reminder workflow addendum captured into the active run. | None |
 | REQ-20260712-013 | Verified | Canonical `/one-time/signup` and direct public Sign Up Now routing are implemented, deployed, and live-smoked. | None |
 | REQ-20260712-014 | Verified | City/timezone signup schedule behavior is implemented, tested, deployed, and covered by live route proof. | None |
-| REQ-20260712-015 through REQ-20260712-019 | In progress / needs verification | CRM/outbox/reminder/Telegram/WAPI pieces have local implementation and guarded tests. | Real DB proof, hosted readiness, and no-send/operator-test evidence remain open where applicable. |
+| REQ-20260712-015 through REQ-20260712-019 | In progress / needs verification | CRM/outbox/reminder/Telegram/WAPI pieces have local implementation and guarded tests; One Time WAPI provider setup is now configured. | Real DB proof, live auto-reply/Telegram approval, scheduler readiness, and no-send/operator-test evidence remain open where applicable. |
 | REQ-20260712-020 / REQ-20260712-021 | Needs operator decision | Release/deploy/live SHA proof is complete. | Terminal closeout depends on blocked persistence/operator personal test evidence. |
-| REQ-20260712-022 | Needs operator decision | Guarded reminder simulation and readiness checks are implemented locally. | Operator personal deployed signup and hosted WAPI/Telegram/scheduler readiness remain open; no external sends were performed. |
+| REQ-20260712-022 | Needs operator decision | Guarded reminder simulation and readiness checks are implemented locally; One Time WAPI provider setup is configured. | Operator personal deployed signup, live auto-reply/Telegram approval, and scheduler/CRON readiness remain open; no external sends were performed. |
 | REQ-20260712-023 | In progress | Signup/reminder evidence matrix exists. | Broader final matrix and remaining live screenshots are incomplete. |
 
 ## Verification
@@ -83,7 +83,7 @@ Release/live gates passed:
 | DEC-20260712-001 | Completed | Operator / reviewer | Release authorization was given and PR #129 was merged/deployed/live-smoked. |
 | DEC-20260712-002 | Blocked | Operator / local test environment | Provide a non-production `BNA_ONETIME_CRM_TEST_DATABASE_URL` and rerun `npm run one-time:smoke:crm-journey-local-db`. |
 | DEC-20260712-003 | Needs operator decision | Operator / reviewer | Decide whether to run a production intake/dropoff write-smoke packet that creates live raw/parse records. |
-| DEC-20260712-004 | Needs operator decision | Operator / provider setup owner | Complete personal deployed signup and hosted reminder-provider readiness before any external send proof. |
+| DEC-20260712-004 | Needs operator decision | Operator / provider setup owner | Complete personal deployed signup and decide whether to approve exact live WAPI auto-reply/Telegram behavior before any external send proof. |
 
 No production email/WhatsApp/Telegram/campaign send, charge/refund, access
 grant, historical import, DNS/account mutation, credential mutation, or
