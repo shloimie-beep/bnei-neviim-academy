@@ -10,10 +10,10 @@ Run remains active with release/live proof recorded and a short blocker list.
   `598f66238f68293575d5f9e6195bb6b032ebb156`
 - Merge commit:
   `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
-- Deployed/live-smoked master SHA:
-  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
+- Deployed/live-smoked runtime source SHA:
+  `5bf521c539e608543c6a54028cccdc8903667081`
 - Railway deployment id:
-  `af80ca76-063d-44ab-9582-f2bda60e1967`
+  `bc45a0fa-76b1-4170-80d2-cf18dbca70c9`
 - Production URL:
   https://join.onetimeonetime.com
 

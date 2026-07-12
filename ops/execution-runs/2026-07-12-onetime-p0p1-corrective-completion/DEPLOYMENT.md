@@ -18,22 +18,24 @@ live-smoked.
   `63243c915b2774c59faf980e027efc8e546a3f1e` delivery outbox dispatcher,
   `fc147ded1ee0e12325111382fa8e460134a8ce3d` release-proof commit,
   `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435` WAPI readiness setup,
-  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c` CRM live edit fix.
+  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c` CRM live edit fix,
+  `5bf521c539e608543c6a54028cccdc8903667081` personal-continuation
+  proof/evidence closeout.
 
 ## Railway
 
 - Target: `one-time-production / production / one-time-web`
 - Public URL: https://join.onetimeonetime.com
-- Final deployment id: `af80ca76-063d-44ab-9582-f2bda60e1967`
+- Final deployment id: `bc45a0fa-76b1-4170-80d2-cf18dbca70c9`
 - Deployment status: `SUCCESS`
-- Live deployed SHA from `/api/deploy-info`:
-  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
+- Live deployed runtime source SHA from `/api/deploy-info`:
+  `5bf521c539e608543c6a54028cccdc8903667081`
 
 ## Live Smoke
 
 Passed after deployment:
 
-- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 5bf521c539e608543c6a54028cccdc8903667081`
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
 - `npm run app:smoke:one-time-interest-crm-e2e`
 - `npm run app:smoke:one-time-personal-continuation`
@@ -43,6 +45,11 @@ Passed after deployment:
 The live smoke checked the exact deployed SHA, One Time instance config,
 landing/signup routes, direct signup fields, Operations login route, portal
 routes, provider route, and One Time classroom route.
+
+The final deployment was a proof/evidence closeout deployment. Runtime app
+behavior from the CRM/personal continuation proof remained unchanged; Railway
+release metadata was refreshed so `/api/deploy-info` reports the final pushed
+master SHA exactly.
 
 The direct signup dry-run smoke now checks `/one-time/signup`, required red
 markers, the required location/reminder acknowledgement checkbox, no

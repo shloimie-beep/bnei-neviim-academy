@@ -38633,3 +38633,15 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   tickets. No dispatchable queued rows remained.
 - No external email, WhatsApp/WAPI, Telegram, payment, access, DNS, import, or
   external CRM write was performed.
+
+## 2026-07-12 - One Time proof closeout deployed and live-smoked
+
+- Pushed proof/evidence closeout commit
+  `5bf521c539e608543c6a54028cccdc8903667081` to `master`.
+- Deployed `one-time-production / production / one-time-web` through Railway:
+  `bc45a0fa-76b1-4170-80d2-cf18dbca70c9`, status `SUCCESS`.
+- Live `/api/deploy-info` returned the exact deployed SHA and branch:
+  `5bf521c539e608543c6a54028cccdc8903667081`, `master`.
+- Live smokes passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 5bf521c539e608543c6a54028cccdc8903667081`
+  and `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.

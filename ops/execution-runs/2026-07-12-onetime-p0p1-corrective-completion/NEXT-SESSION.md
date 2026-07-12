@@ -15,9 +15,9 @@ uncommitted change that breaks `node --check server.js`.
 - PR state: merged
 - Merge commit: `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
 - Deployed/live-smoked SHA:
-  `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`
+  `5bf521c539e608543c6a54028cccdc8903667081`
 - Railway deployment:
-  `af80ca76-063d-44ab-9582-f2bda60e1967`
+  `bc45a0fa-76b1-4170-80d2-cf18dbca70c9`
 - Live URL:
   https://join.onetimeonetime.com
 

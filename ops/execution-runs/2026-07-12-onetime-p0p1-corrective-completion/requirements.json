@@ -1,11 +1,11 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T15:26:00+03:00",
+  "updated_at": "2026-07-12T15:36:00+03:00",
   "git_refs": {
     "delivery_branch": "codex/onetime-p0p1-corrective-20260711",
     "release_worktree": "detached HEAD from origin/master at deployed commit",
-    "last_validated_head": "8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435",
+    "last_validated_head": "5bf521c539e608543c6a54028cccdc8903667081",
     "pr_number": 129,
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
     "pr_branch": "codex/onetime-p0p1-corrective-20260711",
@@ -32,13 +32,13 @@
     "pr_state": "merged",
     "pr_head_at_merge": "598f66238f68293575d5f9e6195bb6b032ebb156",
     "merge_commit": "8e22e5d79844e994e94c4f3ed92ac51422649b8c",
-    "master_release_commit": "f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c",
-    "deployed_commit": "f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c",
-    "deployment_id": "af80ca76-063d-44ab-9582-f2bda60e1967",
+    "master_release_commit": "5bf521c539e608543c6a54028cccdc8903667081",
+    "deployed_commit": "5bf521c539e608543c6a54028cccdc8903667081",
+    "deployment_id": "bc45a0fa-76b1-4170-80d2-cf18dbca70c9",
     "deployment_target": "one-time-production / production / one-time-web",
     "deployment_url": "https://join.onetimeonetime.com",
-    "live_smoke_at": "2026-07-12T11:55:57Z",
-    "final_evidence_commit": "f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c"
+    "live_smoke_at": "2026-07-12T12:35:05Z",
+    "final_evidence_commit": "5bf521c539e608543c6a54028cccdc8903667081"
   },
   "sources": [
     {
@@ -2252,7 +2252,7 @@
         "REQ-20260712-010"
       ],
       "status": "needs_verification",
-      "implementation_status": "Release authorization was granted in chat, PR #129 was marked ready and merged, master was deployed to One Time Railway, and live smoke verified exact SHA 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435 after the WAPI readiness setup. The overall run remains open because REQ-010 and external proof blockers are still non-terminal.",
+      "implementation_status": "Release authorization was granted in chat, PR #129 was marked ready and merged, master was deployed to One Time Railway, and live smoke verified exact SHA 5bf521c539e608543c6a54028cccdc8903667081 after the final proof/evidence commit and Railway metadata deployment. The overall run remains open because REQ-010 and external proof blockers are still open.",
       "can_continue_without_operator": false,
       "blocker": "",
       "blocker_owner": "",
@@ -2278,7 +2278,12 @@
         "Post-WAPI Railway deployment 079c53ca-cb65-4cf9-af06-286a7705e7a1 reached SUCCESS for one-time-production / production / one-time-web.",
         "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435.",
         "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435 PASS.",
-        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after WAPI readiness deployment."
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after WAPI readiness deployment.",
+        "Final proof/evidence commit 5bf521c539e608543c6a54028cccdc8903667081 pushed to master.",
+        "Railway deployment bc45a0fa-76b1-4170-80d2-cf18dbca70c9 reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 5bf521c539e608543c6a54028cccdc8903667081 and source_branch master.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 5bf521c539e608543c6a54028cccdc8903667081 PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS after final proof metadata deployment."
       ],
       "verification": [
         "release approval readback",
@@ -2300,7 +2305,7 @@
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/DEPLOYMENT.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T14:22:00+03:00",
+      "updated_at": "2026-07-12T15:36:00+03:00",
       "expected_result": "App-visible work is held at ready-for-release until explicit authorization, then deployed and live-smoked by exact SHA.",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
       "deployment_id": "079c53ca-cb65-4cf9-af06-286a7705e7a1",

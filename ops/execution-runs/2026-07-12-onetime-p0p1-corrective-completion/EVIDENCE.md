@@ -393,20 +393,22 @@ Release / live proof update:
   `8e61628ad3e3db7cd65fbbf5ebefbb34e39f9435`.
 - CRM live-edit fix commit deployed:
   `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`.
+- Personal-continuation proof/evidence closeout commit deployed:
+  `5bf521c539e608543c6a54028cccdc8903667081`.
 - Railway target:
   `one-time-production / production / one-time-web`.
 - Final Railway deployment:
-  `af80ca76-063d-44ab-9582-f2bda60e1967`, status `SUCCESS`.
+  `bc45a0fa-76b1-4170-80d2-cf18dbca70c9`, status `SUCCESS`.
 - Live URL:
   https://join.onetimeonetime.com
 - Live `/api/deploy-info` readback:
-  `commit_sha` = `f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`,
-  `deployment_source` = `railway:redeploy`,
-  `target_app` = `one-time`,
-  `target_project` = `one-time-production`,
-  `target_service` = `one-time-web`.
+  `commit_sha` = `5bf521c539e608543c6a54028cccdc8903667081`,
+  `source_branch` = `master`,
+  `deployment_source` = `runtime`,
+  `target_app` = `one-time`; `target_project` and `target_service` were
+  blank in runtime metadata after the manual Railway upload.
 - Exact-SHA live smoke passed:
-  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f84d8010702a40e8c3fe7c4efcdc2af4b39ce13c`.
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 5bf521c539e608543c6a54028cccdc8903667081`.
 - Focused Rabbi/One Time landing live smoke passed:
   `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
 - Production personal continuation proof passed:

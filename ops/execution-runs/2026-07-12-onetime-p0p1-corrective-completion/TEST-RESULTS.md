@@ -181,14 +181,13 @@ Post-merge smoke-harness fix gate:
 
 Live production smoke:
 
-- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 5bf521c539e608543c6a54028cccdc8903667081`
   PASS.
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
   PASS.
 - `npm run app:smoke:one-time-personal-continuation` PASS.
 - Direct `/api/deploy-info` readback returned HTTP 200 with
-  `commit_sha` = `fc147ded1ee0e12325111382fa8e460134a8ce3d` and
-  deployment target `one-time-production / one-time-web`.
+  `commit_sha` = `5bf521c539e608543c6a54028cccdc8903667081`.
 
 No external send, payment/charge/refund, access grant, historical import,
 DNS/account mutation, credential mutation, or external-provider write was
@@ -292,8 +291,7 @@ REQ-20260712-007 local landing / Robot gate:
 2026-07-12 post-dispatcher deploy and direct-signup smoke refresh:
 
 - `GET https://join.onetimeonetime.com/api/deploy-info` PASS:
-  `commit_sha` = `fc147ded1ee0e12325111382fa8e460134a8ce3d`, target
-  `one-time-production / one-time-web`.
+  `commit_sha` = `5bf521c539e608543c6a54028cccdc8903667081`.
 - `POST https://join.onetimeonetime.com/api/cron/one-time/delivery-outbox`
   without `CRON_SECRET` returned HTTP 503; no delivery was attempted.
 - `npm run app:smoke:one-time-interest-dry-run` PASS after updating the smoke
