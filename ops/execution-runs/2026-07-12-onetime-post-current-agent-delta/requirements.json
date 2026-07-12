@@ -1,0 +1,313 @@
+{
+  "run_id": "2026-07-12-onetime-post-current-agent-delta",
+  "title": "One Time post-current-agent delta",
+  "updated_at": "2026-07-12T22:35:00+03:00",
+  "git_refs": {
+    "working_branch": "codex/onetime-post-agent-delta-20260712-v3",
+    "starting_head": "593b85c7ffe975dc5eff6f38b684f375385952dc",
+    "origin_master_after_fetch": "593b85c7ffe975dc5eff6f38b684f375385952dc",
+    "pre_active_agent_fetch_head": "b61db37a4e232023f745b568e3456536048a114a",
+    "live_onetime_deployed_commit": "48c52797b2b8354de31f29aa87c1b95307967900",
+    "live_onetime_url": "https://join.onetimeonetime.com"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260712-013",
+      "source_path": "raw-input/RAW-20260712-013-onetime-post-current-agent-delta.txt",
+      "captured_at": "2026-07-12T22:10:00+03:00",
+      "content_fingerprint": "sha256:AE08273F04E3988D30592D5CA962D8B3177AD787ED82D6527D0607E842935704",
+      "privacy_classification": "operator_prompt_no_secret_expected",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_goal_mode_packet"
+    }
+  ],
+  "source_statement_matrices": [
+    {
+      "path": "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/source-statement-matrix.json",
+      "source_id": "RAW-20260712-013"
+    }
+  ],
+  "canonical_tasks": [
+    {
+      "canonical_task_id": "TASK-20260712-801",
+      "canonical_task_key": "rabbi_sheller_provider|one_time_mishnah_class|RAW-20260712-013|post-current-agent-delta",
+      "title": "Execute One Time post-current-agent delta",
+      "owner": "Codex",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "source_id": "RAW-20260712-013",
+      "requirement_id": "REQ-20260712-801",
+      "visible": false,
+      "status": "in_progress"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260712-801",
+      "title": "Register intake and reconcile current state",
+      "expected_result": "The packet is captured, baseline state is recorded, stale approval-only deployment blockers are superseded, and child deltas are linked to existing One Time requirements.",
+      "source_id": "RAW-20260712-013",
+      "source_statement_ids": ["RAW-20260712-013:S1", "RAW-20260712-013:S2", "RAW-20260712-013:S3"],
+      "source_path": "raw-input/RAW-20260712-013-onetime-post-current-agent-delta.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "delta-00",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "Raw source was already committed by active-agent commit 6ffbb0a55. Requirement register created, execution run initialized, current git/live deploy state captured, isolated worktree created, and run validation passed.",
+      "can_continue_without_operator": true,
+      "next_action": "Continue REQ-20260712-804 after committing/pushing the runner batch, or continue REQ-20260712-802/805 while cutover is prepared.",
+      "acceptance_criteria": [
+        "Raw source is repo-visible and fingerprinted.",
+        "Requirement register and execution run exist.",
+        "Current HEAD, origin/master, dirty files, recent commits, and live deployed SHA are recorded.",
+        "Approval-only deployment blocker is superseded without authorizing sends/imports/payments/access/DNS/secrets."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260712-013-onetime-post-current-agent-delta.txt",
+        "tasks-pending/2026-07-12-onetime-post-current-agent-delta.md",
+        "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/BASELINE.md",
+        "https://join.onetimeonetime.com/api/deploy-info"
+      ],
+      "verification": ["PASS npm run bna:run:validate"],
+      "implementation_files": [
+        "tasks-pending/2026-07-12-onetime-post-current-agent-delta.md",
+        "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-12T22:35:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-802",
+      "title": "Harden automatic ramble-to-done compiler and materialization",
+      "expected_result": "Natural rambles from ChatGPT, Telegram text, and Telegram voice are captured immutably, compiled through validated structured specs, materialized into tasks/jobs, reconstructed without truncation, and reported honestly.",
+      "source_id": "RAW-20260712-013",
+      "source_statement_ids": ["RAW-20260712-013:S4"],
+      "source_path": "raw-input/RAW-20260712-013-onetime-post-current-agent-delta.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "protocol_hardening",
+      "priority": "P0",
+      "batch_id": "delta-A",
+      "depends_on": ["REQ-20260712-801"],
+      "status": "not_started",
+      "implementation_status": "Existing ingestion/ramble services and tests need current-state audit before targeted edits.",
+      "can_continue_without_operator": true,
+      "next_action": "Inspect src/platform/ingestion, src/lib/bna/ramble-source-coverage.js, server intake routes, Telegram bridge, ChatGPT ingestor, and agent fleet materialization paths.",
+      "acceptance_criteria": [
+        "No generic placeholder requirement can become implementation_ready.",
+        "Invalid/unavailable OpenAI structured compilation remains specification_pending.",
+        "Every validated actionable requirement has a task and agent job.",
+        "Long Telegram rambles reconstruct exactly or split into linked child intakes.",
+        "Status receipt distinguishes registered, implemented, deployed, live_verified, blocked, failed, superseded, and done."
+      ],
+      "evidence": [],
+      "verification": ["PENDING targeted ramble/ingestion regression tests"],
+      "implementation_files": [
+        "src/lib/bna/ramble-source-coverage.js",
+        "src/platform/ingestion/",
+        "server.js",
+        "scripts/telegram-kimi-bridge.mjs",
+        "scripts/chatgpt-dropoff-ingestor.mjs",
+        "scripts/agent-fleet-supervisor.mjs",
+        "scripts/lib/chatgpt-dropoff-context.mjs",
+        "tests/ingestion/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T22:35:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-803",
+      "title": "Add One Time delivery outbox Railway cron runner",
+      "expected_result": "A short-lived runner posts the approved delivery outbox endpoint every scheduled run with redacted output and focused test coverage.",
+      "source_id": "RAW-20260712-013",
+      "source_statement_ids": ["RAW-20260712-013:S5"],
+      "source_path": "raw-input/RAW-20260712-013-onetime-post-current-agent-delta.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "delivery_cron",
+      "priority": "P0",
+      "batch_id": "delta-B1-B3",
+      "depends_on": ["REQ-20260712-801"],
+      "status": "done",
+      "implementation_status": "Implemented. The short-lived runner requires CRON_SECRET, posts the delivery-outbox endpoint with exact headers/body, aborts after 30 seconds, prints only allowed redacted status/counter fields, fails nonzero for missing config, timeout, non-2xx, invalid JSON, or success=false, and never calls class-reminders.",
+      "can_continue_without_operator": true,
+      "next_action": "Commit/push this batch, then continue REQ-20260712-804 Railway cron service cutover.",
+      "acceptance_criteria": [
+        "CRON_SECRET is required before fetch.",
+        "POST goes to ONE_TIME_DELIVERY_OUTBOX_URL or documented production default.",
+        "Headers and body match the contract.",
+        "Timeout, non-2xx, invalid JSON, and success=false fail nonzero.",
+        "Output prints only redacted allowed counters.",
+        "No class-reminders route is ever called.",
+        "Process exits cleanly without open handles."
+      ],
+      "evidence": [
+        "scripts/run-one-time-delivery-outbox-cron.mjs",
+        "railway.one-time-delivery-cron.json",
+        "tests/one-time-delivery-outbox-cron.test.js",
+        "package.json",
+        ".env.example"
+      ],
+      "verification": [
+        "PASS node --check scripts/run-one-time-delivery-outbox-cron.mjs",
+        "PASS node --test tests/one-time-delivery-outbox-cron.test.js (6/6)",
+        "PASS node --test tests/one-time-delivery-outbox.test.js (5/5)",
+        "PASS JSON parse for package.json and railway.one-time-delivery-cron.json"
+      ],
+      "implementation_files": [
+        "scripts/run-one-time-delivery-outbox-cron.mjs",
+        "railway.one-time-delivery-cron.json",
+        "package.json",
+        ".env.example",
+        "tests/one-time-delivery-outbox-cron.test.js"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-07-12T22:10:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-804",
+      "title": "Cut over delivery dispatcher to separate Railway cron",
+      "expected_result": "A separate Railway service named one-time-delivery-cron runs the delivery outbox every five minutes without overlapping with any Codex automation dispatcher.",
+      "source_id": "RAW-20260712-013",
+      "source_statement_ids": ["RAW-20260712-013:S6"],
+      "source_path": "raw-input/RAW-20260712-013-onetime-post-current-agent-delta.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex / Railway",
+      "category": "delivery_cutover",
+      "priority": "P0",
+      "batch_id": "delta-B4",
+      "depends_on": ["REQ-20260712-803"],
+      "status": "not_started",
+      "implementation_status": "Waiting for runner implementation and Railway/automation readback.",
+      "can_continue_without_operator": true,
+      "next_action": "After REQ-20260712-803 passes, create/deploy/read back the separate cron service or record exact Railway/tooling blocker.",
+      "acceptance_criteria": [
+        "Cron service uses railway.one-time-delivery-cron.json.",
+        "Schedule is */5 * * * * UTC.",
+        "Service has only CRON_SECRET and ONE_TIME_DELIVERY_OUTBOX_URL.",
+        "one-time-web retains provider credentials and sender configuration.",
+        "Two consecutive redacted empty/due-safe executions succeed.",
+        "No class-reminders job ran.",
+        "Old Codex automation one-time-delivery-outbox-dispatcher is disabled/deleted only after cutover proof."
+      ],
+      "evidence": [],
+      "verification": ["PENDING Railway service/deployment readback", "PENDING redacted execution proof"],
+      "implementation_files": [
+        "railway.one-time-delivery-cron.json",
+        "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/DEPLOYMENT.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T22:10:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-805",
+      "title": "Create canonical One Time CRM Contacts/Inbox blueprint",
+      "expected_result": "The CRM Contacts/Inbox spec exists as a canonical JSON blueprint and identifies already satisfied, partial, and missing rows against current master.",
+      "source_id": "RAW-20260712-013",
+      "source_statement_ids": ["RAW-20260712-013:S7"],
+      "source_path": "raw-input/RAW-20260712-013-onetime-post-current-agent-delta.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "crm_blueprint",
+      "priority": "P0",
+      "batch_id": "delta-C0",
+      "depends_on": ["REQ-20260712-801"],
+      "status": "not_started",
+      "implementation_status": "Requested blueprint file is absent at baseline.",
+      "can_continue_without_operator": true,
+      "next_action": "Create ops/product-specs/one-time/crm/contacts-inbox.v1.json and gap matrix after current-state inspection.",
+      "acceptance_criteria": [
+        "Blueprint includes shell tokens, Contacts index, full contact workspace, server DTO/endpoints, Inbox, tasks/pipeline, isolation, performance, canonical-route verification, and packet ownership.",
+        "Source requirements are assigned to OT-CRM-01 through OT-CRM-05.",
+        "Current-state delta matrix avoids reimplementing already merged work."
+      ],
+      "evidence": [],
+      "verification": ["PENDING JSON parse/schema-style checks"],
+      "implementation_files": ["ops/product-specs/one-time/crm/contacts-inbox.v1.json"],
+      "deployment_required": false,
+      "updated_at": "2026-07-12T22:10:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-806",
+      "title": "Implement missing CRM Contacts/Inbox packet rows",
+      "expected_result": "Only missing or partial OT-CRM-01 through OT-CRM-05 rows are implemented and verified through canonical /operations.",
+      "source_id": "RAW-20260712-013",
+      "source_statement_ids": ["RAW-20260712-013:S8"],
+      "source_path": "raw-input/RAW-20260712-013-onetime-post-current-agent-delta.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "crm_implementation",
+      "priority": "P0",
+      "batch_id": "delta-C1-C9",
+      "depends_on": ["REQ-20260712-805"],
+      "status": "not_started",
+      "implementation_status": "Blocked on blueprint/current-state gap matrix.",
+      "can_continue_without_operator": true,
+      "next_action": "Implement dependency-ordered missing rows after REQ-20260712-805.",
+      "acceptance_criteria": [
+        "Canonical /operations is used for browser proof.",
+        "No browser-side joins among unrelated datasets.",
+        "Workspace/project isolation negative proof passes.",
+        "Mutations persist after reload in isolated test DB.",
+        "Responsive screenshots are captured at required viewports."
+      ],
+      "evidence": [],
+      "verification": ["PENDING focused CRM tests and canonical-route browser journeys"],
+      "implementation_files": [
+        "src/lib/bna/crm-contact-model.js",
+        "server.js",
+        "public/js/operations-shell.js",
+        "public/js/operations-deferred-renderers.js",
+        "tests/",
+        "ops/action-registry.json",
+        "ops/route-registry.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T22:10:00+03:00"
+    },
+    {
+      "id": "REQ-20260712-807",
+      "title": "Verify, publish, deploy, live-smoke, and close out",
+      "expected_result": "All changed requirements have focused verification, watchdog/protocol proof, scoped commit/push, deployment/live readback, screenshot paths where applicable, ledger/changelog updates, and terminal statuses.",
+      "source_id": "RAW-20260712-013",
+      "source_statement_ids": ["RAW-20260712-013:S9"],
+      "source_path": "raw-input/RAW-20260712-013-onetime-post-current-agent-delta.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "deploy_verify_closeout",
+      "priority": "P0",
+      "batch_id": "delta-closeout",
+      "depends_on": ["REQ-20260712-802", "REQ-20260712-803", "REQ-20260712-804", "REQ-20260712-806"],
+      "status": "not_started",
+      "implementation_status": "Waiting on implementation requirements.",
+      "can_continue_without_operator": true,
+      "next_action": "Run after implementation batches.",
+      "acceptance_criteria": [
+        "Focused tests and watchdogs pass or exact blockers are recorded.",
+        "Scoped changes are committed and pushed.",
+        "Server-visible/app-visible changes are deployed and live-smoked by exact SHA.",
+        "Ledger, changelog, status, evidence, deployment, and next-session files are updated."
+      ],
+      "evidence": [],
+      "verification": ["PENDING final validation"],
+      "implementation_files": [
+        "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-07-12T22:10:00+03:00"
+    }
+  ]
+}

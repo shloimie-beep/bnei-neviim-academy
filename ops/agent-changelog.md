@@ -38824,3 +38824,27 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Family and School, intercepted `/api/one-time/interest` locally, and captured
   the correct normalized `family` and `school` payloads without a live lead
   write or external send.
+
+## 2026-07-12 - One Time post-current-agent delivery cron runner locally verified
+
+- Captured the post-current-agent goal-mode continuation as `RAW-20260712-013`
+  and created execution run
+  `ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/` from an
+  isolated worktree.
+- Added the bounded One Time delivery outbox Railway cron runner at
+  `scripts/run-one-time-delivery-outbox-cron.mjs`, package command
+  `one-time:delivery-outbox:cron`, separate
+  `railway.one-time-delivery-cron.json`, `.env.example` URL documentation, and
+  focused cron-runner tests.
+- The runner requires `CRON_SECRET`, posts only the approved
+  `/api/cron/one-time/delivery-outbox` endpoint, sends the exact
+  `{"dry_run":false,"limit":25}` body, aborts on timeout, fails nonzero for
+  unsafe/error responses, and prints only redacted status/counter fields.
+- Verification passed locally: `node --check
+  scripts/run-one-time-delivery-outbox-cron.mjs`, `node --test
+  tests/one-time-delivery-outbox-cron.test.js` 6/6, `node --test
+  tests/one-time-delivery-outbox.test.js` 5/5, and JSON parse for
+  `package.json` plus `railway.one-time-delivery-cron.json`.
+- No live scheduler was created or changed in this batch. Railway service
+  creation, two redacted execution proofs, scheduler overlap proof, and old
+  dispatcher automation disablement remain open under `REQ-20260712-804`.

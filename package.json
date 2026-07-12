@@ -19,6 +19,7 @@
     "bna:run:blockers": "node scripts/bna-execution-run.mjs blockers",
     "bna:run:source-coverage": "node scripts/bna-execution-run.mjs source-coverage",
     "bna:run:stale-evidence": "node scripts/bna-execution-run.mjs stale-evidence",
+    "one-time:delivery-outbox:cron": "node scripts/run-one-time-delivery-outbox-cron.mjs",
     "onetime:reminder:test-contact": "node scripts/simulate-one-time-class-reminder.mjs",
     "one-time:operator-test-handoff": "node scripts/one-time-operator-test-handoff.mjs",
     "production:readiness:snapshot": "node scripts/production-readiness-snapshot.mjs",

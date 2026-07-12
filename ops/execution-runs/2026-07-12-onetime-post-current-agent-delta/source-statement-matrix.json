@@ -1,0 +1,71 @@
+{
+  "source_id": "RAW-20260712-013",
+  "source_path": "raw-input/RAW-20260712-013-onetime-post-current-agent-delta.txt",
+  "content_fingerprint": "sha256:AE08273F04E3988D30592D5CA962D8B3177AD787ED82D6527D0607E842935704",
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260712-013:S1",
+      "classification": "requirement",
+      "source_statement": "This is a continuation, not a new rebuild; do not recreate already implemented landing, owner-shell, CRM, dispatcher, signup, or verification work.",
+      "summary": "Treat packet as continuation; do not rebuild already implemented One Time work.",
+      "requirement_id": "REQ-20260712-801"
+    },
+    {
+      "statement_id": "RAW-20260712-013:S2",
+      "classification": "requirement",
+      "source_statement": "Fetch and report the actual current SHA, inspect dirty state, recent commits, current Railway deployed SHA, and current state of REQ-20260711-003 through REQ-20260711-009 before editing.",
+      "summary": "Fetch/report actual current SHA, inspect dirty state, recent commits, live deployed SHA, and existing requirement statuses.",
+      "requirement_id": "REQ-20260712-801"
+    },
+    {
+      "statement_id": "RAW-20260712-013:S3",
+      "classification": "decision",
+      "source_statement": "The operator has explicitly authorized normal scoped commit, push, deployment, and live smoke for this work, while continuing to forbid unapproved sends, imports, payments, access grants, DNS/account/credential changes, and secret exposure.",
+      "summary": "Supersede stale deployment approval blockers while preserving no-send/no-import/no-payment/no-DNS/no-secret constraints.",
+      "requirement_id": "REQ-20260712-801",
+      "decision_id": "DEC-20260712-801"
+    },
+    {
+      "statement_id": "RAW-20260712-013:S4",
+      "classification": "requirement",
+      "source_statement": "Make ramble compilation automatic and executable across ChatGPT, Telegram text, and Telegram voice, with validated structured specs, materialization, bounded packet DAGs, long Telegram reconstruction, status receipts, and protocol tests.",
+      "summary": "Make ramble compilation automatic, validated, materialized, bounded, lossless for long Telegram rambles, and honestly reported.",
+      "requirement_id": "REQ-20260712-802"
+    },
+    {
+      "statement_id": "RAW-20260712-013:S5",
+      "classification": "requirement",
+      "source_statement": "Add scripts/run-one-time-delivery-outbox-cron.mjs, railway.one-time-delivery-cron.json, package command, tests, and .env.example documentation for the One Time delivery outbox cron.",
+      "summary": "Add the short-lived One Time delivery outbox Railway cron runner, config, package command, env example, and focused tests.",
+      "requirement_id": "REQ-20260712-803"
+    },
+    {
+      "statement_id": "RAW-20260712-013:S6",
+      "classification": "requirement",
+      "source_statement": "Deploy/create a separate one-time-delivery-cron Railway service, prove scheduled redacted executions, prevent duplicate sends, confirm no class-reminders job ran, and disable/delete the old Codex dispatcher automation only after cutover.",
+      "summary": "Create/cut over separate Railway cron service and disable old Codex automation after overlap-safe proof.",
+      "requirement_id": "REQ-20260712-804"
+    },
+    {
+      "statement_id": "RAW-20260712-013:S7",
+      "classification": "requirement",
+      "source_statement": "Create or update ops/product-specs/one-time/crm/contacts-inbox.v1.json as the canonical blueprint driving production UI, tests, PQC validation, and future ramble deltas.",
+      "summary": "Create canonical CRM Contacts/Inbox blueprint and current-state delta matrix.",
+      "requirement_id": "REQ-20260712-805"
+    },
+    {
+      "statement_id": "RAW-20260712-013:S8",
+      "classification": "requirement",
+      "source_statement": "Build the professional One Time CRM as vertical workflows through OT-CRM-01, OT-CRM-02, OT-CRM-03, OT-CRM-04, and OT-CRM-05, implementing only missing or partial rows.",
+      "summary": "Implement missing/partial CRM Contacts/Inbox rows as OT-CRM-01 through OT-CRM-05.",
+      "requirement_id": "REQ-20260712-806"
+    },
+    {
+      "statement_id": "RAW-20260712-013:S9",
+      "classification": "requirement",
+      "source_statement": "After focused tests and protocol checks pass, commit, push, deploy the exact tested SHA to Railway production, live-smoke canonical One Time routes, update the execution run, ledger, changelog, screenshots, and requirement statuses.",
+      "summary": "Commit, push, deploy, live-smoke, update evidence, and return final matrix/blockers.",
+      "requirement_id": "REQ-20260712-807"
+    }
+  ]
+}
