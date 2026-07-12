@@ -43997,13 +43997,13 @@ function buildDeploymentInfo() {
   const metadata = readDeploymentMetadata();
   return {
     status: 'ok',
-    commit_sha: process.env.BNA_RELEASE_SHA
-      || metadata.commit_sha
+    commit_sha: metadata.commit_sha
+      || process.env.BNA_RELEASE_SHA
       || process.env.RAILWAY_GIT_COMMIT_SHA
       || process.env.GIT_COMMIT_SHA
       || '',
-    source_branch: process.env.BNA_RELEASE_BRANCH
-      || metadata.source_branch
+    source_branch: metadata.source_branch
+      || process.env.BNA_RELEASE_BRANCH
       || process.env.RAILWAY_GIT_BRANCH
       || '',
     generated_at: metadata.generated_at || '',
