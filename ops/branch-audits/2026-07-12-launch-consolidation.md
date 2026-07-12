@@ -28,7 +28,7 @@ Source request: `RAW-20260712-006`
 | `codex/onetime-landing-followup-20260712` / `codex/onetime-landing-visual-20260712` | Already merged to `origin/master` | `git branch --merged origin/master` includes both branch names. | No merge needed. |
 | `codex/onetime-p0p1-corrective-20260711` | Patch-equivalent / already integrated | `git cherry -v origin/master codex/onetime-p0p1-corrective-20260711` reports `- 3f47c0ded Add One Time delivery outbox dispatcher`. | Do not ancestry-merge again; evidence and implementation are already carried into the consolidation state. |
 | `codex/onetime-signup-location-hotfix-20260712` | Current missing One Time work | `git cherry -v origin/master` reports six unique commits through `24b920564 Use visible One Time signup type buttons`. | Incorporated into the consolidation candidate and verified with focused tests plus public onboarding smoke. |
-| `codex/ramble-protocol-telegram-unification-20260712` | Current but separate blocked protocol lane | `git cherry -v origin/master` reports two unique commits, including `.github/workflows/ramble-protocol.yml`, migration, Telegram bridge, parser, server, and test changes. `git push -u origin codex/ramble-protocol-telegram-unification-20260712` was rejected because the OAuth token lacks `workflow` scope for `.github/workflows/ramble-protocol.yml`. | Do not fold into the One Time launch commit without separate protocol verification and workflow-scope push clearance. Keep as next scoped release/blocker. |
+| `codex/ramble-protocol-telegram-unification-20260712` | Current but separate blocked protocol lane | `git cherry -v origin/master` reports two unique commits, including `.github/workflows/ramble-protocol.yml`, migration, Telegram bridge, parser, server, and test changes. `git push -u origin codex/ramble-protocol-telegram-unification-20260712` was rejected because the OAuth token lacks `workflow` scope for `.github/workflows/ramble-protocol.yml`. A merge simulation against current `origin/master` also reports conflicts in generated action registries, `package.json`, `server.js`, and tests. | Do not fold into the One Time launch commit without separate protocol verification, conflict resolution, and workflow-scope push clearance. Keep as next scoped release/blocker. |
 
 ## Remote branch classification
 
@@ -51,5 +51,29 @@ https://github.com/shloimie-beep/bnei-neviim-academy/pull/130
 
 The remaining current protocol lane is real work, but it is broad, includes a
 workflow file rejected by GitHub because the current OAuth token lacks
-`workflow` scope, and needs its own verification before it can be pushed or
-called deployable.
+`workflow` scope, conflicts with current master in several generated/runtime
+files, and needs its own conflict-resolution plus verification pass before it
+can be pushed or called deployable.
+
+## Protocol lane blocker evidence
+
+Command:
+
+```bash
+git merge-tree $(git merge-base origin/master codex/ramble-protocol-telegram-unification-20260712) origin/master codex/ramble-protocol-telegram-unification-20260712
+```
+
+Observed conflict classes:
+
+- new workflow file `.github/workflows/ramble-protocol.yml`, which GitHub
+  already rejected without OAuth `workflow` scope;
+- generated action registry conflicts:
+  `ops/action-registry/one-time-action-coverage.*` and
+  `ops/action-registry/universal-action-parity.*`;
+- `package.json`;
+- `server.js`;
+- `tests/rabbi-checkout-access.test.js`.
+
+The branch diff is 44 files / 8,380 insertions / 450 deletions, so a no-workflow
+split would still require a dedicated protocol branch, manual conflict
+resolution, regenerated registries, and a focused protocol verification run.
