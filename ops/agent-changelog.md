@@ -38412,6 +38412,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   provider/production-data mutation, payment, access grant, local-class
   activation, or parallel PR was performed.
 
+## 2026-07-12 - Execution-run git head validator repaired
+
+- Fixed `scripts/bna-execution-run.mjs` so a committed run file can record a
+  prior corrective commit without failing validation immediately after the
+  bookkeeping commit advances `HEAD`.
+- The validator now accepts a recorded head only when it is listed in the run's
+  corrective commit list and is an ancestor of the current branch head; unrelated
+  stale heads still fail.
+- Added a git-backed regression in `tests/bna-execution-run.test.js`.
+- Verification passed: `node --check scripts/bna-execution-run.mjs`,
+  `node --test tests/bna-execution-run.test.js` (27/27), and
+  `npm run bna:run:next` on the active One Time run.
+
 ## 2026-07-12 - One Time signup checkbox and required-marker visual proof refreshed
 
 - Styled the required acknowledgement on `public/one-time/signup.html` as a

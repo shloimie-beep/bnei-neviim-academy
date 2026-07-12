@@ -117,8 +117,8 @@ REQ-20260712-010 / REQ-20260712-023 matrix refresh:
   guarded single-recipient reminder simulation command.
 - JSON evidence integrity check PASS for `requirements.json` and
   `ops/agent-task-ledger.jsonl`.
-- `npm run bna:run:validate` PASS after updating `git_refs.current_head` to
-  the current PR-lane HEAD.
+- `npm run bna:run:validate` PASS after recording the current PR-lane evidence
+  commit in `git_refs.last_validated_head`.
 
 REQ-20260712-006 local gate:
 
@@ -148,6 +148,16 @@ REQ-20260712-006 local gate:
 - `npm run one-time:smoke:crm-journey-local-db` remains BLOCKED by missing
   `BNA_ONETIME_CRM_TEST_DATABASE_URL`; deployed live proof remains blocked by
   release authorization.
+
+Execution-run validator repair:
+
+- `node --check scripts/bna-execution-run.mjs` PASS.
+- `node --test tests/bna-execution-run.test.js` PASS: 27 tests, 27 passed.
+- `npm run bna:run:next` PASS. The active One Time run validates again and
+  reports `Next unblocked executable batch: none`.
+- Validator now accepts a recorded `git_refs.current_head` when it is listed in
+  `existing_corrective_commits` and is an ancestor of the current branch head,
+  preventing committed run-head bookkeeping from becoming immediately stale.
 
 REQ-20260712-005 local gate:
 

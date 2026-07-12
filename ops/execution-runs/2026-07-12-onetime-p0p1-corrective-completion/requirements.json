@@ -5,7 +5,7 @@
   "git_refs": {
     "expected_branch": "codex/onetime-p0p1-corrective-20260711",
     "branch": "codex/onetime-p0p1-corrective-20260711",
-    "current_head": "597e56a75cd0815f40289de0dc931fdc9b8386e8",
+    "last_validated_head": "ce312aa53a73b1df7248db9ebb5beed0f7056354",
     "pr_number": 129,
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
     "pr_branch": "codex/onetime-p0p1-corrective-20260711",
@@ -22,7 +22,8 @@
       "0df0300ab1e1d3701a4fa3489c9fc9cfc9eabcfb",
       "de601c82290110bbf7029364cecca834f8f3440d",
       "8f401d6aacd59f56e6c4505be9a8f6a130d5e064",
-      "597e56a75cd0815f40289de0dc931fdc9b8386e8"
+      "597e56a75cd0815f40289de0dc931fdc9b8386e8",
+      "ce312aa53a73b1df7248db9ebb5beed0f7056354"
     ],
     "current_priority_addendum": "RAW-20260712-002",
     "current_p0_batch": "crm-confirmation-outbox"
