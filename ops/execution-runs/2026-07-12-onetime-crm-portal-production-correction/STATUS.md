@@ -4,6 +4,7 @@ As of release-lane closeout on 2026-07-12T21:14:00+03:00:
 
 - Clean release branch `codex/onetime-crm-portal-release-20260712` was created from current `origin/master`.
 - Scoped One Time correction work was reapplied, validated, committed, and pushed as implementation commit `833cac222`.
+- Draft PR `#131` is open: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/131`.
 - Local release-gate dry-run reports ready on the release branch.
 - No production deployment, production mutation, or live verification was performed.
 
@@ -18,7 +19,7 @@ As of release-lane closeout on 2026-07-12T21:14:00+03:00:
 - `REQ-20260712-109`: done locally. The public One Time landing page now uses one accessible fixed WhatsApp launcher backed by the same-origin runtime redirect, and no longer loads the public helper scripts, Robot Scheller helper chrome, or hard-coded `wa.me` links. Local screenshots cover 1440, 1024, 768, 430, and 390 px with no HTTP errors, helper-script requests, POSTs, or writes. Production public-number readback/release/live-smoke is centralized in `REQ-20260712-112`.
 - `REQ-20260712-110`: done locally. WhatsApp assistant deterministic natural replies and WAPI safety gates pass local tests; production WAPI readback/no-unapproved-send proof is centralized in `REQ-20260712-112`.
 - `REQ-20260712-111`: done locally. Operations split delivery is under the 1.2 MB shell budget, CRM first-page/list/detail metrics pass locally, local cache policy passes, and member-library Vimeo loads only after Play Video. Production Brotli/gzip, `Vary`, long-cache/fingerprint readback, commit/push/deploy, and live smoke remain under `REQ-20260712-112`.
-- `REQ-20260712-112`: blocked / needs operator release decision. The stale `master` / dirty worktree blocker has been superseded by the clean pushed release branch. Production deploy/live verification still needs explicit release-gate confirmation and either completion or approved deferral of external Railway/Drive readbacks.
+- `REQ-20260712-112`: blocked / needs operator release decision. The stale `master` / dirty worktree blocker has been superseded by the clean pushed release branch and draft PR `#131`. Production deploy/live verification still needs PR review/release approval, explicit release-gate confirmation, and either completion or approved deferral of external Railway/Drive readbacks.
 
 Next expected step after this local batch:
 
@@ -27,4 +28,4 @@ npm run bna:run:validate
 npm run bna:release-gate -- --expected-branch codex/onetime-crm-portal-release-20260712
 ```
 
-There is no next unblocked implementation requirement in this run. To resume, confirm the production release path, run the approved deploy/live-verify gate commands from the release branch, verify exact SHA readback on the BNA Operations/portal service and One Time public service, then run the required live smokes before closing `REQ-20260712-112`.
+There is no next unblocked implementation requirement in this run. To resume, review/merge PR `#131` or otherwise confirm the production release path, run the approved deploy/live-verify gate commands, verify exact SHA readback on the BNA Operations/portal service and One Time public service, then run the required live smokes before closing `REQ-20260712-112`.

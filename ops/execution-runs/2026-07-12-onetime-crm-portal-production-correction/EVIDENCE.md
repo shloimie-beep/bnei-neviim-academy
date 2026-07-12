@@ -197,5 +197,6 @@ Superseding clean release-lane evidence:
 
 - Release branch `codex/onetime-crm-portal-release-20260712` was created from current `origin/master`.
 - Scoped One Time changes were committed and pushed as implementation commit `833cac222`.
+- Draft PR `#131` is open: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/131`.
 - PASS `npm run bna:release-gate -- --expected-branch codex/onetime-crm-portal-release-20260712`: ready, dry-run mode, HEAD pushed yes, dirty files 0, production mutation performed no.
-- REMAINING BLOCKER: production deploy/live verification was not run. It requires explicit release-gate confirmation tokens and Railway/Drive readback completion or approved deferral.
+- REMAINING BLOCKER: production deploy/live verification was not run. It requires PR review/release approval, explicit release-gate confirmation tokens, and Railway/Drive readback completion or approved deferral.
