@@ -38667,3 +38667,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Live smokes passed:
   `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 5bf521c539e608543c6a54028cccdc8903667081`
   and `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
+
+## 2026-07-12 - One Time landing visual revision deployed for review
+
+- Deployed branch `codex/onetime-landing-visual-20260712` to
+  `one-time-production / production / one-time-web` after operator approval to
+  launch the landing page for review.
+- Final Railway deployment `a5144c33-4302-4d33-a75d-617ac4ac0d6d` reached
+  `SUCCESS`; live `/api/deploy-info` reports commit
+  `18e05c70e3547b3caa0afbddaadfb012d91755d3` and source branch
+  `codex/onetime-landing-visual-20260712`.
+- Live smokes passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 18e05c70e3547b3caa0afbddaadfb012d91755d3`,
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`,
+  and `npm run one-time:target:guard`.
+- Live desktop/mobile screenshots were captured under
+  `ops/live-smokes/2026-07-12-onetime-landing-live-*.png`.
+- No email, WhatsApp/WAPI, Telegram, payment, access, DNS/account, credential,
+  provider-data, or production CRM mutation was performed.
