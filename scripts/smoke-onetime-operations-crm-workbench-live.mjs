@@ -150,7 +150,11 @@ async function main() {
       'Class / Trial / Access',
       'Read-only local timeline for',
       'No email, WhatsApp, payment, access, or external CRM write',
-      'No-send locked',
+      'data-shared-crm-workbench',
+      'data-shared-crm-component="contact-workspace"',
+      'Review mode',
+      'Email is not available for this contact.',
+      'WhatsApp is not available for this contact.',
     ];
     const missing = required.filter((marker) => !html.includes(marker));
     assert(!missing.length, `missing marker(s): ${missing.join(', ')}`);

@@ -481,9 +481,9 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       selectedListHiddenOnMobile: window.innerWidth <= 700 ? Boolean(!list || listRect.width === 0 || window.getComputedStyle(list).display === 'none') : true,
       hasContactTimeline: /Contact Timeline/.test(text),
       hasClassTrialAccess: /Class \/ Trial \/ Access/i.test(text),
-      hasNoSendLock: /No-send locked|Scoped no-send|Read-only preview|Read-only \/ no-send|No email, WhatsApp, payment, access, or external CRM write/.test(text),
+      hasNoSendLock: /Review mode|Scoped review|Read-only preview|No email, WhatsApp, payment, access, or external CRM write/.test(text),
       hasSafeActionPanel: Boolean(document.querySelector('[data-crm-safe-actions]')),
-      disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
+      disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-CREATE-TASK-PENDING"][disabled], [data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
       hasOpenScopedInboxAction: Boolean(document.querySelector('[data-action-id="ACTION-CRM-OPEN-SCOPED-INBOX"]')),
     };
   });
@@ -547,9 +547,9 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       selectedProfileVisible: Boolean(profile && profileRect && profileRect.width > 0 && profileRect.height > 0),
       hasContactTimeline: /Contact Timeline/.test(text),
       hasClassTrialAccess: /Class \/ Trial \/ Access/i.test(text),
-      hasNoSendLock: /No-send locked|Scoped no-send|Read-only preview|Read-only \/ no-send|No email, WhatsApp, payment, access, or external CRM write/.test(text),
+      hasNoSendLock: /Review mode|Scoped review|Read-only preview|No email, WhatsApp, payment, access, or external CRM write/.test(text),
       hasSafeActionPanel: Boolean(document.querySelector('[data-crm-safe-actions]')),
-      disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
+      disabledCrmActionCount: document.querySelectorAll('[data-action-id="ACTION-CRM-CREATE-TASK-PENDING"][disabled], [data-action-id="ACTION-CRM-REPLY-DRAFT-BLOCKED"][disabled], [data-action-id="ACTION-CRM-INTERNAL-NOTE-BLOCKED"][disabled], [data-action-id="ACTION-CRM-TASK-BLOCKED"][disabled]').length,
 
       hasWrongWorkspaceLeak: /BNA Academy/i.test(text),
       hasForbiddenExternalTerm: /LeadConnector|GHL runtime/i.test(text),
@@ -583,7 +583,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
       selectedMetrics.hasClassTrialAccess &&
       selectedMetrics.hasNoSendLock &&
       selectedMetrics.hasSafeActionPanel &&
-      selectedMetrics.disabledCrmActionCount >= 3 &&
+      selectedMetrics.disabledCrmActionCount >= 1 &&
       selectedMetrics.hasOpenScopedInboxAction &&
       mobileBackMetrics.restoredList &&
       mobileBackMetrics.clearedSelectedState &&

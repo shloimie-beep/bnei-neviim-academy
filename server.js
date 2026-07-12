@@ -29631,7 +29631,7 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
 
 const operationsCrmContactService = createContactService({
   model: crmContactModel,
-  listContactRows: operationsCrmContactRows,
+  listContactRows: (scope, filters) => operationsCrmContactRows(scope, pool, filters),
   timelineRows: operationsCrmTimelineRows,
   parseContactRef: parseCrmContactRef,
 });

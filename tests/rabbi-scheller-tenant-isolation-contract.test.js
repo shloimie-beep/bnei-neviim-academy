@@ -90,7 +90,7 @@ test('One Time CRM and communications routes derive scope server-side before que
   );
   assert.match(timelineRoute, /const workspaceKey = assertWorkspaceAccess\(req, scope\.workspace_key \|\| defaultWorkspaceKeyForRequest\(req\)\);/);
   assert.match(timelineRoute, /const payload = await operationsCrmContactService\.getContactTimeline\(req\.params\.id, scope\);/);
-  assert.match(server, /const operationsCrmContactService = createContactService\({[\s\S]*listContactRows: operationsCrmContactRows,[\s\S]*timelineRows: operationsCrmTimelineRows,[\s\S]*parseContactRef: parseCrmContactRef,[\s\S]*}\);/);
+  assert.match(server, /const operationsCrmContactService = createContactService\({[\s\S]*listContactRows: \(scope, filters\) => operationsCrmContactRows\(scope, pool, filters\),[\s\S]*timelineRows: operationsCrmTimelineRows,[\s\S]*parseContactRef: parseCrmContactRef,[\s\S]*}\);/);
 
   const communicationsFilters = serverSlice(
     'function buildCommunicationsQueryFilters',

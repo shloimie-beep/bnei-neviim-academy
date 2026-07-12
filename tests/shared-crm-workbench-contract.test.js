@@ -61,7 +61,7 @@ test('Shared CRM modules expose paths, empty states, actions, and inbox scope', 
 
 test('CRM routes delegate DTOs through the canonical contact service', () => {
   assert.match(server, /const \{ createContactService \} = require\('\.\/src\/lib\/bna\/crm\/contact-service'\);/);
-  assert.match(server, /const operationsCrmContactService = createContactService\({[\s\S]*listContactRows: operationsCrmContactRows,[\s\S]*timelineRows: operationsCrmTimelineRows,[\s\S]*parseContactRef: parseCrmContactRef,[\s\S]*}\);/);
+  assert.match(server, /const operationsCrmContactService = createContactService\({[\s\S]*listContactRows: \(scope, filters\) => operationsCrmContactRows\(scope, pool, filters\),[\s\S]*timelineRows: operationsCrmTimelineRows,[\s\S]*parseContactRef: parseCrmContactRef,[\s\S]*}\);/);
   assert.match(server, /const payload = await operationsCrmContactService\.listContacts\(scope, filters\);/);
   assert.match(server, /const payload = await operationsCrmContactService\.getContactTimeline\(req\.params\.id, scope\);/);
   assert.match(contactService, /aggregate_service: 'bna_crm_contact_service_v1'/);
