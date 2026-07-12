@@ -1,9 +1,9 @@
-# Production Unblocker - 2026-07-12T08:40:55.742Z
+# Production Unblocker - 2026-07-12T18:17:44.067Z
 Snapshot status: not_production_complete
 Production ready: no
 Source snapshot: node scripts/production-readiness-snapshot.mjs --no-write --json (live_no_write_command)
-Source snapshot generated at: 2026-07-12T08:40:52.744Z
-Snapshot git head: c9fba94c (origin/master: d68e3f9a, worktree clean: yes)
+Source snapshot generated at: 2026-07-12T18:17:30.389Z
+Snapshot git head: 2ce45ec5f (origin/master: e5efbb15a, worktree clean: yes)
 Workspace/project: rabbi_sheller_provider / one_time_mishnah_class
 Next unblocked executable batch: none
 One Time setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
@@ -20,27 +20,16 @@ One Time setup check: 5/8 ready (live_no_write_command_expected_blocked, exit 1)
 Owner: Codex / operator
 Count: 1
 Evidence:
-  - REQ-20260712-002
-  - REQ-20260712-013
-  - REQ-20260712-014
-  - REQ-20260712-020
-  - REQ-20260712-021
-  - REQ-20260712-022
-  - REQ-20260712-005
-  - REQ-20260712-006
-  - REQ-20260712-007
-  - REQ-20260712-008
-  - REQ-20260712-009
-  - REQ-20260712-011
+  - REQ-20260712-112
 Next action: Clear the external setup, terminal Agent Mode proof, and active collision-lane blockers; then rerun `npm run bna:run:next`.
 ### external_setup_blockers - External One Time setup values or approvals are missing
 Owner: Shloimie / provider account owners
 Count: 3
 Evidence:
   - SETUP-ONETIME-STRIPE-001: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias
-  - SETUP-ONETIME-WHAPI-001: whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number
+  - SETUP-ONETIME-WHAPI-001: whapi_wapi_instance_id, whapi_wapi_phone_number
   - SETUP-ONETIME-CAMPAIGN-001: final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval
-Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_token_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
+Next action: Provide aliases/status only, not raw secrets, for current setup-check fields: rabbi_stripe_test_secret_key_alias_or_test_key_status, 67_month_product_price_id_or_alias, whapi_wapi_instance_id, whapi_wapi_phone_number, final_campaign_copy, exact_recipient_segment_or_list, suppression_unsubscribe_proof, explicit_seed_packet_approval.
 ### rabbi_telegram_runtime_configuration - Rabbi Telegram runtime is not production-verified
 Owner: Codex / operator
 Count: 1
@@ -84,11 +73,10 @@ Verification after setup:
   - TEST_prefixed_reversible_access_grant_or_extension
 ### SETUP-ONETIME-WHAPI-001 - Whapi/WAPI provider details
 Owner: Shloimie / provider account owners
-Status: blocked_external_input
-Current evidence: OneTime-scoped outbound token and hosted class link are configured; instance ID, sender phone metadata, auto-reply enable flag, and explicit approval flag are missing.
+Status: provider_setup_ready_live_send_gated
+Current evidence: One Time-scoped outbound token, Whapi instance ID, sender metadata, webhook secret, and hosted class link are configured in ignored local secret storage and Railway by redacted readiness readback. Auto-reply/live Telegram flags and one approved no-broad-send provider proof remain gated.
 Setup check ready: no
 Current missing fields from setup check:
-  - whapi_wapi_token_alias
   - whapi_wapi_instance_id
   - whapi_wapi_phone_number
 Setup check warnings:
@@ -132,7 +120,7 @@ Verification after setup:
 Status: passed
 Ready: yes
 Fresh for launch gate: yes
-Age hours: 0.07
+Age hours: 9.68
 Commands passed: 4/4
 External write performed: no
 Production data mutation performed: no
@@ -142,7 +130,7 @@ Blocker: none
 Status: blocked_missing_bot_token
 Local ready: no
 Readiness report: ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
-Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (missing locally)
+Chat ID readback report: .runtime/rabbi-telegram-chat-id-candidates.json (available locally)
 Chat ID configured: no
 Candidate count: 0
 Unique masked chat count: 0
@@ -184,5 +172,6 @@ Required result: save terminal PASS, FAIL, or BLOCKED proof for only this prompt
 - ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 - node scripts/check-onetime-external-setup-readiness.mjs --json
 - ops/watchdog-audits/2026-07-08-rabbi-telegram-ticket-readiness.json
+- .runtime/rabbi-telegram-chat-id-candidates.json
 - ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
 - ops/agent-review-proof-readiness/latest-rabbi-agent-review-proof-readiness-live.json
