@@ -95,26 +95,55 @@ function buildOneTimeOperatorTestHandoff(checks = {}, details = {}) {
   };
 }
 
+function parseJsonObject(value) {
+  if (!value || typeof value !== 'string') return {};
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
 function deriveChecksFromReadinessSnapshot(snapshot = {}) {
   const assessment = snapshot.assessment || {};
   const activeRun = snapshot.active_run || {};
   const publicLaunchSmoke = snapshot.public_launch_smoke || {};
   const oneTimeSetup = snapshot.one_time_setup || {};
   const rabbiTelegram = snapshot.rabbi_telegram_runtime || {};
+  const setupCheckReport = parseJsonObject(snapshot.commands?.one_time_setup_check?.stdout);
+  const railwayReadback = setupCheckReport.railway_variable_readback || {};
+  const operatorBlockers = Array.isArray(oneTimeSetup.operator_blocker_items)
+    ? oneTimeSetup.operator_blocker_items
+    : [];
   const reasons = Array.isArray(assessment.reason) ? assessment.reason.join('\n') : '';
   const runBlockers = Array.isArray(activeRun.blockers) ? activeRun.blockers : [];
   const blockersText = `${reasons}\n${runBlockers.map((item) => `${item.requirement_id || ''} ${item.blocker || ''}`).join('\n')}`;
-  const setupMissing = Array.isArray(oneTimeSetup.operator_blocker_items) && oneTimeSetup.operator_blocker_items.length > 0;
+  const publicSmokeReady = publicLaunchSmoke.ready === true && publicLaunchSmoke.status !== 'failed';
+  const wapiBlocked = operatorBlockers.some((item) => /WAPI|Whapi/i.test(`${item.id || ''} ${item.title || ''} ${item.status || ''}`))
+    || railwayReadback.one_time_wapi_token_present === false
+    || railwayReadback.one_time_whapi_instance_present === false
+    || railwayReadback.one_time_whapi_phone_present === false;
+  const schedulerReadbackAvailable = Object.prototype.hasOwnProperty.call(railwayReadback, 'one_time_class_reminder_scheduler_ready')
+    || Object.prototype.hasOwnProperty.call(railwayReadback, 'cron_secret_present')
+    || Object.prototype.hasOwnProperty.call(railwayReadback, 'one_time_class_reminders_enabled_true')
+    || Object.prototype.hasOwnProperty.call(railwayReadback, 'one_time_class_reminders_confirm_approved');
+  const schedulerReady = schedulerReadbackAvailable
+    ? railwayReadback.one_time_class_reminders_enabled_true === true
+      && railwayReadback.one_time_class_reminders_confirm_approved === true
+      && railwayReadback.cron_secret_present === true
+      && railwayReadback.one_time_class_reminder_scheduler_ready === true
+    : !/CRON_SECRET|scheduler|reminders.*enabled/i.test(blockersText);
   return {
     implementation_complete: activeRun.validation_passed === true,
     migrations_applied: !/migration/i.test(blockersText),
     no_send_tests_passed: publicLaunchSmoke.ready === true,
     ci_passed: !/workflow scope|CI/i.test(blockersText),
-    deployment_complete: !/deploy|release authorization|live verification/i.test(blockersText),
+    deployment_complete: publicSmokeReady || !/deploy|release authorization|live verification/i.test(blockersText),
     resend_ready: !/resend/i.test(blockersText),
-    wapi_ready: !setupMissing && !/WAPI|Whapi|whapi/i.test(blockersText),
+    wapi_ready: !wapiBlocked && !/WAPI|Whapi|whapi/i.test(blockersText),
     telegram_ready: rabbiTelegram.production_verified === true || rabbiTelegram.status === 'live_smoke_verified',
-    scheduler_ready: !/CRON_SECRET|scheduler|reminders.*enabled/i.test(blockersText),
+    scheduler_ready: schedulerReady,
     direct_form_visual_proof_ready: publicLaunchSmoke.ready === true,
   };
 }

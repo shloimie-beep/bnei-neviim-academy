@@ -73,15 +73,31 @@ test('operator handoff derives current readiness blockers without raw provider s
     public_launch_smoke: { ready: true },
     one_time_setup: { operator_blocker_items: [{ id: 'SETUP-ONETIME-WHAPI-001' }] },
     rabbi_telegram_runtime: { status: 'blocked_missing_bot_token' },
+    commands: {
+      one_time_setup_check: {
+        stdout: JSON.stringify({
+          railway_variable_readback: {
+            one_time_class_reminders_enabled_true: false,
+            one_time_class_reminders_confirm_approved: false,
+            cron_secret_present: false,
+            one_time_class_reminder_scheduler_ready: false,
+            one_time_wapi_token_present: false,
+            one_time_whapi_instance_present: false,
+            one_time_whapi_phone_present: false,
+          },
+        }),
+      },
+    },
   });
   const report = buildOneTimeOperatorTestHandoff(checks);
   assert.equal(report.ready, false);
   assert.equal(report.checks.implementation_complete, true);
   assert.equal(report.checks.no_send_tests_passed, true);
   assert.equal(report.checks.ci_passed, false);
-  assert.equal(report.checks.deployment_complete, false);
+  assert.equal(report.checks.deployment_complete, true);
   assert.equal(report.checks.wapi_ready, false);
   assert.equal(report.checks.telegram_ready, false);
+  assert.equal(report.checks.scheduler_ready, false);
   assert.doesNotMatch(JSON.stringify(report), /bot_token|secret-value|Bearer/i);
 });
 

@@ -33,10 +33,23 @@ Passed after deployment:
 
 - `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com`
+- `npm run app:smoke:one-time-interest-dry-run`
 
 The live smoke checked the exact deployed SHA, One Time instance config,
 landing/signup routes, direct signup fields, Operations login route, portal
 routes, provider route, and One Time classroom route.
+
+The direct signup dry-run smoke now checks `/one-time/signup`, required red
+markers, the required location/reminder acknowledgement checkbox, no
+customer-facing phone-optional copy, no preselected reminder choice, and a
+dry-run `.invalid` email signup with no phone number. The API response stayed
+`dry_run=true` and `external_write_performed=false`.
+
+The protected delivery dispatcher route is deployed. A no-secret live request
+to `POST /api/cron/one-time/delivery-outbox` returned HTTP 503, which proves
+the route exists and refuses to run without hosted cron/provider readiness. No
+delivery was attempted.
 
 ## Not Performed
 
@@ -51,7 +64,10 @@ external-provider write was performed.
 - `REQ-20260712-005` / `REQ-20260712-006`: the required real local/test
   Postgres persistence journey still needs `BNA_ONETIME_CRM_TEST_DATABASE_URL`.
 - `REQ-20260712-022`: operator personal deployed signup and hosted reminder
-  provider readiness remain open; no external sends were performed.
+  provider readiness remain open; no external sends were performed. The
+  handoff guard now marks deployment complete from live smoke but still
+  suppresses the ready message because CI, WAPI, Telegram, and scheduler/
+  `CRON_SECRET` readiness are not green.
 - `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
   write-smoke was not performed because it would create live raw/parse records
   without a separately scoped production test packet.

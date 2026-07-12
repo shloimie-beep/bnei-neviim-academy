@@ -38545,3 +38545,26 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No email/WhatsApp/Telegram/campaign send, payment/charge/refund, access
   grant, historical import, DNS/account mutation, credential mutation, or
   external-provider write was performed.
+
+## 2026-07-12 - One Time direct signup smoke and handoff guard refreshed
+
+- Updated the live no-write dry-run smoke to inspect the canonical
+  `/one-time/signup` page instead of the retired landing modal.
+- The smoke now verifies required red markers, the required location/reminder
+  acknowledgement checkbox, no visible phone-optional copy, no preselected
+  reminder choice, and a dry-run email-reminder signup with no phone number.
+- Tightened the operator-test handoff guard so live public smoke satisfies
+  deployment readiness, while redacted Railway setup readback keeps scheduler
+  readiness false when class reminders are not enabled/approved or
+  `CRON_SECRET` is missing.
+- Live readback: `/api/deploy-info` reports
+  `fc147ded1ee0e12325111382fa8e460134a8ce3d`; the protected delivery-outbox
+  route returns HTTP 503 without `CRON_SECRET`, and no delivery was attempted.
+- Verification passed: smoke syntax check, `npm run app:smoke:one-time-interest-dry-run`,
+  handoff syntax checks, and `node --test tests/one-time-operator-test-handoff.test.js
+  tests/one-time-signup-reminder-workflow.test.js tests/one-time-delivery-outbox.test.js`
+  20/20.
+- The operator-ready message remains suppressed because CI workflow scope,
+  WAPI, Rabbi Telegram, and scheduler/`CRON_SECRET` readiness are still not
+  green. No email/WhatsApp/Telegram send, provider mutation, production-data
+  mutation, payment/access mutation, or local-class activation was performed.

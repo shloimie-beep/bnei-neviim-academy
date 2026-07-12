@@ -283,3 +283,38 @@ REQ-20260712-007 local landing / Robot gate:
   Robot launcher bounding boxes: 84x84 at 1440/768 and 76x76 at 430/390;
   accessible label: `Open Rabbi Scheller’s WhatsApp assistant.`; console
   warnings/errors: none.
+
+2026-07-12 post-dispatcher deploy and direct-signup smoke refresh:
+
+- `GET https://join.onetimeonetime.com/api/deploy-info` PASS:
+  `commit_sha` = `fc147ded1ee0e12325111382fa8e460134a8ce3d`, target
+  `one-time-production / one-time-web`.
+- `POST https://join.onetimeonetime.com/api/cron/one-time/delivery-outbox`
+  without `CRON_SECRET` returned HTTP 503; no delivery was attempted.
+- `npm run app:smoke:one-time-interest-dry-run` PASS after updating the smoke
+  to inspect `/one-time/signup` instead of the retired landing modal.
+- The dry-run smoke proved the direct form has required red markers, a
+  required location/reminder acknowledgement checkbox, no visible
+  phone-optional copy, no preselected reminder, and no student field.
+- The dry-run API payload used `.invalid` email, `reminder_preference=email`,
+  no phone number, and `source_landing_page=/one-time/signup`; the response
+  stayed `dry_run=true`, `external_write_performed=false`, and previewed email
+  confirmation plus Rabbi Telegram outbox rows without WhatsApp or raw Zoom URL
+  leakage.
+- `node --check src/lib/bna/one-time-operator-test-handoff.js` PASS.
+- `node --check scripts/one-time-operator-test-handoff.mjs` PASS.
+- `node --check scripts/smoke-one-time-interest-dry-run-live.mjs` PASS.
+- `node --test tests/one-time-operator-test-handoff.test.js
+  tests/one-time-signup-reminder-workflow.test.js
+  tests/one-time-delivery-outbox.test.js` PASS: 20/20.
+- `node scripts/one-time-operator-test-handoff.mjs --json` remains blocked as
+  expected: deployment is now true, but CI, WAPI, Telegram, and scheduler/
+  `CRON_SECRET` readiness are false; `ready_message_suppressed=true`.
+- `npm run one-time:setup:check` remains blocked with no external writes or
+  secret values printed. Redacted Railway readback shows class reminders are
+  not enabled/approved, `CRON_SECRET` is missing, and One Time WAPI token,
+  instance, and phone readiness are not present.
+
+No email, WhatsApp/WAPI, Telegram, campaign send, payment/charge/refund, CRM
+production mutation, access grant, local-class activation, DNS/account
+mutation, credential mutation, or external-provider write was performed.
