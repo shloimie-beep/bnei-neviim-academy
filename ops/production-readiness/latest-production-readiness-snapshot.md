@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-12T18:08:21.232Z
+# Production Readiness Snapshot - 2026-07-12T18:10:17.575Z
 
 Result: not_production_complete
 Production ready: no
@@ -12,13 +12,13 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: codex/launch-consolidation-20260712
-- HEAD: 71c9f7d78
+- HEAD: a3ad94a6d
 - origin/master: e5efbb15a
 - Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: 71c9f7d78
+- Sampled git head: a3ad94a6d
 - Sampled origin/master: e5efbb15a
 - Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
@@ -32,7 +32,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Next unblocked executable batch: none
 
 ## Remaining External Blockers
-- REQ-20260712-112: Release gate blocked: local master is 0 commits ahead and 54 commits behind origin/master, One Time correction work is uncommitted in a mixed dirty tree, and Railway/Drive external readback readiness gaps remain. Owner: Codex/operator release lane. Next: Start from current origin/master in a clean scoped release lane, reapply only the One Time correction files, push the exact One Time release commit, complete or explicitly defer Railway/Drive readback through approved release-gate options, then rerun deploy/live verification.
+- REQ-20260712-112: Release gate blocked: clean consolidation commit 71c9f7d78 exists, but production readiness remains blocked by external Stripe/WAPI/campaign setup fields, Rabbi Telegram runtime token/chat readiness, Agent Mode terminal proof, and exact push/merge/deploy/readback requirements. Owner: Codex/operator release lane. Next: Clear or explicitly defer the external setup/readback gates, configure Rabbi Telegram runtime through secret-safe channels, save the two required Agent Mode terminal proofs, push/merge the exact clean release commit, then rerun deploy/live verification.
 
 ## One Time Setup Buckets
 - Checklist: ops/one-time-mishnah/launch-unblocker/2026-07-02-operator-external-setup-checklist.json
@@ -49,7 +49,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Path: ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 - Status: passed
 - Ready: yes
-- Fresh for launch gate: yes (9.53h old, max 24h)
+- Fresh for launch gate: yes (9.56h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
@@ -84,7 +84,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - No running launch collision lanes reported.
 
 ## Other Agent Policy Rows
-- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=245.49 path=.runtime/agent-fleet/task-1736.lock.json)
+- job #344 / task #1736 [blocked_needs_human_decision] Repair Agent Mode result AGR-19cfa47542407167 (local_lock=stale_lock_dead_pid pid=105512 heartbeat=2026-07-02T12:39:01.959Z age_hours=245.52 path=.runtime/agent-fleet/task-1736.lock.json)
 - job #426 / task #2181 [blocked_needs_human_decision] Is that why Pharaoh wanted them to build it there? (local_lock=missing path=.runtime/agent-fleet/task-2181.lock.json)
 - job #443 / task #2258 [failed] Turn Rabbi meeting drop into One Time build brief (local_lock=missing path=.runtime/agent-fleet/task-2258.lock.json)
 - job #236 / task #1130 [failed] Repair follow-up after Drive transcription reprocess. (local_lock=missing path=.runtime/agent-fleet/task-1130.lock.json)
@@ -109,7 +109,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - rabbi-helper-tool-scope-map: terminal proof missing (https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md; dropoff https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-helper-tool-scope-map&requirement_id=REQ-20260708-093&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-helper-tool-scope-map&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-helper-tool-scope-map%3Aall-contexts&autosave=1)
 
 ## Next Actions
-1. Codex/operator release lane: Start from current origin/master in a clean scoped release lane, reapply only the One Time correction files, push the exact One Time release commit, complete or explicitly defer Railway/Drive readback through approved release-gate options, then rerun deploy/live verification.
+1. Codex/operator release lane: Clear or explicitly defer the external setup/readback gates, configure Rabbi Telegram runtime through secret-safe channels, save the two required Agent Mode terminal proofs, push/merge the exact clean release commit, then rerun deploy/live verification.
 2. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-telegram-helper-ticket-smoke.md
 3. Shloimie / Agent Mode runner: Run only this Agent Mode prompt scope and save terminal PASS/FAIL/BLOCKED proof through the Operations drop-off: https://join.onetimeonetime.com/agent-review-prompts/rabbi-helper-tool-scope-map.md
 4. Codex / operator: Configure the Rabbi bot token through secret-safe runtime config, then rerun readiness.
