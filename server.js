@@ -135,9 +135,11 @@ const {
   buildTelegramRuntimeReadiness,
 } = require('./src/lib/bna/telegram-runtime-status');
 const {
+  loadTelegramNotificationConfig,
   notifyRabbiCommunication,
   notifySuperAdminSupportTicket,
   notifyTelegramRoleAlias,
+  sendTelegramMessage: sendScopedTelegramMessage,
 } = require('./src/lib/bna/telegram-notifications');
 const {
   buildProviderLeadBotPlan,
@@ -362,6 +364,13 @@ const {
   resolveOneTimeCitySelection,
   safeRecipientHash,
 } = require('./src/lib/bna/one-time-signup-workflow');
+const {
+  ONE_TIME_OUTBOX_CHANNEL_KEYS,
+  buildOneTimeOutboxDeliveryRequest,
+  failedOutboxStatus,
+  nextRetryAt,
+  publicOutboxDeliveryResult,
+} = require('./src/lib/bna/one-time-delivery-outbox');
 const {
   LIVE_ACCESS_TIERS,
   LIVE_ACCESS_TIER_VALUES,
@@ -79959,6 +79968,407 @@ async function enqueueOneTimeDirectSignupOutbox({
   };
 }
 
+function oneTimeDeliveryOutboxLeadJoinExpression(alias = 'o') {
+  return `CASE
+    WHEN COALESCE(${alias}.payload->>'contact_id', '') ~ '^[0-9]+$' THEN (${alias}.payload->>'contact_id')::int
+    WHEN COALESCE(${alias}.payload->>'crm_lead_id', '') ~ '^[0-9]+$' THEN (${alias}.payload->>'crm_lead_id')::int
+    ELSE NULL
+  END`;
+}
+
+async function fetchDueOneTimeDeliveryOutboxRows({
+  db = pool,
+  now = new Date(),
+  limit = 25,
+} = {}) {
+  const safeLimit = Math.min(100, Math.max(1, Number.parseInt(String(limit || 25), 10) || 25));
+  const leadJoin = oneTimeDeliveryOutboxLeadJoinExpression('o');
+  return (await db.query(
+    `SELECT o.*,
+            l.id AS lead_id,
+            l.project_id AS project_id,
+            l.parent_name,
+            l.parent_email,
+            l.parent_phone,
+            l.parent_whatsapp,
+            l.status AS lead_status,
+            l.metadata AS lead_metadata
+     FROM assistant_delivery_outbox o
+     LEFT JOIN bna_parent_leads l ON l.id = ${leadJoin}
+     WHERE o.channel_key = ANY($1::text[])
+       AND o.status IN ('queued', 'failed')
+       AND (o.next_attempt_at IS NULL OR o.next_attempt_at <= $2::timestamptz)
+     ORDER BY o.next_attempt_at NULLS FIRST, o.created_at ASC, o.id ASC
+     LIMIT $3`,
+    [ONE_TIME_OUTBOX_CHANNEL_KEYS, now, safeLimit]
+  )).rows;
+}
+
+async function claimDueOneTimeDeliveryOutboxRows({
+  db = pool,
+  now = new Date(),
+  limit = 25,
+} = {}) {
+  const safeLimit = Math.min(100, Math.max(1, Number.parseInt(String(limit || 25), 10) || 25));
+  const leadJoin = oneTimeDeliveryOutboxLeadJoinExpression('claimed');
+  return (await db.query(
+    `WITH picked AS (
+       SELECT o.id
+       FROM assistant_delivery_outbox o
+       WHERE o.channel_key = ANY($1::text[])
+         AND (
+           (o.status IN ('queued', 'failed') AND (o.next_attempt_at IS NULL OR o.next_attempt_at <= $2::timestamptz))
+           OR (o.status = 'sending' AND o.updated_at <= $2::timestamptz - INTERVAL '15 minutes')
+         )
+       ORDER BY o.next_attempt_at NULLS FIRST, o.created_at ASC, o.id ASC
+       LIMIT $3
+       FOR UPDATE SKIP LOCKED
+     ),
+     claimed AS (
+       UPDATE assistant_delivery_outbox o
+       SET status = 'sending',
+           attempts = attempts + 1,
+           updated_at = NOW()
+       FROM picked
+       WHERE o.id = picked.id
+       RETURNING o.*
+     )
+     SELECT claimed.*,
+            l.id AS lead_id,
+            l.project_id AS project_id,
+            l.parent_name,
+            l.parent_email,
+            l.parent_phone,
+            l.parent_whatsapp,
+            l.status AS lead_status,
+            l.metadata AS lead_metadata
+     FROM claimed
+     LEFT JOIN bna_parent_leads l ON l.id = ${leadJoin}
+     ORDER BY claimed.next_attempt_at NULLS FIRST, claimed.created_at ASC, claimed.id ASC`,
+    [ONE_TIME_OUTBOX_CHANNEL_KEYS, now, safeLimit]
+  )).rows;
+}
+
+function oneTimeOutboxContactFromRow(row = {}) {
+  return {
+    id: row.lead_id ? Number(row.lead_id) : null,
+    parent_name: row.parent_name || '',
+    parent_email: row.parent_email || '',
+    parent_phone: row.parent_phone || '',
+    parent_whatsapp: row.parent_whatsapp || '',
+    status: row.lead_status || '',
+    metadata: oneTimeProductJson(row.lead_metadata || {}, {}),
+  };
+}
+
+function oneTimeOutboxProviderMessageId(providerResult = {}) {
+  return providerResult?.message_id
+    || providerResult?.id
+    || providerResult?.data?.id
+    || wapiResponseMessageId(providerResult?.response)
+    || null;
+}
+
+async function deliverOneTimeOutboxRequest(request = {}) {
+  if (request.transport === 'email') {
+    return sendResendMessage({
+      workspace: {
+        workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+        project_key: ONE_TIME_PROJECT_KEY,
+      },
+      to: request.to,
+      subject: request.subject,
+      text: request.text,
+      html: request.html,
+    });
+  }
+  if (request.transport === 'whatsapp') {
+    return sendWapiTextMessage({
+      to: request.to,
+      body: request.text,
+      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+    });
+  }
+  if (request.transport === 'telegram') {
+    if (request.role_alias !== 'one_time_rabbi_operator') {
+      const error = new Error('One Time Telegram delivery must target one_time_rabbi_operator.');
+      error.statusCode = 400;
+      error.retryable = false;
+      throw error;
+    }
+    const config = loadTelegramNotificationConfig();
+    const target = config.rabbi_elie_scheller || {};
+    if (!target.token || !target.chat_id) {
+      const error = new Error('Rabbi Scheller Telegram bot/chat is not configured.');
+      error.statusCode = 503;
+      error.retryable = true;
+      throw error;
+    }
+    const result = await sendScopedTelegramMessage({
+      token: target.token,
+      chatId: target.chat_id,
+      text: request.text,
+    });
+    if (!result.sent) {
+      const error = new Error(result.error || result.reason || 'Rabbi Scheller Telegram send failed.');
+      error.statusCode = result.status || 502;
+      error.retryable = result.skipped !== true;
+      throw error;
+    }
+    return {
+      provider: 'telegram',
+      status: result.status || 200,
+      response: { sent: true },
+    };
+  }
+  const error = new Error('Unsupported One Time outbox transport.');
+  error.statusCode = 400;
+  error.retryable = false;
+  throw error;
+}
+
+async function markOneTimeOutboxSent(db, row = {}, request = {}, providerResult = {}) {
+  const providerMessageId = oneTimeOutboxProviderMessageId(providerResult);
+  return (await db.query(
+    `UPDATE assistant_delivery_outbox
+     SET status = 'sent',
+         sent_at = NOW(),
+         next_attempt_at = NULL,
+         last_error = NULL,
+         payload = COALESCE(payload, '{}'::jsonb) || $2::jsonb,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      row.id,
+      JSON.stringify({
+        delivery_provider: request.provider || providerResult?.provider || null,
+        provider_message_id: providerMessageId,
+        delivered_at: new Date().toISOString(),
+        raw_join_url_returned: false,
+        message_body_returned: false,
+      }),
+    ]
+  )).rows[0] || row;
+}
+
+async function recordOneTimeOutboxDeadLetter(db, row = {}, error = null) {
+  const payload = oneTimeProductJson(row.payload || {}, {});
+  await db.query(
+    `INSERT INTO assistant_dead_letters (
+       dead_letter_key, source_table, source_key, channel_key,
+       workspace_key, project_key, reason, payload_redacted, status
+     ) VALUES (
+       $1, 'assistant_delivery_outbox', $2, $3,
+       $4, $5, $6, $7::jsonb, 'open'
+     )
+     ON CONFLICT (dead_letter_key) DO UPDATE
+     SET reason = EXCLUDED.reason,
+         payload_redacted = EXCLUDED.payload_redacted,
+         status = 'open'`,
+    [
+      `one-time-delivery-outbox:${row.id}`,
+      row.delivery_key || String(row.id || ''),
+      row.channel_key || '',
+      ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      ONE_TIME_PROJECT_KEY,
+      limitText(error?.message || String(error || 'One Time outbox delivery failed'), 500),
+      JSON.stringify({
+        outbox_id: row.id ? Number(row.id) : null,
+        delivery_key: row.delivery_key || null,
+        channel_key: row.channel_key || null,
+        workflow: payload.workflow || null,
+        contact_id: payload.contact_id || payload.crm_lead_id || null,
+        recipient_hash: payload.recipient_hash || payload.to_hash || row.recipient_identity_key || null,
+        raw_join_url_in_payload: false,
+        message_body_in_payload: false,
+      }),
+    ]
+  );
+}
+
+async function markOneTimeOutboxFailed(db, row = {}, error = null, { now = new Date() } = {}) {
+  const attempts = Number(row.attempts || 0);
+  const maxAttempts = error?.retryable === false ? 1 : undefined;
+  const status = failedOutboxStatus({ attempts, maxAttempts });
+  const nextAttemptAt = status === 'failed' ? nextRetryAt({ now, attempts }) : null;
+  const updated = (await db.query(
+    `UPDATE assistant_delivery_outbox
+     SET status = $2,
+         next_attempt_at = $3::timestamptz,
+         last_error = $4,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      row.id,
+      status,
+      nextAttemptAt,
+      limitText(error?.message || String(error || 'One Time outbox delivery failed'), 500),
+    ]
+  )).rows[0] || { ...row, status, next_attempt_at: nextAttemptAt };
+  if (status === 'dead_lettered') {
+    await recordOneTimeOutboxDeadLetter(db, row, error);
+  }
+  return {
+    ...updated,
+    status,
+    attempts,
+    next_attempt_at: nextAttemptAt,
+  };
+}
+
+async function logOneTimeOutboxTimeline(db, row = {}, result = {}) {
+  const leadId = Number(row.lead_id || 0);
+  const projectId = Number(row.project_id || 0);
+  if (!leadId || !projectId) return null;
+  const status = String(result.status || '').trim() || 'unknown';
+  const channel = result.transport || String(row.channel_key || '').split(':')[0] || 'delivery_outbox';
+  const messageKind = result.message_kind || 'one_time_delivery';
+  const sent = status === 'sent';
+  const summary = `One Time ${messageKind} ${status}`.slice(0, 240);
+  const body = sent
+    ? `One Time ${channel} delivery completed through ${result.provider || 'provider'}.`
+    : `One Time ${channel} delivery ${status}: ${result.error || 'see outbox status'}.`;
+  return (await db.query(
+    `INSERT INTO bna_contact_communications (
+       project_id, contact_type, lead_id, channel, direction,
+       summary, body, follow_up_required, occurred_at, created_by, source,
+       source_context, metadata
+     ) VALUES (
+       $1, 'lead', $2, $3, 'outbound',
+       $4, $5, $6, NOW(), 'one_time_delivery_outbox_dispatcher', 'automation',
+       $7::jsonb, $8::jsonb
+     )
+     RETURNING id`,
+    [
+      projectId,
+      leadId,
+      channel,
+      summary,
+      limitText(body, 2000),
+      !sent,
+      JSON.stringify({
+        outbox_id: row.id ? Number(row.id) : null,
+        delivery_key: row.delivery_key || null,
+        channel_key: row.channel_key || null,
+        status,
+        provider_message_id: result.provider_message_id || null,
+        raw_join_url_in_timeline: false,
+        message_body_in_timeline: false,
+      }),
+      JSON.stringify({
+        source: 'one_time_delivery_outbox_dispatcher',
+        workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+        project_key: ONE_TIME_PROJECT_KEY,
+        outbox_id: row.id ? Number(row.id) : null,
+        delivery_key: row.delivery_key || null,
+        channel_key: row.channel_key || null,
+        message_kind: messageKind,
+        status,
+        attempts: result.attempts,
+        next_attempt_at: result.next_attempt_at || null,
+        external_write_performed: sent,
+        raw_join_url_returned: false,
+        message_body_returned: false,
+      }),
+    ]
+  )).rows[0] || null;
+}
+
+async function dispatchOneTimeDeliveryOutboxBatch({
+  db = pool,
+  now = new Date(),
+  limit = 25,
+  dryRun = false,
+} = {}) {
+  const nowDate = now instanceof Date ? now : new Date(now);
+  if (Number.isNaN(nowDate.getTime())) {
+    const error = new Error('Invalid now timestamp');
+    error.statusCode = 400;
+    throw error;
+  }
+  const rows = dryRun
+    ? await fetchDueOneTimeDeliveryOutboxRows({ db, now: nowDate, limit })
+    : await claimDueOneTimeDeliveryOutboxRows({ db, now: nowDate, limit });
+  const classJoinUrl = configuredOneTimeLiveClassUrl();
+  const results = [];
+  for (const row of rows) {
+    let request = null;
+    try {
+      request = buildOneTimeOutboxDeliveryRequest({
+        outboxRow: row,
+        contact: oneTimeOutboxContactFromRow(row),
+        classJoinUrl,
+        now: nowDate,
+      });
+      if (dryRun) {
+        results.push(publicOutboxDeliveryResult({
+          outboxRow: row,
+          request,
+          status: 'would_send',
+          attempts: Number(row.attempts || 0),
+        }));
+        continue;
+      }
+      const providerResult = await deliverOneTimeOutboxRequest(request);
+      const providerMessageId = oneTimeOutboxProviderMessageId(providerResult);
+      const sentRow = await markOneTimeOutboxSent(db, row, request, {
+        ...providerResult,
+        message_id: providerMessageId,
+      });
+      const result = publicOutboxDeliveryResult({
+        outboxRow: sentRow,
+        request,
+        status: 'sent',
+        providerResult: {
+          ...providerResult,
+          message_id: providerMessageId,
+        },
+        attempts: Number(sentRow.attempts || row.attempts || 0),
+      });
+      await logOneTimeOutboxTimeline(db, row, result)
+        .catch((timelineError) => console.error('One Time delivery timeline log failed:', timelineError));
+      results.push(result);
+    } catch (error) {
+      const failedRow = dryRun
+        ? row
+        : await markOneTimeOutboxFailed(db, row, error, { now: nowDate });
+      const result = publicOutboxDeliveryResult({
+        outboxRow: failedRow,
+        request: request || {},
+        status: dryRun ? 'would_fail' : failedRow.status,
+        error,
+        attempts: Number(failedRow.attempts || row.attempts || 0),
+        nextAttemptAt: failedRow.next_attempt_at || null,
+      });
+      if (!dryRun) {
+        await logOneTimeOutboxTimeline(db, row, result)
+          .catch((timelineError) => console.error('One Time delivery timeline log failed:', timelineError));
+      }
+      results.push(result);
+    }
+  }
+  return {
+    success: true,
+    dry_run: Boolean(dryRun),
+    checked_at: new Date().toISOString(),
+    due_count: rows.length,
+    processed_count: results.length,
+    sent_count: results.filter((row) => row.status === 'sent').length,
+    failed_count: results.filter((row) => row.status === 'failed').length,
+    dead_lettered_count: results.filter((row) => row.status === 'dead_lettered').length,
+    would_send_count: results.filter((row) => row.status === 'would_send').length,
+    would_fail_count: results.filter((row) => row.status === 'would_fail').length,
+    channel_keys: ONE_TIME_OUTBOX_CHANNEL_KEYS,
+    results,
+    raw_join_url_returned: false,
+    message_body_returned: false,
+    external_send_performed: !dryRun && results.some((row) => row.status === 'sent'),
+  };
+}
+
 async function sendOneTimeSignupTelegramReminder(lead = {}) {
   const result = await sendTelegramNotification(buildOneTimeSignupTelegramReminder(lead));
   if (result && !result.sent && !result.skipped) {
@@ -81710,6 +82120,37 @@ app.get('/api/bna/one-time/local-class-reminder-preview', requireAdmin, async (r
   try {
     const preview = await previewOneTimeLocalClassReminderSegment();
     res.status(preview.activation_blocked ? 409 : 200).json(preview);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/cron/one-time/delivery-outbox', async (req, res) => {
+  try {
+    const dryRun = req.body?.dry_run === true
+      || req.body?.dryRun === true
+      || /^(?:1|true|yes)$/i.test(String(req.query.dry_run || req.query.dryRun || ''));
+    const suppliedSecret = String(req.query.secret || req.headers['x-cron-secret'] || req.headers.authorization?.replace(/^Bearer\s+/i, '') || '').trim();
+    if (!process.env.CRON_SECRET) {
+      return res.status(503).json({
+        success: false,
+        error: 'CRON_SECRET is required before One Time delivery outbox dispatch can run.',
+      });
+    }
+    if (process.env.CRON_SECRET && suppliedSecret !== process.env.CRON_SECRET) {
+      return res.status(401).json({ success: false, error: 'Unauthorized cron request' });
+    }
+    const requestedNow = req.body?.now || req.query.now || '';
+    const now = requestedNow ? new Date(requestedNow) : new Date();
+    if (Number.isNaN(now.getTime())) {
+      return res.status(400).json({ success: false, error: 'Invalid now timestamp' });
+    }
+    const result = await dispatchOneTimeDeliveryOutboxBatch({
+      dryRun,
+      now,
+      limit: req.body?.limit || req.query.limit || 25,
+    });
+    return res.json(result);
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message });
   }

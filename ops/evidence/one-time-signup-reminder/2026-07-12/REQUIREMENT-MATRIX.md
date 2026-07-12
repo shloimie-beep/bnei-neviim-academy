@@ -13,10 +13,12 @@ personal test completion.
 | --- | --- |
 | `public/one-time/signup.html` | Direct signup form route UI and browser payload. |
 | `src/lib/bna/one-time-signup-workflow.js` | Form validation, city/timezone, class schedule, email/reminder copy, outbox event builders, readiness helpers, idempotency helpers, local-class preview. |
-| `server.js` | `/one-time/signup`, `/api/one-time/interest`, direct-signup CRM/outbox/timeline path, protected reminder cron, no-portal guard metadata. |
+| `src/lib/bna/one-time-delivery-outbox.js` | Scoped confirmation/reminder/Rabbi Telegram delivery request builder, retry/dead-letter helpers, and redacted public result mapper. |
+| `server.js` | `/one-time/signup`, `/api/one-time/interest`, direct-signup CRM/outbox/timeline path, protected reminder enqueue cron, protected delivery-outbox dispatcher, no-portal guard metadata. |
 | `tests/one-time-direct-signup-page.test.js` | Playwright route/form proof at 1440/1024/768/430/390, phone marker gating, payload assertions. |
 | `tests/one-time-onboarding-intake.test.js` | Browser/static proof that continuation preserves exact product/CRM lead IDs, UTM/referrer/source attribution, and Family/School required fields. |
 | `tests/one-time-signup-reminder-workflow.test.js` | Unit/static no-send workflow proof for consent, timezone, outbox, Telegram, reminder, local-class preview, no-portal negatives. |
+| `tests/one-time-delivery-outbox.test.js` | Pure dispatcher proof for channel scoping, email/WhatsApp/Telegram request building, Zoom redaction, and retry/dead-letter timing. |
 | `src/lib/bna/one-time-operator-test-handoff.js` | Operator personal-test handoff guard; suppresses the ready message until all readiness checks pass. |
 | `scripts/one-time-operator-test-handoff.mjs` | No-send CLI readback for the handoff guard. |
 | `tests/one-time-operator-test-handoff.test.js` | Exact ready-message, blocked-state, guarded-command, and no-secret/no-broad-audience proof. |
@@ -41,17 +43,17 @@ personal test completion.
 | Recipient-local display time | Locally proven | Confirmation/reminder display tests for Lakewood/London/Sydney | Live email/WhatsApp received-copy proof requires operator test. |
 | Phone not required for email/no-reminder choices | Locally proven | `buildOneTimeSignupLeadInput()` tests; Playwright phone marker/hint hidden before WhatsApp and explicit regression coverage that rejects visible `phone optional` copy | Live deployed form smoke still required. |
 | Phone required for WhatsApp choices | Locally proven | Playwright WhatsApp validation blocks submit without phone; server-side validation requires phone for WhatsApp/Both | Live deployed form smoke still required. |
-| No daily reminders still receives immediate confirmation | Locally proven at outbox-builder level | `buildOneTimeSignupOutboxEvents()` no-reminder test queues email confirmation and Rabbi Telegram alert, no WhatsApp | Real Resend delivery proof requires operator test and provider readiness. |
+| No daily reminders still receives immediate confirmation | Locally proven at outbox-builder and dispatcher-request level | `buildOneTimeSignupOutboxEvents()` no-reminder test queues email confirmation and Rabbi Telegram alert, no WhatsApp; `buildOneTimeOutboxDeliveryRequest()` renders the confirmation email from the linked CRM contact and server-side class link alias | Real Resend delivery proof requires operator test and provider readiness. |
 | Consent not hard-coded | Locally proven | `buildOneTimeSignupLeadInput()` sets `consent=false` for no reminders and requires explicit acknowledgement/consent for recurring reminders | Live CRM readback still required. |
 | CRM deduplication | Partially local, live/test DB blocked | Server direct-signup path uses deterministic lead/outbox keys and `ON CONFLICT` patterns; run evidence records missing `BNA_ONETIME_CRM_TEST_DATABASE_URL` | Real local/test Postgres persistence and duplicate replay proof are blocked until approved test DB URL is provided. |
-| Confirmation outbox retries | Partially local | `assistant_delivery_outbox` upsert path and idempotent delivery keys in `server.js`; outbox event builder tests | Worker retry lifecycle/delivery-provider proof still requires deployed outbox worker and provider readiness. |
-| Daily reminder idempotency | Locally proven | `buildReminderIdempotencyKey()` includes class date, contact ID, channel, 30-minute window, schedule version; cron enqueue uses `delivery_key` with this idempotency key | Hosted cron/live replay proof still required. |
+| Confirmation outbox retries | Locally proven through protected dispatcher, live provider proof blocked | `assistant_delivery_outbox` upsert path and idempotent delivery keys in `server.js`; `dispatchOneTimeDeliveryOutboxBatch()` claims scoped rows, updates sent/failed/dead_lettered states, schedules retries, records dead letters, and returns redacted results; `tests/one-time-delivery-outbox.test.js` covers retry/dead-letter timing | Hosted outbox worker, real Resend failure/retry, and live received-email proof still require deployment/provider readiness. |
+| Daily reminder idempotency | Locally proven through enqueue and delivery dispatcher | `buildReminderIdempotencyKey()` includes class date, contact ID, channel, 30-minute window, schedule version; cron enqueue uses `delivery_key` with this idempotency key; delivery dispatcher scopes to One Time reminder channel keys and claims due rows with `FOR UPDATE SKIP LOCKED` | Hosted cron/live replay proof still required. |
 | Guarded single-recipient reminder simulation | Locally proven | `scripts/simulate-one-time-class-reminder.mjs`; `tests/one-time-reminder-simulation-command.test.js`; `npm run onetime:reminder:test-contact -- --confirm APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST --contact-id <operator_test_contact_id> --dry-run` | Real use is blocked until deploy, `CRON_SECRET`, hosted reminder readiness, and operator-submitted test contact exist. The command refuses missing/wrong confirmation, missing/zero contact ID, missing `CRON_SECRET`, and broad flags such as `--all`, `--audience`, or `--segment`. |
 | Canceled/paused class suppression | Locally proven by static regression | `enqueueOneTimeClassReminderBatch()` checks `ONE_TIME_CLASS_ACTIVE` and returns `class_paused_or_canceled` skip reason; workflow test asserts these guardrails exist | Live dry-run/provider proof still required before terminal Done. |
 | Email unsubscribe and WhatsApp STOP | Locally proven by static regression and preview tests | `oneTimeReminderSuppressionReason()` handles email unsubscribed/suppressed/invalid/bounced and WhatsApp stop/wrong_number/suppressed states; workflow test asserts STOP/wrong-number guardrails and local-class preview covers suppressed rows | Live provider webhook/readback still required before terminal Done. |
 | Missing/changed Zoom-link handling | Locally proven for message builders | Confirmation/reminder builders reject missing or non-HTTPS join links; raw join URL is excluded from outbox payloads | Live alias readback and provider copy proof still required; raw URL must remain out of evidence. |
-| Scoped Rabbi Telegram delivery | Locally proven at payload level, readiness blocked | `buildRabbiSignupTelegramAlert()` excludes Zoom URL; outbox channel is `telegram:one_time_rabbi_operator`; readiness report is redacted | Rabbi token/chat/worker readiness and one live scoped smoke remain blocked. |
-| WAPI provider failures | Locally proven/readiness blocked | `oneTimeWapiReminderEnvReadiness()` and `npm run one-time:wapi:readiness` report missing scoped Whapi settings without sending | Whapi auth/instance/phone/webhook/live-mode setup required; if auth expired, Rabbi must scan Whapi QR. |
+| Scoped Rabbi Telegram delivery | Locally proven through payload and dispatcher, readiness blocked | `buildRabbiSignupTelegramAlert()` excludes Zoom URL; outbox channel is `telegram:one_time_rabbi_operator`; delivery dispatcher targets Rabbi Scheller's scoped Telegram bot/chat config and rejects Zoom/class-link text; readiness report is redacted | Rabbi token/chat/worker readiness and one live scoped smoke remain blocked. |
+| WAPI provider failures | Locally proven/readiness blocked | `oneTimeWapiReminderEnvReadiness()` and `npm run one-time:wapi:readiness` report missing scoped Whapi settings without sending; delivery helper builds WAPI requests only for WhatsApp confirmation/reminder channel rows and normalizes the linked CRM contact phone | Whapi auth/instance/phone/webhook/live-mode setup required; if auth expired, Rabbi must scan Whapi QR. |
 | Exact three-contact local-tag preview | Locally proven at pure-function level | `buildLocalClassSegmentPreview()` expected count 3 and masked references; test now blocks activation for count mismatch, duplicate contacts, invalid/missing email, and suppressed/archived rows | Real scoped DB preview for exactly three eligible contacts still requires approved CRM/test DB readback and must stop on mismatch. |
 | Count mismatch blocks activation | Locally proven | Local-class preview test returns `blocked_count_mismatch` for two rows; activation-plan helper produces no updates when the preview is blocked | Real scoped DB preview still required before activation. |
 | Local contacts receive email only | Locally proven as guarded activation plan | `buildLocalClassReminderActivationPlan()` refuses updates until operator personal test plus `APPROVE_ONE_TIME_LOCAL_CLASS_EMAIL_REMINDERS`, then returns exactly three email-only metadata patches with zero WhatsApp channels | Actual activation is intentionally blocked until operator personal test passes and exact segment is verified. |
@@ -67,8 +69,12 @@ personal test completion.
 - `node --test tests/one-time-reminder-simulation-command.test.js` PASS: 4/4.
 - `node --test tests/one-time-operator-test-handoff.test.js` PASS: 4/4.
 - `node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js` PASS: 13/13, including explicit no-phone-optional copy regression, required-dot visibility, and required acknowledgement checkbox assertions.
+- `node --check src/lib/bna/one-time-delivery-outbox.js` PASS.
+- `node --check server.js` PASS.
+- `node --test tests/one-time-delivery-outbox.test.js` PASS: 5/5.
+- `node --test tests/one-time-signup-reminder-workflow.test.js tests/one-time-delivery-outbox.test.js` PASS: 16/16.
 - `node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js` PASS: 6/6.
-- `npm run test:onetime:focused` PASS: 67/67, including the guarded
+- `npm run test:onetime:focused` PASS: 72/72, including the delivery-outbox dispatcher,
   reminder simulation command, required checkbox/marker assertions, and the
   local-class activation-plan and operator-test handoff blocker assertions.
 - `node scripts/one-time-operator-test-handoff.mjs --json` BLOCKED as expected:
@@ -79,7 +85,10 @@ personal test completion.
 - `npm run one-time:railway-target:guard` PASS with no external write, no send, no secret print.
 - `npm run one-time:setup:check` BLOCKED as expected: ready 5/8; missing Rabbi Stripe sandbox, Whapi/WAPI provider details, campaign seed/real campaign details; hosted scheduler settings are not enabled/approved and `CRON_SECRET` is missing.
 - `npm run bna:run:validate` PASS with work remaining.
-- `npm run secrets:audit` PASS: 0 tracked secret-risk files found.
+- `npm run secrets:audit` PASS: 8379 tracked paths checked, 0 tracked secret-risk files found.
+- `npm run watchdog:actions` PASS: `finding_count=0`.
+- `npm run watchdog:protocol-drift` PASS: findings 0.
+- `git diff --check` PASS with line-ending warnings only.
 
 ## Explicit Non-Claims
 
