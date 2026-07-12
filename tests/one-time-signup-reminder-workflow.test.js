@@ -303,6 +303,7 @@ test('server declares protected cron and local-class preview without portal/paym
   assert.match(server, /app\.post\('\/api\/cron\/one-time\/class-reminders'/);
   assert.match(server, /buildReminderIdempotencyKey/);
   assert.match(server, /app\.get\('\/api\/bna\/one-time\/local-class-reminder-preview'/);
+  assert.match(server, /activation_blocked: preview\.activation_blocked === true/);
   assert.match(server, /local_class_attendee/);
   assert.match(server, /zoom_mishnayos_class/);
   assert.match(server, /local_student/);
@@ -331,17 +332,41 @@ test('local-class preview blocks activation unless the scoped tag set resolves t
   const rows = [
     { id: 101, parent_email: 'one@example.com', status: 'follow_up' },
     { id: 102, parent_email: 'two@example.com', status: 'follow_up' },
-    { id: 103, parent_email: 'two@example.com', status: 'follow_up' },
+    { id: 103, parent_email: 'three@example.com', status: 'follow_up' },
   ];
   const preview = buildLocalClassSegmentPreview(rows);
   assert.equal(preview.expected_count, 3);
   assert.equal(preview.actual_count, 3);
   assert.equal(preview.valid_email_count, 3);
-  assert.equal(preview.duplicate_count, 1);
+  assert.equal(preview.duplicate_count, 0);
+  assert.equal(preview.suppressed_count, 0);
+  assert.equal(preview.eligible_email_contact_count, 3);
+  assert.equal(preview.activation_blocked, false);
   assert.equal(preview.status, 'ready_for_operator_personal_test_gate');
 
   const mismatch = buildLocalClassSegmentPreview(rows.slice(0, 2));
+  assert.equal(mismatch.activation_blocked, true);
   assert.equal(mismatch.status, 'blocked_count_mismatch');
+
+  const duplicate = buildLocalClassSegmentPreview([
+    { id: 101, parent_email: 'one@example.com', status: 'follow_up' },
+    { id: 102, parent_email: 'two@example.com', status: 'follow_up' },
+    { id: 103, parent_email: 'two@example.com', status: 'follow_up' },
+  ]);
+  assert.equal(duplicate.actual_count, 3);
+  assert.equal(duplicate.duplicate_count, 1);
+  assert.equal(duplicate.eligible_email_contact_count, 2);
+  assert.equal(duplicate.activation_blocked, true);
+  assert.equal(duplicate.status, 'blocked_duplicate_contacts');
+
+  const invalidEmail = buildLocalClassSegmentPreview([
+    { id: 101, parent_email: 'one@example.com', status: 'follow_up' },
+    { id: 102, parent_email: 'invalid-email', status: 'follow_up' },
+    { id: 103, parent_email: 'three@example.com', status: 'follow_up' },
+  ]);
+  assert.equal(invalidEmail.valid_email_count, 2);
+  assert.equal(invalidEmail.activation_blocked, true);
+  assert.equal(invalidEmail.status, 'blocked_invalid_or_missing_email');
 
   const suppressed = buildLocalClassSegmentPreview([
     { id: 201, parent_email: 'active@example.invalid', status: 'follow_up' },
@@ -349,5 +374,9 @@ test('local-class preview blocks activation unless the scoped tag set resolves t
     { id: 203, parent_email: 'archived@example.invalid', archived: true, status: 'archived' },
   ]);
   assert.equal(suppressed.actual_count, 3);
+  assert.equal(suppressed.suppressed_count, 2);
+  assert.equal(suppressed.eligible_email_contact_count, 1);
+  assert.equal(suppressed.activation_blocked, true);
+  assert.equal(suppressed.status, 'blocked_suppressed_or_archived_contact');
   assert.equal(suppressed.contacts.filter((contact) => contact.suppressed).length, 2);
 });

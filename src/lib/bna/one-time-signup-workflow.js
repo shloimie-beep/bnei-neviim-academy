@@ -702,29 +702,47 @@ function buildRabbiSignupTelegramAlert({
 
 function buildLocalClassSegmentPreview(rows = []) {
   const seen = new Set();
+  const eligibleSeen = new Set();
   let duplicateCount = 0;
   let validEmailCount = 0;
+  let suppressedCount = 0;
   const contacts = rows.map((row) => {
     const email = normalizeEmail(row.parent_email || row.email || row.email_address || '');
     const phone = normalizePhoneDigits(row.parent_phone || row.phone || row.whatsapp || '');
     const canonical = email || phone || String(row.id || row.contact_id || '').trim();
-    if (canonical && seen.has(canonical)) duplicateCount += 1;
+    const duplicate = Boolean(canonical && seen.has(canonical));
+    if (duplicate) duplicateCount += 1;
     if (canonical) seen.add(canonical);
-    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) validEmailCount += 1;
+    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const suppressed = Boolean(row.suppressed || row.email_suppressed || row.unsubscribed || row.archived);
+    if (validEmail) validEmailCount += 1;
+    if (suppressed) suppressedCount += 1;
+    if (!duplicate && validEmail && !suppressed && canonical) eligibleSeen.add(canonical);
     return {
       masked_reference: `contact:${String(row.id || row.contact_id || 'unknown').replace(/\d(?=\d{2})/g, '*')}`,
       email_present: Boolean(email),
-      valid_email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
-      suppressed: Boolean(row.suppressed || row.email_suppressed || row.unsubscribed || row.archived),
+      valid_email: validEmail,
+      duplicate,
+      suppressed,
       status: row.status || row.contact_status || 'unknown',
     };
   });
+  const expectedCount = 3;
+  const blockers = [];
+  if (rows.length !== expectedCount) blockers.push('count_mismatch');
+  if (duplicateCount > 0) blockers.push('duplicate_contacts');
+  if (validEmailCount !== rows.length) blockers.push('invalid_or_missing_email');
+  if (suppressedCount > 0) blockers.push('suppressed_or_archived_contact');
   return {
-    expected_count: 3,
+    expected_count: expectedCount,
     actual_count: rows.length,
     valid_email_count: validEmailCount,
     duplicate_count: duplicateCount,
-    status: rows.length === 3 ? 'ready_for_operator_personal_test_gate' : 'blocked_count_mismatch',
+    suppressed_count: suppressedCount,
+    eligible_email_contact_count: eligibleSeen.size,
+    activation_blocked: blockers.length > 0,
+    activation_blockers: blockers,
+    status: blockers.length === 0 ? 'ready_for_operator_personal_test_gate' : `blocked_${blockers[0]}`,
     contacts,
   };
 }

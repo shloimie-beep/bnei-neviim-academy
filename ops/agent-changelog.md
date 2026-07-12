@@ -38456,3 +38456,20 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
   mutation, payment/access mutation, credential/DNS mutation, local-class
   activation, or parallel PR was performed.
+
+## 2026-07-12 - One Time local-class preview activation gate tightened
+
+- Hardened `buildLocalClassSegmentPreview()` so the local-class segment is
+  operator-ready only when it has exactly three unique, unsuppressed,
+  non-archived contacts with valid email addresses.
+- The protected local-class preview route now uses the preview's
+  `activation_blocked` result, instead of checking row count alone.
+- Updated the One Time signup/reminder workflow tests to prove count mismatch,
+  duplicate contacts, invalid/missing email, and suppressed/archived rows block
+  activation.
+- Verification passed: `node --check` for the workflow/server files,
+  `node --test tests/one-time-signup-reminder-workflow.test.js` 10/10, and
+  `npm run test:onetime:focused` 62/62.
+- No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
+  mutation, payment/access mutation, local-class activation, or parallel PR was
+  performed.
