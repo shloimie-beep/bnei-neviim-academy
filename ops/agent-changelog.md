@@ -38673,12 +38673,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Deployed branch `codex/onetime-landing-visual-20260712` to
   `one-time-production / production / one-time-web` after operator approval to
   launch the landing page for review.
-- Final Railway deployment `a5144c33-4302-4d33-a75d-617ac4ac0d6d` reached
+- Final Railway deployment `949c5f23-8673-4922-aca5-357a90a74e19` reached
   `SUCCESS`; live `/api/deploy-info` reports commit
-  `18e05c70e3547b3caa0afbddaadfb012d91755d3` and source branch
+  `0317acc163ca7f6903e6dcf4426d95666501d504` and source branch
   `codex/onetime-landing-visual-20260712`.
 - Live smokes passed:
-  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 18e05c70e3547b3caa0afbddaadfb012d91755d3`,
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 0317acc163ca7f6903e6dcf4426d95666501d504`,
   `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`,
   and `npm run one-time:target:guard`.
 - Live desktop/mobile screenshots were captured under
