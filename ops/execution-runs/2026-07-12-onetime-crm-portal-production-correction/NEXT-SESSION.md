@@ -1,6 +1,7 @@
 # Next Session
 
-Current branch: `master` (now confirmed 0 commits ahead and 54 commits behind `origin/master`).
+Current release candidate branch: `codex/launch-consolidation-20260712` at
+`71c9f7d78`.
 Current active run: `ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/`
 
 Open requirements:
@@ -16,7 +17,7 @@ Open requirements:
 - `REQ-20260712-109`: Done locally - public landing Robot/helper widget assets are removed from the served page, one accessible same-origin WhatsApp launcher is present, action registry coverage is updated, and local screenshots cover 1440/1024/768/430/390 widths. Public-number live readback/release/live-smoke remains under `REQ-20260712-112`.
 - `REQ-20260712-110`: Done locally - WhatsApp assistant natural deterministic replies and WAPI safety gates pass local tests. WAPI live/no-unapproved-send proof remains under `REQ-20260712-112`.
 - `REQ-20260712-111`: Done locally - split shell is under the 1.2 MB budget, CRM metrics pass locally, cache policy contract passes, and member-library Vimeo loads only after Play Video. Production compression/cache/header readback remains under `REQ-20260712-112`.
-- `REQ-20260712-112`: Blocked - release-gate dry-run performed no deploy/mutation/live verification and blocked on a stale local branch (`master` is 0 ahead / 54 behind `origin/master`), mixed dirty worktree, uncommitted One Time correction work, and Railway/Drive external readback readiness gaps.
+- `REQ-20260712-112`: Blocked - clean launch-consolidation commit `71c9f7d78` exists and production readiness was resampled from a clean tree. No deploy/mutation/live verification was performed; production readiness remains blocked by external Stripe/WAPI/campaign setup fields, Rabbi Telegram runtime token/chat readiness, Agent Mode terminal proof, and exact push/merge/deploy/readback requirements.
 
 Next safe commands:
 
@@ -26,7 +27,10 @@ npm run bna:run:validate
 npm run bna:run:next
 ```
 
-If validation passes, the next unblocked batch should be none until `REQ-20260712-112` is unblocked by a clean scoped release lane based on current `origin/master`, a pushed exact One Time release commit, and approved Railway/Drive readback/defer path.
+If validation passes, the next unblocked batch should be none until
+`REQ-20260712-112` is unblocked by external setup/readback clearance or approved
+deferral, Rabbi Telegram runtime readiness, saved Agent Mode terminal proofs,
+and a pushed/merged exact release commit.
 Use the regenerated audit findings before touching broad UI files. Downstream UI packets still need focused Product Quality Compiler
 Definition of Ready and action/route registry checks.
 
@@ -34,7 +38,12 @@ Resolved audit blocker / remaining limitation:
 
 - `DEC-20260712-101`: six source screenshots from `/workspace/scratch/ffef2e71fe52/upload/` remain unavailable locally, but authenticated/current-state regeneration has now been performed. Do not wait on the missing PNGs unless direct before/after comparison is specifically needed.
 - `REQ-20260712-103` through `REQ-20260712-111`: release verification is open under `REQ-20260712-112`. After scoped staging is safe, commit/push/deploy and run live view-as, CRM scope/API/frontend/inbox/portal/landing, public WhatsApp readiness, WAPI no-unapproved-send, production compression/cache/header, and exact SHA smokes before closing the run.
-- `DEC-20260712-112`: release gate blocked by mixed dirty worktree (100 dirty/untracked paths), local branch 0 commits ahead and 54 commits behind `origin/master`, uncommitted One Time correction work, and Railway/Drive readback gates not ready. Recommended next action: start a clean scoped branch/PR from current `origin/master`, reapply only the One Time run files, push the exact release commit, then rerun the release gate and approved deploy/live verification.
+- `DEC-20260712-112`: release gate blocked by external setup/readback fields,
+  Rabbi Telegram runtime readiness, Agent Mode terminal proof, and exact
+  push/merge/deploy/readback requirements. Recommended next action: clear or
+  explicitly defer those blockers through the approved release policy, push/merge
+  the exact clean release commit, then rerun the release gate and approved
+  deploy/live verification.
 
 Do not run yet:
 

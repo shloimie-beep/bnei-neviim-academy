@@ -727,9 +727,9 @@
         "REQ-20260712-111"
       ],
       "status": "blocked",
-      "implementation_status": "Release gate dry-run is blocked before deploy/live-smoke. No deploy, production mutation, or live verification was performed.",
+      "implementation_status": "Clean launch-consolidation commit 71c9f7d78 exists and readiness was resampled from a clean tree. Production deploy/live-smoke remains blocked by external setup, Rabbi Telegram runtime configuration, Agent Mode proof, and exact release handoff/readback requirements. No deploy, production mutation, or live verification was performed.",
       "can_continue_without_operator": false,
-      "next_action": "Unblock by starting from current origin/master in a clean scoped release lane, reapplying only the One Time correction files, pushing the exact release commit, and completing or explicitly deferring Railway/Drive external readback through the approved release gate options.",
+      "next_action": "Unblock by clearing or explicitly deferring the external setup/readback gates, configuring Rabbi Telegram runtime through secret-safe channels, saving the two required Agent Mode terminal proofs, pushing/merging the exact clean release commit, then rerunning deploy/live verification.",
       "acceptance_criteria": [
         "Required behavioral tests and existing One Time regression suite pass.",
         "Screenshots at required viewport/state matrix exist where UI work is done.",
@@ -746,8 +746,9 @@
         "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/TEST-RESULTS.md"
       ],
       "verification": [
-        "BLOCKED npm run bna:release-gate -- --json (dry run): current HEAD is not confirmed pushed to origin/master; working tree has 100 dirty/untracked paths; Railway and Drive external readback gates are not ready",
-        "BLOCKED release lane scope audit: master is 0 commits ahead and 54 commits behind origin/master; One Time correction work is uncommitted in a 100-path mixed dirty tree",
+        "BLOCKED npm run bna:release-gate -- --json (dry run): historical dry run blocked before deploy/live-smoke; no deploy, production mutation, or live verification was performed",
+        "PASS launch consolidation clean-tree resample: npm run production:readiness:snapshot sampled commit 71c9f7d78 with sampled_worktree_clean=true",
+        "BLOCKED npm run production:readiness:gate -- --json: production readiness remains blocked by external Stripe/WAPI/campaign setup fields, Rabbi Telegram runtime token/chat readiness, Agent Mode terminal proof, and no unblocked executable batch",
         "PASS npm run bna:run:validate before release gate dry-run (11 done, 1 not_started)",
         "PASS npm run watchdog:protocol-drift before release gate dry-run",
         "PASS npm run bna:run:next identified BATCH-11-VERIFY-DEPLOY / REQ-20260712-112"
@@ -759,21 +760,21 @@
         "ops/ui-audits/"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T20:37:23+03:00",
-      "blocker": "Release gate blocked: local master is 0 commits ahead and 54 commits behind origin/master, One Time correction work is uncommitted in a mixed dirty tree, and Railway/Drive external readback readiness gaps remain.",
+      "updated_at": "2026-07-12T21:09:04+03:00",
+      "blocker": "Release gate blocked: clean consolidation commit 71c9f7d78 exists, but production readiness remains blocked by external Stripe/WAPI/campaign setup fields, Rabbi Telegram runtime token/chat readiness, Agent Mode terminal proof, and exact push/merge/deploy/readback requirements.",
       "blocker_owner": "Codex/operator release lane",
-      "blocker_next_action": "Start from current origin/master in a clean scoped release lane, reapply only the One Time correction files, push the exact One Time release commit, complete or explicitly defer Railway/Drive readback through approved release-gate options, then rerun deploy/live verification.",
+      "blocker_next_action": "Clear or explicitly defer the external setup/readback gates, configure Rabbi Telegram runtime through secret-safe channels, save the two required Agent Mode terminal proofs, push/merge the exact clean release commit, then rerun deploy/live verification.",
       "blocker_detail": {
         "id": "DEC-20260712-112",
-        "reason": "The approved production release gate cannot run from a stale local branch with uncommitted One Time changes mixed with unrelated dirty work. Local master is 0 commits ahead and 54 commits behind origin/master, and Railway/Drive external readback readiness is incomplete.",
+        "reason": "The launch consolidation lane is clean at 71c9f7d78, but the approved production gate still cannot mark launch ready because required external setup/readback values, Rabbi Telegram runtime readiness, and Agent Mode terminal proofs are incomplete.",
         "owner": "Codex/operator release lane",
-        "recommended_option": "Create a clean scoped release lane from current origin/master, reapply/stage/commit/push only the intended One Time changes, then rerun the release gate and live smokes.",
+        "recommended_option": "Use the clean consolidation commit as the release candidate, clear or explicitly defer the external setup/readback gates, save the required Agent Mode proofs, then push/merge/deploy and rerun live smokes.",
         "alternatives": [
           "Explicitly defer optional integrations/external readback using the approved release-gate flags after deploy approval is present.",
-          "Pause release until unrelated dirty Telegram/keyholder/provider files are committed, archived, or moved to their owning lane."
+          "Pause release until operator-owned external setup and Agent Mode proof blockers are complete."
         ],
         "consequences": "No production Done can be claimed; GitHub-connected ChatGPT cannot see local-only changes until pushed; live app may still be on older code.",
-        "exact_next_action": "Start a clean branch/worktree at origin/master, reapply the One Time release file set, run local validators, then run npm run bna:release-gate -- --json and the approved deploy/live-verify commands."
+        "exact_next_action": "Push/merge the clean release candidate only after external setup/readback, Telegram runtime, and Agent Mode proof blockers are cleared or explicitly deferred through approved policy, then run npm run bna:release-gate -- --json and the approved deploy/live-verify commands."
       }
     }
   ]
