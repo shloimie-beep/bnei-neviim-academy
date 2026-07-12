@@ -38355,3 +38355,19 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
   mutation, portal/account/payment/access mutation, local-class activation, or
   parallel PR was performed.
+
+## 2026-07-12 - One Time signup/reminder proof matrix added
+
+- Added
+  `ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md`
+  mapping each urgent P0 signup/reminder requirement to implementation files,
+  local tests, screenshot evidence, redacted readiness evidence, and remaining
+  provider/deploy/operator blockers.
+- Extended `tests/one-time-signup-reminder-workflow.test.js` to assert the
+  dedicated reminder path includes paused/canceled class suppression plus email
+  unsubscribe, WhatsApp STOP, and wrong-number guardrails.
+- Verification passed: workflow suite 10/10, direct signup plus workflow suite
+  12/12.
+- No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
+  mutation, portal/account/payment/access mutation, local-class activation, or
+  parallel PR was performed.
