@@ -307,6 +307,12 @@ test('server declares protected cron and local-class preview without portal/paym
   assert.match(server, /zoom_mishnayos_class/);
   assert.match(server, /local_student/);
   assert.match(server, /oneTimeClassReminderEnvReadiness\(process\.env\)/);
+  assert.match(server, /ONE_TIME_CLASS_ACTIVE/);
+  assert.match(server, /class_paused_or_canceled/);
+  assert.match(server, /oneTimeReminderSuppressionReason/);
+  assert.match(server, /email_unsubscribed/);
+  assert.match(server, /whatsapp_stop/);
+  assert.match(server, /wrong_number/);
   assert.match(workflow, /ONE_TIME_CLASS_REMINDERS_CONFIRM/);
   assert.match(workflow, /APPROVE_ONE_TIME_CLASS_REMINDERS/);
 
