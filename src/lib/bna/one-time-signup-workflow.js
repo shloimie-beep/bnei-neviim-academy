@@ -569,7 +569,7 @@ function buildOneTimeSignupConfirmationEmail({
   };
 }
 
-function buildOneTimeClassReminderMessage({ city, classInstant, zoomJoinUrl } = {}) {
+function buildOneTimeClassReminderMessage({ city, classInstant, zoomJoinUrl, channel = 'email' } = {}) {
   const display = city?.timezone
     ? buildClassTimeDisplay({ classInstant, city })
     : {
@@ -584,6 +584,18 @@ function buildOneTimeClassReminderMessage({ city, classInstant, zoomJoinUrl } = 
   const localLine = display.recipient_local_time
     ? `Your local time: ${display.recipient_local_time}`
     : 'The class starts in 30 minutes - 7:00 p.m. Israel time.';
+  if (compact(channel).toLowerCase() === 'whatsapp') {
+    return [
+      "Hi, this is Rabbi Scheller's digital assistant.",
+      "We're about to begin in 30 minutes. It's going to be an awesome class today.",
+      '',
+      localLine,
+      'Israel time: 7:00 p.m.',
+      '',
+      'Join Zoom:',
+      joinUrl,
+    ].join('\n');
+  }
   return [
     "Rabbi Scheller's Mishnah class starts in 30 minutes.",
     '',
@@ -841,25 +853,34 @@ function oneTimeClassReminderEnvReadiness(env = process.env) {
 }
 
 function oneTimeWapiReminderEnvReadiness(env = process.env) {
-  const required = [
-    'ONE_TIME_WAPI_API_TOKEN',
-    'ONE_TIME_WAPI_API_BASE_URL',
-    'ONE_TIME_WHAPI_INSTANCE_ID',
-    'ONE_TIME_WHAPI_PHONE',
-    'ONE_TIME_WAPI_WEBHOOK_SECRET',
-    'ONE_TIME_PUBLIC_WHATSAPP_NUMBER',
-    'ONE_TIME_WHATSAPP_CLASS_LINK',
-  ];
-  const missing = required.filter((key) => !compact(env[key]));
-  const autoReplyEnabled = /^(?:1|true|yes)$/i.test(String(env.ONE_TIME_WAPI_AUTO_REPLY_ENABLED || '').trim());
-  const autoReplyApproved = String(env.ONE_TIME_WAPI_AUTO_REPLY_CONFIRM || '').trim() === 'APPROVE_ONE_TIME_WAPI_AUTO_REPLY';
-  const modeLive = String(env.ONE_TIME_PROVIDER_LEAD_BOT_MODE || '').trim() === 'live';
-  if (!autoReplyEnabled) missing.push('ONE_TIME_WAPI_AUTO_REPLY_ENABLED=true');
-  if (!autoReplyApproved) missing.push('ONE_TIME_WAPI_AUTO_REPLY_CONFIRM=APPROVE_ONE_TIME_WAPI_AUTO_REPLY');
-  if (!modeLive) missing.push('ONE_TIME_PROVIDER_LEAD_BOT_MODE=live');
+  const tokenPresent = Boolean(compact(env.ONE_TIME_WAPI_API_TOKEN || env.ONETIME_WAPI_API_TOKEN || env.RABBI_SHELLER_WAPI_API_TOKEN || env.RABBI_SCHELLER_WAPI_API_TOKEN));
+  const apiBasePresent = Boolean(compact(env.ONE_TIME_WAPI_API_BASE_URL || env.ONETIME_WAPI_API_BASE_URL || env.RABBI_SHELLER_WAPI_API_BASE_URL || env.RABBI_SCHELLER_WAPI_API_BASE_URL));
+  const instancePresent = Boolean(compact(env.ONE_TIME_WHAPI_INSTANCE_ID || env.ONE_TIME_WAPI_INSTANCE_ID));
+  const senderPhone = compact(env.ONE_TIME_WHAPI_PHONE || env.ONE_TIME_WAPI_PHONE);
+  const senderDigits = normalizePhoneDigits(senderPhone);
+  const requiredSenderDigits = normalizePhoneDigits(env.ONE_TIME_WAPI_REQUIRED_SENDER_DIGITS || env.ONE_TIME_WHATSAPP_REQUIRED_SENDER_DIGITS || '');
+  const classLinkPresent = Boolean(compact(env.ONE_TIME_WHATSAPP_CLASS_LINK || env.ONE_TIME_LIVE_CLASS_URL || env.ONE_TIME_ZOOM_JOIN_URL || env.ONE_TIME_TONIGHT_CLASS_LINK || env.ONE_TIME_CURRENT_CLASS_LINK || env.ONETIME_CLASS_LINK));
+  const remindersEnabled = /^(?:1|true|yes|live)$/i.test(String(env.ONE_TIME_WHATSAPP_CLASS_REMINDERS_ENABLED || env.ONE_TIME_WAPI_CLASS_REMINDERS_ENABLED || '').trim());
+  const reminderConfirm = String(env.ONE_TIME_WHATSAPP_CLASS_REMINDERS_CONFIRM || env.ONE_TIME_WAPI_CLASS_REMINDERS_CONFIRM || '').trim();
+  const remindersApproved = reminderConfirm === 'APPROVE_ONE_TIME_WHATSAPP_CLASS_REMINDERS';
+  const missing = [];
+  if (!tokenPresent) missing.push('ONE_TIME_WAPI_API_TOKEN missing');
+  if (!apiBasePresent) missing.push('ONE_TIME_WAPI_API_BASE_URL missing');
+  if (!instancePresent) missing.push('ONE_TIME_WHAPI_INSTANCE_ID missing');
+  if (!senderDigits) missing.push('ONE_TIME_WHAPI_PHONE missing');
+  if (requiredSenderDigits && !senderDigits.includes(requiredSenderDigits)) {
+    missing.push('ONE_TIME_WHAPI_PHONE does not match required sender digits');
+  }
+  if (!classLinkPresent) missing.push('ONE_TIME_WHATSAPP_CLASS_LINK missing');
+  if (!remindersEnabled) missing.push('ONE_TIME_WHATSAPP_CLASS_REMINDERS_ENABLED=true');
+  if (!remindersApproved) missing.push('ONE_TIME_WHATSAPP_CLASS_REMINDERS_CONFIRM=APPROVE_ONE_TIME_WHATSAPP_CLASS_REMINDERS');
   return {
     ready: missing.length === 0,
     missing,
+    enabled: remindersEnabled,
+    approved: remindersApproved,
+    sender_binding_configured: Boolean(senderDigits),
+    required_sender_digits_configured: Boolean(requiredSenderDigits),
     qr_action_if_auth_expired: 'Rabbi Scheller must scan the Whapi channel QR from his WhatsApp phone.',
   };
 }

@@ -2727,6 +2727,11 @@ const ONE_TIME_WAPI_SENDER_PHONE = String(
   process.env.ONE_TIME_WAPI_PHONE ||
   ''
 ).trim();
+const ONE_TIME_WAPI_REQUIRED_SENDER_DIGITS = normalizePhoneDigits(
+  process.env.ONE_TIME_WAPI_REQUIRED_SENDER_DIGITS ||
+  process.env.ONE_TIME_WHATSAPP_REQUIRED_SENDER_DIGITS ||
+  ''
+);
 const ONE_TIME_WHATSAPP_CLASS_LINK = String(
   process.env.ONE_TIME_WHATSAPP_CLASS_LINK ||
   process.env.ONE_TIME_LIVE_CLASS_URL ||
@@ -2741,6 +2746,7 @@ const ONE_TIME_PUBLIC_WHATSAPP_NUMBER = String(
   process.env.ONETIME_PUBLIC_WHATSAPP_NUMBER ||
   process.env.RABBI_SCHELLER_PUBLIC_WHATSAPP_NUMBER ||
   process.env.RABBI_SHELLER_PUBLIC_WHATSAPP_NUMBER ||
+  ONE_TIME_WAPI_SENDER_PHONE ||
   ''
 ).trim();
 const WAPI_SEND_TIMEOUT_MS = Math.max(
@@ -65049,6 +65055,24 @@ async function sendWapiTextMessage({
     error.statusCode = 503;
     throw error;
   }
+  if (credentials.one_time_scope) {
+    if (credentials.credential_scope !== 'one_time_scoped') {
+      const error = new Error('One Time WhatsApp delivery requires one_time_scoped WAPI credentials.');
+      error.statusCode = 503;
+      throw error;
+    }
+    const senderDigits = normalizePhoneDigits(ONE_TIME_WAPI_SENDER_PHONE);
+    if (!senderDigits) {
+      const error = new Error('One Time WhatsApp delivery requires ONE_TIME_WHAPI_PHONE sender binding.');
+      error.statusCode = 503;
+      throw error;
+    }
+    if (ONE_TIME_WAPI_REQUIRED_SENDER_DIGITS && !senderDigits.includes(ONE_TIME_WAPI_REQUIRED_SENDER_DIGITS)) {
+      const error = new Error('One Time WhatsApp delivery sender binding does not match the required Rabbi Scheller sender.');
+      error.statusCode = 503;
+      throw error;
+    }
+  }
 
   const recipient = normalizeWapiRecipient(to);
   const message = String(body || '').trim();
@@ -81249,11 +81273,25 @@ function oneTimeReminderEnrollmentForLeadRow(row = {}) {
   const localApproved = metadata.reminder_source === 'operator_approved_local_class_tag'
     && metadata.local_class_reminders_active === true;
   if (localApproved) {
+    let channels = [];
+    if (Array.isArray(metadata.reminder_channels)) {
+      channels = metadata.reminder_channels
+        .map((channel) => String(channel || '').trim().toLowerCase())
+        .filter((channel) => channel === 'email' || channel === 'whatsapp');
+    }
+    if (!channels.length) {
+      try {
+        channels = reminderChannelsForPreference(metadata.reminder_preference || 'email');
+      } catch {
+        channels = ['email'];
+      }
+    }
+    if (!channels.length) channels = ['email'];
     return {
       source: 'operator_approved_local_class_tag',
       approved: true,
-      preference: 'email',
-      channels: ['email'],
+      preference: metadata.reminder_preference || (channels.includes('email') && channels.includes('whatsapp') ? 'both' : channels[0]),
+      channels,
       consent_at: metadata.operator_approved_at || null,
       consent_policy_version: metadata.operator_approval_policy_version || null,
     };
@@ -81287,7 +81325,7 @@ function oneTimeReminderCityForLeadRow(row = {}) {
 
 function oneTimeReminderRecipientForChannel(row = {}, channel = 'email') {
   if (channel === 'email') return normalizeEmail(row.parent_email || row.email || '');
-  return normalizePhoneDigits(row.parent_phone || row.parent_whatsapp || row.phone || row.whatsapp || '');
+  return normalizePhoneDigits(row.parent_whatsapp || row.whatsapp || row.parent_phone || row.phone || '');
 }
 
 async function oneTimeReminderCandidateRows({ db = pool, projectId } = {}) {

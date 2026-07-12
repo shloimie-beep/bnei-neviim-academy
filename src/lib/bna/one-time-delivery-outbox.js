@@ -190,7 +190,12 @@ function buildOneTimeOutboxDeliveryRequest({
         html: email.html,
       };
     }
-    const text = buildOneTimeClassReminderMessage({ city, classInstant, zoomJoinUrl: classLink });
+    const text = buildOneTimeClassReminderMessage({
+      city,
+      classInstant,
+      zoomJoinUrl: classLink,
+      channel: 'email',
+    });
     return {
       transport,
       kind,
@@ -218,7 +223,12 @@ function buildOneTimeOutboxDeliveryRequest({
           zoomJoinUrl: classLink,
           reminderPreference,
         }).text
-      : buildOneTimeClassReminderMessage({ city, classInstant, zoomJoinUrl: classLink });
+      : buildOneTimeClassReminderMessage({
+          city,
+          classInstant,
+          zoomJoinUrl: classLink,
+          channel: 'whatsapp',
+        });
     return {
       transport,
       kind,
