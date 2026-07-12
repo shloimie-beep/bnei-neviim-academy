@@ -1,4 +1,4 @@
-# Production Readiness Snapshot - 2026-07-12T08:37:40.721Z
+# Production Readiness Snapshot - 2026-07-12T08:39:55.921Z
 
 Result: not_production_complete
 Production ready: no
@@ -12,15 +12,15 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 
 ## Git
 - Branch: codex/onetime-p0p1-corrective-20260711
-- HEAD: ba515bf9
+- HEAD: 2511d829
 - origin/master: d68e3f9a
-- Worktree clean when sampled: no
+- Worktree clean when sampled: yes
 
 ## Snapshot Freshness
 - Kind: sampled_control_tower_report
-- Sampled git head: ba515bf9
+- Sampled git head: 2511d829
 - Sampled origin/master: d68e3f9a
-- Sampled worktree clean: no
+- Sampled worktree clean: yes
 - Refresh command: `npm run production:readiness:snapshot`
 - Note: This committed file is a sampled production-readiness report, not live telemetry. The commit that stores the report can have a newer hash than the sampled_git_head. Local agents should regenerate the snapshot before acting on launch-critical state.
 
@@ -60,7 +60,7 @@ Safe current scope: read-only production-readiness reporting, blocker reconcilia
 - Path: ops/production-readiness/2026-07-12-no-write-live-smoke-readback.json
 - Status: passed
 - Ready: yes
-- Fresh for launch gate: yes (0.02h old, max 24h)
+- Fresh for launch gate: yes (0.05h old, max 24h)
 - Commands passed: 4/4
 - External write performed: no
 - Production data mutation performed: no
