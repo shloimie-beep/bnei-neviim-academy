@@ -39012,3 +39012,20 @@ Report: ops/agent-fleet-runs/2026-07-12T14-58-15-897Z-task-2266.md
   Time landing/signup surfaces.
 - Telegram notifications remain disabled and unapproved; no manual WhatsApp
   message was sent during the flag enablement.
+
+## 2026-07-12 - Launch consolidation branch pushed as blocked draft PR
+
+- Captured Shloimie's launch-consolidation request as `RAW-20260712-006` and
+  created `tasks-pending/2026-07-12-launch-consolidation-merge-deploy.md`.
+- Preserved and reconciled today's local launch work on
+  `codex/launch-consolidation-20260712`, resolved origin/master conflicts,
+  and committed the clean candidate through `3930d8e05`.
+- Pushed the branch and opened draft PR #130:
+  https://github.com/shloimie-beep/bnei-neviim-academy/pull/130
+- Verification passed for focused One Time tests/smokes, action watchdog,
+  run validation, and secret audit. Production readiness gate remains blocked
+  by external Stripe/WAPI/campaign fields, Rabbi Telegram runtime config, two
+  Agent Mode proof prompts, and approved merge/deploy/readback requirements.
+- The separate `codex/ramble-protocol-telegram-unification-20260712` branch
+  could not be pushed because GitHub rejected `.github/workflows/ramble-protocol.yml`
+  without OAuth `workflow` scope.

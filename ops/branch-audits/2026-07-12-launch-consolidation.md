@@ -28,7 +28,7 @@ Source request: `RAW-20260712-006`
 | `codex/onetime-landing-followup-20260712` / `codex/onetime-landing-visual-20260712` | Already merged to `origin/master` | `git branch --merged origin/master` includes both branch names. | No merge needed. |
 | `codex/onetime-p0p1-corrective-20260711` | Patch-equivalent / already integrated | `git cherry -v origin/master codex/onetime-p0p1-corrective-20260711` reports `- 3f47c0ded Add One Time delivery outbox dispatcher`. | Do not ancestry-merge again; evidence and implementation are already carried into the consolidation state. |
 | `codex/onetime-signup-location-hotfix-20260712` | Current missing One Time work | `git cherry -v origin/master` reports six unique commits through `24b920564 Use visible One Time signup type buttons`. | Incorporated into the consolidation candidate and verified with focused tests plus public onboarding smoke. |
-| `codex/ramble-protocol-telegram-unification-20260712` | Current but separate blocked protocol lane | `git cherry -v origin/master` reports two unique commits, including `.github/workflows/ramble-protocol.yml`, migration, Telegram bridge, parser, server, and test changes. Prior branch status records a push blocker for workflow scope. | Do not fold into the One Time launch commit without separate protocol verification and workflow-scope push clearance. Keep as next scoped release/blocker. |
+| `codex/ramble-protocol-telegram-unification-20260712` | Current but separate blocked protocol lane | `git cherry -v origin/master` reports two unique commits, including `.github/workflows/ramble-protocol.yml`, migration, Telegram bridge, parser, server, and test changes. `git push -u origin codex/ramble-protocol-telegram-unification-20260712` was rejected because the OAuth token lacks `workflow` scope for `.github/workflows/ramble-protocol.yml`. | Do not fold into the One Time launch commit without separate protocol verification and workflow-scope push clearance. Keep as next scoped release/blocker. |
 
 ## Remote branch classification
 
@@ -46,7 +46,10 @@ Source request: `RAW-20260712-006`
 ## Launch conclusion
 
 The only safe app-visible launch candidate from today's unmerged work is the
-One Time consolidation set now staged on `codex/launch-consolidation-20260712`.
+One Time consolidation set now pushed as draft PR #130:
+https://github.com/shloimie-beep/bnei-neviim-academy/pull/130
+
 The remaining current protocol lane is real work, but it is broad, includes a
-workflow file previously blocked by token scope, and needs its own verification
-before it can be pushed or called deployable.
+workflow file rejected by GitHub because the current OAuth token lacks
+`workflow` scope, and needs its own verification before it can be pushed or
+called deployable.
