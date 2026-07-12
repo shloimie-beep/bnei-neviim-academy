@@ -144,7 +144,7 @@ export async function buildOneTimePublicTargetGate(options = {}, context = {}) {
   const runner = context.runner || defaultRunner;
   const fetchFn = context.fetchFn || globalThis.fetch;
   const baseUrl = normalizeBaseUrl(options.targetBaseUrl || process.env.ONETIME_BASE_URL || 'https://join.onetimeonetime.com');
-  const expectedTitlePattern = /Give Your Son A Love For Torah/i;
+  const expectedTitlePattern = /Give Your Son A Love For Learning Torah/i;
   const expectedHeadlinePattern = /Give your son a love for learning Torah\./i;
   const requiredText = ['Give your son a love for learning Torah.', 'One Time Mishnayos', 'Sign Up Now'];
   const forbiddenPatterns = [

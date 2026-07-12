@@ -43998,13 +43998,13 @@ function buildDeploymentInfo() {
   return {
     status: 'ok',
     commit_sha: process.env.BNA_RELEASE_SHA
+      || metadata.commit_sha
       || process.env.RAILWAY_GIT_COMMIT_SHA
       || process.env.GIT_COMMIT_SHA
-      || metadata.commit_sha
       || '',
     source_branch: process.env.BNA_RELEASE_BRANCH
-      || process.env.RAILWAY_GIT_BRANCH
       || metadata.source_branch
+      || process.env.RAILWAY_GIT_BRANCH
       || '',
     generated_at: metadata.generated_at || '',
     deployment_source: metadata.deployment_source || 'runtime',
