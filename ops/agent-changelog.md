@@ -38532,10 +38532,10 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Marked PR #129 ready, merged it, and deployed the One Time production service
   at https://join.onetimeonetime.com.
 - Recorded merge commit `8e22e5d79844e994e94c4f3ed92ac51422649b8c`,
-  deployed SHA `4a6951643eebb341dcc495d5f306417e1621a07a`, and Railway
-  deployment `0ff5498b-1116-479e-87ca-afe8d2fc6f7b`.
+  final deployed SHA `fc147ded1ee0e12325111382fa8e460134a8ce3d`, and
+  Railway deployment `64ab8814-c984-4618-b808-5e762914f3eb`.
 - Live smokes passed:
-  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a`
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`
   and `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
 - Updated the execution run, task register, deployment record, status, evidence,
   test results, batch status, and next-session handoff with the real remaining

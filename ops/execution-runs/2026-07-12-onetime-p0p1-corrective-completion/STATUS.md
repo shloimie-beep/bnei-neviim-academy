@@ -11,9 +11,9 @@ Run remains active with release/live proof recorded and a short blocker list.
 - Merge commit:
   `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
 - Deployed/live-smoked master SHA:
-  `4a6951643eebb341dcc495d5f306417e1621a07a`
+  `fc147ded1ee0e12325111382fa8e460134a8ce3d`
 - Railway deployment id:
-  `0ff5498b-1116-479e-87ca-afe8d2fc6f7b`
+  `64ab8814-c984-4618-b808-5e762914f3eb`
 - Production URL:
   https://join.onetimeonetime.com
 

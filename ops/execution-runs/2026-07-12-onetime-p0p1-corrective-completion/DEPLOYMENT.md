@@ -13,23 +13,25 @@ live-smoked.
 - PR head at merge: `598f66238f68293575d5f9e6195bb6b032ebb156`
 - Merge commit: `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
 - Merged at: `2026-07-12T10:26:51Z`
-- Post-merge smoke-harness fix on master:
-  `4a6951643eebb341dcc495d5f306417e1621a07a`
+- Post-merge release trail:
+  `4a6951643eebb341dcc495d5f306417e1621a07a` smoke-harness fix,
+  `63243c915b2774c59faf980e027efc8e546a3f1e` delivery outbox dispatcher,
+  `fc147ded1ee0e12325111382fa8e460134a8ce3d` release-proof commit.
 
 ## Railway
 
 - Target: `one-time-production / production / one-time-web`
 - Public URL: https://join.onetimeonetime.com
-- Final deployment id: `0ff5498b-1116-479e-87ca-afe8d2fc6f7b`
+- Final deployment id: `64ab8814-c984-4618-b808-5e762914f3eb`
 - Deployment status: `SUCCESS`
 - Live deployed SHA from `/api/deploy-info`:
-  `4a6951643eebb341dcc495d5f306417e1621a07a`
+  `fc147ded1ee0e12325111382fa8e460134a8ce3d`
 
 ## Live Smoke
 
 Passed after deployment:
 
-- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
 
 The live smoke checked the exact deployed SHA, One Time instance config,

@@ -179,12 +179,12 @@ Post-merge smoke-harness fix gate:
 
 Live production smoke:
 
-- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`
   PASS.
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
   PASS.
 - Direct `/api/deploy-info` readback returned HTTP 200 with
-  `commit_sha` = `4a6951643eebb341dcc495d5f306417e1621a07a` and
+  `commit_sha` = `fc147ded1ee0e12325111382fa8e460134a8ce3d` and
   deployment target `one-time-production / one-time-web`.
 
 No external send, payment/charge/refund, access grant, historical import,

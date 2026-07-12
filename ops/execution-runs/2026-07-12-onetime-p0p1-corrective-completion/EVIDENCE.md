@@ -355,20 +355,24 @@ Release / live proof update:
   `8e22e5d79844e994e94c4f3ed92ac51422649b8c`.
 - Post-merge live-smoke harness fix on master:
   `4a6951643eebb341dcc495d5f306417e1621a07a`.
+- Post-merge delivery outbox dispatcher on master:
+  `63243c915b2774c59faf980e027efc8e546a3f1e`.
+- Final release-proof commit deployed:
+  `fc147ded1ee0e12325111382fa8e460134a8ce3d`.
 - Railway target:
   `one-time-production / production / one-time-web`.
 - Final Railway deployment:
-  `0ff5498b-1116-479e-87ca-afe8d2fc6f7b`, status `SUCCESS`.
+  `64ab8814-c984-4618-b808-5e762914f3eb`, status `SUCCESS`.
 - Live URL:
   https://join.onetimeonetime.com
 - Live `/api/deploy-info` readback:
-  `commit_sha` = `4a6951643eebb341dcc495d5f306417e1621a07a`,
+  `commit_sha` = `fc147ded1ee0e12325111382fa8e460134a8ce3d`,
   `deployment_source` = `railway:redeploy`,
   `target_app` = `one-time`,
   `target_project` = `one-time-production`,
   `target_service` = `one-time-web`.
 - Exact-SHA live smoke passed:
-  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a`.
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`.
 - Focused Rabbi/One Time landing live smoke passed:
   `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
 - No production email/WhatsApp/Telegram/campaign send, charge/refund, access

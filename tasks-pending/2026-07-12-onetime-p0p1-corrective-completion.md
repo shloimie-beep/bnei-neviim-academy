@@ -20,9 +20,9 @@ Continues prior run:
 - Merge commit:
   `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
 - Deployed/live-smoked master SHA:
-  `4a6951643eebb341dcc495d5f306417e1621a07a`
+  `fc147ded1ee0e12325111382fa8e460134a8ce3d`
 - Railway deployment:
-  `0ff5498b-1116-479e-87ca-afe8d2fc6f7b`
+  `64ab8814-c984-4618-b808-5e762914f3eb`
 - Live URL:
   https://join.onetimeonetime.com
 
@@ -71,10 +71,10 @@ Release/live gates passed:
 
 - `npm run bna:release-gate -- --allow-detached --remote-branch master`
 - `npm run one-time:railway-target:guard`
-- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha fc147ded1ee0e12325111382fa8e460134a8ce3d`
 - `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
 - Direct `GET https://join.onetimeonetime.com/api/deploy-info` returned
-  `commit_sha` = `4a6951643eebb341dcc495d5f306417e1621a07a`.
+  `commit_sha` = `fc147ded1ee0e12325111382fa8e460134a8ce3d`.
 
 ## Decisions And Blockers
 
