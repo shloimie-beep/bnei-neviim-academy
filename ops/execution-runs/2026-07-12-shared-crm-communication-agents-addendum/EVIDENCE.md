@@ -26,6 +26,11 @@
 - `ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md` - deployed local update/no-auto-task slice live smoke at `224bc077919c624f115c264d35e35092ed4144da`, with 12 scoped cards and read-only selected timeline.
 - `public/operations.html` / `public/js/crm/crm-actions.js` - the CRM contact workspace now exposes an explicit active `ACTION-CRM-CREATE-TASK` button that calls the scoped first-party PATCH route with `create_follow_up_task=true`, no-send flags, and read-only preview disabled state.
 - `ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md` - local Operations CRM workbench smoke passed after the explicit task action slice; all 1440/1024/768/430/390 split-shell and monolith checks show `Task action=true`.
+- BNA live deploy-info readback - `https://bneineviimacademy.org/api/deploy-info` returned `commit_sha=ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- One Time live deploy-info readback - `https://join.onetimeonetime.com/api/deploy-info` returned `commit_sha=ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- BNA post-deploy doctor - Railway deployment `ab35f8b9-9670-486b-9b4a-94719e01098d` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `988210a8-3fbf-41f5-aa52-f7f54b69bdc8` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed after the explicit Create task action slice with 12 scoped cards and read-only selected timeline.
 - `raw-input/RAW-20260713-001-onetime-bot-portal-landing-polish.md` - operator correction requiring the WhatsApp bot knowledge to state no portal/member/library access is being granted yet plus One Time landing header/button/mobile CTA polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.md` - scoped local-verified handoff for bot knowledge and landing polish.
 - `tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json` - focused Product Quality Compiler packet for the One Time header/CTA/spacing/mobile correction and bot access-fact guardrail.

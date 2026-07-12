@@ -91,6 +91,14 @@
 - PASS `npm run secrets:audit` after explicit CRM Create task action slice.
 - PASS `npm run bna:run:validate` after explicit CRM Create task action slice; work remains on the broader addendum.
 - PASS `git diff --check` with line-ending warnings only after explicit CRM Create task action slice.
+- PASS `git push origin master` for explicit CRM Create task action commit `ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `ab35f8b9-9670-486b-9b4a-94719e01098d`.
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `988210a8-3fbf-41f5-aa52-f7f54b69bdc8`.
+- PASS BNA and One Time live `/api/deploy-info`; deployed SHA `ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- PASS `npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com` after explicit CRM Create task action deploy.
+  - Scoped CRM contacts API returned 12 cards with no external-write flags.
+  - Selected CRM timeline API was read-only.
 - PASS `node --check src/lib/bna/provider-lead-bot.js` after One Time bot knowledge/landing polish slice.
 - PASS `npm run pqc:validate -- tasks-pending/2026-07-13-onetime-bot-portal-landing-polish.product-quality.json`.
 - PASS `node --test tests\service-provider-lead-bot.test.js tests\one-time-focused-landing.test.js tests\one-time-canonical-journey.test.js tests\one-time-brand-helper-isolation.test.js tests\one-time-shared-review-branding.test.js` (33/33) after One Time bot knowledge/landing polish slice.

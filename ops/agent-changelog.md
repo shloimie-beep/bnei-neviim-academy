@@ -39043,4 +39043,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `34/34`, local Operations CRM workbench smoke at 1440/1024/768/430/390,
   action watchdog 0 findings, protocol drift watchdog, secret audit, execution
   run validation, and diff check with line-ending warnings only.
-- Deployment/live proof remains next for this slice.
+- Deployed commit `ded53274e31f91abff7944c094bdcdfaa9c55c5e` to BNA and One
+  Time production.
+- BNA Railway deployment `ab35f8b9-9670-486b-9b4a-94719e01098d` and One Time
+  deployment `988210a8-3fbf-41f5-aa52-f7f54b69bdc8` reached `SUCCESS`.
+- BNA and One Time live `/api/deploy-info` both returned
+  `ded53274e31f91abff7944c094bdcdfaa9c55c5e`.
+- Live proof passed: One Time separate-instance SHA smoke and One Time
+  Operations CRM workbench smoke with 12 scoped cards and read-only selected
+  timeline.

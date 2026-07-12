@@ -78,9 +78,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the local update/no-auto-task slice; the next explicit Create task action slice is locally verified and pending deploy. Canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked, the local CRM update form/no-auto-task policy slice is deployed and live-smoked, and the dead-end Create task placeholder is locally replaced by explicit ACTION-CRM-CREATE-TASK.",
+      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked through the explicit Create task action slice. Canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, the One Time Operations CRM workbench API/timeline smoke passed, the crm_contact/filter/search/sort/list-scroll URL-state slice is deployed and live-smoked, the local CRM update form/no-auto-task policy slice is deployed and live-smoked, and the dead-end Create task placeholder is replaced by deployed explicit ACTION-CRM-CREATE-TASK at commit ded53274e31f91abff7944c094bdcdfaa9c55c5e.",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, deploy the explicit Create task action slice, then continue deeper dedicated contact workspace/actions without reintroducing workspace leakage or internal CRM copy.",
+      "next_action": "Continue deeper dedicated contact workspace/actions without reintroducing workspace leakage or internal CRM copy.",
       "acceptance_criteria": [
         "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace."
       ],
@@ -99,7 +99,10 @@
         "ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md records the deployed local update/no-auto-task slice live smoke at commit 224bc077919c624f115c264d35e35092ed4144da.",
         "public/operations.html and public/js/operations-shell.js replace ACTION-CRM-CREATE-TASK-PENDING with active ACTION-CRM-CREATE-TASK.",
         "public/js/crm/crm-actions.js exposes followUpTaskSummary for shared task action copy.",
-        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records local smoke PASS with Task action=true across split-shell and monolith at 1440, 1024, 768, 430, and 390."
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md records local smoke PASS with Task action=true across split-shell and monolith at 1440, 1024, 768, 430, and 390.",
+        "BNA deployment ab35f8b9-9670-486b-9b4a-94719e01098d SUCCESS at commit ded53274e31f91abff7944c094bdcdfaa9c55c5e.",
+        "One Time deployment 988210a8-3fbf-41f5-aa52-f7f54b69bdc8 SUCCESS at commit ded53274e31f91abff7944c094bdcdfaa9c55c5e.",
+        "ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md records deployed One Time Operations CRM workbench smoke after explicit Create task action slice."
       ],
       "verification": [
         "node --check server.js PASS",
@@ -149,7 +152,12 @@
         "npm run watchdog:actions PASS finding_count 0 after explicit Create task action slice",
         "npm run watchdog:protocol-drift PASS after explicit Create task action slice",
         "npm run secrets:audit PASS after explicit Create task action slice",
-        "npm run bna:run:validate PASS after explicit Create task action slice"
+        "npm run bna:run:validate PASS after explicit Create task action slice",
+        "BNA Railway post-deploy doctor PASS deployment ab35f8b9-9670-486b-9b4a-94719e01098d",
+        "One Time Railway post-deploy doctor PASS deployment 988210a8-3fbf-41f5-aa52-f7f54b69bdc8",
+        "BNA and One Time deploy-info returned commit_sha=ded53274e31f91abff7944c094bdcdfaa9c55c5e",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha ded53274e31f91abff7944c094bdcdfaa9c55c5e PASS",
+        "npm run app:smoke:onetime-operations-crm-workbench -- https://join.onetimeonetime.com PASS after explicit Create task action slice"
       ],
       "implementation_files": [
         "src/lib/bna/crm/contact-service.js",
@@ -182,9 +190,11 @@
         "One Time production deploy-info readback commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4.",
         "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md.",
         "URL-state slice deployed at f818822bb3969dca5d27f7c5a70d4dbf0baa8744 with live smoke report ops/live-smokes/2026-07-12T21-39-03-428Z-one-time-operations-crm-workbench-live-smoke.md.",
-        "Local update/no-auto-task slice deployed at 224bc077919c624f115c264d35e35092ed4144da with live smoke report ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md."
-      ],
-  "updated_at": "2026-07-13T01:31:00+03:00",
+    "Local update/no-auto-task slice deployed at 224bc077919c624f115c264d35e35092ed4144da with live smoke report ops/live-smokes/2026-07-12T21-48-53-805Z-one-time-operations-crm-workbench-live-smoke.md."
+    ,
+    "Explicit Create task action slice deployed at ded53274e31f91abff7944c094bdcdfaa9c55c5e with live smoke report ops/live-smokes/2026-07-12T22-30-27-405Z-one-time-operations-crm-workbench-live-smoke.md."
+  ],
+  "updated_at": "2026-07-13T01:39:00+03:00",
       "blocker": ""
     },
     {
