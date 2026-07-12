@@ -146,8 +146,8 @@ REQ-20260712-013 evidence:
   `npm run watchdog:protocol-drift`, and
   `npm run bna:run:validate` after statuses were corrected to open
   non-terminal deployment-required work.
-- Production deploy/live proof is not claimed. It remains gated by
-  `REQ-20260712-011` and `REQ-20260712-022`.
+- Production deploy/live proof is recorded below. Operator personal signup and
+  hosted reminder-provider readiness remain open under `REQ-20260712-022`.
 
 REQ-20260712-006 local onboarding-linkage evidence:
 
@@ -169,9 +169,9 @@ REQ-20260712-006 local onboarding-linkage evidence:
   `node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js`
   (6/6), `node --check server.js`, and `npm run test:onetime:focused` (62/62).
 - Remaining blocker: real local/test DB persistence proof still needs
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL`; deployed/live proof still needs release
-  authorization. No production deploy, external send, payment, access grant, or
-  production data mutation was performed.
+  `BNA_ONETIME_CRM_TEST_DATABASE_URL`. Deployment/live proof is recorded below.
+  No external send, payment, access grant, historical import, DNS/account
+  mutation, credential mutation, or production-data import was performed.
 
 REQ-20260712-010 / REQ-20260712-023 matrix evidence:
 
@@ -306,8 +306,9 @@ REQ-20260712-008 / REQ-20260712-009 final local regression pass:
   `npm run watchdog:actions` PASS finding_count 0,
   `npm run watchdog:protocol-drift`, `npm run secrets:audit`, and
   `npm run bna:run:validate`.
-- Terminal Done is not claimed for REQ-008 or REQ-009. Both remain
-  release/live-smoke gated under `REQ-20260712-011`.
+- Terminal Done is not claimed for REQ-008 or REQ-009. Both are deployed, but
+  production intake/dropoff write-smoke was not run because it would create
+  live raw/parse records without a separately scoped production test packet.
 
 REQ-20260712-007 local landing / Robot proof:
 
@@ -323,9 +324,9 @@ REQ-20260712-007 local landing / Robot proof:
   84x84 on desktop/tablet and 76x76 on mobile, using the contained Robot PNG
   and accessible label `Open Rabbi Scheller’s WhatsApp assistant.`.
 - Local browser proof used the real Express `/one-time` route in
-  `ONE_TIME_REVIEW_ONLY_NO_DB=1` mode; no production DB, deploy, external send,
-  payment, access grant, provider mutation, or production-data mutation was
-  performed.
+  `ONE_TIME_REVIEW_ONLY_NO_DB=1` mode before release. Final deployment/live
+  proof is recorded below. No external send, payment, access grant, provider
+  mutation, or production-data import was performed.
 - Screenshots were captured and force-added under
   `ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/`:
   `landing-1440.png`, `landing-768.png`, `landing-430.png`,
@@ -339,5 +340,51 @@ REQ-20260712-007 local landing / Robot proof:
   `npm run secrets:audit`, `npm run bna:run:validate`, and Playwright local
   route screenshot proof at 1440, 768, 430, and 390 widths with no console
   warnings.
-- Terminal Done is not claimed. REQ-20260712-007 remains blocked on release
-  authorization, deployment of the exact PR #129 SHA, and live-smoke proof.
+- Landing/Robot release proof is recorded below. The broader screenshot matrix
+  remains open for the non-landing Operations/CRM/mailbox surfaces.
+
+Release / live proof update:
+
+- Operator release authorization was given in the July 12 Codex conversation:
+  `I approvw everything continue`.
+- PR #129 was marked ready and merged:
+  https://github.com/shloimie-beep/bnei-neviim-academy/pull/129
+- PR head at merge:
+  `598f66238f68293575d5f9e6195bb6b032ebb156`.
+- Merge commit:
+  `8e22e5d79844e994e94c4f3ed92ac51422649b8c`.
+- Post-merge live-smoke harness fix on master:
+  `4a6951643eebb341dcc495d5f306417e1621a07a`.
+- Railway target:
+  `one-time-production / production / one-time-web`.
+- Final Railway deployment:
+  `0ff5498b-1116-479e-87ca-afe8d2fc6f7b`, status `SUCCESS`.
+- Live URL:
+  https://join.onetimeonetime.com
+- Live `/api/deploy-info` readback:
+  `commit_sha` = `4a6951643eebb341dcc495d5f306417e1621a07a`,
+  `deployment_source` = `railway:redeploy`,
+  `target_app` = `one-time`,
+  `target_project` = `one-time-production`,
+  `target_service` = `one-time-web`.
+- Exact-SHA live smoke passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a`.
+- Focused Rabbi/One Time landing live smoke passed:
+  `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
+- No production email/WhatsApp/Telegram/campaign send, charge/refund, access
+  grant, historical import, DNS/account mutation, credential mutation, or
+  external-provider write was performed.
+
+Remaining evidence blockers:
+
+- `REQ-20260712-002`: workflow CI file still needs a GitHub credential with
+  `workflow` scope.
+- `REQ-20260712-005` / `REQ-20260712-006`: real local/test Postgres journey
+  still needs `BNA_ONETIME_CRM_TEST_DATABASE_URL`.
+- `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
+  write-smoke was not run because it would create live raw/parse records
+  without a separately scoped production test packet.
+- `REQ-20260712-010`: the complete requested screenshot/matrix set remains
+  open beyond the landing/signup local proof.
+- `REQ-20260712-022`: operator personal deployed signup and hosted reminder
+  provider readiness remain open.

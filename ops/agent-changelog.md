@@ -38526,3 +38526,22 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No deploy, email/WhatsApp/Telegram send, provider mutation,
   production-data mutation, portal/account/payment/access mutation,
   local-class activation, or parallel PR was performed.
+
+## 2026-07-12 - One Time PR #129 merged and live-smoked
+
+- Marked PR #129 ready, merged it, and deployed the One Time production service
+  at https://join.onetimeonetime.com.
+- Recorded merge commit `8e22e5d79844e994e94c4f3ed92ac51422649b8c`,
+  deployed SHA `4a6951643eebb341dcc495d5f306417e1621a07a`, and Railway
+  deployment `0ff5498b-1116-479e-87ca-afe8d2fc6f7b`.
+- Live smokes passed:
+  `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a`
+  and `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`.
+- Updated the execution run, task register, deployment record, status, evidence,
+  test results, batch status, and next-session handoff with the real remaining
+  blockers: GitHub `workflow` scope, missing local/test CRM DB URL, scoped
+  production intake write-smoke decision, remaining screenshot/matrix proof,
+  and operator personal signup/provider-readiness proof.
+- No email/WhatsApp/Telegram/campaign send, payment/charge/refund, access
+  grant, historical import, DNS/account mutation, credential mutation, or
+  external-provider write was performed.

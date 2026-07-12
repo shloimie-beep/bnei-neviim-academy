@@ -146,8 +146,8 @@ REQ-20260712-006 local gate:
 - `server.js` verifies `bna_product_leads` and `bna_parent_leads` are linked by
   CRM metadata `product_lead_id` before local no-send onboarding writes.
 - `npm run one-time:smoke:crm-journey-local-db` remains BLOCKED by missing
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL`; deployed live proof remains blocked by
-  release authorization.
+  `BNA_ONETIME_CRM_TEST_DATABASE_URL`; deployed live proof is recorded in the
+  release section below.
 
 Execution-run validator repair:
 
@@ -155,6 +155,41 @@ Execution-run validator repair:
 - `node --test tests/bna-execution-run.test.js` PASS: 27 tests, 27 passed.
 - `npm run bna:run:next` PASS. The active One Time run validates again and
   reports `Next unblocked executable batch: none`.
+
+Pre-merge release gate:
+
+- `node --check server.js` PASS.
+- `npm run operations:build` PASS.
+- `npm run operations:check-generated` PASS.
+- `npm run operations:check-canonical` PASS.
+- `npm run secrets:audit` PASS.
+- `npm run watchdog:actions` PASS.
+- `npm run watchdog:protocol-drift` PASS.
+- `node --test tests/release-captain.test.js` PASS: 6 tests, 6 passed.
+- `npm run test:onetime:focused` PASS: 67 tests, 67 passed.
+
+Post-merge smoke-harness fix gate:
+
+- `node --check server.js` PASS.
+- `node --check scripts/smoke-onetime-separate-instance-live.mjs` PASS.
+- `node --check scripts/smoke-rabbi-onetime-landing-live.mjs` PASS.
+- `npm run bna:release-gate -- --allow-detached --remote-branch master` PASS.
+- `npm run one-time:railway-target:guard` PASS with redacted target readback.
+- `npm run secrets:audit` PASS.
+
+Live production smoke:
+
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a`
+  PASS.
+- `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
+  PASS.
+- Direct `/api/deploy-info` readback returned HTTP 200 with
+  `commit_sha` = `4a6951643eebb341dcc495d5f306417e1621a07a` and
+  deployment target `one-time-production / one-time-web`.
+
+No external send, payment/charge/refund, access grant, historical import,
+DNS/account mutation, credential mutation, or external-provider write was
+performed during these tests.
 - Validator now accepts a recorded `git_refs.current_head` when it is listed in
   `existing_corrective_commits` and is an ancestor of the current branch head,
   preventing committed run-head bookkeeping from becoming immediately stale.

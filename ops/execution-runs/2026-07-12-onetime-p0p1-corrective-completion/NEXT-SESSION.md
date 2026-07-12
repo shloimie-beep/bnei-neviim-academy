@@ -1,31 +1,51 @@
 # Next Session
 
-Continue in:
-`C:\Users\User\BNA-onetime-p0p1-corrective-20260711`
+PR #129 has been merged and the One Time production service has been deployed
+and live-smoked.
 
-Branch:
-`codex/onetime-p0p1-corrective-20260711`
+Use a fresh clean worktree from `origin/master` for continuation work. Do not
+resume from `C:\Users\User\BNA-onetime-p0p1-corrective-20260711` until its
+unrelated dirty `server.js` / `src/lib/bna/one-time-delivery-outbox.js` state
+is reconciled by its owner; that worktree currently contains an external
+uncommitted change that breaks `node --check server.js`.
 
-PR:
-https://github.com/shloimie-beep/bnei-neviim-academy/pull/129
+## Current Release Truth
 
-Next unblocked requirements:
+- PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/129
+- PR state: merged
+- Merge commit: `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
+- Deployed/live-smoked SHA:
+  `4a6951643eebb341dcc495d5f306417e1621a07a`
+- Railway deployment:
+  `0ff5498b-1116-479e-87ca-afe8d2fc6f7b`
+- Live URL:
+  https://join.onetimeonetime.com
 
-- `REQ-20260712-014`: verify and complete server-side city/timezone conversion
-  and DST-safe schedule metadata.
-- `REQ-20260712-015`: verify and complete atomic product lead, scoped One Time
-  CRM contact/lead, consent, dedupe, timeline, and outbox linkage.
+## Next Requirements
 
-Concrete next actions:
+- `REQ-20260712-002`: add/push
+  `.github/workflows/onetime-corrective.yml` with a GitHub credential that has
+  `workflow` scope.
+- `REQ-20260712-005`: provide `BNA_ONETIME_CRM_TEST_DATABASE_URL` and run
+  `npm run one-time:smoke:crm-journey-local-db`.
+- `REQ-20260712-006`: rerun/record the real local/test DB onboarding linkage
+  proof after the database URL exists.
+- `REQ-20260712-008` / `REQ-20260712-009`: decide whether to run a production
+  intake/dropoff write-smoke packet, since it creates live raw/parse records.
+- `REQ-20260712-010`: complete the remaining live screenshot/matrix set for
+  provider login, canonical Rabbi dashboard, CRM list/detail, persisted CRM
+  edit, targeted mailbox, and Robot launcher.
+- `REQ-20260712-022`: operator personal deployed signup and hosted
+  WAPI/Telegram/scheduler readiness remain open. Do not send externally until
+  the exact send scope and provider readiness are approved.
 
-1. Run `npm run bna:run:validate` and `npm run bna:run:next`.
-2. Inspect `src/lib/bna/one-time-signup-workflow.js`,
-   `/api/one-time/interest`, CRM/outbox helpers, Resend/Telegram/WAPI helpers,
-   and existing focused One Time tests.
-3. Complete any missing server-side city/timezone validation and schedule
-   conversion evidence for `REQ-20260712-014`.
-4. Continue into `REQ-20260712-015`: atomic CRM/consent/dedupe/outbox storage
-   and persistence proof.
+## First Commands
 
-Do not deploy. Do not send messages. Do not charge, import historical data,
-grant access, mutate DNS/accounts/credentials, or write external providers.
+1. `git fetch origin master`
+2. `git worktree add C:\Users\User\BNA-onetime-followup-YYYYMMDD origin/master`
+3. `npm run bna:release-gate -- --allow-detached --remote-branch master`
+4. `npm run bna:run:next`
+
+Do not send messages, charge/refund, import historical data, grant access,
+mutate DNS/accounts/credentials, or write to external providers unless a
+separately scoped approval covers the exact action.

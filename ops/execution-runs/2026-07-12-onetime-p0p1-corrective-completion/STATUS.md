@@ -1,66 +1,81 @@
 # Status
 
-Run created and active.
+Run remains active with release/live proof recorded and a short blocker list.
 
-- `REQ-20260712-001` is verified: July 12 raw prompt, Robot correction context,
-  register, run files, and latest pointer have been created.
-- `REQ-20260712-002` needs operator decision for CI workflow publishing: PR
-  truth has been confirmed, stale July 11 "push/open PR" claims were corrected,
-  and the local focused test script/gates pass. The GitHub Actions workflow
-  file cannot be pushed with the current OAuth token because it lacks
-  `workflow` scope.
-- `REQ-20260712-003` is verified locally: the canonical browser smoke now
-  serves `public/operations-bootstrap.html` plus generated CSS/IA/shell/deferred
-  JS and explicitly rejects raw `public/operations.html` as proof.
-- `REQ-20260712-004` is verified locally: normal One Time provider credentials
-  now establish a scoped provider session that lands on canonical `/operations`,
-  provider aliases redirect away from the old dashboard, and targeted internal
-  disabled-state copy was removed from the normal shell.
-- `REQ-20260712-012` is verified: the urgent signup/reminder workflow addendum
-  has been captured and attached to this active run.
-- `REQ-20260712-013` needs operator decision for deployment/live verification:
-  canonical
-  `/one-time/signup` is locally implemented, all public Sign Up Now actions use
-  it, route/action registries are current, and responsive browser proof passes.
-- `REQ-20260712-014`, `REQ-20260712-020`, and `REQ-20260712-021` also need
-  operator decision for deployment/live verification after local implementation.
-- `REQ-20260712-015` through `REQ-20260712-019` and `REQ-20260712-023` are in
-  progress: local CRM/outbox/reminder/WhatsApp/Telegram/test-matrix pieces are
-  implemented, but hosted delivery/readiness/provider evidence remains open.
-- `REQ-20260712-005` is blocked only on real local/test Postgres proof: the
-  first-party CRM DTO/API/UI implementation, focused tests, responsive
-  browser/API smoke, cross-workspace denial, and targeted mailbox proof are
-  local-pass, but the required real persistence journey cannot run until
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL` is provided.
-- `REQ-20260712-006` is locally implemented but blocked on terminal proof:
-  direct signup now stores exact product/CRM IDs and attribution, continuation
-  validates those IDs plus Family/School required fields, and the server
-  verifies the product lead and CRM lead match the original One Time capture
-  before local writes. Real local/test DB persistence still needs
-  `BNA_ONETIME_CRM_TEST_DATABASE_URL`, and live proof still needs release
-  authorization.
-- `REQ-20260712-008` needs operator decision for release/live proof but is
-  verified locally: canonical ramble-to-done service,
-  Operations API receipts, ChatGPT dropoff canonical preview, `codex_done`
-  migration/rejection, worker-offline truth, duplicate task `#1945` packet
-  correction, and control-tower regeneration all pass local tests/watchdogs.
-- `REQ-20260712-009` needs operator decision for release/live proof but is
-  verified locally: mandatory ramble-to-done regressions now cover adapter
-  recognition, source offsets/hashes, no-lost mapping, exact execution IDs,
-  blocked-decision independence, failed verification staying open, UI
-  release/live gating, intake API readback, packet-status migration/rejection,
-  and worker-offline truth.
-- `REQ-20260712-007` and `REQ-20260712-010` remain open; `REQ-20260712-006`
-  remains blocked only for the real persistence/live proof gates above.
-- `REQ-20260712-022` is blocked on release authorization and the operator's
-  personal deployed end-to-end test.
-- `REQ-20260712-011` is blocked on explicit release authorization.
-- Current safe local pointer: run `npm run bna:run:next`; `REQ-20260712-005`
-  remains blocked on a local/test DB URL, and deploy/operator-test items remain
-  release-gated.
+## Current Truth
 
-Current PR:
-https://github.com/shloimie-beep/bnei-neviim-academy/pull/129
+- PR #129 is merged:
+  https://github.com/shloimie-beep/bnei-neviim-academy/pull/129
+- PR head at merge:
+  `598f66238f68293575d5f9e6195bb6b032ebb156`
+- Merge commit:
+  `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
+- Deployed/live-smoked master SHA:
+  `4a6951643eebb341dcc495d5f306417e1621a07a`
+- Railway deployment id:
+  `0ff5498b-1116-479e-87ca-afe8d2fc6f7b`
+- Production URL:
+  https://join.onetimeonetime.com
 
-No production deploy or external mutation has been performed in this
-continuation run.
+## Verified
+
+- `REQ-20260712-001`: July 12 raw prompt, Robot correction context, register,
+  run files, and latest pointer were created.
+- `REQ-20260712-003`: canonical browser tests load the real
+  `/operations` bootstrap/generated CSS and JS assets instead of raw
+  `public/operations.html`.
+- `REQ-20260712-004`: normal One Time provider credentials establish a scoped
+  Operations session and land on canonical `/operations`; provider aliases
+  resolve away from the old independent provider dashboard.
+- `REQ-20260712-012`: the urgent signup/reminder addendum was captured in the
+  active run.
+- `REQ-20260712-013`: canonical `/one-time/signup` is implemented and
+  deployed/live-smoked; public Sign Up Now actions use the direct route.
+- `REQ-20260712-014`: city/timezone signup schedule behavior is implemented,
+  deployed, and covered by the focused One Time proof.
+- `REQ-20260712-011`: release authorization, merge, deployment, and exact-SHA
+  live smoke are complete; the machine status remains `needs_verification`
+  until its final-matrix dependency is closed.
+
+## Implemented But Still Open
+
+- `REQ-20260712-005`: first-party One Time CRM DTO/API/UI, responsive local
+  browser/API smoke, cross-workspace denial, and targeted mailbox flow are
+  implemented locally. Terminal proof is blocked by the missing real local/test
+  Postgres URL.
+- `REQ-20260712-006`: direct signup and Family/School continuation linkage are
+  implemented locally and deployed, but terminal persistence proof still needs
+  the real local/test database journey.
+- `REQ-20260712-007`: landing hierarchy, Robot asset optimization/launcher,
+  config sync, and live smoke are complete. The broader requested screenshot
+  matrix still has open non-landing surfaces.
+- `REQ-20260712-008` / `REQ-20260712-009`: canonical ramble-to-done service,
+  packet-status contract, adapter coverage, and regression tests pass locally
+  and are deployed. Production write-smoke for intake/dropoff was not performed
+  because it would create live raw/parse records without a separately scoped
+  production test packet.
+- `REQ-20260712-010`: signup/landing screenshot proof and matrix evidence
+  exist; the full requested screenshot/matrix set remains open for provider
+  login, Operations, CRM, mailbox, and Robot live views.
+- `REQ-20260712-020` / `REQ-20260712-021`: release proof is complete, but
+  terminal closeout depends on the blocked persistence/operator-test evidence.
+- `REQ-20260712-022`: guarded reminder simulation and readiness checks pass
+  locally, but the operator has not personally submitted the deployed test
+  signup and hosted WAPI/Telegram/scheduler readiness is not fully green.
+
+## Blockers
+
+- `REQ-20260712-002`: GitHub token lacks `workflow` scope, so
+  `.github/workflows/onetime-corrective.yml` still cannot be pushed.
+- `REQ-20260712-005` / `REQ-20260712-006`: missing
+  `BNA_ONETIME_CRM_TEST_DATABASE_URL` for the required real local/test
+  Postgres persistence journey.
+- `REQ-20260712-008` / `REQ-20260712-009`: production intake/dropoff
+  write-smoke requires a separately scoped production test packet because it
+  creates live raw/parse records.
+- `REQ-20260712-022`: operator personal deployed signup and hosted reminder
+  provider readiness are still open. No external sends were performed.
+
+No production email/WhatsApp/Telegram/campaign send, charge/refund, access
+grant, historical import, DNS/account mutation, credential mutation, or
+external-provider write was performed.

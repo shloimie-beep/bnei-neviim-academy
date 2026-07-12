@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T13:35:00+03:00",
+  "updated_at": "2026-07-12T13:43:00+03:00",
   "git_refs": {
     "expected_branch": "codex/onetime-p0p1-corrective-20260711",
     "branch": "codex/onetime-p0p1-corrective-20260711",
@@ -26,7 +26,18 @@
       "ce312aa53a73b1df7248db9ebb5beed0f7056354"
     ],
     "current_priority_addendum": "RAW-20260712-002",
-    "current_p0_batch": "crm-confirmation-outbox"
+    "current_p0_batch": "crm-confirmation-outbox",
+    "release_authorized_at": "2026-07-12T10:12:00Z",
+    "pr_merged_at": "2026-07-12T10:26:51Z",
+    "pr_state": "merged",
+    "pr_head_at_merge": "598f66238f68293575d5f9e6195bb6b032ebb156",
+    "merge_commit": "8e22e5d79844e994e94c4f3ed92ac51422649b8c",
+    "master_release_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+    "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+    "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+    "deployment_target": "one-time-production / production / one-time-web",
+    "deployment_url": "https://join.onetimeonetime.com",
+    "live_smoke_at": "2026-07-12T10:33:34Z"
   },
   "sources": [
     {
@@ -574,10 +585,10 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "can_continue_without_operator": false,
-      "blocker": "Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet.",
-      "blocker_owner": "Operator / reviewer",
-      "blocker_next_action": "Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
       "evidence": [
         "server.js serves canonical /one-time/signup and /one-time/signup/ through sendOneTimeSignupPage.",
         "public/one-time/signup.html implements the standalone direct signup page with One Time header, Back to Home action, contact name, Family/School selection, unambiguous city/timezone metadata, required email, no customer-facing phone-optional wording, phone required only for WhatsApp/Both reminders, required no-preselected reminder choice, and the clicked location/reminder acknowledgement checkbox.",
@@ -587,7 +598,13 @@
         "tests/one-time-direct-signup-page.test.js performs a Playwright journey at 1440, 1024, 768, 430, and 390 widths, validates hidden phone required marker/hint before WhatsApp and visible marker/hint after WhatsApp, submits to /api/one-time/interest, and confirms first-party payload fields without a student field.",
         "tests/one-time-focused-landing.test.js, tests/one-time-product-system.test.js, and tests/one-time-signup-reminder-workflow.test.js cover CTA routing, internal-copy removal, route/action registry coverage, and no portal/payment/access route leakage.",
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json records local Playwright screenshot evidence at 1440, 1024, 768, 430, and 390 widths with no horizontal overflow, visible form, Back to Home, no preselected reminder choice, and no overlapping robot artwork.",
-        "tests/one-time-direct-signup-page.test.js and tests/one-time-signup-reminder-workflow.test.js now explicitly reject visible phone-optional copy while preserving red required markers and the required reminder/location acknowledgement checkbox."
+        "tests/one-time-direct-signup-page.test.js and tests/one-time-signup-reminder-workflow.test.js now explicitly reject visible phone-optional copy while preserving red required markers and the required reminder/location acknowledgement checkbox.",
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
       ],
       "deployment_required": true,
       "id": "REQ-20260712-013",
@@ -602,9 +619,9 @@
       "depends_on": [
         "REQ-20260712-012"
       ],
-      "status": "needs_operator_decision",
-      "implementation_status": "Locally implemented and verified. The canonical /one-time/signup route exists, public Sign Up Now actions route to it, the form has the required first-step fields, red required dots, no phone-optional customer copy, phone required marker/hint only after WhatsApp selection, and a required location/reminder acknowledgement checkbox. The latest regression tests explicitly fail if phone optional wording appears. Student-name capture and member-login/portal actions are absent from the form, internal implementation copy is removed from visible customer copy, responsive browser proof passes at 1440/1024/768/430/390, and action/route registries are current. Production deployment, live smoke, and the operator personal end-to-end test are still required before terminal Done/verified status.",
-      "next_action": "After release authorization, deploy the exact approved SHA, run live smoke/readback for this requirement, and record the deployed SHA evidence.",
+      "status": "verified",
+      "implementation_status": "Locally implemented and verified. The canonical /one-time/signup route exists, public Sign Up Now actions route to it, the form has the required first-step fields, red required dots, no phone-optional customer copy, phone required marker/hint only after WhatsApp selection, and a required location/reminder acknowledgement checkbox. The latest regression tests explicitly fail if phone optional wording appears. Student-name capture and member-login/portal actions are absent from the form, internal implementation copy is removed from visible customer copy, responsive browser proof passes at 1440/1024/768/430/390, and action/route registries are current. Production deployment, live smoke, and the operator personal end-to-end test are still required before terminal Done/verified status. Release authorization was granted, PR #129 was merged, and the current master SHA is deployed and live-smoked on the One Time join domain.",
+      "next_action": "No further action for this requirement unless a new regression is found.",
       "acceptance_criteria": [
         "Route /one-time/signup exists and is registered.",
         "All Sign Up Now controls open this route or same canonical component.",
@@ -625,7 +642,13 @@
         "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 13/13 with explicit no-phone-optional copy regression, required-dot visibility, and required acknowledgement checkbox assertions",
-        "npm run test:onetime:focused PASS 67/67"
+        "npm run test:onetime:focused PASS 67/67",
+        "npm run bna:release-gate -- --allow-detached --remote-branch master PASS at 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run one-time:railway-target:guard PASS before deployment; redacted readback confirmed one-time-production / one-time-web with scoped One Time variables.",
+        "npm run railway:redeploy PASS with BNA_DEPLOY_APP=one-time; Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS.",
+        "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a."
       ],
       "implementation_files": [
         "server.js",
@@ -642,8 +665,22 @@
         "tests/one-time-signup-reminder-workflow.test.js",
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json"
       ],
-      "updated_at": "2026-07-12T11:59:00+03:00",
-      "expected_result": "A professional standalone signup route is the single public signup implementation."
+      "updated_at": "2026-07-12T13:36:00+03:00",
+      "expected_result": "A professional standalone signup route is the single public signup implementation.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+      "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+      "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 4a6951643eebb341dcc495d5f306417e1621a07a",
+      "deployment_evidence": [
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
+      ],
+      "implementation_commit": "598f66238f68293575d5f9e6195bb6b032ebb156",
+      "pushed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a"
     },
     {
       "source_id": "RAW-20260712-002",
@@ -652,15 +689,21 @@
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
       "priority": "P0",
-      "can_continue_without_operator": false,
-      "blocker": "Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet.",
-      "blocker_owner": "Operator / reviewer",
-      "blocker_next_action": "Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
       "evidence": [
-        "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
+        "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed.",
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T11:49:00+03:00",
+      "updated_at": "2026-07-12T13:36:00+03:00",
       "id": "REQ-20260712-014",
       "title": "Implement city autocomplete and DST-safe class time conversion",
       "source_statement_ids": [
@@ -671,9 +714,9 @@
       "depends_on": [
         "REQ-20260712-013"
       ],
-      "status": "needs_operator_decision",
-      "implementation_status": "Locally implemented in the shared One Time signup workflow helper and direct signup page: city autocomplete stores city ID/name/region/country/country code/IANA timezone, browser timezone is captured, mismatches are preserved for review, and class/reminder instants are computed from 19:00/18:30 Asia/Jerusalem with IANA timezone conversion. Deployment/live readback remains required.",
-      "next_action": "After release authorization, deploy the exact approved SHA, run live smoke/readback for this requirement, and record the deployed SHA evidence.",
+      "status": "verified",
+      "implementation_status": "Locally implemented in the shared One Time signup workflow helper and direct signup page: city autocomplete stores city ID/name/region/country/country code/IANA timezone, browser timezone is captured, mismatches are preserved for review, and class/reminder instants are computed from 19:00/18:30 Asia/Jerusalem with IANA timezone conversion. Deployment/live readback remains required. Release authorization was granted, PR #129 was merged, and the current master SHA is deployed and live-smoked on the One Time join domain.",
+      "next_action": "No further action for this requirement unless a new regression is found.",
       "acceptance_criteria": [
         "City selection stores city, region, country, country code, and IANA timezone.",
         "Ambiguous city text alone is not accepted.",
@@ -692,7 +735,13 @@
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
         "node --test tests/one-time-signup-reminder-workflow.test.js PASS 10/10",
         "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
-        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/one-time-brand-helper-isolation.test.js tests/one-time-signup-reminder-workflow.test.js PASS 33/33"
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/one-time-brand-helper-isolation.test.js tests/one-time-signup-reminder-workflow.test.js PASS 33/33",
+        "npm run bna:release-gate -- --allow-detached --remote-branch master PASS at 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run one-time:railway-target:guard PASS before deployment; redacted readback confirmed one-time-production / one-time-web with scoped One Time variables.",
+        "npm run railway:redeploy PASS with BNA_DEPLOY_APP=one-time; Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS.",
+        "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a."
       ],
       "implementation_files": [
         "src/lib/bna/one-time-signup-workflow.js",
@@ -700,7 +749,21 @@
         "server.js",
         "tests/one-time-signup-reminder-workflow.test.js"
       ],
-      "expected_result": "All recipients are scheduled at one worldwide event instant and see correct local and Israel times."
+      "expected_result": "All recipients are scheduled at one worldwide event instant and see correct local and Israel times.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+      "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+      "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 4a6951643eebb341dcc495d5f306417e1621a07a",
+      "deployment_evidence": [
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
+      ],
+      "implementation_commit": "598f66238f68293575d5f9e6195bb6b032ebb156",
+      "pushed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a"
     },
     {
       "source_id": "RAW-20260712-002",
@@ -1019,14 +1082,20 @@
       "owner": "Codex",
       "priority": "P0",
       "can_continue_without_operator": false,
-      "blocker": "Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet.",
-      "blocker_owner": "Operator / reviewer",
-      "blocker_next_action": "Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.",
+      "blocker": "Release/deploy/live SHA proof is complete. Terminal proof still requires the dependent real persistence/operator personal test evidence before this requirement can close.",
+      "blocker_owner": "Operator / local test environment",
+      "blocker_next_action": "After BNA_ONETIME_CRM_TEST_DATABASE_URL and/or the operator personal deployed signup test is available, rerun the no-portal/payment/access persistence proof and attach evidence.",
       "evidence": [
-        "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
+        "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed.",
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T10:52:00+03:00",
+      "updated_at": "2026-07-12T13:36:00+03:00",
       "id": "REQ-20260712-020",
       "title": "Prove signup does not trigger portal, account, payment, or access paths",
       "source_statement_ids": [
@@ -1039,7 +1108,7 @@
       ],
       "status": "needs_operator_decision",
       "implementation_status": "Local negative tests and route checks prove the direct signup path does not call portal, login-token, password, payment, Stripe, checkout, access-grant, or member onboarding functions. Live deployed replay/no-side-effect proof remains required.",
-      "next_action": "After release authorization, deploy the exact approved SHA, run live smoke/readback for this requirement, and record the deployed SHA evidence.",
+      "next_action": "After BNA_ONETIME_CRM_TEST_DATABASE_URL and/or the operator personal deployed signup test is available, rerun the no-portal/payment/access persistence proof and attach evidence.",
       "acceptance_criteria": [
         "No parent/student portal records.",
         "No member login/password/setup/recovery/classroom code.",
@@ -1056,7 +1125,13 @@
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "npm run bna:release-gate -- --allow-detached --remote-branch master PASS at 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run one-time:railway-target:guard PASS before deployment; redacted readback confirmed one-time-production / one-time-web with scoped One Time variables.",
+        "npm run railway:redeploy PASS with BNA_DEPLOY_APP=one-time; Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS.",
+        "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a."
       ],
       "implementation_files": [
         "server.js",
@@ -1064,7 +1139,19 @@
         "tests/one-time-direct-signup-page.test.js",
         "tests/one-time-signup-reminder-workflow.test.js"
       ],
-      "expected_result": "The signup form only creates CRM/outbox workflow for confirmation/reminders/Telegram alert."
+      "expected_result": "The signup form only creates CRM/outbox workflow for confirmation/reminders/Telegram alert.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+      "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+      "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 4a6951643eebb341dcc495d5f306417e1621a07a",
+      "deployment_evidence": [
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
+      ]
     },
     {
       "source_id": "RAW-20260712-002",
@@ -1074,14 +1161,20 @@
       "owner": "Codex",
       "priority": "P0",
       "can_continue_without_operator": false,
-      "blocker": "Release/live verification requires explicit authorization for PR #129 deployment and the operator personal deployed test; local implementation evidence is recorded, but terminal verification is not authorized yet.",
+      "blocker": "Release/deploy/live SHA proof is complete. Terminal proof still requires the dependent real persistence/operator personal test evidence before this requirement can close.",
       "blocker_owner": "Operator / reviewer",
-      "blocker_next_action": "Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.",
+      "blocker_next_action": "After the operator personal deployed signup test is complete and exact-three local-class contacts are verified, rerun the local-class preview/activation gate and attach proof.",
       "evidence": [
-        "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
+        "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed.",
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T10:52:00+03:00",
+      "updated_at": "2026-07-12T13:36:00+03:00",
       "id": "REQ-20260712-021",
       "title": "Build exact-three local-class contact preview and activation gate",
       "source_statement_ids": [
@@ -1094,7 +1187,7 @@
       ],
       "status": "needs_operator_decision",
       "implementation_status": "Admin-only local-class preview route is implemented for the scoped One Time project and expected tag set, returning a redacted preview and blocking activation unless the segment has exactly three unique, unsuppressed, non-archived contacts with valid email addresses. A pure local activation-plan helper now refuses to produce updates until the operator personal test is marked passed and APPROVE_ONE_TIME_LOCAL_CLASS_EMAIL_REMINDERS is supplied, then produces email-only, no-portal/no-payment metadata patches for the exact three contacts. Live readback of the real three-contact segment remains required before activation.",
-      "next_action": "After release authorization, deploy the exact approved SHA, run live smoke/readback for this requirement, and record the deployed SHA evidence.",
+      "next_action": "After the operator personal deployed signup test is complete and exact-three local-class contacts are verified, rerun the local-class preview/activation gate and attach proof.",
       "acceptance_criteria": [
         "Only rabbi_sheller_provider / one_time_mishnah_class contacts are inspected.",
         "Approved tags are local_class_attendee, zoom_mishnayos_class, local_student.",
@@ -1115,14 +1208,32 @@
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
         "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
-        "node --test tests/one-time-signup-reminder-workflow.test.js PASS 11/11 with duplicate, suppression, archived, invalid-email, count-mismatch, operator-personal-test, approval-phrase, email-only, and no-portal activation-plan blockers"
+        "node --test tests/one-time-signup-reminder-workflow.test.js PASS 11/11 with duplicate, suppression, archived, invalid-email, count-mismatch, operator-personal-test, approval-phrase, email-only, and no-portal activation-plan blockers",
+        "npm run bna:release-gate -- --allow-detached --remote-branch master PASS at 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run one-time:railway-target:guard PASS before deployment; redacted readback confirmed one-time-production / one-time-web with scoped One Time variables.",
+        "npm run railway:redeploy PASS with BNA_DEPLOY_APP=one-time; Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS.",
+        "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a."
       ],
       "implementation_files": [
         "server.js",
         "src/lib/bna/one-time-signup-workflow.js",
         "tests/one-time-signup-reminder-workflow.test.js"
       ],
-      "expected_result": "Only the exact approved three-contact local segment can later be enrolled, after operator personal test approval."
+      "expected_result": "Only the exact approved three-contact local segment can later be enrolled, after operator personal test approval.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+      "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+      "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 4a6951643eebb341dcc495d5f306417e1621a07a",
+      "deployment_evidence": [
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
+      ]
     },
     {
       "source_id": "RAW-20260712-002",
@@ -1132,19 +1243,25 @@
       "owner": "Codex",
       "priority": "P0",
       "can_continue_without_operator": false,
-      "blocker": "The operator must approve release/deployment and personally submit exactly one test signup before Codex can verify real external-send evidence or activate the exact three-contact local segment.",
+      "blocker": "Deployment/live SHA proof is complete, but the operator has not personally submitted the deployed test signup, and hosted WAPI/Telegram/scheduler readiness still is not fully green for external-send proof.",
       "blocker_owner": "Operator / reviewer",
-      "blocker_next_action": "After local implementation and no-send validation pass, approve deployment and submit the personal test through https://join.onetimeonetime.com/one-time/signup, then report when the page confirms signup.",
+      "blocker_next_action": "Operator submits exactly one personal test signup at https://join.onetimeonetime.com/one-time/signup and reports the confirmation; then Codex verifies product lead, CRM contact, consent, no portal/access/payment side effects, and any approved single-recipient reminder simulation without broad sends.",
       "evidence": [
         "scripts/simulate-one-time-class-reminder.mjs requires --confirm APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST, one positive numeric --contact-id, and CRON_SECRET before calling the protected reminder endpoint.",
         "scripts/simulate-one-time-class-reminder.mjs rejects broad audience flags including --all, --audience, --segment, --workspace, and --project.",
         "tests/one-time-reminder-simulation-command.test.js covers missing confirmation, missing/zero contact, unrestricted audience refusal, missing CRON_SECRET refusal, and contact-scoped request/output assertions.",
         "src/lib/bna/one-time-operator-test-handoff.js builds the exact operator-ready message only after implementation, migrations, no-send tests, CI, deployment, Resend, WAPI, Telegram, scheduler, and direct-form visual proof are all true.",
         "scripts/one-time-operator-test-handoff.mjs exits blocked by default against the current readiness snapshot and suppresses the ready message while missing ci_passed, deployment_complete, wapi_ready, and telegram_ready.",
-        "tests/one-time-operator-test-handoff.test.js verifies ready-message suppression, exact ready message text, guarded single-recipient command, no unrestricted audience flags, and no secret echo."
+        "tests/one-time-operator-test-handoff.test.js verifies ready-message suppression, exact ready message text, guarded single-recipient command, no unrestricted audience flags, and no secret echo.",
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T11:59:00+03:00",
+      "updated_at": "2026-07-12T13:36:00+03:00",
       "id": "REQ-20260712-022",
       "title": "Gate deployed personal end-to-end operator test",
       "source_statement_ids": [
@@ -1156,8 +1273,8 @@
         "REQ-20260712-023"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Guarded single-recipient reminder simulation command is locally implemented and tested. A separate operator-test handoff guard now suppresses the required \"Automation is deployed and ready for your test\" message until implementation, migrations, no-send tests, CI, deployment, Resend/WAPI/Telegram readiness, scheduler health, and direct-form visual proof all pass. Current readiness is blocked as expected on ci_passed, deployment_complete, wapi_ready, and telegram_ready. Deployment authorization, hosted readiness, scheduler health, visual proof on the deployed URL, real provider evidence, and operator personal signup submission remain required before terminal closeout.",
-      "next_action": "After approval and operator submission, verify product lead, CRM contact, location/timezone, consent, email, optional WhatsApp, one Telegram alert, no portal/access records, replay idempotency, and guarded reminder simulation. Do not emit the operator-ready message while the handoff guard is blocked.",
+      "implementation_status": "Guarded single-recipient reminder simulation command is locally implemented and tested. A separate operator-test handoff guard now suppresses the required \"Automation is deployed and ready for your test\" message until implementation, migrations, no-send tests, CI, deployment, Resend/WAPI/Telegram readiness, scheduler health, and direct-form visual proof all pass. Current readiness is blocked as expected on ci_passed, deployment_complete, wapi_ready, and telegram_ready. Deployment authorization, hosted readiness, scheduler health, visual proof on the deployed URL, real provider evidence, and operator personal signup submission remain required before terminal closeout. Deployment_complete is now true by live SHA proof; the operator personal test and hosted send-readiness proof remain blocked.",
+      "next_action": "Operator submits exactly one personal test signup at https://join.onetimeonetime.com/one-time/signup and reports the confirmation; then Codex verifies product lead, CRM contact, consent, no portal/access/payment side effects, and any approved single-recipient reminder simulation without broad sends.",
       "acceptance_criteria": [
         "Automation deployed and ready message is given only after implementation/tests/readiness/deploy/visual proof.",
         "Only operator-submitted recipient is used.",
@@ -1173,7 +1290,13 @@
         "node --check scripts/one-time-operator-test-handoff.mjs PASS",
         "node --test tests/one-time-operator-test-handoff.test.js PASS 4/4",
         "node scripts/one-time-operator-test-handoff.mjs --json BLOCKED as expected: ready=false, status=blocked_before_operator_personal_test, ready_message_suppressed=true, missing ci_passed/deployment_complete/wapi_ready/telegram_ready",
-        "npm run test:onetime:focused PASS 67/67"
+        "npm run test:onetime:focused PASS 67/67",
+        "npm run bna:release-gate -- --allow-detached --remote-branch master PASS at 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run one-time:railway-target:guard PASS before deployment; redacted readback confirmed one-time-production / one-time-web with scoped One Time variables.",
+        "npm run railway:redeploy PASS with BNA_DEPLOY_APP=one-time; Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS.",
+        "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a."
       ],
       "implementation_files": [
         "scripts/simulate-one-time-class-reminder.mjs",
@@ -1184,7 +1307,19 @@
         "scripts/one-time-operator-test-handoff.mjs",
         "tests/one-time-operator-test-handoff.test.js"
       ],
-      "expected_result": "Real-send workflow remains gated until the operator personally performs and confirms the deployed test."
+      "expected_result": "Real-send workflow remains gated until the operator personally performs and confirms the deployed test.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+      "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+      "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 4a6951643eebb341dcc495d5f306417e1621a07a",
+      "deployment_evidence": [
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
+      ]
     },
     {
       "source_id": "RAW-20260712-002",
@@ -1438,12 +1573,12 @@
         "REQ-20260712-005"
       ],
       "status": "blocked",
-      "implementation_status": "Local implementation is complete for exact signup-to-continuation linkage: direct signup stores product_lead_id, crm_lead_id, UTM/referrer/source context; continuation validates both IDs and Family/School required fields; server verifies the product lead and CRM lead match the original One Time capture before local review writes. Terminal persistence proof is blocked because the approved local/test CRM database URL is missing, and live proof is blocked until PR #129 release is authorized.",
+      "implementation_status": "Local implementation is complete for exact signup-to-continuation linkage: direct signup stores product_lead_id, crm_lead_id, UTM/referrer/source context; continuation validates both IDs and Family/School required fields; server verifies the product lead and CRM lead match the original One Time capture before local review writes. Public signup and continuation surfaces are deployed and live-smoked by exact SHA. Terminal real persistence proof remains blocked because the approved local/test CRM database URL is missing.",
       "can_continue_without_operator": false,
-      "blocker": "BNA_ONETIME_CRM_TEST_DATABASE_URL is missing for the real local/test Postgres persistence journey, and deployment/live smoke is not authorized.",
+      "blocker": "BNA_ONETIME_CRM_TEST_DATABASE_URL is missing for the required real local/test Postgres persistence journey. Production DATABASE_URL remains intentionally ignored for this proof.",
       "blocker_owner": "Operator / local test environment",
-      "blocker_next_action": "Provide an approved non-production BNA_ONETIME_CRM_TEST_DATABASE_URL, rerun the real persistence journey, then authorize PR #129 release/deploy/live smoke for terminal proof.",
-      "next_action": "Rerun the real Family/School continuation persistence journey against an approved test database, then deployed live smoke after release authorization.",
+      "blocker_next_action": "Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, rerun npm run one-time:smoke:crm-journey-local-db, and attach the generated report.",
+      "next_action": "Set BNA_ONETIME_CRM_TEST_DATABASE_URL to an approved local/test Postgres URL, rerun npm run one-time:smoke:crm-journey-local-db, and attach the generated report.",
       "acceptance_criteria": [
         "Quick signup requires contact name, email, and Family/School choice.",
         "Phone is optional and student name is not requested in first capture.",
@@ -1459,21 +1594,32 @@
         "server.js resolveOneTimeOnboardingOriginalCapture() verifies bna_product_leads and bna_parent_leads are scoped to one_time_mishnah_class and linked by crm metadata product_lead_id before local writes.",
         "server.js direct signup metadata now records one_time_direct_signup=true for direct signup dedupe/original-capture recognition.",
         "tests/one-time-direct-signup-page.test.js asserts first signup stores exact IDs and attribution in session storage.",
-        "tests/one-time-onboarding-intake.test.js asserts continuation validation and Family/School browser payload classification without external sends."
+        "tests/one-time-onboarding-intake.test.js asserts continuation validation and Family/School browser payload classification without external sends.",
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
       ],
       "verification": [
         "node --check server.js PASS",
         "node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js PASS 6/6",
         "npm run test:onetime:focused PASS 62/62",
         "Real local/test database persistence journey BLOCKED: missing BNA_ONETIME_CRM_TEST_DATABASE_URL",
-        "Deployment/live smoke BLOCKED: release authorization unavailable",
         "npm run operations:build PASS",
         "npm run operations:check-generated PASS",
         "npm run operations:check-canonical PASS",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run secrets:audit PASS 8373 tracked paths checked, 0 tracked secret-risk files found",
-        "npm run bna:run:validate PASS with work remaining by design"
+        "npm run bna:run:validate PASS with work remaining by design",
+        "npm run bna:release-gate -- --allow-detached --remote-branch master PASS at 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run one-time:railway-target:guard PASS before deployment; redacted readback confirmed one-time-production / one-time-web with scoped One Time variables.",
+        "npm run railway:redeploy PASS with BNA_DEPLOY_APP=one-time; Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS.",
+        "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a."
       ],
       "implementation_files": [
         "server.js",
@@ -1485,8 +1631,20 @@
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/TEST-RESULTS.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T11:42:00+03:00",
-      "expected_result": "Public signup becomes a clean no-send lead capture that continues through exact Family/School onboarding records."
+      "updated_at": "2026-07-12T13:36:00+03:00",
+      "expected_result": "Public signup becomes a clean no-send lead capture that continues through exact Family/School onboarding records.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+      "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+      "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 4a6951643eebb341dcc495d5f306417e1621a07a",
+      "deployment_evidence": [
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
+      ]
     },
     {
       "id": "REQ-20260712-007",
@@ -1507,13 +1665,13 @@
       "depends_on": [
         "REQ-20260712-006"
       ],
-      "status": "needs_operator_decision",
-      "implementation_status": "Locally implemented and verified. The public landing removes the unverified teaching carousel and placeholder asset instructions, uses the approved hierarchy/copy, keeps Member Login only in header/footer, routes the sole prominent CTA to /one-time/signup, hides teaching gallery config until verified assets exist, optimizes the Robot PNG from 1,681,110 bytes to 403,234 bytes, and renders the Robot launcher as a recognizable 84px desktop/tablet and 76px mobile accessible assistant. Production deployment/live smoke remains release-gated.",
-      "can_continue_without_operator": false,
-      "blocker": "Terminal Done requires release authorization, deployment of the exact PR #129 SHA, and live-smoke proof. Local browser proof is complete, but no deploy/live external write is authorized.",
-      "blocker_owner": "Operator / reviewer",
-      "blocker_next_action": "Authorize PR #129 release, deploy the exact approved SHA, then run live screenshots/readback against the deployed URL.",
-      "next_action": "After release authorization, deploy the exact approved PR #129 SHA and capture live screenshots/readback for landing, signup, continuation, provider login, Operations dashboard, CRM, mailbox, and Robot launcher.",
+      "status": "needs_verification",
+      "implementation_status": "Public landing, Robot, config, and direct signup CTA are locally implemented and deployed to the One Time join domain. Live smoke passed at the exact deployed SHA. Terminal closeout remains open only because the broader screenshot/matrix requirement and dependent onboarding/CRM proof are still not fully terminal.",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "next_action": "Attach release evidence to the final requirement matrix and keep dependent CRM/onboarding proof blockers open without re-blocking the deployed public landing.",
       "acceptance_criteria": [
         "Header and hero use exact approved hierarchy and sole prominent CTA.",
         "Member Login appears only in header and footer.",
@@ -1537,7 +1695,13 @@
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/robot-launcher-1440.png",
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/robot-launcher-768.png",
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/robot-launcher-430.png",
-        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/robot-launcher-390.png"
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/robot-launcher-390.png",
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
       ],
       "verification": [
         "node --test tests/one-time-focused-landing.test.js PASS 2/2",
@@ -1549,7 +1713,13 @@
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run secrets:audit PASS 8363 tracked paths, 0 secret-risk files",
         "npm run bna:run:validate PASS",
-        "Playwright local route screenshot proof PASS for /one-time at 1440, 768, 430, and 390 widths; Robot launcher visible 84x84 desktop/tablet and 76x76 mobile; no console warnings."
+        "Playwright local route screenshot proof PASS for /one-time at 1440, 768, 430, and 390 widths; Robot launcher visible 84x84 desktop/tablet and 76x76 mobile; no console warnings.",
+        "npm run bna:release-gate -- --allow-detached --remote-branch master PASS at 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run one-time:railway-target:guard PASS before deployment; redacted readback confirmed one-time-production / one-time-web with scoped One Time variables.",
+        "npm run railway:redeploy PASS with BNA_DEPLOY_APP=one-time; Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS.",
+        "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a."
       ],
       "implementation_files": [
         "public/one-time/index.html",
@@ -1559,8 +1729,20 @@
         "public/js/bna-bot-widget.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T10:53:40+03:00",
-      "expected_result": "The public landing is customer-ready for the approved no-send signup path and no longer exposes placeholder/internal copy or competing CTAs."
+      "updated_at": "2026-07-12T13:36:00+03:00",
+      "expected_result": "The public landing is customer-ready for the approved no-send signup path and no longer exposes placeholder/internal copy or competing CTAs.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+      "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+      "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 4a6951643eebb341dcc495d5f306417e1621a07a",
+      "deployment_evidence": [
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
+      ]
     },
     {
       "id": "REQ-20260712-008",
@@ -1582,12 +1764,12 @@
         "REQ-20260712-001"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Implemented canonical operator ramble ingestion service, shared packet-status contract, Operations intake receipts, ChatGPT/Codex dropoff status normalization, worker-offline UI truth, and release-gated verification propagation. Local tests/watchdogs pass; terminal Done remains deploy/live-smoke gated.",
+      "implementation_status": "Implemented canonical operator ramble ingestion service, shared packet-status contract, Operations intake receipts, ChatGPT/Codex dropoff status normalization, worker-offline UI truth, and release-gated verification propagation. Local tests/watchdogs pass; terminal Done remains deploy/live-smoke gated. The code is merged and deployed at the exact live-smoked SHA; no production intake write-smoke was performed.",
       "can_continue_without_operator": false,
-      "blocker": "Deployment/live-smoke evidence is required before this server-visible requirement can be terminal Done.",
-      "blocker_owner": "release_owner",
-      "blocker_next_action": "After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path.",
-      "next_action": "Continue independent local work with REQ-20260712-009/REQ-20260712-006/REQ-20260712-007; release/live proof remains gated by REQ-20260712-011 and REQ-20260712-022.",
+      "blocker": "A production intake/dropoff write-smoke would create live raw/parse records and was not performed without a separately scoped production test packet. Local regressions and exact-SHA deployment proof are recorded.",
+      "blocker_owner": "Operator / production test owner",
+      "blocker_next_action": "Either approve one exact production intake dry-run/write-smoke packet with expected source text and cleanup policy, or accept the local regression suite plus deployment/SHA live proof as terminal evidence.",
+      "next_action": "Either approve one exact production intake dry-run/write-smoke packet with expected source text and cleanup policy, or accept the local regression suite plus deployment/SHA live proof as terminal evidence.",
       "acceptance_criteria": [
         "Operations, Telegram, scoped Telegram, ChatGPT/Codex dropoff, and file intake call the same service.",
         "Source recognition covers codex_chat, telegram_ramble, telegram_scoped_task, chatgpt, and operations_ui.",
@@ -1621,7 +1803,13 @@
         "public/js/operations-deferred-renderers.js",
         "ops/watchdog-audits/2026-07-12T07-26-raw-intake-drift.md",
         "ops/watchdog-audits/2026-07-12T07-25-watchdog-action-audit.md",
-        "tests/ingestion/ramble-regression-suite.test.js"
+        "tests/ingestion/ramble-regression-suite.test.js",
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
       ],
       "verification": [
         "node --check src/platform/ingestion/operator-ramble-service.js; node --check server.js; node --check scripts/chatgpt-dropoff-ingestor.mjs PASS",
@@ -1644,7 +1832,13 @@
         "npm run operations:build PASS",
         "npm run operations:check-generated PASS",
         "npm run operations:check-canonical PASS",
-        "node --test tests/ingestion/ramble-regression-suite.test.js PASS 4/4"
+        "node --test tests/ingestion/ramble-regression-suite.test.js PASS 4/4",
+        "npm run bna:release-gate -- --allow-detached --remote-branch master PASS at 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run one-time:railway-target:guard PASS before deployment; redacted readback confirmed one-time-production / one-time-web with scoped One Time variables.",
+        "npm run railway:redeploy PASS with BNA_DEPLOY_APP=one-time; Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS.",
+        "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a."
       ],
       "implementation_files": [
         "server.js",
@@ -1667,8 +1861,20 @@
         "tests/ingestion/ramble-regression-suite.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T10:31:00+03:00",
-      "expected_result": "All natural-language intake channels project into one observable raw-to-requirement-to-job-to-proof graph."
+      "updated_at": "2026-07-12T13:36:00+03:00",
+      "expected_result": "All natural-language intake channels project into one observable raw-to-requirement-to-job-to-proof graph.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+      "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+      "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 4a6951643eebb341dcc495d5f306417e1621a07a",
+      "deployment_evidence": [
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
+      ]
     },
     {
       "id": "REQ-20260712-009",
@@ -1688,12 +1894,12 @@
         "REQ-20260712-008"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Mandatory ramble-to-done regression coverage is implemented and passes locally: source adapter recognition, source statement offsets/hashes, no-lost mapping, exact execution IDs, blocked-decision independence, failed verification staying open, UI release/live gate, intake API readback, codex_done migration/rejection, and worker-offline truth. Terminal Done remains release/live-smoke gated because this batch changes server-visible protocol behavior.",
+      "implementation_status": "Mandatory ramble-to-done regression coverage is implemented and passes locally: source adapter recognition, source statement offsets/hashes, no-lost mapping, exact execution IDs, blocked-decision independence, failed verification staying open, UI release/live gate, intake API readback, codex_done migration/rejection, and worker-offline truth. Terminal Done remains release/live-smoke gated because this batch changes server-visible protocol behavior. The code is merged and deployed at the exact live-smoked SHA; no production intake write-smoke was performed.",
       "can_continue_without_operator": false,
-      "blocker": "Deployment/live-smoke evidence is required before this server-visible regression batch can be terminal Done.",
-      "blocker_owner": "release_owner",
-      "blocker_next_action": "After release authorization, deploy the approved PR SHA and run live smoke/readback for the intake/dropoff path.",
-      "next_action": "Continue with other independent local requirements; keep REQ-20260712-009 open for release/live proof under REQ-20260712-011.",
+      "blocker": "A production intake/dropoff write-smoke would create live raw/parse records and was not performed without a separately scoped production test packet. Local regressions and exact-SHA deployment proof are recorded.",
+      "blocker_owner": "Operator / production test owner",
+      "blocker_next_action": "Either approve one exact production intake dry-run/write-smoke packet with expected source text and cleanup policy, or accept the local regression suite plus deployment/SHA live proof as terminal evidence.",
+      "next_action": "Either approve one exact production intake dry-run/write-smoke packet with expected source text and cleanup policy, or accept the local regression suite plus deployment/SHA live proof as terminal evidence.",
       "acceptance_criteria": [
         "Long ramble maps all statements.",
         "Duplicate Telegram creates one idempotent graph.",
@@ -1716,7 +1922,13 @@
         "src/platform/ingestion/operator-ramble-service.js",
         "src/platform/ingestion/packet-status.js",
         "server.js",
-        "public/operations.html worker-offline source text and regenerated Operations assets"
+        "public/operations.html worker-offline source text and regenerated Operations assets",
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
       ],
       "verification": [
         "node --check tests/ingestion/ramble-regression-suite.test.js PASS",
@@ -1731,7 +1943,13 @@
         "npm run watchdog:protocol-drift PASS",
         "npm run secrets:audit PASS",
         "npm run bna:run:validate PASS",
-        "node --test tests/ingestion/ramble-regression-suite.test.js PASS 4/4"
+        "node --test tests/ingestion/ramble-regression-suite.test.js PASS 4/4",
+        "npm run bna:release-gate -- --allow-detached --remote-branch master PASS at 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run one-time:railway-target:guard PASS before deployment; redacted readback confirmed one-time-production / one-time-web with scoped One Time variables.",
+        "npm run railway:redeploy PASS with BNA_DEPLOY_APP=one-time; Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS.",
+        "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a."
       ],
       "implementation_files": [
         "tests/",
@@ -1748,8 +1966,20 @@
         "public/js/operations-deferred-renderers.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T10:31:00+03:00",
-      "expected_result": "The ramble-to-done system has deterministic regression coverage for the July 12 failure modes."
+      "updated_at": "2026-07-12T13:36:00+03:00",
+      "expected_result": "The ramble-to-done system has deterministic regression coverage for the July 12 failure modes.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+      "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+      "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 4a6951643eebb341dcc495d5f306417e1621a07a",
+      "deployment_evidence": [
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
+      ]
     },
     {
       "id": "REQ-20260712-010",
@@ -1831,31 +2061,55 @@
       "depends_on": [
         "REQ-20260712-010"
       ],
-      "status": "needs_operator_decision",
-      "implementation_status": "Production release is not authorized in the prompt. Local implementation can continue; deploy/live smoke remains blocked until explicit approval.",
+      "status": "needs_verification",
+      "implementation_status": "Release authorization was granted in chat, PR #129 was marked ready and merged, master was deployed to One Time Railway, and live smoke verified exact SHA 4a6951643eebb341dcc495d5f306417e1621a07a. The overall run remains open because REQ-010 and external proof blockers are still non-terminal.",
       "can_continue_without_operator": false,
-      "blocker": "Explicit authorization is required before merge, deployment, or production live smoke.",
-      "blocker_owner": "Operator / reviewer",
-      "blocker_next_action": "Review PR #129 after local verification and explicitly approve or reject release through the approved pipeline.",
-      "next_action": "After approval, deploy the exact approved SHA and run live smoke/readback before marking app-visible requirements Done.",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "next_action": "Use the deployed SHA proof in the final matrix; keep unrelated CI, CRM test DB, and operator personal test blockers explicit.",
       "acceptance_criteria": [
         "No unauthorized deploy, send, charge, import, access grant, DNS/account mutation, or external write occurs.",
         "Ready-for-release status names one precise blocker when approval is missing.",
         "After approval, deployed SHA is recorded and live-smoked."
       ],
       "evidence": [
-        "tasks-pending/2026-07-12-onetime-p0p1-corrective-completion.md"
+        "tasks-pending/2026-07-12-onetime-p0p1-corrective-completion.md",
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
       ],
       "verification": [
         "release approval readback",
-        "deploy/live smoke after approval"
+        "deploy/live smoke after approval",
+        "npm run bna:release-gate -- --allow-detached --remote-branch master PASS at 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run one-time:railway-target:guard PASS before deployment; redacted readback confirmed one-time-production / one-time-web with scoped One Time variables.",
+        "npm run railway:redeploy PASS with BNA_DEPLOY_APP=one-time; Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS.",
+        "Live /api/deploy-info readback PASS: commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a."
       ],
       "implementation_files": [
         "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/DEPLOYMENT.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T08:31:00+03:00",
-      "expected_result": "App-visible work is held at ready-for-release until explicit authorization, then deployed and live-smoked by exact SHA."
+      "updated_at": "2026-07-12T13:36:00+03:00",
+      "expected_result": "App-visible work is held at ready-for-release until explicit authorization, then deployed and live-smoked by exact SHA.",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
+      "deployment_id": "0ff5498b-1116-479e-87ca-afe8d2fc6f7b",
+      "deployed_commit": "4a6951643eebb341dcc495d5f306417e1621a07a",
+      "live_smoke": "PASS https://join.onetimeonetime.com at 4a6951643eebb341dcc495d5f306417e1621a07a",
+      "deployment_evidence": [
+        "PR #129 merged on 2026-07-12T10:26:51Z with merge commit 8e22e5d79844e994e94c4f3ed92ac51422649b8c.",
+        "Post-merge smoke harness fix pushed to master as 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "Railway deployment 0ff5498b-1116-479e-87ca-afe8d2fc6f7b reached SUCCESS for one-time-production / production / one-time-web.",
+        "Live https://join.onetimeonetime.com/api/deploy-info returned commit_sha 4a6951643eebb341dcc495d5f306417e1621a07a.",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a PASS.",
+        "npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com PASS; local ignored report ops/live-smokes/2026-07-12T10-33-34-654Z-rabbi-onetime-landing-smoke.md."
+      ]
     }
   ]
 }

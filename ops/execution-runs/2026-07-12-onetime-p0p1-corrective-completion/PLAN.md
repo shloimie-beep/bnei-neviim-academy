@@ -1,20 +1,21 @@
 # Plan
 
-1. `REQ-20260712-001` through `REQ-20260712-004` are locally verified.
-2. Finish urgent addendum `REQ-20260712-013` through `REQ-20260712-015`:
-   canonical direct `/one-time/signup`, structured city/timezone/consent
-   capture, and atomic CRM/outbox storage.
-3. Finish `REQ-20260712-016` through `REQ-20260712-020`: immediate
-   confirmation email, dedicated reminder dispatcher, WhatsApp gates, Rabbi
-   Telegram alert, and no-portal/no-payment/no-access negative tests.
-4. Finish `REQ-20260712-021`: exact-three local-class preview and activation
-   gate, without activating the segment before the operator personal test.
-5. Finish `REQ-20260712-023`: required signup/reminder test matrix,
-   screenshots, no-send proof, CI, watchdogs, and run/PR evidence.
-6. Resume older open work `REQ-20260712-005` through `REQ-20260712-010` only
-   after the urgent signup/reminder slice is implemented or precisely blocked.
-7. Keep `REQ-20260712-011` and `REQ-20260712-022` blocked until explicit
-   release authorization and the operator's personal deployed test.
+PR #129 has been merged and the One Time production service has been deployed
+and live-smoked. Continue only on the remaining blockers.
 
-Do not deploy, send, charge, import, grant access, mutate DNS/accounts, or
-write external providers during local implementation.
+1. Resolve `REQ-20260712-002` by adding the CI workflow with a GitHub
+   credential that has `workflow` scope.
+2. Resolve `REQ-20260712-005` / `REQ-20260712-006` by providing a
+   non-production `BNA_ONETIME_CRM_TEST_DATABASE_URL` and rerunning the real
+   local/test database journey.
+3. Decide whether to run a scoped production intake/dropoff write-smoke for
+   `REQ-20260712-008` / `REQ-20260712-009`; it creates live raw/parse records.
+4. Finish `REQ-20260712-010` / `REQ-20260712-023` by capturing the remaining
+   live screenshots and requirement-matrix rows for provider login,
+   Operations, CRM, mailbox, and Robot launcher.
+5. Resolve `REQ-20260712-022` only after the operator personally submits the
+   deployed signup and hosted reminder-provider readiness is green.
+
+Do not send messages, charge/refund, import historical data, grant access,
+mutate DNS/accounts/credentials, or write to external providers unless a
+separately scoped approval covers the exact action.

@@ -4,92 +4,87 @@ Raw source: `raw-input/RAW-20260712-001-onetime-pr129-completion-followup.md`
 Execution run: `ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion`
 Continues prior run:
 `ops/execution-runs/2026-07-11-onetime-p0p1-owner-crm-landing-corrective`
-Delivery lane: PR #129,
-`codex/onetime-p0p1-corrective-20260711`
 
-## Git Truth At Capture
+## Delivery Truth
 
-- Clean worktree:
-  `C:\Users\User\BNA-onetime-p0p1-corrective-20260711`
-- Branch: `codex/onetime-p0p1-corrective-20260711`
+- Delivery lane: PR #129,
+  `codex/onetime-p0p1-corrective-20260711`
 - PR URL: https://github.com/shloimie-beep/bnei-neviim-academy/pull/129
-- PR head at capture: `ee264c5a4b8329719b5420ffb6f99ccae93e1a60`
-- Base/master at audit time: `d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a`
-- Existing corrective commits present:
-  `e49bd3b00291818bb44e4a483fdd69b35f599c28`,
+- PR state: merged
+- PR head at capture:
   `ee264c5a4b8329719b5420ffb6f99ccae93e1a60`
+- PR head at merge:
+  `598f66238f68293575d5f9e6195bb6b032ebb156`
+- Base/master at audit time:
+  `d68e3f9a3de25c831d18dd42e7b1d3882bd43f2a`
+- Merge commit:
+  `8e22e5d79844e994e94c4f3ed92ac51422649b8c`
+- Deployed/live-smoked master SHA:
+  `4a6951643eebb341dcc495d5f306417e1621a07a`
+- Railway deployment:
+  `0ff5498b-1116-479e-87ca-afe8d2fc6f7b`
+- Live URL:
+  https://join.onetimeonetime.com
 
-## Register Rule
-
-This continuation does not open a new PR or delivery lane. It reconciles the
-July 12 operator prompt into the existing PR #129 branch. Prior local evidence
-from July 11 is input only; app-visible requirements are not Done until
-implementation, authentic tests, screenshots/runtime proof, current PR records,
-authorized release, and exact deployed SHA live smoke are recorded.
+Use a fresh clean worktree from `origin/master` for future work. The original
+PR worktree later acquired unrelated dirty `server.js` /
+`src/lib/bna/one-time-delivery-outbox.js` changes and must not be treated as
+clean Git truth until reconciled by its owner.
 
 ## Requirements
 
-| ID | Priority | Batch | Status | Requirement | Terminal Criteria |
-| --- | --- | --- | --- | --- | --- |
-| REQ-20260712-001 | P0 | intake-run | Verified | Capture the July 12 follow-up prompt, Robot/image context, and continuation run before implementation. | Raw input, daily memory, register, run files, latest pointer, and prior-run continuation state validate. |
-| REQ-20260712-002 | P0 | delivery-truth-ci | Needs operator decision | Reconcile PR #129 delivery truth and add CI enforcement for Operations build/checks, focused One Time tests, and secrets audit. | PR/run/ledger/control-tower/latest truth is current and local gates pass; GitHub workflow publishing requires a token/maintainer with `workflow` scope. |
-| REQ-20260712-003 | P0 | canonical-operations-proof | Verified | Ensure browser tests load real `/operations` bootstrap/generated CSS/JS assets, not raw `public/operations.html`. | Canonical-route harness proves the served route uses generated assets and direct source HTML cannot substitute as proof. |
-| REQ-20260712-004 | P0 | rabbi-provider-login | Verified | Normal One Time provider credentials establish a scoped Operations session and land on canonical `/operations`; provider aliases resolve to the same shell. | Authentic login/session browser test passes; old provider CRM is not independently reachable; BNA Super Admin remains unchanged. |
-| REQ-20260712-012 | P0 | urgent-signup-addendum-intake | Verified | Capture the urgent signup/reminder workflow addendum into the active run without opening a competing PR. | Raw addendum, dated register, daily memory, and machine-readable run records exist. |
-| REQ-20260712-013 | P0 | direct-signup-page | Needs operator decision | Create canonical `/one-time/signup`, route all public Sign Up Now actions to it, and remove duplicate/internal signup copy. | Local route/action/config/browser proof is complete, but deployment/live/operator proof requires release authorization before terminal verification. |
-| REQ-20260712-005 | P0 | first-party-crm | Blocked | Complete the first-party One Time CRM DTO, list/detail/timeline/actions/mailbox journey with real API persistence and cross-workspace denial. | Local DTO/API/UI/tests/responsive smoke pass; terminal proof requires `BNA_ONETIME_CRM_TEST_DATABASE_URL` and `npm run one-time:smoke:crm-journey-local-db`. |
-| REQ-20260712-006 | P0 | onboarding-linkage | Blocked | Complete first signup and Family/School continuation linkage with exact original lead IDs, UTM/referrer preservation, classification, and real API persistence. | Local linkage/validation/browser payload proof is complete; real local/test DB persistence remains blocked on `BNA_ONETIME_CRM_TEST_DATABASE_URL`, and terminal live proof remains release-gated. |
-| REQ-20260712-007 | P1 | landing-robot-config | Needs operator decision | Complete public landing hierarchy, remove placeholders/competing CTAs, optimize full-silhouette Robot launcher, and synchronize One Time config/assets/navigation. | Local landing/Robot proof is complete; terminal Done requires authorized release, exact deployed SHA, and live-smoke screenshots/readback. |
-| REQ-20260712-008 | P0 | ramble-to-done-service | Needs operator decision | Implement one canonical `ingestOperatorRamble()` service and route Operations, Telegram, ChatGPT/Codex dropoff, and file intake through it before specialized extraction. | Local service/API/dropoff tests and watchdogs pass; terminal Done requires release/live proof under the separate release gate. |
-| REQ-20260712-009 | P0 | regression-suite | Needs operator decision | Add mandatory regression tests for long rambles, duplicate Telegram idempotency, codex_chat recognition, blocked-decision independence, result propagation, failed verification, release gating, ID validation, intake API parent records, packet status, and worker-offline state. | Local regression tests pass; terminal Done remains release/live-smoke gated because server-visible protocol behavior changed. |
-| REQ-20260712-010 | P1 | screenshots-matrix-pr | In progress | Produce required screenshots and requirement matrix linking source statements to code, tests, screenshots, PR/commit, and deploy/live proof. | Urgent signup/reminder screenshot proof and matrix exist; broader landing/continuation/provider/Operations/CRM/mailbox/Robot screenshot set remains open or release-gated. |
-| REQ-20260712-011 | P1 | release-live-smoke | Needs operator decision | Merge/deploy/live-smoke only after explicit release authorization. | After approval, exact deployed SHA is live-smoked; until then report ready-for-release with the single blocker. |
+| ID | Status | Current result | Remaining blocker |
+| --- | --- | --- | --- |
+| REQ-20260712-001 | Verified | July 12 raw prompt, Robot/image context, register, run files, latest pointer, and prior-run continuation state exist. | None |
+| REQ-20260712-002 | Needs operator decision | PR/run truth is current and local gates pass. | GitHub credential lacks `workflow` scope for `.github/workflows/onetime-corrective.yml`. |
+| REQ-20260712-003 | Verified | Browser tests load real `/operations` bootstrap/generated CSS/JS assets, not raw `public/operations.html`. | None |
+| REQ-20260712-004 | Verified | Normal One Time provider login establishes scoped Operations session and redirects provider aliases to canonical `/operations`. | None |
+| REQ-20260712-005 | Blocked | First-party One Time CRM DTO/API/UI, responsive local smoke, cross-workspace denial, and targeted mailbox journey are implemented locally. | Missing `BNA_ONETIME_CRM_TEST_DATABASE_URL` for required real local/test Postgres journey. |
+| REQ-20260712-006 | Blocked | Direct signup and Family/School continuation linkage preserve exact product/CRM lead IDs and attribution; deployed route is live. | Missing `BNA_ONETIME_CRM_TEST_DATABASE_URL` for terminal persistence proof. |
+| REQ-20260712-007 | Needs verification | Landing hierarchy, Robot asset optimization/launcher, config sync, and live smoke are complete. | Full screenshot/matrix set remains open for non-landing surfaces. |
+| REQ-20260712-008 | Needs operator decision | Canonical `ingestOperatorRamble()` service, adapter routing, receipts, packet-status contract, and local regressions are implemented and deployed. | Production intake/dropoff write-smoke would create live raw/parse records and needs a scoped production test packet. |
+| REQ-20260712-009 | Needs operator decision | Mandatory ramble-to-done regression coverage passes locally and deployed server code is live-smoked. | Same production write-smoke decision as REQ-008. |
+| REQ-20260712-010 | In progress | Signup/landing screenshot proof and partial requirement matrix exist. | Remaining screenshots/matrix for provider login, Operations dashboard, CRM, mailbox, and Robot launcher. |
+| REQ-20260712-011 | Needs verification | Release authorization, PR merge, Railway deploy, exact deployed SHA readback, and live smokes are complete. | Machine status remains open until the final-matrix dependency closes. |
+| REQ-20260712-012 | Verified | Urgent signup/reminder workflow addendum captured into the active run. | None |
+| REQ-20260712-013 | Verified | Canonical `/one-time/signup` and direct public Sign Up Now routing are implemented, deployed, and live-smoked. | None |
+| REQ-20260712-014 | Verified | City/timezone signup schedule behavior is implemented, tested, deployed, and covered by live route proof. | None |
+| REQ-20260712-015 through REQ-20260712-019 | In progress / needs verification | CRM/outbox/reminder/Telegram/WAPI pieces have local implementation and guarded tests. | Real DB proof, hosted readiness, and no-send/operator-test evidence remain open where applicable. |
+| REQ-20260712-020 / REQ-20260712-021 | Needs operator decision | Release/deploy/live SHA proof is complete. | Terminal closeout depends on blocked persistence/operator personal test evidence. |
+| REQ-20260712-022 | Needs operator decision | Guarded reminder simulation and readiness checks are implemented locally. | Operator personal deployed signup and hosted WAPI/Telegram/scheduler readiness remain open; no external sends were performed. |
+| REQ-20260712-023 | In progress | Signup/reminder evidence matrix exists. | Broader final matrix and remaining live screenshots are incomplete. |
+
+## Verification
+
+Pre-merge/local gates passed:
+
+- `npm run operations:build`
+- `npm run operations:check-generated`
+- `npm run operations:check-canonical`
+- `npm run secrets:audit`
+- `npm run watchdog:actions`
+- `npm run watchdog:protocol-drift`
+- `node --test tests/release-captain.test.js`
+- `npm run test:onetime:focused` at 67/67 before merge
+
+Release/live gates passed:
+
+- `npm run bna:release-gate -- --allow-detached --remote-branch master`
+- `npm run one-time:railway-target:guard`
+- `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 4a6951643eebb341dcc495d5f306417e1621a07a`
+- `npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com`
+- Direct `GET https://join.onetimeonetime.com/api/deploy-info` returned
+  `commit_sha` = `4a6951643eebb341dcc495d5f306417e1621a07a`.
 
 ## Decisions And Blockers
 
-| ID | Decision | Missing information | Owner | Recommended option | Blocks requirements | Status |
-| --- | --- | --- | --- | --- | --- | --- |
-| DEC-20260712-001 | Production release authorization | Explicit approval to merge/deploy PR #129 and run live smoke on the exact deployed SHA. | Operator / reviewer | Review PR #129 after verification, then explicitly approve or reject release. | REQ-20260712-011 and terminal Done state for app-visible requirements. | Needs operator decision |
-| DEC-20260712-002 | Local/test CRM database proof | `BNA_ONETIME_CRM_TEST_DATABASE_URL` pointing at an approved local/test Postgres database. | Operator / local test environment | Provide a non-production test database URL and rerun `npm run one-time:smoke:crm-journey-local-db`. | REQ-20260712-005 terminal verification and dependent REQ-20260712-006. | Blocked |
-
-## Open Questions
-
-None for local implementation. Deployment remains authorization-gated.
-
-## Durable Memory Candidates
-
-| ID | Candidate | Promote? | Reason |
+| ID | Status | Owner | Next action |
 | --- | --- | --- | --- |
-| MEM-20260712-001 | Definition of Done for this One Time lane requires implementation, authentic tests, visual/runtime proof, current PR records, authorized deploy, and exact deployed SHA live smoke. | No immediate MEMORY edit. | This already matches AGENTS and BNA-RAMBLE-TO-DONE; keep it scoped to this run unless repeated as a new durable rule. |
+| DEC-20260712-001 | Completed | Operator / reviewer | Release authorization was given and PR #129 was merged/deployed/live-smoked. |
+| DEC-20260712-002 | Blocked | Operator / local test environment | Provide a non-production `BNA_ONETIME_CRM_TEST_DATABASE_URL` and rerun `npm run one-time:smoke:crm-journey-local-db`. |
+| DEC-20260712-003 | Needs operator decision | Operator / reviewer | Decide whether to run a production intake/dropoff write-smoke packet that creates live raw/parse records. |
+| DEC-20260712-004 | Needs operator decision | Operator / provider setup owner | Complete personal deployed signup and hosted reminder-provider readiness before any external send proof. |
 
-## Implementation Map
-
-| ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
-| --- | --- | --- | --- | --- | --- | --- |
-| REQ-20260712-002 | `package.json`, run files, control tower, ledger/changelog | Reconcile PR/run truth and add local focused gate. | `gh pr view`, `npm run bna:run:validate`, local gate commands, secrets audit, and push rejection readback for workflow scope. | Pending | Pending | CI workflow publishing blocked until a workflow-scope GitHub credential is available |
-| REQ-20260712-003 | `tests/one-time-operations-ui-smoke.test.js`, `scripts/split-operations-shell.mjs`, Operations bootstrap/generated assets | Canonical-route test harness serves real bootstrap/generated assets; splitter emits shared shell helpers needed before deferred loading. | `npm run operations:build`; `npm run operations:check-generated`; `npm run operations:check-canonical`; `npm run test:onetime:focused` 42/42. | Pending | Pending | Blocked until release authorization |
-| REQ-20260712-004 | `server.js`, `public/operations.html`, generated Operations assets, provider login tests | Bridge real One Time provider sessions into project-scoped Operations identity; redirect normal provider login and aliases to canonical `/operations`; clean targeted disabled-state copy. | `node --check server.js`; `operations:check-generated`; `operations:check-canonical`; `test:onetime:focused` 44/44; targeted copy scan. | Pending | Pending | Blocked until release authorization |
-| REQ-20260712-013 | `server.js`, `public/one-time/signup.html`, `public/one-time/index.html`, `public/js/bna-bot-widget.js`, One Time config/route/action registries, focused signup tests | Standalone direct signup route with required first-step fields, red required dots, no optional-style phone copy, phone marker/hint shown only for WhatsApp reminder choices, reminder/location acknowledgement checkbox, canonical CTAs, and no customer-facing internal copy. | `node --check server.js`; `node --check public/js/bna-bot-widget.js`; focused signup/reminder tests 33/33; targeted direct signup + reminder workflow tests 12/12; `npm run test:onetime:focused` 62/62; `npm run watchdog:actions`; `npm run bna:run:validate`. | Pending | Pending | Blocked until release authorization |
-| REQ-20260712-005 | `src/lib/bna/crm-contact-model.js`, `server.js`, `public/operations.html`, generated Operations assets, CRM tests/smokes | Enrich first-party CRM DTO, add safe identity edits/follow-up task creation/timeline rows, target mailbox to selected contact, and add local/test DB journey smoke. | Local tests/smoke pass; real local/test DB journey is blocked because `BNA_ONETIME_CRM_TEST_DATABASE_URL` is missing. | Pending | Pending | Blocked on local/test DB proof and later release authorization |
-| REQ-20260712-006 | `server.js`, `public/one-time/signup.html`, `public/one-time-preview.html`, focused signup/onboarding tests | Link quick signup to continuation with exact product/CRM lead IDs, UTM/referrer/source context, Family/School required fields, and first-party no-send classification. | `node --check server.js`; direct signup + onboarding browser tests 6/6; `npm run test:onetime:focused` 62/62. | Pending | Pending | Real DB persistence blocked on `BNA_ONETIME_CRM_TEST_DATABASE_URL`; deployment/live proof blocked until release authorization |
-| REQ-20260712-007 | `public/one-time/index.html`, `public/js/bna-bot-widget.js`, `config/service-provider-sites/one-time.json`, `public/assets/one-time/robot/robot-scheller-whatsapp.png`, action registry, focused landing tests, screenshot proof | Remove public placeholder teaching carousel, apply approved landing hierarchy/copy, hide unavailable teaching gallery assets, optimize Robot PNG, enlarge the accessible Robot launcher, and record responsive local proof. | `node --test tests/one-time-focused-landing.test.js` 2/2; `npm run test:onetime:focused` 57/57; Operations build/check/canonical; action/protocol watchdogs; secrets audit; run validator; Playwright `/one-time` screenshots at 1440/768/430/390 and Robot launcher crops. | Pending | Pending | Blocked until release authorization and deployed live smoke |
-| REQ-20260712-008 | `src/platform/ingestion/operator-ramble-service.js`, `src/platform/ingestion/packet-status.js`, `server.js`, `scripts/chatgpt-dropoff-ingestor.mjs`, `scripts/chatgpt-dropoff-control-tower.mjs`, Operations source/generated assets, focused ingestion/API/dropoff tests | Canonical service emits statement maps, requirement/job projections, receipts, worker-health truth, status propagation, packet-status migration/rejection, and release-gated verification propagation; Operations API and ChatGPT dropoff/control-tower payloads use the shared contracts; duplicate task #1945 packet claim corrected. | Service/dropoff/control-tower/intake tests pass; `test:onetime:focused` 54/54; Operations build/check/canonical; raw/action/protocol watchdogs; secrets audit; run validator. | Pending | Pending | Release/live-smoke remains gated separately |
-| REQ-20260712-009 | `tests/ingestion/ramble-regression-suite.test.js`, `tests/ingestion/operator-ramble-service.test.js`, `tests/chatgpt-dropoff-ingestor.test.js`, `tests/chatgpt-dropoff-control-tower.test.js`, `tests/one-time-intake-api-readback.test.js`, `src/platform/ingestion/`, `server.js`, Operations source/generated assets | Mandatory ramble-to-done regressions cover adapter recognition, statement offsets/hashes, no-lost mapping, exact execution IDs, blocked-decision independence, failed verification staying open, UI release/live gate, intake API readback, packet-status migration/rejection, and worker-offline truth. | `node --test tests/ingestion/ramble-regression-suite.test.js` 4/4; service test 6/6; dropoff/control-tower/intake readback 12/12; `test:onetime:focused` 54/54; watchdogs; secrets audit; run validator. | Pending | Pending | Release/live-smoke remains gated separately |
-
-## Final Audit
-
-| ID | Status | Evidence | Files changed | Verification | Remaining issue |
-| --- | --- | --- | --- | --- | --- |
-| REQ-20260712-001 | Verified | Raw/register/run/latest files | Raw/run/task files | Pending full `npm run bna:run:validate` after register write | Implementation work remains |
-| REQ-20260712-002 | Needs operator decision | `package.json`; July 11 run reconciliation; push rejection readback for workflow scope | Package script, run records | `operations:check-generated`, `operations:check-canonical`, `operations:build` diff clean, `test:onetime:focused` 42/42, `secrets:audit`; `git push` blocked only on workflow file scope | CI workflow file must be added by a workflow-scope GitHub credential |
-| REQ-20260712-003 | Verified | Canonical smoke serves `operations-bootstrap.html` and generated assets, not raw `operations.html`; splitter shared helpers rebuilt into shell | Test harness, splitter, generated assets | `operations:build`, `operations:check-generated`, `operations:check-canonical`, `test:onetime:focused` 42/42 | Remote GitHub check will run after push |
-| REQ-20260712-004 | Verified | Normal provider login browser journey and alias redirects; scoped provider session bridges into canonical Operations; targeted internal disabled-state copy removed | Server auth/session routes, Operations source/generated assets, provider login browser test | `node --check server.js`, `operations:check-generated`, `operations:check-canonical`, `test:onetime:focused` 44/44 | Remote GitHub check will run after push |
-| REQ-20260712-013 | Needs operator decision | Canonical `/one-time/signup`; public CTA routing; responsive Playwright journey; red required markers; phone marker/hint hidden before WhatsApp and visible after; required reminder/location checkbox; route/action/config coverage | Signup page, landing, bot widget, server route, registries, focused tests | `node --check server.js`, `node --check public/js/bna-bot-widget.js`, focused signup/reminder tests 33/33, targeted direct signup + workflow tests 12/12, `test:onetime:focused` 62/62, `watchdog:actions`, `bna:run:validate` | Deployment/live/operator proof requires release authorization |
-| REQ-20260712-005 | Blocked | CRM DTO/API/UI implementation, first-party follow-up task creation, targeted mailbox return state, responsive browser/API smoke, blocked local/test DB report | `src/lib/bna/crm-contact-model.js`, `server.js`, Operations source/generated assets, CRM tests/smokes | `node --test tests/crm-contact-model.test.js tests/service-provider-scope-routes.test.js` 10/10, `test:onetime:focused` 54/54, `one-time:smoke:operations-crm-workbench-local` PASS, `one-time:smoke:crm-journey-local-db` BLOCKED missing `BNA_ONETIME_CRM_TEST_DATABASE_URL` | Real local/test Postgres persistence proof still required |
-| REQ-20260712-006 | Blocked | Direct signup stores exact product/CRM IDs and attribution; continuation validates IDs and Family/School fields; server verifies product lead and CRM lead are linked before local writes | Signup/preview pages, server onboarding route, focused browser tests | `node --check server.js`; direct signup + onboarding tests 6/6; `test:onetime:focused` 62/62 | Real local/test Postgres persistence proof still blocked on `BNA_ONETIME_CRM_TEST_DATABASE_URL`; deploy/live smoke requires release authorization |
-| REQ-20260712-007 | Needs operator decision | Corrected landing hierarchy, hidden unverified teaching gallery, optimized Robot asset, enlarged accessible launcher, local responsive screenshots | Landing, bot widget, config, action registry, Robot PNG, focused landing test, screenshot evidence | Focused landing 2/2; `test:onetime:focused` 57/57; Operations build/check/canonical; action/protocol watchdogs; secrets audit; run validator; Playwright local route screenshots 1440/768/430/390 | Deployment/live proof requires release authorization |
-| REQ-20260712-008 | Needs operator decision | Canonical `ingestOperatorRamble()` service, shared packet-status contract, Operations parse API receipts, ChatGPT dropoff/control-tower canonical status normalization, `codex_done` migration/rejection, worker-offline truth, duplicate task #1945 claim correction, regenerated Operations assets | `src/platform/ingestion/operator-ramble-service.js`, `src/platform/ingestion/packet-status.js`, `server.js`, `scripts/chatgpt-dropoff-ingestor.mjs`, `scripts/chatgpt-dropoff-control-tower.mjs`, Operations source/generated assets, focused tests, corrected packet status | Syntax checks; service test 6/6; dropoff/control-tower/intake readback 12/12; `test:onetime:focused` 54/54; Operations build/check/canonical; `watchdog:raw`; `watchdog:actions`; `watchdog:protocol-drift`; `secrets:audit`; `bna:run:validate` | Terminal Done requires production release/live smoke |
-| REQ-20260712-009 | Needs operator decision | Mandatory ramble-to-done regression suite is locally passing for statement mapping, ID contracts, blocked-decision independence, verification/release gates, packet-status migration/rejection, intake readback, and worker-offline truth | `tests/ingestion/ramble-regression-suite.test.js`, `tests/ingestion/operator-ramble-service.test.js`, `tests/chatgpt-dropoff-ingestor.test.js`, `tests/chatgpt-dropoff-control-tower.test.js`, `tests/one-time-intake-api-readback.test.js`, service/status/server/Operations files | Dedicated ramble suite 4/4; service test 6/6; dropoff/control-tower/intake readback 12/12; `test:onetime:focused` 54/54; watchdogs; secrets audit; run validator | Terminal Done requires production release/live smoke |
-| REQ-20260712-010 | In progress | Signup/reminder evidence matrix and direct signup screenshot proof are present without claiming live proof | `ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md`, `ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json`, signup screenshots at 1440/1024/768/430/390 | Direct signup + reminder workflow tests 12/12; run validator | Broader screenshot set remains incomplete/release-gated |
-| REQ-20260712-022 | Needs operator decision | Guarded single-recipient reminder simulation command requires exact phrase, positive contact ID, `CRON_SECRET`, and rejects broad audience flags | `scripts/simulate-one-time-class-reminder.mjs`, `tests/one-time-reminder-simulation-command.test.js`, `package.json` focused gate | Command test 4/4; direct signup/reminder/simulation bundle 16/16; `test:onetime:focused` 62/62 | Deployed operator personal test, hosted readiness, and real provider evidence remain required |
-| REQ-20260712-011 | Needs operator decision | This register | None | Not run | Release authorization required |
+No production email/WhatsApp/Telegram/campaign send, charge/refund, access
+grant, historical import, DNS/account mutation, credential mutation, or
+external-provider write was performed.
