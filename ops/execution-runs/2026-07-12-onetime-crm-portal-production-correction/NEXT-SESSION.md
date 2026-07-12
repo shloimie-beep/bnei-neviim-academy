@@ -1,7 +1,15 @@
 # Next Session
 
-Current branch: `master` (now confirmed 0 commits ahead and 54 commits behind `origin/master`).
+Current release branch: `codex/onetime-crm-portal-release-20260712`
 Current active run: `ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/`
+
+Release-lane state as of 2026-07-12T21:14:00+03:00:
+
+- A clean worktree was created from current `origin/master`.
+- Scoped One Time CRM/portal correction work was reapplied without unrelated dirty lanes.
+- Implementation commit `833cac222` was pushed to `origin/codex/onetime-crm-portal-release-20260712`.
+- Local validation, focused tests, screenshots/smokes, protocol drift watchdog, audit governance, and release-gate dry-run all completed on the release branch.
+- No production deployment, production mutation, external send, provider write, payment/access/DNS change, or live verification was performed.
 
 Open requirements:
 
@@ -10,33 +18,37 @@ Open requirements:
 - `REQ-20260712-103`: Done locally - server/view-as scoping tests pass. Release/live-smoke remains under `REQ-20260712-112`.
 - `REQ-20260712-104`: Done locally - CRM isolation/source-label tests pass and redacted local report exists. Release/live-smoke remains under `REQ-20260712-112`.
 - `REQ-20260712-105`: Done locally - CRM pagination/cursor/source fetch cap tests pass, including 10,000-contact fixture. DB EXPLAIN/live-smoke remains under `REQ-20260712-112`.
-- `REQ-20260712-106`: Done locally - CRM frontend loader/detail flow uses scoped panel refresh, AbortController-backed list/timeline requests, debounced search, 50-card cap, query cache, split-shell parity, and lazy legacy review table construction. Release/live-smoke remains under `REQ-20260712-112`; shell byte-budget work remains under `REQ-20260712-111`.
-- `REQ-20260712-107`: Done locally - CRM/inbox UI now has three-pane desktop layout, mobile selected-contact Back flow, disabled/no-send reply/note/task controls, scoped One Time Inbox selected-contact context, action registry rows, and local split-shell/monolith smoke proof. Release/live-smoke remains under `REQ-20260712-112`; shell byte-budget work remains under `REQ-20260712-111`.
-- `REQ-20260712-108`: Done locally - portal shell/preview work now covers Family Portal labels, parent setup/reset labels, shared One Time portal shell, TEST preview banner, preserved review links, accessible mobile menu, action registry rows, and screenshots at 1440/1024/768/430/390 widths. Release/live-smoke remains under `REQ-20260712-112`; bundle/performance work remains under `REQ-20260712-111`.
+- `REQ-20260712-106`: Done locally - CRM frontend loader/detail flow uses scoped panel refresh, AbortController-backed list/timeline requests, debounced search, 50-card cap, query cache, split-shell parity, and lazy legacy review table construction. Release/live-smoke remains under `REQ-20260712-112`.
+- `REQ-20260712-107`: Done locally - CRM/inbox UI now has three-pane desktop layout, mobile selected-contact Back flow, disabled/no-send reply/note/task controls, scoped One Time Inbox selected-contact context, action registry rows, and local split-shell/monolith smoke proof. Release/live-smoke remains under `REQ-20260712-112`.
+- `REQ-20260712-108`: Done locally - portal shell/preview work now covers Family Portal labels, parent setup/reset labels, shared One Time portal shell, TEST preview banner, preserved review links, accessible mobile menu, action registry rows, and screenshots at 1440/1024/768/430/390 widths. Release/live-smoke remains under `REQ-20260712-112`.
 - `REQ-20260712-109`: Done locally - public landing Robot/helper widget assets are removed from the served page, one accessible same-origin WhatsApp launcher is present, action registry coverage is updated, and local screenshots cover 1440/1024/768/430/390 widths. Public-number live readback/release/live-smoke remains under `REQ-20260712-112`.
 - `REQ-20260712-110`: Done locally - WhatsApp assistant natural deterministic replies and WAPI safety gates pass local tests. WAPI live/no-unapproved-send proof remains under `REQ-20260712-112`.
 - `REQ-20260712-111`: Done locally - split shell is under the 1.2 MB budget, CRM metrics pass locally, cache policy contract passes, and member-library Vimeo loads only after Play Video. Production compression/cache/header readback remains under `REQ-20260712-112`.
-- `REQ-20260712-112`: Blocked - release-gate dry-run performed no deploy/mutation/live verification and blocked on a stale local branch (`master` is 0 ahead / 54 behind `origin/master`), mixed dirty worktree, uncommitted One Time correction work, and Railway/Drive external readback readiness gaps.
+- `REQ-20260712-112`: Blocked / needs operator release decision - scoped branch is clean, pushed, and release-gate dry-run reports ready. Production deploy/live verification still requires explicit release-gate confirmation and either completion or approved deferral of external Railway/Drive readbacks.
 
 Next safe commands:
 
 ```bash
-npm run pqc:validate ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/00-control-tower.product-quality.json ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/01-current-state-visual-audit.product-quality.json
 npm run bna:run:validate
-npm run bna:run:next
+npm run bna:release-gate -- --expected-branch codex/onetime-crm-portal-release-20260712
 ```
 
-If validation passes, the next unblocked batch should be none until `REQ-20260712-112` is unblocked by a clean scoped release lane based on current `origin/master`, a pushed exact One Time release commit, and approved Railway/Drive readback/defer path.
-Use the regenerated audit findings before touching broad UI files. Downstream UI packets still need focused Product Quality Compiler
-Definition of Ready and action/route registry checks.
+Production deploy and live verification require explicit approval tokens and should only run after the operator confirms the production release path:
 
-Resolved audit blocker / remaining limitation:
+```bash
+node scripts/bna-production-closeout-gate.mjs --deploy --confirm-deploy DEPLOY_BNA_PRODUCTION_CLOSEOUT --expected-branch codex/onetime-crm-portal-release-20260712
+node scripts/bna-production-closeout-gate.mjs --live-verify --confirm-live VERIFY_BNA_LIVE_CLOSEOUT --expected-branch codex/onetime-crm-portal-release-20260712
+```
 
-- `DEC-20260712-101`: six source screenshots from `/workspace/scratch/ffef2e71fe52/upload/` remain unavailable locally, but authenticated/current-state regeneration has now been performed. Do not wait on the missing PNGs unless direct before/after comparison is specifically needed.
-- `REQ-20260712-103` through `REQ-20260712-111`: release verification is open under `REQ-20260712-112`. After scoped staging is safe, commit/push/deploy and run live view-as, CRM scope/API/frontend/inbox/portal/landing, public WhatsApp readiness, WAPI no-unapproved-send, production compression/cache/header, and exact SHA smokes before closing the run.
-- `DEC-20260712-112`: release gate blocked by mixed dirty worktree (100 dirty/untracked paths), local branch 0 commits ahead and 54 commits behind `origin/master`, uncommitted One Time correction work, and Railway/Drive readback gates not ready. Recommended next action: start a clean scoped branch/PR from current `origin/master`, reapply only the One Time run files, push the exact release commit, then rerun the release gate and approved deploy/live verification.
+If Railway/Drive readback is intentionally deferred, use only the approved release-gate defer flags after production deploy approval is present.
 
-Do not run yet:
+Resolved release-lane blocker / remaining limitation:
 
-- No deploy/live-smoke until scoped implementation and release gates pass.
+- `DEC-20260712-112`: the stale local `master` / mixed dirty worktree blocker is superseded by the clean pushed release branch. Remaining blocker is approval and execution of production deploy/live verification, including exact SHA readback and live smokes.
+- `REQ-20260712-103` through `REQ-20260712-111`: local implementation and verification are complete. Do not mark production Done until `REQ-20260712-112` has deploy/live-smoke proof.
+- `DEC-20260712-101`: six source screenshots from `/workspace/scratch/ffef2e71fe52/upload/` remain unavailable locally, but authenticated/current-state regeneration has been performed. Do not wait on the missing PNGs unless direct before/after comparison is specifically needed.
+
+Do not run without explicit approval:
+
+- No deploy/live-smoke that mutates production release state.
 - No email/WhatsApp sends, payment/access changes, DNS/provider writes, uploads, production hard deletes, or external CRM/GHL writes from this packet.

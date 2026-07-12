@@ -1,6 +1,11 @@
 # Status
 
-As of regenerated current-state visual audit:
+As of release-lane closeout on 2026-07-12T21:14:00+03:00:
+
+- Clean release branch `codex/onetime-crm-portal-release-20260712` was created from current `origin/master`.
+- Scoped One Time correction work was reapplied, validated, committed, and pushed as implementation commit `833cac222`.
+- Local release-gate dry-run reports ready on the release branch.
+- No production deployment, production mutation, or live verification was performed.
 
 - `REQ-20260712-101`: done. PQC validation and execution-run validation passed.
 - `REQ-20260712-102`: done. Original source PNGs remain missing, but authenticated/current-state regeneration produced 35 screenshots, broader Rabbi/One Time audit produced 80 screenshots, parallel frontend audit produced 45 checks and 140 screenshots/crops, and the live public/review performance baseline passed with 0 samples needing attention.
@@ -13,12 +18,13 @@ As of regenerated current-state visual audit:
 - `REQ-20260712-109`: done locally. The public One Time landing page now uses one accessible fixed WhatsApp launcher backed by the same-origin runtime redirect, and no longer loads the public helper scripts, Robot Scheller helper chrome, or hard-coded `wa.me` links. Local screenshots cover 1440, 1024, 768, 430, and 390 px with no HTTP errors, helper-script requests, POSTs, or writes. Production public-number readback/release/live-smoke is centralized in `REQ-20260712-112`.
 - `REQ-20260712-110`: done locally. WhatsApp assistant deterministic natural replies and WAPI safety gates pass local tests; production WAPI readback/no-unapproved-send proof is centralized in `REQ-20260712-112`.
 - `REQ-20260712-111`: done locally. Operations split delivery is under the 1.2 MB shell budget, CRM first-page/list/detail metrics pass locally, local cache policy passes, and member-library Vimeo loads only after Play Video. Production Brotli/gzip, `Vary`, long-cache/fingerprint readback, commit/push/deploy, and live smoke remain under `REQ-20260712-112`.
-- `REQ-20260712-112`: blocked. Release-gate dry-run performed no deploy/mutation/live verification and blocked because `master` is 0 ahead / 54 behind `origin/master`, the One Time correction work is uncommitted in a 100-path mixed dirty tree, and Railway/Drive external readback gates are not ready.
+- `REQ-20260712-112`: blocked / needs operator release decision. The stale `master` / dirty worktree blocker has been superseded by the clean pushed release branch. Production deploy/live verification still needs explicit release-gate confirmation and either completion or approved deferral of external Railway/Drive readbacks.
 
 Next expected step after this local batch:
 
 ```bash
-npm run bna:run:next
+npm run bna:run:validate
+npm run bna:release-gate -- --expected-branch codex/onetime-crm-portal-release-20260712
 ```
 
-There is no next unblocked implementation requirement in this run. To resume, start from current `origin/master` in a clean scoped release lane, reapply only the One Time correction files, push the exact One Time release commit, complete or explicitly defer Railway/Drive readback through the approved release gate, then rerun `npm run bna:release-gate -- --json`.
+There is no next unblocked implementation requirement in this run. To resume, confirm the production release path, run the approved deploy/live-verify gate commands from the release branch, verify exact SHA readback on the BNA Operations/portal service and One Time public service, then run the required live smokes before closing `REQ-20260712-112`.

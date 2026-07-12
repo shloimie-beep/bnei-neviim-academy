@@ -199,6 +199,40 @@ Result:
 - Evidence saved to `ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/release-gate-dry-run/report.json` and `.md`.
 - Release-lane scope evidence saved to `ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/release-lane-scope-audit/report.json` and `.md`.
 
+REQ-20260712-112 clean release lane:
+
+```bash
+npm ci
+npm run pqc:validate -- ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/00-control-tower.product-quality.json ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/01-current-state-visual-audit.product-quality.json ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/02-crm-frontend-performance.product-quality.json ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/03-crm-inbox-ui.product-quality.json ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/04-portal-shell-preview.product-quality.json ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/05-landing-whatsapp-launcher.product-quality.json ops/prompt-packets/2026-07-12-onetime-crm-portal-production-correction/06-performance-budgets.product-quality.json
+npm run bna:run:validate
+npm run operations:check-generated
+node --test tests\crm-contact-model.test.js tests\rabbi-scheller-tenant-isolation-contract.test.js tests\one-time-view-as-scope-contract.test.js tests\service-provider-lead-bot.test.js tests\one-time-brand-helper-isolation.test.js
+node scripts\smoke-onetime-operations-crm-workbench-local.mjs
+node scripts\smoke-onetime-portal-shell-local.mjs
+node scripts\smoke-onetime-landing-whatsapp-local.mjs
+npm run watchdog:protocol-drift
+npm run audit:governance
+git commit -m "Prepare One Time CRM portal correction release"
+git push -u origin codex/onetime-crm-portal-release-20260712
+npm run bna:release-gate -- --expected-branch codex/onetime-crm-portal-release-20260712
+```
+
+Result:
+
+- PASS dependencies installed in clean release worktree with `npm ci`; npm audit reported existing vulnerabilities and no fix was applied.
+- PASS all 7 Product Quality Compiler packets.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run operations:check-generated`.
+- PASS focused One Time scope/CRM/assistant/helper regression subset - 36 tests passed, 0 failed.
+- PASS local Operations CRM workbench smoke across split shell and monolith.
+- PASS local portal shell smoke across Family Portal, Library, Classroom, parent setup/reset, Student, and mobile menu states.
+- PASS local public landing WhatsApp launcher smoke across 1440, 1024, 768, 430, and 390 px.
+- PASS `npm run watchdog:protocol-drift`.
+- PASS `npm run audit:governance` with exit code 0. It still reports historical repo-wide audit mapping debt, but current One Time audit packages are linked as implemented/proven or to `REQ-20260712-112`.
+- PASS commit and push to `origin/codex/onetime-crm-portal-release-20260712`; implementation commit `833cac222`.
+- PASS release-gate dry-run on the clean pushed release branch: ready, dry-run mode, branch `codex/onetime-crm-portal-release-20260712`, HEAD pushed yes, dirty files 0, production mutation performed no.
+- BLOCKED / NEEDS OPERATOR RELEASE DECISION: no deploy or live verification was run. The deploy command requires `DEPLOY_BNA_PRODUCTION_CLOSEOUT`; live verification requires `VERIFY_BNA_LIVE_CLOSEOUT`; Railway/Drive external readbacks must be completed or explicitly deferred through approved release-gate flags.
+
 Closeout checks:
 
 ```bash

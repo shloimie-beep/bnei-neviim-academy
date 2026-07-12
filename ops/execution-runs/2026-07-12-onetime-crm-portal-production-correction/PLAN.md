@@ -13,7 +13,7 @@
 9. `BATCH-08-LANDING-WHATSAPP` / `REQ-20260712-109`: done locally; release/live-smoke remains under `REQ-20260712-112`.
 10. `REQ-20260712-110`: done locally; WhatsApp assistant natural-language behavior is covered by deterministic safety tests and no live send was performed.
 11. `REQ-20260712-111`: done locally; performance, split delivery, cache policy, and Vimeo lazy-load proof are complete.
-12. `REQ-20260712-112`: blocked by release-gate dry run until a clean scoped release lane/pushed commit and approved Railway/Drive readback/defer path exist.
+12. `REQ-20260712-112`: blocked / needs release decision. Clean scoped release branch and pushed commit now exist; production deploy/live verification still requires explicit release-gate confirmation and approved Railway/Drive readback completion or deferral.
 
 ## Guardrails
 

@@ -727,9 +727,9 @@
         "REQ-20260712-111"
       ],
       "status": "blocked",
-      "implementation_status": "Release gate dry-run is blocked before deploy/live-smoke. No deploy, production mutation, or live verification was performed.",
+      "implementation_status": "Clean release branch is pushed and release-gate dry-run is ready. No production deploy, production mutation, external write, or live verification was performed.",
       "can_continue_without_operator": false,
-      "next_action": "Unblock by starting from current origin/master in a clean scoped release lane, reapplying only the One Time correction files, pushing the exact release commit, and completing or explicitly deferring Railway/Drive external readback through the approved release gate options.",
+      "next_action": "Unblock by confirming the production release path, then run the approved deploy/live-verify gate commands from codex/onetime-crm-portal-release-20260712 and complete or explicitly defer Railway/Drive external readbacks through the approved release gate options.",
       "acceptance_criteria": [
         "Required behavioral tests and existing One Time regression suite pass.",
         "Screenshots at required viewport/state matrix exist where UI work is done.",
@@ -743,14 +743,23 @@
         "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/release-lane-scope-audit/report.json",
         "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/release-lane-scope-audit/report.md",
         "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/requirements.json",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/NEXT-SESSION.md",
+        "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/DEPLOYMENT.md",
         "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/TEST-RESULTS.md"
       ],
       "verification": [
-        "BLOCKED npm run bna:release-gate -- --json (dry run): current HEAD is not confirmed pushed to origin/master; working tree has 100 dirty/untracked paths; Railway and Drive external readback gates are not ready",
-        "BLOCKED release lane scope audit: master is 0 commits ahead and 54 commits behind origin/master; One Time correction work is uncommitted in a 100-path mixed dirty tree",
-        "PASS npm run bna:run:validate before release gate dry-run (11 done, 1 not_started)",
-        "PASS npm run watchdog:protocol-drift before release gate dry-run",
-        "PASS npm run bna:run:next identified BATCH-11-VERIFY-DEPLOY / REQ-20260712-112"
+        "SUPERSEDED BLOCKER npm run bna:release-gate -- --json (dry run) on stale local master: current HEAD was not confirmed pushed to origin/master; working tree had 100 dirty/untracked paths; Railway and Drive external readback gates were not ready",
+        "SUPERSEDED BLOCKER release lane scope audit: master was 0 commits ahead and 54 commits behind origin/master; One Time correction work was uncommitted in a 100-path mixed dirty tree",
+        "PASS clean release branch codex/onetime-crm-portal-release-20260712 created from current origin/master and pushed with implementation commit 833cac222",
+        "PASS npm run pqc:validate for all 7 One Time product-quality packets",
+        "PASS npm run bna:run:validate on the clean release branch",
+        "PASS npm run operations:check-generated",
+        "PASS focused One Time scope/CRM/assistant/helper regression subset (36 tests passed)",
+        "PASS local Operations CRM workbench, portal shell, and landing WhatsApp smokes on the clean release branch",
+        "PASS npm run watchdog:protocol-drift",
+        "PASS npm run audit:governance exit 0; current One Time audit packages mapped, historical repo-wide audit debt remains",
+        "PASS npm run bna:release-gate -- --expected-branch codex/onetime-crm-portal-release-20260712 (dry run): ready, HEAD pushed yes, dirty files 0, production mutation performed no",
+        "BLOCKED / NEEDS OPERATOR RELEASE DECISION: deploy requires DEPLOY_BNA_PRODUCTION_CLOSEOUT, live verification requires VERIFY_BNA_LIVE_CLOSEOUT, and Railway/Drive readbacks must be completed or explicitly deferred"
       ],
       "implementation_files": [
         "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/",
@@ -759,21 +768,21 @@
         "ops/ui-audits/"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T20:37:23+03:00",
-      "blocker": "Release gate blocked: local master is 0 commits ahead and 54 commits behind origin/master, One Time correction work is uncommitted in a mixed dirty tree, and Railway/Drive external readback readiness gaps remain.",
+      "updated_at": "2026-07-12T21:14:00+03:00",
+      "blocker": "Production Done is blocked until explicit deploy/live-verify approval is given and Railway/Drive readbacks are completed or explicitly deferred through approved release-gate options. The stale master / dirty worktree blocker is superseded by the clean pushed release branch.",
       "blocker_owner": "Codex/operator release lane",
-      "blocker_next_action": "Start from current origin/master in a clean scoped release lane, reapply only the One Time correction files, push the exact One Time release commit, complete or explicitly defer Railway/Drive readback through approved release-gate options, then rerun deploy/live verification.",
+      "blocker_next_action": "Confirm the production release path, then run the approved deploy/live-verify gate commands from codex/onetime-crm-portal-release-20260712 and complete or explicitly defer Railway/Drive readback through approved release-gate options.",
       "blocker_detail": {
         "id": "DEC-20260712-112",
-        "reason": "The approved production release gate cannot run from a stale local branch with uncommitted One Time changes mixed with unrelated dirty work. Local master is 0 commits ahead and 54 commits behind origin/master, and Railway/Drive external readback readiness is incomplete.",
+        "reason": "The scoped release branch is clean, pushed, and release-gate dry-run ready, but production deploy/live verification would mutate release state and requires explicit approval tokens. Railway/Drive external readbacks also need completion or approved deferral before production Done can be claimed.",
         "owner": "Codex/operator release lane",
-        "recommended_option": "Create a clean scoped release lane from current origin/master, reapply/stage/commit/push only the intended One Time changes, then rerun the release gate and live smokes.",
+        "recommended_option": "Approve the production release path, run the deploy gate from the release branch, verify exact SHA on the BNA Operations/portal and One Time public services, then run the required live smokes.",
         "alternatives": [
           "Explicitly defer optional integrations/external readback using the approved release-gate flags after deploy approval is present.",
-          "Pause release until unrelated dirty Telegram/keyholder/provider files are committed, archived, or moved to their owning lane."
+          "Pause release and keep REQ-20260712-112 blocked until the operator is ready for production deploy/live verification."
         ],
-        "consequences": "No production Done can be claimed; GitHub-connected ChatGPT cannot see local-only changes until pushed; live app may still be on older code.",
-        "exact_next_action": "Start a clean branch/worktree at origin/master, reapply the One Time release file set, run local validators, then run npm run bna:release-gate -- --json and the approved deploy/live-verify commands."
+        "consequences": "No production Done can be claimed; live app may still be on older code until deployed and smoke-tested.",
+        "exact_next_action": "From codex/onetime-crm-portal-release-20260712, run the approved deploy command with DEPLOY_BNA_PRODUCTION_CLOSEOUT, then run live verification with VERIFY_BNA_LIVE_CLOSEOUT, exact SHA readback, and the required live smokes."
       }
     }
   ]
