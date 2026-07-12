@@ -1,5 +1,20 @@
 # Evidence
 
+Final release evidence:
+
+- Final deployed SHA: `22cc6b88b0045f9052a403582ec8249e369196a0`.
+- One Time Railway deployment `89c697ad-3f72-4d4f-96a2-46f0b2c2d740` reached `SUCCESS`.
+- One Time deploy-info readback returned final SHA, `deployment_source=railway:redeploy`, `target_app=one-time`, `target_project=one-time-production`, and `target_service=one-time-web`.
+- BNA deploy-info readback returned final SHA from runtime/auto deploy.
+- `ops/live-smokes/2026-07-12T19-36-35-101Z-one-time-interest-dry-run-live-smoke.md`
+- `ops/live-smokes/2026-07-12T19-36-35-100Z-rabbi-onetime-landing-smoke.md`
+- `ops/live-smokes/2026-07-12T19-36-35-141Z-one-time-operations-crm-workbench-live-smoke.md`
+- Production-JS no-write browser intercept verified Family and School signup payloads before network write.
+- Live One Time portal route smoke verified Family Portal, Library, Classroom, Student Login, parent setup/reset, and parent review route scope.
+- Live signed view-as Rabbi negative smoke verified scoped Rabbi identity, cross-workspace 403, cross-project 403, and write attempt 403 before mutation.
+- Live BNA no-write route smoke verified exact SHA and expected logged-out/private route behavior.
+- Production compression readback verified `content-encoding: br` and `Vary: Accept-Encoding` on One Time landing, One Time Operations shell, BNA Operations login, and BNA Operations shell JS.
+
 Initial evidence:
 
 - `raw-input/RAW-20260712-004-onetime-crm-portal-production-correction-source.txt`

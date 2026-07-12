@@ -1,6 +1,16 @@
 # Deployment
 
-No app/server implementation has been deployed yet for this run.
+Final production deployment was completed on 2026-07-12T22:38:00+03:00.
+
+- Final deployed `master` SHA: `22cc6b88b0045f9052a403582ec8249e369196a0`.
+- One Time Railway target: `one-time-production / production / one-time-web`.
+- One Time deployment: `89c697ad-3f72-4d4f-96a2-46f0b2c2d740`, status `SUCCESS`.
+- One Time readback: `https://join.onetimeonetime.com/api/deploy-info` returned final SHA, `deployment_source=railway:redeploy`, `target_app=one-time`.
+- BNA readback: `https://bneineviimacademy.org/api/deploy-info` returned final SHA from runtime/auto deploy.
+- Live smoke proof passed for One Time public funnel, direct signup, landing/WhatsApp readiness, Operations CRM workbench, portal routes, signed view-as scope denials, BNA route no-write smoke, and production compression headers.
+- No external email, WhatsApp/WAPI manual send, Telegram send, payment/access mutation, DNS/account mutation, provider-data mutation, GHL runtime operation, or production CRM write was performed by these release smokes.
+
+Historical release candidate state retained below:
 
 Release candidate state as of 2026-07-12T21:14:00+03:00:
 

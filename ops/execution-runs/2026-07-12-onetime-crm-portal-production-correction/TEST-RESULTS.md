@@ -1,5 +1,32 @@
 # Test Results
 
+Final deployment/live-smoke closeout:
+
+```bash
+node --check server.js
+node --test tests\one-time-route-role-mapping.test.js tests\service-provider-scope-routes.test.js
+node --test tests\one-time-intake-api-readback.test.js tests\operations-shell-navigation-contract.test.js tests\one-time-brand-helper-isolation.test.js tests\one-time-direct-signup-page.test.js
+npm run test:onetime:focused
+npm run secrets:audit
+npm run watchdog:actions
+npm run watchdog:protocol-drift
+npm run bna:release-gate -- --expected-branch master
+npm run one-time:target:guard
+npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 22cc6b88b0045f9052a403582ec8249e369196a0
+npm run app:smoke:one-time-interest-dry-run -- https://join.onetimeonetime.com
+npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com
+ONE_TIME_PUBLIC_BASE_URL=https://join.onetimeonetime.com BNA_DEPLOYED_COMMIT=22cc6b88b0045f9052a403582ec8249e369196a0 BNA_DEPLOYMENT_ID=89c697ad-3f72-4d4f-96a2-46f0b2c2d740 npm run app:smoke:onetime-operations-crm-workbench
+```
+
+Result:
+
+- PASS syntax, targeted contracts, focused One Time suite `76/76`, secrets audit, action watchdog, protocol drift watchdog, release gate, and One Time target guard.
+- PASS One Time Railway deployment `89c697ad-3f72-4d4f-96a2-46f0b2c2d740` reached `SUCCESS`.
+- PASS exact-SHA live readbacks on One Time and BNA for `22cc6b88b0045f9052a403582ec8249e369196a0`.
+- PASS live One Time smokes: separate instance exact-SHA, direct signup dry-run, Rabbi landing/WhatsApp readiness, and Operations CRM workbench with 12 cards.
+- PASS production-JS browser intercept for `/one-time/signup`: Family and School submit normalized root `audience_type` / `family_school_classification` and preserve display `metadata.signup_as`, with the API route intercepted before any live lead write.
+- PASS live BNA route no-write smoke, One Time portal route smoke, signed view-as Rabbi negative scope/write smoke, and compression header readback on One Time and BNA.
+
 Initial validation:
 
 ```bash

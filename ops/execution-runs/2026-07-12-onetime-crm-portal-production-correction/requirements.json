@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-onetime-crm-portal-production-correction",
   "title": "One Time CRM, portal, assistant, performance production correction",
-  "updated_at": "2026-07-12T20:35:00+03:00",
+  "updated_at": "2026-07-12T22:38:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260712-004",
@@ -31,7 +31,7 @@
       "source_id": "RAW-20260712-004",
       "requirement_id": "REQ-20260712-101",
       "visible": false,
-      "status": "in_progress"
+      "status": "done"
     }
   ],
   "requirements": [
@@ -726,10 +726,10 @@
         "REQ-20260712-110",
         "REQ-20260712-111"
       ],
-      "status": "blocked",
-      "implementation_status": "Clean release branch is pushed, draft PR #131 is open and mergeable/clean, and release-gate dry-run is ready. No production deploy, production mutation, external write, or live verification was performed.",
-      "can_continue_without_operator": false,
-      "next_action": "Unblock by reviewing/merging PR #131 or otherwise confirming the production release path, then run the approved deploy/live-verify gate commands and complete or explicitly defer Railway/Drive external readbacks through the approved release gate options.",
+      "status": "done",
+      "implementation_status": "Production correction was merged to master, pushed, deployed, and live-smoked on final SHA 22cc6b88b0045f9052a403582ec8249e369196a0. One Time Railway deployment 89c697ad-3f72-4d4f-96a2-46f0b2c2d740 reached SUCCESS, BNA runtime readback also served the final SHA, and all scoped live no-write/safety smokes passed.",
+      "can_continue_without_operator": true,
+      "next_action": "No remaining action for this execution run. Continue broader launch consolidation on separate open/parked branches only after a fresh branch audit.",
       "acceptance_criteria": [
         "Required behavioral tests and existing One Time regression suite pass.",
         "Screenshots at required viewport/state matrix exist where UI work is done.",
@@ -746,47 +746,83 @@
         "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/NEXT-SESSION.md",
         "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/DEPLOYMENT.md",
         "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/TEST-RESULTS.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/131"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/131",
+        "master commit b61db37a4e232023f745b568e3456536048a114a - Merge One Time CRM portal correction release",
+        "master commit 593b85c7ffe975dc5eff6f38b684f375385952dc - Update One Time landing live smoke",
+        "master commit 22cc6b88b0045f9052a403582ec8249e369196a0 - Enable production response compression",
+        "One Time Railway deployment 89c697ad-3f72-4d4f-96a2-46f0b2c2d740 SUCCESS for one-time-production / production / one-time-web",
+        "GET https://join.onetimeonetime.com/api/deploy-info returned final SHA 22cc6b88b0045f9052a403582ec8249e369196a0 and deployment_source railway:redeploy",
+        "GET https://bneineviimacademy.org/api/deploy-info returned final SHA 22cc6b88b0045f9052a403582ec8249e369196a0",
+        "ops/live-smokes/2026-07-12T19-36-35-101Z-one-time-interest-dry-run-live-smoke.md",
+        "ops/live-smokes/2026-07-12T19-36-35-100Z-rabbi-onetime-landing-smoke.md",
+        "ops/live-smokes/2026-07-12T19-36-35-141Z-one-time-operations-crm-workbench-live-smoke.md",
+        "Production-JS Family/School browser intercept against https://join.onetimeonetime.com/one-time/signup captured canonical family/school payloads before network write",
+        "Live BNA no-write route smoke against https://bneineviimacademy.org passed for /api/health, /api/deploy-info, /operations-login.html, /operations 401, parent/student/provider, and /one-time/",
+        "Live One Time portal route smoke passed for Family Portal, Library, Classroom, Student Login, parent setup/reset, and parent review routes",
+        "Live signed view-as Rabbi negative smoke passed: scoped identity, cross-workspace 403, cross-project 403, and write attempt 403 before mutation",
+        "Production compression readback passed on One Time landing, One Time operations shell, BNA operations login, and BNA operations-shell.js with content-encoding br and Vary: Accept-Encoding"
       ],
       "verification": [
-        "SUPERSEDED BLOCKER npm run bna:release-gate -- --json (dry run) on stale local master: current HEAD was not confirmed pushed to origin/master; working tree had 100 dirty/untracked paths; Railway and Drive external readback gates were not ready",
-        "SUPERSEDED BLOCKER release lane scope audit: master was 0 commits ahead and 54 commits behind origin/master; One Time correction work was uncommitted in a 100-path mixed dirty tree",
-        "PASS clean release branch codex/onetime-crm-portal-release-20260712 created from current origin/master and pushed with implementation commit 833cac222",
-        "PASS npm run pqc:validate for all 7 One Time product-quality packets",
-        "PASS npm run bna:run:validate on the clean release branch",
-        "PASS npm run operations:check-generated",
-        "PASS focused One Time scope/CRM/assistant/helper regression subset (36 tests passed)",
-        "PASS local Operations CRM workbench, portal shell, and landing WhatsApp smokes on the clean release branch",
-        "PASS npm run watchdog:protocol-drift",
-        "PASS npm run audit:governance exit 0; current One Time audit packages mapped, historical repo-wide audit debt remains",
-        "PASS npm run bna:release-gate -- --expected-branch codex/onetime-crm-portal-release-20260712 (dry run): ready, HEAD pushed yes, dirty files 0, production mutation performed no",
-        "PASS draft PR #131 opened against master: https://github.com/shloimie-beep/bnei-neviim-academy/pull/131",
-        "PASS PR #131 readiness readback: open, draft, mergeable, merge state CLEAN, and no status checks reported on the branch",
-        "BLOCKED / NEEDS OPERATOR RELEASE DECISION: PR review/release approval is required; deploy requires DEPLOY_BNA_PRODUCTION_CLOSEOUT, live verification requires VERIFY_BNA_LIVE_CLOSEOUT, and Railway/Drive readbacks must be completed or explicitly deferred"
+        "PASS node --check server.js",
+        "PASS node --test tests\\one-time-route-role-mapping.test.js tests\\service-provider-scope-routes.test.js (9/9)",
+        "PASS node --test tests\\one-time-intake-api-readback.test.js tests\\operations-shell-navigation-contract.test.js tests\\one-time-brand-helper-isolation.test.js tests\\one-time-direct-signup-page.test.js (21/21)",
+        "PASS npm run test:onetime:focused (76/76)",
+        "PASS npm run secrets:audit (0 tracked secret-risk files)",
+        "PASS npm run watchdog:actions (finding_count 0)",
+        "PASS npm run watchdog:protocol-drift (finding_count 0)",
+        "PASS npm run bna:run:validate before final deploy (11 done, 1 blocked release item)",
+        "PASS npm run bna:release-gate -- --expected-branch master after commit/push (ready, HEAD pushed yes, dirty files 0)",
+        "PASS npm run one-time:target:guard (join.onetimeonetime.com / one-time-production / one-time-web)",
+        "PASS Railway deployment 89c697ad-3f72-4d4f-96a2-46f0b2c2d740 reached SUCCESS",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 22cc6b88b0045f9052a403582ec8249e369196a0",
+        "PASS npm run app:smoke:one-time-interest-dry-run -- https://join.onetimeonetime.com (no-write report)",
+        "PASS npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com (WhatsApp readiness no-send)",
+        "PASS ONE_TIME_PUBLIC_BASE_URL=https://join.onetimeonetime.com BNA_DEPLOYED_COMMIT=22cc6b88b0045f9052a403582ec8249e369196a0 BNA_DEPLOYMENT_ID=89c697ad-3f72-4d4f-96a2-46f0b2c2d740 npm run app:smoke:onetime-operations-crm-workbench (12 CRM cards)",
+        "PASS live production-JS Family/School signup browser intercept with no live lead write",
+        "PASS live BNA no-write route smoke with exact SHA readback",
+        "PASS live One Time portal route smoke for portal/classroom/library/student/parent routes",
+        "PASS live signed view-as Rabbi negative smoke with scoped identity and 403 cross-scope/write denials",
+        "PASS live compression header readback on One Time and BNA domains"
       ],
       "implementation_files": [
         "ops/execution-runs/2026-07-12-onetime-crm-portal-production-correction/",
         "ops/live-smokes/",
         "ops/performance-audits/",
-        "ops/ui-audits/"
+        "ops/ui-audits/",
+        "server.js",
+        "package.json",
+        "package-lock.json",
+        "tests/one-time-route-role-mapping.test.js",
+        "tests/operations-shell-navigation-contract.test.js",
+        "tests/service-provider-scope-routes.test.js",
+        "scripts/smoke-rabbi-onetime-landing-live.mjs"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T21:22:41+03:00",
-      "blocker": "Production Done is blocked until PR review/release approval and explicit deploy/live-verify approval are given, and Railway/Drive readbacks are completed or explicitly deferred through approved release-gate options. The stale master / dirty worktree blocker is superseded by the clean pushed release branch and mergeable/clean draft PR #131.",
-      "blocker_owner": "Codex/operator release lane",
-      "blocker_next_action": "Review/merge PR #131 or otherwise confirm the production release path, then run the approved deploy/live-verify gate commands and complete or explicitly defer Railway/Drive readback through approved release-gate options.",
-      "blocker_detail": {
-        "id": "DEC-20260712-112",
-        "reason": "The scoped release branch is clean, pushed, draft PR #131 is open and mergeable/clean, and release-gate dry-run ready, but production deploy/live verification would mutate release state and requires PR review/release approval plus explicit approval tokens. Railway/Drive external readbacks also need completion or approved deferral before production Done can be claimed.",
-        "owner": "Codex/operator release lane",
-        "recommended_option": "Review/merge PR #131, approve the production release path, run the deploy gate, verify exact SHA on the BNA Operations/portal and One Time public services, then run the required live smokes.",
-        "alternatives": [
-          "Explicitly defer optional integrations/external readback using the approved release-gate flags after deploy approval is present.",
-          "Pause release and keep REQ-20260712-112 blocked until the operator is ready for production deploy/live verification."
-        ],
-        "consequences": "No production Done can be claimed; live app may still be on older code until deployed and smoke-tested.",
-        "exact_next_action": "Review PR #131, then from the approved release ref run the deploy command with DEPLOY_BNA_PRODUCTION_CLOSEOUT, followed by live verification with VERIFY_BNA_LIVE_CLOSEOUT, exact SHA readback, and the required live smokes."
-      }
+      "updated_at": "2026-07-12T22:38:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "blocker_detail": null,
+      "notes": "Final release completed under explicit operator launch request. No external email, WhatsApp/WAPI manual send, Telegram send, payment/access mutation, DNS/account mutation, provider-data mutation, or production CRM write was performed by the live smokes; signup browser proof intercepted the API request before network write.",
+      "implementation_commit": "833cac222",
+      "deployed_commit": "22cc6b88b0045f9052a403582ec8249e369196a0",
+      "deployment_id": "89c697ad-3f72-4d4f-96a2-46f0b2c2d740",
+      "deployment_evidence": [
+        "Railway deployment 89c697ad-3f72-4d4f-96a2-46f0b2c2d740 reached SUCCESS for one-time-production / production / one-time-web",
+        "https://join.onetimeonetime.com/api/deploy-info returned deployed_commit 22cc6b88b0045f9052a403582ec8249e369196a0",
+        "https://bneineviimacademy.org/api/deploy-info returned deployed_commit 22cc6b88b0045f9052a403582ec8249e369196a0"
+      ],
+      "live_smoke": [
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha 22cc6b88b0045f9052a403582ec8249e369196a0",
+        "PASS npm run app:smoke:one-time-interest-dry-run -- https://join.onetimeonetime.com; report ops/live-smokes/2026-07-12T19-36-35-101Z-one-time-interest-dry-run-live-smoke.md",
+        "PASS npm run app:smoke:rabbi-onetime-landing -- https://join.onetimeonetime.com; report ops/live-smokes/2026-07-12T19-36-35-100Z-rabbi-onetime-landing-smoke.md",
+        "PASS npm run app:smoke:onetime-operations-crm-workbench; report ops/live-smokes/2026-07-12T19-36-35-141Z-one-time-operations-crm-workbench-live-smoke.md",
+        "PASS production-JS Family/School signup browser intercept with no live lead write",
+        "PASS BNA no-write route smoke with exact deployed_commit readback",
+        "PASS One Time portal route smoke and signed view-as Rabbi negative scope/write smoke",
+        "PASS production compression header readback on One Time and BNA domains"
+      ],
+      "pushed_commit": "22cc6b88b0045f9052a403582ec8249e369196a0"
     }
   ]
 }

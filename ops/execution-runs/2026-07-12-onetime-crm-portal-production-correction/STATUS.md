@@ -1,5 +1,15 @@
 # Status
 
+Final production closeout as of 2026-07-12T22:38:00+03:00:
+
+- Final deployed `master` SHA: `22cc6b88b0045f9052a403582ec8249e369196a0`.
+- One Time Railway deployment `89c697ad-3f72-4d4f-96a2-46f0b2c2d740` reached `SUCCESS` for `one-time-production / production / one-time-web`.
+- `https://join.onetimeonetime.com/api/deploy-info` and `https://bneineviimacademy.org/api/deploy-info` both returned the final SHA.
+- Live One Time smokes passed: separate instance exact-SHA smoke, interest dry-run, Rabbi landing/WhatsApp readiness, Operations CRM workbench, portal route scope, signed view-as Rabbi negative scope/write checks, and Family/School signup browser intercept with no live lead write.
+- Live BNA no-write route smoke passed, including `/operations` returning the expected logged-out 401.
+- Production compression readback passed on One Time and BNA routes with `content-encoding: br` and `Vary: Accept-Encoding`.
+- All requirements in this run are terminal `done`; older blocked/release-candidate notes below are retained as history only.
+
 As of release-lane closeout on 2026-07-12T21:14:00+03:00:
 
 - Clean release branch `codex/onetime-crm-portal-release-20260712` was created from current `origin/master`.

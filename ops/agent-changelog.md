@@ -38824,3 +38824,21 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   Family and School, intercepted `/api/one-time/interest` locally, and captured
   the correct normalized `family` and `school` payloads without a live lead
   write or external send.
+
+## 2026-07-12 - One Time CRM portal correction release deployed
+
+- Merged the scoped One Time CRM/portal correction release to `master`, pushed
+  final SHA `22cc6b88b0045f9052a403582ec8249e369196a0`, and redeployed the One
+  Time Railway service.
+- One Time deployment `89c697ad-3f72-4d4f-96a2-46f0b2c2d740` reached
+  `SUCCESS`; One Time and BNA deploy-info endpoints both returned the final
+  SHA.
+- Verification passed: focused One Time suite `76/76`, secrets audit, action
+  watchdog, protocol drift watchdog, release gate, One Time target guard,
+  exact-SHA live smoke, interest dry-run, Rabbi landing/WhatsApp readiness,
+  Operations CRM workbench, BNA no-write route smoke, portal route smoke,
+  signed view-as Rabbi negative scope/write smoke, Family/School signup
+  browser intercept, and production compression readback.
+- Live smokes did not perform external sends, payment/access/DNS/account
+  changes, provider-data mutations, production CRM imports, or GHL runtime
+  operations.
