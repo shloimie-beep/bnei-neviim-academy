@@ -26,13 +26,35 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
   assert.match(html, /Member Login/);
   assert.match(html, /Join free until Rosh Hashanah/);
   assert.match(html, /Meet Rabbi Eli Scheller/);
-  assert.match(html, /As seen through Jewish media and learning platforms/);
-  assert.match(html, /Teaching Torah Across The World/);
+  assert.match(html, /As Seen Across the Jewish World/);
+  assert.match(html, /<h3>Clarity<\/h3>/);
+  assert.match(html, /<h3>Accomplishment<\/h3>/);
+  assert.match(html, /<h3>Excitement for learning Torah<\/h3>/);
+  assert.match(html, /<h3>Live daily Mishnayos class<\/h3>/);
+  assert.match(html, /<h3>Online class library<\/h3>/);
+  assert.match(html, /<h3>Parent portal<\/h3>/);
+  assert.match(html, /<h3>Student portal<\/h3>/);
+  assert.match(html, /<h3>Worksheets and review materials<\/h3>/);
+  assert.match(html, /<h3>Daily reminders<\/h3>/);
+  assert.match(html, /<h3>Monitored online platform<\/h3>/);
+  assert.match(html, /<h3>Structured communication with the Rabbi<\/h3>/);
+  assert.match(html, /<h3>Sign up<\/h3>/);
+  assert.match(html, /<h3>Choose Family or School<\/h3>/);
+  assert.match(html, /<h3>Receive class details and reminders<\/h3>/);
+  assert.match(html, /<h3>Join the live learning rhythm<\/h3>/);
+  assert.match(html, /<h3>Families<\/h3>/);
+  assert.match(html, /<h3>English-speaking homeschoolers<\/h3>/);
+  assert.match(html, /<h3>Schools using it as a class<\/h3>/);
+  assert.match(html, /<h3>Local boys joining the free live class at 7 p\.m\. in Ramat Beit Shemesh Alef<\/h3>/);
   assert.match(html, /How It Works/);
   assert.match(html, /\/one-time\/privacy\.html/);
   assert.match(html, /\/one-time\/terms\.html/);
   assert.doesNotMatch(html, /TODO: replace with final hero video\/image/);
   assert.doesNotMatch(html, /hero-media-placeholder|image-placeholder/);
+  assert.doesNotMatch(html, /Teaching Torah Across The World/);
+  assert.doesNotMatch(html, /Verified photo slot|Replacement-ready|usage rights are confirmed|approved .* asset/i);
+  assert.doesNotMatch(html, /HaGaon|MiVilna/);
+  assert.doesNotMatch(html, /most sought-after/);
   assert.doesNotMatch(html, /approved Zoom details/);
   assert.doesNotMatch(html, /signup-strip/);
   assert.doesNotMatch(html, /Join the Free Class/);
@@ -67,8 +89,11 @@ test('One Time focused landing copy uses launch funnel offer and safe CTAs', () 
 test('One Time focused offer route and registries are declared', () => {
   const server = fs.readFileSync('server.js', 'utf8');
   const operations = fs.readFileSync('public/operations.html', 'utf8');
+  const botWidget = fs.readFileSync('public/js/bna-bot-widget.js', 'utf8');
   const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));
   const actionRegistry = JSON.parse(fs.readFileSync('ops/action-registry.json', 'utf8'));
+  const siteConfig = JSON.parse(fs.readFileSync('config/service-provider-sites/one-time.json', 'utf8'));
+  const robotAsset = fs.statSync('public/assets/one-time/robot/robot-scheller-whatsapp.png');
 
   assert.match(server, /'\/one-time\/mishnayos'/);
   assert.match(server, /function isOneTimeSingleTenantRuntime\(\)/);
@@ -88,6 +113,14 @@ test('One Time focused offer route and registries are declared', () => {
   assert.ok(routes.has('/one-time-onboarding'));
   assert.ok(routes.has('/one-time-preview'));
 
+  assert.deepEqual(siteConfig.assets.teaching_gallery, []);
+  assert.equal(siteConfig.assets.robot_scheller, '/assets/one-time/robot/robot-scheller-whatsapp.png');
+  assert.ok(robotAsset.size < 500_000, `expected optimized Robot PNG below 500 KB, got ${robotAsset.size}`);
+  assert.match(botWidget, /robot-scheller-whatsapp\.png"\) center center \/ contain no-repeat/);
+  assert.match(botWidget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher[\s\S]*width: 84px;[\s\S]*min-height: 84px;/);
+  assert.match(botWidget, /body\.bna-assistant-surface-one-time-public \.bna-bot-launcher \.bna-bot-avatar[\s\S]*width: 72px;[\s\S]*height: 72px;/);
+  assert.match(botWidget, /@media \(max-width: 520px\)[\s\S]*width: 76px;[\s\S]*min-height: 76px;[\s\S]*width: 66px;[\s\S]*height: 66px;/);
+
   const actions = new Set(actionRegistry.actions.map((action) => action.action_id));
   assert.ok(actions.has('ACTION-ONETIME-JOIN-SHIR-CTA'));
   assert.ok(actions.has('ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT'));
@@ -96,6 +129,15 @@ test('One Time focused offer route and registries are declared', () => {
   assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-NEXT'));
   assert.ok(actions.has('ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE'));
   assert.ok(actions.has('ACTION-ONETIME-MEMBER-LOGIN-LINK'));
+  for (const id of [
+    'ACTION-ONETIME-TEACHING-CAROUSEL-PREV',
+    'ACTION-ONETIME-TEACHING-CAROUSEL-NEXT',
+    'ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE',
+  ]) {
+    const action = actionRegistry.actions.find((entry) => entry.action_id === id);
+    assert.equal(action.status, 'hidden_until_verified_assets');
+    assert.match(action.disabled_reason, /verified approved teaching-location images/);
+  }
   const joinAction = actionRegistry.actions.find((action) => action.action_id === 'ACTION-ONETIME-JOIN-SHIR-CTA');
   assert.match(joinAction.selector_hint, /\/one-time\/signup/);
   assert.match(joinAction.expected_behavior, /\/one-time\/signup/);

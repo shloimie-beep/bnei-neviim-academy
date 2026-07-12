@@ -584,17 +584,18 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-PREV\"]",
-      "expected_behavior": "Moves the public teaching photo carousel to the previous verified repo asset without loading private media.",
+      "expected_behavior": "No public carousel control is rendered while verified approved teaching-location images are unavailable.",
       "permission": "public",
-      "status": "active",
+      "status": "hidden_until_verified_assets",
       "test": {
-        "type": "browser_static",
-        "expected_result": "Carousel changes slide and does not expose private classroom, student, or provider-only media."
+        "type": "static_guard",
+        "expected_result": "The One Time landing page omits the teaching carousel controls and contains no placeholder asset instructions."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-014"
-      ]
+      ],
+      "disabled_reason": "Hidden by RAW-20260712-002 / REQ-20260712-007 until verified approved teaching-location images exist in public assets."
     },
     {
       "action_id": "ACTION-ONETIME-TEACHING-CAROUSEL-NEXT",
@@ -602,17 +603,18 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-NEXT\"]",
-      "expected_behavior": "Moves the public teaching photo carousel to the next verified repo asset without loading private media.",
+      "expected_behavior": "No public carousel control is rendered while verified approved teaching-location images are unavailable.",
       "permission": "public",
-      "status": "active",
+      "status": "hidden_until_verified_assets",
       "test": {
-        "type": "browser_static",
-        "expected_result": "Carousel changes slide and does not expose private classroom, student, or provider-only media."
+        "type": "static_guard",
+        "expected_result": "The One Time landing page omits the teaching carousel controls and contains no placeholder asset instructions."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-014"
-      ]
+      ],
+      "disabled_reason": "Hidden by RAW-20260712-002 / REQ-20260712-007 until verified approved teaching-location images exist in public assets."
     },
     {
       "action_id": "ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE",
@@ -620,17 +622,18 @@
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "[data-action-id=\"ACTION-ONETIME-TEACHING-CAROUSEL-PAUSE\"]",
-      "expected_behavior": "Pauses or resumes the public teaching photo carousel and updates the accessible label.",
+      "expected_behavior": "No public carousel control is rendered while verified approved teaching-location images are unavailable.",
       "permission": "public",
-      "status": "active",
+      "status": "hidden_until_verified_assets",
       "test": {
-        "type": "browser_accessibility",
-        "expected_result": "Pause toggles carousel playback and updates aria-label for assistive technology."
+        "type": "static_guard",
+        "expected_result": "The One Time landing page omits the teaching carousel controls and contains no placeholder asset instructions."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-014"
-      ]
+      ],
+      "disabled_reason": "Hidden by RAW-20260712-002 / REQ-20260712-007 until verified approved teaching-location images exist in public assets."
     },
     {
       "action_id": "ACTION-ONETIME-VIEW-AS-RABBI-START",

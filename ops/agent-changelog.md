@@ -38306,3 +38306,52 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - Local gates remain verified through `package.json` scripts and recorded test
   output; an authorized maintainer or workflow-scope token must add the CI
   workflow before this requirement is terminal.
+
+## 2026-07-12 - One Time signup/reminder test matrix hardened locally
+
+- Expanded `tests/one-time-signup-reminder-workflow.test.js` to cover phone
+  required-dot visibility, missing/unsafe Zoom-link rejection, local-class
+  fallback reminder wording, no-reminder confirmation plus Rabbi alert, Rabbi
+  Telegram alert content without Zoom data, redacted reminder/WAPI readiness,
+  and suppressed local-class preview rows.
+- Verification passed: `node --test tests/one-time-signup-reminder-workflow.test.js`
+  10/10, landing plus reminder suite 12/12, focused signup/reminder bundle
+  33/33, and `npm run test:onetime:focused` 57/57.
+- No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
+  mutation, portal/account/payment/access mutation, local-class activation, or
+  parallel PR was performed.
+
+## 2026-07-12 - One Time landing and Robot proof completed locally
+
+- Removed the unverified public teaching-carousel placeholder section, updated
+  the landing hierarchy/copy to the approved sections, hid unavailable teaching
+  gallery config, and marked the old carousel actions hidden until verified
+  teaching-location assets exist.
+- Optimized `robot-scheller-whatsapp.png` from 1,681,110 bytes to 403,234
+  bytes, and enlarged the One Time public Robot launcher to 84px desktop/tablet
+  and 76px mobile with the Rabbi Scheller WhatsApp assistant accessible label.
+- Verification passed: focused landing test 2/2, `npm run test:onetime:focused`
+  57/57, Operations build/check/canonical, action/protocol watchdogs,
+  `secrets:audit`, `bna:run:validate`, and Playwright local `/one-time`
+  screenshots at 1440, 768, 430, and 390 widths.
+- `REQ-20260712-007` remains release-gated. No deploy, external send, provider
+  mutation, production-data mutation, payment/access/DNS/account mutation, or
+  parallel PR was performed.
+
+## 2026-07-12 - One Time signup required markers and consent UI tightened
+
+- Updated `public/one-time/signup.html` so the phone field no longer shows
+  optional-style guidance; its red required marker and "Required for WhatsApp
+  reminders" hint remain hidden until WhatsApp or Email and WhatsApp reminders
+  are selected.
+- Preserved the required clicked acknowledgement checkbox for selected city
+  class-time use and reminder consent.
+- Added/updated regression coverage in
+  `tests/one-time-direct-signup-page.test.js` and
+  `tests/one-time-signup-reminder-workflow.test.js`.
+- Verification passed: direct signup plus reminder workflow tests 12/12,
+  external setup readiness tests 8/8, Railway target guard PASS, and full
+  setup check safely BLOCKED with redacted no-send/no-secret evidence.
+- No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
+  mutation, portal/account/payment/access mutation, local-class activation, or
+  parallel PR was performed.

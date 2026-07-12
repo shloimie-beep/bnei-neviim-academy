@@ -90,6 +90,8 @@ REQ-20260712-004 evidence:
 
 REQ-20260712-013 evidence:
 
+- Required-marker/UI correction raw intake:
+  `raw-input/RAW-20260712-003-onetime-signup-required-markers-consent.md`
 - Canonical direct signup route added:
   `public/one-time/signup.html` served by `server.js` at `/one-time/signup`
   and `/one-time/signup/`.
@@ -101,7 +103,9 @@ REQ-20260712-013 evidence:
   reminders, required no-preselected reminder choice, red required markers, and
   a clicked acknowledgment checkbox for selected-city class-time use and
   selected reminder consent. The customer-facing form does not say "phone
-  optional." It does not ask for student name and does not show Member Login or
+  optional" or show optional-style phone guidance. The phone required marker
+  and "Required for WhatsApp reminders" hint are hidden until WhatsApp/Both is
+  selected. It does not ask for student name and does not show Member Login or
   portal actions.
 - Route/action/config coverage updated:
   `ops/route-registry.json`, `ops/action-registry.json`, and
@@ -109,8 +113,10 @@ REQ-20260712-013 evidence:
 - Focused browser proof added:
   `tests/one-time-direct-signup-page.test.js` loads the signup route at 1440,
   1024, 768, 430, and 390 widths, checks no horizontal overflow, validates
-  WhatsApp phone gating, submits to `/api/one-time/interest`, and confirms the
-  first-party payload has no student field.
+  red required markers, no preselected reminder choice, hidden phone
+  marker/hint before WhatsApp, visible phone marker/hint after WhatsApp,
+  submits to `/api/one-time/interest`, and confirms the first-party payload has
+  no student field.
 - Visual screenshot proof added:
   `ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json` with
   screenshots at 1440, 1024, 768, 430, and 390 widths. The refreshed smoke
@@ -122,9 +128,13 @@ REQ-20260712-013 evidence:
 - Local gates passed:
   `node --check server.js`,
   `node --test tests/one-time-direct-signup-page.test.js` (2/2),
+  `node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js`
+  (12/12),
   `node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js`
-  (9/9),
-  `npm run test:onetime:focused` (53/53),
+  (12/12),
+  `node --test tests/one-time-direct-signup-page.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/one-time-brand-helper-isolation.test.js tests/one-time-signup-reminder-workflow.test.js`
+  (33/33),
+  `npm run test:onetime:focused` (57/57),
   `npm run watchdog:actions` (finding_count 0), and
   `npm run watchdog:protocol-drift`, and
   `npm run bna:run:validate` after statuses were corrected to open
@@ -239,3 +249,36 @@ REQ-20260712-008 / REQ-20260712-009 final local regression pass:
   `npm run bna:run:validate`.
 - Terminal Done is not claimed for REQ-008 or REQ-009. Both remain
   release/live-smoke gated under `REQ-20260712-011`.
+
+REQ-20260712-007 local landing / Robot proof:
+
+- `public/one-time/index.html` now removes the unverified teaching carousel and
+  public placeholder asset instructions, uses the required landing hierarchy,
+  and keeps the sole prominent signup CTA as `Sign Up Now`.
+- `config/service-provider-sites/one-time.json` now sets
+  `assets.teaching_gallery` to `[]`; `ops/action-registry.json` marks the old
+  teaching-carousel actions `hidden_until_verified_assets`.
+- `public/assets/one-time/robot/robot-scheller-whatsapp.png` was optimized from
+  1,681,110 bytes to 403,234 bytes without resizing its 1254x1254 bounds.
+- `public/js/bna-bot-widget.js` renders the One Time public Robot launcher at
+  84x84 on desktop/tablet and 76x76 on mobile, using the contained Robot PNG
+  and accessible label `Open Rabbi Scheller’s WhatsApp assistant.`.
+- Local browser proof used the real Express `/one-time` route in
+  `ONE_TIME_REVIEW_ONLY_NO_DB=1` mode; no production DB, deploy, external send,
+  payment, access grant, provider mutation, or production-data mutation was
+  performed.
+- Screenshots were captured and force-added under
+  `ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/`:
+  `landing-1440.png`, `landing-768.png`, `landing-430.png`,
+  `landing-390.png`, plus `robot-launcher-1440.png`,
+  `robot-launcher-768.png`, `robot-launcher-430.png`, and
+  `robot-launcher-390.png`.
+- Verification passed: `node --test tests/one-time-focused-landing.test.js`
+  2/2, `npm run test:onetime:focused` 57/57, `npm run operations:build`,
+  `npm run operations:check-generated`, `npm run operations:check-canonical`,
+  `npm run watchdog:actions`, `npm run watchdog:protocol-drift`,
+  `npm run secrets:audit`, `npm run bna:run:validate`, and Playwright local
+  route screenshot proof at 1440, 768, 430, and 390 widths with no console
+  warnings.
+- Terminal Done is not claimed. REQ-20260712-007 remains blocked on release
+  authorization, deployment of the exact PR #129 SHA, and live-smoke proof.

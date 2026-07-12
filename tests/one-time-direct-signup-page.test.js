@@ -81,6 +81,7 @@ test('One Time direct signup route, registries, and landing CTAs are canonical',
   assert.match(signupHtml, /Use my selected city for class times\. By choosing reminders, I agree to receive class updates and can stop them at any time\./);
   assert.match(signupHtml, /Required for WhatsApp reminders/);
   assert.match(signupHtml, /class="required-dot"/);
+  assert.doesNotMatch(signupHtml, /Add a phone number if you want WhatsApp reminders/i);
   assert.doesNotMatch(visibleSignupText, /Optional unless/i);
   assert.doesNotMatch(signupHtml, /<input[^>]+name="reminder_preference"[^>]+checked/i);
   assert.doesNotMatch(signupHtml, /name="(?:student|student_name|studentName|learner_name|learnerName)/i);
@@ -125,11 +126,13 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
         checkedReminderCount: document.querySelectorAll('input[name="reminder_preference"]:checked').length,
         requiredDotCount: document.querySelectorAll('.required-dot:not([hidden])').length,
         phoneDotVisible: !document.querySelector('[data-phone-required-dot]')?.hidden,
+        phoneHintVisible: !document.querySelector('[data-phone-hint]')?.hidden,
       }));
       assert.equal(metrics.formVisible, true, `form visible at ${width}`);
       assert.equal(metrics.checkedReminderCount, 0, `no preselected reminder at ${width}`);
       assert.ok(metrics.requiredDotCount >= 5, `required dots visible at ${width}`);
       assert.equal(metrics.phoneDotVisible, false, `phone dot hidden before WhatsApp selection at ${width}`);
+      assert.equal(metrics.phoneHintVisible, false, `phone hint hidden before WhatsApp selection at ${width}`);
       assert.ok(metrics.scrollWidth <= metrics.clientWidth + 1, `no horizontal overflow at ${width}`);
     }
 
@@ -142,6 +145,7 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
     await page.fill('input[name="email"]', 'leah@example.invalid');
     await page.check('input[name="reminder_preference"][value="whatsapp"]');
     assert.equal(await page.locator('[data-phone-required-dot]').evaluate((node) => !node.hidden), true);
+    assert.equal(await page.locator('[data-phone-hint]').evaluate((node) => !node.hidden && /Required for WhatsApp reminders/.test(node.textContent || '')), true);
     await page.click('button[data-action-id="ACTION-ONETIME-DIRECT-SIGNUP-SUBMIT"]');
     await page.waitForSelector('[data-error-for="phone"].visible');
     assert.equal(requests.length, 0, 'WhatsApp selection without phone does not submit');

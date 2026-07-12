@@ -56,20 +56,7 @@
         "src": "/images/one-time/press/mishpacha.webp"
       }
     ],
-    "teaching_gallery": [
-      {
-        "label": "Live teaching stage",
-        "src": "/images/one-time/teaching/promo-stage-still-01.webp"
-      },
-      {
-        "label": "Rabbi teaching moment",
-        "src": "/images/one-time/teaching/promo-stage-still-02.webp"
-      },
-      {
-        "label": "Mishnayos review setting",
-        "src": "/images/one-time/teaching/promo-stage-still-03.webp"
-      }
-    ]
+    "teaching_gallery": []
   },
   "copy": {
     "campaign_bar": "Live from Israel. Every day at 7 p.m. Israel time.",

@@ -5,7 +5,7 @@
   "git_refs": {
     "expected_branch": "codex/onetime-p0p1-corrective-20260711",
     "branch": "codex/onetime-p0p1-corrective-20260711",
-    "current_head": "3f65e4a248a932ea8cc93110466601e138ffc168",
+    "current_head": "efcafcb85cad3d77bb754f3e18c784ba5ff9182f",
     "pr_number": 129,
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/129",
     "pr_branch": "codex/onetime-p0p1-corrective-20260711",
@@ -14,7 +14,7 @@
     "existing_corrective_commits": [
       "e49bd3b00291818bb44e4a483fdd69b35f599c28",
       "ee264c5a4b8329719b5420ffb6f99ccae93e1a60",
-      "3f65e4a248a932ea8cc93110466601e138ffc168"
+      "efcafcb85cad3d77bb754f3e18c784ba5ff9182f"
     ],
     "current_priority_addendum": "RAW-20260712-002",
     "current_p0_batch": "crm-confirmation-outbox"
@@ -39,6 +39,16 @@
       "workspace": "rabbi_sheller_provider",
       "project": "one_time_mishnah_class",
       "source_type": "codex_chat_p0_addendum"
+    },
+    {
+      "source_id": "RAW-20260712-003",
+      "source_path": "raw-input/RAW-20260712-003-onetime-signup-required-markers-consent.md",
+      "captured_at": "2026-07-12T09:48:00+03:00",
+      "content_fingerprint": "sha256:4cbfb6e6554045eb3d23e0c55eac185fd64fff9f41f5b8bbb8a8a43eb67370f7",
+      "privacy_classification": "operator_prompt_no_secret_expected",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "operator_form_ui_correction"
     }
   ],
   "source_statements": [
@@ -234,7 +244,7 @@
     {
       "statement_id": "RAW-20260712-002:S28",
       "source_id": "RAW-20260712-002",
-      "source_statement": "Signup form fields are contact name, Family or School, unambiguous city with timezone metadata, email, optional phone unless WhatsApp selected, and required no-preselected class reminder choice with concise consent.",
+      "source_statement": "Signup form fields are contact name, Family or School, unambiguous city with timezone metadata, email, phone required only when WhatsApp is selected, and required no-preselected class reminder choice with concise consent.",
       "classification": "requirement",
       "requirement_id": "REQ-20260712-013"
     },
@@ -314,6 +324,13 @@
       "source_statement": "Run the required test matrix covering form fields, responsive route, internal-copy removal, city/timezone, DST cases, one worldwide instant, consent, CRM dedupe, outbox retries, reminder idempotency/suppression, Telegram/WAPI/local-contact behavior, no portal/payment/access paths, cross-workspace isolation, and .invalid no-send tests.",
       "classification": "requirement",
       "requirement_id": "REQ-20260712-023"
+    },
+    {
+      "statement_id": "RAW-20260712-003:S40",
+      "source_id": "RAW-20260712-003",
+      "source_statement": "The signup form should not show phone-optional wording; required fields need red dots, phone becomes required only for WhatsApp reminder choices, and the visitor must click a checkbox acknowledging reminders and selected location/class-time use.",
+      "classification": "requirement",
+      "requirement_id": "REQ-20260712-013"
     }
   ],
   "requirements": [
@@ -554,11 +571,11 @@
       "blocker_next_action": "Approve PR #129 release through the approved pipeline, then run deployed live smoke/readback and the operator personal signup test.",
       "evidence": [
         "server.js serves canonical /one-time/signup and /one-time/signup/ through sendOneTimeSignupPage.",
-        "public/one-time/signup.html implements the standalone direct signup page with One Time header, Back to Home action, contact name, Family/School selection, unambiguous city/timezone metadata, required email, optional phone unless WhatsApp/Both reminders, required no-preselected reminder choice, and the exact reminder consent line.",
+        "public/one-time/signup.html implements the standalone direct signup page with One Time header, Back to Home action, contact name, Family/School selection, unambiguous city/timezone metadata, required email, no customer-facing phone-optional wording, phone required only for WhatsApp/Both reminders, required no-preselected reminder choice, and the clicked location/reminder acknowledgement checkbox.",
         "public/one-time/index.html routes Sign Up Now actions to /one-time/signup and no longer exposes the old embedded signup form/modal trigger.",
         "public/js/bna-bot-widget.js routes signup helper actions to /one-time/signup.",
         "config/service-provider-sites/one-time.json, ops/route-registry.json, and ops/action-registry.json declare the route and visible actions.",
-        "tests/one-time-direct-signup-page.test.js performs a Playwright journey at 1440, 1024, 768, 430, and 390 widths, validates WhatsApp phone gating, submits to /api/one-time/interest, and confirms first-party payload fields without a student field.",
+        "tests/one-time-direct-signup-page.test.js performs a Playwright journey at 1440, 1024, 768, 430, and 390 widths, validates hidden phone required marker/hint before WhatsApp and visible marker/hint after WhatsApp, submits to /api/one-time/interest, and confirms first-party payload fields without a student field.",
         "tests/one-time-focused-landing.test.js, tests/one-time-product-system.test.js, and tests/one-time-signup-reminder-workflow.test.js cover CTA routing, internal-copy removal, route/action registry coverage, and no portal/payment/access route leakage.",
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json records local Playwright screenshot evidence at 1440, 1024, 768, 430, and 390 widths with no horizontal overflow, visible form, Back to Home, no preselected reminder choice, and no overlapping robot artwork."
       ],
@@ -567,7 +584,8 @@
       "title": "Create canonical direct One Time signup page",
       "source_statement_ids": [
         "RAW-20260712-002:S27",
-        "RAW-20260712-002:S28"
+        "RAW-20260712-002:S28",
+        "RAW-20260712-003:S40"
       ],
       "category": "public_signup_ui",
       "batch_id": "direct-signup-page",
@@ -575,7 +593,7 @@
         "REQ-20260712-012"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Locally implemented and verified. The canonical /one-time/signup route exists, public Sign Up Now actions route to it, the form has the required first-step fields and reminder consent behavior, student-name capture and member-login/portal actions are absent from the form, internal implementation copy is removed from visible customer copy, responsive browser proof passes at 1440/1024/768/430/390, and action/route registries are current. Production deployment, live smoke, and the operator personal end-to-end test are still required before terminal Done/verified status.",
+      "implementation_status": "Locally implemented and verified. The canonical /one-time/signup route exists, public Sign Up Now actions route to it, the form has the required first-step fields, red required dots, no phone-optional customer copy, phone required marker/hint only after WhatsApp selection, and a required location/reminder acknowledgement checkbox. Student-name capture and member-login/portal actions are absent from the form, internal implementation copy is removed from visible customer copy, responsive browser proof passes at 1440/1024/768/430/390, and action/route registries are current. Production deployment, live smoke, and the operator personal end-to-end test are still required before terminal Done/verified status.",
       "next_action": "After release authorization, deploy the exact approved SHA, run live smoke/readback for this requirement, and record the deployed SHA evidence.",
       "acceptance_criteria": [
         "Route /one-time/signup exists and is registered.",
@@ -589,11 +607,12 @@
       "verification": [
         "node --check server.js PASS",
         "node --check public/js/bna-bot-widget.js PASS",
-        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/one-time-brand-helper-isolation.test.js tests/one-time-signup-reminder-workflow.test.js PASS 30/30",
-        "npm run test:onetime:focused PASS 53/53",
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/one-time-brand-helper-isolation.test.js tests/one-time-signup-reminder-workflow.test.js PASS 33/33",
+        "npm run test:onetime:focused PASS 57/57",
         "npm run watchdog:actions PASS finding_count 0",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 9/9",
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md"
       ],
       "implementation_files": [
@@ -611,7 +630,7 @@
         "tests/one-time-signup-reminder-workflow.test.js",
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json"
       ],
-      "updated_at": "2026-07-12T09:35:00+03:00",
+      "updated_at": "2026-07-12T10:56:00+03:00",
       "expected_result": "A professional standalone signup route is the single public signup implementation."
     },
     {
@@ -629,7 +648,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T09:38:00+03:00",
+      "updated_at": "2026-07-12T10:52:00+03:00",
       "id": "REQ-20260712-014",
       "title": "Implement city autocomplete and DST-safe class time conversion",
       "source_statement_ids": [
@@ -654,12 +673,14 @@
         "timezone unit tests",
         "signup API validation tests",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 53/53",
+        "npm run test:onetime:focused PASS 57/57",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 9/9"
+        "node --test tests/one-time-signup-reminder-workflow.test.js PASS 10/10",
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/one-time-brand-helper-isolation.test.js tests/one-time-signup-reminder-workflow.test.js PASS 33/33"
       ],
       "implementation_files": [
         "src/lib/bna/one-time-signup-workflow.js",
@@ -684,7 +705,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T09:38:00+03:00",
+      "updated_at": "2026-07-12T10:52:00+03:00",
       "id": "REQ-20260712-015",
       "title": "Atomically store signup CRM data, consent, and outbox intents",
       "source_statement_ids": [
@@ -711,12 +732,12 @@
         "dedupe/idempotency tests",
         ".invalid no-send tests",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 53/53",
+        "npm run test:onetime:focused PASS 57/57",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 9/9"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
       ],
       "implementation_files": [
         "server.js",
@@ -741,7 +762,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T09:38:00+03:00",
+      "updated_at": "2026-07-12T10:52:00+03:00",
       "id": "REQ-20260712-016",
       "title": "Queue and send immediate transactional confirmation email",
       "source_statement_ids": [
@@ -767,12 +788,12 @@
         "outbox retry tests",
         "redacted class-link tests",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 53/53",
+        "npm run test:onetime:focused PASS 57/57",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 9/9"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
       ],
       "implementation_files": [
         "src/lib/bna/one-time-signup-workflow.js",
@@ -796,7 +817,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T09:38:00+03:00",
+      "updated_at": "2026-07-12T10:52:00+03:00",
       "id": "REQ-20260712-017",
       "title": "Build dedicated One Time class reminder dispatcher",
       "source_statement_ids": [
@@ -822,12 +843,12 @@
         "idempotency tests",
         "suppression tests",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 53/53",
+        "npm run test:onetime:focused PASS 57/57",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 9/9"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
       ],
       "implementation_files": [
         "server.js",
@@ -852,7 +873,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T09:38:00+03:00",
+      "updated_at": "2026-07-12T10:52:00+03:00",
       "id": "REQ-20260712-018",
       "title": "Gate WhatsApp reminders on explicit consent and Rabbi Whapi readiness",
       "source_statement_ids": [
@@ -878,12 +899,12 @@
         "WhatsApp eligibility tests",
         "STOP/suppression tests",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 53/53",
+        "npm run test:onetime:focused PASS 57/57",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 9/9"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
       ],
       "implementation_files": [
         "server.js",
@@ -907,7 +928,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T09:38:00+03:00",
+      "updated_at": "2026-07-12T10:52:00+03:00",
       "id": "REQ-20260712-019",
       "title": "Send exactly one scoped Rabbi Telegram signup alert",
       "source_statement_ids": [
@@ -933,12 +954,12 @@
         "dedupe tests",
         "redacted readiness test",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 53/53",
+        "npm run test:onetime:focused PASS 57/57",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 9/9"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
       ],
       "implementation_files": [
         "server.js",
@@ -963,7 +984,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T09:38:00+03:00",
+      "updated_at": "2026-07-12T10:52:00+03:00",
       "id": "REQ-20260712-020",
       "title": "Prove signup does not trigger portal, account, payment, or access paths",
       "source_statement_ids": [
@@ -988,12 +1009,12 @@
         "negative side-effect tests",
         ".invalid no-send tests",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 53/53",
+        "npm run test:onetime:focused PASS 57/57",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 9/9"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
       ],
       "implementation_files": [
         "server.js",
@@ -1018,7 +1039,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T09:38:00+03:00",
+      "updated_at": "2026-07-12T10:52:00+03:00",
       "id": "REQ-20260712-021",
       "title": "Build exact-three local-class contact preview and activation gate",
       "source_statement_ids": [
@@ -1045,12 +1066,12 @@
         "count-mismatch block tests",
         "activation-gate tests",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 53/53",
+        "npm run test:onetime:focused PASS 57/57",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 9/9"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
       ],
       "implementation_files": [
         "server.js",
@@ -1117,7 +1138,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T09:38:00+03:00",
+      "updated_at": "2026-07-12T10:52:00+03:00",
       "id": "REQ-20260712-023",
       "title": "Run required signup/reminder test matrix and evidence closeout",
       "source_statement_ids": [
@@ -1149,12 +1170,12 @@
         "watchdog:protocol-drift",
         "npm run bna:run:validate",
         "node --check server.js PASS",
-        "npm run test:onetime:focused PASS 53/53",
+        "npm run test:onetime:focused PASS 57/57",
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
         "npm run bna:run:validate PASS after statuses corrected to open non-terminal deployment-required work",
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
-        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 9/9"
+        "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12"
       ],
       "implementation_files": [
         "tests/one-time-direct-signup-page.test.js",
@@ -1376,13 +1397,13 @@
       "depends_on": [
         "REQ-20260712-006"
       ],
-      "status": "not_started",
-      "implementation_status": "Pending rendered landing inspection, asset optimization check, and screenshot proof.",
-      "can_continue_without_operator": true,
-      "blocker": "",
-      "blocker_owner": "",
-      "blocker_next_action": "",
-      "next_action": "Inspect landing/config/Robot asset, remove placeholder or competing CTA content, optimize Robot if needed, and capture responsive screenshots.",
+      "status": "needs_operator_decision",
+      "implementation_status": "Locally implemented and verified. The public landing removes the unverified teaching carousel and placeholder asset instructions, uses the approved hierarchy/copy, keeps Member Login only in header/footer, routes the sole prominent CTA to /one-time/signup, hides teaching gallery config until verified assets exist, optimizes the Robot PNG from 1,681,110 bytes to 403,234 bytes, and renders the Robot launcher as a recognizable 84px desktop/tablet and 76px mobile accessible assistant. Production deployment/live smoke remains release-gated.",
+      "can_continue_without_operator": false,
+      "blocker": "Terminal Done requires release authorization, deployment of the exact PR #129 SHA, and live-smoke proof. Local browser proof is complete, but no deploy/live external write is authorized.",
+      "blocker_owner": "Operator / reviewer",
+      "blocker_next_action": "Authorize PR #129 release, deploy the exact approved SHA, then run live screenshots/readback against the deployed URL.",
+      "next_action": "After release authorization, deploy the exact approved PR #129 SHA and capture live screenshots/readback for landing, signup, continuation, provider login, Operations dashboard, CRM, mailbox, and Robot launcher.",
       "acceptance_criteria": [
         "Header and hero use exact approved hierarchy and sole prominent CTA.",
         "Member Login appears only in header and footer.",
@@ -1391,11 +1412,34 @@
         "Unavailable assets hide cleanly.",
         "One Time config matches rendered navigation and live asset paths."
       ],
-      "evidence": [],
+      "evidence": [
+        "public/one-time/index.html removes unverified Teaching Torah Across The World placeholder carousel/customer copy and uses required landing hierarchy.",
+        "config/service-provider-sites/one-time.json sets assets.teaching_gallery to [] until verified approved teaching-location images exist.",
+        "ops/action-registry.json marks ACTION-ONETIME-TEACHING-CAROUSEL-PREV/NEXT/PAUSE hidden_until_verified_assets.",
+        "public/assets/one-time/robot/robot-scheller-whatsapp.png optimized from 1,681,110 bytes to 403,234 bytes while preserving 1254x1254 bounds.",
+        "public/js/bna-bot-widget.js renders One Time public Robot launcher at 84x84 desktop/tablet and 76x76 mobile, with contained full-silhouette background and accessible label.",
+        "tests/one-time-focused-landing.test.js covers exact copy, hidden teaching gallery/config/actions, optimized Robot asset, and launcher sizing.",
+        "Local Express route proof used ONE_TIME_REVIEW_ONLY_NO_DB=1 at http://127.0.0.1:5199/one-time; no production DB, external send, payment, access, provider mutation, or deploy occurred.",
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/landing-1440.png",
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/landing-768.png",
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/landing-430.png",
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/landing-390.png",
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/robot-launcher-1440.png",
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/robot-launcher-768.png",
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/robot-launcher-430.png",
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/screenshots/landing-20260712-local/robot-launcher-390.png"
+      ],
       "verification": [
-        "public landing browser smoke",
-        "asset size/readability check",
-        "responsive screenshot review"
+        "node --test tests/one-time-focused-landing.test.js PASS 2/2",
+        "npm run test:onetime:focused PASS 57/57",
+        "npm run operations:build PASS",
+        "npm run operations:check-generated PASS",
+        "npm run operations:check-canonical PASS",
+        "npm run watchdog:actions PASS finding_count 0",
+        "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
+        "npm run secrets:audit PASS 8363 tracked paths, 0 secret-risk files",
+        "npm run bna:run:validate PASS",
+        "Playwright local route screenshot proof PASS for /one-time at 1440, 768, 430, and 390 widths; Robot launcher visible 84x84 desktop/tablet and 76x76 mobile; no console warnings."
       ],
       "implementation_files": [
         "public/one-time/index.html",
@@ -1405,7 +1449,7 @@
         "public/js/bna-bot-widget.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T08:31:00+03:00",
+      "updated_at": "2026-07-12T10:53:40+03:00",
       "expected_result": "The public landing is customer-ready for the approved no-send signup path and no longer exposes placeholder/internal copy or competing CTAs."
     },
     {

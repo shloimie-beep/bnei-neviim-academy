@@ -40,10 +40,43 @@ REQ-20260712-013 local gate:
 - `node --check server.js` PASS.
 - `node --check public/js/bna-bot-widget.js` PASS.
 - `node --test tests/one-time-direct-signup-page.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js tests/one-time-brand-helper-isolation.test.js tests/one-time-signup-reminder-workflow.test.js`
-  PASS: 30 tests, 30 passed.
-- `npm run test:onetime:focused` PASS: 53 tests, 53 passed.
+  PASS: 33 tests, 33 passed.
+- `node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js`
+  PASS: 12 tests, 12 passed. This covers the latest required-marker correction:
+  no optional-style phone copy, phone dot/hint hidden before WhatsApp, phone
+  dot/hint visible after WhatsApp, required reminder/location checkbox, and no
+  preselected reminder option.
+- `node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js`
+  PASS: 12 tests, 12 passed.
+- `node --test tests/one-time-signup-reminder-workflow.test.js` PASS: 10
+  tests, 10 passed.
+- `npm run test:onetime:focused` PASS: 57 tests, 57 passed.
 - `npm run watchdog:actions` PASS: finding_count 0.
 - `npm run bna:run:validate` PASS.
+
+Readiness/no-send rerun:
+
+- `node --check scripts/check-onetime-external-setup-readiness.mjs` PASS.
+- `node --test tests/one-time-external-setup-readiness.test.js` PASS: 8
+  tests, 8 passed.
+- `npm run one-time:railway-target:guard` PASS. Redacted readback reported no
+  external write, provider mutation, DNS mutation, email send, WhatsApp send,
+  payment, or secret value print.
+- `npm run one-time:setup:check` BLOCKED as expected for full setup:
+  ready_count 5/8, blocked on Rabbi Stripe sandbox, Whapi/WAPI provider
+  details, and campaign seed/real campaign details. Redacted hosted readback
+  also shows the class-reminder scheduler is not hosted-ready yet because
+  `ONE_TIME_CLASS_REMINDERS_ENABLED`, `ONE_TIME_CLASS_REMINDERS_CONFIRM`, and
+  `CRON_SECRET` are not present/approved in the hosted config.
+- JSON evidence integrity check PASS for `requirements.json` and
+  `ops/agent-task-ledger.jsonl`.
+- `npm run bna:run:validate` PASS; work remains by design.
+- `npm run watchdog:actions` PASS: finding_count 0.
+- `npm run watchdog:protocol-drift` PASS and refreshed
+  `ops/watchdog-audits/2026-07-12-product-quality-drift.*`.
+- `npm run secrets:audit` PASS: 8363 tracked paths checked, 0 tracked
+  secret-risk files found.
+- `npm run bna:run:next` PASS: no next unblocked executable batch.
 
 REQ-20260712-005 local gate:
 
@@ -112,3 +145,25 @@ REQ-20260712-008 / REQ-20260712-009 final local regression pass:
 - `npm run bna:run:validate` PASS; work remains by design because release,
   deployment/live-smoke, CRM local/test DB proof, and remaining UI/onboarding
   batches are still open.
+
+REQ-20260712-007 local landing / Robot gate:
+
+- `node --test tests/one-time-focused-landing.test.js` PASS: 2 tests, 2
+  passed.
+- `npm run test:onetime:focused` PASS: 57 tests, 57 passed.
+- `npm run operations:build` PASS.
+- `npm run operations:check-generated` PASS.
+- `npm run operations:check-canonical` PASS.
+- `npm run watchdog:actions` PASS: finding_count 0.
+- `npm run watchdog:protocol-drift` PASS:
+  `ops/watchdog-audits/2026-07-12-product-quality-drift.md`.
+- `npm run secrets:audit` PASS: 8363 tracked paths checked, 0 tracked
+  secret-risk files found.
+- `npm run bna:run:validate` PASS; work remains by design because release,
+  deployment/live-smoke, CRM local/test DB proof, and dependent work are still
+  open.
+- Playwright local Express-route screenshot proof PASS for `/one-time` in
+  `ONE_TIME_REVIEW_ONLY_NO_DB=1` mode at 1440, 768, 430, and 390 widths.
+  Robot launcher bounding boxes: 84x84 at 1440/768 and 76x76 at 430/390;
+  accessible label: `Open Rabbi Scheller’s WhatsApp assistant.`; console
+  warnings/errors: none.

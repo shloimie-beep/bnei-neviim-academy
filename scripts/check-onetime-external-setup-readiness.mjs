@@ -220,6 +220,16 @@ function redactedVariableSummary(variables = {}, { source, service, environment,
       variables.ONE_TIME_CURRENT_CLASS_LINK ||
       variables.ONETIME_CLASS_LINK,
     )),
+    one_time_class_reminders_enabled_true: /^(?:1|true|yes)$/i.test(normalizeValue(
+      variables.ONE_TIME_CLASS_REMINDERS_ENABLED,
+    )),
+    one_time_class_reminders_confirm_approved:
+      normalizeValue(variables.ONE_TIME_CLASS_REMINDERS_CONFIRM) === 'APPROVE_ONE_TIME_CLASS_REMINDERS',
+    cron_secret_present: Boolean(normalizeValue(variables.CRON_SECRET)),
+    one_time_class_reminder_scheduler_ready:
+      /^(?:1|true|yes)$/i.test(normalizeValue(variables.ONE_TIME_CLASS_REMINDERS_ENABLED)) &&
+      normalizeValue(variables.ONE_TIME_CLASS_REMINDERS_CONFIRM) === 'APPROVE_ONE_TIME_CLASS_REMINDERS' &&
+      Boolean(normalizeValue(variables.CRON_SECRET)),
     one_time_wapi_token_present: Boolean(normalizeValue(
       variables.ONE_TIME_WAPI_API_TOKEN ||
       variables.ONETIME_WAPI_API_TOKEN ||

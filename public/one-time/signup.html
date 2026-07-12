@@ -702,7 +702,7 @@
           <div class="field">
             <label for="phone">Phone / WhatsApp <span class="required-dot" data-phone-required-dot aria-hidden="true" hidden></span><span class="sr-only" data-phone-required-copy hidden>required when WhatsApp reminders are selected</span></label>
             <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" aria-describedby="phoneHint">
-            <span class="field-hint" id="phoneHint" data-phone-hint>Add a phone number if you want WhatsApp reminders.</span>
+            <span class="field-hint" id="phoneHint" data-phone-hint hidden>Required for WhatsApp reminders.</span>
             <span class="field-error" data-error-for="phone">Enter a phone number for WhatsApp reminders.</span>
           </div>
 
@@ -783,7 +783,10 @@
         phoneInput.setAttribute('aria-required', String(needsPhone));
         if (phoneRequiredDot) phoneRequiredDot.hidden = !needsPhone;
         if (phoneRequiredCopy) phoneRequiredCopy.hidden = !needsPhone;
-        if (phoneHint) phoneHint.textContent = needsPhone ? 'Required for WhatsApp reminders.' : 'Add a phone number if you want WhatsApp reminders.';
+        if (phoneHint) {
+          phoneHint.hidden = !needsPhone;
+          phoneHint.textContent = 'Required for WhatsApp reminders.';
+        }
       }
 
       function cityForLabel(label) {

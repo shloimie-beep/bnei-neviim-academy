@@ -6,9 +6,11 @@ const {
   ONE_TIME_SCHEDULE_VERSION,
   buildClassTimeDisplay,
   buildLocalClassSegmentPreview,
+  buildOneTimeClassReminderMessage,
   buildOneTimeSignupConfirmationEmail,
   buildOneTimeSignupLeadInput,
   buildOneTimeSignupOutboxEvents,
+  buildRabbiSignupTelegramAlert,
   buildReminderIdempotencyKey,
   nextOneTimeClassSchedule,
   oneTimeClassReminderEnvReadiness,
@@ -47,6 +49,9 @@ test('direct signup page is the canonical public form', () => {
   assert.match(signup, /name="reminder_preference" value="none"/);
   assert.match(signup, /Use my selected city for class times\. By choosing reminders, I agree to receive class updates and can stop them at any time\./);
   assert.match(signup, /class="required-dot"/);
+  assert.match(signup, /data-phone-required-dot[^>]*hidden/);
+  assert.match(signup, /data-phone-hint hidden>Required for WhatsApp reminders\./);
+  assert.doesNotMatch(signup, /Add a phone number if you want WhatsApp reminders/i);
   assert.match(signup, /prefers-reduced-motion/);
   assert.match(signup, /\/api\/one-time\/interest/);
   assert.doesNotMatch(visibleSignupText, /Member Login|parent portal|student portal|checkout|billing|CRM|Codex|guardrail|approval|password setup|Optional unless/i);
@@ -172,6 +177,81 @@ test('confirmation copy and outbox events protect the server-side class link ali
   assert.equal(events.find((event) => event.channel_key === 'telegram:one_time_rabbi_operator').payload.zoom_url_included, false);
 });
 
+test('confirmation/reminder link handling and local-class fallback stay server-side and safe', () => {
+  const city = resolveOneTimeCitySelection({ city_id: 'lakewood-nj-us' });
+  const schedule = nextOneTimeClassSchedule({ now: new Date('2026-07-12T10:00:00Z') });
+
+  assert.throws(
+    () => buildOneTimeSignupConfirmationEmail({
+      contactName: 'Example Family',
+      city,
+      classInstant: schedule.class_instant,
+      zoomJoinUrl: '',
+      reminderPreference: 'email',
+    }),
+    /join link is not configured/
+  );
+  assert.throws(
+    () => buildOneTimeClassReminderMessage({
+      city,
+      classInstant: schedule.class_instant,
+      zoomJoinUrl: 'http://unsafe.example.test/class',
+    }),
+    /join link is not configured/
+  );
+
+  const fallback = buildOneTimeClassReminderMessage({
+    classInstant: schedule.class_instant,
+    zoomJoinUrl: 'https://join.example.test/one-time-class',
+  });
+  assert.match(fallback, /Rabbi Scheller's Mishnah class starts in 30 minutes/);
+  assert.match(fallback, /The class starts in 30 minutes - 7:00 p\.m\. Israel time\./);
+  assert.match(fallback, /Israel time: 7:00 p\.m\./);
+  assert.match(fallback, /Join Zoom:\nhttps:\/\/join\.example\.test\/one-time-class/);
+});
+
+test('no-reminder signup still queues confirmation and Rabbi alert without WhatsApp', () => {
+  const city = resolveOneTimeCitySelection({ city_id: 'lakewood-nj-us' });
+  const events = buildOneTimeSignupOutboxEvents({
+    productLeadId: 91,
+    crmLeadId: 92,
+    contactName: 'No Reminder Family',
+    signupAs: 'Family',
+    email: 'operator@example.invalid',
+    phone: '',
+    city,
+    reminderPreference: 'none',
+  });
+  assert.deepEqual(events.map((event) => event.channel_key), [
+    'email:one_time_signup_confirmation',
+    'telegram:one_time_rabbi_operator',
+  ]);
+  assert.ok(events.every((event) => event.payload.raw_join_url_in_payload === false));
+  assert.ok(events.every((event) => event.payload.no_portal_onboarding === true));
+  assert.ok(events.every((event) => event.payload.no_checkout === true));
+  assert.ok(events.every((event) => event.payload.no_payment === true));
+  assert.ok(events.every((event) => event.payload.no_access_granted === true));
+});
+
+test('Rabbi Telegram signup alert includes CRM context and never includes Zoom link data', () => {
+  const alert = buildRabbiSignupTelegramAlert({
+    contactName: 'Example School',
+    signupAs: 'School',
+    city: resolveOneTimeCitySelection({ city_id: 'london-england-gb' }),
+    reminderPreference: 'email',
+    crmLeadId: 4242,
+    crmDeepLink: '/provider.html?admin_provider=one-time&section=crm&lead=4242',
+  });
+  assert.match(alert, /New One Time signup/);
+  assert.match(alert, /Example School/);
+  assert.match(alert, /Signing up as: School/);
+  assert.match(alert, /City: London, United Kingdom/);
+  assert.match(alert, /Reminders: Email reminders/);
+  assert.match(alert, /CRM lead: 4242/);
+  assert.match(alert, /section=crm&lead=4242/);
+  assert.doesNotMatch(alert, /zoom|join\.|https?:\/\//i);
+});
+
 test('reminder idempotency and readiness gates are explicit', () => {
   const key = buildReminderIdempotencyKey({
     classDate: '2026-07-12',
@@ -184,9 +264,10 @@ test('reminder idempotency and readiness gates are explicit', () => {
   const ready = oneTimeClassReminderEnvReadiness({
     ONE_TIME_CLASS_REMINDERS_ENABLED: 'true',
     ONE_TIME_CLASS_REMINDERS_CONFIRM: 'APPROVE_ONE_TIME_CLASS_REMINDERS',
-    CRON_SECRET: 'configured',
+    CRON_SECRET: 'cron-secret-value',
   });
   assert.equal(ready.ready, true);
+  assert.equal(JSON.stringify(ready).includes('cron-secret-value'), false);
   const blocked = oneTimeClassReminderEnvReadiness({});
   assert.equal(blocked.ready, false);
   assert.match(blocked.blockers.join('\n'), /ONE_TIME_CLASS_REMINDERS_ENABLED/);
@@ -205,6 +286,8 @@ test('reminder idempotency and readiness gates are explicit', () => {
   });
   assert.equal(wapi.ready, true);
   assert.equal(wapi.qr_action_if_auth_expired, 'Rabbi Scheller must scan the Whapi channel QR from his WhatsApp phone.');
+  assert.equal(JSON.stringify(wapi).includes('token'), false);
+  assert.equal(JSON.stringify(wapi).includes('secret'), false);
 });
 
 test('server declares protected cron and local-class preview without portal/payment paths in the signup route', () => {
@@ -245,4 +328,12 @@ test('local-class preview blocks activation unless the scoped tag set resolves t
 
   const mismatch = buildLocalClassSegmentPreview(rows.slice(0, 2));
   assert.equal(mismatch.status, 'blocked_count_mismatch');
+
+  const suppressed = buildLocalClassSegmentPreview([
+    { id: 201, parent_email: 'active@example.invalid', status: 'follow_up' },
+    { id: 202, parent_email: 'stop@example.invalid', unsubscribed: true, status: 'follow_up' },
+    { id: 203, parent_email: 'archived@example.invalid', archived: true, status: 'archived' },
+  ]);
+  assert.equal(suppressed.actual_count, 3);
+  assert.equal(suppressed.contacts.filter((contact) => contact.suppressed).length, 2);
 });
