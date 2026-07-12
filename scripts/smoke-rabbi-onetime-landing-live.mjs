@@ -131,7 +131,7 @@ async function main() {
     expectIncludes(signup.text, [
       'name="contact_name"',
       'name="signup_as"',
-      'data-signup-type-trigger',
+      'data-signup-type-picker',
       'data-value="Family"',
       'data-value="School"',
       'ACTION-ONETIME-SIGNUP-AS-FAMILY',

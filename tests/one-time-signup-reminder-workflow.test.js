@@ -34,7 +34,7 @@ test('direct signup page is the canonical public form', () => {
   assert.match(signup, /href="\/one-time"[^>]*>Back to Home<\/a>/);
   assert.match(signup, /name="contact_name"/);
   assert.match(signup, /name="signup_as"/);
-  assert.match(signup, /data-signup-type-trigger/);
+  assert.match(signup, /data-signup-type-picker/);
   assert.match(signup, /data-signup-type-option/);
   assert.match(signup, /data-value="Family"/);
   assert.match(signup, /data-value="School"/);
@@ -43,6 +43,7 @@ test('direct signup page is the canonical public form', () => {
   assert.doesNotMatch(signup, /<select\b[^>]*name="signup_as"/i);
   assert.doesNotMatch(signup, /<option value="Family">Family<\/option>/);
   assert.doesNotMatch(signup, /<option value="School">School<\/option>/);
+  assert.doesNotMatch(signup, /data-signup-type-trigger|data-signup-type-menu/);
   assert.match(signup, /name="city_label"/);
   assert.match(signup, /name="city_id"/);
   assert.match(signup, /name="city_region"/);

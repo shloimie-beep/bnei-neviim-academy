@@ -38722,6 +38722,12 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   2/2, `node --test tests/one-time-focused-landing.test.js` 2/2,
   `npm run test:onetime:focused` 73/73, `npm run watchdog:actions`, and
   `node --test tests/watchdog-action-registry.test.js` 5/5.
+- Follow-up: replaced the custom Family/School dropdown with always-visible
+  Family and School choice buttons after live inspection showed the dropdown
+  could feel unloaded or clipped on mobile. Follow-up gates passed:
+  `node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js`
+  13/13, `npm run test:onetime:focused` 73/73, and
+  `npm run watchdog:actions`.
 
 ## 2026-07-12 - One Time scoped class-reminder live dispatch completed
 

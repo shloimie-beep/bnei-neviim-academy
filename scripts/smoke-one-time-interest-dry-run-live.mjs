@@ -114,7 +114,7 @@ async function main() {
     assert(/href="\/one-time"[^>]*>Back to Home<\/a>/.test(text), 'Back to Home link missing');
     assert(/name="contact_name"/.test(text), 'contact name input missing');
     assert(/name="signup_as"/.test(text), 'Family/School hidden field missing');
-    assert(/data-signup-type-trigger/.test(text), 'Family/School in-page selector missing');
+    assert(/data-signup-type-picker/.test(text), 'Family/School in-page selector missing');
     assert(/data-value="Family"/.test(text), 'Family choice missing');
     assert(/data-value="School"/.test(text), 'School choice missing');
     assert(/ACTION-ONETIME-SIGNUP-AS-FAMILY/.test(text), 'Family selector action missing');

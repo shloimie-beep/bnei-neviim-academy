@@ -447,12 +447,12 @@
       "surface": "one_time_public_direct_signup",
       "route": "/one-time/signup",
       "selector_hint": "[data-signup-type-option][data-value=\"Family\"]",
-      "expected_behavior": "Sets the hidden signup_as form value to Family using the first-party in-page One Time selector, updates the visible selected label and aria-selected state, clears the Family/School validation error, and performs no submit, send, charge, access grant, or external write.",
+      "expected_behavior": "Sets the hidden signup_as form value to Family using the always-visible first-party in-page One Time choice button, updates the pressed state, clears the Family/School validation error, and performs no submit, send, charge, access grant, or external write.",
       "permission": "public_local_ui",
       "status": "active",
       "test": {
         "type": "browser_click",
-        "expected_result": "Clicking Family sets input[name=\"signup_as\"] to Family, keeps the native mobile select picker absent, and allows the direct signup payload to submit with metadata.signup_as Family."
+        "expected_result": "Clicking the always-visible Family button sets input[name=\"signup_as\"] to Family, keeps native and custom dropdown pickers absent, and allows the direct signup payload to submit with metadata.signup_as Family."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -466,12 +466,12 @@
       "surface": "one_time_public_direct_signup",
       "route": "/one-time/signup",
       "selector_hint": "[data-signup-type-option][data-value=\"School\"]",
-      "expected_behavior": "Sets the hidden signup_as form value to School using the first-party in-page One Time selector, updates the visible selected label and aria-selected state, clears the Family/School validation error, and performs no submit, send, charge, access grant, or external write.",
+      "expected_behavior": "Sets the hidden signup_as form value to School using the always-visible first-party in-page One Time choice button, updates the pressed state, clears the Family/School validation error, and performs no submit, send, charge, access grant, or external write.",
       "permission": "public_local_ui",
       "status": "active",
       "test": {
         "type": "browser_click",
-        "expected_result": "Clicking School sets input[name=\"signup_as\"] to School, keeps the native mobile select picker absent, and does not perform external writes."
+        "expected_result": "Clicking the always-visible School button sets input[name=\"signup_as\"] to School, keeps native and custom dropdown pickers absent, and does not perform external writes."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",

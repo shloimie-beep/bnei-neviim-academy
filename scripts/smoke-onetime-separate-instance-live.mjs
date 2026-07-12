@@ -84,7 +84,7 @@ try {
   const signup = await fetchText('/one-time/signup');
   assertText('/one-time/signup', signup.text, /name="contact_name"/i, 'signup contact name input missing');
   assertText('/one-time/signup', signup.text, /name="signup_as"/i, 'Family/School selector missing');
-  assertText('/one-time/signup', signup.text, /data-signup-type-trigger/i, 'Family/School in-page selector missing');
+  assertText('/one-time/signup', signup.text, /data-signup-type-picker/i, 'Family/School in-page selector missing');
   assertText('/one-time/signup', signup.text, /data-value="Family"/i, 'Family selector choice missing');
   assertText('/one-time/signup', signup.text, /data-value="School"/i, 'School selector choice missing');
   assertText('/one-time/signup', signup.text, /ACTION-ONETIME-SIGNUP-AS-FAMILY/i, 'Family selector action missing');

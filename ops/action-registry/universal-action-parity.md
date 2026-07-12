@@ -1,6 +1,6 @@
 # Universal Action Parity
 
-Generated at 2026-07-12T14:48:47.904Z.
+Generated at 2026-07-12T16:51:58.390Z.
 
 Requirement: REQ-20260623-013
 
@@ -13,12 +13,12 @@ Requirement: REQ-20260623-013
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (212)
+- website_assistant_request_parity_present: pass (214)
 - agent_work_handoff_parity_present: pass (100)
 
 ## Summary
 
-- Root registry actions: 132
+- Root registry actions: 134
 - Detailed typed actions: 80
 - Visible UI hooks: 53
 - Visible UI hooks classified: 53
@@ -33,7 +33,7 @@ Requirement: REQ-20260623-013
 | --- | ---: |
 | ui_button | 53 |
 | telegram_request | 80 |
-| website_assistant_request | 212 |
+| website_assistant_request | 214 |
 | operations_helper_request | 182 |
 | automation_action | 88 |
 | agent_work_handoff | 100 |
@@ -77,7 +77,7 @@ Requirement: REQ-20260623-013
 | ticket | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>create_report_problem_ticket<br>create_ticket<br>route_bug_to_codex |
 | support | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>create_help_request<br>create_report_problem_ticket<br>create_ticket<br>request_provider_contact<br>route_bug_to_codex |
 | file_intake | covered_by_canonical_registry | ACTION-HELPER-CAPTURE-RAW-INTAKE<br>ACTION-ONETIME-DRIVE-BRIEF-PREVIEW<br>google_drive_create_doc_preview<br>google_drive_create_folder_preview<br>google_drive_find_file_preview<br>google_drive_move_file_preview |
-| integration | covered_by_canonical_registry | ACTION-INTEGRATION-SETUP-OPEN<br>ACTION-INTEGRATION-SETUP-VALIDATE<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND<br>ACTION-ONETIME-PUBLIC-HELPER-OPEN<br>ACTION-ONETIME-PUBLIC-WHATSAPP |
+| integration | covered_by_canonical_registry | ACTION-INTEGRATION-SETUP-OPEN<br>ACTION-INTEGRATION-SETUP-VALIDATE<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND<br>ACTION-ONETIME-PUBLIC-WHATSAPP<br>ACTION-PARENT-ACCESS-LINK-WHATSAPP |
 | billing | covered_by_canonical_registry | ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS |
 | agent_work | covered_by_canonical_registry | ACTION-AGENT-RESULT-RECORD<br>ACTION-AGENT-REVIEW-COPY-PROMPT<br>ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-MARK-BLOCKED<br>ACTION-AGENT-REVIEW-OPEN-CONTEXT |
 | deployment_status | covered_by_canonical_registry | ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS<br>ACTION-ONETIME-MEMBER-LIBRARY-SMOKE<br>ACTION-ONETIME-SCOPED-AGENT-STATUS<br>ACTION-PROVIDER-SECTION-NAVIGATION |
