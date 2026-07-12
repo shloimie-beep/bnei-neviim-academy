@@ -15,3 +15,7 @@
 - `public/js/crm/` and `public/css/crm-core.css` - shared browser CRM modules and core styling loaded by the Operations shell.
 - `tests/crm-contact-service.test.js` and `tests/shared-crm-workbench-contract.test.js` - local contract proof for the canonical contact service and shared browser CRM module wiring.
 - `ops/watchdog-audits/2026-07-12-product-quality-drift.md` - protocol drift watchdog report with zero findings for the shared CRM slice.
+- BNA and One Time live deploy-info readbacks - both returned `commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`.
+- BNA post-deploy doctor - Railway deployment `b7363013-f56e-4a27-80bc-0c4d3f5ab2c4` reached `SUCCESS`.
+- One Time post-deploy doctor - Railway deployment `3132ec38-3b28-4583-a2b9-0aab261ef112` reached `SUCCESS`.
+- `ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md` - deployed One Time Operations CRM workbench smoke passed with 12 scoped CRM cards, external-write flags false, and selected timeline read-only.

@@ -38932,3 +38932,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `git diff --check` with line-ending warnings only.
 - Deployment/live Operations CRM workbench smoke remains the next step before
   calling this shared CRM slice deployed.
+
+## 2026-07-13 - Shared CRM product slice deployed proof
+
+- Pushed shared CRM slice `1bbe74691eac18c83808f27cd9c9dfa949b1aa7a` and
+  hotfix `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4` to `origin/master`.
+- Deployed the hotfix SHA to BNA and One Time production; BNA Railway
+  deployment `b7363013-f56e-4a27-80bc-0c4d3f5ab2c4` and One Time Railway
+  deployment `3132ec38-3b28-4583-a2b9-0aab261ef112` both reached `SUCCESS`.
+- Live `/api/deploy-info` on both BNA and One Time returned
+  `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`; BNA `/api/health` returned
+  `ok`.
+- The first live CRM workbench smoke caught the row-loader adapter mismatch
+  (`db.query is not a function`); the hotfix now passes `pool` to
+  `operationsCrmContactRows(scope, pool, filters)` and locks that contract in
+  tests.
+- Verification passed: One Time separate-instance smoke at the exact deployed
+  SHA, One Time Operations CRM workbench smoke with 12 scoped CRM cards, no
+  external-write flags, and selected timeline read-only.
+- Evidence:
+  `ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md`.

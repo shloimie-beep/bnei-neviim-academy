@@ -78,9 +78,9 @@
         "REQ-20260712-305"
       ],
       "status": "in_progress",
-      "implementation_status": "Partial shared CRM product slice implemented and locally verified: canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, and deployment/live smoke is pending.",
+      "implementation_status": "Partial shared CRM product slice implemented, pushed, deployed to BNA and One Time, and live-smoked: canonical contact service wraps list/timeline DTOs, Operations loads reusable browser CRM modules, customer-facing empty states/actions are shared, and the One Time Operations CRM workbench API/timeline smoke passed.",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, deploy the exact tested SHA, live-smoke the Operations CRM workbench, then continue the dedicated contact workspace/actions and deeper parity batches.",
+      "next_action": "Continue the dedicated contact workspace/actions and deeper parity batches without reintroducing workspace leakage or internal CRM copy.",
       "acceptance_criteria": [
         "BNA and One Time use shared CRM shell/index/workspace/inbox/actions/components with only theme, logo, title, allowed fields/actions, channels, agents, and records varying by workspace."
       ],
@@ -89,7 +89,8 @@
         "src/lib/bna/crm/contact-service.js provides the canonical CRM contact service wrapper for list DTOs and timeline DTOs.",
         "public/js/crm/crm-api.js, crm-store.js, contacts-index.js, contact-workspace.js, crm-actions.js, and crm-inbox.js provide shared browser CRM primitives loaded by Operations.",
         "public/operations.html and generated operations shell assets load the shared CRM modules and mark contacts index, contact workspace, and inspector components with shared CRM data attributes.",
-        "ops/action-registry.json registers the scoped email navigation, WhatsApp no-send link, and disabled Create Task placeholder actions."
+        "ops/action-registry.json registers the scoped email navigation, WhatsApp no-send link, and disabled Create Task placeholder actions.",
+        "ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md records the deployed One Time Operations CRM workbench smoke with 12 scoped CRM cards and read-only timeline proof."
       ],
       "verification": [
         "node --check server.js PASS",
@@ -103,7 +104,13 @@
         "npm run watchdog:actions PASS finding_count 0",
         "npm run watchdog:protocol-drift PASS findings 0",
         "npm run bna:run:validate PASS",
-        "git diff --check PASS with line-ending warnings only"
+        "git diff --check PASS with line-ending warnings only",
+        "BNA Railway redeploy uploaded current code and post-deploy doctor passed for deployment b7363013-f56e-4a27-80bc-0c4d3f5ab2c4",
+        "One Time Railway redeploy uploaded current code and post-deploy doctor passed for deployment 3132ec38-3b28-4583-a2b9-0aab261ef112",
+        "BNA deploy-info returned commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4 and health status ok",
+        "One Time deploy-info returned commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4",
+        "npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha bf0ec619b5ed10b2c057d5cf4f1553362d6614f4 PASS",
+        "npm run app:smoke:onetime-operations-crm-workbench PASS with scoped contacts API, zero external-write flags, and read-only selected timeline"
       ],
       "implementation_files": [
         "src/lib/bna/crm/contact-service.js",
@@ -126,7 +133,13 @@
         "tests/rabbi-scheller-tenant-isolation-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-13T00:14:00+03:00",
+      "deployment_evidence": [
+        "Pushed commits 1bbe74691eac18c83808f27cd9c9dfa949b1aa7a and hotfix bf0ec619b5ed10b2c057d5cf4f1553362d6614f4 to origin/master.",
+        "BNA production deploy-info readback commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4.",
+        "One Time production deploy-info readback commit_sha=bf0ec619b5ed10b2c057d5cf4f1553362d6614f4.",
+        "One Time Operations CRM workbench live smoke report: ops/live-smokes/2026-07-12T21-25-50-540Z-one-time-operations-crm-workbench-live-smoke.md."
+      ],
+      "updated_at": "2026-07-13T00:26:00+03:00",
       "blocker": ""
     },
     {

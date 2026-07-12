@@ -1,20 +1,23 @@
 # Next Session
 
-Next unblocked batch: `1-identity-isolation`
-Open requirement: `REQ-20260712-306`
+Next unblocked batch: `2-shared-crm`
+Open requirement: `REQ-20260712-302`
 
-Latest deployed SHA: `7fee7ca15874e1964da8d59671322130fe9ed2e0`
+Latest deployed SHA: `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`
 
 Current proof:
 
-- `7fee7ca15874e1964da8d59671322130fe9ed2e0` is pushed to `origin/master`.
+- `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4` is pushed to `origin/master`.
 - BNA production `https://bneineviimacademy.org/api/deploy-info` returns that SHA.
 - One Time production `https://join.onetimeonetime.com/api/deploy-info` returns that SHA.
 - One Time signup Family/School behavior has live no-write browser proof and API dry-run proof.
 - `REQ-20260712-305` passed live transaction-rollback identity-isolation proof and is terminal Done.
+- `REQ-20260712-302` has a deployed partial shared CRM service/module slice: canonical contact service wrapper, shared browser CRM modules, Operations shared CRM markers, customer-facing empty states/actions, action registry coverage, and One Time Operations CRM workbench live smoke with 12 scoped cards and read-only timeline.
+- The first deployed shared-CRM slice exposed a live row-loader adapter bug; hotfix `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4` fixed it by passing `pool` into `operationsCrmContactRows`.
 
 Continue by inspecting and repairing:
 
+- remaining dedicated CRM workspace/actions and component parity under `REQ-20260712-302` / `REQ-20260712-303`;
 - canonical CRM contact aggregate service boundaries;
 - list, aggregate, timeline, conversations, and tasks DTOs;
 - server-side reconciliation of contacts, parent leads, signups, students, members, access, attendance, lifecycle, communications, notes, tasks, tickets, and suppression/opt-out records;

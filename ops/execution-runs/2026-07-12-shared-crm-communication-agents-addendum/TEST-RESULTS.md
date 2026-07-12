@@ -34,4 +34,16 @@
 - PASS `npm run watchdog:protocol-drift` findings `0`
 - PASS `npm run bna:run:validate`
 - PASS `git diff --check` with line-ending warnings only
+- PASS `git push origin master` for shared CRM slice commit `1bbe74691eac18c83808f27cd9c9dfa949b1aa7a`
+- PASS `git push origin master` for CRM row-loader hotfix commit `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`
+- PASS BNA Railway redeploy and post-deploy doctor; deployment `b7363013-f56e-4a27-80bc-0c4d3f5ab2c4`
+- PASS One Time Railway redeploy and post-deploy doctor; deployment `3132ec38-3b28-4583-a2b9-0aab261ef112`
+- PASS BNA live `/api/health` and `/api/deploy-info`; deployed SHA `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`
+- PASS One Time live `/api/deploy-info`; deployed SHA `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`
+- PASS `npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`
+- PASS `npm run app:smoke:onetime-operations-crm-workbench`
+  - Operations login used One Time Railway auth fallback.
+  - Deployed Operations HTML included shared CRM workbench markers.
+  - Scoped CRM contacts API returned 12 cards with no external-write flags.
+  - Selected CRM timeline API was read-only.
 - BLOCKED `npm run production:readiness:gate -- --json` only on full-launch external Stripe/campaign setup fields.

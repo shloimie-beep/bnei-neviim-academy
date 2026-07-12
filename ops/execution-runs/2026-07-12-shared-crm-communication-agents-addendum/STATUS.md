@@ -39,7 +39,10 @@ Current status: `active`
 - Replaced internal/dead-end CRM copy in this slice with customer-facing empty states and concise disabled-channel tooltips.
 - Registered the scoped email navigation, WhatsApp no-send link, and disabled Create Task placeholder actions.
 - Local verification passed: syntax checks, focused CRM/isolation tests `31/31`, generated-shell check, PQC validation, secret audit, action watchdog, protocol drift watchdog, execution-run validation, and whitespace diff check.
-- Deployment and live workbench smoke are pending for this slice.
+- First deployment of `1bbe74691eac18c83808f27cd9c9dfa949b1aa7a` exposed a live adapter mismatch in the CRM contacts API (`db.query is not a function`), caught by the One Time Operations CRM workbench smoke.
+- Hotfix `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4` wraps `operationsCrmContactRows(scope, pool, filters)` correctly and updates the CRM workbench smoke expectations for the customer-facing review copy.
+- BNA and One Time are deployed at `bf0ec619b5ed10b2c057d5cf4f1553362d6614f4`; post-deploy Railway doctors passed.
+- One Time Operations CRM workbench live smoke passed with 12 scoped cards and selected timeline read-only. The full `REQ-20260712-302` remains in progress because dedicated workspace/actions and deeper parity are still open.
 
 ## Identity Isolation Batch
 
