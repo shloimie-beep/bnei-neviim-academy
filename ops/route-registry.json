@@ -2314,10 +2314,10 @@
       "workspace_scope_required": true,
       "public_allowed": false,
       "expected_logged_out_behavior": "reject_unauthorized",
-      "expected_logged_in_behavior": "return_workspace_scoped_first_party_crm_contacts_readonly",
+      "expected_logged_in_behavior": "return_workspace_scoped_first_party_crm_contacts_or_create_local_first_party_contact",
       "privacy_risk": "high_private_contacts",
-      "security_expectation": "Requires CRM entitlements and workspace access; uses first-party BNA tables only; no GHL/external CRM and no sends.",
-      "smoke_expectation": "tests/crm-contact-model.test.js verifies entitlement-gated filter behavior.",
+      "security_expectation": "Requires CRM entitlements and workspace access; uses first-party BNA tables only; contact creation is a local bna_parent_leads write with no GHL/external CRM and no sends.",
+      "smoke_expectation": "tests/crm-contact-model.test.js verifies entitlement-gated filter behavior; tests/service-provider-scope-routes.test.js verifies create/read route registration and no-send contract.",
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-006",
@@ -2350,10 +2350,100 @@
       "workspace_scope_required": true,
       "public_allowed": false,
       "expected_logged_out_behavior": "reject_unauthorized",
-      "expected_logged_in_behavior": "save_workspace_scoped_local_crm_update_without_external_write",
+      "expected_logged_in_behavior": "read_or_save_workspace_scoped_local_crm_contact_without_external_write",
       "privacy_risk": "high_private_contacts",
-      "security_expectation": "Requires CRM entitlements and workspace access; only updates first-party local CRM tables and local timeline/events; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write. View-as Rabbi non-GET requests are rejected.",
-      "smoke_expectation": "Focused CRM workbench smoke verifies local update copy and no_send/external_write_performed=false.",
+      "security_expectation": "Requires CRM entitlements and workspace access; GET returns one canonical contact DTO and PATCH only updates first-party local CRM tables and local timeline/events; no email, WhatsApp, Telegram, payment, access grant, import, historical sync, or external CRM write. View-as Rabbi non-GET requests are rejected.",
+      "smoke_expectation": "Focused CRM workbench smoke verifies local update copy and no_send/external_write_performed=false; tests/service-provider-scope-routes.test.js verifies detail route wiring.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/crm/contacts/:id/notes",
+      "surface": "operations_api_first_party_crm_contact_notes",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_workspace_scoped_local_crm_note_without_external_write",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires CRM entitlements and workspace access; writes only first-party local timeline/note rows and returns no_send/external_write_performed=false.",
+      "smoke_expectation": "tests/service-provider-scope-routes.test.js verifies route registration, local note tables, and no-send contract.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/crm/contacts/:id/tasks",
+      "surface": "operations_api_first_party_crm_contact_tasks",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_workspace_scoped_local_crm_follow_up_task_without_external_write",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires CRM entitlements and workspace access; writes only bna_tasks follow-up rows and returns no_send/external_write_performed=false.",
+      "smoke_expectation": "tests/service-provider-scope-routes.test.js verifies route registration and local task creation contract.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/crm/tasks/:taskId",
+      "surface": "operations_api_first_party_crm_task_update",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "update_workspace_scoped_local_crm_task_without_external_write",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires CRM entitlements and workspace/project scope; updates only local bna_tasks rows and returns no_send/external_write_performed=false.",
+      "smoke_expectation": "tests/service-provider-scope-routes.test.js verifies route registration and no-send contract.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/crm/contacts/:id/threads",
+      "surface": "operations_api_first_party_crm_contact_threads",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_workspace_scoped_contact_email_threads_readonly",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires CRM entitlements and workspace access; reads only project-scoped bna_communications rows and returns no_send/external_write_performed=false.",
+      "smoke_expectation": "tests/service-provider-scope-routes.test.js verifies route registration and project-scoped communications query.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/crm/threads/:threadId/messages",
+      "surface": "operations_api_first_party_crm_thread_message_draft",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_local_crm_thread_message_draft_with_guarded_outbox_approval_required",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires CRM entitlements and workspace access; creates a local bna_communications draft only, returns guarded_outbox_required=true and queued=false, and performs no provider send from the browser.",
+      "smoke_expectation": "tests/service-provider-scope-routes.test.js verifies draft-only guarded composer contract.",
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-006",

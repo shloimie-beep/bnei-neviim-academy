@@ -16,8 +16,15 @@ test('server wires service-provider scope and first-party CRM routes', () => {
     "require('./src/lib/bna/assistant-scope-policy')",
     "app.get('/api/bna/account-scope/summary'",
     "app.get('/api/bna/crm/contacts'",
+    "app.post('/api/bna/crm/contacts'",
     "app.get('/api/bna/crm/contacts/:id/timeline'",
+    "app.get('/api/bna/crm/contacts/:id'",
     "app.patch('/api/bna/crm/contacts/:id'",
+    "app.post('/api/bna/crm/contacts/:id/notes'",
+    "app.post('/api/bna/crm/contacts/:id/tasks'",
+    "app.patch('/api/bna/crm/tasks/:taskId'",
+    "app.get('/api/bna/crm/contacts/:id/threads'",
+    "app.post('/api/bna/crm/threads/:threadId/messages'",
     "app.post('/api/bna/assistant/scope-plan'",
     "app.get('/api/provider-portal/scope-session'",
     "app.get('/api/provider-portal/inquiries'",
@@ -32,10 +39,13 @@ test('server wires service-provider scope and first-party CRM routes', () => {
   assert.match(server, /INSERT INTO bna_tasks \(/);
   assert.match(server, /'dashboard',\s*\$6::jsonb,\s*\$7::jsonb/);
   assert.match(server, /'follow_up_task' AS communication_type/);
+  assert.match(server, /guarded_outbox_required:\s*true/);
+  assert.match(server, /queued:\s*false/);
+  assert.match(server, /one_time_crm_reply_draft/);
 });
 test('provider and operations UIs expose scoped package surfaces', () => {
   const provider = read('public/provider.html');
-  const operations = read('public/operations.html');
+  const operations = `${read('public/operations.html')}\n${read('public/js/operations-shell.js')}`;
 
   [
     'data-provider-section="inquiries"',
@@ -48,7 +58,14 @@ test('provider and operations UIs expose scoped package surfaces', () => {
 
   [
     'getCrmContacts',
+    'createCrmContact',
+    'getCrmContact',
     'getCrmContactTimeline',
+    'createCrmContactNote',
+    'createCrmContactTask',
+    'updateCrmTask',
+    'getCrmContactThreads',
+    'draftCrmThreadMessage',
     'renderFirstPartyCrmContactsPanel',
     'membership_access',
     'follow_up_task',
@@ -64,6 +81,9 @@ test('provider and operations UIs expose scoped package surfaces', () => {
     'clearCrmMailboxTarget',
     'ACTION-CRM-CONTACTS-FILTER',
     'ACTION-CRM-CONTACT-CARD-EXPAND',
+    'ACTION-CRM-INTERNAL-NOTE-BLOCKED',
+    'ACTION-CRM-TASK-BLOCKED',
+    'ACTION-CRM-REPLY-DRAFT-BLOCKED',
   ].forEach((needle) => assert.match(operations, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
 });
 
@@ -88,6 +108,15 @@ test('migration and registries cover service-provider scope package', () => {
     'ACTION-CRM-CONTACT-CARD-EXPAND',
     'ACTION-CRM-CONTACT-MAILBOX-OPEN',
     'ACTION-CRM-CONTACT-SAFE-UPDATE',
+    'ACTION-CRM-CONTACT-CREATE',
+    'ACTION-CRM-INTERNAL-NOTE-BLOCKED',
+    'ACTION-CRM-CONTACT-NOTE-CREATE',
+    'ACTION-CRM-TASK-BLOCKED',
+    'ACTION-CRM-CONTACT-TASK-CREATE',
+    'ACTION-CRM-TASK-UPDATE',
+    'ACTION-CRM-REPLY-DRAFT-BLOCKED',
+    'ACTION-CRM-CONTACT-THREADS-READ',
+    'ACTION-CRM-THREAD-MESSAGE-DRAFT',
     'ACTION-ASSISTANT-CODEX-CLI-ROUTING-DISABLED',
   ].forEach((id) => assert.equal(actionIds.has(id), true, `${id} is registered`));
 
@@ -96,6 +125,11 @@ test('migration and registries cover service-provider scope package', () => {
     '/api/bna/crm/contacts',
     '/api/bna/crm/contacts/:id/timeline',
     '/api/bna/crm/contacts/:id',
+    '/api/bna/crm/contacts/:id/notes',
+    '/api/bna/crm/contacts/:id/tasks',
+    '/api/bna/crm/tasks/:taskId',
+    '/api/bna/crm/contacts/:id/threads',
+    '/api/bna/crm/threads/:threadId/messages',
     '/api/bna/assistant/scope-plan',
     '/api/provider-portal/scope-session',
     '/api/provider-portal/inquiries',

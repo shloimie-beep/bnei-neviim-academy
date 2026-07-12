@@ -29236,6 +29236,8 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
   const workspaceKey = normalizeWorkspaceKey(scope.workspace_key);
   const projectKey = normalizeProjectKey(scope.project_key || workspaceProjectKey(workspaceKey));
   const sourceFetchLimit = crmListSourceFetchLimit(options);
+  const contactRef = options.contact_ref || options.contactRef || null;
+  const hasContactRef = contactRef && Number.isFinite(Number(contactRef.id)) && Number(contactRef.id) > 0;
   const rows = [];
 
   const contactParams = [];
@@ -29243,6 +29245,14 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
   if (workspaceKey && !['platform', 'super_admin'].includes(workspaceKey)) {
     contactParams.push(workspaceKey);
     contactConditions.push(`ws.workspace_key = $${contactParams.length}`);
+  }
+  if (hasContactRef) {
+    if (contactRef.source === 'bna_contacts') {
+      contactParams.push(Number(contactRef.id));
+      contactConditions.push(`c.id = $${contactParams.length}`);
+    } else {
+      contactConditions.push('FALSE');
+    }
   }
   contactParams.push(sourceFetchLimit);
   const contactLimitParam = contactParams.length;
@@ -29354,6 +29364,14 @@ async function operationsCrmContactRows(scope = {}, db = pool, options = {}) {
   if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
     leadParams.push(projectKey);
     leadConditions.push(`p.project_key = $${leadParams.length}`);
+  }
+  if (hasContactRef) {
+    if (contactRef.source === 'bna_parent_leads') {
+      leadParams.push(Number(contactRef.id));
+      leadConditions.push(`l.id = $${leadParams.length}`);
+    } else {
+      leadConditions.push('FALSE');
+    }
   }
   leadParams.push(sourceFetchLimit);
   const leadLimitParam = leadParams.length;
@@ -29600,6 +29618,228 @@ async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
     params
   );
   return result.rows;
+}
+
+async function crmScopeFromOpsRequest(req, body = {}, entitlement = accountScope.ENTITLEMENTS.CRM_CONTACTS, action = 'read CRM contact') {
+  const scope = scopeFromOpsRequest(req, body);
+  const workspaceKey = assertWorkspaceAccess(req, scope.workspace_key || defaultWorkspaceKeyForRequest(req), action);
+  scope.workspace_key = workspaceKey;
+  scope.project_key = scope.project_key || workspaceProjectKey(workspaceKey) || opsScopeProjectKey(req) || null;
+  scope.feature_overrides = await featureOverridesForScope(scope);
+  if (entitlement) accountScope.assertEntitlement(scope, entitlement);
+  return scope;
+}
+
+async function operationsCrmContactCard(contactRef, scope = {}, db = pool) {
+  const rows = await operationsCrmContactRows(scope, db, {
+    contact_ref: contactRef,
+    limit: 1,
+  });
+  const payload = crmContactModel.filterCrmContacts(rows, { limit: 1 }, scope);
+  return (payload.cards || []).find((item) => String(item.id) === `${contactRef.source}:${contactRef.id}`) || null;
+}
+
+async function createOperationsCrmContactNote({
+  req,
+  scope = {},
+  contactRef = {},
+  card = {},
+  summary = '',
+  body = '',
+} = {}, db = pool) {
+  const noteSummary = limitText(String(summary || 'CRM internal note').trim(), 240);
+  const noteBody = limitText(String(body || summary || '').trim(), 4000);
+  const workspaceKey = normalizeWorkspaceKey(scope.workspace_key);
+  const projectKey = normalizeProjectKey(scope.project_key || workspaceProjectKey(workspaceKey) || ONE_TIME_PROJECT_KEY);
+  const sourceContext = {
+    source: 'operations_crm_contact_note',
+    crm_contact_id: `${contactRef.source || 'bna_contacts'}:${contactRef.id || ''}`,
+    workspace_key: workspaceKey || null,
+    project_key: projectKey || null,
+    no_send: true,
+    external_write_performed: false,
+  };
+
+  if (contactRef.source === 'bna_parent_leads') {
+    await assertProjectOwnedRowAccess(req, 'bna_parent_leads', contactRef.id, db);
+    const result = await db.query(
+      `INSERT INTO bna_contact_communications (
+         project_id, contact_type, lead_id, channel, direction, summary, body,
+         follow_up_required, occurred_at, created_by, source, source_context, metadata
+       )
+       SELECT
+         l.project_id, COALESCE(NULLIF(l.lead_type, ''), 'lead'), l.id,
+         'internal_note', 'internal_note', $2, $3, false, NOW(), $4,
+         'operations_crm_contact_note', $5::jsonb, $5::jsonb
+       FROM bna_parent_leads l
+       LEFT JOIN bna_projects p ON p.id = l.project_id
+       WHERE l.id = $1
+         AND ($6::text IS NULL OR p.project_key = $6)
+       RETURNING *`,
+      [
+        contactRef.id,
+        noteSummary,
+        noteBody || null,
+        req?.opsUser || 'operations',
+        JSON.stringify(sourceContext),
+        projectKey || null,
+      ]
+    );
+    return result.rows[0] || null;
+  }
+
+  const result = await db.query(
+    `INSERT INTO bna_contact_pipeline_events (
+       workspace_id, contact_id, event_type, pipeline_status, summary, source, metadata
+     )
+     SELECT
+       c.workspace_id, c.id, 'crm_internal_note', COALESCE(NULLIF(c.status, ''), $3),
+       $4, 'operations_crm_contact_note', $5::jsonb
+     FROM bna_contacts c
+     LEFT JOIN bna_workspace_settings ws ON ws.id = c.workspace_id
+     WHERE c.id = $1
+       AND ($2::text IS NULL OR ws.workspace_key = $2)
+     RETURNING *`,
+    [
+      contactRef.id,
+      workspaceKey || null,
+      card.lifecycle_stage || card.status || null,
+      noteSummary || noteBody || 'CRM internal note',
+      JSON.stringify({
+        ...sourceContext,
+        body: noteBody || null,
+      }),
+    ]
+  );
+  return result.rows[0] || null;
+}
+
+async function operationsCrmThreadRows(contactRef, scope = {}, db = pool) {
+  const card = await operationsCrmContactCard(contactRef, scope, db);
+  if (!card) return { card: null, threads: [] };
+
+  const projectKey = normalizeProjectKey(scope.project_key || workspaceProjectKey(scope.workspace_key) || ONE_TIME_PROJECT_KEY);
+  const email = normalizeEmail(card.email || '');
+  const params = [projectKey];
+  const contactClauses = [];
+
+  if (email) {
+    params.push(`%${email}%`);
+    contactClauses.push(`lower(COALESCE(cm.from_address, '')) LIKE $${params.length}`);
+    contactClauses.push(`lower(COALESCE(cm.to_address, '')) LIKE $${params.length}`);
+  }
+  if (contactRef.source === 'bna_contacts' && Number.isFinite(contactRef.id)) {
+    params.push(Number(contactRef.id));
+    contactClauses.push(`cm.contact_id = $${params.length}`);
+  }
+  if (!contactClauses.length) return { card, threads: [] };
+
+  const result = await db.query(
+    `WITH scoped_messages AS (
+       SELECT
+         cm.*,
+         COALESCE(NULLIF(cm.thread_key, ''), 'communication:' || cm.id::text) AS crm_thread_key
+       FROM bna_communications cm
+       LEFT JOIN bna_projects p ON p.id = cm.project_id
+       WHERE p.project_key = $1
+         AND (${contactClauses.join(' OR ')})
+     )
+     SELECT
+       crm_thread_key AS thread_key,
+       COUNT(*) AS message_count,
+       MAX(occurred_at) AS latest_at,
+       (ARRAY_AGG(subject ORDER BY occurred_at DESC NULLS LAST, id DESC))[1] AS latest_subject,
+       (ARRAY_AGG(status ORDER BY occurred_at DESC NULLS LAST, id DESC))[1] AS latest_status,
+       jsonb_agg(
+         jsonb_build_object(
+           'id', id,
+           'channel', channel,
+           'direction', direction,
+           'communication_type', communication_type,
+           'from_address', from_address,
+           'to_address', to_address,
+           'subject', subject,
+           'body_text', body_text,
+           'status', status,
+           'occurred_at', occurred_at,
+           'no_send', true,
+           'external_write_performed', false
+         )
+         ORDER BY occurred_at ASC NULLS LAST, id ASC
+       ) AS messages
+     FROM scoped_messages
+     GROUP BY crm_thread_key
+     ORDER BY MAX(occurred_at) DESC NULLS LAST
+     LIMIT 50`,
+    params
+  );
+
+  return {
+    card,
+    threads: result.rows.map((row) => ({
+      thread_key: row.thread_key,
+      message_count: Number(row.message_count || 0),
+      latest_at: row.latest_at || null,
+      latest_subject: row.latest_subject || '',
+      latest_status: row.latest_status || '',
+      messages: Array.isArray(row.messages) ? row.messages : [],
+      no_send: true,
+      external_write_performed: false,
+    })),
+  };
+}
+
+async function createOperationsCrmThreadDraft({
+  req,
+  scope = {},
+  threadKey = '',
+  body = {},
+} = {}, db = pool) {
+  const projectKey = normalizeProjectKey(scope.project_key || workspaceProjectKey(scope.workspace_key) || ONE_TIME_PROJECT_KEY);
+  const project = await getProjectByKey(projectKey, db);
+  const workspaceId = await getWorkspaceIdForProjectKey(projectKey, db).catch(() => null);
+  const draftBody = limitText(String(body.body || body.body_text || body.message || '').trim(), 8000);
+  if (!draftBody) {
+    const error = new Error('Draft message body is required.');
+    error.statusCode = 400;
+    throw error;
+  }
+  const draftSubject = limitText(String(body.subject || `Draft reply for ${threadKey}`).trim(), 240);
+  const recipient = normalizeEmail(body.to || body.to_address || body.recipient || '');
+  const metadata = {
+    source: 'operations_crm_guarded_composer',
+    thread_key: threadKey,
+    workspace_key: scope.workspace_key || null,
+    project_key: projectKey || null,
+    approval_required: true,
+    guarded_outbox_required: true,
+    queued_for_guarded_outbox: false,
+    no_send: true,
+    external_write_performed: false,
+  };
+  const result = await db.query(
+    `INSERT INTO bna_communications (
+       workspace_id, project_id, channel, direction, communication_type,
+       from_name, from_address, to_address, subject, body_text,
+       thread_key, provider, status, metadata
+     ) VALUES (
+       $1, $2, 'email', 'outbound', 'one_time_crm_reply_draft',
+       $3, $4, $5, $6, $7, $8, 'crm_guarded_outbox', 'draft', $9::jsonb
+     )
+     RETURNING *`,
+    [
+      workspaceId,
+      project?.id || null,
+      req?.opsUser || 'operations',
+      normalizeEmail(body.from || body.from_address || 'info@onetimeonetime.com') || null,
+      recipient || null,
+      draftSubject,
+      draftBody,
+      threadKey,
+      JSON.stringify(metadata),
+    ]
+  );
+  return result.rows[0] || null;
 }
 
 async function createOperationsCrmFollowUpTask({
@@ -49871,6 +50111,70 @@ app.get('/api/bna/crm/contacts', requireAdmin, async (req, res) => {
   }
 });
 
+app.post('/api/bna/crm/contacts', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const scope = await crmScopeFromOpsRequest(req, body, accountScope.ENTITLEMENTS.CRM_CONTACTS, 'create CRM contact');
+    const projectKey = normalizeProjectKey(scope.project_key || workspaceProjectKey(scope.workspace_key) || ONE_TIME_PROJECT_KEY);
+    const project = await getProjectByKey(projectKey, pool);
+    if (!project) {
+      return res.status(400).json({ success: false, error: 'A valid project is required for CRM contact creation.', external_write_performed: false });
+    }
+
+    const displayName = limitText(String(body.display_name || body.parent_name || body.full_name || body.name || '').trim(), 180);
+    const email = normalizeEmail(body.email || body.parent_email || body.primary_email || '');
+    const phone = limitText(String(body.phone || body.parent_phone || body.primary_phone || '').trim(), 80);
+    if (!displayName && !email && !phone) {
+      return res.status(400).json({ success: false, error: 'Name, email, or phone is required to create a CRM contact.', external_write_performed: false });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO bna_parent_leads (
+         project_id, parent_name, parent_email, parent_phone, lead_type, status,
+         interest_level, source, source_detail, next_follow_up_date, owner, tags, notes, metadata
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6, $7, 'operations_crm_workbench', $8, $9::date, $10, $11, $12, $13::jsonb
+       )
+       RETURNING *`,
+      [
+        project.id,
+        displayName || email || phone || 'CRM contact',
+        email || null,
+        phone || null,
+        limitText(String(body.contact_type || body.lead_type || 'school_interest').trim(), 80),
+        limitText(String(body.lifecycle_stage || body.status || 'new').trim(), 80),
+        limitText(String(body.interest_level || 'warm').trim(), 80),
+        limitText(String(body.source_detail || 'Created from Operations CRM workbench.').trim(), 500),
+        String(body.next_follow_up_at || body.next_follow_up_date || '').trim() || null,
+        limitText(String(body.assigned_owner || body.owner || '').trim(), 120) || null,
+        normalizeTextArray(body.tags),
+        limitText(String(body.notes || body.summary || '').trim(), 4000) || null,
+        JSON.stringify({
+          source: 'operations_crm_workbench',
+          workspace_key: scope.workspace_key || null,
+          project_key: projectKey || null,
+          no_send: true,
+          external_write_performed: false,
+        }),
+      ]
+    );
+    const created = result.rows[0];
+    const contactRef = { source: 'bna_parent_leads', id: Number(created.id) };
+    const card = await operationsCrmContactCard(contactRef, scope);
+    res.status(201).json({
+      success: true,
+      contact: card || created,
+      no_send: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_import_performed: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, external_write_performed: false });
+  }
+});
+
 app.get('/api/bna/crm/contacts/:id/timeline', requireAdmin, async (req, res) => {
   try {
     const scope = scopeFromOpsRequest(req);
@@ -49888,6 +50192,27 @@ app.get('/api/bna/crm/contacts/:id/timeline', requireAdmin, async (req, res) => 
     });
   } catch (err) {
     res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.get('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
+  try {
+    const scope = await crmScopeFromOpsRequest(req, req.query || {}, accountScope.ENTITLEMENTS.CRM_CONTACTS, 'read CRM contact');
+    const contactRef = parseCrmContactRef(req.params.id);
+    const contact = await operationsCrmContactCard(contactRef, scope);
+    if (!contact) return res.status(404).json({ success: false, error: 'CRM contact not found in this workspace.', external_write_performed: false });
+    const timelineRows = await operationsCrmTimelineRows(contactRef, scope);
+    const threadPayload = await operationsCrmThreadRows(contactRef, scope);
+    res.json({
+      success: true,
+      contact,
+      timeline: crmContactModel.buildTimeline(timelineRows),
+      threads: threadPayload.threads,
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, external_write_performed: false });
   }
 });
 
@@ -50098,6 +50423,183 @@ app.patch('/api/bna/crm/contacts/:id', requireAdmin, async (req, res) => {
       local_event: localEvent,
       follow_up_task: followUpTask,
       timeline: crmContactModel.buildTimeline(timeline),
+      no_send: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_import_performed: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, external_write_performed: false });
+  }
+});
+
+app.post('/api/bna/crm/contacts/:id/notes', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const scope = await crmScopeFromOpsRequest(req, body, accountScope.ENTITLEMENTS.CRM_CONTACTS, 'add CRM note');
+    const contactRef = parseCrmContactRef(req.params.id);
+    const contact = await operationsCrmContactCard(contactRef, scope);
+    if (!contact) return res.status(404).json({ success: false, error: 'CRM contact not found in this workspace.', external_write_performed: false });
+    const note = await createOperationsCrmContactNote({
+      req,
+      scope,
+      contactRef,
+      card: contact,
+      summary: body.summary || body.note_summary || '',
+      body: body.body || body.note || body.note_body || '',
+    });
+    const timelineRows = await operationsCrmTimelineRows(contactRef, scope);
+    res.status(201).json({
+      success: true,
+      note,
+      contact,
+      timeline: crmContactModel.buildTimeline(timelineRows),
+      no_send: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_import_performed: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, external_write_performed: false });
+  }
+});
+
+app.post('/api/bna/crm/contacts/:id/tasks', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const scope = await crmScopeFromOpsRequest(req, body, accountScope.ENTITLEMENTS.CRM_CONTACTS, 'create CRM task');
+    const contactRef = parseCrmContactRef(req.params.id);
+    const contact = await operationsCrmContactCard(contactRef, scope);
+    if (!contact) return res.status(404).json({ success: false, error: 'CRM contact not found in this workspace.', external_write_performed: false });
+    const task = await createOperationsCrmFollowUpTask({
+      req,
+      scope,
+      contactRef,
+      contact: {
+        display_name: contact.display_name,
+        email: contact.email,
+        parent_email: contact.email,
+        primary_email: contact.email,
+        owner: contact.assigned_owner,
+      },
+      summary: body.title || body.summary || 'CRM follow-up task',
+      body: body.notes || body.body || '',
+      dueDate: body.due_date || body.due_at || body.next_follow_up_at || '',
+      assignedTo: body.assigned_to || body.owner || contact.assigned_owner || '',
+    });
+    const timelineRows = await operationsCrmTimelineRows(contactRef, scope);
+    res.status(201).json({
+      success: true,
+      task,
+      contact,
+      timeline: crmContactModel.buildTimeline(timelineRows),
+      no_send: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_import_performed: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, external_write_performed: false });
+  }
+});
+
+app.patch('/api/bna/crm/tasks/:taskId', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const scope = await crmScopeFromOpsRequest(req, body, accountScope.ENTITLEMENTS.CRM_CONTACTS, 'update CRM task');
+    const taskId = Number(req.params.taskId);
+    if (!Number.isFinite(taskId) || taskId <= 0) {
+      return res.status(400).json({ success: false, error: 'A valid CRM task id is required.', external_write_performed: false });
+    }
+    const requestedStage = String(body.stage || body.status || body.action || '').trim().toLowerCase();
+    const stage = requestedStage === 'complete' ? 'done'
+      : requestedStage === 'reopen' ? 'assigned'
+      : ['assigned', 'in_progress', 'done', 'archive'].includes(requestedStage) ? requestedStage
+      : '';
+    const fields = [];
+    const values = [];
+    const addField = (field, value) => {
+      values.push(value);
+      fields.push(`${field} = $${values.length}`);
+    };
+    if (stage) addField('stage', stage);
+    if (body.title) addField('title', limitText(String(body.title), 180));
+    if (body.notes !== undefined) addField('notes', limitText(String(body.notes || ''), 4000));
+    if (body.due_date || body.due_at) addField('due_date', String(body.due_date || body.due_at).trim() || null);
+    if (body.assigned_to || body.owner) addField('assigned_to', limitText(String(body.assigned_to || body.owner), 120));
+    if (!fields.length) {
+      return res.status(400).json({ success: false, error: 'No supported CRM task update fields were provided.', external_write_performed: false });
+    }
+    values.push(stage || null);
+    const stageParam = values.length;
+    values.push(taskId);
+    const taskIdParam = values.length;
+    values.push(scope.project_key || null);
+    const projectParam = values.length;
+    const result = await pool.query(
+      `UPDATE bna_tasks
+       SET ${fields.join(', ')},
+           completed_at = CASE
+             WHEN $${stageParam}::text = 'done' THEN NOW()
+             WHEN $${stageParam}::text = 'assigned' THEN NULL
+             ELSE completed_at
+           END,
+           updated_at = NOW()
+       WHERE id = $${taskIdParam}
+         AND ($${projectParam}::text IS NULL OR project_id IN (SELECT id FROM bna_projects WHERE project_key = $${projectParam}))
+       RETURNING *`,
+      values
+    );
+    const task = result.rows[0] || null;
+    if (!task) return res.status(404).json({ success: false, error: 'CRM task not found in this workspace.', external_write_performed: false });
+    res.json({
+      success: true,
+      task,
+      no_send: true,
+      no_checkout: true,
+      no_access_granted: true,
+      no_import_performed: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, external_write_performed: false });
+  }
+});
+
+app.get('/api/bna/crm/contacts/:id/threads', requireAdmin, async (req, res) => {
+  try {
+    const scope = await crmScopeFromOpsRequest(req, req.query || {}, accountScope.ENTITLEMENTS.CRM_CONTACTS, 'read CRM contact threads');
+    const contactRef = parseCrmContactRef(req.params.id);
+    const payload = await operationsCrmThreadRows(contactRef, scope);
+    if (!payload.card) return res.status(404).json({ success: false, error: 'CRM contact not found in this workspace.', external_write_performed: false });
+    res.json({
+      success: true,
+      contact: payload.card,
+      threads: payload.threads,
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ success: false, error: err.message, external_write_performed: false });
+  }
+});
+
+app.post('/api/bna/crm/threads/:threadId/messages', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const scope = await crmScopeFromOpsRequest(req, body, accountScope.ENTITLEMENTS.CRM_CONTACTS, 'draft CRM thread message');
+    const threadKey = limitText(String(req.params.threadId || body.thread_key || '').trim(), 240);
+    if (!threadKey) return res.status(400).json({ success: false, error: 'Thread id is required.', external_write_performed: false });
+    const draft = await createOperationsCrmThreadDraft({ req, scope, threadKey, body });
+    res.status(202).json({
+      success: true,
+      draft,
+      queued: false,
+      approval_required: true,
+      guarded_outbox_required: true,
       no_send: true,
       no_checkout: true,
       no_access_granted: true,

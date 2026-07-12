@@ -1,13 +1,16 @@
 {
   "run_id": "2026-07-12-onetime-post-current-agent-delta",
   "title": "One Time post-current-agent delta",
-  "updated_at": "2026-07-12T22:46:00+03:00",
+  "updated_at": "2026-07-12T23:12:00+03:00",
   "git_refs": {
     "working_branch": "codex/onetime-post-agent-delta-20260712-v3",
     "starting_head": "593b85c7ffe975dc5eff6f38b684f375385952dc",
     "origin_master_after_fetch": "593b85c7ffe975dc5eff6f38b684f375385952dc",
     "pre_active_agent_fetch_head": "b61db37a4e232023f745b568e3456536048a114a",
-    "live_onetime_deployed_commit": "48c52797b2b8354de31f29aa87c1b95307967900",
+    "live_onetime_deployed_commit": "f0376e4539c31d80f917c90241bbffd91ee9c57c",
+    "live_onetime_deployment_id": "fc4c5c45-89d4-4a99-a6f6-f3a9f58213c8",
+    "live_onetime_delivery_cron_service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+    "live_onetime_delivery_cron_deployment_id": "df89ade6-86bc-4d2e-8384-54957fb7fada",
     "live_onetime_url": "https://join.onetimeonetime.com"
   },
   "sources": [
@@ -95,10 +98,10 @@
       "priority": "P0",
       "batch_id": "delta-A",
       "depends_on": ["REQ-20260712-801"],
-      "status": "needs_verification",
-      "implementation_status": "Local hardening implemented and verified. Nontrivial operator rambles now require a validated structured compilation before implementation jobs materialize; invalid/unavailable compilation leaves requirements specification_pending. Telegram/raw text parts reconstruct before statement mapping, source reconstruction and honest status receipts are emitted, and validated structured compilation still materializes jobs. Production deploy/live proof is still pending because this server-visible change is only pushed on the feature branch.",
+      "status": "done",
+      "implementation_status": "Implemented, pushed, deployed, and live-smoked. Nontrivial operator rambles now require a validated structured compilation before implementation jobs materialize; invalid/unavailable compilation leaves requirements specification_pending. Telegram/raw text parts reconstruct before statement mapping, source reconstruction and honest status receipts are emitted, and validated structured compilation still materializes jobs. One Time Railway deployment fc4c5c45-89d4-4a99-a6f6-f3a9f58213c8 reached SUCCESS and SHA-pinned live smoke confirmed join.onetimeonetime.com is serving commit f0376e4539c31d80f917c90241bbffd91ee9c57c.",
       "can_continue_without_operator": true,
-      "next_action": "Merge/deploy the branch through the approved release path and run live readback/smoke before marking this requirement terminal; non-deploy CRM blueprint work may continue separately.",
+      "next_action": "Done for this scoped server-visible hardening; continue REQ-20260712-804 Railway cron cutover or REQ-20260712-805 CRM blueprint.",
       "acceptance_criteria": [
         "No generic placeholder requirement can become implementation_ready.",
         "Invalid/unavailable OpenAI structured compilation remains specification_pending.",
@@ -110,24 +113,41 @@
         "src/platform/ingestion/operator-ramble-service.js",
         "tests/ingestion/operator-ramble-service.test.js",
         "tests/ingestion/ramble-regression-suite.test.js",
-        "ops/watchdog-audits/2026-07-12-product-quality-drift.md"
+        "ops/watchdog-audits/2026-07-12-product-quality-drift.md",
+        "Railway deployment fc4c5c45-89d4-4a99-a6f6-f3a9f58213c8 SUCCESS on one-time-production / production / one-time-web",
+        "PASS npm run one-time:target:guard after deploy",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f0376e4539c31d80f917c90241bbffd91ee9c57c"
       ],
       "verification": [
         "PASS node --check src/platform/ingestion/operator-ramble-service.js",
         "PASS node --test tests/ingestion/operator-ramble-service.test.js tests/ingestion/ramble-regression-suite.test.js tests/ingestion/w3-intake-service.test.js (16/16)",
         "PASS node --test tests/chatgpt-dropoff-ingestor.test.js tests/one-time-intake-api-readback.test.js (10/10)",
         "PASS node --test tests/ramble-protocol-hardening.test.js tests/watchdog-raw-intake-drift.test.js (4/4)",
-        "PASS npm run watchdog:protocol-drift (0 findings)"
+        "PASS npm run watchdog:protocol-drift (0 findings)",
+        "PASS Railway service status one-time-web production deployment fc4c5c45-89d4-4a99-a6f6-f3a9f58213c8 SUCCESS",
+        "PASS npm run one-time:target:guard",
+        "PASS npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f0376e4539c31d80f917c90241bbffd91ee9c57c"
       ],
       "implementation_files": [
         "src/platform/ingestion/operator-ramble-service.js",
         "tests/ingestion/operator-ramble-service.test.js",
         "tests/ingestion/ramble-regression-suite.test.js",
         "ops/watchdog-audits/2026-07-12-product-quality-drift.md",
-        "ops/watchdog-audits/2026-07-12-product-quality-drift.json"
+        "ops/watchdog-audits/2026-07-12-product-quality-drift.json",
+        "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/DEPLOYMENT.md",
+        "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/EVIDENCE.md"
+      ],
+      "implementation_commit": "f0376e4539c31d80f917c90241bbffd91ee9c57c",
+      "pushed_commit": "f0376e4539c31d80f917c90241bbffd91ee9c57c",
+      "deployed_commit": "f0376e4539c31d80f917c90241bbffd91ee9c57c",
+      "deployment_id": "fc4c5c45-89d4-4a99-a6f6-f3a9f58213c8",
+      "deployment_evidence": [
+        "Railway deployment fc4c5c45-89d4-4a99-a6f6-f3a9f58213c8 reached SUCCESS on one-time-production / production / one-time-web.",
+        "Live smoke passed: npm run app:smoke:onetime-separate-instance -- https://join.onetimeonetime.com --expected-sha f0376e4539c31d80f917c90241bbffd91ee9c57c.",
+        "Live target guard passed: npm run one-time:target:guard."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T22:46:00+03:00"
+      "updated_at": "2026-07-12T22:58:00+03:00"
     },
     {
       "id": "REQ-20260712-803",
@@ -193,10 +213,10 @@
       "priority": "P0",
       "batch_id": "delta-B4",
       "depends_on": ["REQ-20260712-803"],
-      "status": "not_started",
-      "implementation_status": "Waiting for runner implementation and Railway/automation readback.",
+      "status": "done",
+      "implementation_status": "Separate Railway cron service created and deployed. Service one-time-delivery-cron (742f60ed-dc2f-4321-85d0-019003d4e9b9) deployed bundle df89ade6-86bc-4d2e-8384-54957fb7fada with manifest start command node scripts/run-one-time-delivery-outbox-cron.mjs, cron schedule */5 * * * *, and restartPolicyType NEVER. Redacted Railway logs show two successful zero-due executions with external_send_performed false. One Time web HTTP logs show delivery-outbox POSTs and no class-reminders POSTs in the verification window. Old Codex automation one-time-delivery-outbox-dispatcher was paused through automation_update and read back as status PAUSED.",
       "can_continue_without_operator": true,
-      "next_action": "After REQ-20260712-803 passes, create/deploy/read back the separate cron service or record exact Railway/tooling blocker.",
+      "next_action": "Done for cutover; monitor normal cron health through Railway logs. Continue REQ-20260712-805 CRM Contacts/Inbox blueprint.",
       "acceptance_criteria": [
         "Cron service uses railway.one-time-delivery-cron.json.",
         "Schedule is */5 * * * * UTC.",
@@ -206,14 +226,42 @@
         "No class-reminders job ran.",
         "Old Codex automation one-time-delivery-outbox-dispatcher is disabled/deleted only after cutover proof."
       ],
-      "evidence": [],
-      "verification": ["PENDING Railway service/deployment readback", "PENDING redacted execution proof"],
+      "evidence": [
+        "railway.one-time-delivery-cron.json",
+        "scripts/run-one-time-delivery-outbox-cron.mjs",
+        "Railway service one-time-delivery-cron id 742f60ed-dc2f-4321-85d0-019003d4e9b9",
+        "Railway deployment df89ade6-86bc-4d2e-8384-54957fb7fada SUCCESS",
+        "Railway manifest cronSchedule */5 * * * * and startCommand node scripts/run-one-time-delivery-outbox-cron.mjs",
+        "Railway logs show two redacted executions with processed_count 0, due_count 0, sent_count 0, failed_count 0, dead_lettered_count 0, external_send_performed false",
+        "HTTP log check for /api/cron/one-time/class-reminders returned no entries in the verification window",
+        "Codex automation one-time-delivery-outbox-dispatcher read back status PAUSED"
+      ],
+      "verification": [
+        "PASS delivery-outbox dry-run preview before cutover: due_count 0, would_send_count 0, external_send_performed false",
+        "PASS Railway service creation/readback: one-time-delivery-cron id 742f60ed-dc2f-4321-85d0-019003d4e9b9",
+        "PASS Railway deployment df89ade6-86bc-4d2e-8384-54957fb7fada status SUCCESS",
+        "PASS deployment manifest readback: cronSchedule */5 * * * *, startCommand node scripts/run-one-time-delivery-outbox-cron.mjs, restartPolicyType NEVER",
+        "PASS Railway logs show two redacted zero-due executions and external_send_performed false",
+        "PASS HTTP logs: no POST /api/cron/one-time/class-reminders entries in the verification window",
+        "PASS automation_update paused one-time-delivery-outbox-dispatcher and TOML readback shows status PAUSED"
+      ],
       "implementation_files": [
         "railway.one-time-delivery-cron.json",
-        "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/DEPLOYMENT.md"
+        "scripts/run-one-time-delivery-outbox-cron.mjs",
+        "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/DEPLOYMENT.md",
+        "ops/execution-runs/2026-07-12-onetime-post-current-agent-delta/EVIDENCE.md"
+      ],
+      "implementation_commit": "f0376e4539c31d80f917c90241bbffd91ee9c57c",
+      "pushed_commit": "f0376e4539c31d80f917c90241bbffd91ee9c57c",
+      "deployed_commit": "f0376e4539c31d80f917c90241bbffd91ee9c57c",
+      "deployment_id": "df89ade6-86bc-4d2e-8384-54957fb7fada",
+      "deployment_evidence": [
+        "Railway deployment df89ade6-86bc-4d2e-8384-54957fb7fada reached SUCCESS for service one-time-delivery-cron.",
+        "Railway deployment manifest includes cronSchedule */5 * * * * and startCommand node scripts/run-one-time-delivery-outbox-cron.mjs.",
+        "Railway logs show two successful redacted delivery-outbox executions with due_count 0 and external_send_performed false."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T22:10:00+03:00"
+      "updated_at": "2026-07-12T23:12:00+03:00"
     },
     {
       "id": "REQ-20260712-805",
@@ -229,20 +277,36 @@
       "priority": "P0",
       "batch_id": "delta-C0",
       "depends_on": ["REQ-20260712-801"],
-      "status": "not_started",
-      "implementation_status": "Requested blueprint file is absent at baseline.",
+      "status": "done",
+      "implementation_status": "Canonical blueprint, focused surface map, and current-state gap matrix created. Existing CRM DTO/API/workbench/inbox behavior was inspected and only partial/missing OT-CRM rows were left for REQ-20260712-806.",
       "can_continue_without_operator": true,
-      "next_action": "Create ops/product-specs/one-time/crm/contacts-inbox.v1.json and gap matrix after current-state inspection.",
+      "next_action": "Use OT-CRM-01 through OT-CRM-05 from the blueprint to implement only partial/open rows under REQ-20260712-806.",
       "acceptance_criteria": [
         "Blueprint includes shell tokens, Contacts index, full contact workspace, server DTO/endpoints, Inbox, tasks/pipeline, isolation, performance, canonical-route verification, and packet ownership.",
         "Source requirements are assigned to OT-CRM-01 through OT-CRM-05.",
         "Current-state delta matrix avoids reimplementing already merged work."
       ],
-      "evidence": [],
-      "verification": ["PENDING JSON parse/schema-style checks"],
-      "implementation_files": ["ops/product-specs/one-time/crm/contacts-inbox.v1.json"],
+      "evidence": [
+        "Created ops/product-specs/one-time/crm/contacts-inbox.v1.json with shell tokens, Contacts index, contact workspace, server DTO/endpoints, scoped Inbox, action state matrix, and OT-CRM-01 through OT-CRM-05 ownership.",
+        "Created ops/surface-maps/2026-07-12-one-time-crm-contacts-inbox-surface-map.md and .json with canonical routes, files, APIs, packet rows, and open gaps.",
+        "Current-state inspection found CRM model/list/timeline/pagination/workbench/inbox context already partially implemented, while exact C0-C9 layout/DTO/mutation/inbox/task/performance/browser proof rows remain partial/open.",
+        "Gap matrix records GAP-OT-CRM-001 through GAP-OT-CRM-009 and avoids reimplementing already merged CRM work."
+      ],
+      "verification": [
+        "PASS JSON parse for contacts-inbox.v1.json and focused surface-map JSON",
+        "PASS node --test tests/crm-contact-model.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js 20/20",
+        "PASS npm run pqc:validate",
+        "PASS npm run bna:run:validate"
+      ],
+      "implementation_files": [
+        "ops/product-specs/one-time/crm/contacts-inbox.v1.json",
+        "ops/surface-maps/2026-07-12-one-time-crm-contacts-inbox-surface-map.md",
+        "ops/surface-maps/2026-07-12-one-time-crm-contacts-inbox-surface-map.json",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
+        "ops/product-quality-compiler/validation/latest-product-quality-validation.json"
+      ],
       "deployment_required": false,
-      "updated_at": "2026-07-12T22:10:00+03:00"
+      "updated_at": "2026-07-12T23:58:00+03:00"
     },
     {
       "id": "REQ-20260712-806",
@@ -258,10 +322,10 @@
       "priority": "P0",
       "batch_id": "delta-C1-C9",
       "depends_on": ["REQ-20260712-805"],
-      "status": "not_started",
-      "implementation_status": "Blocked on blueprint/current-state gap matrix.",
+      "status": "blocked",
+      "implementation_status": "Implemented the safe missing C3/C8 CRM slice: canonical contact key filtering in the shared CRM row builder; POST/GET/PATCH CRM contact surface; local-only notes, tasks, task update, thread readback, and guarded draft-only thread message endpoints; split-shell client methods; route/action registry coverage; and canonical /operations browser smoke tightened to operations-bootstrap.html only. Remaining acceptance proof is blocked because the isolated local/test DB journey requires BNA_ONETIME_CRM_TEST_DATABASE_URL, and production DATABASE_URL is intentionally ignored.",
       "can_continue_without_operator": true,
-      "next_action": "Implement dependency-ordered missing rows after REQ-20260712-805.",
+      "next_action": "Provide a local/test Postgres URL in BNA_ONETIME_CRM_TEST_DATABASE_URL, then rerun node scripts/smoke-onetime-crm-journey-local-db.mjs and continue REQ-20260712-807 deploy/live closeout only if it passes.",
       "acceptance_criteria": [
         "Canonical /operations is used for browser proof.",
         "No browser-side joins among unrelated datasets.",
@@ -269,19 +333,44 @@
         "Mutations persist after reload in isolated test DB.",
         "Responsive screenshots are captured at required viewports."
       ],
-      "evidence": [],
-      "verification": ["PENDING focused CRM tests and canonical-route browser journeys"],
+      "evidence": [
+        "server.js adds scoped first-party CRM create/detail/note/task/task-update/thread/draft endpoints with no_send/external_write_performed=false and guarded_outbox_required draft-only composer behavior.",
+        "public/js/operations-shell.js adds split-shell API client methods for the new local-only CRM endpoints.",
+        "ops/route-registry.json and ops/action-registry.json cover the new CRM routes/actions plus disabled note/task/reply preview controls.",
+        "PASS node --check server.js",
+        "PASS node --check public/js/operations-shell.js",
+        "PASS registry JSON parse for ops/action-registry.json and ops/route-registry.json",
+        "PASS node --test tests/service-provider-scope-routes.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/crm-contact-model.test.js (18/18)",
+        "PASS node scripts/smoke-onetime-operations-crm-workbench-local.mjs with canonical /operations -> operations-bootstrap.html proof and screenshots at 1440, 1024, 768, 430, and 390 widths",
+        "PASS npm run watchdog:actions with 0 findings",
+        "BLOCKED node scripts/smoke-onetime-crm-journey-local-db.mjs because BNA_ONETIME_CRM_TEST_DATABASE_URL is not set"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check public/js/operations-shell.js",
+        "PASS node --test tests/service-provider-scope-routes.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/crm-contact-model.test.js",
+        "PASS node scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "PASS npm run watchdog:actions",
+        "BLOCKED isolated DB mutation/reload proof: ops/evidence/one-time-crm-journey-local-db/2026-07-12T20-46-07-389Z-report.md"
+      ],
       "implementation_files": [
         "src/lib/bna/crm-contact-model.js",
         "server.js",
         "public/js/operations-shell.js",
         "public/js/operations-deferred-renderers.js",
-        "tests/",
+        "tests/service-provider-scope-routes.test.js",
+        "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.md",
+        "ops/ui-audits/2026-07-10-onetime-crm-workbench-local/report.json",
+        "ops/evidence/one-time-crm-journey-local-db/2026-07-12T20-46-07-389Z-report.md",
         "ops/action-registry.json",
         "ops/route-registry.json"
       ],
+      "blocker": "Isolated CRM mutation/reload proof requires a local/test Postgres URL in BNA_ONETIME_CRM_TEST_DATABASE_URL. The smoke intentionally ignores production DATABASE_URL and refuses remote-looking databases unless explicitly allowed for an approved test database.",
+      "blocker_owner": "Operator / local test environment",
+      "blocker_next_action": "Set BNA_ONETIME_CRM_TEST_DATABASE_URL to a local/test Postgres URL, then rerun node scripts/smoke-onetime-crm-journey-local-db.mjs from this branch.",
       "deployment_required": true,
-      "updated_at": "2026-07-12T22:10:00+03:00"
+      "updated_at": "2026-07-12T23:48:00+03:00"
     },
     {
       "id": "REQ-20260712-807",

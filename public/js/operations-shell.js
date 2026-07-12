@@ -288,7 +288,26 @@ const api = {
         });
         return this.request('GET', '/crm/contacts/' + encodeURIComponent(id) + '/timeline' + (params.toString() ? '?' + params.toString() : ''), null, requestOptions);
     },
+    createCrmContact(payload = {}) { return this.request('POST', '/crm/contacts', payload); },
+    getCrmContact(id, filters = {}) {
+        const params = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') params.set(key, value);
+        });
+        return this.request('GET', '/crm/contacts/' + encodeURIComponent(id) + (params.toString() ? '?' + params.toString() : ''));
+    },
     updateCrmContact(id, payload = {}) { return this.request('PATCH', '/crm/contacts/' + encodeURIComponent(id), payload); },
+    createCrmContactNote(id, payload = {}) { return this.request('POST', '/crm/contacts/' + encodeURIComponent(id) + '/notes', payload); },
+    createCrmContactTask(id, payload = {}) { return this.request('POST', '/crm/contacts/' + encodeURIComponent(id) + '/tasks', payload); },
+    updateCrmTask(id, payload = {}) { return this.request('PATCH', '/crm/tasks/' + encodeURIComponent(id), payload); },
+    getCrmContactThreads(id, filters = {}) {
+        const params = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') params.set(key, value);
+        });
+        return this.request('GET', '/crm/contacts/' + encodeURIComponent(id) + '/threads' + (params.toString() ? '?' + params.toString() : ''));
+    },
+    draftCrmThreadMessage(threadId, payload = {}) { return this.request('POST', '/crm/threads/' + encodeURIComponent(threadId) + '/messages', payload); },
     createContactCommunication(note) { return this.request('POST', '/contact-communications', note); },
     previewContactImport(payload = {}) { return this.request('POST', '/contact-imports/preview', payload); },
     getParentAnnouncements(filters = {}) {

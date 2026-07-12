@@ -2651,6 +2651,177 @@
       ]
     },
     {
+      "action_id": "ACTION-CRM-CONTACT-CREATE",
+      "label": "Create CRM contact",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts",
+      "selector_hint": "future Add Contact control / api.createCrmContact",
+      "expected_behavior": "Creates a first-party One Time CRM contact as a local bna_parent_leads row only; no external CRM, email, WhatsApp, payment, access grant, or import is performed.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "api_available_not_yet_exposed_as_primary_button",
+      "test": {
+        "type": "static_route_contract",
+        "expected_result": "POST /api/bna/crm/contacts returns no_send=true and external_write_performed=false; tests/service-provider-scope-routes.test.js verifies route wiring."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-INTERNAL-NOTE-BLOCKED",
+      "label": "Internal note preview",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-INTERNAL-NOTE-BLOCKED\"]",
+      "expected_behavior": "Visible CRM note control remains disabled until the full contact workspace enables local note entry states; the backed API route is /api/bna/crm/contacts/:id/notes.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "disabled_until_workspace_ui_packet",
+      "test": {
+        "type": "browser_static_and_local_smoke",
+        "expected_result": "CRM local smoke verifies the disabled note preview button is present and no external write occurs."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-NOTE-CREATE",
+      "label": "Create CRM note",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id/notes",
+      "selector_hint": "api.createCrmContactNote",
+      "expected_behavior": "Creates a local first-party CRM timeline note only and returns no_send/external_write_performed=false.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "api_available_ui_disabled_pending_workspace_packet",
+      "test": {
+        "type": "static_route_contract",
+        "expected_result": "tests/service-provider-scope-routes.test.js verifies the note route writes local timeline rows and no-send metadata."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-TASK-BLOCKED",
+      "label": "Task preview",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-TASK-BLOCKED\"]",
+      "expected_behavior": "Visible CRM task control remains disabled until the full contact workspace enables task entry states; the backed API routes are /api/bna/crm/contacts/:id/tasks and /api/bna/crm/tasks/:taskId.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "disabled_until_workspace_ui_packet",
+      "test": {
+        "type": "browser_static_and_local_smoke",
+        "expected_result": "CRM local smoke verifies the disabled task preview button is present and no external write occurs."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-TASK-CREATE",
+      "label": "Create CRM task",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id/tasks",
+      "selector_hint": "api.createCrmContactTask",
+      "expected_behavior": "Creates a local bna_tasks follow-up task linked to the CRM contact only and returns no_send/external_write_performed=false.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "api_available_ui_disabled_pending_workspace_packet",
+      "test": {
+        "type": "static_route_contract",
+        "expected_result": "tests/service-provider-scope-routes.test.js verifies the task route and no-send contract."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-TASK-UPDATE",
+      "label": "Update CRM task",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/tasks/:taskId",
+      "selector_hint": "api.updateCrmTask",
+      "expected_behavior": "Completes, reopens, or edits a workspace/project-scoped local CRM task only and returns no_send/external_write_performed=false.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "api_available_ui_disabled_pending_workspace_packet",
+      "test": {
+        "type": "static_route_contract",
+        "expected_result": "tests/service-provider-scope-routes.test.js verifies the task update route and local-only contract."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-REPLY-DRAFT-BLOCKED",
+      "label": "Reply draft preview",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-REPLY-DRAFT-BLOCKED\"]",
+      "expected_behavior": "Visible CRM reply control remains disabled in the contact card until the guarded composer UI packet is implemented; no provider send can occur from this control.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "disabled_until_guarded_composer_packet",
+      "test": {
+        "type": "browser_static_and_local_smoke",
+        "expected_result": "CRM local smoke verifies the disabled reply preview button is present and no external write occurs."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-THREADS-READ",
+      "label": "Read CRM threads",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/contacts/:id/threads",
+      "selector_hint": "api.getCrmContactThreads",
+      "expected_behavior": "Reads project-scoped local bna_communications threads linked to the selected CRM contact and returns no_send/external_write_performed=false.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "api_available",
+      "test": {
+        "type": "static_route_contract",
+        "expected_result": "tests/service-provider-scope-routes.test.js verifies project-scoped bna_communications thread readback."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-THREAD-MESSAGE-DRAFT",
+      "label": "Draft CRM thread message",
+      "surface": "operations_contacts",
+      "route": "/api/bna/crm/threads/:threadId/messages",
+      "selector_hint": "api.draftCrmThreadMessage",
+      "expected_behavior": "Creates a local draft only with guarded_outbox_required=true, approval_required=true, queued=false, and no provider send from the browser.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "api_available_guarded_draft_only",
+      "test": {
+        "type": "static_route_contract",
+        "expected_result": "tests/service-provider-scope-routes.test.js verifies the guarded composer route returns draft-only no-send metadata."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-ASSISTANT-CODEX-CLI-ROUTING-DISABLED",
       "label": "Codex CLI routing disabled",
       "surface": "provider_and_operations_assistants",

@@ -1,22 +1,17 @@
 # One Time Operations CRM Workbench Local Smoke
 
 Status: PASS
-Generated: 2026-07-12T18:07:07.093Z
+Generated: 2026-07-12T20:46:00.412Z
 
 Local synthetic Operations One Time CRM workbench smoke; no database, sends, payments, external accounts, or production writes.
 
-| Target | Viewport | Passed | CRM calls | Initial cards | Root rerenders | Search requests | Legacy table closed/open | Screenshot |
-|---|---|---:|---:|---:|---:|---:|---:|---|
-| split-shell | 1440x960 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1440-crm-workbench.png |
-| monolith | 1440x960 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1440-crm-workbench.png |
-| split-shell | 1024x900 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1024-crm-workbench.png |
-| monolith | 1024x900 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-desktop-1024-crm-workbench.png |
-| split-shell | 768x1024 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-tablet-768-crm-workbench.png |
-| monolith | 768x1024 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-tablet-768-crm-workbench.png |
-| split-shell | 430x932 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-workbench.png |
-| monolith | 430x932 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-430-crm-workbench.png |
-| split-shell | 390x844 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-workbench.png |
-| monolith | 390x844 | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/monolith-mobile-390-crm-workbench.png |
+| Target | Viewport | Passed | Bootstrap route | CRM calls | Initial cards | Root rerenders | Search requests | Legacy table closed/open | Screenshot |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| split-shell | 1440x960 | true | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1440-crm-workbench.png |
+| split-shell | 1024x900 | true | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-desktop-1024-crm-workbench.png |
+| split-shell | 768x1024 | true | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-tablet-768-crm-workbench.png |
+| split-shell | 430x932 | true | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-430-crm-workbench.png |
+| split-shell | 390x844 | true | true | 1 | 50 | 0 | 1 | 0/1 | ops/ui-audits/2026-07-10-onetime-crm-workbench-local/split-shell-mobile-390-crm-workbench.png |
 
 Inbox context:
 
@@ -27,7 +22,7 @@ Inbox context:
 Checks:
 
 - One Time Operations CRM route renders the API-backed workbench.
-- Split shell and monolith fallback render the API-backed workbench.
+- Canonical /operations renders through operations-bootstrap.html with split-shell assets; the legacy /operations.html monolith route is not used for proof.
 - Search/filter/sort controls, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe action locks, and timeline readback are visible.
 - Mobile selected-contact state hides the list and Back to contacts restores it.
 - Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.

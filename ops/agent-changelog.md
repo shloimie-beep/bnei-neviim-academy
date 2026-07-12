@@ -38866,3 +38866,74 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
   `npm run watchdog:protocol-drift` with 0 findings.
 - This is a server-visible change, so `REQ-20260712-802` remains
   deploy/live-smoke pending rather than terminal.
+
+## 2026-07-12 - One Time ramble-to-done hardening deployed
+
+- Deployed the ramble-to-done hardening branch
+  `codex/onetime-post-agent-delta-20260712-v3` at commit
+  `f0376e4539c31d80f917c90241bbffd91ee9c57c` to the canonical One Time
+  Railway target `one-time-production / production / one-time-web`.
+- Railway deployment `fc4c5c45-89d4-4a99-a6f6-f3a9f58213c8` reached
+  `SUCCESS`.
+- Live proof passed: `npm run one-time:target:guard` and
+  `npm run app:smoke:onetime-separate-instance --
+  https://join.onetimeonetime.com --expected-sha
+  f0376e4539c31d80f917c90241bbffd91ee9c57c`.
+- A direct production intake parse was not run because it would create
+  raw-intake rows without a narrower approved/no-write live-intake packet.
+- `npm run app:smoke:rabbi-onetime-landing` against the default BNA domain
+  failed only on public WhatsApp readiness; that remains a separate provider
+  readiness gate, not a blocker for `REQ-20260712-802`.
+
+## 2026-07-12 - One Time delivery outbox cron cutover
+
+- Created Railway service `one-time-delivery-cron`
+  (`742f60ed-dc2f-4321-85d0-019003d4e9b9`) in
+  `one-time-production / production`.
+- Deployed the short-lived delivery outbox runner as Railway deployment
+  `df89ade6-86bc-4d2e-8384-54957fb7fada`; manifest readback confirmed
+  `startCommand=node scripts/run-one-time-delivery-outbox-cron.mjs`,
+  `cronSchedule=*/5 * * * *`, and `restartPolicyType=NEVER`.
+- Verified a pre-cutover dry-run preview had `due_count=0` and
+  `external_send_performed=false`; Railway logs then showed two redacted
+  zero-due executions with no external send.
+- Verified no `/api/cron/one-time/class-reminders` POST logs in the
+  verification window.
+- Paused Codex automation `one-time-delivery-outbox-dispatcher` through
+  `automation_update`; TOML readback shows `status = "PAUSED"`.
+
+## 2026-07-12 - One Time CRM Contacts/Inbox blueprint completed
+
+- Created the canonical One Time CRM Contacts/Inbox blueprint at
+  `ops/product-specs/one-time/crm/contacts-inbox.v1.json`.
+- Added focused surface-map artifacts at
+  `ops/surface-maps/2026-07-12-one-time-crm-contacts-inbox-surface-map.md`
+  and `.json`.
+- The blueprint assigns current/future work to the raw packet's C9 sequence:
+  `OT-CRM-01` DTO/list/performance, `OT-CRM-02` workspace/mutations,
+  `OT-CRM-03` timeline/inbox/composer, `OT-CRM-04` tasks/lifecycle/access, and
+  `OT-CRM-05` canonical-route proof/deployment. It records
+  `GAP-OT-CRM-001` through `GAP-OT-CRM-009`.
+- Verification passed: JSON parse for the spec/map, focused CRM/inbox test
+  subset 20/20, and `npm run pqc:validate`.
+
+## 2026-07-12 - One Time CRM Contacts/Inbox safe slice blocked on test DB
+
+- Implemented the safe local-only C3/C8 CRM slice for `REQ-20260712-806`:
+  scoped contact create/detail/note/task/task-update/thread-read/draft endpoints
+  in `server.js`, split-shell client methods in `public/js/operations-shell.js`,
+  route/action registry coverage, and canonical `/operations` smoke proof that
+  serves `operations-bootstrap.html` instead of proving via `/operations.html`.
+- Guardrails held: no production contact import, no external CRM runtime, no
+  email/WhatsApp/Telegram send, no payment/access mutation, no DNS/account/
+  credential mutation, no secret exposure, and the CRM thread message endpoint
+  creates a local draft with `guarded_outbox_required=true`, `queued=false`, and
+  `external_write_performed=false`.
+- Verification passed: `node --check server.js`, `node --check
+  public/js/operations-shell.js`, registry JSON parse, focused route/tenant/DTO
+  tests 18/18, canonical local browser smoke, `npm run watchdog:actions`, and
+  `npm run bna:run:validate`.
+- Remaining blocker: `node scripts/smoke-onetime-crm-journey-local-db.mjs`
+  requires `BNA_ONETIME_CRM_TEST_DATABASE_URL`; it intentionally ignores
+  production `DATABASE_URL`. The blocker report is
+  `ops/evidence/one-time-crm-journey-local-db/2026-07-12T20-46-07-389Z-report.md`.

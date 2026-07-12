@@ -12,7 +12,6 @@ const outDir = path.join(repoRoot, 'ops', 'ui-audits', '2026-07-10-onetime-crm-w
 const routeQuery = '?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts';
 const routeTargets = [
   { id: 'split-shell', route: `/operations${routeQuery}` },
-  { id: 'monolith', route: `/operations.html${routeQuery}` },
 ];
 
 
@@ -88,6 +87,7 @@ const generatedCrmCards = Array.from({ length: 78 }, (_, index) => {
 
 const crmCards = [...crmSeedCards, ...generatedCrmCards];
 const apiRequests = [];
+const staticRequests = [];
 const timelineByContactId = new Map(crmCards.map((card) => [
   card.id,
   [
@@ -371,6 +371,10 @@ async function serve(req, res, baseUrl) {
     : url.pathname === '/operations'
       ? '/operations-bootstrap.html'
       : url.pathname;
+  staticRequests.push({
+    request_path: url.pathname,
+    served_path: requested,
+  });
   const safePath = path.normalize(decodeURIComponent(requested)).replace(/^(\.\.[\\/])+/, '');
   const filePath = path.join(publicDir, safePath);
   if (!filePath.startsWith(publicDir)) {
@@ -437,9 +441,19 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     }
   });
 
+  const staticRequestsBeforeGoto = staticRequests.length;
   await page.goto(`${baseUrl}${target.route}`, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('[data-one-time-crm-workbench]', { timeout: 15000 });
   await page.waitForFunction(() => /Sample One Time Parent/.test(document.body.textContent || ''), null, { timeout: 15000 });
+  const routeStaticRequests = staticRequests.slice(staticRequestsBeforeGoto);
+  const canonicalRouteProof = {
+    url_path: new URL(page.url()).pathname,
+    served_bootstrap: routeStaticRequests.some((item) => item.request_path === '/operations' && item.served_path === '/operations-bootstrap.html'),
+    used_legacy_monolith_route: routeStaticRequests.some((item) => item.request_path === '/operations.html'),
+    loaded_operations_shell: routeStaticRequests.some((item) => item.served_path === '/js/operations-shell.js'),
+    loaded_generated_ia: routeStaticRequests.some((item) => item.served_path === '/js/one-time-rabbi-dashboard-ia.generated.js'),
+    loaded_operations_css: routeStaticRequests.some((item) => item.served_path === '/css/operations-shell.css'),
+  };
   const initialMetrics = await page.evaluate(() => ({
     cardCount: document.querySelectorAll('[data-first-party-crm-card]').length,
     paneCount: document.querySelectorAll('[data-crm-pane-count="3"]').length,
@@ -565,7 +579,14 @@ async function captureViewport(browser, baseUrl, viewport, target) {
   await page.close();
 
   const passed = Boolean(
-    metrics.workbenchCount >= 1 &&
+    target.route.startsWith('/operations?') &&
+      canonicalRouteProof.url_path === '/operations' &&
+      canonicalRouteProof.served_bootstrap &&
+      !canonicalRouteProof.used_legacy_monolith_route &&
+      canonicalRouteProof.loaded_operations_shell &&
+      canonicalRouteProof.loaded_generated_ia &&
+      canonicalRouteProof.loaded_operations_css &&
+      metrics.workbenchCount >= 1 &&
       metrics.apiWorkbenchCount >= 1 &&
       initialMetrics.paneCount >= 1 &&
       initialMetrics.listPaneVisible &&
@@ -611,6 +632,7 @@ async function captureViewport(browser, baseUrl, viewport, target) {
     route: target.route,
     target: target.id,
     screenshot: rel(screenshot),
+    canonicalRouteProof,
     initialCrmRequestCount,
     initialListRequestCount,
     initialRenderedCardCount: initialMetrics.cardCount,
@@ -764,12 +786,13 @@ async function main() {
     '',
     report.scope,
     '',
-    '| Target | Viewport | Passed | CRM calls | Initial cards | Root rerenders | Search requests | Legacy table closed/open | Screenshot |',
-    '|---|---|---:|---:|---:|---:|---:|---:|---|',
+    '| Target | Viewport | Passed | Bootstrap route | CRM calls | Initial cards | Root rerenders | Search requests | Legacy table closed/open | Screenshot |',
+    '|---|---|---:|---:|---:|---:|---:|---:|---:|---|',
     ...results.map((result) => [
       `| ${result.target}`,
       `${result.viewport.width}x${result.viewport.height}`,
       String(result.passed),
+      String(Boolean(result.canonicalRouteProof?.served_bootstrap && !result.canonicalRouteProof?.used_legacy_monolith_route)),
       String(result.initialCrmRequestCount),
       String(result.initialRenderedCardCount),
       String(result.appRootMutationsAfterSelect),
@@ -796,7 +819,7 @@ async function main() {
     'Checks:',
     '',
     '- One Time Operations CRM route renders the API-backed workbench.',
-    '- Split shell and monolith fallback render the API-backed workbench.',
+    '- Canonical /operations renders through operations-bootstrap.html with split-shell assets; the legacy /operations.html monolith route is not used for proof.',
     '- Search/filter/sort controls, cards, three CRM panes, selected detail, profile, class/trial/access context, no-send guard, safe action locks, and timeline readback are visible.',
     '- Mobile selected-contact state hides the list and Back to contacts restores it.',
     '- Scoped One Time Inbox retains selected CRM contact context and keeps send gates visible.',

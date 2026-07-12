@@ -1,0 +1,124 @@
+{
+  "surface_map_id": "SURF-20260712-013-OT-CRM",
+  "raw_id": "RAW-20260712-013",
+  "requirement_id": "REQ-20260712-805",
+  "status": "current_state_map_ready",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "spec": "ops/product-specs/one-time/crm/contacts-inbox.v1.json",
+  "external_crm_policy": "forbidden",
+  "routes": [
+    {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "surface": "operations_crm_contacts",
+      "state": "partial_already_mostly_implemented"
+    },
+    {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "surface": "operations_scoped_one_time_inbox",
+      "state": "partial_already_mostly_implemented"
+    },
+    {
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "surface": "provider_mailbox",
+      "state": "implemented_with_provider_session"
+    },
+    {
+      "route": "/api/bna/crm/contacts",
+      "surface": "crm_contacts_api",
+      "state": "implemented"
+    },
+    {
+      "route": "/api/bna/crm/contacts/:id/timeline",
+      "surface": "crm_timeline_api",
+      "state": "implemented"
+    },
+    {
+      "route": "/api/bna/crm/contacts/:id",
+      "surface": "crm_update_api",
+      "state": "api_implemented_ui_enablement_packetized"
+    },
+    {
+      "route": "/api/provider-portal/mailbox",
+      "surface": "provider_mailbox_api",
+      "state": "implemented"
+    },
+    {
+      "route": "/api/provider-portal/mailbox/:threadKey",
+      "surface": "provider_mailbox_thread_api",
+      "state": "implemented"
+    }
+  ],
+  "files": [
+    {
+      "path": "src/lib/bna/crm-contact-model.js",
+      "role": "crm_dto_filters_pagination_timeline",
+      "state": "already_satisfied"
+    },
+    {
+      "path": "server.js",
+      "role": "crm_and_mailbox_routes",
+      "state": "partial"
+    },
+    {
+      "path": "public/js/operations-shell.js",
+      "role": "operations_crm_workbench",
+      "state": "partial"
+    },
+    {
+      "path": "public/js/operations-deferred-renderers.js",
+      "role": "operations_email_inbox_workspace",
+      "state": "partial"
+    },
+    {
+      "path": "ops/action-registry.json",
+      "role": "visible_action_registry",
+      "state": "partial"
+    },
+    {
+      "path": "ops/route-registry.json",
+      "role": "route_security_registry",
+      "state": "partial"
+    }
+  ],
+  "packet_rows": [
+    {
+      "packet_id": "OT-CRM-01",
+      "scope": "canonical_dto_query_scoping_list_pagination_performance",
+      "state": "partial"
+    },
+    {
+      "packet_id": "OT-CRM-02",
+      "scope": "full_contact_workspace_and_mutations",
+      "state": "partial"
+    },
+    {
+      "packet_id": "OT-CRM-03",
+      "scope": "timeline_inbox_handoff_guarded_composer",
+      "state": "partial"
+    },
+    {
+      "packet_id": "OT-CRM-04",
+      "scope": "tasks_lifecycle_pipeline_access_relationships",
+      "state": "partial"
+    },
+    {
+      "packet_id": "OT-CRM-05",
+      "scope": "canonical_route_browser_verification_responsive_screenshots_deployment",
+      "state": "partial"
+    }
+  ],
+  "open_gaps": [
+    "GAP-OT-CRM-004",
+    "GAP-OT-CRM-005",
+    "GAP-OT-CRM-006",
+    "GAP-OT-CRM-007",
+    "GAP-OT-CRM-008"
+  ],
+  "verification_targets": [
+    "JSON parse blueprint and surface map",
+    "node --test tests/crm-contact-model.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js",
+    "npm run bna:run:validate",
+    "future implementation packets: PQC validation, watchdog:actions, watchdog:protocol-drift, local screenshots, live no-write smoke"
+  ]
+}

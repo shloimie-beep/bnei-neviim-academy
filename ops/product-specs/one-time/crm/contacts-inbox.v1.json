@@ -1,0 +1,766 @@
+{
+  "spec_id": "OT-CRM-CONTACTS-INBOX-V1",
+  "version": "1.0.0",
+  "status": "current_state_blueprint_ready_for_packetized_implementation",
+  "title": "One Time CRM Contacts and Inbox Blueprint",
+  "created_at": "2026-07-12T23:55:00+03:00",
+  "updated_at": "2026-07-12T23:55:00+03:00",
+  "raw_id": "RAW-20260712-013",
+  "requirement_id": "REQ-20260712-805",
+  "source_hash": "sha256:AE08273F04E3988D30592D5CA962D8B3177AD787ED82D6527D0607E842935704",
+  "workspace": {
+    "workspace_key": "rabbi_sheller_provider",
+    "project_key": "one_time_mishnah_class",
+    "provider_policy": "first_party_bna_provider_workspace_only",
+    "external_crm_policy": "No GHL, LeadConnector, or external CRM runtime is allowed for this spec."
+  },
+  "brand_and_scope_tokens": {
+    "brand": {
+      "name": "One Time",
+      "colors": ["black", "yellow"],
+      "forbidden_bleed": ["BNA school-only cream/navy/teal brand treatment", "BNA Academy copy in Rabbi-facing CRM", "school-only student/accountability data"]
+    },
+    "canonical_route_tokens": {
+      "contacts": {
+        "route": "/operations",
+        "query": {
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class",
+          "view": "contacts",
+          "section": "crm_contacts"
+        }
+      },
+      "inbox": {
+        "route": "/operations",
+        "query": {
+          "workspace": "rabbi_sheller_provider",
+          "project": "one_time_mishnah_class",
+          "view": "communications",
+          "section": "email",
+          "inbox": "rabbi"
+        }
+      },
+      "provider_mailbox": {
+        "route": "/provider.html",
+        "query": {
+          "admin_provider": "one-time",
+          "section": "mailbox"
+        }
+      }
+    },
+    "required_ui_markers": [
+      "data-one-time-crm-workbench",
+      "data-one-time-crm-api-workbench",
+      "data-crm-pane-count=\"3\"",
+      "data-crm-safe-actions",
+      "data-email-operator-workspace",
+      "data-one-time-inbox-workspace=\"true\"",
+      "data-email-selected-crm-context",
+      "data-email-readiness-gates"
+    ],
+    "no_write_tokens": [
+      "no_send=true",
+      "external_write_performed=false",
+      "no_checkout=true",
+      "no_access_granted=true",
+      "no_import_performed=true"
+    ],
+    "canonical_shell": {
+      "desktop_measurements": {
+        "left_application_sidebar_px": 236,
+        "sticky_application_header_px": 66,
+        "selected_module_subsection_rail_px": 48,
+        "main_canvas_max_width_px": 1480,
+        "desktop_canvas_inset_px": 24,
+        "tablet_canvas_inset_px": 16,
+        "mobile_canvas_inset_px": 12
+      },
+      "visual_tokens": {
+        "shell_background": "#07131F",
+        "secondary_shell": "#0D2233",
+        "page_background": "#F4F7FA",
+        "surface": "#FFFFFF",
+        "primary_text": "#0B1F33",
+        "muted_text": "#607286",
+        "border": "#D8E2EB",
+        "one_time_yellow": "#EDE518",
+        "ice_blue_focus": "#42BFE8",
+        "selected_row_fill": "rgba(237,229,24,0.10)",
+        "error": "#B42318",
+        "success": "#16794B"
+      },
+      "typography": {
+        "font_stack": "Inter, ui-sans-serif, system-ui, sans-serif",
+        "page_title": "24px/32px weight 750",
+        "contact_name_heading": "22px/28px weight 750",
+        "section_heading": "16px/24px weight 700",
+        "body": "14px/20px weight 400",
+        "control_text": "14px/20px weight 600",
+        "metadata": "12px/16px weight 400",
+        "uppercase_field_labels": "11px/16px weight 700 letter-spacing 0.04em"
+      },
+      "controls": {
+        "standard_control_height_px": 40,
+        "mobile_touch_target_min_px": 44,
+        "button_horizontal_padding_px": 16,
+        "button_icon_gap_px": 8,
+        "control_radius_px": 8,
+        "panel_radius_px": 8,
+        "panel_padding_px": 16,
+        "panel_gap_px": 16,
+        "border_px": 1,
+        "normal_panel_shadow": "0 1px 2px rgba(11,31,51,0.06)",
+        "elevated_drawer_shadow": "-12px 0 32px rgba(11,31,51,0.16)",
+        "radius_rule": "Do not mix 8px, 16px, and 999px radii for ordinary cards/buttons. Full-pill radius is reserved for status chips."
+      }
+    }
+  },
+  "current_state_inspection": {
+    "inspected_at": "2026-07-12T23:55:00+03:00",
+    "files": [
+      {
+        "path": "src/lib/bna/crm-contact-model.js",
+        "finding": "Normalizes first-party contact rows into CRM cards with contact type, family/school classification, lifecycle/status, owner, interest, identifiers, tags, source label, follow-up, linked records, membership/access context, mailbox context, support context, follow-up task context, class/trial/access context, timeline activity, entitlement-gated filters, pagination, provider inquiry inbox, and read-only timeline no-send flags.",
+        "status": "already_satisfied"
+      },
+      {
+        "path": "server.js",
+        "finding": "Provides GET /api/bna/crm/contacts, GET /api/bna/crm/contacts/:id/timeline, PATCH /api/bna/crm/contacts/:id, provider inquiry inbox, and provider mailbox endpoints. CRM list/timeline responses include no-send and external-write false flags. PATCH supports local CRM field, note, pipeline event, and follow-up task persistence with no external send/import/payment/access write.",
+        "status": "partial"
+      },
+      {
+        "path": "public/js/operations-shell.js",
+        "finding": "Operations Contacts has an API-backed One Time CRM workbench with search/filter/sort, page-sized cards, three panes, selected profile/activity/timeline, safe action locks, and Open scoped inbox routing to Rabbi inbox.",
+        "status": "partial"
+      },
+      {
+        "path": "public/js/operations-deferred-renderers.js",
+        "finding": "Email workspace has BNA/Rabbi inbox selector, One Time Inbox context card, selected CRM context readback, readiness gates, view rail, local draft editor, detail card, and no-send approval copy.",
+        "status": "partial"
+      },
+      {
+        "path": "ops/action-registry.json",
+        "finding": "Registry includes CRM filter, expand, open scoped inbox, update, and email inbox selection actions, with no external CRM/write guarantees.",
+        "status": "partial"
+      },
+      {
+        "path": "ops/route-registry.json",
+        "finding": "Registry includes CRM contact APIs, scoped One Time inbox/provider mailbox routes, public One Time routes, and cron routes. Additional route rows are required only when new implementation packets add or expose routes.",
+        "status": "partial"
+      }
+    ],
+    "tests_and_smokes_found": [
+      "tests/crm-contact-model.test.js",
+      "tests/one-time-crm-live-smoke-contract.test.js",
+      "tests/one-time-communications-workspace.test.js",
+      "tests/operations-contacts-intake-cleanup.test.js",
+      "tests/operations-saas-crm-redesign.test.js",
+      "scripts/smoke-onetime-operations-crm-workbench-local.mjs",
+      "scripts/smoke-onetime-operations-crm-workbench-live.mjs",
+      "scripts/smoke-onetime-crm-journey-local-db.mjs",
+      "scripts/smoke-onetime-provider-crm-layout-local.mjs",
+      "scripts/smoke-one-time-crm-contacts-ux-live.mjs"
+    ],
+    "baseline_delta": "The repo already contains substantial CRM DTO, API, workbench, inbox context, and test scaffolding. The next implementation must not rebuild these pieces. It must close only the partial or missing rows in the gap matrix."
+  },
+  "view_classes": [
+    {
+      "id": "SHLOIMIE_PLATFORM_SUPPORT",
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=crm_contacts",
+      "allowed": ["read scoped CRM contacts", "filter/search/sort", "open timeline", "perform local CRM update only inside an approved packet", "open scoped One Time inbox"],
+      "forbidden": ["external CRM write", "email send without exact approval", "WhatsApp send", "payment charge", "access grant", "DNS/account/credential mutation"]
+    },
+    {
+      "id": "RABBI_PROVIDER_ADMIN",
+      "route": "/provider.html?admin_provider=one-time&section=mailbox",
+      "allowed": ["read scoped provider mailbox", "save local reply draft where supported", "view readiness and scope"],
+      "forbidden": ["bulk send", "cross-workspace contacts", "BNA private student/admin data", "external CRM runtime"]
+    }
+  ],
+  "information_architecture": {
+    "contacts_index": {
+      "purpose": "High-density CRM list for One Time leads, members, family/school prospects, and contact records.",
+      "header": {
+        "min_height_px": 72,
+        "left": ["title", "result_count"],
+        "right": ["Add Contact primary button"],
+        "add_contact_width_px": 120
+      },
+      "toolbar": {
+        "min_height_px": 56,
+        "gap_px": 12,
+        "search_min_width_px": 280,
+        "status_width_px": 144,
+        "source_width_px": 168,
+        "tags_width_px": 168,
+        "owner_width_px": 160,
+        "sort_width_px": 160,
+        "more_filters_button": "40px square icon button",
+        "clear_filters": "text button visible only when filters are active",
+        "search_debounce_ms": 250,
+        "stale_requests": "must be aborted"
+      },
+      "desktop_table_row": {
+        "height_px": 76,
+        "horizontal_padding_px": 14,
+        "columns": {
+          "checkbox_px": 44,
+          "contact_min_px": 240,
+          "lifecycle_px": 128,
+          "family_school_px": 128,
+          "reminder_px": 136,
+          "source_px": 168,
+          "last_activity_px": 144,
+          "owner_px": 144,
+          "follow_up_px": 144,
+          "overflow_action_px": 48
+        },
+        "avatar_px": 36,
+        "contact_name_typography": "14px/20px weight 700",
+        "secondary_line_typography": "12px/16px",
+        "lifecycle_chip_height_px": 24
+      },
+      "pagination": "Server-side cursor pagination with 50 contacts per page. Do not load all contacts or all timelines on initial route load.",
+      "open_behavior": "Clicking any contact row or contact name must open a dedicated full contact workspace. It must not inject an unexplained detail card into the list.",
+      "browser_back_restores": ["search", "filters", "sort", "cursor/page", "scroll position"],
+      "mobile": "Below 900px, replace the table with 76px contact cards and show one pane at a time.",
+      "required_controls": ["Add Contact", "search", "status", "source", "tags", "owner", "sort", "More Filters", "Clear Filters"]
+    },
+    "contact_workspace": {
+      "purpose": "Selected contact workspace with profile, activity, local timeline, linked records, class/trial/access context, and safe next actions.",
+      "route_state": "Route state must contain a stable canonical contact key using the existing Operations route framework.",
+      "header": {
+        "min_height_px": 80,
+        "back_button_px": 40,
+        "avatar_px": 48,
+        "fields": ["contact name", "lifecycle chip", "secondary email/phone line"],
+        "actions_in_order": ["Email", "WhatsApp", "Add Note", "Schedule Follow-up", "More"],
+        "disabled_tooltip_rule": "Email and WhatsApp show one concise disabled tooltip when provider readiness or consent is missing. Do not display large internal no-send explanations."
+      },
+      "desktop_body": {
+        "main_column": "minmax(0,1fr)",
+        "inspector_px": 360,
+        "gutter_px": 16
+      },
+      "responsive": {
+        "tablet_1024_1279": "Inspector becomes a 400px right drawer.",
+        "mobile_899_and_below": "Display one full-width pane at a time."
+      },
+      "tabs_exact": ["Overview", "Activity", "Conversations", "Tasks", "Access"],
+      "tab_height_px": 40,
+      "inspector_sections_exact": ["Identity", "Family & Membership", "Tags", "Next Follow-up"],
+      "required_fields": [
+        "full/contact name",
+        "primary email",
+        "phone/WhatsApp",
+        "city",
+        "timezone",
+        "family or school",
+        "preferred reminder channel",
+        "consent timestamp",
+        "lifecycle",
+        "source and attribution",
+        "assigned owner",
+        "tags",
+        "next follow-up",
+        "related task",
+        "linked family",
+        "linked students",
+        "linked member/access record",
+        "class/trial status",
+        "attendance",
+        "library status",
+        "access status",
+        "suppression/opt-out",
+        "created time",
+        "updated time",
+        "last activity"
+      ],
+      "activity_layout": {
+        "sort": "newest first",
+        "event_icon_rail_px": 40,
+        "vertical_row_padding_px": 12,
+        "separator_px": 1,
+        "event_fields": ["actor", "timestamp", "channel", "summary", "linked record"],
+        "notes_composer_min_height_px": 104,
+        "add_note_button_alignment": "bottom-right"
+      },
+      "required_sections": ["Overview", "Activity", "Conversations", "Tasks", "Access", "Identity", "Family & Membership", "Tags", "Next Follow-up"],
+      "write_policy": "CRM-local updates are allowed only after the packet explicitly enables a scoped local-write UI, action registry row, audit evidence, isolated test DB persistence proof, and no-send flags. External sends remain separate."
+    },
+    "scoped_inbox": {
+      "purpose": "One Time email/inbox workspace that can retain selected CRM context and show draft/readiness gates.",
+      "desktop_1280_and_above": {
+        "thread_list_px": 340,
+        "conversation": "minmax(480px,1fr)",
+        "contact_inspector_px": 320,
+        "gutter_rule": "1px borders rather than floating card gaps"
+      },
+      "thread_row": {
+        "height_px": 72,
+        "horizontal_padding_px": 14,
+        "avatar_px": 36,
+        "sender_typography": "14px/20px weight 700",
+        "preview_typography": "12px/16px",
+        "timestamp_typography": "11px/16px",
+        "unread_indicator_px": 8,
+        "channel_badge_height_px": 22
+      },
+      "conversation": {
+        "header_height_px": 64,
+        "body": "scrollable message body",
+        "composer_min_height_px": 88,
+        "send_button_px": 40,
+        "status_rule": "Show queued/sent/failed status. Do not label a queued message as sent."
+      },
+      "responsive": {
+        "tablet_1024_1279": "Contact inspector opens as a 400px drawer.",
+        "mobile_below_900": "Show thread list or conversation, never squeezed side-by-side; use a 44px Back control; retain selected contact and thread in URL/session state."
+      },
+      "round_trip_rule": "Opening a thread from the contact record must retain the contact. Returning from Inbox must reopen the same contact and tab.",
+      "required_sections": ["thread list", "conversation", "contact inspector", "readiness gates", "composer", "selected CRM context"],
+      "send_policy": "Draft creation is local preview. Live email send requires exact natural-language or configured approval for the prepared recipient/copy/sender plus the endpoint confirmation gate; bulk sends require a separate campaign packet."
+    },
+    "tasks_and_pipeline": {
+      "task_fields": ["title", "owner", "due date/time", "timezone", "priority", "status", "linked contact", "completion timestamp", "audit event"],
+      "task_creation_rule": "Task creation belongs in the Tasks tab and Schedule Follow-up action. Do not scatter duplicate task forms across the page.",
+      "pipeline_rule": "Pipeline is implemented only after canonical lifecycle mutations and persistence pass. Pipeline columns must come from the canonical lifecycle registry, not a second Kanban-only stage field."
+    },
+    "workspace_isolation": {
+      "server_scope_rule": "Every server query must scope by workspace/project before returning data.",
+      "required_negative_proof": [
+        "Create colliding BNA and One Time fixtures with similar names/emails in the isolated test database.",
+        "One Time role receives only One Time records.",
+        "Rabbi role cannot request a BNA contact by changing an ID or query parameter.",
+        "View as Rabbi uses the same shell but rejects mutations server-side.",
+        "Super Admin sees multiple workspaces only after explicit workspace selection.",
+        "No BNA source labels, BNA parent lead descriptions, internal infrastructure, keys, diagnostics, or command-agent panels appear in normal Rabbi mode."
+      ]
+    },
+    "performance": {
+      "budgets": {
+        "crm_route_specific_initial_js_gzip_kb_max": 250,
+        "initial_crm_api_requests_max": 6,
+        "list_api_p95_ms_max": 600,
+        "selected_contact_detail_p95_ms_max": 400,
+        "click_to_skeleton_ms_max": 100,
+        "usable_selected_record_desktop_broadband_ms_max": 1500
+      },
+      "requirements": [
+        "defer CRM code until CRM is selected",
+        "remove sequential loading of unrelated datasets",
+        "use the narrow list DTO for the index",
+        "fetch full detail only after selection",
+        "fetch timeline/conversations/tasks/access by active tab",
+        "cancel stale requests",
+        "cache identical list queries for 30 seconds",
+        "use optimistic updates with rollback",
+        "paginate rather than render all 503 contacts",
+        "remove duplicate overview metrics, API workbench panels, legacy review blocks, and empty command-bot panels from normal Rabbi CRM",
+        "no full Operations rerender after a field mutation",
+        "no N+1 timeline/member/thread queries"
+      ]
+    },
+    "canonical_route_browser_journey": [
+      "Log in as One Time owner.",
+      "Land in the canonical scoped Operations shell served through /operations, operations-bootstrap.html, and generated assets.",
+      "Open Contacts.",
+      "Search a persisted isolated-test contact.",
+      "Apply and clear filters.",
+      "Open the full contact workspace.",
+      "Add a note.",
+      "Change lifecycle.",
+      "Add/remove a tag.",
+      "Set, change, and clear follow-up.",
+      "Create and complete a task.",
+      "Reload after each mutation and prove persistence.",
+      "Open the mailbox thread.",
+      "Return and retain selected contact.",
+      "Verify a BNA-only fixture is absent.",
+      "Verify View as Rabbi rejects writes.",
+      "Capture 1440, 1024, 768, 430, and 390 screenshots."
+    ],
+    "provider_mailbox": {
+      "purpose": "Rabbi-facing provider mailbox for scoped One Time email threads.",
+      "required_sections": ["thread list", "message timeline", "readiness", "draft only reply", "send approval gate where exposed"],
+      "visibility_policy": "Provider session can see only rabbi_sheller_provider / one_time_mishnah_class mailbox rows."
+    }
+  },
+  "data_contract": {
+    "canonical_contact_dto": {
+      "goal": "One server-side canonical contact DTO reconciles authorized One Time records from existing sources without creating duplicate person records. Browser code must not join unrelated datasets.",
+      "required_fields": [
+        "contact_key",
+        "workspace_id",
+        "project_id",
+        "identity",
+        "channels",
+        "lifecycle",
+        "attribution",
+        "ownership",
+        "tags",
+        "reminder preferences and consent",
+        "family/student/member relationships",
+        "class/trial/access summary",
+        "next follow-up",
+        "active task summary",
+        "last activity",
+        "unread thread counts"
+      ]
+    },
+    "canonical_endpoints": [
+      {
+        "method": "GET",
+        "path": "/api/bna/crm/contacts",
+        "status": "implemented_partial_contract"
+      },
+      {
+        "method": "POST",
+        "path": "/api/bna/crm/contacts",
+        "status": "missing_or_not_verified"
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/crm/contacts/:contactKey",
+        "status": "missing_or_not_verified"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/bna/crm/contacts/:contactKey",
+        "status": "implemented_partial_contract"
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/crm/contacts/:contactKey/timeline",
+        "status": "implemented_partial_contract"
+      },
+      {
+        "method": "POST",
+        "path": "/api/bna/crm/contacts/:contactKey/notes",
+        "status": "missing_or_not_verified"
+      },
+      {
+        "method": "POST",
+        "path": "/api/bna/crm/contacts/:contactKey/tasks",
+        "status": "missing_or_not_verified"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/bna/crm/tasks/:taskId",
+        "status": "missing_or_not_verified"
+      },
+      {
+        "method": "GET",
+        "path": "/api/bna/crm/contacts/:contactKey/threads",
+        "status": "missing_or_not_verified"
+      },
+      {
+        "method": "POST",
+        "path": "/api/bna/crm/threads/:threadId/messages",
+        "status": "missing_or_not_verified",
+        "policy": "Must enqueue through the existing guarded outbox. It must never call providers directly from browser code."
+      }
+    ],
+    "mutation_contract": [
+      "validate authenticated role",
+      "validate workspace and project",
+      "validate field-level permission",
+      "mutate the canonical record",
+      "write one audit event",
+      "return the updated DTO",
+      "show saving state",
+      "show success confirmation",
+      "roll back optimistic UI on failure",
+      "persist after page reload"
+    ],
+    "required_mutations": [
+      "create contact",
+      "edit approved identity fields",
+      "change lifecycle",
+      "assign owner",
+      "add/remove tags",
+      "add internal note",
+      "set/change/clear follow-up",
+      "create task",
+      "complete/reopen task",
+      "archive contact",
+      "open linked email thread",
+      "open linked WhatsApp thread when configured and consented"
+    ],
+    "crm_contact_card": {
+      "required_fields": [
+        "id",
+        "source",
+        "workspace_key",
+        "project_key",
+        "display_name",
+        "contact_type",
+        "family_school_classification",
+        "status",
+        "lifecycle_stage",
+        "assigned_owner",
+        "interest_level",
+        "email",
+        "phone",
+        "tags",
+        "source_label",
+        "last_contact_at",
+        "next_follow_up_at",
+        "summary",
+        "linked",
+        "membership_access",
+        "mailbox",
+        "support",
+        "follow_up_task",
+        "class_context",
+        "timeline_activity",
+        "editable_fields"
+      ],
+      "source_tables": [
+        "bna_contacts",
+        "bna_parent_leads",
+        "bna_communications",
+        "bna_contact_communications",
+        "bna_contact_pipeline_events",
+        "bna_tasks",
+        "bna_support_tickets"
+      ],
+      "privacy": "Do not expose raw private notes, raw provider payloads, secrets, contact exports, unrelated BNA school-only data, or records outside the selected workspace/project."
+    },
+    "timeline_item": {
+      "required_fields": ["id", "type", "channel", "direction", "body", "occurred_at", "no_send", "external_write_performed", "source_context"],
+      "write_policy": "Timeline reads are no-send. Local notes or events must be created only through scoped local CRM update APIs with audit metadata."
+    },
+    "inbox_thread": {
+      "required_fields": ["thread_key", "subject", "contact_id", "contact_name", "contact_email", "latest_direction", "latest_status", "latest_at", "preview", "message_count", "needs_reply"],
+      "source_tables": ["bna_communications", "bna_contacts"],
+      "workspace_filter": "project_id = one_time_mishnah_class or metadata.project_key = one_time_mishnah_class, and workspace_id/workspace_key matches rabbi_sheller_provider"
+    }
+  },
+  "action_state_matrix": [
+    {
+      "action_id": "ACTION-CRM-CONTACTS-FILTER",
+      "surface": "contacts_index",
+      "current_state": "already_satisfied",
+      "handler": "GET /api/bna/crm/contacts",
+      "allowed_state": "read_only",
+      "required_evidence": ["tests/crm-contact-model.test.js", "scripts/smoke-onetime-operations-crm-workbench-local.mjs", "scripts/smoke-onetime-operations-crm-workbench-live.mjs"]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-CARD-EXPAND",
+      "surface": "contact_workspace",
+      "current_state": "already_satisfied",
+      "handler": "GET /api/bna/crm/contacts/:id/timeline",
+      "allowed_state": "read_only",
+      "required_evidence": ["timeline no_send and external_write_performed false", "desktop and mobile selected-contact screenshots"]
+    },
+    {
+      "action_id": "ACTION-CRM-OPEN-SCOPED-INBOX",
+      "surface": "contacts_to_inbox",
+      "current_state": "partial",
+      "handler": "client route to /operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=communications&section=email&inbox=rabbi",
+      "allowed_state": "navigation_only",
+      "required_evidence": ["selected CRM context persists", "inbox is rabbi", "project key remains one_time_mishnah_class", "no send/write request is issued"]
+    },
+    {
+      "action_id": "ACTION-CRM-LOCAL-UPDATE",
+      "surface": "contact_workspace",
+      "current_state": "partial",
+      "handler": "PATCH /api/bna/crm/contacts/:id",
+      "allowed_state": "local_write_only_after_packet",
+      "required_evidence": ["isolated test DB persistence after reload", "timeline event appears", "follow-up task created when requested", "external_write_performed false", "action registry update if UI is exposed"]
+    },
+    {
+      "action_id": "ACTION-CRM-REPLY-DRAFT-BLOCKED",
+      "surface": "contact_workspace",
+      "current_state": "already_satisfied",
+      "handler": "disabled CRM panel control",
+      "allowed_state": "blocked_until_inbox_packet",
+      "required_evidence": ["disabled control visible", "recipient/copy/sender approval not bypassed"]
+    },
+    {
+      "action_id": "ACTION-EMAIL-DRAFT-CREATE",
+      "surface": "scoped_inbox",
+      "current_state": "partial",
+      "handler": "POST /api/bna/communications/email/drafts",
+      "allowed_state": "local_draft_preview",
+      "required_evidence": ["draft stored locally only", "selected CRM context/related record retained", "no send endpoint called"]
+    },
+    {
+      "action_id": "ACTION-EMAIL-SEND-APPROVAL-GATE",
+      "surface": "scoped_inbox",
+      "current_state": "already_satisfied_for_gate",
+      "handler": "POST /api/bna/communications/email/send",
+      "allowed_state": "blocked_until_exact_approval",
+      "required_evidence": ["SEND_RESEND_EMAIL gate remains", "recipient workspace conflict check passes", "bulk sends stay blocked without campaign packet"]
+    }
+  ],
+  "ot_crm_packets": [
+    {
+      "packet_id": "OT-CRM-01",
+      "title": "Canonical DTO, query scoping, list, pagination, and performance",
+      "status": "partial",
+      "requirements_assigned": ["C0 canonical shell tokens", "C1 contacts index", "C3 canonical list DTO", "C6 query scoping", "C7 list performance"],
+      "already_satisfied": ["CRM model maps a broad card DTO.", "GET /api/bna/crm/contacts exists with entitlement-gated filters and cursor pagination.", "Operations workbench has search/type/status/source/tag/sort controls.", "Local smoke asserts one initial CRM API call, 50-card page size, debounced search, and no external writes."],
+      "remaining_gap": "Raw C1/C3/C7 exact table/header/toolbar geometry, Add Contact, owner filter, dedicated workspace route behavior, narrow route-specific loading, and p95/performance budgets are not fully proven in this batch.",
+      "implementation_rule": "Implement only missing DTO/list/performance rows. Do not rebuild working list behavior unless fresh proof fails."
+    },
+    {
+      "packet_id": "OT-CRM-02",
+      "title": "Full contact workspace and mutations",
+      "status": "partial",
+      "requirements_assigned": ["C2 full contact workspace", "C3 mutation endpoints", "create/edit/change lifecycle/owner/tags/note/follow-up/archive", "mutation audit and reload persistence"],
+      "already_satisfied": ["Selected profile/activity/timeline panes exist.", "PATCH /api/bna/crm/contacts/:id supports some local field, note, lifecycle, owner, tag, and follow-up task updates.", "Safe action panel keeps sends disabled."],
+      "remaining_gap": "Dedicated full contact workspace route/state, exact header/tabs/inspector/activity geometry, Add Note/Schedule Follow-up UI, POST contact, GET detail, POST notes, complete mutation audit contract, optimistic rollback, success/saving/failure states, and reload persistence proof remain partial or missing.",
+      "implementation_rule": "Local writes only. No email/WhatsApp/payment/access/import/external CRM writes. Any exposed action must update the action registry and pass isolated test DB proof."
+    },
+    {
+      "packet_id": "OT-CRM-03",
+      "title": "Timeline, inbox handoff, and guarded composer",
+      "status": "partial",
+      "requirements_assigned": ["C2 Activity layout", "C3 GET timeline", "C3 contact threads/messages endpoints", "C4 Inbox", "open linked email/WhatsApp thread"],
+      "already_satisfied": ["GET timeline exists.", "Open scoped inbox navigation exists.", "Email workspace shows One Time Inbox context, selected CRM context card, readiness gates, local draft editor, view rail, and detail cards.", "Provider mailbox thread/list/draft endpoints exist."],
+      "remaining_gap": "Contact-specific threads endpoint, guarded CRM-to-inbox composer, exact C4 three-pane geometry, URL/session thread retention, return-to-contact retention, queued/sent/failed status proof, and no provider-direct browser send proof remain partial or missing.",
+      "implementation_rule": "Composer work must enqueue only through existing guarded outbox and preserve recipient/copy/sender approval gates."
+    },
+    {
+      "packet_id": "OT-CRM-04",
+      "title": "Tasks, lifecycle pipeline, and access relationships",
+      "status": "partial",
+      "requirements_assigned": ["C5 tasks", "C5 lifecycle pipeline", "access relationships", "family/student/member/access record readbacks"],
+      "already_satisfied": ["CRM DTO includes follow_up_task, membership_access, class_context, linked records, and support summaries.", "PATCH can create a follow-up task when next follow-up or owner is supplied."],
+      "remaining_gap": "Tasks tab, Schedule Follow-up action, POST contact task endpoint, PATCH task complete/reopen endpoint, canonical lifecycle registry, pipeline gating after persistence, and exact access relationship readback/proof remain partial or missing.",
+      "implementation_rule": "Task creation belongs in the Tasks tab and Schedule Follow-up action. Do not create duplicate task forms or a second Kanban-only lifecycle field."
+    },
+    {
+      "packet_id": "OT-CRM-05",
+      "title": "Canonical-route browser verification, responsive screenshots, and deployment",
+      "status": "partial",
+      "requirements_assigned": ["C6 workspace isolation negative proof", "C8 canonical-route browser verification", "C9 deployment sequence", "responsive screenshots", "registry/watchdog/protocol proof"],
+      "already_satisfied": ["Tenant/isolation static and model tests exist.", "Local and live smoke scripts exist.", "Previous CRM correction run recorded passing PQC/local proof for several packets."],
+      "remaining_gap": "Need fresh canonical /operations browser journey through operations-bootstrap generated assets, isolated test DB mutation/reload proof, BNA-only fixture absence proof, View-as-Rabbi write rejection, 1440/1024/768/430/390 screenshots, watchdog/action/route checks, deployment, and live no-write smoke before terminal Done.",
+      "implementation_rule": "Use an isolated test database for mutation proof. Do not create production contacts merely to satisfy a smoke test."
+    }
+  ],
+  "gap_matrix": [
+    {
+      "gap_id": "GAP-OT-CRM-001",
+      "area": "Canonical blueprint",
+      "status_before_this_spec": "missing",
+      "status_after_this_spec": "satisfied",
+      "evidence": ["ops/product-specs/one-time/crm/contacts-inbox.v1.json"]
+    },
+    {
+      "gap_id": "GAP-OT-CRM-002",
+      "area": "CRM list DTO and API",
+      "status_before_this_spec": "already_satisfied",
+      "status_after_this_spec": "already_satisfied",
+      "evidence": ["src/lib/bna/crm-contact-model.js", "server.js", "tests/crm-contact-model.test.js"]
+    },
+    {
+      "gap_id": "GAP-OT-CRM-003",
+      "area": "Operations CRM workbench",
+      "status_before_this_spec": "mostly_satisfied",
+      "status_after_this_spec": "mostly_satisfied",
+      "evidence": ["public/js/operations-shell.js", "scripts/smoke-onetime-operations-crm-workbench-local.mjs"]
+    },
+    {
+      "gap_id": "GAP-OT-CRM-004",
+      "area": "Full contact workspace and local mutations",
+      "status_before_this_spec": "partial",
+      "status_after_this_spec": "partial",
+      "evidence": ["PATCH endpoint exists", "UI safe-action controls are disabled", "dedicated full workspace and several mutation endpoints are not verified"],
+      "next_packet": "OT-CRM-02"
+    },
+    {
+      "gap_id": "GAP-OT-CRM-005",
+      "area": "Timeline, inbox handoff, guarded composer",
+      "status_before_this_spec": "partial",
+      "status_after_this_spec": "partial",
+      "evidence": ["openFirstPartyCrmInboxContext", "renderEmailCrmContextCard", "scripts/smoke-onetime-operations-crm-workbench-local.mjs"],
+      "next_packet": "OT-CRM-03"
+    },
+    {
+      "gap_id": "GAP-OT-CRM-006",
+      "area": "Tasks, lifecycle pipeline, and access relationships",
+      "status_before_this_spec": "partial",
+      "status_after_this_spec": "partial",
+      "evidence": ["follow_up_task DTO exists", "PATCH can create a follow-up task", "Tasks tab/pipeline/access relationship proof not complete"],
+      "next_packet": "OT-CRM-04"
+    },
+    {
+      "gap_id": "GAP-OT-CRM-007",
+      "area": "Isolated mutation proof",
+      "status_before_this_spec": "test_script_exists_not_run_in_this_batch",
+      "status_after_this_spec": "open_for_REQ_20260712_806",
+      "evidence": ["scripts/smoke-onetime-crm-journey-local-db.mjs"],
+      "next_packet": "OT-CRM-05"
+    },
+    {
+      "gap_id": "GAP-OT-CRM-008",
+      "area": "Live production no-write proof",
+      "status_before_this_spec": "prior_scripts_exist_fresh_run_needed_after_app_visible_changes",
+      "status_after_this_spec": "open_for_REQ_20260712_806_or_807",
+      "evidence": ["scripts/smoke-onetime-operations-crm-workbench-live.mjs", "scripts/smoke-one-time-crm-contacts-ux-live.mjs"],
+      "next_packet": "OT-CRM-05"
+    },
+    {
+      "gap_id": "GAP-OT-CRM-009",
+      "area": "Exact raw C0-C9 implementation contract",
+      "status_before_this_spec": "incomplete_first_draft",
+      "status_after_this_spec": "satisfied_for_blueprint",
+      "evidence": ["canonical shell, Contacts index, contact workspace, endpoint/mutation, Inbox, tasks/pipeline, isolation, performance, browser journey, and C9 packet ownership now encoded in this JSON"],
+      "next_packet": "OT-CRM-01"
+    }
+  ],
+  "definition_of_ready_for_implementation": [
+    "This JSON spec parses successfully.",
+    "REQ-20260712-805 is terminal Done with current-state inspection evidence.",
+    "REQ-20260712-806 selects only partial/open gap rows, not already-satisfied rows.",
+    "Any UI/product packet that changes visible behavior has a Product Quality packet or uses an already-validated packet and names current screenshot evidence.",
+    "Any new visible action has action registry coverage before closeout.",
+    "Any new route has route registry coverage before closeout.",
+    "Any local write has isolated test DB proof, reload persistence proof, and no-send/external-write assertions.",
+    "Any production/live proof is read-only/no-write unless explicitly approved."
+  ],
+  "definition_of_done": [
+    "Current spec and surface map are committed and pushed with the run evidence.",
+    "REQ-20260712-806 implements or blocks each OT-CRM row with evidence.",
+    "Focused tests pass: crm model, communications workspace, contacts cleanup, relevant route/action registry checks, and local CRM/inbox smoke.",
+    "For app-visible changes, screenshots are captured across desktop and mobile through the canonical /operations route.",
+    "For server-visible changes, live no-write/readback smoke passes on the One Time deployment.",
+    "No external CRM, email send, WhatsApp send, payment, access grant, DNS/account/credential mutation, raw private data commit, or secret exposure occurs."
+  ],
+  "verification_plan": [
+    {
+      "command": "node -e \"JSON.parse(require('fs').readFileSync('ops/product-specs/one-time/crm/contacts-inbox.v1.json','utf8')); JSON.parse(require('fs').readFileSync('ops/surface-maps/2026-07-12-one-time-crm-contacts-inbox-surface-map.json','utf8'));\"",
+      "expected_result": "Blueprint and surface map JSON parse."
+    },
+    {
+      "command": "node --test tests/crm-contact-model.test.js tests/one-time-communications-workspace.test.js tests/operations-contacts-intake-cleanup.test.js",
+      "expected_result": "Focused current CRM/inbox static and DTO contracts pass."
+    },
+    {
+      "command": "npm run bna:run:validate",
+      "expected_result": "Execution run validates after REQ-20260712-805 closeout."
+    },
+    {
+      "command": "npm run pqc:validate",
+      "expected_result": "Existing product-quality packet corpus still validates. Future implementation packets may run narrower PQC validation paths."
+    }
+  ],
+  "blocked_or_not_in_scope": [
+    {
+      "item": "Production contact mutation/live intake",
+      "reason": "Would write production rows and needs a narrower approved synthetic/no-write or isolated test DB packet."
+    },
+    {
+      "item": "Bulk campaign sends",
+      "reason": "Requires separate campaign packet with recipients, copy, suppressions, footer/compliance, seed proof, and explicit approval."
+    },
+    {
+      "item": "GHL/LeadConnector",
+      "reason": "Forbidden by current durable memory. One Time CRM stays first-party BNA."
+    }
+  ]
+}
