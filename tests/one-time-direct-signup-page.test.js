@@ -84,6 +84,7 @@ test('One Time direct signup route, registries, and landing CTAs are canonical',
   assert.match(signupHtml, /Required for WhatsApp reminders/);
   assert.match(signupHtml, /class="required-dot"/);
   assert.doesNotMatch(signupHtml, /Add a phone number if you want WhatsApp reminders/i);
+  assert.doesNotMatch(visibleSignupText, /phone\s*(?:\/\s*WhatsApp)?\s*[-:–—]?\s*optional/i);
   assert.doesNotMatch(visibleSignupText, /Optional unless/i);
   assert.doesNotMatch(signupHtml, /<input[^>]+name="reminder_preference"[^>]+checked/i);
   assert.doesNotMatch(signupHtml, /name="(?:student|student_name|studentName|learner_name|learnerName)/i);
@@ -131,6 +132,7 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
         phoneHintVisible: !document.querySelector('[data-phone-hint]')?.hidden,
         acknowledgementRequired: Boolean(document.querySelector('input[name="signup_acknowledgement"]')?.required),
         acknowledgementChecked: Boolean(document.querySelector('input[name="signup_acknowledgement"]')?.checked),
+        phoneLabel: document.querySelector('label[for="phone"]')?.textContent || '',
         consentText: document.querySelector('.consent-copy')?.textContent || '',
       }));
       assert.equal(metrics.formVisible, true, `form visible at ${width}`);
@@ -138,6 +140,7 @@ test('One Time direct signup validates WhatsApp phone and submits first-party pa
       assert.ok(metrics.requiredDotCount >= 5, `required dots visible at ${width}`);
       assert.equal(metrics.phoneDotVisible, false, `phone dot hidden before WhatsApp selection at ${width}`);
       assert.equal(metrics.phoneHintVisible, false, `phone hint hidden before WhatsApp selection at ${width}`);
+      assert.doesNotMatch(metrics.phoneLabel, /optional/i, `phone label has no optional copy at ${width}`);
       assert.equal(metrics.acknowledgementRequired, true, `acknowledgement required at ${width}`);
       assert.equal(metrics.acknowledgementChecked, false, `acknowledgement not prechecked at ${width}`);
       assert.match(metrics.consentText, /selected city/i, `consent line mentions selected city at ${width}`);

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-07-12-onetime-p0p1-corrective-completion",
   "title": "One Time P0/P1 Corrective Completion",
-  "updated_at": "2026-07-12T11:45:00+03:00",
+  "updated_at": "2026-07-12T11:59:00+03:00",
   "git_refs": {
     "expected_branch": "codex/onetime-p0p1-corrective-20260711",
     "branch": "codex/onetime-p0p1-corrective-20260711",
@@ -586,7 +586,8 @@
         "config/service-provider-sites/one-time.json, ops/route-registry.json, and ops/action-registry.json declare the route and visible actions.",
         "tests/one-time-direct-signup-page.test.js performs a Playwright journey at 1440, 1024, 768, 430, and 390 widths, validates hidden phone required marker/hint before WhatsApp and visible marker/hint after WhatsApp, submits to /api/one-time/interest, and confirms first-party payload fields without a student field.",
         "tests/one-time-focused-landing.test.js, tests/one-time-product-system.test.js, and tests/one-time-signup-reminder-workflow.test.js cover CTA routing, internal-copy removal, route/action registry coverage, and no portal/payment/access route leakage.",
-        "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json records local Playwright screenshot evidence at 1440, 1024, 768, 430, and 390 widths with no horizontal overflow, visible form, Back to Home, no preselected reminder choice, and no overlapping robot artwork."
+        "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json records local Playwright screenshot evidence at 1440, 1024, 768, 430, and 390 widths with no horizontal overflow, visible form, Back to Home, no preselected reminder choice, and no overlapping robot artwork.",
+        "tests/one-time-direct-signup-page.test.js and tests/one-time-signup-reminder-workflow.test.js now explicitly reject visible phone-optional copy while preserving red required markers and the required reminder/location acknowledgement checkbox."
       ],
       "deployment_required": true,
       "id": "REQ-20260712-013",
@@ -602,7 +603,7 @@
         "REQ-20260712-012"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Locally implemented and verified. The canonical /one-time/signup route exists, public Sign Up Now actions route to it, the form has the required first-step fields, red required dots, no phone-optional customer copy, phone required marker/hint only after WhatsApp selection, and a required location/reminder acknowledgement checkbox. Student-name capture and member-login/portal actions are absent from the form, internal implementation copy is removed from visible customer copy, responsive browser proof passes at 1440/1024/768/430/390, and action/route registries are current. Production deployment, live smoke, and the operator personal end-to-end test are still required before terminal Done/verified status.",
+      "implementation_status": "Locally implemented and verified. The canonical /one-time/signup route exists, public Sign Up Now actions route to it, the form has the required first-step fields, red required dots, no phone-optional customer copy, phone required marker/hint only after WhatsApp selection, and a required location/reminder acknowledgement checkbox. The latest regression tests explicitly fail if phone optional wording appears. Student-name capture and member-login/portal actions are absent from the form, internal implementation copy is removed from visible customer copy, responsive browser proof passes at 1440/1024/768/430/390, and action/route registries are current. Production deployment, live smoke, and the operator personal end-to-end test are still required before terminal Done/verified status.",
       "next_action": "After release authorization, deploy the exact approved SHA, run live smoke/readback for this requirement, and record the deployed SHA evidence.",
       "acceptance_criteria": [
         "Route /one-time/signup exists and is registered.",
@@ -622,7 +623,9 @@
         "node --test tests/one-time-direct-signup-page.test.js PASS 2/2",
         "node --test tests/one-time-focused-landing.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
         "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
-        "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md"
+        "npm run watchdog:protocol-drift PASS report ops/watchdog-audits/2026-07-12-product-quality-drift.md",
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 13/13 with explicit no-phone-optional copy regression, required-dot visibility, and required acknowledgement checkbox assertions",
+        "npm run test:onetime:focused PASS 67/67"
       ],
       "implementation_files": [
         "server.js",
@@ -639,7 +642,7 @@
         "tests/one-time-signup-reminder-workflow.test.js",
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json"
       ],
-      "updated_at": "2026-07-12T10:56:00+03:00",
+      "updated_at": "2026-07-12T11:59:00+03:00",
       "expected_result": "A professional standalone signup route is the single public signup implementation."
     },
     {
@@ -1109,10 +1112,13 @@
       "evidence": [
         "scripts/simulate-one-time-class-reminder.mjs requires --confirm APPROVE_ONE_TIME_SINGLE_RECIPIENT_REMINDER_TEST, one positive numeric --contact-id, and CRON_SECRET before calling the protected reminder endpoint.",
         "scripts/simulate-one-time-class-reminder.mjs rejects broad audience flags including --all, --audience, --segment, --workspace, and --project.",
-        "tests/one-time-reminder-simulation-command.test.js covers missing confirmation, missing/zero contact, unrestricted audience refusal, missing CRON_SECRET refusal, and contact-scoped request/output assertions."
+        "tests/one-time-reminder-simulation-command.test.js covers missing confirmation, missing/zero contact, unrestricted audience refusal, missing CRON_SECRET refusal, and contact-scoped request/output assertions.",
+        "src/lib/bna/one-time-operator-test-handoff.js builds the exact operator-ready message only after implementation, migrations, no-send tests, CI, deployment, Resend, WAPI, Telegram, scheduler, and direct-form visual proof are all true.",
+        "scripts/one-time-operator-test-handoff.mjs exits blocked by default against the current readiness snapshot and suppresses the ready message while missing ci_passed, deployment_complete, wapi_ready, and telegram_ready.",
+        "tests/one-time-operator-test-handoff.test.js verifies ready-message suppression, exact ready message text, guarded single-recipient command, no unrestricted audience flags, and no secret echo."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T11:10:00+03:00",
+      "updated_at": "2026-07-12T11:59:00+03:00",
       "id": "REQ-20260712-022",
       "title": "Gate deployed personal end-to-end operator test",
       "source_statement_ids": [
@@ -1124,8 +1130,8 @@
         "REQ-20260712-023"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "Guarded single-recipient reminder simulation command is locally implemented and tested. Deployment authorization, hosted readiness, scheduler health, visual proof on the deployed URL, real provider evidence, and operator personal signup submission remain required before terminal closeout.",
-      "next_action": "After approval and operator submission, verify product lead, CRM contact, location/timezone, consent, email, optional WhatsApp, one Telegram alert, no portal/access records, replay idempotency, and guarded reminder simulation.",
+      "implementation_status": "Guarded single-recipient reminder simulation command is locally implemented and tested. A separate operator-test handoff guard now suppresses the required \"Automation is deployed and ready for your test\" message until implementation, migrations, no-send tests, CI, deployment, Resend/WAPI/Telegram readiness, scheduler health, and direct-form visual proof all pass. Current readiness is blocked as expected on ci_passed, deployment_complete, wapi_ready, and telegram_ready. Deployment authorization, hosted readiness, scheduler health, visual proof on the deployed URL, real provider evidence, and operator personal signup submission remain required before terminal closeout.",
+      "next_action": "After approval and operator submission, verify product lead, CRM contact, location/timezone, consent, email, optional WhatsApp, one Telegram alert, no portal/access records, replay idempotency, and guarded reminder simulation. Do not emit the operator-ready message while the handoff guard is blocked.",
       "acceptance_criteria": [
         "Automation deployed and ready message is given only after implementation/tests/readiness/deploy/visual proof.",
         "Only operator-submitted recipient is used.",
@@ -1136,13 +1142,21 @@
         "deployed personal E2E readback after authorization",
         "guarded single-recipient reminder simulation",
         "node --test tests/one-time-reminder-simulation-command.test.js PASS 4/4",
-        "npm run test:onetime:focused PASS 62/62"
+        "npm run test:onetime:focused PASS 62/62",
+        "node --check src/lib/bna/one-time-operator-test-handoff.js PASS",
+        "node --check scripts/one-time-operator-test-handoff.mjs PASS",
+        "node --test tests/one-time-operator-test-handoff.test.js PASS 4/4",
+        "node scripts/one-time-operator-test-handoff.mjs --json BLOCKED as expected: ready=false, status=blocked_before_operator_personal_test, ready_message_suppressed=true, missing ci_passed/deployment_complete/wapi_ready/telegram_ready",
+        "npm run test:onetime:focused PASS 67/67"
       ],
       "implementation_files": [
         "scripts/simulate-one-time-class-reminder.mjs",
         "tests/one-time-reminder-simulation-command.test.js",
         "package.json",
-        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/DEPLOYMENT.md"
+        "ops/execution-runs/2026-07-12-onetime-p0p1-corrective-completion/DEPLOYMENT.md",
+        "src/lib/bna/one-time-operator-test-handoff.js",
+        "scripts/one-time-operator-test-handoff.mjs",
+        "tests/one-time-operator-test-handoff.test.js"
       ],
       "expected_result": "Real-send workflow remains gated until the operator personally performs and confirms the deployed test."
     },
@@ -1161,7 +1175,7 @@
         "Local implementation evidence recorded in ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json and focused tests; production deployment/live proof is not yet claimed."
       ],
       "deployment_required": true,
-      "updated_at": "2026-07-12T11:10:00+03:00",
+      "updated_at": "2026-07-12T11:59:00+03:00",
       "id": "REQ-20260712-023",
       "title": "Run required signup/reminder test matrix and evidence closeout",
       "source_statement_ids": [
@@ -1181,7 +1195,7 @@
         "REQ-20260712-021"
       ],
       "status": "in_progress",
-      "implementation_status": "Local test matrix is partially complete and now mapped in ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md: direct route, Back to Home, styling smoke, internal-copy removal, city/timezone validation, DST conversion, worldwide instant, phone gating, consent, dedupe/idempotency helpers, outbox, cron gates, guarded single-recipient simulation command, paused/canceled class suppression guardrails, email unsubscribe and WhatsApp STOP/wrong-number suppression guardrails, WAPI gates, Rabbi Telegram payload, local-class preview, and no-portal negatives are covered. Deployment, readiness checks, live smoke, operator personal test, and provider evidence remain required.",
+      "implementation_status": "Local test matrix is expanded and mapped in ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md: direct route, Back to Home, styling smoke, internal-copy removal, no-phone-optional regression, city/timezone validation, DST conversion, worldwide instant, phone gating, required reminder/location acknowledgement, consent, dedupe/idempotency helpers, outbox, cron gates, guarded single-recipient simulation command, guarded operator-test handoff suppression, paused/canceled class suppression guardrails, email unsubscribe and WhatsApp STOP/wrong-number suppression guardrails, WAPI gates, Rabbi Telegram payload, local-class preview, and no-portal negatives are covered. Deployment, readiness checks, live smoke, operator personal test, and provider evidence remain required.",
       "next_action": "Complete hosted readiness/deploy/live-smoke/provider evidence and operator personal test before terminal closeout.",
       "acceptance_criteria": [
         "Family/School, route/back link, styling, internal-copy removal, city autocomplete, timezone validation, DST, worldwide instant, local display, phone validation, no-reminder confirmation, consent, CRM dedupe, outbox retry, reminder idempotency, suppression, missing/changed Zoom link, Telegram, WAPI failure, local-contact preview, no portal/payment/access, cross-workspace isolation, and .invalid no-send cases are covered."
@@ -1203,7 +1217,12 @@
         "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 12/12",
         "node --test tests/one-time-reminder-simulation-command.test.js PASS 4/4",
         "node --test tests/one-time-reminder-simulation-command.test.js tests/one-time-signup-reminder-workflow.test.js tests/one-time-direct-signup-page.test.js PASS 16/16",
-        "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md created with requirement-by-requirement proof and blocker mapping"
+        "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md created with requirement-by-requirement proof and blocker mapping",
+        "node --test tests/one-time-operator-test-handoff.test.js PASS 4/4",
+        "node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js PASS 13/13",
+        "npm run test:onetime:focused PASS 67/67",
+        "node scripts/one-time-operator-test-handoff.mjs --json BLOCKED as expected with ready_message_suppressed=true",
+        "npm run secrets:audit PASS tracked paths checked, 0 tracked secret-risk files found"
       ],
       "implementation_files": [
         "tests/one-time-direct-signup-page.test.js",
@@ -1211,7 +1230,10 @@
         "tests/one-time-signup-reminder-workflow.test.js",
         "tests/one-time-reminder-simulation-command.test.js",
         "ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json",
-        "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md"
+        "ops/evidence/one-time-signup-reminder/2026-07-12/REQUIREMENT-MATRIX.md",
+        "tests/one-time-operator-test-handoff.test.js",
+        "src/lib/bna/one-time-operator-test-handoff.js",
+        "scripts/one-time-operator-test-handoff.mjs"
       ],
       "expected_result": "The PR includes deterministic no-send proof and evidence for the complete signup/reminder workflow without claiming final Done before personal deployed test."
     },

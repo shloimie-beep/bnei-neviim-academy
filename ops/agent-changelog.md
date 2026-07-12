@@ -38487,3 +38487,23 @@ Report: ops/agent-fleet-runs/2026-07-07T14-31-54-632Z-task-1518.md
 - No deploy, email/WhatsApp/Telegram send, provider mutation, production-data
   mutation, payment/access mutation, local-class activation, or parallel PR was
   performed.
+
+## 2026-07-12 - One Time operator-test handoff guard added
+
+- Added a no-send operator-test handoff guard that suppresses the required
+  "Automation is deployed and ready for your test" message until implementation,
+  migrations, no-send tests, CI, deployment, Resend, WAPI, Telegram, scheduler,
+  and direct-form visual proof all pass.
+- Added a CLI readback and tests for blocked-by-default behavior, exact ready
+  message text, guarded single-recipient reminder command, no unrestricted
+  audience flags, and no secret echo.
+- Tightened signup tests so the public form fails if visible phone-optional
+  wording returns; required red markers and the clicked reminder/location
+  acknowledgement checkbox remain covered.
+- Verification passed: handoff syntax checks, handoff test 4/4, direct signup
+  plus reminder workflow tests 13/13, focused One Time suite 67/67,
+  `bna:run:validate`, `secrets:audit`, and `git diff --check`.
+- The handoff CLI is blocked as expected on CI scope, deployment, WAPI, and
+  Telegram readiness. No deploy, email/WhatsApp/Telegram send, provider
+  mutation, production-data mutation, portal/account/payment/access mutation,
+  local-class activation, or parallel PR was performed.

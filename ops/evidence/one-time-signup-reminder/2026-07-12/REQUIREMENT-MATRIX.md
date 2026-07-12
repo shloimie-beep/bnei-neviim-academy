@@ -17,6 +17,9 @@ personal test completion.
 | `tests/one-time-direct-signup-page.test.js` | Playwright route/form proof at 1440/1024/768/430/390, phone marker gating, payload assertions. |
 | `tests/one-time-onboarding-intake.test.js` | Browser/static proof that continuation preserves exact product/CRM lead IDs, UTM/referrer/source attribution, and Family/School required fields. |
 | `tests/one-time-signup-reminder-workflow.test.js` | Unit/static no-send workflow proof for consent, timezone, outbox, Telegram, reminder, local-class preview, no-portal negatives. |
+| `src/lib/bna/one-time-operator-test-handoff.js` | Operator personal-test handoff guard; suppresses the ready message until all readiness checks pass. |
+| `scripts/one-time-operator-test-handoff.mjs` | No-send CLI readback for the handoff guard. |
+| `tests/one-time-operator-test-handoff.test.js` | Exact ready-message, blocked-state, guarded-command, and no-secret/no-broad-audience proof. |
 | `tests/one-time-external-setup-readiness.test.js` | Redacted readiness proof for hosted settings without secret echo. |
 | `ops/evidence/one-time-signup-reminder/2026-07-12/visual-smoke.json` | Local screenshot proof for `/one-time/signup` at 1440/1024/768/430/390. |
 | `ops/watchdog-audits/2026-07-09-onetime-wapi-readiness.*` | Redacted WAPI readiness report; blocked, no send. |
@@ -36,7 +39,7 @@ personal test completion.
 | Jerusalem/New York/London/Sydney DST cases | Locally proven | `nextOneTimeClassSchedule()` and `buildClassTimeDisplay()` tests in `tests/one-time-signup-reminder-workflow.test.js` | None locally; live message rendering remains provider-gated. |
 | Worldwide reminder sent at one actual instant | Locally proven | Schedule tests assert one Jerusalem class instant and converted recipient-local display | Hosted scheduler/run proof still blocked on cron config and deploy. |
 | Recipient-local display time | Locally proven | Confirmation/reminder display tests for Lakewood/London/Sydney | Live email/WhatsApp received-copy proof requires operator test. |
-| Phone not required for email/no-reminder choices | Locally proven | `buildOneTimeSignupLeadInput()` tests; Playwright phone marker/hint hidden before WhatsApp and no visible optional-phone wording | Live deployed form smoke still required. |
+| Phone not required for email/no-reminder choices | Locally proven | `buildOneTimeSignupLeadInput()` tests; Playwright phone marker/hint hidden before WhatsApp and explicit regression coverage that rejects visible `phone optional` copy | Live deployed form smoke still required. |
 | Phone required for WhatsApp choices | Locally proven | Playwright WhatsApp validation blocks submit without phone; server-side validation requires phone for WhatsApp/Both | Live deployed form smoke still required. |
 | No daily reminders still receives immediate confirmation | Locally proven at outbox-builder level | `buildOneTimeSignupOutboxEvents()` no-reminder test queues email confirmation and Rabbi Telegram alert, no WhatsApp | Real Resend delivery proof requires operator test and provider readiness. |
 | Consent not hard-coded | Locally proven | `buildOneTimeSignupLeadInput()` sets `consent=false` for no reminders and requires explicit acknowledgement/consent for recurring reminders | Live CRM readback still required. |
@@ -55,21 +58,28 @@ personal test completion.
 | No portal, login, password, payment, or access records | Locally proven for direct signup payload/outbox path and local-class activation plan | Form tests reject portal copy/actions; workflow metadata sets `no_portal_onboarding`, `no_member_login_created`, `no_password_setup`, `no_checkout`, `no_payment`, `no_access_granted`; activation plan repeats those no-portal/no-payment/no-access flags | Real DB negative readback requires operator test/test DB. |
 | Cross-workspace isolation | Partially covered by broader focused suite | Existing scope route tests and One Time focused suite cover workspace isolation; direct signup path uses `getRabbiProject()` / One Time workspace/project | Direct signup live CRM readback still required. |
 | Synthetic `.invalid` tests perform no external send | Locally proven | Browser/API tests submit `.invalid` only to local test server; no-send readiness reports show no email/WhatsApp/Telegram sends | Real provider smoke must use only operator-submitted recipient after authorization. |
-| Operator personal end-to-end test | Not run | Requirements and deployment gate document exact sequence | Requires deploy, provider readiness, and operator submitting exactly one test signup. |
+| Operator personal end-to-end test | Locally gated, not run | `buildOneTimeOperatorTestHandoff()` suppresses the required ready message until implementation, migrations, no-send tests, CI, deployment, Resend, WAPI, Telegram, scheduler, and direct-form visual proof pass; default CLI readback is blocked as expected with `ready_message_suppressed=true` | Requires deploy, provider readiness, CI workflow scope, and operator submitting exactly one test signup. |
 | Local-class activation after personal test | Locally planned, not run | Activation-plan helper is email-only and requires both operator personal test proof and `APPROVE_ONE_TIME_LOCAL_CLASS_EMAIL_REMINDERS`; it performs no mutation itself | Must remain inactive until operator personal test passes and real scoped DB preview proves exactly three eligible contacts. |
 
 ## Current No-Send Gate Results
 
 - `node --test tests/one-time-signup-reminder-workflow.test.js` PASS: 11/11.
 - `node --test tests/one-time-reminder-simulation-command.test.js` PASS: 4/4.
+- `node --test tests/one-time-operator-test-handoff.test.js` PASS: 4/4.
+- `node --test tests/one-time-direct-signup-page.test.js tests/one-time-signup-reminder-workflow.test.js` PASS: 13/13, including explicit no-phone-optional copy regression, required-dot visibility, and required acknowledgement checkbox assertions.
 - `node --test tests/one-time-direct-signup-page.test.js tests/one-time-onboarding-intake.test.js` PASS: 6/6.
-- `npm run test:onetime:focused` PASS: 63/63, including the guarded
+- `npm run test:onetime:focused` PASS: 67/67, including the guarded
   reminder simulation command, required checkbox/marker assertions, and the
-  local-class activation-plan blocker assertions.
+  local-class activation-plan and operator-test handoff blocker assertions.
+- `node scripts/one-time-operator-test-handoff.mjs --json` BLOCKED as expected:
+  `ready=false`, `status=blocked_before_operator_personal_test`,
+  `ready_message_suppressed=true`; missing checks are `ci_passed`,
+  `deployment_complete`, `wapi_ready`, and `telegram_ready`.
 - `node --test tests/one-time-external-setup-readiness.test.js` PASS: 8/8.
 - `npm run one-time:railway-target:guard` PASS with no external write, no send, no secret print.
 - `npm run one-time:setup:check` BLOCKED as expected: ready 5/8; missing Rabbi Stripe sandbox, Whapi/WAPI provider details, campaign seed/real campaign details; hosted scheduler settings are not enabled/approved and `CRON_SECRET` is missing.
 - `npm run bna:run:validate` PASS with work remaining.
+- `npm run secrets:audit` PASS: 0 tracked secret-risk files found.
 
 ## Explicit Non-Claims
 

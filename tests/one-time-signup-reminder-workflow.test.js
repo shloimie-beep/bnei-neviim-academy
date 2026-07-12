@@ -54,6 +54,7 @@ test('direct signup page is the canonical public form', () => {
   assert.match(signup, /data-phone-required-dot[^>]*hidden/);
   assert.match(signup, /data-phone-hint hidden>Required for WhatsApp reminders\./);
   assert.doesNotMatch(signup, /Add a phone number if you want WhatsApp reminders/i);
+  assert.doesNotMatch(visibleSignupText, /phone\s*(?:\/\s*WhatsApp)?\s*[-:–—]?\s*optional/i);
   assert.match(signup, /prefers-reduced-motion/);
   assert.match(signup, /\/api\/one-time\/interest/);
   assert.doesNotMatch(visibleSignupText, /Member Login|parent portal|student portal|checkout|billing|CRM|Codex|guardrail|approval|password setup|Optional unless/i);
